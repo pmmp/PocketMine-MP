@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 
 class PlayerListEntry{
 
@@ -40,7 +40,7 @@ class PlayerListEntry{
 	/** @var string */
 	public $platformChatId = "";
 	/** @var int */
-	public $buildPlatform = -1;
+	public $buildPlatform = DeviceOS::UNKNOWN;
 	/** @var bool */
 	public $isTeacher = false;
 	/** @var bool */

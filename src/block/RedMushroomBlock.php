@@ -58,4 +58,8 @@ class RedMushroomBlock extends Opaque{
 			VanillaBlocks::RED_MUSHROOM()->asItem()->setCount(mt_rand(0, 2))
 		];
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
 }

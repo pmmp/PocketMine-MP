@@ -28,19 +28,16 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
+use pocketmine\network\mcpe\protocol\types\EducationEditionOffer;
+use pocketmine\network\mcpe\protocol\types\GameRuleType;
+use pocketmine\network\mcpe\protocol\types\GeneratorType;
+use pocketmine\network\mcpe\protocol\types\MultiplayerGameVisibility;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use function count;
-use function file_get_contents;
-use function json_decode;
-use const pocketmine\RESOURCE_PATH;
 
 class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::START_GAME_PACKET;
-
-	/** @var string|null */
-	private static $itemTableCache = null;
 
 	/** @var int */
 	public $entityUniqueId;
@@ -62,7 +59,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $dimension;
 	/** @var int */
-	public $generator = 1; //default infinite - 0 old, 1 infinite, 2 flat
+	public $generator = GeneratorType::OVERWORLD;
 	/** @var int */
 	public $worldGamemode;
 	/** @var int */
@@ -78,7 +75,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $time = -1;
 	/** @var int */
-	public $eduEditionOffer = 0;
+	public $eduEditionOffer = EducationEditionOffer::NONE;
 	/** @var bool */
 	public $hasEduFeaturesEnabled = false;
 	/** @var float */
@@ -92,9 +89,9 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	/** @var bool */
 	public $hasLANBroadcast = true;
 	/** @var int */
-	public $xboxLiveBroadcastMode = 0; //TODO: find values
+	public $xboxLiveBroadcastMode = MultiplayerGameVisibility::PUBLIC;
 	/** @var int */
-	public $platformBroadcastMode = 0;
+	public $platformBroadcastMode = MultiplayerGameVisibility::PUBLIC;
 	/** @var bool */
 	public $commandsEnabled;
 	/** @var bool */
@@ -104,7 +101,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	 * @phpstan-var array<string, array{0: int, 1: bool|int|float}>
 	 */
 	public $gameRules = [ //TODO: implement this
-		"naturalregeneration" => [1, false] //Hack for client side regeneration
+		"naturalregeneration" => [GameRuleType::BOOL, false] //Hack for client side regeneration
 	];
 	/** @var bool */
 	public $hasBonusChestEnabled = false;
@@ -156,10 +153,10 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	 */
 	public $blockTable;
 	/**
-	 * @var int[]|null string (name) => int16 (legacyID)
-	 * @phpstan-var array<string, int>|null
+	 * @var int[] string (name) => int16 (legacyID)
+	 * @phpstan-var array<string, int>
 	 */
-	public $itemTable = null;
+	public $itemTable = [];
 
 	protected function decodePayload(NetworkBinaryStream $in) : void{
 		$this->entityUniqueId = $in->getEntityUniqueId();
@@ -214,9 +211,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 
 		$this->enchantmentSeed = $in->getVarInt();
 
-		$offset = $in->getOffset();
-		$blockTable = (new NetworkNbtSerializer())->read($in->getBuffer(), $offset, 512)->getTag();
-		$in->setOffset($offset);
+		$blockTable = $in->getNbtRoot()->getTag();
 		if(!($blockTable instanceof ListTag)){
 			throw new \UnexpectedValueException("Wrong block table root NBT tag type");
 		}
@@ -288,14 +283,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 
 		$out->put($this->blockTable->getEncodedNbt());
 
-		if($this->itemTable === null){
-			if(self::$itemTableCache === null){
-				self::$itemTableCache = self::serializeItemTable(json_decode(file_get_contents(RESOURCE_PATH . '/vanilla/item_id_map.json'), true));
-			}
-			$out->put(self::$itemTableCache);
-		}else{
-			$out->put(self::serializeItemTable($this->itemTable));
-		}
+		$out->put(self::serializeItemTable($this->itemTable));
 
 		$out->putString($this->multiplayerCorrelationId);
 	}

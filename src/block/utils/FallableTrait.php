@@ -47,9 +47,9 @@ trait FallableTrait{
 
 	public function onNearbyBlockChange() : void{
 		$pos = $this->getPos();
-		$down = $pos->world->getBlock($pos->getSide(Facing::DOWN));
+		$down = $pos->getWorldNonNull()->getBlock($pos->getSide(Facing::DOWN));
 		if($down->getId() === BlockLegacyIds::AIR or $down instanceof Liquid or $down instanceof Fire){
-			$pos->world->setBlock($pos, VanillaBlocks::AIR());
+			$pos->getWorldNonNull()->setBlock($pos, VanillaBlocks::AIR());
 
 			$nbt = EntityFactory::createBaseNBT($pos->add(0.5, 0, 0.5));
 			$nbt->setInt("TileID", $this->getId());

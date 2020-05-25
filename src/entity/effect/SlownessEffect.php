@@ -23,18 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
-use pocketmine\entity\Attribute;
 use pocketmine\entity\Living;
 
 class SlownessEffect extends Effect{
 
 	public function add(Living $entity, EffectInstance $instance) : void{
-		$attr = $entity->getAttributeMap()->get(Attribute::MOVEMENT_SPEED);
-		$attr->setValue($attr->getValue() * (1 - 0.15 * $instance->getEffectLevel()), true);
+		$entity->setMovementSpeed($entity->getMovementSpeed() * (1 - 0.15 * $instance->getEffectLevel()), true);
 	}
 
 	public function remove(Living $entity, EffectInstance $instance) : void{
-		$attr = $entity->getAttributeMap()->get(Attribute::MOVEMENT_SPEED);
-		$attr->setValue($attr->getValue() / (1 - 0.15 * $instance->getEffectLevel()));
+		$entity->setMovementSpeed($entity->getMovementSpeed() / (1 - 0.15 * $instance->getEffectLevel()));
 	}
 }

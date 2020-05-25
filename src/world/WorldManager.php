@@ -53,6 +53,12 @@ use function sprintf;
 use function trim;
 
 class WorldManager{
+	/** @var string */
+	private $dataPath;
+
+	/** @var WorldProviderManager */
+	private $providerManager;
+
 	/** @var World[] */
 	private $worlds = [];
 	/** @var World|null */
@@ -69,11 +75,10 @@ class WorldManager{
 	/** @var int */
 	private $autoSaveTicker = 0;
 
-	public function __construct(Server $server){
+	public function __construct(Server $server, string $dataPath, WorldProviderManager $providerManager){
 		$this->server = $server;
-
-		$this->autoSave = $this->server->getConfigBool("auto-save", $this->autoSave);
-		$this->autoSaveTicks = (int) $this->server->getProperty("ticks-per.autosave", 6000);
+		$this->dataPath = $dataPath;
+		$this->providerManager = $providerManager;
 	}
 
 	/**
@@ -176,9 +181,9 @@ class WorldManager{
 			return false;
 		}
 
-		$path = $this->server->getDataPath() . "worlds/" . $name . "/";
+		$path = $this->getWorldPath($name);
 
-		$providers = WorldProviderManager::getMatchingProviders($path);
+		$providers = $this->providerManager->getMatchingProviders($path);
 		if(count($providers) !== 1){
 			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [
 				$name,
@@ -204,7 +209,7 @@ class WorldManager{
 			return false;
 		}
 		try{
-			GeneratorManager::getGenerator($provider->getWorldData()->getGenerator(), true);
+			GeneratorManager::getInstance()->getGenerator($provider->getWorldData()->getGenerator(), true);
 		}catch(\InvalidArgumentException $e){
 			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Unknown generator \"" . $provider->getWorldData()->getGenerator() . "\""]));
 			return false;
@@ -215,7 +220,7 @@ class WorldManager{
 			}
 			$this->server->getLogger()->notice("Upgrading world \"$name\" to new format. This may take a while.");
 
-			$converter = new FormatConverter($provider, WorldProviderManager::getDefault(), $this->server->getDataPath() . "world_conversion_backups", $this->server->getLogger());
+			$converter = new FormatConverter($provider, $this->providerManager->getDefault(), $this->server->getDataPath() . "world_conversion_backups", $this->server->getLogger());
 			$provider = $converter->execute();
 
 			$this->server->getLogger()->notice("Upgraded world \"$name\" to new format successfully. Backed up pre-conversion world at " . $converter->getBackupPath());
@@ -250,9 +255,9 @@ class WorldManager{
 
 		Utils::testValidInstance($generator, Generator::class);
 
-		$providerClass = WorldProviderManager::getDefault();
+		$providerClass = $this->providerManager->getDefault();
 
-		$path = $this->server->getDataPath() . "worlds/" . $name . "/";
+		$path = $this->getWorldPath($name);
 		/** @var WritableWorldProvider $providerClass */
 		$providerClass::generate($path, $name, $seed, $generator, $options);
 
@@ -296,13 +301,17 @@ class WorldManager{
 		return true;
 	}
 
+	private function getWorldPath(string $name) : string{
+		return $this->dataPath . "/" . $name . "/";
+	}
+
 	public function isWorldGenerated(string $name) : bool{
 		if(trim($name) === ""){
 			return false;
 		}
-		$path = $this->server->getDataPath() . "worlds/" . $name . "/";
+		$path = $this->getWorldPath($name);
 		if(!($this->getWorldByName($name) instanceof World)){
-			return count(WorldProviderManager::getMatchingProviders($path)) > 0;
+			return count($this->providerManager->getMatchingProviders($path)) > 0;
 		}
 
 		return true;

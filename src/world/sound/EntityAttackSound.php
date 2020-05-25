@@ -21,11 +21,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\command;
+namespace pocketmine\world\sound;
 
-use pocketmine\plugin\Plugin;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
-interface PluginIdentifiableCommand{
+/**
+ * Played when a player attacks a mob, dealing damage.
+ */
+class EntityAttackSound implements Sound{
 
-	public function getPlugin() : Plugin;
+	public function encode(?Vector3 $pos){
+		return LevelSoundEventPacket::create(
+			LevelSoundEventPacket::SOUND_ATTACK_STRONG, //TODO: seems like ATTACK is dysfunctional
+			$pos,
+			-1,
+			"minecraft:player"
+		);
+	}
 }

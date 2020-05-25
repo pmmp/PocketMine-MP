@@ -48,14 +48,14 @@ trait ContainerTrait{
 			$inventoryTag = $tag->getListTag(Container::TAG_ITEMS);
 
 			$inventory = $this->getRealInventory();
-			$listeners = $inventory->getListeners();
-			$inventory->removeListeners(...$listeners); //prevent any events being fired by initialization
+			$listeners = $inventory->getListeners()->toArray();
+			$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
 			$inventory->clearAll();
 			/** @var CompoundTag $itemNBT */
 			foreach($inventoryTag as $itemNBT){
 				$inventory->setItem($itemNBT->getByte("Slot"), Item::nbtDeserialize($itemNBT));
 			}
-			$inventory->addListeners(...$listeners);
+			$inventory->getListeners()->add(...$listeners);
 		}
 
 		if($tag->hasTag(Container::TAG_LOCK, StringTag::class)){
@@ -96,7 +96,7 @@ trait ContainerTrait{
 		$pos = $this->getPos();
 
 		foreach($inv->getContents() as $k => $item){
-			$pos->world->dropItem($pos->add(0.5, 0.5, 0.5), $item);
+			$pos->getWorldNonNull()->dropItem($pos->add(0.5, 0.5, 0.5), $item);
 		}
 		$inv->clearAll();
 	}

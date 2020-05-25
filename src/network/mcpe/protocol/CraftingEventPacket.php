@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 use function count;
 
 class CraftingEventPacket extends DataPacket implements ServerboundPacket{

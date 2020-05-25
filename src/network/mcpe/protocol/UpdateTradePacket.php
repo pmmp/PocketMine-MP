@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 
 class UpdateTradePacket extends DataPacket implements ClientboundPacket{
@@ -51,7 +52,10 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 	public $isV2Trading;
 	/** @var bool */
 	public $isWilling;
-	/** @var string */
+	/**
+	 * @var CacheableNbt
+	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
+	 */
 	public $offers;
 
 	protected function decodePayload(NetworkBinaryStream $in) : void{
@@ -64,7 +68,7 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 		$this->displayName = $in->getString();
 		$this->isV2Trading = $in->getBool();
 		$this->isWilling = $in->getBool();
-		$this->offers = $in->getRemaining();
+		$this->offers = new CacheableNbt($in->getNbtCompoundRoot());
 	}
 
 	protected function encodePayload(NetworkBinaryStream $out) : void{
@@ -77,7 +81,7 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 		$out->putString($this->displayName);
 		$out->putBool($this->isV2Trading);
 		$out->putBool($this->isWilling);
-		$out->put($this->offers);
+		$out->put($this->offers->getEncodedNbt());
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

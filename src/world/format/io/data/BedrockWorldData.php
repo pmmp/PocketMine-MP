@@ -102,7 +102,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 			//Additional PocketMine-MP fields
 			->setTag("GameRules", new CompoundTag())
 			->setByte("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0)
-			->setString("generatorName", GeneratorManager::getGeneratorName($generator))
+			->setString("generatorName", GeneratorManager::getInstance()->getGeneratorName($generator))
 			->setString("generatorOptions", $options["preset"] ?? "");
 
 		$nbt = new LittleEndianNbtSerializer();
@@ -111,8 +111,11 @@ class BedrockWorldData extends BaseNbtWorldData{
 	}
 
 	protected function load() : CompoundTag{
-		$rawLevelData = file_get_contents($this->dataPath);
-		if($rawLevelData === false or strlen($rawLevelData) <= 8){
+		$rawLevelData = @file_get_contents($this->dataPath);
+		if($rawLevelData === false){
+			throw new CorruptedWorldException("Failed to read level.dat (permission denied or doesn't exist)");
+		}
+		if(strlen($rawLevelData) <= 8){
 			throw new CorruptedWorldException("Truncated level.dat");
 		}
 		$nbt = new LittleEndianNbtSerializer();

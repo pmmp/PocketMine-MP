@@ -32,6 +32,8 @@ use pocketmine\scheduler\TaskHandler;
 use function dechex;
 
 abstract class Timings{
+	public const INCLUDED_BY_OTHER_TIMINGS_PREFIX = "** ";
+
 	/** @var bool */
 	private static $initialized = false;
 
@@ -121,18 +123,18 @@ abstract class Timings{
 		self::$initialized = true;
 
 		self::$fullTickTimer = new TimingsHandler("Full Server Tick");
-		self::$serverTickTimer = new TimingsHandler("** Full Server Tick", self::$fullTickTimer);
+		self::$serverTickTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Full Server Tick", self::$fullTickTimer);
 		self::$memoryManagerTimer = new TimingsHandler("Memory Manager");
 		self::$garbageCollectorTimer = new TimingsHandler("Garbage Collector", self::$memoryManagerTimer);
 		self::$titleTickTimer = new TimingsHandler("Console Title Tick");
 
 		self::$playerNetworkSendTimer = new TimingsHandler("Player Network Send");
-		self::$playerNetworkSendCompressTimer = new TimingsHandler("** Player Network Send - Compression", self::$playerNetworkSendTimer);
-		self::$playerNetworkSendEncryptTimer = new TimingsHandler("** Player Network Send - Encryption", self::$playerNetworkSendTimer);
+		self::$playerNetworkSendCompressTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression", self::$playerNetworkSendTimer);
+		self::$playerNetworkSendEncryptTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Encryption", self::$playerNetworkSendTimer);
 
 		self::$playerNetworkReceiveTimer = new TimingsHandler("Player Network Receive");
-		self::$playerNetworkReceiveDecompressTimer = new TimingsHandler("** Player Network Receive - Decompression", self::$playerNetworkReceiveTimer);
-		self::$playerNetworkReceiveDecryptTimer = new TimingsHandler("** Player Network Receive - Decryption", self::$playerNetworkReceiveTimer);
+		self::$playerNetworkReceiveDecompressTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Receive - Decompression", self::$playerNetworkReceiveTimer);
+		self::$playerNetworkReceiveDecryptTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Receive - Decryption", self::$playerNetworkReceiveTimer);
 
 		self::$playerChunkOrderTimer = new TimingsHandler("Player Order Chunks");
 		self::$playerChunkSendTimer = new TimingsHandler("Player Send Chunks");
@@ -145,19 +147,19 @@ abstract class Timings{
 		self::$permissibleCalculationTimer = new TimingsHandler("Permissible Calculation");
 		self::$permissionDefaultTimer = new TimingsHandler("Default Permission Calculation");
 
-		self::$entityMoveTimer = new TimingsHandler("** entityMove");
-		self::$playerCheckNearEntitiesTimer = new TimingsHandler("** checkNearEntities");
-		self::$tickEntityTimer = new TimingsHandler("** tickEntity");
-		self::$tickTileEntityTimer = new TimingsHandler("** tickTileEntity");
+		self::$entityMoveTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "entityMove");
+		self::$playerCheckNearEntitiesTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "checkNearEntities");
+		self::$tickEntityTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickEntity");
+		self::$tickTileEntityTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickTileEntity");
 
-		self::$timerEntityBaseTick = new TimingsHandler("** entityBaseTick");
-		self::$timerLivingEntityBaseTick = new TimingsHandler("** livingEntityBaseTick");
+		self::$timerEntityBaseTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "entityBaseTick");
+		self::$timerLivingEntityBaseTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "livingEntityBaseTick");
 
-		self::$schedulerSyncTimer = new TimingsHandler("** Scheduler - Sync Tasks");
-		self::$schedulerAsyncTimer = new TimingsHandler("** Scheduler - Async Tasks");
+		self::$schedulerSyncTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Scheduler - Sync Tasks");
+		self::$schedulerAsyncTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Scheduler - Async Tasks");
 
-		self::$playerCommandTimer = new TimingsHandler("** playerCommand");
-		self::$craftingDataCacheRebuildTimer = new TimingsHandler("** craftingDataCacheRebuild");
+		self::$playerCommandTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "playerCommand");
+		self::$craftingDataCacheRebuildTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "craftingDataCacheRebuild");
 
 	}
 
@@ -181,9 +183,9 @@ abstract class Timings{
 		$entityType = (new \ReflectionClass($entity))->getShortName();
 		if(!isset(self::$entityTypeTimingMap[$entityType])){
 			if($entity instanceof Player){
-				self::$entityTypeTimingMap[$entityType] = new TimingsHandler("** tickEntity - EntityPlayer", self::$tickEntityTimer);
+				self::$entityTypeTimingMap[$entityType] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickEntity - EntityPlayer", self::$tickEntityTimer);
 			}else{
-				self::$entityTypeTimingMap[$entityType] = new TimingsHandler("** tickEntity - " . $entityType, self::$tickEntityTimer);
+				self::$entityTypeTimingMap[$entityType] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickEntity - " . $entityType, self::$tickEntityTimer);
 			}
 		}
 
@@ -193,7 +195,7 @@ abstract class Timings{
 	public static function getTileEntityTimings(Tile $tile) : TimingsHandler{
 		$tileType = (new \ReflectionClass($tile))->getShortName();
 		if(!isset(self::$tileEntityTypeTimingMap[$tileType])){
-			self::$tileEntityTypeTimingMap[$tileType] = new TimingsHandler("** tickTileEntity - " . $tileType, self::$tickTileEntityTimer);
+			self::$tileEntityTypeTimingMap[$tileType] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickTileEntity - " . $tileType, self::$tickTileEntityTimer);
 		}
 
 		return self::$tileEntityTypeTimingMap[$tileType];
@@ -203,7 +205,7 @@ abstract class Timings{
 		$pid = $pk->pid();
 		if(!isset(self::$packetReceiveTimingMap[$pid])){
 			$pkName = (new \ReflectionClass($pk))->getShortName();
-			self::$packetReceiveTimingMap[$pid] = new TimingsHandler("** receivePacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkReceiveTimer);
+			self::$packetReceiveTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "receivePacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkReceiveTimer);
 		}
 
 		return self::$packetReceiveTimingMap[$pid];
@@ -213,7 +215,7 @@ abstract class Timings{
 		$pid = $pk->pid();
 		if(!isset(self::$packetSendTimingMap[$pid])){
 			$pkName = (new \ReflectionClass($pk))->getShortName();
-			self::$packetSendTimingMap[$pid] = new TimingsHandler("** sendPacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkSendTimer);
+			self::$packetSendTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "sendPacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkSendTimer);
 		}
 
 		return self::$packetSendTimingMap[$pid];

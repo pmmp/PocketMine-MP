@@ -131,8 +131,8 @@ abstract class Tile{
 
 			if($this->pos->isValid()){
 				$this->pos->getWorldNonNull()->removeTile($this);
-				$this->pos->setWorld(null);
 			}
+			$this->pos = null;
 		}
 	}
 }

@@ -34,7 +34,7 @@ class CheckTestCompletionTask extends Task{
 		$this->plugin = $plugin;
 	}
 
-	public function onRun(int $currentTick){
+	public function onRun() : void{
 		$test = $this->plugin->getCurrentTest();
 		if($test === null){
 			if(!$this->plugin->startNextTest()){

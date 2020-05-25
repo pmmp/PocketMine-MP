@@ -30,21 +30,25 @@ use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 class UpdateBlockSyncedPacket extends UpdateBlockPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_SYNCED_PACKET;
 
+	public const TYPE_NONE = 0;
+	public const TYPE_CREATE = 1;
+	public const TYPE_DESTROY = 2;
+
 	/** @var int */
-	public $entityUniqueId = 0;
+	public $entityUniqueId;
 	/** @var int */
-	public $uvarint64_2 = 0;
+	public $updateType;
 
 	protected function decodePayload(NetworkBinaryStream $in) : void{
 		parent::decodePayload($in);
 		$this->entityUniqueId = $in->getUnsignedVarLong();
-		$this->uvarint64_2 = $in->getUnsignedVarLong();
+		$this->updateType = $in->getUnsignedVarLong();
 	}
 
 	protected function encodePayload(NetworkBinaryStream $out) : void{
 		parent::encodePayload($out);
 		$out->putUnsignedVarLong($this->entityUniqueId);
-		$out->putUnsignedVarLong($this->uvarint64_2);
+		$out->putUnsignedVarLong($this->updateType);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

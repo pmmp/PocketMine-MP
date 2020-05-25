@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\color\Color;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\item\enchantment\Enchantment;
@@ -33,7 +34,6 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\player\Player;
 use pocketmine\utils\Binary;
-use pocketmine\utils\Color;
 use function lcg_value;
 use function mt_rand;
 

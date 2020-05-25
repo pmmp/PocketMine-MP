@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\data\bedrock\LegacyItemIdToStringIdMap;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
-use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\StaticPacketCache;
@@ -58,13 +59,13 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk = new StartGamePacket();
 		$pk->entityUniqueId = $this->player->getId();
 		$pk->entityRuntimeId = $this->player->getId();
-		$pk->playerGamemode = NetworkSession::getClientFriendlyGamemode($this->player->getGamemode());
+		$pk->playerGamemode = TypeConverter::getInstance()->getClientFriendlyGamemode($this->player->getGamemode());
 		$pk->playerPosition = $this->player->getOffsetPosition($location);
 		$pk->pitch = $location->pitch;
 		$pk->yaw = $location->yaw;
 		$pk->seed = -1;
 		$pk->dimension = DimensionIds::OVERWORLD; //TODO: implement this properly
-		$pk->worldGamemode = NetworkSession::getClientFriendlyGamemode($this->server->getGamemode());
+		$pk->worldGamemode = TypeConverter::getInstance()->getClientFriendlyGamemode($this->server->getGamemode());
 		$pk->difficulty = $location->getWorldNonNull()->getDifficulty();
 		$pk->spawnX = $spawnPosition->getFloorX();
 		$pk->spawnY = $spawnPosition->getFloorY();
@@ -78,14 +79,11 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
 		$pk->blockTable = RuntimeBlockMapping::getInstance()->getStartGamePaletteCache();
-
+		$pk->itemTable = LegacyItemIdToStringIdMap::getInstance()->getStringToLegacyMap(); //TODO: check if this is actually needed
 		$this->session->sendDataPacket($pk);
 
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getAvailableActorIdentifiers());
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getBiomeDefs());
-
-		$this->player->setImmobile(); //HACK: fix client-side falling pre-spawn
-
 		$this->session->syncAttributes($this->player, $this->player->getAttributeMap()->getAll());
 		$this->session->syncAvailableCommands();
 		$this->session->syncAdventureSettings($this->player);
@@ -104,14 +102,6 @@ class PreSpawnPacketHandler extends PacketHandler{
 
 	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
 		$this->player->setViewDistance($packet->radius);
-
-		return true;
-	}
-
-	public function handleSetLocalPlayerAsInitialized(SetLocalPlayerAsInitializedPacket $packet) : bool{
-		$this->player->setImmobile(false); //HACK: this is set to prevent client-side falling before spawn
-
-		$this->session->onSpawn();
 
 		return true;
 	}

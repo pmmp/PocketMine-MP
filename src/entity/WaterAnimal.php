@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 
 abstract class WaterAnimal extends Living implements Ageable{
@@ -43,8 +44,8 @@ abstract class WaterAnimal extends Living implements Ageable{
 		$this->attack($ev);
 	}
 
-	protected function syncNetworkData() : void{
-		parent::syncNetworkData();
-		$this->networkProperties->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
+	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
+		parent::syncNetworkData($properties);
+		$properties->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
 	}
 }

@@ -67,26 +67,26 @@ class WorldTimings{
 	public function __construct(World $world){
 		$name = $world->getFolderName() . " - ";
 
-		$this->setBlock = new TimingsHandler("** " . $name . "setBlock");
-		$this->doBlockLightUpdates = new TimingsHandler("** " . $name . "doBlockLightUpdates");
-		$this->doBlockSkyLightUpdates = new TimingsHandler("** " . $name . "doBlockSkyLightUpdates");
+		$this->setBlock = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "setBlock");
+		$this->doBlockLightUpdates = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "doBlockLightUpdates");
+		$this->doBlockSkyLightUpdates = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "doBlockSkyLightUpdates");
 
-		$this->doChunkUnload = new TimingsHandler("** " . $name . "doChunkUnload");
-		$this->doTickPending = new TimingsHandler("** " . $name . "doTickPending");
-		$this->doTickTiles = new TimingsHandler("** " . $name . "doTickTiles");
-		$this->doChunkGC = new TimingsHandler("** " . $name . "doChunkGC");
-		$this->entityTick = new TimingsHandler("** " . $name . "entityTick");
+		$this->doChunkUnload = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "doChunkUnload");
+		$this->doTickPending = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "doTickPending");
+		$this->doTickTiles = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "doTickTiles");
+		$this->doChunkGC = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "doChunkGC");
+		$this->entityTick = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "entityTick");
 
-		$this->syncChunkSendTimer = new TimingsHandler("** " . $name . "syncChunkSend");
-		$this->syncChunkSendPrepareTimer = new TimingsHandler("** " . $name . "syncChunkSendPrepare");
+		$this->syncChunkSendTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkSend");
+		$this->syncChunkSendPrepareTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkSendPrepare");
 
-		$this->syncChunkLoadTimer = new TimingsHandler("** " . $name . "syncChunkLoad");
-		$this->syncChunkLoadDataTimer = new TimingsHandler("** " . $name . "syncChunkLoad - Data");
-		$this->syncChunkLoadEntitiesTimer = new TimingsHandler("** " . $name . "syncChunkLoad - Entities");
-		$this->syncChunkLoadTileEntitiesTimer = new TimingsHandler("** " . $name . "syncChunkLoad - TileEntities");
+		$this->syncChunkLoadTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkLoad");
+		$this->syncChunkLoadDataTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkLoad - Data");
+		$this->syncChunkLoadEntitiesTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkLoad - Entities");
+		$this->syncChunkLoadTileEntitiesTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkLoad - TileEntities");
 
 		Timings::init(); //make sure the timer we want is available
-		$this->syncChunkSaveTimer = new TimingsHandler("** " . $name . "syncChunkSave", Timings::$worldSaveTimer);
+		$this->syncChunkSaveTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkSave", Timings::$worldSaveTimer);
 
 		$this->doTick = new TimingsHandler($name . "doTick");
 	}

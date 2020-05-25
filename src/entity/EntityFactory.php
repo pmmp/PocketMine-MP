@@ -103,7 +103,6 @@ final class EntityFactory{
 
 		$this->register(Human::class, ['Human']);
 
-		Attribute::init();
 		PaintingMotive::init();
 	}
 

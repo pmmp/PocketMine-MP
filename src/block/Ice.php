@@ -62,4 +62,8 @@ class Ice extends Transparent{
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
 }

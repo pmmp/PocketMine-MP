@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\utils\CloningRegistryTrait;
 use pocketmine\utils\RegistryTrait;
-use pocketmine\utils\Utils;
 use function assert;
 
 /**
@@ -665,7 +665,7 @@ use function assert;
  * @method static Wool YELLOW_WOOL()
  */
 final class VanillaBlocks{
-	use RegistryTrait;
+	use CloningRegistryTrait;
 
 	private function __construct(){
 		//NOOP
@@ -678,14 +678,17 @@ final class VanillaBlocks{
 	public static function fromString(string $name) : Block{
 		$result = self::_registryFromString($name);
 		assert($result instanceof Block);
-		return clone $result;
+		return $result;
 	}
 
 	/**
 	 * @return Block[]
 	 */
 	public static function getAll() : array{
-		return Utils::cloneObjectArray(self::_registryGetAll());
+		//phpstan doesn't support generic traits yet :(
+		/** @var Block[] $result */
+		$result = self::_registryGetAll();
+		return $result;
 	}
 
 	protected static function setup() : void{

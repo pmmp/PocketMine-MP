@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\world\particle;
 
+use pocketmine\color\Color;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
-use pocketmine\utils\Color;
 
 class PotionSplashParticle implements Particle{
 

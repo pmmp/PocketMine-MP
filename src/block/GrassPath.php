@@ -51,4 +51,8 @@ class GrassPath extends Transparent{
 			VanillaBlocks::DIRT()->asItem()
 		];
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
 }

@@ -23,14 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
+use Ds\Set;
+use pocketmine\color\Color;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
-use pocketmine\utils\Color;
-use pocketmine\utils\Utils;
 use function abs;
 use function count;
-use function spl_object_id;
 
 class EffectManager{
 
@@ -46,19 +45,21 @@ class EffectManager{
 	protected $onlyAmbientEffects = false;
 
 	/**
-	 * @var \Closure[]
-	 * @phpstan-var (\Closure(EffectInstance, bool $replacesOldEffect) : void)[]
+	 * @var \Closure[]|Set
+	 * @phpstan-var Set<\Closure(EffectInstance, bool $replacesOldEffect) : void>
 	 */
-	protected $effectAddHooks = [];
+	protected $effectAddHooks;
 	/**
-	 * @var \Closure[]
-	 * @phpstan-var (\Closure(EffectInstance) : void)[]
+	 * @var \Closure[]|Set
+	 * @phpstan-var Set<\Closure(EffectInstance) : void>
 	 */
-	protected $effectRemoveHooks = [];
+	protected $effectRemoveHooks;
 
 	public function __construct(Living $entity){
 		$this->entity = $entity;
 		$this->bubbleColor = new Color(0, 0, 0, 0);
+		$this->effectAddHooks = new Set();
+		$this->effectRemoveHooks = new Set();
 	}
 
 	/**
@@ -222,18 +223,18 @@ class EffectManager{
 	}
 
 	/**
-	 * @phpstan-param \Closure(EffectInstance, bool $replacesOldEffect) : void $closure
+	 * @return \Closure[]|Set
+	 * @phpstan-return Set<\Closure(EffectInstance, bool $replacesOldEffect) : void>
 	 */
-	public function onEffectAdd(\Closure $closure) : void{
-		Utils::validateCallableSignature(function(EffectInstance $effect, bool $replacesOldEffect) : void{}, $closure);
-		$this->effectAddHooks[spl_object_id($closure)] = $closure;
+	public function getEffectAddHooks() : Set{
+		return $this->effectAddHooks;
 	}
 
 	/**
-	 * @phpstan-param \Closure(EffectInstance) : void $closure
+	 * @return \Closure[]|Set
+	 * @phpstan-return Set<\Closure(EffectInstance) : void>
 	 */
-	public function onEffectRemove(\Closure $closure) : void{
-		Utils::validateCallableSignature(function(EffectInstance $effect) : void{}, $closure);
-		$this->effectRemoveHooks[spl_object_id($closure)] = $closure;
+	public function getEffectRemoveHooks() : Set{
+		return $this->effectRemoveHooks;
 	}
 }

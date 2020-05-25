@@ -151,8 +151,4 @@ class FlowerPot extends Flowable{
 	public function getPickedItem(bool $addUserData = false) : Item{
 		return $this->plant !== null ? $this->plant->asItem() : parent::getPickedItem($addUserData);
 	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return false;
-	}
 }

@@ -29,6 +29,7 @@ use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
@@ -69,12 +70,18 @@ class McRegion extends RegionWorldProvider{
 			$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, [SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $y)]);
 		}
 
+		$makeBiomeArray = function(string $biomeIds) : BiomeArray{
+			try{
+				return new BiomeArray($biomeIds);
+			}catch(\InvalidArgumentException $e){
+				throw new CorruptedChunkException($e->getMessage(), 0, $e);
+			}
+		};
+		$biomeIds = null;
 		if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
-			$biomeIds = ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors")); //Convert back to original format
+			$biomeIds = $makeBiomeArray(ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors"))); //Convert back to original format
 		}elseif($chunk->hasTag("Biomes", ByteArrayTag::class)){
-			$biomeIds = $chunk->getByteArray("Biomes");
-		}else{
-			$biomeIds = "";
+			$biomeIds = $makeBiomeArray($chunk->getByteArray("Biomes"));
 		}
 
 		$result = new Chunk(

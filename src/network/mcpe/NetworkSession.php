@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
+use Ds\Set;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\EffectInstance;
@@ -50,6 +51,7 @@ use pocketmine\network\mcpe\handler\LoginPacketHandler;
 use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
+use pocketmine\network\mcpe\handler\SpawnResponsePacketHandler;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
@@ -166,6 +168,12 @@ class NetworkSession{
 	/** @var PacketSender */
 	private $sender;
 
+	/**
+	 * @var \Closure[]|Set
+	 * @phpstan-var Set<\Closure() : void>
+	 */
+	private $disposeHooks;
+
 	public function __construct(Server $server, NetworkSessionManager $manager, PacketPool $packetPool, PacketSender $sender, Compressor $compressor, string $ip, int $port){
 		$this->server = $server;
 		$this->manager = $manager;
@@ -178,6 +186,8 @@ class NetworkSession{
 		$this->compressedQueue = new \SplQueue();
 		$this->compressor = $compressor;
 		$this->packetPool = $packetPool;
+
+		$this->disposeHooks = new Set();
 
 		$this->connectTime = time();
 
@@ -218,11 +228,17 @@ class NetworkSession{
 		$this->player = new $class($this->server, $this, $this->info, $this->authenticated);
 
 		$this->invManager = new InventoryManager($this->player, $this);
-		$this->player->getEffects()->onEffectAdd(function(EffectInstance $effect, bool $replacesOldEffect) : void{
+
+		$effectManager = $this->player->getEffects();
+		$effectManager->getEffectAddHooks()->add($effectAddHook = function(EffectInstance $effect, bool $replacesOldEffect) : void{
 			$this->onEntityEffectAdded($this->player, $effect, $replacesOldEffect);
 		});
-		$this->player->getEffects()->onEffectRemove(function(EffectInstance $effect) : void{
+		$effectManager->getEffectRemoveHooks()->add($effectRemoveHook = function(EffectInstance $effect) : void{
 			$this->onEntityEffectRemoved($this->player, $effect);
+		});
+		$this->disposeHooks->add(static function() use ($effectManager, $effectAddHook, $effectRemoveHook) : void{
+			$effectManager->getEffectAddHooks()->remove($effectAddHook);
+			$effectManager->getEffectRemoveHooks()->remove($effectRemoveHook);
 		});
 	}
 
@@ -467,6 +483,10 @@ class NetworkSession{
 			$this->disconnectGuard = true;
 			$func();
 			$this->disconnectGuard = false;
+			foreach($this->disposeHooks as $callback){
+				$callback();
+			}
+			$this->disposeHooks->clear();
 			$this->setHandler(null);
 			$this->connected = false;
 			$this->manager->remove($this);
@@ -600,16 +620,22 @@ class NetworkSession{
 		$this->createPlayer();
 
 		$this->setHandler(new PreSpawnPacketHandler($this->server, $this->player, $this));
+		$this->player->setImmobile(); //TODO: HACK: fix client-side falling pre-spawn
+
 		$this->logger->debug("Waiting for spawn chunks");
 	}
 
 	public function onTerrainReady() : void{
 		$this->logger->debug("Sending spawn notification, waiting for spawn response");
 		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::PLAYER_SPAWN));
+		$this->setHandler(new SpawnResponsePacketHandler(function() : void{
+			$this->onSpawn();
+		}));
 	}
 
-	public function onSpawn() : void{
+	private function onSpawn() : void{
 		$this->logger->debug("Received spawn response, entering in-game phase");
+		$this->player->setImmobile(false); //TODO: HACK: we set this during the spawn sequence to prevent the client sending junk movements
 		$this->player->doFirstSpawn();
 		$this->setHandler(new InGamePacketHandler($this->player, $this));
 	}
@@ -656,7 +682,7 @@ class NetworkSession{
 	}
 
 	public function syncGameMode(GameMode $mode, bool $isRollback = false) : void{
-		$this->sendDataPacket(SetPlayerGameTypePacket::create(self::getClientFriendlyGamemode($mode)));
+		$this->sendDataPacket(SetPlayerGameTypePacket::create(TypeConverter::getInstance()->getClientFriendlyGamemode($mode)));
 		$this->syncAdventureSettings($this->player);
 		if(!$isRollback){
 			$this->invManager->syncCreative();
@@ -786,8 +812,7 @@ class NetworkSession{
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
 		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ) : void{}, $onCompletion);
 
-		$world = $this->player->getLocation()->getWorld();
-		assert($world !== null);
+		$world = $this->player->getLocation()->getWorldNonNull();
 		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
@@ -795,7 +820,7 @@ class NetworkSession{
 				if(!$this->isConnected()){
 					return;
 				}
-				$currentWorld = $this->player->getLocation()->getWorld();
+				$currentWorld = $this->player->getLocation()->getWorldNonNull();
 				if($world !== $currentWorld or !$this->player->isUsingChunk($chunkX, $chunkZ)){
 					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
 					return;
@@ -917,19 +942,5 @@ class NetworkSession{
 		}
 
 		return false;
-	}
-
-	/**
-	 * Returns a client-friendly gamemode of the specified real gamemode
-	 * This function takes care of handling gamemodes known to MCPE (as of 1.1.0.3, that includes Survival, Creative and Adventure)
-	 *
-	 * @internal
-	 */
-	public static function getClientFriendlyGamemode(GameMode $gamemode) : int{
-		if($gamemode->equals(GameMode::SPECTATOR())){
-			return GameMode::CREATIVE()->getMagicNumber();
-		}
-
-		return $gamemode->getMagicNumber();
 	}
 }

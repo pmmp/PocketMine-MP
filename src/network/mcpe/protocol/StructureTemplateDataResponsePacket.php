@@ -26,19 +26,23 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 
 class StructureTemplateDataResponsePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::STRUCTURE_TEMPLATE_DATA_RESPONSE_PACKET;
 
 	/** @var string */
 	public $structureTemplateName;
-	/** @var string|null */
+	/**
+	 * @var CacheableNbt|null
+	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
+	 */
 	public $namedtag;
 
 	protected function decodePayload(NetworkBinaryStream $in) : void{
 		$this->structureTemplateName = $in->getString();
 		if($in->getBool()){
-			$this->namedtag = $in->getRemaining();
+			$this->namedtag = new CacheableNbt($in->getNbtCompoundRoot());
 		}
 	}
 
@@ -46,7 +50,7 @@ class StructureTemplateDataResponsePacket extends DataPacket implements Clientbo
 		$out->putString($this->structureTemplateName);
 		$out->putBool($this->namedtag !== null);
 		if($this->namedtag !== null){
-			$out->put($this->namedtag);
+			$out->put($this->namedtag->getEncodedNbt());
 		}
 	}
 

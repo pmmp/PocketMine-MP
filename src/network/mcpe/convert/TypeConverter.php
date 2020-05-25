@@ -34,32 +34,40 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
+use pocketmine\player\GameMode;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\SingletonTrait;
 
 class TypeConverter{
+	use SingletonTrait;
+
 	private const DAMAGE_TAG = "Damage"; //TAG_Int
 	private const DAMAGE_TAG_CONFLICT_RESOLUTION = "___Damage_ProtocolCollisionResolution___";
 
-	/** @var self|null */
-	private static $instance;
-
-	private function __construct(){
-		//NOOP
-	}
-
-	public static function getInstance() : self{
-		if(self::$instance === null){
-			self::$instance = new self;
+	/**
+	 * Returns a client-friendly gamemode of the specified real gamemode
+	 * This function takes care of handling gamemodes known to MCPE (as of 1.1.0.3, that includes Survival, Creative and Adventure)
+	 *
+	 * @internal
+	 */
+	public function getClientFriendlyGamemode(GameMode $gamemode) : int{
+		switch($gamemode->id()){
+			case GameMode::SURVIVAL()->id():
+				return ProtocolGameMode::SURVIVAL;
+			case GameMode::CREATIVE()->id():
+			case GameMode::SPECTATOR()->id():
+				return ProtocolGameMode::CREATIVE;
+			case GameMode::ADVENTURE()->id():
+				return ProtocolGameMode::ADVENTURE;
+			default:
+				throw new AssumptionFailedError("Unknown game mode");
 		}
-		return self::$instance;
-	}
-
-	public static function setInstance(self $instance) : void{
-		self::$instance = $instance;
 	}
 
 	public function coreItemStackToRecipeIngredient(Item $itemStack) : RecipeIngredient{

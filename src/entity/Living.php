@@ -49,6 +49,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
@@ -101,6 +102,20 @@ abstract class Living extends Entity{
 	/** @var int */
 	protected $maxBreathTicks = self::DEFAULT_BREATH_TICKS;
 
+	/** @var Attribute */
+	protected $healthAttr;
+	/** @var Attribute */
+	protected $absorptionAttr;
+	/** @var Attribute */
+	protected $knockbackResistanceAttr;
+	/** @var Attribute */
+	protected $moveSpeedAttr;
+
+	/** @var bool */
+	protected $sprinting = false;
+	/** @var bool */
+	protected $sneaking = false;
+
 	abstract public function getName() : string;
 
 	protected function initEntity(CompoundTag $nbt) : void{
@@ -110,7 +125,7 @@ abstract class Living extends Entity{
 
 		$this->armorInventory = new ArmorInventory($this);
 		//TODO: load/save armor inventory contents
-		$this->armorInventory->addListeners(CallbackInventoryListener::onAnyChange(
+		$this->armorInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(
 			function(Inventory $unused) : void{
 				foreach($this->getViewers() as $viewer){
 					$viewer->getNetworkSession()->onMobArmorChange($this);
@@ -153,37 +168,66 @@ abstract class Living extends Entity{
 	}
 
 	protected function addAttributes() : void{
-		$this->attributeMap->add(Attribute::get(Attribute::HEALTH));
-		$this->attributeMap->add(Attribute::get(Attribute::FOLLOW_RANGE));
-		$this->attributeMap->add(Attribute::get(Attribute::KNOCKBACK_RESISTANCE));
-		$this->attributeMap->add(Attribute::get(Attribute::MOVEMENT_SPEED));
-		$this->attributeMap->add(Attribute::get(Attribute::ATTACK_DAMAGE));
-		$this->attributeMap->add(Attribute::get(Attribute::ABSORPTION));
+		$this->attributeMap->add($this->healthAttr = AttributeFactory::getInstance()->mustGet(Attribute::HEALTH));
+		$this->attributeMap->add(AttributeFactory::getInstance()->mustGet(Attribute::FOLLOW_RANGE));
+		$this->attributeMap->add($this->knockbackResistanceAttr = AttributeFactory::getInstance()->mustGet(Attribute::KNOCKBACK_RESISTANCE));
+		$this->attributeMap->add($this->moveSpeedAttr = AttributeFactory::getInstance()->mustGet(Attribute::MOVEMENT_SPEED));
+		$this->attributeMap->add(AttributeFactory::getInstance()->mustGet(Attribute::ATTACK_DAMAGE));
+		$this->attributeMap->add($this->absorptionAttr = AttributeFactory::getInstance()->mustGet(Attribute::ABSORPTION));
 	}
 
 	public function setHealth(float $amount) : void{
 		$wasAlive = $this->isAlive();
 		parent::setHealth($amount);
-		$this->attributeMap->get(Attribute::HEALTH)->setValue(ceil($this->getHealth()), true);
+		$this->healthAttr->setValue(ceil($this->getHealth()), true);
 		if($this->isAlive() and !$wasAlive){
 			$this->broadcastAnimation(new RespawnAnimation($this));
 		}
 	}
 
 	public function getMaxHealth() : int{
-		return (int) $this->attributeMap->get(Attribute::HEALTH)->getMaxValue();
+		return (int) $this->healthAttr->getMaxValue();
 	}
 
 	public function setMaxHealth(int $amount) : void{
-		$this->attributeMap->get(Attribute::HEALTH)->setMaxValue($amount)->setDefaultValue($amount);
+		$this->healthAttr->setMaxValue($amount)->setDefaultValue($amount);
 	}
 
 	public function getAbsorption() : float{
-		return $this->attributeMap->get(Attribute::ABSORPTION)->getValue();
+		return $this->absorptionAttr->getValue();
 	}
 
 	public function setAbsorption(float $absorption) : void{
-		$this->attributeMap->get(Attribute::ABSORPTION)->setValue($absorption);
+		$this->absorptionAttr->setValue($absorption);
+	}
+
+	public function isSneaking() : bool{
+		return $this->sneaking;
+	}
+
+	public function setSneaking(bool $value = true) : void{
+		$this->sneaking = $value;
+	}
+
+	public function isSprinting() : bool{
+		return $this->sprinting;
+	}
+
+	public function setSprinting(bool $value = true) : void{
+		if($value !== $this->isSprinting()){
+			$this->sprinting = $value;
+			$moveSpeed = $this->getMovementSpeed();
+			$this->setMovementSpeed($value ? ($moveSpeed * 1.3) : ($moveSpeed / 1.3));
+			$this->moveSpeedAttr->markSynchronized(false); //TODO: reevaluate this hack
+		}
+	}
+
+	public function getMovementSpeed() : float{
+		return $this->moveSpeedAttr->getValue();
+	}
+
+	public function setMovementSpeed(float $v, bool $fit = false) : void{
+		$this->moveSpeedAttr->setValue($v, $fit);
 	}
 
 	public function saveNBT() : CompoundTag{
@@ -262,14 +306,13 @@ abstract class Living extends Entity{
 		}else{
 			$fallBlockPos = $this->location->floor();
 			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
-			for(
-			;
-				$fallBlock->getId() === BlockLegacyIds::AIR;
-				$fallBlockPos = $fallBlockPos->subtract(0, 1, 0), $fallBlock = $this->getWorld()->getBlock($fallBlockPos)
-			){
-				//this allows the correct sound to be played when landing in snow
+			if($fallBlock->getId() === BlockLegacyIds::AIR){
+				$fallBlockPos = $fallBlockPos->subtract(0, 1, 0);
+				$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
 			}
-			$this->getWorld()->addSound($this->location, new EntityLandSound($this, $fallBlock));
+			if($fallBlock->getId() !== BlockLegacyIds::AIR){
+				$this->getWorld()->addSound($this->location, new EntityLandSound($this, $fallBlock));
+			}
 		}
 	}
 
@@ -433,13 +476,6 @@ abstract class Living extends Entity{
 			}
 
 			if($e !== null){
-				if((
-					$source->getCause() === EntityDamageEvent::CAUSE_PROJECTILE or
-					$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_ATTACK
-				) and $e->isOnFire()){
-					$this->setOnFire(2 * $this->getWorld()->getDifficulty());
-				}
-
 				$deltaX = $this->location->x - $e->location->x;
 				$deltaZ = $this->location->z - $e->location->z;
 				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack());
@@ -461,7 +497,7 @@ abstract class Living extends Entity{
 		if($f <= 0){
 			return;
 		}
-		if(mt_rand() / mt_getrandmax() > $this->getAttributeMap()->get(Attribute::KNOCKBACK_RESISTANCE)->getValue()){
+		if(mt_rand() / mt_getrandmax() > $this->knockbackResistanceAttr->getValue()){
 			$f = 1 / $f;
 
 			$motion = clone $this->motion;
@@ -731,15 +767,17 @@ abstract class Living extends Entity{
 		$player->getNetworkSession()->onMobArmorChange($this);
 	}
 
-	protected function syncNetworkData() : void{
-		parent::syncNetworkData();
+	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
+		parent::syncNetworkData($properties);
 
-		$this->networkProperties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectManager->hasOnlyAmbientEffects() ? 1 : 0);
-		$this->networkProperties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->effectManager->getBubbleColor()->toARGB()));
-		$this->networkProperties->setShort(EntityMetadataProperties::AIR, $this->breathTicks);
-		$this->networkProperties->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
+		$properties->setByte(EntityMetadataProperties::POTION_AMBIENT, $this->effectManager->hasOnlyAmbientEffects() ? 1 : 0);
+		$properties->setInt(EntityMetadataProperties::POTION_COLOR, Binary::signInt($this->effectManager->getBubbleColor()->toARGB()));
+		$properties->setShort(EntityMetadataProperties::AIR, $this->breathTicks);
+		$properties->setShort(EntityMetadataProperties::MAX_AIR, $this->maxBreathTicks);
 
-		$this->networkProperties->setGenericFlag(EntityMetadataFlags::BREATHING, $this->breathing);
+		$properties->setGenericFlag(EntityMetadataFlags::BREATHING, $this->breathing);
+		$properties->setGenericFlag(EntityMetadataFlags::SNEAKING, $this->sneaking);
+		$properties->setGenericFlag(EntityMetadataFlags::SPRINTING, $this->sprinting);
 	}
 
 	protected function onDispose() : void{

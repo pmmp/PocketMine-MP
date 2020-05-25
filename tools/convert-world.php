@@ -25,14 +25,11 @@ use pocketmine\world\format\io\FormatConverter;
 use pocketmine\world\format\io\WorldProvider;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
-use pocketmine\world\generator\GeneratorManager;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-WorldProviderManager::init();
-GeneratorManager::registerDefaultGenerators();
-
-$writableFormats = array_filter(WorldProviderManager::getAvailableProviders(), function(string $class){
+$providerManager = new WorldProviderManager();
+$writableFormats = array_filter($providerManager->getAvailableProviders(), function(string $class){
 	return is_a($class, WritableWorldProvider::class, true);
 });
 $requiredOpts = [
@@ -63,7 +60,7 @@ if((!@mkdir($backupPath, 0777, true) and !is_dir($backupPath)) or !is_writable($
 	die("Backup file path " . $backupPath . " is not writable (permission error or doesn't exist), aborting");
 }
 
-$oldProviderClasses = WorldProviderManager::getMatchingProviders($inputPath);
+$oldProviderClasses = $providerManager->getMatchingProviders($inputPath);
 if(count($oldProviderClasses) === 0){
 	die("Unknown input world format");
 }

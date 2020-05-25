@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use PackageVersions\Versions;
+use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginManager;
@@ -182,7 +183,7 @@ class CrashDump{
 	private function extraData() : void{
 		global $argv;
 
-		if($this->server->getProperty("auto-report.send-settings", true) !== false){
+		if($this->server->getConfigGroup()->getProperty("auto-report.send-settings", true) !== false){
 			$this->data["parameters"] = (array) $argv;
 			$this->data["server.properties"] = @file_get_contents($this->server->getDataPath() . "server.properties");
 			$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $this->data["server.properties"]);
@@ -198,7 +199,7 @@ class CrashDump{
 		}
 		$this->data["extensions"] = $extensions;
 
-		if($this->server->getProperty("auto-report.send-phpinfo", true) !== false){
+		if($this->server->getConfigGroup()->getProperty("auto-report.send-phpinfo", true) !== false){
 			ob_start();
 			phpinfo();
 			$this->data["phpinfo"] = ob_get_contents();
@@ -220,7 +221,7 @@ class CrashDump{
 			$error["fullFile"] = $error["file"];
 			$error["file"] = Filesystem::cleanPath($error["file"]);
 			try{
-				$error["type"] = \ErrorUtils::errorTypeToString($error["type"]);
+				$error["type"] = ErrorTypeToStringMap::get($error["type"]);
 			}catch(\InvalidArgumentException $e){
 				//pass
 			}
@@ -260,7 +261,7 @@ class CrashDump{
 		$this->addLine("Code:");
 		$this->data["code"] = [];
 
-		if($this->server->getProperty("auto-report.send-code", true) !== false and file_exists($error["fullFile"])){
+		if($this->server->getConfigGroup()->getProperty("auto-report.send-code", true) !== false and file_exists($error["fullFile"])){
 			$file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
 			if($file !== false){
 				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 and isset($file[$l]); ++$l){

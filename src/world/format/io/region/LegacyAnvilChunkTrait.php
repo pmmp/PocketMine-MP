@@ -25,9 +25,11 @@ namespace pocketmine\world\format\io\region;
 
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
@@ -72,10 +74,18 @@ trait LegacyAnvilChunkTrait{
 			}
 		}
 
+		$makeBiomeArray = function(string $biomeIds) : BiomeArray{
+			try{
+				return new BiomeArray($biomeIds);
+			}catch(\InvalidArgumentException $e){
+				throw new CorruptedChunkException($e->getMessage(), 0, $e);
+			}
+		};
+		$biomeArray = null;
 		if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
-			$biomeIds = ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors")); //Convert back to original format
-		}else{
-			$biomeIds = $chunk->getByteArray("Biomes", "");
+			$biomeArray = $makeBiomeArray(ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors"))); //Convert back to original format
+		}elseif($chunk->hasTag("Biomes", ByteArrayTag::class)){
+			$biomeArray = $makeBiomeArray($chunk->getByteArray("Biomes"));
 		}
 
 		$result = new Chunk(
@@ -84,7 +94,7 @@ trait LegacyAnvilChunkTrait{
 			$subChunks,
 			$chunk->hasTag("Entities", ListTag::class) ? self::getCompoundList("Entities", $chunk->getListTag("Entities")) : [],
 			$chunk->hasTag("TileEntities", ListTag::class) ? self::getCompoundList("TileEntities", $chunk->getListTag("TileEntities")) : [],
-			$biomeIds
+			$biomeArray
 		);
 		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
 		$result->setGenerated();

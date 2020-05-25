@@ -103,10 +103,6 @@ class Farmland extends Transparent{
 		];
 	}
 
-	public function isAffectedBySilkTouch() : bool{
-		return false;
-	}
-
 	public function getPickedItem(bool $addUserData = false) : Item{
 		return VanillaBlocks::DIRT()->asItem();
 	}

@@ -26,22 +26,24 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 
 class LevelEventGenericPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LEVEL_EVENT_GENERIC_PACKET;
 
 	/** @var int */
 	private $eventId;
-	/** @var string network-format NBT */
+	/**
+	 * @var CacheableNbt
+	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
+	 */
 	private $eventData;
 
 	public static function create(int $eventId, CompoundTag $data) : self{
 		$result = new self;
 		$result->eventId = $eventId;
-		$result->eventData = (new NetworkNbtSerializer())->write(new TreeRoot($data));
+		$result->eventData = new CacheableNbt($data);
 		return $result;
 	}
 
@@ -49,18 +51,21 @@ class LevelEventGenericPacket extends DataPacket implements ClientboundPacket{
 		return $this->eventId;
 	}
 
-	public function getEventData() : string{
+	/**
+	 * @phpstan-return CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
+	 */
+	public function getEventData() : CacheableNbt{
 		return $this->eventData;
 	}
 
 	protected function decodePayload(NetworkBinaryStream $in) : void{
 		$this->eventId = $in->getVarInt();
-		$this->eventData = $in->getRemaining();
+		$this->eventData = new CacheableNbt($in->getNbtCompoundRoot());
 	}
 
 	protected function encodePayload(NetworkBinaryStream $out) : void{
 		$out->putVarInt($this->eventId);
-		$out->put($this->eventData);
+		$out->put($this->eventData->getEncodedNbt());
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

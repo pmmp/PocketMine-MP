@@ -59,8 +59,9 @@ class ExperienceManager{
 	}
 
 	private static function fetchAttribute(Entity $entity, string $attributeId) : Attribute{
-		$entity->getAttributeMap()->add(Attribute::get($attributeId));
-		return $entity->getAttributeMap()->get($attributeId);
+		$attribute = AttributeFactory::getInstance()->mustGet($attributeId);
+		$entity->getAttributeMap()->add($attribute);
+		return $attribute;
 	}
 
 	/**

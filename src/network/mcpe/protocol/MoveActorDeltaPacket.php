@@ -37,6 +37,9 @@ class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
 	public const FLAG_HAS_ROT_X = 0x08;
 	public const FLAG_HAS_ROT_Y = 0x10;
 	public const FLAG_HAS_ROT_Z = 0x20;
+	public const FLAG_GROUND = 0x40;
+	public const FLAG_TELEPORT = 0x80;
+	public const FLAG_FORCE_MOVE_LOCAL_ENTITY = 0x100;
 
 	/** @var int */
 	public $entityRuntimeId;

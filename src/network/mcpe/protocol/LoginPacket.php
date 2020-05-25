@@ -26,39 +26,24 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
-use pocketmine\network\mcpe\protocol\types\login\AuthenticationData;
-use pocketmine\network\mcpe\protocol\types\login\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\JwtChain;
-use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
-use pocketmine\utils\Utils;
-use function is_array;
+use function is_object;
 use function json_decode;
+use function json_encode;
+use function json_last_error_msg;
+use function strlen;
 
 class LoginPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LOGIN_PACKET;
-
-	public const EDITION_POCKET = 0;
 
 	/** @var int */
 	public $protocol;
 
 	/** @var JwtChain */
 	public $chainDataJwt;
-	/** @var AuthenticationData|null extraData index of whichever JWT has it */
-	public $extraData = null;
 	/** @var string */
 	public $clientDataJwt;
-	/** @var ClientData decoded payload of the clientData JWT */
-	public $clientData;
-
-	/**
-	 * This field may be used by plugins to bypass keychain verification. It should only be used for plugins such as
-	 * Specter where passing verification would take too much time and not be worth it.
-	 *
-	 * @var bool
-	 */
-	public $skipVerification = false;
 
 	public function canBeSentBeforeLogin() : bool{
 		return true;
@@ -66,17 +51,16 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 
 	protected function decodePayload(NetworkBinaryStream $in) : void{
 		$this->protocol = $in->getInt();
-		$this->decodeConnectionRequest($in);
+		$this->decodeConnectionRequest($in->getString());
 	}
 
-	/**
-	 * @throws PacketDecodeException
-	 * @throws BinaryDataException
-	 */
-	protected function decodeConnectionRequest(NetworkBinaryStream $in) : void{
-		$buffer = new BinaryStream($in->getString());
+	protected function decodeConnectionRequest(string $binary) : void{
+		$connRequestReader = new BinaryStream($binary);
 
-		$chainDataJson = json_decode($buffer->get($buffer->getLInt()));
+		$chainDataJson = json_decode($connRequestReader->get($connRequestReader->getLInt()));
+		if(!is_object($chainDataJson)){
+			throw new PacketDecodeException("Failed decoding chain data JSON: " . json_last_error_msg());
+		}
 		$mapper = new \JsonMapper;
 		$mapper->bExceptionOnMissingData = true;
 		$mapper->bExceptionOnUndefinedProperty = true;
@@ -87,57 +71,28 @@ class LoginPacket extends DataPacket implements ServerboundPacket{
 		}
 
 		$this->chainDataJwt = $chainData;
-
-		foreach($this->chainDataJwt->chain as $k => $chain){
-			//validate every chain element
-			try{
-				$claims = Utils::getJwtClaims($chain);
-			}catch(\UnexpectedValueException $e){
-				throw new PacketDecodeException($e->getMessage(), 0, $e);
-			}
-			if(isset($claims["extraData"])){
-				if(!is_array($claims["extraData"])){
-					throw new PacketDecodeException("'extraData' key should be an array");
-				}
-				if($this->extraData !== null){
-					throw new PacketDecodeException("Found 'extraData' more than once in chainData");
-				}
-
-				$mapper = new \JsonMapper;
-				$mapper->bEnforceMapType = false; //TODO: we don't really need this as an array, but right now we don't have enough models
-				$mapper->bExceptionOnMissingData = true;
-				$mapper->bExceptionOnUndefinedProperty = true;
-				try{
-					$this->extraData = $mapper->map($claims['extraData'], new AuthenticationData);
-				}catch(\JsonMapper_Exception $e){
-					throw PacketDecodeException::wrap($e);
-				}
-			}
-		}
-		if($this->extraData === null){
-			throw new PacketDecodeException("'extraData' not found in chain data");
-		}
-
-		$this->clientDataJwt = $buffer->get($buffer->getLInt());
-		try{
-			$clientData = Utils::getJwtClaims($this->clientDataJwt);
-		}catch(\UnexpectedValueException $e){
-			throw new PacketDecodeException($e->getMessage(), 0, $e);
-		}
-
-		$mapper = new \JsonMapper;
-		$mapper->bEnforceMapType = false; //TODO: we don't really need this as an array, but right now we don't have enough models
-		$mapper->bExceptionOnMissingData = true;
-		$mapper->bExceptionOnUndefinedProperty = true;
-		try{
-			$this->clientData = $mapper->map($clientData, new ClientData);
-		}catch(\JsonMapper_Exception $e){
-			throw PacketDecodeException::wrap($e);
-		}
+		$this->clientDataJwt = $connRequestReader->get($connRequestReader->getLInt());
 	}
 
 	protected function encodePayload(NetworkBinaryStream $out) : void{
-		//TODO
+		$out->putInt($this->protocol);
+		$out->putString($this->encodeConnectionRequest());
+	}
+
+	protected function encodeConnectionRequest() : string{
+		$connRequestWriter = new BinaryStream();
+
+		$chainDataJson = json_encode($this->chainDataJwt);
+		if($chainDataJson === false){
+			throw new \InvalidStateException("Failed to encode chain data JSON: " . json_last_error_msg());
+		}
+		$connRequestWriter->putLInt(strlen($chainDataJson));
+		$connRequestWriter->put($chainDataJson);
+
+		$connRequestWriter->putLInt(strlen($this->clientDataJwt));
+		$connRequestWriter->put($this->clientDataJwt);
+
+		return $connRequestWriter->getBuffer();
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

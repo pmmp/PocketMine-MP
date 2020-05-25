@@ -39,12 +39,8 @@ use pocketmine\world\World;
 use function array_fill;
 use function array_filter;
 use function array_map;
-use function assert;
-use function chr;
 use function count;
-use function ord;
 use function str_repeat;
-use function strlen;
 
 class Chunk{
 	public const DIRTY_FLAG_TERRAIN = 1 << 0;
@@ -81,13 +77,10 @@ class Chunk{
 	/** @var Entity[] */
 	protected $entities = [];
 
-	/**
-	 * @var \SplFixedArray|int[]
-	 * @phpstan-var \SplFixedArray<int>
-	 */
+	/** @var HeightArray */
 	protected $heightMap;
 
-	/** @var string */
+	/** @var BiomeArray */
 	protected $biomeIds;
 
 	/** @var CompoundTag[]|null */
@@ -100,9 +93,8 @@ class Chunk{
 	 * @param SubChunk[]    $subChunks
 	 * @param CompoundTag[] $entities
 	 * @param CompoundTag[] $tiles
-	 * @param int[]         $heightMap
 	 */
-	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], ?array $entities = null, ?array $tiles = null, string $biomeIds = "", array $heightMap = []){
+	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], ?array $entities = null, ?array $tiles = null, ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null){
 		$this->x = $chunkX;
 		$this->z = $chunkZ;
 
@@ -112,20 +104,9 @@ class Chunk{
 			$this->subChunks[$y] = $subChunks[$y] ?? new SubChunk(BlockLegacyIds::AIR << 4, []);
 		}
 
-		if(count($heightMap) === 256){
-			$this->heightMap = \SplFixedArray::fromArray($heightMap);
-		}else{
-			assert(count($heightMap) === 0, "Wrong HeightMap value count, expected 256, got " . count($heightMap));
-			$val = ($this->subChunks->getSize() * 16);
-			$this->heightMap = \SplFixedArray::fromArray(array_fill(0, 256, $val));
-		}
-
-		if(strlen($biomeIds) === 256){
-			$this->biomeIds = $biomeIds;
-		}else{
-			assert($biomeIds === "", "Wrong BiomeIds value count, expected 256, got " . strlen($biomeIds));
-			$this->biomeIds = str_repeat("\x00", 256);
-		}
+		$val = ($this->subChunks->getSize() * 16);
+		$this->heightMap = $heightMap ?? new HeightArray(array_fill(0, 256, $val));
+		$this->biomeIds = $biomeIds ?? new BiomeArray(str_repeat("\x00", 256));
 
 		$this->NBTtiles = $tiles;
 		$this->NBTentities = $entities;
@@ -263,7 +244,7 @@ class Chunk{
 	 * @param int $z 0-15
 	 */
 	public function getHeightMap(int $x, int $z) : int{
-		return $this->heightMap[($z << 4) | $x];
+		return $this->heightMap->get($x, $z);
 	}
 
 	/**
@@ -273,7 +254,7 @@ class Chunk{
 	 * @param int $z 0-15
 	 */
 	public function setHeightMap(int $x, int $z, int $value) : void{
-		$this->heightMap[($z << 4) | $x] = $value;
+		$this->heightMap->set($x, $z, $value);
 	}
 
 	/**
@@ -359,7 +340,7 @@ class Chunk{
 	 * @return int 0-255
 	 */
 	public function getBiomeId(int $x, int $z) : int{
-		return ord($this->biomeIds[($z << 4) | $x]);
+		return $this->biomeIds->get($x, $z);
 	}
 
 	/**
@@ -370,7 +351,7 @@ class Chunk{
 	 * @param int $biomeId 0-255
 	 */
 	public function setBiomeId(int $x, int $z, int $biomeId) : void{
-		$this->biomeIds[($z << 4) | $x] = chr($biomeId & 0xff);
+		$this->biomeIds->set($x, $z, $biomeId);
 		$this->dirtyFlags |= self::DIRTY_FLAG_BIOMES;
 	}
 
@@ -550,25 +531,21 @@ class Chunk{
 	}
 
 	public function getBiomeIdArray() : string{
-		return $this->biomeIds;
+		return $this->biomeIds->getData();
 	}
 
 	/**
 	 * @return int[]
 	 */
 	public function getHeightMapArray() : array{
-		return $this->heightMap->toArray();
+		return $this->heightMap->getValues();
 	}
 
 	/**
 	 * @param int[] $values
-	 * @throws \InvalidArgumentException
 	 */
 	public function setHeightMapArray(array $values) : void{
-		if(count($values) !== 256){
-			throw new \InvalidArgumentException("Expected exactly 256 values");
-		}
-		$this->heightMap = \SplFixedArray::fromArray($values);
+		$this->heightMap = new HeightArray($values);
 	}
 
 	public function isDirty() : bool{

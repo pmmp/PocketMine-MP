@@ -53,7 +53,7 @@ use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\player\Player;
 use pocketmine\utils\Limits;
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 use pocketmine\world\sound\TotemUseSound;
 use pocketmine\world\World;
 use function array_filter;
@@ -65,6 +65,10 @@ use function random_int;
 use function strlen;
 
 class Human extends Living implements ProjectileSource, InventoryHolder{
+
+	public static function getNetworkTypeId() : int{
+		return -1; //TODO: ideally we shouldn't have to specify this at all here ...
+	}
 
 	/** @var PlayerInventory */
 	protected $inventory;
@@ -221,8 +225,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$inventoryTag = $nbt->getListTag("Inventory");
 		if($inventoryTag !== null){
-			$armorListeners = $this->armorInventory->getListeners();
-			$this->armorInventory->removeListeners(...$armorListeners);
+			$armorListeners = $this->armorInventory->getListeners()->toArray();
+			$this->armorInventory->getListeners()->clear();
 
 			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
@@ -236,7 +240,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 				}
 			}
 
-			$this->armorInventory->addListeners(...$armorListeners);
+			$this->armorInventory->getListeners()->add(...$armorListeners);
 		}
 
 		$enderChestInventoryTag = $nbt->getListTag("EnderChestInventory");

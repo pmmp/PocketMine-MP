@@ -29,7 +29,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\world\particle\ItemBreakParticle;
 
 class Egg extends Throwable{
-	public const NETWORK_ID = EntityLegacyIds::EGG;
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::EGG; }
 
 	//TODO: spawn chickens on collision
 

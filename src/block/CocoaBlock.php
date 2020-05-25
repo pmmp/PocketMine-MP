@@ -59,10 +59,6 @@ class CocoaBlock extends Transparent{
 		return 0b1111;
 	}
 
-	public function isAffectedBySilkTouch() : bool{
-		return false;
-	}
-
 	/**
 	 * @return AxisAlignedBB[]
 	 */

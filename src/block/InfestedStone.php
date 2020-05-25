@@ -35,5 +35,9 @@ abstract class InfestedStone extends Opaque{
 		return [];
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
 	//TODO
 }

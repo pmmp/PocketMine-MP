@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 
 abstract class Animal extends Living implements Ageable{
@@ -33,8 +34,8 @@ abstract class Animal extends Living implements Ageable{
 		return $this->baby;
 	}
 
-	protected function syncNetworkData() : void{
-		parent::syncNetworkData();
-		$this->networkProperties->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
+	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
+		parent::syncNetworkData($properties);
+		$properties->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
 	}
 }

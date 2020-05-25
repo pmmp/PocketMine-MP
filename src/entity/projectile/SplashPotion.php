@@ -25,6 +25,7 @@ namespace pocketmine\entity\projectile;
 
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\color\Color;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\InstantEffect;
 use pocketmine\entity\Living;
@@ -34,9 +35,9 @@ use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Potion;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
-use pocketmine\utils\Color;
 use pocketmine\world\particle\PotionSplashParticle;
 use pocketmine\world\sound\PotionSplashSound;
 use function count;
@@ -45,7 +46,7 @@ use function sqrt;
 
 class SplashPotion extends Throwable{
 
-	public const NETWORK_ID = EntityLegacyIds::SPLASH_POTION;
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::SPLASH_POTION; }
 
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
@@ -172,10 +173,10 @@ class SplashPotion extends Throwable{
 		return Potion::getPotionEffectsById($this->getPotionId());
 	}
 
-	protected function syncNetworkData() : void{
-		parent::syncNetworkData();
+	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
+		parent::syncNetworkData($properties);
 
-		$this->networkProperties->setShort(EntityMetadataProperties::POTION_AUX_VALUE, $this->potionId);
-		$this->networkProperties->setGenericFlag(EntityMetadataFlags::LINGER, $this->linger);
+		$properties->setShort(EntityMetadataProperties::POTION_AUX_VALUE, $this->potionId);
+		$properties->setGenericFlag(EntityMetadataFlags::LINGER, $this->linger);
 	}
 }

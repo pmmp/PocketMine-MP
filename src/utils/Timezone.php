@@ -103,7 +103,7 @@ abstract class Timezone{
 	 */
 	public static function detectSystemTimezone(){
 		switch(Utils::getOS()){
-			case 'win':
+			case Utils::OS_WINDOWS:
 				$regex = '/(UTC)(\+*\-*\d*\d*\:*\d*\d*)/';
 
 				/*
@@ -138,13 +138,12 @@ abstract class Timezone{
 				}
 
 				return self::parseOffset($offset);
-			case 'linux':
+			case Utils::OS_LINUX:
 				// Ubuntu / Debian.
 				$data = @file_get_contents('/etc/timezone');
 				if($data !== false){
 					return trim($data);
 				}
-
 
 				// RHEL / CentOS
 				$data = @parse_ini_file('/etc/sysconfig/clock');
@@ -161,7 +160,7 @@ abstract class Timezone{
 				}
 
 				return self::parseOffset($offset);
-			case 'mac':
+			case Utils::OS_MACOS:
 				$filename = @readlink('/etc/localtime');
 				if($filename !== false and strpos($filename, '/usr/share/zoneinfo/') === 0){
 					$timezone = substr($filename, 20);

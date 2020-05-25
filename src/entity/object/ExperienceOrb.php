@@ -29,12 +29,14 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\player\Player;
 use function sqrt;
 
 class ExperienceOrb extends Entity{
-	public const NETWORK_ID = EntityLegacyIds::XP_ORB;
+
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::XP_ORB; }
 
 	public const TAG_VALUE_PC = "Value"; //short
 	public const TAG_VALUE_PE = "experience value"; //int (WTF?)
@@ -189,7 +191,7 @@ class ExperienceOrb extends Entity{
 		$this->setTargetPlayer($currentTarget);
 
 		if($currentTarget !== null){
-			$vector = $currentTarget->getPosition()->add(0, $currentTarget->getEyeHeight() / 2, 0)->subtract($this->location)->divide(self::MAX_TARGET_DISTANCE);
+			$vector = $currentTarget->getPosition()->add(0, $currentTarget->getEyeHeight() / 2, 0)->subtractVector($this->location)->divide(self::MAX_TARGET_DISTANCE);
 
 			$distance = $vector->lengthSquared();
 			if($distance < 1){
@@ -219,9 +221,9 @@ class ExperienceOrb extends Entity{
 		return false;
 	}
 
-	protected function syncNetworkData() : void{
-		parent::syncNetworkData();
+	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
+		parent::syncNetworkData($properties);
 
-		$this->networkProperties->setInt(EntityMetadataProperties::EXPERIENCE_VALUE, $this->xpValue);
+		$properties->setInt(EntityMetadataProperties::EXPERIENCE_VALUE, $this->xpValue);
 	}
 }

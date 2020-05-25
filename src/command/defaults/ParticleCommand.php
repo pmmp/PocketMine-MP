@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\block\BlockFactory;
+use pocketmine\color\Color;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\ItemFactory;
@@ -31,7 +32,6 @@ use pocketmine\item\VanillaItems;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\utils\Color;
 use pocketmine\utils\Random;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\particle\AngryVillagerParticle;
@@ -93,7 +93,7 @@ class ParticleCommand extends VanillaCommand{
 
 		if($sender instanceof Player){
 			$senderPos = $sender->getPosition();
-			$world = $senderPos->getWorld();
+			$world = $senderPos->getWorldNonNull();
 			$pos = new Vector3(
 				$this->getRelativeDouble($senderPos->getX(), $sender, $args[1]),
 				$this->getRelativeDouble($senderPos->getY(), $sender, $args[2], 0, World::Y_MAX),
@@ -156,7 +156,7 @@ class ParticleCommand extends VanillaCommand{
 			case "smoke":
 				return new SmokeParticle($data ?? 0);
 			case "spell":
-				return new EnchantParticle();
+				return new EnchantParticle(new Color(0, 0, 0, 255)); //TODO: colour support
 			case "instantspell":
 				return new InstantEnchantParticle(new Color(0, 0, 0, 255)); //TODO: colour support
 			case "dripwater":

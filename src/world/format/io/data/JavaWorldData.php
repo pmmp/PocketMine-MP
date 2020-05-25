@@ -64,7 +64,7 @@ class JavaWorldData extends BaseNbtWorldData{
 			->setLong("RandomSeed", $seed)
 			->setLong("SizeOnDisk", 0)
 			->setLong("Time", 0)
-			->setString("generatorName", GeneratorManager::getGeneratorName($generator))
+			->setString("generatorName", GeneratorManager::getInstance()->getGeneratorName($generator))
 			->setString("generatorOptions", $options["preset"] ?? "")
 			->setString("LevelName", $name)
 			->setTag("GameRules", new CompoundTag());
@@ -75,9 +75,13 @@ class JavaWorldData extends BaseNbtWorldData{
 	}
 
 	protected function load() : CompoundTag{
+		$rawLevelData = @file_get_contents($this->dataPath);
+		if($rawLevelData === false){
+			throw new CorruptedWorldException("Failed to read level.dat (permission denied or doesn't exist)");
+		}
 		$nbt = new BigEndianNbtSerializer();
 		try{
-			$worldData = $nbt->readCompressed(file_get_contents($this->dataPath))->mustGetCompoundTag();
+			$worldData = $nbt->readCompressed($rawLevelData)->mustGetCompoundTag();
 		}catch(NbtDataException $e){
 			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}

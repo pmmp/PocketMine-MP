@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 
 class UpdateEquipPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_EQUIP_PACKET;
@@ -38,7 +39,10 @@ class UpdateEquipPacket extends DataPacket implements ClientboundPacket{
 	public $windowSlotCount; //useless, seems to be part of a standard container header
 	/** @var int */
 	public $entityUniqueId;
-	/** @var string */
+	/**
+	 * @var CacheableNbt
+	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
+	 */
 	public $namedtag;
 
 	protected function decodePayload(NetworkBinaryStream $in) : void{
@@ -46,7 +50,7 @@ class UpdateEquipPacket extends DataPacket implements ClientboundPacket{
 		$this->windowType = $in->getByte();
 		$this->windowSlotCount = $in->getVarInt();
 		$this->entityUniqueId = $in->getEntityUniqueId();
-		$this->namedtag = $in->getRemaining();
+		$this->namedtag = new CacheableNbt($in->getNbtCompoundRoot());
 	}
 
 	protected function encodePayload(NetworkBinaryStream $out) : void{
@@ -54,7 +58,7 @@ class UpdateEquipPacket extends DataPacket implements ClientboundPacket{
 		$out->putByte($this->windowType);
 		$out->putVarInt($this->windowSlotCount);
 		$out->putEntityUniqueId($this->entityUniqueId);
-		$out->put($this->namedtag);
+		$out->put($this->namedtag->getEncodedNbt());
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

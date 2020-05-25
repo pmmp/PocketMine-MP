@@ -34,15 +34,18 @@ use const PHP_INT_MAX;
 class ConsoleCommandSender implements CommandSender{
 	use PermissibleDelegateTrait;
 
+	/** @var Server */
+	private $server;
 	/** @var int|null */
 	protected $lineHeight = null;
 
-	public function __construct(){
+	public function __construct(Server $server){
+		$this->server = $server;
 		$this->perm = new PermissibleBase($this);
 	}
 
 	public function getServer() : Server{
-		return Server::getInstance();
+		return $this->server;
 	}
 
 	/**

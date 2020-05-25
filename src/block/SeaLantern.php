@@ -41,4 +41,8 @@ class SeaLantern extends Transparent{
 			VanillaItems::PRISMARINE_CRYSTALS()->setCount(3)
 		];
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
 }

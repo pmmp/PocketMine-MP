@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\command;
 
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 
 class CommandOriginData{
 	public const ORIGIN_PLAYER = 0;
@@ -48,5 +48,5 @@ class CommandOriginData{
 	public $requestId;
 
 	/** @var int */
-	public $varlong1;
+	public $playerEntityUniqueId;
 }

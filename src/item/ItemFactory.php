@@ -34,14 +34,7 @@ use pocketmine\entity\Living;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\SingletonTrait;
-use function constant;
-use function defined;
-use function explode;
 use function is_a;
-use function is_numeric;
-use function str_replace;
-use function strtoupper;
-use function trim;
 
 /**
  * Manages Item instance creation and registration
@@ -259,8 +252,8 @@ class ItemFactory{
 
 		foreach(EntityFactory::getInstance()->getKnownTypes() as $className){
 			/** @var Living|string $className */
-			if(is_a($className, Living::class, true) and $className::NETWORK_ID !== -1){
-				$this->register(new SpawnEgg(ItemIds::SPAWN_EGG, $className::NETWORK_ID, "Spawn Egg", $className));
+			if(is_a($className, Living::class, true) and $className::getNetworkTypeId() !== -1){
+				$this->register(new SpawnEgg(ItemIds::SPAWN_EGG, $className::getNetworkTypeId(), "Spawn Egg", $className));
 			}
 		}
 
@@ -409,7 +402,11 @@ class ItemFactory{
 			}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) and $this->list[$zero] instanceof Durable){
 				/** @var Durable $item */
 				$item = clone $this->list[$zero];
-				$item->setDamage($meta);
+				try{
+					$item->setDamage($meta);
+				}catch(\InvalidArgumentException $e){
+					$item = new Item($id, $meta);
+				}
 			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
 				$item = new ItemBlock($id, $meta);
 			}
@@ -424,37 +421,6 @@ class ItemFactory{
 		if($tags !== null){
 			$item->setNamedTag($tags);
 		}
-		return $item;
-	}
-
-	/**
-	 * Tries to parse the specified string into Item types.
-	 *
-	 * Example accepted formats:
-	 * - `diamond_pickaxe:5`
-	 * - `minecraft:string`
-	 * - `351:4 (lapis lazuli ID:meta)`
-	 *
-	 * @throws \InvalidArgumentException if the given string cannot be parsed as an item identifier
-	 */
-	public function fromString(string $str) : Item{
-		$b = explode(":", str_replace([" ", "minecraft:"], ["_", ""], trim($str)));
-		if(!isset($b[1])){
-			$meta = 0;
-		}elseif(is_numeric($b[1])){
-			$meta = (int) $b[1];
-		}else{
-			throw new \InvalidArgumentException("Unable to parse \"" . $b[1] . "\" from \"" . $str . "\" as a valid meta value");
-		}
-
-		if(is_numeric($b[0])){
-			$item = $this->get((int) $b[0], $meta);
-		}elseif(defined(ItemIds::class . "::" . strtoupper($b[0]))){
-			$item = $this->get(constant(ItemIds::class . "::" . strtoupper($b[0])), $meta);
-		}else{
-			throw new \InvalidArgumentException("Unable to resolve \"" . $str . "\" to a valid item");
-		}
-
 		return $item;
 	}
 

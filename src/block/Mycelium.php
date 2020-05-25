@@ -40,6 +40,10 @@ class Mycelium extends Opaque{
 		];
 	}
 
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
+
 	public function ticksRandomly() : bool{
 		return true;
 	}

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
-use pocketmine\utils\Color;
+use pocketmine\color\Color;
 use pocketmine\utils\RegistryTrait;
 use function assert;
 
@@ -112,7 +112,10 @@ final class VanillaEffects{
 	 * @return Effect[]
 	 */
 	public static function getAll() : array{
-		return self::_registryGetAll();
+		//phpstan doesn't support generic traits yet :(
+		/** @var Effect[] $result */
+		$result = self::_registryGetAll();
+		return $result;
 	}
 
 	public static function fromString(string $name) : Effect{

@@ -57,14 +57,13 @@ class Bow extends Tool{
 			($location->yaw > 180 ? 360 : 0) - $location->yaw,
 			-$location->pitch
 		);
-		$nbt->setShort("Fire", $player->isOnFire() ? 45 * 60 : 0);
 
 		$diff = $player->getItemUseDuration();
 		$p = $diff / 20;
 		$baseForce = min((($p ** 2) + $p * 2) / 3, 1);
 
 		/** @var ArrowEntity $entity */
-		$entity = EntityFactory::getInstance()->create(ArrowEntity::class, $location->getWorld(), $nbt, $player, $baseForce >= 1);
+		$entity = EntityFactory::getInstance()->create(ArrowEntity::class, $location->getWorldNonNull(), $nbt, $player, $baseForce >= 1);
 
 		$infinity = $this->hasEnchantment(Enchantment::INFINITY());
 		if($infinity){

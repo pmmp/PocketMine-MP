@@ -32,8 +32,8 @@ use pocketmine\utils\Utils;
  * Example usage:
  *
  * ```
- * TaskScheduler->scheduleTask(new CancellableClosureTask(function(int $currentTick) : bool{
- *     echo "HI on $currentTick\n";
+ * TaskScheduler->scheduleTask(new CancellableClosureTask(function() : bool{
+ *     echo "HI\n";
  *     $continue = false;
  *     return $continue; //stop repeating
  * });
@@ -47,20 +47,20 @@ class CancellableClosureTask extends Task{
 
 	/**
 	 * @var \Closure
-	 * @phpstan-var \Closure(int $currentTick) : bool
+	 * @phpstan-var \Closure() : bool
 	 */
 	private $closure;
 
 	/**
 	 * CancellableClosureTask constructor.
 	 *
-	 * The closure should follow the signature callback(int $currentTick) : bool. The return value will be used to
+	 * The closure should follow the signature callback() : bool. The return value will be used to
 	 * decide whether to continue repeating.
 	 *
-	 * @phpstan-param \Closure(int $currentTick) : bool $closure
+	 * @phpstan-param \Closure() : bool $closure
 	 */
 	public function __construct(\Closure $closure){
-		Utils::validateCallableSignature(function(int $currentTick) : bool{ return false; }, $closure);
+		Utils::validateCallableSignature(function() : bool{ return false; }, $closure);
 		$this->closure = $closure;
 	}
 
@@ -68,8 +68,8 @@ class CancellableClosureTask extends Task{
 		return Utils::getNiceClosureName($this->closure);
 	}
 
-	public function onRun(int $currentTick) : void{
-		if(!($this->closure)($currentTick)){
+	public function onRun() : void{
+		if(!($this->closure)()){
 			$this->getHandler()->cancel();
 		}
 	}

@@ -44,6 +44,7 @@ use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\ShortMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\Vec3MetadataProperty;
+use pocketmine\network\mcpe\protocol\types\GameRuleType;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
@@ -55,7 +56,7 @@ use pocketmine\network\mcpe\protocol\types\StructureEditorData;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 use function count;
 use function strlen;
 
@@ -223,11 +224,7 @@ class NetworkBinaryStream extends BinaryStream{
 			if($c !== 1){
 				throw new PacketDecodeException("Unexpected NBT count $c");
 			}
-			try{
-				$compound = (new NetworkNbtSerializer())->read($this->buffer, $this->offset, 512)->mustGetCompoundTag();
-			}catch(NbtDataException $e){
-				throw new PacketDecodeException($e->getMessage(), 0, $e);
-			}
+			$compound = $this->getNbtCompoundRoot();
 		}elseif($nbtLen !== 0){
 			throw new PacketDecodeException("Unexpected fake NBT length $nbtLen");
 		}
@@ -547,13 +544,13 @@ class NetworkBinaryStream extends BinaryStream{
 			$type = $this->getUnsignedVarInt();
 			$value = null;
 			switch($type){
-				case 1:
+				case GameRuleType::BOOL:
 					$value = $this->getBool();
 					break;
-				case 2:
+				case GameRuleType::INT:
 					$value = $this->getUnsignedVarInt();
 					break;
-				case 3:
+				case GameRuleType::FLOAT:
 					$value = $this->getLFloat();
 					break;
 				default:
@@ -579,13 +576,13 @@ class NetworkBinaryStream extends BinaryStream{
 			$this->putString($name);
 			$this->putUnsignedVarInt($rule[0]);
 			switch($rule[0]){
-				case 1:
+				case GameRuleType::BOOL:
 					$this->putBool($rule[1]);
 					break;
-				case 2:
+				case GameRuleType::INT:
 					$this->putUnsignedVarInt($rule[1]);
 					break;
-				case 3:
+				case GameRuleType::FLOAT:
 					$this->putLFloat($rule[1]);
 					break;
 				default:
@@ -626,7 +623,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$result->requestId = $this->getString();
 
 		if($result->type === CommandOriginData::ORIGIN_DEV_CONSOLE or $result->type === CommandOriginData::ORIGIN_TEST){
-			$result->varlong1 = $this->getVarLong();
+			$result->playerEntityUniqueId = $this->getVarLong();
 		}
 
 		return $result;
@@ -638,7 +635,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putString($data->requestId);
 
 		if($data->type === CommandOriginData::ORIGIN_DEV_CONSOLE or $data->type === CommandOriginData::ORIGIN_TEST){
-			$this->putVarLong($data->varlong1);
+			$this->putVarLong($data->playerEntityUniqueId);
 		}
 	}
 
@@ -706,5 +703,24 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putVarInt($structureEditorData->structureBlockType);
 		$this->putStructureSettings($structureEditorData->structureSettings);
 		$this->putVarInt($structureEditorData->structureRedstoneSaveMove);
+	}
+
+	public function getNbtRoot() : TreeRoot{
+		$offset = $this->getOffset();
+		try{
+			return (new NetworkNbtSerializer())->read($this->getBuffer(), $offset, 512);
+		}catch(NbtDataException $e){
+			throw PacketDecodeException::wrap($e, "Failed decoding NBT root");
+		}finally{
+			$this->setOffset($offset);
+		}
+	}
+
+	public function getNbtCompoundRoot() : CompoundTag{
+		try{
+			return $this->getNbtRoot()->mustGetCompoundTag();
+		}catch(NbtDataException $e){
+			throw PacketDecodeException::wrap($e, "Expected TAG_Compound NBT root");
+		}
 	}
 }

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator;
 
+use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use pocketmine\world\generator\hell\Nether;
 use pocketmine\world\generator\normal\Normal;
@@ -30,21 +31,20 @@ use function array_keys;
 use function strtolower;
 
 final class GeneratorManager{
+	use SingletonTrait;
+
 	/**
 	 * @var string[] name => classname mapping
 	 * @phpstan-var array<string, class-string<Generator>>
 	 */
-	private static $list = [];
+	private $list = [];
 
-	/**
-	 * Registers the default known generators.
-	 */
-	public static function registerDefaultGenerators() : void{
-		self::addGenerator(Flat::class, "flat");
-		self::addGenerator(Normal::class, "normal");
-		self::addGenerator(Normal::class, "default");
-		self::addGenerator(Nether::class, "hell");
-		self::addGenerator(Nether::class, "nether");
+	public function __construct(){
+		$this->addGenerator(Flat::class, "flat");
+		$this->addGenerator(Normal::class, "normal");
+		$this->addGenerator(Normal::class, "default");
+		$this->addGenerator(Nether::class, "hell");
+		$this->addGenerator(Nether::class, "nether");
 	}
 
 	/**
@@ -55,14 +55,14 @@ final class GeneratorManager{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public static function addGenerator(string $class, string $name, bool $overwrite = false) : void{
+	public function addGenerator(string $class, string $name, bool $overwrite = false) : void{
 		Utils::testValidInstance($class, Generator::class);
 
-		if(!$overwrite and isset(self::$list[$name = strtolower($name)])){
+		if(!$overwrite and isset($this->list[$name = strtolower($name)])){
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
 
-		self::$list[$name] = $class;
+		$this->list[$name] = $class;
 	}
 
 	/**
@@ -70,8 +70,8 @@ final class GeneratorManager{
 	 *
 	 * @return string[]
 	 */
-	public static function getGeneratorList() : array{
-		return array_keys(self::$list);
+	public function getGeneratorList() : array{
+		return array_keys($this->list);
 	}
 
 	/**
@@ -84,9 +84,9 @@ final class GeneratorManager{
 	 *
 	 * @throws \InvalidArgumentException if the generator type isn't registered
 	 */
-	public static function getGenerator(string $name, bool $throwOnMissing = false){
-		if(isset(self::$list[$name = strtolower($name)])){
-			return self::$list[$name];
+	public function getGenerator(string $name, bool $throwOnMissing = false){
+		if(isset($this->list[$name = strtolower($name)])){
+			return $this->list[$name];
 		}
 
 		if($throwOnMissing){
@@ -103,18 +103,14 @@ final class GeneratorManager{
 	 *
 	 * @throws \InvalidArgumentException if the class type cannot be matched to a known alias
 	 */
-	public static function getGeneratorName(string $class) : string{
+	public function getGeneratorName(string $class) : string{
 		Utils::testValidInstance($class, Generator::class);
-		foreach(self::$list as $name => $c){
+		foreach($this->list as $name => $c){
 			if($c === $class){
 				return $name;
 			}
 		}
 
 		throw new \InvalidArgumentException("Generator class $class is not registered");
-	}
-
-	private function __construct(){
-		//NOOP
 	}
 }

@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\generator;
 
 use pocketmine\block\VanillaBlocks;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\object\OreType;
@@ -99,7 +99,7 @@ class Flat extends Generator{
 		$result = [];
 		$split = array_map('\trim', explode(',', $layers));
 		$y = 0;
-		$itemFactory = ItemFactory::getInstance();
+		$itemParser = LegacyStringToItemParser::getInstance();
 		foreach($split as $line){
 			preg_match('#^(?:(\d+)[x|*])?(.+)$#', $line, $matches);
 			if(count($matches) !== 3){
@@ -108,7 +108,7 @@ class Flat extends Generator{
 
 			$cnt = $matches[1] !== "" ? (int) $matches[1] : 1;
 			try{
-				$b = $itemFactory->fromString($matches[2])->getBlock();
+				$b = $itemParser->parse($matches[2])->getBlock();
 			}catch(\InvalidArgumentException $e){
 				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\": " . $e->getMessage(), 0, $e);
 			}

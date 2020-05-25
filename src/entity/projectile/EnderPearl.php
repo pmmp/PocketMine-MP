@@ -30,7 +30,7 @@ use pocketmine\world\particle\EndermanTeleportParticle;
 use pocketmine\world\sound\EndermanTeleportSound;
 
 class EnderPearl extends Throwable{
-	public const NETWORK_ID = EntityLegacyIds::ENDER_PEARL;
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::ENDER_PEARL; }
 
 	protected function onHit(ProjectileHitEvent $event) : void{
 		$owner = $this->getOwningEntity();

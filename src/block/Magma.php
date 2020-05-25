@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\ToolTier;
@@ -43,7 +44,7 @@ class Magma extends Opaque{
 	}
 
 	public function onEntityInside(Entity $entity) : void{
-		if(!$entity->isSneaking()){
+		if($entity instanceof Living and !$entity->isSneaking()){
 			$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
 			$entity->attack($ev);
 		}

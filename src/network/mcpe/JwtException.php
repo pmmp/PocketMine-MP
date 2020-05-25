@@ -21,12 +21,8 @@
 
 declare(strict_types=1);
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-if(defined('pocketmine\_GLOBAL_CONSTANTS_INCLUDED')){
-	return;
-}
-define('pocketmine\_GLOBAL_CONSTANTS_INCLUDED', true);
+namespace pocketmine\network\mcpe;
 
-const INT32_MIN = -0x80000000;
-const INT32_MAX = 0x7fffffff;
-const INT32_MASK = 0xffffffff;
+final class JwtException extends \RuntimeException{
+
+}

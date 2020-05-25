@@ -39,7 +39,11 @@ class Position extends Vector3{
 	 */
 	public function __construct($x = 0, $y = 0, $z = 0, ?World $world = null){
 		parent::__construct($x, $y, $z);
-		$this->setWorld($world);
+		if($world !== null and $world->isClosed()){
+			throw new \InvalidArgumentException("Specified world has been unloaded and cannot be used");
+		}
+
+		$this->world = $world;
 	}
 
 	/**
@@ -83,22 +87,6 @@ class Position extends Vector3{
 		}
 
 		return $world;
-	}
-
-	/**
-	 * Sets the target world of the position.
-	 *
-	 * @return $this
-	 *
-	 * @throws \InvalidArgumentException if the specified World has been closed
-	 */
-	public function setWorld(?World $world){
-		if($world !== null and $world->isClosed()){
-			throw new \InvalidArgumentException("Specified world has been unloaded and cannot be used");
-		}
-
-		$this->world = $world;
-		return $this;
 	}
 
 	/**

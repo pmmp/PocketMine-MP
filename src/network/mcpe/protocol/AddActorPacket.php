@@ -28,122 +28,12 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute;
-use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use function count;
 
 class AddActorPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_ACTOR_PACKET;
-
-	/*
-	 * Really really really really really nasty hack, to preserve backwards compatibility.
-	 * We can't transition to string IDs within 3.x because the network IDs (the integer ones) are exposed
-	 * to the API in some places (for god's sake shoghi).
-	 *
-	 * TODO: remove this on 4.0
-	 */
-	public const LEGACY_ID_MAP_BC = [
-		-1 => ":",
-		EntityLegacyIds::NPC => "minecraft:npc",
-		EntityLegacyIds::PLAYER => "minecraft:player",
-		EntityLegacyIds::WITHER_SKELETON => "minecraft:wither_skeleton",
-		EntityLegacyIds::HUSK => "minecraft:husk",
-		EntityLegacyIds::STRAY => "minecraft:stray",
-		EntityLegacyIds::WITCH => "minecraft:witch",
-		EntityLegacyIds::ZOMBIE_VILLAGER => "minecraft:zombie_villager",
-		EntityLegacyIds::BLAZE => "minecraft:blaze",
-		EntityLegacyIds::MAGMA_CUBE => "minecraft:magma_cube",
-		EntityLegacyIds::GHAST => "minecraft:ghast",
-		EntityLegacyIds::CAVE_SPIDER => "minecraft:cave_spider",
-		EntityLegacyIds::SILVERFISH => "minecraft:silverfish",
-		EntityLegacyIds::ENDERMAN => "minecraft:enderman",
-		EntityLegacyIds::SLIME => "minecraft:slime",
-		EntityLegacyIds::ZOMBIE_PIGMAN => "minecraft:zombie_pigman",
-		EntityLegacyIds::SPIDER => "minecraft:spider",
-		EntityLegacyIds::SKELETON => "minecraft:skeleton",
-		EntityLegacyIds::CREEPER => "minecraft:creeper",
-		EntityLegacyIds::ZOMBIE => "minecraft:zombie",
-		EntityLegacyIds::SKELETON_HORSE => "minecraft:skeleton_horse",
-		EntityLegacyIds::MULE => "minecraft:mule",
-		EntityLegacyIds::DONKEY => "minecraft:donkey",
-		EntityLegacyIds::DOLPHIN => "minecraft:dolphin",
-		EntityLegacyIds::TROPICALFISH => "minecraft:tropicalfish",
-		EntityLegacyIds::WOLF => "minecraft:wolf",
-		EntityLegacyIds::SQUID => "minecraft:squid",
-		EntityLegacyIds::DROWNED => "minecraft:drowned",
-		EntityLegacyIds::SHEEP => "minecraft:sheep",
-		EntityLegacyIds::MOOSHROOM => "minecraft:mooshroom",
-		EntityLegacyIds::PANDA => "minecraft:panda",
-		EntityLegacyIds::SALMON => "minecraft:salmon",
-		EntityLegacyIds::PIG => "minecraft:pig",
-		EntityLegacyIds::VILLAGER => "minecraft:villager",
-		EntityLegacyIds::COD => "minecraft:cod",
-		EntityLegacyIds::PUFFERFISH => "minecraft:pufferfish",
-		EntityLegacyIds::COW => "minecraft:cow",
-		EntityLegacyIds::CHICKEN => "minecraft:chicken",
-		EntityLegacyIds::BALLOON => "minecraft:balloon",
-		EntityLegacyIds::LLAMA => "minecraft:llama",
-		EntityLegacyIds::IRON_GOLEM => "minecraft:iron_golem",
-		EntityLegacyIds::RABBIT => "minecraft:rabbit",
-		EntityLegacyIds::SNOW_GOLEM => "minecraft:snow_golem",
-		EntityLegacyIds::BAT => "minecraft:bat",
-		EntityLegacyIds::OCELOT => "minecraft:ocelot",
-		EntityLegacyIds::HORSE => "minecraft:horse",
-		EntityLegacyIds::CAT => "minecraft:cat",
-		EntityLegacyIds::POLAR_BEAR => "minecraft:polar_bear",
-		EntityLegacyIds::ZOMBIE_HORSE => "minecraft:zombie_horse",
-		EntityLegacyIds::TURTLE => "minecraft:turtle",
-		EntityLegacyIds::PARROT => "minecraft:parrot",
-		EntityLegacyIds::GUARDIAN => "minecraft:guardian",
-		EntityLegacyIds::ELDER_GUARDIAN => "minecraft:elder_guardian",
-		EntityLegacyIds::VINDICATOR => "minecraft:vindicator",
-		EntityLegacyIds::WITHER => "minecraft:wither",
-		EntityLegacyIds::ENDER_DRAGON => "minecraft:ender_dragon",
-		EntityLegacyIds::SHULKER => "minecraft:shulker",
-		EntityLegacyIds::ENDERMITE => "minecraft:endermite",
-		EntityLegacyIds::MINECART => "minecraft:minecart",
-		EntityLegacyIds::HOPPER_MINECART => "minecraft:hopper_minecart",
-		EntityLegacyIds::TNT_MINECART => "minecraft:tnt_minecart",
-		EntityLegacyIds::CHEST_MINECART => "minecraft:chest_minecart",
-		EntityLegacyIds::COMMAND_BLOCK_MINECART => "minecraft:command_block_minecart",
-		EntityLegacyIds::ARMOR_STAND => "minecraft:armor_stand",
-		EntityLegacyIds::ITEM => "minecraft:item",
-		EntityLegacyIds::TNT => "minecraft:tnt",
-		EntityLegacyIds::FALLING_BLOCK => "minecraft:falling_block",
-		EntityLegacyIds::XP_BOTTLE => "minecraft:xp_bottle",
-		EntityLegacyIds::XP_ORB => "minecraft:xp_orb",
-		EntityLegacyIds::EYE_OF_ENDER_SIGNAL => "minecraft:eye_of_ender_signal",
-		EntityLegacyIds::ENDER_CRYSTAL => "minecraft:ender_crystal",
-		EntityLegacyIds::SHULKER_BULLET => "minecraft:shulker_bullet",
-		EntityLegacyIds::FISHING_HOOK => "minecraft:fishing_hook",
-		EntityLegacyIds::DRAGON_FIREBALL => "minecraft:dragon_fireball",
-		EntityLegacyIds::ARROW => "minecraft:arrow",
-		EntityLegacyIds::SNOWBALL => "minecraft:snowball",
-		EntityLegacyIds::EGG => "minecraft:egg",
-		EntityLegacyIds::PAINTING => "minecraft:painting",
-		EntityLegacyIds::THROWN_TRIDENT => "minecraft:thrown_trident",
-		EntityLegacyIds::FIREBALL => "minecraft:fireball",
-		EntityLegacyIds::SPLASH_POTION => "minecraft:splash_potion",
-		EntityLegacyIds::ENDER_PEARL => "minecraft:ender_pearl",
-		EntityLegacyIds::LEASH_KNOT => "minecraft:leash_knot",
-		EntityLegacyIds::WITHER_SKULL => "minecraft:wither_skull",
-		EntityLegacyIds::WITHER_SKULL_DANGEROUS => "minecraft:wither_skull_dangerous",
-		EntityLegacyIds::BOAT => "minecraft:boat",
-		EntityLegacyIds::LIGHTNING_BOLT => "minecraft:lightning_bolt",
-		EntityLegacyIds::SMALL_FIREBALL => "minecraft:small_fireball",
-		EntityLegacyIds::LLAMA_SPIT => "minecraft:llama_spit",
-		EntityLegacyIds::AREA_EFFECT_CLOUD => "minecraft:area_effect_cloud",
-		EntityLegacyIds::LINGERING_POTION => "minecraft:lingering_potion",
-		EntityLegacyIds::FIREWORKS_ROCKET => "minecraft:fireworks_rocket",
-		EntityLegacyIds::EVOCATION_FANG => "minecraft:evocation_fang",
-		EntityLegacyIds::EVOCATION_ILLAGER => "minecraft:evocation_illager",
-		EntityLegacyIds::VEX => "minecraft:vex",
-		EntityLegacyIds::AGENT => "minecraft:agent",
-		EntityLegacyIds::ICE_BOMB => "minecraft:ice_bomb",
-		EntityLegacyIds::PHANTOM => "minecraft:phantom",
-		EntityLegacyIds::TRIPOD_CAMERA => "minecraft:tripod_camera"
-	];
 
 	/** @var int|null */
 	public $entityUniqueId = null; //TODO

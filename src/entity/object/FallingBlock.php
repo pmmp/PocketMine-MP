@@ -33,12 +33,14 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use function abs;
 use function get_class;
 
 class FallingBlock extends Entity{
-	public const NETWORK_ID = EntityLegacyIds::FALLING_BLOCK;
+
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::FALLING_BLOCK; }
 
 	public $width = 0.98;
 	public $height = 0.98;
@@ -139,9 +141,9 @@ class FallingBlock extends Entity{
 		return $nbt;
 	}
 
-	protected function syncNetworkData() : void{
-		parent::syncNetworkData();
+	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
+		parent::syncNetworkData($properties);
 
-		$this->networkProperties->setInt(EntityMetadataProperties::VARIANT, $this->block->getRuntimeId());
+		$properties->setInt(EntityMetadataProperties::VARIANT, $this->block->getRuntimeId());
 	}
 }

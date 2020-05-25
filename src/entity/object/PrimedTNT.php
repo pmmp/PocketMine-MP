@@ -29,6 +29,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\world\Explosion;
@@ -36,7 +37,8 @@ use pocketmine\world\Position;
 use pocketmine\world\sound\IgniteSound;
 
 class PrimedTNT extends Entity implements Explosive{
-	public const NETWORK_ID = EntityLegacyIds::TNT;
+
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::TNT; }
 
 	public $width = 0.98;
 	public $height = 0.98;
@@ -107,10 +109,10 @@ class PrimedTNT extends Entity implements Explosive{
 		}
 	}
 
-	protected function syncNetworkData() : void{
-		parent::syncNetworkData();
+	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
+		parent::syncNetworkData($properties);
 
-		$this->networkProperties->setGenericFlag(EntityMetadataFlags::IGNITED, true);
-		$this->networkProperties->setInt(EntityMetadataProperties::FUSE_LENGTH, $this->fuse);
+		$properties->setGenericFlag(EntityMetadataFlags::IGNITED, true);
+		$properties->setInt(EntityMetadataProperties::FUSE_LENGTH, $this->fuse);
 	}
 }

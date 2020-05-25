@@ -31,6 +31,25 @@ use function strtolower;
 
 class PermissionParser{
 
+	public const DEFAULT_STRING_MAP = [
+		"op" => Permission::DEFAULT_OP,
+		"isop" => Permission::DEFAULT_OP,
+		"operator" => Permission::DEFAULT_OP,
+		"isoperator" => Permission::DEFAULT_OP,
+		"admin" => Permission::DEFAULT_OP,
+		"isadmin" => Permission::DEFAULT_OP,
+
+		"!op" => Permission::DEFAULT_NOT_OP,
+		"notop" => Permission::DEFAULT_NOT_OP,
+		"!operator" => Permission::DEFAULT_NOT_OP,
+		"notoperator" => Permission::DEFAULT_NOT_OP,
+		"!admin" => Permission::DEFAULT_NOT_OP,
+		"notadmin" => Permission::DEFAULT_NOT_OP,
+
+		"true" => Permission::DEFAULT_TRUE,
+		"false" => Permission::DEFAULT_FALSE,
+	];
+
 	/**
 	 * @param bool|string $value
 	 *
@@ -44,27 +63,9 @@ class PermissionParser{
 				return "false";
 			}
 		}
-		switch(strtolower($value)){
-			case "op":
-			case "isop":
-			case "operator":
-			case "isoperator":
-			case "admin":
-			case "isadmin":
-				return Permission::DEFAULT_OP;
-
-			case "!op":
-			case "notop":
-			case "!operator":
-			case "notoperator":
-			case "!admin":
-			case "notadmin":
-				return Permission::DEFAULT_NOT_OP;
-
-			case "true":
-				return Permission::DEFAULT_TRUE;
-			case "false":
-				return Permission::DEFAULT_FALSE;
+		$lower = strtolower($value);
+		if(isset(self::DEFAULT_STRING_MAP[$lower])){
+			return self::DEFAULT_STRING_MAP[$lower];
 		}
 
 		throw new \InvalidArgumentException("Unknown permission default name \"$value\"");

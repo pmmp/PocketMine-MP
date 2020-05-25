@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine {
 
+	use pocketmine\errorhandler\ErrorToExceptionHandler;
 	use pocketmine\thread\ThreadManager;
 	use pocketmine\utils\Filesystem;
 	use pocketmine\utils\Git;
@@ -194,7 +195,7 @@ namespace pocketmine {
 			\parallel\bootstrap(\pocketmine\COMPOSER_AUTOLOADER_PATH);
 		}
 
-		\ErrorUtils::setErrorExceptionHandler();
+		ErrorToExceptionHandler::set();
 
 		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
 		define('pocketmine\VERSION', $version->getFullVersion(true));

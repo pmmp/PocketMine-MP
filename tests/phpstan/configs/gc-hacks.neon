@@ -21,6 +21,16 @@ parameters:
 			path: ../../../src/block/tile/Hopper.php
 
 		-
+			message: "#^Property pocketmine\\\\block\\\\tile\\\\Tile\\:\\:\\$pos \\(pocketmine\\\\world\\\\Position\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/block/tile/Tile.php
+
+		-
+			message: "#^Property pocketmine\\\\entity\\\\Entity\\:\\:\\$location \\(pocketmine\\\\entity\\\\Location\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/entity/Entity.php
+
+		-
 			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$inventory \\(pocketmine\\\\inventory\\\\PlayerInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/entity/Human.php

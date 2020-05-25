@@ -185,7 +185,7 @@ class Explosion{
 			$distance = $entityPos->distance($this->source) / $explosionSize;
 
 			if($distance <= 1){
-				$motion = $entityPos->subtract($this->source)->normalize();
+				$motion = $entityPos->subtractVector($this->source)->normalize();
 
 				$impact = (1 - $distance) * ($exposure = 1);
 
@@ -241,7 +241,7 @@ class Explosion{
 					$updateBlocks[$index] = true;
 				}
 			}
-			$send[] = $pos->subtract($source);
+			$send[] = $pos->subtractVector($source);
 		}
 
 		$this->world->addParticle($source, new HugeExplodeSeedParticle());

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-use pocketmine\utils\Color;
+use pocketmine\color\Color;
 
 class MapDecoration{
 	/** @var int */

@@ -36,7 +36,8 @@ use function sqrt;
 use const M_PI;
 
 class Squid extends WaterAnimal{
-	public const NETWORK_ID = EntityLegacyIds::SQUID;
+
+	public static function getNetworkTypeId() : int{ return EntityLegacyIds::SQUID; }
 
 	public $width = 0.95;
 	public $height = 0.95;
@@ -68,7 +69,7 @@ class Squid extends WaterAnimal{
 			$this->swimSpeed = mt_rand(150, 350) / 2000;
 			$e = $source->getDamager();
 			if($e !== null){
-				$this->swimDirection = $this->location->subtract($e->location)->normalize();
+				$this->swimDirection = $this->location->subtractVector($e->location)->normalize();
 			}
 
 			$this->broadcastAnimation(new SquidInkCloudAnimation($this));

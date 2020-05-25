@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\world\particle;
 
+use pocketmine\color\Color;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
-use pocketmine\utils\Color;
 
 class InstantEnchantParticle implements Particle{
 	/** @var Color */

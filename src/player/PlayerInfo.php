@@ -25,7 +25,7 @@ namespace pocketmine\player;
 
 use pocketmine\entity\Skin;
 use pocketmine\utils\TextFormat;
-use pocketmine\utils\UUID;
+use pocketmine\uuid\UUID;
 
 /**
  * Encapsulates data needed to create a player.

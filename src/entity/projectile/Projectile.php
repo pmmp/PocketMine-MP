@@ -176,7 +176,7 @@ abstract class Projectile extends Entity{
 		Timings::$entityMoveTimer->startTiming();
 
 		$start = $this->location->asVector3();
-		$end = $start->add($this->motion);
+		$end = $start->addVector($this->motion);
 
 		$blockHit = null;
 		$entityHit = null;
@@ -196,7 +196,7 @@ abstract class Projectile extends Entity{
 
 		$entityDistance = PHP_INT_MAX;
 
-		$newDiff = $end->subtract($start);
+		$newDiff = $end->subtractVector($start);
 		foreach($this->getWorld()->getCollidingEntities($this->boundingBox->addCoord($newDiff->x, $newDiff->y, $newDiff->z)->expand(1, 1, 1), $this) as $entity){
 			if($entity->getId() === $this->getOwningEntityId() and $this->ticksLived < 5){
 				continue;

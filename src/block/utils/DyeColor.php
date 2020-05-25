@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\utils\Color;
+use pocketmine\color\Color;
 use pocketmine\utils\EnumTrait;
 
 /**

@@ -57,7 +57,7 @@ class DifficultyCommand extends VanillaCommand{
 		}
 
 		if($difficulty !== -1){
-			$sender->getServer()->setConfigInt("difficulty", $difficulty);
+			$sender->getServer()->getConfigGroup()->setConfigInt("difficulty", $difficulty);
 
 			//TODO: add per-world support
 			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){

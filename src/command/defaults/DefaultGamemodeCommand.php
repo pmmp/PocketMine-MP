@@ -56,7 +56,7 @@ class DefaultGamemodeCommand extends VanillaCommand{
 			return true;
 		}
 
-		$sender->getServer()->setConfigInt("gamemode", $gameMode->getMagicNumber());
+		$sender->getServer()->getConfigGroup()->setConfigInt("gamemode", $gameMode->getMagicNumber());
 		$sender->sendMessage(new TranslationContainer("commands.defaultgamemode.success", [$gameMode->getTranslationKey()]));
 		return true;
 	}

@@ -38,4 +38,8 @@ class Snow extends Opaque{
 			VanillaItems::SNOWBALL()->setCount(4)
 		];
 	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
+	}
 }

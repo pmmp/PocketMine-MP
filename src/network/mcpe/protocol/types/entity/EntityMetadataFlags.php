@@ -28,7 +28,6 @@ final class EntityMetadataFlags{
 	private function __construct(){
 		//NOOP
 	}
-
 	public const ONFIRE = 0;
 	public const SNEAKING = 1;
 	public const RIDING = 2;
@@ -101,11 +100,11 @@ final class EntityMetadataFlags{
 	public const OVER_SCAFFOLDING = 69;
 	public const FALL_THROUGH_SCAFFOLDING = 70;
 	public const BLOCKING = 71; //shield
-	public const DISABLE_BLOCKING = 72;
-	//73 is set when a player is attacked while using shield, unclear on purpose
-	//74 related to shield usage, needs further investigation
+	public const TRANSITION_BLOCKING = 72;
+	public const BLOCKED_USING_SHIELD = 73;
+	public const BLOCKED_USING_DAMAGED_SHIELD = 74;
 	public const SLEEPING = 75;
-	//76 related to sleeping, unclear usage
+	public const WANTS_TO_WAKE = 76;
 	public const TRADE_INTEREST = 77;
 	public const DOOR_BREAKER = 78; //...
 	public const BREAKING_OBSTRUCTION = 79;
@@ -115,6 +114,10 @@ final class EntityMetadataFlags{
 	public const ROARING = 83;
 	public const DELAYED_ATTACKING = 84;
 	public const AVOIDING_MOBS = 85;
-	//86 used by RangedAttackGoal
-	//87 used by NearestAttackableTargetGoal
+	public const FACING_TARGET_TO_RANGE_ATTACK = 86;
+	public const HIDDEN_WHEN_INVISIBLE = 87; //??????????????????
+	public const IS_IN_UI = 88;
+	public const STALKING = 89;
+	public const EMOTING = 90;
+	public const CELEBRATING = 91;
 }

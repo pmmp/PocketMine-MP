@@ -51,10 +51,9 @@ final class ChunkSerializer{
 		return 0;
 	}
 
-	public static function serialize(Chunk $chunk, ?string $tiles = null) : string{
+	public static function serialize(Chunk $chunk, RuntimeBlockMapping $blockMapper, ?string $tiles = null) : string{
 		$stream = new NetworkBinaryStream();
 		$subChunkCount = self::getSubChunkCount($chunk);
-		$blockMapper = RuntimeBlockMapping::getInstance();
 		for($y = 0; $y < $subChunkCount; ++$y){
 			$layers = $chunk->getSubChunk($y)->getBlockLayers();
 			$stream->putByte(8); //version
@@ -71,7 +70,7 @@ final class ChunkSerializer{
 				//zigzag and just shift directly.
 				$stream->putUnsignedVarInt(count($palette) << 1); //yes, this is intentionally zigzag
 				foreach($palette as $p){
-					$stream->putUnsignedVarInt($blockMapper->toStaticRuntimeId($p >> 4, $p & 0xf) << 1);
+					$stream->putUnsignedVarInt($blockMapper->toRuntimeId($p >> 4, $p & 0xf) << 1);
 				}
 			}
 		}
@@ -91,7 +90,7 @@ final class ChunkSerializer{
 		$stream = new BinaryStream();
 		foreach($chunk->getTiles() as $tile){
 			if($tile instanceof Spawnable){
-				$stream->put($tile->getSerializedSpawnCompound());
+				$stream->put($tile->getSerializedSpawnCompound()->getEncodedNbt());
 			}
 		}
 

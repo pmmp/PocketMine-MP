@@ -31,8 +31,8 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Internet;
 use pocketmine\utils\Process;
 use pocketmine\utils\Utils;
-use pocketmine\utils\UUID;
 use pocketmine\utils\VersionString;
+use pocketmine\uuid\UUID;
 use function array_map;
 use function array_values;
 use function count;
@@ -60,7 +60,7 @@ class SendUsageTask extends AsyncTask{
 	 * @phpstan-param array<string, string> $playerList
 	 */
 	public function __construct(Server $server, int $type, array $playerList = []){
-		$endpoint = "http://" . $server->getProperty("anonymous-statistics.host", "stats.pocketmine.net") . "/";
+		$endpoint = "http://" . $server->getConfigGroup()->getProperty("anonymous-statistics.host", "stats.pocketmine.net") . "/";
 
 		$data = [];
 		$data["uniqueServerId"] = $server->getServerUniqueId()->toString();

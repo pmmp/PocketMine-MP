@@ -25,9 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\nbt\NbtDataException;
 use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 
 class AvailableActorIdentifiersPacket extends DataPacket implements ClientboundPacket{
@@ -49,13 +47,7 @@ class AvailableActorIdentifiersPacket extends DataPacket implements ClientboundP
 	}
 
 	protected function decodePayload(NetworkBinaryStream $in) : void{
-		$offset = $in->getOffset();
-		try{
-			$this->identifiers = new CacheableNbt((new NetworkNbtSerializer())->read($in->getBuffer(), $offset)->mustGetCompoundTag());
-		}catch(NbtDataException $e){
-			throw PacketDecodeException::wrap($e, "Failed decoding actor identifiers");
-		}
-		$in->setOffset($offset);
+		$this->identifiers = new CacheableNbt($in->getNbtCompoundRoot());
 	}
 
 	protected function encodePayload(NetworkBinaryStream $out) : void{

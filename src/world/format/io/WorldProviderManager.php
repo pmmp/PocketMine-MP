@@ -31,24 +31,24 @@ use pocketmine\world\format\io\region\PMAnvil;
 use function strtolower;
 use function trim;
 
-abstract class WorldProviderManager{
+final class WorldProviderManager{
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, class-string<WorldProvider>>
 	 */
-	protected static $providers = [];
+	protected $providers = [];
 
 	/**
 	 * @var string
 	 * @phpstan-var class-string<WritableWorldProvider>
 	 */
-	private static $default = LevelDB::class;
+	private $default = LevelDB::class;
 
-	public static function init() : void{
-		self::addProvider(Anvil::class, "anvil");
-		self::addProvider(McRegion::class, "mcregion");
-		self::addProvider(PMAnvil::class, "pmanvil");
-		self::addProvider(LevelDB::class, "leveldb");
+	public function __construct(){
+		$this->addProvider(Anvil::class, "anvil");
+		$this->addProvider(McRegion::class, "mcregion");
+		$this->addProvider(PMAnvil::class, "pmanvil");
+		$this->addProvider(LevelDB::class, "leveldb");
 	}
 
 	/**
@@ -56,8 +56,8 @@ abstract class WorldProviderManager{
 	 *
 	 * @phpstan-return class-string<WritableWorldProvider>
 	 */
-	public static function getDefault() : string{
-		return self::$default;
+	public function getDefault() : string{
+		return $this->default;
 	}
 
 	/**
@@ -68,25 +68,25 @@ abstract class WorldProviderManager{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public static function setDefault(string $class) : void{
+	public function setDefault(string $class) : void{
 		Utils::testValidInstance($class, WritableWorldProvider::class);
 
-		self::$default = $class;
+		$this->default = $class;
 	}
 
 	/**
 	 * @phpstan-param class-string<WorldProvider> $class
 	 */
-	public static function addProvider(string $class, string $name, bool $overwrite = false) : void{
+	public function addProvider(string $class, string $name, bool $overwrite = false) : void{
 		Utils::testValidInstance($class, WorldProvider::class);
 
 		$name = strtolower($name);
-		if(!$overwrite and isset(self::$providers[$name])){
+		if(!$overwrite and isset($this->providers[$name])){
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
 
 		/** @var WorldProvider $class */
-		self::$providers[$name] = $class;
+		$this->providers[$name] = $class;
 	}
 
 	/**
@@ -95,9 +95,9 @@ abstract class WorldProviderManager{
 	 * @return string[]
 	 * @phpstan-return array<string, class-string<WorldProvider>>
 	 */
-	public static function getMatchingProviders(string $path) : array{
+	public function getMatchingProviders(string $path) : array{
 		$result = [];
-		foreach(self::$providers as $alias => $provider){
+		foreach($this->providers as $alias => $provider){
 			if($provider::isValid($path)){
 				$result[$alias] = $provider;
 			}
@@ -109,8 +109,8 @@ abstract class WorldProviderManager{
 	 * @return string[]
 	 * @phpstan-return array<string, class-string<WorldProvider>>
 	 */
-	public static function getAvailableProviders() : array{
-		return self::$providers;
+	public function getAvailableProviders() : array{
+		return $this->providers;
 	}
 
 	/**
@@ -118,7 +118,7 @@ abstract class WorldProviderManager{
 	 *
 	 * @phpstan-return class-string<WorldProvider>|null
 	 */
-	public static function getProviderByName(string $name) : ?string{
-		return self::$providers[trim(strtolower($name))] ?? null;
+	public function getProviderByName(string $name) : ?string{
+		return $this->providers[trim(strtolower($name))] ?? null;
 	}
 }

@@ -24,18 +24,17 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
+use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use function get_class;
 
 abstract class Spawnable extends Tile{
-	/** @var string|null */
+	/**
+	 * @var CacheableNbt|null
+	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>|null
+	 */
 	private $spawnCompoundCache = null;
 	/** @var bool */
 	private $dirty = true; //default dirty, until it's been spawned appropriately on the world
-
-	/** @var NetworkNbtSerializer|null */
-	private static $nbtWriter = null;
 
 	/**
 	 * Returns whether the tile needs to be respawned to viewers.
@@ -55,15 +54,11 @@ abstract class Spawnable extends Tile{
 	 * Returns encoded NBT (varint, little-endian) used to spawn this tile to clients. Uses cache where possible,
 	 * populates cache if it is null.
 	 *
-	 * @return string encoded NBT
+	 * @phpstan-return CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
 	 */
-	final public function getSerializedSpawnCompound() : string{
+	final public function getSerializedSpawnCompound() : CacheableNbt{
 		if($this->spawnCompoundCache === null){
-			if(self::$nbtWriter === null){
-				self::$nbtWriter = new NetworkNbtSerializer();
-			}
-
-			$this->spawnCompoundCache = self::$nbtWriter->write(new TreeRoot($this->getSpawnCompound()));
+			$this->spawnCompoundCache = new CacheableNbt($this->getSpawnCompound());
 		}
 
 		return $this->spawnCompoundCache;

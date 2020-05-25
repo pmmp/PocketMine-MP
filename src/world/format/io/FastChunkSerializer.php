@@ -25,7 +25,9 @@ namespace pocketmine\world\format\io;
 
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\utils\BinaryStream;
+use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\HeightArray;
 use pocketmine\world\format\LightArray;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
@@ -40,6 +42,9 @@ use function unpack;
  * The serialization format **is not intended for permanent storage** and may change without warning.
  */
 final class FastChunkSerializer{
+	private const FLAG_GENERATED = 1 << 0;
+	private const FLAG_POPULATED = 1 << 1;
+	private const FLAG_HAS_LIGHT = 1 << 2;
 
 	private function __construct(){
 		//NOOP
@@ -59,7 +64,11 @@ final class FastChunkSerializer{
 		$stream = new BinaryStream();
 		$stream->putInt($chunk->getX());
 		$stream->putInt($chunk->getZ());
-		$stream->putByte(($includeLight ? 4 : 0) | ($chunk->isPopulated() ? 2 : 0) | ($chunk->isGenerated() ? 1 : 0));
+		$stream->putByte(
+			($includeLight ? self::FLAG_HAS_LIGHT : 0) |
+			($chunk->isPopulated() ? self::FLAG_POPULATED : 0) |
+			($chunk->isGenerated() ? self::FLAG_GENERATED : 0)
+		);
 		if($chunk->isGenerated()){
 			//subchunks
 			$subChunks = $chunk->getSubChunks();
@@ -106,13 +115,13 @@ final class FastChunkSerializer{
 		$x = $stream->getInt();
 		$z = $stream->getInt();
 		$flags = $stream->getByte();
-		$lightPopulated = (bool) ($flags & 4);
-		$terrainPopulated = (bool) ($flags & 2);
-		$terrainGenerated = (bool) ($flags & 1);
+		$lightPopulated = (bool) ($flags & self::FLAG_HAS_LIGHT);
+		$terrainPopulated = (bool) ($flags & self::FLAG_POPULATED);
+		$terrainGenerated = (bool) ($flags & self::FLAG_GENERATED);
 
 		$subChunks = [];
-		$biomeIds = "";
-		$heightMap = [];
+		$biomeIds = null;
+		$heightMap = null;
 		if($terrainGenerated){
 			$count = $stream->getByte();
 			for($subCount = 0; $subCount < $count; ++$subCount){
@@ -132,9 +141,9 @@ final class FastChunkSerializer{
 				);
 			}
 
-			$biomeIds = $stream->get(256);
+			$biomeIds = new BiomeArray($stream->get(256));
 			if($lightPopulated){
-				$heightMap = array_values(unpack("S*", $stream->get(512)));
+				$heightMap = new HeightArray(array_values(unpack("S*", $stream->get(512))));
 			}
 		}
 
