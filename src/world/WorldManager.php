@@ -81,7 +81,7 @@ class WorldManager{
 		$this->providerManager = $providerManager;
 	}
 
-	public function getProvider() : WorldProviderManager{
+	public function getProviderManager() : WorldProviderManager{
 		return $this->providerManager;
 	}
 
