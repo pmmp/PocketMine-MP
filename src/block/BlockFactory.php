@@ -66,7 +66,7 @@ class BlockFactory{
 	 * @var \SplFixedArray|Block[]
 	 * @phpstan-var \SplFixedArray<Block>
 	 */
-	private $fullList;
+	public $fullList;
 
 	/**
 	 * @var \SplFixedArray|int[]
