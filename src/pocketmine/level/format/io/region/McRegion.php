@@ -28,6 +28,7 @@ use pocketmine\level\format\io\BaseLevelProvider;
 use pocketmine\level\format\io\ChunkUtils;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\SubChunk;
+use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\nbt\BigEndianNBTStream;
@@ -268,15 +269,18 @@ class McRegion extends BaseLevelProvider{
 			mkdir($path . "/region", 0777);
 		}
 		//TODO, add extra details
+		/** @var Generator $gen */
+		$gen = new $generator($options);
+		$spawn = $gen->getSpawn();
 		$levelData = new CompoundTag("Data", [
 			new ByteTag("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0),
 			new ByteTag("Difficulty", Level::getDifficultyFromString((string) ($options["difficulty"] ?? "normal"))),
 			new ByteTag("initialized", 1),
 			new IntTag("GameType", 0),
 			new IntTag("generatorVersion", 1), //2 in MCPE
-			new IntTag("SpawnX", 256),
-			new IntTag("SpawnY", 70),
-			new IntTag("SpawnZ", 256),
+			new IntTag("SpawnX", $spawn->getFloorX()),
+			new IntTag("SpawnY", $spawn->getFloorY()),
+			new IntTag("SpawnZ", $spawn->getFloorZ()),
 			new IntTag("version", static::getPcWorldFormatVersion()),
 			new IntTag("DayTime", 0),
 			new LongTag("LastPlayed", (int) (microtime(true) * 1000)),
