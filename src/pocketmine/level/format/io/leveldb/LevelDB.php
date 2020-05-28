@@ -30,6 +30,7 @@ use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\level\format\SubChunk;
 use pocketmine\level\generator\Flat;
+use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\Level;
 use pocketmine\level\LevelException;
@@ -211,6 +212,9 @@ class LevelDB extends BaseLevelProvider{
 			//TODO: add support for limited worlds
 		}
 
+		/** @var Generator $gen */
+		$gen = new $generator($options);
+		$spawn = $gen->getSpawn();
 		$levelData = new CompoundTag("", [
 			//Vanilla fields
 			new IntTag("DayCycleStopTime", -1),
@@ -223,9 +227,9 @@ class LevelDB extends BaseLevelProvider{
 			new IntTag("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL),
 			//new IntTag("Platform", 2), //TODO: find out what the possible values are for
 			new LongTag("RandomSeed", $seed),
-			new IntTag("SpawnX", 0),
-			new IntTag("SpawnY", 32767),
-			new IntTag("SpawnZ", 0),
+			new IntTag("SpawnX", $spawn->getFloorX()),
+			new IntTag("SpawnY", $spawn->getFloorY()),
+			new IntTag("SpawnZ", $spawn->getFloorZ()),
 			new IntTag("StorageVersion", self::CURRENT_STORAGE_VERSION),
 			new LongTag("Time", 0),
 			new ByteTag("eduLevel", 0),
