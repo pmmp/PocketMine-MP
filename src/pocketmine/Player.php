@@ -370,7 +370,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $lastRightClickTime = 0.0;
 	/** @var Vector3|null */
 	protected $lastRightClickPos = null;
-
+	/** @var string */
+	private $deviceId;
+	/** @var string */
+	private $deviceModel;
+	/** @var int */
+	private $deviceOS;
 	/**
 	 * @return TranslationContainer|string
 	 */
@@ -918,26 +923,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getDeviceOS() {
-		return $this->deviceOS;
-	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getDeviceModel() {
-		return $this->deviceModel;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getDeviceId() {
-		return $this->deviceId;
-	}
 
 	protected function switchLevel(Level $targetLevel) : bool{
 		$oldLevel = $this->level;
@@ -1807,9 +1793,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->batchedPackets = [];
 		}
 	}
-	private $deviceId;
-	private $deviceModel;
-	private $deviceOS;
 	/**
 	 * Returns whether the player can interact with the specified position. This checks distance and direction.
 	 *
@@ -3985,5 +3968,25 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function isLoaderActive() : bool{
 		return $this->isConnected();
+	}
+	/**
+	 * @return int
+ 	*/
+	public function getDeviceOS() : int{
+		return $this->deviceOS;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getDeviceModel() : string {
+		return $this->deviceModel;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getDeviceId() : string {
+		return $this->deviceId;
 	}
 }
