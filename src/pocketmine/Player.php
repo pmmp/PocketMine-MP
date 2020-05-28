@@ -1854,9 +1854,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return true;
 		}
 		$this->randomClientId = $packet->clientId;
-		$this->deviceId = $packet->clientData['DeviceId'];
-		$this->deviceModel = $packet->clientData['DeviceModel'];
-		$this->deviceOS = $packet->clientData['DeviceOS'];
+		$this->deviceId = $packet->clientData["DeviceId"];
+		$this->deviceModel = $packet->clientData["DeviceModel"];
+		$this->deviceOS = $packet->clientData["DeviceOS"];
 		$this->uuid = UUID::fromString($packet->clientUUID);
 		$this->rawUUID = $this->uuid->toBinary();
 
