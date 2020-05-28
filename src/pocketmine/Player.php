@@ -918,6 +918,27 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getDeviceOS() {
+		return $this->deviceOS;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDeviceModel() {
+		return $this->deviceModel;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDeviceId() {
+		return $this->deviceId;
+	}
+
 	protected function switchLevel(Level $targetLevel) : bool{
 		$oldLevel = $this->level;
 		if(parent::switchLevel($targetLevel)){
@@ -1786,7 +1807,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->batchedPackets = [];
 		}
 	}
-
+	private $deviceId;
+	private $deviceModel;
+	private $deviceOS;
 	/**
 	 * Returns whether the player can interact with the specified position. This checks distance and direction.
 	 *
@@ -1840,7 +1863,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->username = TextFormat::clean($packet->username);
 		$this->displayName = $this->username;
 		$this->iusername = strtolower($this->username);
-
 		if($packet->locale !== null){
 			$this->locale = $packet->locale;
 		}
@@ -1848,9 +1870,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if(count($this->server->getOnlinePlayers()) >= $this->server->getMaxPlayers() and $this->kick("disconnectionScreen.serverFull", false)){
 			return true;
 		}
-
 		$this->randomClientId = $packet->clientId;
-
+		$this->deviceId = $packet->clientData['DeviceId'];
+		$this->deviceModel = $packet->clientData['DeviceModel'];
+		$this->deviceOS = $packet->clientData['DeviceOS'];
 		$this->uuid = UUID::fromString($packet->clientUUID);
 		$this->rawUUID = $this->uuid->toBinary();
 
