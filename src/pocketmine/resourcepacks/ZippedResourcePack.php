@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\resourcepacks;
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
+use function assert;
 use function count;
 use function fclose;
 use function feof;
@@ -35,6 +36,8 @@ use function fseek;
 use function gettype;
 use function hash_file;
 use function implode;
+use function preg_match;
+use function strlen;
 
 class ZippedResourcePack implements ResourcePack{
 
@@ -85,7 +88,22 @@ class ZippedResourcePack implements ResourcePack{
 		}
 
 		if(($manifestData = $archive->getFromName("manifest.json")) === false){
-			if($archive->locateName("pack_manifest.json") !== false){
+			$manifestPath = null;
+			$manifestIdx = null;
+			for($i = 0; $i < $archive->numFiles; ++$i){
+				$name = $archive->getNameIndex($i);
+				if(
+					($manifestPath === null or strlen($name) < strlen($manifestPath)) and
+					preg_match('#.*/manifest.json$#', $name) === 1
+				){
+					$manifestPath = $name;
+					$manifestIdx = $i;
+				}
+			}
+			if($manifestIdx !== null){
+				$manifestData = $archive->getFromIndex($manifestIdx);
+				assert($manifestData !== false);
+			}elseif($archive->locateName("pack_manifest.json") !== false){
 				throw new ResourcePackException("Unsupported old pack format");
 			}else{
 				throw new ResourcePackException("manifest.json not found in the archive root");

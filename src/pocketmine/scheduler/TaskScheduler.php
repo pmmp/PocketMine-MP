@@ -36,7 +36,7 @@ class TaskScheduler{
 	/** @var bool */
 	private $enabled = true;
 
-	/** @var ReversePriorityQueue<Task> */
+	/** @var ReversePriorityQueue<TaskHandler> */
 	protected $queue;
 
 	/** @var TaskHandler[] */

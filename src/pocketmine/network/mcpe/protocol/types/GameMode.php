@@ -21,18 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\network\mcpe\protocol\types;
 
-use function defined;
+final class GameMode{
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-// TODO: drop this file and use a final class with constants
-if(defined('pocketmine\_VERSION_INFO_INCLUDED')){
-	return;
+	private function __construct(){
+		//NOOP
+	}
+
+	public const SURVIVAL = 0;
+	public const CREATIVE = 1;
+	public const ADVENTURE = 2;
+	public const SURVIVAL_VIEWER = 3;
+	public const CREATIVE_VIEWER = 4;
+	public const DEFAULT = 5;
 }
-const _VERSION_INFO_INCLUDED = true;
-
-const NAME = "Altay";
-const BASE_VERSION = "3.12.3";
-const IS_DEVELOPMENT_BUILD = true;
-const BUILD_NUMBER = 0;

@@ -91,11 +91,11 @@ abstract class Living extends Entity implements Damageable{
 
 	/** @var ArmorInventory */
 	protected $armorInventory;
-	
+
 	/** @var int|null */
 	protected $revengeTargetId = null;
 	protected $revengeTimer = 0;
-	
+
 	/** @var int|null */
 	protected $lastAttackedEntityId = null;
 
@@ -112,33 +112,33 @@ abstract class Living extends Entity implements Damageable{
 	protected $moveStrafing = 0.0;
 
 	abstract public function getName() : string;
-	
+
 	public function getRevengeTarget() : ?Entity{
 		if($this->revengeTargetId !== null){
 			return $this->server->findEntity($this->revengeTargetId);
 		}
-		
+
 		return null;
 	}
-	
+
 	public function setRevengeTarget(?Entity $revengeTarget) : void{
 		if($revengeTarget === null){
 			$this->revengeTargetId = null;
 		}else{
 			$this->revengeTargetId = $revengeTarget->getId();
 		}
-		
+
 		$this->revengeTimer = $this->ticksLived;
 	}
-	
+
 	public function getLastAttackedEntity() : ?Entity{
 		if($this->lastAttackedEntityId !== null){
 			return $this->server->findEntity($this->lastAttackedEntityId);
 		}
-		
+
 		return null;
 	}
-	
+
 	public function setLastAttackedEntity(?Entity $attackedEntity) : void{
 		if($attackedEntity === null){
 			$this->lastAttackedEntityId = null;
@@ -146,11 +146,11 @@ abstract class Living extends Entity implements Damageable{
 			$this->lastAttackedEntityId = $attackedEntity->getId();
 		}
 	}
-	
+
 	public function getRevengeTimer() : int{
 		return $this->revengeTimer;
 	}
-	
+
 	public function getLeashedToEntity() : ?Entity{
 		if($this->leashedToEntityId !== null){
 			return $this->server->findEntity($this->leashedToEntityId);
@@ -158,7 +158,7 @@ abstract class Living extends Entity implements Damageable{
 
 		return null;
 	}
-	
+
 	public function setLeashedToEntity(Entity $leashedToEntity, bool $send = true) : void{
 		$this->leashed = true;
 		$this->leashedToEntityId = $leashedToEntity->getId();
@@ -168,7 +168,7 @@ abstract class Living extends Entity implements Damageable{
 			$this->propertyManager->setLong(self::DATA_LEAD_HOLDER_EID, $leashedToEntity->getId());
 		}
 	}
-	
+
 	public function isLeashed() : bool{
 		return $this->leashed;
 	}
@@ -683,16 +683,12 @@ abstract class Living extends Entity implements Damageable{
 			}
 
 			if($e !== null){
-				if($source->getCause() === EntityDamageEvent::CAUSE_PROJECTILE and $e->isOnFire()){
-					$this->setOnFire(2 * $this->level->getDifficulty());
-				}
-
 				$deltaX = $this->x - $e->x;
 				$deltaZ = $this->z - $e->z;
 				$this->knockBack($e, $source->getBaseDamage(), $deltaX, $deltaZ, $source->getKnockBack());
 
 				$e->broadcastEntityEvent(ActorEventPacket::ARM_SWING);
-				
+
 				$attacker = $source->getDamager();
 				if($attacker instanceof Living){
 					$this->setRevengeTarget($attacker);

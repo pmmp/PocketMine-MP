@@ -21,18 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\network\mcpe\protocol\types;
 
-use function defined;
+final class MultiplayerGameVisibility{
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-// TODO: drop this file and use a final class with constants
-if(defined('pocketmine\_VERSION_INFO_INCLUDED')){
-	return;
+	private function __construct(){
+		//NOOP
+	}
+
+	public const NONE = 0;
+	public const INVITE = 1;
+	public const FRIENDS = 2;
+	public const FRIENDS_OF_FRIENDS = 3;
+	public const PUBLIC = 4;
 }
-const _VERSION_INFO_INCLUDED = true;
-
-const NAME = "Altay";
-const BASE_VERSION = "3.12.3";
-const IS_DEVELOPMENT_BUILD = true;
-const BUILD_NUMBER = 0;
