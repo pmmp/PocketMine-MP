@@ -110,6 +110,13 @@ class ExperienceManager{
 	public function getXpProgress() : float{
 		return $this->progressAttr->getValue();
 	}
+	
+	/**
+	 * Returns the Human entity
+	 */
+	public function getEntity() : Human{
+		return $this->entity;
+	}
 
 	/**
 	 * Sets the player's progress through the current level to a value between 0.0 and 1.0.
