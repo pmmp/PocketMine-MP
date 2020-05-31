@@ -2305,11 +2305,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return false;
 		}
 
-		if($this->isSpectator()){
-			$this->sendAllInventories();
-			return true;
-		}
-
 		/** @var InventoryAction[] $actions */
 		$actions = [];
 		foreach($packet->actions as $networkInventoryAction){
@@ -2403,7 +2398,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						$this->setUsingItem(false);
 
-						if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13) or $this->isSpectator()){
+						if(!$this->canInteract($blockVector->add(0.5, 0.5, 0.5), 13)){
 						}elseif($this->isCreative()){
 							$item = $this->inventory->getItemInHand();
 							if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->clickPos, $this, true)){
@@ -2509,7 +2504,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						}
 
 						$ev = new PlayerInteractEvent($this, $item, null, $directionVector, $face, PlayerInteractEvent::RIGHT_CLICK_AIR);
-						if($this->hasItemCooldown($item)){
+						if($this->hasItemCooldown($item) or $this->isSpectator()){
 							$ev->setCancelled();
 						}
 
@@ -2560,7 +2555,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						$heldItem = $this->inventory->getItemInHand();
 						$oldItem = clone $heldItem;
 
-						if(!$this->canInteract($target, 8)){
+						if(!$this->canInteract($target, 8) or $this->isSpectator()){
 							$cancelled = true;
 						}elseif($target instanceof Player){
 							if(!$this->server->getConfigBool("pvp")){

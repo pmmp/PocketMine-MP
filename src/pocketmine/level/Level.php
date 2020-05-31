@@ -1856,7 +1856,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($player !== null){
 			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $clickVector, $face, PlayerInteractEvent::RIGHT_CLICK_BLOCK);
-			if($this->checkSpawnProtection($player, $blockClicked)){
+			if($this->checkSpawnProtection($player, $blockClicked) or $player->isSpectator()){
 				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
 			}
 
@@ -1909,7 +1909,7 @@ class Level implements ChunkManager, Metadatable{
 
 		if($player !== null){
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
-			if($this->checkSpawnProtection($player, $blockReplace)){
+			if($this->checkSpawnProtection($player, $blockReplace) or $player->isSpectator()){
 				$ev->setCancelled();
 			}
 
