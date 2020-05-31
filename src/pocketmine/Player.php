@@ -337,6 +337,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var Vector3|null */
 	protected $forceMoveSync = null;
 
+	/**
+	 * @deprecated this remains solely to preserve BC with plugins that have custom movement systems
+	 * @var Vector3|null
+	 */
+	protected $newPosition;
+	/**
+	 * @deprecated this remains solely to preserve BC with plugins that have custom movement systems
+	 * @var bool
+	 */
+	protected $isTeleporting = false;
+
 	/** @var int */
 	protected $inAirTicks = 0;
 	/** @var float */
@@ -873,7 +884,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @deprecated
 	 */
 	public function getNextPosition() : Position{
-		return $this->getPosition();
+		return $this->newPosition !== null ? Position::fromObject($this->newPosition, $this->level) : $this->getPosition();
 	}
 
 	public function getInAirTicks() : int{
@@ -1588,6 +1599,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
+	 * @deprecated plugin BC only, this should be removed on next major
+	 * @return void
+	 */
+	protected function processMovement(int $tickDiff){
+		$this->processMostRecentMovements();
+	}
+
+	/**
 	 * Fires movement events and synchronizes player movement, every tick.
 	 */
 	protected function processMostRecentMovements() : void{
@@ -1641,6 +1660,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->server->getLogger()->debug("Player " . $this->getName() . " exceeded movement rate limit, forcing to last accepted position");
 			$this->sendPosition($this, $this->yaw, $this->pitch, MovePlayerPacket::MODE_RESET);
 		}
+
+		$this->newPosition = null; //TODO: BC only, this should be removed on next major
 	}
 
 	protected function revertMovement(Location $from) : void{
@@ -1724,7 +1745,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->timings->startTiming();
 
 		if($this->spawned){
-			$this->processMostRecentMovements();
+			$this->processMovement($tickDiff);
 			$this->motion->x = $this->motion->y = $this->motion->z = 0; //TODO: HACK! (Fixes player knockback being messed up)
 			if($this->onGround){
 				$this->inAirTicks = 0;
@@ -2267,6 +2288,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->server->getLogger()->debug("Reverted movement of " . $this->getName() . " due to not alive or not spawned, received " . $newPos . ", locked at " . $this->asVector3());
 		}else{
 			// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
+			if($this->isTeleporting){ //TODO: plugin BC only, this should be removed on next major
+				$this->isTeleporting = false;
+			}
 			$this->forceMoveSync = null;
 
 			$packet->yaw = fmod($packet->yaw, 360);
@@ -2277,6 +2301,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 
 			$this->setRotation($packet->yaw, $packet->pitch);
+			$this->newPosition = $newPos; //TODO: plugin BC only, this should be removed on next major
 			$this->handleMovement($newPos);
 		}
 
@@ -3772,6 +3797,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->forceMoveSync = $pos->asVector3();
 			$this->dataPacket($pk);
 		}
+
+		$this->newPosition = null; //TODO: BC only, this should be removed on next major
 	}
 
 	/**
@@ -3789,7 +3816,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$this->resetFallDistance();
 			$this->nextChunkOrderRun = 0;
+			$this->newPosition = null; //TODO: BC only, this should be removed on next major
 			$this->stopSleep();
+
+			$this->isTeleporting = true; //TODO: BC only, this should be removed on next major
 
 			//TODO: workaround for player last pos not getting updated
 			//Entity::updateMovement() normally handles this, but it's overridden with an empty function in Player
