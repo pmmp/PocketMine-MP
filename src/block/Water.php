@@ -51,7 +51,5 @@ class Water extends Liquid{
 		if($entity->isOnFire()){
 			$entity->extinguish();
 		}
-
-		$entity->resetFallDistance();
 	}
 }
