@@ -436,6 +436,11 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
+			message: "#^Cannot access property \\$onGround on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
 			message: "#^Cannot call method syncCreative\\(\\) on pocketmine\\\\network\\\\mcpe\\\\InventoryManager\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php

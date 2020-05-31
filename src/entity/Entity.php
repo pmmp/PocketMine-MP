@@ -763,6 +763,9 @@ abstract class Entity{
 		if($teleport){
 			$pk->flags |= MoveActorAbsolutePacket::FLAG_TELEPORT;
 		}
+		if($this->onGround){
+			$pk->flags |= MoveActorAbsolutePacket::FLAG_GROUND;
+		}
 
 		$this->getWorld()->broadcastPacketToViewers($this->location, $pk);
 	}
