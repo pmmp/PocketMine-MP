@@ -37,6 +37,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
+use pocketmine\entity\Location;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
@@ -112,6 +113,7 @@ use function explode;
 use function floor;
 use function get_class;
 use function is_int;
+use function max;
 use function microtime;
 use function min;
 use function preg_match;
@@ -134,6 +136,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	use PermissibleDelegateTrait {
 		recalculatePermissions as private delegateRecalculatePermissions;
 	}
+
+	private const MOVES_PER_TICK = 2;
+	private const MOVE_BACKLOG_SIZE = 100 * self::MOVES_PER_TICK; //100 ticks backlog (5 seconds)
 
 	/**
 	 * Validates the given username.
@@ -208,10 +213,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/** @var bool[] map: raw UUID (string) => bool */
 	protected $hiddenPlayers = [];
 
+	/** @var int */
+	protected $moveRateLimit = 10 * self::MOVES_PER_TICK;
 	/** @var Vector3|null */
-	protected $newPosition;
-	/** @var bool */
-	protected $isTeleporting = false;
+	protected $forceMoveSync = null;
+
 	/** @var int */
 	protected $inAirTicks = 0;
 	/** @var float */
@@ -1141,14 +1147,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	/**
-	 * Returns the location that the player wants to be in at the end of this tick. Note that this may not be their
-	 * actual result position at the end due to plugin interference or a range of other things.
-	 */
-	public function getNextPosition() : Vector3{
-		return $this->newPosition !== null ? clone $this->newPosition : $this->location->asVector3();
-	}
-
-	/**
 	 * Sets the coordinates the player will move to next. This is processed at the end of each tick. Unless you have
 	 * some particularly specialized logic, you probably want to use teleport() instead of this.
 	 *
@@ -1162,7 +1160,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		//TODO: teleport acks are a network specific thing and shouldn't be here
 
 		$newPos = $newPos->asVector3();
-		if($this->isTeleporting and $newPos->distanceSquared($this->location) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+		if($this->forceMoveSync !== null and $newPos->distanceSquared($this->forceMoveSync) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
 			$this->sendPosition($this->location, null, null, MovePlayerPacket::MODE_RESET);
 			$this->logger->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $this->location->asVector3());
 			//Still getting movements from before teleport, ignore them
@@ -1170,11 +1168,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
-		if($this->isTeleporting){
-			$this->isTeleporting = false;
-		}
+		$this->forceMoveSync = null;
 
-		$this->newPosition = $newPos;
+		$this->handleMovement($newPos);
 		return true;
 	}
 
@@ -1182,19 +1178,19 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		return $this->inAirTicks;
 	}
 
-	protected function processMovement(int $tickDiff) : void{
-		if($this->newPosition === null or $this->isSleeping()){
+	protected function handleMovement(Vector3 $newPos) : void{
+		$this->moveRateLimit--;
+		if($this->moveRateLimit < 0){
 			return;
 		}
 
-		assert($this->newPosition->x !== null and $this->newPosition->y !== null and $this->newPosition->z !== null);
-
-		$newPos = $this->newPosition;
-		$distanceSquared = $newPos->distanceSquared($this->location);
+		$oldPos = $this->getLocation();
+		$distanceSquared = $newPos->distanceSquared($oldPos);
 
 		$revert = false;
 
-		if(($distanceSquared / ($tickDiff ** 2)) > 100){
+		if($distanceSquared > 100){
+			//TODO: this is probably too big if we process every movement
 			/* !!! BEWARE YE WHO ENTER HERE !!!
 			 *
 			 * This is NOT an anti-cheat check. It is a safety check.
@@ -1206,7 +1202,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			 * asking for help if you suffer the consequences of messing with this.
 			 */
 			$this->logger->debug("Moved too fast, reverting movement");
-			$this->logger->debug("Old position: " . $this->location->asVector3() . ", new position: " . $this->newPosition);
+			$this->logger->debug("Old position: " . $this->location->asVector3() . ", new position: " . $newPos);
 			$revert = true;
 		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos) or !$this->getWorld()->isChunkGenerated($newPos->getFloorX() >> 4, $newPos->getFloorZ() >> 4)){
 			$revert = true;
@@ -1221,48 +1217,67 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->move($dx, $dy, $dz);
 		}
 
+		if($revert){
+			$this->revertMovement($oldPos);
+		}
+	}
+
+	/**
+	 * Fires movement events and synchronizes player movement, every tick.
+	 */
+	protected function processMostRecentMovements() : void{
+		$exceededRateLimit = $this->moveRateLimit < 0;
+		$this->moveRateLimit = min(self::MOVE_BACKLOG_SIZE, max(0, $this->moveRateLimit) + self::MOVES_PER_TICK);
+
 		$from = clone $this->lastLocation;
 		$to = clone $this->location;
 
 		$delta = $to->distanceSquared($from);
 		$deltaAngle = abs($this->lastLocation->yaw - $to->yaw) + abs($this->lastLocation->pitch - $to->pitch);
 
-		if(!$revert and ($delta > 0.0001 or $deltaAngle > 1.0)){
+		if($delta > 0.0001 or $deltaAngle > 1.0){
 			$this->lastLocation = clone $to; //avoid PlayerMoveEvent modifying this
 
 			$ev = new PlayerMoveEvent($this, $from, $to);
 
 			$ev->call();
 
-			if(!($revert = $ev->isCancelled())){ //Yes, this is intended
-				if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
-					$this->teleport($ev->getTo());
-				}else{
-					$this->broadcastMovement();
-
-					$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
-					//TODO: check swimming (adds 0.015 exhaustion in MCPE)
-					if($this->isSprinting()){
-						$this->hungerManager->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
-					}else{
-						$this->hungerManager->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
-					}
-				}
+			if($ev->isCancelled()){
+				$this->revertMovement($from);
+				return;
 			}
-		}
 
-		if($revert){
-			$this->lastLocation = $from;
+			if($to->distanceSquared($ev->getTo()) > 0.01){ //If plugins modify the destination
+				$this->teleport($ev->getTo());
+				return;
+			}
 
-			$this->setPosition($from);
-			$this->sendPosition($from, $from->yaw, $from->pitch, MovePlayerPacket::MODE_RESET);
-		}else{
-			if($distanceSquared != 0 and $this->nextChunkOrderRun > 20){
+			$this->broadcastMovement();
+
+			$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
+			//TODO: check swimming (adds 0.015 exhaustion in MCPE)
+			if($this->isSprinting()){
+				$this->hungerManager->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
+			}else{
+				$this->hungerManager->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
+			}
+
+			if($this->nextChunkOrderRun > 20){
 				$this->nextChunkOrderRun = 20;
 			}
 		}
 
-		$this->newPosition = null;
+		if($exceededRateLimit){ //client and server positions will be out of sync if this happens
+			$this->server->getLogger()->debug("Player " . $this->getName() . " exceeded movement rate limit, forcing to last accepted position");
+			$this->sendPosition($this->location, $this->location->getYaw(), $this->location->getPitch(), MovePlayerPacket::MODE_RESET);
+		}
+	}
+
+	protected function revertMovement(Location $from) : void{
+		$this->lastLocation = $from;
+
+		$this->setPosition($from);
+		$this->sendPosition($from, $from->yaw, $from->pitch, MovePlayerPacket::MODE_RESET);
 	}
 
 	public function fall(float $fallDistance) : void{
@@ -1319,7 +1334,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->timings->startTiming();
 
 		if($this->spawned){
-			$this->processMovement($tickDiff);
+			$this->processMostRecentMovements();
 			$this->motion->x = $this->motion->y = $this->motion->z = 0; //TODO: HACK! (Fixes player knockback being messed up)
 			if($this->onGround){
 				$this->inAirTicks = 0;
@@ -2211,8 +2226,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	public function sendPosition(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL) : void{
 		$this->networkSession->syncMovement($pos, $yaw, $pitch, $mode);
 
-		//TODO: get rid of this
-		$this->newPosition = null;
+		$this->forceMoveSync = $pos->asVector3();
 	}
 
 	/**
@@ -2230,11 +2244,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 			$this->resetFallDistance();
 			$this->nextChunkOrderRun = 0;
-			$this->newPosition = null;
 			$this->stopSleep();
 			$this->blockBreakHandler = null;
-
-			$this->isTeleporting = true;
 
 			//TODO: workaround for player last pos not getting updated
 			//Entity::updateMovement() normally handles this, but it's overridden with an empty function in Player

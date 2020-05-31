@@ -1572,15 +1572,6 @@ class World implements ChunkManager{
 			if(count($this->getCollidingEntities($collisionBox)) > 0){
 				return false;  //Entity in block
 			}
-
-			if($player !== null){
-				if(($diff = $player->getNextPosition()->subtractVector($player->getPosition())) and $diff->lengthSquared() > 0.00001){
-					$bb = $player->getBoundingBox()->offsetCopy($diff->x, $diff->y, $diff->z);
-					if($collisionBox->intersectsWith($bb)){
-						return false; //Inside player BB
-					}
-				}
-			}
 		}
 
 		if($player !== null){
