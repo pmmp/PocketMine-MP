@@ -217,7 +217,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public const SPECTATOR = 3;
 	public const VIEW = Player::SPECTATOR;
 
-	private const RESOURCE_PACK_CHUNK_SIZE = 1048576; //1MB
+	private const RESOURCE_PACK_CHUNK_SIZE = 128 * 1024; //128KB
 
 	/**
 	 * Validates the given username.
