@@ -217,6 +217,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public const SPECTATOR = 3;
 	public const VIEW = Player::SPECTATOR;
 
+	private const RESOURCE_PACK_CHUNK_SIZE = 1048576; //1MB
+
 	/**
 	 * Validates the given username.
 	 */
@@ -2070,7 +2072,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 					$pk = new ResourcePackDataInfoPacket();
 					$pk->packId = $pack->getPackId();
-					$pk->maxChunkSize = 1048576; //1MB
+					$pk->maxChunkSize = self::RESOURCE_PACK_CHUNK_SIZE;
 					$pk->chunkCount = (int) ceil($pack->getPackSize() / $pk->maxChunkSize);
 					$pk->compressedPackSize = $pack->getPackSize();
 					$pk->sha256 = $pack->getSha256();
@@ -3053,8 +3055,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk = new ResourcePackChunkDataPacket();
 		$pk->packId = $pack->getPackId();
 		$pk->chunkIndex = $packet->chunkIndex;
-		$pk->data = $pack->getPackChunk(1048576 * $packet->chunkIndex, 1048576);
-		$pk->progress = (1048576 * $packet->chunkIndex);
+		$pk->data = $pack->getPackChunk(self::RESOURCE_PACK_CHUNK_SIZE * $packet->chunkIndex, self::RESOURCE_PACK_CHUNK_SIZE);
+		$pk->progress = (self::RESOURCE_PACK_CHUNK_SIZE * $packet->chunkIndex);
 		$this->dataPacket($pk);
 		return true;
 	}
