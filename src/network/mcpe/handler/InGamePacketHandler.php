@@ -333,8 +333,8 @@ class InGamePacketHandler extends PacketHandler{
 				if($this->player->isUsingItem()){
 					if(!$this->player->consumeHeldItem()){
 						$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
+						return true;
 					}
-					return true;
 				}
 				if(!$this->player->useHeldItem()){
 					$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
