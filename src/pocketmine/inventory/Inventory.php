@@ -153,11 +153,6 @@ interface Inventory{
 	public function clearAll(bool $send = true) : void;
 
 	/**
-	 * Swaps the specified slots.
-	 */
-	public function swap(int $slot1, int $slot2) : void;
-
-	/**
 	 * Gets all the Players viewing the inventory
 	 * Players will view their inventory at all times, even when not open.
 	 *
