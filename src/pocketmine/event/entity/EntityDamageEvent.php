@@ -40,6 +40,7 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	public const MODIFIER_CRITICAL = 7;
 	public const MODIFIER_TOTEM = 8;
 	public const MODIFIER_WEAPON_ENCHANTMENTS = 9;
+	public const MODIFIER_PREVIOUS_DAMAGE_COOLDOWN = 10;
 
 	public const CAUSE_CONTACT = 0;
 	public const CAUSE_ENTITY_ATTACK = 1;
@@ -180,5 +181,9 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	 */
 	public function setAttackCooldown(int $attackCooldown) : void{
 		$this->attackCooldown = $attackCooldown;
+	}
+
+	public function isCancelled() : bool{
+		return parent::isCancelled() or $this->getFinalDamage() <= 0;
 	}
 }

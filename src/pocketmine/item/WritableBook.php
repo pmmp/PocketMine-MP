@@ -50,7 +50,7 @@ class WritableBook extends Item{
 	 */
 	public function getPageText(int $pageId) : ?string{
 		$pages = $this->getNamedTag()->getListTag(self::TAG_PAGES);
-		if($pages === null){
+		if($pages === null or !$pages->isset($pageId)){
 			return null;
 		}
 
