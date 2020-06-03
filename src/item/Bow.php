@@ -80,7 +80,7 @@ class Bow extends Tool{
 		}
 		$ev = new EntityShootBowEvent($player, $this, $entity, $baseForce * 3);
 
-		if($baseForce < 0.1 or $diff < 5){
+		if($baseForce < 0.1 or $diff < 5 or $player->isSpectator()){
 			$ev->setCancelled();
 		}
 

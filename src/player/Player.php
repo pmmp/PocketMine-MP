@@ -1451,7 +1451,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$item = $this->inventory->getItemInHand();
 
 		$ev = new PlayerItemUseEvent($this, $item, $directionVector);
-		if($this->hasItemCooldown($item)){
+		if($this->hasItemCooldown($item) or $this->isSpectator()){
 			$ev->setCancelled();
 		}
 
@@ -1630,7 +1630,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	public function breakBlock(Vector3 $pos) : bool{
 		$this->doCloseInventory();
 
-		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 7) and !$this->isSpectator()){
+		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 7)){
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 			$this->stopBreakBlock($pos);
 			$item = $this->inventory->getItemInHand();
@@ -1655,7 +1655,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	public function interactBlock(Vector3 $pos, int $face, Vector3 $clickOffset) : bool{
 		$this->setUsingItem(false);
 
-		if($this->canInteract($pos->add(0.5, 0.5, 0.5), 13) and !$this->isSpectator()){
+		if($this->canInteract($pos->add(0.5, 0.5, 0.5), 13)){
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
 			$oldItem = clone $item;
@@ -1690,7 +1690,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$oldItem = clone $heldItem;
 
 		$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
-		if(!$this->canInteract($entity->getLocation(), 8) or ($entity instanceof Player and !$this->server->getConfigGroup()->getConfigBool("pvp"))){
+		if($this->isSpectator() or !$this->canInteract($entity->getLocation(), 8) or ($entity instanceof Player and !$this->server->getConfigGroup()->getConfigBool("pvp"))){
 			$ev->setCancelled();
 		}
 

@@ -173,11 +173,6 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleInventoryTransaction(InventoryTransactionPacket $packet) : bool{
-		if($this->player->isSpectator()){
-			$this->session->getInvManager()->syncAll();
-			return true;
-		}
-
 		$result = true;
 
 		if($packet->trData instanceof NormalTransactionData){

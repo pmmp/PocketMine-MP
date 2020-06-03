@@ -1537,6 +1537,10 @@ class World implements ChunkManager{
 
 		if($player !== null){
 			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $clickVector, $face, PlayerInteractEvent::RIGHT_CLICK_BLOCK);
+			if($player->isSpectator()){
+				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
+			}
+
 			$ev->call();
 			if(!$ev->isCancelled()){
 				if((!$player->isSneaking() or $item->isNull()) and $blockClicked->onInteract($item, $face, $clickVector, $player)){
@@ -1576,6 +1580,10 @@ class World implements ChunkManager{
 
 		if($player !== null){
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
+			if($player->isSpectator()){
+				$ev->setCancelled();
+			}
+
 			if($player->isAdventure(true) and !$ev->isCancelled()){
 				$canPlace = false;
 				$itemParser = LegacyStringToItemParser::getInstance();
