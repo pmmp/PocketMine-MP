@@ -356,6 +356,9 @@ abstract class Living extends Entity{
 	 */
 	public function applyDamageModifiers(EntityDamageEvent $source) : void{
 		if($this->lastDamageCause !== null and $this->attackTime > 0){
+			if($this->lastDamageCause->getBaseDamage() >= $source->getBaseDamage()){
+				$source->setCancelled();
+			}
 			$source->setModifier(-$this->lastDamageCause->getBaseDamage(), EntityDamageEvent::MODIFIER_PREVIOUS_DAMAGE_COOLDOWN);
 		}
 		if($source->canBeReducedByArmor()){
