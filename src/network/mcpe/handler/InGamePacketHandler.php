@@ -141,7 +141,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$this->player->setRotation($yaw, $pitch);
-		$this->player->updateNextPosition($packet->position->subtract(0, 1.62, 0));
+		$this->player->updateNextPosition($packet->position->round(4)->subtract(0, 1.62, 0));
 
 		return true;
 	}
