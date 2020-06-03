@@ -355,6 +355,9 @@ abstract class Living extends Entity{
 	 * to effects or armour.
 	 */
 	public function applyDamageModifiers(EntityDamageEvent $source) : void{
+		if($this->lastDamageCause !== null and $this->attackTime > 0){
+			$source->setModifier(-$this->lastDamageCause->getBaseDamage(), EntityDamageEvent::MODIFIER_PREVIOUS_DAMAGE_COOLDOWN);
+		}
 		if($source->canBeReducedByArmor()){
 			//MCPE uses the same system as PC did pre-1.9
 			$source->setModifier(-$source->getFinalDamage() * $this->getArmorPoints() * 0.04, EntityDamageEvent::MODIFIER_ARMOR);
@@ -433,11 +436,6 @@ abstract class Living extends Entity{
 	public function attack(EntityDamageEvent $source) : void{
 		if($this->noDamageTicks > 0){
 			$source->setCancelled();
-		}elseif($this->attackTime > 0){
-			$lastCause = $this->getLastDamageCause();
-			if($lastCause !== null and $lastCause->getBaseDamage() >= $source->getBaseDamage()){
-				$source->setCancelled();
-			}
 		}
 
 		if($this->effectManager->has(VanillaEffects::FIRE_RESISTANCE()) and (
