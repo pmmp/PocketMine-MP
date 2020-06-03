@@ -666,6 +666,10 @@ class InGamePacketHandler extends PacketHandler{
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_SWAP_PAGES:
+				if(!$newBook->pageExists($packet->pageNumber) or !$newBook->pageExists($packet->secondaryPageNumber)){
+					//the client will create pages on its own without telling us until it tries to switch them
+					$newBook->addPage(max($packet->pageNumber, $packet->secondaryPageNumber));
+				}
 				$newBook->swapPages($packet->pageNumber, $packet->secondaryPageNumber);
 				$modifiedPages = [$packet->pageNumber, $packet->secondaryPageNumber];
 				break;
