@@ -71,6 +71,10 @@ class SnowLayer extends Flowable implements Fallable{
 		return [AxisAlignedBB::one()->trim(Facing::UP, $this->layers >= 4 ? 0.5 : 1)];
 	}
 
+	private function canBeSupportedBy(Block $b) : bool{
+		return $b->isSolid() or ($b instanceof SnowLayer and $b->isSameType($this) and $b->layers === 8);
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($blockReplace instanceof SnowLayer){
 			if($blockReplace->layers >= 8){
@@ -78,8 +82,7 @@ class SnowLayer extends Flowable implements Fallable{
 			}
 			$this->layers = $blockReplace->layers + 1;
 		}
-		if($blockReplace->getSide(Facing::DOWN)->isSolid()){
-			//TODO: fix placement
+		if($this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
