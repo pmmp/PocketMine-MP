@@ -78,6 +78,7 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
+use pocketmine\lang\Language;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -169,6 +170,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected $authenticated;
 	/** @var PlayerInfo */
 	protected $playerInfo;
+
+	/** @var Language */
+	protected $language;
 
 	/** @var Inventory|null */
 	protected $currentWindow = null;
@@ -270,6 +274,9 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->username = $username;
 		$this->displayName = $this->username;
 		$this->locale = $this->playerInfo->getLocale();
+
+		if(($language = $server->getLanguageManager()->get($playerInfo->getLocale())) !== null)
+			$this->language = $language;
 
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->xuid = $this->playerInfo->getXuid();
@@ -647,6 +654,14 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function getLocale() : string{
 		return $this->locale;
+	}
+
+	/**
+	 * @return Language
+	 */
+	public function getLanguage(): Language
+	{
+		return $this->language;
 	}
 
 	/**
@@ -1859,7 +1874,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			return;
 		}
 
-		$this->networkSession->onRawChatMessage($this->server->getLanguage()->translateString($message));
+		$this->networkSession->onRawChatMessage($this->getLanguage()->translateString($message));
 	}
 
 	/**

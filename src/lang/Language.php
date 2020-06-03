@@ -23,126 +23,56 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
-use function array_filter;
-use function array_map;
-use function explode;
-use function file_exists;
-use function is_dir;
 use function ord;
-use function parse_ini_file;
-use function scandir;
 use function str_replace;
 use function strlen;
 use function strpos;
-use function strtolower;
 use function substr;
-use const INI_SCANNER_RAW;
-use const SCANDIR_SORT_NONE;
 
-class Language{
-
-	public const FALLBACK_LANGUAGE = "eng";
-
-	/**
-	 * @return string[]
-	 * @phpstan-return array<string, string>
-	 *
-	 * @throws LanguageNotFoundException
-	 */
-	public static function getLanguageList(string $path = "") : array{
-		if($path === ""){
-			$path = \pocketmine\RESOURCE_PATH . "locale/";
-		}
-
-		if(is_dir($path)){
-			$allFiles = scandir($path, SCANDIR_SORT_NONE);
-
-			if($allFiles !== false){
-				$files = array_filter($allFiles, function(string $filename) : bool{
-					return substr($filename, -4) === ".ini";
-				});
-
-				$result = [];
-
-				foreach($files as $file){
-					$code = explode(".", $file)[0];
-					$strings = self::loadLang($path, $code);
-					if(isset($strings["language.name"])){
-						$result[$code] = $strings["language.name"];
-					}
-				}
-
-				return $result;
-			}
-		}
-
-		throw new LanguageNotFoundException("Language directory $path does not exist or is not a directory");
-	}
-
+class Language
+{
 	/** @var string */
-	protected $langName;
+	private $langCode;
+	/** @var string[] */
+	private $langValue;
 
 	/**
-	 * @var string[]
-	 * @phpstan-var array<string, string>
+	 * Language constructor.
+	 * @param string $langCode
+	 * @param string[] $langValue
 	 */
-	protected $lang = [];
-	/**
-	 * @var string[]
-	 * @phpstan-var array<string, string>
-	 */
-	protected $fallbackLang = [];
-
-	/**
-	 * @throws LanguageNotFoundException
-	 */
-	public function __construct(string $lang, ?string $path = null, string $fallback = self::FALLBACK_LANGUAGE){
-		$this->langName = strtolower($lang);
-
-		if($path === null){
-			$path = \pocketmine\RESOURCE_PATH . "locale/";
-		}
-
-		$this->lang = self::loadLang($path, $this->langName);
-		$this->fallbackLang = self::loadLang($path, $fallback);
-	}
-
-	public function getName() : string{
-		return $this->get("language.name");
-	}
-
-	public function getLang() : string{
-		return $this->langName;
+	public function __construct(string $langCode, array $langValue)
+	{
+		$this->langCode = $langCode;
+		$this->langValue = $langValue;
 	}
 
 	/**
-	 * @return string[]
-	 * @phpstan-return array<string, string>
+	 * @param string[] $langValue
 	 */
-	protected static function loadLang(string $path, string $languageCode) : array{
-		$file = $path . $languageCode . ".ini";
-		if(file_exists($file)){
-			return array_map('\stripcslashes', parse_ini_file($file, false, INI_SCANNER_RAW));
-		}
-
-		throw new LanguageNotFoundException("Language \"$languageCode\" not found");
+	public function supplement(array $langValue): void
+	{
+		$this->langValue += $langValue;
 	}
 
 	/**
-	 * @param (float|int|string)[] $params
+	 * @return string
 	 */
-	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null) : string{
-		$baseText = $this->get($str);
-		$baseText = $this->parseTranslation(($onlyPrefix === null or strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
-
-		foreach($params as $i => $p){
-			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText, $onlyPrefix);
-		}
-
-		return $baseText;
+	public function getLangCode(): string
+	{
+		return $this->langCode;
 	}
 
-	public function translate(TranslationContainer $c) : string{
+	/**
+	 * @return string
+	 */
+	public function getName(): string
+	{
+		return $this->get('language.name');
+	}
+
+	public function translate(TranslationContainer $c): string
+	{
 		$baseText = $this->internalGet($c->getText());
 		$baseText = $this->parseTranslation($baseText ?? $c->getText());
 
@@ -153,15 +83,30 @@ class Language{
 		return $baseText;
 	}
 
-	protected function internalGet(string $id) : ?string{
-		return $this->lang[$id] ?? $this->fallbackLang[$id] ?? null;
+	/**
+	 * @param (float|int|string)[] $params
+	 */
+	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null): string
+	{
+		$baseText = $this->get($str);
+		$baseText = $this->parseTranslation(($onlyPrefix === null or strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
+
+		foreach($params as $i => $p){
+			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText, $onlyPrefix);
+		}
+
+		return $baseText;
 	}
 
-	public function get(string $id) : string{
+	protected function internalGet(string $id): ?string {
+		return $this->langValue[$id] ?? null;
+	}
+
+	public function get(string $id): string {
 		return $this->internalGet($id) ?? $id;
 	}
 
-	protected function parseTranslation(string $text, ?string $onlyPrefix = null) : string{
+	protected function parseTranslation(string $text, ?string $onlyPrefix = null): string {
 		$newString = "";
 
 		$replaceString = null;

@@ -41,6 +41,7 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\lang\Language;
+use pocketmine\lang\LanguageManager;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\nbt\BigEndianNbtSerializer;
@@ -246,6 +247,8 @@ class Server{
 	/** @var bool */
 	private $networkCompressionAsync = true;
 
+	/** @var LanguageManager */
+	private $languageManager;
 	/** @var Language */
 	private $language;
 	/** @var bool */
@@ -790,20 +793,20 @@ class Server{
 			}
 
 			$this->forceLanguage = (bool) $this->configGroup->getProperty("settings.force-language", false);
-			$selectedLang = $this->configGroup->getConfigString("language", $this->configGroup->getProperty("settings.language", Language::FALLBACK_LANGUAGE));
-			try{
-				$this->language = new Language($selectedLang);
-			}catch(LanguageNotFoundException $e){
-				$this->logger->error($e->getMessage());
-				try{
-					$this->language = new Language(Language::FALLBACK_LANGUAGE);
-				}catch(LanguageNotFoundException $e){
-					$this->logger->emergency("Fallback language \"" . Language::FALLBACK_LANGUAGE . "\" not found");
-					return;
-				}
+			$selectedLang = $this->configGroup->getConfigString("language", $this->configGroup->getProperty("settings.language", LanguageManager::FALLBACK_LANGUAGE));
+
+			$this->languageManager = new LanguageManager(\pocketmine\RESOURCE_PATH . 'locale/');
+			$language = $this->languageManager->get($selectedLang);
+
+			if($language === null)
+			{
+				$this->logger->emergency("Fallback language \"" . LanguageManager::FALLBACK_LANGUAGE . "\" not found");
+				return;
 			}
 
-			$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLang()]));
+			$this->language = $language;
+
+			$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLangCode()]));
 
 			if(\pocketmine\IS_DEVELOPMENT_BUILD){
 				if(!((bool) $this->configGroup->getProperty("settings.enable-dev-builds", false))){
@@ -1519,6 +1522,14 @@ class Server{
 			$this->asyncPool->submitTask(new SendUsageTask($this, $type, $this->uniquePlayers));
 		}
 		$this->uniquePlayers = [];
+	}
+
+	/**
+	 * @return LanguageManager
+	 */
+	public function getLanguageManager(): LanguageManager
+	{
+		return $this->languageManager;
 	}
 
 	/**

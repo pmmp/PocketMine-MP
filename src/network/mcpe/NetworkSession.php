@@ -744,6 +744,10 @@ class NetworkSession{
 	}
 
 	public function syncAvailableCommands() : void{
+		if($this->player === null) {
+			return;
+		}
+
 		$pk = new AvailableCommandsPacket();
 		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
 			if(isset($pk->commandData[$command->getName()]) or $command->getName() === "help" or !$command->testPermissionSilent($this->player)){
