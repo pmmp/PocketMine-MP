@@ -467,12 +467,14 @@ abstract class Living extends Entity{
 
 		$this->attackTime = $source->getAttackCooldown();
 
-		if($source instanceof EntityDamageByEntityEvent){
-			$e = $source->getDamager();
-			if($source instanceof EntityDamageByChildEntityEvent){
-				$e = $source->getChild();
+		if($source instanceof EntityDamageByChildEntityEvent){
+			$e = $source->getChild();
+			if($e !== null){
+				$motion = $e->getMotion();
+				$this->knockBack($motion->x, $motion->z, $source->getKnockBack());
 			}
-
+		}elseif($source instanceof EntityDamageByEntityEvent){
+			$e = $source->getDamager();
 			if($e !== null){
 				$deltaX = $this->location->x - $e->location->x;
 				$deltaZ = $this->location->z - $e->location->z;
