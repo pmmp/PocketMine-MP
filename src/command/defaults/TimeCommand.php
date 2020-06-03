@@ -50,7 +50,7 @@ class TimeCommand extends VanillaCommand{
 
 		if($args[0] === "start"){
 			if(!$sender->hasPermission("pocketmine.command.time.start")){
-				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage(TextFormat::RED . "%commands.generic.permission");
 
 				return true;
 			}
@@ -61,7 +61,7 @@ class TimeCommand extends VanillaCommand{
 			return true;
 		}elseif($args[0] === "stop"){
 			if(!$sender->hasPermission("pocketmine.command.time.stop")){
-				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage(TextFormat::RED . "%commands.generic.permission");
 
 				return true;
 			}
@@ -72,16 +72,19 @@ class TimeCommand extends VanillaCommand{
 			return true;
 		}elseif($args[0] === "query"){
 			if(!$sender->hasPermission("pocketmine.command.time.query")){
-				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage(TextFormat::RED . "%commands.generic.permission");
 
 				return true;
 			}
+
 			if($sender instanceof Player){
 				$world = $sender->getWorld();
+				$message = $sender->getLanguage()->translateString("commands.time.query", [$world->getTime()]);
 			}else{
 				$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
+				$message = $sender->getServer()->getLanguage()->translateString("commands.time.query", [$world->getTime()]);
 			}
-			$sender->sendMessage($sender->getServer()->getLanguage()->translateString("commands.time.query", [$world->getTime()]));
+			$sender->sendMessage($message);
 			return true;
 		}
 
@@ -91,7 +94,7 @@ class TimeCommand extends VanillaCommand{
 
 		if($args[0] === "set"){
 			if(!$sender->hasPermission("pocketmine.command.time.set")){
-				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage(TextFormat::RED . "%commands.generic.permission");
 
 				return true;
 			}
@@ -126,7 +129,7 @@ class TimeCommand extends VanillaCommand{
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.time.set", [$value]));
 		}elseif($args[0] === "add"){
 			if(!$sender->hasPermission("pocketmine.command.time.add")){
-				$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage(TextFormat::RED . "%commands.generic.permission");
 
 				return true;
 			}

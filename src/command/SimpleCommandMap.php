@@ -64,6 +64,7 @@ use pocketmine\command\defaults\VanillaCommand;
 use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WhitelistCommand;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\player\Player;
 use pocketmine\Server;
 use function array_shift;
 use function count;
@@ -243,7 +244,10 @@ class SimpleCommandMap implements CommandMap{
 		try{
 			$target->execute($sender, $sentCommandLabel, $args);
 		}catch(InvalidCommandSyntaxException $e){
-			$sender->sendMessage($this->server->getLanguage()->translateString("commands.generic.usage", [$target->getUsage()]));
+			if($sender instanceof Player) {
+				$text = $sender->getLanguage()->translateString("commands.generic.usage", [$target->getUsage()]);
+			} else $text = $this->server->getLanguage()->translateString("commands.generic.usage", [$target->getUsage()]);
+			$sender->sendMessage($text);
 		}finally{
 			$target->timings->stopTiming();
 		}
