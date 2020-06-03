@@ -92,4 +92,12 @@ class DoublePlant extends Flowable{
 
 		return parent::getAffectedBlocks();
 	}
+
+	public function getFlameEncouragement() : int{
+		return 60;
+	}
+
+	public function getFlammability() : int{
+		return 100;
+	}
 }
