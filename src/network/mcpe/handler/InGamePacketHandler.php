@@ -655,6 +655,11 @@ class InGamePacketHandler extends PacketHandler{
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_ADD_PAGE:
+				if(!$newBook->pageExists($packet->pageNumber)){
+					//this may only come before a page which already exists
+					//TODO: the client can send insert-before actions on trailing client-side pages which cause odd behaviour on the server
+					return false;
+				}
 				$newBook->insertPage($packet->pageNumber, $packet->text);
 				$modifiedPages[] = $packet->pageNumber;
 				break;
