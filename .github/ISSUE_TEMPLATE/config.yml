@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Help & support on Discord
+    url: https://discord.gg/bmSAZBG
+    about: We don't accept support requests on the issue tracker. Please try asking on Discord instead.
+  - name: Help & support on forums
+    url: https://forums.pmmp.io
+    about: We don't accept support requests on the issue tracker. Please try asking on forums instead.
+  - name: Security/DoS vulnerability
+    url: mailto:team@pmmp.io
+    about: Bug or exploit that can be used to attack servers. Please DO NOT report security vulnerabilities on the issue traacker. Instead, send an email to team@pmmp.io or contact a developer directly, IN PRIVATE.
