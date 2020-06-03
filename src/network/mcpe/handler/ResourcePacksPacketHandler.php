@@ -46,7 +46,7 @@ use function substr;
  * packs to the client.
  */
 class ResourcePacksPacketHandler extends PacketHandler{
-	private const PACK_CHUNK_SIZE = 1048576; //1MB
+	private const PACK_CHUNK_SIZE = 128 * 1024; //128KB
 
 	/** @var NetworkSession */
 	private $session;
