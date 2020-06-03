@@ -41,6 +41,7 @@ use pocketmine\world\particle\CriticalParticle;
 use pocketmine\world\particle\DustParticle;
 use pocketmine\world\particle\EnchantmentTableParticle;
 use pocketmine\world\particle\EnchantParticle;
+use pocketmine\world\particle\EntityFlameParticle;
 use pocketmine\world\particle\ExplodeParticle;
 use pocketmine\world\particle\FlameParticle;
 use pocketmine\world\particle\HappyVillagerParticle;
@@ -202,7 +203,8 @@ class ParticleCommand extends VanillaCommand{
 				return new AngryVillagerParticle();
 			case "forcefield":
 				return new BlockForceFieldParticle($data ?? 0);
-
+			case "mobflame":
+				return new EntityFlameParticle();
 		}
 
 		if(strpos($name, "iconcrack_") === 0){
