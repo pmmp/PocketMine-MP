@@ -294,7 +294,12 @@ class InventoryTransaction{
 
 		$this->shuffleActions();
 
-		$this->validate();
+		try{
+			$this->validate();
+		}catch(TransactionValidationException $e){
+			$this->sendInventories();
+			throw $e;
+		}
 
 		if(!$this->callExecuteEvent()){
 			$this->sendInventories();
