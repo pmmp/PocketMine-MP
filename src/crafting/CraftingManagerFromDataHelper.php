@@ -60,7 +60,7 @@ final class CraftingManagerFromDataHelper{
 					if($recipe["block"] !== "furnace"){ //TODO: filter others out for now to avoid breaking economics
 						break;
 					}
-					$result->registerFurnaceRecipe(new FurnaceRecipe(
+					$result->getFurnaceRecipeManager()->register(new FurnaceRecipe(
 						Item::jsonDeserialize($recipe["output"]),
 						Item::jsonDeserialize($recipe["input"]))
 					);

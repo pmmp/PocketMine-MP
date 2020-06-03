@@ -48,11 +48,19 @@ class CraftingManager{
 	protected $shapedRecipes = [];
 	/** @var ShapelessRecipe[][] */
 	protected $shapelessRecipes = [];
-	/** @var FurnaceRecipe[] */
-	protected $furnaceRecipes = [];
+
+	/** @var FurnaceRecipeManager */
+	protected $furnaceRecipeManager;
 
 	/** @var CompressBatchPromise[] */
 	private $craftingDataCaches = [];
+
+	public function __construct(){
+		$this->furnaceRecipeManager = new FurnaceRecipeManager();
+		$this->furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(function(FurnaceRecipe $recipe) : void{
+			$this->craftingDataCaches = [];
+		});
+	}
 
 	/**
 	 * Rebuilds the cached CraftingDataPacket.
@@ -105,7 +113,7 @@ class CraftingManager{
 			}
 		}
 
-		foreach($this->furnaceRecipes as $recipe){
+		foreach($this->furnaceRecipeManager->getAll() as $recipe){
 			$input = $converter->coreItemStackToNet($recipe->getInput());
 			$pk->entries[] = new ProtocolFurnaceRecipe(
 				CraftingDataPacket::ENTRY_FURNACE_DATA,
@@ -198,11 +206,8 @@ class CraftingManager{
 		return $this->shapedRecipes;
 	}
 
-	/**
-	 * @return FurnaceRecipe[]
-	 */
-	public function getFurnaceRecipes() : array{
-		return $this->furnaceRecipes;
+	public function getFurnaceRecipeManager() : FurnaceRecipeManager{
+		return $this->furnaceRecipeManager;
 	}
 
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
@@ -214,12 +219,6 @@ class CraftingManager{
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
-		$this->craftingDataCaches = [];
-	}
-
-	public function registerFurnaceRecipe(FurnaceRecipe $recipe) : void{
-		$input = $recipe->getInput();
-		$this->furnaceRecipes[$input->getId() . ":" . ($input->hasAnyDamageValue() ? "?" : $input->getMeta())] = $recipe;
 		$this->craftingDataCaches = [];
 	}
 
@@ -272,9 +271,5 @@ class CraftingManager{
 				yield $recipe;
 			}
 		}
-	}
-
-	public function matchFurnaceRecipe(Item $input) : ?FurnaceRecipe{
-		return $this->furnaceRecipes[$input->getId() . ":" . $input->getMeta()] ?? $this->furnaceRecipes[$input->getId() . ":?"] ?? null;
 	}
 }
