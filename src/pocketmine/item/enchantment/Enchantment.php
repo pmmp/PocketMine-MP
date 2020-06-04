@@ -66,6 +66,9 @@ class Enchantment{
 	public const RIPTIDE = 30;
 	public const LOYALTY = 31;
 	public const CHANNELING = 32;
+	public const MULTISHOT = 33;
+	public const PIERCING = 34;
+	public const QUICK_CHARGE = 35;
 
 	public const RARITY_COMMON = 10;
 	public const RARITY_UNCOMMON = 5;

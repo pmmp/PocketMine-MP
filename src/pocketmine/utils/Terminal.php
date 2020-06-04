@@ -91,6 +91,7 @@ abstract class Terminal{
 
 	private static function detectFormattingCodesSupport() : bool{
 		$stdout = fopen("php://stdout", "w");
+		if($stdout === false) throw new AssumptionFailedError("Opening php://stdout should never fail");
 		$result = (
 			stream_isatty($stdout) and //STDOUT isn't being piped
 			(
@@ -181,14 +182,14 @@ abstract class Terminal{
 		}
 
 		switch(Utils::getOS()){
-			case "linux":
-			case "mac":
-			case "bsd":
+			case Utils::OS_LINUX:
+			case Utils::OS_MACOS:
+			case Utils::OS_BSD:
 				self::getEscapeCodes();
 				return;
 
-			case "win":
-			case "android":
+			case Utils::OS_WINDOWS:
+			case Utils::OS_ANDROID:
 				self::getFallbackEscapeCodes();
 				return;
 		}
@@ -289,5 +290,20 @@ abstract class Terminal{
 		}
 
 		return $newString;
+	}
+
+	/**
+	 * Emits a string containing Minecraft colour codes to the console formatted with native colours.
+	 */
+	public static function write(string $line) : void{
+		echo self::toANSI($line);
+	}
+
+	/**
+	 * Emits a string containing Minecraft colour codes to the console formatted with native colours, followed by a
+	 * newline character.
+	 */
+	public static function writeLine(string $line) : void{
+		echo self::toANSI($line) . self::$FORMAT_RESET . PHP_EOL;
 	}
 }

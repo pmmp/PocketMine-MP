@@ -98,7 +98,7 @@ class FallingBlock extends Entity{
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if(!$this->isFlaggedForDespawn()){
-			$pos = Position::fromObject($this->add(-$this->width / 2, $this->height, -$this->width / 2)->floor(), $this->getLevel());
+			$pos = Position::fromObject($this->add(-$this->width / 2, $this->height, -$this->width / 2)->floor(), $this->getLevelNonNull());
 
 			$this->block->position($pos);
 
@@ -113,12 +113,12 @@ class FallingBlock extends Entity{
 				$block = $this->level->getBlock($pos);
 				if(!$block->canBeReplaced() or ($this->onGround and abs($this->y - $this->getFloorY()) > 0.001)){
 					//FIXME: anvils are supposed to destroy torches
-					$this->getLevel()->dropItem($this, ItemFactory::get($this->getBlock(), $this->getDamage()));
+					$this->getLevelNonNull()->dropItem($this, ItemFactory::get($this->getBlock(), $this->getDamage()));
 				}else{
 					$ev = new EntityBlockChangeEvent($this, $block, $blockTarget ?? $this->block);
 					$ev->call();
 					if(!$ev->isCancelled()){
-						$this->getLevel()->setBlock($pos, $ev->getTo(), true);
+						$this->getLevelNonNull()->setBlock($pos, $ev->getTo(), true);
 					}
 				}
 				$hasUpdate = true;

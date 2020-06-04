@@ -354,30 +354,34 @@ class ItemFactory{
 		if($multiple){
 			$blocks = [];
 			foreach(explode(",", $str) as $b){
-				$blocks[] = self::fromString($b, false);
+				$blocks[] = self::fromStringSingle($b);
 			}
 
 			return $blocks;
 		}else{
-			$b = explode(":", str_replace([" ", "minecraft:"], ["_", ""], trim($str)));
-			if(!isset($b[1])){
-				$meta = 0;
-			}elseif(is_numeric($b[1])){
-				$meta = (int) $b[1];
-			}else{
-				throw new \InvalidArgumentException("Unable to parse \"" . $b[1] . "\" from \"" . $str . "\" as a valid meta value");
-			}
-
-			if(is_numeric($b[0])){
-				$item = self::get((int) $b[0], $meta);
-			}elseif(defined(ItemIds::class . "::" . strtoupper($b[0]))){
-				$item = self::get(constant(ItemIds::class . "::" . strtoupper($b[0])), $meta);
-			}else{
-				throw new \InvalidArgumentException("Unable to resolve \"" . $str . "\" to a valid item");
-			}
-
-			return $item;
+			return self::fromStringSingle($str);
 		}
+	}
+
+	public static function fromStringSingle(string $str) : Item{
+		$b = explode(":", str_replace([" ", "minecraft:"], ["_", ""], trim($str)));
+		if(!isset($b[1])){
+			$meta = 0;
+		}elseif(is_numeric($b[1])){
+			$meta = (int) $b[1];
+		}else{
+			throw new \InvalidArgumentException("Unable to parse \"" . $b[1] . "\" from \"" . $str . "\" as a valid meta value");
+		}
+
+		if(is_numeric($b[0])){
+			$item = self::get((int) $b[0], $meta);
+		}elseif(defined(ItemIds::class . "::" . strtoupper($b[0]))){
+			$item = self::get(constant(ItemIds::class . "::" . strtoupper($b[0])), $meta);
+		}else{
+			throw new \InvalidArgumentException("Unable to resolve \"" . $str . "\" to a valid item");
+		}
+
+		return $item;
 	}
 
 	/**

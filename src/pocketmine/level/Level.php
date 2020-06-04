@@ -128,9 +128,11 @@ class Level implements ChunkManager, Metadatable{
 	public const Y_MASK = 0xFF;
 	public const Y_MAX = 0x100; //256
 
-	public const TIME_DAY = 0;
+	public const TIME_DAY = 1000;
+	public const TIME_NOON = 6000;
 	public const TIME_SUNSET = 12000;
-	public const TIME_NIGHT = 14000;
+	public const TIME_NIGHT = 13000;
+	public const TIME_MIDNIGHT = 18000;
 	public const TIME_SUNRISE = 23000;
 
 	public const TIME_FULL = 24000;
@@ -935,7 +937,7 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		if($resetTime){
-			$time = $this->getTime() % Level::TIME_FULL;
+			$time = $this->getTimeOfDay();
 
 			if($time >= Level::TIME_NIGHT and $time < Level::TIME_SUNRISE){
 				$this->setTime($this->getTime() + Level::TIME_FULL - $time);
@@ -1764,7 +1766,7 @@ class Level implements ChunkManager, Metadatable{
 				if($tag instanceof ListTag){
 					foreach($tag as $v){
 						if($v instanceof StringTag){
-							$entry = ItemFactory::fromString($v->getValue());
+							$entry = ItemFactory::fromStringSingle($v->getValue());
 							if($entry->getId() > 0 and $entry->getBlock()->getId() === $target->getId()){
 								$canBreak = true;
 								break;
@@ -1895,15 +1897,6 @@ class Level implements ChunkManager, Metadatable{
 				if(count($this->getCollidingEntities($collisionBox)) > 0){
 					return false;  //Entity in block
 				}
-
-				if($player !== null){
-					if(($diff = $player->getNextPosition()->subtract($player->getPosition())) and $diff->lengthSquared() > 0.00001){
-						$bb = $player->getBoundingBox()->offsetCopy($diff->x, $diff->y, $diff->z);
-						if($collisionBox->intersectsWith($bb)){
-							return false; //Inside player BB
-						}
-					}
-				}
 			}
 		}
 
@@ -1919,7 +1912,7 @@ class Level implements ChunkManager, Metadatable{
 				if($tag instanceof ListTag){
 					foreach($tag as $v){
 						if($v instanceof StringTag){
-							$entry = ItemFactory::fromString($v->getValue());
+							$entry = ItemFactory::fromStringSingle($v->getValue());
 							if($entry->getId() > 0 and $entry->getBlock()->getId() === $blockClicked->getId()){
 								$canPlace = true;
 								break;
@@ -2838,6 +2831,13 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function getTime() : int{
 		return $this->time;
+	}
+
+	/**
+	 * Returns the current time of day
+	 */
+	public function getTimeOfDay() : int{
+		return $this->time % self::TIME_FULL;
 	}
 
 	/**

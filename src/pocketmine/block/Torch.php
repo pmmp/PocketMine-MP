@@ -57,7 +57,7 @@ class Torch extends Flowable{
 		$face = $faces[$meta] ?? Vector3::SIDE_DOWN;
 
 		if($this->getSide($face)->isTransparent() and !($face === Vector3::SIDE_DOWN and ($below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL))){
-			$this->getLevel()->useBreakOn($this);
+			$this->getLevelNonNull()->useBreakOn($this);
 		}
 	}
 
@@ -73,12 +73,12 @@ class Torch extends Flowable{
 				Vector3::SIDE_EAST => 1
 			];
 			$this->meta = $faces[$face];
-			$this->getLevel()->setBlock($blockReplace, $this, true, true);
+			$this->getLevelNonNull()->setBlock($blockReplace, $this, true, true);
 
 			return true;
 		}elseif(!$below->isTransparent() or $below->getId() === self::FENCE or $below->getId() === self::COBBLESTONE_WALL){
 			$this->meta = 0;
-			$this->getLevel()->setBlock($blockReplace, $this, true, true);
+			$this->getLevelNonNull()->setBlock($blockReplace, $this, true, true);
 
 			return true;
 		}

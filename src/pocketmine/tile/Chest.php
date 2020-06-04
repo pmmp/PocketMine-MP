@@ -121,7 +121,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 	 * @return void
 	 */
 	protected function checkPairing(){
-		if($this->isPaired() and !$this->getLevel()->isInLoadedTerrain(new Vector3($this->pairX, $this->y, $this->pairZ))){
+		if($this->isPaired() and !$this->getLevelNonNull()->isInLoadedTerrain(new Vector3($this->pairX, $this->y, $this->pairZ))){
 			//paired to a tile in an unloaded chunk
 			$this->doubleInventory = null;
 
@@ -160,7 +160,7 @@ class Chest extends Spawnable implements InventoryHolder, Container, Nameable{
 
 	public function getPair() : ?Chest{
 		if($this->isPaired()){
-			$tile = $this->getLevel()->getTileAt($this->pairX, $this->y, $this->pairZ);
+			$tile = $this->getLevelNonNull()->getTileAt($this->pairX, $this->y, $this->pairZ);
 			if($tile instanceof Chest){
 				return $tile;
 			}

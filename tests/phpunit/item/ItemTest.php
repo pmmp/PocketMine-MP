@@ -84,7 +84,7 @@ class ItemTest extends TestCase{
 	 * @param int    $meta
 	 */
 	public function testFromStringSingle(string $string, int $id, int $meta) : void{
-		$item = ItemFactory::fromString($string);
+		$item = ItemFactory::fromStringSingle($string);
 
 		self::assertEquals($id, $item->getId());
 		self::assertEquals($meta, $item->getDamage());

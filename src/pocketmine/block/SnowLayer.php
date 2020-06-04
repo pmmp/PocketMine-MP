@@ -66,7 +66,7 @@ class SnowLayer extends Flowable{
 			$this->setDamage($blockReplace->getDamage() + 1);
 		}
 		if($this->canBeSupportedBy($blockReplace->getSide(Vector3::SIDE_DOWN))){
-			$this->getLevel()->setBlock($blockReplace, $this, true);
+			$this->getLevelNonNull()->setBlock($blockReplace, $this, true);
 
 			return true;
 		}
@@ -76,7 +76,7 @@ class SnowLayer extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->canBeSupportedBy($this->getSide(Vector3::SIDE_DOWN))){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
+			$this->getLevelNonNull()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
 		}
 	}
 
@@ -86,7 +86,7 @@ class SnowLayer extends Flowable{
 
 	public function onRandomTick() : void{
 		if($this->level->getBlockLightAt($this->x, $this->y, $this->z) >= 12){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
+			$this->getLevelNonNull()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
 		}
 	}
 

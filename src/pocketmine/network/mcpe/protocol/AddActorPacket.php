@@ -30,7 +30,6 @@ use pocketmine\entity\EntityIds;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
-use function array_search;
 use function count;
 
 class AddActorPacket extends DataPacket{
@@ -148,7 +147,7 @@ class AddActorPacket extends DataPacket{
 	public $entityUniqueId = null; //TODO
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var int */
+	/** @var string */
 	public $type;
 	/** @var Vector3 */
 	public $position;
@@ -174,10 +173,7 @@ class AddActorPacket extends DataPacket{
 	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->type = array_search($t = $this->getString(), self::LEGACY_ID_MAP_BC, true);
-		if($this->type === false){
-			throw new \UnexpectedValueException("Can't map ID $t to legacy ID");
-		}
+		$this->type = $this->getString();
 		$this->position = $this->getVector3();
 		$this->motion = $this->getVector3();
 		$this->pitch = $this->getLFloat();
@@ -212,10 +208,7 @@ class AddActorPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		if(!isset(self::LEGACY_ID_MAP_BC[$this->type])){
-			throw new \InvalidArgumentException("Unknown entity numeric ID $this->type");
-		}
-		$this->putString(self::LEGACY_ID_MAP_BC[$this->type]);
+		$this->putString($this->type);
 		$this->putVector3($this->position);
 		$this->putVector3Nullable($this->motion);
 		$this->putLFloat($this->pitch);

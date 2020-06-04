@@ -68,21 +68,21 @@ class TitleCommand extends VanillaCommand{
 					throw new InvalidCommandSyntaxException();
 				}
 
-				$player->addTitle(implode(" ", array_slice($args, 2)));
+				$player->sendTitle(implode(" ", array_slice($args, 2)));
 				break;
 			case "subtitle":
 				if(count($args) < 3){
 					throw new InvalidCommandSyntaxException();
 				}
 
-				$player->addSubTitle(implode(" ", array_slice($args, 2)));
+				$player->sendSubTitle(implode(" ", array_slice($args, 2)));
 				break;
 			case "actionbar":
 				if(count($args) < 3){
 					throw new InvalidCommandSyntaxException();
 				}
 
-				$player->addActionBarMessage(implode(" ", array_slice($args, 2)));
+				$player->sendActionBarMessage(implode(" ", array_slice($args, 2)));
 				break;
 			case "times":
 				if(count($args) < 5){

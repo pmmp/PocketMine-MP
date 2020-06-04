@@ -5,7 +5,7 @@
    "homepage": "https://pmmp.io",
    "license": "LGPL-3.0",
    "require": {
-      "php": ">=7.2.0",
+      "php": ">=7.3.0",
       "php-64bit": "*",
       "ext-bcmath": "*",
       "ext-curl": "*",
@@ -34,7 +34,8 @@
       "pocketmine/log": "^0.2.0",
       "pocketmine/log-pthreads": "^0.1.0",
       "pocketmine/callback-validator": "^1.0.1",
-      "adhocore/json-comment": "^0.1.0"
+      "adhocore/json-comment": "^0.1.0",
+      "ocramius/package-versions": "^1.5"
    },
    "require-dev": {
       "phpstan/phpstan": "^0.12.25",

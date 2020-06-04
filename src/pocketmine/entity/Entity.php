@@ -1750,7 +1750,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 
 		if($pos instanceof Position and $pos->level !== null and $pos->level !== $this->level){
-			if(!$this->switchLevel($pos->getLevel())){
+			if(!$this->switchLevel($pos->getLevelNonNull())){
 				return false;
 			}
 		}
@@ -1856,7 +1856,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			$pitch = $pitch ?? $pos->pitch;
 		}
 		$from = Position::fromObject($this, $this->level);
-		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getLevel() : $this->level);
+		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getLevelNonNull() : $this->level);
 		$ev = new EntityTeleportEvent($this, $from, $to);
 		$ev->call();
 		if($ev->isCancelled()){
@@ -1921,7 +1921,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected function sendSpawnPacket(Player $player) : void{
 		$pk = new AddActorPacket();
 		$pk->entityRuntimeId = $this->getId();
-		$pk->type = static::NETWORK_ID;
+		$pk->type = AddActorPacket::LEGACY_ID_MAP_BC[static::NETWORK_ID];
 		$pk->position = $this->asVector3();
 		$pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;

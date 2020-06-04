@@ -58,7 +58,7 @@ class Quartz extends Solid{
 		if($this->getVariant() !== self::NORMAL){
 			$this->meta = PillarRotationHelper::getMetaFromFace($this->meta, $face);
 		}
-		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
+		return $this->getLevelNonNull()->setBlock($blockReplace, $this, true, true);
 	}
 
 	public function getToolType() : int{

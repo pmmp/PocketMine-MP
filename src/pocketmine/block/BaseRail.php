@@ -91,7 +91,7 @@ abstract class BaseRail extends Flowable{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if(!$blockReplace->getSide(Vector3::SIDE_DOWN)->isTransparent() and $this->getLevel()->setBlock($blockReplace, $this, true, true)){
+		if(!$blockReplace->getSide(Vector3::SIDE_DOWN)->isTransparent() and $this->getLevelNonNull()->setBlock($blockReplace, $this, true, true)){
 			$this->tryReconnect();
 			return true;
 		}
@@ -279,7 +279,7 @@ abstract class BaseRail extends Flowable{
 			isset(self::ASCENDING_SIDES[$this->meta & 0x07]) and
 			$this->getSide(self::ASCENDING_SIDES[$this->meta & 0x07])->isTransparent()
 		)){
-			$this->getLevel()->useBreakOn($this);
+			$this->getLevelNonNull()->useBreakOn($this);
 		}
 	}
 

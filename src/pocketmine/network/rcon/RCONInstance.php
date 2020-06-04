@@ -167,7 +167,7 @@ class RCONInstance extends Thread{
 
 		/** @var resource[] $clients */
 		$clients = [];
-		/** @var int[] $authenticated */
+		/** @var bool[] $authenticated */
 		$authenticated = [];
 		/** @var float[] $timeouts */
 		$timeouts = [];

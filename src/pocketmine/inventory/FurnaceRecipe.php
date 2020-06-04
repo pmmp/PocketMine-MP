@@ -53,6 +53,9 @@ class FurnaceRecipe implements Recipe{
 		return clone $this->output;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function registerToCraftingManager(CraftingManager $manager) : void{
 		$manager->registerFurnaceRecipe($this);
 	}

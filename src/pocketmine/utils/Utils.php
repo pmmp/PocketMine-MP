@@ -28,7 +28,6 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use DaveRandom\CallbackValidator\CallbackType;
-use pocketmine\ThreadManager;
 use function array_combine;
 use function array_map;
 use function array_reverse;
@@ -42,7 +41,6 @@ use function dechex;
 use function error_reporting;
 use function exec;
 use function explode;
-use function fclose;
 use function file;
 use function file_exists;
 use function file_get_contents;
@@ -51,35 +49,33 @@ use function get_current_user;
 use function get_loaded_extensions;
 use function getenv;
 use function gettype;
-use function hexdec;
 use function implode;
 use function is_array;
+use function is_dir;
+use function is_file;
 use function is_object;
 use function is_readable;
 use function is_string;
 use function json_decode;
 use function ltrim;
-use function memory_get_usage;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
 use function ord;
 use function php_uname;
 use function phpversion;
-use function posix_kill;
 use function preg_grep;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
-use function proc_close;
-use function proc_open;
+use function rmdir;
 use function rtrim;
+use function scandir;
 use function sha1;
 use function spl_object_hash;
 use function str_pad;
 use function str_replace;
 use function str_split;
-use function stream_get_contents;
 use function stripos;
 use function strlen;
 use function strpos;
@@ -88,12 +84,14 @@ use function strtr;
 use function substr;
 use function sys_get_temp_dir;
 use function trim;
+use function unlink;
 use function xdebug_get_function_stack;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_INT_MAX;
 use const PHP_INT_SIZE;
 use const PHP_MAXPATHLEN;
+use const SCANDIR_SORT_NONE;
 use const STR_PAD_LEFT;
 use const STR_PAD_RIGHT;
 
@@ -101,6 +99,14 @@ use const STR_PAD_RIGHT;
  * Big collection of functions
  */
 class Utils{
+	public const OS_WINDOWS = "win";
+	public const OS_IOS = "ios";
+	public const OS_MACOS = "mac";
+	public const OS_ANDROID = "android";
+	public const OS_LINUX = "linux";
+	public const OS_BSD = "bsd";
+	public const OS_UNKNOWN = "other";
+
 	/** @var string|null */
 	public static $os;
 	/** @var UUID|null */
@@ -114,8 +120,10 @@ class Utils{
 	public static function getCallableIdentifier(callable $variable){
 		if(is_array($variable)){
 			return sha1(strtolower(spl_object_hash($variable[0])) . "::" . strtolower($variable[1]));
-		}else{
+		}elseif(is_string($variable)){
 			return sha1(strtolower($variable));
+		}else{
+			throw new AssumptionFailedError("Unhandled callable type");
 		}
 	}
 
@@ -141,7 +149,12 @@ class Utils{
 			//non-class function
 			return $func->getName();
 		}
-		return "closure@" . self::cleanPath($func->getFileName()) . "#L" . $func->getStartLine();
+		$filename = $func->getFileName();
+
+		return "closure@" . ($filename !== false ?
+				self::cleanPath($filename) . "#L" . $func->getStartLine() :
+				"internal"
+			);
 	}
 
 	/**
@@ -152,7 +165,12 @@ class Utils{
 	public static function getNiceClassName(object $obj) : string{
 		$reflect = new \ReflectionClass($obj);
 		if($reflect->isAnonymous()){
-			return "anonymous@" . self::cleanPath($reflect->getFileName()) . "#L" . $reflect->getStartLine();
+			$filename = $reflect->getFileName();
+
+			return "anonymous@" . ($filename !== false ?
+					self::cleanPath($filename) . "#L" . $reflect->getStartLine() :
+					"internal"
+				);
 		}
 
 		return $reflect->getName();
@@ -172,14 +190,14 @@ class Utils{
 		}
 
 		$machine = php_uname("a");
-		$machine .= file_exists("/proc/cpuinfo") ? implode(preg_grep("/(model name|Processor|Serial)/", file("/proc/cpuinfo"))) : "";
+		$machine .= ($cpuinfo = @file("/proc/cpuinfo")) !== false ? implode(preg_grep("/(model name|Processor|Serial)/", $cpuinfo)) : "";
 		$machine .= sys_get_temp_dir();
 		$machine .= $extra;
 		$os = Utils::getOS();
-		if($os === "win"){
+		if($os === Utils::OS_WINDOWS){
 			@exec("ipconfig /ALL", $mac);
 			$mac = implode("\n", $mac);
-			if(preg_match_all("#Physical Address[. ]{1,}: ([0-9A-F\\-]{17})#", $mac, $matches)){
+			if(preg_match_all("#Physical Address[. ]{1,}: ([0-9A-F\\-]{17})#", $mac, $matches) > 0){
 				foreach($matches[1] as $i => $v){
 					if($v == "00-00-00-00-00-00"){
 						unset($matches[1][$i]);
@@ -187,13 +205,13 @@ class Utils{
 				}
 				$machine .= implode(" ", $matches[1]); //Mac Addresses
 			}
-		}elseif($os === "linux"){
+		}elseif($os === Utils::OS_LINUX){
 			if(file_exists("/etc/machine-id")){
 				$machine .= file_get_contents("/etc/machine-id");
 			}else{
 				@exec("ifconfig 2>/dev/null", $mac);
 				$mac = implode("\n", $mac);
-				if(preg_match_all("#HWaddr[ \t]{1,}([0-9a-f:]{17})#", $mac, $matches)){
+				if(preg_match_all("#HWaddr[ \t]{1,}([0-9a-f:]{17})#", $mac, $matches) > 0){
 					foreach($matches[1] as $i => $v){
 						if($v == "00:00:00:00:00:00"){
 							unset($matches[1][$i]);
@@ -202,9 +220,9 @@ class Utils{
 					$machine .= implode(" ", $matches[1]); //Mac Addresses
 				}
 			}
-		}elseif($os === "android"){
+		}elseif($os === Utils::OS_ANDROID){
 			$machine .= @file_get_contents("/system/build.prop");
-		}elseif($os === "mac"){
+		}elseif($os === Utils::OS_MACOS){
 			$machine .= `system_profiler SPHardwareDataType | grep UUID`;
 		}
 		$data = $machine . PHP_MAXPATHLEN;
@@ -251,22 +269,22 @@ class Utils{
 			$uname = php_uname("s");
 			if(stripos($uname, "Darwin") !== false){
 				if(strpos(php_uname("m"), "iP") === 0){
-					self::$os = "ios";
+					self::$os = self::OS_IOS;
 				}else{
-					self::$os = "mac";
+					self::$os = self::OS_MACOS;
 				}
 			}elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
-				self::$os = "win";
+				self::$os = self::OS_WINDOWS;
 			}elseif(stripos($uname, "Linux") !== false){
 				if(@file_exists("/system/build.prop")){
-					self::$os = "android";
+					self::$os = self::OS_ANDROID;
 				}else{
-					self::$os = "linux";
+					self::$os = self::OS_LINUX;
 				}
 			}elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
-				self::$os = "bsd";
+				self::$os = self::OS_BSD;
 			}else{
-				self::$os = "other";
+				self::$os = self::OS_UNKNOWN;
 			}
 		}
 
@@ -274,72 +292,32 @@ class Utils{
 	}
 
 	/**
+	 * @deprecated
+	 * @see Process::getRealMemoryUsage()
+	 *
 	 * @return int[]
 	 */
 	public static function getRealMemoryUsage() : array{
-		$stack = 0;
-		$heap = 0;
-
-		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
-			$mappings = file("/proc/self/maps");
-			foreach($mappings as $line){
-				if(preg_match("#([a-z0-9]+)\\-([a-z0-9]+) [rwxp\\-]{4} [a-z0-9]+ [^\\[]*\\[([a-zA-z0-9]+)\\]#", trim($line), $matches) > 0){
-					if(strpos($matches[3], "heap") === 0){
-						$heap += hexdec($matches[2]) - hexdec($matches[1]);
-					}elseif(strpos($matches[3], "stack") === 0){
-						$stack += hexdec($matches[2]) - hexdec($matches[1]);
-					}
-				}
-			}
-		}
-
-		return [$heap, $stack];
+		return Process::getRealMemoryUsage();
 	}
 
 	/**
+	 * @deprecated
+	 * @see Process::getMemoryUsage()
+	 * @see Process::getAdvancedMemoryUsage()
+	 *
 	 * @return int[]|int
 	 */
 	public static function getMemoryUsage(bool $advanced = false){
-		$reserved = memory_get_usage();
-		$VmSize = null;
-		$VmRSS = null;
-		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
-			$status = file_get_contents("/proc/self/status");
-			if(preg_match("/VmRSS:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
-				$VmRSS = $matches[1] * 1024;
-			}
-
-			if(preg_match("/VmSize:[ \t]+([0-9]+) kB/", $status, $matches) > 0){
-				$VmSize = $matches[1] * 1024;
-			}
-		}
-
-		//TODO: more OS
-
-		if($VmRSS === null){
-			$VmRSS = memory_get_usage();
-		}
-
-		if(!$advanced){
-			return $VmRSS;
-		}
-
-		if($VmSize === null){
-			$VmSize = memory_get_usage(true);
-		}
-
-		return [$reserved, $VmRSS, $VmSize];
+		return $advanced ? Process::getAdvancedMemoryUsage() : Process::getMemoryUsage();
 	}
 
+	/**
+	 * @deprecated
+	 * @see Process::getThreadCount()
+	 */
 	public static function getThreadCount() : int{
-		if(Utils::getOS() === "linux" or Utils::getOS() === "android"){
-			if(preg_match("/Threads:[ \t]+([0-9]+)/", file_get_contents("/proc/self/status"), $matches) > 0){
-				return (int) $matches[1];
-			}
-		}
-		//TODO: more OS
-
-		return count(ThreadManager::getInstance()->getAll()) + 3; //RakLib + MainLogger + Main Thread
+		return Process::getThreadCount();
 	}
 
 	public static function getCoreCount(bool $recalculate = false) : int{
@@ -352,25 +330,25 @@ class Utils{
 		}
 
 		switch(Utils::getOS()){
-			case "linux":
-			case "android":
-				if(file_exists("/proc/cpuinfo")){
-					foreach(file("/proc/cpuinfo") as $l){
+			case Utils::OS_LINUX:
+			case Utils::OS_ANDROID:
+				if(($cpuinfo = @file('/proc/cpuinfo')) !== false){
+					foreach($cpuinfo as $l){
 						if(preg_match('/^processor[ \t]*:[ \t]*[0-9]+$/m', $l) > 0){
 							++$processors;
 						}
 					}
-				}elseif(is_readable("/sys/devices/system/cpu/present")){
-					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim(file_get_contents("/sys/devices/system/cpu/present")), $matches) > 0){
+				}elseif(($cpuPresent = @file_get_contents("/sys/devices/system/cpu/present")) !== false){
+					if(preg_match("/^([0-9]+)\\-([0-9]+)$/", trim($cpuPresent), $matches) > 0){
 						$processors = (int) ($matches[2] - $matches[1]);
 					}
 				}
 				break;
-			case "bsd":
-			case "mac":
+			case Utils::OS_BSD:
+			case Utils::OS_MACOS:
 				$processors = (int) `sysctl -n hw.ncpu`;
 				break;
-			case "win":
+			case Utils::OS_WINDOWS:
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
 				break;
 		}
@@ -495,6 +473,9 @@ class Utils{
 	}
 
 	/**
+	 * @deprecated
+	 * @see Process::execute()
+	 *
 	 * @param string      $command Command to execute
 	 * @param string|null $stdout Reference parameter to write stdout to
 	 * @param string|null $stderr Reference parameter to write stderr to
@@ -502,27 +483,7 @@ class Utils{
 	 * @return int process exit code
 	 */
 	public static function execute(string $command, string &$stdout = null, string &$stderr = null) : int{
-		$process = proc_open($command, [
-			["pipe", "r"],
-			["pipe", "w"],
-			["pipe", "w"]
-		], $pipes);
-
-		if($process === false){
-			$stderr = "Failed to open process";
-			$stdout = "";
-
-			return -1;
-		}
-
-		$stdout = stream_get_contents($pipes[1]);
-		$stderr = stream_get_contents($pipes[2]);
-
-		foreach($pipes as $p){
-			fclose($p);
-		}
-
-		return proc_close($process);
+		return Process::execute($command, $stdout, $stderr);
 	}
 
 	/**
@@ -530,31 +491,28 @@ class Utils{
 	 * @phpstan-return array<string, mixed>
 	 */
 	public static function decodeJWT(string $token) : array{
-		list($headB64, $payloadB64, $sigB64) = explode(".", $token);
+		[$headB64, $payloadB64, $sigB64] = explode(".", $token);
 
-		return json_decode(base64_decode(strtr($payloadB64, '-_', '+/'), true), true);
+		$rawPayloadJSON = base64_decode(strtr($payloadB64, '-_', '+/'), true);
+		if($rawPayloadJSON === false){
+			throw new \InvalidArgumentException("Payload base64 is invalid and cannot be decoded");
+		}
+		$decodedPayload = json_decode($rawPayloadJSON, true);
+		if(!is_array($decodedPayload)){
+			throw new \InvalidArgumentException("Decoded payload should be array, " . gettype($decodedPayload) . " received");
+		}
+
+		return $decodedPayload;
 	}
 
 	/**
+	 * @deprecated
+	 * @see Process::kill()
+	 *
 	 * @param int $pid
 	 */
 	public static function kill($pid) : void{
-		if(MainLogger::isRegisteredStatic()){
-			MainLogger::getLogger()->syncFlushBuffer();
-		}
-		switch(Utils::getOS()){
-			case "win":
-				exec("taskkill.exe /F /PID $pid > NUL");
-				break;
-			case "mac":
-			case "linux":
-			default:
-				if(function_exists("posix_kill")){
-					posix_kill($pid, 9); //SIGKILL
-				}else{
-					exec("kill -9 $pid > /dev/null 2>&1");
-				}
-		}
+		Process::kill($pid);
 	}
 
 	/**
@@ -565,7 +523,9 @@ class Utils{
 	public static function getReferenceCount($value, bool $includeCurrent = true){
 		ob_start();
 		debug_zval_dump($value);
-		$ret = explode("\n", ob_get_contents());
+		$contents = ob_get_contents();
+		if($contents === false) throw new AssumptionFailedError("ob_get_contents() should never return false here");
+		$ret = explode("\n", $contents);
 		ob_end_clean();
 
 		if(count($ret) >= 1 and preg_match('/^.* refcount\\(([0-9]+)\\)\\{$/', trim($ret[0]), $m) > 0){
@@ -669,7 +629,9 @@ class Utils{
 		}
 		preg_match_all('/(*ANYCRLF)^[\t ]*(?:\* )?@([a-zA-Z]+)(?:[\t ]+(.+?))?[\t ]*$/m', $rawDocComment, $matches);
 
-		return array_combine($matches[1], $matches[2]);
+		$result = array_combine($matches[1], $matches[2]);
+		if($result === false) throw new AssumptionFailedError("array_combine() doesn't return false with two equal-sized arrays");
+		return $result;
 	}
 
 	/**
@@ -683,6 +645,10 @@ class Utils{
 		return true; //stfu operator
 	}
 
+	/**
+	 * @phpstan-param class-string $className
+	 * @phpstan-param class-string $baseName
+	 */
 	public static function testValidInstance(string $className, string $baseName) : void{
 		try{
 			$base = new \ReflectionClass($baseName);
@@ -717,6 +683,25 @@ class Utils{
 	public static function validateCallableSignature(callable $signature, callable $subject) : void{
 		if(!($sigType = CallbackType::createFromCallable($signature))->isSatisfiedBy($subject)){
 			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($subject) . "` must be compatible with `" . $sigType . "`");
+		}
+	}
+
+	public static function recursiveUnlink(string $dir) : void{
+		if(is_dir($dir)){
+			$objects = scandir($dir, SCANDIR_SORT_NONE);
+			if($objects === false) throw new AssumptionFailedError("scandir() shouldn't return false when is_dir() returns true");
+			foreach($objects as $object){
+				if($object !== "." and $object !== ".."){
+					if(is_dir($dir . "/" . $object)){
+						self::recursiveUnlink($dir . "/" . $object);
+					}else{
+						unlink($dir . "/" . $object);
+					}
+				}
+			}
+			rmdir($dir);
+		}elseif(is_file($dir)){
+			unlink($dir);
 		}
 	}
 }

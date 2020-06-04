@@ -21,31 +21,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\utils;
 
-use pocketmine\entity\Entity;
-use pocketmine\math\Vector3;
+/**
+ * This exception should be thrown in places where something is assumed to be true, but the type system does not provide
+ * a guarantee. This makes static analysers happy and makes sure that the server will crash properly if any assumption
+ * does not hold.
+ */
+final class AssumptionFailedError extends \Error{
 
-abstract class Fallable extends Solid{
-
-	public function onNearbyBlockChange() : void{
-		$down = $this->getSide(Vector3::SIDE_DOWN);
-		if($down->getId() === self::AIR or $down instanceof Liquid or $down instanceof Fire){
-			$this->level->setBlock($this, BlockFactory::get(Block::AIR), true);
-
-			$nbt = Entity::createBaseNBT($this->add(0.5, 0, 0.5));
-			$nbt->setInt("TileID", $this->getId());
-			$nbt->setByte("Data", $this->getDamage());
-
-			$fall = Entity::createEntity("FallingSand", $this->getLevelNonNull(), $nbt);
-
-			if($fall !== null){
-				$fall->spawnToAll();
-			}
-		}
-	}
-
-	public function tickFalling() : ?Block{
-		return null;
-	}
 }

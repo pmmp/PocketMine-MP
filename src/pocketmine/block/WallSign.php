@@ -33,7 +33,7 @@ class WallSign extends SignPost{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide($this->meta ^ 0x01)->getId() === self::AIR){
-			$this->getLevel()->useBreakOn($this);
+			$this->getLevelNonNull()->useBreakOn($this);
 		}
 	}
 }

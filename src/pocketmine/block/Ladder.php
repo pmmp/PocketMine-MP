@@ -100,7 +100,7 @@ class Ladder extends Transparent{
 			];
 			if(isset($faces[$face])){
 				$this->meta = $faces[$face];
-				$this->getLevel()->setBlock($blockReplace, $this, true, true);
+				$this->getLevelNonNull()->setBlock($blockReplace, $this, true, true);
 
 				return true;
 			}

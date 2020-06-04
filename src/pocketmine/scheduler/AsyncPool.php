@@ -28,7 +28,6 @@ use pocketmine\utils\Utils;
 use function array_keys;
 use function assert;
 use function count;
-use function get_class;
 use function spl_object_hash;
 use function time;
 use const PHP_INT_MAX;
@@ -54,18 +53,33 @@ class AsyncPool{
 	/** @var int */
 	private $workerMemoryLimit;
 
-	/** @var AsyncTask[] */
+	/**
+	 * @var AsyncTask[]
+	 * @phpstan-var array<int, AsyncTask>
+	 */
 	private $tasks = [];
-	/** @var int[] */
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
 	private $taskWorkers = [];
 	/** @var int */
 	private $nextTaskId = 1;
 
-	/** @var AsyncWorker[] */
+	/**
+	 * @var AsyncWorker[]
+	 * @phpstan-var array<int, AsyncWorker>
+	 */
 	private $workers = [];
-	/** @var int[] */
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
 	private $workerUsage = [];
-	/** @var int[] */
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
 	private $workerLastUsed = [];
 
 	/**
@@ -163,13 +177,14 @@ class AsyncPool{
 		}
 
 		$task->progressUpdates = new \Threaded;
-		$task->setTaskId($this->nextTaskId++);
+		$taskId = $this->nextTaskId++;
+		$task->setTaskId($taskId);
 
-		$this->tasks[$task->getTaskId()] = $task;
+		$this->tasks[$taskId] = $task;
 
 		$this->getWorker($worker)->stack($task);
 		$this->workerUsage[$worker]++;
-		$this->taskWorkers[$task->getTaskId()] = $worker;
+		$this->taskWorkers[$taskId] = $worker;
 		$this->workerLastUsed[$worker] = time();
 	}
 
@@ -302,9 +317,6 @@ class AsyncPool{
 					 */
 					$task->checkProgressUpdates($this->server);
 					$task->onCompletion($this->server);
-					if($task->removeDanglingStoredObjects()){
-						$this->logger->notice("AsyncTask " . get_class($task) . " stored local complex data but did not remove them after completion");
-					}
 				}
 
 				$this->removeTask($task);

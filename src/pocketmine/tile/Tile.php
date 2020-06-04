@@ -168,7 +168,7 @@ abstract class Tile extends Position{
 		parent::__construct($nbt->getInt(self::TAG_X), $nbt->getInt(self::TAG_Y), $nbt->getInt(self::TAG_Z), $level);
 		$this->readSaveData($nbt);
 
-		$this->getLevel()->addTile($this);
+		$this->getLevelNonNull()->addTile($this);
 	}
 
 	public function getId() : int{

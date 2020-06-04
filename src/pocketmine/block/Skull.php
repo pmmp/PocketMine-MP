@@ -65,8 +65,8 @@ class Skull extends Flowable{
 		}
 
 		$this->meta = $face;
-		$this->getLevel()->setBlock($blockReplace, $this, true);
-		Tile::createTile(Tile::SKULL, $this->getLevel(), TileSkull::createNBT($this, $face, $item, $player));
+		$this->getLevelNonNull()->setBlock($blockReplace, $this, true);
+		Tile::createTile(Tile::SKULL, $this->getLevelNonNull(), TileSkull::createNBT($this, $face, $item, $player));
 
 		return true;
 	}

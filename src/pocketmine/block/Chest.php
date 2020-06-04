@@ -81,7 +81,7 @@ class Chest extends Transparent{
 			}
 			$c = $this->getSide($side);
 			if($c->getId() === $this->id and $c->getDamage() === $this->meta){
-				$tile = $this->getLevel()->getTile($c);
+				$tile = $this->getLevelNonNull()->getTile($c);
 				if($tile instanceof TileChest and !$tile->isPaired()){
 					$chest = $tile;
 					break;
@@ -89,8 +89,8 @@ class Chest extends Transparent{
 			}
 		}
 
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
-		$tile = Tile::createTile(Tile::CHEST, $this->getLevel(), TileChest::createNBT($this, $face, $item, $player));
+		$this->getLevelNonNull()->setBlock($blockReplace, $this, true, true);
+		$tile = Tile::createTile(Tile::CHEST, $this->getLevelNonNull(), TileChest::createNBT($this, $face, $item, $player));
 
 		if($chest instanceof TileChest and $tile instanceof TileChest){
 			$chest->pairWith($tile);
@@ -103,12 +103,12 @@ class Chest extends Transparent{
 	public function onActivate(Item $item, Player $player = null) : bool{
 		if($player instanceof Player){
 
-			$t = $this->getLevel()->getTile($this);
+			$t = $this->getLevelNonNull()->getTile($this);
 			$chest = null;
 			if($t instanceof TileChest){
 				$chest = $t;
 			}else{
-				$chest = Tile::createTile(Tile::CHEST, $this->getLevel(), TileChest::createNBT($this));
+				$chest = Tile::createTile(Tile::CHEST, $this->getLevelNonNull(), TileChest::createNBT($this));
 				if(!($chest instanceof TileChest)){
 					return true;
 				}

@@ -77,7 +77,7 @@ class TimeCommand extends VanillaCommand{
 				return true;
 			}
 			if($sender instanceof Player){
-				$level = $sender->getLevel();
+				$level = $sender->getLevelNonNull();
 			}else{
 				$level = $sender->getServer()->getDefaultLevel();
 			}
@@ -96,12 +96,28 @@ class TimeCommand extends VanillaCommand{
 				return true;
 			}
 
-			if($args[1] === "day"){
-				$value = Level::TIME_DAY;
-			}elseif($args[1] === "night"){
-				$value = Level::TIME_NIGHT;
-			}else{
-				$value = $this->getInteger($sender, $args[1], 0);
+			switch($args[1]){
+				case "day":
+					$value = Level::TIME_DAY;
+					break;
+				case "noon":
+					$value = Level::TIME_NOON;
+					break;
+				case "sunset":
+					$value = Level::TIME_SUNSET;
+					break;
+				case "night":
+					$value = Level::TIME_NIGHT;
+					break;
+				case "midnight":
+					$value = Level::TIME_MIDNIGHT;
+					break;
+				case "sunrise":
+					$value = Level::TIME_SUNRISE;
+					break;
+				default:
+					$value = $this->getInteger($sender, $args[1], 0);
+					break;
 			}
 
 			foreach($sender->getServer()->getLevels() as $level){

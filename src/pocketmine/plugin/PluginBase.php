@@ -28,6 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\PluginIdentifiableCommand;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use function dirname;
 use function fclose;
@@ -171,7 +172,9 @@ abstract class PluginBase implements Plugin{
 	public function getResource(string $filename){
 		$filename = rtrim(str_replace(DIRECTORY_SEPARATOR, "/", $filename), "/");
 		if(file_exists($this->file . "resources/" . $filename)){
-			return fopen($this->file . "resources/" . $filename, "rb");
+			$resource = fopen($this->file . "resources/" . $filename, "rb");
+			if($resource === false) throw new AssumptionFailedError("fopen() should not fail on a file which exists");
+			return $resource;
 		}
 
 		return null;
@@ -195,7 +198,10 @@ abstract class PluginBase implements Plugin{
 			return false;
 		}
 
-		$ret = stream_copy_to_stream($resource, $fp = fopen($out, "wb")) > 0;
+		$fp = fopen($out, "wb");
+		if($fp === false) throw new AssumptionFailedError("fopen() should not fail with wb flags");
+
+		$ret = stream_copy_to_stream($resource, $fp) > 0;
 		fclose($fp);
 		fclose($resource);
 		return $ret;

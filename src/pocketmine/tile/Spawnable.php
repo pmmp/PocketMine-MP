@@ -30,6 +30,7 @@ use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\Player;
+use pocketmine\utils\AssumptionFailedError;
 
 abstract class Spawnable extends Tile{
 	/** @var string|null */
@@ -96,7 +97,9 @@ abstract class Spawnable extends Tile{
 				self::$nbtWriter = new NetworkLittleEndianNBTStream();
 			}
 
-			$this->spawnCompoundCache = self::$nbtWriter->write($this->getSpawnCompound());
+			$spawnCompoundCache = self::$nbtWriter->write($this->getSpawnCompound());
+			if($spawnCompoundCache === false) throw new AssumptionFailedError("NBTStream->write() should not return false when given a CompoundTag");
+			$this->spawnCompoundCache = $spawnCompoundCache;
 		}
 
 		return $this->spawnCompoundCache;
