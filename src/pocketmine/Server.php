@@ -2091,17 +2091,24 @@ class Server{
 
 				if($report){
 					$url = ((bool) $this->getProperty("auto-report.use-https", true) ? "https" : "http") . "://" . $this->getProperty("auto-report.host", "crash.pmmp.io") . "/submit/api";
+					$postUrlError = "Unknown error";
 					$reply = Internet::postURL($url, [
 						"report" => "yes",
 						"name" => $this->getName() . " " . $this->getPocketMineVersion(),
 						"email" => "crash@pocketmine.net",
 						"reportPaste" => base64_encode($dump->getEncodedData())
-					]);
+					], 10, [], $postUrlError);
 
-					if($reply !== false and ($data = json_decode($reply)) !== null and isset($data->crashId) and isset($data->crashUrl)){
-						$reportId = $data->crashId;
-						$reportUrl = $data->crashUrl;
-						$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.archive", [$reportUrl, $reportId]));
+					if($reply !== false and ($data = json_decode($reply)) !== null){
+						if(isset($data->crashId) and isset($data->crashUrl)){
+							$reportId = $data->crashId;
+							$reportUrl = $data->crashUrl;
+							$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.archive", [$reportUrl, $reportId]));
+						}elseif(isset($data->error)){
+							$this->logger->emergency("Automatic crash report submission failed: $data->error");
+						}
+					}else{
+						$this->logger->emergency("Failed to communicate with crash archive: $postUrlError");
 					}
 				}
 			}
