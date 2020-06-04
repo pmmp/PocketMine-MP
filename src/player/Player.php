@@ -1030,8 +1030,16 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		if($this->isSpectator()){
 			$this->setFlying(true);
-		}elseif($this->isSurvival()){
-			$this->setFlying(false);
+			$this->onGround = false;
+
+			//TODO: HACK! this syncs the onground flag with the client so that flying works properly
+			//this is a yucky hack but we don't have any other options :(
+			$this->sendPosition($this->location, null, null, MovePlayerPacket::MODE_TELEPORT);
+		}else{
+			if($this->isSurvival()){
+				$this->setFlying(false);
+			}
+			$this->checkGroundState(0, 0, 0, 0, 0, 0);
 		}
 	}
 
@@ -1123,11 +1131,15 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	protected function checkGroundState(float $movX, float $movY, float $movZ, float $dx, float $dy, float $dz) : void{
-		$bb = clone $this->boundingBox;
-		$bb->minY = $this->location->y - 0.2;
-		$bb->maxY = $this->location->y + 0.2;
+		if($this->isSpectator()){
+			$this->onGround = false;
+		}else{
+			$bb = clone $this->boundingBox;
+			$bb->minY = $this->location->y - 0.2;
+			$bb->maxY = $this->location->y + 0.2;
 
-		$this->onGround = $this->isCollided = count($this->getWorld()->getCollisionBlocks($bb, true)) > 0;
+			$this->onGround = $this->isCollided = count($this->getWorld()->getCollisionBlocks($bb, true)) > 0;
+		}
 	}
 
 	public function canBeMovedByCurrents() : bool{
