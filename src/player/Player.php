@@ -213,8 +213,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/** @var bool[] map: raw UUID (string) => bool */
 	protected $hiddenPlayers = [];
 
-	/** @var int */
+	/** @var float */
 	protected $moveRateLimit = 10 * self::MOVES_PER_TICK;
+	/** @var float|null */
+	protected $lastMovementProcess = null;
 	/** @var Vector3|null */
 	protected $forceMoveSync = null;
 
@@ -1238,8 +1240,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * Fires movement events and synchronizes player movement, every tick.
 	 */
 	protected function processMostRecentMovements() : void{
+		$now = microtime(true);
+		$multiplier = $this->lastMovementProcess !== null ? ($now - $this->lastMovementProcess) * 20 : 1;
 		$exceededRateLimit = $this->moveRateLimit < 0;
-		$this->moveRateLimit = min(self::MOVE_BACKLOG_SIZE, max(0, $this->moveRateLimit) + self::MOVES_PER_TICK);
+		$this->moveRateLimit = min(self::MOVE_BACKLOG_SIZE, max(0, $this->moveRateLimit) + self::MOVES_PER_TICK * $multiplier);
+		$this->lastMovementProcess = $now;
 
 		$from = clone $this->lastLocation;
 		$to = clone $this->location;
