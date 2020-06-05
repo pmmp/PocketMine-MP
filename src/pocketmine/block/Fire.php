@@ -82,7 +82,7 @@ class Fire extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->getSide(Vector3::SIDE_DOWN)->isSolid() and !$this->hasAdjacentFlammableBlocks()){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), true);
+			$this->getLevelNonNull()->setBlock($this, BlockFactory::get(Block::AIR), true);
 		}else{
 			$this->level->scheduleDelayedBlockUpdate($this, mt_rand(30, 40));
 		}

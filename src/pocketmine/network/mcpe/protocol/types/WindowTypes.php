@@ -51,9 +51,12 @@ interface WindowTypes{
 	public const ELEMENT_CONSTRUCTOR = 21;
 	public const MATERIAL_REDUCER = 22;
 	public const LAB_TABLE = 23;
-
+	public const LOOM = 24;
+	public const LECTERN = 25;
+	public const GRINDSTONE = 26;
 	public const BLAST_FURNACE = 27;
 	public const SMOKER = 28;
 	public const STONECUTTER = 29;
+	public const CARTOGRAPHY = 30;
 
 }

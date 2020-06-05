@@ -59,7 +59,7 @@ class WaterLily extends Flowable{
 		if($blockClicked instanceof Water){
 			$up = $blockClicked->getSide(Vector3::SIDE_UP);
 			if($up->getId() === Block::AIR){
-				$this->getLevel()->setBlock($up, $this, true, true);
+				$this->getLevelNonNull()->setBlock($up, $this, true, true);
 				return true;
 			}
 		}
@@ -69,7 +69,7 @@ class WaterLily extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if(!($this->getSide(Vector3::SIDE_DOWN) instanceof Water)){
-			$this->getLevel()->useBreakOn($this);
+			$this->getLevelNonNull()->useBreakOn($this);
 		}
 	}
 

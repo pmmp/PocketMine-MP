@@ -28,7 +28,6 @@ use function array_map;
 use function array_values;
 use function constant;
 use function defined;
-use function extension_loaded;
 use function is_array;
 use function phpversion;
 use function preg_match;
@@ -55,6 +54,8 @@ class PluginDescription{
 	private $api;
 	/** @var int[] */
 	private $compatibleMcpeProtocols = [];
+	/** @var string[] */
+	private $compatibleOperatingSystems = [];
 	/**
 	 * @var string[][]
 	 * @phpstan-var array<string, list<mixed>>
@@ -114,6 +115,7 @@ class PluginDescription{
 
 		$this->api = array_map("\strval", (array) ($plugin["api"] ?? []));
 		$this->compatibleMcpeProtocols = array_map("\intval", (array) ($plugin["mcpe-protocol"] ?? []));
+		$this->compatibleOperatingSystems = array_map("\strval", (array) ($plugin["os"] ?? []));
 
 		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
 			$this->commands = $plugin["commands"];
@@ -188,6 +190,13 @@ class PluginDescription{
 	/**
 	 * @return string[]
 	 */
+	public function getCompatibleOperatingSystems() : array{
+		return $this->compatibleOperatingSystems;
+	}
+
+	/**
+	 * @return string[]
+	 */
 	public function getAuthors() : array{
 		return $this->authors;
 	}
@@ -220,11 +229,11 @@ class PluginDescription{
 	 */
 	public function checkRequiredExtensions(){
 		foreach($this->extensions as $name => $versionConstrs){
-			if(!extension_loaded($name)){
+			$gotVersion = phpversion($name);
+			if($gotVersion === false){
 				throw new PluginException("Required extension $name not loaded");
 			}
 
-			$gotVersion = phpversion($name);
 			foreach($versionConstrs as $constr){ // versionConstrs_loop
 				if($constr === "*"){
 					continue;

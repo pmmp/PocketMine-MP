@@ -21,7 +21,6 @@ parameters:
 		- src/pocketmine/PocketMine.php
 		- build/make-release.php
 		- build/server-phar.php
-		- vendor/irstea/phpunit-shim/phpunit
 	paths:
 		- src
 		- build/make-release.php

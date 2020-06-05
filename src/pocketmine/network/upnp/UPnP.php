@@ -37,7 +37,7 @@ abstract class UPnP{
 		if(!Internet::$online){
 			throw new \RuntimeException("Server is offline");
 		}
-		if(Utils::getOS() !== "win"){
+		if(Utils::getOS() !== Utils::OS_WINDOWS){
 			throw new \RuntimeException("UPnP is only supported on Windows");
 		}
 		if(!class_exists("COM")){
@@ -62,7 +62,7 @@ abstract class UPnP{
 		if(!Internet::$online){
 			return false;
 		}
-		if(Utils::getOS() != "win" or !class_exists("COM")){
+		if(Utils::getOS() !== Utils::OS_WINDOWS or !class_exists("COM")){
 			return false;
 		}
 

@@ -107,7 +107,7 @@ parameters:
 
 		-
 			message: "#^Cannot call method getFolderName\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/pocketmine/Player.php
 
 		-
@@ -136,11 +136,6 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Cannot call method broadcastPacketToViewers\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Player.php
-
-		-
 			message: "#^Cannot call method useItemOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/Player.php
@@ -157,7 +152,7 @@ parameters:
 
 		-
 			message: "#^Cannot call method getTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/pocketmine/Player.php
 
 		-
@@ -196,7 +191,7 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Cannot call method getLevel\\(\\) on pocketmine\\\\level\\\\Position\\|null\\.$#"
+			message: "#^Cannot call method getLevelNonNull\\(\\) on pocketmine\\\\level\\\\Position\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
@@ -281,59 +276,19 @@ parameters:
 			path: ../../../src/pocketmine/Worker.php
 
 		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Anvil.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/BaseRail.php
-
-		-
 			message: "#^Parameter \\#1 \\$constraint of method pocketmine\\\\block\\\\BaseRail\\:\\:getPossibleConnectionDirectionsOneConstraint\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/BaseRail.php
 
 		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/BaseRail.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 3
-			path: ../../../src/pocketmine/block/Bed.php
-
-		-
-			message: "#^Cannot call method getTime\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Bed.php
 
 		-
 			message: "#^Only numeric types are allowed in \\-, int\\|null given on the left side\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Bed.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\tile\\\\Tile\\:\\:createTile\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/Bed.php
-
-		-
-			message: "#^Cannot call method getTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Bed.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/Block.php
-
-		-
-			message: "#^Cannot call method getBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Block.php
 
 		-
 			message: "#^Cannot call method getBlockMetadata\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
@@ -373,112 +328,17 @@ parameters:
 		-
 			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/block/BoneBlock.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/BurningFurnace.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\tile\\\\Tile\\:\\:createTile\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/BurningFurnace.php
-
-		-
-			message: "#^Cannot call method getTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/BurningFurnace.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
 			path: ../../../src/pocketmine/block/Button.php
 
 		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/Cactus.php
-
-		-
-			message: "#^Cannot call method getBlockAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/block/Cactus.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 4
-			path: ../../../src/pocketmine/block/Cactus.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 3
 			path: ../../../src/pocketmine/block/Cake.php
 
 		-
 			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/block/Carpet.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Carpet.php
-
-		-
-			message: "#^Cannot call method getTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/Chest.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Chest.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\tile\\\\Tile\\:\\:createTile\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/Chest.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
 			path: ../../../src/pocketmine/block/ConcretePowder.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 3
-			path: ../../../src/pocketmine/block/Crops.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Crops.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Dandelion.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Dandelion.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/DeadBush.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/Dirt.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 6
-			path: ../../../src/pocketmine/block/Door.php
 
 		-
 			message: "#^Only numeric types are allowed in \\+, int\\|null given on the left side\\.$#"
@@ -491,29 +351,14 @@ parameters:
 			path: ../../../src/pocketmine/block/Door.php
 
 		-
-			message: "#^Cannot call method addSound\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/block/Door.php
 
 		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			message: "#^Cannot call method addSound\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 2
-			path: ../../../src/pocketmine/block/DoublePlant.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/DoublePlant.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/EnchantingTable.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\tile\\\\Tile\\:\\:createTile\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/EnchantingTable.php
+			path: ../../../src/pocketmine/block/Door.php
 
 		-
 			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
@@ -522,26 +367,6 @@ parameters:
 
 		-
 			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/EnderChest.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\tile\\\\Tile\\:\\:createTile\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/EnderChest.php
-
-		-
-			message: "#^Cannot call method getTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/EnderChest.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Fallable.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\entity\\\\Entity\\:\\:createEntity\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Fallable.php
 
@@ -561,19 +386,9 @@ parameters:
 			path: ../../../src/pocketmine/block/FenceGate.php
 
 		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/FenceGate.php
-
-		-
 			message: "#^Cannot call method addSound\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/FenceGate.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 4
-			path: ../../../src/pocketmine/block/Fire.php
 
 		-
 			message: "#^Cannot call method scheduleDelayedBlockUpdate\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
@@ -582,48 +397,13 @@ parameters:
 
 		-
 			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Flower.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Flower.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/FlowerPot.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\tile\\\\Tile\\:\\:createTile\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/FlowerPot.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/FlowerPot.php
-
-		-
-			message: "#^Cannot call method getTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/FlowerPot.php
+			count: 3
+			path: ../../../src/pocketmine/block/Fire.php
 
 		-
 			message: "#^Only numeric types are allowed in \\-, int\\|null given on the left side\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/GlazedTerracotta.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/GlazedTerracotta.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/GlowingRedstoneOre.php
 
 		-
 			message: "#^Cannot call method getFullLightAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
@@ -637,7 +417,7 @@ parameters:
 
 		-
 			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 4
+			count: 2
 			path: ../../../src/pocketmine/block/Grass.php
 
 		-
@@ -651,24 +431,9 @@ parameters:
 			path: ../../../src/pocketmine/block/Grass.php
 
 		-
-			message: "#^Parameter \\#1 \\$level of static method pocketmine\\\\level\\\\generator\\\\object\\\\TallGrass\\:\\:growGrass\\(\\) expects pocketmine\\\\level\\\\ChunkManager, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Grass.php
-
-		-
 			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/GrassPath.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/HayBale.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Ice.php
 
 		-
 			message: "#^Cannot call method getHighestAdjacentBlockLight\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
@@ -686,11 +451,6 @@ parameters:
 			path: ../../../src/pocketmine/block/ItemFrame.php
 
 		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\tile\\\\Tile\\:\\:createTile\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/ItemFrame.php
-
-		-
 			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/ItemFrame.php
@@ -699,36 +459,11 @@ parameters:
 			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/ItemFrame.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Ladder.php
 
 		-
 			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Ladder.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Lava.php
-
-		-
-			message: "#^Cannot call method scheduleDelayedBlockUpdate\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Lava.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 3
-			path: ../../../src/pocketmine/block/Leaves.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Leaves.php
 
 		-
 			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
@@ -766,119 +501,14 @@ parameters:
 			path: ../../../src/pocketmine/block/Liquid.php
 
 		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/MelonStem.php
-
-		-
-			message: "#^Cannot call method getBlockAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Mycelium.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Mycelium.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/NetherWartPlant.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/NetherWartPlant.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Pumpkin.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/PumpkinStem.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Quartz.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/RedMushroom.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/RedMushroom.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 3
-			path: ../../../src/pocketmine/block/RedstoneOre.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/Sapling.php
-
-		-
-			message: "#^Parameter \\#1 \\$level of static method pocketmine\\\\level\\\\generator\\\\object\\\\Tree\\:\\:growTree\\(\\) expects pocketmine\\\\level\\\\ChunkManager, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/Sapling.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Sapling.php
-
-		-
 			message: "#^Cannot call method getFullLightAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Sapling.php
 
 		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/SignPost.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\tile\\\\Tile\\:\\:createTile\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/SignPost.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/SignPost.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Skull.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\tile\\\\Tile\\:\\:createTile\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Skull.php
-
-		-
 			message: "#^Cannot call method getTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Skull.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 6
-			path: ../../../src/pocketmine/block/Slab.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 3
-			path: ../../../src/pocketmine/block/SnowLayer.php
 
 		-
 			message: "#^Cannot call method getBlockLightAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
@@ -886,74 +516,9 @@ parameters:
 			path: ../../../src/pocketmine/block/SnowLayer.php
 
 		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Stair.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/StandingBanner.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\tile\\\\Tile\\:\\:createTile\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/StandingBanner.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/StandingBanner.php
-
-		-
 			message: "#^Cannot call method getTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/StandingBanner.php
-
-		-
-			message: "#^Cannot call method getBlockAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/Sugarcane.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 7
-			path: ../../../src/pocketmine/block/Sugarcane.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Sugarcane.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/TNT.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\entity\\\\Entity\\:\\:createEntity\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/TNT.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/TallGrass.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Torch.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/Torch.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/Trapdoor.php
 
 		-
 			message: "#^Cannot call method addSound\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
@@ -961,49 +526,14 @@ parameters:
 			path: ../../../src/pocketmine/block/Trapdoor.php
 
 		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/block/Vine.php
-
-		-
 			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Vine.php
 
 		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/WallBanner.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/WallSign.php
-
-		-
 			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/block/Water.php
-
-		-
-			message: "#^Cannot call method scheduleDelayedBlockUpdate\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Water.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/WaterLily.php
-
-		-
-			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/WaterLily.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Wood.php
+			path: ../../../src/pocketmine/block/Vine.php
 
 		-
 			message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, string\\|null given\\.$#"
@@ -1067,18 +597,13 @@ parameters:
 
 		-
 			message: "#^Cannot call method getSeed\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
+			count: 1
 			path: ../../../src/pocketmine/command/defaults/SeedCommand.php
 
 		-
 			message: "#^Cannot call method setSpawnLocation\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/command/defaults/SetWorldSpawnCommand.php
-
-		-
-			message: "#^Cannot call method getSpawnLocation\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/SpawnpointCommand.php
 
 		-
 			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getPlayer\\(\\) expects string, string\\|null given\\.$#"
@@ -1187,11 +712,6 @@ parameters:
 
 		-
 			message: "#^Cannot call method getTickRateTime\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/entity/Entity.php
-
-		-
-			message: "#^Parameter \\#1 \\$targetLevel of method pocketmine\\\\entity\\\\Entity\\:\\:switchLevel\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/entity/Entity.php
 
@@ -1321,16 +841,6 @@ parameters:
 			path: ../../../src/pocketmine/entity/Living.php
 
 		-
-			message: "#^Cannot call method getDifficulty\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/entity/Living.php
-
-		-
-			message: "#^Cannot call method dropItem\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/entity/Living.php
-
-		-
 			message: "#^Cannot call method dropExperience\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/entity/Living.php
@@ -1367,16 +877,6 @@ parameters:
 
 		-
 			message: "#^Cannot call method getBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/entity/object/FallingBlock.php
-
-		-
-			message: "#^Cannot call method dropItem\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/entity/object/FallingBlock.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/entity/object/FallingBlock.php
 
@@ -1486,18 +986,8 @@ parameters:
 			path: ../../../src/pocketmine/entity/projectile/SplashPotion.php
 
 		-
-			message: "#^Cannot call method getServer\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/event/entity/EntityDamageByChildEntityEvent.php
-
-		-
 			message: "#^Cannot call method getEffectLevel\\(\\) on pocketmine\\\\entity\\\\EffectInstance\\|null\\.$#"
 			count: 2
-			path: ../../../src/pocketmine/event/entity/EntityDamageByEntityEvent.php
-
-		-
-			message: "#^Cannot call method getServer\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
 			path: ../../../src/pocketmine/event/entity/EntityDamageByEntityEvent.php
 
 		-
@@ -1506,24 +996,9 @@ parameters:
 			path: ../../../src/pocketmine/inventory/BaseInventory.php
 
 		-
-			message: "#^Cannot call method broadcastLevelSoundEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/inventory/ChestInventory.php
-
-		-
-			message: "#^Cannot call method broadcastPacketToViewers\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/inventory/ChestInventory.php
-
-		-
 			message: "#^Method pocketmine\\\\inventory\\\\CraftingManager\\:\\:getCraftingDataPacket\\(\\) should return pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket but returns pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/inventory/CraftingManager.php
-
-		-
-			message: "#^Cannot call method getServer\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/inventory/PlayerInventory.php
 
 		-
 			message: "#^Parameter \\#2 \\$recipe of class pocketmine\\\\event\\\\inventory\\\\CraftItemEvent constructor expects pocketmine\\\\inventory\\\\CraftingRecipe, pocketmine\\\\inventory\\\\CraftingRecipe\\|null given\\.$#"
@@ -1546,34 +1021,9 @@ parameters:
 			path: ../../../src/pocketmine/item/Banner.php
 
 		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\entity\\\\Entity\\:\\:createEntity\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/Bow.php
-
-		-
-			message: "#^Cannot call method broadcastLevelSoundEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/Bow.php
-
-		-
 			message: "#^Cannot call method spawnToAll\\(\\) on pocketmine\\\\entity\\\\Entity\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/item/Bow.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/item/Bucket.php
-
-		-
-			message: "#^Cannot call method broadcastLevelSoundEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/item/Bucket.php
-
-		-
-			message: "#^Cannot call method getWorldHeight\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/ChorusFruit.php
 
 		-
 			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
@@ -1596,16 +1046,6 @@ parameters:
 			path: ../../../src/pocketmine/item/PaintingItem.php
 
 		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\entity\\\\Entity\\:\\:createEntity\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/PaintingItem.php
-
-		-
-			message: "#^Cannot call method broadcastLevelEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/PaintingItem.php
-
-		-
 			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/item/PoisonousPotato.php
@@ -1614,16 +1054,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
 			count: 32
 			path: ../../../src/pocketmine/item/Potion.php
-
-		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\entity\\\\Entity\\:\\:createEntity\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/ProjectileItem.php
-
-		-
-			message: "#^Cannot call method broadcastLevelSoundEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/ProjectileItem.php
 
 		-
 			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
@@ -1641,11 +1071,6 @@ parameters:
 			path: ../../../src/pocketmine/item/RottenFlesh.php
 
 		-
-			message: "#^Parameter \\#2 \\$level of static method pocketmine\\\\entity\\\\Entity\\:\\:createEntity\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/SpawnEgg.php
-
-		-
 			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/item/SpiderEye.php
@@ -1659,16 +1084,6 @@ parameters:
 			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\EnchantmentList\\:\\:getSlot\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\EnchantmentEntry but returns pocketmine\\\\item\\\\enchantment\\\\EnchantmentEntry\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/item/enchantment/EnchantmentList.php
-
-		-
-			message: "#^Property pocketmine\\\\level\\\\Explosion\\:\\:\\$level \\(pocketmine\\\\level\\\\Level\\) does not accept pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
-			message: "#^Parameter \\#1 \\$level of class pocketmine\\\\level\\\\utils\\\\SubChunkIteratorManager constructor expects pocketmine\\\\level\\\\ChunkManager, pocketmine\\\\level\\\\Level\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Explosion.php
 
 		-
 			message: "#^Cannot call method getBlockId\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
@@ -1819,16 +1234,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$chunk of class pocketmine\\\\level\\\\generator\\\\PopulationTask constructor expects pocketmine\\\\level\\\\format\\\\Chunk, pocketmine\\\\level\\\\format\\\\Chunk\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Cannot call method getName\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Location.php
-
-		-
-			message: "#^Cannot call method getName\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Position.php
 
 		-
 			message: "#^Method pocketmine\\\\level\\\\biome\\\\Biome\\:\\:getBiome\\(\\) should return pocketmine\\\\level\\\\biome\\\\Biome but returns pocketmine\\\\level\\\\biome\\\\Biome\\|null\\.$#"
@@ -2261,11 +1666,6 @@ parameters:
 			path: ../../../src/pocketmine/tile/Chest.php
 
 		-
-			message: "#^Cannot call method isInLoadedTerrain\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/tile/Chest.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of class pocketmine\\\\math\\\\Vector3 constructor expects float\\|int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/tile/Chest.php
@@ -2276,7 +1676,12 @@ parameters:
 			path: ../../../src/pocketmine/tile/Chest.php
 
 		-
-			message: "#^Cannot call method getTileAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getTileAt\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Chest.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getTileAt\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/tile/Chest.php
 
@@ -2288,11 +1693,6 @@ parameters:
 		-
 			message: "#^Argument of an invalid type pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null supplied for foreach, only iterables are supported\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/tile/Furnace.php
-
-		-
-			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 2
 			path: ../../../src/pocketmine/tile/Furnace.php
 
 		-
@@ -2304,11 +1704,6 @@ parameters:
 			message: "#^Cannot call method clearChunkCache\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/tile/Spawnable.php
-
-		-
-			message: "#^Cannot call method addTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/tile/Tile.php
 
 		-
 			message: "#^Cannot clone non\\-object variable \\$customBlockDataTag of type pocketmine\\\\nbt\\\\tag\\\\NamedTag\\|null\\.$#"
@@ -2369,11 +1764,6 @@ parameters:
 			message: "#^Method pocketmine\\\\utils\\\\MainLogger\\:\\:getLogger\\(\\) should return pocketmine\\\\utils\\\\MainLogger but returns pocketmine\\\\utils\\\\MainLogger\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/utils/MainLogger.php
-
-		-
-			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|null given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/utils/TextFormat.php
 
 		-
 			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, string\\|null given\\.$#"

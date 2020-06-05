@@ -49,7 +49,7 @@ class PumpkinStem extends Crops{
 				$ev = new BlockGrowEvent($this, $block);
 				$ev->call();
 				if(!$ev->isCancelled()){
-					$this->getLevel()->setBlock($this, $ev->getNewState(), true);
+					$this->getLevelNonNull()->setBlock($this, $ev->getNewState(), true);
 				}
 			}else{
 				for($side = 2; $side <= 5; ++$side){
@@ -64,7 +64,7 @@ class PumpkinStem extends Crops{
 					$ev = new BlockGrowEvent($side, BlockFactory::get(Block::PUMPKIN));
 					$ev->call();
 					if(!$ev->isCancelled()){
-						$this->getLevel()->setBlock($side, $ev->getNewState(), true);
+						$this->getLevelNonNull()->setBlock($side, $ev->getNewState(), true);
 					}
 				}
 			}

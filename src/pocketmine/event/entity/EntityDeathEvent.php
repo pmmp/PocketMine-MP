@@ -29,13 +29,16 @@ use pocketmine\item\Item;
 class EntityDeathEvent extends EntityEvent{
 	/** @var Item[] */
 	private $drops = [];
+	/** @var int */
+	private $xp;
 
 	/**
 	 * @param Item[] $drops
 	 */
-	public function __construct(Living $entity, array $drops = []){
+	public function __construct(Living $entity, array $drops = [], int $xp = 0){
 		$this->entity = $entity;
 		$this->drops = $drops;
+		$this->xp = $xp;
 	}
 
 	/**
@@ -57,5 +60,22 @@ class EntityDeathEvent extends EntityEvent{
 	 */
 	public function setDrops(array $drops) : void{
 		$this->drops = $drops;
+	}
+
+	/**
+	 * Returns how much experience is dropped due to this entity's death.
+	 */
+	public function getXpDropAmount() : int{
+		return $this->xp;
+	}
+
+	/**
+	 * @throws \InvalidArgumentException
+	 */
+	public function setXpDropAmount(int $xp) : void{
+		if($xp < 0){
+			throw new \InvalidArgumentException("XP drop amount must not be negative");
+		}
+		$this->xp = $xp;
 	}
 }

@@ -42,7 +42,7 @@ class SnowLayer extends Flowable{
 	}
 
 	public function canBeReplaced() : bool{
-		return true;
+		return $this->meta < 7; //8 snow layers
 	}
 
 	public function getHardness() : float{
@@ -57,10 +57,16 @@ class SnowLayer extends Flowable{
 		return TieredTool::TIER_WOODEN;
 	}
 
+	private function canBeSupportedBy(Block $b) : bool{
+		return $b->isSolid() or ($b->getId() === $this->getId() and $b->getDamage() === 7);
+	}
+
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		if($blockReplace->getSide(Vector3::SIDE_DOWN)->isSolid()){
-			//TODO: fix placement
-			$this->getLevel()->setBlock($blockReplace, $this, true);
+		if($blockReplace->getId() === $this->getId() and $blockReplace->getDamage() < 7){
+			$this->setDamage($blockReplace->getDamage() + 1);
+		}
+		if($this->canBeSupportedBy($blockReplace->getSide(Vector3::SIDE_DOWN))){
+			$this->getLevelNonNull()->setBlock($blockReplace, $this, true);
 
 			return true;
 		}
@@ -69,8 +75,8 @@ class SnowLayer extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Vector3::SIDE_DOWN)->isSolid()){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
+		if(!$this->canBeSupportedBy($this->getSide(Vector3::SIDE_DOWN))){
+			$this->getLevelNonNull()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
 		}
 	}
 
@@ -80,7 +86,7 @@ class SnowLayer extends Flowable{
 
 	public function onRandomTick() : void{
 		if($this->level->getBlockLightAt($this->x, $this->y, $this->z) >= 12){
-			$this->getLevel()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
+			$this->getLevelNonNull()->setBlock($this, BlockFactory::get(Block::AIR), false, false);
 		}
 	}
 

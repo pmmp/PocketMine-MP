@@ -61,7 +61,12 @@ class UUID{
 	 * Creates an UUID from an hexadecimal representation
 	 */
 	public static function fromString(string $uuid, int $version = null) : UUID{
-		return self::fromBinary(hex2bin(str_replace("-", "", trim($uuid))), $version);
+		//TODO: should we be stricter about the notation (8-4-4-4-12)?
+		$binary = @hex2bin(str_replace("-", "", trim($uuid)));
+		if($binary === false){
+			throw new \InvalidArgumentException("Invalid hex string UUID representation");
+		}
+		return self::fromBinary($binary, $version);
 	}
 
 	/**

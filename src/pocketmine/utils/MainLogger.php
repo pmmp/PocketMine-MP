@@ -314,7 +314,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		}
 
 		$this->synchronized(function() use ($message, $level, $time) : void{
-			echo Terminal::toANSI($message) . PHP_EOL;
+			Terminal::writeLine($message);
 
 			foreach($this->attachments as $attachment){
 				$attachment->call($level, $message);

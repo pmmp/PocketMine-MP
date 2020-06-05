@@ -93,13 +93,13 @@ class PaintingItem extends Item{
 		$nbt->setInt("TileY", $blockClicked->getFloorY());
 		$nbt->setInt("TileZ", $blockClicked->getFloorZ());
 
-		$entity = Entity::createEntity("Painting", $blockReplace->getLevel(), $nbt);
+		$entity = Entity::createEntity("Painting", $blockReplace->getLevelNonNull(), $nbt);
 
 		if($entity instanceof Entity){
 			$this->pop();
 			$entity->spawnToAll();
 
-			$player->getLevel()->broadcastLevelEvent($blockReplace->add(0.5, 0.5, 0.5), LevelEventPacket::EVENT_SOUND_ITEMFRAME_PLACE); //item frame and painting have the same sound
+			$player->getLevelNonNull()->broadcastLevelEvent($blockReplace->add(0.5, 0.5, 0.5), LevelEventPacket::EVENT_SOUND_ITEMFRAME_PLACE); //item frame and painting have the same sound
 			return true;
 		}
 

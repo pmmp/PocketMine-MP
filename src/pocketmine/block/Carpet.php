@@ -64,7 +64,7 @@ class Carpet extends Flowable{
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$down = $this->getSide(Vector3::SIDE_DOWN);
 		if($down->getId() !== self::AIR){
-			$this->getLevel()->setBlock($blockReplace, $this, true, true);
+			$this->getLevelNonNull()->setBlock($blockReplace, $this, true, true);
 
 			return true;
 		}
@@ -74,7 +74,7 @@ class Carpet extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){
-			$this->getLevel()->useBreakOn($this);
+			$this->getLevelNonNull()->useBreakOn($this);
 		}
 	}
 

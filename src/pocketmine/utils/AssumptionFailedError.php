@@ -21,42 +21,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory;
+namespace pocketmine\utils;
 
-use pocketmine\item\Item;
+/**
+ * This exception should be thrown in places where something is assumed to be true, but the type system does not provide
+ * a guarantee. This makes static analysers happy and makes sure that the server will crash properly if any assumption
+ * does not hold.
+ */
+final class AssumptionFailedError extends \Error{
 
-class FurnaceRecipe implements Recipe{
-
-	/** @var Item */
-	private $output;
-
-	/** @var Item */
-	private $ingredient;
-
-	public function __construct(Item $result, Item $ingredient){
-		$this->output = clone $result;
-		$this->ingredient = clone $ingredient;
-	}
-
-	/**
-	 * @return void
-	 */
-	public function setInput(Item $item){
-		$this->ingredient = clone $item;
-	}
-
-	public function getInput() : Item{
-		return clone $this->ingredient;
-	}
-
-	public function getResult() : Item{
-		return clone $this->output;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public function registerToCraftingManager(CraftingManager $manager) : void{
-		$manager->registerFurnaceRecipe($this);
-	}
 }

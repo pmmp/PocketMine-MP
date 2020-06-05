@@ -60,7 +60,7 @@ class CraftingManager{
 					if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
 						break;
 					}
-					$this->registerRecipe(new ShapelessRecipe(
+					$this->registerShapelessRecipe(new ShapelessRecipe(
 						array_map($itemDeserializerFunc, $recipe["input"]),
 						array_map($itemDeserializerFunc, $recipe["output"])
 					));
@@ -69,7 +69,7 @@ class CraftingManager{
 					if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
 						break;
 					}
-					$this->registerRecipe(new ShapedRecipe(
+					$this->registerShapedRecipe(new ShapedRecipe(
 						$recipe["shape"],
 						array_map($itemDeserializerFunc, $recipe["input"]),
 						array_map($itemDeserializerFunc, $recipe["output"])
@@ -79,7 +79,7 @@ class CraftingManager{
 					if($recipe["block"] !== "furnace"){ //TODO: filter others out for now to avoid breaking economics
 						break;
 					}
-					$this->registerRecipe(new FurnaceRecipe(
+					$this->registerFurnaceRecipe(new FurnaceRecipe(
 						Item::jsonDeserialize($recipe["output"]),
 						Item::jsonDeserialize($recipe["input"]))
 					);
@@ -281,6 +281,9 @@ class CraftingManager{
 		return $this->furnaceRecipes[$input->getId() . ":" . $input->getDamage()] ?? $this->furnaceRecipes[$input->getId() . ":?"] ?? null;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function registerRecipe(Recipe $recipe) : void{
 		$recipe->registerToCraftingManager($this);
 	}

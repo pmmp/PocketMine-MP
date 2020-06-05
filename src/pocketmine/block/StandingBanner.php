@@ -62,13 +62,13 @@ class StandingBanner extends Transparent{
 		if($face !== Vector3::SIDE_DOWN){
 			if($face === Vector3::SIDE_UP and $player !== null){
 				$this->meta = floor((($player->yaw + 180) * 16 / 360) + 0.5) & 0x0f;
-				$this->getLevel()->setBlock($blockReplace, $this, true);
+				$this->getLevelNonNull()->setBlock($blockReplace, $this, true);
 			}else{
 				$this->meta = $face;
-				$this->getLevel()->setBlock($blockReplace, BlockFactory::get(Block::WALL_BANNER, $this->meta), true);
+				$this->getLevelNonNull()->setBlock($blockReplace, BlockFactory::get(Block::WALL_BANNER, $this->meta), true);
 			}
 
-			Tile::createTile(Tile::BANNER, $this->getLevel(), TileBanner::createNBT($this, $face, $item, $player));
+			Tile::createTile(Tile::BANNER, $this->getLevelNonNull(), TileBanner::createNBT($this, $face, $item, $player));
 			return true;
 		}
 
@@ -77,7 +77,7 @@ class StandingBanner extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Vector3::SIDE_DOWN)->getId() === self::AIR){
-			$this->getLevel()->useBreakOn($this);
+			$this->getLevelNonNull()->useBreakOn($this);
 		}
 	}
 

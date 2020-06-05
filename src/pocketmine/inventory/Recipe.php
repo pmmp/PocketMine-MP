@@ -23,7 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+/**
+ * @deprecated
+ */
 interface Recipe{
 
+	/**
+	 * @deprecated
+	 */
 	public function registerToCraftingManager(CraftingManager $manager) : void;
 }

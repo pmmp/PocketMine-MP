@@ -53,6 +53,6 @@ class GlowingRedstoneOre extends RedstoneOre{
 	}
 
 	public function onRandomTick() : void{
-		$this->getLevel()->setBlock($this, BlockFactory::get(Block::REDSTONE_ORE, $this->meta), false, false);
+		$this->getLevelNonNull()->setBlock($this, BlockFactory::get(Block::REDSTONE_ORE, $this->meta), false, false);
 	}
 }

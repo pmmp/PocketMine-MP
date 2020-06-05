@@ -37,6 +37,7 @@ use pocketmine\level\particle\CriticalParticle;
 use pocketmine\level\particle\DustParticle;
 use pocketmine\level\particle\EnchantmentTableParticle;
 use pocketmine\level\particle\EnchantParticle;
+use pocketmine\level\particle\EntityFlameParticle;
 use pocketmine\level\particle\ExplodeParticle;
 use pocketmine\level\particle\FlameParticle;
 use pocketmine\level\particle\HappyVillagerParticle;
@@ -91,7 +92,7 @@ class ParticleCommand extends VanillaCommand{
 		}
 
 		if($sender instanceof Player){
-			$level = $sender->getLevel();
+			$level = $sender->getLevelNonNull();
 			$pos = new Vector3(
 				$this->getRelativeDouble($sender->getX(), $sender, $args[1]),
 				$this->getRelativeDouble($sender->getY(), $sender, $args[2], 0, Level::Y_MAX),
@@ -204,7 +205,8 @@ class ParticleCommand extends VanillaCommand{
 				return new AngryVillagerParticle($pos);
 			case "forcefield":
 				return new BlockForceFieldParticle($pos, $data ?? 0);
-
+			case "mobflame":
+				return new EntityFlameParticle($pos);
 		}
 
 		if(strpos($name, "iconcrack_") === 0){

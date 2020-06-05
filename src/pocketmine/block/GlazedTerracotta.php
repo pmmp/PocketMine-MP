@@ -53,7 +53,7 @@ class GlazedTerracotta extends Solid{
 			$this->meta = $faces[(~($player->getDirection() - 1)) & 0x03];
 		}
 
-		return $this->getLevel()->setBlock($blockReplace, $this, true, true);
+		return $this->getLevelNonNull()->setBlock($blockReplace, $this, true, true);
 	}
 
 	public function getVariantBitmask() : int{

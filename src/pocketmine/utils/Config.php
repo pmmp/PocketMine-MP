@@ -172,6 +172,10 @@ class Config{
 		}else{
 			if($this->correct){
 				$content = file_get_contents($this->file);
+				if($content === false){
+					$this->correct = false;
+					return false;
+				}
 				$config = null;
 				switch($this->type){
 					case Config::PROPERTIES:
@@ -242,6 +246,13 @@ class Config{
 		}else{
 			return false;
 		}
+	}
+
+	/**
+	 * Returns the path of the config.
+	 */
+	public function getPath() : string{
+		return $this->file;
 	}
 
 	/**
@@ -562,7 +573,6 @@ class Config{
 
 	/**
 	 * @return mixed[]
-	 * @phpstan-return array<string, mixed>
 	 */
 	private function parseProperties(string $content) : array{
 		$result = [];

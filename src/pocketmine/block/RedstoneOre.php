@@ -47,16 +47,16 @@ class RedstoneOre extends Solid{
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
-		return $this->getLevel()->setBlock($this, $this, true, false);
+		return $this->getLevelNonNull()->setBlock($this, $this, true, false);
 	}
 
 	public function onActivate(Item $item, Player $player = null) : bool{
-		$this->getLevel()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
+		$this->getLevelNonNull()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
 		return false; //this shouldn't prevent block placement
 	}
 
 	public function onNearbyBlockChange() : void{
-		$this->getLevel()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
+		$this->getLevelNonNull()->setBlock($this, BlockFactory::get(Block::GLOWING_REDSTONE_ORE, $this->meta));
 	}
 
 	public function getToolType() : int{

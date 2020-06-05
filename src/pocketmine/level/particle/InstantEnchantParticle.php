@@ -24,9 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\level\particle;
 
 use pocketmine\math\Vector3;
+use pocketmine\utils\Color;
 
 class InstantEnchantParticle extends GenericParticle{
-	public function __construct(Vector3 $pos){
-		parent::__construct($pos, Particle::TYPE_MOB_SPELL_INSTANTANEOUS);
+	public function __construct(Vector3 $pos, ?Color $color = null){
+		parent::__construct($pos, Particle::TYPE_MOB_SPELL_INSTANTANEOUS, $color !== null ? $color->toARGB() : 0);
 	}
 }

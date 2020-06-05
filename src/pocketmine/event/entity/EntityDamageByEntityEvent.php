@@ -62,7 +62,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 * Returns the attacking entity, or null if the attacker has been killed or closed.
 	 */
 	public function getDamager() : ?Entity{
-		return $this->getEntity()->getLevel()->getServer()->findEntity($this->damagerEntityId);
+		return $this->getEntity()->getLevelNonNull()->getServer()->findEntity($this->damagerEntityId);
 	}
 
 	public function getKnockBack() : float{

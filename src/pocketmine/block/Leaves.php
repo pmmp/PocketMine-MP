@@ -139,7 +139,7 @@ class Leaves extends Transparent{
 	public function onNearbyBlockChange() : void{
 		if(($this->meta & 0b00001100) === 0){
 			$this->meta |= 0x08;
-			$this->getLevel()->setBlock($this, $this, true, false);
+			$this->getLevelNonNull()->setBlock($this, $this, true, false);
 		}
 	}
 
@@ -155,16 +155,16 @@ class Leaves extends Transparent{
 			$ev = new LeavesDecayEvent($this);
 			$ev->call();
 			if($ev->isCancelled() or $this->findLog($this, $visited, 0)){
-				$this->getLevel()->setBlock($this, $this, false, false);
+				$this->getLevelNonNull()->setBlock($this, $this, false, false);
 			}else{
-				$this->getLevel()->useBreakOn($this);
+				$this->getLevelNonNull()->useBreakOn($this);
 			}
 		}
 	}
 
 	public function place(Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, Player $player = null) : bool{
 		$this->meta |= 0x04;
-		return $this->getLevel()->setBlock($this, $this, true);
+		return $this->getLevelNonNull()->setBlock($this, $this, true);
 	}
 
 	public function getVariantBitmask() : int{

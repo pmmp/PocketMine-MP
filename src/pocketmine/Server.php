@@ -103,6 +103,7 @@ use pocketmine\updater\AutoUpdater;
 use pocketmine\utils\Color;
 use pocketmine\utils\Config;
 use pocketmine\utils\MainLogger;
+use pocketmine\utils\Process;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
@@ -1776,7 +1777,7 @@ class Server{
 		}
 
 		foreach($recipients as $recipient){
-			$recipient->addTitle($title, $subtitle, $fadeIn, $stay, $fadeOut);
+			$recipient->sendTitle($title, $subtitle, $fadeIn, $stay, $fadeOut);
 		}
 
 		return count($recipients);
@@ -2050,7 +2051,7 @@ class Server{
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 			$this->logger->emergency("Crashed while crashing, killing process");
-			@Utils::kill(getmypid());
+			@Process::kill(getmypid());
 		}
 
 	}
@@ -2198,17 +2199,24 @@ class Server{
 
 				if($report){
 					$url = ((bool) $this->getProperty("auto-report.use-https", true) ? "https" : "http") . "://" . $this->getProperty("auto-report.host", "crash.pmmp.io") . "/submit/api";
+					$postUrlError = "Unknown error";
 					$reply = Internet::postURL($url, [
 						"report" => "yes",
 						"name" => $this->getName() . " " . $this->getPocketMineVersion(),
 						"email" => "crash@pocketmine.net",
 						"reportPaste" => base64_encode($dump->getEncodedData())
-					]);
+					], 10, [], $postUrlError);
 
-					if($reply !== false and ($data = json_decode($reply)) !== null and isset($data->crashId) and isset($data->crashUrl)){
-						$reportId = $data->crashId;
-						$reportUrl = $data->crashUrl;
-						$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.archive", [$reportUrl, $reportId]));
+					if($reply !== false and ($data = json_decode($reply)) !== null){
+						if(isset($data->crashId) and isset($data->crashUrl)){
+							$reportId = $data->crashId;
+							$reportUrl = $data->crashUrl;
+							$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.archive", [$reportUrl, $reportId]));
+						}elseif(isset($data->error)){
+							$this->logger->emergency("Automatic crash report submission failed: $data->error");
+						}
+					}else{
+						$this->logger->emergency("Failed to communicate with crash archive: $postUrlError");
 					}
 				}
 			}
@@ -2228,7 +2236,7 @@ class Server{
 			echo "--- Waiting $spacing seconds to throttle automatic restart (you can kill the process safely now) ---" . PHP_EOL;
 			sleep($spacing);
 		}
-		@Utils::kill(getmypid());
+		@Process::kill(getmypid());
 		exit(1);
 	}
 
@@ -2413,10 +2421,10 @@ class Server{
 
 	private function titleTick() : void{
 		Timings::$titleTickTimer->startTiming();
-		$d = Utils::getRealMemoryUsage();
+		$d = Process::getRealMemoryUsage();
 
-		$u = Utils::getMemoryUsage(true);
-		$usage = sprintf("%g/%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($d[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Utils::getThreadCount());
+		$u = Process::getAdvancedMemoryUsage();
+		$usage = sprintf("%g/%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($d[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Process::getThreadCount());
 
 		echo "\x1b]0;" . $this->getName() . " " .
 			$this->getPocketMineVersion() .

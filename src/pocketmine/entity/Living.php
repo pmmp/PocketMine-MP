@@ -322,7 +322,7 @@ abstract class Living extends Entity implements Damageable{
 	public function hasLineOfSight(Entity $entity) : bool{
 		//TODO: head height
 		return true;
-		//return $this->getLevel()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
+		//return $this->getLevelNonNull()->rayTraceBlocks(Vector3::createVector($this->x, $this->y + $this->height, $this->z), Vector3::createVector($entity->x, $entity->y + $entity->height, $entity->z)) === null;
 	}
 
 	/**
@@ -567,6 +567,12 @@ abstract class Living extends Entity implements Damageable{
 	 * to effects or armour.
 	 */
 	public function applyDamageModifiers(EntityDamageEvent $source) : void{
+		if($this->lastDamageCause !== null and $this->attackTime > 0){
+			if($this->lastDamageCause->getBaseDamage() >= $source->getBaseDamage()){
+				$source->setCancelled();
+			}
+			$source->setModifier(-$this->lastDamageCause->getBaseDamage(), EntityDamageEvent::MODIFIER_PREVIOUS_DAMAGE_COOLDOWN);
+		}
 		if($source->canBeReducedByArmor()){
 			//MCPE uses the same system as PC did pre-1.9
 			$source->setModifier(-$source->getFinalDamage() * $this->getArmorPoints() * 0.04, EntityDamageEvent::MODIFIER_ARMOR);
@@ -640,11 +646,6 @@ abstract class Living extends Entity implements Damageable{
 	public function attack(EntityDamageEvent $source) : void{
 		if($this->noDamageTicks > 0){
 			$source->setCancelled();
-		}elseif($this->attackTime > 0){
-			$lastCause = $this->getLastDamageCause();
-			if($lastCause !== null and $lastCause->getBaseDamage() >= $source->getBaseDamage()){
-				$source->setCancelled();
-			}
 		}
 
 		if($this->hasEffect(Effect::FIRE_RESISTANCE) and (
@@ -676,12 +677,14 @@ abstract class Living extends Entity implements Damageable{
 
 		$this->attackTime = $source->getAttackCooldown();
 
-		if($source instanceof EntityDamageByEntityEvent){
-			$e = $source->getDamager();
-			if($source instanceof EntityDamageByChildEntityEvent){
-				$e = $source->getChild();
+		if($source instanceof EntityDamageByChildEntityEvent){
+			$e = $source->getChild();
+			if($e !== null){
+				$motion = $e->getMotion();
+				$this->knockBack($e, $source->getBaseDamage(), $motion->x, $motion->z, $source->getKnockBack());
 			}
-
+		}elseif($source instanceof EntityDamageByEntityEvent){
+			$e = $source->getDamager();
 			if($e !== null){
 				$deltaX = $this->x - $e->x;
 				$deltaZ = $this->z - $e->z;
@@ -739,15 +742,14 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	protected function onDeath() : void{
-		$ev = new EntityDeathEvent($this, $this->getDrops());
+		$ev = new EntityDeathEvent($this, $this->getDrops(), $this->getXpDropAmount());
 		$ev->call();
 		foreach($ev->getDrops() as $item){
-			$this->getLevel()->dropItem($this, $item);
+			$this->getLevelNonNull()->dropItem($this, $item);
 		}
 
 		//TODO: check death conditions (must have been damaged by player < 5 seconds from death)
-		//TODO: allow this number to be manipulated during EntityDeathEvent
-		$this->level->dropExperience($this, $this->getXpDropAmount());
+		$this->level->dropExperience($this, $ev->getXpDropAmount());
 	}
 
 	protected function onDeathUpdate(int $tickDiff) : bool{

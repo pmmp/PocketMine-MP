@@ -56,11 +56,11 @@ abstract class Slab extends Transparent{
 		$this->meta &= 0x07;
 		if($face === Vector3::SIDE_DOWN){
 			if($blockClicked->getId() === $this->id and ($blockClicked->getDamage() & 0x08) === 0x08 and $blockClicked->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
+				$this->getLevelNonNull()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
 
 				return true;
 			}elseif($blockReplace->getId() === $this->id and $blockReplace->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
+				$this->getLevelNonNull()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
 
 				return true;
 			}else{
@@ -68,18 +68,18 @@ abstract class Slab extends Transparent{
 			}
 		}elseif($face === Vector3::SIDE_UP){
 			if($blockClicked->getId() === $this->id and ($blockClicked->getDamage() & 0x08) === 0 and $blockClicked->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
+				$this->getLevelNonNull()->setBlock($blockClicked, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
 
 				return true;
 			}elseif($blockReplace->getId() === $this->id and $blockReplace->getVariant() === $this->getVariant()){
-				$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
+				$this->getLevelNonNull()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
 
 				return true;
 			}
 		}else{ //TODO: collision
 			if($blockReplace->getId() === $this->id){
 				if($blockReplace->getVariant() === $this->getVariant()){
-					$this->getLevel()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
+					$this->getLevelNonNull()->setBlock($blockReplace, BlockFactory::get($this->getDoubleSlabId(), $this->getVariant()), true);
 
 					return true;
 				}
@@ -95,7 +95,7 @@ abstract class Slab extends Transparent{
 		if($blockReplace->getId() === $this->id and $blockClicked->getVariant() !== $this->getVariant()){
 			return false;
 		}
-		$this->getLevel()->setBlock($blockReplace, $this, true, true);
+		$this->getLevelNonNull()->setBlock($blockReplace, $this, true, true);
 
 		return true;
 	}
