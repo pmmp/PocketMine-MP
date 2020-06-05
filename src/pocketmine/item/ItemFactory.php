@@ -180,6 +180,8 @@ class ItemFactory{
 		self::registerItem(new Item(Item::MAGMA_CREAM, 0, "Magma Cream"));
 		self::registerItem(new ItemBlock(Block::BREWING_STAND_BLOCK, 0, Item::BREWING_STAND));
 		self::registerItem(new ItemBlock(Block::CAULDRON_BLOCK, 0, Item::CAULDRON));
+		self::registerItem(new ShulkerBox(), true);
+		self::registerItem(new UndyedShulkerBox(), true);
 		//TODO: ENDER_EYE
 		self::registerItem(new Item(Item::GLISTERING_MELON, 0, "Glistering Melon"));
 		self::registerItem(new SpawnEgg());
