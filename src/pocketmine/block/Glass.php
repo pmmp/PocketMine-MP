@@ -25,7 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 
-class Glass extends Transparent{
+class Glass extends Solid{
 
 	protected $id = self::GLASS;
 
@@ -39,6 +39,14 @@ class Glass extends Transparent{
 
 	public function getHardness() : float{
 		return 0.3;
+	}
+
+	public function getLightFilter() : int{
+		return 0;
+	}
+
+	public function isSolid() : bool{
+		return false;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
