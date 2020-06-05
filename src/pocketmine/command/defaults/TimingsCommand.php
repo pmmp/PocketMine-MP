@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
@@ -72,12 +73,12 @@ class TimingsCommand extends VanillaCommand{
 
 		if($mode === "on"){
 			TimingsHandler::setEnabled();
-			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.enable"));
+			Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.enable"));
 
 			return true;
 		}elseif($mode === "off"){
 			TimingsHandler::setEnabled(false);
-			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.disable"));
+			Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.disable"));
 			return true;
 		}
 
@@ -91,7 +92,7 @@ class TimingsCommand extends VanillaCommand{
 
 		if($mode === "reset"){
 			TimingsHandler::reload();
-			$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.reset"));
+			Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.reset"));
 		}elseif($mode === "merged" or $mode === "report" or $paste){
 			$timings = "";
 			if($paste){
@@ -160,16 +161,16 @@ class TimingsCommand extends VanillaCommand{
 							return;
 						}
 						if(isset($result[0]) && is_array($response = json_decode($result[0], true)) && isset($response["id"])){
-							$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsRead",
+							Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.timingsRead",
 								["https://" . $this->host . "/?id=" . $response["id"]]));
 						}else{
-							$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.pasteError"));
+							Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.pasteError"));
 						}
 					}
 				});
 			}else{
 				fclose($fileTimings);
-				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.timingsWrite", [$timings]));
+				Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.timingsWrite", [$timings]));
 			}
 		}
 
