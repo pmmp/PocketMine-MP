@@ -406,7 +406,7 @@ parameters:
 			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
 
 		-
-			message: "#^Parameter \\#4 \\$data of class class@anonymous/src/pocketmine/command/defaults/TimingsCommand\\.php\\:125 constructor expects array\\<string, string\\>, array\\<string, string\\|false\\> given\\.$#"
+			message: "#^Parameter \\#4 \\$data of class class@anonymous/src/pocketmine/command/defaults/TimingsCommand\\.php\\:126 constructor expects array\\<string, string\\>, array\\<string, string\\|false\\> given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
 
