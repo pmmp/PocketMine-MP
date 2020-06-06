@@ -88,7 +88,6 @@ use function unlink;
 use function xdebug_get_function_stack;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
-use const PHP_MAXPATHLEN;
 use const PHP_INT_MAX;
 use const PHP_INT_SIZE;
 use const PHP_MAXPATHLEN;
