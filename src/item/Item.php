@@ -505,6 +505,10 @@ class Item implements \JsonSerializable{
 		return 1;
 	}
 
+	public function canBeUsed() : bool{
+		return false;
+	}
+
 	/**
 	 * Called when a player uses this item on a block.
 	 */

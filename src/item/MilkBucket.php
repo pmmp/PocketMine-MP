@@ -31,6 +31,10 @@ class MilkBucket extends Item implements Consumable{
 		return 1;
 	}
 
+	public function canBeUsed() : bool{
+		return true;
+	}
+
 	public function getResidue(){
 		return VanillaItems::BUCKET();
 	}

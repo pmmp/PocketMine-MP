@@ -30,6 +30,10 @@ abstract class Food extends Item implements FoodSource{
 		return true;
 	}
 
+	public function canBeUsed() : bool{
+		return true;
+	}
+
 	/**
 	 * @return Item
 	 */

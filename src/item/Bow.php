@@ -44,6 +44,10 @@ class Bow extends Tool{
 		return 385;
 	}
 
+	public function canBeUsed() : bool{
+		return true;
+	}
+
 	public function onReleaseUsing(Player $player) : ItemUseResult{
 		$arrow = VanillaItems::ARROW();
 		if($player->hasFiniteResources() and !$player->getInventory()->contains($arrow)){
