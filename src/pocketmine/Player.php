@@ -274,6 +274,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $randomClientId;
 	/** @var string */
 	protected $xuid = "";
+	/** @var LoginPacket */
+	protected $loginPacket;
 
 	protected $windowCnt = 2;
 	/** @var int[] */
@@ -824,6 +826,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function getLocale() : string{
 		return $this->locale;
+	}
+	
+	/**
+      * @return LoginPacket
+	  */
+	public function getLoginPacket() : LoginPacket{
+		return $this->loginPacket;
 	}
 
 	/**
@@ -1896,6 +1905,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->username = TextFormat::clean($packet->username);
 		$this->displayName = $this->username;
 		$this->iusername = strtolower($this->username);
+		$this->loginPacket = $packet;
 
 		if($packet->locale !== null){
 			$this->locale = $packet->locale;
