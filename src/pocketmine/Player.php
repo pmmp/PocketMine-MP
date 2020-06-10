@@ -172,6 +172,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 use function abs;
 use function array_merge;
+use function array_values;
 use function assert;
 use function base64_decode;
 use function ceil;
@@ -742,7 +743,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 				$data->aliases = new CommandEnum();
 				$data->aliases->enumName = ucfirst($command->getName()) . "Aliases";
-				$data->aliases->enumValues = $aliases;
+				$data->aliases->enumValues = array_values($aliases);
 			}
 
 			$pk->commandData[$command->getName()] = $data;

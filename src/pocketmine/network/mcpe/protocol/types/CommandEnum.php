@@ -26,7 +26,10 @@ namespace pocketmine\network\mcpe\protocol\types;
 class CommandEnum{
 	/** @var string */
 	public $enumName;
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	public $enumValues = [];
 
 }
