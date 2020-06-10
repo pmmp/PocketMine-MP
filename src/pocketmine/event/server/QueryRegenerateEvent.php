@@ -76,7 +76,7 @@ class QueryRegenerateEvent extends ServerEvent{
 
 	public function __construct(Server $server){
 		$this->serverName = $server->getMotd();
-		$this->listPlugins = $server->getProperty("settings.query-plugins", true);
+		$this->listPlugins = (bool) $server->getProperty("settings.query-plugins", true);
 		$this->plugins = $server->getPluginManager()->getPlugins();
 		$this->players = [];
 		foreach($server->getOnlinePlayers() as $player){
