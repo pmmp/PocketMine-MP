@@ -301,7 +301,8 @@ class LevelDB extends BaseLevelProvider{
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
-		if(!$this->chunkExists($chunkX, $chunkZ)){
+		$chunkVersionRaw = $this->db->get($index . self::TAG_VERSION);
+		if($chunkVersionRaw === false){
 			return null;
 		}
 
@@ -316,7 +317,7 @@ class LevelDB extends BaseLevelProvider{
 		/** @var bool $lightPopulated */
 		$lightPopulated = true;
 
-		$chunkVersion = ord($this->db->get($index . self::TAG_VERSION));
+		$chunkVersion = ord($chunkVersionRaw);
 		$hasBeenUpgraded = $chunkVersion < self::CURRENT_LEVEL_CHUNK_VERSION;
 
 		$binaryStream = new BinaryStream();
@@ -368,7 +369,11 @@ class LevelDB extends BaseLevelProvider{
 				}
 				break;
 			case 2: // < MCPE 1.0
-				$binaryStream->setBuffer($this->db->get($index . self::TAG_LEGACY_TERRAIN));
+				$legacyTerrain = $this->db->get($index . self::TAG_LEGACY_TERRAIN);
+				if($legacyTerrain === false){
+					throw new CorruptedChunkException("Expected to find a LEGACY_TERRAIN key for this chunk version, but none found");
+				}
+				$binaryStream->setBuffer($legacyTerrain);
 				$fullIds = $binaryStream->get(32768);
 				$fullData = $binaryStream->get(16384);
 				$fullSkyLight = $binaryStream->get(16384);
