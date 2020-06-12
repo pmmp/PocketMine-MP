@@ -30,7 +30,7 @@ use function implode;
 use function sprintf;
 use function strlen;
 use function strpos;
-use function strtoupper;
+use function mb_strtoupper;
 use function substr;
 
 trait RegistryTrait{
@@ -43,11 +43,11 @@ trait RegistryTrait{
 	 * @throws \InvalidArgumentException
 	 */
 	private static function _registryRegister(string $name, object $member) : void{
-		$name = strtoupper($name);
+		$name = mb_strtoupper($name);
 		if(isset(self::$members[$name])){
 			throw new \InvalidArgumentException("\"$name\" is already reserved");
 		}
-		self::$members[strtoupper($name)] = $member;
+		self::$members[mb_strtoupper($name)] = $member;
 	}
 
 	/**
@@ -74,7 +74,7 @@ trait RegistryTrait{
 	 */
 	private static function _registryFromString(string $name) : object{
 		self::checkInit();
-		$name = strtoupper($name);
+		$name = mb_strtoupper($name);
 		if(!isset(self::$members[$name])){
 			throw new \InvalidArgumentException("No such registry member: " . self::class . "::" . $name);
 		}
