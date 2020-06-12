@@ -383,7 +383,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $lastRightClickTime = 0.0;
 	/** @var Vector3|null */
 	protected $lastRightClickPos = null;
-
+	
+	
+	/** @var string */
+	protected $deviceId;
+	/** @var string */
+	protected $deviceModel;
+	/** @var int */
+	protected $deviceOS;
+	
 	/**
 	 * @return TranslationContainer|string
 	 */
@@ -1886,7 +1894,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->username = TextFormat::clean($packet->username);
 		$this->displayName = $this->username;
 		$this->iusername = strtolower($this->username);
-
+		
+		$this->deviceId = $packet->clientData["DeviceId"];
+		$this->deviceModel = $packet->clientData["DeviceModel"];
+		$this->deviceOS = $packet->clientData["DeviceOS"];
+		
 		if($packet->locale !== null){
 			$this->locale = $packet->locale;
 		}
@@ -4076,5 +4088,17 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	public function isLoaderActive() : bool{
 		return $this->isConnected();
+	}
+	
+	public function getDeviceId() : string{
+		return $this->deviceId;
+	}
+	
+	public function getDeviceModel() : string{
+		return $this->deviceModel;
+	}
+	
+	public function getDeviceOS() : int{
+		return $this->deviceOS;
 	}
 }
