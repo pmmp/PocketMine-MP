@@ -308,7 +308,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
-		return false; //TODO: GUI stuff
+		return $this->player->handleServerSettingsRequest();
 	}
 
 	public function handleSetLocalPlayerAsInitialized(SetLocalPlayerAsInitializedPacket $packet) : bool{

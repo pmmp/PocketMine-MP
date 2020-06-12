@@ -135,6 +135,7 @@ use pocketmine\network\mcpe\protocol\ResourcePackDataInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
+use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
@@ -217,6 +218,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public const ADVENTURE = 2;
 	public const SPECTATOR = 3;
 	public const VIEW = Player::SPECTATOR;
+
+	public const FORM_NORMAL = 0;
+	public const FORM_SETTINGS = 1;
 
 	private const MOVES_PER_TICK = 2;
 	private const MOVE_BACKLOG_SIZE = 100 * self::MOVES_PER_TICK; //100 ticks backlog (5 seconds)
@@ -379,6 +383,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $formIdCounter = 0;
 	/** @var Form[] */
 	protected $forms = [];
+	/** @var Form|null */
+	protected $serverSettingsForm = null;
 
 	/** @var float */
 	protected $lastRightClickTime = 0.0;
@@ -3514,9 +3520,18 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/**
 	 * Sends a Form to the player, or queue to send it if a form is already open.
 	 */
-	public function sendForm(Form $form) : void{
+	public function sendForm(Form $form, int $type = self::FORM_NORMAL) : void{
 		$id = $this->formIdCounter++;
-		$pk = new ModalFormRequestPacket();
+		switch($type){
+			case self::FORM_NORMAL:
+				$pk = new ModalFormRequestPacket();
+				break;
+			case self::FORM_SETTINGS:
+				$pk = new ServerSettingsResponsePacket();
+				break;
+			default:
+				throw new \InvalidArgumentException("Invalid type " . $type);
+		}
 		$pk->formId = $id;
 		$pk->formData = json_encode($form);
 		if($pk->formData === false){
@@ -3545,6 +3560,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			unset($this->forms[$formId]);
 		}
 
+		return true;
+	}
+
+	public function setServerSettingsForm(?Form $form) : void{
+		$this->serverSettingsForm = $form;
+	}
+	
+	public function getServerSettingsForm() : ?Form{
+		return $this->serverSettingsForm;
+	}
+
+	public function handleServerSettingsRequest() : bool{
+		if($this->serverSettingsForm === null){
+			return false;
+		}
+		$this->sendForm($this->serverSettingsForm, self::FORM_SETTINGS);
 		return true;
 	}
 
