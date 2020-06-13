@@ -226,7 +226,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
-		if(!$this->chunkExists($chunkX, $chunkZ)){
+		$chunkVersionRaw = $this->db->get($index . self::TAG_VERSION);
+		if($chunkVersionRaw === false){
 			return null;
 		}
 
@@ -236,7 +237,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		/** @var BiomeArray|null $biomeArray */
 		$biomeArray = null;
 
-		$chunkVersion = ord($this->db->get($index . self::TAG_VERSION));
+		$chunkVersion = ord($chunkVersionRaw);
 		$hasBeenUpgraded = $chunkVersion < self::CURRENT_LEVEL_CHUNK_VERSION;
 
 		$binaryStream = new BinaryStream();
