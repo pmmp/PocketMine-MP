@@ -684,7 +684,7 @@ class NetworkSession{
 	}
 
 	public function syncGameMode(GameMode $mode, bool $isRollback = false) : void{
-		$this->sendDataPacket(SetPlayerGameTypePacket::create(TypeConverter::getInstance()->getClientFriendlyGamemode($mode)));
+		$this->sendDataPacket(SetPlayerGameTypePacket::create(TypeConverter::getInstance()->coreGameModeToProtocol($mode)));
 		$this->syncAdventureSettings($this->player);
 		if(!$isRollback){
 			$this->invManager->syncCreative();

@@ -56,7 +56,7 @@ class TypeConverter{
 	 *
 	 * @internal
 	 */
-	public function getClientFriendlyGamemode(GameMode $gamemode) : int{
+	public function coreGameModeToProtocol(GameMode $gamemode) : int{
 		switch($gamemode->id()){
 			case GameMode::SURVIVAL()->id():
 				return ProtocolGameMode::SURVIVAL;
@@ -67,6 +67,22 @@ class TypeConverter{
 				return ProtocolGameMode::ADVENTURE;
 			default:
 				throw new AssumptionFailedError("Unknown game mode");
+		}
+	}
+
+	public function protocolGameModeToCore(int $gameMode) : GameMode{
+		switch($gameMode){
+			case ProtocolGameMode::SURVIVAL:
+				return GameMode::SURVIVAL();
+			case ProtocolGameMode::CREATIVE:
+				return GameMode::CREATIVE();
+			case ProtocolGameMode::ADVENTURE:
+				return GameMode::ADVENTURE();
+			case ProtocolGameMode::CREATIVE_VIEWER:
+			case ProtocolGameMode::SURVIVAL_VIEWER:
+				return GameMode::SPECTATOR();
+			default:
+				throw new \UnexpectedValueException("Unmapped protocol game mode $gameMode");
 		}
 	}
 

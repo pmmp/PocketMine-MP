@@ -59,13 +59,13 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk = new StartGamePacket();
 		$pk->entityUniqueId = $this->player->getId();
 		$pk->entityRuntimeId = $this->player->getId();
-		$pk->playerGamemode = TypeConverter::getInstance()->getClientFriendlyGamemode($this->player->getGamemode());
+		$pk->playerGamemode = TypeConverter::getInstance()->coreGameModeToProtocol($this->player->getGamemode());
 		$pk->playerPosition = $this->player->getOffsetPosition($location);
 		$pk->pitch = $location->pitch;
 		$pk->yaw = $location->yaw;
 		$pk->seed = -1;
 		$pk->dimension = DimensionIds::OVERWORLD; //TODO: implement this properly
-		$pk->worldGamemode = TypeConverter::getInstance()->getClientFriendlyGamemode($this->server->getGamemode());
+		$pk->worldGamemode = TypeConverter::getInstance()->coreGameModeToProtocol($this->server->getGamemode());
 		$pk->difficulty = $location->getWorldNonNull()->getDifficulty();
 		$pk->spawnX = $spawnPosition->getFloorX();
 		$pk->spawnY = $spawnPosition->getFloorY();

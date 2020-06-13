@@ -582,7 +582,8 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
-		if($packet->gamemode !== $this->player->getGamemode()->getMagicNumber()){
+		$converter = TypeConverter::getInstance();
+		if(!$converter->protocolGameModeToCore($packet->gamemode)->equals($this->player->getGamemode())){
 			//Set this back to default. TODO: handle this properly
 			$this->session->syncGameMode($this->player->getGamemode(), true);
 		}
