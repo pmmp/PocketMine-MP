@@ -154,7 +154,7 @@ class ShapedRecipe implements CraftingRecipe{
 	}
 
 	public function getIngredient(int $x, int $y) : Item{
-		$exists = $this->ingredientList[$this->shape[$y]{$x}] ?? null;
+		$exists = $this->ingredientList[$this->shape[$y][$x]] ?? null;
 		return $exists !== null ? clone $exists : ItemFactory::air();
 	}
 
