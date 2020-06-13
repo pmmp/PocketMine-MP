@@ -76,7 +76,7 @@ final class QueryInfo{
 
 	public function __construct(Server $server){
 		$this->serverName = $server->getMotd();
-		$this->listPlugins = $server->getConfigGroup()->getProperty("settings.query-plugins", true);
+		$this->listPlugins = (bool) $server->getConfigGroup()->getProperty("settings.query-plugins", true);
 		$this->plugins = $server->getPluginManager()->getPlugins();
 		$this->players = $server->getOnlinePlayers();
 
