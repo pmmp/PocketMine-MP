@@ -34,8 +34,8 @@ use function gettype;
 use function is_numeric;
 use function is_object;
 use function is_string;
+use function mb_strtoupper;
 use function str_replace;
-use function strtoupper;
 use function trim;
 
 /**
@@ -375,8 +375,8 @@ class ItemFactory{
 
 		if(is_numeric($b[0])){
 			$item = self::get((int) $b[0], $meta);
-		}elseif(defined(ItemIds::class . "::" . strtoupper($b[0]))){
-			$item = self::get(constant(ItemIds::class . "::" . strtoupper($b[0])), $meta);
+		}elseif(defined(ItemIds::class . "::" . mb_strtoupper($b[0]))){
+			$item = self::get(constant(ItemIds::class . "::" . mb_strtoupper($b[0])), $meta);
 		}else{
 			throw new \InvalidArgumentException("Unable to resolve \"" . $str . "\" to a valid item");
 		}

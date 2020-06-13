@@ -59,12 +59,12 @@ use function is_dir;
 use function is_string;
 use function is_subclass_of;
 use function iterator_to_array;
+use function mb_strtoupper;
 use function mkdir;
 use function shuffle;
 use function stripos;
 use function strpos;
 use function strtolower;
-use function strtoupper;
 use const DIRECTORY_SEPARATOR;
 
 /**
@@ -379,7 +379,7 @@ class PluginManager{
 			if($version !== $serverString){
 				$pluginApi = array_pad(explode("-", $version, 2), 2, ""); //0 = version, 1 = suffix (optional)
 
-				if(strtoupper($pluginApi[1]) !== strtoupper($serverApi[1])){ //Different release phase (alpha vs. beta) or phase build (alpha.1 vs alpha.2)
+				if(mb_strtoupper($pluginApi[1]) !== mb_strtoupper($serverApi[1])){ //Different release phase (alpha vs. beta) or phase build (alpha.1 vs alpha.2)
 					continue;
 				}
 

@@ -31,7 +31,7 @@ use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\utils\Color;
 use function constant;
 use function defined;
-use function strtoupper;
+use function mb_strtoupper;
 
 class Effect{
 	public const SPEED = 1;
@@ -102,7 +102,7 @@ class Effect{
 	}
 
 	public static function getEffectByName(string $name) : ?Effect{
-		$const = self::class . "::" . strtoupper($name);
+		$const = self::class . "::" . mb_strtoupper($name);
 		if(defined($const)){
 			return self::getEffect(constant($const));
 		}

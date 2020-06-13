@@ -29,12 +29,12 @@ use function array_values;
 use function constant;
 use function defined;
 use function is_array;
+use function mb_strtoupper;
 use function phpversion;
 use function preg_match;
 use function str_replace;
 use function stripos;
 use function strlen;
-use function strtoupper;
 use function substr;
 use function version_compare;
 use function yaml_parse;
@@ -147,7 +147,7 @@ class PluginDescription{
 		$this->prefix = (string) ($plugin["prefix"] ?? $this->prefix);
 
 		if(isset($plugin["load"])){
-			$order = strtoupper($plugin["load"]);
+			$order = mb_strtoupper($plugin["load"]);
 			if(!defined(PluginLoadOrder::class . "::" . $order)){
 				throw new PluginException("Invalid PluginDescription load");
 			}else{
