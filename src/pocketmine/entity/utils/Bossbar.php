@@ -96,7 +96,7 @@ class Bossbar extends Vector3{
 	public function showTo(Player $player, bool $isViewer = true){
 		$pk = new AddActorPacket();
 		$pk->entityRuntimeId = $this->entityId;
-		$pk->type = EntityIds::SLIME;
+		$pk->type = AddActorPacket::LEGACY_ID_MAP_BC[EntityIds::SLIME];
 		$pk->metadata = $this->metadata;
 		$pk->position = $this;
 
