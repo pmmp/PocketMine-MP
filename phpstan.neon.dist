@@ -37,6 +37,7 @@ parameters:
 	stubFiles:
 		- tests/phpstan/stubs/JsonMapper.stub
 		- tests/phpstan/stubs/pthreads.stub
+		- tests/phpstan/stubs/leveldb.stub
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	staticReflectionClassNamePatterns:
 		- "#^COM$#"
