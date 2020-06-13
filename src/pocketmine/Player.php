@@ -385,6 +385,16 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $forms = [];
 	/** @var Form|null */
 	protected $serverSettingsForm = null;
+	/**
+	 * @var int
+	 * @see handleServerSettingsRequest()
+	 */
+	protected $serverSettingsWaitTick = 0;
+	/**
+	 * @var Form|null
+	 * @see handleServerSettingsRequest()
+	 */
+	protected $serverSettingsQueueForm = null;
 
 	/** @var float */
 	protected $lastRightClickTime = 0.0;
@@ -3566,7 +3576,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function setServerSettingsForm(?Form $form) : void{
 		$this->serverSettingsForm = $form;
 	}
-	
+
 	public function getServerSettingsForm() : ?Form{
 		return $this->serverSettingsForm;
 	}
@@ -3575,8 +3585,29 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($this->serverSettingsForm === null){
 			return false;
 		}
-		$this->sendForm($this->serverSettingsForm, self::FORM_SETTINGS);
+		//$this->sendForm($this->serverSettingsForm, self::FORM_SETTINGS);
+		//TODO: HACK for client bug by mojang...
+		//Send after delaying. (Use entityBaseTick because the scheduler is unavailable.)
+		$this->serverSettingsQueueForm = $this->serverSettingsForm;
+		$this->serverSettingsWaitTick = 40;//set the wait(delay) ticks.
 		return true;
+	}
+
+	public function entityBaseTick(int $tickDiff = 1): bool
+	{
+		//TODO: start hack for serversettings client bug
+		/** @see handleServerSettingsRequest() */
+		if ($this->isConnected() and !$this->closed) {
+			if ($this->serverSettingsQueueForm !== null) {
+				$this->serverSettingsWaitTick -= $tickDiff;
+				if ($this->serverSettingsWaitTick < 1) {
+					$this->sendForm($this->serverSettingsQueueForm, self::FORM_SETTINGS);
+					$this->serverSettingsQueueForm = null;
+				}
+			}
+		}
+		//TODO: end hack for serversettings client bug
+		return parent::entityBaseTick($tickDiff);
 	}
 
 	/**
