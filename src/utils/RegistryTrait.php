@@ -124,7 +124,7 @@ public static function %1$s() : %2$s{
 	return self::fromString("%1$s");
 }';
 
-		foreach(self::getAll() as $name => $member){
+		foreach(self::_registryGetAll() as $name => $member){
 			$lines[] = sprintf($fnTmpl, $name, '\\' . get_class($member));
 		}
 		return "//region auto-generated code\n" . implode("\n", $lines) . "\n\n//endregion\n";
@@ -144,7 +144,7 @@ public static function %1$s() : %2$s{
 		static $lineTmpl = " * @method static %2\$s %s()";
 
 		$thisNamespace = (new \ReflectionClass(__CLASS__))->getNamespaceName();
-		foreach(self::getAll() as $name => $member){
+		foreach(self::_registryGetAll() as $name => $member){
 			$reflect = new \ReflectionClass($member);
 			while($reflect !== false and $reflect->isAnonymous()){
 				$reflect = $reflect->getParentClass();
