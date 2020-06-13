@@ -193,6 +193,9 @@ abstract class Timezone{
 		}
 
 		$parsed = date_parse($offset);
+		if($parsed === false){
+			return false;
+		}
 		$offset = $parsed['hour'] * 3600 + $parsed['minute'] * 60 + $parsed['second'];
 
 		//After date_parse is done, put the sign back
