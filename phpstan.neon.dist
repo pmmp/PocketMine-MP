@@ -20,8 +20,9 @@ rules:
 
 parameters:
 	level: 8
-	autoload_files:
+	bootstrapFiles:
 		- tests/phpstan/bootstrap.php
+	scanFiles:
 		- src/PocketMine.php
 		- build/make-release.php
 		- build/server-phar.php
