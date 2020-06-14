@@ -95,6 +95,7 @@ use function implode;
 use function json_decode;
 use function json_encode;
 use function json_last_error_msg;
+use function max;
 use function microtime;
 use function preg_match;
 use function strlen;

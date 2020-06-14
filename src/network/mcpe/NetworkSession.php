@@ -103,7 +103,6 @@ use pocketmine\utils\Utils;
 use pocketmine\world\Position;
 use function array_map;
 use function array_values;
-use function assert;
 use function base64_encode;
 use function bin2hex;
 use function count;
