@@ -366,7 +366,7 @@ class RegionLoader{
 	}
 
 	private function bumpNextFreeSector(RegionLocationTableEntry $entry) : void{
-		$this->nextSector = max($this->nextSector, $entry->getLastSector()) + 1;
+		$this->nextSector = max($this->nextSector, $entry->getLastSector() + 1);
 	}
 
 	public function getX() : int{
