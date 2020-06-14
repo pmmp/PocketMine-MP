@@ -500,23 +500,26 @@ class Server{
 		return $result;
 	}
 
+	private function getPlayerDataPath(string $username) : string{
+		return $this->getDataPath() . '/players/' . strtolower($username) . '.dat';
+	}
+
 	/**
 	 * Returns whether the server has stored any saved data for this player.
 	 */
 	public function hasOfflinePlayerData(string $name) : bool{
-		$name = strtolower($name);
-		return file_exists($this->getDataPath() . "players/$name.dat");
+		return file_exists($this->getPlayerDataPath($name));
 	}
 
 	public function getOfflinePlayerData(string $name) : ?CompoundTag{
 		$name = strtolower($name);
-		$path = $this->getDataPath() . "players/";
+		$path = $this->getPlayerDataPath($name);
 
-		if(file_exists($path . "$name.dat")){
+		if(file_exists($path)){
 			try{
-				return (new BigEndianNbtSerializer())->readCompressed(file_get_contents($path . "$name.dat"))->mustGetCompoundTag();
+				return (new BigEndianNbtSerializer())->readCompressed(file_get_contents($path))->mustGetCompoundTag();
 			}catch(NbtDataException $e){ //zlib decode error / corrupt data
-				rename($path . "$name.dat", $path . "$name.dat.bak");
+				rename($path, $path . '.bak');
 				$this->logger->error($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
 			}
 		}
@@ -532,7 +535,7 @@ class Server{
 		if(!$ev->isCancelled()){
 			$nbt = new BigEndianNbtSerializer();
 			try{
-				file_put_contents($this->getDataPath() . "players/" . strtolower($name) . ".dat", $nbt->writeCompressed(new TreeRoot($ev->getSaveData())));
+				file_put_contents($this->getPlayerDataPath($name), $nbt->writeCompressed(new TreeRoot($ev->getSaveData())));
 			}catch(\ErrorException $e){
 				$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
 				$this->logger->logException($e);
