@@ -197,12 +197,18 @@ class World implements ChunkManager{
 	/** @var Vector3[][] */
 	private $changedBlocks = [];
 
-	/** @var ReversePriorityQueue */
+	/**
+	 * @var ReversePriorityQueue
+	 * @phpstan-var ReversePriorityQueue<int, Vector3>
+	 */
 	private $scheduledBlockUpdateQueue;
 	/** @var int[] */
 	private $scheduledBlockUpdateQueueIndex = [];
 
-	/** @var \SplQueue */
+	/**
+	 * @var \SplQueue
+	 * @phpstan-var \SplQueue<int>
+	 */
 	private $neighbourBlockUpdateQueue;
 	/** @var bool[] blockhash => dummy */
 	private $neighbourBlockUpdateQueueIndex = [];

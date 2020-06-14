@@ -49,7 +49,10 @@ class AsyncPool{
 	/** @var int */
 	private $workerMemoryLimit;
 
-	/** @var \SplQueue[]|AsyncTask[][] */
+	/**
+	 * @var \SplQueue[]|AsyncTask[][]
+	 * @phpstan-var array<int, \SplQueue<AsyncTask>>
+	 */
 	private $taskQueues = [];
 
 	/**

@@ -751,34 +751,9 @@ parameters:
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Cannot call method enqueue\\(\\) on array\\<pocketmine\\\\scheduler\\\\AsyncTask\\>\\|SplQueue\\.$#"
+			message: "#^Cannot call method getNextRun\\(\\) on array\\<string, int\\|pocketmine\\\\scheduler\\\\TaskHandler\\>\\|int\\|pocketmine\\\\scheduler\\\\TaskHandler\\.$#"
 			count: 1
-			path: ../../../src/scheduler/AsyncPool.php
-
-		-
-			message: "#^Cannot call method count\\(\\) on array\\<pocketmine\\\\scheduler\\\\AsyncTask\\>\\|SplQueue\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncPool.php
-
-		-
-			message: "#^Method pocketmine\\\\scheduler\\\\AsyncPool\\:\\:selectWorker\\(\\) should return int but returns int\\|string\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncPool.php
-
-		-
-			message: "#^Cannot call method isEmpty\\(\\) on array\\<pocketmine\\\\scheduler\\\\AsyncTask\\>\\|SplQueue\\.$#"
-			count: 3
-			path: ../../../src/scheduler/AsyncPool.php
-
-		-
-			message: "#^Cannot call method bottom\\(\\) on array\\<pocketmine\\\\scheduler\\\\AsyncTask\\>\\|SplQueue\\.$#"
-			count: 1
-			path: ../../../src/scheduler/AsyncPool.php
-
-		-
-			message: "#^Cannot call method dequeue\\(\\) on array\\<pocketmine\\\\scheduler\\\\AsyncTask\\>\\|SplQueue\\.$#"
-			count: 2
-			path: ../../../src/scheduler/AsyncPool.php
+			path: ../../../src/scheduler/TaskScheduler.php
 
 		-
 			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, string\\|false given\\.$#"
@@ -892,6 +867,16 @@ parameters:
 
 		-
 			message: "#^Parameter \\#2 \\$generatorClass of class pocketmine\\\\world\\\\generator\\\\GeneratorRegisterTask constructor expects string, pocketmine\\\\world\\\\generator\\\\Generator\\|string given\\.$#"
+			count: 1
+			path: ../../../src/world/World.php
+
+		-
+			message: "#^Cannot access offset 'priority' on array\\('priority' \\=\\> int, 'data' \\=\\> pocketmine\\\\math\\\\Vector3\\)\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
+			count: 1
+			path: ../../../src/world/World.php
+
+		-
+			message: "#^Cannot access offset 'data' on array\\('priority' \\=\\> int, 'data' \\=\\> pocketmine\\\\math\\\\Vector3\\)\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
 

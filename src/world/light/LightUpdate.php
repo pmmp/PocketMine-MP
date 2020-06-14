@@ -42,7 +42,10 @@ abstract class LightUpdate{
 	 */
 	protected $updateNodes = [];
 
-	/** @var \SplQueue */
+	/**
+	 * @var \SplQueue
+	 * @phpstan-var \SplQueue<array{int, int, int}>
+	 */
 	protected $spreadQueue;
 	/**
 	 * @var true[]
@@ -50,7 +53,10 @@ abstract class LightUpdate{
 	 */
 	protected $spreadVisited = [];
 
-	/** @var \SplQueue */
+	/**
+	 * @var \SplQueue
+	 * @phpstan-var \SplQueue<array{int, int, int, int}>
+	 */
 	protected $removalQueue;
 	/**
 	 * @var true[]

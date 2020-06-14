@@ -154,7 +154,10 @@ class NetworkSession{
 	/** @var PacketBatch|null */
 	private $sendBuffer;
 
-	/** @var \SplQueue|CompressBatchPromise[] */
+	/**
+	 * @var \SplQueue|CompressBatchPromise[]
+	 * @phpstan-var \SplQueue<CompressBatchPromise>
+	 */
 	private $compressedQueue;
 	/** @var Compressor */
 	private $compressor;

@@ -36,7 +36,10 @@ class TaskScheduler{
 	/** @var bool */
 	private $enabled = true;
 
-	/** @var ReversePriorityQueue<TaskHandler> */
+	/**
+	 * @var ReversePriorityQueue
+	 * @phpstan-var ReversePriorityQueue<int, TaskHandler>
+	 */
 	protected $queue;
 
 	/** @var TaskHandler[] */
