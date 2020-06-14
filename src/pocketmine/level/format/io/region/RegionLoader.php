@@ -40,6 +40,7 @@ use function fseek;
 use function ftruncate;
 use function fwrite;
 use function is_resource;
+use function ksort;
 use function max;
 use function ord;
 use function pack;
@@ -313,6 +314,18 @@ class RegionLoader{
 				throw new CorruptedRegionException("Found two chunk offsets (chunk1: x=$existingX,z=$existingZ, chunk2: x=$x,z=$z) pointing to the file location $fileOffset");
 			}
 			$usedOffsets[$offset] = $i;
+		}
+		ksort($usedOffsets, SORT_NUMERIC);
+		$prevLocationIndex = null;
+		foreach($usedOffsets as $startOffset => $locationTableIndex){
+			if($prevLocationIndex !== null){
+				if($this->locationTable[$locationTableIndex]->overlaps($this->locationTable[$prevLocationIndex])){
+					self::getChunkCoords($locationTableIndex, $chunkXX, $chunkZZ);
+					self::getChunkCoords($prevLocationIndex, $prevChunkXX, $prevChunkZZ);
+					throw new CorruptedRegionException("Overlapping chunks detected in region header (chunk1: x=$chunkXX,z=$chunkZZ, chunk2: x=$prevChunkXX,z=$prevChunkZZ)");
+				}
+			}
+			$prevLocationIndex = $locationTableIndex;
 		}
 	}
 
