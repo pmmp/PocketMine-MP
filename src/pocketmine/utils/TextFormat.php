@@ -25,7 +25,9 @@ namespace pocketmine\utils;
 
 use function is_array;
 use function json_encode;
+use function json_last_error_msg;
 use function mb_scrub;
+use function preg_last_error;
 use function preg_quote;
 use function preg_replace;
 use function preg_split;

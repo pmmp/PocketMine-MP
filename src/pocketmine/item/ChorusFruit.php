@@ -27,7 +27,6 @@ use pocketmine\block\Liquid;
 use pocketmine\entity\Living;
 use pocketmine\level\sound\EndermanTeleportSound;
 use pocketmine\math\Vector3;
-use function assert;
 use function min;
 use function mt_rand;
 
