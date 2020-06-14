@@ -47,6 +47,7 @@ use function is_resource;
 use function json_encode;
 use function json_last_error_msg;
 use function max;
+use function mb_strtoupper;
 use function mkdir;
 use function ob_end_clean;
 use function ob_get_contents;
@@ -57,7 +58,6 @@ use function phpversion;
 use function preg_replace;
 use function str_split;
 use function strpos;
-use function strtoupper;
 use function substr;
 use function time;
 use function zend_version;
@@ -172,7 +172,7 @@ class CrashDump{
 					"depends" => $d->getDepend(),
 					"softDepends" => $d->getSoftDepend(),
 					"main" => $d->getMain(),
-					"load" => strtoupper($d->getOrder()->name()),
+					"load" => mb_strtoupper($d->getOrder()->name()),
 					"website" => $d->getWebsite()
 				];
 				$this->addLine($d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors()) . " for API(s) " . implode(", ", $d->getCompatibleApis()));

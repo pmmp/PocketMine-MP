@@ -50,6 +50,7 @@ use function is_object;
 use function is_resource;
 use function is_string;
 use function json_encode;
+use function mb_strtoupper;
 use function min;
 use function mkdir;
 use function preg_match;
@@ -58,7 +59,6 @@ use function round;
 use function spl_object_hash;
 use function sprintf;
 use function strlen;
-use function strtoupper;
 use function substr;
 use const JSON_PRETTY_PRINT;
 use const JSON_UNESCAPED_SLASHES;
@@ -131,7 +131,7 @@ class MemoryManager{
 			if($m <= 0){
 				$defaultMemory = 0;
 			}else{
-				switch(strtoupper($matches[2])){
+				switch(mb_strtoupper($matches[2])){
 					case "K":
 						$defaultMemory = $m / 1024;
 						break;
