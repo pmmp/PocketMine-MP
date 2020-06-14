@@ -591,6 +591,16 @@ parameters:
 			path: ../../../src/pocketmine/level/Level.php
 
 		-
+			message: "#^Cannot access offset 'priority' on array\\('priority' \\=\\> int, 'data' \\=\\> pocketmine\\\\math\\\\Vector3\\)\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot access offset 'data' on array\\('priority' \\=\\> int, 'data' \\=\\> pocketmine\\\\math\\\\Vector3\\)\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
 			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/pocketmine/level/Level.php
@@ -974,6 +984,11 @@ parameters:
 			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackChunk\\(\\) should return string but returns string\\|false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
+
+		-
+			message: "#^Cannot call method getNextRun\\(\\) on array\\<string, int\\|pocketmine\\\\scheduler\\\\TaskHandler\\>\\|int\\|pocketmine\\\\scheduler\\\\TaskHandler\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/scheduler/TaskScheduler.php
 
 		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
