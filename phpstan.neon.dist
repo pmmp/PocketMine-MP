@@ -16,8 +16,9 @@ includes:
 
 parameters:
 	level: 8
-	autoload_files:
+	bootstrapFiles:
 		- tests/phpstan/bootstrap.php
+	scanFiles:
 		- src/pocketmine/PocketMine.php
 		- build/make-release.php
 		- build/server-phar.php
