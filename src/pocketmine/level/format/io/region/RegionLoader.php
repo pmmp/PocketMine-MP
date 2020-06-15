@@ -272,9 +272,10 @@ class RegionLoader{
 		for($i = 0; $i < 1024; ++$i){
 			$index = $data[$i + 1];
 			$offset = $index >> 8;
+			$sectorCount = $index & 0xff;
 			$timestamp = $data[$i + 1025];
 
-			if($offset === 0){
+			if($offset === 0 or $sectorCount === 0){
 				$this->locationTable[$i] = null;
 			}else{
 				$this->bumpNextFreeSector($this->locationTable[$i] = new RegionLocationTableEntry($offset, $index & 0xff, $timestamp));
