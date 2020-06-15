@@ -40,7 +40,7 @@ class ClosureTask extends Task{
 
 	/**
 	 * @var \Closure
-	 * @phpstan-var \Closure(int) : void|\Closure(int, TaskHandler) : void
+	 * @phpstan-var \Closure(int) : void|\Closure(int, TaskHandler|null) : void
 	 */
 	private $closure;
 
@@ -49,11 +49,11 @@ class ClosureTask extends Task{
 
 	/**
 	 * @param \Closure $closure Must accept only ONE parameter, $currentTick
-	 * @phpstan-param \Closure(int) : void|\Closure(int, TaskHandler) : void $closure
+	 * @phpstan-param \Closure(int) : void|\Closure(int, TaskHandler|null) : void $closure
 	 */
 	public function __construct(\Closure $closure){
 		try{
-			Utils::validateCallableSignature(function(int $currentTick, TaskHandler $handler): void{}, $closure);
+			Utils::validateCallableSignature(function(int $currentTick, ?TaskHandler $handler): void{}, $closure);
 			$this->useTaskHandler = true;
 		}catch(\TypeError $typeError){
 			//For backward compatibility
