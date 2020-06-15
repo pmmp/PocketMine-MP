@@ -55,7 +55,7 @@ class ClosureTask extends Task{
 		try{
 			Utils::validateCallableSignature(function(int $currentTick, TaskHandler $handler): void{}, $closure);
 			$this->useTaskHandler = true;
-		}catch (\TypeError $typeError){
+		}catch(\TypeError $typeError){
 			//For backward compatibility
 			Utils::validateCallableSignature(function(int $currentTick) : void{}, $closure);
 		}
