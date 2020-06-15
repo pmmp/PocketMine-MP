@@ -42,8 +42,8 @@ class RegionLocationTableEntry{
 			throw new \InvalidArgumentException("Start sector must be positive, got $firstSector");
 		}
 		$this->firstSector = $firstSector;
-		if($sectorCount < 0 or $sectorCount > 255){
-			throw new \InvalidArgumentException("Sector count must be in range 0...255, got $sectorCount");
+		if($sectorCount < 1 or $sectorCount > 255){
+			throw new \InvalidArgumentException("Sector count must be in range 1...255, got $sectorCount");
 		}
 		$this->sectorCount = $sectorCount;
 		$this->timestamp = $timestamp;
