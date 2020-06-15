@@ -73,6 +73,17 @@ abstract class TextFormat{
 	}
 
 	/**
+	 * @throws \InvalidArgumentException
+	 */
+	private static function preg_replace(string $pattern, string $replacement, string $string, string $errorContext) : string{
+		$result = preg_replace($pattern, $replacement, $string);
+		if($result === null){
+			throw self::makePcreError($errorContext);
+		}
+		return $result;
+	}
+
+	/**
 	 * Splits the string by Format tokens
 	 *
 	 * @return string[]
@@ -90,12 +101,11 @@ abstract class TextFormat{
 	 */
 	public static function clean(string $string, bool $removeFormat = true) : string{
 		$string = mb_scrub($string, 'UTF-8');
-		$string = preg_replace("/[\x{E000}-\x{F8FF}]/u", "", $string); //remove unicode private-use-area characters (they might break the console)
-		if($string === null) throw self::makePcreError("Failed to strip private-area characters");
+		$string = self::preg_replace("/[\x{E000}-\x{F8FF}]/u", "", $string, "Stripping private-area characters"); //remove unicode private-use-area characters (they might break the console)
 		if($removeFormat){
-			$string = str_replace(TextFormat::ESCAPE, "", preg_replace("/" . TextFormat::ESCAPE . "[0-9a-fk-or]/u", "", $string));
+			$string = str_replace(TextFormat::ESCAPE, "", self::preg_replace("/" . TextFormat::ESCAPE . "[0-9a-fk-or]/u", "", $string, "Removing color codes"));
 		}
-		return str_replace("\x1b", "", preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/u", "", $string));
+		return str_replace("\x1b", "", self::preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/u", "", $string, "Removing special characters"));
 	}
 
 	/**
@@ -104,7 +114,7 @@ abstract class TextFormat{
 	 * @param string $placeholder default "&"
 	 */
 	public static function colorize(string $string, string $placeholder = "&") : string{
-		return preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-fk-or])/u', TextFormat::ESCAPE . '$1', $string);
+		return self::preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-fk-or])/u', TextFormat::ESCAPE . '$1', $string, "Colorizing string");
 	}
 
 	/**

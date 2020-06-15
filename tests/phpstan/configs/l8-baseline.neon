@@ -1761,16 +1761,6 @@ parameters:
 			path: ../../../src/pocketmine/utils/MainLogger.php
 
 		-
-			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, string\\|null given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/utils/TextFormat.php
-
-		-
-			message: "#^Method pocketmine\\\\utils\\\\TextFormat\\:\\:colorize\\(\\) should return string but returns string\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/utils/TextFormat.php
-
-		-
 			message: "#^Method pocketmine\\\\utils\\\\Utils\\:\\:printable\\(\\) should return string but returns string\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/utils/Utils.php
