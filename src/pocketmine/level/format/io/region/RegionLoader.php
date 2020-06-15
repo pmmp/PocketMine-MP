@@ -265,8 +265,8 @@ class RegionLoader{
 		fseek($this->filePointer, 0);
 
 		$headerRaw = fread($this->filePointer, self::REGION_HEADER_LENGTH);
-		if(($len = strlen($headerRaw)) !== self::REGION_HEADER_LENGTH){
-			throw new CorruptedRegionException("Invalid region file header, expected " . self::REGION_HEADER_LENGTH . " bytes, got " . $len . " bytes");
+		if($headerRaw === false or strlen($headerRaw) !== self::REGION_HEADER_LENGTH){
+			throw new CorruptedRegionException("Corrupted region header (unexpected end of file)");
 		}
 
 		$data = unpack("N*", $headerRaw);

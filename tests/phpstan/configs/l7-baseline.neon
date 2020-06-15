@@ -781,16 +781,6 @@ parameters:
 			path: ../../../src/pocketmine/level/format/io/region/RegionLoader.php
 
 		-
-			message: "#^Parameter \\#1 \\$string of function strlen expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/format/io/region/RegionLoader.php
-
-		-
-			message: "#^Parameter \\#2 \\$data of function unpack expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/format/io/region/RegionLoader.php
-
-		-
 			message: "#^Parameter \\#1 \\$start of method pocketmine\\\\utils\\\\Random\\:\\:nextRange\\(\\) expects int, float\\|int given\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/level/generator/object/TallGrass.php
