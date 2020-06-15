@@ -109,6 +109,7 @@ class Chunk{
 	 * @param CompoundTag[]       $entities
 	 * @param CompoundTag[]       $tiles
 	 * @param int[]               $heightMap
+	 * @phpstan-param list<int> $heightMap
 	 */
 	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], array $entities = [], array $tiles = [], string $biomeIds = "", array $heightMap = []){
 		$this->x = $chunkX;
