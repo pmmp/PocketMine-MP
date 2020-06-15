@@ -44,6 +44,7 @@ class ClosureTask extends Task{
 	 */
 	private $closure;
 
+	/** @var bool */
 	private $useTaskHandler = false;
 
 	/**
