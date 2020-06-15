@@ -18,7 +18,7 @@ class ChunkUtils{
 	public static function reorderNibbleArray($nibble_array){}
 
 	/**
-	 * @param int[] $color_array
+	 * @param list<int> $color_array
 	 *
 	 * @return string
 	 */
