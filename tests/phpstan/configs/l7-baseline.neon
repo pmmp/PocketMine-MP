@@ -1041,16 +1041,6 @@ parameters:
 			path: ../../../src/world/format/io/region/RegionLoader.php
 
 		-
-			message: "#^Parameter \\#1 \\$string of function strlen expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/region/RegionLoader.php
-
-		-
-			message: "#^Parameter \\#2 \\$data of function unpack expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/region/RegionLoader.php
-
-		-
 			message: "#^Argument of an invalid type array\\<int, string\\>\\|false supplied for foreach, only iterables are supported\\.$#"
 			count: 1
 			path: ../../../src/world/format/io/region/RegionWorldProvider.php

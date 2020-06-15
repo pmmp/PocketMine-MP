@@ -38,12 +38,12 @@ class RegionLocationTableEntry{
 	 * @throws \InvalidArgumentException
 	 */
 	public function __construct(int $firstSector, int $sectorCount, int $timestamp){
-		if($firstSector < 0){
+		if($firstSector < 0 or $firstSector >= 2 ** 24){
 			throw new \InvalidArgumentException("Start sector must be positive, got $firstSector");
 		}
 		$this->firstSector = $firstSector;
-		if($sectorCount < 0 or $sectorCount > 255){
-			throw new \InvalidArgumentException("Sector count must be in range 0...255, got $sectorCount");
+		if($sectorCount < 1){
+			throw new \InvalidArgumentException("Sector count must be positive, got $sectorCount");
 		}
 		$this->sectorCount = $sectorCount;
 		$this->timestamp = $timestamp;
@@ -73,7 +73,16 @@ class RegionLocationTableEntry{
 		return $this->timestamp;
 	}
 
-	public function isNull() : bool{
-		return $this->firstSector === 0 or $this->sectorCount === 0;
+	public function overlaps(RegionLocationTableEntry $other) : bool{
+		$overlapCheck = static function(RegionLocationTableEntry $entry1, RegionLocationTableEntry $entry2) : bool{
+			$entry1Last = $entry1->getLastSector();
+			$entry2Last = $entry2->getLastSector();
+
+			return (
+				($entry2->firstSector >= $entry1->firstSector and $entry2->firstSector <= $entry1Last) or
+				($entry2Last >= $entry1->firstSector and $entry2Last <= $entry1Last)
+			);
+		};
+		return $overlapCheck($this, $other) or $overlapCheck($other, $this);
 	}
 }
