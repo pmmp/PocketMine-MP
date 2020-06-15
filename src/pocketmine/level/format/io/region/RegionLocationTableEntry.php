@@ -38,7 +38,7 @@ class RegionLocationTableEntry{
 	 * @throws \InvalidArgumentException
 	 */
 	public function __construct(int $firstSector, int $sectorCount, int $timestamp){
-		if($firstSector < 0){
+		if($firstSector < 0 or $firstSector >= 2 ** 24){
 			throw new \InvalidArgumentException("Start sector must be positive, got $firstSector");
 		}
 		$this->firstSector = $firstSector;
