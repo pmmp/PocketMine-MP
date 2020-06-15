@@ -404,6 +404,20 @@ class RegionLoader{
 		return $result;
 	}
 
+	/**
+	 * Returns a float between 0 and 1 indicating what fraction of the file is currently unused space.
+	 */
+	public function getProportionUnusedSpace() : float{
+		$size = $this->nextSector;
+		$used = self::FIRST_SECTOR; //header is always allocated
+		foreach($this->locationTable as $entry){
+			if($entry !== null){
+				$used += $entry->getSectorCount();
+			}
+		}
+		return 1 - ($used / $size);
+	}
+
 	public function getX() : int{
 		return $this->x;
 	}
