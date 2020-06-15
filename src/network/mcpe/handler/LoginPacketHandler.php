@@ -229,7 +229,7 @@ class LoginPacketHandler extends PacketHandler{
 				$mapper->bExceptionOnUndefinedProperty = true;
 				try{
 					/** @var AuthenticationData $extraData */
-					$extraData = $mapper->map($claims['extraData'], new AuthenticationData);
+					$extraData = $mapper->map($claims["extraData"], new AuthenticationData);
 				}catch(\JsonMapper_Exception $e){
 					throw BadPacketException::wrap($e);
 				}
