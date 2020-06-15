@@ -35,6 +35,8 @@ use pocketmine\item\ItemFactory;
 use pocketmine\level\GameRules;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\SetActorLinkPacket;
+use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\Player;
 
 class Boat extends Vehicle{
@@ -180,7 +182,7 @@ class Boat extends Vehicle{
 			}
 		}
 
-		if($this->getRiddenByEntity() === null){
+		if($this->getRiddenByEntity() !== null){
 			if($this->clientMoveTicks > 0){
 				$newPos = $this->add(($this->boatPos->subtract($this))->divide($this->clientMoveTicks));
 				$newYaw = $this->yaw + ($this->boatYaw - $this->yaw) / $this->clientMoveTicks;
@@ -189,6 +191,15 @@ class Boat extends Vehicle{
 				$this->setPositionAndRotation($newPos, $newYaw, $newPitch);
 
 				$this->clientMoveTicks--;
+
+				//MAKING SURE TO KEEP PLAYER IN POSITION ON OTHER CLIENTS
+				//SENDING EVERY 100 TICKS
+				if($this->ticksLived % 100 === 0){
+					$this->broadcastLink($this->getRiddenByEntity());
+				}
+
+
+
 			}else{
 				if($this->onGround){
 					$this->motion = $this->motion->multiply(0.5);
@@ -249,5 +260,16 @@ class Boat extends Vehicle{
 
 	public function getPaddleTimeRight() : float{
 		return $this->propertyManager->getFloat(self::DATA_PADDLE_TIME_RIGHT) ?? 0.0;
+	}
+
+	protected function broadcastLink(Player $player = null, int $type = EntityLink::TYPE_RIDER): void{
+		foreach($this->getViewers() as $viewer) {
+			if (!isset($viewer->getViewers()[$player->getLoaderId()])) {
+				$player->spawnTo($viewer);
+			}
+			$pk = new SetActorLinkPacket();
+			$pk->link = new EntityLink($this->getId(), $player->getId(), $type);
+			$viewer->sendDataPacket($pk);
+		}
 	}
 }
