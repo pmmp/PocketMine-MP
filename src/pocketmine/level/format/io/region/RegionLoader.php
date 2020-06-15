@@ -203,7 +203,7 @@ class RegionLoader{
 			$offset = $this->locationTable[$index]->getFirstSector(); //reuse old location - TODO: risk of corruption during power failure
 		}
 
-		$this->bumpNextFreeSector($this->locationTable[$index] = $newEntry = new RegionLocationTableEntry($offset, $newSize, time()));
+		$this->bumpNextFreeSector($this->locationTable[$index] = new RegionLocationTableEntry($offset, $newSize, time()));
 
 		fseek($this->filePointer, $offset << 12);
 		fwrite($this->filePointer, str_pad(Binary::writeInt($length) . chr(self::COMPRESSION_ZLIB) . $chunkData, $newSize << 12, "\x00", STR_PAD_RIGHT));
