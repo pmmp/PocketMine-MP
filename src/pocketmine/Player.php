@@ -4391,10 +4391,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $this->isConnected();
 	}
 
-	public function isTeleporting() : bool{
-		return $this->isTeleporting;
-	}
-
 	public function getDeviceOS(): ?int{
 	    return $this->deviceOS;
     }
