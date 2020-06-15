@@ -46,6 +46,7 @@ use function max;
 use function ord;
 use function pack;
 use function str_pad;
+use function str_repeat;
 use function stream_set_read_buffer;
 use function stream_set_write_buffer;
 use function strlen;
@@ -379,6 +380,28 @@ class RegionLoader{
 
 	private function bumpNextFreeSector(RegionLocationTableEntry $entry) : void{
 		$this->nextSector = max($this->nextSector, $entry->getLastSector() + 1);
+	}
+
+	public function generateSectorMap(string $usedChar, string $freeChar) : string{
+		$result = str_repeat($freeChar, $this->nextSector);
+		for($i = 0; $i < self::FIRST_SECTOR; ++$i){
+			$result[$i] = $usedChar;
+		}
+		foreach($this->locationTable as $locationTableEntry){
+			if($locationTableEntry === null){
+				continue;
+			}
+			foreach($locationTableEntry->getUsedSectors() as $sectorIndex){
+				if($sectorIndex >= strlen($result)){
+					throw new AssumptionFailedError("This should never happen...");
+				}
+				if($result[$sectorIndex] === $usedChar){
+					throw new AssumptionFailedError("Overlap detected");
+				}
+				$result[$sectorIndex] = $usedChar;
+			}
+		}
+		return $result;
 	}
 
 	public function getX() : int{
