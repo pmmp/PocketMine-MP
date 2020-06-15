@@ -73,10 +73,6 @@ class RegionLocationTableEntry{
 		return $this->timestamp;
 	}
 
-	public function isNull() : bool{
-		return $this->firstSector === 0 or $this->sectorCount === 0;
-	}
-
 	public function overlaps(RegionLocationTableEntry $other) : bool{
 		$overlapCheck = static function(RegionLocationTableEntry $entry1, RegionLocationTableEntry $entry2) : bool{
 			$entry1Last = $entry1->getLastSector();

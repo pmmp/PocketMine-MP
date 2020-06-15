@@ -28,6 +28,7 @@ use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
 use pocketmine\utils\MainLogger;
+use function assert;
 use function ceil;
 use function chr;
 use function fclose;
@@ -77,7 +78,7 @@ class RegionLoader{
 	protected $filePointer;
 	/** @var int */
 	protected $nextSector = self::FIRST_SECTOR;
-	/** @var RegionLocationTableEntry[] */
+	/** @var RegionLocationTableEntry[]|null[] */
 	protected $locationTable = [];
 	/** @var int */
 	public $lastUsed = 0;
@@ -122,7 +123,7 @@ class RegionLoader{
 	}
 
 	protected function isChunkGenerated(int $index) : bool{
-		return !$this->locationTable[$index]->isNull();
+		return $this->locationTable[$index] !== null;
 	}
 
 	/**
@@ -134,7 +135,7 @@ class RegionLoader{
 
 		$this->lastUsed = time();
 
-		if(!$this->isChunkGenerated($index)){
+		if($this->locationTable[$index] === null){
 			return null;
 		}
 
@@ -195,14 +196,14 @@ class RegionLoader{
 
 		$newSize = (int) ceil(($length + 4) / 4096);
 		$index = self::getChunkOffset($x, $z);
-		$offset = $this->locationTable[$index]->getFirstSector();
 
-		if($this->locationTable[$index]->getSectorCount() < $newSize){
+		if($this->locationTable[$index] === null or $this->locationTable[$index]->getSectorCount() < $newSize){
 			$offset = $this->nextSector;
+		}else{
+			$offset = $this->locationTable[$index]->getFirstSector(); //reuse old location - TODO: risk of corruption during power failure
 		}
 
-		$this->locationTable[$index] = new RegionLocationTableEntry($offset, $newSize, time());
-		$this->bumpNextFreeSector($this->locationTable[$index]);
+		$this->bumpNextFreeSector($this->locationTable[$index] = $newEntry = new RegionLocationTableEntry($offset, $newSize, time()));
 
 		fseek($this->filePointer, $offset << 12);
 		fwrite($this->filePointer, str_pad(Binary::writeInt($length) . chr(self::COMPRESSION_ZLIB) . $chunkData, $newSize << 12, "\x00", STR_PAD_RIGHT));
@@ -216,7 +217,7 @@ class RegionLoader{
 	 */
 	public function removeChunk(int $x, int $z){
 		$index = self::getChunkOffset($x, $z);
-		$this->locationTable[$index] = new RegionLocationTableEntry(0, 0, 0);
+		$this->locationTable[$index] = null;
 		$this->writeLocationIndex($index);
 	}
 
@@ -274,10 +275,9 @@ class RegionLoader{
 			$timestamp = $data[$i + 1025];
 
 			if($offset === 0){
-				$this->locationTable[$i] = new RegionLocationTableEntry(0, 0, 0);
+				$this->locationTable[$i] = null;
 			}else{
-				$this->locationTable[$i] = new RegionLocationTableEntry($offset, $index & 0xff, $timestamp);
-				$this->bumpNextFreeSector($this->locationTable[$i]);
+				$this->bumpNextFreeSector($this->locationTable[$i] = new RegionLocationTableEntry($offset, $index & 0xff, $timestamp));
 			}
 		}
 
@@ -295,7 +295,7 @@ class RegionLoader{
 
 		for($i = 0; $i < 1024; ++$i){
 			$entry = $this->locationTable[$i];
-			if($entry->isNull()){
+			if($entry === null){
 				continue;
 			}
 
@@ -318,7 +318,11 @@ class RegionLoader{
 		ksort($usedOffsets, SORT_NUMERIC);
 		$prevLocationIndex = null;
 		foreach($usedOffsets as $startOffset => $locationTableIndex){
+			if($this->locationTable[$locationTableIndex] === null){
+				continue;
+			}
 			if($prevLocationIndex !== null){
+				assert($this->locationTable[$prevLocationIndex] !== null);
 				if($this->locationTable[$locationTableIndex]->overlaps($this->locationTable[$prevLocationIndex])){
 					self::getChunkCoords($locationTableIndex, $chunkXX, $chunkZZ);
 					self::getChunkCoords($prevLocationIndex, $prevChunkXX, $prevChunkZZ);
@@ -333,10 +337,12 @@ class RegionLoader{
 		$write = [];
 
 		for($i = 0; $i < 1024; ++$i){
-			$write[] = (($this->locationTable[$i]->getFirstSector() << 8) | $this->locationTable[$i]->getSectorCount());
+			$entry = $this->locationTable[$i];
+			$write[] = $entry !== null ? (($entry->getFirstSector() << 8) | $entry->getSectorCount()) : 0;
 		}
 		for($i = 0; $i < 1024; ++$i){
-			$write[] = $this->locationTable[$i]->getTimestamp();
+			$entry = $this->locationTable[$i];
+			$write[] = $entry !== null ? $entry->getTimestamp() : 0;
 		}
 		fseek($this->filePointer, 0);
 		fwrite($this->filePointer, pack("N*", ...$write), 4096 * 2);
@@ -348,10 +354,11 @@ class RegionLoader{
 	 * @return void
 	 */
 	protected function writeLocationIndex($index){
+		$entry = $this->locationTable[$index];
 		fseek($this->filePointer, $index << 2);
-		fwrite($this->filePointer, Binary::writeInt(($this->locationTable[$index]->getFirstSector() << 8) | $this->locationTable[$index]->getSectorCount()), 4);
+		fwrite($this->filePointer, Binary::writeInt($entry !== null ? ($entry->getFirstSector() << 8) | $entry->getSectorCount() : 0), 4);
 		fseek($this->filePointer, 4096 + ($index << 2));
-		fwrite($this->filePointer, Binary::writeInt($this->locationTable[$index]->getTimestamp()), 4);
+		fwrite($this->filePointer, Binary::writeInt($entry !== null ? $entry->getTimestamp() : 0), 4);
 	}
 
 	/**
@@ -361,7 +368,7 @@ class RegionLoader{
 		fseek($this->filePointer, 0);
 		ftruncate($this->filePointer, 8192); // this fills the file with the null byte
 		for($i = 0; $i < 1024; ++$i){
-			$this->locationTable[$i] = new RegionLocationTableEntry(0, 0, 0);
+			$this->locationTable[$i] = null;
 		}
 	}
 
