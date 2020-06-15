@@ -53,6 +53,7 @@ use function substr;
 use function time;
 use function touch;
 use function unpack;
+use const SORT_NUMERIC;
 use const STR_PAD_RIGHT;
 
 class RegionLoader{
