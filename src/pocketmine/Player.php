@@ -3515,13 +3515,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Sends a Form to the player, or queue to send it if a form is already open.
 	 */
 	public function sendForm(Form $form) : void{
+		$formData = json_encode($form);
+		if($formData === false){
+			throw new \InvalidArgumentException("Failed to encode form JSON: " . json_last_error_msg());
+		}
 		$id = $this->formIdCounter++;
 		$pk = new ModalFormRequestPacket();
 		$pk->formId = $id;
-		$pk->formData = json_encode($form);
-		if($pk->formData === false){
-			throw new \InvalidArgumentException("Failed to encode form JSON: " . json_last_error_msg());
-		}
+		$pk->formData = $formData;
 		if($this->dataPacket($pk)){
 			$this->forms[$id] = $form;
 		}

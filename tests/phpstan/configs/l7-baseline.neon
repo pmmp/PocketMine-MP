@@ -46,11 +46,6 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\ModalFormRequestPacket\\:\\:\\$formData \\(string\\) does not accept string\\|false\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Player.php
-
-		-
 			message: "#^Only booleans are allowed in an if condition, bool\\|int given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
