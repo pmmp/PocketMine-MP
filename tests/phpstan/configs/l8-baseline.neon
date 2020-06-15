@@ -1546,21 +1546,6 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/protocol/SetScoreboardIdentityPacket.php
 
 		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\EntityLink\\:\\:\\$fromEntityUniqueId \\(int\\) does not accept int\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/EntityLink.php
-
-		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\EntityLink\\:\\:\\$toEntityUniqueId \\(int\\) does not accept int\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/EntityLink.php
-
-		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\EntityLink\\:\\:\\$type \\(int\\) does not accept int\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/EntityLink.php
-
-		-
 			message: "#^Argument of an invalid type array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null supplied for foreach, only iterables are supported\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
