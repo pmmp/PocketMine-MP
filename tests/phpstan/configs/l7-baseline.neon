@@ -46,11 +46,6 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Only booleans are allowed in an if condition, bool\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Player.php
-
-		-
 			message: "#^Parameter \\#1 \\$haystack of function substr_count expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/PocketMine.php
