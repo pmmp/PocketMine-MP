@@ -6,11 +6,6 @@ parameters:
 			path: ../../../build/make-release.php
 
 		-
-			message: "#^Parameter \\#2 \\$delim_char of function preg_quote expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../build/server-phar.php
-
-		-
 			message: "#^Parameter \\#1 \\$uuid of method pocketmine\\\\Server\\:\\:updatePlayerListData\\(\\) expects pocketmine\\\\utils\\\\UUID, pocketmine\\\\utils\\\\UUID\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php

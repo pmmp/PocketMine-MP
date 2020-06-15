@@ -49,7 +49,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
  *
  * @return string[]
  */
-function preg_quote_array(array $strings, string $delim = null) : array{
+function preg_quote_array(array $strings, string $delim) : array{
 	return array_map(function(string $str) use ($delim) : string{ return preg_quote($str, $delim); }, $strings);
 }
 
