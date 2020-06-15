@@ -552,12 +552,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "9d8a73014725f57cf4bf5cbdb40e340fe4643169"
+                "reference": "666175cd9a6561217d436902c666405b790a1a86"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/9d8a73014725f57cf4bf5cbdb40e340fe4643169",
-                "reference": "9d8a73014725f57cf4bf5cbdb40e340fe4643169",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/666175cd9a6561217d436902c666405b790a1a86",
+                "reference": "666175cd9a6561217d436902c666405b790a1a86",
                 "shasum": ""
             },
             "require": {
@@ -579,7 +579,7 @@
                 "LGPL-3.0"
             ],
             "description": "PHP library containing math related code used in PocketMine-MP",
-            "time": "2020-05-19T12:13:12+00:00"
+            "time": "2020-06-15T21:21:46+00:00"
         },
         {
             "name": "pocketmine/nbt",
@@ -624,12 +624,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "12153dcd1e37d1d1b026db65605210f094579861"
+                "reference": "a63bad0250e3218e606c055fbc77820ce8214fb8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/12153dcd1e37d1d1b026db65605210f094579861",
-                "reference": "12153dcd1e37d1d1b026db65605210f094579861",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/a63bad0250e3218e606c055fbc77820ce8214fb8",
+                "reference": "a63bad0250e3218e606c055fbc77820ce8214fb8",
                 "shasum": ""
             },
             "require": {
@@ -655,7 +655,7 @@
                 "GPL-3.0"
             ],
             "description": "A RakNet server implementation written in PHP",
-            "time": "2020-05-10T10:47:44+00:00"
+            "time": "2020-06-03T19:14:17+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -811,16 +811,16 @@
         },
         {
             "name": "respect/validation",
-            "version": "2.0.8",
+            "version": "2.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Respect/Validation.git",
-                "reference": "e0fbed32c90b408652bb30803647d90901f612f1"
+                "reference": "80f236bb900e5bc5e790737a31806f4d10c560ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Respect/Validation/zipball/e0fbed32c90b408652bb30803647d90901f612f1",
-                "reference": "e0fbed32c90b408652bb30803647d90901f612f1",
+                "url": "https://api.github.com/repos/Respect/Validation/zipball/80f236bb900e5bc5e790737a31806f4d10c560ba",
+                "reference": "80f236bb900e5bc5e790737a31806f4d10c560ba",
                 "shasum": ""
             },
             "require": {
@@ -873,7 +873,7 @@
                 "validation",
                 "validator"
             ],
-            "time": "2020-05-20T13:02:44+00:00"
+            "time": "2020-06-07T00:14:45+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
