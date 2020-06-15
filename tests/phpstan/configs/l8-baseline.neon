@@ -1596,11 +1596,6 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
 
 		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData\\:\\:\\$capeImage \\(pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinImage\\) does not accept pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinImage\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/SkinData.php
-
-		-
 			message: "#^Cannot call method wakeupSleeper\\(\\) on pocketmine\\\\snooze\\\\SleeperNotifier\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/rcon/RCONInstance.php

@@ -75,7 +75,7 @@ class SkinData{
 		$this->resourcePatch = $resourcePatch;
 		$this->skinImage = $skinImage;
 		$this->animations = $animations;
-		$this->capeImage = $capeImage;
+		$this->capeImage = $capeImage ?? new SkinImage(0, 0, "");
 		$this->geometryData = $geometryData;
 		$this->animationData = $animationData;
 		$this->premium = $premium;
