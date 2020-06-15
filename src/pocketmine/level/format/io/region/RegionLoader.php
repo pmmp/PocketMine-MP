@@ -65,7 +65,7 @@ class RegionLoader{
 	public const MAX_SECTOR_LENGTH = 255 << 12; //255 sectors (~0.996 MiB)
 	public const REGION_HEADER_LENGTH = 8192; //4096 location table + 4096 timestamps
 
-	private const FIRST_SECTOR = 2; //location table occupies 0 and 1
+	public const FIRST_SECTOR = 2; //location table occupies 0 and 1
 
 	/** @var int */
 	public static $COMPRESSION_LEVEL = 7;
@@ -82,6 +82,8 @@ class RegionLoader{
 	protected $nextSector = self::FIRST_SECTOR;
 	/** @var RegionLocationTableEntry[]|null[] */
 	protected $locationTable = [];
+	/** @var RegionGarbageMap */
+	protected $garbageTable;
 	/** @var int */
 	public $lastUsed = 0;
 
@@ -89,6 +91,7 @@ class RegionLoader{
 		$this->x = $regionX;
 		$this->z = $regionZ;
 		$this->filePath = $filePath;
+		$this->garbageTable = new RegionGarbageMap([]);
 	}
 
 	/**
@@ -199,18 +202,49 @@ class RegionLoader{
 		$newSize = (int) ceil(($length + 4) / 4096);
 		$index = self::getChunkOffset($x, $z);
 
-		if($this->locationTable[$index] === null or $this->locationTable[$index]->getSectorCount() < $newSize){
-			$offset = $this->nextSector;
-		}else{
-			$offset = $this->locationTable[$index]->getFirstSector(); //reuse old location - TODO: risk of corruption during power failure
+		/*
+		 * look for an unused area big enough to hold this data
+		 * this is corruption-resistant (it leaves the old data intact if a failure occurs when writing new data), and
+		 * also allows the file to become more compact across consecutive writes without introducing a dedicated garbage
+		 * collection mechanism.
+		 */
+		$newLocation = $this->garbageTable->allocate($newSize);
+
+		/* if no gaps big enough were found, append to the end of the file instead */
+		if($newLocation === null){
+			$newLocation = new RegionLocationTableEntry($this->nextSector, $newSize, time());
+			$this->bumpNextFreeSector($newLocation);
 		}
 
-		$this->bumpNextFreeSector($this->locationTable[$index] = new RegionLocationTableEntry($offset, $newSize, time()));
-
-		fseek($this->filePointer, $offset << 12);
+		/* write the chunk data into the chosen location */
+		fseek($this->filePointer, $newLocation->getFirstSector() << 12);
 		fwrite($this->filePointer, str_pad(Binary::writeInt($length) . chr(self::COMPRESSION_ZLIB) . $chunkData, $newSize << 12, "\x00", STR_PAD_RIGHT));
 
+		/*
+		 * update the file header - we do this after writing the main data, so that if a failure occurs while writing,
+		 * the header will still point to the old (intact) copy of the chunk, instead of a potentially broken new
+		 * version of the file (e.g. partially written).
+		*/
+		$oldLocation = $this->locationTable[$index];
+		$this->locationTable[$index] = $newLocation;
 		$this->writeLocationIndex($index);
+
+		if($oldLocation !== null){
+			/* release the area containing the old copy to the garbage pool */
+			$this->garbageTable->add($oldLocation);
+
+			$endGarbage = $this->garbageTable->end();
+			$nextSector = $this->nextSector;
+			for(; $endGarbage !== null and $endGarbage->getLastSector() + 1 === $nextSector; $endGarbage = $this->garbageTable->end()){
+				$nextSector = $endGarbage->getFirstSector();
+				$this->garbageTable->remove($endGarbage);
+			}
+
+			if($nextSector !== $this->nextSector){
+				$this->nextSector = $nextSector;
+				ftruncate($this->filePointer, $this->nextSector << 12);
+			}
+		}
 	}
 
 	/**
@@ -288,6 +322,8 @@ class RegionLoader{
 		}
 
 		$this->checkLocationTableValidity();
+
+		$this->garbageTable = RegionGarbageMap::buildFromLocationTable($this->locationTable);
 
 		fseek($this->filePointer, 0);
 	}
