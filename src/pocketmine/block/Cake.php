@@ -27,6 +27,8 @@ use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Living;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\Player;
@@ -107,6 +109,10 @@ class Cake extends Transparent implements FoodSource{
 
 	public function requiresHunger() : bool{
 		return true;
+	}
+
+	public function getPickedItem() : Item{
+		return ItemFactory::get(ItemIds::CAKE);
 	}
 
 	/**
