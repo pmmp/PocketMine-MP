@@ -1782,7 +1782,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function isHungry() : bool{
-		return $this->isSurvival() and parent::isHungry();
+		return $this->isCreative(true) or ($this->isSurvival() and parent::isHungry());
 	}
 
 	public function canBreathe() : bool{
