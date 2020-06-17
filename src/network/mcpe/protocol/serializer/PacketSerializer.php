@@ -606,14 +606,12 @@ class PacketSerializer extends BinaryStream{
 	 * @throws BinaryDataException
 	 */
 	public function getEntityLink() : EntityLink{
-		$link = new EntityLink();
-
-		$link->fromEntityUniqueId = $this->getEntityUniqueId();
-		$link->toEntityUniqueId = $this->getEntityUniqueId();
-		$link->type = $this->getByte();
-		$link->immediate = $this->getBool();
-
-		return $link;
+		return new EntityLink(
+			$fromEntityUniqueId = $this->getEntityUniqueId(),
+			$toEntityUniqueId = $this->getEntityUniqueId(),
+			$type = $this->getByte(),
+			$immediate = $this->getBool()
+		);
 	}
 
 	public function putEntityLink(EntityLink $link) : void{
