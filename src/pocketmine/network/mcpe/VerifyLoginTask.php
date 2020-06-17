@@ -115,6 +115,9 @@ class VerifyLoginTask extends AsyncTask{
 
 			//First link, check that it is self-signed
 			$currentPublicKey = $headers["x5u"];
+		}elseif($headers["x5u"] !== $currentPublicKey){
+			//Fast path: if the header key doesn't match what we expected, the signature isn't going to validate anyway
+			throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.badSignature");
 		}
 
 		$plainSignature = base64_decode(strtr($sigB64, '-_', '+/'), true);
