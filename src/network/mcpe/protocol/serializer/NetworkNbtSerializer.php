@@ -23,11 +23,23 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\serializer;
 
-use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\BaseNbtSerializer;
 use function count;
 use function strlen;
 
-class NetworkNbtSerializer extends LittleEndianNbtSerializer{
+class NetworkNbtSerializer extends BaseNbtSerializer{
+
+	public function readShort() : int{
+		return $this->buffer->getLShort();
+	}
+
+	public function readSignedShort() : int{
+		return $this->buffer->getSignedLShort();
+	}
+
+	public function writeShort(int $v) : void{
+		$this->buffer->putLShort($v);
+	}
 
 	public function readInt() : int{
 		return $this->buffer->getVarInt();
@@ -52,6 +64,22 @@ class NetworkNbtSerializer extends LittleEndianNbtSerializer{
 	public function writeString(string $v) : void{
 		$this->buffer->putUnsignedVarInt(self::checkWriteStringLength(strlen($v)));
 		$this->buffer->put($v);
+	}
+
+	public function readFloat() : float{
+		return $this->buffer->getLFloat();
+	}
+
+	public function writeFloat(float $v) : void{
+		$this->buffer->putLFloat($v);
+	}
+
+	public function readDouble() : float{
+		return $this->buffer->getLDouble();
+	}
+
+	public function writeDouble(float $v) : void{
+		$this->buffer->putLDouble($v);
 	}
 
 	public function readIntArray() : array{
