@@ -109,7 +109,7 @@ class Cake extends Transparent implements FoodSource{
 		return true;
 	}
 
-	public function getVariant() : int{
+	public function getVariantBitmask() : int{
 		return 0;
 	}
 
