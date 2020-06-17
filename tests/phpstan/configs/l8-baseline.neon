@@ -486,11 +486,6 @@ parameters:
 			path: ../../../src/network/mcpe/encryption/PrepareEncryptionTask.php
 
 		-
-			message: "#^Cannot call method getUsername\\(\\) on pocketmine\\\\player\\\\PlayerInfo\\|null\\.$#"
-			count: 2
-			path: ../../../src/network/mcpe/handler/LoginPacketHandler.php
-
-		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\StartGamePacket\\:\\:\\$blockTable \\(pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\CacheableNbt\\<pocketmine\\\\nbt\\\\tag\\\\ListTag\\>\\) does not accept pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\CacheableNbt\\<pocketmine\\\\nbt\\\\tag\\\\ListTag\\>\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/handler/PreSpawnPacketHandler.php
