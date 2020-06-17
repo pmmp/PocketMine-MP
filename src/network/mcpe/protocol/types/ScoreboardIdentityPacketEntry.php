@@ -27,6 +27,6 @@ class ScoreboardIdentityPacketEntry{
 	/** @var int */
 	public $scoreboardId;
 	/** @var int|null */
-	public $entityUniqueId;
+	public $entityUniqueId = null;
 
 }
