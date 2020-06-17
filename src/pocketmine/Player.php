@@ -33,6 +33,7 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
+use pocketmine\entity\InvalidSkinException;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\entity\Skin;
@@ -1957,9 +1958,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			true
 		);
 
-		$skin = SkinAdapterSingleton::get()->fromSkinData($skinData);
-
-		if(!$skin->isValid()){
+		try{
+			$skin = SkinAdapterSingleton::get()->fromSkinData($skinData);
+			$skin->validate();
+		}catch(InvalidSkinException $e){
+			$this->server->getLogger()->debug("$this->username: Invalid skin: " . $e->getMessage());
 			$this->close("", "disconnectionScreen.invalidSkin");
 
 			return true;
