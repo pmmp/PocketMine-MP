@@ -50,20 +50,20 @@ final class Skin{
 
 	public function __construct(string $skinId, string $skinData, string $capeData = "", string $geometryName = "", string $geometryData = ""){
 		if($skinId === ""){
-			throw new \InvalidArgumentException("Skin ID must not be empty");
+			throw new InvalidSkinException("Skin ID must not be empty");
 		}
 		$len = strlen($skinData);
 		if(!in_array($len, self::ACCEPTED_SKIN_SIZES, true)){
-			throw new \InvalidArgumentException("Invalid skin data size $len bytes (allowed sizes: " . implode(", ", self::ACCEPTED_SKIN_SIZES) . ")");
+			throw new InvalidSkinException("Invalid skin data size $len bytes (allowed sizes: " . implode(", ", self::ACCEPTED_SKIN_SIZES) . ")");
 		}
 		if($capeData !== "" and strlen($capeData) !== 8192){
-			throw new \InvalidArgumentException("Invalid cape data size " . strlen($capeData) . " bytes (must be exactly 8192 bytes)");
+			throw new InvalidSkinException("Invalid cape data size " . strlen($capeData) . " bytes (must be exactly 8192 bytes)");
 		}
 
 		if($geometryData !== ""){
 			$decodedGeometry = (new CommentedJsonDecoder())->decode($geometryData);
 			if($decodedGeometry === false){
-				throw new \InvalidArgumentException("Invalid geometry data (" . json_last_error_msg() . ")");
+				throw new InvalidSkinException("Invalid geometry data (" . json_last_error_msg() . ")");
 			}
 
 			/*
