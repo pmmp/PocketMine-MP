@@ -29,6 +29,8 @@ use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\protocol\LoginPacket;
+use pocketmine\network\mcpe\protocol\types\login\JwtChainLinkBody;
+use pocketmine\network\mcpe\protocol\types\login\JwtHeader;
 use pocketmine\scheduler\AsyncTask;
 use function base64_decode;
 use function time;
@@ -106,9 +108,21 @@ class ProcessLoginTask extends AsyncTask{
 	 */
 	private function validateToken(string $jwt, ?string &$currentPublicKey, bool $first = false) : void{
 		try{
-			[$headers, $claims, ] = JwtUtils::parse($jwt);
+			[$headersArray, $claimsArray, ] = JwtUtils::parse($jwt);
 		}catch(JwtException $e){
 			throw new VerifyLoginException("Failed to parse JWT: " . $e->getMessage(), 0, $e);
+		}
+
+		$mapper = new \JsonMapper();
+		$mapper->bExceptionOnMissingData = true;
+		$mapper->bExceptionOnUndefinedProperty = true;
+		$mapper->bEnforceMapType = false;
+
+		try{
+			/** @var JwtHeader $headers */
+			$headers = $mapper->map($headersArray, new JwtHeader());
+		}catch(\JsonMapper_Exception $e){
+			throw new VerifyLoginException("Invalid JWT header: " . $e->getMessage(), 0, $e);
 		}
 
 		if($currentPublicKey === null){
@@ -117,7 +131,7 @@ class ProcessLoginTask extends AsyncTask{
 			}
 
 			//First link, check that it is self-signed
-			$currentPublicKey = $headers["x5u"];
+			$currentPublicKey = $headers->x5u;
 		}
 
 		$derPublicKeySerializer = new DerPublicKeySerializer();
@@ -143,16 +157,28 @@ class ProcessLoginTask extends AsyncTask{
 			$this->authenticated = true; //we're signed into xbox live
 		}
 
+		$mapper = new \JsonMapper();
+		$mapper->bExceptionOnUndefinedProperty = false; //we only care about the properties we're using in this case
+		$mapper->bExceptionOnMissingData = true;
+		$mapper->bEnforceMapType = false;
+		$mapper->bRemoveUndefinedAttributes = true;
+		try{
+			/** @var JwtChainLinkBody $claims */
+			$claims = $mapper->map($claimsArray, new JwtChainLinkBody());
+		}catch(\JsonMapper_Exception $e){
+			throw new VerifyLoginException("Invalid chain link body: " . $e->getMessage(), 0, $e);
+		}
+
 		$time = time();
-		if(isset($claims["nbf"]) and $claims["nbf"] > $time + self::CLOCK_DRIFT_MAX){
+		if(isset($claims->nbf) and $claims->nbf > $time + self::CLOCK_DRIFT_MAX){
 			throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.tooEarly");
 		}
 
-		if(isset($claims["exp"]) and $claims["exp"] < $time - self::CLOCK_DRIFT_MAX){
+		if(isset($claims->exp) and $claims->exp < $time - self::CLOCK_DRIFT_MAX){
 			throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.tooLate");
 		}
 
-		$currentPublicKey = $claims["identityPublicKey"] ?? null; //if there are further links, the next link should be signed with this
+		$currentPublicKey = $claims->identityPublicKey ?? null; //if there are further links, the next link should be signed with this
 	}
 
 	public function onCompletion() : void{
