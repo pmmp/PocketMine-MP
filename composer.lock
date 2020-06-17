@@ -294,12 +294,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "a36705550b42e7e93e2a9748a8b9fa88985780bf"
+                "reference": "f126c8babe63220ca7141ff696761751c19ca756"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/a36705550b42e7e93e2a9748a8b9fa88985780bf",
-                "reference": "a36705550b42e7e93e2a9748a8b9fa88985780bf",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/f126c8babe63220ca7141ff696761751c19ca756",
+                "reference": "f126c8babe63220ca7141ff696761751c19ca756",
                 "shasum": ""
             },
             "require": {
@@ -320,7 +320,7 @@
                 "LGPL-3.0"
             ],
             "description": "Classes and methods for conveniently handling binary data",
-            "time": "2020-01-28T12:17:38+00:00"
+            "time": "2020-06-17T12:14:53+00:00"
         },
         {
             "name": "pocketmine/callback-validator",
@@ -587,12 +587,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "8e42604a7a91d52578af0c9a8024635ed5985b97"
+                "reference": "bdb818fc048055a3dcd0f86d9d7e1ad733105921"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/8e42604a7a91d52578af0c9a8024635ed5985b97",
-                "reference": "8e42604a7a91d52578af0c9a8024635ed5985b97",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/bdb818fc048055a3dcd0f86d9d7e1ad733105921",
+                "reference": "bdb818fc048055a3dcd0f86d9d7e1ad733105921",
                 "shasum": ""
             },
             "require": {
@@ -616,7 +616,7 @@
                 "LGPL-3.0"
             ],
             "description": "PHP library for working with Named Binary Tags",
-            "time": "2020-04-19T12:18:01+00:00"
+            "time": "2020-06-17T12:18:23+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -624,12 +624,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "a63bad0250e3218e606c055fbc77820ce8214fb8"
+                "reference": "31e2b2259404399cac7f50ae4a9bbdfdd8c1035e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/a63bad0250e3218e606c055fbc77820ce8214fb8",
-                "reference": "a63bad0250e3218e606c055fbc77820ce8214fb8",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/31e2b2259404399cac7f50ae4a9bbdfdd8c1035e",
+                "reference": "31e2b2259404399cac7f50ae4a9bbdfdd8c1035e",
                 "shasum": ""
             },
             "require": {
@@ -655,7 +655,7 @@
                 "GPL-3.0"
             ],
             "description": "A RakNet server implementation written in PHP",
-            "time": "2020-06-03T19:14:17+00:00"
+            "time": "2020-06-17T12:01:42+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -1827,16 +1827,16 @@
         },
         {
             "name": "phpunit/php-token-stream",
-            "version": "4.0.1",
+            "version": "4.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-token-stream.git",
-                "reference": "cdc0db5aed8fbfaf475fbd95bfd7bab83c7a779c"
+                "reference": "e61c593e9734b47ef462340c24fca8d6a57da14e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/cdc0db5aed8fbfaf475fbd95bfd7bab83c7a779c",
-                "reference": "cdc0db5aed8fbfaf475fbd95bfd7bab83c7a779c",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/e61c593e9734b47ef462340c24fca8d6a57da14e",
+                "reference": "e61c593e9734b47ef462340c24fca8d6a57da14e",
                 "shasum": ""
             },
             "require": {
@@ -1878,7 +1878,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-05-06T09:56:31+00:00"
+            "time": "2020-06-16T07:00:44+00:00"
         },
         {
             "name": "phpunit/phpunit",
@@ -2808,16 +2808,16 @@
         },
         {
             "name": "webmozart/assert",
-            "version": "1.8.0",
+            "version": "1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webmozart/assert.git",
-                "reference": "ab2cb0b3b559010b75981b1bdce728da3ee90ad6"
+                "reference": "9dc4f203e36f2b486149058bade43c851dd97451"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webmozart/assert/zipball/ab2cb0b3b559010b75981b1bdce728da3ee90ad6",
-                "reference": "ab2cb0b3b559010b75981b1bdce728da3ee90ad6",
+                "url": "https://api.github.com/repos/webmozart/assert/zipball/9dc4f203e36f2b486149058bade43c851dd97451",
+                "reference": "9dc4f203e36f2b486149058bade43c851dd97451",
                 "shasum": ""
             },
             "require": {
@@ -2825,6 +2825,7 @@
                 "symfony/polyfill-ctype": "^1.8"
             },
             "conflict": {
+                "phpstan/phpstan": "<0.12.20",
                 "vimeo/psalm": "<3.9.1"
             },
             "require-dev": {
@@ -2852,7 +2853,7 @@
                 "check",
                 "validate"
             ],
-            "time": "2020-04-18T12:12:48+00:00"
+            "time": "2020-06-16T10:16:42+00:00"
         }
     ],
     "aliases": [],
