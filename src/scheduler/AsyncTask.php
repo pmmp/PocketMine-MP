@@ -24,11 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use pocketmine\utils\AssumptionFailedError;
+use function igbinary_serialize;
+use function igbinary_unserialize;
 use function is_scalar;
 use function is_string;
-use function serialize;
 use function spl_object_id;
-use function unserialize;
 
 /**
  * Class used to run async tasks in other threads.
@@ -109,7 +109,7 @@ abstract class AsyncTask extends \Threaded{
 	public function getResult(){
 		if($this->serialized){
 			if(!is_string($this->result)) throw new AssumptionFailedError("Result expected to be a serialized string");
-			return unserialize($this->result);
+			return igbinary_unserialize($this->result);
 		}
 		return $this->result;
 	}
@@ -130,7 +130,7 @@ abstract class AsyncTask extends \Threaded{
 	 * @param mixed $result
 	 */
 	public function setResult($result) : void{
-		$this->result = ($this->serialized = !is_scalar($result)) ? serialize($result) : $result;
+		$this->result = ($this->serialized = !is_scalar($result)) ? igbinary_serialize($result) : $result;
 	}
 
 	public function setSubmitted() : void{
@@ -161,7 +161,7 @@ abstract class AsyncTask extends \Threaded{
 	 * @param mixed $progress A value that can be safely serialize()'ed.
 	 */
 	public function publishProgress($progress) : void{
-		$this->progressUpdates[] = serialize($progress);
+		$this->progressUpdates[] = igbinary_serialize($progress);
 	}
 
 	/**
@@ -170,7 +170,7 @@ abstract class AsyncTask extends \Threaded{
 	public function checkProgressUpdates() : void{
 		while($this->progressUpdates->count() !== 0){
 			$progress = $this->progressUpdates->shift();
-			$this->onProgressUpdate(unserialize($progress));
+			$this->onProgressUpdate(igbinary_unserialize($progress));
 		}
 	}
 

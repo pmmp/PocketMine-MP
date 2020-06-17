@@ -25,8 +25,8 @@ namespace pocketmine\scheduler;
 
 use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
-use function serialize;
-use function unserialize;
+use function igbinary_serialize;
+use function igbinary_unserialize;
 
 /**
  * Executes a consecutive list of cURL operations.
@@ -48,12 +48,12 @@ class BulkCurlTask extends AsyncTask{
 	 * @phpstan-param list<array{page: string, timeout?: float, extraHeaders?: list<string>, extraOpts?: array<int, mixed>}> $operations
 	 */
 	public function __construct(array $operations){
-		$this->operations = serialize($operations);
+		$this->operations = igbinary_serialize($operations);
 	}
 
 	public function onRun() : void{
 		/** @phpstan-var list<array{page: string, timeout?: float, extraHeaders?: list<string>, extraOpts?: array<int, mixed>}> $operations */
-		$operations = unserialize($this->operations);
+		$operations = igbinary_unserialize($this->operations);
 		$results = [];
 		foreach($operations as $op){
 			try{

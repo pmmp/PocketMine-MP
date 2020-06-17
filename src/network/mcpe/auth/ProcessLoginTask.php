@@ -32,9 +32,9 @@ use pocketmine\network\mcpe\protocol\types\login\JwtChainLinkBody;
 use pocketmine\network\mcpe\protocol\types\login\JwtHeader;
 use pocketmine\scheduler\AsyncTask;
 use function base64_decode;
-use function serialize;
+use function igbinary_serialize;
+use function igbinary_unserialize;
 use function time;
-use function unserialize;
 
 class ProcessLoginTask extends AsyncTask{
 	private const TLS_KEY_ON_COMPLETION = "completion";
@@ -73,7 +73,7 @@ class ProcessLoginTask extends AsyncTask{
 	 */
 	public function __construct(array $chainJwts, string $clientDataJwt, bool $authRequired, \Closure $onCompletion){
 		$this->storeLocal(self::TLS_KEY_ON_COMPLETION, $onCompletion);
-		$this->chain = serialize($chainJwts);
+		$this->chain = igbinary_serialize($chainJwts);
 		$this->clientDataJwt = $clientDataJwt;
 		$this->authRequired = $authRequired;
 	}
@@ -89,7 +89,7 @@ class ProcessLoginTask extends AsyncTask{
 
 	private function validateChain() : PublicKeyInterface{
 		/** @var string[] $chain */
-		$chain = unserialize($this->chain);
+		$chain = igbinary_unserialize($this->chain);
 
 		$currentKey = null;
 		$first = true;

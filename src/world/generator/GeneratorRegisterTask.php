@@ -26,8 +26,8 @@ namespace pocketmine\world\generator;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\World;
-use function serialize;
-use function unserialize;
+use function igbinary_serialize;
+use function igbinary_unserialize;
 
 class GeneratorRegisterTask extends AsyncTask{
 
@@ -48,7 +48,7 @@ class GeneratorRegisterTask extends AsyncTask{
 	 */
 	public function __construct(World $world, string $generatorClass, array $generatorSettings = []){
 		$this->generatorClass = $generatorClass;
-		$this->settings = serialize($generatorSettings);
+		$this->settings = igbinary_serialize($generatorSettings);
 		$this->seed = $world->getSeed();
 		$this->worldId = $world->getId();
 		$this->worldHeight = $world->getWorldHeight();
@@ -63,7 +63,7 @@ class GeneratorRegisterTask extends AsyncTask{
 		 * @var Generator $generator
 		 * @see Generator::__construct()
 		 */
-		$generator = new $this->generatorClass($manager, $this->seed, unserialize($this->settings));
+		$generator = new $this->generatorClass($manager, $this->seed, igbinary_unserialize($this->settings));
 		$this->worker->saveToThreadStore("generation.world{$this->worldId}.generator", $generator);
 	}
 }
