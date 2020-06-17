@@ -38,15 +38,18 @@ final class ClientDataToSkinDataHelper{
 	/**
 	 * @throws \InvalidArgumentException
 	 */
-	public function fromClientData(ClientData $clientData) : SkinData{
-		$safeB64Decode = static function(string $base64, string $context) : string{
-			$result = base64_decode($base64, true);
-			if($result === false){
-				throw new \InvalidArgumentException("$context: Malformed base64, cannot be decoded");
-			}
-			return $result;
-		};
+	private static function safeB64Decode(string $base64, string $context) : string{
+		$result = base64_decode($base64, true);
+		if($result === false){
+			throw new \InvalidArgumentException("$context: Malformed base64, cannot be decoded");
+		}
+		return $result;
+	}
 
+	/**
+	 * @throws \InvalidArgumentException
+	 */
+	public function fromClientData(ClientData $clientData) : SkinData{
 		/** @var SkinAnimation[] $animations */
 		$animations = [];
 		foreach($clientData->AnimatedImageData as $k => $animation){
@@ -54,7 +57,7 @@ final class ClientDataToSkinDataHelper{
 				new SkinImage(
 					$animation->ImageHeight,
 					$animation->ImageWidth,
-					$safeB64Decode($animation->Image, "AnimatedImageData.$k.Image")
+					self::safeB64Decode($animation->Image, "AnimatedImageData.$k.Image")
 				),
 				$animation->Type,
 				$animation->Frames
@@ -62,12 +65,12 @@ final class ClientDataToSkinDataHelper{
 		}
 		return new SkinData(
 			$clientData->SkinId,
-			$safeB64Decode($clientData->SkinResourcePatch, "SkinResourcePatch"),
-			new SkinImage($clientData->SkinImageHeight, $clientData->SkinImageWidth, $safeB64Decode($clientData->SkinData, "SkinData")),
+			self::safeB64Decode($clientData->SkinResourcePatch, "SkinResourcePatch"),
+			new SkinImage($clientData->SkinImageHeight, $clientData->SkinImageWidth, self::safeB64Decode($clientData->SkinData, "SkinData")),
 			$animations,
-			new SkinImage($clientData->CapeImageHeight, $clientData->CapeImageWidth, $safeB64Decode($clientData->CapeData, "CapeData")),
-			$safeB64Decode($clientData->SkinGeometryData, "SkinGeometryData"),
-			$safeB64Decode($clientData->SkinAnimationData, "SkinAnimationData"),
+			new SkinImage($clientData->CapeImageHeight, $clientData->CapeImageWidth, self::safeB64Decode($clientData->CapeData, "CapeData")),
+			self::safeB64Decode($clientData->SkinGeometryData, "SkinGeometryData"),
+			self::safeB64Decode($clientData->SkinAnimationData, "SkinAnimationData"),
 			$clientData->PremiumSkin,
 			$clientData->PersonaSkin,
 			$clientData->CapeOnClassicSkin,
