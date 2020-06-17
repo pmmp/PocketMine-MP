@@ -36,6 +36,7 @@ use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\SubChunkConverter;
 use pocketmine\world\format\SubChunk;
 use function str_repeat;
+use function zlib_decode;
 
 class McRegion extends RegionWorldProvider{
 
@@ -50,9 +51,13 @@ class McRegion extends RegionWorldProvider{
 	 * @throws CorruptedChunkException
 	 */
 	protected function deserializeChunk(string $data) : Chunk{
+		$decompressed = @zlib_decode($data);
+		if($decompressed === false){
+			throw new CorruptedChunkException("Failed to decompress chunk NBT");
+		}
 		$nbt = new BigEndianNbtSerializer();
 		try{
-			$chunk = $nbt->readCompressed($data)->mustGetCompoundTag();
+			$chunk = $nbt->read($decompressed)->mustGetCompoundTag();
 		}catch(NbtDataException $e){
 			throw new CorruptedChunkException($e->getMessage(), 0, $e);
 		}

@@ -141,10 +141,14 @@ use function time;
 use function touch;
 use function trim;
 use function yaml_parse;
+use function zlib_decode;
+use function zlib_encode;
 use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_INT_MAX;
 use const PTHREADS_INHERIT_NONE;
+use const ZLIB_ENCODING_DEFLATE;
+use const ZLIB_ENCODING_GZIP;
 
 /**
  * The class that manages everything
@@ -511,16 +515,34 @@ class Server{
 		return file_exists($this->getPlayerDataPath($name));
 	}
 
+	private function handleCorruptedPlayerData(string $name) : void{
+		$path = $this->getPlayerDataPath($name);
+		rename($path, $path . '.bak');
+		$this->logger->error($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
+	}
+
 	public function getOfflinePlayerData(string $name) : ?CompoundTag{
 		$name = strtolower($name);
 		$path = $this->getPlayerDataPath($name);
 
 		if(file_exists($path)){
+			$contents = @file_get_contents($path);
+			if($contents === false){
+				throw new \RuntimeException("Failed to read player data file \"$path\" (permission denied?)");
+			}
+			$decompressed = @zlib_decode($contents);
+			if($decompressed === false){
+				$this->logger->debug("Failed to decompress raw player data for \"$name\"");
+				$this->handleCorruptedPlayerData($name);
+				return null;
+			}
+
 			try{
-				return (new BigEndianNbtSerializer())->readCompressed(file_get_contents($path))->mustGetCompoundTag();
+				return (new BigEndianNbtSerializer())->read($decompressed)->mustGetCompoundTag();
 			}catch(NbtDataException $e){ //zlib decode error / corrupt data
-				rename($path, $path . '.bak');
-				$this->logger->error($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
+				$this->logger->debug("Failed to decode NBT data for \"$name\": " . $e->getMessage());
+				$this->handleCorruptedPlayerData($name);
+				return null;
 			}
 		}
 		return null;
@@ -535,7 +557,7 @@ class Server{
 		if(!$ev->isCancelled()){
 			$nbt = new BigEndianNbtSerializer();
 			try{
-				file_put_contents($this->getPlayerDataPath($name), $nbt->writeCompressed(new TreeRoot($ev->getSaveData())));
+				file_put_contents($this->getPlayerDataPath($name), zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP));
 			}catch(\ErrorException $e){
 				$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
 				$this->logger->logException($e);

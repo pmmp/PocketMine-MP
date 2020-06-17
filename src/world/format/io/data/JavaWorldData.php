@@ -38,6 +38,9 @@ use function ceil;
 use function file_get_contents;
 use function file_put_contents;
 use function microtime;
+use function zlib_decode;
+use function zlib_encode;
+use const ZLIB_ENCODING_GZIP;
 
 class JavaWorldData extends BaseNbtWorldData{
 
@@ -70,7 +73,7 @@ class JavaWorldData extends BaseNbtWorldData{
 			->setTag("GameRules", new CompoundTag());
 
 		$nbt = new BigEndianNbtSerializer();
-		$buffer = $nbt->writeCompressed(new TreeRoot(CompoundTag::create()->setTag("Data", $worldData)));
+		$buffer = zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag("Data", $worldData))), ZLIB_ENCODING_GZIP);
 		file_put_contents($path . "level.dat", $buffer);
 	}
 
@@ -80,8 +83,12 @@ class JavaWorldData extends BaseNbtWorldData{
 			throw new CorruptedWorldException("Failed to read level.dat (permission denied or doesn't exist)");
 		}
 		$nbt = new BigEndianNbtSerializer();
+		$decompressed = @zlib_decode($rawLevelData);
+		if($decompressed === false){
+			throw new CorruptedWorldException("Failed to decompress level.dat contents");
+		}
 		try{
-			$worldData = $nbt->readCompressed($rawLevelData)->mustGetCompoundTag();
+			$worldData = $nbt->read($decompressed)->mustGetCompoundTag();
 		}catch(NbtDataException $e){
 			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}
@@ -106,7 +113,7 @@ class JavaWorldData extends BaseNbtWorldData{
 
 	public function save() : void{
 		$nbt = new BigEndianNbtSerializer();
-		$buffer = $nbt->writeCompressed(new TreeRoot(CompoundTag::create()->setTag("Data", $this->compoundTag)));
+		$buffer = zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag("Data", $this->compoundTag))), ZLIB_ENCODING_GZIP);
 		file_put_contents($this->dataPath, $buffer);
 	}
 
