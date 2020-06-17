@@ -1021,11 +1021,6 @@ parameters:
 			path: ../../../src/world/format/Chunk.php
 
 		-
-			message: "#^Method pocketmine\\\\world\\\\format\\\\io\\\\ChunkUtils\\:\\:convertBiomeColors\\(\\) should return string but returns array\\<string\\>\\|string\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/ChunkUtils.php
-
-		-
 			message: "#^Parameter \\#1 \\$className of static method pocketmine\\\\utils\\\\Utils\\:\\:testValidInstance\\(\\) expects class\\-string, string given\\.$#"
 			count: 1
 			path: ../../../src/world/format/io/FormatConverter.php
