@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
-use pocketmine\item\ItemIds;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\types\FixedItemIds;
 
 final class ItemStack{
 
@@ -48,7 +48,7 @@ final class ItemStack{
 	 * @param string[] $canDestroy
 	 */
 	public function __construct(int $id, int $meta, int $count, ?CompoundTag $nbt, array $canPlaceOn, array $canDestroy, ?int $shieldBlockingTick = null){
-		if(($shieldBlockingTick !== null) !== ($id === ItemIds::SHIELD)){
+		if(($shieldBlockingTick !== null) !== ($id === FixedItemIds::SHIELD)){
 			throw new \InvalidArgumentException("Blocking tick must only be provided for shield items");
 		}
 		$this->id = $id;

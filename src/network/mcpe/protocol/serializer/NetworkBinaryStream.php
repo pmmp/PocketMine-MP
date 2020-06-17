@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol\serializer;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
@@ -46,6 +45,7 @@ use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\Vec3MetadataProperty;
 use pocketmine\network\mcpe\protocol\types\GameRuleType;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\FixedItemIds;
 use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
@@ -240,7 +240,7 @@ class NetworkBinaryStream extends BinaryStream{
 		}
 
 		$shieldBlockingTick = null;
-		if($id === ItemIds::SHIELD){
+		if($id === FixedItemIds::SHIELD){
 			$shieldBlockingTick = $this->getVarLong();
 		}
 
