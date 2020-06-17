@@ -416,26 +416,6 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method getLocation\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
-			count: 3
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
-			message: "#^Cannot call method getId\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
-			message: "#^Cannot call method getOffsetPosition\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
-			message: "#^Cannot access property \\$onGround on pocketmine\\\\player\\\\Player\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
 			message: "#^Cannot call method syncCreative\\(\\) on pocketmine\\\\network\\\\mcpe\\\\InventoryManager\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
@@ -443,6 +423,11 @@ parameters:
 		-
 			message: "#^Parameter \\#1 \\$target of method pocketmine\\\\command\\\\Command\\:\\:testPermissionSilent\\(\\) expects pocketmine\\\\command\\\\CommandSender, pocketmine\\\\player\\\\Player\\|null given\\.$#"
 			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Cannot call method getLocation\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
@@ -534,21 +519,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/SetScoreboardIdentityPacket.php
-
-		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\entity\\\\EntityLink\\:\\:\\$fromEntityUniqueId \\(int\\) does not accept int\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/types/entity/EntityLink.php
-
-		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\entity\\\\EntityLink\\:\\:\\$toEntityUniqueId \\(int\\) does not accept int\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/types/entity/EntityLink.php
-
-		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\entity\\\\EntityLink\\:\\:\\$type \\(int\\) does not accept int\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/types/entity/EntityLink.php
 
 		-
 			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putVarInt\\(\\) expects int, int\\|null given\\.$#"
