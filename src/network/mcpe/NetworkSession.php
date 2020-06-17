@@ -657,20 +657,22 @@ class NetworkSession{
 	}
 
 	public function syncMovement(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL) : void{
-		$location = $this->player->getLocation();
-		$yaw = $yaw ?? $location->getYaw();
-		$pitch = $pitch ?? $location->getPitch();
+		if($this->player !== null){
+			$location = $this->player->getLocation();
+			$yaw = $yaw ?? $location->getYaw();
+			$pitch = $pitch ?? $location->getPitch();
 
-		$pk = new MovePlayerPacket();
-		$pk->entityRuntimeId = $this->player->getId();
-		$pk->position = $this->player->getOffsetPosition($pos);
-		$pk->pitch = $pitch;
-		$pk->headYaw = $yaw;
-		$pk->yaw = $yaw;
-		$pk->mode = $mode;
-		$pk->onGround = $this->player->onGround;
+			$pk = new MovePlayerPacket();
+			$pk->entityRuntimeId = $this->player->getId();
+			$pk->position = $this->player->getOffsetPosition($pos);
+			$pk->pitch = $pitch;
+			$pk->headYaw = $yaw;
+			$pk->yaw = $yaw;
+			$pk->mode = $mode;
+			$pk->onGround = $this->player->onGround;
 
-		$this->sendDataPacket($pk);
+			$this->sendDataPacket($pk);
+		}
 	}
 
 	public function syncViewAreaRadius(int $distance) : void{
