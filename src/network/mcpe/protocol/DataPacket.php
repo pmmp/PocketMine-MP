@@ -55,6 +55,10 @@ abstract class DataPacket implements Packet{
 		return $this->buf;
 	}
 
+	public function setSerializer(PacketSerializer $serializer) : void{
+		$this->buf = $serializer;
+	}
+
 	public function pid() : int{
 		return $this::NETWORK_ID;
 	}
@@ -105,7 +109,7 @@ abstract class DataPacket implements Packet{
 	abstract protected function decodePayload(PacketSerializer $in) : void;
 
 	final public function encode() : void{
-		$this->buf->reset();
+		$this->buf = new PacketSerializer();
 		$this->encodeHeader($this->buf);
 		$this->encodePayload($this->buf);
 	}

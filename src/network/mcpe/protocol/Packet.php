@@ -29,6 +29,8 @@ interface Packet{
 
 	public function getSerializer() : PacketSerializer;
 
+	public function setSerializer(PacketSerializer $serializer) : void;
+
 	public function pid() : int;
 
 	public function getName() : string;
