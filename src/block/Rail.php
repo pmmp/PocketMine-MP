@@ -61,6 +61,7 @@ class Rail extends BaseRail{
 	}
 
 	protected function getPossibleConnectionDirectionsOneConstraint(int $constraint) : array{
+		/** @var int[] $horizontal */
 		static $horizontal = [
 			Facing::NORTH,
 			Facing::SOUTH,

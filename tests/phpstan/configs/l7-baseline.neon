@@ -356,11 +356,6 @@ parameters:
 			path: ../../../src/block/Mycelium.php
 
 		-
-			message: "#^Method pocketmine\\\\block\\\\Rail\\:\\:getPossibleConnectionDirectionsOneConstraint\\(\\) should return array\\<int, true\\> but returns array\\<int\\|string, true\\>\\.$#"
-			count: 1
-			path: ../../../src/block/Rail.php
-
-		-
 			message: "#^Parameter \\#2 \\$x of static method pocketmine\\\\world\\\\generator\\\\object\\\\Tree\\:\\:growTree\\(\\) expects int, float\\|int given\\.$#"
 			count: 2
 			path: ../../../src/block/Sapling.php
