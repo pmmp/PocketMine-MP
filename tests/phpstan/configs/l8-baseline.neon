@@ -486,11 +486,6 @@ parameters:
 			path: ../../../src/network/mcpe/encryption/PrepareEncryptionTask.php
 
 		-
-			message: "#^Parameter \\#1 \\$playerInfo of class pocketmine\\\\event\\\\player\\\\PlayerPreLoginEvent constructor expects pocketmine\\\\player\\\\PlayerInfo, pocketmine\\\\player\\\\PlayerInfo\\|null given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/handler/LoginPacketHandler.php
-
-		-
 			message: "#^Cannot call method getUsername\\(\\) on pocketmine\\\\player\\\\PlayerInfo\\|null\\.$#"
 			count: 2
 			path: ../../../src/network/mcpe/handler/LoginPacketHandler.php

@@ -124,17 +124,18 @@ class LoginPacketHandler extends PacketHandler{
 		}catch(\InvalidArgumentException $e){
 			throw BadPacketException::wrap($e, "Failed to parse login UUID");
 		}
-		($this->playerInfoConsumer)(new PlayerInfo(
+		$playerInfo = new PlayerInfo(
 			$extraData->displayName,
 			$uuid,
 			$skin,
 			$clientData->LanguageCode,
 			$extraData->XUID,
 			(array) $clientData
-		));
+		);
+		($this->playerInfoConsumer)($playerInfo);
 
 		$ev = new PlayerPreLoginEvent(
-			$this->session->getPlayerInfo(),
+			$playerInfo,
 			$this->session->getIp(),
 			$this->session->getPort(),
 			$this->server->requiresAuthentication()
