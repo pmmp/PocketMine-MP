@@ -28,12 +28,13 @@ use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
 use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
-use pocketmine\network\mcpe\protocol\LoginPacket;
 use pocketmine\network\mcpe\protocol\types\login\JwtChainLinkBody;
 use pocketmine\network\mcpe\protocol\types\login\JwtHeader;
 use pocketmine\scheduler\AsyncTask;
 use function base64_decode;
+use function serialize;
 use function time;
+use function unserialize;
 
 class ProcessLoginTask extends AsyncTask{
 	private const TLS_KEY_ON_COMPLETION = "completion";
@@ -42,8 +43,10 @@ class ProcessLoginTask extends AsyncTask{
 
 	private const CLOCK_DRIFT_MAX = 60;
 
-	/** @var LoginPacket */
-	private $packet;
+	/** @var string */
+	private $chain;
+	/** @var string */
+	private $clientDataJwt;
 
 	/**
 	 * @var string|null
@@ -65,11 +68,13 @@ class ProcessLoginTask extends AsyncTask{
 	private $clientPublicKey = null;
 
 	/**
+	 * @param string[] $chainJwts
 	 * @phpstan-var \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPublicKey) : void $onCompletion
 	 */
-	public function __construct(LoginPacket $packet, bool $authRequired, \Closure $onCompletion){
+	public function __construct(array $chainJwts, string $clientDataJwt, bool $authRequired, \Closure $onCompletion){
 		$this->storeLocal(self::TLS_KEY_ON_COMPLETION, $onCompletion);
-		$this->packet = $packet;
+		$this->chain = serialize($chainJwts);
+		$this->clientDataJwt = $clientDataJwt;
 		$this->authRequired = $authRequired;
 	}
 
@@ -83,12 +88,13 @@ class ProcessLoginTask extends AsyncTask{
 	}
 
 	private function validateChain() : PublicKeyInterface{
-		$packet = $this->packet;
+		/** @var string[] $chain */
+		$chain = unserialize($this->chain);
 
 		$currentKey = null;
 		$first = true;
 
-		foreach($packet->chainDataJwt->chain as $jwt){
+		foreach($chain as $jwt){
 			$this->validateToken($jwt, $currentKey, $first);
 			if($first){
 				$first = false;
@@ -98,7 +104,7 @@ class ProcessLoginTask extends AsyncTask{
 		/** @var string $clientKey */
 		$clientKey = $currentKey;
 
-		$this->validateToken($packet->clientDataJwt, $currentKey);
+		$this->validateToken($this->clientDataJwt, $currentKey);
 
 		return (new DerPublicKeySerializer())->parse(base64_decode($clientKey, true));
 	}

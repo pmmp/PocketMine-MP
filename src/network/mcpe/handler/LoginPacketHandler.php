@@ -270,7 +270,7 @@ class LoginPacketHandler extends PacketHandler{
 	 * @throws \InvalidArgumentException
 	 */
 	protected function processLogin(LoginPacket $packet, bool $authRequired) : void{
-		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($packet, $authRequired, $this->authCallback));
+		$this->server->getAsyncPool()->submitTask(new ProcessLoginTask($packet->chainDataJwt->chain, $packet->clientDataJwt, $authRequired, $this->authCallback));
 		$this->session->setHandler(null); //drop packets received during login verification
 	}
 
