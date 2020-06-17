@@ -101,11 +101,10 @@ class PacketSerializer extends BinaryStream{
 		$animationCount = $this->getLInt();
 		$animations = [];
 		for($i = 0; $i < $animationCount; ++$i){
-			$animations[] = new SkinAnimation(
-				$skinImage = $this->getSkinImage(),
-				$animationType = $this->getLInt(),
-				$animationFrames = $this->getLFloat()
-			);
+			$skinImage = $this->getSkinImage();
+			$animationType = $this->getLInt();
+			$animationFrames = $this->getLFloat();
+			$animations[] = new SkinAnimation($skinImage, $animationType, $animationFrames);
 		}
 		$capeData = $this->getSkinImage();
 		$geometryData = $this->getString();
@@ -120,13 +119,12 @@ class PacketSerializer extends BinaryStream{
 		$personaPieceCount = $this->getLInt();
 		$personaPieces = [];
 		for($i = 0; $i < $personaPieceCount; ++$i){
-			$personaPieces[] = new PersonaSkinPiece(
-				$pieceId = $this->getString(),
-				$pieceType = $this->getString(),
-				$packId = $this->getString(),
-				$isDefaultPiece = $this->getBool(),
-				$productId = $this->getString()
-			);
+			$pieceId = $this->getString();
+			$pieceType = $this->getString();
+			$packId = $this->getString();
+			$isDefaultPiece = $this->getBool();
+			$productId = $this->getString();
+			$personaPieces[] = new PersonaSkinPiece($pieceId, $pieceType, $packId, $isDefaultPiece, $productId);
 		}
 		$pieceTintColorCount = $this->getLInt();
 		$pieceTintColors = [];
@@ -491,11 +489,10 @@ class PacketSerializer extends BinaryStream{
 	 * @throws BinaryDataException
 	 */
 	public function getVector3() : Vector3{
-		return new Vector3(
-			$this->getLFloat(),
-			$this->getLFloat(),
-			$this->getLFloat()
-		);
+		$x = $this->getLFloat();
+		$y = $this->getLFloat();
+		$z = $this->getLFloat();
+		return new Vector3($x, $y, $z);
 	}
 
 	/**
@@ -606,12 +603,11 @@ class PacketSerializer extends BinaryStream{
 	 * @throws BinaryDataException
 	 */
 	public function getEntityLink() : EntityLink{
-		return new EntityLink(
-			$fromEntityUniqueId = $this->getEntityUniqueId(),
-			$toEntityUniqueId = $this->getEntityUniqueId(),
-			$type = $this->getByte(),
-			$immediate = $this->getBool()
-		);
+		$fromEntityUniqueId = $this->getEntityUniqueId();
+		$toEntityUniqueId = $this->getEntityUniqueId();
+		$type = $this->getByte();
+		$immediate = $this->getBool();
+		return new EntityLink($fromEntityUniqueId, $toEntityUniqueId, $type, $immediate);
 	}
 
 	public function putEntityLink(EntityLink $link) : void{
