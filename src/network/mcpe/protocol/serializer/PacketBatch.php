@@ -30,22 +30,22 @@ use pocketmine\utils\BinaryDataException;
 class PacketBatch{
 
 	/** @var PacketSerializer */
-	private $binaryStream;
+	private $serializer;
 
 	public function __construct(?string $buffer = null){
-		$this->binaryStream = new PacketSerializer($buffer ?? "");
+		$this->serializer = new PacketSerializer($buffer ?? "");
 	}
 
 	public function putPacket(Packet $packet) : void{
 		$packet->encode();
-		$this->binaryStream->putString($packet->getBinaryStream()->getBuffer());
+		$this->serializer->putString($packet->getSerializer()->getBuffer());
 	}
 
 	/**
 	 * @throws BinaryDataException
 	 */
 	public function getPacket(PacketPool $packetPool) : Packet{
-		return $packetPool->getPacket($this->binaryStream->getString());
+		return $packetPool->getPacket($this->serializer->getString());
 	}
 
 	/**
@@ -64,10 +64,10 @@ class PacketBatch{
 	}
 
 	public function getBuffer() : string{
-		return $this->binaryStream->getBuffer();
+		return $this->serializer->getBuffer();
 	}
 
 	public function feof() : bool{
-		return $this->binaryStream->feof();
+		return $this->serializer->feof();
 	}
 }

@@ -27,7 +27,7 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 interface Packet{
 
-	public function getBinaryStream() : PacketSerializer;
+	public function getSerializer() : PacketSerializer;
 
 	public function pid() : int;
 

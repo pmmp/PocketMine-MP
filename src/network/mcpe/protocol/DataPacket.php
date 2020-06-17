@@ -51,7 +51,7 @@ abstract class DataPacket implements Packet{
 		$this->buf = new PacketSerializer();
 	}
 
-	public function getBinaryStream() : PacketSerializer{
+	public function getSerializer() : PacketSerializer{
 		return $this->buf;
 	}
 
