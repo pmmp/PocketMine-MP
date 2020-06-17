@@ -160,7 +160,7 @@ final class RuntimeBlockMapping{
 	/**
 	 * @phpstan-return CacheableNbt<\pocketmine\nbt\tag\ListTag>
 	 */
-	public function getStartGamePaletteCache() : ?CacheableNbt{
+	public function getStartGamePaletteCache() : CacheableNbt{
 		return $this->startGamePaletteCache ?? new CacheableNbt(new ListTag($this->bedrockKnownStates));
 	}
 }
