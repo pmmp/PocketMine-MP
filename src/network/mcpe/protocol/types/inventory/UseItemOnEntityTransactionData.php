@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol\types\inventory;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class UseItemOnEntityTransactionData extends TransactionData{
 	public const ACTION_INTERACT = 0;
@@ -72,7 +72,7 @@ class UseItemOnEntityTransactionData extends TransactionData{
 		return InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY;
 	}
 
-	protected function decodeData(NetworkBinaryStream $stream) : void{
+	protected function decodeData(PacketSerializer $stream) : void{
 		$this->entityRuntimeId = $stream->getEntityRuntimeId();
 		$this->actionType = $stream->getUnsignedVarInt();
 		$this->hotbarSlot = $stream->getVarInt();
@@ -81,7 +81,7 @@ class UseItemOnEntityTransactionData extends TransactionData{
 		$this->clickPos = $stream->getVector3();
 	}
 
-	protected function encodeData(NetworkBinaryStream $stream) : void{
+	protected function encodeData(PacketSerializer $stream) : void{
 		$stream->putEntityRuntimeId($this->entityRuntimeId);
 		$stream->putUnsignedVarInt($this->actionType);
 		$stream->putVarInt($this->hotbarSlot);

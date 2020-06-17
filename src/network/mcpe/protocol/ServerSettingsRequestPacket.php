@@ -25,16 +25,16 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class ServerSettingsRequestPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SERVER_SETTINGS_REQUEST_PACKET;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		//No payload
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		//No payload
 	}
 

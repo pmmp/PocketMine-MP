@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\command\CommandOutputMessage;
 use pocketmine\utils\BinaryDataException;
@@ -45,7 +45,7 @@ class CommandOutputPacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $unknownString;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->originData = $in->getCommandOriginData();
 		$this->outputType = $in->getByte();
 		$this->successCount = $in->getUnsignedVarInt();
@@ -62,7 +62,7 @@ class CommandOutputPacket extends DataPacket implements ClientboundPacket{
 	/**
 	 * @throws BinaryDataException
 	 */
-	protected function getCommandMessage(NetworkBinaryStream $in) : CommandOutputMessage{
+	protected function getCommandMessage(PacketSerializer $in) : CommandOutputMessage{
 		$message = new CommandOutputMessage();
 
 		$message->isInternal = $in->getBool();
@@ -75,7 +75,7 @@ class CommandOutputPacket extends DataPacket implements ClientboundPacket{
 		return $message;
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putCommandOriginData($this->originData);
 		$out->putByte($this->outputType);
 		$out->putUnsignedVarInt($this->successCount);
@@ -90,7 +90,7 @@ class CommandOutputPacket extends DataPacket implements ClientboundPacket{
 		}
 	}
 
-	protected function putCommandMessage(CommandOutputMessage $message, NetworkBinaryStream $out) : void{
+	protected function putCommandMessage(CommandOutputMessage $message, PacketSerializer $out) : void{
 		$out->putBool($message->isInternal);
 		$out->putString($message->messageId);
 

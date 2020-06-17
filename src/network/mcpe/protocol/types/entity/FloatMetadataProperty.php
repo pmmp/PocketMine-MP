@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\entity;
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 final class FloatMetadataProperty implements MetadataProperty{
 
@@ -46,11 +46,11 @@ final class FloatMetadataProperty implements MetadataProperty{
 		return $other instanceof self and $other->value === $this->value;
 	}
 
-	public static function read(NetworkBinaryStream $in) : self{
+	public static function read(PacketSerializer $in) : self{
 		return new self($in->getLFloat());
 	}
 
-	public function write(NetworkBinaryStream $out) : void{
+	public function write(PacketSerializer $out) : void{
 		$out->putLFloat($this->value);
 	}
 }

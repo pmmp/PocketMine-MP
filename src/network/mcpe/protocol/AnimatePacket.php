@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class AnimatePacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ANIMATE_PACKET;
@@ -58,7 +58,7 @@ class AnimatePacket extends DataPacket implements ClientboundPacket, Serverbound
 		return $result;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->action = $in->getVarInt();
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		if(($this->action & 0x80) !== 0){
@@ -66,7 +66,7 @@ class AnimatePacket extends DataPacket implements ClientboundPacket, Serverbound
 		}
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putVarInt($this->action);
 		$out->putEntityRuntimeId($this->entityRuntimeId);
 		if(($this->action & 0x80) !== 0){

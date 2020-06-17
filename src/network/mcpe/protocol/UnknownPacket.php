@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use function ord;
 use function strlen;
 
@@ -44,19 +44,19 @@ class UnknownPacket extends DataPacket{
 		return "unknown packet";
 	}
 
-	protected function decodeHeader(NetworkBinaryStream $in) : void{
+	protected function decodeHeader(PacketSerializer $in) : void{
 
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->payload = $in->getRemaining();
 	}
 
-	protected function encodeHeader(NetworkBinaryStream $out) : void{
+	protected function encodeHeader(PacketSerializer $out) : void{
 
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->put($this->payload);
 	}
 

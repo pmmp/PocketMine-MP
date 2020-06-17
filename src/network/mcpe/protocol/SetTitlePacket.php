@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class SetTitlePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_TITLE_PACKET;
@@ -48,7 +48,7 @@ class SetTitlePacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $fadeOutTime = 0;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->type = $in->getVarInt();
 		$this->text = $in->getString();
 		$this->fadeInTime = $in->getVarInt();
@@ -56,7 +56,7 @@ class SetTitlePacket extends DataPacket implements ClientboundPacket{
 		$this->fadeOutTime = $in->getVarInt();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putVarInt($this->type);
 		$out->putString($this->text);
 		$out->putVarInt($this->fadeInTime);

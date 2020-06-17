@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class LecternUpdatePacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LECTERN_UPDATE_PACKET;
@@ -43,14 +43,14 @@ class LecternUpdatePacket extends DataPacket implements ServerboundPacket{
 	/** @var bool */
 	public $dropBook;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->page = $in->getByte();
 		$this->totalPages = $in->getByte();
 		$in->getBlockPosition($this->x, $this->y, $this->z);
 		$this->dropBook = $in->getBool();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putByte($this->page);
 		$out->putByte($this->totalPages);
 		$out->putBlockPosition($this->x, $this->y, $this->z);

@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
@@ -62,7 +62,7 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 	/** @var EntityLink[] */
 	public $links = [];
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityUniqueId = $in->getEntityUniqueId();
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->type = $in->getString();
@@ -88,7 +88,7 @@ class AddActorPacket extends DataPacket implements ClientboundPacket{
 		}
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$out->putEntityRuntimeId($this->entityRuntimeId);
 		$out->putString($this->type);

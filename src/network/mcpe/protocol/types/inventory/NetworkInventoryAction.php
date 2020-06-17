@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\utils\BinaryDataException;
 
 class NetworkInventoryAction{
@@ -83,7 +83,7 @@ class NetworkInventoryAction{
 	 * @throws BinaryDataException
 	 * @throws PacketDecodeException
 	 */
-	public function read(NetworkBinaryStream $packet) : NetworkInventoryAction{
+	public function read(PacketSerializer $packet) : NetworkInventoryAction{
 		$this->sourceType = $packet->getUnsignedVarInt();
 
 		switch($this->sourceType){
@@ -112,7 +112,7 @@ class NetworkInventoryAction{
 	/**
 	 * @throws \InvalidArgumentException
 	 */
-	public function write(NetworkBinaryStream $packet) : void{
+	public function write(PacketSerializer $packet) : void{
 		$packet->putUnsignedVarInt($this->sourceType);
 
 		switch($this->sourceType){

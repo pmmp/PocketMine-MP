@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class MapCreateLockedCopyPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MAP_CREATE_LOCKED_COPY_PACKET;
@@ -35,12 +35,12 @@ class MapCreateLockedCopyPacket extends DataPacket implements ServerboundPacket{
 	/** @var int */
 	public $newMapId;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->originalMapId = $in->getEntityUniqueId();
 		$this->newMapId = $in->getEntityUniqueId();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityUniqueId($this->originalMapId);
 		$out->putEntityUniqueId($this->newMapId);
 	}

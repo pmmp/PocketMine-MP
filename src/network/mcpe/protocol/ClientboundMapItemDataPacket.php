@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\color\Color;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\MapDecoration;
 use pocketmine\network\mcpe\protocol\types\MapTrackedObject;
@@ -71,7 +71,7 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 	/** @var Color[][] */
 	public $colors = [];
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->mapId = $in->getEntityUniqueId();
 		$this->type = $in->getUnsignedVarInt();
 		$this->dimensionId = $in->getByte();
@@ -132,7 +132,7 @@ class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPack
 		}
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityUniqueId($this->mapId);
 
 		$type = 0;

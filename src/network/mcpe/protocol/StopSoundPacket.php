@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class StopSoundPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::STOP_SOUND_PACKET;
@@ -35,12 +35,12 @@ class StopSoundPacket extends DataPacket implements ClientboundPacket{
 	/** @var bool */
 	public $stopAll;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->soundName = $in->getString();
 		$this->stopAll = $in->getBool();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putString($this->soundName);
 		$out->putBool($this->stopAll);
 	}

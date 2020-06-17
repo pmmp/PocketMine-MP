@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\utils\BinaryDataException;
 use function get_class;
 
@@ -44,14 +44,14 @@ abstract class DataPacket implements Packet{
 	/** @var int */
 	public $recipientSubId = 0;
 
-	/** @var NetworkBinaryStream */
+	/** @var PacketSerializer */
 	private $buf;
 
 	public function __construct(){
-		$this->buf = new NetworkBinaryStream();
+		$this->buf = new PacketSerializer();
 	}
 
-	public function getBinaryStream() : NetworkBinaryStream{
+	public function getBinaryStream() : PacketSerializer{
 		return $this->buf;
 	}
 
@@ -84,7 +84,7 @@ abstract class DataPacket implements Packet{
 	 * @throws BinaryDataException
 	 * @throws \UnexpectedValueException
 	 */
-	protected function decodeHeader(NetworkBinaryStream $in) : void{
+	protected function decodeHeader(PacketSerializer $in) : void{
 		$header = $in->getUnsignedVarInt();
 		$pid = $header & self::PID_MASK;
 		if($pid !== static::NETWORK_ID){
@@ -102,7 +102,7 @@ abstract class DataPacket implements Packet{
 	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
-	abstract protected function decodePayload(NetworkBinaryStream $in) : void;
+	abstract protected function decodePayload(PacketSerializer $in) : void;
 
 	final public function encode() : void{
 		$this->buf->reset();
@@ -110,7 +110,7 @@ abstract class DataPacket implements Packet{
 		$this->encodePayload($this->buf);
 	}
 
-	protected function encodeHeader(NetworkBinaryStream $out) : void{
+	protected function encodeHeader(PacketSerializer $out) : void{
 		$out->putUnsignedVarInt(
 			static::NETWORK_ID |
 			($this->senderSubId << self::SENDER_SUBCLIENT_ID_SHIFT) |
@@ -121,7 +121,7 @@ abstract class DataPacket implements Packet{
 	/**
 	 * Encodes the packet body, without the packet ID or other generic header fields.
 	 */
-	abstract protected function encodePayload(NetworkBinaryStream $out) : void;
+	abstract protected function encodePayload(PacketSerializer $out) : void;
 
 	/**
 	 * @param string $name

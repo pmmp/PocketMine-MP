@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class LevelEventPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LEVEL_EVENT_PACKET;
@@ -133,13 +133,13 @@ class LevelEventPacket extends DataPacket implements ClientboundPacket{
 		return self::create(self::EVENT_ADD_PARTICLE_MASK | $particleId, $data, $pos);
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->evid = $in->getVarInt();
 		$this->position = $in->getVector3();
 		$this->data = $in->getVarInt();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putVarInt($this->evid);
 		$out->putVector3Nullable($this->position);
 		$out->putVarInt($this->data);

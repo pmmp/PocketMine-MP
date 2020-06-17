@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\ChunkCacheBlob;
 use function count;
 
@@ -54,7 +54,7 @@ class ClientCacheMissResponsePacket extends DataPacket implements ClientboundPac
 		return $this->blobs;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		for($i = 0, $count = $in->getUnsignedVarInt(); $i < $count; ++$i){
 			$hash = $in->getLLong();
 			$payload = $in->getString();
@@ -62,7 +62,7 @@ class ClientCacheMissResponsePacket extends DataPacket implements ClientboundPac
 		}
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putUnsignedVarInt(count($this->blobs));
 		foreach($this->blobs as $blob){
 			$out->putLLong($blob->getHash());

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\entity;
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 final class StringMetadataProperty implements MetadataProperty{
 	/** @var string */
@@ -37,11 +37,11 @@ final class StringMetadataProperty implements MetadataProperty{
 		return EntityMetadataTypes::STRING;
 	}
 
-	public static function read(NetworkBinaryStream $in) : self{
+	public static function read(PacketSerializer $in) : self{
 		return new self($in->getString());
 	}
 
-	public function write(NetworkBinaryStream $out) : void{
+	public function write(PacketSerializer $out) : void{
 		$out->putString($this->value);
 	}
 

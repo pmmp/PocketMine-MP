@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\EducationEditionOffer;
 use pocketmine\network\mcpe\protocol\types\GameRuleType;
@@ -158,7 +158,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	 */
 	public $itemTable = [];
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityUniqueId = $in->getEntityUniqueId();
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->playerGamemode = $in->getVarInt();
@@ -228,7 +228,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$this->multiplayerCorrelationId = $in->getString();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityUniqueId($this->entityUniqueId);
 		$out->putEntityRuntimeId($this->entityRuntimeId);
 		$out->putVarInt($this->playerGamemode);
@@ -293,7 +293,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	 * @phpstan-param array<string, int> $table
 	 */
 	private static function serializeItemTable(array $table) : string{
-		$stream = new NetworkBinaryStream();
+		$stream = new PacketSerializer();
 		$stream->putUnsignedVarInt(count($table));
 		foreach($table as $name => $legacyId){
 			$stream->putString($name);

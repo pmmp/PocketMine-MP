@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 
 class BlockActorDataPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
@@ -53,12 +53,12 @@ class BlockActorDataPacket extends DataPacket implements ClientboundPacket, Serv
 		return $result;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$in->getBlockPosition($this->x, $this->y, $this->z);
 		$this->namedtag = new CacheableNbt($in->getNbtCompoundRoot());
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putBlockPosition($this->x, $this->y, $this->z);
 		$out->put($this->namedtag->getEncodedNbt());
 	}

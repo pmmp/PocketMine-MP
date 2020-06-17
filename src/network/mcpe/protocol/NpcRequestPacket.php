@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class NpcRequestPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::NPC_REQUEST_PACKET;
@@ -46,14 +46,14 @@ class NpcRequestPacket extends DataPacket implements ServerboundPacket{
 	/** @var int */
 	public $actionType;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->requestType = $in->getByte();
 		$this->commandString = $in->getString();
 		$this->actionType = $in->getByte();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityRuntimeId($this->entityRuntimeId);
 		$out->putByte($this->requestType);
 		$out->putString($this->commandString);

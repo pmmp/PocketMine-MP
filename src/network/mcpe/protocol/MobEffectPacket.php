@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class MobEffectPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MOB_EFFECT_PACKET;
@@ -66,7 +66,7 @@ class MobEffectPacket extends DataPacket implements ClientboundPacket{
 		return $pk;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->eventId = $in->getByte();
 		$this->effectId = $in->getVarInt();
@@ -75,7 +75,7 @@ class MobEffectPacket extends DataPacket implements ClientboundPacket{
 		$this->duration = $in->getVarInt();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityRuntimeId($this->entityRuntimeId);
 		$out->putByte($this->eventId);
 		$out->putVarInt($this->effectId);

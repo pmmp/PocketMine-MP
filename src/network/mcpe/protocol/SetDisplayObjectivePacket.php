@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class SetDisplayObjectivePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_DISPLAY_OBJECTIVE_PACKET;
@@ -41,7 +41,7 @@ class SetDisplayObjectivePacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $sortOrder;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->displaySlot = $in->getString();
 		$this->objectiveName = $in->getString();
 		$this->displayName = $in->getString();
@@ -49,7 +49,7 @@ class SetDisplayObjectivePacket extends DataPacket implements ClientboundPacket{
 		$this->sortOrder = $in->getVarInt();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putString($this->displaySlot);
 		$out->putString($this->objectiveName);
 		$out->putString($this->displayName);

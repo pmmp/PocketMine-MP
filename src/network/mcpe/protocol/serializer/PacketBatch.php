@@ -29,11 +29,11 @@ use pocketmine\utils\BinaryDataException;
 
 class PacketBatch{
 
-	/** @var NetworkBinaryStream */
+	/** @var PacketSerializer */
 	private $binaryStream;
 
 	public function __construct(?string $buffer = null){
-		$this->binaryStream = new NetworkBinaryStream($buffer ?? "");
+		$this->binaryStream = new PacketSerializer($buffer ?? "");
 	}
 
 	public function putPacket(Packet $packet) : void{

@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use function count;
 
 class LevelChunkPacket extends DataPacket implements ClientboundPacket{
@@ -100,7 +100,7 @@ class LevelChunkPacket extends DataPacket implements ClientboundPacket{
 		return $this->extraPayload;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->chunkX = $in->getVarInt();
 		$this->chunkZ = $in->getVarInt();
 		$this->subChunkCount = $in->getUnsignedVarInt();
@@ -113,7 +113,7 @@ class LevelChunkPacket extends DataPacket implements ClientboundPacket{
 		$this->extraPayload = $in->getString();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putVarInt($this->chunkX);
 		$out->putVarInt($this->chunkZ);
 		$out->putUnsignedVarInt($this->subChunkCount);

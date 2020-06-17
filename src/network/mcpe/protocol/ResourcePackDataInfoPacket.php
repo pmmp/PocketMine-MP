@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackType;
 
 class ResourcePackDataInfoPacket extends DataPacket implements ClientboundPacket{
@@ -56,7 +56,7 @@ class ResourcePackDataInfoPacket extends DataPacket implements ClientboundPacket
 		return $result;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->packId = $in->getString();
 		$this->maxChunkSize = $in->getLInt();
 		$this->chunkCount = $in->getLInt();
@@ -66,7 +66,7 @@ class ResourcePackDataInfoPacket extends DataPacket implements ClientboundPacket
 		$this->packType = $in->getByte();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putString($this->packId);
 		$out->putLInt($this->maxChunkSize);
 		$out->putLInt($this->chunkCount);

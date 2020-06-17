@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class RiderJumpPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::RIDER_JUMP_PACKET;
@@ -33,11 +33,11 @@ class RiderJumpPacket extends DataPacket implements ServerboundPacket{
 	/** @var int */
 	public $jumpStrength; //percentage
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->jumpStrength = $in->getVarInt();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putVarInt($this->jumpStrength);
 	}
 

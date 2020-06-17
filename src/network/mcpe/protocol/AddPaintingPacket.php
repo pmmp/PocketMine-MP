@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class AddPaintingPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_PAINTING_PACKET;
@@ -42,7 +42,7 @@ class AddPaintingPacket extends DataPacket implements ClientboundPacket{
 	/** @var string */
 	public $title;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityUniqueId = $in->getEntityUniqueId();
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->position = $in->getVector3();
@@ -50,7 +50,7 @@ class AddPaintingPacket extends DataPacket implements ClientboundPacket{
 		$this->title = $in->getString();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$out->putEntityRuntimeId($this->entityRuntimeId);
 		$out->putVector3($this->position);

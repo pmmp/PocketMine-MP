@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 
 class AdventureSettingsPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
@@ -75,7 +75,7 @@ class AdventureSettingsPacket extends DataPacket implements ClientboundPacket, S
 	/** @var int */
 	public $entityUniqueId; //This is a little-endian long, NOT a var-long. (WTF Mojang)
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->flags = $in->getUnsignedVarInt();
 		$this->commandPermission = $in->getUnsignedVarInt();
 		$this->flags2 = $in->getUnsignedVarInt();
@@ -84,7 +84,7 @@ class AdventureSettingsPacket extends DataPacket implements ClientboundPacket, S
 		$this->entityUniqueId = $in->getLLong();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putUnsignedVarInt($this->flags);
 		$out->putUnsignedVarInt($this->commandPermission);
 		$out->putUnsignedVarInt($this->flags2);

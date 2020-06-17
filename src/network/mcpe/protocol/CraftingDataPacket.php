@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\PotionContainerChangeRecipe;
 use pocketmine\network\mcpe\protocol\types\PotionTypeRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe;
@@ -56,7 +56,7 @@ class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 	/** @var bool */
 	public $cleanRecipes = false;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$recipeCount = $in->getUnsignedVarInt();
 		for($i = 0; $i < $recipeCount; ++$i){
 			$recipeType = $in->getVarInt();
@@ -97,7 +97,7 @@ class CraftingDataPacket extends DataPacket implements ClientboundPacket{
 		$this->cleanRecipes = $in->getBool();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $d){
 			$out->putVarInt($d->getTypeId());

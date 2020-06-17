@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use function count;
 
 class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
@@ -115,7 +115,7 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 		return self::messageOnly(self::TYPE_TIP, $message);
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->type = $in->getByte();
 		$this->needsTranslation = $in->getBool();
 		switch($this->type){
@@ -146,7 +146,7 @@ class TextPacket extends DataPacket implements ClientboundPacket, ServerboundPac
 		$this->platformChatId = $in->getString();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putByte($this->type);
 		$out->putBool($this->needsTranslation);
 		switch($this->type){

@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class CompletedUsingItemPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::COMPLETED_USING_ITEM_PACKET;
@@ -52,12 +52,12 @@ class CompletedUsingItemPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $action;
 
-	public function decodePayload(NetworkBinaryStream $in) : void{
+	public function decodePayload(PacketSerializer $in) : void{
 		$this->itemId = $in->getShort();
 		$this->action = $in->getLInt();
 	}
 
-	public function encodePayload(NetworkBinaryStream $out) : void{
+	public function encodePayload(PacketSerializer $out) : void{
 		$out->putShort($this->itemId);
 		$out->putLInt($this->action);
 	}

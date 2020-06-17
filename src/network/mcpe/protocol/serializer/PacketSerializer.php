@@ -60,7 +60,7 @@ use pocketmine\uuid\UUID;
 use function count;
 use function strlen;
 
-class NetworkBinaryStream extends BinaryStream{
+class PacketSerializer extends BinaryStream{
 
 	/**
 	 * @throws BinaryDataException
@@ -146,7 +146,7 @@ class NetworkBinaryStream extends BinaryStream{
 		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId, $armSize, $skinColor, $personaPieces, $pieceTintColors);
 	}
 
-	public function putSkin(SkinData $skin): void{
+	public function putSkin(SkinData $skin) : void{
 		$this->putString($skin->getSkinId());
 		$this->putString($skin->getResourcePatch());
 		$this->putSkinImage($skin->getSkinImage());
@@ -327,15 +327,24 @@ class NetworkBinaryStream extends BinaryStream{
 
 	private function readMetadataProperty(int $type) : MetadataProperty{
 		switch($type){
-			case ByteMetadataProperty::id(): return ByteMetadataProperty::read($this);
-			case ShortMetadataProperty::id(): return ShortMetadataProperty::read($this);
-			case IntMetadataProperty::id(): return IntMetadataProperty::read($this);
-			case FloatMetadataProperty::id(): return FloatMetadataProperty::read($this);
-			case StringMetadataProperty::id(): return StringMetadataProperty::read($this);
-			case CompoundTagMetadataProperty::id(): return CompoundTagMetadataProperty::read($this);
-			case BlockPosMetadataProperty::id(): return BlockPosMetadataProperty::read($this);
-			case LongMetadataProperty::id(): return LongMetadataProperty::read($this);
-			case Vec3MetadataProperty::id(): return Vec3MetadataProperty::read($this);
+			case ByteMetadataProperty::id():
+				return ByteMetadataProperty::read($this);
+			case ShortMetadataProperty::id():
+				return ShortMetadataProperty::read($this);
+			case IntMetadataProperty::id():
+				return IntMetadataProperty::read($this);
+			case FloatMetadataProperty::id():
+				return FloatMetadataProperty::read($this);
+			case StringMetadataProperty::id():
+				return StringMetadataProperty::read($this);
+			case CompoundTagMetadataProperty::id():
+				return CompoundTagMetadataProperty::read($this);
+			case BlockPosMetadataProperty::id():
+				return BlockPosMetadataProperty::read($this);
+			case LongMetadataProperty::id():
+				return LongMetadataProperty::read($this);
+			case Vec3MetadataProperty::id():
+				return Vec3MetadataProperty::read($this);
 			default:
 				throw new PacketDecodeException("Unknown entity metadata type " . $type);
 		}
@@ -345,6 +354,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Writes entity metadata to the packet buffer.
 	 *
 	 * @param MetadataProperty[] $metadata
+	 *
 	 * @phpstan-param array<int, MetadataProperty> $metadata
 	 */
 	public function putEntityMetadata(array $metadata) : void{
@@ -494,7 +504,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * Note: ONLY use this where it is reasonable to allow not specifying the vector.
 	 * For all other purposes, use the non-nullable version.
 	 *
-	 * @see NetworkBinaryStream::putVector3()
+	 * @see PacketSerializer::putVector3()
 	 */
 	public function putVector3Nullable(?Vector3 $vector) : void{
 		if($vector !== null){
@@ -568,6 +578,7 @@ class NetworkBinaryStream extends BinaryStream{
 	 * TODO: implement this properly
 	 *
 	 * @param mixed[][] $rules
+	 *
 	 * @phpstan-param array<string, array{0: int, 1: bool|int|float}> $rules
 	 */
 	public function putGameRules(array $rules) : void{

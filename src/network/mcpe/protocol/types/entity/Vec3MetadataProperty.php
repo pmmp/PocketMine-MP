@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types\entity;
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class Vec3MetadataProperty implements MetadataProperty{
 	/** @var Vector3 */
@@ -42,11 +42,11 @@ class Vec3MetadataProperty implements MetadataProperty{
 		return EntityMetadataTypes::VECTOR3F;
 	}
 
-	public static function read(NetworkBinaryStream $in) : self{
+	public static function read(PacketSerializer $in) : self{
 		return new self($in->getVector3());
 	}
 
-	public function write(NetworkBinaryStream $out) : void{
+	public function write(PacketSerializer $out) : void{
 		$out->putVector3($this->value);
 	}
 

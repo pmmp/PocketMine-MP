@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class NetworkChunkPublisherUpdatePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::NETWORK_CHUNK_PUBLISHER_UPDATE_PACKET;
@@ -48,12 +48,12 @@ class NetworkChunkPublisherUpdatePacket extends DataPacket implements Clientboun
 		return $result;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$in->getSignedBlockPosition($this->x, $this->y, $this->z);
 		$this->radius = $in->getUnsignedVarInt();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putSignedBlockPosition($this->x, $this->y, $this->z);
 		$out->putUnsignedVarInt($this->radius);
 	}

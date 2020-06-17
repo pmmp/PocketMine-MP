@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\NormalTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
@@ -48,7 +48,7 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 	/** @var TransactionData */
 	public $trData;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$transactionType = $in->getUnsignedVarInt();
 
 		switch($transactionType){
@@ -74,7 +74,7 @@ class InventoryTransactionPacket extends DataPacket implements ClientboundPacket
 		$this->trData->decode($in);
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putUnsignedVarInt($this->trData->getTypeId());
 		$this->trData->encode($out);
 	}

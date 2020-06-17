@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use function count;
 
 class ResourcePackClientResponsePacket extends DataPacket implements ServerboundPacket{
@@ -41,7 +41,7 @@ class ResourcePackClientResponsePacket extends DataPacket implements Serverbound
 	/** @var string[] */
 	public $packIds = [];
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->status = $in->getByte();
 		$entryCount = $in->getLShort();
 		while($entryCount-- > 0){
@@ -49,7 +49,7 @@ class ResourcePackClientResponsePacket extends DataPacket implements Serverbound
 		}
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putByte($this->status);
 		$out->putLShort(count($this->packIds));
 		foreach($this->packIds as $id){

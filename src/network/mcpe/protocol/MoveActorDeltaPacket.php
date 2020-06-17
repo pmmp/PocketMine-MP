@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\utils\BinaryDataException;
 
 class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
@@ -61,7 +61,7 @@ class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
 	/**
 	 * @throws BinaryDataException
 	 */
-	private function maybeReadCoord(int $flag, NetworkBinaryStream $in) : int{
+	private function maybeReadCoord(int $flag, PacketSerializer $in) : int{
 		if(($this->flags & $flag) !== 0){
 			return $in->getVarInt();
 		}
@@ -71,14 +71,14 @@ class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
 	/**
 	 * @throws BinaryDataException
 	 */
-	private function maybeReadRotation(int $flag, NetworkBinaryStream $in) : float{
+	private function maybeReadRotation(int $flag, PacketSerializer $in) : float{
 		if(($this->flags & $flag) !== 0){
 			return $in->getByteRotation();
 		}
 		return 0.0;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->flags = $in->getLShort();
 		$this->xDiff = $this->maybeReadCoord(self::FLAG_HAS_X, $in);
@@ -89,19 +89,19 @@ class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
 		$this->zRot = $this->maybeReadRotation(self::FLAG_HAS_ROT_Z, $in);
 	}
 
-	private function maybeWriteCoord(int $flag, int $val, NetworkBinaryStream $out) : void{
+	private function maybeWriteCoord(int $flag, int $val, PacketSerializer $out) : void{
 		if(($this->flags & $flag) !== 0){
 			$out->putVarInt($val);
 		}
 	}
 
-	private function maybeWriteRotation(int $flag, float $val, NetworkBinaryStream $out) : void{
+	private function maybeWriteRotation(int $flag, float $val, PacketSerializer $out) : void{
 		if(($this->flags & $flag) !== 0){
 			$out->putByteRotation($val);
 		}
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityRuntimeId($this->entityRuntimeId);
 		$out->putLShort($this->flags);
 		$this->maybeWriteCoord(self::FLAG_HAS_X, $this->xDiff, $out);

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\recipe;
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 abstract class RecipeWithTypeId{
 	/** @var int */
@@ -37,5 +37,5 @@ abstract class RecipeWithTypeId{
 		return $this->typeId;
 	}
 
-	abstract public function encode(NetworkBinaryStream $out) : void;
+	abstract public function encode(PacketSerializer $out) : void;
 }

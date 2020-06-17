@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class NormalTransactionData extends TransactionData{
 
@@ -32,11 +32,11 @@ class NormalTransactionData extends TransactionData{
 		return InventoryTransactionPacket::TYPE_NORMAL;
 	}
 
-	protected function decodeData(NetworkBinaryStream $stream) : void{
+	protected function decodeData(PacketSerializer $stream) : void{
 
 	}
 
-	protected function encodeData(NetworkBinaryStream $stream) : void{
+	protected function encodeData(PacketSerializer $stream) : void{
 
 	}
 

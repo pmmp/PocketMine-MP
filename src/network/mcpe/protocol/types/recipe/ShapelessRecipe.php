@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\recipe;
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\uuid\UUID;
 use function count;
@@ -87,7 +87,7 @@ final class ShapelessRecipe extends RecipeWithTypeId{
 		return $this->priority;
 	}
 
-	public static function decode(int $recipeType, NetworkBinaryStream $in) : self{
+	public static function decode(int $recipeType, PacketSerializer $in) : self{
 		$recipeId = $in->getString();
 		$input = [];
 		for($j = 0, $ingredientCount = $in->getUnsignedVarInt(); $j < $ingredientCount; ++$j){
@@ -104,7 +104,7 @@ final class ShapelessRecipe extends RecipeWithTypeId{
 		return new self($recipeType, $recipeId, $input, $output, $uuid, $block, $priority);
 	}
 
-	public function encode(NetworkBinaryStream $out) : void{
+	public function encode(PacketSerializer $out) : void{
 		$out->putString($this->recipeId);
 		$out->putUnsignedVarInt(count($this->inputs));
 		foreach($this->inputs as $item){

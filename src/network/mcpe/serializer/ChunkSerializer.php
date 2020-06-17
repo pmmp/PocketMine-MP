@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\serializer;
 
 use pocketmine\block\tile\Spawnable;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
 use function count;
@@ -52,7 +52,7 @@ final class ChunkSerializer{
 	}
 
 	public static function serialize(Chunk $chunk, RuntimeBlockMapping $blockMapper, ?string $tiles = null) : string{
-		$stream = new NetworkBinaryStream();
+		$stream = new PacketSerializer();
 		$subChunkCount = self::getSubChunkCount($chunk);
 		for($y = 0; $y < $subChunkCount; ++$y){
 			$layers = $chunk->getSubChunk($y)->getBlockLayers();

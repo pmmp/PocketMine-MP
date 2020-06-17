@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use function count;
 
 class PurchaseReceiptPacket extends DataPacket implements ServerboundPacket{
@@ -34,14 +34,14 @@ class PurchaseReceiptPacket extends DataPacket implements ServerboundPacket{
 	/** @var string[] */
 	public $entries = [];
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$count = $in->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
 			$this->entries[] = $in->getString();
 		}
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){
 			$out->putString($entry);

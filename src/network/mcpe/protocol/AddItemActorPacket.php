@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 
@@ -51,7 +51,7 @@ class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	/** @var bool */
 	public $isFromFishing = false;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityUniqueId = $in->getEntityUniqueId();
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->item = $in->getSlot();
@@ -61,7 +61,7 @@ class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 		$this->isFromFishing = $in->getBool();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$out->putEntityRuntimeId($this->entityRuntimeId);
 		$out->putSlot($this->item);

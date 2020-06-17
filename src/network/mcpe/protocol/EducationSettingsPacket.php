@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class EducationSettingsPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::EDUCATION_SETTINGS_PACKET;
@@ -50,12 +50,12 @@ class EducationSettingsPacket extends DataPacket implements ClientboundPacket{
 		return $this->hasQuiz;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->codeBuilderDefaultUri = $in->getString();
 		$this->hasQuiz = $in->getBool();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putString($this->codeBuilderDefaultUri);
 		$out->putBool($this->hasQuiz);
 	}

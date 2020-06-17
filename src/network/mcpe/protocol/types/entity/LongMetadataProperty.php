@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\entity;
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
 
@@ -42,11 +42,11 @@ final class LongMetadataProperty implements MetadataProperty{
 		return EntityMetadataTypes::LONG;
 	}
 
-	public static function read(NetworkBinaryStream $in) : self{
+	public static function read(PacketSerializer $in) : self{
 		return new self($in->getVarLong());
 	}
 
-	public function write(NetworkBinaryStream $out) : void{
+	public function write(PacketSerializer $out) : void{
 		$out->putVarLong($this->value);
 	}
 }

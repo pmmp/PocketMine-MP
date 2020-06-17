@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class UpdateBlockSyncedPacket extends UpdateBlockPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_SYNCED_PACKET;
@@ -39,13 +39,13 @@ class UpdateBlockSyncedPacket extends UpdateBlockPacket{
 	/** @var int */
 	public $updateType;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		parent::decodePayload($in);
 		$this->entityUniqueId = $in->getUnsignedVarLong();
 		$this->updateType = $in->getUnsignedVarLong();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		parent::encodePayload($out);
 		$out->putUnsignedVarLong($this->entityUniqueId);
 		$out->putUnsignedVarLong($this->updateType);

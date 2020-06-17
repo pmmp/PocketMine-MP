@@ -26,8 +26,8 @@ namespace pocketmine\network\mcpe\protocol\types\entity;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 final class CompoundTagMetadataProperty implements MetadataProperty{
 	/** @var CompoundTag */
@@ -52,11 +52,11 @@ final class CompoundTagMetadataProperty implements MetadataProperty{
 	/**
 	 * @throws PacketDecodeException
 	 */
-	public static function read(NetworkBinaryStream $in) : self{
+	public static function read(PacketSerializer $in) : self{
 		return new self($in->getNbtCompoundRoot());
 	}
 
-	public function write(NetworkBinaryStream $out) : void{
+	public function write(PacketSerializer $out) : void{
 		$out->put((new NetworkNbtSerializer())->write(new TreeRoot($this->value)));
 	}
 }

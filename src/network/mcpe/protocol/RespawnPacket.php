@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class RespawnPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::RESPAWN_PACKET;
@@ -50,13 +50,13 @@ class RespawnPacket extends DataPacket implements ClientboundPacket, Serverbound
 		return $result;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->position = $in->getVector3();
 		$this->respawnState = $in->getByte();
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putVector3($this->position);
 		$out->putByte($this->respawnState);
 		$out->putEntityRuntimeId($this->entityRuntimeId);

@@ -24,18 +24,18 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol;
 
 use PHPUnit\Framework\TestCase;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use function strlen;
 
 class LoginPacketTest extends TestCase{
 
 	public function testInvalidChainDataJsonHandling() : void{
-		$stream = new NetworkBinaryStream();
+		$stream = new PacketSerializer();
 		$stream->putUnsignedVarInt(ProtocolInfo::LOGIN_PACKET);
 		$payload = '{"chain":[]'; //intentionally malformed
 		$stream->putInt(ProtocolInfo::CURRENT_PROTOCOL);
 
-		$stream2 = new NetworkBinaryStream();
+		$stream2 = new PacketSerializer();
 		$stream2->putLInt(strlen($payload));
 		$stream2->put($payload);
 		$stream->putString($stream2->getBuffer());

@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\uuid\UUID;
 use function count;
@@ -44,7 +44,7 @@ class CraftingEventPacket extends DataPacket implements ServerboundPacket{
 	/** @var ItemStack[] */
 	public $output = [];
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->windowId = $in->getByte();
 		$this->type = $in->getVarInt();
 		$this->id = $in->getUUID();
@@ -60,7 +60,7 @@ class CraftingEventPacket extends DataPacket implements ServerboundPacket{
 		}
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putByte($this->windowId);
 		$out->putVarInt($this->type);
 		$out->putUUID($this->id);

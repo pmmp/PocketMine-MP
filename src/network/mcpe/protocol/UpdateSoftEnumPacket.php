@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use function count;
 
 class UpdateSoftEnumPacket extends DataPacket implements ClientboundPacket{
@@ -42,7 +42,7 @@ class UpdateSoftEnumPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $type;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->enumName = $in->getString();
 		for($i = 0, $count = $in->getUnsignedVarInt(); $i < $count; ++$i){
 			$this->values[] = $in->getString();
@@ -50,7 +50,7 @@ class UpdateSoftEnumPacket extends DataPacket implements ClientboundPacket{
 		$this->type = $in->getByte();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putString($this->enumName);
 		$out->putUnsignedVarInt(count($this->values));
 		foreach($this->values as $v){

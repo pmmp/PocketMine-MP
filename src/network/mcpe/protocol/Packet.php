@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 interface Packet{
 
-	public function getBinaryStream() : NetworkBinaryStream;
+	public function getBinaryStream() : PacketSerializer;
 
 	public function pid() : int;
 

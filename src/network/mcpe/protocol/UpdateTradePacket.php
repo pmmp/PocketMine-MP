@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 
@@ -58,7 +58,7 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 	 */
 	public $offers;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->windowId = $in->getByte();
 		$this->windowType = $in->getByte();
 		$this->windowSlotCount = $in->getVarInt();
@@ -71,7 +71,7 @@ class UpdateTradePacket extends DataPacket implements ClientboundPacket{
 		$this->offers = new CacheableNbt($in->getNbtCompoundRoot());
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putByte($this->windowId);
 		$out->putByte($this->windowType);
 		$out->putVarInt($this->windowSlotCount);

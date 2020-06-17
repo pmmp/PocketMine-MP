@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
 
 class CommandRequestPacket extends DataPacket implements ServerboundPacket{
@@ -38,13 +38,13 @@ class CommandRequestPacket extends DataPacket implements ServerboundPacket{
 	/** @var bool */
 	public $isInternal;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->command = $in->getString();
 		$this->originData = $in->getCommandOriginData();
 		$this->isInternal = $in->getBool();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putString($this->command);
 		$out->putCommandOriginData($this->originData);
 		$out->putBool($this->isInternal);

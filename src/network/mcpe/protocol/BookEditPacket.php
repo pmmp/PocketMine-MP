@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class BookEditPacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::BOOK_EDIT_PACKET;
@@ -57,7 +57,7 @@ class BookEditPacket extends DataPacket implements ServerboundPacket{
 	/** @var string */
 	public $xuid;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->type = $in->getByte();
 		$this->inventorySlot = $in->getByte();
 
@@ -85,7 +85,7 @@ class BookEditPacket extends DataPacket implements ServerboundPacket{
 		}
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putByte($this->type);
 		$out->putByte($this->inventorySlot);
 

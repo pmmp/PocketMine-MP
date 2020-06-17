@@ -526,17 +526,17 @@ parameters:
 			path: ../../../src/network/mcpe/protocol/LevelSoundEventPacket.php
 
 		-
-			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\NetworkBinaryStream\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
+			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/SetScorePacket.php
 
 		-
-			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\NetworkBinaryStream\\:\\:putString\\(\\) expects string, string\\|null given\\.$#"
+			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putString\\(\\) expects string, string\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/SetScorePacket.php
 
 		-
-			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\NetworkBinaryStream\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
+			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/SetScoreboardIdentityPacket.php
 

@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 
 class PlayerHotbarPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
@@ -46,13 +46,13 @@ class PlayerHotbarPacket extends DataPacket implements ClientboundPacket, Server
 		return $result;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->selectedHotbarSlot = $in->getUnsignedVarInt();
 		$this->windowId = $in->getByte();
 		$this->selectHotbarSlot = $in->getBool();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putUnsignedVarInt($this->selectedHotbarSlot);
 		$out->putByte($this->windowId);
 		$out->putBool($this->selectHotbarSlot);

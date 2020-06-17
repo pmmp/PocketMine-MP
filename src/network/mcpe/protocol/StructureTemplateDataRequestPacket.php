@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 
 class StructureTemplateDataRequestPacket extends DataPacket implements ServerboundPacket{
@@ -47,14 +47,14 @@ class StructureTemplateDataRequestPacket extends DataPacket implements Serverbou
 	/** @var int */
 	public $structureTemplateResponseType;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->structureTemplateName = $in->getString();
 		$in->getBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
 		$this->structureSettings = $in->getStructureSettings();
 		$this->structureTemplateResponseType = $in->getByte();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putString($this->structureTemplateName);
 		$out->putBlockPosition($this->structureBlockX, $this->structureBlockY, $this->structureBlockZ);
 		$out->putStructureSettings($this->structureSettings);

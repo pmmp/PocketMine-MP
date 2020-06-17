@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class MovePlayerPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MOVE_PLAYER_PACKET;
@@ -57,7 +57,7 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 	/** @var int */
 	public $teleportItem = 0;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->position = $in->getVector3();
 		$this->pitch = $in->getLFloat();
@@ -72,7 +72,7 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 		}
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityRuntimeId($this->entityRuntimeId);
 		$out->putVector3($this->position);
 		$out->putLFloat($this->pitch);

@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 
 class LevelEventGenericPacket extends DataPacket implements ClientboundPacket{
@@ -58,12 +58,12 @@ class LevelEventGenericPacket extends DataPacket implements ClientboundPacket{
 		return $this->eventData;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->eventId = $in->getVarInt();
 		$this->eventData = new CacheableNbt($in->getNbtCompoundRoot());
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putVarInt($this->eventId);
 		$out->put($this->eventData->getEncodedNbt());
 	}

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\recipe;
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\uuid\UUID;
 
 final class MultiRecipe extends RecipeWithTypeId{
@@ -53,11 +53,11 @@ final class MultiRecipe extends RecipeWithTypeId{
 		return $this->recipeId;
 	}
 
-	public static function decode(int $typeId, NetworkBinaryStream $in) : self{
+	public static function decode(int $typeId, PacketSerializer $in) : self{
 		return new self($typeId, $in->getUUID());
 	}
 
-	public function encode(NetworkBinaryStream $out) : void{
+	public function encode(PacketSerializer $out) : void{
 		$out->putUUID($this->recipeId);
 	}
 }

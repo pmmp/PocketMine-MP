@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class DisconnectPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::DISCONNECT_PACKET;
@@ -52,14 +52,14 @@ class DisconnectPacket extends DataPacket implements ClientboundPacket, Serverbo
 		return true;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->hideDisconnectionScreen = $in->getBool();
 		if(!$this->hideDisconnectionScreen){
 			$this->message = $in->getString();
 		}
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putBool($this->hideDisconnectionScreen);
 		if(!$this->hideDisconnectionScreen){
 			$out->putString($this->message);

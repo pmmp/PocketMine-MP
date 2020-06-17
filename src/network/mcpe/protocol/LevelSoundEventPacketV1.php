@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 /**
  * Useless leftover from a 1.8 refactor, does nothing
@@ -47,7 +47,7 @@ class LevelSoundEventPacketV1 extends DataPacket{
 	/** @var bool */
 	public $disableRelativeVolume = false;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->sound = $in->getByte();
 		$this->position = $in->getVector3();
 		$this->extraData = $in->getVarInt();
@@ -56,7 +56,7 @@ class LevelSoundEventPacketV1 extends DataPacket{
 		$this->disableRelativeVolume = $in->getBool();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putByte($this->sound);
 		$out->putVector3($this->position);
 		$out->putVarInt($this->extraData);

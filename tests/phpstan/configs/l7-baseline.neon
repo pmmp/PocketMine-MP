@@ -658,45 +658,45 @@ parameters:
 		-
 			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putBool\\(\\) expects bool, bool\\|float\\|int given\\.$#"
 			count: 1
-			path: ../../../src/network/mcpe/protocol/serializer/NetworkBinaryStream.php
+			path: ../../../src/network/mcpe/protocol/serializer/PacketSerializer.php
 
 		-
 			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putUnsignedVarInt\\(\\) expects int, bool\\|float\\|int given\\.$#"
 			count: 1
-			path: ../../../src/network/mcpe/protocol/serializer/NetworkBinaryStream.php
+			path: ../../../src/network/mcpe/protocol/serializer/PacketSerializer.php
 
 		-
 			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putLFloat\\(\\) expects float, bool\\|float\\|int given\\.$#"
 			count: 1
-			path: ../../../src/network/mcpe/protocol/serializer/NetworkBinaryStream.php
+			path: ../../../src/network/mcpe/protocol/serializer/PacketSerializer.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\NetworkBinaryStream\\:\\:putSignedBlockPosition\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putSignedBlockPosition\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/types/entity/BlockPosMetadataProperty.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\NetworkBinaryStream\\:\\:putSignedBlockPosition\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putSignedBlockPosition\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/types/entity/BlockPosMetadataProperty.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\NetworkBinaryStream\\:\\:putSignedBlockPosition\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putSignedBlockPosition\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/types/entity/BlockPosMetadataProperty.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\NetworkBinaryStream\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\NetworkBinaryStream\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\NetworkBinaryStream\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
 

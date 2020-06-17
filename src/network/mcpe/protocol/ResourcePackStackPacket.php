@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
 use function count;
 
@@ -60,7 +60,7 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 		return $result;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->mustAccept = $in->getBool();
 		$behaviorPackCount = $in->getUnsignedVarInt();
 		while($behaviorPackCount-- > 0){
@@ -76,7 +76,7 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 		$this->baseGameVersion = $in->getString();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putBool($this->mustAccept);
 
 		$out->putUnsignedVarInt(count($this->behaviorPackStack));

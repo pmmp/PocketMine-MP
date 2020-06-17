@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 
 class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
@@ -56,7 +56,7 @@ class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, S
 		return $result;
 	}
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->head = $in->getSlot();
 		$this->chest = $in->getSlot();
@@ -64,7 +64,7 @@ class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, S
 		$this->feet = $in->getSlot();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityRuntimeId($this->entityRuntimeId);
 		$out->putSlot($this->head);
 		$out->putSlot($this->chest);

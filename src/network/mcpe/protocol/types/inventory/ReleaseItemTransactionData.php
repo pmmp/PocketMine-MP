@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol\types\inventory;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class ReleaseItemTransactionData extends TransactionData{
 	public const ACTION_RELEASE = 0; //bow shoot
@@ -60,14 +60,14 @@ class ReleaseItemTransactionData extends TransactionData{
 		return InventoryTransactionPacket::TYPE_RELEASE_ITEM;
 	}
 
-	protected function decodeData(NetworkBinaryStream $stream) : void{
+	protected function decodeData(PacketSerializer $stream) : void{
 		$this->actionType = $stream->getUnsignedVarInt();
 		$this->hotbarSlot = $stream->getVarInt();
 		$this->itemInHand = $stream->getSlot();
 		$this->headPos = $stream->getVector3();
 	}
 
-	protected function encodeData(NetworkBinaryStream $stream) : void{
+	protected function encodeData(PacketSerializer $stream) : void{
 		$stream->putUnsignedVarInt($this->actionType);
 		$stream->putVarInt($this->hotbarSlot);
 		$stream->putSlot($this->itemInHand);

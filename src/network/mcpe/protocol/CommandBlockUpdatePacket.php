@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::COMMAND_BLOCK_UPDATE_PACKET;
@@ -62,7 +62,7 @@ class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 	/** @var bool */
 	public $executeOnFirstTick;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->isBlock = $in->getBool();
 
 		if($this->isBlock){
@@ -84,7 +84,7 @@ class CommandBlockUpdatePacket extends DataPacket implements ServerboundPacket{
 		$this->executeOnFirstTick = $in->getBool();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putBool($this->isBlock);
 
 		if($this->isBlock){

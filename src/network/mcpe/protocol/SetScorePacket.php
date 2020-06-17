@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\ScorePacketEntry;
 use function count;
 
@@ -40,7 +40,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 	/** @var ScorePacketEntry[] */
 	public $entries = [];
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->type = $in->getByte();
 		for($i = 0, $i2 = $in->getUnsignedVarInt(); $i < $i2; ++$i){
 			$entry = new ScorePacketEntry();
@@ -65,7 +65,7 @@ class SetScorePacket extends DataPacket implements ClientboundPacket{
 		}
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putByte($this->type);
 		$out->putUnsignedVarInt(count($this->entries));
 		foreach($this->entries as $entry){

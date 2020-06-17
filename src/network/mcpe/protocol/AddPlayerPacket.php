@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
@@ -88,7 +88,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 	/** @var int */
 	public $buildPlatform = DeviceOS::UNKNOWN;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->uuid = $in->getUUID();
 		$this->username = $in->getString();
 		$this->entityUniqueId = $in->getEntityUniqueId();
@@ -119,7 +119,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 		$this->buildPlatform = $in->getLInt();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putUUID($this->uuid);
 		$out->putString($this->username);
 		$out->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);

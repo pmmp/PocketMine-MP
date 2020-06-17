@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types\recipe;
 
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 
 final class FurnaceRecipe extends RecipeWithTypeId{
@@ -62,7 +62,7 @@ final class FurnaceRecipe extends RecipeWithTypeId{
 		return $this->blockName;
 	}
 
-	public static function decode(int $typeId, NetworkBinaryStream $in) : self{
+	public static function decode(int $typeId, PacketSerializer $in) : self{
 		$inputId = $in->getVarInt();
 		$inputData = null;
 		if($typeId === CraftingDataPacket::ENTRY_FURNACE_DATA){
@@ -74,7 +74,7 @@ final class FurnaceRecipe extends RecipeWithTypeId{
 		return new self($typeId, $inputId, $inputData, $output, $block);
 	}
 
-	public function encode(NetworkBinaryStream $out) : void{
+	public function encode(PacketSerializer $out) : void{
 		$out->putVarInt($this->inputId);
 		if($this->getTypeId() === CraftingDataPacket::ENTRY_FURNACE_DATA){
 			$out->putVarInt($this->inputMeta);

@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAY_SOUND_PACKET;
@@ -43,7 +43,7 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 	/** @var float */
 	public $pitch;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->soundName = $in->getString();
 		$in->getBlockPosition($this->x, $this->y, $this->z);
 		$this->x /= 8;
@@ -53,7 +53,7 @@ class PlaySoundPacket extends DataPacket implements ClientboundPacket{
 		$this->pitch = $in->getLFloat();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putString($this->soundName);
 		$out->putBlockPosition((int) ($this->x * 8), (int) ($this->y * 8), (int) ($this->z * 8));
 		$out->putLFloat($this->volume);

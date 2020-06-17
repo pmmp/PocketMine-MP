@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class MoveActorAbsolutePacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MOVE_ACTOR_ABSOLUTE_PACKET;
@@ -48,7 +48,7 @@ class MoveActorAbsolutePacket extends DataPacket implements ClientboundPacket, S
 	/** @var float */
 	public $zRot;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->flags = $in->getByte();
 		$this->position = $in->getVector3();
@@ -57,7 +57,7 @@ class MoveActorAbsolutePacket extends DataPacket implements ClientboundPacket, S
 		$this->zRot = $in->getByteRotation();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityRuntimeId($this->entityRuntimeId);
 		$out->putByte($this->flags);
 		$out->putVector3($this->position);

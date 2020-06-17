@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 class LevelSoundEventPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LEVEL_SOUND_EVENT_PACKET;
@@ -335,7 +335,7 @@ class LevelSoundEventPacket extends DataPacket implements ClientboundPacket, Ser
 	/** @var bool */
 	public $disableRelativeVolume = false;
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		$this->sound = $in->getUnsignedVarInt();
 		$this->position = $in->getVector3();
 		$this->extraData = $in->getVarInt();
@@ -344,7 +344,7 @@ class LevelSoundEventPacket extends DataPacket implements ClientboundPacket, Ser
 		$this->disableRelativeVolume = $in->getBool();
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putUnsignedVarInt($this->sound);
 		$out->putVector3($this->position);
 		$out->putVarInt($this->extraData);

@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\protocol\serializer\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnumConstraint;
@@ -108,7 +108,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	 */
 	public $enumConstraints = [];
 
-	protected function decodePayload(NetworkBinaryStream $in) : void{
+	protected function decodePayload(PacketSerializer $in) : void{
 		/** @var string[] $enumValues */
 		$enumValues = [];
 		for($i = 0, $enumValuesCount = $in->getUnsignedVarInt(); $i < $enumValuesCount; ++$i){
@@ -149,7 +149,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
-	protected function getEnum(array $enumValueList, NetworkBinaryStream $in) : CommandEnum{
+	protected function getEnum(array $enumValueList, PacketSerializer $in) : CommandEnum{
 		$enumName = $in->getString();
 		$enumValues = [];
 
@@ -170,7 +170,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	/**
 	 * @throws BinaryDataException
 	 */
-	protected function getSoftEnum(NetworkBinaryStream $in) : CommandEnum{
+	protected function getSoftEnum(PacketSerializer $in) : CommandEnum{
 		$enumName = $in->getString();
 		$enumValues = [];
 
@@ -185,7 +185,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	/**
 	 * @param int[]       $enumValueMap
 	 */
-	protected function putEnum(CommandEnum $enum, array $enumValueMap, NetworkBinaryStream $out) : void{
+	protected function putEnum(CommandEnum $enum, array $enumValueMap, PacketSerializer $out) : void{
 		$out->putString($enum->getName());
 
 		$values = $enum->getValues();
@@ -200,7 +200,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 		}
 	}
 
-	protected function putSoftEnum(CommandEnum $enum, NetworkBinaryStream $out) : void{
+	protected function putSoftEnum(CommandEnum $enum, PacketSerializer $out) : void{
 		$out->putString($enum->getName());
 
 		$values = $enum->getValues();
@@ -213,7 +213,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	/**
 	 * @throws BinaryDataException
 	 */
-	protected function getEnumValueIndex(int $valueCount, NetworkBinaryStream $in) : int{
+	protected function getEnumValueIndex(int $valueCount, PacketSerializer $in) : int{
 		if($valueCount < 256){
 			return $in->getByte();
 		}elseif($valueCount < 65536){
@@ -223,7 +223,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 		}
 	}
 
-	protected function putEnumValueIndex(int $index, int $valueCount, NetworkBinaryStream $out) : void{
+	protected function putEnumValueIndex(int $index, int $valueCount, PacketSerializer $out) : void{
 		if($valueCount < 256){
 			$out->putByte($index);
 		}elseif($valueCount < 65536){
@@ -240,7 +240,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
-	protected function getEnumConstraint(array $enums, array $enumValues, NetworkBinaryStream $in) : CommandEnumConstraint{
+	protected function getEnumConstraint(array $enums, array $enumValues, PacketSerializer $in) : CommandEnumConstraint{
 		//wtf, what was wrong with an offset inside the enum? :(
 		$valueIndex = $in->getLInt();
 		if(!isset($enumValues[$valueIndex])){
@@ -268,7 +268,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	 * @param int[]                 $enumIndexes string enum name -> int index
 	 * @param int[]                 $enumValueIndexes string value -> int index
 	 */
-	protected function putEnumConstraint(CommandEnumConstraint $constraint, array $enumIndexes, array $enumValueIndexes, NetworkBinaryStream $out) : void{
+	protected function putEnumConstraint(CommandEnumConstraint $constraint, array $enumIndexes, array $enumValueIndexes, PacketSerializer $out) : void{
 		$out->putLInt($enumValueIndexes[$constraint->getAffectedValue()]);
 		$out->putLInt($enumIndexes[$constraint->getEnum()->getName()]);
 		$out->putUnsignedVarInt(count($constraint->getConstraints()));
@@ -284,7 +284,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
-	protected function getCommandData(array $enums, array $postfixes, NetworkBinaryStream $in) : CommandData{
+	protected function getCommandData(array $enums, array $postfixes, PacketSerializer $in) : CommandData{
 		$name = $in->getString();
 		$description = $in->getString();
 		$flags = $in->getByte();
@@ -328,7 +328,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	 * @param int[]       $enumIndexes string enum name -> int index
 	 * @param int[]       $postfixIndexes
 	 */
-	protected function putCommandData(CommandData $data, array $enumIndexes, array $postfixIndexes, NetworkBinaryStream $out) : void{
+	protected function putCommandData(CommandData $data, array $enumIndexes, array $postfixIndexes, PacketSerializer $out) : void{
 		$out->putString($data->name);
 		$out->putString($data->description);
 		$out->putByte($data->flags);
@@ -409,7 +409,7 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 		return "unknown ($argtype)";
 	}
 
-	protected function encodePayload(NetworkBinaryStream $out) : void{
+	protected function encodePayload(PacketSerializer $out) : void{
 		/** @var int[] $enumValueIndexes */
 		$enumValueIndexes = [];
 		/** @var int[] $postfixIndexes */
