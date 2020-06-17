@@ -52,8 +52,6 @@ class SkinImage{
 				return new self(32, 64, $data);
 			case 64 * 64 * 4:
 				return new self(64, 64, $data);
-			case 128 * 64 * 4:
-				return new self(64, 128, $data);
 			case 128 * 128 * 4:
 				return new self(128, 128, $data);
 		}
