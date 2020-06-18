@@ -1,5 +1,6 @@
 includes:
 	- tests/phpstan/configs/actual-problems.neon
+	- tests/phpstan/configs/check-explicit-mixed-baseline.neon
 	- tests/phpstan/configs/com-dotnet-magic.neon
 	- tests/phpstan/configs/custom-leveldb.neon
 	- tests/phpstan/configs/ds-bugs.neon
@@ -20,6 +21,7 @@ rules:
 
 parameters:
 	level: 8
+	checkExplicitMixed: true
 	bootstrapFiles:
 		- tests/phpstan/bootstrap.php
 	scanFiles:
