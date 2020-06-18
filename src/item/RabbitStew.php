@@ -37,7 +37,7 @@ class RabbitStew extends Food{
 		return 12;
 	}
 
-	public function getResidue(){
+	public function getResidue() : Item{
 		return VanillaItems::BOWL();
 	}
 }

@@ -37,7 +37,7 @@ class BeetrootSoup extends Food{
 		return 7.2;
 	}
 
-	public function getResidue(){
+	public function getResidue() : Item{
 		return VanillaItems::BOWL();
 	}
 }

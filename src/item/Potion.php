@@ -27,7 +27,7 @@ use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Living;
 
-class Potion extends Item implements Consumable{
+class Potion extends Item implements ConsumableItem{
 
 	public const WATER = 0;
 	public const MUNDANE = 1;
@@ -266,7 +266,7 @@ class Potion extends Item implements Consumable{
 		return self::getPotionEffectsById($this->meta);
 	}
 
-	public function getResidue(){
+	public function getResidue() : Item{
 		return VanillaItems::GLASS_BOTTLE();
 	}
 }

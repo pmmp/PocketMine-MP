@@ -21,23 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\entity;
 
-class MushroomStew extends Food{
+/**
+ * Interface implemented by objects that can be consumed by players, giving them food and saturation.
+ */
+interface FoodSource extends Consumable{
 
-	public function getMaxStackSize() : int{
-		return 1;
-	}
+	public function getFoodRestore() : int;
 
-	public function getFoodRestore() : int{
-		return 6;
-	}
+	public function getSaturationRestore() : float;
 
-	public function getSaturationRestore() : float{
-		return 7.2;
-	}
-
-	public function getResidue() : Item{
-		return VanillaItems::BOWL();
-	}
+	/**
+	 * Returns whether a Human eating this FoodSource must have a non-full hunger bar.
+	 */
+	public function requiresHunger() : bool;
 }
