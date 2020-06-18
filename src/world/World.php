@@ -1391,8 +1391,7 @@ class World implements ChunkManager{
 		$nbt->setShort("PickupDelay", $delay);
 		$nbt->setTag("Item", $item->nbtSerialize());
 
-		/** @var ItemEntity $itemEntity */
-		$itemEntity = EntityFactory::getInstance()->create(ItemEntity::class, $this, $nbt);
+		$itemEntity = new ItemEntity($this, $nbt);
 		$itemEntity->spawnToAll();
 		return $itemEntity;
 
@@ -1416,8 +1415,7 @@ class World implements ChunkManager{
 			);
 			$nbt->setShort(ExperienceOrb::TAG_VALUE_PC, $split);
 
-			/** @var ExperienceOrb $orb */
-			$orb = EntityFactory::getInstance()->create(ExperienceOrb::class, $this, $nbt);
+			$orb = new ExperienceOrb($this, $nbt);
 			$orb->spawnToAll();
 			$orbs[] = $orb;
 		}

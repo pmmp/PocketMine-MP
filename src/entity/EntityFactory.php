@@ -54,12 +54,8 @@ use function in_array;
 use function reset;
 
 /**
- * This class manages the creation of entities loaded from disk (and optionally entities created at runtime).
- *
- * You need to register your entity class into this factory if:
- * a) you want to load/save your entity on disk (saving with chunks)
- * b) you want to allow custom things to provide a custom class for your entity. Note that you must use
- *    create(MyEntity::class) instead of `new MyEntity()` if you want to allow this.
+ * This class manages the creation of entities loaded from disk.
+ * You need to register your entity into this factory if you want to load/save your entity on disk (saving with chunks).
  */
 final class EntityFactory{
 	use SingletonTrait;
@@ -69,7 +65,7 @@ final class EntityFactory{
 
 	/**
 	 * @var \Closure[] base class => creator function
-	 * @phpstan-var array<class-string<Entity>, \Closure(World, CompoundTag, mixed...) : Entity>
+	 * @phpstan-var array<class-string<Entity>, \Closure(World, CompoundTag) : Entity>
 	 */
 	private $creationFuncs = [];
 	/**
@@ -87,20 +83,20 @@ final class EntityFactory{
 		//define legacy save IDs first - use them for saving for maximum compatibility with Minecraft PC
 		//TODO: index them by version to allow proper multi-save compatibility
 
-		$this->register(Arrow::class, function(World $world, CompoundTag $nbt, ...$extraArgs) : Arrow{
-			return new Arrow($world, $nbt, ...$extraArgs);
+		$this->register(Arrow::class, function(World $world, CompoundTag $nbt) : Arrow{
+			return new Arrow($world, $nbt);
 		}, ['Arrow', 'minecraft:arrow'], EntityLegacyIds::ARROW);
 
-		$this->register(Egg::class, function(World $world, CompoundTag $nbt, ...$extraArgs) : Egg{
-			return new Egg($world, $nbt, ...$extraArgs);
+		$this->register(Egg::class, function(World $world, CompoundTag $nbt) : Egg{
+			return new Egg($world, $nbt);
 		}, ['Egg', 'minecraft:egg'], EntityLegacyIds::EGG);
 
-		$this->register(EnderPearl::class, function(World $world, CompoundTag $nbt, ...$extraArgs) : EnderPearl{
-			return new EnderPearl($world, $nbt, ...$extraArgs);
+		$this->register(EnderPearl::class, function(World $world, CompoundTag $nbt) : EnderPearl{
+			return new EnderPearl($world, $nbt);
 		}, ['ThrownEnderpearl', 'minecraft:ender_pearl'], EntityLegacyIds::ENDER_PEARL);
 
-		$this->register(ExperienceBottle::class, function(World $world, CompoundTag $nbt, ...$extraArgs) : ExperienceBottle{
-			return new ExperienceBottle($world, $nbt, ...$extraArgs);
+		$this->register(ExperienceBottle::class, function(World $world, CompoundTag $nbt) : ExperienceBottle{
+			return new ExperienceBottle($world, $nbt);
 		}, ['ThrownExpBottle', 'minecraft:xp_bottle'], EntityLegacyIds::XP_BOTTLE);
 
 		$this->register(ExperienceOrb::class, function(World $world, CompoundTag $nbt) : ExperienceOrb{
@@ -123,12 +119,12 @@ final class EntityFactory{
 			return new PrimedTNT($world, $nbt);
 		}, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt'], EntityLegacyIds::TNT);
 
-		$this->register(Snowball::class, function(World $world, CompoundTag $nbt, ...$extraArgs) : Snowball{
-			return new Snowball($world, $nbt, ...$extraArgs);
+		$this->register(Snowball::class, function(World $world, CompoundTag $nbt) : Snowball{
+			return new Snowball($world, $nbt);
 		}, ['Snowball', 'minecraft:snowball'], EntityLegacyIds::SNOWBALL);
 
-		$this->register(SplashPotion::class, function(World $world, CompoundTag $nbt, ...$extraArgs) : SplashPotion{
-			return new SplashPotion($world, $nbt, ...$extraArgs);
+		$this->register(SplashPotion::class, function(World $world, CompoundTag $nbt) : SplashPotion{
+			return new SplashPotion($world, $nbt);
 		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
 
 		$this->register(Squid::class, function(World $world, CompoundTag $nbt) : Squid{
@@ -152,14 +148,13 @@ final class EntityFactory{
 
 	/**
 	 * @phpstan-param class-string<Entity> $baseClass
-	 * @phpstan-param \Closure(World, CompoundTag, mixed...) : Entity $creationFunc
+	 * @phpstan-param \Closure(World, CompoundTag) : Entity $creationFunc
 	 */
 	private static function validateCreationFunc(string $baseClass, \Closure $creationFunc) : void{
 		$sig = new CallbackType(
 			new ReturnType($baseClass),
 			new ParameterType("world", World::class),
-			new ParameterType("nbt", CompoundTag::class),
-			new ParameterType("extraArgs", null, ParameterType::VARIADIC | ParameterType::CONTRAVARIANT | ParameterType::OPTIONAL)
+			new ParameterType("nbt", CompoundTag::class)
 		);
 		if(!$sig->isSatisfiedBy($creationFunc)){
 			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($creationFunc) . "` must be compatible with `" . $sig . "`");
@@ -173,7 +168,7 @@ final class EntityFactory{
 	 * @param \Closure $creationFunc
 	 * @param string[] $saveNames An array of save names which this entity might be saved under. Defaults to the short name of the class itself if empty.
 	 * @phpstan-param class-string<Entity> $className
-	 * @phpstan-param \Closure(World $world, CompoundTag $nbt, mixed ...$args) : Entity $creationFunc
+	 * @phpstan-param \Closure(World $world, CompoundTag $nbt) : Entity $creationFunc
 	 *
 	 * NOTE: The first save name in the $saveNames array will be used when saving the entity to disk. The reflection
 	 * name of the class will be appended to the end and only used if no other save names are specified.
@@ -202,27 +197,6 @@ final class EntityFactory{
 	}
 
 	/**
-	 * Registers a class override for the given class. When a new entity is constructed using the factory, the new class
-	 * will be used instead of the base class.
-	 *
-	 * @param string   $baseClass Already-registered entity class to override
-	 * @param \Closure $newCreationFunc
-	 *
-	 * @phpstan-param class-string<Entity> $baseClass
-	 * @phpstan-param \Closure(World, CompoundTag, mixed...) : Entity $newCreationFunc
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public function override(string $baseClass, \Closure $newCreationFunc) : void{
-		if(!isset($this->creationFuncs[$baseClass])){
-			throw new \InvalidArgumentException("Class $baseClass is not a registered entity");
-		}
-
-		self::validateCreationFunc($baseClass, $newCreationFunc);
-		$this->creationFuncs[$baseClass] = $newCreationFunc;
-	}
-
-	/**
 	 * Returns an array of all registered entity classpaths.
 	 *
 	 * @return string[]
@@ -237,36 +211,6 @@ final class EntityFactory{
 	 */
 	public static function nextRuntimeId() : int{
 		return self::$entityCount++;
-	}
-
-	/**
-	 * Creates an entity with the specified type, world and NBT, with optional additional arguments to pass to the
-	 * entity's constructor.
-	 *
-	 * TODO: make this NBT-independent
-	 *
-	 * @phpstan-template TEntity of Entity
-	 *
-	 * @param mixed       ...$args
-	 * @phpstan-param class-string<TEntity> $baseClass
-	 *
-	 * @return Entity instanceof $baseClass
-	 * @phpstan-return TEntity
-	 *
-	 * @throws \InvalidArgumentException if the class doesn't exist or is not registered
-	 */
-	public function create(string $baseClass, World $world, CompoundTag $nbt, ...$args) : Entity{
-		if(isset($this->creationFuncs[$baseClass])){
-			$func = $this->creationFuncs[$baseClass];
-			/**
-			 * @var Entity $entity
-			 * @phpstan-var TEntity $entity
-			 */
-			$entity = $func($world, $nbt, ...$args);
-			return $entity;
-		}
-
-		throw new \InvalidArgumentException("Class $baseClass is not a registered entity");
 	}
 
 	/**

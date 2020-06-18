@@ -36,15 +36,12 @@ class Snowball extends ProjectileItem{
 		return 16;
 	}
 
-	protected function createEntity(EntityFactory $factory, Location $location, Vector3 $velocity, Player $thrower) : Throwable{
-		/** @var SnowballEntity $projectile */
-		$projectile = $factory->create(
-			SnowballEntity::class,
+	protected function createEntity(Location $location, Vector3 $velocity, Player $thrower) : Throwable{
+		return new SnowballEntity(
 			$location->getWorldNonNull(),
 			EntityFactory::createBaseNBT($location, $velocity, $location->yaw, $location->pitch),
 			$thrower
 		);
-		return $projectile;
 	}
 
 	public function getThrowForce() : float{

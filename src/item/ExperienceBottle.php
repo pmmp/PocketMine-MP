@@ -32,15 +32,12 @@ use pocketmine\player\Player;
 
 class ExperienceBottle extends ProjectileItem{
 
-	protected function createEntity(EntityFactory $factory, Location $location, Vector3 $velocity, Player $thrower) : Throwable{
-		/** @var ExperienceBottleEntity $projectile */
-		$projectile = $factory->create(
-			ExperienceBottleEntity::class,
+	protected function createEntity(Location $location, Vector3 $velocity, Player $thrower) : Throwable{
+		return new ExperienceBottleEntity(
 			$location->getWorldNonNull(),
 			EntityFactory::createBaseNBT($location, $velocity, $location->yaw, $location->pitch),
 			$thrower
 		);
-		return $projectile;
 	}
 
 	public function getThrowForce() : float{

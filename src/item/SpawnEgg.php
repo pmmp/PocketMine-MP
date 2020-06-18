@@ -29,36 +29,19 @@ use pocketmine\entity\EntityFactory;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
+use pocketmine\world\World;
 use function lcg_value;
 
-class SpawnEgg extends Item{
+abstract class SpawnEgg extends Item{
 
-	/**
-	 * @var string
-	 * @phpstan-var class-string<Entity>
-	 */
-	private $entityClass;
-
-	/**
-	 * @param string $entityClass instanceof Entity
-	 * @phpstan-param class-string<Entity> $entityClass
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public function __construct(int $id, int $variant, string $name, string $entityClass){
-		parent::__construct($id, $variant, $name);
-		Utils::testValidInstance($entityClass, Entity::class);
-		$this->entityClass = $entityClass;
-	}
+	abstract protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity;
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		$nbt = EntityFactory::createBaseNBT($blockReplace->getPos()->add(0.5, 0, 0.5), null, lcg_value() * 360, 0);
+		$entity = $this->createEntity($player->getWorld(), $blockReplace->getPos()->add(0.5, 0, 0.5), lcg_value() * 360, 0);
 
 		if($this->hasCustomName()){
-			$nbt->setString("CustomName", $this->getCustomName());
+			$entity->setNameTag($this->getCustomName());
 		}
-
-		$entity = EntityFactory::getInstance()->create($this->entityClass, $player->getWorld(), $nbt);
 		$this->pop();
 		$entity->spawnToAll();
 		//TODO: what if the entity was marked for deletion?

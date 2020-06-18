@@ -93,8 +93,7 @@ class PaintingItem extends Item{
 		$nbt->setInt("TileY", $clickedPos->getFloorY());
 		$nbt->setInt("TileZ", $clickedPos->getFloorZ());
 
-		/** @var Painting $entity */
-		$entity = EntityFactory::getInstance()->create(Painting::class, $replacePos->getWorldNonNull(), $nbt);
+		$entity = new Painting($replacePos->getWorldNonNull(), $nbt);
 		$this->pop();
 		$entity->spawnToAll();
 

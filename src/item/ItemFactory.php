@@ -29,12 +29,17 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
-use pocketmine\entity\Living;
+use pocketmine\entity\Squid;
+use pocketmine\entity\Villager;
+use pocketmine\entity\Zombie;
 use pocketmine\inventory\ArmorInventory;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\utils\SingletonTrait;
-use function is_a;
+use pocketmine\world\World;
 
 /**
  * Manages Item instance creation and registration
@@ -50,6 +55,7 @@ class ItemFactory{
 
 	public function __construct(){
 		$this->registerArmorItems();
+		$this->registerSpawnEggs();
 		$this->registerTierToolItems();
 
 		$this->register(new Apple(ItemIds::APPLE, 0, "Apple"));
@@ -250,13 +256,6 @@ class ItemFactory{
 			$this->register(new SplashPotion(ItemIds::SPLASH_POTION, $type, "Splash Potion"));
 		}
 
-		foreach(EntityFactory::getInstance()->getKnownTypes() as $className){
-			/** @var Living|string $className */
-			if(is_a($className, Living::class, true) and $className::getNetworkTypeId() !== -1){
-				$this->register(new SpawnEgg(ItemIds::SPAWN_EGG, $className::getNetworkTypeId(), "Spawn Egg", $className));
-			}
-		}
-
 		foreach(TreeType::getAll() as $type){
 			$this->register(new Boat(ItemIds::BOAT, $type->getMagicNumber(), $type->getDisplayName() . " Boat", $type));
 		}
@@ -314,6 +313,25 @@ class ItemFactory{
 		//TODO: minecraft:trident
 		//TODO: minecraft:turtle_helmet
 		//endregion
+	}
+
+	private function registerSpawnEggs() : void{
+		//TODO: the meta values should probably be hardcoded; they won't change, but the EntityLegacyIds might
+		$this->register(new class(ItemIds::SPAWN_EGG, EntityLegacyIds::ZOMBIE, "Zombie Spawn Egg") extends SpawnEgg{
+			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new Zombie($world, EntityFactory::createBaseNBT($pos, null, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(ItemIds::SPAWN_EGG, EntityLegacyIds::SQUID, "Squid Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new Squid($world, EntityFactory::createBaseNBT($pos, null, $yaw, $pitch));
+			}
+		});
+		$this->register(new class(ItemIds::SPAWN_EGG, EntityLegacyIds::VILLAGER, "Villager Spawn Egg") extends SpawnEgg{
+			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
+				return new Villager($world, EntityFactory::createBaseNBT($pos, null, $yaw, $pitch));
+			}
+		});
 	}
 
 	private function registerTierToolItems() : void{

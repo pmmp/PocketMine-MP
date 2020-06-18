@@ -36,10 +36,8 @@ class SplashPotion extends ProjectileItem{
 		return 1;
 	}
 
-	protected function createEntity(EntityFactory $factory, Location $location, Vector3 $velocity, Player $thrower) : Throwable{
-		/** @var SplashPotionEntity $projectile */
-		$projectile = $factory->create(
-			SplashPotionEntity::class,
+	protected function createEntity(Location $location, Vector3 $velocity, Player $thrower) : Throwable{
+		$projectile = new SplashPotionEntity(
 			$location->getWorldNonNull(),
 			EntityFactory::createBaseNBT($location, $velocity, $location->yaw, $location->pitch),
 			$thrower
