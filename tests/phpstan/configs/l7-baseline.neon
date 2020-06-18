@@ -61,11 +61,6 @@ parameters:
 			path: ../../../src/PocketMine.php
 
 		-
-			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\BaseNbtSerializer\\:\\:readCompressed\\(\\) expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/Server.php
-
-		-
 			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/Server.php
