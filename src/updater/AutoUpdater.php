@@ -99,9 +99,8 @@ class AutoUpdater{
 		$messages = [
 			"Your version of " . $this->server->getName() . " is out of date. Version " . $this->newVersion->getFullVersion(true) . " was released on " . date("D M j h:i:s Y", $this->updateInfo->date)
 		];
-		if($this->updateInfo->details_url !== null){
-			$messages[] = "Details: " . $this->updateInfo->details_url;
-		}
+
+		$messages[] = "Details: " . $this->updateInfo->details_url;
 		$messages[] = "Download: " . $this->updateInfo->download_url;
 
 		$this->printConsoleMessage($messages, \LogLevel::WARNING);
