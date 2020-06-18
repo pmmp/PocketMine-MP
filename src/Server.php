@@ -147,7 +147,6 @@ use const DIRECTORY_SEPARATOR;
 use const PHP_EOL;
 use const PHP_INT_MAX;
 use const PTHREADS_INHERIT_NONE;
-use const ZLIB_ENCODING_DEFLATE;
 use const ZLIB_ENCODING_GZIP;
 
 /**
