@@ -30,7 +30,7 @@ use function openssl_digest;
 use function strlen;
 use function substr;
 
-class NetworkCipher{
+class EncryptionContext{
 	private const ENCRYPTION_SCHEME = "AES-256-CFB8";
 	private const CHECKSUM_ALGO = "sha256";
 

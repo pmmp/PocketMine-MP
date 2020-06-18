@@ -42,7 +42,7 @@ use pocketmine\network\mcpe\compression\DecompressionException;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\encryption\DecryptionException;
-use pocketmine\network\mcpe\encryption\NetworkCipher;
+use pocketmine\network\mcpe\encryption\EncryptionContext;
 use pocketmine\network\mcpe\encryption\PrepareEncryptionTask;
 use pocketmine\network\mcpe\handler\DeathPacketHandler;
 use pocketmine\network\mcpe\handler\HandshakePacketHandler;
@@ -148,7 +148,7 @@ class NetworkSession{
 	/** @var int */
 	private $connectTime;
 
-	/** @var NetworkCipher */
+	/** @var EncryptionContext */
 	private $cipher;
 
 	/** @var PacketBatch|null */
@@ -588,14 +588,14 @@ class NetworkSession{
 		$this->logger->debug("Xbox Live authenticated: " . ($this->authenticated ? "YES" : "NO"));
 
 		if($this->manager->kickDuplicates($this)){
-			if(NetworkCipher::$ENABLED){
+			if(EncryptionContext::$ENABLED){
 				$this->server->getAsyncPool()->submitTask(new PrepareEncryptionTask($clientPubKey, function(string $encryptionKey, string $handshakeJwt) : void{
 					if(!$this->connected){
 						return;
 					}
 					$this->sendDataPacket(ServerToClientHandshakePacket::create($handshakeJwt), true); //make sure this gets sent before encryption is enabled
 
-					$this->cipher = new NetworkCipher($encryptionKey);
+					$this->cipher = new EncryptionContext($encryptionKey);
 
 					$this->setHandler(new HandshakePacketHandler(function() : void{
 						$this->onLoginSuccess();

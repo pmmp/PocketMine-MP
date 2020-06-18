@@ -51,7 +51,7 @@ use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\CompressBatchTask;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
-use pocketmine\network\mcpe\encryption\NetworkCipher;
+use pocketmine\network\mcpe\encryption\EncryptionContext;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -880,7 +880,7 @@ class Server{
 
 			$this->networkCompressionAsync = (bool) $this->configGroup->getProperty("network.async-compression", true);
 
-			NetworkCipher::$ENABLED = (bool) $this->configGroup->getProperty("network.enable-encryption", true);
+			EncryptionContext::$ENABLED = (bool) $this->configGroup->getProperty("network.enable-encryption", true);
 
 			$this->doTitleTick = ((bool) $this->configGroup->getProperty("console.title-tick", true)) && Terminal::hasFormattingCodes();
 
