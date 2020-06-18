@@ -23,7 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\entity\EntityFactory;
+use pocketmine\entity\Location;
 use pocketmine\entity\projectile\Egg as EggEntity;
+use pocketmine\entity\projectile\Throwable;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
 class Egg extends ProjectileItem{
 
@@ -31,8 +36,15 @@ class Egg extends ProjectileItem{
 		return 16;
 	}
 
-	public function getProjectileEntityClass() : string{
-		return EggEntity::class;
+	protected function createEntity(EntityFactory $factory, Location $location, Vector3 $velocity, Player $thrower) : Throwable{
+		/** @var EggEntity $projectile */
+		$projectile = $factory->create(
+			EggEntity::class,
+			$location->getWorldNonNull(),
+			EntityFactory::createBaseNBT($location, $velocity, $location->yaw, $location->pitch),
+			$thrower
+		);
+		return $projectile;
 	}
 
 	public function getThrowForce() : float{

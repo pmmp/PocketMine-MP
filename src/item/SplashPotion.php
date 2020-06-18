@@ -23,8 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\entity\EntityFactory;
+use pocketmine\entity\Location;
 use pocketmine\entity\projectile\SplashPotion as SplashPotionEntity;
-use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\entity\projectile\Throwable;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
 class SplashPotion extends ProjectileItem{
 
@@ -32,15 +36,20 @@ class SplashPotion extends ProjectileItem{
 		return 1;
 	}
 
-	public function getProjectileEntityClass() : string{
-		return SplashPotionEntity::class;
+	protected function createEntity(EntityFactory $factory, Location $location, Vector3 $velocity, Player $thrower) : Throwable{
+		/** @var SplashPotionEntity $projectile */
+		$projectile = $factory->create(
+			SplashPotionEntity::class,
+			$location->getWorldNonNull(),
+			EntityFactory::createBaseNBT($location, $velocity, $location->yaw, $location->pitch),
+			$thrower
+		);
+
+		$projectile->setPotionId($this->meta);
+		return $projectile;
 	}
 
 	public function getThrowForce() : float{
 		return 0.5;
-	}
-
-	protected function addExtraTags(CompoundTag $tag) : void{
-		$tag->setShort("PotionId", $this->meta);
 	}
 }

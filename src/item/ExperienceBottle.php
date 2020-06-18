@@ -23,12 +23,24 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\entity\EntityFactory;
+use pocketmine\entity\Location;
 use pocketmine\entity\projectile\ExperienceBottle as ExperienceBottleEntity;
+use pocketmine\entity\projectile\Throwable;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
 class ExperienceBottle extends ProjectileItem{
 
-	public function getProjectileEntityClass() : string{
-		return ExperienceBottleEntity::class;
+	protected function createEntity(EntityFactory $factory, Location $location, Vector3 $velocity, Player $thrower) : Throwable{
+		/** @var ExperienceBottleEntity $projectile */
+		$projectile = $factory->create(
+			ExperienceBottleEntity::class,
+			$location->getWorldNonNull(),
+			EntityFactory::createBaseNBT($location, $velocity, $location->yaw, $location->pitch),
+			$thrower
+		);
+		return $projectile;
 	}
 
 	public function getThrowForce() : float{
