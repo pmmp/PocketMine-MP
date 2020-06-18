@@ -456,11 +456,6 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/protocol/StartGamePacket.php
 
 		-
-			message: "#^Cannot access offset 'geometry' on mixed\\.$#"
-			count: 3
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/LegacySkinAdapter.php
-
-		-
 			message: "#^Cannot access offset string on mixed\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
