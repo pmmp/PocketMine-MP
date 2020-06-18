@@ -296,21 +296,25 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return $ev->getAmount();
 	}
 
-	public function consumeObject(Consumable $consumable) : bool{
-		if($consumable instanceof MaybeConsumable and !$consumable->canBeConsumed()){
-			return false;
-		}
-
+	public function canConsumeObject(Consumable $consumable) : bool{
 		if($consumable instanceof FoodSource){
 			if($consumable->requiresHunger() and !$this->isHungry()){
 				return false;
 			}
 
+			return true;
+		}
+
+		return parent::canConsumeObject($consumable);
+	}
+
+	protected function onConsumeObject(Consumable $consumable) : void{
+		parent::onConsumeObject($consumable);
+
+		if($consumable instanceof FoodSource){
 			$this->addFood($consumable->getFoodRestore());
 			$this->addSaturation($consumable->getSaturationRestore());
 		}
-
-		return parent::consumeObject($consumable);
 	}
 
 	/**

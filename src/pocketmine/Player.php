@@ -1781,6 +1781,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return 0.0;
 	}
 
+	public function canConsumeObject(Consumable $consumable) : bool{
+		if($this->isCreative()){
+			return true;
+		}
+
+		return parent::canConsumeObject($consumable);
+	}
+
 	public function isHungry() : bool{
 		return $this->isCreative() or parent::isHungry();
 	}

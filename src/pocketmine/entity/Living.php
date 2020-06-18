@@ -356,17 +356,31 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	/**
+	 * Returns the possibility to consume or not the given Consumable object.
+	 */
+	public function canConsumeObject(Consumable $consumable) : bool{
+		return $consumable instanceof MaybeConsumable and $consumable->canBeConsumed();
+	}
+
+	/**
+	 * Called when an Consumable object is going to be consumed.
+	 */
+	protected function onConsumeObject(Consumable $consumable) : void{
+		foreach($consumable->getAdditionalEffects() as $effect){
+			$this->addEffect($effect);
+		}
+	}
+
+	/**
 	 * Causes the mob to consume the given Consumable object, applying applicable effects, health bonuses, food bonuses,
 	 * etc.
 	 */
 	public function consumeObject(Consumable $consumable) : bool{
-		if($consumable instanceof MaybeConsumable and !$consumable->canBeConsumed()){
+		if(!$this->canConsumeObject($consumable)){
 			return false;
 		}
 
-		foreach($consumable->getAdditionalEffects() as $effect){
-			$this->addEffect($effect);
-		}
+		$this->onConsumeObject($consumable);
 
 		$consumable->onConsume($this);
 
