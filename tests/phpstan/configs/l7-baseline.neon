@@ -646,11 +646,6 @@ parameters:
 			path: ../../../src/network/mcpe/encryption/EncryptionUtils.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of function substr expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/encryption/NetworkCipher.php
-
-		-
 			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putBool\\(\\) expects bool, bool\\|float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/serializer/PacketSerializer.php

@@ -27,6 +27,7 @@ use Crypto\Cipher;
 use pocketmine\utils\Binary;
 use function bin2hex;
 use function openssl_digest;
+use function openssl_error_string;
 use function strlen;
 use function substr;
 
@@ -86,6 +87,10 @@ class EncryptionContext{
 	}
 
 	private function calculateChecksum(int $counter, string $payload) : string{
-		return substr(openssl_digest(Binary::writeLLong($counter) . $payload . $this->key, self::CHECKSUM_ALGO, true), 0, 8);
+		$hash = openssl_digest(Binary::writeLLong($counter) . $payload . $this->key, self::CHECKSUM_ALGO, true);
+		if($hash === false){
+			throw new \RuntimeException("Encryption error: " . openssl_error_string());
+		}
+		return substr($hash, 0, 8);
 	}
 }
