@@ -2644,6 +2644,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						$target->attack($ev);
 
+						$this->setSprinting(false);
+						
 						if($ev->isCancelled()){
 							if($heldItem instanceof Durable and $this->isSurvival()){
 								$this->inventory->sendContents($this);
