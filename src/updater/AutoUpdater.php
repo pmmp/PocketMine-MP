@@ -65,8 +65,6 @@ class AutoUpdater{
 
 	/**
 	 * Callback used at the end of the update checking task
-	 *
-	 * @param UpdateInfo $updateInfo
 	 */
 	public function checkUpdateCallback(UpdateInfo $updateInfo) : void{
 		$this->updateInfo = $updateInfo;
@@ -142,8 +140,6 @@ class AutoUpdater{
 
 	/**
 	 * Returns the last retrieved update data.
-	 *
-	 * @return UpdateInfo|null
 	 */
 	public function getUpdateInfo() : ?UpdateInfo{
 		return $this->updateInfo;

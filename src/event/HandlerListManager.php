@@ -57,7 +57,6 @@ class HandlerListManager{
 	}
 
 	/**
-	 * @param \ReflectionClass $class
 	 * @phpstan-param \ReflectionClass<Event> $class
 	 */
 	private static function isValidClass(\ReflectionClass $class) : bool{

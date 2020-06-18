@@ -54,8 +54,6 @@ interface Packet{
 	 * Typically this method returns the return value of the handler in the supplied PacketHandler. See other packets
 	 * for examples how to implement this.
 	 *
-	 * @param PacketHandlerInterface $handler
-	 *
 	 * @return bool true if the packet was handled successfully, false if not.
 	 * @throws PacketDecodeException if broken data was found in the packet
 	 */
