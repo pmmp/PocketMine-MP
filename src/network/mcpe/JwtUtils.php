@@ -59,6 +59,19 @@ use const STR_PAD_LEFT;
 final class JwtUtils{
 
 	/**
+	 * @return string[]
+	 * @phpstan-return array{string, string, string}
+	 * @throws JwtException
+	 */
+	public static function split(string $jwt) : array{
+		$v = explode(".", $jwt);
+		if(count($v) !== 3){
+			throw new JwtException("Expected exactly 3 JWT parts, got " . count($v));
+		}
+		return [$v[0], $v[1], $v[2]]; //workaround phpstan bug
+	}
+
+	/**
 	 * TODO: replace this result with an object
 	 *
 	 * @return mixed[]
@@ -67,10 +80,7 @@ final class JwtUtils{
 	 * @throws JwtException
 	 */
 	public static function parse(string $token) : array{
-		$v = explode(".", $token);
-		if(count($v) !== 3){
-			throw new JwtException("Expected exactly 3 JWT parts, got " . count($v));
-		}
+		$v = self::split($token);
 		$header = json_decode(self::b64UrlDecode($v[0]), true);
 		if(!is_array($header)){
 			throw new JwtException("Failed to decode JWT header JSON: " . json_last_error_msg());
@@ -87,11 +97,7 @@ final class JwtUtils{
 	 * @throws JwtException
 	 */
 	public static function verify(string $jwt, PublicKeyInterface $signingKey) : bool{
-		$parts = explode('.', $jwt);
-		if(count($parts) !== 3){
-			throw new JwtException("Expected exactly 3 JWT parts, got " . count($parts));
-		}
-		[$header, $body, $signature] = $parts;
+		[$header, $body, $signature] = self::split($jwt);
 
 		$plainSignature = self::b64UrlDecode($signature);
 		if(strlen($plainSignature) !== 96){
