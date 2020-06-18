@@ -89,7 +89,7 @@ class EncryptionContext{
 	private function calculateChecksum(int $counter, string $payload) : string{
 		$hash = openssl_digest(Binary::writeLLong($counter) . $payload . $this->key, self::CHECKSUM_ALGO, true);
 		if($hash === false){
-			throw new \RuntimeException("Encryption error: " . openssl_error_string());
+			throw new \RuntimeException("openssl_digest() error: " . openssl_error_string());
 		}
 		return substr($hash, 0, 8);
 	}
