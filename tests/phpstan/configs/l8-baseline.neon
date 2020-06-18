@@ -801,22 +801,22 @@ parameters:
 			path: ../../../src/thread/Worker.php
 
 		-
+			message: "#^Cannot access property \\$date on pocketmine\\\\updater\\\\UpdateInfo\\|null\\.$#"
+			count: 1
+			path: ../../../src/updater/AutoUpdater.php
+
+		-
 			message: "#^Cannot call method getFullVersion\\(\\) on pocketmine\\\\utils\\\\VersionString\\|null\\.$#"
 			count: 1
 			path: ../../../src/updater/AutoUpdater.php
 
 		-
-			message: "#^Offset 'date' does not exist on array\\<string, mixed\\>\\|null\\.$#"
-			count: 1
-			path: ../../../src/updater/AutoUpdater.php
-
-		-
-			message: "#^Offset 'details_url' does not exist on array\\<string, mixed\\>\\|null\\.$#"
+			message: "#^Cannot access property \\$details_url on pocketmine\\\\updater\\\\UpdateInfo\\|null\\.$#"
 			count: 2
 			path: ../../../src/updater/AutoUpdater.php
 
 		-
-			message: "#^Offset 'download_url' does not exist on array\\<string, mixed\\>\\|null\\.$#"
+			message: "#^Cannot access property \\$download_url on pocketmine\\\\updater\\\\UpdateInfo\\|null\\.$#"
 			count: 1
 			path: ../../../src/updater/AutoUpdater.php
 

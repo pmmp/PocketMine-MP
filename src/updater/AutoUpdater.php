@@ -41,10 +41,7 @@ class AutoUpdater{
 	protected $server;
 	/** @var string */
 	protected $endpoint;
-	/**
-	 * @var mixed[]|null
-	 * @phpstan-var array<string, mixed>|null
-	 */
+	/** @var UpdateInfo|null */
 	protected $updateInfo = null;
 	/** @var VersionString|null */
 	protected $newVersion;
@@ -69,10 +66,9 @@ class AutoUpdater{
 	/**
 	 * Callback used at the end of the update checking task
 	 *
-	 * @param mixed[] $updateInfo
-	 * @phpstan-param array<string, mixed> $updateInfo
+	 * @param UpdateInfo $updateInfo
 	 */
-	public function checkUpdateCallback(array $updateInfo) : void{
+	public function checkUpdateCallback(UpdateInfo $updateInfo) : void{
 		$this->updateInfo = $updateInfo;
 		$this->checkUpdate();
 		if($this->hasUpdate()){
@@ -101,12 +97,12 @@ class AutoUpdater{
 	 */
 	public function showConsoleUpdate() : void{
 		$messages = [
-			"Your version of " . $this->server->getName() . " is out of date. Version " . $this->newVersion->getFullVersion(true) . " was released on " . date("D M j h:i:s Y", $this->updateInfo["date"])
+			"Your version of " . $this->server->getName() . " is out of date. Version " . $this->newVersion->getFullVersion(true) . " was released on " . date("D M j h:i:s Y", $this->updateInfo->date)
 		];
-		if($this->updateInfo["details_url"] !== null){
-			$messages[] = "Details: " . $this->updateInfo["details_url"];
+		if($this->updateInfo->details_url !== null){
+			$messages[] = "Details: " . $this->updateInfo->details_url;
 		}
-		$messages[] = "Download: " . $this->updateInfo["download_url"];
+		$messages[] = "Download: " . $this->updateInfo->download_url;
 
 		$this->printConsoleMessage($messages, \LogLevel::WARNING);
 	}
@@ -148,10 +144,9 @@ class AutoUpdater{
 	/**
 	 * Returns the last retrieved update data.
 	 *
-	 * @return mixed[]|null
-	 * @phpstan-return array<string, mixed>|null
+	 * @return UpdateInfo|null
 	 */
-	public function getUpdateInfo() : ?array{
+	public function getUpdateInfo() : ?UpdateInfo{
 		return $this->updateInfo;
 	}
 
@@ -171,7 +166,7 @@ class AutoUpdater{
 		}
 		$currentVersion = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
 		try{
-			$newVersion = new VersionString($this->updateInfo["base_version"], $this->updateInfo["is_dev"], $this->updateInfo["build"]);
+			$newVersion = new VersionString($this->updateInfo->base_version, $this->updateInfo->is_dev, $this->updateInfo->build);
 		}catch(\InvalidArgumentException $e){
 			//Invalid version returned from API, assume there's no update
 			$this->logger->debug("Assuming no update because \"" . $e->getMessage() . "\"");

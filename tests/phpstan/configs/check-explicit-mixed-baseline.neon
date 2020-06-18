@@ -311,34 +311,9 @@ parameters:
 			path: ../../../src/timings/TimingsHandler.php
 
 		-
-			message: "#^Parameter \\#2 \\$timestamp of function date expects int, mixed given\\.$#"
-			count: 1
-			path: ../../../src/updater/AutoUpdater.php
-
-		-
-			message: "#^Parameter \\#1 \\$baseVersion of class pocketmine\\\\utils\\\\VersionString constructor expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/updater/AutoUpdater.php
-
-		-
-			message: "#^Parameter \\#2 \\$isDevBuild of class pocketmine\\\\utils\\\\VersionString constructor expects bool, mixed given\\.$#"
-			count: 1
-			path: ../../../src/updater/AutoUpdater.php
-
-		-
-			message: "#^Parameter \\#3 \\$buildNumber of class pocketmine\\\\utils\\\\VersionString constructor expects int, mixed given\\.$#"
-			count: 1
-			path: ../../../src/updater/AutoUpdater.php
-
-		-
 			message: "#^Parameter \\#1 \\$str of function strtolower expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/updater/AutoUpdater.php
-
-		-
-			message: "#^Parameter \\#1 \\$updateInfo of method pocketmine\\\\updater\\\\AutoUpdater\\:\\:checkUpdateCallback\\(\\) expects array\\<string, mixed\\>, mixed given\\.$#"
-			count: 1
-			path: ../../../src/updater/UpdateCheckTask.php
 
 		-
 			message: "#^Parameter \\#3 \\$length of function substr expects int, mixed given\\.$#"

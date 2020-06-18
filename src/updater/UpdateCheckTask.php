@@ -26,6 +26,7 @@ namespace pocketmine\updater;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\Internet;
 use function is_array;
+use function is_string;
 use function json_decode;
 
 class UpdateCheckTask extends AsyncTask{
@@ -52,19 +53,19 @@ class UpdateCheckTask extends AsyncTask{
 		if($response !== false){
 			$response = json_decode($response, true);
 			if(is_array($response)){
-				if(
-					isset($response["base_version"]) and
-					isset($response["is_dev"]) and
-					isset($response["build"]) and
-					isset($response["date"]) and
-					isset($response["download_url"])
-				){
-					$response["details_url"] = $response["details_url"] ?? null;
-					$this->setResult($response);
-				}elseif(isset($response["error"])){
+				if(isset($response["error"]) and is_string($response["error"])){
 					$this->error = $response["error"];
 				}else{
-					$this->error = "Invalid response data";
+					$mapper = new \JsonMapper();
+					$mapper->bExceptionOnMissingData = true;
+					$mapper->bEnforceMapType = false;
+					try{
+						/** @var UpdateInfo $responseObj */
+						$responseObj = $mapper->map($response, new UpdateInfo());
+						$this->setResult($responseObj);
+					}catch(\JsonMapper_Exception $e){
+						$this->error = "Invalid JSON response data: " . $e->getMessage();
+					}
 				}
 			}else{
 				$this->error = "Invalid response data";
@@ -76,7 +77,9 @@ class UpdateCheckTask extends AsyncTask{
 		/** @var AutoUpdater $updater */
 		$updater = $this->fetchLocal(self::TLS_KEY_UPDATER);
 		if($this->hasResult()){
-			$updater->checkUpdateCallback($this->getResult());
+			/** @var UpdateInfo $response */
+			$response = $this->getResult();
+			$updater->checkUpdateCallback($response);
 		}else{
 			$updater->checkUpdateError($this->error);
 		}
