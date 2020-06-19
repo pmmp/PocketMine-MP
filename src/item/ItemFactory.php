@@ -30,7 +30,7 @@ use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntityFactory;
+use pocketmine\entity\Location;
 use pocketmine\entity\Squid;
 use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
@@ -319,17 +319,17 @@ class ItemFactory{
 		//TODO: the meta values should probably be hardcoded; they won't change, but the EntityLegacyIds might
 		$this->register(new class(ItemIds::SPAWN_EGG, EntityLegacyIds::ZOMBIE, "Zombie Spawn Egg") extends SpawnEgg{
 			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
-				return new Zombie($world, EntityFactory::createBaseNBT($pos, null, $yaw, $pitch));
+				return new Zombie(Location::fromObject($pos, $world, $yaw, $pitch), new CompoundTag());
 			}
 		});
 		$this->register(new class(ItemIds::SPAWN_EGG, EntityLegacyIds::SQUID, "Squid Spawn Egg") extends SpawnEgg{
 			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
-				return new Squid($world, EntityFactory::createBaseNBT($pos, null, $yaw, $pitch));
+				return new Squid(Location::fromObject($pos, $world, $yaw, $pitch), new CompoundTag());
 			}
 		});
 		$this->register(new class(ItemIds::SPAWN_EGG, EntityLegacyIds::VILLAGER, "Villager Spawn Egg") extends SpawnEgg{
 			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
-				return new Villager($world, EntityFactory::createBaseNBT($pos, null, $yaw, $pitch));
+				return new Villager(Location::fromObject($pos, $world, $yaw, $pitch), new CompoundTag());
 			}
 		});
 	}

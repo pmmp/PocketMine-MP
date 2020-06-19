@@ -55,7 +55,6 @@ use pocketmine\player\Player;
 use pocketmine\utils\Limits;
 use pocketmine\uuid\UUID;
 use pocketmine\world\sound\TotemUseSound;
-use pocketmine\world\World;
 use function array_filter;
 use function array_merge;
 use function array_values;
@@ -94,22 +93,27 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	protected $baseOffset = 1.62;
 
-	public function __construct(World $world, CompoundTag $nbt){
-		if($this->skin === null){
-			$skinTag = $nbt->getCompoundTag("Skin");
-			if($skinTag === null){
-				throw new \InvalidStateException((new \ReflectionClass($this))->getShortName() . " must have a valid skin set");
-			}
-			$this->skin = new Skin( //this throws if the skin is invalid
-				$skinTag->getString("Name"),
-				$skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"), //old data (this used to be saved as a StringTag in older versions of PM)
-				$skinTag->getByteArray("CapeData", ""),
-				$skinTag->getString("GeometryName", ""),
-				$skinTag->getByteArray("GeometryData", "")
-			);
-		}
+	public function __construct(Location $location, Skin $skin, CompoundTag $nbt){
+		$this->skin = $skin;
+		parent::__construct($location, $nbt);
+	}
 
-		parent::__construct($world, $nbt);
+	/**
+	 * @throws InvalidSkinException
+	 * @throws \UnexpectedValueException
+	 */
+	public static function parseSkinNBT(CompoundTag $nbt) : Skin{
+		$skinTag = $nbt->getCompoundTag("Skin");
+		if($skinTag === null){
+			throw new \UnexpectedValueException("Missing skin data");
+		}
+		return new Skin( //this throws if the skin is invalid
+			$skinTag->getString("Name"),
+			$skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"), //old data (this used to be saved as a StringTag in older versions of PM)
+			$skinTag->getByteArray("CapeData", ""),
+			$skinTag->getString("GeometryName", ""),
+			$skinTag->getByteArray("GeometryData", "")
+		);
 	}
 
 	public function getUniqueId() : UUID{

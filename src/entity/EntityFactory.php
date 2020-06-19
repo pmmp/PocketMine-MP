@@ -26,6 +26,7 @@ namespace pocketmine\entity;
 use DaveRandom\CallbackValidator\CallbackType;
 use DaveRandom\CallbackValidator\ParameterType;
 use DaveRandom\CallbackValidator\ReturnType;
+use pocketmine\block\BlockFactory;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\entity\object\ItemEntity;
@@ -38,7 +39,11 @@ use pocketmine\entity\projectile\EnderPearl;
 use pocketmine\entity\projectile\ExperienceBottle;
 use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
+use pocketmine\item\Item;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
@@ -50,6 +55,7 @@ use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use pocketmine\world\World;
 use function array_keys;
+use function count;
 use function in_array;
 use function reset;
 
@@ -84,63 +90,85 @@ final class EntityFactory{
 		//TODO: index them by version to allow proper multi-save compatibility
 
 		$this->register(Arrow::class, function(World $world, CompoundTag $nbt) : Arrow{
-			return new Arrow($world, $nbt);
+			return new Arrow(self::parseLocation($nbt, $world), null, false, $nbt); //TODO: missing critical flag
 		}, ['Arrow', 'minecraft:arrow'], EntityLegacyIds::ARROW);
 
 		$this->register(Egg::class, function(World $world, CompoundTag $nbt) : Egg{
-			return new Egg($world, $nbt);
+			return new Egg(self::parseLocation($nbt, $world), null, $nbt);
 		}, ['Egg', 'minecraft:egg'], EntityLegacyIds::EGG);
 
 		$this->register(EnderPearl::class, function(World $world, CompoundTag $nbt) : EnderPearl{
-			return new EnderPearl($world, $nbt);
+			return new EnderPearl(self::parseLocation($nbt, $world), null, $nbt);
 		}, ['ThrownEnderpearl', 'minecraft:ender_pearl'], EntityLegacyIds::ENDER_PEARL);
 
 		$this->register(ExperienceBottle::class, function(World $world, CompoundTag $nbt) : ExperienceBottle{
-			return new ExperienceBottle($world, $nbt);
+			return new ExperienceBottle(self::parseLocation($nbt, $world), null, $nbt);
 		}, ['ThrownExpBottle', 'minecraft:xp_bottle'], EntityLegacyIds::XP_BOTTLE);
 
 		$this->register(ExperienceOrb::class, function(World $world, CompoundTag $nbt) : ExperienceOrb{
-			return new ExperienceOrb($world, $nbt);
+			return new ExperienceOrb(self::parseLocation($nbt, $world), $nbt);
 		}, ['XPOrb', 'minecraft:xp_orb'], EntityLegacyIds::XP_ORB);
 
 		$this->register(FallingBlock::class, function(World $world, CompoundTag $nbt) : FallingBlock{
-			return new FallingBlock($world, $nbt);
+			return new FallingBlock(self::parseLocation($nbt, $world), FallingBlock::parseBlockNBT(BlockFactory::getInstance(), $nbt), $nbt);
 		}, ['FallingSand', 'minecraft:falling_block'], EntityLegacyIds::FALLING_BLOCK);
 
 		$this->register(ItemEntity::class, function(World $world, CompoundTag $nbt) : ItemEntity{
-			return new ItemEntity($world, $nbt);
+			$itemTag = $nbt->getCompoundTag("Item");
+			if($itemTag === null){
+				throw new \UnexpectedValueException("Expected \"Item\" NBT tag not found");
+			}
+
+			$item = Item::nbtDeserialize($itemTag);
+			if($item->isNull()){
+				throw new \UnexpectedValueException("Item is invalid");
+			}
+			return new ItemEntity(self::parseLocation($nbt, $world), $item, $nbt);
 		}, ['Item', 'minecraft:item'], EntityLegacyIds::ITEM);
 
 		$this->register(Painting::class, function(World $world, CompoundTag $nbt) : Painting{
-			return new Painting($world, $nbt);
+			$motive = PaintingMotive::getMotiveByName($nbt->getString("Motive"));
+			if($motive === null){
+				throw new \UnexpectedValueException("Unknown painting motive");
+			}
+			$blockIn = new Vector3($nbt->getInt("TileX"), $nbt->getInt("TileY"), $nbt->getInt("TileZ"));
+			if($nbt->hasTag("Direction", ByteTag::class)){
+				$facing = Painting::DATA_TO_FACING[$nbt->getByte("Direction")] ?? Facing::NORTH;
+			}elseif($nbt->hasTag("Facing", ByteTag::class)){
+				$facing = Painting::DATA_TO_FACING[$nbt->getByte("Facing")] ?? Facing::NORTH;
+			}else{
+				throw new \UnexpectedValueException("Missing facing info");
+			}
+
+			return new Painting(self::parseLocation($nbt, $world), $blockIn, $facing, $motive, $nbt);
 		}, ['Painting', 'minecraft:painting'], EntityLegacyIds::PAINTING);
 
 		$this->register(PrimedTNT::class, function(World $world, CompoundTag $nbt) : PrimedTNT{
-			return new PrimedTNT($world, $nbt);
+			return new PrimedTNT(self::parseLocation($nbt, $world), $nbt);
 		}, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt'], EntityLegacyIds::TNT);
 
 		$this->register(Snowball::class, function(World $world, CompoundTag $nbt) : Snowball{
-			return new Snowball($world, $nbt);
+			return new Snowball(self::parseLocation($nbt, $world), null, $nbt);
 		}, ['Snowball', 'minecraft:snowball'], EntityLegacyIds::SNOWBALL);
 
 		$this->register(SplashPotion::class, function(World $world, CompoundTag $nbt) : SplashPotion{
-			return new SplashPotion($world, $nbt);
+			return new SplashPotion(self::parseLocation($nbt, $world), null, $nbt);
 		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
 
 		$this->register(Squid::class, function(World $world, CompoundTag $nbt) : Squid{
-			return new Squid($world, $nbt);
+			return new Squid(self::parseLocation($nbt, $world), $nbt);
 		}, ['Squid', 'minecraft:squid'], EntityLegacyIds::SQUID);
 
 		$this->register(Villager::class, function(World $world, CompoundTag $nbt) : Villager{
-			return new Villager($world, $nbt);
+			return new Villager(self::parseLocation($nbt, $world), $nbt);
 		}, ['Villager', 'minecraft:villager'], EntityLegacyIds::VILLAGER);
 
 		$this->register(Zombie::class, function(World $world, CompoundTag $nbt) : Zombie{
-			return new Zombie($world, $nbt);
+			return new Zombie(self::parseLocation($nbt, $world), $nbt);
 		}, ['Zombie', 'minecraft:zombie'], EntityLegacyIds::ZOMBIE);
 
 		$this->register(Human::class, function(World $world, CompoundTag $nbt) : Human{
-			return new Human($world, $nbt);
+			return new Human(self::parseLocation($nbt, $world), Human::parseSkinNBT($nbt), $nbt);
 		}, ['Human']);
 
 		PaintingMotive::init();
@@ -245,6 +273,37 @@ final class EntityFactory{
 			return reset($this->saveNames[$class]);
 		}
 		throw new \InvalidArgumentException("Entity $class is not registered");
+	}
+
+	public static function parseLocation(CompoundTag $nbt, World $world) : Location{
+		$pos = self::parseVec3($nbt, "Pos", false);
+
+		$yawPitch = $nbt->getTag("Rotation");
+		if(!($yawPitch instanceof ListTag) or $yawPitch->getTagType() !== NBT::TAG_Float){
+			throw new \UnexpectedValueException("'Rotation' should be a List<Float>");
+		}
+		$values = $yawPitch->getValue();
+		if(count($values) !== 2){
+			throw new \UnexpectedValueException("Expected exactly 2 entries for 'Rotation'");
+		}
+
+		return Location::fromObject($pos, $world, $values[0]->getValue(), $values[1]->getValue());
+	}
+
+	private static function parseVec3(CompoundTag $nbt, string $tagName, bool $optional) : Vector3{
+		$pos = $nbt->getTag($tagName);
+		if($pos === null and $optional){
+			return new Vector3(0, 0, 0);
+		}
+		if(!($pos instanceof ListTag) or $pos->getTagType() !== NBT::TAG_Double){
+			throw new \UnexpectedValueException("'$tagName' should be a List<Double>");
+		}
+		/** @var DoubleTag[] $values */
+		$values = $pos->getValue();
+		if(count($values) !== 3){
+			throw new \UnexpectedValueException("Expected exactly 3 entries in '$tagName' tag");
+		}
+		return new Vector3($values[0]->getValue(), $values[1]->getValue(), $values[2]->getValue());
 	}
 
 	/**

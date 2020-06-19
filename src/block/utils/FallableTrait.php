@@ -23,13 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\Fire;
 use pocketmine\block\Liquid;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\entity\EntityFactory;
+use pocketmine\entity\Location;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\math\Facing;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\Position;
 
 /**
@@ -51,11 +54,10 @@ trait FallableTrait{
 		if($down->getId() === BlockLegacyIds::AIR or $down instanceof Liquid or $down instanceof Fire){
 			$pos->getWorldNonNull()->setBlock($pos, VanillaBlocks::AIR());
 
-			$nbt = EntityFactory::createBaseNBT($pos->add(0.5, 0, 0.5));
-			$nbt->setInt("TileID", $this->getId());
-			$nbt->setByte("Data", $this->getMeta());
+			$block = $this;
+			if(!($block instanceof Block)) throw new AssumptionFailedError(__TRAIT__ . " should only be used by Blocks");
 
-			$fall = new FallingBlock($pos->getWorldNonNull(), $nbt);
+			$fall = new FallingBlock(Location::fromObject($pos->add(0.5, 0, 0.5), $pos->getWorldNonNull()), $block, new CompoundTag());
 			$fall->spawnToAll();
 		}
 	}

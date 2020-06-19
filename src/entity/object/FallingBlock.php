@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\Fallable;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\nbt\tag\ByteTag;
@@ -36,7 +37,6 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use function abs;
-use function get_class;
 
 class FallingBlock extends Entity{
 
@@ -55,9 +55,12 @@ class FallingBlock extends Entity{
 
 	public $canCollide = false;
 
-	protected function initEntity(CompoundTag $nbt) : void{
-		parent::initEntity($nbt);
+	public function __construct(Location $location, Block $block, CompoundTag $nbt){
+		$this->block = $block;
+		parent::__construct($location, $nbt);
+	}
 
+	public static function parseBlockNBT(BlockFactory $factory, CompoundTag $nbt) : Block{
 		$blockId = 0;
 
 		//TODO: 1.8+ save format
@@ -68,12 +71,12 @@ class FallingBlock extends Entity{
 		}
 
 		if($blockId === 0){
-			throw new \UnexpectedValueException("Invalid " . get_class($this) . " entity: block ID is 0 or missing");
+			throw new \UnexpectedValueException("Missing block info from NBT");
 		}
 
 		$damage = $nbt->getByte("Data", 0);
 
-		$this->block = BlockFactory::getInstance()->get($blockId, $damage);
+		return $factory->get($blockId, $damage);
 	}
 
 	public function canCollideWith(Entity $entity) : bool{

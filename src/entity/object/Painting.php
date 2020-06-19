@@ -25,12 +25,12 @@ namespace pocketmine\entity\object;
 
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
@@ -42,7 +42,7 @@ use function ceil;
 class Painting extends Entity{
 	public static function getNetworkTypeId() : int{ return EntityLegacyIds::PAINTING; }
 
-	private const DATA_TO_FACING = [
+	public const DATA_TO_FACING = [
 		0 => Facing::SOUTH,
 		1 => Facing::WEST,
 		2 => Facing::NORTH,
@@ -73,15 +73,11 @@ class Painting extends Entity{
 	/** @var string */
 	protected $motive;
 
-	public function __construct(World $world, CompoundTag $nbt){
-		$this->motive = $nbt->getString("Motive");
-		$this->blockIn = new Vector3($nbt->getInt("TileX"), $nbt->getInt("TileY"), $nbt->getInt("TileZ"));
-		if($nbt->hasTag("Direction", ByteTag::class)){
-			$this->facing = self::DATA_TO_FACING[$nbt->getByte("Direction")] ?? Facing::NORTH;
-		}elseif($nbt->hasTag("Facing", ByteTag::class)){
-			$this->facing = self::DATA_TO_FACING[$nbt->getByte("Facing")] ?? Facing::NORTH;
-		}
-		parent::__construct($world, $nbt);
+	public function __construct(Location $location, Vector3 $blockIn, int $facing, PaintingMotive $motive, CompoundTag $nbt){
+		$this->motive = $motive->getName(); //TODO: use motive directly
+		$this->blockIn = $blockIn->asVector3();
+		$this->facing = $facing;
+		parent::__construct($location, $nbt);
 	}
 
 	protected function initEntity(CompoundTag $nbt) : void{

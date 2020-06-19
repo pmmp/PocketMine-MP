@@ -53,6 +53,17 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public $canCollide = false;
 
+	public function getFuse() : int{
+		return $this->fuse;
+	}
+
+	public function setFuse(int $fuse) : void{
+		if($fuse < 0 or $fuse > 32767){
+			throw new \InvalidArgumentException("Fuse must be in the range 0-32767");
+		}
+		$this->fuse = $fuse;
+	}
+
 	public function attack(EntityDamageEvent $source) : void{
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
 			parent::attack($source);

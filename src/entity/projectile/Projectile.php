@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
+use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityCombustByEntityEvent;
 use pocketmine\event\entity\EntityDamageByChildEntityEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -41,7 +42,6 @@ use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\timings\Timings;
-use pocketmine\world\World;
 use function assert;
 use function atan2;
 use function ceil;
@@ -57,8 +57,8 @@ abstract class Projectile extends Entity{
 	/** @var Block|null */
 	protected $blockHit;
 
-	public function __construct(World $world, CompoundTag $nbt, ?Entity $shootingEntity = null){
-		parent::__construct($world, $nbt);
+	public function __construct(Location $location, ?Entity $shootingEntity, CompoundTag $nbt){
+		parent::__construct($location, $nbt);
 		if($shootingEntity !== null){
 			$this->setOwningEntity($shootingEntity);
 		}

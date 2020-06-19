@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\object;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\Location;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
@@ -33,7 +34,6 @@ use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\player\Player;
-use function get_class;
 use function max;
 
 class ItemEntity extends Entity{
@@ -65,6 +65,14 @@ class ItemEntity extends Entity{
 	/** @var int */
 	protected $despawnDelay = self::DEFAULT_DESPAWN_DELAY;
 
+	public function __construct(Location $location, Item $item, CompoundTag $nbt){
+		if($item->isNull()){
+			throw new \InvalidArgumentException("Item entity must have a non-air item with a count of at least 1");
+		}
+		$this->item = $item;
+		parent::__construct($location, $nbt);
+	}
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
@@ -80,16 +88,6 @@ class ItemEntity extends Entity{
 		$this->pickupDelay = $nbt->getShort("PickupDelay", $this->pickupDelay);
 		$this->owner = $nbt->getString("Owner", $this->owner);
 		$this->thrower = $nbt->getString("Thrower", $this->thrower);
-
-		$itemTag = $nbt->getCompoundTag("Item");
-		if($itemTag === null){
-			throw new \UnexpectedValueException("Invalid " . get_class($this) . " entity: expected \"Item\" NBT tag not found");
-		}
-
-		$this->item = Item::nbtDeserialize($itemTag);
-		if($this->item->isNull()){
-			throw new \UnexpectedValueException("Item for " . get_class($this) . " is invalid");
-		}
 
 		(new ItemSpawnEvent($this))->call();
 	}

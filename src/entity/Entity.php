@@ -213,7 +213,7 @@ abstract class Entity{
 	/** @var int|null */
 	protected $targetId = null;
 
-	public function __construct(World $world, CompoundTag $nbt){
+	public function __construct(Location $location, CompoundTag $nbt){
 		$this->timings = Timings::getEntityTimings($this);
 
 		$this->temporalVector = new Vector3();
@@ -223,14 +223,9 @@ abstract class Entity{
 		}
 
 		$this->id = EntityFactory::nextRuntimeId();
-		$this->server = $world->getServer();
+		$this->server = $location->getWorldNonNull()->getServer();
 
-		/** @var float[] $pos */
-		$pos = $nbt->getListTag("Pos")->getAllValues();
-		/** @var float[] $rotation */
-		$rotation = $nbt->getListTag("Rotation")->getAllValues();
-
-		$this->location = new Location($pos[0], $pos[1], $pos[2], $rotation[0], $rotation[1], $world);
+		$this->location = $location->asLocation();
 		assert(
 			!is_nan($this->location->x) and !is_infinite($this->location->x) and
 			!is_nan($this->location->y) and !is_infinite($this->location->y) and

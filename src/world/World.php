@@ -34,7 +34,7 @@ use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\UnknownBlock;
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntityFactory;
+use pocketmine\entity\Location;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\block\BlockBreakEvent;
@@ -52,6 +52,7 @@ use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
@@ -1385,16 +1386,13 @@ class World implements ChunkManager{
 			return null;
 		}
 
-		$motion = $motion ?? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1);
-		$nbt = EntityFactory::createBaseNBT($source, $motion, lcg_value() * 360, 0);
-		$nbt->setShort("Health", 5);
-		$nbt->setShort("PickupDelay", $delay);
-		$nbt->setTag("Item", $item->nbtSerialize());
+		$itemEntity = new ItemEntity(Location::fromObject($source, $this, lcg_value() * 360, 0), $item, new CompoundTag());
 
-		$itemEntity = new ItemEntity($this, $nbt);
+		$itemEntity->setPickupDelay($delay);
+		$itemEntity->setMotion($motion ?? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1));
 		$itemEntity->spawnToAll();
-		return $itemEntity;
 
+		return $itemEntity;
 	}
 
 	/**
@@ -1407,16 +1405,12 @@ class World implements ChunkManager{
 		$orbs = [];
 
 		foreach(ExperienceOrb::splitIntoOrbSizes($amount) as $split){
-			$nbt = EntityFactory::createBaseNBT(
-				$pos,
-				$this->temporalVector->setComponents((lcg_value() * 0.2 - 0.1) * 2, lcg_value() * 0.4, (lcg_value() * 0.2 - 0.1) * 2),
-				lcg_value() * 360,
-				0
-			);
-			$nbt->setShort(ExperienceOrb::TAG_VALUE_PC, $split);
+			$orb = new ExperienceOrb(Location::fromObject($pos, $this,lcg_value() * 360, 0), new CompoundTag());
 
-			$orb = new ExperienceOrb($this, $nbt);
+			$orb->setXpValue($split);
+			$orb->setMotion($this->temporalVector->setComponents((lcg_value() * 0.2 - 0.1) * 2, lcg_value() * 0.4, (lcg_value() * 0.2 - 0.1) * 2));
 			$orb->spawnToAll();
+
 			$orbs[] = $orb;
 		}
 

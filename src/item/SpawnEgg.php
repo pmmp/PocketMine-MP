@@ -25,10 +25,8 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntityFactory;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\utils\Utils;
 use pocketmine\world\World;
 use function lcg_value;
 

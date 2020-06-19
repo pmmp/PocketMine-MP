@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntityFactory;
+use pocketmine\entity\Location;
 use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\item\Durable;
@@ -32,6 +32,7 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FlintSteel;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use function cos;
@@ -93,10 +94,11 @@ class TNT extends Opaque{
 		$this->pos->getWorldNonNull()->setBlock($this->pos, VanillaBlocks::AIR());
 
 		$mot = (new Random())->nextSignedFloat() * M_PI * 2;
-		$nbt = EntityFactory::createBaseNBT($this->pos->add(0.5, 0, 0.5), new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));
-		$nbt->setShort("Fuse", $fuse);
 
-		$tnt = new PrimedTNT($this->pos->getWorldNonNull(), $nbt);
+		$tnt = new PrimedTNT(Location::fromObject($this->pos->add(0.5, 0, 0.5), $this->pos->getWorldNonNull()), new CompoundTag());
+		$tnt->setFuse($fuse);
+		$tnt->setMotion(new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));
+
 		$tnt->spawnToAll();
 	}
 
