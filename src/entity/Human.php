@@ -59,10 +59,8 @@ use pocketmine\world\World;
 use function array_filter;
 use function array_merge;
 use function array_values;
-use function in_array;
 use function min;
 use function random_int;
-use function strlen;
 
 class Human extends Living implements ProjectileSource, InventoryHolder{
 
@@ -112,15 +110,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 
 		parent::__construct($world, $nbt);
-	}
-
-	/**
-	 * @deprecated
-	 *
-	 * Checks the length of a supplied skin bitmap and returns whether the length is valid.
-	 */
-	public static function isValidSkin(string $skin) : bool{
-		return in_array(strlen($skin), Skin::ACCEPTED_SKIN_SIZES, true);
 	}
 
 	public function getUniqueId() : UUID{
