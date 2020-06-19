@@ -77,6 +77,16 @@ abstract class Entity{
 
 	public const MOTION_THRESHOLD = 0.00001;
 
+	/** @var int */
+	private static $entityCount = 1;
+
+	/**
+	 * Returns a new runtime entity ID for a new entity.
+	 */
+	public static function nextRuntimeId() : int{
+		return self::$entityCount++;
+	}
+
 	/** @var Player[] */
 	protected $hasSpawned = [];
 
@@ -221,7 +231,7 @@ abstract class Entity{
 			$this->eyeHeight = $this->height / 2 + 0.1;
 		}
 
-		$this->id = EntityFactory::nextRuntimeId();
+		$this->id = self::nextRuntimeId();
 		$this->server = $location->getWorldNonNull()->getServer();
 
 		$this->location = $location->asLocation();

@@ -65,9 +65,6 @@ use function reset;
 final class EntityFactory{
 	use SingletonTrait;
 
-	/** @var int */
-	private static $entityCount = 1;
-
 	/**
 	 * @var \Closure[] base class => creator function
 	 * @phpstan-var array<class-string<Entity>, \Closure(World, CompoundTag) : Entity>
@@ -221,13 +218,6 @@ final class EntityFactory{
 		}
 
 		$this->saveNames[$className] = $saveNames;
-	}
-
-	/**
-	 * Returns a new runtime entity ID for a new entity.
-	 */
-	public static function nextRuntimeId() : int{
-		return self::$entityCount++;
 	}
 
 	/**

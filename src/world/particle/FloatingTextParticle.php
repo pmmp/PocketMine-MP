@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\particle;
 
-use pocketmine\entity\EntityFactory;
+use pocketmine\entity\Entity;
 use pocketmine\entity\Skin;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
@@ -84,7 +84,7 @@ class FloatingTextParticle implements Particle{
 		$p = [];
 
 		if($this->entityId === null){
-			$this->entityId = EntityFactory::nextRuntimeId();
+			$this->entityId = Entity::nextRuntimeId();
 		}else{
 			$p[] = RemoveActorPacket::create($this->entityId);
 		}
