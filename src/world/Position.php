@@ -37,7 +37,7 @@ class Position extends Vector3{
 	 * @param float|int $y
 	 * @param float|int $z
 	 */
-	public function __construct($x = 0, $y = 0, $z = 0, ?World $world = null){
+	public function __construct($x, $y, $z, ?World $world = null){
 		parent::__construct($x, $y, $z);
 		if($world !== null and $world->isClosed()){
 			throw new \InvalidArgumentException("Specified world has been unloaded and cannot be used");
