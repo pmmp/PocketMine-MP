@@ -54,7 +54,6 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use pocketmine\world\World;
-use function array_keys;
 use function count;
 use function in_array;
 use function reset;
@@ -222,16 +221,6 @@ final class EntityFactory{
 		}
 
 		$this->saveNames[$className] = $saveNames;
-	}
-
-	/**
-	 * Returns an array of all registered entity classpaths.
-	 *
-	 * @return string[]
-	 * @return class-string<Entity>[]
-	 */
-	public function getKnownTypes() : array{
-		return array_keys($this->creationFuncs);
 	}
 
 	/**
