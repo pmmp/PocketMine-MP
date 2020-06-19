@@ -61,15 +61,10 @@ final class EntityFactory{
 	use SingletonTrait;
 
 	/**
-	 * @var \Closure[] base class => creator function
-	 * @phpstan-var array<class-string<Entity>, \Closure(World, CompoundTag) : Entity>
+	 * @var \Closure[] save ID => creator function
+	 * @phpstan-var array<int|string, \Closure(World, CompoundTag) : Entity>
 	 */
 	private $creationFuncs = [];
-	/**
-	 * @var string[]
-	 * @phpstan-var array<int|string, class-string<Entity>>
-	 */
-	private $knownEntities = [];
 	/**
 	 * @var string[][]
 	 * @phpstan-var array<class-string<Entity>, list<string>>
@@ -198,15 +193,13 @@ final class EntityFactory{
 			throw new \InvalidArgumentException("At least one save name must be provided");
 		}
 		Utils::testValidInstance($className, Entity::class);
-
 		self::validateCreationFunc($className, $creationFunc);
-		$this->creationFuncs[$className] = $creationFunc;
 
 		foreach($saveNames as $name){
-			$this->knownEntities[$name] = $className;
+			$this->creationFuncs[$name] = $creationFunc;
 		}
 		if($legacyMcpeSaveId !== null){
-			$this->knownEntities[$legacyMcpeSaveId] = $className;
+			$this->creationFuncs[$legacyMcpeSaveId] = $creationFunc;
 		}
 
 		$this->saveNames[$className] = $saveNames;
@@ -220,16 +213,15 @@ final class EntityFactory{
 	 */
 	public function createFromData(World $world, CompoundTag $nbt) : ?Entity{
 		$saveId = $nbt->getTag("id") ?? $nbt->getTag("identifier");
-		$baseClass = null;
+		$func = null;
 		if($saveId instanceof StringTag){
-			$baseClass = $this->knownEntities[$saveId->getValue()] ?? null;
+			$func = $this->creationFuncs[$saveId->getValue()] ?? null;
 		}elseif($saveId instanceof IntTag){ //legacy MCPE format
-			$baseClass = $this->knownEntities[$saveId->getValue() & 0xff] ?? null;
+			$func = $this->creationFuncs[$saveId->getValue() & 0xff] ?? null;
 		}
-		if($baseClass === null){
+		if($func === null){
 			return null;
 		}
-		$func = $this->creationFuncs[$baseClass];
 		/** @var Entity $entity */
 		$entity = $func($world, $nbt);
 
