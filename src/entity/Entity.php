@@ -215,7 +215,7 @@ abstract class Entity{
 	public function __construct(Location $location, ?CompoundTag $nbt = null){
 		$this->timings = Timings::getEntityTimings($this);
 
-		$this->temporalVector = new Vector3();
+		$this->temporalVector = new Vector3(0, 0, 0);
 
 		if($this->eyeHeight === null){
 			$this->eyeHeight = $this->height / 2 + 0.1;

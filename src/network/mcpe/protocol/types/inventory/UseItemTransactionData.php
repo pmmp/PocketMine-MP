@@ -87,7 +87,7 @@ class UseItemTransactionData extends TransactionData{
 
 	protected function decodeData(PacketSerializer $stream) : void{
 		$this->actionType = $stream->getUnsignedVarInt();
-		$this->blockPos = new Vector3();
+		$this->blockPos = new Vector3(0, 0, 0);
 		$stream->getBlockPosition($this->blockPos->x, $this->blockPos->y, $this->blockPos->z);
 		$this->face = $stream->getVarInt();
 		$this->hotbarSlot = $stream->getVarInt();
