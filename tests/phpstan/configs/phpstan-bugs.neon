@@ -6,11 +6,6 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
-			message: "#^Instanceof between pocketmine\\\\block\\\\tile\\\\Tile and class\\-string\\<pocketmine\\\\block\\\\tile\\\\Tile\\> will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/block/Block.php
-
-		-
 			message: "#^Comparison operation \"\\>\\=\" between 0 and 2 is always false\\.$#"
 			count: 1
 			path: ../../../src/block/Liquid.php
@@ -29,31 +24,6 @@ parameters:
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
-
-		-
-			message: "#^If condition is always false\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
-
-		-
-			message: "#^Instanceof between pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\entity\\\\MetadataProperty and pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\entity\\\\MetadataProperty will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/types/entity/EntityMetadataCollection.php
-
-		-
-			message: "#^Class pocketmine\\\\item\\\\LegacyStringToItemParser constructor invoked with 0 parameters, 1 required\\.$#"
-			count: 1
-			path: ../../../src/item/LegacyStringToItemParser.php
-
-		-
-			message: "#^Class pocketmine\\\\network\\\\mcpe\\\\StaticPacketCache constructor invoked with 0 parameters, 2 required\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/StaticPacketCache.php
-
-		-
-			message: "#^Class pocketmine\\\\network\\\\mcpe\\\\compression\\\\ZlibCompressor constructor invoked with 0 parameters, 3 required\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/compression/ZlibCompressor.php
 
 		-
 			message: "#^Strict comparison using \\=\\=\\= between string and false will always evaluate to false\\.$#"
