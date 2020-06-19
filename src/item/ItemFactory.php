@@ -319,17 +319,17 @@ class ItemFactory{
 		//TODO: the meta values should probably be hardcoded; they won't change, but the EntityLegacyIds might
 		$this->register(new class(ItemIds::SPAWN_EGG, EntityLegacyIds::ZOMBIE, "Zombie Spawn Egg") extends SpawnEgg{
 			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
-				return new Zombie(Location::fromObject($pos, $world, $yaw, $pitch), new CompoundTag());
+				return new Zombie(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
 		$this->register(new class(ItemIds::SPAWN_EGG, EntityLegacyIds::SQUID, "Squid Spawn Egg") extends SpawnEgg{
 			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
-				return new Squid(Location::fromObject($pos, $world, $yaw, $pitch), new CompoundTag());
+				return new Squid(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
 		$this->register(new class(ItemIds::SPAWN_EGG, EntityLegacyIds::VILLAGER, "Villager Spawn Egg") extends SpawnEgg{
 			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
-				return new Villager(Location::fromObject($pos, $world, $yaw, $pitch), new CompoundTag());
+				return new Villager(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
 	}

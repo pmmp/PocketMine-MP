@@ -57,7 +57,7 @@ abstract class Projectile extends Entity{
 	/** @var Block|null */
 	protected $blockHit;
 
-	public function __construct(Location $location, ?Entity $shootingEntity, CompoundTag $nbt){
+	public function __construct(Location $location, ?Entity $shootingEntity, ?CompoundTag $nbt = null){
 		parent::__construct($location, $nbt);
 		if($shootingEntity !== null){
 			$this->setOwningEntity($shootingEntity);

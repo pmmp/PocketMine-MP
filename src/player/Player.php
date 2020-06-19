@@ -295,7 +295,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$world->registerChunkListener($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4);
 		$this->usedChunks[World::chunkHash($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4)] = UsedChunkStatus::NEEDED();
 
-		parent::__construct($spawn, $this->playerInfo->getSkin(), $namedtag ?? new CompoundTag());
+		parent::__construct($spawn, $this->playerInfo->getSkin(), $namedtag);
 		$this->onGround = $onGround; //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
 
 		$ev = new PlayerLoginEvent($this, "Plugin reason");

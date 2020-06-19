@@ -213,7 +213,7 @@ abstract class Entity{
 	/** @var int|null */
 	protected $targetId = null;
 
-	public function __construct(Location $location, CompoundTag $nbt){
+	public function __construct(Location $location, ?CompoundTag $nbt = null){
 		$this->timings = Timings::getEntityTimings($this);
 
 		$this->temporalVector = new Vector3();
@@ -241,7 +241,7 @@ abstract class Entity{
 		}
 
 		$this->motion = new Vector3(0, 0, 0);
-		if($nbt->hasTag("Motion", ListTag::class)){
+		if($nbt !== null and $nbt->hasTag("Motion", ListTag::class)){
 			/** @var float[] $motion */
 			$motion = $nbt->getListTag("Motion")->getAllValues();
 			$this->setMotion($this->temporalVector->setComponents(...$motion));
@@ -254,7 +254,7 @@ abstract class Entity{
 		$this->attributeMap = new AttributeMap();
 		$this->addAttributes();
 
-		$this->initEntity($nbt);
+		$this->initEntity($nbt ?? new CompoundTag());
 
 		$this->chunk->addEntity($this);
 		$this->getWorld()->addEntity($this);

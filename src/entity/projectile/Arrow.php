@@ -71,7 +71,7 @@ class Arrow extends Projectile{
 	/** @var bool */
 	protected $critical = false;
 
-	public function __construct(Location $location, ?Entity $shootingEntity, bool $critical, CompoundTag $nbt){
+	public function __construct(Location $location, ?Entity $shootingEntity, bool $critical, ?CompoundTag $nbt = null){
 		parent::__construct($location, $shootingEntity, $nbt);
 		$this->setCritical($critical);
 	}

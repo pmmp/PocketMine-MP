@@ -29,7 +29,6 @@ use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PaintingMotive;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use pocketmine\world\sound\PaintingPlaceSound;
 use function array_rand;
@@ -76,7 +75,7 @@ class PaintingItem extends Item{
 		$replacePos = $blockReplace->getPos();
 		$clickedPos = $blockClicked->getPos();
 
-		$entity = new Painting(Location::fromObject($replacePos, $replacePos->getWorldNonNull()), $clickedPos, $face, $motive, new CompoundTag());
+		$entity = new Painting(Location::fromObject($replacePos, $replacePos->getWorldNonNull()), $clickedPos, $face, $motive);
 		$this->pop();
 		$entity->spawnToAll();
 

@@ -93,7 +93,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	protected $baseOffset = 1.62;
 
-	public function __construct(Location $location, Skin $skin, CompoundTag $nbt){
+	public function __construct(Location $location, Skin $skin, ?CompoundTag $nbt = null){
 		$this->skin = $skin;
 		parent::__construct($location, $nbt);
 	}

@@ -52,7 +52,6 @@ use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
@@ -1386,7 +1385,7 @@ class World implements ChunkManager{
 			return null;
 		}
 
-		$itemEntity = new ItemEntity(Location::fromObject($source, $this, lcg_value() * 360, 0), $item, new CompoundTag());
+		$itemEntity = new ItemEntity(Location::fromObject($source, $this, lcg_value() * 360, 0), $item);
 
 		$itemEntity->setPickupDelay($delay);
 		$itemEntity->setMotion($motion ?? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1));
@@ -1405,7 +1404,7 @@ class World implements ChunkManager{
 		$orbs = [];
 
 		foreach(ExperienceOrb::splitIntoOrbSizes($amount) as $split){
-			$orb = new ExperienceOrb(Location::fromObject($pos, $this,lcg_value() * 360, 0), new CompoundTag());
+			$orb = new ExperienceOrb(Location::fromObject($pos, $this, lcg_value() * 360, 0));
 
 			$orb->setXpValue($split);
 			$orb->setMotion($this->temporalVector->setComponents((lcg_value() * 0.2 - 0.1) * 2, lcg_value() * 0.4, (lcg_value() * 0.2 - 0.1) * 2));

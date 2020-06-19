@@ -65,7 +65,7 @@ class ItemEntity extends Entity{
 	/** @var int */
 	protected $despawnDelay = self::DEFAULT_DESPAWN_DELAY;
 
-	public function __construct(Location $location, Item $item, CompoundTag $nbt){
+	public function __construct(Location $location, Item $item, ?CompoundTag $nbt = null){
 		if($item->isNull()){
 			throw new \InvalidArgumentException("Item entity must have a non-air item with a count of at least 1");
 		}

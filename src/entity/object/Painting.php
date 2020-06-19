@@ -73,7 +73,7 @@ class Painting extends Entity{
 	/** @var string */
 	protected $motive;
 
-	public function __construct(Location $location, Vector3 $blockIn, int $facing, PaintingMotive $motive, CompoundTag $nbt){
+	public function __construct(Location $location, Vector3 $blockIn, int $facing, PaintingMotive $motive, ?CompoundTag $nbt = null){
 		$this->motive = $motive->getName(); //TODO: use motive directly
 		$this->blockIn = $blockIn->asVector3();
 		$this->facing = $facing;

@@ -29,7 +29,6 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\entity\EntityShootBowEvent;
 use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use pocketmine\world\sound\BowShootSound;
 use function intdiv;
@@ -62,7 +61,7 @@ class Bow extends Tool{
 			$player->getWorld(),
 			($location->yaw > 180 ? 360 : 0) - $location->yaw,
 			-$location->pitch
-		), $player, $baseForce >= 1, new CompoundTag());
+		), $player, $baseForce >= 1);
 		$entity->setMotion($player->getDirectionVector());
 
 		$infinity = $this->hasEnchantment(Enchantment::INFINITY());

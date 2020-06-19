@@ -31,7 +31,6 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\math\Facing;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\Position;
 
@@ -57,7 +56,7 @@ trait FallableTrait{
 			$block = $this;
 			if(!($block instanceof Block)) throw new AssumptionFailedError(__TRAIT__ . " should only be used by Blocks");
 
-			$fall = new FallingBlock(Location::fromObject($pos->add(0.5, 0, 0.5), $pos->getWorldNonNull()), $block, new CompoundTag());
+			$fall = new FallingBlock(Location::fromObject($pos->add(0.5, 0, 0.5), $pos->getWorldNonNull()), $block);
 			$fall->spawnToAll();
 		}
 	}
