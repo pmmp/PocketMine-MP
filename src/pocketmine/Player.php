@@ -2673,8 +2673,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								$cancelled = true;
 							}
 						}
-
-						$this->setSprinting(false);
+						
 						$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
 
 						$meleeEnchantmentDamage = 0;
@@ -2699,6 +2698,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 						$target->attack($ev);
 
+						$this->setSprinting(false);
+						
 						if($ev->isCancelled()){
 							if($heldItem instanceof Durable and $this->isSurvival()){
 								$this->inventory->sendContents($this);
