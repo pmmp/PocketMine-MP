@@ -26,7 +26,6 @@ namespace pocketmine\item;
 use pocketmine\entity\Location;
 use pocketmine\entity\projectile\Snowball as SnowballEntity;
 use pocketmine\entity\projectile\Throwable;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 
 class Snowball extends ProjectileItem{
@@ -36,7 +35,7 @@ class Snowball extends ProjectileItem{
 	}
 
 	protected function createEntity(Location $location, Player $thrower) : Throwable{
-		return new SnowballEntity($location, $thrower, new CompoundTag());
+		return new SnowballEntity($location, $thrower);
 	}
 
 	public function getThrowForce() : float{

@@ -26,7 +26,6 @@ namespace pocketmine\item;
 use pocketmine\entity\Location;
 use pocketmine\entity\projectile\Egg as EggEntity;
 use pocketmine\entity\projectile\Throwable;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 
 class Egg extends ProjectileItem{
@@ -36,7 +35,7 @@ class Egg extends ProjectileItem{
 	}
 
 	protected function createEntity(Location $location, Player $thrower) : Throwable{
-		return new EggEntity($location, $thrower, new CompoundTag());
+		return new EggEntity($location, $thrower);
 	}
 
 	public function getThrowForce() : float{

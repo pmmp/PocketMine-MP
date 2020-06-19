@@ -26,7 +26,6 @@ namespace pocketmine\item;
 use pocketmine\entity\Location;
 use pocketmine\entity\projectile\SplashPotion as SplashPotionEntity;
 use pocketmine\entity\projectile\Throwable;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 
 class SplashPotion extends ProjectileItem{
@@ -36,7 +35,7 @@ class SplashPotion extends ProjectileItem{
 	}
 
 	protected function createEntity(Location $location, Player $thrower) : Throwable{
-		$projectile = new SplashPotionEntity($location, $thrower, new CompoundTag());
+		$projectile = new SplashPotionEntity($location, $thrower);
 		$projectile->setPotionId($this->meta);
 		return $projectile;
 	}
