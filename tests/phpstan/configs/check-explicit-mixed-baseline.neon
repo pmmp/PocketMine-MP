@@ -146,11 +146,6 @@ parameters:
 			path: ../../../src/network/mcpe/compression/CompressBatchTask.php
 
 		-
-			message: "#^Cannot access offset 'geometry' on mixed\\.$#"
-			count: 3
-			path: ../../../src/network/mcpe/convert/LegacySkinAdapter.php
-
-		-
 			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\raklib\\\\PthreadsChannelReader\\:\\:read\\(\\) should return string\\|null but returns mixed\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/raklib/PthreadsChannelReader.php

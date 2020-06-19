@@ -25,9 +25,9 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\entity\Skin;
-
 use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
+use function is_array;
 use function is_string;
 use function json_decode;
 use function json_encode;
@@ -60,7 +60,7 @@ class LegacySkinAdapter implements SkinAdapter{
 		$capeData = $data->isPersonaCapeOnClassic() ? "" : $data->getCapeImage()->getData();
 
 		$resourcePatch = json_decode($data->getResourcePatch(), true);
-		if(isset($resourcePatch["geometry"]["default"]) && is_string($resourcePatch["geometry"]["default"])){
+		if(is_array($resourcePatch) && isset($resourcePatch["geometry"]["default"]) && is_string($resourcePatch["geometry"]["default"])){
 			$geometryName = $resourcePatch["geometry"]["default"];
 		}else{
 			throw new InvalidSkinException("Missing geometry name field");
