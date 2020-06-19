@@ -41,8 +41,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
-use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
@@ -460,7 +458,8 @@ abstract class Entity{
 	}
 
 	public function saveNBT() : CompoundTag{
-		$nbt = new CompoundTag();
+		$nbt = EntityFactory::createBaseNBT($this->location, $this->motion, $this->location->yaw, $this->location->pitch);
+
 		if(!($this instanceof Player)){
 			$nbt->setString("id", EntityFactory::getInstance()->getSaveId(get_class($this)));
 
@@ -469,23 +468,6 @@ abstract class Entity{
 				$nbt->setByte("CustomNameVisible", $this->isNameTagVisible() ? 1 : 0);
 			}
 		}
-
-		$nbt->setTag("Pos", new ListTag([
-			new DoubleTag($this->location->x),
-			new DoubleTag($this->location->y),
-			new DoubleTag($this->location->z)
-		]));
-
-		$nbt->setTag("Motion", new ListTag([
-			new DoubleTag($this->motion->x),
-			new DoubleTag($this->motion->y),
-			new DoubleTag($this->motion->z)
-		]));
-
-		$nbt->setTag("Rotation", new ListTag([
-			new FloatTag($this->location->yaw),
-			new FloatTag($this->location->pitch)
-		]));
 
 		$nbt->setFloat("FallDistance", $this->fallDistance);
 		$nbt->setShort("Fire", $this->fireTicks);
