@@ -184,7 +184,6 @@ final class EntityFactory{
 	 * Registers an entity type into the index.
 	 *
 	 * @param string   $className Class that extends Entity
-	 * @param \Closure $creationFunc
 	 * @param string[] $saveNames An array of save names which this entity might be saved under.
 	 * @phpstan-param class-string<Entity> $className
 	 * @phpstan-param list<string> $saveNames
