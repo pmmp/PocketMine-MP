@@ -55,7 +55,6 @@ use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
 use pocketmine\world\World;
 use function count;
-use function in_array;
 use function reset;
 
 /**
@@ -190,25 +189,23 @@ final class EntityFactory{
 	 *
 	 * @param string   $className Class that extends Entity
 	 * @param \Closure $creationFunc
-	 * @param string[] $saveNames An array of save names which this entity might be saved under. Defaults to the short name of the class itself if empty.
+	 * @param string[] $saveNames An array of save names which this entity might be saved under.
 	 * @phpstan-param class-string<Entity> $className
+	 * @phpstan-param list<string> $saveNames
 	 * @phpstan-param \Closure(World $world, CompoundTag $nbt) : Entity $creationFunc
 	 *
-	 * NOTE: The first save name in the $saveNames array will be used when saving the entity to disk. The reflection
-	 * name of the class will be appended to the end and only used if no other save names are specified.
+	 * NOTE: The first save name in the $saveNames array will be used when saving the entity to disk.
 	 *
 	 * @throws \InvalidArgumentException
 	 */
 	public function register(string $className, \Closure $creationFunc, array $saveNames, ?int $legacyMcpeSaveId = null) : void{
+		if(count($saveNames) === 0){
+			throw new \InvalidArgumentException("At least one save name must be provided");
+		}
 		Utils::testValidInstance($className, Entity::class);
 
 		self::validateCreationFunc($className, $creationFunc);
 		$this->creationFuncs[$className] = $creationFunc;
-
-		$shortName = (new \ReflectionClass($className))->getShortName();
-		if(!in_array($shortName, $saveNames, true)){
-			$saveNames[] = $shortName;
-		}
 
 		foreach($saveNames as $name){
 			$this->knownEntities[$name] = $className;
