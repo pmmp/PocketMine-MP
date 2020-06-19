@@ -283,9 +283,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		if($namedtag !== null and ($world = $this->server->getWorldManager()->getWorldByName($namedtag->getString("Level", ""))) !== null){
 			$spawn = EntityFactory::parseLocation($namedtag, $world);
+			$onGround = $namedtag->getByte("OnGround", 1) === 1;
 		}else{
 			$world = $this->server->getWorldManager()->getDefaultWorld();
 			$spawn = Location::fromObject($world->getSafeSpawn(), $world);
+			$onGround = true;
 		}
 
 		//load the spawn chunk so we can see the terrain
@@ -293,14 +295,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$world->registerChunkListener($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4);
 		$this->usedChunks[World::chunkHash($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4)] = UsedChunkStatus::NEEDED();
 
-		if($namedtag === null){
-			$namedtag = new CompoundTag();
-
-			$namedtag->setByte("OnGround", 1); //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
-			//TODO: old code had a TODO for SpawnForced
-		}
-
-		parent::__construct($spawn, $this->playerInfo->getSkin(), $namedtag);
+		parent::__construct($spawn, $this->playerInfo->getSkin(), $namedtag ?? new CompoundTag());
+		$this->onGround = $onGround; //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
 
 		$ev = new PlayerLoginEvent($this, "Plugin reason");
 		$ev->call();
