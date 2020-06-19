@@ -250,7 +250,7 @@ abstract class Entity{
 		}
 
 		if($nbt !== null){
-			$this->motion = EntityFactory::parseVec3($nbt, "Motion", true);
+			$this->motion = EntityDataHelper::parseVec3($nbt, "Motion", true);
 		}else{
 			$this->motion = new Vector3(0, 0, 0);
 		}
@@ -461,7 +461,7 @@ abstract class Entity{
 	}
 
 	public function saveNBT() : CompoundTag{
-		$nbt = EntityFactory::createBaseNBT($this->location, $this->motion, $this->location->yaw, $this->location->pitch);
+		$nbt = EntityDataHelper::createBaseNBT($this->location, $this->motion, $this->location->yaw, $this->location->pitch);
 
 		if(!($this instanceof Player)){
 			$nbt->setString("id", EntityFactory::getInstance()->getSaveId(get_class($this)));

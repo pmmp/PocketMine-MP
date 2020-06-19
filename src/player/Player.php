@@ -34,7 +34,7 @@ use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\CriticalHitAnimation;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntityFactory;
+use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
@@ -282,7 +282,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$namedtag = $this->server->getOfflinePlayerData($this->username); //TODO: make this async
 
 		if($namedtag !== null and ($world = $this->server->getWorldManager()->getWorldByName($namedtag->getString("Level", ""))) !== null){
-			$spawn = EntityFactory::parseLocation($namedtag, $world);
+			$spawn = EntityDataHelper::parseLocation($namedtag, $world);
 			$onGround = $namedtag->getByte("OnGround", 1) === 1;
 		}else{
 			$world = $this->server->getWorldManager()->getDefaultWorld();
