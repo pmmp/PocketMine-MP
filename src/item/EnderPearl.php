@@ -27,7 +27,6 @@ use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
 use pocketmine\entity\projectile\EnderPearl as EnderPearlEntity;
 use pocketmine\entity\projectile\Throwable;
-use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 class EnderPearl extends ProjectileItem{
@@ -36,10 +35,10 @@ class EnderPearl extends ProjectileItem{
 		return 16;
 	}
 
-	protected function createEntity(Location $location, Vector3 $velocity, Player $thrower) : Throwable{
+	protected function createEntity(Location $location, Player $thrower) : Throwable{
 		return new EnderPearlEntity(
 			$location->getWorldNonNull(),
-			EntityFactory::createBaseNBT($location, $velocity, $location->yaw, $location->pitch),
+			EntityFactory::createBaseNBT($location, null, $location->yaw, $location->pitch),
 			$thrower
 		);
 	}

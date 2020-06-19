@@ -27,7 +27,6 @@ use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
 use pocketmine\entity\projectile\SplashPotion as SplashPotionEntity;
 use pocketmine\entity\projectile\Throwable;
-use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 class SplashPotion extends ProjectileItem{
@@ -36,10 +35,10 @@ class SplashPotion extends ProjectileItem{
 		return 1;
 	}
 
-	protected function createEntity(Location $location, Vector3 $velocity, Player $thrower) : Throwable{
+	protected function createEntity(Location $location, Player $thrower) : Throwable{
 		$projectile = new SplashPotionEntity(
 			$location->getWorldNonNull(),
-			EntityFactory::createBaseNBT($location, $velocity, $location->yaw, $location->pitch),
+			EntityFactory::createBaseNBT($location, null, $location->yaw, $location->pitch),
 			$thrower
 		);
 
