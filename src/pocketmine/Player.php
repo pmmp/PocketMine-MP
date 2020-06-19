@@ -2618,8 +2618,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 							if(!$this->server->getConfigBool("pvp")){
 								$cancelled = true;
 							}
-						}
-						
+						}	
 						$ev = new EntityDamageByEntityEvent($this, $target, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
 
 						$meleeEnchantmentDamage = 0;
