@@ -41,7 +41,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
@@ -240,11 +239,10 @@ abstract class Entity{
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}
 
-		$this->motion = new Vector3(0, 0, 0);
-		if($nbt !== null and $nbt->hasTag("Motion", ListTag::class)){
-			/** @var float[] $motion */
-			$motion = $nbt->getListTag("Motion")->getAllValues();
-			$this->setMotion($this->temporalVector->setComponents(...$motion));
+		if($nbt !== null){
+			$this->motion = EntityFactory::parseVec3($nbt, "Motion", true);
+		}else{
+			$this->motion = new Vector3(0, 0, 0);
 		}
 
 		$this->resetLastMovements();

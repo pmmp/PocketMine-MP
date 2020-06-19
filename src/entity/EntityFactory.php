@@ -290,7 +290,7 @@ final class EntityFactory{
 		return Location::fromObject($pos, $world, $values[0]->getValue(), $values[1]->getValue());
 	}
 
-	private static function parseVec3(CompoundTag $nbt, string $tagName, bool $optional) : Vector3{
+	public static function parseVec3(CompoundTag $nbt, string $tagName, bool $optional) : Vector3{
 		$pos = $nbt->getTag($tagName);
 		if($pos === null and $optional){
 			return new Vector3(0, 0, 0);
