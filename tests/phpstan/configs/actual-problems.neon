@@ -6,11 +6,6 @@ parameters:
 			path: ../../../src/CrashDump.php
 
 		-
-			message: "#^Function parallel\\\\bootstrap not found\\.$#"
-			count: 1
-			path: ../../../src/PocketMine.php
-
-		-
 			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/Server.php
