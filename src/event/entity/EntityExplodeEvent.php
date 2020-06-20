@@ -31,6 +31,7 @@ use pocketmine\world\Position;
 
 /**
  * Called when a entity explodes
+ * @phpstan-extends EntityEvent<Entity>
  */
 class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;

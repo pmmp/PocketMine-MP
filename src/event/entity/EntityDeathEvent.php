@@ -26,6 +26,9 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
 
+/**
+ * @phpstan-extends EntityEvent<Living>
+ */
 class EntityDeathEvent extends EntityEvent{
 	/** @var Item[] */
 	private $drops = [];

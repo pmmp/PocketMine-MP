@@ -28,6 +28,9 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\event\entity\EntityEvent;
 
+/**
+ * @phpstan-extends EntityEvent<Human>
+ */
 class PlayerExhaustEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 

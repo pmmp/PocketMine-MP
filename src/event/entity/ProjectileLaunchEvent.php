@@ -27,6 +27,9 @@ use pocketmine\entity\projectile\Projectile;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 
+/**
+ * @phpstan-extends EntityEvent<Projectile>
+ */
 class ProjectileLaunchEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 

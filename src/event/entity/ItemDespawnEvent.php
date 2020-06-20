@@ -27,6 +27,9 @@ use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 
+/**
+ * @phpstan-extends EntityEvent<ItemEntity>
+ */
 class ItemDespawnEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 

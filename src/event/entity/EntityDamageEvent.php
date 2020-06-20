@@ -31,6 +31,7 @@ use function max;
 
 /**
  * Called when an entity takes damage.
+ * @phpstan-extends EntityEvent<Entity>
  */
 class EntityDamageEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;

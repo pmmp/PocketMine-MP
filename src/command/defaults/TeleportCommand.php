@@ -26,12 +26,12 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\entity\Location;
 use pocketmine\lang\TranslationContainer;
-use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
-use function array_filter;
-use function array_values;
+use function array_shift;
 use function count;
 use function round;
 
@@ -47,84 +47,83 @@ class TeleportCommand extends VanillaCommand{
 		$this->setPermission("pocketmine.command.teleport");
 	}
 
+	private function findPlayer(CommandSender $sender, string $playerName) : ?Player{
+		$subject = $sender->getServer()->getPlayer($playerName);
+		if($subject === null){
+			$sender->sendMessage(TextFormat::RED . "Can't find player " . $playerName);
+			return null;
+		}
+		return $subject;
+	}
+
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
 		if(!$this->testPermission($sender)){
 			return true;
 		}
 
-		$args = array_values(array_filter($args, function(string $arg) : bool{
-			return $arg !== "";
-		}));
-		if(count($args) < 1 or count($args) > 6){
-			throw new InvalidCommandSyntaxException();
-		}
-
-		$target = null;
-		$origin = $sender;
-
-		if(count($args) === 1 or count($args) === 3){
-			if($sender instanceof Player){
-				$target = $sender;
-			}else{
-				$sender->sendMessage(TextFormat::RED . "Please provide a player!");
-
-				return true;
-			}
-			if(count($args) === 1){
-				$target = $sender->getServer()->getPlayer($args[0]);
-				if($target === null){
-					$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[0]);
-
+		switch(count($args)){
+			case 1: // /tp targetPlayer
+			case 3: // /tp x y z
+			case 5: // /tp x y z yaw pitch - TODO: 5 args could be target x y z yaw :(
+				if(!($sender instanceof Player)){
+					$sender->sendMessage(TextFormat::RED . "Please provide a player!");
 					return true;
 				}
-			}
-		}else{
-			$target = $sender->getServer()->getPlayer($args[0]);
-			if($target === null){
-				$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[0]);
 
-				return true;
-			}
-			if(count($args) === 2){
-				$origin = $target;
-				$target = $sender->getServer()->getPlayer($args[1]);
-				if($target === null){
-					$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[1]);
-
+				$subject = $sender;
+				$targetArgs = $args;
+				break;
+			case 2: // /tp player1 player2
+			case 4: // /tp player1 x y z - TODO: 4 args could be x y z yaw :(
+			case 6: // /tp player1 x y z yaw pitch
+				$subject = $this->findPlayer($sender, $args[0]);
+				if($subject === null){
 					return true;
 				}
-			}
+				$targetArgs = $args;
+				array_shift($targetArgs);
+				break;
+			default:
+				throw new InvalidCommandSyntaxException();
 		}
 
-		$targetLocation = $target->getLocation();
+		switch(count($targetArgs)){
+			case 1:
+				$targetPlayer = $this->findPlayer($sender, $targetArgs[0]);
+				if($targetPlayer === null){
+					return true;
+				}
 
-		if(count($args) < 3){
-			$origin->teleport($targetLocation);
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success", [$origin->getName(), $target->getName()]));
+				$subject->teleport($targetPlayer->getLocation());
+				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success", [$subject->getName(), $targetPlayer->getName()]));
 
-			return true;
-		}else{
-			if(count($args) === 4 or count($args) === 6){
-				$pos = 1;
-			}else{
-				$pos = 0;
-			}
+				return true;
+			case 3:
+			case 5:
+				$base = $subject->getLocation();
+				if(count($targetArgs) === 5){
+					$yaw = (float) $targetArgs[3];
+					$pitch = (float) $targetArgs[4];
+				}else{
+					$yaw = $base->yaw;
+					$pitch = $base->pitch;
+				}
 
-			$x = $this->getRelativeDouble($targetLocation->x, $sender, $args[$pos++]);
-			$y = $this->getRelativeDouble($targetLocation->y, $sender, $args[$pos++], 0, 256);
-			$z = $this->getRelativeDouble($targetLocation->z, $sender, $args[$pos++]);
-			$yaw = $targetLocation->getYaw();
-			$pitch = $targetLocation->getPitch();
+				$x = $this->getRelativeDouble($base->x, $sender, $targetArgs[0]);
+				$y = $this->getRelativeDouble($base->y, $sender, $targetArgs[1], 0, 256);
+				$z = $this->getRelativeDouble($base->z, $sender, $targetArgs[2]);
+				$targetLocation = new Location($x, $y, $z, $yaw, $pitch, $base->getWorldNonNull());
 
-			if(count($args) === 6 or (count($args) === 5 and $pos === 3)){
-				$yaw = (float) $args[$pos++];
-				$pitch = (float) $args[$pos++];
-			}
-
-			$target->teleport(new Vector3($x, $y, $z), $yaw, $pitch);
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success.coordinates", [$target->getName(), round($x, 2), round($y, 2), round($z, 2)]));
-
-			return true;
+				$subject->teleport($targetLocation);
+				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.tp.success.coordinates", [
+					$subject->getName(),
+					round($targetLocation->x, 2),
+					round($targetLocation->y, 2),
+					round($targetLocation->z, 2)
+				]));
+				return true;
+			default:
+				throw new AssumptionFailedError("This branch should be unreachable (for now)");
 		}
 	}
 }

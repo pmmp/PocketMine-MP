@@ -27,6 +27,7 @@ use pocketmine\entity\Entity;
 
 /**
  * Called when a entity is despawned
+ * @phpstan-extends EntityEvent<Entity>
  */
 class EntityDespawnEvent extends EntityEvent{
 

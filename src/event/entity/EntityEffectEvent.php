@@ -28,6 +28,9 @@ use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 
+/**
+ * @phpstan-extends EntityEvent<Entity>
+ */
 class EntityEffectEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 

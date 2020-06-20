@@ -30,6 +30,7 @@ use pocketmine\event\CancellableTrait;
 
 /**
  * Called when an Entity, excluding players, changes a block directly
+ * @phpstan-extends EntityEvent<Entity>
  */
 class EntityBlockChangeEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;

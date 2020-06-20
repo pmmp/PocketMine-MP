@@ -29,6 +29,7 @@ use pocketmine\event\CancellableTrait;
 
 /**
  * Called when a entity decides to explode
+ * @phpstan-extends EntityEvent<Entity>
  */
 class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;

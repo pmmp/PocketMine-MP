@@ -29,12 +29,19 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 use pocketmine\event\Event;
 
+/**
+ * @phpstan-template TEntity of Entity
+ */
 abstract class EntityEvent extends Event{
-	/** @var Entity */
+	/**
+	 * @var Entity
+	 * @phpstan-var TEntity
+	 */
 	protected $entity;
 
 	/**
 	 * @return Entity
+	 * @phpstan-return TEntity
 	 */
 	public function getEntity(){
 		return $this->entity;

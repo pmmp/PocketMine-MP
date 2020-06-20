@@ -28,6 +28,9 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\world\Position;
 
+/**
+ * @phpstan-extends EntityEvent<Entity>
+ */
 class EntityTeleportEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
