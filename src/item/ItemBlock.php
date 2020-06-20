@@ -50,7 +50,7 @@ class ItemBlock extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::getInstance()->get($this->blockId, $this->meta === -1 ? 0 : $this->meta & 0xf);
+		return BlockFactory::getInstance()->get($this->blockId, $this->meta & 0xf);
 	}
 
 	public function getFuelTime() : int{
