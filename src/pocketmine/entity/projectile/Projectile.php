@@ -59,6 +59,9 @@ abstract class Projectile extends Entity{
 	protected $blockHitId;
 	/** @var int|null */
 	protected $blockHitData;
+	
+	/** @var bool */
+	protected $damageCancelled = false;
 
 	public function __construct(Level $level, CompoundTag $nbt, ?Entity $shootingEntity = null){
 		parent::__construct($level, $nbt);
@@ -307,6 +310,8 @@ abstract class Projectile extends Entity{
 				$ev->call();
 				if(!$ev->isCancelled()){
 					$entityHit->setOnFire($ev->getDuration());
+				} else {
+					$this->damageCancelled = true;
 				}
 			}
 		}
