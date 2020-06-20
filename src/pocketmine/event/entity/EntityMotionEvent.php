@@ -27,6 +27,9 @@ use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\math\Vector3;
 
+/**
+ * @phpstan-extends EntityEvent<Entity>
+ */
 class EntityMotionEvent extends EntityEvent implements Cancellable{
 	/** @var Vector3 */
 	private $mot;

@@ -30,6 +30,7 @@ use pocketmine\level\Position;
 
 /**
  * Called when a entity explodes
+ * @phpstan-extends EntityEvent<Entity>
  */
 class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	/** @var Position */

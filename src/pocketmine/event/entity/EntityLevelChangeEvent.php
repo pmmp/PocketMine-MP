@@ -27,6 +27,9 @@ use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\level\Level;
 
+/**
+ * @phpstan-extends EntityEvent<Entity>
+ */
 class EntityLevelChangeEvent extends EntityEvent implements Cancellable{
 	/** @var Level */
 	private $originLevel;

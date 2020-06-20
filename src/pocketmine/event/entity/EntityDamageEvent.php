@@ -30,6 +30,7 @@ use function max;
 
 /**
  * Called when an entity takes damage.
+ * @phpstan-extends EntityEvent<Entity>
  */
 class EntityDamageEvent extends EntityEvent implements Cancellable{
 	public const MODIFIER_ARMOR = 1;

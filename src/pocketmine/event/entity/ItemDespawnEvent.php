@@ -26,6 +26,9 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\Cancellable;
 
+/**
+ * @phpstan-extends EntityEvent<ItemEntity>
+ */
 class ItemDespawnEvent extends EntityEvent implements Cancellable{
 
 	public function __construct(ItemEntity $item){

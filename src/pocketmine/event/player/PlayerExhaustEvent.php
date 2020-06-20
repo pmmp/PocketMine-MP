@@ -27,6 +27,9 @@ use pocketmine\entity\Human;
 use pocketmine\event\Cancellable;
 use pocketmine\event\entity\EntityEvent;
 
+/**
+ * @phpstan-extends EntityEvent<Human>
+ */
 class PlayerExhaustEvent extends EntityEvent implements Cancellable{
 	public const CAUSE_ATTACK = 1;
 	public const CAUSE_DAMAGE = 2;
