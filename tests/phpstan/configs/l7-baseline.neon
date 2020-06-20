@@ -606,11 +606,6 @@ parameters:
 			path: ../../../src/item/Item.php
 
 		-
-			message: "#^Parameter \\#4 \\$entityClass of class pocketmine\\\\item\\\\SpawnEgg constructor expects class\\-string\\<pocketmine\\\\entity\\\\Entity\\>, pocketmine\\\\entity\\\\Living\\|string given\\.$#"
-			count: 1
-			path: ../../../src/item/ItemFactory.php
-
-		-
 			message: "#^Parameter \\#2 \\$input1 of function array_map expects array, array\\|false given\\.$#"
 			count: 1
 			path: ../../../src/lang/Language.php

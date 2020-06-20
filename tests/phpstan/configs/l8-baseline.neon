@@ -156,11 +156,6 @@ parameters:
 			path: ../../../src/command/defaults/TimeCommand.php
 
 		-
-			message: "#^Cannot call method getAllValues\\(\\) on pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null\\.$#"
-			count: 3
-			path: ../../../src/entity/Entity.php
-
-		-
 			message: "#^Cannot call method addEntity\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/entity/Entity.php
@@ -531,11 +526,6 @@ parameters:
 			path: ../../../src/permission/DefaultPermissions.php
 
 		-
-			message: "#^Cannot call method getAllValues\\(\\) on pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
 			message: "#^Cannot call method getSafeSpawn\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 2
 			path: ../../../src/player/Player.php
@@ -547,11 +537,6 @@ parameters:
 
 		-
 			message: "#^Cannot call method registerChunkListener\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
-			message: "#^Parameter \\#1 \\$world of method pocketmine\\\\entity\\\\Human\\:\\:__construct\\(\\) expects pocketmine\\\\world\\\\World, pocketmine\\\\world\\\\World\\|null given\\.$#"
 			count: 1
 			path: ../../../src/player/Player.php
 
@@ -812,7 +797,7 @@ parameters:
 
 		-
 			message: "#^Cannot access property \\$details_url on pocketmine\\\\updater\\\\UpdateInfo\\|null\\.$#"
-			count: 2
+			count: 1
 			path: ../../../src/updater/AutoUpdater.php
 
 		-
