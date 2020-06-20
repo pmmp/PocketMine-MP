@@ -142,7 +142,7 @@ class Arrow extends Projectile{
 
 	protected function onHitEntity(Entity $entityHit, RayTraceResult $hitResult) : void{
 		parent::onHitEntity($entityHit, $hitResult);
-		if($this->punchKnockback > 0){
+		if(!$this->damageCancelled && $this->punchKnockback > 0){
 			$horizontalSpeed = sqrt($this->motion->x ** 2 + $this->motion->z ** 2);
 			if($horizontalSpeed > 0){
 				$multiplier = $this->punchKnockback * 0.6 / $horizontalSpeed;
