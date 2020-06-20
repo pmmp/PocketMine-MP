@@ -28,7 +28,7 @@ use pocketmine\entity\Explosive;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -38,7 +38,7 @@ use pocketmine\world\sound\IgniteSound;
 
 class PrimedTNT extends Entity implements Explosive{
 
-	public static function getNetworkTypeId() : int{ return EntityLegacyIds::TNT; }
+	public static function getNetworkTypeId() : string{ return EntityIds::TNT; }
 
 	public $width = 0.98;
 	public $height = 0.98;

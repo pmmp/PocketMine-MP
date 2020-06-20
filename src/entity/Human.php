@@ -48,6 +48,7 @@ use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
@@ -63,9 +64,7 @@ use function random_int;
 
 class Human extends Living implements ProjectileSource, InventoryHolder{
 
-	public static function getNetworkTypeId() : int{
-		return -1; //TODO: ideally we shouldn't have to specify this at all here ...
-	}
+	public static function getNetworkTypeId() : string{ return EntityIds::PLAYER; }
 
 	/** @var PlayerInventory */
 	protected $inventory;

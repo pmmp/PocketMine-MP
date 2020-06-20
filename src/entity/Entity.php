@@ -28,7 +28,6 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\Water;
-use pocketmine\data\bedrock\LegacyEntityIdToStringIdMap;
 use pocketmine\entity\animation\Animation;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
@@ -1475,7 +1474,7 @@ abstract class Entity{
 		return $this->hasSpawned;
 	}
 
-	abstract public static function getNetworkTypeId() : int;
+	abstract public static function getNetworkTypeId() : string;
 
 	/**
 	 * Called by spawnTo() to send whatever packets needed to spawn the entity to the client.
@@ -1483,7 +1482,7 @@ abstract class Entity{
 	protected function sendSpawnPacket(Player $player) : void{
 		$pk = new AddActorPacket();
 		$pk->entityRuntimeId = $this->getId();
-		$pk->type = LegacyEntityIdToStringIdMap::getInstance()->legacyToString(static::getNetworkTypeId());
+		$pk->type = static::getNetworkTypeId();
 		$pk->position = $this->location->asVector3();
 		$pk->motion = $this->getMotion();
 		$pk->yaw = $this->location->yaw;

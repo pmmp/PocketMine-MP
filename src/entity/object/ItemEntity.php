@@ -32,13 +32,13 @@ use pocketmine\item\Item;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
-use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\player\Player;
 use function max;
 
 class ItemEntity extends Entity{
 
-	public static function getNetworkTypeId() : int{ return EntityLegacyIds::ITEM; }
+	public static function getNetworkTypeId() : string{ return EntityIds::ITEM; }
 
 	public const DEFAULT_DESPAWN_DELAY = 6000; //5 minutes
 	public const NEVER_DESPAWN = -1;

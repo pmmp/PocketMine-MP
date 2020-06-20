@@ -25,12 +25,12 @@ namespace pocketmine\entity\projectile;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\EndermanTeleportParticle;
 use pocketmine\world\sound\EndermanTeleportSound;
 
 class EnderPearl extends Throwable{
-	public static function getNetworkTypeId() : int{ return EntityLegacyIds::ENDER_PEARL; }
+	public static function getNetworkTypeId() : string{ return EntityIds::ENDER_PEARL; }
 
 	protected function onHit(ProjectileHitEvent $event) : void{
 		$owner = $this->getOwningEntity();

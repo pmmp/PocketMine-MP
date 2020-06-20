@@ -32,7 +32,7 @@ use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\player\Player;
@@ -42,7 +42,7 @@ use function sqrt;
 
 class Arrow extends Projectile{
 
-	public static function getNetworkTypeId() : int{ return EntityLegacyIds::ARROW;	}
+	public static function getNetworkTypeId() : string{ return EntityIds::ARROW; }
 
 	public const PICKUP_NONE = 0;
 	public const PICKUP_ANY = 1;

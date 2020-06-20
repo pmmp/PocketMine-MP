@@ -24,13 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\entity\projectile;
 
 use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\world\particle\PotionSplashParticle;
 use pocketmine\world\sound\PotionSplashSound;
 use function mt_rand;
 
 class ExperienceBottle extends Throwable{
-	public static function getNetworkTypeId() : int{ return EntityLegacyIds::XP_BOTTLE; }
+	public static function getNetworkTypeId() : string{ return EntityIds::XP_BOTTLE; }
 
 	protected $gravity = 0.07;
 

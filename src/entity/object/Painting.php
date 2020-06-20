@@ -33,14 +33,14 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
-use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\player\Player;
 use pocketmine\world\particle\DestroyBlockParticle;
 use pocketmine\world\World;
 use function ceil;
 
 class Painting extends Entity{
-	public static function getNetworkTypeId() : int{ return EntityLegacyIds::PAINTING; }
+	public static function getNetworkTypeId() : string{ return EntityIds::PAINTING; }
 
 	public const DATA_TO_FACING = [
 		0 => Facing::SOUTH,
