@@ -174,6 +174,8 @@ class TimingsCommand extends VanillaCommand{
 				fclose($fileTimings);
 				Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.timingsWrite", [$timings]));
 			}
+		}else{
+			throw new InvalidCommandSyntaxException();
 		}
 
 		return true;
