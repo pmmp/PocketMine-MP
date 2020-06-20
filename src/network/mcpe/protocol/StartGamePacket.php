@@ -30,7 +30,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\network\mcpe\protocol\types\EducationEditionOffer;
-use pocketmine\network\mcpe\protocol\types\GameRuleType;
+use pocketmine\network\mcpe\protocol\types\GameRule;
 use pocketmine\network\mcpe\protocol\types\GeneratorType;
 use pocketmine\network\mcpe\protocol\types\MultiplayerGameVisibility;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
@@ -97,12 +97,10 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	/** @var bool */
 	public $isTexturePacksRequired = true;
 	/**
-	 * @var mixed[][]
-	 * @phpstan-var array<string, array{0: int, 1: bool|int|float}>
+	 * @var GameRule[]
+	 * @phpstan-var array<string, GameRule>
 	 */
-	public $gameRules = [ //TODO: implement this
-		"naturalregeneration" => [GameRuleType::BOOL, false] //Hack for client side regeneration
-	];
+	public $gameRules = [];
 	/** @var bool */
 	public $hasBonusChestEnabled = false;
 	/** @var bool */

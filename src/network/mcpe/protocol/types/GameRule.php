@@ -21,31 +21,13 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
-
-#include <rules/DataPacket.h>
+namespace pocketmine\network\mcpe\protocol\types;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\types\GameRule;
 
-class GameRulesChangedPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::GAME_RULES_CHANGED_PACKET;
+abstract class GameRule{
 
-	/**
-	 * @var GameRule[]
-	 * @phpstan-var array<string, GameRule>
-	 */
-	public $gameRules = [];
+	abstract public function getType() : int;
 
-	protected function decodePayload(PacketSerializer $in) : void{
-		$this->gameRules = $in->getGameRules();
-	}
-
-	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putGameRules($this->gameRules);
-	}
-
-	public function handle(PacketHandlerInterface $handler) : bool{
-		return $handler->handleGameRulesChanged($this);
-	}
+	abstract public function encode(PacketSerializer $out) : void;
 }

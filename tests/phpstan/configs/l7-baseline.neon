@@ -641,21 +641,6 @@ parameters:
 			path: ../../../src/network/mcpe/encryption/EncryptionUtils.php
 
 		-
-			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putBool\\(\\) expects bool, bool\\|float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/serializer/PacketSerializer.php
-
-		-
-			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putUnsignedVarInt\\(\\) expects int, bool\\|float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/serializer/PacketSerializer.php
-
-		-
-			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putLFloat\\(\\) expects float, bool\\|float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/serializer/PacketSerializer.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putSignedBlockPosition\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/types/entity/BlockPosMetadataProperty.php

@@ -29,6 +29,7 @@ use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
+use pocketmine\network\mcpe\protocol\types\BoolGameRule;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\StaticPacketCache;
 use pocketmine\player\Player;
@@ -76,6 +77,9 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk->rainLevel = 0; //TODO: implement these properly
 		$pk->lightningLevel = 0;
 		$pk->commandsEnabled = true;
+		$pk->gameRules = [
+			"naturalregeneration" => new BoolGameRule(false) //Hack for client side regeneration
+		];
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
 		$pk->blockTable = RuntimeBlockMapping::getInstance()->getStartGamePaletteCache();
