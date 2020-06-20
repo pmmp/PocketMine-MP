@@ -168,7 +168,7 @@ abstract class Liquid extends Transparent{
 			return $this->flowVector;
 		}
 
-		$vector = new Vector3(0, 0, 0);
+		$vX = $vY = $vZ = 0;
 
 		$decay = $this->getEffectiveFlowDecay($this);
 
@@ -200,19 +200,21 @@ abstract class Liquid extends Transparent{
 
 				if($blockDecay >= 0){
 					$realDecay = $blockDecay - ($decay - 8);
-					$vector->x += ($x - $this->pos->x) * $realDecay;
-					$vector->y += ($y - $this->pos->y) * $realDecay;
-					$vector->z += ($z - $this->pos->z) * $realDecay;
+					$vX += ($x - $this->pos->x) * $realDecay;
+					$vY += ($y - $this->pos->y) * $realDecay;
+					$vZ += ($z - $this->pos->z) * $realDecay;
 				}
 
 				continue;
 			}else{
 				$realDecay = $blockDecay - $decay;
-				$vector->x += ($x - $this->pos->x) * $realDecay;
-				$vector->y += ($y - $this->pos->y) * $realDecay;
-				$vector->z += ($z - $this->pos->z) * $realDecay;
+				$vX += ($x - $this->pos->x) * $realDecay;
+				$vY += ($y - $this->pos->y) * $realDecay;
+				$vZ += ($z - $this->pos->z) * $realDecay;
 			}
 		}
+
+		$vector = new Vector3($vX, $vY, $vZ);
 
 		if($this->falling){
 			if(
