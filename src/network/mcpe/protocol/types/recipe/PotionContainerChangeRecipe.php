@@ -21,31 +21,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol\types\recipe;
 
-class PotionTypeRecipe{
+class PotionContainerChangeRecipe{
 	/** @var int */
-	private $inputPotionType;
+	private $inputItemId;
 	/** @var int */
 	private $ingredientItemId;
 	/** @var int */
-	private $outputPotionType;
+	private $outputItemId;
 
-	public function __construct(int $inputPotionType, int $ingredientItemId, int $outputPotionType){
-		$this->inputPotionType = $inputPotionType;
+	public function __construct(int $inputItemId, int $ingredientItemId, int $outputItemId){
+		$this->inputItemId = $inputItemId;
 		$this->ingredientItemId = $ingredientItemId;
-		$this->outputPotionType = $outputPotionType;
+		$this->outputItemId = $outputItemId;
 	}
 
-	public function getInputPotionType() : int{
-		return $this->inputPotionType;
+	public function getInputItemId() : int{
+		return $this->inputItemId;
 	}
 
 	public function getIngredientItemId() : int{
 		return $this->ingredientItemId;
 	}
 
-	public function getOutputPotionType() : int{
-		return $this->outputPotionType;
+	public function getOutputItemId() : int{
+		return $this->outputItemId;
 	}
 }

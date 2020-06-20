@@ -26,10 +26,10 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\types\PotionContainerChangeRecipe;
-use pocketmine\network\mcpe\protocol\types\PotionTypeRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\MultiRecipe;
+use pocketmine\network\mcpe\protocol\types\recipe\PotionContainerChangeRecipe;
+use pocketmine\network\mcpe\protocol\types\recipe\PotionTypeRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeWithTypeId;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapedRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe;
