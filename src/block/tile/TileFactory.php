@@ -46,11 +46,6 @@ final class TileFactory{
 	 * @phpstan-var array<class-string<Tile>, list<string>>
 	 */
 	private $saveNames = [];
-	/**
-	 * @var string[] base class => overridden class
-	 * @phpstan-var array<class-string<Tile>, class-string<Tile>>
-	 */
-	private $classMapping = [];
 
 	public function __construct(){
 		$this->register(Banner::class, ["Banner", "minecraft:banner"]);
@@ -102,8 +97,6 @@ final class TileFactory{
 	public function register(string $className, array $saveNames = []) : void{
 		Utils::testValidInstance($className, Tile::class);
 
-		$this->classMapping[$className] = $className;
-
 		$shortName = (new \ReflectionClass($className))->getShortName();
 		if(!in_array($shortName, $saveNames, true)){
 			$saveNames[] = $shortName;
@@ -114,51 +107,6 @@ final class TileFactory{
 		}
 
 		$this->saveNames[$className] = $saveNames;
-	}
-
-	/**
-	 * @param string $baseClass Already-registered tile class to override
-	 * @param string $newClass Class which extends the base class
-	 *
-	 * TODO: use an explicit template for param1
-	 * @phpstan-param class-string<Tile> $baseClass
-	 * @phpstan-param class-string<Tile> $newClass
-	 *
-	 * @throws \InvalidArgumentException if the base class is not a registered tile
-	 */
-	public function override(string $baseClass, string $newClass) : void{
-		if(!isset($this->classMapping[$baseClass])){
-			throw new \InvalidArgumentException("Class $baseClass is not a registered tile");
-		}
-
-		Utils::testValidInstance($newClass, $baseClass);
-		$this->classMapping[$baseClass] = $newClass;
-	}
-
-	/**
-	 * @phpstan-template TTile of Tile
-	 * @phpstan-param class-string<TTile> $baseClass
-	 *
-	 * @return Tile (will be an instanceof $baseClass)
-	 * @phpstan-return TTile
-	 *
-	 * @throws \InvalidArgumentException if the specified class is not a registered tile
-	 */
-	public function create(string $baseClass, World $world, Vector3 $pos) : Tile{
-		if(isset($this->classMapping[$baseClass])){
-			$class = $this->classMapping[$baseClass];
-			assert(is_a($class, $baseClass, true));
-			/**
-			 * @var Tile $tile
-			 * @phpstan-var TTile $tile
-			 * @see Tile::__construct()
-			 */
-			$tile = new $class($world, $pos);
-
-			return $tile;
-		}
-
-		throw new \InvalidArgumentException("Class $baseClass is not a registered tile");
 	}
 
 	/**

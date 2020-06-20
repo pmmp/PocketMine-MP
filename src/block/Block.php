@@ -163,7 +163,12 @@ class Block{
 			}
 		}
 		if($oldTile === null and $tileType !== null){
-			$this->pos->getWorldNonNull()->addTile(TileFactory::getInstance()->create($tileType, $this->pos->getWorldNonNull(), $this->pos->asVector3()));
+			/**
+			 * @var Tile $tile
+			 * @see Tile::__construct()
+			 */
+			$tile = new $tileType($this->pos->getWorldNonNull(), $this->pos->asVector3());
+			$this->pos->getWorldNonNull()->addTile($tile);
 		}
 	}
 
