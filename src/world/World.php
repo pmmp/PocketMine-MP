@@ -227,8 +227,6 @@ class World implements ChunkManager{
 
 	/** @var Position */
 	private $temporalPosition;
-	/** @var Vector3 */
-	private $temporalVector;
 
 	/** @var int */
 	private $sleepTicks = 0;
@@ -369,7 +367,6 @@ class World implements ChunkManager{
 
 		$this->timings = new WorldTimings($this);
 		$this->temporalPosition = new Position(0, 0, 0, $this);
-		$this->temporalVector = new Vector3(0, 0, 0);
 	}
 
 	public function getTickRateTime() : float{
@@ -1407,7 +1404,7 @@ class World implements ChunkManager{
 			$orb = new ExperienceOrb(Location::fromObject($pos, $this, lcg_value() * 360, 0));
 
 			$orb->setXpValue($split);
-			$orb->setMotion($this->temporalVector->setComponents((lcg_value() * 0.2 - 0.1) * 2, lcg_value() * 0.4, (lcg_value() * 0.2 - 0.1) * 2));
+			$orb->setMotion(new Vector3((lcg_value() * 0.2 - 0.1) * 2, lcg_value() * 0.4, (lcg_value() * 0.2 - 0.1) * 2));
 			$orb->spawnToAll();
 
 			$orbs[] = $orb;
