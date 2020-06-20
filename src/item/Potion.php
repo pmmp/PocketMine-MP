@@ -253,6 +253,14 @@ class Potion extends Item implements Consumable{
 		return [];
 	}
 
+	/** @var int */
+	private $potionId;
+
+	public function __construct(int $id, int $variant, string $name, int $potionId){
+		parent::__construct($id, $variant, $name);
+		$this->potionId = $potionId;
+	}
+
 	public function getMaxStackSize() : int{
 		return 1;
 	}
@@ -263,7 +271,7 @@ class Potion extends Item implements Consumable{
 
 	public function getAdditionalEffects() : array{
 		//TODO: check CustomPotionEffects NBT
-		return self::getPotionEffectsById($this->meta);
+		return self::getPotionEffectsById($this->potionId);
 	}
 
 	public function getResidue(){

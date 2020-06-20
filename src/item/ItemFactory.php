@@ -252,8 +252,8 @@ class ItemFactory{
 		}
 
 		foreach(Potion::ALL as $type){
-			$this->register(new Potion(ItemIds::POTION, $type, "Potion"));
-			$this->register(new SplashPotion(ItemIds::SPLASH_POTION, $type, "Splash Potion"));
+			$this->register(new Potion(ItemIds::POTION, $type, "Potion", $type));
+			$this->register(new SplashPotion(ItemIds::SPLASH_POTION, $type, "Splash Potion", $type));
 		}
 
 		foreach(TreeType::getAll() as $type){
