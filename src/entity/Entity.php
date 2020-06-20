@@ -115,9 +115,6 @@ abstract class Entity{
 	/** @var bool */
 	protected $forceMovementUpdate = false;
 
-	/** @var Vector3 */
-	public $temporalVector;
-
 	/** @var AxisAlignedBB */
 	public $boundingBox;
 	/** @var bool */
@@ -223,8 +220,6 @@ abstract class Entity{
 
 	public function __construct(Location $location, ?CompoundTag $nbt = null){
 		$this->timings = Timings::getEntityTimings($this);
-
-		$this->temporalVector = new Vector3(0, 0, 0);
 
 		if($this->eyeHeight === null){
 			$this->eyeHeight = $this->height / 2 + 0.1;
@@ -918,7 +913,7 @@ abstract class Entity{
 		$x = -$xz * sin(deg2rad($this->location->yaw));
 		$z = $xz * cos(deg2rad($this->location->yaw));
 
-		return $this->temporalVector->setComponents($x, $y, $z)->normalize();
+		return (new Vector3($x, $y, $z))->normalize();
 	}
 
 	public function getDirectionPlane() : Vector2{
@@ -1267,7 +1262,7 @@ abstract class Entity{
 	}
 
 	protected function checkBlockCollision() : void{
-		$vector = $this->temporalVector->setComponents(0, 0, 0);
+		$vector = new Vector3(0, 0, 0);
 
 		foreach($this->getBlocksAround() as $block){
 			$block->onEntityInside($this);
@@ -1423,7 +1418,7 @@ abstract class Entity{
 		}
 		$pos = $ev->getTo();
 
-		$this->setMotion($this->temporalVector->setComponents(0, 0, 0));
+		$this->setMotion(new Vector3(0, 0, 0));
 		if($this->setPositionAndRotation($pos, $yaw ?? $this->location->yaw, $pitch ?? $this->location->pitch)){
 			$this->resetFallDistance();
 			$this->setForceMovementUpdate();
