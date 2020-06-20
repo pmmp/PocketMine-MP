@@ -11,11 +11,6 @@ parameters:
 			path: ../../../src/block/tile/TileFactory.php
 
 		-
-			message: "#^Call to function assert\\(\\) with bool will always evaluate to true\\.$#"
-			count: 2
-			path: ../../../src/entity/EntityFactory.php
-
-		-
 			message: "#^Instanceof between pocketmine\\\\event\\\\RegisteredListener and pocketmine\\\\event\\\\RegisteredListener will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/event/HandlerList.php
