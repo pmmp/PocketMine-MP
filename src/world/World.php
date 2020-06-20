@@ -225,9 +225,6 @@ class World implements ChunkManager{
 	/** @var bool */
 	private $autoSave = true;
 
-	/** @var Position */
-	private $temporalPosition;
-
 	/** @var int */
 	private $sleepTicks = 0;
 
@@ -366,7 +363,6 @@ class World implements ChunkManager{
 		}
 
 		$this->timings = new WorldTimings($this);
-		$this->temporalPosition = new Position(0, 0, 0, $this);
 	}
 
 	public function getTickRateTime() : float{
@@ -435,7 +431,6 @@ class World implements ChunkManager{
 		$this->provider->close();
 		$this->provider = null;
 		$this->blockCache = [];
-		$this->temporalPosition = null;
 
 		$this->closed = true;
 	}
