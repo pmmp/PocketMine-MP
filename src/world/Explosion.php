@@ -43,6 +43,7 @@ use pocketmine\world\utils\SubChunkIteratorManager;
 use function ceil;
 use function floor;
 use function mt_rand;
+use function sqrt;
 
 class Explosion{
 	/** @var int */
@@ -92,7 +93,6 @@ class Explosion{
 			return false;
 		}
 
-		$vector = new Vector3(0, 0, 0);
 		$blockFactory = BlockFactory::getInstance();
 
 		$currentChunk = null;
@@ -103,8 +103,10 @@ class Explosion{
 			for($j = 0; $j < $this->rays; ++$j){
 				for($k = 0; $k < $this->rays; ++$k){
 					if($i === 0 or $i === $mRays or $j === 0 or $j === $mRays or $k === 0 or $k === $mRays){
-						$vector->setComponents($i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1);
-						$vector->setComponents(($vector->x / ($len = $vector->length())) * $this->stepLen, ($vector->y / $len) * $this->stepLen, ($vector->z / $len) * $this->stepLen);
+						//this could be written as new Vector3(...)->normalize()->multiply(stepLen), but we're avoiding Vector3 for performance here
+						[$shiftX, $shiftY, $shiftZ] = [$i / $mRays * 2 - 1, $j / $mRays * 2 - 1, $k / $mRays * 2 - 1];
+						$len = sqrt($shiftX ** 2 + $shiftY ** 2 + $shiftZ ** 2);
+						[$shiftX, $shiftY, $shiftZ] = [($shiftX / $len) * $this->stepLen, ($shiftY / $len) * $this->stepLen, ($shiftZ / $len) * $this->stepLen];
 						$pointerX = $this->source->x;
 						$pointerY = $this->source->y;
 						$pointerZ = $this->source->z;
@@ -117,9 +119,9 @@ class Explosion{
 							$vBlockY = $pointerY >= $y ? $y : $y - 1;
 							$vBlockZ = $pointerZ >= $z ? $z : $z - 1;
 
-							$pointerX += $vector->x;
-							$pointerY += $vector->y;
-							$pointerZ += $vector->z;
+							$pointerX += $shiftX;
+							$pointerY += $shiftY;
+							$pointerZ += $shiftZ;
 
 							if(!$this->subChunkHandler->moveTo($vBlockX, $vBlockY, $vBlockZ, false)){
 								continue;
