@@ -481,6 +481,21 @@ parameters:
 			path: ../../../src/pocketmine/lang/BaseLang.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:setBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Explosion.php
@@ -537,21 +552,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Explosion.php
 
