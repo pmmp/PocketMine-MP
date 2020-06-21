@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\resourcepacks;
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
+use pocketmine\resourcepacks\json\Manifest;
 use function assert;
-use function count;
 use function fclose;
 use function feof;
 use function file_exists;
@@ -41,28 +41,10 @@ use function strlen;
 
 class ZippedResourcePack implements ResourcePack{
 
-	/**
-	 * Performs basic validation checks on a resource pack's manifest.json.
-	 * TODO: add more manifest validation
-	 */
-	public static function verifyManifest(\stdClass $manifest) : bool{
-		if(!isset($manifest->format_version) or !isset($manifest->header) or !isset($manifest->modules)){
-			return false;
-		}
-
-		//Right now we don't care about anything else, only the stuff we're sending to clients.
-		return
-			isset($manifest->header->description) and
-			isset($manifest->header->name) and
-			isset($manifest->header->uuid) and
-			isset($manifest->header->version) and
-			count($manifest->header->version) === 3;
-	}
-
 	/** @var string */
 	protected $path;
 
-	/** @var \stdClass */
+	/** @var Manifest */
 	protected $manifest;
 
 	/** @var string|null */
@@ -121,7 +103,15 @@ class ZippedResourcePack implements ResourcePack{
 		if(!($manifest instanceof \stdClass)){
 			throw new ResourcePackException("manifest.json should contain a JSON object, not " . gettype($manifest));
 		}
-		if(!self::verifyManifest($manifest)){
+
+		$mapper = new \JsonMapper();
+		$mapper->bExceptionOnUndefinedProperty = true;
+		$mapper->bExceptionOnMissingData = true;
+
+		try{
+			/** @var Manifest $manifest */
+			$manifest = $mapper->map($manifest, new Manifest());
+		}catch(\JsonMapper_Exception $e){
 			throw new ResourcePackException("manifest.json is missing required fields");
 		}
 
