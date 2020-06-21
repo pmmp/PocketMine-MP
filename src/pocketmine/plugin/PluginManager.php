@@ -269,6 +269,16 @@ class PluginManager{
 						continue;
 					}
 
+					$pluginPhpVersions = $description->getCompatiblePhpVersions();
+					$pluginCompatiblePhpVersions = array_filter($pluginPhpVersions, function(string $version) : bool{ return Utils::arePhpVersionsCompatible($version, PHP_MAJOR_VERSION . "." . PHP_MINOR_VERSION . "." . PHP_RELEASE_VERSION); });
+					if(count($pluginPhpVersions) > 0 and count($pluginCompatiblePhpVersions) < 1){
+						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+							$name,
+							$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatiblePhpVersion", [implode(", ", $pluginPhpVersions)])
+						]));
+						continue;
+					}
+
 					if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
 						$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
 						if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
