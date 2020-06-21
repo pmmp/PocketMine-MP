@@ -41,6 +41,7 @@ final class Manifest{
 
 	/**
 	 * @var ManifestModuleEntry[]
+	 * @required
 	 */
 	public $modules;
 }
