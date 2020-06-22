@@ -7,7 +7,7 @@ parameters:
 
 		-
 			message: "#^Call to function assert\\(\\) with bool will always evaluate to true\\.$#"
-			count: 2
+			count: 1
 			path: ../../../src/block/tile/TileFactory.php
 
 		-

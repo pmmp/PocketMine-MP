@@ -80,8 +80,3 @@ parameters:
 			count: 1
 			path: ../../../src/world/World.php
 
-		-
-			message: "#^Property pocketmine\\\\world\\\\World\\:\\:\\$temporalPosition \\(pocketmine\\\\world\\\\Position\\) does not accept null\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
