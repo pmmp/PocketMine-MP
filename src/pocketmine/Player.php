@@ -3228,7 +3228,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
-		if($packet->entityUniqueId !== $this->getId()){
+		if(!$this->constructed or $packet->entityUniqueId !== $this->getId()){
 			return false; //TODO
 		}
 
