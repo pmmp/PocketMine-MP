@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
+use pocketmine\lang\Language;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
@@ -48,15 +49,19 @@ class ConsoleCommandSender implements CommandSender{
 		return $this->server;
 	}
 
+	public function getLanguage() : Language{
+		return $this->server->getLanguage();
+	}
+
 	/**
 	 * @param TranslationContainer|string $message
 	 */
 	public function sendMessage($message) : void{
 		$server = $this->getServer();
 		if($message instanceof TranslationContainer){
-			$message = $server->getLanguage()->translate($message);
+			$message = $this->getLanguage()->translate($message);
 		}else{
-			$message = $server->getLanguage()->translateString($message);
+			$message = $this->getLanguage()->translateString($message);
 		}
 
 		foreach(explode("\n", trim($message)) as $line){

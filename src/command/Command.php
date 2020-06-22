@@ -108,7 +108,7 @@ abstract class Command{
 		}
 
 		if($this->permissionMessage === null){
-			$target->sendMessage($target->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+			$target->sendMessage($target->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 		}elseif($this->permissionMessage !== ""){
 			$target->sendMessage(str_replace("<permission>", $this->permission, $this->permissionMessage));
 		}
@@ -229,7 +229,7 @@ abstract class Command{
 	public static function broadcastCommandMessage(CommandSender $source, $message, bool $sendToSource = true) : void{
 		$users = PermissionManager::getInstance()->getPermissionSubscriptions(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
 		if($message instanceof TranslationContainer){
-			$formatted = "[" . $source->getName() . ": " . ($source->getServer()->getLanguage()->get($message->getText()) !== $message->getText() ? "%" : "") . $message->getText() . "]";
+			$formatted = "[" . $source->getName() . ": " . ($source->getLanguage()->get($message->getText()) !== $message->getText() ? "%" : "") . $message->getText() . "]";
 
 			$result = new TranslationContainer($formatted, $message->getParameters());
 			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . $formatted, $message->getParameters());

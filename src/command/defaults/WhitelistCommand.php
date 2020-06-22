@@ -117,7 +117,7 @@ class WhitelistCommand extends VanillaCommand{
 			"off" => "disable"
 		];
 		if(!$sender->hasPermission("pocketmine.command.whitelist." . ($map[$subcommand] ?? $subcommand))){
-			$sender->sendMessage($sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+			$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 
 			return true;
 		}

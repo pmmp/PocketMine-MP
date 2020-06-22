@@ -1290,7 +1290,7 @@ class Server{
 			return true;
 		}
 
-		$sender->sendMessage($this->getLanguage()->translateString(TextFormat::RED . "%commands.generic.notFound"));
+		$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.notFound"));
 
 		return false;
 	}

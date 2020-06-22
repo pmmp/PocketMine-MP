@@ -78,6 +78,7 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
+use pocketmine\lang\Language;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -632,6 +633,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function getLocale() : string{
 		return $this->locale;
+	}
+
+	public function getLanguage() : Language{
+		return $this->server->getLanguage();
 	}
 
 	/**
@@ -1859,7 +1864,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			return;
 		}
 
-		$this->networkSession->onRawChatMessage($this->server->getLanguage()->translateString($message));
+		$this->networkSession->onRawChatMessage($this->getLanguage()->translateString($message));
 	}
 
 	/**
@@ -1868,11 +1873,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	public function sendTranslation(string $message, array $parameters = []) : void{
 		if(!$this->server->isLanguageForced()){
 			foreach($parameters as $i => $p){
-				$parameters[$i] = $this->server->getLanguage()->translateString($p, [], "pocketmine.");
+				$parameters[$i] = $this->getLanguage()->translateString($p, [], "pocketmine.");
 			}
-			$this->networkSession->onTranslatedChatMessage($this->server->getLanguage()->translateString($message, $parameters, "pocketmine."), $parameters);
+			$this->networkSession->onTranslatedChatMessage($this->getLanguage()->translateString($message, $parameters, "pocketmine."), $parameters);
 		}else{
-			$this->sendMessage($this->server->getLanguage()->translateString($message, $parameters));
+			$this->sendMessage($this->getLanguage()->translateString($message, $parameters));
 		}
 	}
 

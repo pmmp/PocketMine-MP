@@ -768,7 +768,7 @@ class NetworkSession{
 
 			$data = new CommandData(
 				$lname, //TODO: commands containing uppercase letters in the name crash 1.9.0 client
-				$this->server->getLanguage()->translateString($command->getDescription()),
+				$this->player->getLanguage()->translateString($command->getDescription()),
 				0,
 				0,
 				$aliasObj,
