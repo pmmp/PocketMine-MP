@@ -97,8 +97,8 @@ class UtilsTest extends TestCase{
 	public function testPhpVersionsCompatibility() : void{
 		self::assertTrue(Utils::arePhpVersionsCompatible("7.3", "7.3"));
 		self::assertTrue(Utils::arePhpVersionsCompatible("7.3.3", "7.3.3"));
-		self::assertTrue(Utils::arePhpVersionsCompatible("7.3.2", "7.3.3"));
+		self::assertTrue(Utils::arePhpVersionsCompatible("7.3.2", "7.3.1"));
+		self::assertFalse(Utils::arePhpVersionsCompatible("7.3.2", "7.3.3"));
 		self::assertFalse(Utils::arePhpVersionsCompatible("7.3", "7.4"));
-		self::assertFalse(Utils::arePhpVersionsCompatible("7.3.2", "7.3.1"));
 	}
 }
