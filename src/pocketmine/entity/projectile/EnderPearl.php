@@ -34,6 +34,10 @@ class EnderPearl extends Throwable{
 	protected function onHit(ProjectileHitEvent $event) : void{
 		$owner = $this->getOwningEntity();
 		if($owner !== null){
+			if($owner->getLevel() !== $this->level){
+				return;
+			}
+			
 			//TODO: check end gateways (when they are added)
 			//TODO: spawn endermites at origin
 
