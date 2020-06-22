@@ -355,15 +355,15 @@ class Utils{
 		return $processors;
 	}
 
-	public static function arePhpVersionsCompatible(string $mainVersion, string $otherVersion) : bool{
-		$mainVersionParts = explode(".", $mainVersion);
-		$otherVersionParts = explode(".", $otherVersion);
+	public static function arePhpVersionsCompatible(string $version, string $requiredVersion) : bool{
+		$versionParts = explode(".", $version);
+		$requiredVersionParts = explode(".", $requiredVersion);
 
-		if(count($mainVersionParts) < 2 or count($otherVersionParts) < 2){
+		if(count($versionParts) < 2 or count($requiredVersionParts) < 2){
 			throw new \InvalidArgumentException("The versions must include major and minor version!");
 		}
 
-		return $mainVersionParts[0] === $otherVersionParts[0] and $mainVersionParts[1] === $otherVersionParts[1] and (count($mainVersionParts) < 3 or count($otherVersionParts) < 3 or intval($mainVersionParts[2]) >= intval($otherVersionParts[2]));
+		return $versionParts[0] === $requiredVersionParts[0] and $versionParts[1] === $requiredVersionParts[1] and (count($versionParts) < 3 or count($requiredVersionParts) < 3 or intval($versionParts[2]) >= intval($requiredVersionParts[2]));
 	}
 
 	/**
