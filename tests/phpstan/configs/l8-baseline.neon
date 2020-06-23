@@ -986,11 +986,6 @@ parameters:
 			path: ../../../src/pocketmine/event/entity/EntityDamageByEntityEvent.php
 
 		-
-			message: "#^Property pocketmine\\\\inventory\\\\BaseInventory\\:\\:\\$eventProcessor \\(pocketmine\\\\inventory\\\\InventoryEventProcessor\\) does not accept pocketmine\\\\inventory\\\\InventoryEventProcessor\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/inventory/BaseInventory.php
-
-		-
 			message: "#^Method pocketmine\\\\inventory\\\\CraftingManager\\:\\:getCraftingDataPacket\\(\\) should return pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket but returns pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/inventory/CraftingManager.php

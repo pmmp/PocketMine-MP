@@ -53,7 +53,7 @@ abstract class BaseInventory implements Inventory{
 	protected $slots;
 	/** @var Player[] */
 	protected $viewers = [];
-	/** @var InventoryEventProcessor */
+	/** @var InventoryEventProcessor|null */
 	protected $eventProcessor;
 
 	/**
