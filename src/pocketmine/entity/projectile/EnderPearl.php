@@ -27,19 +27,33 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\level\sound\EndermanTeleportSound;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\Player;
 
 class EnderPearl extends Throwable{
 	public const NETWORK_ID = self::ENDER_PEARL;
 
+	public function spawnToAll() : void{
+		parent::spawnToAll();
+
+		$owner = $this->getOwningEntity();
+		if($owner instanceof Player){
+			$owner->increaseActivePearls();
+		}
+	}
+
 	protected function onHit(ProjectileHitEvent $event) : void{
 		$owner = $this->getOwningEntity();
 		if($owner !== null){
-			if($owner->getLevel() !== $this->level){
+			if($owner instanceof Player && !$owner->hasActivePearls()){
 				return;
 			}
 			
 			//TODO: check end gateways (when they are added)
 			//TODO: spawn endermites at origin
+
+			if($owner instanceof Player){
+				$owner->decreaseActivePearls();
+			}
 
 			$this->level->broadcastLevelEvent($owner, LevelEventPacket::EVENT_PARTICLE_ENDERMAN_TELEPORT);
 			$this->level->addSound(new EndermanTeleportSound($owner));

@@ -386,6 +386,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var Vector3|null */
 	protected $lastRightClickPos = null;
 
+	/** @var int */
+	protected $activePearlsCounter = 0;
+
 	/**
 	 * @return TranslationContainer|string
 	 */
@@ -950,6 +953,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->loadQueue = [];
 			$this->level->sendTime($this);
 			$this->level->sendDifficulty($this);
+
+			$this->resetActivePearls();
 
 			return true;
 		}
@@ -3739,6 +3744,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->level->dropExperience($this, $ev->getXpDropAmount());
 		$this->setXpAndProgress(0, 0);
 
+		$this->resetActivePearls();
+
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcastMessage($ev->getDeathMessage());
 		}
@@ -3877,6 +3884,24 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		return false;
+	}
+
+	public function hasActivePearls() : bool{
+		return $this->activePearlsCounter > 0;
+	}
+
+	public function increaseActivePearls() : void{
+		$this->activePearlsCounter++;
+	}
+
+	public function decreaseActivePearls() : void{
+		if($this->hasActivePearls()){
+			$this->activePearlsCounter--;
+		}
+	}
+
+	public function resetActivePearls() : void{
+		$this->activePearlsCounter = 0;
 	}
 
 	/**
