@@ -261,16 +261,6 @@ parameters:
 			path: ../../../src/pocketmine/Server.php
 
 		-
-			message: "#^Parameter \\#1 \\$options of method Thread\\:\\:start\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Thread.php
-
-		-
-			message: "#^Parameter \\#1 \\$options of method Thread\\:\\:start\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Worker.php
-
-		-
 			message: "#^Parameter \\#1 \\$constraint of method pocketmine\\\\block\\\\BaseRail\\:\\:getPossibleConnectionDirectionsOneConstraint\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/BaseRail.php
