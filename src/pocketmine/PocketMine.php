@@ -293,6 +293,10 @@ namespace pocketmine {
 			critical_error("Failed to release the server.lock file.");
 		}
 
+		if(!fclose(\pocketmine\LOCK_FILE)){
+			critical_error("Could not close server.lock resource.");
+		}
+
 		exit($exitCode);
 	}
 
