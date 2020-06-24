@@ -261,16 +261,6 @@ parameters:
 			path: ../../../src/pocketmine/Server.php
 
 		-
-			message: "#^Parameter \\#1 \\$options of method Thread\\:\\:start\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Thread.php
-
-		-
-			message: "#^Parameter \\#1 \\$options of method Thread\\:\\:start\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Worker.php
-
-		-
 			message: "#^Parameter \\#1 \\$constraint of method pocketmine\\\\block\\\\BaseRail\\:\\:getPossibleConnectionDirectionsOneConstraint\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/BaseRail.php
@@ -984,11 +974,6 @@ parameters:
 			message: "#^Cannot call method getEffectLevel\\(\\) on pocketmine\\\\entity\\\\EffectInstance\\|null\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/event/entity/EntityDamageByEntityEvent.php
-
-		-
-			message: "#^Property pocketmine\\\\inventory\\\\BaseInventory\\:\\:\\$eventProcessor \\(pocketmine\\\\inventory\\\\InventoryEventProcessor\\) does not accept pocketmine\\\\inventory\\\\InventoryEventProcessor\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/inventory/BaseInventory.php
 
 		-
 			message: "#^Method pocketmine\\\\inventory\\\\CraftingManager\\:\\:getCraftingDataPacket\\(\\) should return pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket but returns pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket\\|null\\.$#"
