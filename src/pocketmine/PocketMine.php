@@ -290,7 +290,7 @@ namespace pocketmine {
 		echo Terminal::$FORMAT_RESET . PHP_EOL;
 
 		if(!flock(\pocketmine\LOCK_FILE, LOCK_UN)){
-			critical_error("Failed to release the server lock file.");
+			critical_error("Failed to release the server.lock file.");
 		}
 
 		exit($exitCode);
