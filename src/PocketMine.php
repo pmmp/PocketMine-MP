@@ -281,6 +281,8 @@ namespace pocketmine {
 
 		echo Terminal::$FORMAT_RESET . PHP_EOL;
 
+		Filesystem::releaseLockFile($lockFilePath);
+
 		exit($exitCode);
 	}
 

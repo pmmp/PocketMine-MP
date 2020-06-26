@@ -46,6 +46,7 @@ use const DIRECTORY_SEPARATOR;
 use const LOCK_EX;
 use const LOCK_NB;
 use const LOCK_SH;
+use const LOCK_UN;
 use const SCANDIR_SORT_NONE;
 
 final class Filesystem{
@@ -140,6 +141,7 @@ final class Filesystem{
 			throw new \InvalidArgumentException("Invalid lock file path");
 		}
 		if(isset(self::$lockFileHandles[$lockFilePath])){
+			flock(self::$lockFileHandles[$lockFilePath], LOCK_UN);
 			fclose(self::$lockFileHandles[$lockFilePath]);
 			unset(self::$lockFileHandles[$lockFilePath]);
 			@unlink($lockFilePath);
