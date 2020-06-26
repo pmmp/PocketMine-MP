@@ -268,7 +268,7 @@ class Boat extends Vehicle{
 				$player->spawnTo($viewer);
 			}
 			$pk = new SetActorLinkPacket();
-			$pk->link = new EntityLink($this->getId(), $player->getId(), $type);
+			$pk->link = new EntityLink($this->getId(), $player->getId(), $type, false, true);
 			$viewer->sendDataPacket($pk);
 		}
 	}
