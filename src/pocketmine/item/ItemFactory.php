@@ -26,7 +26,6 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\nbt\tag\CompoundTag;
-
 use function constant;
 use function defined;
 use function explode;
