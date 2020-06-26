@@ -29,7 +29,7 @@ use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
+use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\Player;
 
 class NetworkInventoryAction{
@@ -85,7 +85,7 @@ class NetworkInventoryAction{
 	/**
 	 * @return $this
 	 */
-	public function read(InventoryTransactionPacket $packet){
+	public function read(NetworkBinaryStream $packet){
 		$this->sourceType = $packet->getUnsignedVarInt();
 
 		switch($this->sourceType){
@@ -114,7 +114,7 @@ class NetworkInventoryAction{
 	/**
 	 * @return void
 	 */
-	public function write(InventoryTransactionPacket $packet){
+	public function write(NetworkBinaryStream $packet){
 		$packet->putUnsignedVarInt($this->sourceType);
 
 		switch($this->sourceType){
