@@ -200,9 +200,9 @@ class NetworkBinaryStream extends BinaryStream{
 		/** @var CompoundTag|null $nbt */
 		$nbt = null;
 		if($nbtLen === 0xffff){
-			$c = $this->getByte();
-			if($c !== 1){
-				throw new \UnexpectedValueException("Unexpected NBT count $c");
+			$nbtDataVersion = $this->getByte();
+			if($nbtDataVersion !== 1){
+				throw new \UnexpectedValueException("Unexpected NBT data version $nbtDataVersion");
 			}
 			$decodedNBT = (new NetworkLittleEndianNBTStream())->read($this->buffer, false, $this->offset, 512);
 			if(!($decodedNBT instanceof CompoundTag)){
@@ -275,7 +275,7 @@ class NetworkBinaryStream extends BinaryStream{
 
 		if($nbt !== null){
 			$this->putLShort(0xffff);
-			$this->putByte(1); //TODO: some kind of count field? always 1 as of 1.9.0
+			$this->putByte(1); //TODO: NBT data version (?)
 			$this->put((new NetworkLittleEndianNBTStream())->write($nbt));
 		}else{
 			$this->putLShort(0);
