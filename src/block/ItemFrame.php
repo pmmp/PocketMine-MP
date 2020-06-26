@@ -142,7 +142,7 @@ class ItemFrame extends Flowable{
 			return false;
 		}
 		if(lcg_value() <= $this->itemDropChance){
-			$this->pos->getWorldNonNull()->dropItem($this->pos->add(0.5, 0.5, 0.5), $this->getFramedItem());
+			$this->pos->getWorldNonNull()->dropItem($this->pos->add(0.5, 0.5, 0.5), clone $this->framedItem);
 		}
 		$this->setFramedItem(null);
 		$this->pos->getWorldNonNull()->setBlock($this->pos, $this);

@@ -21,11 +21,6 @@ parameters:
 			path: ../../../src/block/Block.php
 
 		-
-			message: "#^Parameter \\#2 \\$item of method pocketmine\\\\world\\\\World\\:\\:dropItem\\(\\) expects pocketmine\\\\item\\\\Item, pocketmine\\\\item\\\\Item\\|null given\\.$#"
-			count: 1
-			path: ../../../src/block/ItemFrame.php
-
-		-
 			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, int\\|null given\\.$#"
 			count: 4
 			path: ../../../src/block/tile/Chest.php
