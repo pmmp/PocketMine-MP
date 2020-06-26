@@ -416,6 +416,11 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
+			message: "#^Cannot call method getLanguage\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
 			message: "#^Cannot call method getLocation\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
 			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
