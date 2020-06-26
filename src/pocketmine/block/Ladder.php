@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -58,7 +59,7 @@ class Ladder extends Transparent{
 	}
 
 	public function onEntityCollide(Entity $entity) : void{
-		if($entity->asVector3()->floor()->distanceSquared($this) < 1){ //entity coordinates must be inside block
+		if(!$entity instanceof Projectile and $entity->asVector3()->floor()->distanceSquared($this) < 1){ //entity coordinates must be inside block and Not arrow
 			$entity->resetFallDistance();
 			$entity->onGround = true;
 		}
