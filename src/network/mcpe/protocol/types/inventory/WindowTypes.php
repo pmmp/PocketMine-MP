@@ -50,7 +50,8 @@ final class WindowTypes{
 	public const TRADING = 15;
 	public const COMMAND_BLOCK = 16;
 	public const JUKEBOX = 17;
-
+	public const ARMOR = 18;
+	public const HAND = 19;
 	public const COMPOUND_CREATOR = 20;
 	public const ELEMENT_CONSTRUCTOR = 21;
 	public const MATERIAL_REDUCER = 22;
