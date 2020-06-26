@@ -1839,13 +1839,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	/**
 	 * @param Player[] $targets
-	 * @param int      $entityId
-	 * @param int      $type
-	 * @param bool     $immediate
+	 * @param int $entityId
+	 * @param int $type
+	 * @param bool $immediate
+	 * @param bool $causedByRider
 	 */
-	public function sendLink(array $targets, int $entityId, int $type = EntityLink::TYPE_RIDER, bool $immediate = false) : void{
+	public function sendLink(array $targets, int $entityId, int $type = EntityLink::TYPE_RIDER, bool $immediate = false, bool $causedByRider = true) : void{
 		$pk = new SetActorLinkPacket();
-		$pk->link = new EntityLink($this->id, $entityId, $type, $immediate);
+		$pk->link = new EntityLink($this->id, $entityId, $type, $immediate, $causedByRider);
 
 		$this->server->broadcastPacket($targets, $pk);
 	}
@@ -2370,8 +2371,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	protected function resetLastMovements() : void{
-		list($this->lastX, $this->lastY, $this->lastZ) = [$this->x, $this->y, $this->z];
-		list($this->lastYaw, $this->lastPitch) = [$this->yaw, $this->pitch];
+		[$this->lastX, $this->lastY, $this->lastZ] = [$this->x, $this->y, $this->z];
+		[$this->lastYaw, $this->lastPitch] = [$this->yaw, $this->pitch];
 		$this->lastMotion = clone $this->motion;
 	}
 

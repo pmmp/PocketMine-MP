@@ -2947,13 +2947,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		switch($packet->action){
-			case InteractPacket::ACTION_OPEN_INVENTORY:
-				if($target instanceof InventoryHolder){
-					if(!($target instanceof AbstractHorse and !$target->isTamed())){
-						$this->addWindow($target->getInventory());
-					}
-				}
-				break;
 			case InteractPacket::ACTION_LEAVE_VEHICLE:
 				if($this->ridingEid === $packet->target){
 					$this->dismountEntity();
@@ -2973,6 +2966,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$pk->entityUniqueId = $this->getId();
 					$this->sendDataPacket($pk);
 					break;
+				}elseif($target instanceof InventoryHolder){
+					if(!($target instanceof AbstractHorse and !$target->isTamed())){
+						$this->addWindow($target->getInventory());
+					}
 				}
 				return false;
 			default:

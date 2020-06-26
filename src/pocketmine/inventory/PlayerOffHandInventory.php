@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\Player;
 
 class PlayerOffHandInventory extends BaseInventory{
@@ -87,7 +88,7 @@ class PlayerOffHandInventory extends BaseInventory{
 
 				$pk2 = new InventoryContentPacket();
 				$pk2->windowId = $player->getWindowId($this);
-				$pk2->items = $this->getContents(true);
+				$pk2->items = array_map([ItemStackWrapper::class, 'legacy'], $this->getContents(true));
 
 				$player->sendDataPacket($pk2);
 			}else{
