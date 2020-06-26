@@ -43,21 +43,31 @@ final class MultiRecipe extends RecipeWithTypeId{
 
 	/** @var UUID */
 	private $recipeId;
+	/** @var int */
+	private $recipeNetId;
 
-	public function __construct(int $typeId, UUID $recipeId){
+	public function __construct(int $typeId, UUID $recipeId, int $recipeNetId){
 		parent::__construct($typeId);
 		$this->recipeId = $recipeId;
+		$this->recipeNetId = $recipeNetId;
 	}
 
 	public function getRecipeId() : UUID{
 		return $this->recipeId;
 	}
 
+	public function getRecipeNetId() : int{
+		return $this->recipeNetId;
+	}
+
 	public static function decode(int $typeId, PacketSerializer $in) : self{
-		return new self($typeId, $in->getUUID());
+		$uuid = $in->getUUID();
+		$recipeNetId = $in->readGenericTypeNetworkId();
+		return new self($typeId, $uuid, $recipeNetId);
 	}
 
 	public function encode(PacketSerializer $out) : void{
 		$out->putUUID($this->recipeId);
+		$out->writeGenericTypeNetworkId($this->recipeNetId);
 	}
 }

@@ -27,7 +27,7 @@ use pocketmine\utils\SingletonTrait;
 use function strlen;
 use function zlib_decode;
 use function zlib_encode;
-use const ZLIB_ENCODING_DEFLATE;
+use const ZLIB_ENCODING_RAW;
 
 final class ZlibCompressor implements Compressor{
 	use SingletonTrait;
@@ -72,6 +72,6 @@ final class ZlibCompressor implements Compressor{
 	}
 
 	public function compress(string $payload) : string{
-		return zlib_encode($payload, ZLIB_ENCODING_DEFLATE, $this->willCompress($payload) ? $this->level : 0);
+		return zlib_encode($payload, ZLIB_ENCODING_RAW, $this->willCompress($payload) ? $this->level : 0);
 	}
 }

@@ -442,16 +442,11 @@ parameters:
 
 		-
 			message: "#^Cannot call method getString\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 3
-			path: ../../../src/network/mcpe/convert/RuntimeBlockMapping.php
-
-		-
-			message: "#^Cannot call method getShort\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/convert/RuntimeBlockMapping.php
 
 		-
-			message: "#^Cannot call method equals\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			message: "#^Parameter \\#1 \\$that of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:equals\\(\\) expects pocketmine\\\\nbt\\\\tag\\\\Tag, pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/convert/RuntimeBlockMapping.php
 

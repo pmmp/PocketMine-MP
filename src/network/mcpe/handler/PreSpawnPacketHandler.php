@@ -31,6 +31,7 @@ use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
+use pocketmine\network\mcpe\protocol\types\SpawnSettings;
 use pocketmine\network\mcpe\StaticPacketCache;
 use pocketmine\player\Player;
 use pocketmine\Server;
@@ -65,7 +66,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk->pitch = $location->pitch;
 		$pk->yaw = $location->yaw;
 		$pk->seed = -1;
-		$pk->dimension = DimensionIds::OVERWORLD; //TODO: implement this properly
+		$pk->spawnSettings = new SpawnSettings(SpawnSettings::BIOME_TYPE_DEFAULT, "", DimensionIds::OVERWORLD); //TODO: implement this properly
 		$pk->worldGamemode = TypeConverter::getInstance()->coreGameModeToProtocol($this->server->getGamemode());
 		$pk->difficulty = $location->getWorldNonNull()->getDifficulty();
 		$pk->spawnX = $spawnPosition->getFloorX();

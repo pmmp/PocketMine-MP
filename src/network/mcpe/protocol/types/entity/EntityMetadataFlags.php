@@ -114,10 +114,13 @@ final class EntityMetadataFlags{
 	public const ROARING = 83;
 	public const DELAYED_ATTACKING = 84;
 	public const AVOIDING_MOBS = 85;
-	public const FACING_TARGET_TO_RANGE_ATTACK = 86;
-	public const HIDDEN_WHEN_INVISIBLE = 87; //??????????????????
-	public const IS_IN_UI = 88;
-	public const STALKING = 89;
-	public const EMOTING = 90;
-	public const CELEBRATING = 91;
+	public const AVOIDING_BLOCK = 86;
+	public const FACING_TARGET_TO_RANGE_ATTACK = 87;
+	public const HIDDEN_WHEN_INVISIBLE = 88; //??????????????????
+	public const IS_IN_UI = 89;
+	public const STALKING = 90;
+	public const EMOTING = 91;
+	public const CELEBRATING = 92;
+	public const ADMIRING = 93;
+	public const CELEBRATING_SPECIAL = 94;
 }

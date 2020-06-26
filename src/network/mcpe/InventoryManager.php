@@ -38,11 +38,13 @@ use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
+use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\player\Player;
 use function array_map;
@@ -50,6 +52,14 @@ use function array_search;
 use function max;
 
 class InventoryManager{
+
+	//TODO: HACK!
+	//these IDs are used for 1.16 to restore 1.14ish crafting & inventory behaviour; since they don't seem to have any
+	//effect on the behaviour of inventory transactions I don't currently plan to integrate these into the main system.
+	private const RESERVED_WINDOW_ID_RANGE_START = ContainerIds::LAST - 10;
+	private const RESERVED_WINDOW_ID_RANGE_END = ContainerIds::LAST;
+	public const HARDCODED_CRAFTING_GRID_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 1;
+	public const HARDCODED_INVENTORY_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 2;
 
 	/** @var Player */
 	private $player;
@@ -107,7 +117,7 @@ class InventoryManager{
 
 	public function onCurrentWindowChange(Inventory $inventory) : void{
 		$this->onCurrentWindowRemove();
-		$this->add($this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % ContainerIds::LAST), $inventory);
+		$this->add($this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % self::RESERVED_WINDOW_ID_RANGE_START), $inventory);
 
 		$pk = $this->createContainerOpen($this->lastInventoryNetworkId, $inventory);
 		if($pk !== null){
@@ -148,6 +158,10 @@ class InventoryManager{
 	}
 
 	public function onClientRemoveWindow(int $id) : void{
+		if($id >= self::RESERVED_WINDOW_ID_RANGE_START && $id <= self::RESERVED_WINDOW_ID_RANGE_END){
+			//TODO: HACK! crafting grid & main inventory currently use these fake IDs
+			return;
+		}
 		if($id === $this->lastInventoryNetworkId){
 			$this->remove($id);
 			$this->player->removeCurrentWindow();
@@ -162,7 +176,7 @@ class InventoryManager{
 			$currentItem = $inventory->getItem($slot);
 			$clientSideItem = $this->initiatedSlotChanges[$windowId][$slot] ?? null;
 			if($clientSideItem === null or !$clientSideItem->equalsExact($currentItem)){
-				$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $slot, TypeConverter::getInstance()->coreItemStackToNet($currentItem)));
+				$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $slot, ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($currentItem))));
 			}
 			unset($this->initiatedSlotChanges[$windowId][$slot]);
 		}
@@ -173,8 +187,8 @@ class InventoryManager{
 		if($windowId !== null){
 			unset($this->initiatedSlotChanges[$windowId]);
 			$typeConverter = TypeConverter::getInstance();
-			$this->session->sendDataPacket(InventoryContentPacket::create($windowId, array_map(function(Item $itemStack) use ($typeConverter) : ItemStack{
-				return $typeConverter->coreItemStackToNet($itemStack);
+			$this->session->sendDataPacket(InventoryContentPacket::create($windowId, array_map(function(Item $itemStack) use ($typeConverter) : ItemStackWrapper{
+				return ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($itemStack));
 			}, $inventory->getContents(true))));
 		}
 	}
@@ -210,6 +224,9 @@ class InventoryManager{
 			}
 		}
 
-		$this->session->sendDataPacket(InventoryContentPacket::create(ContainerIds::CREATIVE, $items));
+		$nextEntryId = 1;
+		$this->session->sendDataPacket(CreativeContentPacket::create(array_map(function(Item $item) use($typeConverter, &$nextEntryId) : CreativeContentEntry{
+			return new CreativeContentEntry($nextEntryId++, $typeConverter->coreItemStackToNet($item));
+		}, $this->player->isSpectator() ? [] : CreativeInventory::getInstance()->getAll())));
 	}
 }

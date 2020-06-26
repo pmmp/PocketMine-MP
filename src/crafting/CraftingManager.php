@@ -86,7 +86,8 @@ class CraftingManager{
 					}, $recipe->getResults()),
 					$nullUUID,
 					"crafting_table",
-					50
+					50,
+					$counter
 				);
 			}
 		}
@@ -108,7 +109,8 @@ class CraftingManager{
 					}, $recipe->getResults()),
 					$nullUUID,
 					"crafting_table",
-					50
+					50,
+					$counter
 				);
 			}
 		}

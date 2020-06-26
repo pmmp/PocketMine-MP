@@ -273,8 +273,6 @@ interface PacketHandlerInterface{
 
 	public function handleLecternUpdate(LecternUpdatePacket $packet) : bool;
 
-	public function handleVideoStreamConnect(VideoStreamConnectPacket $packet) : bool;
-
 	public function handleAddEntity(AddEntityPacket $packet) : bool;
 
 	public function handleRemoveEntity(RemoveEntityPacket $packet) : bool;
@@ -310,4 +308,28 @@ interface PacketHandlerInterface{
 	public function handleNetworkSettings(NetworkSettingsPacket $packet) : bool;
 
 	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool;
+
+	public function handleCreativeContent(CreativeContentPacket $packet) : bool;
+
+	public function handlePlayerEnchantOptions(PlayerEnchantOptionsPacket $packet) : bool;
+
+	public function handleItemStackRequest(ItemStackRequestPacket $packet) : bool;
+
+	public function handleItemStackResponse(ItemStackResponsePacket $packet) : bool;
+
+	public function handlePlayerArmorDamage(PlayerArmorDamagePacket $packet) : bool;
+
+	public function handleCodeBuilder(CodeBuilderPacket $packet) : bool;
+
+	public function handleUpdatePlayerGameType(UpdatePlayerGameTypePacket $packet) : bool;
+
+	public function handleEmoteList(EmoteListPacket $packet) : bool;
+
+	public function handlePositionTrackingDBServerBroadcast(PositionTrackingDBServerBroadcastPacket $packet) : bool;
+
+	public function handlePositionTrackingDBClientRequest(PositionTrackingDBClientRequestPacket $packet) : bool;
+
+	public function handleDebugInfo(DebugInfoPacket $packet) : bool;
+
+	public function handlePacketViolationWarning(PacketViolationWarningPacket $packet) : bool;
 }

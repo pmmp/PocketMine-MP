@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 
 class InventorySlotPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::INVENTORY_SLOT_PACKET;
@@ -35,10 +35,10 @@ class InventorySlotPacket extends DataPacket implements ClientboundPacket{
 	public $windowId;
 	/** @var int */
 	public $inventorySlot;
-	/** @var ItemStack */
+	/** @var ItemStackWrapper */
 	public $item;
 
-	public static function create(int $windowId, int $slot, ItemStack $item) : self{
+	public static function create(int $windowId, int $slot, ItemStackWrapper $item) : self{
 		$result = new self;
 		$result->inventorySlot = $slot;
 		$result->item = $item;
@@ -50,13 +50,13 @@ class InventorySlotPacket extends DataPacket implements ClientboundPacket{
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->windowId = $in->getUnsignedVarInt();
 		$this->inventorySlot = $in->getUnsignedVarInt();
-		$this->item = $in->getSlot();
+		$this->item = ItemStackWrapper::read($in);
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putUnsignedVarInt($this->windowId);
 		$out->putUnsignedVarInt($this->inventorySlot);
-		$out->putSlot($this->item);
+		$this->item->write($out);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

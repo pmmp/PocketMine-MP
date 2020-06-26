@@ -42,12 +42,14 @@ final class ShapedRecipe extends RecipeWithTypeId{
 	private $blockName;
 	/** @var int */
 	private $priority;
+	/** @var int */
+	private $recipeNetId;
 
 	/**
 	 * @param RecipeIngredient[][] $input
 	 * @param ItemStack[]          $output
 	 */
-	public function __construct(int $typeId, string $recipeId, array $input, array $output, UUID $uuid, string $blockType, int $priority){
+	public function __construct(int $typeId, string $recipeId, array $input, array $output, UUID $uuid, string $blockType, int $priority, int $recipeNetId){
 		parent::__construct($typeId);
 		$rows = count($input);
 		if($rows < 1 or $rows > 3){
@@ -67,6 +69,7 @@ final class ShapedRecipe extends RecipeWithTypeId{
 		$this->blockName = $blockType;
 		$this->priority = $priority;
 		$this->uuid = $uuid;
+		$this->recipeNetId = $recipeNetId;
 	}
 
 	public function getRecipeId() : string{
@@ -107,6 +110,10 @@ final class ShapedRecipe extends RecipeWithTypeId{
 		return $this->priority;
 	}
 
+	public function getRecipeNetId() : int{
+		return $this->recipeNetId;
+	}
+
 	public static function decode(int $recipeType, PacketSerializer $in) : self{
 		$recipeId = $in->getString();
 		$width = $in->getVarInt();
@@ -125,8 +132,9 @@ final class ShapedRecipe extends RecipeWithTypeId{
 		$uuid = $in->getUUID();
 		$block = $in->getString();
 		$priority = $in->getVarInt();
+		$recipeNetId = $in->readGenericTypeNetworkId();
 
-		return new self($recipeType, $recipeId, $input, $output, $uuid, $block, $priority);
+		return new self($recipeType, $recipeId, $input, $output, $uuid, $block, $priority, $recipeNetId);
 	}
 
 	public function encode(PacketSerializer $out) : void{
@@ -147,5 +155,6 @@ final class ShapedRecipe extends RecipeWithTypeId{
 		$out->putUUID($this->uuid);
 		$out->putString($this->blockName);
 		$out->putVarInt($this->priority);
+		$out->writeGenericTypeNetworkId($this->recipeNetId);
 	}
 }

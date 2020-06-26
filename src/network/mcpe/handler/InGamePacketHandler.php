@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\Sign;
 use pocketmine\block\utils\SignText;
@@ -42,6 +43,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\ActorFallPacket;
@@ -55,6 +57,7 @@ use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
+use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
@@ -86,6 +89,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\NormalTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
+use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use function array_push;
@@ -205,25 +209,16 @@ class InGamePacketHandler extends PacketHandler{
 		$isFinalCraftingPart = false;
 		$converter = TypeConverter::getInstance();
 		foreach($data->getActions() as $networkInventoryAction){
-			$old = $converter->netItemStackToCore($networkInventoryAction->oldItem);
-			$new = $converter->netItemStackToCore($networkInventoryAction->newItem);
 			if(
-				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER and
-				$networkInventoryAction->windowId === ContainerIds::UI and
-				$networkInventoryAction->inventorySlot === 50 and
-				!$old->equalsExact($new)
-			){
-				$isCraftingPart = true;
-				if(!$old->isNull() and $new->isNull()){
-					$isFinalCraftingPart = true;
-				}
-			}elseif(
 				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO and (
 					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT or
 					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
 				)
 			){
 				$isCraftingPart = true;
+				if($networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT){
+					$isFinalCraftingPart = true;
+				}
 			}
 
 			try{
@@ -262,7 +257,7 @@ class InGamePacketHandler extends PacketHandler{
 					 * So people don't whine about messy desync issues when someone cancels CraftItemEvent, or when a crafting
 					 * transaction goes wrong.
 					 */
-					$this->session->sendDataPacket(ContainerClosePacket::create(ContainerIds::NONE));
+					$this->session->sendDataPacket(ContainerClosePacket::create(InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID));
 
 					return false;
 				}finally{
@@ -318,6 +313,14 @@ class InGamePacketHandler extends PacketHandler{
 				$blockPos = $data->getBlockPos();
 				if(!$this->player->interactBlock($blockPos, $data->getFace(), $clickPos)){
 					$this->onFailedBlockAction($blockPos, $data->getFace());
+				}elseif($this->player->getWorld()->getBlock($blockPos)->getId() === BlockLegacyIds::CRAFTING_TABLE){
+					//TODO: HACK! crafting grid doesn't fit very well into the current PM container system, so this hack
+					//allows it to carry on working approximately the same way as it did in 1.14
+					$this->session->sendDataPacket(ContainerOpenPacket::blockInvVec3(
+						InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID,
+						WindowTypes::WORKBENCH,
+						$blockPos
+					));
 				}
 				return true;
 			case UseItemTransactionData::ACTION_BREAK_BLOCK:
@@ -417,6 +420,21 @@ class InGamePacketHandler extends PacketHandler{
 			//TODO: implement handling for this where it matters
 			return true;
 		}
+		$target = $this->player->getWorld()->getEntity($packet->target);
+		if($target === null){
+			return false;
+		}
+		if($packet->action === InteractPacket::ACTION_OPEN_INVENTORY && $target === $this->player){
+			//TODO: HACK! this restores 1.14ish behaviour, but this should be able to be listened to and
+			//controlled by plugins. However, the player is always a subscriber to their own inventory so it
+			//doesn't integrate well with the regular container system right now.
+			$this->session->sendDataPacket(ContainerOpenPacket::entityInv(
+				InventoryManager::HARDCODED_INVENTORY_WINDOW_ID,
+				WindowTypes::INVENTORY,
+				$this->player->getId()
+			));
+			return true;
+		}
 		return false; //TODO
 	}
 
@@ -506,13 +524,9 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
 		$this->player->doCloseInventory();
 
-		if($packet->windowId === 255){
-			//Closed a fake window
-			return true;
-		}
-
 		$this->session->getInvManager()->onClientRemoveWindow($packet->windowId);
 
+		$this->session->sendDataPacket(ContainerClosePacket::create($packet->windowId));
 		return true;
 	}
 
@@ -738,7 +752,8 @@ class InGamePacketHandler extends PacketHandler{
 						$inQuotes = true;
 					}else{
 						$backslashes = 0;
-						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
+						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){
+						}
 						if(($backslashes % 2) === 0){ //unescaped quote
 							$inQuotes = false;
 						}

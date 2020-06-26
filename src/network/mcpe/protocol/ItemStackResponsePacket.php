@@ -26,41 +26,42 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\inventory\stackresponse\ItemStackResponse;
+use function count;
 
-class VideoStreamConnectPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::VIDEO_STREAM_CONNECT_PACKET;
+class ItemStackResponsePacket extends DataPacket implements ClientboundPacket{
+	public const NETWORK_ID = ProtocolInfo::ITEM_STACK_RESPONSE_PACKET;
 
-	public const ACTION_CONNECT = 0;
-	public const ACTION_DISCONNECT = 1;
+	/** @var ItemStackResponse[] */
+	private $responses;
 
-	/** @var string */
-	public $serverUri;
-	/** @var float */
-	public $frameSendFrequency;
-	/** @var int */
-	public $action;
-	/** @var int */
-	public $resolutionX;
-	/** @var int */
-	public $resolutionY;
+	/**
+	 * @param ItemStackResponse[] $responses
+	 */
+	public static function create(array $responses) : self{
+		$result = new self;
+		$result->responses = $responses;
+		return $result;
+	}
+
+	/** @return ItemStackResponse[] */
+	public function getResponses() : array{ return $this->responses; }
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->serverUri = $in->getString();
-		$this->frameSendFrequency = $in->getLFloat();
-		$this->action = $in->getByte();
-		$this->resolutionX = $in->getLInt();
-		$this->resolutionY = $in->getLInt();
+		$this->responses = [];
+		for($i = 0, $len = $in->getUnsignedVarInt(); $i < $len; ++$i){
+			$this->responses[] = ItemStackResponse::read($in);
+		}
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putString($this->serverUri);
-		$out->putLFloat($this->frameSendFrequency);
-		$out->putByte($this->action);
-		$out->putLInt($this->resolutionX);
-		$out->putLInt($this->resolutionY);
+		$out->putUnsignedVarInt(count($this->responses));
+		foreach($this->responses as $response){
+			$response->write($out);
+		}
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{
-		return $handler->handleVideoStreamConnect($this);
+		return $handler->handleItemStackResponse($this);
 	}
 }

@@ -41,34 +41,45 @@ class SetSpawnPositionPacket extends DataPacket implements ClientboundPacket{
 	public $y;
 	/** @var int */
 	public $z;
-	/** @var bool */
-	public $spawnForced;
+	/** @var int */
+	public $dimension;
+	/** @var int */
+	public $x2;
+	/** @var int */
+	public $y2;
+	/** @var int */
+	public $z2;
 
-	public static function playerSpawn(int $x, int $y, int $z, bool $forced) : self{
+	public static function playerSpawn(int $x, int $y, int $z, int $dimension, int $x2, int $y2, int $z2) : self{
 		$result = new self;
 		$result->spawnType = self::TYPE_PLAYER_SPAWN;
 		[$result->x, $result->y, $result->z] = [$x, $y, $z];
-		$result->spawnForced = $forced;
+		[$result->x2, $result->y2, $result->z2] = [$x2, $y2, $z2];
+		$result->dimension = $dimension;
 		return $result;
 	}
 
-	public static function worldSpawn(int $x, int $y, int $z) : self{
+	public static function worldSpawn(int $x, int $y, int $z, int $dimension) : self{
 		$result = new self;
 		$result->spawnType = self::TYPE_WORLD_SPAWN;
 		[$result->x, $result->y, $result->z] = [$x, $y, $z];
+		[$result->x2, $result->y2, $result->z2] = [$x, $y, $z];
+		$result->dimension = $dimension;
 		return $result;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->spawnType = $in->getVarInt();
 		$in->getBlockPosition($this->x, $this->y, $this->z);
-		$this->spawnForced = $in->getBool();
+		$this->dimension = $in->getVarInt();
+		$in->getBlockPosition($this->x2, $this->y2, $this->z2);
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putVarInt($this->spawnType);
 		$out->putBlockPosition($this->x, $this->y, $this->z);
-		$out->putBool($this->spawnForced);
+		$out->putVarInt($this->dimension);
+		$out->putBlockPosition($this->x2, $this->y2, $this->z2);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

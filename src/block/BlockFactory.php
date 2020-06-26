@@ -85,11 +85,11 @@ class BlockFactory{
 	public $blastResistance;
 
 	public function __construct(){
-		$this->fullList = new \SplFixedArray(8192);
+		$this->fullList = new \SplFixedArray(16384);
 
-		$this->lightFilter = \SplFixedArray::fromArray(array_fill(0, 8192, 1));
-		$this->diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 8192, false));
-		$this->blastResistance = \SplFixedArray::fromArray(array_fill(0, 8192, 0.0));
+		$this->lightFilter = \SplFixedArray::fromArray(array_fill(0, 16384, 1));
+		$this->diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 16384, false));
+		$this->blastResistance = \SplFixedArray::fromArray(array_fill(0, 16384, 0.0));
 
 		$this->register(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail"));
 		$this->register(new Air(new BID(Ids::AIR), "Air"));
