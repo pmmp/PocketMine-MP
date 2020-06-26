@@ -28,7 +28,10 @@ class CommandEnum{
 
 	/** @var string */
 	public $enumName;
-	/** @var string[] */
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
 	public $enumValues = [];
 
 	public function __construct(string $enumName = "CommandEnum", array $enumValues = []){

@@ -28,6 +28,7 @@ use pocketmine\math\RayTraceResult;
 
 /**
  * @allowHandle
+ * @phpstan-extends EntityEvent<Projectile>
  */
 abstract class ProjectileHitEvent extends EntityEvent{
 	/** @var RayTraceResult */

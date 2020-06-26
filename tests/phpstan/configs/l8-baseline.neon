@@ -6,11 +6,6 @@ parameters:
 			path: ../../../build/make-release.php
 
 		-
-			message: "#^Parameter \\#2 \\$delim_char of function preg_quote expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../build/server-phar.php
-
-		-
 			message: "#^Parameter \\#1 \\$uuid of method pocketmine\\\\Server\\:\\:updatePlayerListData\\(\\) expects pocketmine\\\\utils\\\\UUID, pocketmine\\\\utils\\\\UUID\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
@@ -264,16 +259,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$uuid of static method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\PlayerListEntry\\:\\:createAdditionEntry\\(\\) expects pocketmine\\\\utils\\\\UUID, pocketmine\\\\utils\\\\UUID\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Server.php
-
-		-
-			message: "#^Parameter \\#1 \\$options of method Thread\\:\\:start\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Thread.php
-
-		-
-			message: "#^Parameter \\#1 \\$options of method Thread\\:\\:start\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Worker.php
 
 		-
 			message: "#^Parameter \\#1 \\$constraint of method pocketmine\\\\block\\\\BaseRail\\:\\:getPossibleConnectionDirectionsOneConstraint\\(\\) expects int, int\\|null given\\.$#"
@@ -991,11 +976,6 @@ parameters:
 			path: ../../../src/pocketmine/event/entity/EntityDamageByEntityEvent.php
 
 		-
-			message: "#^Property pocketmine\\\\inventory\\\\BaseInventory\\:\\:\\$eventProcessor \\(pocketmine\\\\inventory\\\\InventoryEventProcessor\\) does not accept pocketmine\\\\inventory\\\\InventoryEventProcessor\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/inventory/BaseInventory.php
-
-		-
 			message: "#^Method pocketmine\\\\inventory\\\\CraftingManager\\:\\:getCraftingDataPacket\\(\\) should return pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket but returns pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/inventory/CraftingManager.php
@@ -1536,6 +1516,21 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
 
 		-
+			message: "#^Argument of an invalid type array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Parameter \\#1 \\$that of method pocketmine\\\\nbt\\\\tag\\\\NamedTag\\:\\:equals\\(\\) expects pocketmine\\\\nbt\\\\tag\\\\NamedTag, pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\convert\\\\RuntimeBlockMapping\\:\\:getBedrockKnownStates\\(\\) should return array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\> but returns array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
 			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/SetScorePacket.php
@@ -1549,61 +1544,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/SetScoreboardIdentityPacket.php
-
-		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\EntityLink\\:\\:\\$fromEntityUniqueId \\(int\\) does not accept int\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/EntityLink.php
-
-		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\EntityLink\\:\\:\\$toEntityUniqueId \\(int\\) does not accept int\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/EntityLink.php
-
-		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\EntityLink\\:\\:\\$type \\(int\\) does not accept int\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/EntityLink.php
-
-		-
-			message: "#^Argument of an invalid type array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Cannot call method getString\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Cannot call method getShort\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Cannot call method setName\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Offset mixed does not exist on array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Cannot call method equals\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\RuntimeBlockMapping\\:\\:getBedrockKnownStates\\(\\) should return array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\> but returns array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData\\:\\:\\$capeImage \\(pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinImage\\) does not accept pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinImage\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/SkinData.php
 
 		-
 			message: "#^Cannot call method wakeupSleeper\\(\\) on pocketmine\\\\snooze\\\\SleeperNotifier\\|null\\.$#"
@@ -1764,16 +1704,6 @@ parameters:
 			message: "#^Method pocketmine\\\\utils\\\\MainLogger\\:\\:getLogger\\(\\) should return pocketmine\\\\utils\\\\MainLogger but returns pocketmine\\\\utils\\\\MainLogger\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/utils/MainLogger.php
-
-		-
-			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, string\\|null given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/utils/TextFormat.php
-
-		-
-			message: "#^Method pocketmine\\\\utils\\\\TextFormat\\:\\:colorize\\(\\) should return string but returns string\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/utils/TextFormat.php
 
 		-
 			message: "#^Method pocketmine\\\\utils\\\\Utils\\:\\:printable\\(\\) should return string but returns string\\|null\\.$#"

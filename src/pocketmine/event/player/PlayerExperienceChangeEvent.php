@@ -29,6 +29,7 @@ use pocketmine\event\entity\EntityEvent;
 
 /**
  * Called when a player gains or loses XP levels and/or progress.
+ * @phpstan-extends EntityEvent<Human>
  */
 class PlayerExperienceChangeEvent extends EntityEvent implements Cancellable{
 	/** @var Human */

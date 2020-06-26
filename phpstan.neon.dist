@@ -1,5 +1,6 @@
 includes:
 	- tests/phpstan/configs/actual-problems.neon
+	- tests/phpstan/configs/check-explicit-mixed-baseline.neon
 	- tests/phpstan/configs/com-dotnet-magic.neon
 	- tests/phpstan/configs/custom-leveldb.neon
 	- tests/phpstan/configs/gc-hacks.neon
@@ -15,9 +16,11 @@ includes:
 	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 parameters:
-	level: 2
-	autoload_files:
+	level: 8
+	checkExplicitMixed: true
+	bootstrapFiles:
 		- tests/phpstan/bootstrap.php
+	scanFiles:
 		- src/pocketmine/PocketMine.php
 		- build/make-release.php
 		- build/server-phar.php
@@ -32,6 +35,7 @@ parameters:
 	stubFiles:
 		- tests/phpstan/stubs/pthreads.stub
 		- tests/phpstan/stubs/chunkutils.stub
+		- tests/phpstan/stubs/leveldb.stub
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	staticReflectionClassNamePatterns:
 		- "#^COM$#"

@@ -49,10 +49,6 @@ class WhitelistCommand extends VanillaCommand{
 			return true;
 		}
 
-		if(count($args) === 0 or count($args) > 2){
-			throw new InvalidCommandSyntaxException();
-		}
-
 		if(count($args) === 1){
 			if($this->badPerm($sender, strtolower($args[0]))){
 				return false;
@@ -112,7 +108,7 @@ class WhitelistCommand extends VanillaCommand{
 			}
 		}
 
-		return true;
+		throw new InvalidCommandSyntaxException();
 	}
 
 	private function badPerm(CommandSender $sender, string $subcommand) : bool{

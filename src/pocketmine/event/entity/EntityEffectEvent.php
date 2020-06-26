@@ -27,6 +27,9 @@ use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 
+/**
+ * @phpstan-extends EntityEvent<Entity>
+ */
 class EntityEffectEvent extends EntityEvent implements Cancellable{
 	/** @var EffectInstance */
 	private $effect;

@@ -26,41 +26,42 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
+use function count;
 
-class VideoStreamConnectPacket extends DataPacket/* implements ClientboundPacket*/{
-	public const NETWORK_ID = ProtocolInfo::VIDEO_STREAM_CONNECT_PACKET;
+class CreativeContentPacket extends DataPacket/* implements ClientboundPacket*/{
+	public const NETWORK_ID = ProtocolInfo::CREATIVE_CONTENT_PACKET;
 
-	public const ACTION_CONNECT = 0;
-	public const ACTION_DISCONNECT = 1;
+	/** @var CreativeContentEntry[] */
+	private $entries;
 
-	/** @var string */
-	public $serverUri;
-	/** @var float */
-	public $frameSendFrequency;
-	/** @var int */
-	public $action;
-	/** @var int */
-	public $resolutionX;
-	/** @var int */
-	public $resolutionY;
+	/**
+	 * @param CreativeContentEntry[] $entries
+	 */
+	public static function create(array $entries) : self{
+		$result = new self;
+		$result->entries = $entries;
+		return $result;
+	}
+
+	/** @return CreativeContentEntry[] */
+	public function getEntries() : array{ return $this->entries; }
 
 	protected function decodePayload() : void{
-		$this->serverUri = $this->getString();
-		$this->frameSendFrequency = $this->getLFloat();
-		$this->action = $this->getByte();
-		$this->resolutionX = $this->getLInt();
-		$this->resolutionY = $this->getLInt();
+		$this->entries = [];
+		for($i = 0, $len = $this->getUnsignedVarInt(); $i < $len; ++$i){
+			$this->entries[] = CreativeContentEntry::read($this);
+		}
 	}
 
 	protected function encodePayload() : void{
-		$this->putString($this->serverUri);
-		$this->putLFloat($this->frameSendFrequency);
-		$this->putByte($this->action);
-		$this->putLInt($this->resolutionX);
-		$this->putLInt($this->resolutionY);
+		$this->putUnsignedVarInt(count($this->entries));
+		foreach($this->entries as $entry){
+			$entry->write($this);
+		}
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleVideoStreamConnect($this);
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handleCreativeContent($this);
 	}
 }

@@ -30,6 +30,9 @@ use pocketmine\event\Cancellable;
 use pocketmine\item\Item;
 use function count;
 
+/**
+ * @phpstan-extends EntityEvent<Living>
+ */
 class EntityShootBowEvent extends EntityEvent implements Cancellable{
 	/** @var Item */
 	private $bow;

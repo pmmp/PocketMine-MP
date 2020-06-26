@@ -112,25 +112,25 @@ class Skin{
 		try{
 			$this->validate();
 			return true;
-		}catch(\InvalidArgumentException $e){
+		}catch(InvalidSkinException $e){
 			return false;
 		}
 	}
 
 	/**
-	 * @throws \InvalidArgumentException
+	 * @throws InvalidSkinException
 	 */
 	public function validate() : void{
 		if($this->skinId === ""){
-			throw new \InvalidArgumentException("Skin ID must not be empty");
+			throw new InvalidSkinException("Skin ID must not be empty");
 		}
 		$len = strlen($this->skinImage->getData());
 		if(!in_array($len, self::ACCEPTED_SKIN_SIZES, true)){
-			throw new \InvalidArgumentException("Invalid skin data size $len bytes (allowed sizes: " . implode(", ", self::ACCEPTED_SKIN_SIZES) . ")");
+			throw new InvalidSkinException("Invalid skin data size $len bytes (allowed sizes: " . implode(", ", self::ACCEPTED_SKIN_SIZES) . ")");
 		}
 		$capeData = $this->cape->getImage()->getData();
 		if($capeData !== "" and strlen($capeData) !== 8192){
-			throw new \InvalidArgumentException("Invalid cape data size " . strlen($capeData) . " bytes (must be exactly 8192 bytes)");
+			throw new InvalidSkinException("Invalid cape data size " . strlen($capeData) . " bytes (must be exactly 8192 bytes)");
 		}
 		//TODO: validate geometry
 	}
@@ -154,7 +154,7 @@ class Skin{
 	public function isPremium() : bool{
 		return $this->premium;
 	}
-	
+
 	public function isPersona() : bool{
 		return $this->persona;
 	}
@@ -165,27 +165,27 @@ class Skin{
 	public function getAnimations() : array{
 		return $this->animations;
 	}
-	
+
 	public function getCape() : Cape{
 		return $this->cape;
 	}
-	
+
 	public function getAnimationData() : string{
 		return $this->animationData;
 	}
-	
+
 	public function getSkinImage() : SkinImage{
 		return $this->skinImage;
 	}
-	
+
 	public function getSkinId() : string{
 		return $this->skinId;
 	}
-	
+
 	public function getGeometryData() : string{
 		return $this->geometryData;
 	}
-	
+
 	public function getResourcePatch() : string{
 		return $this->resourcePatch;
 	}
@@ -210,7 +210,7 @@ class Skin{
 	public function getGeometryName() : string{
 		return $this->geometryName;
 	}
-	
+
 	public function setSkinImage(SkinImage $skinImage) : Skin{
 		$this->skinImage = $skinImage;
 		return $this;
@@ -223,22 +223,22 @@ class Skin{
 		$this->animations = $animations;
 		return $this;
 	}
-	
+
 	public function setAnimationData(string $animationData) : Skin{
 		$this->animationData = $animationData;
 		return $this;
 	}
-	
+
 	public function setPersona(bool $persona) : Skin{
 		$this->persona = $persona;
 		return $this;
 	}
-	
+
 	public function setPremium(bool $premium) : Skin{
 		$this->premium = $premium;
 		return $this;
 	}
-	
+
 	public function setCape(Cape $cape) : Skin{
 		$this->cape = $cape;
 		return $this;

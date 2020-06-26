@@ -40,7 +40,8 @@ class TextPacket extends DataPacket{
 	public const TYPE_SYSTEM = 6;
 	public const TYPE_WHISPER = 7;
 	public const TYPE_ANNOUNCEMENT = 8;
-	public const TYPE_JSON = 9;
+	public const TYPE_JSON_WHISPER = 9;
+	public const TYPE_JSON = 10;
 
 	/** @var int */
 	public $type;
@@ -69,6 +70,7 @@ class TextPacket extends DataPacket{
 			case self::TYPE_RAW:
 			case self::TYPE_TIP:
 			case self::TYPE_SYSTEM:
+			case self::TYPE_JSON_WHISPER:
 			case self::TYPE_JSON:
 				$this->message = $this->getString();
 				break;
@@ -100,6 +102,7 @@ class TextPacket extends DataPacket{
 			case self::TYPE_RAW:
 			case self::TYPE_TIP:
 			case self::TYPE_SYSTEM:
+			case self::TYPE_JSON_WHISPER:
 			case self::TYPE_JSON:
 				$this->putString($this->message);
 				break;

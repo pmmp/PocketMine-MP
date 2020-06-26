@@ -38,10 +38,10 @@
       "ocramius/package-versions": "^1.5"
    },
    "require-dev": {
-      "phpstan/phpstan": "^0.12.25",
+      "phpstan/phpstan": "0.12.29",
       "phpstan/phpstan-phpunit": "^0.12.6",
       "phpstan/phpstan-strict-rules": "^0.12.2",
-      "phpunit/phpunit": "^8.5"
+      "phpunit/phpunit": "^9.2"
    },
    "autoload": {
       "psr-4": {

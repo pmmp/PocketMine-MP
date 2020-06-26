@@ -109,6 +109,10 @@ class Cake extends Transparent implements FoodSource{
 		return true;
 	}
 
+	public function getVariantBitmask() : int{
+		return 0;
+	}
+
 	/**
 	 * @return Block
 	 */

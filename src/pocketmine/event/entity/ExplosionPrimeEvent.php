@@ -28,6 +28,7 @@ use pocketmine\event\Cancellable;
 
 /**
  * Called when a entity decides to explode
+ * @phpstan-extends EntityEvent<Entity>
  */
 class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 	/** @var float */

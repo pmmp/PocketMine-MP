@@ -28,10 +28,12 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\level\Level;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
+use pocketmine\network\mcpe\protocol\types\ContainerIds;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\Player;
+use function array_map;
 use function array_slice;
 use function count;
 use function max;
@@ -53,7 +55,7 @@ abstract class BaseInventory implements Inventory{
 	protected $slots;
 	/** @var Player[] */
 	protected $viewers = [];
-	/** @var InventoryEventProcessor */
+	/** @var InventoryEventProcessor|null */
 	protected $eventProcessor;
 
 	/**
@@ -433,7 +435,7 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		$pk = new InventoryContentPacket();
-		$pk->items = $this->getContents(true);
+		$pk->items = array_map([ItemStackWrapper::class, 'legacy'], $this->getContents(true));
 
 		foreach($target as $player){
 			if(($id = $player->getWindowId($this)) === ContainerIds::NONE){
@@ -455,7 +457,7 @@ abstract class BaseInventory implements Inventory{
 
 		$pk = new InventorySlotPacket();
 		$pk->inventorySlot = $index;
-		$pk->item = $this->getItem($index);
+		$pk->item = ItemStackWrapper::legacy($this->getItem($index));
 
 		foreach($target as $player){
 			if(($id = $player->getWindowId($this)) === ContainerIds::NONE){

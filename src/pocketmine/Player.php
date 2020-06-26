@@ -34,6 +34,7 @@ use pocketmine\entity\Effect;
 use pocketmine\entity\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
+use pocketmine\entity\InvalidSkinException;
 use pocketmine\entity\Living;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\entity\passive\AbstractHorse;
@@ -127,6 +128,7 @@ use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
+use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
@@ -162,6 +164,7 @@ use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\GameMode;
+use pocketmine\network\mcpe\protocol\types\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
@@ -170,6 +173,8 @@ use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
 use pocketmine\network\mcpe\protocol\types\UIInventoryOffsets;
+use pocketmine\network\mcpe\protocol\types\SpawnSettings;
+use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\VerifyLoginTask;
@@ -188,6 +193,7 @@ use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 use function abs;
 use function array_merge;
+use function array_values;
 use function assert;
 use function base64_decode;
 use function ceil;
@@ -235,6 +241,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	private const MOVE_BACKLOG_SIZE = 100 * self::MOVES_PER_TICK; //100 ticks backlog (5 seconds)
 
 	private const RESOURCE_PACK_CHUNK_SIZE = 128 * 1024; //128KB
+
+	//TODO: HACK!
+	//these IDs are used for 1.16 to restore 1.14ish crafting & inventory behaviour; since they don't seem to have any
+	//effect on the behaviour of inventory transactions I don't currently plan to integrate these into the main system.
+	private const RESERVED_WINDOW_ID_RANGE_START = ContainerIds::LAST - 10;
+	private const RESERVED_WINDOW_ID_RANGE_END = ContainerIds::LAST;
+	public const HARDCODED_CRAFTING_GRID_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 1;
+	public const HARDCODED_INVENTORY_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 2;
 
 	/**
 	 * Validates the given username.
@@ -1298,11 +1312,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 		$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $level);
 		$pk = new SetSpawnPositionPacket();
-		$pk->x = $this->spawnPosition->getFloorX();
-		$pk->y = $this->spawnPosition->getFloorY();
-		$pk->z = $this->spawnPosition->getFloorZ();
+		$pk->x = $pk->x2 = $this->spawnPosition->getFloorX();
+		$pk->y = $pk->y2 = $this->spawnPosition->getFloorY();
+		$pk->z = $pk->z2 = $this->spawnPosition->getFloorZ();
+		$pk->dimension = DimensionIds::OVERWORLD;
 		$pk->spawnType = SetSpawnPositionPacket::TYPE_PLAYER_SPAWN;
-		$pk->spawnForced = false;
+
 		$this->dataPacket($pk);
 	}
 
@@ -2078,9 +2093,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			true
 		);
 
-		$skin = SkinAdapterSingleton::get()->fromSkinData($skinData);
-
-		if(!$skin->isValid()){
+		try{
+			$skin = SkinAdapterSingleton::get()->fromSkinData($skinData);
+			$skin->validate();
+		}catch(InvalidSkinException $e){
+			$this->server->getLogger()->debug("$this->username: Invalid skin: " . $e->getMessage());
 			$this->close("", "disconnectionScreen.invalidSkin");
 
 			return true;
@@ -2319,7 +2336,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->pitch = $this->pitch;
 		$pk->yaw = $this->yaw;
 		$pk->seed = -1;
-		$pk->dimension = $this->level->getDimension();
+		$pk->spawnSettings = new SpawnSettings(SpawnSettings::BIOME_TYPE_DEFAULT, "", DimensionIds::OVERWORLD); //TODO: implement this properly
 		$pk->gameRules = $this->level->getGameRules()->getRules();
 		$pk->worldGamemode = Player::getClientFriendlyGamemode($this->server->getGamemode());
 		$pk->difficulty = $this->level->getDifficulty();
@@ -2496,7 +2513,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		/** @var InventoryAction[] $actions */
 		$actions = [];
+		$isCraftingPart = false;
+		$isFinalCraftingPart = false;
 		foreach($packet->actions as $networkInventoryAction){
+			if(
+				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO and (
+					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT or
+					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
+				)
+			){
+				$isCraftingPart = true;
+				if($networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT){
+					$isFinalCraftingPart = true;
+				}
+			}
 			try{
 				$action = $networkInventoryAction->createInventoryAction($this);
 				if($action !== null){
@@ -2509,7 +2539,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 		}
 
-		if($packet->isCraftingPart){
+		if($isCraftingPart){
 			if($this->craftingTransaction === null){
 				$this->craftingTransaction = new CraftingTransaction($this, $actions);
 			}else{
@@ -2518,7 +2548,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 			}
 
-			if($packet->isFinalCraftingPart){
+			if($isFinalCraftingPart){
 				//we get the actions for this in several packets, so we need to wait until we have all the pieces before
 				//trying to execute it
 
@@ -2931,8 +2961,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				break;
 			case InteractPacket::ACTION_MOUSEOVER:
 				break; //TODO: handle these
+			case InteractPacket::ACTION_OPEN_INVENTORY:
+				if($target === $this){
+					//TODO: HACK! this restores 1.14ish behaviour, but this should be able to be listened to and
+					//controlled by plugins. However, the player is always a subscriber to their own inventory so it
+					//doesn't integrate well with the regular container system right now.
+					$pk = new ContainerOpenPacket();
+					$pk->windowId = self::HARDCODED_INVENTORY_WINDOW_ID;
+					$pk->type = WindowTypes::INVENTORY;
+					$pk->x = $pk->y = $pk->z = 0;
+					$pk->entityUniqueId = $this->getId();
+					$this->sendDataPacket($pk);
+					break;
+				}
+				return false;
 			default:
-				$this->server->getLogger()->debug("Unhandled/unknown interaction type " . $packet->action . "received from " . $this->getName());
+				$this->server->getLogger()->debug("Unhandled/unknown interaction type " . $packet->action . " received from " . $this->getName());
 
 				return false;
 		}
@@ -3209,18 +3253,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
-		if(!$this->spawned or $packet->windowId === 0){
+		if(!$this->spawned){
 			return true;
 		}
 
 		$this->doCloseInventory();
 
+		if($packet->windowId >= self::RESERVED_WINDOW_ID_RANGE_START and $packet->windowId <= self::RESERVED_WINDOW_ID_RANGE_END){
+			$pk = new ContainerClosePacket();
+			$pk->windowId = $packet->windowId;
+			$this->sendDataPacket($pk);
+			return true;
+		}
 		if(isset($this->windowIndex[$packet->windowId])){
 			(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this))->call();
 			$this->removeWindow($this->windowIndex[$packet->windowId]);
-			return true;
-		}elseif($packet->windowId === 255){
-			//Closed a fake window
+			//removeWindow handles sending the appropriate
 			return true;
 		}
 
@@ -3764,14 +3812,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * Sends a Form to the player, or queue to send it if a form is already open.
 	 */
 	public function sendForm(Form $form) : void{
+		$formData = json_encode($form);
+		if($formData === false){
+			throw new \InvalidArgumentException("Failed to encode form JSON: " . json_last_error_msg());
+		}
 		$id = $this->formIdCounter++;
 		$pk = new ModalFormRequestPacket();
 		$pk->formId = $id;
-		$pk->formData = json_encode($form);
-		if($pk->formData === false){
-			throw new \InvalidArgumentException("Failed to encode form JSON: " . json_last_error_msg());
-		}
-		if($this->dataPacket($pk)){
+		$pk->formData = $formData;
+		if($this->dataPacket($pk) !== false){
 			$this->forms[$id] = $form;
 		}
 	}
@@ -4270,7 +4319,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($forceId === null){
 			$cnt = $this->windowCnt;
 			do{
-				$cnt = max(ContainerIds::FIRST, ($cnt + 1) % ContainerIds::LAST);
+				$cnt = max(ContainerIds::FIRST, ($cnt + 1) % self::RESERVED_WINDOW_ID_RANGE_START);
 				if($cnt === $this->windowCnt){ //wraparound, no free slots
 					throw new \InvalidStateException("No free window IDs found");
 				}
@@ -4278,7 +4327,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->windowCnt = $cnt;
 		}else{
 			$cnt = $forceId;
-			if(isset($this->windowIndex[$cnt])){
+			if(isset($this->windowIndex[$cnt]) or ($cnt >= self::RESERVED_WINDOW_ID_RANGE_START && $cnt <= self::RESERVED_WINDOW_ID_RANGE_END)){
 				throw new \InvalidArgumentException("Requested force ID $forceId already in use");
 			}
 		}

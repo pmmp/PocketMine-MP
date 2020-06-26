@@ -34,6 +34,7 @@ use pocketmine\utils\VersionString;
 use function array_values;
 use function count;
 use function json_encode;
+use function json_last_error_msg;
 use function md5;
 use function microtime;
 use function php_uname;

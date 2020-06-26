@@ -26,6 +26,9 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 
+/**
+ * @phpstan-extends EntityEvent<Entity>
+ */
 class EntityRegainHealthEvent extends EntityEvent implements Cancellable{
 	public const CAUSE_REGEN = 0;
 	public const CAUSE_EATING = 1;

@@ -25,7 +25,7 @@ namespace pocketmine\event;
 
 use function constant;
 use function defined;
-use function strtoupper;
+use function mb_strtoupper;
 
 /**
  * List of event priorities
@@ -79,7 +79,7 @@ abstract class EventPriority{
 	 * @throws \InvalidArgumentException
 	 */
 	public static function fromString(string $name) : int{
-		$name = strtoupper($name);
+		$name = mb_strtoupper($name);
 		$const = self::class . "::" . $name;
 		if($name !== "ALL" and defined($const)){
 			return constant($const);

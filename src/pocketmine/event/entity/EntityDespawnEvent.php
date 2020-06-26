@@ -32,6 +32,7 @@ use pocketmine\entity\Vehicle;
 
 /**
  * Called when a entity is despawned
+ * @phpstan-extends EntityEvent<Entity>
  */
 class EntityDespawnEvent extends EntityEvent{
 	/** @var int */

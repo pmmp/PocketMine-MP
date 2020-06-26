@@ -27,12 +27,10 @@ use function abs;
 use function date_default_timezone_set;
 use function date_parse;
 use function exec;
-use function file_exists;
 use function file_get_contents;
 use function implode;
 use function ini_get;
 use function ini_set;
-use function is_link;
 use function is_string;
 use function json_decode;
 use function parse_ini_file;
@@ -203,6 +201,9 @@ abstract class Timezone{
 		}
 
 		$parsed = date_parse($offset);
+		if($parsed === false){
+			return false;
+		}
 		$offset = $parsed['hour'] * 3600 + $parsed['minute'] * 60 + $parsed['second'];
 
 		//After date_parse is done, put the sign back

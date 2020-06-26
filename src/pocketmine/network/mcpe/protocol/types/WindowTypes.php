@@ -46,7 +46,8 @@ interface WindowTypes{
 	public const TRADING = 15;
 	public const COMMAND_BLOCK = 16;
 	public const JUKEBOX = 17;
-
+	public const ARMOR = 18;
+	public const HAND = 19;
 	public const COMPOUND_CREATOR = 20;
 	public const ELEMENT_CONSTRUCTOR = 21;
 	public const MATERIAL_REDUCER = 22;
@@ -58,5 +59,8 @@ interface WindowTypes{
 	public const SMOKER = 28;
 	public const STONECUTTER = 29;
 	public const CARTOGRAPHY = 30;
+	public const HUD = 31;
+	public const JIGSAW_EDITOR = 32;
+	public const SMITHING_TABLE = 33;
 
 }

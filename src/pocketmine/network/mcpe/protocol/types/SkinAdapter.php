@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\entity\InvalidSkinException;
 use pocketmine\entity\Skin;
 
 /**
@@ -37,6 +38,7 @@ interface SkinAdapter{
 
 	/**
 	 * Allows you to convert skin data to a skin entity.
+	 * @throws InvalidSkinException
 	 */
 	public function fromSkinData(SkinData $data) : Skin;
 }

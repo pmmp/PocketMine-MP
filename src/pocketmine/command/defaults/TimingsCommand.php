@@ -157,6 +157,7 @@ class TimingsCommand extends VanillaCommand{
 					}
 
 					public function onCompletion(Server $server){
+						/** @var CommandSender $sender */
 						$sender = $this->fetchLocal();
 						if($sender instanceof Player and !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
 							return;
@@ -166,7 +167,8 @@ class TimingsCommand extends VanillaCommand{
 							$server->getLogger()->logException($result);
 							return;
 						}
-						if(isset($result[0]) && is_array($response = json_decode($result[0], true)) && isset($response["id"])){
+						$response = json_decode($result[0], true);
+						if(is_array($response) && isset($response["id"])){
 							Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.timingsRead",
 								["https://" . $this->host . "/?id=" . $response["id"]]));
 						}else{
@@ -178,6 +180,8 @@ class TimingsCommand extends VanillaCommand{
 				fclose($fileTimings);
 				Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.timingsWrite", [$timings]));
 			}
+		}else{
+			throw new InvalidCommandSyntaxException();
 		}
 
 		return true;

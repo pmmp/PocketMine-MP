@@ -33,6 +33,7 @@ use pocketmine\level\Position;
 
 /**
  * Called when a entity is spawned
+ * @phpstan-extends EntityEvent<Entity>
  */
 class EntitySpawnEvent extends EntityEvent{
 	/** @var int */

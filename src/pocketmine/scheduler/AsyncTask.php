@@ -27,6 +27,7 @@ use pocketmine\Collectable;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use function is_scalar;
+use function is_string;
 use function serialize;
 use function unserialize;
 

@@ -706,44 +706,9 @@ parameters:
 			path: ../../../src/pocketmine/block/Wool.php
 
 		-
-			message: "#^Call to an undefined method pocketmine\\\\command\\\\CommandSender\\:\\:teleport\\(\\)\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/TeleportCommand.php
-
-		-
-			message: "#^Method pocketmine\\\\event\\\\entity\\\\EntityDeathEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\Living but returns pocketmine\\\\entity\\\\Entity\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/event/entity/EntityDeathEvent.php
-
-		-
-			message: "#^Method pocketmine\\\\event\\\\entity\\\\EntityShootBowEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\Living but returns pocketmine\\\\entity\\\\Entity\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/event/entity/EntityShootBowEvent.php
-
-		-
 			message: "#^Property pocketmine\\\\event\\\\entity\\\\EntityShootBowEvent\\:\\:\\$projectile \\(pocketmine\\\\entity\\\\projectile\\\\Projectile\\) does not accept pocketmine\\\\entity\\\\Entity\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/event/entity/EntityShootBowEvent.php
-
-		-
-			message: "#^Method pocketmine\\\\event\\\\entity\\\\ItemDespawnEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\object\\\\ItemEntity but returns pocketmine\\\\entity\\\\Entity\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/event/entity/ItemDespawnEvent.php
-
-		-
-			message: "#^Method pocketmine\\\\event\\\\entity\\\\ItemSpawnEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\object\\\\ItemEntity but returns pocketmine\\\\entity\\\\Entity\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/event/entity/ItemSpawnEvent.php
-
-		-
-			message: "#^Method pocketmine\\\\event\\\\entity\\\\ProjectileHitEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\projectile\\\\Projectile but returns pocketmine\\\\entity\\\\Entity\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/event/entity/ProjectileHitEvent.php
-
-		-
-			message: "#^Method pocketmine\\\\event\\\\entity\\\\ProjectileLaunchEvent\\:\\:getEntity\\(\\) should return pocketmine\\\\entity\\\\projectile\\\\Projectile but returns pocketmine\\\\entity\\\\Entity\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/event/entity/ProjectileLaunchEvent.php
 
 		-
 			message: "#^pocketmine\\\\inventory\\\\DoubleChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\inventory\\\\ChestInventory\\.$#"

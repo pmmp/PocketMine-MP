@@ -25,6 +25,9 @@ namespace pocketmine\scheduler;
 
 use function file_put_contents;
 
+/**
+ * @deprecated
+ */
 class FileWriteTask extends AsyncTask{
 
 	/** @var string */
