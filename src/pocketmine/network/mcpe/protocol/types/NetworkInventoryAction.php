@@ -111,14 +111,6 @@ class NetworkInventoryAction{
 			case self::SOURCE_UNTRACKED_INTERACTION_UI:
 			case self::SOURCE_TODO:
 				$this->windowId = $packet->getVarInt();
-				switch($this->windowId){
-					/** @noinspection PhpMissingBreakStatementInspection */
-					case self::SOURCE_TYPE_CRAFTING_RESULT:
-						$packet->isFinalCraftingPart = true;
-					case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
-						$packet->isCraftingPart = true;
-						break;
-				}
 				break;
 			default:
 				throw new \UnexpectedValueException("Unknown inventory action source type $this->sourceType");
