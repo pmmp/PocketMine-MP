@@ -222,9 +222,9 @@ class PacketSerializer extends BinaryStream{
 		/** @var CompoundTag|null $compound */
 		$compound = null;
 		if($nbtLen === 0xffff){
-			$c = $this->getByte();
-			if($c !== 1){
-				throw new PacketDecodeException("Unexpected NBT count $c");
+			$nbtDataVersion = $this->getByte();
+			if($nbtDataVersion !== 1){
+				throw new PacketDecodeException("Unexpected NBT data version $nbtDataVersion");
 			}
 			$compound = $this->getNbtCompoundRoot();
 		}elseif($nbtLen !== 0){
@@ -263,7 +263,7 @@ class PacketSerializer extends BinaryStream{
 		$nbt = $item->getNbt();
 		if($nbt !== null){
 			$this->putLShort(0xffff);
-			$this->putByte(1); //TODO: some kind of count field? always 1 as of 1.9.0
+			$this->putByte(1); //TODO: NBT data version (?)
 			$this->put((new NetworkNbtSerializer())->write(new TreeRoot($nbt)));
 		}else{
 			$this->putLShort(0);
