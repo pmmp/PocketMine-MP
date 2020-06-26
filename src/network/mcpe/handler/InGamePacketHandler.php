@@ -201,7 +201,7 @@ class InGamePacketHandler extends PacketHandler{
 		/** @var InventoryAction[] $actions */
 		$actions = [];
 
-		$isCrafting = false;
+		$isCraftingPart = false;
 		$isFinalCraftingPart = false;
 		$converter = TypeConverter::getInstance();
 		foreach($data->getActions() as $networkInventoryAction){
@@ -213,7 +213,7 @@ class InGamePacketHandler extends PacketHandler{
 				$networkInventoryAction->inventorySlot === 50 and
 				!$old->equalsExact($new)
 			){
-				$isCrafting = true;
+				$isCraftingPart = true;
 				if(!$old->isNull() and $new->isNull()){
 					$isFinalCraftingPart = true;
 				}
@@ -223,7 +223,7 @@ class InGamePacketHandler extends PacketHandler{
 					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
 				)
 			){
-				$isCrafting = true;
+				$isCraftingPart = true;
 			}
 
 			try{
@@ -237,7 +237,7 @@ class InGamePacketHandler extends PacketHandler{
 			}
 		}
 
-		if($isCrafting){
+		if($isCraftingPart){
 			//we get the actions for this in several packets, so we need to wait until we have all the pieces before
 			//trying to execute it
 
