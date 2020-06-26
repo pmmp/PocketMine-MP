@@ -21,13 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\BlockIds;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\network\mcpe\NetworkBinaryStream;
 use function file_get_contents;
 use function getmypid;
 use function json_decode;
@@ -66,9 +67,22 @@ final class RuntimeBlockMapping{
 
 	private static function setupLegacyMappings() : void{
 		$legacyIdMap = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/block_id_map.json"), true);
-		$legacyStateMap = (new NetworkLittleEndianNBTStream())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/r12_to_current_block_map.nbt"));
-		if(!($legacyStateMap instanceof ListTag) or $legacyStateMap->getTagType() !== NBT::TAG_Compound){
-			throw new \RuntimeException("Invalid legacy states mapping table, expected TAG_List<TAG_Compound> root");
+
+		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
+		$legacyStateMap = [];
+		$legacyStateMapReader = new NetworkBinaryStream(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/r12_to_current_block_map.bin"));
+		$nbtReader = new NetworkLittleEndianNBTStream();
+		while(!$legacyStateMapReader->feof()){
+			$id = $legacyStateMapReader->getString();
+			$meta = $legacyStateMapReader->getLShort();
+
+			$offset = $legacyStateMapReader->getOffset();
+			$state = $nbtReader->read($legacyStateMapReader->getBuffer(), false, $offset);
+			$legacyStateMapReader->setOffset($offset);
+			if(!($state instanceof CompoundTag)){
+				throw new \RuntimeException("Blockstate should be a TAG_Compound");
+			}
+			$legacyStateMap[] = new R12ToCurrentBlockMapEntry($id, $meta, $state);
 		}
 
 		/**
@@ -78,16 +92,17 @@ final class RuntimeBlockMapping{
 		foreach(self::$bedrockKnownStates as $k => $state){
 			$idToStatesMap[$state->getCompoundTag("block")->getString("name")][] = $k;
 		}
-		/** @var CompoundTag $pair */
 		foreach($legacyStateMap as $pair){
-			$oldState = $pair->getCompoundTag("old");
-			$id = $legacyIdMap[$oldState->getString("name")];
-			$data = $oldState->getShort("val");
+			$id = $legacyIdMap[$pair->getId()] ?? null;
+			if($id === null){
+				throw new \RuntimeException("No legacy ID matches " . $pair->getId());
+			}
+			$data = $pair->getMeta();
 			if($data > 15){
 				//we can't handle metadata with more than 4 bits
 				continue;
 			}
-			$mappedState = $pair->getCompoundTag("new");
+			$mappedState = $pair->getBlockState();
 
 			//TODO HACK: idiotic NBT compare behaviour on 3.x compares keys which are stored by values
 			$mappedState->setName("block");

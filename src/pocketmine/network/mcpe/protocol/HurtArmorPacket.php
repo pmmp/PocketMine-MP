@@ -31,13 +31,17 @@ class HurtArmorPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::HURT_ARMOR_PACKET;
 
 	/** @var int */
+	public $cause;
+	/** @var int */
 	public $health;
 
 	protected function decodePayload(){
+		$this->cause = $this->getVarInt();
 		$this->health = $this->getVarInt();
 	}
 
 	protected function encodePayload(){
+		$this->putVarInt($this->cause);
 		$this->putVarInt($this->health);
 	}
 

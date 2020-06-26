@@ -471,7 +471,7 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Reads and returns an EntityUniqueID
 	 */
-	public function getEntityUniqueId() : int{
+	final public function getEntityUniqueId() : int{
 		return $this->getVarLong();
 	}
 
@@ -485,7 +485,7 @@ class NetworkBinaryStream extends BinaryStream{
 	/**
 	 * Reads and returns an EntityRuntimeID
 	 */
-	public function getEntityRuntimeId() : int{
+	final public function getEntityRuntimeId() : int{
 		return $this->getUnsignedVarLong();
 	}
 
@@ -648,7 +648,8 @@ class NetworkBinaryStream extends BinaryStream{
 		$toEntityUniqueId = $this->getEntityUniqueId();
 		$type = $this->getByte();
 		$immediate = $this->getBool();
-		return new EntityLink($fromEntityUniqueId, $toEntityUniqueId, $type, $immediate);
+		$causedByRider = $this->getBool();
+		return new EntityLink($fromEntityUniqueId, $toEntityUniqueId, $type, $immediate, $causedByRider);
 	}
 
 	protected function putEntityLink(EntityLink $link) : void{
@@ -656,6 +657,7 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putEntityUniqueId($link->toEntityUniqueId);
 		$this->putByte($link->type);
 		$this->putBool($link->immediate);
+		$this->putBool($link->causedByRider);
 	}
 
 	protected function getCommandOriginData() : CommandOriginData{
@@ -746,5 +748,13 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putVarInt($structureEditorData->structureBlockType);
 		$this->putStructureSettings($structureEditorData->structureSettings);
 		$this->putVarInt($structureEditorData->structureRedstoneSaveMove);
+	}
+
+	public function readGenericTypeNetworkId() : int{
+		return $this->getVarInt();
+	}
+
+	public function writeGenericTypeNetworkId(int $id) : void{
+		$this->putVarInt($id);
 	}
 }

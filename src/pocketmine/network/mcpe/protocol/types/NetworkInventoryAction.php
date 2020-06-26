@@ -81,11 +81,13 @@ class NetworkInventoryAction{
 	public $oldItem;
 	/** @var Item */
 	public $newItem;
+	/** @var int|null */
+	public $newItemStackId = null;
 
 	/**
 	 * @return $this
 	 */
-	public function read(NetworkBinaryStream $packet){
+	public function read(NetworkBinaryStream $packet, bool $hasItemStackIds){
 		$this->sourceType = $packet->getUnsignedVarInt();
 
 		switch($this->sourceType){
@@ -107,6 +109,9 @@ class NetworkInventoryAction{
 		$this->inventorySlot = $packet->getUnsignedVarInt();
 		$this->oldItem = $packet->getSlot();
 		$this->newItem = $packet->getSlot();
+		if($hasItemStackIds){
+			$this->newItemStackId = $packet->readGenericTypeNetworkId();
+		}
 
 		return $this;
 	}
@@ -114,7 +119,7 @@ class NetworkInventoryAction{
 	/**
 	 * @return void
 	 */
-	public function write(NetworkBinaryStream $packet){
+	public function write(NetworkBinaryStream $packet, bool $hasItemStackIds){
 		$packet->putUnsignedVarInt($this->sourceType);
 
 		switch($this->sourceType){
@@ -136,6 +141,12 @@ class NetworkInventoryAction{
 		$packet->putUnsignedVarInt($this->inventorySlot);
 		$packet->putSlot($this->oldItem);
 		$packet->putSlot($this->newItem);
+		if($hasItemStackIds){
+			if($this->newItemStackId === null){
+				throw new \InvalidStateException("Item stack ID for newItem must be provided");
+			}
+			$packet->writeGenericTypeNetworkId($this->newItemStackId);
+		}
 	}
 
 	/**

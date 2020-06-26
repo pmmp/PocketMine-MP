@@ -386,6 +386,16 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
 
 		-
+			message: "#^Cannot access offset string on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Offset mixed does not exist on array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\AddActorPacket\\:\\:\\$metadata \\(array\\<int, array\\(int, mixed\\)\\>\\) does not accept array\\<int, mixed\\>\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/AddActorPacket.php
@@ -454,11 +464,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$table of static method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\StartGamePacket\\:\\:serializeItemTable\\(\\) expects array\\<string, int\\>, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/StartGamePacket.php
-
-		-
-			message: "#^Cannot access offset string on mixed\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
 
 		-
 			message: "#^Parameter \\#1 \\$value of static method pocketmine\\\\permission\\\\Permission\\:\\:getByName\\(\\) expects bool\\|string, mixed given\\.$#"

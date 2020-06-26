@@ -841,6 +841,21 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
 
 		-
+			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\NBTStream\\:\\:read\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Parameter \\#1 \\$buffer of class pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream constructor expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
 			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/AvailableActorIdentifiersPacket.php
@@ -871,6 +886,11 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/protocol/LevelEventGenericPacket.php
 
 		-
+			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/PositionTrackingDBServerBroadcastPacket.php
+
+		-
 			message: "#^Static property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\StartGamePacket\\:\\:\\$blockTableCache \\(string\\|null\\) does not accept string\\|false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/StartGamePacket.php
@@ -894,16 +914,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$resourcePatch of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/types/LegacySkinAdapter.php
-
-		-
-			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\NBTStream\\:\\:read\\(\\) expects string, string\\|false given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
 
 		-
 			message: "#^Call to an undefined method object\\:\\:Add\\(\\)\\.$#"

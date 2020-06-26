@@ -1516,6 +1516,21 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
 
 		-
+			message: "#^Argument of an invalid type array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Parameter \\#1 \\$that of method pocketmine\\\\nbt\\\\tag\\\\NamedTag\\:\\:equals\\(\\) expects pocketmine\\\\nbt\\\\tag\\\\NamedTag, pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\convert\\\\RuntimeBlockMapping\\:\\:getBedrockKnownStates\\(\\) should return array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\> but returns array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
 			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/SetScorePacket.php
@@ -1529,41 +1544,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/SetScoreboardIdentityPacket.php
-
-		-
-			message: "#^Argument of an invalid type array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Cannot call method getString\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Cannot call method getShort\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Cannot call method setName\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Offset mixed does not exist on array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Cannot call method equals\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
-
-		-
-			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\RuntimeBlockMapping\\:\\:getBedrockKnownStates\\(\\) should return array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\> but returns array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/types/RuntimeBlockMapping.php
 
 		-
 			message: "#^Cannot call method wakeupSleeper\\(\\) on pocketmine\\\\snooze\\\\SleeperNotifier\\|null\\.$#"

@@ -159,7 +159,6 @@ class PacketPool{
 		static::registerPacket(new LevelSoundEventPacket());
 		static::registerPacket(new LevelEventGenericPacket());
 		static::registerPacket(new LecternUpdatePacket());
-		static::registerPacket(new VideoStreamConnectPacket());
 		static::registerPacket(new AddEntityPacket());
 		static::registerPacket(new RemoveEntityPacket());
 		static::registerPacket(new ClientCacheStatusPacket());
@@ -178,6 +177,18 @@ class PacketPool{
 		static::registerPacket(new CompletedUsingItemPacket());
 		static::registerPacket(new NetworkSettingsPacket());
 		static::registerPacket(new PlayerAuthInputPacket());
+		static::registerPacket(new CreativeContentPacket());
+		static::registerPacket(new PlayerEnchantOptionsPacket());
+		static::registerPacket(new ItemStackRequestPacket());
+		static::registerPacket(new ItemStackResponsePacket());
+		static::registerPacket(new PlayerArmorDamagePacket());
+		static::registerPacket(new CodeBuilderPacket());
+		static::registerPacket(new UpdatePlayerGameTypePacket());
+		static::registerPacket(new EmoteListPacket());
+		static::registerPacket(new PositionTrackingDBServerBroadcastPacket());
+		static::registerPacket(new PositionTrackingDBClientRequestPacket());
+		static::registerPacket(new DebugInfoPacket());
+		static::registerPacket(new PacketViolationWarningPacket());
 	}
 
 	/**
