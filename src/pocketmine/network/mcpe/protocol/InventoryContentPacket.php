@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use function count;
 
 class InventoryContentPacket extends DataPacket{
@@ -34,14 +34,14 @@ class InventoryContentPacket extends DataPacket{
 
 	/** @var int */
 	public $windowId;
-	/** @var Item[] */
+	/** @var ItemStackWrapper[] */
 	public $items = [];
 
 	protected function decodePayload(){
 		$this->windowId = $this->getUnsignedVarInt();
 		$count = $this->getUnsignedVarInt();
 		for($i = 0; $i < $count; ++$i){
-			$this->items[] = $this->getSlot();
+			$this->items[] = ItemStackWrapper::read($this);
 		}
 	}
 
@@ -49,7 +49,7 @@ class InventoryContentPacket extends DataPacket{
 		$this->putUnsignedVarInt($this->windowId);
 		$this->putUnsignedVarInt(count($this->items));
 		foreach($this->items as $item){
-			$this->putSlot($item);
+			$item->write($this);
 		}
 	}
 

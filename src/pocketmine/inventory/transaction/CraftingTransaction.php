@@ -27,7 +27,7 @@ use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\inventory\CraftingRecipe;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
-use pocketmine\network\mcpe\protocol\types\ContainerIds;
+use pocketmine\Player;
 use function array_pop;
 use function count;
 use function intdiv;
@@ -165,7 +165,7 @@ class CraftingTransaction extends InventoryTransaction{
 		 * transaction goes wrong.
 		 */
 		$pk = new ContainerClosePacket();
-		$pk->windowId = ContainerIds::NONE;
+		$pk->windowId = Player::HARDCODED_CRAFTING_GRID_WINDOW_ID;
 		$this->source->dataPacket($pk);
 	}
 

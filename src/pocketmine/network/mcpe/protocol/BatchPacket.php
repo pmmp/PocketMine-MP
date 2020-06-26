@@ -32,6 +32,7 @@ use function get_class;
 use function strlen;
 use function zlib_decode;
 use function zlib_encode;
+use const ZLIB_ENCODING_RAW;
 #ifndef COMPILE
 use pocketmine\utils\Binary;
 #endif
@@ -71,7 +72,7 @@ class BatchPacket extends DataPacket{
 	}
 
 	protected function encodePayload(){
-		$this->put(zlib_encode($this->payload, ZLIB_ENCODING_DEFLATE, $this->compressionLevel));
+		$this->put(zlib_encode($this->payload, ZLIB_ENCODING_RAW, $this->compressionLevel));
 	}
 
 	/**

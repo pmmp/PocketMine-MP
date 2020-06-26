@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\types\ContainerIds;
+use pocketmine\network\mcpe\protocol\types\inventory\InventoryTransactionChangedSlotsHack;
 use pocketmine\network\mcpe\protocol\types\NetworkInventoryAction;
 use function count;
 
@@ -50,20 +50,14 @@ class InventoryTransactionPacket extends DataPacket{
 	public const USE_ITEM_ON_ENTITY_ACTION_ATTACK = 1;
 
 	/** @var int */
-	public $transactionType;
+	public $requestId;
+	/** @var InventoryTransactionChangedSlotsHack[] */
+	public $requestChangedSlots;
 
-	/**
-	 * @var bool
-	 * NOTE: THIS FIELD DOES NOT EXIST IN THE PROTOCOL, it's merely used for convenience for PocketMine-MP to easily
-	 * determine whether we're doing a crafting transaction.
-	 */
-	public $isCraftingPart = false;
-	/**
-	 * @var bool
-	 * NOTE: THIS FIELD DOES NOT EXIST IN THE PROTOCOL, it's merely used for convenience for PocketMine-MP to easily
-	 * determine whether we're doing a crafting transaction.
-	 */
-	public $isFinalCraftingPart = false;
+	/** @var int */
+	public $transactionType;
+	/** @var bool */
+	public $hasItemStackIds;
 
 	/** @var NetworkInventoryAction[] */
 	public $actions = [];
@@ -72,29 +66,20 @@ class InventoryTransactionPacket extends DataPacket{
 	public $trData;
 
 	protected function decodePayload(){
+		$this->requestId = $this->readGenericTypeNetworkId();
+		$this->requestChangedSlots = [];
+		if($this->requestId !== 0){
+			for($i = 0, $len = $this->getUnsignedVarInt(); $i < $len; ++$i){
+				$this->requestChangedSlots[] = InventoryTransactionChangedSlotsHack::read($this);
+			}
+		}
+
 		$this->transactionType = $this->getUnsignedVarInt();
 
-		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$this->actions[] = $action = (new NetworkInventoryAction())->read($this);
+		$this->hasItemStackIds = $this->getBool();
 
-			if(
-				$action->sourceType === NetworkInventoryAction::SOURCE_CONTAINER and
-				$action->windowId === ContainerIds::UI and
-				$action->inventorySlot === 50 and
-				!$action->oldItem->equalsExact($action->newItem)
-			){
-				$this->isCraftingPart = true;
-				if(!$action->oldItem->isNull() and $action->newItem->isNull()){
-					$this->isFinalCraftingPart = true;
-				}
-			}elseif(
-				$action->sourceType === NetworkInventoryAction::SOURCE_TODO and (
-					$action->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT or
-					$action->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
-				)
-			){
-				$this->isCraftingPart = true;
-			}
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$this->actions[] = $action = (new NetworkInventoryAction())->read($this, $this->hasItemStackIds);
 		}
 
 		$this->trData = new \stdClass();
@@ -134,11 +119,19 @@ class InventoryTransactionPacket extends DataPacket{
 	}
 
 	protected function encodePayload(){
+		$this->writeGenericTypeNetworkId($this->requestId);
+		if($this->requestId !== 0){
+			$this->putUnsignedVarInt(count($this->requestChangedSlots));
+			foreach($this->requestChangedSlots as $changedSlots){
+				$changedSlots->write($this);
+			}
+		}
+
 		$this->putUnsignedVarInt($this->transactionType);
 
 		$this->putUnsignedVarInt(count($this->actions));
 		foreach($this->actions as $action){
-			$action->write($this);
+			$action->write($this, $this->hasItemStackIds);
 		}
 
 		switch($this->transactionType){

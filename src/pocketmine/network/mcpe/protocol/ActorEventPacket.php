@@ -87,6 +87,7 @@ class ActorEventPacket extends DataPacket{
 	public const TREASURE_HUNT = 72;
 	public const AGENT_SUMMON = 73;
 	public const CHARGED_CROSSBOW = 74;
+	public const FALL = 75;
 
 	//TODO: add more events
 

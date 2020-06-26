@@ -69,6 +69,7 @@ class Enchantment{
 	public const MULTISHOT = 33;
 	public const PIERCING = 34;
 	public const QUICK_CHARGE = 35;
+	public const SOUL_SPEED = 36;
 
 	public const RARITY_COMMON = 10;
 	public const RARITY_UNCOMMON = 5;

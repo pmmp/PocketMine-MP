@@ -52,6 +52,7 @@ use pocketmine\network\mcpe\protocol\ClientCacheBlobStatusPacket;
 use pocketmine\network\mcpe\protocol\ClientCacheMissResponsePacket;
 use pocketmine\network\mcpe\protocol\ClientCacheStatusPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
+use pocketmine\network\mcpe\protocol\CodeBuilderPacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandOutputPacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
@@ -61,9 +62,12 @@ use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
+use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\DebugInfoPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\EducationSettingsPacket;
+use pocketmine\network\mcpe\protocol\EmoteListPacket;
 use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\EventPacket;
 use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
@@ -74,6 +78,8 @@ use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
+use pocketmine\network\mcpe\protocol\ItemStackRequestPacket;
+use pocketmine\network\mcpe\protocol\ItemStackResponsePacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
 use pocketmine\network\mcpe\protocol\LecternUpdatePacket;
 use pocketmine\network\mcpe\protocol\LevelChunkPacket;
@@ -99,15 +105,20 @@ use pocketmine\network\mcpe\protocol\NetworkSettingsPacket;
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\NpcRequestPacket;
 use pocketmine\network\mcpe\protocol\OnScreenTextureAnimationPacket;
+use pocketmine\network\mcpe\protocol\PacketViolationWarningPacket;
 use pocketmine\network\mcpe\protocol\PhotoTransferPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
+use pocketmine\network\mcpe\protocol\PlayerArmorDamagePacket;
 use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
+use pocketmine\network\mcpe\protocol\PlayerEnchantOptionsPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
+use pocketmine\network\mcpe\protocol\PositionTrackingDBClientRequestPacket;
+use pocketmine\network\mcpe\protocol\PositionTrackingDBServerBroadcastPacket;
 use pocketmine\network\mcpe\protocol\PurchaseReceiptPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
@@ -163,9 +174,9 @@ use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPropertiesPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockSyncedPacket;
 use pocketmine\network\mcpe\protocol\UpdateEquipPacket;
+use pocketmine\network\mcpe\protocol\UpdatePlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\UpdateSoftEnumPacket;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
-use pocketmine\network\mcpe\protocol\VideoStreamConnectPacket;
 
 abstract class NetworkSession{
 
@@ -666,10 +677,6 @@ abstract class NetworkSession{
 		return false;
 	}
 
-	public function handleVideoStreamConnect(VideoStreamConnectPacket $packet) : bool{
-		return false;
-	}
-
 	public function handleAddEntity(AddEntityPacket $packet) : bool{
 		return false;
 	}
@@ -739,6 +746,54 @@ abstract class NetworkSession{
 	}
 
 	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleCreativeContent(CreativeContentPacket $packet) : bool{
+		return false;
+	}
+
+	public function handlePlayerEnchantOptions(PlayerEnchantOptionsPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleItemStackRequest(ItemStackRequestPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleItemStackResponse(ItemStackResponsePacket $packet) : bool{
+		return false;
+	}
+
+	public function handlePlayerArmorDamage(PlayerArmorDamagePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleCodeBuilder(CodeBuilderPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleUpdatePlayerGameType(UpdatePlayerGameTypePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleEmoteList(EmoteListPacket $packet) : bool{
+		return false;
+	}
+
+	public function handlePositionTrackingDBServerBroadcast(PositionTrackingDBServerBroadcastPacket $packet) : bool{
+		return false;
+	}
+
+	public function handlePositionTrackingDBClientRequest(PositionTrackingDBClientRequestPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleDebugInfo(DebugInfoPacket $packet) : bool{
+		return false;
+	}
+
+	public function handlePacketViolationWarning(PacketViolationWarningPacket $packet) : bool{
 		return false;
 	}
 }

@@ -97,6 +97,7 @@ class CraftingDataPacket extends DataPacket{
 					$entry["uuid"] = $this->getUUID()->toString();
 					$entry["block"] = $this->getString();
 					$entry["priority"] = $this->getVarInt();
+					$entry["net_id"] = $this->readGenericTypeNetworkId();
 
 					break;
 				case self::ENTRY_SHAPED:
@@ -118,6 +119,7 @@ class CraftingDataPacket extends DataPacket{
 					$entry["uuid"] = $this->getUUID()->toString();
 					$entry["block"] = $this->getString();
 					$entry["priority"] = $this->getVarInt();
+					$entry["net_id"] = $this->readGenericTypeNetworkId();
 
 					break;
 				case self::ENTRY_FURNACE:
@@ -140,6 +142,7 @@ class CraftingDataPacket extends DataPacket{
 					break;
 				case self::ENTRY_MULTI:
 					$entry["uuid"] = $this->getUUID()->toString();
+					$entry["net_id"] = $this->readGenericTypeNetworkId();
 					break;
 				default:
 					throw new \UnexpectedValueException("Unhandled recipe type $recipeType!"); //do not continue attempting to decode
@@ -148,9 +151,12 @@ class CraftingDataPacket extends DataPacket{
 		}
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			$input = $this->getVarInt();
+			$inputMeta = $this->getVarInt();
 			$ingredient = $this->getVarInt();
+			$ingredientMeta = $this->getVarInt();
 			$output = $this->getVarInt();
-			$this->potionTypeRecipes[] = new PotionTypeRecipe($input, $ingredient, $output);
+			$outputMeta = $this->getVarInt();
+			$this->potionTypeRecipes[] = new PotionTypeRecipe($input, $inputMeta, $ingredient, $ingredientMeta, $output, $outputMeta);
 		}
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			$input = $this->getVarInt();
@@ -193,6 +199,7 @@ class CraftingDataPacket extends DataPacket{
 		$stream->put(str_repeat("\x00", 16)); //Null UUID
 		$stream->putString("crafting_table"); //TODO: blocktype (no prefix) (this might require internal API breaks)
 		$stream->putVarInt(50); //TODO: priority
+		$stream->writeGenericTypeNetworkId($pos); //TODO: ANOTHER recipe ID, only used on the network
 
 		return CraftingDataPacket::ENTRY_SHAPELESS;
 	}
@@ -217,6 +224,7 @@ class CraftingDataPacket extends DataPacket{
 		$stream->put(str_repeat("\x00", 16)); //Null UUID
 		$stream->putString("crafting_table"); //TODO: blocktype (no prefix) (this might require internal API breaks)
 		$stream->putVarInt(50); //TODO: priority
+		$stream->writeGenericTypeNetworkId($pos); //TODO: ANOTHER recipe ID, only used on the network
 
 		return CraftingDataPacket::ENTRY_SHAPED;
 	}
@@ -272,9 +280,12 @@ class CraftingDataPacket extends DataPacket{
 		}
 		$this->putUnsignedVarInt(count($this->potionTypeRecipes));
 		foreach($this->potionTypeRecipes as $recipe){
-			$this->putVarInt($recipe->getInputPotionType());
+			$this->putVarInt($recipe->getInputItemId());
+			$this->putVarInt($recipe->getInputItemMeta());
 			$this->putVarInt($recipe->getIngredientItemId());
-			$this->putVarInt($recipe->getOutputPotionType());
+			$this->putVarInt($recipe->getIngredientItemMeta());
+			$this->putVarInt($recipe->getOutputItemId());
+			$this->putVarInt($recipe->getOutputItemMeta());
 		}
 		$this->putUnsignedVarInt(count($this->potionContainerRecipes));
 		foreach($this->potionContainerRecipes as $recipe){

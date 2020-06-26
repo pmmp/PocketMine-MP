@@ -50,7 +50,7 @@ class PlayerActionPacket extends DataPacket{
 	public const ACTION_BUILD_DENIED = 17;
 	public const ACTION_CONTINUE_BREAK = 18;
 	public const ACTION_CHANGE_SKIN = 19;
-	public const ACTION_SET_ENCHANTMENT_SEED = 20;
+	public const ACTION_SET_ENCHANTMENT_SEED = 20; //no longer used
 	public const ACTION_START_SWIMMING = 21;
 	public const ACTION_STOP_SWIMMING = 22;
 	public const ACTION_START_SPIN_ATTACK = 23;
