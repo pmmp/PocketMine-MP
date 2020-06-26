@@ -2769,7 +2769,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			case InteractPacket::ACTION_MOUSEOVER:
 				break; //TODO: handle these
 			default:
-				$this->server->getLogger()->debug("Unhandled/unknown interaction type " . $packet->action . "received from " . $this->getName());
+				$this->server->getLogger()->debug("Unhandled/unknown interaction type " . $packet->action . " received from " . $this->getName());
 
 				return false;
 		}
