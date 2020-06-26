@@ -129,6 +129,8 @@ class InventoryTransactionPacket extends DataPacket{
 
 		$this->putUnsignedVarInt($this->transactionType);
 
+		$this->putBool($this->hasItemStackIds);
+
 		$this->putUnsignedVarInt(count($this->actions));
 		foreach($this->actions as $action){
 			$action->write($this, $this->hasItemStackIds);
