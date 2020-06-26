@@ -776,16 +776,6 @@ parameters:
 			path: ../../../src/scheduler/DumpWorkerMemoryTask.php
 
 		-
-			message: "#^Parameter \\#1 \\$options of method Thread\\:\\:start\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/thread/Thread.php
-
-		-
-			message: "#^Parameter \\#1 \\$options of method Thread\\:\\:start\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/thread/Worker.php
-
-		-
 			message: "#^Cannot access property \\$date on pocketmine\\\\updater\\\\UpdateInfo\\|null\\.$#"
 			count: 1
 			path: ../../../src/updater/AutoUpdater.php
