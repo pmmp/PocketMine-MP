@@ -136,7 +136,7 @@ class Language{
 		$baseText = $this->parseTranslation(($onlyPrefix === null or strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
 
 		foreach($params as $i => $p){
-			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText, $onlyPrefix);
+			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText);
 		}
 
 		return $baseText;
