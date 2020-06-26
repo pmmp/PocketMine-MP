@@ -148,6 +148,7 @@ use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\GameMode;
+use pocketmine\network\mcpe\protocol\types\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
@@ -2368,7 +2369,27 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		/** @var InventoryAction[] $actions */
 		$actions = [];
+		$isCraftingPart = false;
+		$isFinalCraftingPart = false;
 		foreach($packet->actions as $networkInventoryAction){
+			if(
+				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER and
+				$networkInventoryAction->windowId === ContainerIds::UI and
+				$networkInventoryAction->inventorySlot === 50 and
+				!$networkInventoryAction->oldItem->equalsExact($networkInventoryAction->newItem)
+			){
+				$isCraftingPart = true;
+				if(!$networkInventoryAction->oldItem->isNull() and $networkInventoryAction->newItem->isNull()){
+					$isFinalCraftingPart = true;
+				}
+			}elseif(
+				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO and (
+					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT or
+					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
+				)
+			){
+				$isCraftingPart = true;
+			}
 			try{
 				$action = $networkInventoryAction->createInventoryAction($this);
 				if($action !== null){
@@ -2381,7 +2402,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			}
 		}
 
-		if($packet->isCraftingPart){
+		if($isCraftingPart){
 			if($this->craftingTransaction === null){
 				$this->craftingTransaction = new CraftingTransaction($this, $actions);
 			}else{
@@ -2390,7 +2411,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 			}
 
-			if($packet->isFinalCraftingPart){
+			if($isFinalCraftingPart){
 				//we get the actions for this in several packets, so we need to wait until we have all the pieces before
 				//trying to execute it
 

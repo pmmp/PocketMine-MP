@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\NetworkInventoryAction;
 use function count;
 
@@ -52,19 +51,6 @@ class InventoryTransactionPacket extends DataPacket{
 	/** @var int */
 	public $transactionType;
 
-	/**
-	 * @var bool
-	 * NOTE: THIS FIELD DOES NOT EXIST IN THE PROTOCOL, it's merely used for convenience for PocketMine-MP to easily
-	 * determine whether we're doing a crafting transaction.
-	 */
-	public $isCraftingPart = false;
-	/**
-	 * @var bool
-	 * NOTE: THIS FIELD DOES NOT EXIST IN THE PROTOCOL, it's merely used for convenience for PocketMine-MP to easily
-	 * determine whether we're doing a crafting transaction.
-	 */
-	public $isFinalCraftingPart = false;
-
 	/** @var NetworkInventoryAction[] */
 	public $actions = [];
 
@@ -76,25 +62,6 @@ class InventoryTransactionPacket extends DataPacket{
 
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 			$this->actions[] = $action = (new NetworkInventoryAction())->read($this);
-
-			if(
-				$action->sourceType === NetworkInventoryAction::SOURCE_CONTAINER and
-				$action->windowId === ContainerIds::UI and
-				$action->inventorySlot === 50 and
-				!$action->oldItem->equalsExact($action->newItem)
-			){
-				$this->isCraftingPart = true;
-				if(!$action->oldItem->isNull() and $action->newItem->isNull()){
-					$this->isFinalCraftingPart = true;
-				}
-			}elseif(
-				$action->sourceType === NetworkInventoryAction::SOURCE_TODO and (
-					$action->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT or
-					$action->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
-				)
-			){
-				$this->isCraftingPart = true;
-			}
 		}
 
 		$this->trData = new \stdClass();
