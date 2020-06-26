@@ -289,6 +289,14 @@ namespace pocketmine {
 
 		echo Terminal::$FORMAT_RESET . PHP_EOL;
 
+		if(!flock(\pocketmine\LOCK_FILE, LOCK_UN)){
+			critical_error("Failed to release the server.lock file.");
+		}
+
+		if(!fclose(\pocketmine\LOCK_FILE)){
+			critical_error("Could not close server.lock resource.");
+		}
+
 		exit($exitCode);
 	}
 
