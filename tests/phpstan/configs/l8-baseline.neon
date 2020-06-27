@@ -131,16 +131,6 @@ parameters:
 			path: ../../../src/entity/Entity.php
 
 		-
-			message: "#^Cannot call method getEffectLevel\\(\\) on pocketmine\\\\entity\\\\effect\\\\EffectInstance\\|null\\.$#"
-			count: 3
-			path: ../../../src/entity/Living.php
-
-		-
-			message: "#^Cannot call method getEffectLevel\\(\\) on pocketmine\\\\entity\\\\effect\\\\EffectInstance\\|null\\.$#"
-			count: 2
-			path: ../../../src/event/entity/EntityDamageByEntityEvent.php
-
-		-
 			message: "#^Parameter \\#2 \\$oldContents of method pocketmine\\\\inventory\\\\InventoryListener\\:\\:onContentChange\\(\\) expects array\\<pocketmine\\\\item\\\\Item\\>, array\\<int, pocketmine\\\\item\\\\Item\\|null\\> given\\.$#"
 			count: 1
 			path: ../../../src/inventory/BaseInventory.php
