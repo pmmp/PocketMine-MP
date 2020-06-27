@@ -46,26 +46,6 @@ parameters:
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Argument of an invalid type pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/block/tile/Chest.php
-
-		-
-			message: "#^Argument of an invalid type pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/block/tile/BrewingStand.php
-
-		-
-			message: "#^Argument of an invalid type pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/block/tile/Furnace.php
-
-		-
-			message: "#^Argument of an invalid type pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/block/tile/Hopper.php
-
-		-
 			message: "#^Parameter \\#1 \\$nbt of method pocketmine\\\\block\\\\tile\\\\Tile\\:\\:readSaveData\\(\\) expects pocketmine\\\\nbt\\\\tag\\\\CompoundTag, pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null given\\.$#"
 			count: 1
 			path: ../../../src/block/tile/Tile.php

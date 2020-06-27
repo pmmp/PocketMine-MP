@@ -44,9 +44,7 @@ trait ContainerTrait{
 	abstract public function getRealInventory();
 
 	protected function loadItems(CompoundTag $tag) : void{
-		if($tag->hasTag(Container::TAG_ITEMS, ListTag::class)){
-			$inventoryTag = $tag->getListTag(Container::TAG_ITEMS);
-
+		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag){
 			$inventory = $this->getRealInventory();
 			$listeners = $inventory->getListeners()->toArray();
 			$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
