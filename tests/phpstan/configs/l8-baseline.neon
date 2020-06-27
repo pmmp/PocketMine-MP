@@ -131,16 +131,6 @@ parameters:
 			path: ../../../src/entity/Entity.php
 
 		-
-			message: "#^Parameter \\#1 \\$attribute of method pocketmine\\\\entity\\\\AttributeMap\\:\\:add\\(\\) expects pocketmine\\\\entity\\\\Attribute, pocketmine\\\\entity\\\\Attribute\\|null given\\.$#"
-			count: 1
-			path: ../../../src/entity/HungerManager.php
-
-		-
-			message: "#^Method pocketmine\\\\entity\\\\HungerManager\\:\\:fetchAttribute\\(\\) should return pocketmine\\\\entity\\\\Attribute but returns pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
-			count: 1
-			path: ../../../src/entity/HungerManager.php
-
-		-
 			message: "#^Cannot call method getEffectLevel\\(\\) on pocketmine\\\\entity\\\\effect\\\\EffectInstance\\|null\\.$#"
 			count: 3
 			path: ../../../src/entity/Living.php
