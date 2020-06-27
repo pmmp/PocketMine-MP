@@ -68,8 +68,8 @@ class Item implements \JsonSerializable{
 	protected $id;
 	/** @var int */
 	protected $meta;
-	/** @var CompoundTag|null */
-	private $nbt = null;
+	/** @var CompoundTag */
+	private $nbt;
 	/** @var int */
 	protected $count = 1;
 	/** @var string */
@@ -115,6 +115,7 @@ class Item implements \JsonSerializable{
 
 		$this->canPlaceOn = new Set();
 		$this->canDestroy = new Set();
+		$this->nbt = new CompoundTag();
 	}
 
 	public function hasCustomBlockData() : bool{
@@ -234,9 +235,6 @@ class Item implements \JsonSerializable{
 	 * object is returned to allow the caller to manipulate and apply back to the item.
 	 */
 	public function getNamedTag() : CompoundTag{
-		if($this->nbt === null){
-			$this->nbt = new CompoundTag();
-		}
 		$this->serializeCompoundTag($this->nbt);
 		return $this->nbt;
 	}
@@ -686,9 +684,7 @@ class Item implements \JsonSerializable{
 	}
 
 	public function __clone(){
-		if($this->nbt !== null){
-			$this->nbt = clone $this->nbt;
-		}
+		$this->nbt = clone $this->nbt;
 		if($this->blockEntityTag !== null){
 			$this->blockEntityTag = clone $this->blockEntityTag;
 		}

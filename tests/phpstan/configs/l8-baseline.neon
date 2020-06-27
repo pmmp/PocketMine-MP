@@ -146,11 +146,6 @@ parameters:
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
 
 		-
-			message: "#^Method pocketmine\\\\item\\\\Item\\:\\:getNamedTag\\(\\) should return pocketmine\\\\nbt\\\\tag\\\\CompoundTag but returns pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/Item.php
-
-		-
 			message: "#^Cannot clone pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
 			count: 1
 			path: ../../../src/item/Item.php
