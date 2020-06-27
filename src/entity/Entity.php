@@ -554,7 +554,7 @@ abstract class Entity{
 		}
 
 		if($amount <= 0){
-			if($this->isAlive()){
+			if($this->isAlive() and !$this->justCreated){
 				$this->kill();
 			}
 		}elseif($amount <= $this->getMaxHealth() or $amount < $this->health){
@@ -591,7 +591,12 @@ abstract class Entity{
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
 		//TODO: check vehicles
 
-		$this->justCreated = false;
+		if($this->justCreated){
+			$this->justCreated = false;
+			if(!$this->isAlive()){
+				$this->kill();
+			}
+		}
 
 		$changedProperties = $this->getSyncedNetworkData(true);
 		if(count($changedProperties) > 0){
