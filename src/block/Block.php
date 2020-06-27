@@ -338,8 +338,8 @@ class Block{
 		return false;
 	}
 
-	public function addVelocityToEntity(Entity $entity, Vector3 $vector) : void{
-
+	public function addVelocityToEntity(Entity $entity) : ?Vector3{
+		return null;
 	}
 
 	final public function getPos() : Position{

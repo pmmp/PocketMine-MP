@@ -1262,13 +1262,16 @@ abstract class Entity{
 	}
 
 	protected function checkBlockCollision() : void{
-		$vector = new Vector3(0, 0, 0);
+		$vectors = [];
 
 		foreach($this->getBlocksAround() as $block){
 			$block->onEntityInside($this);
-			$block->addVelocityToEntity($this, $vector);
+			if(($v = $block->addVelocityToEntity($this)) !== null){
+				$vectors[] = $v;
+			}
 		}
 
+		$vector = Vector3::sum(...$vectors);
 		if($vector->lengthSquared() > 0){
 			$d = 0.014;
 			$this->motion = $this->motion->addVector($vector->normalize()->multiply($d));

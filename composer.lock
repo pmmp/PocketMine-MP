@@ -552,12 +552,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "d46310a42ab5535296ded0b9368e5642af723f47"
+                "reference": "a0118ce3026929e11cc05cdf776bb18cdcd1b822"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/d46310a42ab5535296ded0b9368e5642af723f47",
-                "reference": "d46310a42ab5535296ded0b9368e5642af723f47",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/a0118ce3026929e11cc05cdf776bb18cdcd1b822",
+                "reference": "a0118ce3026929e11cc05cdf776bb18cdcd1b822",
                 "shasum": ""
             },
             "require": {
@@ -579,7 +579,7 @@
                 "LGPL-3.0"
             ],
             "description": "PHP library containing math related code used in PocketMine-MP",
-            "time": "2020-06-19T10:25:24+00:00"
+            "time": "2020-06-27T19:45:51+00:00"
         },
         {
             "name": "pocketmine/nbt",
