@@ -136,16 +136,6 @@ parameters:
 			path: ../../../src/entity/Living.php
 
 		-
-			message: "#^Cannot call method attack\\(\\) on pocketmine\\\\entity\\\\Entity\\|null\\.$#"
-			count: 1
-			path: ../../../src/entity/Living.php
-
-		-
-			message: "#^Parameter \\#2 \\$entity of class pocketmine\\\\event\\\\entity\\\\EntityDamageByEntityEvent constructor expects pocketmine\\\\entity\\\\Entity, pocketmine\\\\entity\\\\Entity\\|null given\\.$#"
-			count: 1
-			path: ../../../src/entity/Living.php
-
-		-
 			message: "#^Cannot call method getEffectLevel\\(\\) on pocketmine\\\\entity\\\\effect\\\\EffectInstance\\|null\\.$#"
 			count: 2
 			path: ../../../src/event/entity/EntityDamageByEntityEvent.php

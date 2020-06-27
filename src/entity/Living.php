@@ -391,7 +391,7 @@ abstract class Living extends Entity{
 		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getModifier(EntityDamageEvent::MODIFIER_ABSORPTION)));
 		$this->damageArmor($source->getBaseDamage());
 
-		if($source instanceof EntityDamageByEntityEvent){
+		if($source instanceof EntityDamageByEntityEvent and ($attacker = $source->getDamager()) !== null){
 			$damage = 0;
 			foreach($this->armorInventory->getContents() as $k => $item){
 				if($item instanceof Armor and ($thornsLevel = $item->getEnchantmentLevel(Enchantment::THORNS())) > 0){
@@ -407,7 +407,7 @@ abstract class Living extends Entity{
 			}
 
 			if($damage > 0){
-				$source->getDamager()->attack(new EntityDamageByEntityEvent($this, $source->getDamager(), EntityDamageEvent::CAUSE_MAGIC, $damage));
+				$attacker->attack(new EntityDamageByEntityEvent($this, $attacker, EntityDamageEvent::CAUSE_MAGIC, $damage));
 			}
 		}
 	}
