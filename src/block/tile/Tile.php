@@ -89,8 +89,8 @@ abstract class Tile{
 	 * @throws \RuntimeException
 	 */
 	public function copyDataFromItem(Item $item) : void{
-		if($item->hasCustomBlockData()){ //TODO: check item root tag (MCPE doesn't use BlockEntityTag)
-			$this->readSaveData($item->getCustomBlockData());
+		if(($blockNbt = $item->getCustomBlockData()) !== null){ //TODO: check item root tag (MCPE doesn't use BlockEntityTag)
+			$this->readSaveData($blockNbt);
 		}
 	}
 

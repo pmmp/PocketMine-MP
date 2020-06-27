@@ -46,11 +46,6 @@ parameters:
 			path: ../../../src/block/tile/Chest.php
 
 		-
-			message: "#^Parameter \\#1 \\$nbt of method pocketmine\\\\block\\\\tile\\\\Tile\\:\\:readSaveData\\(\\) expects pocketmine\\\\nbt\\\\tag\\\\CompoundTag, pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null given\\.$#"
-			count: 1
-			path: ../../../src/block/tile/Tile.php
-
-		-
 			message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, string\\|null given\\.$#"
 			count: 1
 			path: ../../../src/command/Command.php
