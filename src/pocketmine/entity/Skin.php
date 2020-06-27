@@ -73,7 +73,7 @@ class Skin{
 	/** @var PersonaPieceTintColor[] */
 	private $pieceTintColors = [];
 	/** @var bool */
-	private $isVerified = false;
+	private $isVerified = true;
 
 	/** @var string */
 	private $geometryName = "";
