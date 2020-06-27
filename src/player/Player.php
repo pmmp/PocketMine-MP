@@ -2219,12 +2219,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		parent::broadcastAnimation($animation, $targets);
 	}
 
-	public function getOffsetPosition(Vector3 $vector3) : Vector3{
-		$result = parent::getOffsetPosition($vector3);
-		$result->y += 0.001; //Hack for MCPE falling underground for no good reason (TODO: find out why it's doing this)
-		return $result;
-	}
-
 	/**
 	 * TODO: remove this
 	 */

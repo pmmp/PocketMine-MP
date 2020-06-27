@@ -29,6 +29,7 @@ use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
@@ -55,7 +56,6 @@ class ItemEntity extends Entity{
 
 	public $width = 0.25;
 	public $height = 0.25;
-	protected $baseOffset = 0.125;
 
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
@@ -213,6 +213,10 @@ class ItemEntity extends Entity{
 		$pk->metadata = $this->getSyncedNetworkData(false);
 
 		$player->getNetworkSession()->sendDataPacket($pk);
+	}
+
+	public function getOffsetPosition(Vector3 $vector3) : Vector3{
+		return $vector3->add(0, 0.125, 0);
 	}
 
 	public function onCollideWithPlayer(Player $player) : void{

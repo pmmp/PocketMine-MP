@@ -27,6 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\entity\Explosive;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ExplosionPrimeEvent;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
@@ -42,8 +43,6 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public $width = 0.98;
 	public $height = 0.98;
-
-	protected $baseOffset = 0.49;
 
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
@@ -125,5 +124,9 @@ class PrimedTNT extends Entity implements Explosive{
 
 		$properties->setGenericFlag(EntityMetadataFlags::IGNITED, true);
 		$properties->setInt(EntityMetadataProperties::FUSE_LENGTH, $this->fuse);
+	}
+
+	public function getOffsetPosition(Vector3 $vector3) : Vector3{
+		return $vector3->add(0, 0.49, 0);
 	}
 }

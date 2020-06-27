@@ -129,9 +129,6 @@ abstract class Entity{
 	public $width;
 
 	/** @var float */
-	protected $baseOffset = 0.0;
-
-	/** @var float */
 	private $health = 20.0;
 	/** @var int */
 	private $maxHealth = 20;
@@ -724,7 +721,7 @@ abstract class Entity{
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
-		return new Vector3($vector3->x, $vector3->y + $this->baseOffset, $vector3->z);
+		return $vector3;
 	}
 
 	protected function broadcastMovement(bool $teleport = false) : void{

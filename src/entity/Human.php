@@ -37,6 +37,7 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
 use pocketmine\item\Totem;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -89,8 +90,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	/** @var int */
 	protected $xpSeed;
-
-	protected $baseOffset = 1.62;
 
 	public function __construct(Location $location, Skin $skin, ?CompoundTag $nbt = null){
 		$this->skin = $skin;
@@ -412,6 +411,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if(!($this instanceof Player)){
 			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($this->uuid)]));
 		}
+	}
+
+	public function getOffsetPosition(Vector3 $vector3) : Vector3{
+		return $vector3->add(0, 1.621, 0); //TODO: +0.001 hack for MCPE falling underground
 	}
 
 	public function broadcastMovement(bool $teleport = false) : void{
