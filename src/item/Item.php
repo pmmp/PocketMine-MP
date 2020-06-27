@@ -351,8 +351,8 @@ class Item implements \JsonSerializable{
 			$tag->removeTag(self::TAG_ENCH);
 		}
 
-		$this->hasCustomBlockData() ?
-			$tag->setTag(self::TAG_BLOCK_ENTITY_TAG, clone $this->getCustomBlockData()) :
+		($blockData = $this->getCustomBlockData()) !== null ?
+			$tag->setTag(self::TAG_BLOCK_ENTITY_TAG, clone $blockData) :
 			$tag->removeTag(self::TAG_BLOCK_ENTITY_TAG);
 
 		if(!$this->canPlaceOn->isEmpty()){

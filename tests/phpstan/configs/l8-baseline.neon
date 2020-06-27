@@ -146,16 +146,6 @@ parameters:
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
 
 		-
-			message: "#^Cannot clone pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/Item.php
-
-		-
-			message: "#^Parameter \\#2 \\$tag of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setTag\\(\\) expects pocketmine\\\\nbt\\\\tag\\\\Tag, pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null given\\.$#"
-			count: 1
-			path: ../../../src/item/Item.php
-
-		-
 			message: "#^Parameter \\#1 \\$object of function get_class expects object, pocketmine\\\\nbt\\\\tag\\\\Tag\\|null given\\.$#"
 			count: 1
 			path: ../../../src/item/Item.php
