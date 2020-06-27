@@ -70,11 +70,11 @@ class Painting extends Entity{
 	protected $blockIn;
 	/** @var int */
 	protected $facing = Facing::NORTH;
-	/** @var string */
+	/** @var PaintingMotive */
 	protected $motive;
 
 	public function __construct(Location $location, Vector3 $blockIn, int $facing, PaintingMotive $motive, ?CompoundTag $nbt = null){
-		$this->motive = $motive->getName(); //TODO: use motive directly
+		$this->motive = $motive;
 		$this->blockIn = $blockIn->asVector3();
 		$this->facing = $facing;
 		parent::__construct($location, $nbt);
@@ -95,7 +95,7 @@ class Painting extends Entity{
 		$nbt->setByte("Facing", self::FACING_TO_DATA[$this->facing]);
 		$nbt->setByte("Direction", self::FACING_TO_DATA[$this->facing]); //Save both for full compatibility
 
-		$nbt->setString("Motive", $this->motive);
+		$nbt->setString("Motive", $this->motive->getName());
 
 		return $nbt;
 	}
@@ -153,7 +153,7 @@ class Painting extends Entity{
 			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
 		);
 		$pk->direction = self::FACING_TO_DATA[$this->facing];
-		$pk->title = $this->motive;
+		$pk->title = $this->motive->getName();
 
 		$player->getNetworkSession()->sendDataPacket($pk);
 	}
@@ -162,7 +162,7 @@ class Painting extends Entity{
 	 * Returns the painting motive (which image is displayed on the painting)
 	 */
 	public function getMotive() : PaintingMotive{
-		return PaintingMotive::getMotiveByName($this->motive);
+		return $this->motive;
 	}
 
 	public function getFacing() : int{

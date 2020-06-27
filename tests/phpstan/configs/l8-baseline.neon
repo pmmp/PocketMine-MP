@@ -146,11 +146,6 @@ parameters:
 			path: ../../../src/entity/Living.php
 
 		-
-			message: "#^Method pocketmine\\\\entity\\\\object\\\\Painting\\:\\:getMotive\\(\\) should return pocketmine\\\\entity\\\\object\\\\PaintingMotive but returns pocketmine\\\\entity\\\\object\\\\PaintingMotive\\|null\\.$#"
-			count: 1
-			path: ../../../src/entity/object/Painting.php
-
-		-
 			message: "#^Cannot call method getEffectLevel\\(\\) on pocketmine\\\\entity\\\\effect\\\\EffectInstance\\|null\\.$#"
 			count: 2
 			path: ../../../src/event/entity/EntityDamageByEntityEvent.php
