@@ -1340,7 +1340,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		if($this->spawned){
 			$this->processMostRecentMovements();
-			$this->motion->x = $this->motion->y = $this->motion->z = 0; //TODO: HACK! (Fixes player knockback being messed up)
+			$this->motion = new Vector3(0, 0, 0); //TODO: HACK! (Fixes player knockback being messed up)
 			if($this->onGround){
 				$this->inAirTicks = 0;
 			}else{

@@ -195,11 +195,7 @@ class ExperienceOrb extends Entity{
 
 			$distance = $vector->lengthSquared();
 			if($distance < 1){
-				$diff = $vector->normalize()->multiply(0.2 * (1 - sqrt($distance)) ** 2);
-
-				$this->motion->x += $diff->x;
-				$this->motion->y += $diff->y;
-				$this->motion->z += $diff->z;
+				$this->motion = $this->motion->addVector($vector->normalize()->multiply(0.2 * (1 - sqrt($distance)) ** 2));
 			}
 
 			if($currentTarget->getXpManager()->canPickupXp() and $this->boundingBox->intersectsWith($currentTarget->getBoundingBox())){

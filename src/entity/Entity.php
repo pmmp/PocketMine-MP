@@ -1270,11 +1270,8 @@ abstract class Entity{
 		}
 
 		if($vector->lengthSquared() > 0){
-			$vector = $vector->normalize();
 			$d = 0.014;
-			$this->motion->x += $vector->x * $d;
-			$this->motion->y += $vector->y * $d;
-			$this->motion->z += $vector->z * $d;
+			$this->motion = $this->motion->addVector($vector->normalize()->multiply($d));
 		}
 	}
 
@@ -1392,9 +1389,7 @@ abstract class Entity{
 	 * Adds the given values to the entity's motion vector.
 	 */
 	public function addMotion(float $x, float $y, float $z) : void{
-		$this->motion->x += $x;
-		$this->motion->y += $y;
-		$this->motion->z += $z;
+		$this->motion = $this->motion->add($x, $y, $z);
 	}
 
 	public function isOnGround() : bool{
