@@ -74,6 +74,7 @@ final class EntityIds{
 	public const FOX = "minecraft:fox";
 	public const GHAST = "minecraft:ghast";
 	public const GUARDIAN = "minecraft:guardian";
+	public const HOGLIN = "minecraft:hoglin";
 	public const HOPPER_MINECART = "minecraft:hopper_minecart";
 	public const HORSE = "minecraft:horse";
 	public const HUSK = "minecraft:husk";
@@ -96,6 +97,7 @@ final class EntityIds{
 	public const PARROT = "minecraft:parrot";
 	public const PHANTOM = "minecraft:phantom";
 	public const PIG = "minecraft:pig";
+	public const PIGLIN = "minecraft:piglin";
 	public const PILLAGER = "minecraft:pillager";
 	public const PLAYER = "minecraft:player";
 	public const POLAR_BEAR = "minecraft:polar_bear";
@@ -117,6 +119,7 @@ final class EntityIds{
 	public const SPLASH_POTION = "minecraft:splash_potion";
 	public const SQUID = "minecraft:squid";
 	public const STRAY = "minecraft:stray";
+	public const STRIDER = "minecraft:strider";
 	public const THROWN_TRIDENT = "minecraft:thrown_trident";
 	public const TNT = "minecraft:tnt";
 	public const TNT_MINECART = "minecraft:tnt_minecart";
@@ -136,6 +139,7 @@ final class EntityIds{
 	public const WOLF = "minecraft:wolf";
 	public const XP_BOTTLE = "minecraft:xp_bottle";
 	public const XP_ORB = "minecraft:xp_orb";
+	public const ZOGLIN = "minecraft:zoglin";
 	public const ZOMBIE = "minecraft:zombie";
 	public const ZOMBIE_HORSE = "minecraft:zombie_horse";
 	public const ZOMBIE_PIGMAN = "minecraft:zombie_pigman";
