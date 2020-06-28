@@ -37,6 +37,88 @@ final class FixedItemIds{
 		//NOOP
 	}
 
+	public const QUARTZ_BRICKS = -304;
+	public const CRACKED_NETHER_BRICKS = -303;
+	public const CHISELED_NETHER_BRICKS = -302;
+	public const STRIPPED_WARPED_HYPHAE = -301;
+	public const STRIPPED_CRIMSON_HYPHAE = -300;
+	public const CRIMSON_HYPHAE = -299;
+	public const WARPED_HYPHAE = -298;
+	public const POLISHED_BLACKSTONE_WALL = -297;
+	public const POLISHED_BLACKSTONE_BUTTON = -296;
+	public const POLISHED_BLACKSTONE_PRESSURE_PLATE = -295;
+	public const POLISHED_BLACKSTONE_DOUBLE_SLAB = -294;
+	public const POLISHED_BLACKSTONE_SLAB = -293;
+	public const POLISHED_BLACKSTONE_STAIRS = -292;
+	public const POLISHED_BLACKSTONE = -291;
+	public const ITEM_SOUL_CAMPFIRE = -290;
+	public const CRYING_OBSIDIAN = -289;
+	public const NETHER_GOLD_ORE = -288;
+	public const TWISTING_VINES = -287;
+	public const ITEM_CHAIN = -286;
+	public const POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB = -285;
+	public const POLISHED_BLACKSTONE_BRICK_SLAB = -284;
+	public const BLACKSTONE_DOUBLE_SLAB = -283;
+	public const BLACKSTONE_SLAB = -282;
+	public const GILDED_BLACKSTONE = -281;
+	public const CRACKED_POLISHED_BLACKSTONE_BRICKS = -280;
+	public const CHISELED_POLISHED_BLACKSTONE = -279;
+	public const POLISHED_BLACKSTONE_BRICK_WALL = -278;
+	public const BLACKSTONE_WALL = -277;
+	public const BLACKSTONE_STAIRS = -276;
+	public const POLISHED_BLACKSTONE_BRICK_STAIRS = -275;
+	public const POLISHED_BLACKSTONE_BRICKS = -274;
+	public const BLACKSTONE = -273;
+	public const RESPAWN_ANCHOR = -272;
+	public const ANCIENT_DEBRIS = -271;
+	public const NETHERITE_BLOCK = -270;
+	public const SOUL_LANTERN = -269;
+	public const SOUL_TORCH = -268;
+	public const WARPED_DOUBLE_SLAB = -267;
+	public const CRIMSON_DOUBLE_SLAB = -266;
+	public const WARPED_SLAB = -265;
+	public const CRIMSON_SLAB = -264;
+	public const WARPED_PRESSURE_PLATE = -263;
+	public const CRIMSON_PRESSURE_PLATE = -262;
+	public const WARPED_BUTTON = -261;
+	public const CRIMSON_BUTTON = -260;
+	public const WARPED_FENCE_GATE = -259;
+	public const CRIMSON_FENCE_GATE = -258;
+	public const WARPED_FENCE = -257;
+	public const CRIMSON_FENCE = -256;
+	public const WARPED_STAIRS = -255;
+	public const CRIMSON_STAIRS = -254;
+	public const WARPED_WALL_SIGN = -253;
+	public const CRIMSON_WALL_SIGN = -252;
+	public const WARPED_STANDING_SIGN = -251;
+	public const CRIMSON_STANDING_SIGN = -250;
+
+	public const WARPED_TRAPDOOR = -247;
+	public const CRIMSON_TRAPDOOR = -246;
+	public const ITEM_WARPED_DOOR = -245;
+	public const ITEM_CRIMSON_DOOR = -244;
+	public const WARPED_PLANKS = -243;
+	public const CRIMSON_PLANKS = -242;
+	public const STRIPPED_WARPED_STEM = -241;
+	public const STRIPPED_CRIMSON_STEM = -240;
+	public const TARGET = -239;
+	public const ITEM_NETHER_SPROUTS = -238;
+	public const SOUL_FIRE = -237;
+	public const SOUL_SOIL = -236;
+	public const POLISHED_BASALT = -235;
+	public const BASALT = -234;
+	public const WARPED_NYLIUM = -233;
+	public const CRIMSON_NYLIUM = -232;
+	public const WEEPING_VINES = -231;
+	public const SHROOMLIGHT = -230;
+	public const WARPED_FUNGUS = -229;
+	public const CRIMSON_FUNGUS = -228;
+	public const WARPED_WART_BLOCK = -227;
+	public const WARPED_STEM = -226;
+	public const CRIMSON_STEM = -225;
+	public const WARPED_ROOTS = -224;
+	public const CRIMSON_ROOTS = -223;
+	public const LODESTONE = -222;
 	public const HONEYCOMB_BLOCK = -221;
 	public const HONEY_BLOCK = -220;
 	public const BEEHIVE = -219;
@@ -467,7 +549,9 @@ final class FixedItemIds{
 	public const FROSTED_ICE = 207;
 	public const END_ROD = 208;
 	public const END_GATEWAY = 209;
-
+	public const ALLOW = 210;
+	public const DENY = 211;
+	public const BORDER_BLOCK = 212;
 	public const MAGMA = 213;
 	public const NETHER_WART_BLOCK = 214;
 	public const RED_NETHER_BRICK = 215;
@@ -754,4 +838,27 @@ final class FixedItemIds{
 
 	public const HONEYCOMB = 736;
 	public const HONEY_BOTTLE = 737;
+
+	public const LODESTONECOMPASS = 741;
+	public const NETHERITE_INGOT = 742;
+	public const NETHERITE_SWORD = 743;
+	public const NETHERITE_SHOVEL = 744;
+	public const NETHERITE_PICKAXE = 745;
+	public const NETHERITE_AXE = 746;
+	public const NETHERITE_HOE = 747;
+	public const NETHERITE_HELMET = 748;
+	public const NETHERITE_CHESTPLATE = 749;
+	public const NETHERITE_LEGGINGS = 750;
+	public const NETHERITE_BOOTS = 751;
+	public const NETHERITE_SCRAP = 752;
+	public const CRIMSON_SIGN = 753;
+	public const WARPED_SIGN = 754;
+	public const CRIMSON_DOOR = 755;
+	public const WARPED_DOOR = 756;
+	public const WARPED_FUNGUS_ON_A_STICK = 757;
+	public const CHAIN = 758;
+	public const RECORD_PIGSTEP = 759;
+	public const NETHER_SPROUTS = 760;
+
+	public const SOUL_CAMPFIRE = 801;
 }
