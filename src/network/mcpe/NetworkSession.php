@@ -645,7 +645,9 @@ class NetworkSession{
 	}
 
 	public function onDeath() : void{
-		$this->setHandler(new DeathPacketHandler($this->player, $this));
+		if($this->handler instanceof InGamePacketHandler){ //TODO: this is a bad fix for pre-spawn death, this shouldn't be reachable at all at this stage :(
+			$this->setHandler(new DeathPacketHandler($this->player, $this));
+		}
 	}
 
 	public function onRespawn() : void{
