@@ -33,6 +33,7 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\AltayEntityEquipment;
 use pocketmine\inventory\ArmorInventory;
+use pocketmine\inventory\utils\EquipmentSlot;
 use pocketmine\item\Armor;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -110,94 +111,71 @@ class ArmorStand extends Living{
 		return $this->propertyManager->getInt(self::DATA_ARMOR_STAND_POSE_INDEX);
 	}
 
-	public function onFirstInteract(Player $player, Item $itemstack, Vector3 $clickPos) : bool{
+	public function onFirstInteract(Player $player, Item $item, Vector3 $clickPos) : bool{
 		if($player->isSneaking()){
-			if($this->getPose() >= 12){
-				$this->setPose(0);
-			}else{
-				$this->setPose($this->getPose() + 1);
-			}
+			$this->setPose(($this->getPose() + 1) % 13);
 			return true;
 		}
-		if($this->isValid() and !$player->isSpectator()){
-			$i = 0;
-			$flag = !$itemstack->isNull();
 
+		if($this->isValid() and !$player->isSpectator()){
+			$targetSlot = EquipmentSlot::MAINHAND;
 			$isArmorSlot = false;
 
-			if($flag and $itemstack instanceof Armor){
-				$i = $itemstack->getArmorSlot();
+			if($item instanceof Armor){
+				$targetSlot = $item->getArmorSlot();
 				$isArmorSlot = true;
+			}elseif($item->getId() === Item::SKULL or $item->getId() === Item::PUMPKIN){
+				$targetSlot = Armor::SLOT_HELMET;
+				$isArmorSlot = true;
+			}elseif($item->isNull()){
+				$clickOffset = $clickPos->y - $this->y;
+
+				if($clickOffset >= 0.1 and $clickOffset < 0.55 and !$this->armorInventory->getItem(ArmorInventory::SLOT_FEET)->isNull()){
+					$targetSlot = Armor::SLOT_BOOTS;
+					$isArmorSlot = true;
+				}elseif($clickOffset >= 0.9 and $clickOffset < 1.6 and !$this->armorInventory->getItem(ArmorInventory::SLOT_CHEST)->isNull()){
+					$targetSlot = Armor::SLOT_CHESTPLATE;
+					$isArmorSlot = true;
+				}elseif($clickOffset >= 0.4 and $clickOffset < 1.2 and !$this->armorInventory->getItem(ArmorInventory::SLOT_LEGS)->isNull()){
+					$targetSlot = Armor::SLOT_LEGGINGS;
+					$isArmorSlot = true;
+				}elseif($clickOffset >= 1.6 and !$this->armorInventory->getItem(ArmorInventory::SLOT_HEAD)->isNull()){
+					$targetSlot = Armor::SLOT_HELMET;
+					$isArmorSlot = true;
+				}
 			}
 
-			if($flag and ($itemstack->getId() === Item::SKULL or $itemstack->getId() === Item::PUMPKIN)){
-				$i = 0;
-			}
-			$j = 0;
-			$d3 = $clickPos->y - $this->y;
-			$flag2 = false;
+			$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ARMOR_STAND_HIT);
 
-			if($d3 >= 0.1 and $d3 < 0.55 and !$this->armorInventory->getItem(ArmorInventory::SLOT_FEET)->isNull()){
-				$j = 3;
-				$flag2 = $isArmorSlot = true;
-			}elseif($d3 >= 0.9 and $d3 < 1.6 and !$this->armorInventory->getItem(ArmorInventory::SLOT_CHEST)->isNull()){
-				$j = 1;
-				$flag2 = $isArmorSlot = true;
-			}elseif($d3 >= 0.4 and $d3 < 1.2 and !$this->armorInventory->getItem(ArmorInventory::SLOT_LEGS)->isNull()){
-				$j = 2;
-				$flag2 = $isArmorSlot = true;
-			}elseif($d3 >= 1.6 and !$this->armorInventory->getItem(ArmorInventory::SLOT_HEAD)->isNull()){
-				$j = 0;
-				$flag2 = $isArmorSlot = true;
-			}elseif(!$this->equipment->getItem($j)->isNull()){
-				$flag2 = true;
-			}
+			$this->tryChangeEquipment($player, $item, $targetSlot, $isArmorSlot);
 
-			if($flag){
-				$this->tryChangeEquipment($player, $itemstack, $i, $isArmorSlot);
-			}elseif($flag2){
-				$this->tryChangeEquipment($player, $itemstack, $j, $isArmorSlot);
-			}
-
-			$this->equipment->sendContents($player);
-			$this->armorInventory->sendContents($player);
-
-			return $flag or $flag2;
+			return true;
 		}
+
 		return false;
 	}
 
-	protected function tryChangeEquipment(Player $player, Item $handItem, int $slot, bool $isArmorSlot = false) : void{
-		$itemstack = $isArmorSlot ? $this->armorInventory->getItem($slot) : $this->equipment->getItem($slot);
+	protected function tryChangeEquipment(Player $player, Item $targetItem, int $slot, bool $isArmorSlot = false) : void{
+		$sourceItem = $isArmorSlot ? $this->armorInventory->getItem($slot) : $this->equipment->getItem($slot);
 
-		if($player->isCreative() and $itemstack->isNull() and !$handItem->isNull()){
-			$itemstack3 = clone $handItem;
-			$itemstack3->setCount(1);
-			if($isArmorSlot){
-				$this->armorInventory->setItem($slot, $itemstack3);
-			}else{
-				$this->equipment->setItem($slot, $itemstack3);
-			}
-		}elseif(!$handItem->isNull() and $handItem->getCount() > 1){
-			if($itemstack->isNull()){
-				$itemstack2 = clone $handItem;
-				$itemstack2->setCount(1);
-				if($isArmorSlot){
-					$this->armorInventory->setItem($slot, $itemstack2);
-				}else{
-					$this->equipment->setItem($slot, $itemstack2);
-				}
-				$handItem->pop();
-			}
+		if($isArmorSlot){
+			$this->armorInventory->setItem($slot, (clone $targetItem)->setCount(1));
 		}else{
-			if($isArmorSlot){
-				$this->armorInventory->setItem($slot, $handItem);
-			}else{
-				$this->equipment->setItem($slot, $handItem);
-			}
-			$player->getInventory()->clear($player->getInventory()->getHeldItemIndex());
-			$player->getInventory()->addItem($itemstack);
+			$this->equipment->setItem($slot, (clone $targetItem)->setCount(1));
 		}
+
+		if(!$targetItem->isNull()){
+			if(!$player->isCreative()){
+				$targetItem->pop();
+			}
+
+			$player->getInventory()->setItemInHand($targetItem);
+		}
+
+		$player->getInventory()->addItem($sourceItem);
+
+		$this->equipment->sendContents($player);
+		$this->armorInventory->sendContents($player);
 	}
 
 	public function fall(float $fallDistance) : void{
@@ -248,12 +226,13 @@ class ArmorStand extends Living{
 
 		if(!$source->isCancelled()){
 			$this->setGenericFlag(self::DATA_FLAG_VIBRATING, true);
-			$this->vibrateTimer = 20;
+			$this->vibrateTimer += 30;
 		}
 	}
 
 	public function startDeathAnimation() : void{
-		$this->level->addParticle(new DestroyBlockParticle($this, BlockFactory::get(Block::WOODEN_PLANKS)));
+		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ARMOR_STAND_BREAK);
+		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_PARTICLE_ARMOR_STAND_DESTROY);
 	}
 
 	protected function onDeathUpdate(int $tickDiff) : bool{
