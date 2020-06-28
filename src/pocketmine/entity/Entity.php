@@ -1795,7 +1795,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		}
 	}
 
-	public function mountEntity(Entity $entity, int $seatNumber = 0) : bool{
+	public function mountEntity(Entity $entity, int $seatNumber = 0, bool $causedByRider = true) : bool{
 		if($this->getRidingEntity() === null and $entity !== $this and count($entity->passengers) < $entity->getSeatCount()){
 			if(!isset($entity->passengers[$seatNumber])){
 				if($seatNumber === 0){
@@ -1813,7 +1813,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				$this->propertyManager->setVector3(self::DATA_RIDER_SEAT_POSITION, $entity->getRiderSeatPosition($seatNumber)->add(0, $this->getMountedYOffset(), 0));
 				$this->propertyManager->setByte(self::DATA_CONTROLLING_RIDER_SEAT_NUMBER, $seatNumber);
 
-				$entity->sendLink($entity->getViewers(), $this->getId(), EntityLink::TYPE_RIDER);
+				$entity->sendLink($entity->getViewers(), $this->getId(), EntityLink::TYPE_RIDER, $causedByRider);
 
 				$entity->onRiderMount($this);
 
