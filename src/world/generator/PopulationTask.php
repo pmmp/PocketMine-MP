@@ -27,7 +27,6 @@ use pocketmine\block\BlockFactory;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
-use pocketmine\world\SimpleChunkManager;
 use pocketmine\world\World;
 
 class PopulationTask extends AsyncTask{
@@ -75,7 +74,7 @@ class PopulationTask extends AsyncTask{
 	public function onRun() : void{
 		$manager = $this->worker->getFromThreadStore("generation.world{$this->worldId}.manager");
 		$generator = $this->worker->getFromThreadStore("generation.world{$this->worldId}.generator");
-		if(!($manager instanceof SimpleChunkManager) or !($generator instanceof Generator)){
+		if(!($manager instanceof GeneratorChunkManager) or !($generator instanceof Generator)){
 			$this->state = false;
 			return;
 		}
