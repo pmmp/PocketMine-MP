@@ -25,13 +25,13 @@ namespace pocketmine\item;
 
 use pocketmine\entity\Living;
 
-class MilkBucket extends Item implements Consumable{
+class MilkBucket extends Item implements ConsumableItem{
 
 	public function getMaxStackSize() : int{
 		return 1;
 	}
 
-	public function getResidue(){
+	public function getResidue() : Item{
 		return VanillaItems::BUCKET();
 	}
 

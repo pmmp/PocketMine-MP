@@ -181,11 +181,6 @@ parameters:
 			path: ../../../src/player/Player.php
 
 		-
-			message: "#^Parameter \\#1 \\.\\.\\.\\$slots of method pocketmine\\\\inventory\\\\BaseInventory\\:\\:addItem\\(\\) expects pocketmine\\\\item\\\\Item, mixed given\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
 			message: "#^Parameter \\#1 \\$description of method pocketmine\\\\command\\\\Command\\:\\:setDescription\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginBase.php

@@ -25,8 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\FoodSource;
 use pocketmine\entity\Living;
-use pocketmine\item\FoodSource;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;

@@ -23,17 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\entity\FoodSource;
 use pocketmine\entity\Living;
 
-abstract class Food extends Item implements FoodSource{
+abstract class Food extends Item implements FoodSourceItem{
 	public function requiresHunger() : bool{
 		return true;
 	}
 
-	/**
-	 * @return Item
-	 */
-	public function getResidue(){
+	public function getResidue() : Item{
 		return ItemFactory::air();
 	}
 

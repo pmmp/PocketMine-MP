@@ -73,7 +73,7 @@ use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
-use pocketmine\item\Consumable;
+use pocketmine\item\ConsumableItem;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
@@ -1489,7 +1489,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 */
 	public function consumeHeldItem() : bool{
 		$slot = $this->inventory->getItemInHand();
-		if($slot instanceof Consumable){
+		if($slot instanceof ConsumableItem){
 			$ev = new PlayerItemConsumeEvent($this, $slot);
 			if($this->hasItemCooldown($slot)){
 				$ev->setCancelled();
