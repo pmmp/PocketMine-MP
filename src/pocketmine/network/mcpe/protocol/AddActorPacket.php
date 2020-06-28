@@ -140,9 +140,17 @@ class AddActorPacket extends DataPacket{
 		EntityIds::AGENT => "minecraft:agent",
 		EntityIds::ICE_BOMB => "minecraft:ice_bomb",
 		EntityIds::PHANTOM => "minecraft:phantom",
-		EntityIds::TRIPOD_CAMERA => "minecraft:tripod_camera"
+		EntityIds::TRIPOD_CAMERA => "minecraft:tripod_camera",
+		EntityIds::RAVAGER => "minecraft:ravager",
+		EntityIds::FOX => "minecraft:fox",
+		EntityIds::BEE => "minecraft:bee",
+		EntityIds::STRIDER => "minecraft:strider",
+		EntityIds::PIGLIN => "minecraft:piglin",
+		EntityIds::HOGLIN => "minecraft:hoglin",
+		EntityIds::ZOGLIN => "minecraft:zoglin",
+		
 	];
-
+	
 	/** @var int|null */
 	public $entityUniqueId = null; //TODO
 	/** @var int */
