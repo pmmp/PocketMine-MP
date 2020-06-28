@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
-use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 final class ItemStackWrapper{

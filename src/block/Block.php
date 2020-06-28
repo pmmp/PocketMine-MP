@@ -28,7 +28,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
-use pocketmine\block\tile\TileFactory;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
