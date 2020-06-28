@@ -52,8 +52,8 @@ class Normal extends Generator{
 	/** @var BiomeSelector */
 	private $selector;
 
-	/** @var Gaussian|null */
-	private static $GAUSSIAN_KERNEL = null;
+	/** @var Gaussian */
+	private $gaussian;
 
 	/**
 	 * @param mixed[] $options
@@ -63,9 +63,8 @@ class Normal extends Generator{
 	 */
 	public function __construct(ChunkManager $world, int $seed, array $options = []){
 		parent::__construct($world, $seed, $options);
-		if(self::$GAUSSIAN_KERNEL === null){
-			self::$GAUSSIAN_KERNEL = new Gaussian(2);
-		}
+
+		$this->gaussian = new Gaussian(2);
 
 		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 32);
 		$this->random->setSeed($this->seed);
@@ -167,10 +166,10 @@ class Normal extends Generator{
 				$biome = $this->pickBiome($chunkX * 16 + $x, $chunkZ * 16 + $z);
 				$chunk->setBiomeId($x, $z, $biome->getId());
 
-				for($sx = -self::$GAUSSIAN_KERNEL->smoothSize; $sx <= self::$GAUSSIAN_KERNEL->smoothSize; ++$sx){
-					for($sz = -self::$GAUSSIAN_KERNEL->smoothSize; $sz <= self::$GAUSSIAN_KERNEL->smoothSize; ++$sz){
+				for($sx = -$this->gaussian->smoothSize; $sx <= $this->gaussian->smoothSize; ++$sx){
+					for($sz = -$this->gaussian->smoothSize; $sz <= $this->gaussian->smoothSize; ++$sz){
 
-						$weight = self::$GAUSSIAN_KERNEL->kernel[$sx + self::$GAUSSIAN_KERNEL->smoothSize][$sz + self::$GAUSSIAN_KERNEL->smoothSize];
+						$weight = $this->gaussian->kernel[$sx + $this->gaussian->smoothSize][$sz + $this->gaussian->smoothSize];
 
 						if($sx === 0 and $sz === 0){
 							$adjacent = $biome;

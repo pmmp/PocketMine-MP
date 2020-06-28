@@ -1041,16 +1041,6 @@ parameters:
 			path: ../../../src/world/generator/normal/Normal.php
 
 		-
-			message: "#^Cannot access property \\$smoothSize on pocketmine\\\\world\\\\generator\\\\Gaussian\\|null\\.$#"
-			count: 6
-			path: ../../../src/world/generator/normal/Normal.php
-
-		-
-			message: "#^Cannot access property \\$kernel on pocketmine\\\\world\\\\generator\\\\Gaussian\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/generator/normal/Normal.php
-
-		-
 			message: "#^Cannot call method setFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 3
 			path: ../../../src/world/generator/normal/Normal.php
