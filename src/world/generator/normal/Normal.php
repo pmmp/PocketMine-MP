@@ -27,6 +27,7 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\generator\biome\BiomeSelector;
+use pocketmine\world\generator\Gaussian;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\InvalidGeneratorOptionsException;
 use pocketmine\world\generator\noise\Simplex;
@@ -35,7 +36,6 @@ use pocketmine\world\generator\populator\GroundCover;
 use pocketmine\world\generator\populator\Ore;
 use pocketmine\world\generator\populator\Populator;
 use pocketmine\world\World;
-use function exp;
 
 class Normal extends Generator{
 
@@ -52,10 +52,8 @@ class Normal extends Generator{
 	/** @var BiomeSelector */
 	private $selector;
 
-	/** @var float[][]|null */
+	/** @var Gaussian|null */
 	private static $GAUSSIAN_KERNEL = null;
-	/** @var int */
-	private static $SMOOTH_SIZE = 2;
 
 	/**
 	 * @param mixed[] $options
@@ -66,7 +64,7 @@ class Normal extends Generator{
 	public function __construct(ChunkManager $world, int $seed, array $options = []){
 		parent::__construct($world, $seed, $options);
 		if(self::$GAUSSIAN_KERNEL === null){
-			self::generateKernel();
+			self::$GAUSSIAN_KERNEL = new Gaussian(2);
 		}
 
 		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 32);
@@ -132,23 +130,6 @@ class Normal extends Generator{
 		$this->populators[] = $ores;
 	}
 
-	private static function generateKernel() : void{
-		self::$GAUSSIAN_KERNEL = [];
-
-		$bellSize = 1 / self::$SMOOTH_SIZE;
-		$bellHeight = 2 * self::$SMOOTH_SIZE;
-
-		for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
-			self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE] = [];
-
-			for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
-				$bx = $bellSize * $sx;
-				$bz = $bellSize * $sz;
-				self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE] = $bellHeight * exp(-($bx * $bx + $bz * $bz) / 2);
-			}
-		}
-	}
-
 	private function pickBiome(int $x, int $z) : Biome{
 		$hash = $x * 2345803 ^ $z * 9236449 ^ $this->seed;
 		$hash *= $hash + 223;
@@ -186,10 +167,10 @@ class Normal extends Generator{
 				$biome = $this->pickBiome($chunkX * 16 + $x, $chunkZ * 16 + $z);
 				$chunk->setBiomeId($x, $z, $biome->getId());
 
-				for($sx = -self::$SMOOTH_SIZE; $sx <= self::$SMOOTH_SIZE; ++$sx){
-					for($sz = -self::$SMOOTH_SIZE; $sz <= self::$SMOOTH_SIZE; ++$sz){
+				for($sx = -self::$GAUSSIAN_KERNEL->smoothSize; $sx <= self::$GAUSSIAN_KERNEL->smoothSize; ++$sx){
+					for($sz = -self::$GAUSSIAN_KERNEL->smoothSize; $sz <= self::$GAUSSIAN_KERNEL->smoothSize; ++$sz){
 
-						$weight = self::$GAUSSIAN_KERNEL[$sx + self::$SMOOTH_SIZE][$sz + self::$SMOOTH_SIZE];
+						$weight = self::$GAUSSIAN_KERNEL->kernel[$sx + self::$GAUSSIAN_KERNEL->smoothSize][$sz + self::$GAUSSIAN_KERNEL->smoothSize];
 
 						if($sx === 0 and $sz === 0){
 							$adjacent = $biome;
