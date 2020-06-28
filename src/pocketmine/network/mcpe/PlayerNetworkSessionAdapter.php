@@ -45,6 +45,8 @@ use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
+use pocketmine\network\mcpe\protocol\EmoteListPacket;
+use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
@@ -80,6 +82,7 @@ use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\utils\UUID;
 use function base64_encode;
 use function bin2hex;
 use function implode;
@@ -96,6 +99,9 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	private $server;
 	/** @var Player */
 	private $player;
+
+	/** @var UUID[] */
+	private $emoteIds = [];
 
 	public function __construct(Server $server, Player $player){
 		$this->server = $server;
@@ -399,5 +405,33 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		// TODO: add support to suppress command message
 		$this->player->chat($packet->getCommand());
 		return true;
+	}
+
+	public function handleEmote(EmotePacket $packet) : bool{
+		if($packet->getEntityRuntimeIdField() === $this->player->getId()){
+			if(isset($this->emoteIds[$packet->getEmoteId()])){
+				$this->player->level->broadcastPacketToViewers($this->player, EmotePacket::create(
+					$this->player->getId(),
+					$packet->getEmoteId(),
+					1 << 0
+				));
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public function handleEmoteList(EmoteListPacket $packet) : bool{
+		if($packet->getPlayerEntityRuntimeId() === $this->player->getId()){
+			foreach($packet->getEmoteIds() as $emoteId){
+				$this->emoteIds[$emoteId->toString()] = $emoteId;
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 }
