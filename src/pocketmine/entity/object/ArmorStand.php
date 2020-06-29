@@ -43,6 +43,7 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
 use function array_merge;
 use function min;
@@ -145,7 +146,7 @@ class ArmorStand extends Living{
 				}
 			}
 
-			$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ARMOR_STAND_HIT);
+			$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_MOB_ARMOR_STAND_PLACE);
 
 			$this->tryChangeEquipment($player, $item, $targetSlot, $isArmorSlot);
 
@@ -164,15 +165,15 @@ class ArmorStand extends Living{
 			$this->equipment->setItem($slot, (clone $targetItem)->setCount(1));
 		}
 
-		if(!$targetItem->isNull()){
-			if(!$player->isCreative()){
-				$targetItem->pop();
-			}
-
-			$player->getInventory()->setItemInHand($targetItem);
+		if(!$targetItem->isNull() and $player->isSurvival()){
+			$targetItem->pop();
 		}
 
-		$player->getInventory()->addItem($sourceItem);
+		if(!$targetItem->isNull() and $targetItem->equals($sourceItem)){
+			$targetItem->setCount($targetItem->getCount() + $sourceItem->getCount());
+		}else{
+			$player->getInventory()->addItem($sourceItem);
+		}
 
 		$this->equipment->sendContents($player);
 		$this->armorInventory->sendContents($player);
@@ -228,6 +229,10 @@ class ArmorStand extends Living{
 			$this->setGenericFlag(self::DATA_FLAG_VIBRATING, true);
 			$this->vibrateTimer += 30;
 		}
+	}
+
+	protected function doHitAnimation() : void{
+		$this->level->broadcastLevelEvent($this, LevelEventPacket::EVENT_SOUND_ARMOR_STAND_HIT);
 	}
 
 	public function startDeathAnimation() : void{
