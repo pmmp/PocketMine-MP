@@ -43,7 +43,10 @@ class SignText{
 	 * @throws \InvalidArgumentException
 	 */
 	public function __construct(?array $lines = null){
-		$this->setLines($lines ?? array_fill(0, self::LINE_COUNT, ""));
+		$this->lines = array_fill(0, self::LINE_COUNT, "");
+		if($lines !== null){
+			$this->setLines($lines);
+		}
 	}
 
 	/**
