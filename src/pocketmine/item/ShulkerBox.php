@@ -32,7 +32,7 @@ class ShulkerBox extends Item{
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::get(Block::SHULKER_BOX);
+		return BlockFactory::get(Block::SHULKER_BOX, $this->getDamage());
 	}
 
 	public function getMaxStackSize() : int{
