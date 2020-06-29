@@ -425,6 +425,8 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 
 	public function handleEmoteList(EmoteListPacket $packet) : bool{
 		if($packet->getPlayerEntityRuntimeId() === $this->player->getId()){
+			$this->emoteIds = [];
+
 			foreach($packet->getEmoteIds() as $emoteId){
 				$this->emoteIds[$emoteId->toString()] = $emoteId;
 			}
