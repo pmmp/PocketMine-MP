@@ -192,6 +192,7 @@ use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 use function abs;
+use function array_key_exists;
 use function array_merge;
 use function array_values;
 use function assert;
@@ -332,6 +333,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $craftingGrid;
 	/** @var CraftingTransaction|null */
 	protected $craftingTransaction = null;
+
+	/**
+	 * TODO: HACK! This tracks GUIs for inventories that the server considers "always open" so that the client can't
+	 * open them twice. (1.16 hack)
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 * @internal
+	 */
+	public $openHardcodedWindows = [];
 
 	/** @var int */
 	protected $messageCounter = 2;
@@ -2955,12 +2965,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			case InteractPacket::ACTION_MOUSEOVER:
 				break; //TODO: handle these
 			case InteractPacket::ACTION_OPEN_INVENTORY:
-				if($target === $this){
+				if($target === $this && !array_key_exists($windowId = self::HARDCODED_INVENTORY_WINDOW_ID, $this->openHardcodedWindows)){
 					//TODO: HACK! this restores 1.14ish behaviour, but this should be able to be listened to and
 					//controlled by plugins. However, the player is always a subscriber to their own inventory so it
 					//doesn't integrate well with the regular container system right now.
+					$this->openHardcodedWindows[$windowId] = true;
 					$pk = new ContainerOpenPacket();
-					$pk->windowId = self::HARDCODED_INVENTORY_WINDOW_ID;
+					$pk->windowId = $windowId;
 					$pk->type = WindowTypes::INVENTORY;
 					$pk->x = $pk->y = $pk->z = 0;
 					$pk->entityUniqueId = $this->getId();
@@ -3256,7 +3267,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->doCloseInventory();
 
-		if($packet->windowId >= self::RESERVED_WINDOW_ID_RANGE_START and $packet->windowId <= self::RESERVED_WINDOW_ID_RANGE_END){
+		if(array_key_exists($packet->windowId, $this->openHardcodedWindows)){
+			unset($this->openHardcodedWindows[$packet->windowId]);
 			$pk = new ContainerClosePacket();
 			$pk->windowId = $packet->windowId;
 			$this->sendDataPacket($pk);
