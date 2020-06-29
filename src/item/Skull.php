@@ -32,8 +32,8 @@ class Skull extends Item{
 	/** @var SkullType */
 	private $skullType;
 
-	public function __construct(int $id, int $variant, string $name, SkullType $skullType){
-		parent::__construct($id, $variant, $name);
+	public function __construct(ItemIdentifier $identifier, string $name, SkullType $skullType){
+		parent::__construct($identifier, $name);
 		$this->skullType = $skullType;
 	}
 

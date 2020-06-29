@@ -33,8 +33,8 @@ class SplashPotion extends ProjectileItem{
 	/** @var int */
 	private $potionId;
 
-	public function __construct(int $id, int $variant, string $name, int $potionId){
-		parent::__construct($id, $variant, $name);
+	public function __construct(ItemIdentifier $identifier, string $name, int $potionId){
+		parent::__construct($identifier, $name);
 		$this->potionId = $potionId;
 	}
 

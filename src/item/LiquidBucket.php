@@ -35,8 +35,8 @@ class LiquidBucket extends Item{
 	/** @var Liquid */
 	private $liquid;
 
-	public function __construct(int $id, int $meta, string $name, Liquid $liquid){
-		parent::__construct($id, $meta, $name);
+	public function __construct(ItemIdentifier $identifier, string $name, Liquid $liquid){
+		parent::__construct($identifier, $name);
 		$this->liquid = $liquid;
 	}
 

@@ -58,183 +58,183 @@ class ItemFactory{
 		$this->registerSpawnEggs();
 		$this->registerTierToolItems();
 
-		$this->register(new Apple(ItemIds::APPLE, 0, "Apple"));
-		$this->register(new Arrow(ItemIds::ARROW, 0, "Arrow"));
+		$this->register(new Apple(new ItemIdentifier(ItemIds::APPLE, 0), "Apple"));
+		$this->register(new Arrow(new ItemIdentifier(ItemIds::ARROW, 0), "Arrow"));
 
-		$this->register(new BakedPotato(ItemIds::BAKED_POTATO, 0, "Baked Potato"));
-		$this->register(new Beetroot(ItemIds::BEETROOT, 0, "Beetroot"));
-		$this->register(new BeetrootSeeds(ItemIds::BEETROOT_SEEDS, 0, "Beetroot Seeds"));
-		$this->register(new BeetrootSoup(ItemIds::BEETROOT_SOUP, 0, "Beetroot Soup"));
-		$this->register(new BlazeRod(ItemIds::BLAZE_ROD, 0, "Blaze Rod"));
-		$this->register(new Book(ItemIds::BOOK, 0, "Book"));
-		$this->register(new Bow(ItemIds::BOW, 0, "Bow"));
-		$this->register(new Bowl(ItemIds::BOWL, 0, "Bowl"));
-		$this->register(new Bread(ItemIds::BREAD, 0, "Bread"));
-		$this->register(new Bucket(ItemIds::BUCKET, 0, "Bucket"));
-		$this->register(new Carrot(ItemIds::CARROT, 0, "Carrot"));
-		$this->register(new ChorusFruit(ItemIds::CHORUS_FRUIT, 0, "Chorus Fruit"));
-		$this->register(new Clock(ItemIds::CLOCK, 0, "Clock"));
-		$this->register(new Clownfish(ItemIds::CLOWNFISH, 0, "Clownfish"));
-		$this->register(new Coal(ItemIds::COAL, 0, "Coal"));
-		$this->register(new Coal(ItemIds::COAL, 1, "Charcoal"));
-		$this->register(new CocoaBeans(ItemIds::DYE, 3, "Cocoa Beans"));
-		$this->register(new Compass(ItemIds::COMPASS, 0, "Compass"));
-		$this->register(new CookedChicken(ItemIds::COOKED_CHICKEN, 0, "Cooked Chicken"));
-		$this->register(new CookedFish(ItemIds::COOKED_FISH, 0, "Cooked Fish"));
-		$this->register(new CookedMutton(ItemIds::COOKED_MUTTON, 0, "Cooked Mutton"));
-		$this->register(new CookedPorkchop(ItemIds::COOKED_PORKCHOP, 0, "Cooked Porkchop"));
-		$this->register(new CookedRabbit(ItemIds::COOKED_RABBIT, 0, "Cooked Rabbit"));
-		$this->register(new CookedSalmon(ItemIds::COOKED_SALMON, 0, "Cooked Salmon"));
-		$this->register(new Cookie(ItemIds::COOKIE, 0, "Cookie"));
-		$this->register(new DriedKelp(ItemIds::DRIED_KELP, 0, "Dried Kelp"));
-		$this->register(new Egg(ItemIds::EGG, 0, "Egg"));
-		$this->register(new EnderPearl(ItemIds::ENDER_PEARL, 0, "Ender Pearl"));
-		$this->register(new ExperienceBottle(ItemIds::EXPERIENCE_BOTTLE, 0, "Bottle o' Enchanting"));
-		$this->register(new Fertilizer(ItemIds::DYE, 15, "Bone Meal"));
-		$this->register(new FishingRod(ItemIds::FISHING_ROD, 0, "Fishing Rod"));
-		$this->register(new FlintSteel(ItemIds::FLINT_STEEL, 0, "Flint and Steel"));
-		$this->register(new GlassBottle(ItemIds::GLASS_BOTTLE, 0, "Glass Bottle"));
-		$this->register(new GoldenApple(ItemIds::GOLDEN_APPLE, 0, "Golden Apple"));
-		$this->register(new GoldenAppleEnchanted(ItemIds::ENCHANTED_GOLDEN_APPLE, 0, "Enchanted Golden Apple"));
-		$this->register(new GoldenCarrot(ItemIds::GOLDEN_CARROT, 0, "Golden Carrot"));
-		$this->register(new Item(ItemIds::BLAZE_POWDER, 0, "Blaze Powder"));
-		$this->register(new Item(ItemIds::BLEACH, 0, "Bleach")); //EDU
-		$this->register(new Item(ItemIds::BONE, 0, "Bone"));
-		$this->register(new Item(ItemIds::BRICK, 0, "Brick"));
-		$this->register(new Item(ItemIds::CHORUS_FRUIT_POPPED, 0, "Popped Chorus Fruit"));
-		$this->register(new Item(ItemIds::CLAY_BALL, 0, "Clay"));
-		$this->register(new Item(ItemIds::COMPOUND, 0, "Salt"));
-		$this->register(new Item(ItemIds::COMPOUND, 1, "Sodium Oxide"));
-		$this->register(new Item(ItemIds::COMPOUND, 2, "Sodium Hydroxide"));
-		$this->register(new Item(ItemIds::COMPOUND, 3, "Magnesium Nitrate"));
-		$this->register(new Item(ItemIds::COMPOUND, 4, "Iron Sulphide"));
-		$this->register(new Item(ItemIds::COMPOUND, 5, "Lithium Hydride"));
-		$this->register(new Item(ItemIds::COMPOUND, 6, "Sodium Hydride"));
-		$this->register(new Item(ItemIds::COMPOUND, 7, "Calcium Bromide"));
-		$this->register(new Item(ItemIds::COMPOUND, 8, "Magnesium Oxide"));
-		$this->register(new Item(ItemIds::COMPOUND, 9, "Sodium Acetate"));
-		$this->register(new Item(ItemIds::COMPOUND, 10, "Luminol"));
-		$this->register(new Item(ItemIds::COMPOUND, 11, "Charcoal")); //??? maybe bug
-		$this->register(new Item(ItemIds::COMPOUND, 12, "Sugar")); //??? maybe bug
-		$this->register(new Item(ItemIds::COMPOUND, 13, "Aluminium Oxide"));
-		$this->register(new Item(ItemIds::COMPOUND, 14, "Boron Trioxide"));
-		$this->register(new Item(ItemIds::COMPOUND, 15, "Soap"));
-		$this->register(new Item(ItemIds::COMPOUND, 16, "Polyethylene"));
-		$this->register(new Item(ItemIds::COMPOUND, 17, "Rubbish"));
-		$this->register(new Item(ItemIds::COMPOUND, 18, "Magnesium Salts"));
-		$this->register(new Item(ItemIds::COMPOUND, 19, "Sulphate"));
-		$this->register(new Item(ItemIds::COMPOUND, 20, "Barium Sulphate"));
-		$this->register(new Item(ItemIds::COMPOUND, 21, "Potassium Chloride"));
-		$this->register(new Item(ItemIds::COMPOUND, 22, "Mercuric Chloride"));
-		$this->register(new Item(ItemIds::COMPOUND, 23, "Cerium Chloride"));
-		$this->register(new Item(ItemIds::COMPOUND, 24, "Tungsten Chloride"));
-		$this->register(new Item(ItemIds::COMPOUND, 25, "Calcium Chloride"));
-		$this->register(new Item(ItemIds::COMPOUND, 26, "Water")); //???
-		$this->register(new Item(ItemIds::COMPOUND, 27, "Glue"));
-		$this->register(new Item(ItemIds::COMPOUND, 28, "Hypochlorite"));
-		$this->register(new Item(ItemIds::COMPOUND, 29, "Crude Oil"));
-		$this->register(new Item(ItemIds::COMPOUND, 30, "Latex"));
-		$this->register(new Item(ItemIds::COMPOUND, 31, "Potassium Iodide"));
-		$this->register(new Item(ItemIds::COMPOUND, 32, "Sodium Fluoride"));
-		$this->register(new Item(ItemIds::COMPOUND, 33, "Benzene"));
-		$this->register(new Item(ItemIds::COMPOUND, 34, "Ink"));
-		$this->register(new Item(ItemIds::COMPOUND, 35, "Hydrogen Peroxide"));
-		$this->register(new Item(ItemIds::COMPOUND, 36, "Ammonia"));
-		$this->register(new Item(ItemIds::COMPOUND, 37, "Sodium Hypochlorite"));
-		$this->register(new Item(ItemIds::DIAMOND, 0, "Diamond"));
-		$this->register(new Item(ItemIds::DRAGON_BREATH, 0, "Dragon's Breath"));
-		$this->register(new Item(ItemIds::DYE, 0, "Ink Sac"));
-		$this->register(new Item(ItemIds::DYE, 4, "Lapis Lazuli"));
-		$this->register(new Item(ItemIds::EMERALD, 0, "Emerald"));
-		$this->register(new Item(ItemIds::FEATHER, 0, "Feather"));
-		$this->register(new Item(ItemIds::FERMENTED_SPIDER_EYE, 0, "Fermented Spider Eye"));
-		$this->register(new Item(ItemIds::FLINT, 0, "Flint"));
-		$this->register(new Item(ItemIds::GHAST_TEAR, 0, "Ghast Tear"));
-		$this->register(new Item(ItemIds::GLISTERING_MELON, 0, "Glistering Melon"));
-		$this->register(new Item(ItemIds::GLOWSTONE_DUST, 0, "Glowstone Dust"));
-		$this->register(new Item(ItemIds::GOLD_INGOT, 0, "Gold Ingot"));
-		$this->register(new Item(ItemIds::GOLD_NUGGET, 0, "Gold Nugget"));
-		$this->register(new Item(ItemIds::GUNPOWDER, 0, "Gunpowder"));
-		$this->register(new Item(ItemIds::HEART_OF_THE_SEA, 0, "Heart of the Sea"));
-		$this->register(new Item(ItemIds::IRON_INGOT, 0, "Iron Ingot"));
-		$this->register(new Item(ItemIds::IRON_NUGGET, 0, "Iron Nugget"));
-		$this->register(new Item(ItemIds::LEATHER, 0, "Leather"));
-		$this->register(new Item(ItemIds::MAGMA_CREAM, 0, "Magma Cream"));
-		$this->register(new Item(ItemIds::NAUTILUS_SHELL, 0, "Nautilus Shell"));
-		$this->register(new Item(ItemIds::NETHER_BRICK, 0, "Nether Brick"));
-		$this->register(new Item(ItemIds::NETHER_QUARTZ, 0, "Nether Quartz"));
-		$this->register(new Item(ItemIds::NETHER_STAR, 0, "Nether Star"));
-		$this->register(new Item(ItemIds::PAPER, 0, "Paper"));
-		$this->register(new Item(ItemIds::PRISMARINE_CRYSTALS, 0, "Prismarine Crystals"));
-		$this->register(new Item(ItemIds::PRISMARINE_SHARD, 0, "Prismarine Shard"));
-		$this->register(new Item(ItemIds::RABBIT_FOOT, 0, "Rabbit's Foot"));
-		$this->register(new Item(ItemIds::RABBIT_HIDE, 0, "Rabbit Hide"));
-		$this->register(new Item(ItemIds::SHULKER_SHELL, 0, "Shulker Shell"));
-		$this->register(new Item(ItemIds::SLIME_BALL, 0, "Slimeball"));
-		$this->register(new Item(ItemIds::SUGAR, 0, "Sugar"));
-		$this->register(new Item(ItemIds::TURTLE_SHELL_PIECE, 0, "Scute"));
-		$this->register(new Item(ItemIds::WHEAT, 0, "Wheat"));
-		$this->register(new ItemBlock(BlockLegacyIds::ACACIA_DOOR_BLOCK, 0, ItemIds::ACACIA_DOOR));
-		$this->register(new ItemBlock(BlockLegacyIds::BIRCH_DOOR_BLOCK, 0, ItemIds::BIRCH_DOOR));
-		$this->register(new ItemBlock(BlockLegacyIds::BREWING_STAND_BLOCK, 0, ItemIds::BREWING_STAND));
-		$this->register(new ItemBlock(BlockLegacyIds::CAKE_BLOCK, 0, ItemIds::CAKE));
-		$this->register(new ItemBlock(BlockLegacyIds::CAULDRON_BLOCK, 0, ItemIds::CAULDRON));
-		$this->register(new ItemBlock(BlockLegacyIds::COMPARATOR_BLOCK, 0, ItemIds::COMPARATOR));
-		$this->register(new ItemBlock(BlockLegacyIds::DARK_OAK_DOOR_BLOCK, 0, ItemIds::DARK_OAK_DOOR));
-		$this->register(new ItemBlock(BlockLegacyIds::FLOWER_POT_BLOCK, 0, ItemIds::FLOWER_POT));
-		$this->register(new ItemBlock(BlockLegacyIds::HOPPER_BLOCK, 0, ItemIds::HOPPER));
-		$this->register(new ItemBlock(BlockLegacyIds::IRON_DOOR_BLOCK, 0, ItemIds::IRON_DOOR));
-		$this->register(new ItemBlock(BlockLegacyIds::ITEM_FRAME_BLOCK, 0, ItemIds::ITEM_FRAME));
-		$this->register(new ItemBlock(BlockLegacyIds::JUNGLE_DOOR_BLOCK, 0, ItemIds::JUNGLE_DOOR));
-		$this->register(new ItemBlock(BlockLegacyIds::NETHER_WART_PLANT, 0, ItemIds::NETHER_WART));
-		$this->register(new ItemBlock(BlockLegacyIds::OAK_DOOR_BLOCK, 0, ItemIds::OAK_DOOR));
-		$this->register(new ItemBlock(BlockLegacyIds::REPEATER_BLOCK, 0, ItemIds::REPEATER));
-		$this->register(new ItemBlock(BlockLegacyIds::SPRUCE_DOOR_BLOCK, 0, ItemIds::SPRUCE_DOOR));
-		$this->register(new ItemBlock(BlockLegacyIds::SUGARCANE_BLOCK, 0, ItemIds::SUGARCANE));
+		$this->register(new BakedPotato(new ItemIdentifier(ItemIds::BAKED_POTATO, 0), "Baked Potato"));
+		$this->register(new Beetroot(new ItemIdentifier(ItemIds::BEETROOT, 0), "Beetroot"));
+		$this->register(new BeetrootSeeds(new ItemIdentifier(ItemIds::BEETROOT_SEEDS, 0), "Beetroot Seeds"));
+		$this->register(new BeetrootSoup(new ItemIdentifier(ItemIds::BEETROOT_SOUP, 0), "Beetroot Soup"));
+		$this->register(new BlazeRod(new ItemIdentifier(ItemIds::BLAZE_ROD, 0), "Blaze Rod"));
+		$this->register(new Book(new ItemIdentifier(ItemIds::BOOK, 0), "Book"));
+		$this->register(new Bow(new ItemIdentifier(ItemIds::BOW, 0), "Bow"));
+		$this->register(new Bowl(new ItemIdentifier(ItemIds::BOWL, 0), "Bowl"));
+		$this->register(new Bread(new ItemIdentifier(ItemIds::BREAD, 0), "Bread"));
+		$this->register(new Bucket(new ItemIdentifier(ItemIds::BUCKET, 0), "Bucket"));
+		$this->register(new Carrot(new ItemIdentifier(ItemIds::CARROT, 0), "Carrot"));
+		$this->register(new ChorusFruit(new ItemIdentifier(ItemIds::CHORUS_FRUIT, 0), "Chorus Fruit"));
+		$this->register(new Clock(new ItemIdentifier(ItemIds::CLOCK, 0), "Clock"));
+		$this->register(new Clownfish(new ItemIdentifier(ItemIds::CLOWNFISH, 0), "Clownfish"));
+		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 0), "Coal"));
+		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 1), "Charcoal"));
+		$this->register(new CocoaBeans(new ItemIdentifier(ItemIds::DYE, 3), "Cocoa Beans"));
+		$this->register(new Compass(new ItemIdentifier(ItemIds::COMPASS, 0), "Compass"));
+		$this->register(new CookedChicken(new ItemIdentifier(ItemIds::COOKED_CHICKEN, 0), "Cooked Chicken"));
+		$this->register(new CookedFish(new ItemIdentifier(ItemIds::COOKED_FISH, 0), "Cooked Fish"));
+		$this->register(new CookedMutton(new ItemIdentifier(ItemIds::COOKED_MUTTON, 0), "Cooked Mutton"));
+		$this->register(new CookedPorkchop(new ItemIdentifier(ItemIds::COOKED_PORKCHOP, 0), "Cooked Porkchop"));
+		$this->register(new CookedRabbit(new ItemIdentifier(ItemIds::COOKED_RABBIT, 0), "Cooked Rabbit"));
+		$this->register(new CookedSalmon(new ItemIdentifier(ItemIds::COOKED_SALMON, 0), "Cooked Salmon"));
+		$this->register(new Cookie(new ItemIdentifier(ItemIds::COOKIE, 0), "Cookie"));
+		$this->register(new DriedKelp(new ItemIdentifier(ItemIds::DRIED_KELP, 0), "Dried Kelp"));
+		$this->register(new Egg(new ItemIdentifier(ItemIds::EGG, 0), "Egg"));
+		$this->register(new EnderPearl(new ItemIdentifier(ItemIds::ENDER_PEARL, 0), "Ender Pearl"));
+		$this->register(new ExperienceBottle(new ItemIdentifier(ItemIds::EXPERIENCE_BOTTLE, 0), "Bottle o' Enchanting"));
+		$this->register(new Fertilizer(new ItemIdentifier(ItemIds::DYE, 15), "Bone Meal"));
+		$this->register(new FishingRod(new ItemIdentifier(ItemIds::FISHING_ROD, 0), "Fishing Rod"));
+		$this->register(new FlintSteel(new ItemIdentifier(ItemIds::FLINT_STEEL, 0), "Flint and Steel"));
+		$this->register(new GlassBottle(new ItemIdentifier(ItemIds::GLASS_BOTTLE, 0), "Glass Bottle"));
+		$this->register(new GoldenApple(new ItemIdentifier(ItemIds::GOLDEN_APPLE, 0), "Golden Apple"));
+		$this->register(new GoldenAppleEnchanted(new ItemIdentifier(ItemIds::ENCHANTED_GOLDEN_APPLE, 0), "Enchanted Golden Apple"));
+		$this->register(new GoldenCarrot(new ItemIdentifier(ItemIds::GOLDEN_CARROT, 0), "Golden Carrot"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::BLAZE_POWDER, 0), "Blaze Powder"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::BLEACH, 0), "Bleach")); //EDU
+		$this->register(new Item(new ItemIdentifier(ItemIds::BONE, 0), "Bone"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::BRICK, 0), "Brick"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::CHORUS_FRUIT_POPPED, 0), "Popped Chorus Fruit"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::CLAY_BALL, 0), "Clay"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 0), "Salt"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 1), "Sodium Oxide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 2), "Sodium Hydroxide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 3), "Magnesium Nitrate"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 4), "Iron Sulphide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 5), "Lithium Hydride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 6), "Sodium Hydride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 7), "Calcium Bromide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 8), "Magnesium Oxide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 9), "Sodium Acetate"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 10), "Luminol"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 11), "Charcoal")); //??? maybe bug
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 12), "Sugar")); //??? maybe bug
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 13), "Aluminium Oxide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 14), "Boron Trioxide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 15), "Soap"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 16), "Polyethylene"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 17), "Rubbish"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 18), "Magnesium Salts"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 19), "Sulphate"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 20), "Barium Sulphate"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 21), "Potassium Chloride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 22), "Mercuric Chloride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 23), "Cerium Chloride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 24), "Tungsten Chloride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 25), "Calcium Chloride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 26), "Water")); //???
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 27), "Glue"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 28), "Hypochlorite"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 29), "Crude Oil"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 30), "Latex"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 31), "Potassium Iodide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 32), "Sodium Fluoride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 33), "Benzene"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 34), "Ink"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 35), "Hydrogen Peroxide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 36), "Ammonia"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 37), "Sodium Hypochlorite"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::DIAMOND, 0), "Diamond"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::DRAGON_BREATH, 0), "Dragon's Breath"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::DYE, 0), "Ink Sac"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::DYE, 4), "Lapis Lazuli"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::EMERALD, 0), "Emerald"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::FEATHER, 0), "Feather"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::FERMENTED_SPIDER_EYE, 0), "Fermented Spider Eye"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::FLINT, 0), "Flint"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::GHAST_TEAR, 0), "Ghast Tear"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::GLISTERING_MELON, 0), "Glistering Melon"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::GLOWSTONE_DUST, 0), "Glowstone Dust"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::GOLD_INGOT, 0), "Gold Ingot"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::GOLD_NUGGET, 0), "Gold Nugget"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::GUNPOWDER, 0), "Gunpowder"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::HEART_OF_THE_SEA, 0), "Heart of the Sea"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::IRON_INGOT, 0), "Iron Ingot"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::IRON_NUGGET, 0), "Iron Nugget"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::LEATHER, 0), "Leather"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::MAGMA_CREAM, 0), "Magma Cream"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::NAUTILUS_SHELL, 0), "Nautilus Shell"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::NETHER_BRICK, 0), "Nether Brick"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::NETHER_QUARTZ, 0), "Nether Quartz"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::NETHER_STAR, 0), "Nether Star"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::PAPER, 0), "Paper"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::PRISMARINE_CRYSTALS, 0), "Prismarine Crystals"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::PRISMARINE_SHARD, 0), "Prismarine Shard"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::RABBIT_FOOT, 0), "Rabbit's Foot"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::RABBIT_HIDE, 0), "Rabbit Hide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::SHULKER_SHELL, 0), "Shulker Shell"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::SLIME_BALL, 0), "Slimeball"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::SUGAR, 0), "Sugar"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::TURTLE_SHELL_PIECE, 0), "Scute"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::WHEAT, 0), "Wheat"));
+		$this->register(new ItemBlock(BlockLegacyIds::ACACIA_DOOR_BLOCK, 0, new ItemIdentifier(ItemIds::ACACIA_DOOR, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::BIRCH_DOOR_BLOCK, 0, new ItemIdentifier(ItemIds::BIRCH_DOOR, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::BREWING_STAND_BLOCK, 0, new ItemIdentifier(ItemIds::BREWING_STAND, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::CAKE_BLOCK, 0, new ItemIdentifier(ItemIds::CAKE, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::CAULDRON_BLOCK, 0, new ItemIdentifier(ItemIds::CAULDRON, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::COMPARATOR_BLOCK, 0, new ItemIdentifier(ItemIds::COMPARATOR, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::DARK_OAK_DOOR_BLOCK, 0, new ItemIdentifier(ItemIds::DARK_OAK_DOOR, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::FLOWER_POT_BLOCK, 0, new ItemIdentifier(ItemIds::FLOWER_POT, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::HOPPER_BLOCK, 0, new ItemIdentifier(ItemIds::HOPPER, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::IRON_DOOR_BLOCK, 0, new ItemIdentifier(ItemIds::IRON_DOOR, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::ITEM_FRAME_BLOCK, 0, new ItemIdentifier(ItemIds::ITEM_FRAME, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::JUNGLE_DOOR_BLOCK, 0, new ItemIdentifier(ItemIds::JUNGLE_DOOR, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::NETHER_WART_PLANT, 0, new ItemIdentifier(ItemIds::NETHER_WART, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::OAK_DOOR_BLOCK, 0, new ItemIdentifier(ItemIds::OAK_DOOR, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::REPEATER_BLOCK, 0, new ItemIdentifier(ItemIds::REPEATER, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::SPRUCE_DOOR_BLOCK, 0, new ItemIdentifier(ItemIds::SPRUCE_DOOR, 0)));
+		$this->register(new ItemBlock(BlockLegacyIds::SUGARCANE_BLOCK, 0, new ItemIdentifier(ItemIds::SUGARCANE, 0)));
 		//TODO: fix metadata for buckets with still liquid in them
 		//the meta values are intentionally hardcoded because block IDs will change in the future
-		$this->register(new LiquidBucket(ItemIds::BUCKET, 8, "Water Bucket", VanillaBlocks::WATER()));
-		$this->register(new LiquidBucket(ItemIds::BUCKET, 10, "Lava Bucket", VanillaBlocks::LAVA()));
-		$this->register(new Melon(ItemIds::MELON, 0, "Melon"));
-		$this->register(new MelonSeeds(ItemIds::MELON_SEEDS, 0, "Melon Seeds"));
-		$this->register(new MilkBucket(ItemIds::BUCKET, 1, "Milk Bucket"));
-		$this->register(new Minecart(ItemIds::MINECART, 0, "Minecart"));
-		$this->register(new MushroomStew(ItemIds::MUSHROOM_STEW, 0, "Mushroom Stew"));
-		$this->register(new PaintingItem(ItemIds::PAINTING, 0, "Painting"));
-		$this->register(new PoisonousPotato(ItemIds::POISONOUS_POTATO, 0, "Poisonous Potato"));
-		$this->register(new Potato(ItemIds::POTATO, 0, "Potato"));
-		$this->register(new Pufferfish(ItemIds::PUFFERFISH, 0, "Pufferfish"));
-		$this->register(new PumpkinPie(ItemIds::PUMPKIN_PIE, 0, "Pumpkin Pie"));
-		$this->register(new PumpkinSeeds(ItemIds::PUMPKIN_SEEDS, 0, "Pumpkin Seeds"));
-		$this->register(new RabbitStew(ItemIds::RABBIT_STEW, 0, "Rabbit Stew"));
-		$this->register(new RawBeef(ItemIds::RAW_BEEF, 0, "Raw Beef"));
-		$this->register(new RawChicken(ItemIds::RAW_CHICKEN, 0, "Raw Chicken"));
-		$this->register(new RawFish(ItemIds::RAW_FISH, 0, "Raw Fish"));
-		$this->register(new RawMutton(ItemIds::RAW_MUTTON, 0, "Raw Mutton"));
-		$this->register(new RawPorkchop(ItemIds::RAW_PORKCHOP, 0, "Raw Porkchop"));
-		$this->register(new RawRabbit(ItemIds::RAW_RABBIT, 0, "Raw Rabbit"));
-		$this->register(new RawSalmon(ItemIds::RAW_SALMON, 0, "Raw Salmon"));
-		$this->register(new Redstone(ItemIds::REDSTONE, 0, "Redstone"));
-		$this->register(new RottenFlesh(ItemIds::ROTTEN_FLESH, 0, "Rotten Flesh"));
-		$this->register(new Shears(ItemIds::SHEARS, 0, "Shears"));
-		$this->register(new Sign(BlockLegacyIds::STANDING_SIGN, 0, ItemIds::SIGN));
-		$this->register(new Sign(BlockLegacyIds::SPRUCE_STANDING_SIGN, 0, ItemIds::SPRUCE_SIGN));
-		$this->register(new Sign(BlockLegacyIds::BIRCH_STANDING_SIGN, 0, ItemIds::BIRCH_SIGN));
-		$this->register(new Sign(BlockLegacyIds::JUNGLE_STANDING_SIGN, 0, ItemIds::JUNGLE_SIGN));
-		$this->register(new Sign(BlockLegacyIds::ACACIA_STANDING_SIGN, 0, ItemIds::ACACIA_SIGN));
-		$this->register(new Sign(BlockLegacyIds::DARKOAK_STANDING_SIGN, 0, ItemIds::DARKOAK_SIGN));
-		$this->register(new Snowball(ItemIds::SNOWBALL, 0, "Snowball"));
-		$this->register(new SpiderEye(ItemIds::SPIDER_EYE, 0, "Spider Eye"));
-		$this->register(new Steak(ItemIds::STEAK, 0, "Steak"));
-		$this->register(new Stick(ItemIds::STICK, 0, "Stick"));
-		$this->register(new StringItem(ItemIds::STRING, 0, "String"));
-		$this->register(new Totem(ItemIds::TOTEM, 0, "Totem of Undying"));
-		$this->register(new WheatSeeds(ItemIds::WHEAT_SEEDS, 0, "Wheat Seeds"));
-		$this->register(new WritableBook(ItemIds::WRITABLE_BOOK, 0, "Book & Quill"));
-		$this->register(new WrittenBook(ItemIds::WRITTEN_BOOK, 0, "Written Book"));
+		$this->register(new LiquidBucket(new ItemIdentifier(ItemIds::BUCKET, 8), "Water Bucket", VanillaBlocks::WATER()));
+		$this->register(new LiquidBucket(new ItemIdentifier(ItemIds::BUCKET, 10), "Lava Bucket", VanillaBlocks::LAVA()));
+		$this->register(new Melon(new ItemIdentifier(ItemIds::MELON, 0), "Melon"));
+		$this->register(new MelonSeeds(new ItemIdentifier(ItemIds::MELON_SEEDS, 0), "Melon Seeds"));
+		$this->register(new MilkBucket(new ItemIdentifier(ItemIds::BUCKET, 1), "Milk Bucket"));
+		$this->register(new Minecart(new ItemIdentifier(ItemIds::MINECART, 0), "Minecart"));
+		$this->register(new MushroomStew(new ItemIdentifier(ItemIds::MUSHROOM_STEW, 0), "Mushroom Stew"));
+		$this->register(new PaintingItem(new ItemIdentifier(ItemIds::PAINTING, 0), "Painting"));
+		$this->register(new PoisonousPotato(new ItemIdentifier(ItemIds::POISONOUS_POTATO, 0), "Poisonous Potato"));
+		$this->register(new Potato(new ItemIdentifier(ItemIds::POTATO, 0), "Potato"));
+		$this->register(new Pufferfish(new ItemIdentifier(ItemIds::PUFFERFISH, 0), "Pufferfish"));
+		$this->register(new PumpkinPie(new ItemIdentifier(ItemIds::PUMPKIN_PIE, 0), "Pumpkin Pie"));
+		$this->register(new PumpkinSeeds(new ItemIdentifier(ItemIds::PUMPKIN_SEEDS, 0), "Pumpkin Seeds"));
+		$this->register(new RabbitStew(new ItemIdentifier(ItemIds::RABBIT_STEW, 0), "Rabbit Stew"));
+		$this->register(new RawBeef(new ItemIdentifier(ItemIds::RAW_BEEF, 0), "Raw Beef"));
+		$this->register(new RawChicken(new ItemIdentifier(ItemIds::RAW_CHICKEN, 0), "Raw Chicken"));
+		$this->register(new RawFish(new ItemIdentifier(ItemIds::RAW_FISH, 0), "Raw Fish"));
+		$this->register(new RawMutton(new ItemIdentifier(ItemIds::RAW_MUTTON, 0), "Raw Mutton"));
+		$this->register(new RawPorkchop(new ItemIdentifier(ItemIds::RAW_PORKCHOP, 0), "Raw Porkchop"));
+		$this->register(new RawRabbit(new ItemIdentifier(ItemIds::RAW_RABBIT, 0), "Raw Rabbit"));
+		$this->register(new RawSalmon(new ItemIdentifier(ItemIds::RAW_SALMON, 0), "Raw Salmon"));
+		$this->register(new Redstone(new ItemIdentifier(ItemIds::REDSTONE, 0), "Redstone"));
+		$this->register(new RottenFlesh(new ItemIdentifier(ItemIds::ROTTEN_FLESH, 0), "Rotten Flesh"));
+		$this->register(new Shears(new ItemIdentifier(ItemIds::SHEARS, 0), "Shears"));
+		$this->register(new Sign(BlockLegacyIds::STANDING_SIGN, 0, new ItemIdentifier(ItemIds::SIGN, 0)));
+		$this->register(new Sign(BlockLegacyIds::SPRUCE_STANDING_SIGN, 0, new ItemIdentifier(ItemIds::SPRUCE_SIGN, 0)));
+		$this->register(new Sign(BlockLegacyIds::BIRCH_STANDING_SIGN, 0, new ItemIdentifier(ItemIds::BIRCH_SIGN, 0)));
+		$this->register(new Sign(BlockLegacyIds::JUNGLE_STANDING_SIGN, 0, new ItemIdentifier(ItemIds::JUNGLE_SIGN, 0)));
+		$this->register(new Sign(BlockLegacyIds::ACACIA_STANDING_SIGN, 0, new ItemIdentifier(ItemIds::ACACIA_SIGN, 0)));
+		$this->register(new Sign(BlockLegacyIds::DARKOAK_STANDING_SIGN, 0, new ItemIdentifier(ItemIds::DARKOAK_SIGN, 0)));
+		$this->register(new Snowball(new ItemIdentifier(ItemIds::SNOWBALL, 0), "Snowball"));
+		$this->register(new SpiderEye(new ItemIdentifier(ItemIds::SPIDER_EYE, 0), "Spider Eye"));
+		$this->register(new Steak(new ItemIdentifier(ItemIds::STEAK, 0), "Steak"));
+		$this->register(new Stick(new ItemIdentifier(ItemIds::STICK, 0), "Stick"));
+		$this->register(new StringItem(new ItemIdentifier(ItemIds::STRING, 0), "String"));
+		$this->register(new Totem(new ItemIdentifier(ItemIds::TOTEM, 0), "Totem of Undying"));
+		$this->register(new WheatSeeds(new ItemIdentifier(ItemIds::WHEAT_SEEDS, 0), "Wheat Seeds"));
+		$this->register(new WritableBook(new ItemIdentifier(ItemIds::WRITABLE_BOOK, 0), "Book & Quill"));
+		$this->register(new WrittenBook(new ItemIdentifier(ItemIds::WRITTEN_BOOK, 0), "Written Book"));
 
 		foreach(SkullType::getAll() as $skullType){
-			$this->register(new Skull(ItemIds::SKULL, $skullType->getMagicNumber(), $skullType->getDisplayName(), $skullType));
+			$this->register(new Skull(new ItemIdentifier(ItemIds::SKULL, $skullType->getMagicNumber()), $skullType->getDisplayName(), $skullType));
 		}
 
 		$dyeMap = [
@@ -246,18 +246,18 @@ class ItemFactory{
 		foreach(DyeColor::getAll() as $color){
 			//TODO: use colour object directly
 			//TODO: add interface to dye-colour objects
-			$this->register(new Dye(ItemIds::DYE, $dyeMap[$color->id()] ?? $color->getInvertedMagicNumber(), $color->getDisplayName() . " Dye", $color));
-			$this->register(new Bed(ItemIds::BED, $color->getMagicNumber(), $color->getDisplayName() . " Bed", $color));
-			$this->register(new Banner(ItemIds::BANNER, $color->getInvertedMagicNumber(), $color->getDisplayName() . " Banner", $color));
+			$this->register(new Dye(new ItemIdentifier(ItemIds::DYE, $dyeMap[$color->id()] ?? $color->getInvertedMagicNumber()), $color->getDisplayName() . " Dye", $color));
+			$this->register(new Bed(new ItemIdentifier(ItemIds::BED, $color->getMagicNumber()), $color->getDisplayName() . " Bed", $color));
+			$this->register(new Banner(new ItemIdentifier(ItemIds::BANNER, $color->getInvertedMagicNumber()), $color->getDisplayName() . " Banner", $color));
 		}
 
 		foreach(Potion::ALL as $type){
-			$this->register(new Potion(ItemIds::POTION, $type, "Potion", $type));
-			$this->register(new SplashPotion(ItemIds::SPLASH_POTION, $type, "Splash Potion", $type));
+			$this->register(new Potion(new ItemIdentifier(ItemIds::POTION, $type), "Potion", $type));
+			$this->register(new SplashPotion(new ItemIdentifier(ItemIds::SPLASH_POTION, $type), "Splash Potion", $type));
 		}
 
 		foreach(TreeType::getAll() as $type){
-			$this->register(new Boat(ItemIds::BOAT, $type->getMagicNumber(), $type->getDisplayName() . " Boat", $type));
+			$this->register(new Boat(new ItemIdentifier(ItemIds::BOAT, $type->getMagicNumber()), $type->getDisplayName() . " Boat", $type));
 		}
 
 		//region --- auto-generated TODOs ---
@@ -317,17 +317,17 @@ class ItemFactory{
 
 	private function registerSpawnEggs() : void{
 		//TODO: the meta values should probably be hardcoded; they won't change, but the EntityLegacyIds might
-		$this->register(new class(ItemIds::SPAWN_EGG, EntityLegacyIds::ZOMBIE, "Zombie Spawn Egg") extends SpawnEgg{
+		$this->register(new class(new ItemIdentifier(ItemIds::SPAWN_EGG, EntityLegacyIds::ZOMBIE), "Zombie Spawn Egg") extends SpawnEgg{
 			protected function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Zombie(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
-		$this->register(new class(ItemIds::SPAWN_EGG, EntityLegacyIds::SQUID, "Squid Spawn Egg") extends SpawnEgg{
+		$this->register(new class(new ItemIdentifier(ItemIds::SPAWN_EGG, EntityLegacyIds::SQUID), "Squid Spawn Egg") extends SpawnEgg{
 			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Squid(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
 		});
-		$this->register(new class(ItemIds::SPAWN_EGG, EntityLegacyIds::VILLAGER, "Villager Spawn Egg") extends SpawnEgg{
+		$this->register(new class(new ItemIdentifier(ItemIds::SPAWN_EGG, EntityLegacyIds::VILLAGER), "Villager Spawn Egg") extends SpawnEgg{
 			public function createEntity(World $world, Vector3 $pos, float $yaw, float $pitch) : Entity{
 				return new Villager(Location::fromObject($pos, $world, $yaw, $pitch));
 			}
@@ -335,54 +335,54 @@ class ItemFactory{
 	}
 
 	private function registerTierToolItems() : void{
-		$this->register(new Axe(ItemIds::DIAMOND_AXE, "Diamond Axe", ToolTier::DIAMOND()));
-		$this->register(new Axe(ItemIds::GOLDEN_AXE, "Golden Axe", ToolTier::GOLD()));
-		$this->register(new Axe(ItemIds::IRON_AXE, "Iron Axe", ToolTier::IRON()));
-		$this->register(new Axe(ItemIds::STONE_AXE, "Stone Axe", ToolTier::STONE()));
-		$this->register(new Axe(ItemIds::WOODEN_AXE, "Wooden Axe", ToolTier::WOOD()));
-		$this->register(new Hoe(ItemIds::DIAMOND_HOE, "Diamond Hoe", ToolTier::DIAMOND()));
-		$this->register(new Hoe(ItemIds::GOLDEN_HOE, "Golden Hoe", ToolTier::GOLD()));
-		$this->register(new Hoe(ItemIds::IRON_HOE, "Iron Hoe", ToolTier::IRON()));
-		$this->register(new Hoe(ItemIds::STONE_HOE, "Stone Hoe", ToolTier::STONE()));
-		$this->register(new Hoe(ItemIds::WOODEN_HOE, "Wooden Hoe", ToolTier::WOOD()));
-		$this->register(new Pickaxe(ItemIds::DIAMOND_PICKAXE, "Diamond Pickaxe", ToolTier::DIAMOND()));
-		$this->register(new Pickaxe(ItemIds::GOLDEN_PICKAXE, "Golden Pickaxe", ToolTier::GOLD()));
-		$this->register(new Pickaxe(ItemIds::IRON_PICKAXE, "Iron Pickaxe", ToolTier::IRON()));
-		$this->register(new Pickaxe(ItemIds::STONE_PICKAXE, "Stone Pickaxe", ToolTier::STONE()));
-		$this->register(new Pickaxe(ItemIds::WOODEN_PICKAXE, "Wooden Pickaxe", ToolTier::WOOD()));
-		$this->register(new Shovel(ItemIds::DIAMOND_SHOVEL, "Diamond Shovel", ToolTier::DIAMOND()));
-		$this->register(new Shovel(ItemIds::GOLDEN_SHOVEL, "Golden Shovel", ToolTier::GOLD()));
-		$this->register(new Shovel(ItemIds::IRON_SHOVEL, "Iron Shovel", ToolTier::IRON()));
-		$this->register(new Shovel(ItemIds::STONE_SHOVEL, "Stone Shovel", ToolTier::STONE()));
-		$this->register(new Shovel(ItemIds::WOODEN_SHOVEL, "Wooden Shovel", ToolTier::WOOD()));
-		$this->register(new Sword(ItemIds::DIAMOND_SWORD, "Diamond Sword", ToolTier::DIAMOND()));
-		$this->register(new Sword(ItemIds::GOLDEN_SWORD, "Golden Sword", ToolTier::GOLD()));
-		$this->register(new Sword(ItemIds::IRON_SWORD, "Iron Sword", ToolTier::IRON()));
-		$this->register(new Sword(ItemIds::STONE_SWORD, "Stone Sword", ToolTier::STONE()));
-		$this->register(new Sword(ItemIds::WOODEN_SWORD, "Wooden Sword", ToolTier::WOOD()));
+		$this->register(new Axe(new ItemIdentifier(ItemIds::DIAMOND_AXE, 0), "Diamond Axe", ToolTier::DIAMOND()));
+		$this->register(new Axe(new ItemIdentifier(ItemIds::GOLDEN_AXE, 0), "Golden Axe", ToolTier::GOLD()));
+		$this->register(new Axe(new ItemIdentifier(ItemIds::IRON_AXE, 0), "Iron Axe", ToolTier::IRON()));
+		$this->register(new Axe(new ItemIdentifier(ItemIds::STONE_AXE, 0), "Stone Axe", ToolTier::STONE()));
+		$this->register(new Axe(new ItemIdentifier(ItemIds::WOODEN_AXE, 0), "Wooden Axe", ToolTier::WOOD()));
+		$this->register(new Hoe(new ItemIdentifier(ItemIds::DIAMOND_HOE, 0), "Diamond Hoe", ToolTier::DIAMOND()));
+		$this->register(new Hoe(new ItemIdentifier(ItemIds::GOLDEN_HOE, 0), "Golden Hoe", ToolTier::GOLD()));
+		$this->register(new Hoe(new ItemIdentifier(ItemIds::IRON_HOE, 0), "Iron Hoe", ToolTier::IRON()));
+		$this->register(new Hoe(new ItemIdentifier(ItemIds::STONE_HOE, 0), "Stone Hoe", ToolTier::STONE()));
+		$this->register(new Hoe(new ItemIdentifier(ItemIds::WOODEN_HOE, 0), "Wooden Hoe", ToolTier::WOOD()));
+		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::DIAMOND_PICKAXE, 0), "Diamond Pickaxe", ToolTier::DIAMOND()));
+		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::GOLDEN_PICKAXE, 0), "Golden Pickaxe", ToolTier::GOLD()));
+		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::IRON_PICKAXE, 0), "Iron Pickaxe", ToolTier::IRON()));
+		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::STONE_PICKAXE, 0), "Stone Pickaxe", ToolTier::STONE()));
+		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::WOODEN_PICKAXE, 0), "Wooden Pickaxe", ToolTier::WOOD()));
+		$this->register(new Shovel(new ItemIdentifier(ItemIds::DIAMOND_SHOVEL, 0), "Diamond Shovel", ToolTier::DIAMOND()));
+		$this->register(new Shovel(new ItemIdentifier(ItemIds::GOLDEN_SHOVEL, 0), "Golden Shovel", ToolTier::GOLD()));
+		$this->register(new Shovel(new ItemIdentifier(ItemIds::IRON_SHOVEL, 0), "Iron Shovel", ToolTier::IRON()));
+		$this->register(new Shovel(new ItemIdentifier(ItemIds::STONE_SHOVEL, 0), "Stone Shovel", ToolTier::STONE()));
+		$this->register(new Shovel(new ItemIdentifier(ItemIds::WOODEN_SHOVEL, 0), "Wooden Shovel", ToolTier::WOOD()));
+		$this->register(new Sword(new ItemIdentifier(ItemIds::DIAMOND_SWORD, 0), "Diamond Sword", ToolTier::DIAMOND()));
+		$this->register(new Sword(new ItemIdentifier(ItemIds::GOLDEN_SWORD, 0), "Golden Sword", ToolTier::GOLD()));
+		$this->register(new Sword(new ItemIdentifier(ItemIds::IRON_SWORD, 0), "Iron Sword", ToolTier::IRON()));
+		$this->register(new Sword(new ItemIdentifier(ItemIds::STONE_SWORD, 0), "Stone Sword", ToolTier::STONE()));
+		$this->register(new Sword(new ItemIdentifier(ItemIds::WOODEN_SWORD, 0), "Wooden Sword", ToolTier::WOOD()));
 	}
 
 	private function registerArmorItems() : void{
-		$this->register(new Armor(ItemIds::CHAIN_BOOTS, 0, "Chainmail Boots", new ArmorTypeInfo(1, 196, ArmorInventory::SLOT_FEET)));
-		$this->register(new Armor(ItemIds::DIAMOND_BOOTS, 0, "Diamond Boots", new ArmorTypeInfo(3, 430, ArmorInventory::SLOT_FEET)));
-		$this->register(new Armor(ItemIds::GOLDEN_BOOTS, 0, "Golden Boots", new ArmorTypeInfo(1, 92, ArmorInventory::SLOT_FEET)));
-		$this->register(new Armor(ItemIds::IRON_BOOTS, 0, "Iron Boots", new ArmorTypeInfo(2, 196, ArmorInventory::SLOT_FEET)));
-		$this->register(new Armor(ItemIds::LEATHER_BOOTS, 0, "Leather Boots", new ArmorTypeInfo(1, 66, ArmorInventory::SLOT_FEET)));
-		$this->register(new Armor(ItemIds::CHAIN_CHESTPLATE, 0, "Chainmail Chestplate", new ArmorTypeInfo(5, 241, ArmorInventory::SLOT_CHEST)));
-		$this->register(new Armor(ItemIds::DIAMOND_CHESTPLATE, 0, "Diamond Chestplate", new ArmorTypeInfo(8, 529, ArmorInventory::SLOT_CHEST)));
-		$this->register(new Armor(ItemIds::GOLDEN_CHESTPLATE, 0, "Golden Chestplate", new ArmorTypeInfo(5, 113, ArmorInventory::SLOT_CHEST)));
-		$this->register(new Armor(ItemIds::IRON_CHESTPLATE, 0, "Iron Chestplate", new ArmorTypeInfo(6, 241, ArmorInventory::SLOT_CHEST)));
-		$this->register(new Armor(ItemIds::LEATHER_CHESTPLATE, 0, "Leather Tunic", new ArmorTypeInfo(3, 81, ArmorInventory::SLOT_CHEST)));
-		$this->register(new Armor(ItemIds::CHAIN_HELMET, 0, "Chainmail Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD)));
-		$this->register(new Armor(ItemIds::DIAMOND_HELMET, 0, "Diamond Helmet", new ArmorTypeInfo(3, 364, ArmorInventory::SLOT_HEAD)));
-		$this->register(new Armor(ItemIds::GOLDEN_HELMET, 0, "Golden Helmet", new ArmorTypeInfo(2, 78, ArmorInventory::SLOT_HEAD)));
-		$this->register(new Armor(ItemIds::IRON_HELMET, 0, "Iron Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD)));
-		$this->register(new Armor(ItemIds::LEATHER_HELMET, 0, "Leather Cap", new ArmorTypeInfo(1, 56, ArmorInventory::SLOT_HEAD)));
-		$this->register(new Armor(ItemIds::CHAIN_LEGGINGS, 0, "Chainmail Leggings", new ArmorTypeInfo(4, 226, ArmorInventory::SLOT_LEGS)));
-		$this->register(new Armor(ItemIds::DIAMOND_LEGGINGS, 0, "Diamond Leggings", new ArmorTypeInfo(6, 496, ArmorInventory::SLOT_LEGS)));
-		$this->register(new Armor(ItemIds::GOLDEN_LEGGINGS, 0, "Golden Leggings", new ArmorTypeInfo(3, 106, ArmorInventory::SLOT_LEGS)));
-		$this->register(new Armor(ItemIds::IRON_LEGGINGS, 0, "Iron Leggings", new ArmorTypeInfo(5, 226, ArmorInventory::SLOT_LEGS)));
-		$this->register(new Armor(ItemIds::LEATHER_LEGGINGS, 0, "Leather Pants", new ArmorTypeInfo(2, 76, ArmorInventory::SLOT_LEGS)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_BOOTS, 0), "Chainmail Boots", new ArmorTypeInfo(1, 196, ArmorInventory::SLOT_FEET)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_BOOTS, 0), "Diamond Boots", new ArmorTypeInfo(3, 430, ArmorInventory::SLOT_FEET)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_BOOTS, 0), "Golden Boots", new ArmorTypeInfo(1, 92, ArmorInventory::SLOT_FEET)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::IRON_BOOTS, 0), "Iron Boots", new ArmorTypeInfo(2, 196, ArmorInventory::SLOT_FEET)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::LEATHER_BOOTS, 0), "Leather Boots", new ArmorTypeInfo(1, 66, ArmorInventory::SLOT_FEET)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_CHESTPLATE, 0), "Chainmail Chestplate", new ArmorTypeInfo(5, 241, ArmorInventory::SLOT_CHEST)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_CHESTPLATE, 0), "Diamond Chestplate", new ArmorTypeInfo(8, 529, ArmorInventory::SLOT_CHEST)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_CHESTPLATE, 0), "Golden Chestplate", new ArmorTypeInfo(5, 113, ArmorInventory::SLOT_CHEST)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::IRON_CHESTPLATE, 0), "Iron Chestplate", new ArmorTypeInfo(6, 241, ArmorInventory::SLOT_CHEST)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::LEATHER_CHESTPLATE, 0), "Leather Tunic", new ArmorTypeInfo(3, 81, ArmorInventory::SLOT_CHEST)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_HELMET, 0), "Chainmail Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_HELMET, 0), "Diamond Helmet", new ArmorTypeInfo(3, 364, ArmorInventory::SLOT_HEAD)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_HELMET, 0), "Golden Helmet", new ArmorTypeInfo(2, 78, ArmorInventory::SLOT_HEAD)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::IRON_HELMET, 0), "Iron Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::LEATHER_HELMET, 0), "Leather Cap", new ArmorTypeInfo(1, 56, ArmorInventory::SLOT_HEAD)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_LEGGINGS, 0), "Chainmail Leggings", new ArmorTypeInfo(4, 226, ArmorInventory::SLOT_LEGS)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_LEGGINGS, 0), "Diamond Leggings", new ArmorTypeInfo(6, 496, ArmorInventory::SLOT_LEGS)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_LEGGINGS, 0), "Golden Leggings", new ArmorTypeInfo(3, 106, ArmorInventory::SLOT_LEGS)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::IRON_LEGGINGS, 0), "Iron Leggings", new ArmorTypeInfo(5, 226, ArmorInventory::SLOT_LEGS)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::LEATHER_LEGGINGS, 0), "Leather Pants", new ArmorTypeInfo(2, 76, ArmorInventory::SLOT_LEGS)));
 	}
 
 	/**
@@ -423,16 +423,17 @@ class ItemFactory{
 				try{
 					$item->setDamage($meta);
 				}catch(\InvalidArgumentException $e){
-					$item = new Item($id, $meta);
+					$item = new Item(new ItemIdentifier($id, $meta));
 				}
 			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
-				$item = new ItemBlock($id, $meta);
+				//TODO: do not assume that item IDs and block IDs are the same or related
+				$item = new ItemBlock($id < 0 ? 255 - $id : $id, $meta, new ItemIdentifier($id, $meta));
 			}
 		}
 
 		if($item === null){
 			//negative damage values will fallthru to here, to avoid crazy shit with crafting wildcard hacks
-			$item = new Item($id, $meta);
+			$item = new Item(new ItemIdentifier($id, $meta));
 		}
 
 		$item->setCount($count);

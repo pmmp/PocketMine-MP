@@ -40,8 +40,8 @@ abstract class WritableBookBase extends Item{
 	 */
 	private $pages;
 
-	public function __construct(int $id, int $variant, string $name){
-		parent::__construct($id, $variant, $name);
+	public function __construct(ItemIdentifier $identifier, string $name){
+		parent::__construct($identifier, $name);
 		$this->pages = new Deque();
 	}
 

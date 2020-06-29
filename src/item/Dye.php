@@ -30,8 +30,8 @@ class Dye extends Item{
 	/** @var DyeColor */
 	private $color;
 
-	public function __construct(int $id, int $variant, string $name, DyeColor $color){
-		parent::__construct($id, $variant, $name);
+	public function __construct(ItemIdentifier $identifier, string $name, DyeColor $color){
+		parent::__construct($identifier, $name);
 		$this->color = $color;
 	}
 

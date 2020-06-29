@@ -29,8 +29,8 @@ class Boat extends Item{
 	/** @var TreeType */
 	private $woodType;
 
-	public function __construct(int $id, int $variant, string $name, TreeType $woodType){
-		parent::__construct($id, $variant, $name);
+	public function __construct(ItemIdentifier $identifier, string $name, TreeType $woodType){
+		parent::__construct($identifier, $name);
 		$this->woodType = $woodType;
 	}
 

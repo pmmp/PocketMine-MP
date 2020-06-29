@@ -32,25 +32,26 @@ use pocketmine\block\BlockFactory;
 class ItemBlock extends Item{
 	/** @var int */
 	protected $blockId;
+	/** @var int */
+	protected $blockMeta;
 
 	/**
-	 * @param int      $meta usually 0-15 (placed blocks may only have meta values 0-15)
+	 * @param int            $blockId
+	 * @param int            $blockMeta usually 0-15 (placed blocks may only have meta values 0-15)
+	 * @param ItemIdentifier $identifier
 	 */
-	public function __construct(int $blockId, int $meta = 0, ?int $itemId = null){
-		if($blockId < 0){ //extended blocks
-			if($itemId === null){
-				$itemId = $blockId;
-			}
-			$blockId = 255 - $blockId;
+	public function __construct(int $blockId, int $blockMeta, ItemIdentifier $identifier){
+		if($blockMeta < 0 || $blockMeta > 15){
+			throw new \InvalidArgumentException("Block meta value may only be between 0 and 15");
 		}
 		$this->blockId = $blockId;
-		$this->meta = $meta;
+		$this->blockMeta = $blockMeta;
 
-		parent::__construct($itemId ?? $blockId, $meta, $this->getBlock()->getName());
+		parent::__construct($identifier, $this->getBlock()->getName());
 	}
 
 	public function getBlock() : Block{
-		return BlockFactory::getInstance()->get($this->blockId, $this->meta & 0xf);
+		return BlockFactory::getInstance()->get($this->blockId, $this->blockMeta);
 	}
 
 	public function getFuelTime() : int{

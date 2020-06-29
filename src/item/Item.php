@@ -64,10 +64,8 @@ class Item implements \JsonSerializable{
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
 
-	/** @var int */
-	protected $id;
-	/** @var int */
-	protected $meta;
+	/** @var ItemIdentifier */
+	private $identifier;
 	/** @var CompoundTag */
 	private $nbt;
 	/** @var int */
@@ -105,12 +103,8 @@ class Item implements \JsonSerializable{
 	 * NOTE: This should NOT BE USED for creating items to set into an inventory. Use {@link ItemFactory#get} for that
 	 * purpose.
 	 */
-	public function __construct(int $id, int $variant = 0, string $name = "Unknown"){
-		if($id < -0x8000 or $id > 0x7fff){ //signed short range
-			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
-		}
-		$this->id = $id;
-		$this->meta = $variant !== -1 ? $variant & 0x7FFF : -1;
+	public function __construct(ItemIdentifier $identifier, string $name = "Unknown"){
+		$this->identifier = $identifier;
 		$this->name = $name;
 
 		$this->canPlaceOn = new Set();
@@ -408,7 +402,7 @@ class Item implements \JsonSerializable{
 	}
 
 	public function isNull() : bool{
-		return $this->count <= 0 or $this->id === ItemIds::AIR;
+		return $this->count <= 0 or $this->getId() === ItemIds::AIR;
 	}
 
 	/**
@@ -437,11 +431,11 @@ class Item implements \JsonSerializable{
 	}
 
 	final public function getId() : int{
-		return $this->id;
+		return $this->identifier->getId();
 	}
 
 	public function getMeta() : int{
-		return $this->meta;
+		return $this->identifier->getMeta();
 	}
 
 	/**
@@ -449,7 +443,7 @@ class Item implements \JsonSerializable{
 	 * Used in crafting recipes which accept multiple variants of the same item, for example crafting tables recipes.
 	 */
 	public function hasAnyDamageValue() : bool{
-		return $this->meta === -1;
+		return $this->identifier->getMeta() === -1;
 	}
 
 	/**
@@ -554,7 +548,7 @@ class Item implements \JsonSerializable{
 	 * @param bool $checkCompound Whether to verify that the items' NBT match.
 	 */
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		return $this->id === $item->getId() and
+		return $this->getId() === $item->getId() and
 			(!$checkDamage or $this->getMeta() === $item->getMeta()) and
 			(!$checkCompound or $this->getNamedTag()->equals($item->getNamedTag()));
 	}
@@ -567,7 +561,7 @@ class Item implements \JsonSerializable{
 	}
 
 	final public function __toString() : string{
-		return "Item " . $this->name . " (" . $this->id . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
+		return "Item " . $this->name . " (" . $this->getId() . ":" . ($this->hasAnyDamageValue() ? "?" : $this->getMeta()) . ")x" . $this->count . ($this->hasNamedTag() ? " tags:0x" . base64_encode((new LittleEndianNbtSerializer())->write(new TreeRoot($this->getNamedTag()))) : "");
 	}
 
 	/**
@@ -634,7 +628,7 @@ class Item implements \JsonSerializable{
 	 */
 	public function nbtSerialize(int $slot = -1) : CompoundTag{
 		$result = CompoundTag::create()
-			->setShort("id", $this->id)
+			->setShort("id", $this->getId())
 			->setByte("Count", Binary::signByte($this->count))
 			->setShort("Damage", $this->getMeta());
 
