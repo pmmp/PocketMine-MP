@@ -2078,10 +2078,11 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		if($this->hasValidCustomSpawn()){
-			$nbt->setString("SpawnLevel", $this->spawnPosition->getWorld()->getFolderName());
-			$nbt->setInt("SpawnX", $this->spawnPosition->getFloorX());
-			$nbt->setInt("SpawnY", $this->spawnPosition->getFloorY());
-			$nbt->setInt("SpawnZ", $this->spawnPosition->getFloorZ());
+			$spawn = $this->getSpawn();
+			$nbt->setString("SpawnLevel", $spawn->getWorld()->getFolderName());
+			$nbt->setInt("SpawnX", $spawn->getFloorX());
+			$nbt->setInt("SpawnY", $spawn->getFloorY());
+			$nbt->setInt("SpawnZ", $spawn->getFloorZ());
 		}
 
 		if(!$this->isAlive()){
