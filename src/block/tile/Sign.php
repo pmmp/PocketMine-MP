@@ -62,13 +62,14 @@ class Sign extends Spawnable{
 		if($nbt->hasTag(self::TAG_TEXT_BLOB, StringTag::class)){ //MCPE 1.2 save format
 			$this->text = SignText::fromBlob(mb_scrub($nbt->getString(self::TAG_TEXT_BLOB), 'UTF-8'));
 		}else{
-			$this->text = new SignText();
+			$text = [];
 			for($i = 0; $i < SignText::LINE_COUNT; ++$i){
 				$textKey = sprintf(self::TAG_TEXT_LINE, $i + 1);
 				if($nbt->hasTag($textKey, StringTag::class)){
-					$this->text->setLine($i, mb_scrub($nbt->getString($textKey), 'UTF-8'));
+					$text[$i] = mb_scrub($nbt->getString($textKey), 'UTF-8');
 				}
 			}
+			$this->text = new SignText($text);
 		}
 	}
 

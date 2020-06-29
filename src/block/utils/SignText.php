@@ -39,13 +39,27 @@ class SignText{
 	private $lines;
 
 	/**
-	 * @param string[] $lines
-	 * @throws \InvalidArgumentException
+	 * @param string[]|null $lines index-sensitive; omitting an index will leave it unchanged
+	 *
+	 * @throws \InvalidArgumentException if the array size is greater than 4
+	 * @throws \InvalidArgumentException if invalid keys (out of bounds or string) are found in the array
+	 * @throws \InvalidArgumentException if any line is not valid UTF-8 or contains a newline
 	 */
 	public function __construct(?array $lines = null){
 		$this->lines = array_fill(0, self::LINE_COUNT, "");
 		if($lines !== null){
-			$this->setLines($lines);
+			if(count($lines) > self::LINE_COUNT){
+				throw new \InvalidArgumentException("Expected at most 4 lines, got " . count($lines));
+			}
+			foreach($lines as $k => $line){
+				$this->checkLineIndex($k);
+				Utils::checkUTF8($line);
+				if(strpos($line, "\n") !== false){
+					throw new \InvalidArgumentException("Line must not contain newlines");
+				}
+				//TODO: add length checks
+				$this->lines[$k] = $line;
+			}
 		}
 	}
 
@@ -69,24 +83,6 @@ class SignText{
 	}
 
 	/**
-	 * Sets the sign text.
-	 *
-	 * @param string[] $lines index-sensitive; omitting an index will leave it unchanged
-	 *
-	 * @throws \InvalidArgumentException if the array size is greater than 4
-	 * @throws \InvalidArgumentException if invalid keys (out of bounds or string) are found in the array
-	 */
-	public function setLines(array $lines) : void{
-		if(count($lines) > self::LINE_COUNT){
-			throw new \InvalidArgumentException("Expected at most 4 lines, got " . count($lines));
-		}
-		foreach($lines as $k => $line){
-			$this->checkLineIndex($k);
-			$this->setLine($k, $line);
-		}
-	}
-
-	/**
 	 * @param int|string $index
 	 */
 	private function checkLineIndex($index) : void{
@@ -106,21 +102,5 @@ class SignText{
 	public function getLine(int $index) : string{
 		$this->checkLineIndex($index);
 		return $this->lines[$index];
-	}
-
-	/**
-	 * Sets the line at the given offset.
-	 *
-	 * @throws \InvalidArgumentException if the text is not valid UTF-8
-	 * @throws \InvalidArgumentException if the text contains a newline
-	 */
-	public function setLine(int $index, string $line) : void{
-		$this->checkLineIndex($index);
-		Utils::checkUTF8($line);
-		if(strpos($line, "\n") !== false){
-			throw new \InvalidArgumentException("Line must not contain newlines");
-		}
-		//TODO: add length checks
-		$this->lines[$index] = $line;
 	}
 }
