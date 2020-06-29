@@ -571,6 +571,10 @@ class BlockFactory{
 		}
 
 		$this->registerElements();
+		$this->register(new Opaque(new BID(Ids::ANCIENT_DEBRIS, 0, ItemIds::ANCIENT_DEBRIS), "Ancient Debris", new BlockBreakInfo(30, BlockToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 1200)));
+		$this->register(new Opaque(new BID(Ids::BASALT, 0, ItemIds::BASALT), "Basalt", new BlockBreakInfo(1.25, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 4.2)));
+		$this->register(new Opaque(new BID(Ids::NETHERITE_BLOCK, 0, ItemIds::NETHERITE_BLOCK), "Block of Netherite", new BlockBreakInfo(50, BlockToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 1200)));
+		$this->register(new Opaque(new BID(Ids::CHAIN, 0, ItemIds::CHAIN), "Chain", new BlockBreakInfo(5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6)));
 
 		//region --- auto-generated TODOs ---
 		//TODO: minecraft:bamboo

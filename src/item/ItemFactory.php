@@ -260,6 +260,9 @@ class ItemFactory{
 			$this->register(new Boat(new ItemIdentifier(ItemIds::BOAT, $type->getMagicNumber()), $type->getDisplayName() . " Boat", $type));
 		}
 
+		$this->register(new Item(new ItemIdentifier(ItemIds::NETHERITE_INGOT, 0), "Netherite Ingot"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::NETHERITE_CRAPS, 0), "Netherite Craps"));
+
 		//region --- auto-generated TODOs ---
 		//TODO: minecraft:armor_stand
 		//TODO: minecraft:balloon

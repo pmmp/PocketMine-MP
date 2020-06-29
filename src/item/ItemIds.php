@@ -29,6 +29,11 @@ final class ItemIds{
 		//NOOP
 	}
 
+	public const CHAIN = -286;
+	public const ANCIENT_DEBRIS = -271;
+	public const NETHERITE_BLOCK = -270;
+	public const BASALT = -234;
+
 	public const LIT_BLAST_FURNACE = -214;
 	public const COMPOSTER = -213;
 	public const WOOD = -212;
@@ -743,5 +748,6 @@ final class ItemIds{
 	public const NETHERITE_CHESTPLATE = 749;
 	public const NETHERITE_LEGGINGS = 750;
 	public const NETHERITE_BOOTS = 751;
+	public const NETHERITE_CRAPS = 752;
 
 }
