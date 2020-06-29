@@ -79,7 +79,7 @@ class Block{
 	}
 
 	public function __clone(){
-		$this->pos = Position::fromObject($this->pos, $this->pos->getWorld());
+		$this->pos = Position::fromObject($this->pos, $this->pos->getWorldNonNull());
 	}
 
 	public function getIdInfo() : BlockIdentifier{

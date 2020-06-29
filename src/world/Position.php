@@ -119,7 +119,7 @@ class Position extends Vector3{
 
 	public function equals(Vector3 $v) : bool{
 		if($v instanceof Position){
-			return parent::equals($v) and $v->getWorld() === $this->getWorld();
+			return parent::equals($v) and $v->world === $this->world;
 		}
 		return parent::equals($v);
 	}

@@ -2043,7 +2043,7 @@ class World implements ChunkManager{
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to world");
 		}
 		$pos = $tile->getPos();
-		if($pos->getWorld() !== $this){
+		if(!$pos->isValid() || $pos->getWorldNonNull() !== $this){
 			throw new \InvalidArgumentException("Invalid Tile world");
 		}
 
@@ -2065,7 +2065,7 @@ class World implements ChunkManager{
 	 */
 	public function removeTile(Tile $tile) : void{
 		$pos = $tile->getPos();
-		if($pos->getWorld() !== $this){
+		if(!$pos->isValid() || $pos->getWorldNonNull() !== $this){
 			throw new \InvalidArgumentException("Invalid Tile world");
 		}
 
