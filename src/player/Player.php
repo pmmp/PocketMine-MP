@@ -949,16 +949,20 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * Sets the spawnpoint of the player (and the compass direction) to a Vector3, or set it on another world with a
 	 * Position object
 	 *
-	 * @param Vector3|Position $pos
+	 * @param Vector3|Position|null $pos
 	 */
-	public function setSpawn(Vector3 $pos) : void{
-		if(!($pos instanceof Position)){
-			$world = $this->getWorld();
+	public function setSpawn(?Vector3 $pos) : void{
+		if($pos !== null){
+			if(!($pos instanceof Position)){
+				$world = $this->getWorld();
+			}else{
+				$world = $pos->getWorld();
+			}
+			$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $world);
 		}else{
-			$world = $pos->getWorld();
+			$this->spawnPosition = null;
 		}
-		$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $world);
-		$this->networkSession->syncPlayerSpawnPoint($this->spawnPosition);
+		$this->networkSession->syncPlayerSpawnPoint($this->getSpawn());
 	}
 
 	public function isSleeping() : bool{
