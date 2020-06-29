@@ -347,12 +347,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->setNameTagAlwaysVisible();
 		$this->setCanClimb();
 
-		if(!$this->hasValidSpawnPosition()){
-			if(($world = $this->server->getWorldManager()->getWorldByName($nbt->getString("SpawnLevel", ""))) instanceof World){
-				$this->spawnPosition = new Position($nbt->getInt("SpawnX"), $nbt->getInt("SpawnY"), $nbt->getInt("SpawnZ"), $world);
-			}else{
-				$this->spawnPosition = $this->getWorld()->getSafeSpawn();
-			}
+		if(($world = $this->server->getWorldManager()->getWorldByName($nbt->getString("SpawnLevel", ""))) instanceof World){
+			$this->spawnPosition = new Position($nbt->getInt("SpawnX"), $nbt->getInt("SpawnY"), $nbt->getInt("SpawnZ"), $world);
 		}
 	}
 
@@ -936,7 +932,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	 * @return Position
 	 */
 	public function getSpawn(){
-		if($this->hasValidSpawnPosition()){
+		if($this->hasValidCustomSpawn()){
 			return $this->spawnPosition;
 		}else{
 			$world = $this->server->getWorldManager()->getDefaultWorld();
@@ -945,7 +941,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 	}
 
-	public function hasValidSpawnPosition() : bool{
+	public function hasValidCustomSpawn() : bool{
 		return $this->spawnPosition !== null and $this->spawnPosition->isValid();
 	}
 
@@ -2081,20 +2077,21 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$nbt->setString("Level", $this->getWorld()->getFolderName());
 		}
 
-		if($this->hasValidSpawnPosition()){
+		if($this->hasValidCustomSpawn()){
 			$nbt->setString("SpawnLevel", $this->spawnPosition->getWorld()->getFolderName());
 			$nbt->setInt("SpawnX", $this->spawnPosition->getFloorX());
 			$nbt->setInt("SpawnY", $this->spawnPosition->getFloorY());
 			$nbt->setInt("SpawnZ", $this->spawnPosition->getFloorZ());
+		}
 
-			if(!$this->isAlive()){
-				//hack for respawn after quit
-				$nbt->setTag("Pos", new ListTag([
-					new DoubleTag($this->spawnPosition->x),
-					new DoubleTag($this->spawnPosition->y),
-					new DoubleTag($this->spawnPosition->z)
-				]));
-			}
+		if(!$this->isAlive()){
+			$spawn = $this->getSpawn();
+			//hack for respawn after quit
+			$nbt->setTag("Pos", new ListTag([
+				new DoubleTag($spawn->getFloorX()),
+				new DoubleTag($spawn->getFloorY()),
+				new DoubleTag($spawn->getFloorZ())
+			]));
 		}
 
 		$nbt->setInt("playerGameType", $this->gamemode->getMagicNumber());
