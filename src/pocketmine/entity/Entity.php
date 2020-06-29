@@ -2535,7 +2535,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 			}
 
 			$pk->links = array_map(function(int $entityId){
-				return new EntityLink($this->getId(), $entityId, EntityLink::TYPE_RIDER);
+				return new EntityLink($this->getId(), $entityId, EntityLink::TYPE_RIDER, true, false);
 			}, $this->passengers);
 		}
 
