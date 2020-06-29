@@ -932,22 +932,23 @@ class Server{
 	 *
 	 * @throws LevelException
 	 */
-	public function loadLevel(string $name) : bool{
+	public function loadLevel(string $name, string $path = null) : bool{
 		if(trim($name) === ""){
 			throw new LevelException("Invalid empty world name");
 		}
+        if ($path === null) {
+            $path = $this->getDataPath() . "worlds/" . $name . "/";
+        }
+
 		if($this->isLevelLoaded($name)){
 			return true;
-		}elseif(!$this->isLevelGenerated($name)){
+		}elseif(!$this->isLevelGenerated($name, $path)){
 			$this->logger->notice($this->getLanguage()->translateString("pocketmine.level.notFound", [$name]));
 
 			return false;
 		}
 
-		$path = $this->getDataPath() . "worlds/" . $name . "/";
-
 		$providerClass = LevelProviderManager::getProvider($path);
-
 		if($providerClass === null){
 			$this->logger->error($this->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Cannot identify format of world"]));
 
@@ -987,8 +988,12 @@ class Server{
 	 * @phpstan-param class-string<Generator> $generator
 	 * @phpstan-param array<string, mixed>    $options
 	 */
-	public function generateLevel(string $name, int $seed = null, $generator = null, array $options = []) : bool{
-		if(trim($name) === "" or $this->isLevelGenerated($name)){
+	public function generateLevel(string $name, int $seed = null, $generator = null, array $options = [], string $path = null) : bool{
+        if ($path === null) {
+            $path = $this->getDataPath() . "worlds/" . $name . "/";
+        }
+
+	    if(trim($name) === "" or $this->isLevelGenerated($name)){
 			return false;
 		}
 
@@ -1009,7 +1014,6 @@ class Server{
 			}
 		}
 
-		$path = $this->getDataPath() . "worlds/" . $name . "/";
 		/** @var LevelProvider $providerClass */
 		$providerClass::generate($path, $name, $seed, $generator, $options);
 
@@ -1049,11 +1053,14 @@ class Server{
 		return true;
 	}
 
-	public function isLevelGenerated(string $name) : bool{
+	public function isLevelGenerated(string $name, string $path = null) : bool{
+        if ($path === null) {
+            $path = $this->getDataPath() . "worlds/" . $name . "/";
+        }
+
 		if(trim($name) === ""){
 			return false;
 		}
-		$path = $this->getDataPath() . "worlds/" . $name . "/";
 		if(!($this->getLevelByName($name) instanceof Level)){
 			return is_dir($path) and count(array_filter(scandir($path, SCANDIR_SORT_NONE), function(string $v) : bool{
 				return $v !== ".." and $v !== ".";
