@@ -51,7 +51,7 @@ class ChestInventory extends BlockInventory{
 		if(count($this->getViewers()) === 1 and $this->getHolder()->isValid()){
 			//TODO: this crap really shouldn't be managed by the inventory
 			$this->broadcastBlockEventPacket(true);
-			$this->getHolder()->getWorldNonNull()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getOpenSound());
+			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getOpenSound());
 		}
 	}
 
@@ -59,7 +59,7 @@ class ChestInventory extends BlockInventory{
 		if(count($this->getViewers()) === 1 and $this->getHolder()->isValid()){
 			//TODO: this crap really shouldn't be managed by the inventory
 			$this->broadcastBlockEventPacket(false);
-			$this->getHolder()->getWorldNonNull()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getCloseSound());
+			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getCloseSound());
 		}
 		parent::onClose($who);
 	}
@@ -68,6 +68,6 @@ class ChestInventory extends BlockInventory{
 		$holder = $this->getHolder();
 
 		//event ID is always 1 for a chest
-		$holder->getWorldNonNull()->broadcastPacketToViewers($holder, BlockEventPacket::create(1, $isOpen ? 1 : 0, $holder->asVector3()));
+		$holder->getWorld()->broadcastPacketToViewers($holder, BlockEventPacket::create(1, $isOpen ? 1 : 0, $holder->asVector3()));
 	}
 }

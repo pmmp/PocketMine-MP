@@ -51,7 +51,7 @@ abstract class ProjectileItem extends Item{
 
 		$projectile->spawnToAll();
 
-		$location->getWorldNonNull()->addSound($location, new ThrowSound());
+		$location->getWorld()->addSound($location, new ThrowSound());
 
 		$this->pop();
 

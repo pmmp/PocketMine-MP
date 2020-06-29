@@ -45,7 +45,7 @@ abstract class Stem extends Crops{
 				$ev = new BlockGrowEvent($this, $block);
 				$ev->call();
 				if(!$ev->isCancelled()){
-					$this->pos->getWorldNonNull()->setBlock($this->pos, $ev->getNewState());
+					$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
 				}
 			}else{
 				$grow = $this->getPlant();
@@ -61,7 +61,7 @@ abstract class Stem extends Crops{
 					$ev = new BlockGrowEvent($side, $grow);
 					$ev->call();
 					if(!$ev->isCancelled()){
-						$this->pos->getWorldNonNull()->setBlock($side->pos, $ev->getNewState());
+						$this->pos->getWorld()->setBlock($side->pos, $ev->getNewState());
 					}
 				}
 			}

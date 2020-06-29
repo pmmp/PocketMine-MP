@@ -69,17 +69,17 @@ class Lantern extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canAttachTo($this->pos->getWorldNonNull()->getBlock($blockReplace->getPos()->up())) and !$this->canAttachTo($this->pos->getWorldNonNull()->getBlock($blockReplace->getPos()->down()))){
+		if(!$this->canAttachTo($this->pos->getWorld()->getBlock($blockReplace->getPos()->up())) and !$this->canAttachTo($this->pos->getWorld()->getBlock($blockReplace->getPos()->down()))){
 			return false;
 		}
 
-		$this->hanging = ($face === Facing::DOWN or !$this->canAttachTo($this->pos->getWorldNonNull()->getBlock($blockReplace->getPos()->down())));
+		$this->hanging = ($face === Facing::DOWN or !$this->canAttachTo($this->pos->getWorld()->getBlock($blockReplace->getPos()->down())));
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canAttachTo($this->pos->getWorldNonNull()->getBlock($this->hanging ? $this->pos->up() : $this->pos->down()))){
-			$this->pos->getWorldNonNull()->useBreakOn($this->pos);
+		if(!$this->canAttachTo($this->pos->getWorld()->getBlock($this->hanging ? $this->pos->up() : $this->pos->down()))){
+			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
 }

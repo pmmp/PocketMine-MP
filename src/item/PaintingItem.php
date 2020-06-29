@@ -75,7 +75,7 @@ class PaintingItem extends Item{
 		$replacePos = $blockReplace->getPos();
 		$clickedPos = $blockClicked->getPos();
 
-		$entity = new Painting(Location::fromObject($replacePos, $replacePos->getWorldNonNull()), $clickedPos, $face, $motive);
+		$entity = new Painting(Location::fromObject($replacePos, $replacePos->getWorld()), $clickedPos, $face, $motive);
 		$this->pop();
 		$entity->spawnToAll();
 

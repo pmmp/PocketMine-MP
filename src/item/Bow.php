@@ -103,7 +103,7 @@ class Bow extends Tool{
 			}
 
 			$ev->getProjectile()->spawnToAll();
-			$location->getWorldNonNull()->addSound($location, new BowShootSound());
+			$location->getWorld()->addSound($location, new BowShootSound());
 		}else{
 			$entity->spawnToAll();
 		}

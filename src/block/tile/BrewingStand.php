@@ -55,7 +55,7 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 		parent::__construct($world, $pos);
 		$this->inventory = new BrewingStandInventory($this->pos);
 		$this->inventory->getListeners()->add(CallbackInventoryListener::onAnyChange(function(Inventory $unused) : void{
-			$this->pos->getWorldNonNull()->scheduleDelayedBlockUpdate($this->pos, 1);
+			$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, 1);
 		}));
 	}
 

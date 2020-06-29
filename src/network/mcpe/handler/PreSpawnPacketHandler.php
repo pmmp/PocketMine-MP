@@ -68,12 +68,12 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk->seed = -1;
 		$pk->spawnSettings = new SpawnSettings(SpawnSettings::BIOME_TYPE_DEFAULT, "", DimensionIds::OVERWORLD); //TODO: implement this properly
 		$pk->worldGamemode = TypeConverter::getInstance()->coreGameModeToProtocol($this->server->getGamemode());
-		$pk->difficulty = $location->getWorldNonNull()->getDifficulty();
+		$pk->difficulty = $location->getWorld()->getDifficulty();
 		$pk->spawnX = $spawnPosition->getFloorX();
 		$pk->spawnY = $spawnPosition->getFloorY();
 		$pk->spawnZ = $spawnPosition->getFloorZ();
 		$pk->hasAchievementsDisabled = true;
-		$pk->time = $location->getWorldNonNull()->getTime();
+		$pk->time = $location->getWorld()->getTime();
 		$pk->eduEditionOffer = 0;
 		$pk->rainLevel = 0; //TODO: implement these properly
 		$pk->lightningLevel = 0;

@@ -99,7 +99,7 @@ class Door extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->getId() === BlockLegacyIds::AIR){ //Replace with common break method
-			$this->pos->getWorldNonNull()->useBreakOn($this->pos); //this will delete both halves if they exist
+			$this->pos->getWorld()->useBreakOn($this->pos); //this will delete both halves if they exist
 		}
 	}
 
@@ -138,11 +138,11 @@ class Door extends Transparent{
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
 		if($other instanceof Door and $other->isSameType($this)){
 			$other->open = $this->open;
-			$this->pos->getWorldNonNull()->setBlock($other->pos, $other);
+			$this->pos->getWorld()->setBlock($other->pos, $other);
 		}
 
-		$this->pos->getWorldNonNull()->setBlock($this->pos, $this);
-		$this->pos->getWorldNonNull()->addSound($this->pos, new DoorSound());
+		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->pos->getWorld()->addSound($this->pos, new DoorSound());
 
 		return true;
 	}

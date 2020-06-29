@@ -58,7 +58,7 @@ class Farmland extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::UP)->isSolid()){
-			$this->pos->getWorldNonNull()->setBlock($this->pos, VanillaBlocks::DIRT());
+			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::DIRT());
 		}
 	}
 
@@ -70,13 +70,13 @@ class Farmland extends Transparent{
 		if(!$this->canHydrate()){
 			if($this->wetness > 0){
 				$this->wetness--;
-				$this->pos->getWorldNonNull()->setBlock($this->pos, $this, false);
+				$this->pos->getWorld()->setBlock($this->pos, $this, false);
 			}else{
-				$this->pos->getWorldNonNull()->setBlock($this->pos, VanillaBlocks::DIRT());
+				$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::DIRT());
 			}
 		}elseif($this->wetness < 7){
 			$this->wetness = 7;
-			$this->pos->getWorldNonNull()->setBlock($this->pos, $this, false);
+			$this->pos->getWorld()->setBlock($this->pos, $this, false);
 		}
 	}
 
@@ -87,7 +87,7 @@ class Farmland extends Transparent{
 		for($y = $start->y; $y <= $end->y; ++$y){
 			for($z = $start->z; $z <= $end->z; ++$z){
 				for($x = $start->x; $x <= $end->x; ++$x){
-					if($this->pos->getWorldNonNull()->getBlockAt($x, $y, $z) instanceof Water){
+					if($this->pos->getWorld()->getBlockAt($x, $y, $z) instanceof Water){
 						return true;
 					}
 				}

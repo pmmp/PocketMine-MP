@@ -63,7 +63,7 @@ class Location extends Position{
 	}
 
 	public function __toString(){
-		return "Location (world=" . ($this->isValid() ? $this->getWorldNonNull()->getDisplayName() : "null") . ", x=$this->x, y=$this->y, z=$this->z, yaw=$this->yaw, pitch=$this->pitch)";
+		return "Location (world=" . ($this->isValid() ? $this->getWorld()->getDisplayName() : "null") . ", x=$this->x, y=$this->y, z=$this->z, yaw=$this->yaw, pitch=$this->pitch)";
 	}
 
 	public function equals(Vector3 $v) : bool{

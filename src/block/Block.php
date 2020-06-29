@@ -79,7 +79,7 @@ class Block{
 	}
 
 	public function __clone(){
-		$this->pos = Position::fromObject($this->pos, $this->pos->getWorldNonNull());
+		$this->pos = Position::fromObject($this->pos, $this->pos->getWorld());
 	}
 
 	public function getIdInfo() : BlockIdentifier{
@@ -148,10 +148,10 @@ class Block{
 	}
 
 	public function writeStateToWorld() : void{
-		$this->pos->getWorldNonNull()->getChunkAtPosition($this->pos)->setFullBlock($this->pos->x & 0xf, $this->pos->y, $this->pos->z & 0xf, $this->getFullId());
+		$this->pos->getWorld()->getChunkAtPosition($this->pos)->setFullBlock($this->pos->x & 0xf, $this->pos->y, $this->pos->z & 0xf, $this->getFullId());
 
 		$tileType = $this->idInfo->getTileClass();
-		$oldTile = $this->pos->getWorldNonNull()->getTile($this->pos);
+		$oldTile = $this->pos->getWorld()->getTile($this->pos);
 		if($oldTile !== null){
 			if($tileType === null or !($oldTile instanceof $tileType)){
 				$oldTile->close();
@@ -165,8 +165,8 @@ class Block{
 			 * @var Tile $tile
 			 * @see Tile::__construct()
 			 */
-			$tile = new $tileType($this->pos->getWorldNonNull(), $this->pos->asVector3());
-			$this->pos->getWorldNonNull()->addTile($tile);
+			$tile = new $tileType($this->pos->getWorld(), $this->pos->asVector3());
+			$this->pos->getWorld()->addTile($tile);
 		}
 	}
 
@@ -225,10 +225,10 @@ class Block{
 	 * Do the actions needed so the block is broken with the Item
 	 */
 	public function onBreak(Item $item, ?Player $player = null) : bool{
-		if(($t = $this->pos->getWorldNonNull()->getTile($this->pos)) !== null){
+		if(($t = $this->pos->getWorld()->getTile($this->pos)) !== null){
 			$t->onBlockDestroyed();
 		}
-		$this->pos->getWorldNonNull()->setBlock($this->pos, VanillaBlocks::AIR());
+		$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::AIR());
 		return true;
 	}
 
@@ -417,7 +417,7 @@ class Block{
 	public function getPickedItem(bool $addUserData = false) : Item{
 		$item = $this->asItem();
 		if($addUserData){
-			$tile = $this->pos->getWorldNonNull()->getTile($this->pos);
+			$tile = $this->pos->getWorld()->getTile($this->pos);
 			if($tile instanceof Tile){
 				$nbt = $tile->getCleanedNBT();
 				if($nbt instanceof CompoundTag){
@@ -479,7 +479,7 @@ class Block{
 	 */
 	public function getSide(int $side, int $step = 1){
 		if($this->pos->isValid()){
-			return $this->pos->getWorldNonNull()->getBlock($this->pos->getSide($side, $step));
+			return $this->pos->getWorld()->getBlock($this->pos->getSide($side, $step));
 		}
 
 		throw new \InvalidStateException("Block does not have a valid world");

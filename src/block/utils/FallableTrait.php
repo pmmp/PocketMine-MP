@@ -49,14 +49,14 @@ trait FallableTrait{
 
 	public function onNearbyBlockChange() : void{
 		$pos = $this->getPos();
-		$down = $pos->getWorldNonNull()->getBlock($pos->getSide(Facing::DOWN));
+		$down = $pos->getWorld()->getBlock($pos->getSide(Facing::DOWN));
 		if($down->getId() === BlockLegacyIds::AIR or $down instanceof Liquid or $down instanceof Fire){
-			$pos->getWorldNonNull()->setBlock($pos, VanillaBlocks::AIR());
+			$pos->getWorld()->setBlock($pos, VanillaBlocks::AIR());
 
 			$block = $this;
 			if(!($block instanceof Block)) throw new AssumptionFailedError(__TRAIT__ . " should only be used by Blocks");
 
-			$fall = new FallingBlock(Location::fromObject($pos->add(0.5, 0, 0.5), $pos->getWorldNonNull()), $block);
+			$fall = new FallingBlock(Location::fromObject($pos->add(0.5, 0, 0.5), $pos->getWorld()), $block);
 			$fall->spawnToAll();
 		}
 	}

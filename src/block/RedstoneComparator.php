@@ -72,7 +72,7 @@ class RedstoneComparator extends Flowable{
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorldNonNull()->getTile($this->pos);
+		$tile = $this->pos->getWorld()->getTile($this->pos);
 		if($tile instanceof Comparator){
 			$this->signalStrength = $tile->getSignalStrength();
 		}
@@ -80,7 +80,7 @@ class RedstoneComparator extends Flowable{
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$tile = $this->pos->getWorldNonNull()->getTile($this->pos);
+		$tile = $this->pos->getWorld()->getTile($this->pos);
 		assert($tile instanceof Comparator);
 		$tile->setSignalStrength($this->signalStrength);
 	}
@@ -143,13 +143,13 @@ class RedstoneComparator extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->isSubtractMode = !$this->isSubtractMode;
-		$this->pos->getWorldNonNull()->setBlock($this->pos, $this);
+		$this->pos->getWorld()->setBlock($this->pos, $this);
 		return true;
 	}
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->pos->getWorldNonNull()->useBreakOn($this->pos);
+			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
 

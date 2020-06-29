@@ -359,7 +359,7 @@ class InGamePacketHandler extends PacketHandler{
 			}else{
 				$blocks[] = $blockPos;
 			}
-			$this->player->getLocation()->getWorldNonNull()->sendBlocks([$this->player], $blocks);
+			$this->player->getLocation()->getWorld()->sendBlocks([$this->player], $blocks);
 		}
 	}
 
@@ -563,7 +563,7 @@ class InGamePacketHandler extends PacketHandler{
 			return false;
 		}
 
-		$block = $this->player->getLocation()->getWorldNonNull()->getBlock($pos);
+		$block = $this->player->getLocation()->getWorld()->getBlock($pos);
 		$nbt = $packet->namedtag->getRoot();
 		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
 

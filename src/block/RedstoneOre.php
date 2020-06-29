@@ -68,7 +68,7 @@ class RedstoneOre extends Opaque{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$this->lit){
 			$this->lit = true;
-			$this->pos->getWorldNonNull()->setBlock($this->pos, $this); //no return here - this shouldn't prevent block placement
+			$this->pos->getWorld()->setBlock($this->pos, $this); //no return here - this shouldn't prevent block placement
 		}
 		return false;
 	}
@@ -76,7 +76,7 @@ class RedstoneOre extends Opaque{
 	public function onNearbyBlockChange() : void{
 		if(!$this->lit){
 			$this->lit = true;
-			$this->pos->getWorldNonNull()->setBlock($this->pos, $this);
+			$this->pos->getWorld()->setBlock($this->pos, $this);
 		}
 	}
 
@@ -87,7 +87,7 @@ class RedstoneOre extends Opaque{
 	public function onRandomTick() : void{
 		if($this->lit){
 			$this->lit = false;
-			$this->pos->getWorldNonNull()->setBlock($this->pos, $this);
+			$this->pos->getWorld()->setBlock($this->pos, $this);
 		}
 	}
 

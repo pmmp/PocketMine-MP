@@ -53,13 +53,13 @@ class Mycelium extends Opaque{
 		$x = mt_rand($this->pos->x - 1, $this->pos->x + 1);
 		$y = mt_rand($this->pos->y - 2, $this->pos->y + 2);
 		$z = mt_rand($this->pos->z - 1, $this->pos->z + 1);
-		$block = $this->pos->getWorldNonNull()->getBlockAt($x, $y, $z);
+		$block = $this->pos->getWorld()->getBlockAt($x, $y, $z);
 		if($block->getId() === BlockLegacyIds::DIRT){
 			if($block->getSide(Facing::UP) instanceof Transparent){
 				$ev = new BlockSpreadEvent($block, $this, VanillaBlocks::MYCELIUM());
 				$ev->call();
 				if(!$ev->isCancelled()){
-					$this->pos->getWorldNonNull()->setBlock($block->pos, $ev->getNewState());
+					$this->pos->getWorld()->setBlock($block->pos, $ev->getNewState());
 				}
 			}
 		}

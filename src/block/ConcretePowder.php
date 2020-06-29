@@ -38,7 +38,7 @@ class ConcretePowder extends Opaque implements Fallable{
 
 	public function onNearbyBlockChange() : void{
 		if(($block = $this->checkAdjacentWater()) !== null){
-			$this->pos->getWorldNonNull()->setBlock($this->pos, $block);
+			$this->pos->getWorld()->setBlock($this->pos, $block);
 		}else{
 			$this->startFalling();
 		}

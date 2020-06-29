@@ -61,32 +61,16 @@ class Position extends Vector3{
 	}
 
 	/**
-	 * Returns the target world, or null if the target is not valid.
-	 * If a reference exists to a world which is closed, the reference will be destroyed and null will be returned.
-	 *
-	 * @return World|null
-	 */
-	public function getWorld(){
-		if($this->world !== null and $this->world->isClosed()){
-			\GlobalLogger::get()->debug("Position was holding a reference to an unloaded world");
-			$this->world = null;
-		}
-
-		return $this->world;
-	}
-
-	/**
-	 * Returns the position's world if valid. Throws an error if the world is unexpectedly null.
+	 * Returns the position's world if valid. Throws an error if the world is unexpectedly invalid.
 	 *
 	 * @throws AssumptionFailedError
 	 */
-	public function getWorldNonNull() : World{
-		$world = $this->getWorld();
-		if($world === null){
-			throw new AssumptionFailedError("Position world is null");
+	public function getWorld() : World{
+		if($this->world === null || $this->world->isClosed()){
+			throw new AssumptionFailedError("Position world is null or has been unloaded");
 		}
 
-		return $world;
+		return $this->world;
 	}
 
 	/**
@@ -114,7 +98,7 @@ class Position extends Vector3{
 	}
 
 	public function __toString(){
-		return "Position(level=" . ($this->isValid() ? $this->getWorldNonNull()->getDisplayName() : "null") . ",x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
+		return "Position(level=" . ($this->isValid() ? $this->getWorld()->getDisplayName() : "null") . ",x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
 	}
 
 	public function equals(Vector3 $v) : bool{

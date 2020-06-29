@@ -72,7 +72,7 @@ abstract class Crops extends Flowable{
 			$ev = new BlockGrowEvent($this, $block);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->pos->getWorldNonNull()->setBlock($this->pos, $ev->getNewState());
+				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
 			}
 
 			$item->pop();
@@ -85,7 +85,7 @@ abstract class Crops extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->getId() !== BlockLegacyIds::FARMLAND){
-			$this->pos->getWorldNonNull()->useBreakOn($this->pos);
+			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
 
@@ -100,7 +100,7 @@ abstract class Crops extends Flowable{
 			$ev = new BlockGrowEvent($this, $block);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->pos->getWorldNonNull()->setBlock($this->pos, $ev->getNewState());
+				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
 			}
 		}
 	}

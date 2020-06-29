@@ -713,7 +713,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	protected function switchWorld(World $targetWorld) : bool{
-		$oldWorld = $this->location->isValid() ? $this->location->getWorldNonNull() : null;
+		$oldWorld = $this->location->isValid() ? $this->location->getWorld() : null;
 		if(parent::switchWorld($targetWorld)){
 			if($oldWorld !== null){
 				foreach($this->usedChunks as $index => $status){
@@ -959,7 +959,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		if(!($pos instanceof Position)){
 			$world = $this->getWorld();
 		}else{
-			$world = $pos->getWorldNonNull();
+			$world = $pos->getWorld();
 		}
 		$this->spawnPosition = new Position($pos->x, $pos->y, $pos->z, $world);
 		$this->networkSession->syncPlayerSpawnPoint($this->spawnPosition);
@@ -2082,7 +2082,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 
 		if($this->hasValidSpawnPosition()){
-			$nbt->setString("SpawnLevel", $this->spawnPosition->getWorldNonNull()->getFolderName());
+			$nbt->setString("SpawnLevel", $this->spawnPosition->getWorld()->getFolderName());
 			$nbt->setInt("SpawnX", $this->spawnPosition->getFloorX());
 			$nbt->setInt("SpawnY", $this->spawnPosition->getFloorY());
 			$nbt->setInt("SpawnZ", $this->spawnPosition->getFloorZ());
@@ -2152,7 +2152,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$ev = new PlayerRespawnEvent($this, $this->getSpawn());
 		$ev->call();
 
-		$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getWorldNonNull());
+		$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getWorld());
 		$this->teleport($realSpawn);
 
 		$this->setSprinting(false);

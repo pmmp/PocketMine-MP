@@ -94,7 +94,7 @@ class ParticleCommand extends VanillaCommand{
 
 		if($sender instanceof Player){
 			$senderPos = $sender->getPosition();
-			$world = $senderPos->getWorldNonNull();
+			$world = $senderPos->getWorld();
 			$pos = new Vector3(
 				$this->getRelativeDouble($senderPos->getX(), $sender, $args[1]),
 				$this->getRelativeDouble($senderPos->getY(), $sender, $args[2], 0, World::Y_MAX),

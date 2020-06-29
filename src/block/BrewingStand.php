@@ -60,7 +60,7 @@ class BrewingStand extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
-			$stand = $this->pos->getWorldNonNull()->getTile($this->pos);
+			$stand = $this->pos->getWorld()->getTile($this->pos);
 			if($stand instanceof TileBrewingStand and $stand->canOpenWith($item->getCustomName())){
 				$player->setCurrentWindow($stand->getInventory());
 			}

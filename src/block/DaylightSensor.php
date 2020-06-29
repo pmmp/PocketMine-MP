@@ -91,7 +91,7 @@ class DaylightSensor extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->inverted = !$this->inverted;
 		$this->power = $this->recalculatePower();
-		$this->pos->getWorldNonNull()->setBlock($this->pos, $this);
+		$this->pos->getWorld()->setBlock($this->pos, $this);
 		return true;
 	}
 
@@ -99,18 +99,18 @@ class DaylightSensor extends Transparent{
 		$newPower = $this->recalculatePower();
 		if($this->power !== $newPower){
 			$this->power = $newPower;
-			$this->pos->getWorldNonNull()->setBlock($this->pos, $this);
+			$this->pos->getWorld()->setBlock($this->pos, $this);
 		}
-		$this->pos->getWorldNonNull()->scheduleDelayedBlockUpdate($this->pos, 20);
+		$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, 20);
 	}
 
 	private function recalculatePower() : int{
-		$lightLevel = $this->pos->getWorldNonNull()->getRealBlockSkyLightAt($this->pos->x, $this->pos->y, $this->pos->z);
+		$lightLevel = $this->pos->getWorld()->getRealBlockSkyLightAt($this->pos->x, $this->pos->y, $this->pos->z);
 		if($this->inverted){
 			return 15 - $lightLevel;
 		}
 
-		$sunAngle = $this->pos->getWorldNonNull()->getSunAnglePercentage();
+		$sunAngle = $this->pos->getWorld()->getSunAnglePercentage();
 		return max(0, (int) round($lightLevel * cos(($sunAngle + ((($sunAngle < 0.5 ? 0 : 1) - $sunAngle) / 5)) * 2 * M_PI)));
 	}
 

@@ -107,14 +107,14 @@ class Lever extends Flowable{
 		}
 
 		if(!$this->getSide($face)->isSolid()){
-			$this->pos->getWorldNonNull()->useBreakOn($this->pos);
+			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->powered = !$this->powered;
-		$this->pos->getWorldNonNull()->setBlock($this->pos, $this);
-		$this->pos->getWorldNonNull()->addSound(
+		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->pos->getWorld()->addSound(
 			$this->pos->add(0.5, 0.5, 0.5),
 			$this->powered ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
 		);

@@ -223,7 +223,7 @@ abstract class Entity{
 		}
 
 		$this->id = self::nextRuntimeId();
-		$this->server = $location->getWorldNonNull()->getServer();
+		$this->server = $location->getWorld()->getServer();
 
 		$this->location = $location->asLocation();
 		assert(
@@ -1289,7 +1289,7 @@ abstract class Entity{
 	}
 
 	public function getWorld() : World{
-		return $this->location->getWorldNonNull();
+		return $this->location->getWorld();
 	}
 
 	protected function setPosition(Vector3 $pos) : bool{
@@ -1297,8 +1297,8 @@ abstract class Entity{
 			return false;
 		}
 
-		if($pos instanceof Position and $pos->isValid() and $pos->getWorldNonNull() !== $this->getWorld()){
-			if(!$this->switchWorld($pos->getWorldNonNull())){
+		if($pos instanceof Position and $pos->isValid() and $pos->getWorld() !== $this->getWorld()){
+			if(!$this->switchWorld($pos->getWorld())){
 				return false;
 			}
 		}
@@ -1410,7 +1410,7 @@ abstract class Entity{
 			$pitch = $pitch ?? $pos->pitch;
 		}
 		$from = $this->location->asPosition();
-		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getWorldNonNull() : $this->getWorld());
+		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getWorld() : $this->getWorld());
 		$ev = new EntityTeleportEvent($this, $from, $to);
 		$ev->call();
 		if($ev->isCancelled()){

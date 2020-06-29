@@ -78,7 +78,7 @@ class Leaves extends Transparent{
 		}
 		$visited[$index] = true;
 
-		$block = $this->pos->getWorldNonNull()->getBlock($pos);
+		$block = $this->pos->getWorld()->getBlock($pos);
 		if($block instanceof Wood){ //type doesn't matter
 			return true;
 		}
@@ -97,7 +97,7 @@ class Leaves extends Transparent{
 	public function onNearbyBlockChange() : void{
 		if(!$this->noDecay and !$this->checkDecay){
 			$this->checkDecay = true;
-			$this->pos->getWorldNonNull()->setBlock($this->pos, $this, false);
+			$this->pos->getWorld()->setBlock($this->pos, $this, false);
 		}
 	}
 
@@ -111,9 +111,9 @@ class Leaves extends Transparent{
 			$ev->call();
 			if($ev->isCancelled() or $this->findLog($this->pos)){
 				$this->checkDecay = false;
-				$this->pos->getWorldNonNull()->setBlock($this->pos, $this, false);
+				$this->pos->getWorld()->setBlock($this->pos, $this, false);
 			}else{
-				$this->pos->getWorldNonNull()->useBreakOn($this->pos);
+				$this->pos->getWorld()->useBreakOn($this->pos);
 			}
 		}
 	}
