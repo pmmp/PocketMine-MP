@@ -596,41 +596,6 @@ parameters:
 			path: ../../../src/player/Player.php
 
 		-
-			message: "#^Cannot call method getWorldNonNull\\(\\) on pocketmine\\\\world\\\\Position\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
-			message: "#^Cannot call method getFloorX\\(\\) on pocketmine\\\\world\\\\Position\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
-			message: "#^Cannot call method getFloorY\\(\\) on pocketmine\\\\world\\\\Position\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
-			message: "#^Cannot call method getFloorZ\\(\\) on pocketmine\\\\world\\\\Position\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
-			message: "#^Cannot access property \\$x on pocketmine\\\\world\\\\Position\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
-			message: "#^Cannot access property \\$y on pocketmine\\\\world\\\\Position\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
-			message: "#^Cannot access property \\$z on pocketmine\\\\world\\\\Position\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
 			message: "#^Cannot call method onDeath\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
 			count: 1
 			path: ../../../src/player/Player.php
