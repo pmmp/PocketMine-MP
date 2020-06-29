@@ -43,7 +43,6 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\Position;
 use pocketmine\world\World;
-use function array_merge;
 use function assert;
 use function count;
 use function dechex;
@@ -489,30 +488,26 @@ class Block{
 	/**
 	 * Returns the 4 blocks on the horizontal axes around the block (north, south, east, west)
 	 *
-	 * @return Block[]
+	 * @return Block[]|\Generator
+	 * @phpstan-return \Generator<int, Block, void, void>
 	 */
-	public function getHorizontalSides() : array{
-		return [
-			$this->getSide(Facing::NORTH),
-			$this->getSide(Facing::SOUTH),
-			$this->getSide(Facing::WEST),
-			$this->getSide(Facing::EAST)
-		];
+	public function getHorizontalSides() : \Generator{
+		yield $this->getSide(Facing::NORTH);
+		yield $this->getSide(Facing::SOUTH);
+		yield $this->getSide(Facing::WEST);
+		yield $this->getSide(Facing::EAST);
 	}
 
 	/**
 	 * Returns the six blocks around this block.
 	 *
-	 * @return Block[]
+	 * @return Block[]|\Generator
+	 * @phpstan-return \Generator<int, Block, void, void>
 	 */
-	public function getAllSides() : array{
-		return array_merge(
-			[
-				$this->getSide(Facing::DOWN),
-				$this->getSide(Facing::UP)
-			],
-			$this->getHorizontalSides()
-		);
+	public function getAllSides() : \Generator{
+		yield $this->getSide(Facing::DOWN);
+		yield $this->getSide(Facing::UP);
+		yield from $this->getHorizontalSides();
 	}
 
 	/**
