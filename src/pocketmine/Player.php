@@ -954,8 +954,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->level->sendTime($this);
 			$this->level->sendDifficulty($this);
 
-			$this->resetActivePearls();
-
 			return true;
 		}
 
@@ -3879,6 +3877,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			//TODO: workaround for player last pos not getting updated
 			//Entity::updateMovement() normally handles this, but it's overridden with an empty function in Player
 			$this->resetLastMovements();
+
+			$this->resetActivePearls();
 
 			return true;
 		}
