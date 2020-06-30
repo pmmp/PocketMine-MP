@@ -28,7 +28,7 @@ use pocketmine\entity\Consumable;
 /**
  * Interface implemented by objects that can be consumed by mobs.
  */
-interface ConsumableItem extends Consumable, Useable{
+interface ConsumableItem extends Consumable, Releasable{
 
 	/**
 	 * Returns the leftover that this Consumable produces when it is consumed. For Items, this is usually air, but could

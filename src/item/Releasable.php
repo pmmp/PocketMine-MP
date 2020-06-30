@@ -26,6 +26,6 @@ namespace pocketmine\item;
 /**
  * Interface implemented by objects that can be used.
  */
-interface Useable{
+interface Releasable{
 
 }
