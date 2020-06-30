@@ -34,7 +34,7 @@ use pocketmine\world\sound\BowShootSound;
 use function intdiv;
 use function min;
 
-class Bow extends Tool{
+class Bow extends Tool implements Releasable{
 
 	public function getFuelTime() : int{
 		return 200;

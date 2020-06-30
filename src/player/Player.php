@@ -78,6 +78,7 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
+use pocketmine\item\Releasable;
 use pocketmine\lang\Language;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
@@ -1476,8 +1477,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->inventory->setItemInHand($item);
 		}
 
-		//TODO: check if item has a release action - if it doesn't, this shouldn't be set
-		$this->setUsingItem(true);
+		$this->setUsingItem($item instanceof Releasable);
 
 		return true;
 	}
