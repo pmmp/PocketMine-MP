@@ -23,9 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction;
 
+use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingRecipe;
 use pocketmine\event\inventory\CraftItemEvent;
 use pocketmine\item\Item;
+use pocketmine\player\Player;
 use function array_pop;
 use function count;
 use function intdiv;
@@ -55,6 +57,13 @@ class CraftingTransaction extends InventoryTransaction{
 	protected $inputs = [];
 	/** @var Item[] */
 	protected $outputs = [];
+	/** @var CraftingManager */
+	private $craftingManager;
+
+	public function __construct(Player $source, CraftingManager $craftingManager, array $actions = []){
+		parent::__construct($source, $actions);
+		$this->craftingManager = $craftingManager;
+	}
 
 	/**
 	 * @param Item[] $txItems
@@ -126,7 +135,7 @@ class CraftingTransaction extends InventoryTransaction{
 		$this->matchItems($this->outputs, $this->inputs);
 
 		$failed = 0;
-		foreach($this->source->getServer()->getCraftingManager()->matchRecipeByOutputs($this->outputs) as $recipe){
+		foreach($this->craftingManager->matchRecipeByOutputs($this->outputs) as $recipe){
 			try{
 				//compute number of times recipe was crafted
 				$this->repetitions = $this->matchRecipeItems($this->outputs, $recipe->getResultsFor($this->source->getCraftingGrid()), false);

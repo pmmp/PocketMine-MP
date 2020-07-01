@@ -236,7 +236,7 @@ class InGamePacketHandler extends PacketHandler{
 			//trying to execute it
 
 			if($this->craftingTransaction === null){
-				$this->craftingTransaction = new CraftingTransaction($this->player, $actions);
+				$this->craftingTransaction = new CraftingTransaction($this->player, $this->player->getServer()->getCraftingManager(), $actions);
 			}else{
 				foreach($actions as $action){
 					$this->craftingTransaction->addAction($action);
