@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\serializer;
 
 use pocketmine\network\mcpe\protocol\Packet;
+use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\utils\BinaryDataException;
 
@@ -46,6 +47,19 @@ class PacketBatch{
 	 */
 	public function getPacket(PacketPool $packetPool) : Packet{
 		return $packetPool->getPacket($this->serializer->getString());
+	}
+
+	/**
+	 * @return \Generator|Packet[]
+	 * @phpstan-return \Generator<int, Packet, void, void>
+	 */
+	public function getPackets(PacketPool $packetPool, int $max) : \Generator{
+		for($c = 0; $c < $max and !$this->serializer->feof(); ++$c){
+			yield $c => $packetPool->getPacket($this->serializer->getString());
+		}
+		if(!$this->serializer->feof()){
+			throw new PacketDecodeException("Reached limit of $max packets in a single batch");
+		}
 	}
 
 	/**

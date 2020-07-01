@@ -98,7 +98,6 @@ use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
-use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\world\Position;
@@ -328,24 +327,18 @@ class NetworkSession{
 			Timings::$playerNetworkReceiveDecompressTimer->stopTiming();
 		}
 
-		$count = 0;
-		while(!$stream->feof() and $this->connected){
-			if($count++ >= 500){
-				throw new BadPacketException("Too many packets in a single batch");
+		try{
+			foreach($stream->getPackets($this->packetPool, 500) as $packet){
+				try{
+					$this->handleDataPacket($packet);
+				}catch(BadPacketException $e){
+					$this->logger->debug($packet->getName() . ": " . base64_encode($packet->getSerializer()->getBuffer()));
+					throw BadPacketException::wrap($e, "Error processing " . $packet->getName());
+				}
 			}
-			try{
-				$pk = $stream->getPacket($this->packetPool);
-			}catch(BinaryDataException $e){
-				$this->logger->debug("Packet batch: " . base64_encode($stream->getBuffer()));
-				throw BadPacketException::wrap($e, "Packet batch decode error");
-			}
-
-			try{
-				$this->handleDataPacket($pk);
-			}catch(BadPacketException $e){
-				$this->logger->debug($pk->getName() . ": " . base64_encode($pk->getSerializer()->getBuffer()));
-				throw BadPacketException::wrap($e, "Error processing " . $pk->getName());
-			}
+		}catch(PacketDecodeException $e){
+			$this->logger->logException($e);
+			throw BadPacketException::wrap($e, "Packet batch decode error");
 		}
 	}
 
