@@ -1059,7 +1059,7 @@ class Server{
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - $this->startTime, 3)]));
 
 			//TODO: move console parts to a separate component
-			$consoleSender = new ConsoleCommandSender($this);
+			$consoleSender = new ConsoleCommandSender($this, $this->language);
 			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
 			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $consoleSender);
 

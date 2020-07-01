@@ -39,10 +39,13 @@ class ConsoleCommandSender implements CommandSender{
 	private $server;
 	/** @var int|null */
 	protected $lineHeight = null;
+	/** @var Language */
+	private $language;
 
-	public function __construct(Server $server){
+	public function __construct(Server $server, Language $language){
 		$this->server = $server;
 		$this->perm = new PermissibleBase($this);
+		$this->language = $language;
 	}
 
 	public function getServer() : Server{
@@ -50,7 +53,7 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	public function getLanguage() : Language{
-		return $this->server->getLanguage();
+		return $this->language;
 	}
 
 	/**
