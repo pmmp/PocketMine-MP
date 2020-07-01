@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction;
 
 /**
- * Thrown when a transaction cannot proceed due to preconditions not being met (e.g. transaction doesn't balance).
+ * Thrown when a transaction fails to execute for any reason.
  */
-class TransactionValidationException extends TransactionException{
+abstract class TransactionException extends \RuntimeException{
 
 }
