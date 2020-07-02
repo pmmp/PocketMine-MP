@@ -48,6 +48,7 @@ final class TileFactory{
 	private $saveNames = [];
 
 	public function __construct(){
+		$this->register(Barrel::class, ["Barrel", "minecraft:barrel"]);
 		$this->register(Banner::class, ["Banner", "minecraft:banner"]);
 		$this->register(Bed::class, ["Bed", "minecraft:bed"]);
 		$this->register(BrewingStand::class, ["BrewingStand", "minecraft:brewing_stand"]);
@@ -65,7 +66,6 @@ final class TileFactory{
 		$this->register(Sign::class, ["Sign", "minecraft:sign"]);
 		$this->register(Skull::class, ["Skull", "minecraft:skull"]);
 
-		//TODO: Barrel
 		//TODO: Beacon
 		//TODO: Bell
 		//TODO: BlastFurnace

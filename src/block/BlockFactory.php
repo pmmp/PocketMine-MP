@@ -28,6 +28,7 @@ use pocketmine\block\BlockIdentifierFlattened as BIDFlattened;
 use pocketmine\block\BlockLegacyIds as Ids;
 use pocketmine\block\BlockLegacyMetadata as Meta;
 use pocketmine\block\tile\Banner as TileBanner;
+use pocketmine\block\tile\Barrel as TileBarrel;
 use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\tile\Chest as TileChest;
@@ -97,6 +98,7 @@ class BlockFactory{
 		$this->register(new Anvil(new BID(Ids::ANVIL, Meta::ANVIL_SLIGHTLY_DAMAGED), "Slightly Damaged Anvil"));
 		$this->register(new Anvil(new BID(Ids::ANVIL, Meta::ANVIL_VERY_DAMAGED), "Very Damaged Anvil"));
 		$this->register(new Banner(new BIDFlattened(Ids::STANDING_BANNER, Ids::WALL_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Banner"));
+		$this->register(new Barrel(new BID(Ids::BARREL, 0, null, TileBarrel::class), "Barrel"));
 		$this->register(new Transparent(new BID(Ids::BARRIER), "Barrier", BlockBreakInfo::indestructible()));
 		$this->register(new Bed(new BID(Ids::BED_BLOCK, 0, ItemIds::BED, TileBed::class), "Bed Block"));
 		$this->register(new Bedrock(new BID(Ids::BEDROCK), "Bedrock"));
@@ -575,7 +577,6 @@ class BlockFactory{
 		//region --- auto-generated TODOs ---
 		//TODO: minecraft:bamboo
 		//TODO: minecraft:bamboo_sapling
-		//TODO: minecraft:barrel
 		//TODO: minecraft:beacon
 		//TODO: minecraft:bell
 		//TODO: minecraft:blast_furnace
