@@ -31,11 +31,22 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
+ * @method static NoteInstrument BANJO()
  * @method static NoteInstrument BASS_DRUM()
+ * @method static NoteInstrument BELL()
+ * @method static NoteInstrument BIT()
+ * @method static NoteInstrument CHIMES()
  * @method static NoteInstrument CLICKS_AND_STICKS()
+ * @method static NoteInstrument COW_BELL()
+ * @method static NoteInstrument DIDGERIDOO()
  * @method static NoteInstrument DOUBLE_BASS()
+ * @method static NoteInstrument FLUTE()
+ * @method static NoteInstrument GUITAR()
+ * @method static NoteInstrument IRON_XYLOPHONE()
  * @method static NoteInstrument PIANO()
+ * @method static NoteInstrument PLING()
  * @method static NoteInstrument SNARE()
+ * @method static NoteInstrument XYLOPHONE()
  */
 final class NoteInstrument{
 	use EnumTrait {
@@ -48,7 +59,18 @@ final class NoteInstrument{
 			new self("bass_drum", 1),
 			new self("snare", 2),
 			new self("clicks_and_sticks", 3),
-			new self("double_bass", 4)
+			new self("double_bass", 4),
+			new self("bell", 5),
+			new self("flute", 6),
+			new self("chimes", 7),
+			new self("guitar", 8),
+			new self("xylophone", 9),
+			new self("iron_xylophone", 10),
+			new self("cow_bell", 11),
+			new self("didgeridoo", 12),
+			new self("bit", 13),
+			new self("banjo", 14),
+			new self("pling", 15)
 		);
 	}
 
