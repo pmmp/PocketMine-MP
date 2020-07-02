@@ -395,7 +395,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $lineHeight = null;
 	/** @var string */
 	protected $locale = "en_US";
-	/** @var string[] */
+	/** @var UUID[] */
 	protected $emoteIds = [];
 
 	/** @var int */
@@ -841,6 +841,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return $this->locale;
 	}
 
+	/**
+	 * @return UUID[]
+	 */
 	public function getEmoteIds() : array{
 		return $this->emoteIds;
 	}
