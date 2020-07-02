@@ -30,7 +30,8 @@ use pocketmine\network\mcpe\NetworkSession;
 class EmotePacket extends DataPacket/* implements ClientboundPacket, ServerboundPacket*/{
 	public const NETWORK_ID = ProtocolInfo::EMOTE_PACKET;
 
-	private const FLAG_SERVER = 1 << 0;
+	public const FLAG_C2S = 0;// TODO: find the proper value
+	public const FLAG_S2C = 1;
 
 	/** @var int */
 	private $entityRuntimeId;

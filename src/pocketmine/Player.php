@@ -51,6 +51,7 @@ use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerEditBookEvent;
+use pocketmine\event\player\PlayerEmoteEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
@@ -116,6 +117,8 @@ use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
+use pocketmine\network\mcpe\protocol\EmoteListPacket;
+use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
@@ -392,6 +395,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	protected $lineHeight = null;
 	/** @var string */
 	protected $locale = "en_US";
+	/** @var string[] */
+	protected $emoteIds = [];
 
 	/** @var int */
 	protected $startAction = -1;
@@ -834,6 +839,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function getLocale() : string{
 		return $this->locale;
+	}
+
+	public function getEmoteIds() : array{
+		return $this->emoteIds;
 	}
 
 	/**
@@ -3234,6 +3243,26 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->getInventory()->setItem($packet->inventorySlot, $event->getNewBook());
 
+		return true;
+	}
+
+	public function handleEmote(EmotePacket $packet) : bool{
+		$rawEmoteId = $packet->getEmoteId();
+		$emoteId = UUID::fromString($rawEmoteId);
+		$event = new PlayerEmoteEvent($this, $emoteId);
+		$event->call();
+		if ($event->isCancelled()) {
+			return true;
+		}
+
+		$newPacket = EmotePacket::create($this->getId(), $rawEmoteId, EmotePacket::FLAG_S2C);
+		$this->getLevelNonNull()->broadcastPacketToViewers($this, $newPacket);
+
+		return true;
+	}
+
+	public function handleEmoteList(EmoteListPacket $packet) : bool{
+		$this->emoteIds = $packet->getEmoteIds();
 		return true;
 	}
 
