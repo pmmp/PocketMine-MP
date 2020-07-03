@@ -30,7 +30,9 @@ use pocketmine\permission\BanEntry;
 use function array_map;
 use function count;
 use function implode;
+use function sort;
 use function strtolower;
+use const SORT_STRING;
 
 class BanListCommand extends VanillaCommand{
 
@@ -62,10 +64,11 @@ class BanListCommand extends VanillaCommand{
 			$args[0] = "players";
 		}
 
-		$list = $list->getEntries();
-		$message = implode(", ", array_map(function(BanEntry $entry) : string{
+		$list = array_map(function(BanEntry $entry) : string{
 			return $entry->getName();
-		}, $list));
+		}, $list->getEntries());
+		sort($list, SORT_STRING);
+		$message = implode(", ", $list);
 
 		if($args[0] === "ips"){
 			$sender->sendMessage(new TranslationContainer("commands.banlist.ips", [count($list)]));
