@@ -31,7 +31,9 @@ use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function count;
 use function implode;
+use function sort;
 use function strtolower;
+use const SORT_STRING;
 
 class WhitelistCommand extends VanillaCommand{
 
@@ -71,6 +73,7 @@ class WhitelistCommand extends VanillaCommand{
 					return true;
 				case "list":
 					$entries = $sender->getServer()->getWhitelisted()->getAll(true);
+					sort($entries, SORT_STRING);
 					$result = implode($entries, ", ");
 					$count = count($entries);
 
