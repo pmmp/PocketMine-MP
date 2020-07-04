@@ -501,6 +501,21 @@ class Utils{
 		}
 	}
 
+	/**
+	 * @phpstan-template TMemberType
+	 * @phpstan-param array<mixed, TMemberType> $array
+	 * @phpstan-param \Closure(TMemberType) : void $validator
+	 */
+	public static function validateArrayValueType(array $array, \Closure $validator) : void{
+		foreach($array as $k => $v){
+			try{
+				$validator($v);
+			}catch(\TypeError $e){
+				throw new \TypeError("Incorrect type of element at \"$k\": " . $e->getMessage(), 0, $e);
+			}
+		}
+	}
+
 	public static function checkUTF8(string $string) : void{
 		if(!mb_check_encoding($string, 'UTF-8')){
 			throw new \InvalidArgumentException("Text must be valid UTF-8");
