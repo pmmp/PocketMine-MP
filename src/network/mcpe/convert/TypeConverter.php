@@ -38,11 +38,13 @@ use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
+use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use function array_key_exists;
 
 class TypeConverter{
 	use SingletonTrait;
@@ -168,21 +170,21 @@ class TypeConverter{
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
 				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){
-					if($action->inventorySlot === 50){
+					if($action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
 						return null; //useless noise
 					}
-					if($action->inventorySlot >= 28 and $action->inventorySlot <= 31){
+					if(array_key_exists($action->inventorySlot, UIInventorySlotOffset::CRAFTING2X2_INPUT)){
 						$window = $player->getCraftingGrid();
 						if($window->getGridWidth() !== CraftingGrid::SIZE_SMALL){
 							throw new \UnexpectedValueException("Expected small crafting grid");
 						}
-						$slot = $action->inventorySlot - 28;
-					}elseif($action->inventorySlot >= 32 and $action->inventorySlot <= 40){
+						$slot = UIInventorySlotOffset::CRAFTING2X2_INPUT[$action->inventorySlot];
+					}elseif(array_key_exists($action->inventorySlot, UIInventorySlotOffset::CRAFTING3X3_INPUT)){
 						$window = $player->getCraftingGrid();
 						if($window->getGridWidth() !== CraftingGrid::SIZE_BIG){
 							throw new \UnexpectedValueException("Expected big crafting grid");
 						}
-						$slot = $action->inventorySlot - 32;
+						$slot = UIInventorySlotOffset::CRAFTING3X3_INPUT[$action->inventorySlot];
 					}else{
 						throw new \UnexpectedValueException("Unhandled magic UI slot offset $action->inventorySlot");
 					}
