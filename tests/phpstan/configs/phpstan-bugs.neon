@@ -36,6 +36,11 @@ parameters:
 			path: ../../../src/pocketmine/utils/Utils.php
 
 		-
+			message: "#^Parameter \\#1 \\$ of closure expects TMemberType, TMemberType given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Utils.php
+
+		-
 			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertNotNull\\(\\) with int and string will always evaluate to true\\.$#"
 			count: 1
 			path: ../../phpunit/block/BlockTest.php

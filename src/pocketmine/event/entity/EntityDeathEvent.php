@@ -25,6 +25,7 @@ namespace pocketmine\event\entity;
 
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
+use pocketmine\utils\Utils;
 
 /**
  * @phpstan-extends EntityEvent<Living>
@@ -62,6 +63,7 @@ class EntityDeathEvent extends EntityEvent{
 	 * @param Item[] $drops
 	 */
 	public function setDrops(array $drops) : void{
+		Utils::validateArrayValueType($drops, function(Item $_) : void{});
 		$this->drops = $drops;
 	}
 

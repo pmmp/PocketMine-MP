@@ -26,6 +26,7 @@ namespace pocketmine\event\block;
 use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\Player;
+use pocketmine\utils\Utils;
 use function count;
 
 /**
@@ -79,6 +80,7 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 		if(count($lines) !== 4){
 			throw new \InvalidArgumentException("Array size must be 4!");
 		}
+		Utils::validateArrayValueType($lines, function(string $_) : void{});
 		$this->lines = $lines;
 	}
 
