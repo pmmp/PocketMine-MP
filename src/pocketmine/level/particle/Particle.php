@@ -49,7 +49,7 @@ abstract class Particle extends Vector3{
 	public const TYPE_TERRAIN = 19;
 	public const TYPE_SUSPENDED_TOWN = 20, TYPE_TOWN_AURA = 20;
 	public const TYPE_PORTAL = 21;
-	//22 same as 21
+	public const TYPE_MOB_PORTAL = 22;
 	public const TYPE_SPLASH = 23, TYPE_WATER_SPLASH = 23;
 	public const TYPE_WATER_SPLASH_MANUAL = 24;
 	public const TYPE_WATER_WAKE = 25;
@@ -95,6 +95,9 @@ abstract class Particle extends Vector3{
 	public const TYPE_TALL_CAMPFIRE_SMOKE = 65;
 	public const TYPE_DRAGON_BREATH_FIRE = 66;
 	public const TYPE_DRAGON_BREATH_TRAIL = 67;
+	public const TYPE_BLUE_FLAME = 68;
+	public const TYPE_SOUL = 69;
+	public const TYPE_OBSIDIAN_TEAR = 70;
 
 	/**
 	 * @return DataPacket|DataPacket[]
