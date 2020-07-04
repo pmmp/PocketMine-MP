@@ -30,7 +30,9 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\Player;
+use function array_key_exists;
 
 class NetworkInventoryAction{
 	public const SOURCE_CONTAINER = 0;
@@ -162,21 +164,21 @@ class NetworkInventoryAction{
 		switch($this->sourceType){
 			case self::SOURCE_CONTAINER:
 				if($this->windowId === ContainerIds::UI and $this->inventorySlot > 0){
-					if($this->inventorySlot === 50){
+					if($this->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
 						return null; //useless noise
 					}
-					if($this->inventorySlot >= 28 and $this->inventorySlot <= 31){
+					if(array_key_exists($this->inventorySlot, UIInventorySlotOffset::CRAFTING2X2_INPUT)){
 						$window = $player->getCraftingGrid();
 						if($window->getGridWidth() !== CraftingGrid::SIZE_SMALL){
 							throw new \UnexpectedValueException("Expected small crafting grid");
 						}
-						$slot = $this->inventorySlot - 28;
-					}elseif($this->inventorySlot >= 32 and $this->inventorySlot <= 40){
+						$slot = UIInventorySlotOffset::CRAFTING2X2_INPUT[$this->inventorySlot];
+					}elseif(array_key_exists($this->inventorySlot, UIInventorySlotOffset::CRAFTING3X3_INPUT)){
 						$window = $player->getCraftingGrid();
 						if($window->getGridWidth() !== CraftingGrid::SIZE_BIG){
 							throw new \UnexpectedValueException("Expected big crafting grid");
 						}
-						$slot = $this->inventorySlot - 32;
+						$slot = UIInventorySlotOffset::CRAFTING3X3_INPUT[$this->inventorySlot];
 					}else{
 						throw new \UnexpectedValueException("Unhandled magic UI slot offset $this->inventorySlot");
 					}
