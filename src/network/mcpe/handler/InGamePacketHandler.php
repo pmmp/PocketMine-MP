@@ -91,6 +91,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use function array_key_exists;
 use function array_push;
 use function base64_encode;
 use function count;
@@ -124,6 +125,15 @@ class InGamePacketHandler extends PacketHandler{
 	protected $lastRightClickTime = 0.0;
 	/** @var Vector3|null */
 	protected $lastRightClickPos = null;
+
+	/**
+	 * TODO: HACK! This tracks GUIs for inventories that the server considers "always open" so that the client can't
+	 * open them twice. (1.16 hack)
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 * @internal
+	 */
+	protected $openHardcodedWindows = [];
 
 	public function __construct(Player $player, NetworkSession $session){
 		$this->player = $player;
@@ -320,9 +330,13 @@ class InGamePacketHandler extends PacketHandler{
 				$blockPos = $data->getBlockPos();
 				if(!$this->player->interactBlock($blockPos, $data->getFace(), $clickPos)){
 					$this->onFailedBlockAction($blockPos, $data->getFace());
-				}elseif($this->player->getWorld()->getBlock($blockPos)->getId() === BlockLegacyIds::CRAFTING_TABLE){
+				}elseif(
+					$this->player->getWorld()->getBlock($blockPos)->getId() === BlockLegacyIds::CRAFTING_TABLE &&
+					!array_key_exists($windowId = InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID, $this->openHardcodedWindows)
+				){
 					//TODO: HACK! crafting grid doesn't fit very well into the current PM container system, so this hack
 					//allows it to carry on working approximately the same way as it did in 1.14
+					$this->openHardcodedWindows[$windowId] = true;
 					$this->session->sendDataPacket(ContainerOpenPacket::blockInvVec3(
 						InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID,
 						WindowTypes::WORKBENCH,
@@ -431,10 +445,14 @@ class InGamePacketHandler extends PacketHandler{
 		if($target === null){
 			return false;
 		}
-		if($packet->action === InteractPacket::ACTION_OPEN_INVENTORY && $target === $this->player){
+		if(
+			$packet->action === InteractPacket::ACTION_OPEN_INVENTORY && $target === $this->player &&
+			!array_key_exists($windowId = InventoryManager::HARDCODED_INVENTORY_WINDOW_ID, $this->openHardcodedWindows)
+		){
 			//TODO: HACK! this restores 1.14ish behaviour, but this should be able to be listened to and
 			//controlled by plugins. However, the player is always a subscriber to their own inventory so it
 			//doesn't integrate well with the regular container system right now.
+			$this->openHardcodedWindows[$windowId] = true;
 			$this->session->sendDataPacket(ContainerOpenPacket::entityInv(
 				InventoryManager::HARDCODED_INVENTORY_WINDOW_ID,
 				WindowTypes::INVENTORY,
@@ -531,7 +549,11 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
 		$this->player->doCloseInventory();
 
-		$this->session->getInvManager()->onClientRemoveWindow($packet->windowId);
+		if(array_key_exists($packet->windowId, $this->openHardcodedWindows)){
+			unset($this->openHardcodedWindows[$packet->windowId]);
+		}else{
+			$this->session->getInvManager()->onClientRemoveWindow($packet->windowId);
+		}
 
 		$this->session->sendDataPacket(ContainerClosePacket::create($packet->windowId));
 		return true;
