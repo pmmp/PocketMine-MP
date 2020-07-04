@@ -30,6 +30,8 @@ use function array_filter;
 use function array_map;
 use function count;
 use function implode;
+use function sort;
+use const SORT_STRING;
 
 class ListCommand extends VanillaCommand{
 
@@ -52,6 +54,7 @@ class ListCommand extends VanillaCommand{
 		}, array_filter($sender->getServer()->getOnlinePlayers(), function(Player $player) use ($sender) : bool{
 			return !($sender instanceof Player) or $sender->canSee($player);
 		}));
+		sort($playerNames, SORT_STRING);
 
 		$sender->sendMessage(new TranslationContainer("commands.players.list", [count($playerNames), $sender->getServer()->getMaxPlayers()]));
 		$sender->sendMessage(implode(", ", $playerNames));
