@@ -636,7 +636,6 @@ class BlockFactory{
 		//TODO: minecraft:structure_block
 		//TODO: minecraft:sweet_berry_bush
 		//TODO: minecraft:turtle_egg
-		//TODO: minecraft:undyed_shulker_box
 		//endregion
 	}
 
