@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Parameter \\#1 \\$tag of method pocketmine\\\\item\\\\Item\\:\\:setNamedTag\\(\\) expects pocketmine\\\\nbt\\\\tag\\\\CompoundTag, pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null given\\.$#"
+			count: 1
+			path: ../../../src/block/ShulkerBox.php
+
+		-
 			message: "#^Property pocketmine\\\\block\\\\tile\\\\BrewingStand\\:\\:\\$inventory \\(pocketmine\\\\block\\\\inventory\\\\BrewingStandInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/block/tile/BrewingStand.php
@@ -19,6 +24,21 @@ parameters:
 			message: "#^Property pocketmine\\\\block\\\\tile\\\\Hopper\\:\\:\\$inventory \\(pocketmine\\\\block\\\\inventory\\\\HopperInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/block/tile/Hopper.php
+
+		-
+			message: "#^Property pocketmine\\\\block\\\\tile\\\\ShulkerBox\\:\\:\\$inventory \\(pocketmine\\\\block\\\\inventory\\\\ShulkerBoxInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/block/tile/ShulkerBox.php
+
+		-
+			message: "#^Cannot call method getTag\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 1
+			path: ../../../src/block/tile/ShulkerBox.php
+
+		-
+			message: "#^Cannot call method removeTag\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 1
+			path: ../../../src/block/tile/ShulkerBox.php
 
 		-
 			message: "#^Property pocketmine\\\\block\\\\tile\\\\Tile\\:\\:\\$pos \\(pocketmine\\\\world\\\\Position\\) does not accept null\\.$#"
