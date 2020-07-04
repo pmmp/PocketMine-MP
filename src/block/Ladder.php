@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -66,7 +67,7 @@ class Ladder extends Transparent{
 	}
 
 	public function onEntityInside(Entity $entity) : void{
-		if($entity->getPosition()->floor()->distanceSquared($this->pos) < 1){ //entity coordinates must be inside block
+		if($entity instanceof Living && $entity->getPosition()->floor()->distanceSquared($this->pos) < 1){ //entity coordinates must be inside block
 			$entity->resetFallDistance();
 			$entity->onGround = true;
 		}
