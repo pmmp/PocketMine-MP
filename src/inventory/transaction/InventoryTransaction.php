@@ -142,8 +142,10 @@ class InventoryTransaction{
 				$needItems[] = $action->getTargetItem();
 			}
 
-			if(!$action->isValid($this->source)){
-				throw new TransactionValidationException("Action " . get_class($action) . " is not valid in the current transaction");
+			try{
+				$action->validate($this->source);
+			}catch(TransactionValidationException $e){
+				throw new TransactionValidationException(get_class($action) . ": " . $e->getMessage(), 0, $e);
 			}
 
 			if(!$action->getSourceItem()->isNull()){

@@ -25,6 +25,7 @@ namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 
@@ -60,12 +61,16 @@ class SlotChangeAction extends InventoryAction{
 
 	/**
 	 * Checks if the item in the inventory at the specified slot is the same as this action's source item.
+	 *
+	 * @throws TransactionValidationException
 	 */
-	public function isValid(Player $source) : bool{
-		return (
-			$this->inventory->slotExists($this->inventorySlot) and
-			$this->inventory->getItem($this->inventorySlot)->equalsExact($this->sourceItem)
-		);
+	public function validate(Player $source) : void{
+		if(!$this->inventory->slotExists($this->inventorySlot)){
+			throw new TransactionValidationException("Slot does not exist");
+		}
+		if(!$this->inventory->getItem($this->inventorySlot)->equalsExact($this->sourceItem)){
+			throw new TransactionValidationException("Slot does not contain expected original item");
+		}
 	}
 
 	/**

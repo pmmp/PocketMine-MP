@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory\transaction\action;
 
+use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\player\Player;
@@ -37,8 +38,10 @@ class DestroyItemAction extends InventoryAction{
 		parent::__construct(ItemFactory::air(), $targetItem);
 	}
 
-	public function isValid(Player $source) : bool{
-		return !$source->hasFiniteResources();
+	public function validate(Player $source) : void{
+		if($source->hasFiniteResources()){
+			throw new TransactionValidationException("Player has finite resources, cannot destroy items");
+		}
 	}
 
 	public function execute(Player $source) : void{

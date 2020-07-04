@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 
@@ -57,8 +58,10 @@ abstract class InventoryAction{
 
 	/**
 	 * Returns whether this action is currently valid. This should perform any necessary sanity checks.
+	 *
+	 * @throws TransactionValidationException
 	 */
-	abstract public function isValid(Player $source) : bool;
+	abstract public function validate(Player $source) : void;
 
 	/**
 	 * Called when the action is added to the specified InventoryTransaction.
