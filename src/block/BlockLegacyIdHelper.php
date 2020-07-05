@@ -27,6 +27,7 @@ use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\block\BlockIdentifierFlattened as BIDFlattened;
 use pocketmine\block\BlockLegacyIds as Ids;
 use pocketmine\block\tile\Sign as TileSign;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\TreeType;
 use pocketmine\item\ItemIds;
 use pocketmine\utils\AssumptionFailedError;
@@ -155,6 +156,44 @@ final class BlockLegacyIdHelper{
 				return new BlockIdentifier(Ids::ACACIA_STAIRS);
 			case TreeType::DARK_OAK()->id():
 				return new BlockIdentifier(Ids::DARK_OAK_STAIRS);
+		}
+		throw new AssumptionFailedError("Switch should cover all wood types");
+	}
+
+	public static function getGlazedTerracottaIdentifier(DyeColor $color) : BlockIdentifier{
+		switch($color->id()){
+			case DyeColor::WHITE()->id():
+				return new BlockIdentifier(Ids::WHITE_GLAZED_TERRACOTTA);
+			case DyeColor::ORANGE()->id():
+				return new BlockIdentifier(Ids::ORANGE_GLAZED_TERRACOTTA);
+			case DyeColor::MAGENTA()->id():
+				return new BlockIdentifier(Ids::MAGENTA_GLAZED_TERRACOTTA);
+			case DyeColor::LIGHT_BLUE()->id():
+				return new BlockIdentifier(Ids::LIGHT_BLUE_GLAZED_TERRACOTTA);
+			case DyeColor::YELLOW()->id():
+				return new BlockIdentifier(Ids::YELLOW_GLAZED_TERRACOTTA);
+			case DyeColor::LIME()->id():
+				return new BlockIdentifier(Ids::LIME_GLAZED_TERRACOTTA);
+			case DyeColor::PINK()->id():
+				return new BlockIdentifier(Ids::PINK_GLAZED_TERRACOTTA);
+			case DyeColor::GRAY()->id():
+				return new BlockIdentifier(Ids::GRAY_GLAZED_TERRACOTTA);
+			case DyeColor::LIGHT_GRAY()->id():
+				return new BlockIdentifier(Ids::SILVER_GLAZED_TERRACOTTA);
+			case DyeColor::CYAN()->id():
+				return new BlockIdentifier(Ids::CYAN_GLAZED_TERRACOTTA);
+			case DyeColor::PURPLE()->id():
+				return new BlockIdentifier(Ids::PURPLE_GLAZED_TERRACOTTA);
+			case DyeColor::BLUE()->id():
+				return new BlockIdentifier(Ids::BLUE_GLAZED_TERRACOTTA);
+			case DyeColor::BROWN()->id():
+				return new BlockIdentifier(Ids::BROWN_GLAZED_TERRACOTTA);
+			case DyeColor::GREEN()->id():
+				return new BlockIdentifier(Ids::GREEN_GLAZED_TERRACOTTA);
+			case DyeColor::RED()->id():
+				return new BlockIdentifier(Ids::RED_GLAZED_TERRACOTTA);
+			case DyeColor::BLACK()->id():
+				return new BlockIdentifier(Ids::BLACK_GLAZED_TERRACOTTA);
 		}
 		throw new AssumptionFailedError("Switch should cover all wood types");
 	}

@@ -451,35 +451,13 @@ class BlockFactory{
 			$this->register(new Opaque(new BID(Ids::RED_SANDSTONE, $variant), $prefix . "Red Sandstone", $sandstoneBreakInfo));
 		}
 
-		//region ugly glazed-terracotta colour -> ID mapping table
-		/** @var int[] */
-		$glazedTerracottaIds = [
-			DyeColor::WHITE()->id() => Ids::WHITE_GLAZED_TERRACOTTA,
-			DyeColor::ORANGE()->id() => Ids::ORANGE_GLAZED_TERRACOTTA,
-			DyeColor::MAGENTA()->id() => Ids::MAGENTA_GLAZED_TERRACOTTA,
-			DyeColor::LIGHT_BLUE()->id() => Ids::LIGHT_BLUE_GLAZED_TERRACOTTA,
-			DyeColor::YELLOW()->id() => Ids::YELLOW_GLAZED_TERRACOTTA,
-			DyeColor::LIME()->id() => Ids::LIME_GLAZED_TERRACOTTA,
-			DyeColor::PINK()->id() => Ids::PINK_GLAZED_TERRACOTTA,
-			DyeColor::GRAY()->id() => Ids::GRAY_GLAZED_TERRACOTTA,
-			DyeColor::LIGHT_GRAY()->id() => Ids::SILVER_GLAZED_TERRACOTTA,
-			DyeColor::CYAN()->id() => Ids::CYAN_GLAZED_TERRACOTTA,
-			DyeColor::PURPLE()->id() => Ids::PURPLE_GLAZED_TERRACOTTA,
-			DyeColor::BLUE()->id() => Ids::BLUE_GLAZED_TERRACOTTA,
-			DyeColor::BROWN()->id() => Ids::BROWN_GLAZED_TERRACOTTA,
-			DyeColor::GREEN()->id() => Ids::GREEN_GLAZED_TERRACOTTA,
-			DyeColor::RED()->id() => Ids::RED_GLAZED_TERRACOTTA,
-			DyeColor::BLACK()->id() => Ids::BLACK_GLAZED_TERRACOTTA
-		];
-		//endregion
-
 		foreach(DyeColor::getAll() as $color){
 			$this->register(new Carpet(new BID(Ids::CARPET, $color->getMagicNumber()), $color->getDisplayName() . " Carpet"));
 			$this->register(new Concrete(new BID(Ids::CONCRETE, $color->getMagicNumber()), $color->getDisplayName() . " Concrete"));
 			$this->register(new ConcretePowder(new BID(Ids::CONCRETE_POWDER, $color->getMagicNumber()), $color->getDisplayName() . " Concrete Powder"));
 			$this->register(new Glass(new BID(Ids::STAINED_GLASS, $color->getMagicNumber()), $color->getDisplayName() . " Stained Glass"));
 			$this->register(new GlassPane(new BID(Ids::STAINED_GLASS_PANE, $color->getMagicNumber()), $color->getDisplayName() . " Stained Glass Pane"));
-			$this->register(new GlazedTerracotta(new BID($glazedTerracottaIds[$color->id()]), $color->getDisplayName() . " Glazed Terracotta"));
+			$this->register(new GlazedTerracotta(BlockLegacyIdHelper::getGlazedTerracottaIdentifier($color), $color->getDisplayName() . " Glazed Terracotta"));
 			$this->register(new HardenedClay(new BID(Ids::STAINED_CLAY, $color->getMagicNumber()), $color->getDisplayName() . " Stained Clay"));
 			$this->register(new HardenedGlass(new BID(Ids::HARD_STAINED_GLASS, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass"));
 			$this->register(new HardenedGlassPane(new BID(Ids::HARD_STAINED_GLASS_PANE, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass Pane"));
