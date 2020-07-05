@@ -53,6 +53,11 @@ final class BlockLegacyMetadata{
 
 	public const BUTTON_FLAG_POWERED = 0x08;
 
+	public const CHEMISTRY_COMPOUND_CREATOR = 0;
+	public const CHEMISTRY_MATERIAL_REDUCER = 4;
+	public const CHEMISTRY_ELEMENT_CONSTRUCTOR = 8;
+	public const CHEMISTRY_LAB_TABLE = 12;
+
 	public const COLORED_TORCH_BP_BLUE = 0;
 	public const COLORED_TORCH_BP_PURPLE = 8;
 	public const COLORED_TORCH_RG_RED = 0;
