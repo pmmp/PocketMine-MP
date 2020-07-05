@@ -50,67 +50,38 @@ use pocketmine\utils\EnumTrait;
  */
 final class DyeColor{
 	use EnumTrait {
-		register as Enum_register;
 		__construct as Enum___construct;
 	}
 
-	/** @var DyeColor[] */
-	private static $numericIdMap = [];
-
 	protected static function setup() : void{
 		self::registerAll(
-			new DyeColor("white", "White", 0, new Color(0xf0, 0xf0, 0xf0)),
-			new DyeColor("orange", "Orange", 1, new Color(0xf9, 0x80, 0x1d)),
-			new DyeColor("magenta", "Magenta", 2, new Color(0xc7, 0x4e, 0xbd)),
-			new DyeColor("light_blue", "Light Blue", 3, new Color(0x3a, 0xb3, 0xda)),
-			new DyeColor("yellow", "Yellow", 4, new Color(0xfe, 0xd8, 0x3d)),
-			new DyeColor("lime", "Lime", 5, new Color(0x80, 0xc7, 0x1f)),
-			new DyeColor("pink", "Pink", 6, new Color(0xf3, 0x8b, 0xaa)),
-			new DyeColor("gray", "Gray", 7, new Color(0x47, 0x4f, 0x52)),
-			new DyeColor("light_gray", "Light Gray", 8, new Color(0x9d, 0x9d, 0x97)),
-			new DyeColor("cyan", "Cyan", 9, new Color(0x16, 0x9c, 0x9c)),
-			new DyeColor("purple", "Purple", 10, new Color(0x89, 0x32, 0xb8)),
-			new DyeColor("blue", "Blue", 11, new Color(0x3c, 0x44, 0xaa)),
-			new DyeColor("brown", "Brown", 12, new Color(0x83, 0x54, 0x32)),
-			new DyeColor("green", "Green", 13, new Color(0x5e, 0x7c, 0x16)),
-			new DyeColor("red", "Red", 14, new Color(0xb0, 0x2e, 0x26)),
-			new DyeColor("black", "Black", 15, new Color(0x1d, 0x1d, 0x21))
+			new DyeColor("white", "White", new Color(0xf0, 0xf0, 0xf0)),
+			new DyeColor("orange", "Orange", new Color(0xf9, 0x80, 0x1d)),
+			new DyeColor("magenta", "Magenta", new Color(0xc7, 0x4e, 0xbd)),
+			new DyeColor("light_blue", "Light Blue", new Color(0x3a, 0xb3, 0xda)),
+			new DyeColor("yellow", "Yellow", new Color(0xfe, 0xd8, 0x3d)),
+			new DyeColor("lime", "Lime", new Color(0x80, 0xc7, 0x1f)),
+			new DyeColor("pink", "Pink", new Color(0xf3, 0x8b, 0xaa)),
+			new DyeColor("gray", "Gray", new Color(0x47, 0x4f, 0x52)),
+			new DyeColor("light_gray", "Light Gray", new Color(0x9d, 0x9d, 0x97)),
+			new DyeColor("cyan", "Cyan", new Color(0x16, 0x9c, 0x9c)),
+			new DyeColor("purple", "Purple", new Color(0x89, 0x32, 0xb8)),
+			new DyeColor("blue", "Blue", new Color(0x3c, 0x44, 0xaa)),
+			new DyeColor("brown", "Brown", new Color(0x83, 0x54, 0x32)),
+			new DyeColor("green", "Green", new Color(0x5e, 0x7c, 0x16)),
+			new DyeColor("red", "Red", new Color(0xb0, 0x2e, 0x26)),
+			new DyeColor("black", "Black", new Color(0x1d, 0x1d, 0x21))
 		);
-	}
-
-	protected static function register(DyeColor $color) : void{
-		self::Enum_register($color);
-		self::$numericIdMap[$color->getMagicNumber()] = $color;
-	}
-
-	/**
-	 * Returns a DyeColor object matching the given magic number
-	 * @internal
-	 *
-	 * @param bool $inverted Invert the ID before using it (useful for actual dye magic IDs)
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public static function fromMagicNumber(int $magicNumber, bool $inverted = false) : DyeColor{
-		self::checkInit();
-		$real = $inverted ? ~$magicNumber & 0xf : $magicNumber;
-		if(!isset(self::$numericIdMap[$real])){
-			throw new \InvalidArgumentException("Unknown dye colour magic number $magicNumber");
-		}
-		return self::$numericIdMap[$real];
 	}
 
 	/** @var string */
 	private $displayName;
-	/** @var int */
-	private $magicNumber;
 	/** @var Color */
 	private $rgbValue;
 
-	private function __construct(string $enumName, string $displayName, int $magicNumber, Color $rgbValue){
+	private function __construct(string $enumName, string $displayName, Color $rgbValue){
 		$this->Enum___construct($enumName);
 		$this->displayName = $displayName;
-		$this->magicNumber = $magicNumber;
 		$this->rgbValue = $rgbValue;
 	}
 
@@ -120,13 +91,5 @@ final class DyeColor{
 
 	public function getRgbValue() : Color{
 		return $this->rgbValue;
-	}
-
-	public function getMagicNumber() : int{
-		return $this->magicNumber;
-	}
-
-	public function getInvertedMagicNumber() : int{
-		return ~$this->magicNumber & 0xf;
 	}
 }

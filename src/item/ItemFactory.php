@@ -29,6 +29,7 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\Squid;
@@ -243,12 +244,13 @@ class ItemFactory{
 			DyeColor::BLUE()->id() => 18,
 			DyeColor::WHITE()->id() => 19
 		];
+		$colorIdMap = DyeColorIdMap::getInstance();
 		foreach(DyeColor::getAll() as $color){
 			//TODO: use colour object directly
 			//TODO: add interface to dye-colour objects
-			$this->register(new Dye(new ItemIdentifier(ItemIds::DYE, $dyeMap[$color->id()] ?? $color->getInvertedMagicNumber()), $color->getDisplayName() . " Dye", $color));
-			$this->register(new Bed(new ItemIdentifier(ItemIds::BED, $color->getMagicNumber()), $color->getDisplayName() . " Bed", $color));
-			$this->register(new Banner(new ItemIdentifier(ItemIds::BANNER, $color->getInvertedMagicNumber()), $color->getDisplayName() . " Banner", $color));
+			$this->register(new Dye(new ItemIdentifier(ItemIds::DYE, $dyeMap[$color->id()] ?? $colorIdMap->toInvertedId($color)), $color->getDisplayName() . " Dye", $color));
+			$this->register(new Bed(new ItemIdentifier(ItemIds::BED, $colorIdMap->toId($color)), $color->getDisplayName() . " Bed", $color));
+			$this->register(new Banner(new ItemIdentifier(ItemIds::BANNER, $colorIdMap->toInvertedId($color)), $color->getDisplayName() . " Banner", $color));
 		}
 
 		foreach(Potion::ALL as $type){

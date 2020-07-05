@@ -28,6 +28,7 @@ use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPattern;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -176,7 +177,7 @@ class Banner extends Transparent{
 	}
 
 	public function asItem() : Item{
-		return ItemFactory::getInstance()->get(ItemIds::BANNER, $this->baseColor->getInvertedMagicNumber());
+		return ItemFactory::getInstance()->get(ItemIds::BANNER, DyeColorIdMap::getInstance()->toInvertedId($this->baseColor));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

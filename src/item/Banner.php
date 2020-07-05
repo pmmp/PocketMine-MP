@@ -29,6 +29,7 @@ use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPattern;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 
@@ -93,11 +94,12 @@ class Banner extends Item{
 
 		$this->patterns = new Deque();
 
+		$colorIdMap = DyeColorIdMap::getInstance();
 		$patterns = $tag->getListTag(self::TAG_PATTERNS);
 		if($patterns !== null){
 			/** @var CompoundTag $t */
 			foreach($patterns as $t){
-				$this->patterns->push(new BannerPattern($t->getString(self::TAG_PATTERN_NAME), DyeColor::fromMagicNumber($t->getInt(self::TAG_PATTERN_COLOR), true)));
+				$this->patterns->push(new BannerPattern($t->getString(self::TAG_PATTERN_NAME), $colorIdMap->fromInvertedId($t->getInt(self::TAG_PATTERN_COLOR))));
 			}
 		}
 	}
@@ -107,11 +109,12 @@ class Banner extends Item{
 
 		if(!$this->patterns->isEmpty()){
 			$patterns = new ListTag();
+			$colorIdMap = DyeColorIdMap::getInstance();
 			/** @var BannerPattern $pattern */
 			foreach($this->patterns as $pattern){
 				$patterns->push(CompoundTag::create()
 					->setString(self::TAG_PATTERN_NAME, $pattern->getId())
-					->setInt(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
+					->setInt(self::TAG_PATTERN_COLOR, $colorIdMap->toInvertedId($pattern->getColor()))
 				);
 			}
 

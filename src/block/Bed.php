@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Bed as ItemBed;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -193,7 +194,7 @@ class Bed extends Transparent{
 	}
 
 	public function asItem() : Item{
-		return ItemFactory::getInstance()->get($this->idInfo->getItemId(), $this->color->getMagicNumber());
+		return ItemFactory::getInstance()->get($this->idInfo->getItemId(), DyeColorIdMap::getInstance()->toId($this->color));
 	}
 
 	public function getAffectedBlocks() : array{
