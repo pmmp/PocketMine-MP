@@ -464,25 +464,20 @@ class BlockFactory{
 			$this->register(new Wool(new BID(Ids::WOOL, $color->getMagicNumber()), $color->getDisplayName() . " Wool"));
 		}
 
-		static $wallTypes = [
-			Meta::WALL_ANDESITE => "Andesite",
-			Meta::WALL_BRICK => "Brick",
-			Meta::WALL_DIORITE => "Diorite",
-			Meta::WALL_END_STONE_BRICK => "End Stone Brick",
-			Meta::WALL_GRANITE => "Granite",
-			Meta::WALL_MOSSY_STONE_BRICK => "Mossy Stone Brick",
-			Meta::WALL_MOSSY_COBBLESTONE => "Mossy Cobblestone",
-			Meta::WALL_NETHER_BRICK => "Nether Brick",
-			Meta::WALL_COBBLESTONE => "Cobblestone",
-			Meta::WALL_PRISMARINE => "Prismarine",
-			Meta::WALL_RED_NETHER_BRICK => "Red Nether Brick",
-			Meta::WALL_RED_SANDSTONE => "Red Sandstone",
-			Meta::WALL_SANDSTONE => "Sandstone",
-			Meta::WALL_STONE_BRICK => "Stone Brick"
-		];
-		foreach($wallTypes as $magicNumber => $prefix){
-			$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, $magicNumber), $prefix . " Wall"));
-		}
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_ANDESITE), "Andesite Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_BRICK), "Brick Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_DIORITE), "Diorite Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_END_STONE_BRICK), "End Stone Brick Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_GRANITE), "Granite Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_MOSSY_STONE_BRICK), "Mossy Stone Brick Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_MOSSY_COBBLESTONE), "Mossy Cobblestone Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_NETHER_BRICK), "Nether Brick Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_COBBLESTONE), "Cobblestone Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_PRISMARINE), "Prismarine Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_RED_NETHER_BRICK), "Red Nether Brick Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_RED_SANDSTONE), "Red Sandstone Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_SANDSTONE), "Sandstone Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_STONE_BRICK), "Stone Brick Wall"));
 
 		$this->registerElements();
 
