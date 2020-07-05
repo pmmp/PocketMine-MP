@@ -41,7 +41,6 @@ use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\Note as TileNote;
-use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
@@ -409,69 +408,6 @@ class BlockFactory{
 		$this->register(new WeightedPressurePlateLight(new BID(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Light"));
 		$this->register(new Wheat(new BID(Ids::WHEAT_BLOCK), "Wheat Block"));
 
-		//region ugly treetype -> blockID mapping tables
-		$woodenStairIds = [
-			TreeType::OAK()->id() => Ids::OAK_STAIRS,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_STAIRS,
-			TreeType::BIRCH()->id() => Ids::BIRCH_STAIRS,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_STAIRS,
-			TreeType::ACACIA()->id() => Ids::ACACIA_STAIRS,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_STAIRS
-		];
-		$fenceGateIds = [
-			TreeType::OAK()->id() => Ids::OAK_FENCE_GATE,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_FENCE_GATE,
-			TreeType::BIRCH()->id() => Ids::BIRCH_FENCE_GATE,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_FENCE_GATE,
-			TreeType::ACACIA()->id() => Ids::ACACIA_FENCE_GATE,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_FENCE_GATE
-		];
-
-		/** @var BID[] $woodenDoorIds */
-		$woodenDoorIds = [
-			TreeType::OAK()->id() => new BID(Ids::OAK_DOOR_BLOCK, 0, ItemIds::OAK_DOOR),
-			TreeType::SPRUCE()->id() => new BID(Ids::SPRUCE_DOOR_BLOCK, 0, ItemIds::SPRUCE_DOOR),
-			TreeType::BIRCH()->id() => new BID(Ids::BIRCH_DOOR_BLOCK, 0, ItemIds::BIRCH_DOOR),
-			TreeType::JUNGLE()->id() => new BID(Ids::JUNGLE_DOOR_BLOCK, 0, ItemIds::JUNGLE_DOOR),
-			TreeType::ACACIA()->id() => new BID(Ids::ACACIA_DOOR_BLOCK, 0, ItemIds::ACACIA_DOOR),
-			TreeType::DARK_OAK()->id() => new BID(Ids::DARK_OAK_DOOR_BLOCK, 0, ItemIds::DARK_OAK_DOOR)
-		];
-		$woodenPressurePlateIds = [
-			TreeType::OAK()->id() => Ids::WOODEN_PRESSURE_PLATE,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_PRESSURE_PLATE,
-			TreeType::BIRCH()->id() => Ids::BIRCH_PRESSURE_PLATE,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_PRESSURE_PLATE,
-			TreeType::ACACIA()->id() => Ids::ACACIA_PRESSURE_PLATE,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_PRESSURE_PLATE
-		];
-		$woodenButtonIds = [
-			TreeType::OAK()->id() => Ids::WOODEN_BUTTON,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_BUTTON,
-			TreeType::BIRCH()->id() => Ids::BIRCH_BUTTON,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_BUTTON,
-			TreeType::ACACIA()->id() => Ids::ACACIA_BUTTON,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_BUTTON
-		];
-		$woodenTrapdoorIds = [
-			TreeType::OAK()->id() => Ids::WOODEN_TRAPDOOR,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_TRAPDOOR,
-			TreeType::BIRCH()->id() => Ids::BIRCH_TRAPDOOR,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_TRAPDOOR,
-			TreeType::ACACIA()->id() => Ids::ACACIA_TRAPDOOR,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_TRAPDOOR
-		];
-
-		/** @var BIDFlattened[] $woodenSignIds */
-		$woodenSignIds = [
-			TreeType::OAK()->id() => new BIDFlattened(Ids::SIGN_POST, Ids::WALL_SIGN, 0, ItemIds::SIGN, TileSign::class),
-			TreeType::SPRUCE()->id() => new BIDFlattened(Ids::SPRUCE_STANDING_SIGN, Ids::SPRUCE_WALL_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class),
-			TreeType::BIRCH()->id() => new BIDFlattened(Ids::BIRCH_STANDING_SIGN, Ids::BIRCH_WALL_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class),
-			TreeType::JUNGLE()->id() => new BIDFlattened(Ids::JUNGLE_STANDING_SIGN, Ids::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class),
-			TreeType::ACACIA()->id() => new BIDFlattened(Ids::ACACIA_STANDING_SIGN, Ids::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, TileSign::class),
-			TreeType::DARK_OAK()->id() => new BIDFlattened(Ids::DARKOAK_STANDING_SIGN, Ids::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class)
-		];
-		//endregion
-
 		foreach(TreeType::getAll() as $treeType){
 			$magicNumber = $treeType->getMagicNumber();
 			$name = $treeType->getDisplayName();
@@ -488,15 +424,15 @@ class BlockFactory{
 			$this->register($wood);
 			$this->remap($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, ($magicNumber & 0x03) | 0b1100, $wood);
 
-			$this->register(new FenceGate(new BID($fenceGateIds[$treeType->id()]), $treeType->getDisplayName() . " Fence Gate"));
-			$this->register(new WoodenStairs(new BID($woodenStairIds[$treeType->id()]), $treeType->getDisplayName() . " Stairs"));
-			$this->register(new WoodenDoor($woodenDoorIds[$treeType->id()], $treeType->getDisplayName() . " Door"));
+			$this->register(new FenceGate(BlockLegacyIdHelper::getWoodenFenceIdentifier($treeType), $treeType->getDisplayName() . " Fence Gate"));
+			$this->register(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($treeType), $treeType->getDisplayName() . " Stairs"));
+			$this->register(new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($treeType), $treeType->getDisplayName() . " Door"));
 
-			$this->register(new WoodenButton(new BID($woodenButtonIds[$treeType->id()]), $treeType->getDisplayName() . " Button"));
-			$this->register(new WoodenPressurePlate(new BID($woodenPressurePlateIds[$treeType->id()]), $treeType->getDisplayName() . " Pressure Plate"));
-			$this->register(new WoodenTrapdoor(new BID($woodenTrapdoorIds[$treeType->id()]), $treeType->getDisplayName() . " Trapdoor"));
+			$this->register(new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($treeType), $treeType->getDisplayName() . " Button"));
+			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($treeType), $treeType->getDisplayName() . " Pressure Plate"));
+			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($treeType), $treeType->getDisplayName() . " Trapdoor"));
 
-			$this->register(new Sign($woodenSignIds[$treeType->id()], $treeType->getDisplayName() . " Sign"));
+			$this->register(new Sign(BlockLegacyIdHelper::getWoodenSignIdentifier($treeType), $treeType->getDisplayName() . " Sign"));
 		}
 
 		static $sandstoneTypes = [
