@@ -65,11 +65,10 @@ trait LegacyAnvilChunkTrait{
 		}catch(NbtDataException $e){
 			throw new CorruptedChunkException($e->getMessage(), 0, $e);
 		}
-		if(!$chunk->hasTag("Level")){
+		$chunk = $chunk->getTag("Level");
+		if(!($chunk instanceof CompoundTag)){
 			throw new CorruptedChunkException("'Level' key is missing from chunk NBT");
 		}
-
-		$chunk = $chunk->getCompoundTag("Level");
 
 		$subChunks = [];
 		$subChunksTag = $chunk->getListTag("Sections") ?? [];
@@ -97,8 +96,8 @@ trait LegacyAnvilChunkTrait{
 			$chunk->getInt("xPos"),
 			$chunk->getInt("zPos"),
 			$subChunks,
-			$chunk->hasTag("Entities", ListTag::class) ? self::getCompoundList("Entities", $chunk->getListTag("Entities")) : [],
-			$chunk->hasTag("TileEntities", ListTag::class) ? self::getCompoundList("TileEntities", $chunk->getListTag("TileEntities")) : [],
+			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
+			($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
 			$biomeArray
 		);
 		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);

@@ -93,10 +93,11 @@ class JavaWorldData extends BaseNbtWorldData{
 			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}
 
-		if(!$worldData->hasTag("Data", CompoundTag::class)){
+		$dataTag = $worldData->getTag("Data");
+		if(!($dataTag instanceof CompoundTag)){
 			throw new CorruptedWorldException("Missing 'Data' key or wrong type");
 		}
-		return $worldData->getCompoundTag("Data");
+		return $dataTag;
 	}
 
 	protected function fix() : void{
