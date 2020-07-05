@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\serializer;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
 use function count;
@@ -70,7 +71,7 @@ final class ChunkSerializer{
 				//zigzag and just shift directly.
 				$stream->putUnsignedVarInt(count($palette) << 1); //yes, this is intentionally zigzag
 				foreach($palette as $p){
-					$stream->putUnsignedVarInt($blockMapper->toRuntimeId($p >> 4, $p & 0xf) << 1);
+					$stream->put(Binary::writeUnsignedVarInt($blockMapper->toRuntimeId($p >> 4, $p & 0xf) << 1));
 				}
 			}
 		}
