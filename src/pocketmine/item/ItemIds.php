@@ -273,4 +273,5 @@ interface ItemIds extends BlockIds{
 	public const NETHERITE_CHESTPLATE = 749;
 	public const NETHERITE_LEGGINGS = 750;
 	public const NETHERITE_BOOTS = 751;
+	public const NETHERITE_SCRAP = 752;
 }
