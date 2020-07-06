@@ -25,6 +25,7 @@ namespace pocketmine\world\particle;
 
 use pocketmine\block\Block;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class DestroyBlockParticle implements Particle{
@@ -37,6 +38,6 @@ class DestroyBlockParticle implements Particle{
 	}
 
 	public function encode(Vector3 $pos){
-		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_DESTROY, $this->block->getRuntimeId(), $pos);
+		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_DESTROY, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getId(), $this->block->getMeta()), $pos);
 	}
 }

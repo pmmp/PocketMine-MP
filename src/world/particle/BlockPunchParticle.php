@@ -25,6 +25,7 @@ namespace pocketmine\world\particle;
 
 use pocketmine\block\Block;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 /**
@@ -43,6 +44,6 @@ class BlockPunchParticle implements Particle{
 	}
 
 	public function encode(Vector3 $pos){
-		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, $this->block->getRuntimeId() | ($this->face << 24), $pos);
+		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getId(), $this->block->getMeta()) | ($this->face << 24), $pos);
 	}
 }

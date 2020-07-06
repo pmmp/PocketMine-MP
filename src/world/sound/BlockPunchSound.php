@@ -25,6 +25,7 @@ namespace pocketmine\world\sound;
 
 use pocketmine\block\Block;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 /**
@@ -43,7 +44,7 @@ class BlockPunchSound implements Sound{
 		return LevelSoundEventPacket::create(
 			LevelSoundEventPacket::SOUND_HIT,
 			$pos,
-			$this->block->getRuntimeId()
+			RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getId(), $this->block->getMeta())
 		);
 	}
 }
