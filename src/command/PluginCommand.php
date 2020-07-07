@@ -28,7 +28,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginOwned;
 use pocketmine\plugin\PluginOwnedTrait;
 
-class PluginCommand extends Command implements PluginOwned{
+final class PluginCommand extends Command implements PluginOwned{
 	use PluginOwnedTrait;
 
 	/** @var CommandExecutor */
