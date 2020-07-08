@@ -50,9 +50,6 @@ class TaskScheduler{
 	protected $tasks;
 
 	/** @var int */
-	private $ids = 1;
-
-	/** @var int */
 	protected $currentTick = 0;
 
 	public function __construct(?string $owner = null){
@@ -85,7 +82,6 @@ class TaskScheduler{
 		while(!$this->queue->isEmpty()){
 			$this->queue->extract();
 		}
-		$this->ids = 1;
 	}
 
 	public function isQueued(TaskHandler $task) : bool{
@@ -110,7 +106,7 @@ class TaskScheduler{
 			$period = 1;
 		}
 
-		return $this->handle(new TaskHandler($task, $this->nextId(), $delay, $period, $this->owner));
+		return $this->handle(new TaskHandler($task, $delay, $period, $this->owner));
 	}
 
 	private function handle(TaskHandler $handler) : TaskHandler{
@@ -158,9 +154,5 @@ class TaskScheduler{
 
 	private function isReady(int $currentTick) : bool{
 		return !$this->queue->isEmpty() and $this->queue->current()->getNextRun() <= $currentTick;
-	}
-
-	private function nextId() : int{
-		return $this->ids++;
 	}
 }
