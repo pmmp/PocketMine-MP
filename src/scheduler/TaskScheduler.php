@@ -72,19 +72,9 @@ class TaskScheduler{
 		return $this->addTask($task, $delay, $period);
 	}
 
-	public function cancelTask(int $taskId) : void{
-		if(isset($this->tasks[$taskId])){
-			try{
-				$this->tasks[$taskId]->cancel();
-			}finally{
-				unset($this->tasks[$taskId]);
-			}
-		}
-	}
-
 	public function cancelAllTasks() : void{
 		foreach($this->tasks as $id => $task){
-			$this->cancelTask($id);
+			$task->cancel();
 		}
 		$this->tasks = [];
 		while(!$this->queue->isEmpty()){
