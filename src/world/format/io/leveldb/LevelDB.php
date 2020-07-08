@@ -489,10 +489,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		return Binary::writeLInt($chunkX) . Binary::writeLInt($chunkZ);
 	}
 
-	private function chunkExists(int $chunkX, int $chunkZ) : bool{
-		return $this->db->get(LevelDB::chunkIndex($chunkX, $chunkZ) . self::TAG_VERSION) !== false;
-	}
-
 	public function doGarbageCollection() : void{
 
 	}
