@@ -35,11 +35,10 @@ use function igbinary_unserialize;
 
 class LightPopulationTask extends AsyncTask{
 	private const TLS_KEY_WORLD = "world";
+	private const TLS_KEY_CHUNK_POS = "chunkPos";
 
 	/** @var string */
 	public $chunk;
-	/** @var ChunkPos */
-	private $chunkPos;
 
 	/** @var string */
 	private $resultHeightMap;
@@ -50,7 +49,7 @@ class LightPopulationTask extends AsyncTask{
 
 	public function __construct(World $world, Chunk $chunk){
 		$this->storeLocal(self::TLS_KEY_WORLD, $world);
-		$this->chunkPos = $chunk->getPos();
+		$this->storeLocal(self::TLS_KEY_CHUNK_POS, $chunk->getPos());
 		$this->chunk = FastChunkSerializer::serialize($chunk);
 	}
 
@@ -77,7 +76,8 @@ class LightPopulationTask extends AsyncTask{
 	public function onCompletion() : void{
 		/** @var World $world */
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
-		$pos = $this->chunkPos;
+		/** @var ChunkPos $pos */
+		$pos = $this->fetchLocal(self::TLS_KEY_CHUNK_POS);
 		if(!$world->isClosed() and $world->isChunkLoaded($pos->getX(), $pos->getZ())){
 			/** @var Chunk $chunk */
 			$chunk = $world->getChunk($pos->getX(), $pos->getZ());
