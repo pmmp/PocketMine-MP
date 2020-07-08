@@ -26,6 +26,7 @@ namespace pocketmine\world\generator;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\object\OreType;
 use pocketmine\world\generator\populator\Ore;
@@ -148,7 +149,7 @@ class Flat extends Generator{
 	}
 
 	protected function generateBaseChunk() : void{
-		$this->chunk = new Chunk(0, 0);
+		$this->chunk = new Chunk(new ChunkPos(0, 0));
 		$this->chunk->setGenerated();
 
 		for($Z = 0; $Z < 16; ++$Z){
@@ -174,8 +175,7 @@ class Flat extends Generator{
 
 	public function generateChunk(int $chunkX, int $chunkZ) : void{
 		$chunk = clone $this->chunk;
-		$chunk->setX($chunkX);
-		$chunk->setZ($chunkZ);
+		$chunk->setPos(new ChunkPos($chunkX, $chunkZ));
 		$this->world->setChunk($chunkX, $chunkZ, $chunk);
 	}
 

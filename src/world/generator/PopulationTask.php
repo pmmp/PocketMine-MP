@@ -25,6 +25,7 @@ namespace pocketmine\world\generator;
 
 use pocketmine\block\BlockFactory;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\World;
@@ -92,7 +93,7 @@ class PopulationTask extends AsyncTask{
 			$zz = -1 + (int) ($i / 3);
 			$ck = $this->{"chunk$i"};
 			if($ck === null){
-				$chunks[$i] = new Chunk($chunk->getX() + $xx, $chunk->getZ() + $zz);
+				$chunks[$i] = new Chunk(new ChunkPos($chunk->getX() + $xx, $chunk->getZ() + $zz));
 			}else{
 				$chunks[$i] = FastChunkSerializer::deserialize($ck);
 			}

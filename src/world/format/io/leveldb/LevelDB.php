@@ -33,6 +33,7 @@ use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\Utils;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
@@ -393,8 +394,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		}
 
 		$chunk = new Chunk(
-			$chunkX,
-			$chunkZ,
+			new ChunkPos($chunkX, $chunkZ),
 			$subChunks,
 			$entities,
 			$tiles,

@@ -35,6 +35,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\player\Player;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\World;
 use function array_fill;
 use function array_filter;
@@ -50,10 +51,8 @@ class Chunk{
 
 	public const MAX_SUBCHUNKS = 16;
 
-	/** @var int */
-	protected $x;
-	/** @var int */
-	protected $z;
+	/** @var ChunkPos */
+	private $pos;
 
 	/** @var int */
 	private $dirtyFlags = 0;
@@ -94,9 +93,8 @@ class Chunk{
 	 * @param CompoundTag[] $entities
 	 * @param CompoundTag[] $tiles
 	 */
-	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], ?array $entities = null, ?array $tiles = null, ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null){
-		$this->x = $chunkX;
-		$this->z = $chunkZ;
+	public function __construct(ChunkPos $pos, array $subChunks = [], ?array $entities = null, ?array $tiles = null, ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null){
+		$this->pos = $pos;
 
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
@@ -113,19 +111,19 @@ class Chunk{
 	}
 
 	public function getX() : int{
-		return $this->x;
+		return $this->pos->getX();
 	}
 
 	public function getZ() : int{
-		return $this->z;
+		return $this->pos->getZ();
 	}
 
-	public function setX(int $x) : void{
-		$this->x = $x;
+	public function getPos() : ChunkPos{
+		return $this->pos;
 	}
 
-	public function setZ(int $z) : void{
-		$this->z = $z;
+	public function setPos(ChunkPos $pos) : void{
+		$this->pos = $pos;
 	}
 
 	/**
@@ -500,7 +498,7 @@ class Chunk{
 						}elseif($saveIdTag instanceof IntTag){ //legacy MCPE format
 							$saveId = "legacy(" . $saveIdTag->getValue() . ")";
 						}
-						$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown entity type $saveId");
+						$world->getLogger()->warning("Chunk $this->pos: Deleted unknown entity type $saveId");
 						continue;
 					}
 				}catch(\Exception $t){ //TODO: this shouldn't be here
@@ -520,7 +518,7 @@ class Chunk{
 				if(($tile = $tileFactory->createFromData($world, $nbt)) !== null){
 					$world->addTile($tile);
 				}else{
-					$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
+					$world->getLogger()->warning("Chunk $this->pos: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
 					continue;
 				}
 			}

@@ -29,6 +29,7 @@ use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\ChunkUtils;
@@ -93,8 +94,7 @@ trait LegacyAnvilChunkTrait{
 		}
 
 		$result = new Chunk(
-			$chunk->getInt("xPos"),
-			$chunk->getInt("zPos"),
+			new ChunkPos($chunk->getInt("xPos"), $chunk->getInt("zPos")),
 			$subChunks,
 			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
 			($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
