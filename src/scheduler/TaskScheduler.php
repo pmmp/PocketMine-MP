@@ -83,8 +83,8 @@ class TaskScheduler{
 		$this->ids = 1;
 	}
 
-	public function isQueued(int $taskId) : bool{
-		return isset($this->tasks[$taskId]);
+	public function isQueued(TaskHandler $task) : bool{
+		return isset($this->tasks[$task->getTaskId()]);
 	}
 
 	/**
