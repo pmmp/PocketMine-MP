@@ -931,6 +931,8 @@ class Server{
 			TimingsHandler::setEnabled((bool) $this->configGroup->getProperty("settings.enable-profiling", false));
 			$this->profilingTickRate = (float) $this->configGroup->getProperty("settings.profile-report-trigger", 20);
 
+			DefaultPermissions::registerCorePermissions();
+
 			$this->commandMap = new SimpleCommandMap($this);
 
 			Enchantment::init();
@@ -1268,7 +1270,6 @@ class Server{
 
 		if($type->equals(PluginLoadOrder::POSTWORLD())){
 			$this->commandMap->registerServerAliases();
-			DefaultPermissions::registerCorePermissions();
 		}
 	}
 
