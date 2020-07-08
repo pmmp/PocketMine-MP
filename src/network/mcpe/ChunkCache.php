@@ -28,6 +28,7 @@ use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
 use function spl_object_id;
@@ -91,46 +92,44 @@ class ChunkCache implements ChunkListener{
 	 *
 	 * @return CompressBatchPromise a promise of resolution which will contain a compressed chunk packet.
 	 */
-	public function request(int $chunkX, int $chunkZ) : CompressBatchPromise{
-		$this->world->registerChunkListener($this, $chunkX, $chunkZ);
-		$chunkHash = World::chunkHash($chunkX, $chunkZ);
+	public function request(ChunkPos $chunkPos) : CompressBatchPromise{
+		$this->world->registerChunkListener($this, $chunkPos->getX(), $chunkPos->getZ());
 
-		if(isset($this->caches[$chunkHash])){
+		if(isset($this->caches[$chunkPos->hash])){
 			++$this->hits;
-			return $this->caches[$chunkHash];
+			return $this->caches[$chunkPos->hash];
 		}
 
 		++$this->misses;
 
 		$this->world->timings->syncChunkSendPrepareTimer->startTiming();
 		try{
-			$this->caches[$chunkHash] = new CompressBatchPromise();
+			$this->caches[$chunkPos->hash] = new CompressBatchPromise();
 
 			$this->world->getServer()->getAsyncPool()->submitTask(
 				new ChunkRequestTask(
-					$chunkX,
-					$chunkZ,
-					$this->world->getChunk($chunkX, $chunkZ),
-					$this->caches[$chunkHash],
+					$chunkPos->getX(),
+					$chunkPos->getZ(),
+					$this->world->getChunk($chunkPos->getX(), $chunkPos->getZ()),
+					$this->caches[$chunkPos->hash],
 					$this->compressor,
-					function() use ($chunkX, $chunkZ) : void{
-						$this->world->getLogger()->error("Failed preparing chunk $chunkX $chunkZ, retrying");
+					function() use ($chunkPos) : void{
+						$this->world->getLogger()->error("Failed preparing chunk $chunkPos, retrying");
 
-						$this->restartPendingRequest($chunkX, $chunkZ);
+						$this->restartPendingRequest($chunkPos);
 					}
 				)
 			);
 
-			return $this->caches[$chunkHash];
+			return $this->caches[$chunkPos->hash];
 		}finally{
 			$this->world->timings->syncChunkSendPrepareTimer->stopTiming();
 		}
 	}
 
-	private function destroy(int $chunkX, int $chunkZ) : bool{
-		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$existing = $this->caches[$chunkHash] ?? null;
-		unset($this->caches[$chunkHash]);
+	private function destroy(ChunkPos $chunkPos) : bool{
+		$existing = $this->caches[$chunkPos->hash] ?? null;
+		unset($this->caches[$chunkPos->hash]);
 
 		return $existing !== null;
 	}
@@ -140,30 +139,29 @@ class ChunkCache implements ChunkListener{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	private function restartPendingRequest(int $chunkX, int $chunkZ) : void{
-		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$existing = $this->caches[$chunkHash] ?? null;
+	private function restartPendingRequest(ChunkPos $chunkPos) : void{
+		$existing = $this->caches[$chunkPos->hash] ?? null;
 		if($existing === null or $existing->hasResult()){
 			throw new \InvalidArgumentException("Restart can only be applied to unresolved promises");
 		}
 		$existing->cancel();
-		unset($this->caches[$chunkHash]);
+		unset($this->caches[$chunkPos->hash]);
 
-		$this->request($chunkX, $chunkZ)->onResolve(...$existing->getResolveCallbacks());
+		$this->request($chunkPos)->onResolve(...$existing->getResolveCallbacks());
 	}
 
 	/**
 	 * @throws \InvalidArgumentException
 	 */
-	private function destroyOrRestart(int $chunkX, int $chunkZ) : void{
-		$cache = $this->caches[World::chunkHash($chunkX, $chunkZ)] ?? null;
+	private function destroyOrRestart(ChunkPos $chunkPos) : void{
+		$cache = $this->caches[$chunkPos->hash] ?? null;
 		if($cache !== null){
 			if(!$cache->hasResult()){
 				//some requesters are waiting for this chunk, so their request needs to be fulfilled
-				$this->restartPendingRequest($chunkX, $chunkZ);
+				$this->restartPendingRequest($chunkPos);
 			}else{
 				//dump the cache, it'll be regenerated the next time it's requested
-				$this->destroy($chunkX, $chunkZ);
+				$this->destroy($chunkPos);
 			}
 		}
 	}
@@ -180,8 +178,7 @@ class ChunkCache implements ChunkListener{
 	 */
 	public function onChunkChanged(Chunk $chunk) : void{
 		//FIXME: this gets fired for stuff that doesn't change terrain related things (like lighting updates)
-		$pos = $chunk->getPos();
-		$this->destroyOrRestart($pos->getX(), $pos->getZ());
+		$this->destroyOrRestart($chunk->getPos());
 	}
 
 	/**
@@ -190,7 +187,7 @@ class ChunkCache implements ChunkListener{
 	public function onBlockChanged(Vector3 $block) : void{
 		//FIXME: requesters will still receive this chunk after it's been dropped, but we can't mark this for a simple
 		//sync here because it can spam the worker pool
-		$this->destroy($block->getFloorX() >> 4, $block->getFloorZ() >> 4);
+		$this->destroy(ChunkPos::fromVec3($block));
 	}
 
 	/**
@@ -198,7 +195,7 @@ class ChunkCache implements ChunkListener{
 	 */
 	public function onChunkUnloaded(Chunk $chunk) : void{
 		$pos = $chunk->getPos();
-		$this->destroy($pos->getX(), $pos->getZ());
+		$this->destroy($pos);
 		$this->world->unregisterChunkListener($this, $pos->getX(), $pos->getZ());
 	}
 

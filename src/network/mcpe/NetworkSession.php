@@ -100,6 +100,7 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\Position;
 use function array_map;
 use function array_values;
@@ -817,7 +818,7 @@ class NetworkSession{
 		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ) : void{}, $onCompletion);
 
 		$world = $this->player->getLocation()->getWorld();
-		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ)->onResolve(
+		ChunkCache::getInstance($world, $this->compressor)->request(new ChunkPos($chunkX, $chunkZ))->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
 			function(CompressBatchPromise $promise) use ($world, $chunkX, $chunkZ, $onCompletion) : void{
