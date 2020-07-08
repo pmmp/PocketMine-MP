@@ -261,7 +261,7 @@ parameters:
 			path: ../../../src/network/NetworkSessionManager.php
 
 		-
-			message: "#^Parameter \\#3 \\$chunk of class pocketmine\\\\network\\\\mcpe\\\\ChunkRequestTask constructor expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
+			message: "#^Parameter \\#2 \\$chunk of class pocketmine\\\\network\\\\mcpe\\\\ChunkRequestTask constructor expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/ChunkCache.php
 

@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\protocol\LevelChunkPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\serializer\ChunkSerializer;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 
@@ -53,12 +54,12 @@ class ChunkRequestTask extends AsyncTask{
 	/**
 	 * @phpstan-param (\Closure() : void)|null $onError
 	 */
-	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise, Compressor $compressor, ?\Closure $onError = null){
+	public function __construct(ChunkPos $chunkPos, Chunk $chunk, CompressBatchPromise $promise, Compressor $compressor, ?\Closure $onError = null){
 		$this->compressor = $compressor;
 
 		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
-		$this->chunkX = $chunkX;
-		$this->chunkZ = $chunkZ;
+		$this->chunkX = $chunkPos->getX();
+		$this->chunkZ = $chunkPos->getZ();
 		$this->tiles = ChunkSerializer::serializeTiles($chunk);
 
 		$this->storeLocal(self::TLS_KEY_PROMISE, $promise);

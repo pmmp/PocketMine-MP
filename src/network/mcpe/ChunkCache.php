@@ -108,8 +108,7 @@ class ChunkCache implements ChunkListener{
 
 			$this->world->getServer()->getAsyncPool()->submitTask(
 				new ChunkRequestTask(
-					$chunkPos->getX(),
-					$chunkPos->getZ(),
+					$chunkPos,
 					$this->world->getChunk($chunkPos->getX(), $chunkPos->getZ()),
 					$this->caches[$chunkPos->hash],
 					$this->compressor,
