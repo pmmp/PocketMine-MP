@@ -29,6 +29,10 @@ final class BlockLegacyIds{
 		//NOOP
 	}
 
+	public const BASALT = 489;
+	public const NETHERITE_BLOCK = 525;
+	public const ANCIENT_DEBRIS = 526;
+
 	public const AIR = 0;
 	public const STONE = 1;
 	public const GRASS = 2;

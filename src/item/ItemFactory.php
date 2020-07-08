@@ -59,6 +59,9 @@ class ItemFactory{
 		$this->registerSpawnEggs();
 		$this->registerTierToolItems();
 
+		$this->register(new Item(new ItemIdentifier(ItemIds::NETHERITE_INGOT, 0), "Netherite Ingot"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::NETHERITE_SCRAP, 0), "Netherite Scrap"));
+
 		$this->register(new Apple(new ItemIdentifier(ItemIds::APPLE, 0), "Apple"));
 		$this->register(new Arrow(new ItemIdentifier(ItemIds::ARROW, 0), "Arrow"));
 
@@ -337,6 +340,12 @@ class ItemFactory{
 	}
 
 	private function registerTierToolItems() : void{
+		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::NETHERITE_PICKAXE, 0), "Netherite Pickaxe", ToolTier::NETHERITE()));
+		$this->register(new Axe(new ItemIdentifier(ItemIds::NETHERITE_AXE, 0), "Netherite Axe", ToolTier::NETHERITE()));
+		$this->register(new Hoe(new ItemIdentifier(ItemIds::NETHERITE_HOE, 0), "Netherite Hoe", ToolTier::NETHERITE()));
+		$this->register(new Shovel(new ItemIdentifier(ItemIds::NETHERITE_SHOVEL, 0), "Netherite Shovel", ToolTier::NETHERITE()));
+		$this->register(new Sword(new ItemIdentifier(ItemIds::NETHERITE_SWORD, 0), "Netherite Sword", ToolTier::NETHERITE()));
+
 		$this->register(new Axe(new ItemIdentifier(ItemIds::DIAMOND_AXE, 0), "Diamond Axe", ToolTier::DIAMOND()));
 		$this->register(new Axe(new ItemIdentifier(ItemIds::GOLDEN_AXE, 0), "Golden Axe", ToolTier::GOLD()));
 		$this->register(new Axe(new ItemIdentifier(ItemIds::IRON_AXE, 0), "Iron Axe", ToolTier::IRON()));
@@ -365,6 +374,11 @@ class ItemFactory{
 	}
 
 	private function registerArmorItems() : void{
+		$this->register(new Armor(new ItemIdentifier(ItemIds::NETHERITE_BOOTS, 0), "Netherite Boots", new ArmorTypeInfo(3, 681, ArmorInventory::SLOT_FEET)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::NETHERITE_CHESTPLATE, 0), "Netherite Chestplate", new ArmorTypeInfo(8, 792, ArmorInventory::SLOT_CHEST)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::NETHERITE_HELMET, 0), "Netherite Helmet", new ArmorTypeInfo(3, 607, ArmorInventory::SLOT_HEAD)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::NETHERITE_LEGGINGS, 0), "Netherite Leggings", new ArmorTypeInfo(3, 607, ArmorInventory::SLOT_LEGS)));
+
 		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_BOOTS, 0), "Chainmail Boots", new ArmorTypeInfo(1, 196, ArmorInventory::SLOT_FEET)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_BOOTS, 0), "Diamond Boots", new ArmorTypeInfo(3, 430, ArmorInventory::SLOT_FEET)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_BOOTS, 0), "Golden Boots", new ArmorTypeInfo(1, 92, ArmorInventory::SLOT_FEET)));

@@ -139,6 +139,8 @@ class Enchantment{
 
 		self::register(new Enchantment(self::MENDING, "%enchantment.mending", self::RARITY_RARE, self::SLOT_NONE, self::SLOT_ALL, 1));
 
+		self::register(new Enchantment(self::FORTUNE, "%enchantment.fortune", self::RARITY_RARE, self::SLOT_NONE, self::SLOT_ALL, 5));
+
 		self::register(new Enchantment(self::VANISHING, "%enchantment.curse.vanishing", self::RARITY_MYTHIC, self::SLOT_NONE, self::SLOT_ALL, 1));
 	}
 

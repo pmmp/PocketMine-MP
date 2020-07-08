@@ -28,6 +28,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\item\enchantment\Enchantment;
 
 /**
  * Called when a player destroys a block somewhere in the world.
@@ -48,6 +49,8 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 	/** @var int */
 	protected $xpDrops;
 
+	protected $fortuneBlocks = ["Diamond Ore", "Emerald Ore", "Redstone Ore", "Coal Ore", "Lapis Ore"];
+
 	/**
 	 * @param Item[] $drops
 	 */
@@ -57,6 +60,13 @@ class BlockBreakEvent extends BlockEvent implements Cancellable{
 		$this->player = $player;
 
 		$this->instaBreak = $instaBreak;
+
+		if ($item->hasEnchantment(Enchantment::fromString("fortune"))) {
+			if (in_array($block->getName(), $this->fortuneBlocks)) {
+				$drops[0]->setCount(intval($drops[0]->getCount()*random_int(1, $item->getEnchantmentLevel(Enchantment::fromString("fortune"))+1)));
+			}
+		}
+		
 		$this->setDrops($drops);
 		$this->xpDrops = $xpDrops;
 	}

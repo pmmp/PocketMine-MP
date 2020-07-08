@@ -91,6 +91,10 @@ class BlockFactory{
 		$this->diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 16384, false));
 		$this->blastResistance = \SplFixedArray::fromArray(array_fill(0, 16384, 0.0));
 
+		$this->register(new AncientDebris(new BID(Ids::ANCIENT_DEBRIS), "Ancient Debris"));
+		$this->register(new Basalt(new BID(Ids::BASALT), "Basalt"));
+		$this->register(new NetheriteBlock(new BID(Ids::NETHERITE_BLOCK), "Netherite Block"));
+
 		$this->register(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail"));
 		$this->register(new Air(new BID(Ids::AIR), "Air"));
 		$this->register(new Anvil(new BID(Ids::ANVIL, Meta::ANVIL_NORMAL), "Anvil"));

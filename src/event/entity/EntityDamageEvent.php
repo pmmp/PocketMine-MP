@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\entity;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\ItemEntity;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use function array_sum;
@@ -78,6 +79,8 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 
 	/** @var int */
 	private $attackCooldown = 10;
+
+	private $netherite = [271, -270, 742, 743, 744, 745, 746, 747, 748, 749, 750, 751, 752];
 
 	/**
 	 * @param float[] $modifiers
@@ -149,6 +152,11 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	}
 
 	public function getFinalDamage() : float{
+		if (method_exists($this->entity, "getItem")) {
+			if (in_array($this->entity->getItem()->getId(), $this->netherite) && ($this->cause == 5||$this->cause == 6||$this->cause == 7)) {
+				return 0;
+			}
+		}
 		return max(0, $this->baseDamage + array_sum($this->modifiers));
 	}
 
