@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use Ds\Set;
 use pocketmine\utils\ReversePriorityQueue;
 
 class TaskScheduler{
@@ -42,8 +43,11 @@ class TaskScheduler{
 	 */
 	protected $queue;
 
-	/** @var TaskHandler[] */
-	protected $tasks = [];
+	/**
+	 * @var Set|TaskHandler[]
+	 * @phpstan-var Set<TaskHandler>
+	 */
+	protected $tasks;
 
 	/** @var int */
 	private $ids = 1;
@@ -54,6 +58,7 @@ class TaskScheduler{
 	public function __construct(?string $owner = null){
 		$this->owner = $owner;
 		$this->queue = new ReversePriorityQueue();
+		$this->tasks = new Set();
 	}
 
 	public function scheduleTask(Task $task) : TaskHandler{
@@ -76,7 +81,7 @@ class TaskScheduler{
 		foreach($this->tasks as $id => $task){
 			$task->cancel();
 		}
-		$this->tasks = [];
+		$this->tasks->clear();
 		while(!$this->queue->isEmpty()){
 			$this->queue->extract();
 		}
@@ -84,7 +89,7 @@ class TaskScheduler{
 	}
 
 	public function isQueued(TaskHandler $task) : bool{
-		return isset($this->tasks[$task->getTaskId()]);
+		return $this->tasks->contains($task);
 	}
 
 	/**
@@ -116,7 +121,7 @@ class TaskScheduler{
 		}
 
 		$handler->setNextRun($nextRun);
-		$this->tasks[$handler->getTaskId()] = $handler;
+		$this->tasks->add($handler);
 		$this->queue->insert($handler, $nextRun);
 
 		return $handler;
@@ -137,7 +142,7 @@ class TaskScheduler{
 			/** @var TaskHandler $task */
 			$task = $this->queue->extract();
 			if($task->isCancelled()){
-				unset($this->tasks[$task->getTaskId()]);
+				$this->tasks->remove($task);
 				continue;
 			}
 			$task->run();
@@ -146,7 +151,7 @@ class TaskScheduler{
 				$this->queue->insert($task, $this->currentTick + $task->getPeriod());
 			}else{
 				$task->remove();
-				unset($this->tasks[$task->getTaskId()]);
+				$this->tasks->remove($task);
 			}
 		}
 	}
