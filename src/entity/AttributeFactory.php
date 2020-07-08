@@ -48,6 +48,7 @@ final class AttributeFactory{
 		$this->register(Attribute::FALL_DAMAGE, 0.0, 340282346638528859811704183484516925440.0, 1.0);
 		$this->register(Attribute::HORSE_JUMP_STRENGTH, 0.0, 2.0, 0.7);
 		$this->register(Attribute::ZOMBIE_SPAWN_REINFORCEMENTS, 0.0, 1.0, 0.0);
+		$this->register(Attribute::LAVA_MOVEMENT, 0.0, 340282346638528859811704183484516925440.0, 0.02);
 	}
 
 	public function get(string $id) : ?Attribute{

@@ -55,6 +55,9 @@ class TaskHandler{
 	private $ownerName;
 
 	public function __construct(Task $task, int $taskId, int $delay = -1, int $period = -1, ?string $ownerName = null){
+		if($task->getHandler() !== null){
+			throw new \InvalidArgumentException("Cannot assign multiple handlers to the same task");
+		}
 		$this->task = $task;
 		$this->taskId = $taskId;
 		$this->delay = $delay;
