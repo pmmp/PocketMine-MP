@@ -97,6 +97,10 @@ abstract class Entity{
 
 	/** @var Chunk|null */
 	public $chunk;
+	/** @var int */
+	private $chunkX;
+	/** @var int */
+	private $chunkZ;
 
 	/** @var EntityDamageEvent|null */
 	protected $lastDamageCause = null;
@@ -239,6 +243,8 @@ abstract class Entity{
 		if($this->chunk === null){
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}
+		$this->chunkX = $this->location->getFloorX() >> 4;
+		$this->chunkZ = $this->location->getFloorZ() >> 4;
 
 		if($nbt !== null){
 			$this->motion = EntityDataHelper::parseVec3($nbt, "Motion", true);
@@ -1335,11 +1341,13 @@ abstract class Entity{
 	protected function checkChunks() : void{
 		$chunkX = $this->location->getFloorX() >> 4;
 		$chunkZ = $this->location->getFloorZ() >> 4;
-		if($this->chunk === null or ($this->chunk->getX() !== $chunkX or $this->chunk->getZ() !== $chunkZ)){
+		if($this->chunk === null or $chunkX !== $this->chunkX or $chunkZ !== $this->chunkZ){
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
 			$this->chunk = $this->getWorld()->getChunk($chunkX, $chunkZ, true);
+			$this->chunkX = $chunkX;
+			$this->chunkZ = $chunkZ;
 
 			if(!$this->justCreated){
 				$newChunk = $this->getWorld()->getViewersForPosition($this->location);
