@@ -422,7 +422,8 @@ class World implements ChunkManager{
 		$this->unloadCallbacks = [];
 
 		foreach($this->chunks as $chunk){
-			$this->unloadChunk($chunk->getX(), $chunk->getZ(), false);
+			$pos = $chunk->getPos();
+			$this->unloadChunk($pos->getX(), $pos->getZ(), false);
 		}
 
 		$this->save();

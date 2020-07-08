@@ -25,6 +25,7 @@ namespace pocketmine\world\light;
 
 use pocketmine\block\BlockFactory;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\format\LightArray;
@@ -37,11 +38,8 @@ class LightPopulationTask extends AsyncTask{
 
 	/** @var string */
 	public $chunk;
-
-	/** @var int */
-	private $chunkX;
-	/** @var int */
-	private $chunkZ;
+	/** @var ChunkPos */
+	private $chunkPos;
 
 	/** @var string */
 	private $resultHeightMap;
@@ -52,7 +50,7 @@ class LightPopulationTask extends AsyncTask{
 
 	public function __construct(World $world, Chunk $chunk){
 		$this->storeLocal(self::TLS_KEY_WORLD, $world);
-		[$this->chunkX, $this->chunkZ] = [$chunk->getX(), $chunk->getZ()];
+		$this->chunkPos = $chunk->getPos();
 		$this->chunk = FastChunkSerializer::serialize($chunk);
 	}
 
@@ -79,9 +77,10 @@ class LightPopulationTask extends AsyncTask{
 	public function onCompletion() : void{
 		/** @var World $world */
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
-		if(!$world->isClosed() and $world->isChunkLoaded($this->chunkX, $this->chunkZ)){
+		$pos = $this->chunkPos;
+		if(!$world->isClosed() and $world->isChunkLoaded($pos->getX(), $pos->getZ())){
 			/** @var Chunk $chunk */
-			$chunk = $world->getChunk($this->chunkX, $this->chunkZ);
+			$chunk = $world->getChunk($pos->getX(), $pos->getZ());
 			//TODO: calculated light information might not be valid if the terrain changed during light calculation
 
 			/** @var int[] $heightMapArray */

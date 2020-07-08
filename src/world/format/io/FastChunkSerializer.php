@@ -63,8 +63,9 @@ final class FastChunkSerializer{
 		$includeLight = $includeLight && $chunk->isLightPopulated();
 
 		$stream = new BinaryStream();
-		$stream->putInt($chunk->getX());
-		$stream->putInt($chunk->getZ());
+		$pos = $chunk->getPos();
+		$stream->putInt($pos->getX());
+		$stream->putInt($pos->getZ());
 		$stream->putByte(
 			($includeLight ? self::FLAG_HAS_LIGHT : 0) |
 			($chunk->isPopulated() ? self::FLAG_POPULATED : 0) |

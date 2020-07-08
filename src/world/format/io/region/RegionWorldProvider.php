@@ -214,8 +214,9 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	}
 
 	protected function writeChunk(Chunk $chunk) : void{
-		$chunkX = $chunk->getX();
-		$chunkZ = $chunk->getZ();
+		$pos = $chunk->getPos();
+		$chunkX = $pos->getX();
+		$chunkZ = $pos->getZ();
 
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		$this->loadRegion($regionX, $regionZ);

@@ -65,7 +65,8 @@ class PopulationTask extends AsyncTask{
 		$this->worldId = $world->getId();
 		$this->chunk = FastChunkSerializer::serialize($chunk);
 
-		foreach($world->getAdjacentChunks($chunk->getX(), $chunk->getZ()) as $i => $c){
+		$pos = $chunk->getPos();
+		foreach($world->getAdjacentChunks($pos->getX(), $pos->getZ()) as $i => $c){
 			$this->{"chunk$i"} = $c !== null ? FastChunkSerializer::serialize($c) : null;
 		}
 
@@ -84,6 +85,7 @@ class PopulationTask extends AsyncTask{
 		$chunks = [];
 
 		$chunk = FastChunkSerializer::deserialize($this->chunk);
+		$centerCPos = $chunk->getPos();
 
 		for($i = 0; $i < 9; ++$i){
 			if($i === 4){
@@ -93,30 +95,31 @@ class PopulationTask extends AsyncTask{
 			$zz = -1 + (int) ($i / 3);
 			$ck = $this->{"chunk$i"};
 			if($ck === null){
-				$chunks[$i] = new Chunk(new ChunkPos($chunk->getX() + $xx, $chunk->getZ() + $zz));
+				$chunks[$i] = new Chunk($centerCPos->add($xx, $zz));
 			}else{
 				$chunks[$i] = FastChunkSerializer::deserialize($ck);
 			}
 		}
 
-		$manager->setChunk($chunk->getX(), $chunk->getZ(), $chunk);
+		$manager->setChunk($centerCPos->getX(), $centerCPos->getZ(), $chunk);
 		if(!$chunk->isGenerated()){
-			$generator->generateChunk($chunk->getX(), $chunk->getZ());
-			$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
+			$generator->generateChunk($centerCPos->getX(), $centerCPos->getZ());
+			$chunk = $manager->getChunk($centerCPos->getX(), $centerCPos->getZ());
 			$chunk->setGenerated();
 		}
 
 		foreach($chunks as $i => $c){
-			$manager->setChunk($c->getX(), $c->getZ(), $c);
+			$cPos = $c->getPos();
+			$manager->setChunk($cPos->getX(), $cPos->getZ(), $c);
 			if(!$c->isGenerated()){
-				$generator->generateChunk($c->getX(), $c->getZ());
-				$chunks[$i] = $manager->getChunk($c->getX(), $c->getZ());
+				$generator->generateChunk($cPos->getX(), $cPos->getZ());
+				$chunks[$i] = $manager->getChunk($cPos->getX(), $cPos->getZ());
 				$chunks[$i]->setGenerated();
 			}
 		}
 
-		$generator->populateChunk($chunk->getX(), $chunk->getZ());
-		$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
+		$generator->populateChunk($centerCPos->getX(), $centerCPos->getZ());
+		$chunk = $manager->getChunk($centerCPos->getX(), $centerCPos->getZ());
 		$chunk->setPopulated();
 
 		$blockFactory = BlockFactory::getInstance();
@@ -150,11 +153,13 @@ class PopulationTask extends AsyncTask{
 				$c = $this->{"chunk$i"};
 				if($c !== null){
 					$c = FastChunkSerializer::deserialize($c);
-					$world->generateChunkCallback($c->getX(), $c->getZ(), $this->state ? $c : null);
+					$cpos = $c->getPos();
+					$world->generateChunkCallback($cpos->getX(), $cpos->getZ(), $this->state ? $c : null);
 				}
 			}
 
-			$world->generateChunkCallback($chunk->getX(), $chunk->getZ(), $this->state ? $chunk : null);
+			$pos = $chunk->getPos();
+			$world->generateChunkCallback($pos->getX(), $pos->getZ(), $this->state ? $chunk : null);
 		}
 	}
 }

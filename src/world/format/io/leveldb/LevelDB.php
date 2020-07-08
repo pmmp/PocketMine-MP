@@ -414,7 +414,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 	protected function writeChunk(Chunk $chunk) : void{
 		$idMap = LegacyBlockIdToStringIdMap::getInstance();
-		$index = LevelDB::chunkIndex($chunk->getX(), $chunk->getZ());
+		$pos = $chunk->getPos();
+		$index = LevelDB::chunkIndex($pos->getX(), $pos->getZ());
 
 		$write = new \LevelDBWriteBatch();
 		$write->put($index . self::TAG_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));

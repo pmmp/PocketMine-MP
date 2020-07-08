@@ -110,14 +110,6 @@ class Chunk{
 		$this->NBTentities = $entities;
 	}
 
-	public function getX() : int{
-		return $this->pos->getX();
-	}
-
-	public function getZ() : int{
-		return $this->pos->getZ();
-	}
-
 	public function getPos() : ChunkPos{
 		return $this->pos;
 	}

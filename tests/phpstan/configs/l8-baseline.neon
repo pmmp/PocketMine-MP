@@ -821,13 +821,8 @@ parameters:
 			path: ../../../src/world/generator/PopulationTask.php
 
 		-
-			message: "#^Cannot call method getX\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 5
-			path: ../../../src/world/generator/PopulationTask.php
-
-		-
-			message: "#^Cannot call method getZ\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 5
+			message: "#^Cannot call method getPos\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
 			path: ../../../src/world/generator/PopulationTask.php
 
 		-
