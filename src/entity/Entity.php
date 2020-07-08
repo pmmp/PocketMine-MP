@@ -53,6 +53,7 @@ use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
@@ -97,10 +98,8 @@ abstract class Entity{
 
 	/** @var Chunk|null */
 	public $chunk;
-	/** @var int */
-	private $chunkX;
-	/** @var int */
-	private $chunkZ;
+	/** @var ChunkPos */
+	private $chunkPos;
 
 	/** @var EntityDamageEvent|null */
 	protected $lastDamageCause = null;
@@ -237,12 +236,11 @@ abstract class Entity{
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->recalculateBoundingBox();
 
+		$this->chunkPos = ChunkPos::fromVec3($this->location);
 		$this->chunk = $this->getWorld()->getChunkAtPosition($this->location, false);
 		if($this->chunk === null){
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}
-		$this->chunkX = $this->location->getFloorX() >> 4;
-		$this->chunkZ = $this->location->getFloorZ() >> 4;
 
 		if($nbt !== null){
 			$this->motion = EntityDataHelper::parseVec3($nbt, "Motion", true);
@@ -1337,13 +1335,12 @@ abstract class Entity{
 	protected function checkChunks() : void{
 		$chunkX = $this->location->getFloorX() >> 4;
 		$chunkZ = $this->location->getFloorZ() >> 4;
-		if($this->chunk === null or $chunkX !== $this->chunkX or $chunkZ !== $this->chunkZ){
+		if($this->chunk === null or $chunkX !== $this->chunkPos->getX() or $chunkZ !== $this->chunkPos->getZ()){
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
+			$this->chunkPos = new ChunkPos($chunkX, $chunkZ);
 			$this->chunk = $this->getWorld()->getChunk($chunkX, $chunkZ, true);
-			$this->chunkX = $chunkX;
-			$this->chunkZ = $chunkZ;
 
 			if(!$this->justCreated){
 				$newChunk = $this->getWorld()->getViewersForPosition($this->location);
