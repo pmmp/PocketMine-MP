@@ -812,28 +812,28 @@ class NetworkSession{
 	/**
 	 * Instructs the networksession to start using the chunk at the given coordinates. This may occur asynchronously.
 	 * @param \Closure $onCompletion To be called when chunk sending has completed.
-	 * @phpstan-param \Closure(int $chunkX, int $chunkZ) : void $onCompletion
+	 * @phpstan-param \Closure(ChunkPos) : void $onCompletion
 	 */
-	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
-		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ) : void{}, $onCompletion);
+	public function startUsingChunk(ChunkPos $chunkPos, \Closure $onCompletion) : void{
+		Utils::validateCallableSignature(function(ChunkPos $chunkPos) : void{}, $onCompletion);
 
 		$world = $this->player->getLocation()->getWorld();
-		ChunkCache::getInstance($world, $this->compressor)->request(new ChunkPos($chunkX, $chunkZ))->onResolve(
+		ChunkCache::getInstance($world, $this->compressor)->request($chunkPos)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
-			function(CompressBatchPromise $promise) use ($world, $chunkX, $chunkZ, $onCompletion) : void{
+			function(CompressBatchPromise $promise) use ($world, $chunkPos, $onCompletion) : void{
 				if(!$this->isConnected()){
 					return;
 				}
 				$currentWorld = $this->player->getLocation()->getWorld();
-				if($world !== $currentWorld or !$this->player->isUsingChunk($chunkX, $chunkZ)){
-					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
+				if($world !== $currentWorld or !$this->player->isUsingChunk($chunkPos->getX(), $chunkPos->getZ())){
+					$this->logger->debug("Tried to send no-longer-active chunk $chunkPos in world " . $world->getFolderName());
 					return;
 				}
 				$currentWorld->timings->syncChunkSendTimer->startTiming();
 				try{
 					$this->queueCompressed($promise);
-					$onCompletion($chunkX, $chunkZ);
+					$onCompletion($chunkPos);
 				}finally{
 					$currentWorld->timings->syncChunkSendTimer->stopTiming();
 				}

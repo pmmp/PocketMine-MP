@@ -102,6 +102,8 @@ use pocketmine\utils\TextFormat;
 use pocketmine\uuid\UUID;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
+use pocketmine\world\ChunkLoader;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\sound\EntityAttackNoDamageSound;
@@ -113,7 +115,6 @@ use function count;
 use function explode;
 use function floor;
 use function get_class;
-use function is_int;
 use function max;
 use function microtime;
 use function min;
@@ -771,28 +772,25 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				break;
 			}
 
-			$X = null;
-			$Z = null;
-			World::getXZ($index, $X, $Z);
-			assert(is_int($X) and is_int($Z));
+			$chunkPos = ChunkPos::fromHash($index);
 
 			++$count;
 
-			$this->usedChunks[$index] = UsedChunkStatus::NEEDED();
-			$this->getWorld()->registerChunkLoader($this->chunkLoader, $X, $Z, true);
-			$this->getWorld()->registerChunkListener($this, $X, $Z);
+			$this->usedChunks[$chunkPos->hash] = UsedChunkStatus::NEEDED();
+			$this->getWorld()->registerChunkLoader($this->chunkLoader, $chunkPos->getX(), $chunkPos->getZ(), true);
+			$this->getWorld()->registerChunkListener($this, $chunkPos->getX(), $chunkPos->getZ());
 
-			if(!$this->getWorld()->populateChunk($X, $Z)){
+			if(!$this->getWorld()->populateChunk($chunkPos->getX(), $chunkPos->getZ())){
 				continue;
 			}
 
-			unset($this->loadQueue[$index]);
-			$this->usedChunks[$index] = UsedChunkStatus::REQUESTED();
+			unset($this->loadQueue[$chunkPos->hash]);
+			$this->usedChunks[$chunkPos->hash] = UsedChunkStatus::REQUESTED();
 
-			$this->networkSession->startUsingChunk($X, $Z, function(int $chunkX, int $chunkZ) use ($index) : void{
-				$this->usedChunks[$index] = UsedChunkStatus::SENT();
+			$this->networkSession->startUsingChunk($chunkPos, function(ChunkPos $chunkPos) : void{
+				$this->usedChunks[$chunkPos->hash] = UsedChunkStatus::SENT();
 				if($this->spawnChunkLoadCount === -1){
-					$this->spawnEntitiesOnChunk($chunkX, $chunkZ);
+					$this->spawnEntitiesOnChunk($chunkPos->getX(), $chunkPos->getZ());
 				}elseif($this->spawnChunkLoadCount++ === $this->spawnThreshold){
 					$this->spawnChunkLoadCount = -1;
 
