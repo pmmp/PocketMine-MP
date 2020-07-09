@@ -170,8 +170,6 @@ abstract class Entity{
 	public $noDamageTicks = 0;
 	/** @var bool */
 	protected $justCreated = true;
-	/** @var bool */
-	private $invulnerable = false;
 
 	/** @var AttributeMap */
 	protected $attributeMap;
@@ -472,7 +470,6 @@ abstract class Entity{
 		$nbt->setFloat("FallDistance", $this->fallDistance);
 		$nbt->setShort("Fire", $this->fireTicks);
 		$nbt->setByte("OnGround", $this->onGround ? 1 : 0);
-		$nbt->setByte("Invulnerable", $this->invulnerable ? 1 : 0);
 
 		return $nbt;
 	}
@@ -481,7 +478,6 @@ abstract class Entity{
 		$this->fireTicks = $nbt->getShort("Fire", 0);
 
 		$this->onGround = $nbt->getByte("OnGround", 0) !== 0;
-		$this->invulnerable = $nbt->getByte("Invulnerable", 0) !== 0;
 
 		$this->fallDistance = $nbt->getFloat("FallDistance", 0.0);
 
