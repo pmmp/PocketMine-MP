@@ -224,11 +224,15 @@ class NetworkSession{
 		$ev->call();
 		$class = $ev->getPlayerClass();
 
+		//TODO: make this async
+		//TODO: this really has no business being in NetworkSession at all - what about allowing it to be provided by PlayerCreationEvent?
+		$namedtag = $this->server->getOfflinePlayerData($this->info->getUsername());
+
 		/**
 		 * @var Player $player
 		 * @see Player::__construct()
 		 */
-		$this->player = new $class($this->server, $this, $this->info, $this->authenticated);
+		$this->player = new $class($this->server, $this, $this->info, $this->authenticated, $namedtag);
 
 		$this->invManager = new InventoryManager($this->player, $this);
 

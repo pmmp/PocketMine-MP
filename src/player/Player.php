@@ -263,7 +263,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	/** @var SurvivalBlockBreakHandler|null */
 	protected $blockBreakHandler = null;
 
-	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated){
+	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $namedtag){
 		$username = TextFormat::clean($playerInfo->getUsername());
 		$this->logger = new \PrefixedLogger($server->getLogger(), "Player: $username");
 
@@ -283,8 +283,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->chunksPerTick = (int) $this->server->getConfigGroup()->getProperty("chunk-sending.per-tick", 4);
 		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
 		$this->chunkSelector = new ChunkSelector();
-
-		$namedtag = $this->server->getOfflinePlayerData($this->username); //TODO: make this async
 
 		if($namedtag !== null and ($world = $this->server->getWorldManager()->getWorldByName($namedtag->getString("Level", ""))) !== null){
 			$spawn = EntityDataHelper::parseLocation($namedtag, $world);
