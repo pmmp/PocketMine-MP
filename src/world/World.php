@@ -2235,6 +2235,7 @@ class World implements ChunkManager{
 		$v = $spawn->floor();
 		$chunk = $this->getChunkAtPosition($v, false);
 		$x = (int) $v->x;
+		$y = $v->y;
 		$z = (int) $v->z;
 		if($chunk !== null and $chunk->isGenerated()){
 			$y = (int) min($max - 2, $v->y);
@@ -2259,11 +2260,9 @@ class World implements ChunkManager{
 					++$y;
 				}
 			}
-
-			$v->y = $y;
 		}
 
-		return new Position($spawn->x, $v->y, $spawn->z, $this);
+		return new Position($spawn->x, $y, $spawn->z, $this);
 	}
 
 	/**
