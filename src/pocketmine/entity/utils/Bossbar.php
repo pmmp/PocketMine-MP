@@ -24,17 +24,12 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\utils;
 
-use pocketmine\entity\Attribute;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityIds;
 use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\protocol\{AddActorPacket,
-	AddEntityPacket,
-	BossEventPacket,
-	RemoveActorPacket,
-	RemoveEntityPacket,
-	SetActorDataPacket,
-	UpdateAttributesPacket};
+use pocketmine\network\mcpe\protocol\AddActorPacket;
+use pocketmine\network\mcpe\protocol\BossEventPacket;
+use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\Player;
 
 /*
