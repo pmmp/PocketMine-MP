@@ -790,10 +790,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 			$this->networkSession->startUsingChunk($X, $Z, function(int $chunkX, int $chunkZ) use ($index) : void{
 				$this->usedChunks[$index] = UsedChunkStatus::SENT();
-				if($this->spawned){
+				if($this->spawnChunkLoadCount === -1){
 					$this->spawnEntitiesOnChunk($chunkX, $chunkZ);
 				}elseif($this->spawnChunkLoadCount++ === $this->spawnThreshold){
-					$this->spawned = true;
+					$this->spawnChunkLoadCount = -1;
 
 					foreach($this->usedChunks as $chunkHash => $status){
 						if($status->equals(UsedChunkStatus::SENT())){
@@ -811,6 +811,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	}
 
 	public function doFirstSpawn() : void{
+		if($this->spawned){
+			return;
+		}
+		$this->spawned = true;
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
 			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
 		}
