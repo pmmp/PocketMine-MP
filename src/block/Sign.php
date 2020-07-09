@@ -144,7 +144,6 @@ class Sign extends Transparent{
 
 	public function setText(SignText $text) : void{
 		$this->text = $text;
-		$this->pos->getWorld()->setBlock($this->pos, $this);
 	}
 
 	/**
@@ -171,6 +170,7 @@ class Sign extends Transparent{
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->setText($ev->getNewText());
+			$this->pos->getWorld()->setBlock($this->pos, $this);
 			return true;
 		}
 
