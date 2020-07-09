@@ -211,6 +211,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected $spawnChunkLoadCount = 0;
 	/** @var int */
 	protected $chunksPerTick;
+	/** @var ChunkSelector */
+	protected $chunkSelector;
 
 	/** @var bool[] map: raw UUID (string) => bool */
 	protected $hiddenPlayers = [];
@@ -280,6 +282,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->perm = new PermissibleBase($this);
 		$this->chunksPerTick = (int) $this->server->getConfigGroup()->getProperty("chunk-sending.per-tick", 4);
 		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
+		$this->chunkSelector = new ChunkSelector();
 
 		$namedtag = $this->server->getOfflinePlayerData($this->username); //TODO: make this async
 
@@ -838,43 +841,6 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		}
 	}
 
-	/**
-	 * @return \Generator<int, int, void, void>
-	 */
-	protected function selectChunks(int $radius, int $centerX, int $centerZ) : \Generator{
-		$radiusSquared = $radius ** 2;
-
-		for($x = 0; $x < $radius; ++$x){
-			for($z = 0; $z <= $x; ++$z){
-				if(($x ** 2 + $z ** 2) > $radiusSquared){
-					break; //skip to next band
-				}
-
-				//If the chunk is in the radius, others at the same offsets in different quadrants are also guaranteed to be.
-
-				/* Top right quadrant */
-				yield World::chunkHash($centerX + $x, $centerZ + $z);
-				/* Top left quadrant */
-				yield World::chunkHash($centerX - $x - 1, $centerZ + $z);
-				/* Bottom right quadrant */
-				yield World::chunkHash($centerX + $x, $centerZ - $z - 1);
-				/* Bottom left quadrant */
-				yield World::chunkHash($centerX - $x - 1, $centerZ - $z - 1);
-
-				if($x !== $z){
-					/* Top right quadrant mirror */
-					yield World::chunkHash($centerX + $z, $centerZ + $x);
-					/* Top left quadrant mirror */
-					yield World::chunkHash($centerX - $z - 1, $centerZ + $x);
-					/* Bottom right quadrant mirror */
-					yield World::chunkHash($centerX + $z, $centerZ - $x - 1);
-					/* Bottom left quadrant mirror */
-					yield World::chunkHash($centerX - $z - 1, $centerZ - $x - 1);
-				}
-			}
-		}
-	}
-
 	protected function orderChunks() : void{
 		if(!$this->isConnected() or $this->viewDistance === -1){
 			return;
@@ -885,7 +851,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$newOrder = [];
 		$unloadChunks = $this->usedChunks;
 
-		foreach($this->selectChunks(
+		foreach($this->chunkSelector->selectChunks(
 			$this->server->getAllowedViewDistance($this->viewDistance),
 			$this->location->getFloorX() >> 4,
 			$this->location->getFloorZ() >> 4
