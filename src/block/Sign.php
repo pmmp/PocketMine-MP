@@ -142,9 +142,6 @@ class Sign extends Transparent{
 		return $this->text;
 	}
 
-	/**
-	 * @param SignText $text
-	 */
 	public function setText(SignText $text) : void{
 		$this->text = $text;
 		$this->pos->getWorld()->setBlock($this->pos, $this);
