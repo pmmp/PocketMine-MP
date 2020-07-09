@@ -41,6 +41,13 @@ class PlayerSkinPacket extends DataPacket implements ClientboundPacket, Serverbo
 	/** @var SkinData */
 	public $skin;
 
+	public static function create(UUID $uuid, SkinData $skinData) : self{
+		$result = new self;
+		$result->uuid = $uuid;
+		$result->skin = $skinData;
+		return $result;
+	}
+
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->uuid = $in->getUUID();
 		$this->skin = $in->getSkin();

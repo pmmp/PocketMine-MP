@@ -138,10 +138,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	 * @param Player[]|null $targets
 	 */
 	public function sendSkin(?array $targets = null) : void{
-		$pk = new PlayerSkinPacket();
-		$pk->uuid = $this->getUniqueId();
-		$pk->skin = SkinAdapterSingleton::get()->toSkinData($this->skin);
-		$this->server->broadcastPackets($targets ?? $this->hasSpawned, [$pk]);
+		$this->server->broadcastPackets($targets ?? $this->hasSpawned, [
+			PlayerSkinPacket::create($this->getUniqueId(), SkinAdapterSingleton::get()->toSkinData($this->skin))
+		]);
 	}
 
 	public function jump() : void{
