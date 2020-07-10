@@ -31,7 +31,6 @@ use pocketmine\event\inventory\FurnaceSmeltEvent;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
@@ -169,7 +168,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 				++$this->cookTime;
 
 				if($this->cookTime >= 200){ //10 seconds
-					$product = ItemFactory::getInstance()->get($smelt->getResult()->getId(), $smelt->getResult()->getMeta(), $product->getCount() + 1);
+					$product = $smelt->getResult()->setCount($product->getCount() + 1);
 
 					$ev = new FurnaceSmeltEvent($this, $raw, $product);
 					$ev->call();
