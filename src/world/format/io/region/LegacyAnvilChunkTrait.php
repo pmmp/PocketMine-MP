@@ -86,10 +86,10 @@ trait LegacyAnvilChunkTrait{
 			}
 		};
 		$biomeArray = null;
-		if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
-			$biomeArray = $makeBiomeArray(ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors"))); //Convert back to original format
-		}elseif($chunk->hasTag("Biomes", ByteArrayTag::class)){
-			$biomeArray = $makeBiomeArray($chunk->getByteArray("Biomes"));
+		if(($biomeColorsTag = $chunk->getTag("BiomeColors")) instanceof IntArrayTag){
+			$biomeArray = $makeBiomeArray(ChunkUtils::convertBiomeColors($biomeColorsTag->getValue())); //Convert back to original format
+		}elseif(($biomesTag = $chunk->getTag("Biomes")) instanceof ByteArrayTag){
+			$biomeArray = $makeBiomeArray($biomesTag->getValue());
 		}
 
 		$result = new Chunk(

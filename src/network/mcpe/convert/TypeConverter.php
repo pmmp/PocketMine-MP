@@ -137,8 +137,8 @@ class TypeConverter{
 
 		if($compound !== null){
 			$compound = clone $compound;
-			if($compound->hasTag(self::DAMAGE_TAG, IntTag::class)){
-				$meta = $compound->getInt(self::DAMAGE_TAG);
+			if(($damageTag = $compound->getTag(self::DAMAGE_TAG)) instanceof IntTag){
+				$meta = $damageTag->getValue();
 				$compound->removeTag(self::DAMAGE_TAG);
 				if($compound->count() === 0){
 					$compound = null;

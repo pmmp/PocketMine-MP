@@ -59,8 +59,8 @@ trait NameableTrait{
 	}
 
 	protected function loadName(CompoundTag $tag) : void{
-		if($tag->hasTag(Nameable::TAG_CUSTOM_NAME, StringTag::class)){
-			$this->customName = $tag->getString(Nameable::TAG_CUSTOM_NAME);
+		if(($customNameTag = $tag->getTag(Nameable::TAG_CUSTOM_NAME)) instanceof StringTag){
+			$this->customName = $customNameTag->getValue();
 		}
 	}
 

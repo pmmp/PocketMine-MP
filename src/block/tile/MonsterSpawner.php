@@ -95,11 +95,11 @@ class MonsterSpawner extends Spawnable{
 	private $requiredPlayerRange = self::DEFAULT_REQUIRED_PLAYER_RANGE;
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		if($nbt->hasTag(self::TAG_LEGACY_ENTITY_TYPE_ID, IntTag::class)){
+		if(($legacyIdTag = $nbt->getTag(self::TAG_LEGACY_ENTITY_TYPE_ID)) instanceof IntTag){
 			//TODO: this will cause unexpected results when there's no mapping for the entity
-			$this->entityTypeId = LegacyEntityIdToStringIdMap::getInstance()->legacyToString($nbt->getInt(self::TAG_LEGACY_ENTITY_TYPE_ID)) ?? ":";
-		}elseif($nbt->hasTag(self::TAG_ENTITY_TYPE_ID, StringTag::class)){
-			$this->entityTypeId = $nbt->getString(self::TAG_ENTITY_TYPE_ID);
+			$this->entityTypeId = LegacyEntityIdToStringIdMap::getInstance()->legacyToString($legacyIdTag->getValue()) ?? ":";
+		}elseif(($idTag = $nbt->getTag(self::TAG_ENTITY_TYPE_ID)) instanceof StringTag){
+			$this->entityTypeId = $idTag->getValue();
 		}else{
 			$this->entityTypeId = ":"; //default - TODO: replace this with a constant
 		}

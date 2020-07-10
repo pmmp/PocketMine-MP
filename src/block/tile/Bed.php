@@ -49,8 +49,8 @@ class Bed extends Spawnable{
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		if($nbt->hasTag(self::TAG_COLOR, ByteTag::class)){
-			$this->color = DyeColorIdMap::getInstance()->fromId($nbt->getByte(self::TAG_COLOR));
+		if(($colorTag = $nbt->getTag(self::TAG_COLOR)) instanceof ByteTag){
+			$this->color = DyeColorIdMap::getInstance()->fromId($colorTag->getValue());
 		}
 	}
 

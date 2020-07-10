@@ -108,10 +108,10 @@ class ExperienceOrb extends Entity{
 		$this->age = $nbt->getShort("Age", 0);
 
 		$value = 1;
-		if($nbt->hasTag(self::TAG_VALUE_PC, ShortTag::class)){ //PC
-			$value = $nbt->getShort(self::TAG_VALUE_PC);
-		}elseif($nbt->hasTag(self::TAG_VALUE_PE, IntTag::class)){ //PE save format
-			$value = $nbt->getInt(self::TAG_VALUE_PE);
+		if(($valuePcTag = $nbt->getTag(self::TAG_VALUE_PC)) instanceof ShortTag){ //PC
+			$value = $valuePcTag->getValue();
+		}elseif(($valuePeTag = $nbt->getTag(self::TAG_VALUE_PE)) instanceof IntTag){ //PE save format
+			$value = $valuePeTag->getValue();
 		}
 
 		$this->setXpValue($value);

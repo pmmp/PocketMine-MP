@@ -134,9 +134,10 @@ class BedrockWorldData extends BaseNbtWorldData{
 	}
 
 	protected function fix() : void{
-		if(!$this->compoundTag->hasTag("generatorName", StringTag::class)){
-			if($this->compoundTag->hasTag("Generator", IntTag::class)){
-				switch($this->compoundTag->getInt("Generator")){ //Detect correct generator from MCPE data
+		$generatorNameTag = $this->compoundTag->getTag("generatorName");
+		if(!($generatorNameTag instanceof StringTag)){
+			if(($mcpeGeneratorTypeTag = $this->compoundTag->getTag("Generator")) instanceof IntTag){
+				switch($mcpeGeneratorTypeTag->getValue()){ //Detect correct generator from MCPE data
 					case self::GENERATOR_FLAT:
 						$this->compoundTag->setString("generatorName", "flat");
 						$this->compoundTag->setString("generatorOptions", "2;7,3,3,2;1");
@@ -154,11 +155,11 @@ class BedrockWorldData extends BaseNbtWorldData{
 			}else{
 				$this->compoundTag->setString("generatorName", "default");
 			}
-		}elseif(($generatorName = self::hackyFixForGeneratorClasspathInLevelDat($this->compoundTag->getString("generatorName"))) !== null){
+		}elseif(($generatorName = self::hackyFixForGeneratorClasspathInLevelDat($generatorNameTag->getValue())) !== null){
 			$this->compoundTag->setString("generatorName", $generatorName);
 		}
 
-		if(!$this->compoundTag->hasTag("generatorOptions", StringTag::class)){
+		if(!($this->compoundTag->getTag("generatorOptions")) instanceof StringTag){
 			$this->compoundTag->setString("generatorOptions", "");
 		}
 	}

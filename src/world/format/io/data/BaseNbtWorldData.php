@@ -125,8 +125,8 @@ abstract class BaseNbtWorldData implements WorldData{
 	}
 
 	public function getTime() : int{
-		if($this->compoundTag->hasTag("Time", IntTag::class)){ //some older PM worlds had this in the wrong format
-			return $this->compoundTag->getInt("Time");
+		if(($timeTag = $this->compoundTag->getTag("Time")) instanceof IntTag){ //some older PM worlds had this in the wrong format
+			return $timeTag->getValue();
 		}
 		return $this->compoundTag->getLong("Time", 0);
 	}

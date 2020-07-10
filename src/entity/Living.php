@@ -134,12 +134,12 @@ abstract class Living extends Entity{
 
 		$health = $this->getMaxHealth();
 
-		if($nbt->hasTag("HealF", FloatTag::class)){
-			$health = $nbt->getFloat("HealF");
-		}elseif($nbt->hasTag("Health", ShortTag::class)){
-			$health = $nbt->getShort("Health"); //Older versions of PocketMine-MP incorrectly saved this as a short instead of a float
-		}elseif($nbt->hasTag("Health", FloatTag::class)){
-			$health = $nbt->getFloat("Health");
+		if(($healFTag = $nbt->getTag("HealF")) instanceof FloatTag){
+			$health = $healFTag->getValue();
+		}elseif(($healthTag = $nbt->getTag("Health")) instanceof ShortTag){
+			$health = $healthTag->getValue(); //Older versions of PocketMine-MP incorrectly saved this as a short instead of a float
+		}elseif(($healthTag = $nbt->getTag("Health")) instanceof FloatTag){
+			$health = $healthTag->getValue();
 		}
 
 		$this->setHealth($health);

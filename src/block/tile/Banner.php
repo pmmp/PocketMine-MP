@@ -61,8 +61,8 @@ class Banner extends Spawnable{
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		$colorIdMap = DyeColorIdMap::getInstance();
-		if($nbt->hasTag(self::TAG_BASE, IntTag::class)){
-			$this->baseColor = $colorIdMap->fromInvertedId($nbt->getInt(self::TAG_BASE));
+		if(($baseColorTag = $nbt->getTag(self::TAG_BASE)) instanceof IntTag){
+			$this->baseColor = $colorIdMap->fromInvertedId($baseColorTag->getValue());
 		}
 
 		$patterns = $nbt->getListTag(self::TAG_PATTERNS);

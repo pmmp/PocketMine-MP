@@ -99,11 +99,11 @@ class OfflinePlayer implements IPlayer{
 	}
 
 	public function getFirstPlayed() : ?int{
-		return ($this->namedtag !== null and $this->namedtag->hasTag("firstPlayed", LongTag::class)) ? $this->namedtag->getLong("firstPlayed") : null;
+		return ($this->namedtag !== null and ($firstPlayedTag = $this->namedtag->getTag("firstPlayed")) instanceof LongTag) ? $firstPlayedTag->getValue() : null;
 	}
 
 	public function getLastPlayed() : ?int{
-		return ($this->namedtag !== null and $this->namedtag->hasTag("lastPlayed", LongTag::class)) ? $this->namedtag->getLong("lastPlayed") : null;
+		return ($this->namedtag !== null and ($lastPlayedTag = $this->namedtag->getTag("lastPlayed")) instanceof LongTag) ? $lastPlayedTag->getValue() : null;
 	}
 
 	public function hasPlayedBefore() : bool{

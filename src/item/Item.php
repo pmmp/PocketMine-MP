@@ -647,7 +647,7 @@ class Item implements \JsonSerializable{
 	 * Deserializes an Item from an NBT CompoundTag
 	 */
 	public static function nbtDeserialize(CompoundTag $tag) : Item{
-		if(!$tag->hasTag("id") or !$tag->hasTag("Count")){
+		if($tag->getTag("id") === null or $tag->getTag("Count") === null){
 			return ItemFactory::getInstance()->get(0);
 		}
 

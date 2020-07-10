@@ -64,10 +64,10 @@ class FallingBlock extends Entity{
 		$blockId = 0;
 
 		//TODO: 1.8+ save format
-		if($nbt->hasTag("TileID", IntTag::class)){
-			$blockId = $nbt->getInt("TileID");
-		}elseif($nbt->hasTag("Tile", ByteTag::class)){
-			$blockId = $nbt->getByte("Tile");
+		if(($tileIdTag = $nbt->getTag("TileID")) instanceof IntTag){
+			$blockId = $tileIdTag->getValue();
+		}elseif(($tileTag = $nbt->getTag("Tile")) instanceof ByteTag){
+			$blockId = $tileTag->getValue();
 		}
 
 		if($blockId === 0){

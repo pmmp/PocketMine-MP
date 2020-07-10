@@ -118,10 +118,10 @@ final class EntityFactory{
 				throw new \UnexpectedValueException("Unknown painting motive");
 			}
 			$blockIn = new Vector3($nbt->getInt("TileX"), $nbt->getInt("TileY"), $nbt->getInt("TileZ"));
-			if($nbt->hasTag("Direction", ByteTag::class)){
-				$facing = Painting::DATA_TO_FACING[$nbt->getByte("Direction")] ?? Facing::NORTH;
-			}elseif($nbt->hasTag("Facing", ByteTag::class)){
-				$facing = Painting::DATA_TO_FACING[$nbt->getByte("Facing")] ?? Facing::NORTH;
+			if(($directionTag = $nbt->getTag("Direction")) instanceof ByteTag){
+				$facing = Painting::DATA_TO_FACING[$directionTag->getValue()] ?? Facing::NORTH;
+			}elseif(($facingTag = $nbt->getTag("Facing")) instanceof ByteTag){
+				$facing = Painting::DATA_TO_FACING[$facingTag->getValue()] ?? Facing::NORTH;
 			}else{
 				throw new \UnexpectedValueException("Missing facing info");
 			}

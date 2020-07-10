@@ -334,10 +334,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 		$this->firstPlayed = $nbt->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
 		$this->lastPlayed = $nbt->getLong("lastPlayed", $now);
 
-		if($this->server->getForceGamemode() or !$nbt->hasTag("playerGameType", IntTag::class)){
-			$this->internalSetGameMode($this->server->getGamemode());
+		if(!$this->server->getForceGamemode() and ($gameModeTag = $nbt->getTag("playerGameType")) instanceof IntTag){
+			$this->internalSetGameMode(GameMode::fromMagicNumber($gameModeTag->getValue() & 0x03)); //TODO: bad hack here to avoid crashes on corrupted data
 		}else{
-			$this->internalSetGameMode(GameMode::fromMagicNumber($nbt->getInt("playerGameType") & 0x03)); //TODO: bad hack here to avoid crashes on corrupted data
+			$this->internalSetGameMode($this->server->getGamemode());
 		}
 
 		$this->keepMovement = true;

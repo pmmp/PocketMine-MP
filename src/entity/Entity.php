@@ -481,12 +481,12 @@ abstract class Entity{
 
 		$this->fallDistance = $nbt->getFloat("FallDistance", 0.0);
 
-		if($nbt->hasTag("CustomName", StringTag::class)){
-			$this->setNameTag($nbt->getString("CustomName"));
+		if(($customNameTag = $nbt->getTag("CustomName")) instanceof StringTag){
+			$this->setNameTag($customNameTag->getValue());
 
-			if($nbt->hasTag("CustomNameVisible", StringTag::class)){
+			if(($customNameVisibleTag = $nbt->getTag("CustomNameVisible")) instanceof StringTag){
 				//Older versions incorrectly saved this as a string (see 890f72dbf23a77f294169b79590770470041adc4)
-				$this->setNameTagVisible($nbt->getString("CustomNameVisible") !== "");
+				$this->setNameTagVisible($customNameVisibleTag->getValue() !== "");
 			}else{
 				$this->setNameTagVisible($nbt->getByte("CustomNameVisible", 1) !== 0);
 			}
