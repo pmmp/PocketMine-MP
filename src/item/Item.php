@@ -658,13 +658,12 @@ class Item implements \JsonSerializable{
 		if($idTag instanceof ShortTag){
 			$item = ItemFactory::getInstance()->get($idTag->getValue(), $meta, $count);
 		}elseif($idTag instanceof StringTag){ //PC item save format
-			try{
-				$item = LegacyStringToItemParser::getInstance()->parse($idTag->getValue() . ":$meta");
-			}catch(\InvalidArgumentException $e){
-				//TODO: improve error handling
+			//TODO: this isn't a very good mapping source, we need a dedicated mapping for PC
+			$id = LegacyStringToItemParser::getInstance()->parseId($idTag->getValue());
+			if($id === null){
 				return ItemFactory::air();
 			}
-			$item->setCount($count);
+			$item = ItemFactory::getInstance()->get($id, $meta, $count);
 		}else{
 			throw new \InvalidArgumentException("Item CompoundTag ID must be an instance of StringTag or ShortTag, " . get_class($idTag) . " given");
 		}
