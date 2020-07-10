@@ -37,7 +37,7 @@ interface Cancellable{
 	/**
 	 * Returns whether this instance of the event is currently cancelled.
 	 *
-	 * If it is cancelled, downstream handlers that do not declare `@handleCancelled` will be called with this event.
+	 * If it is cancelled, only downstream handlers that declare `@handleCancelled` will be called with this event.
 	 */
 	public function isCancelled() : bool;
 }
