@@ -43,6 +43,9 @@ class PlayerRespawnEvent extends PlayerEvent{
 	}
 
 	public function setRespawnPosition(Position $position) : void{
+		if(!$position->isValid()){
+			throw new \InvalidArgumentException("Spawn position must reference a valid and loaded World");
+		}
 		$this->position = $position;
 	}
 }
