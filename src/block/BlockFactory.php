@@ -454,16 +454,19 @@ class BlockFactory{
 
 		$colorIdMap = DyeColorIdMap::getInstance();
 		foreach(DyeColor::getAll() as $color){
-			$this->register(new Carpet(new BID(Ids::CARPET, $colorIdMap->toId($color)), $color->getDisplayName() . " Carpet"));
-			$this->register(new Concrete(new BID(Ids::CONCRETE, $colorIdMap->toId($color)), $color->getDisplayName() . " Concrete"));
-			$this->register(new ConcretePowder(new BID(Ids::CONCRETE_POWDER, $colorIdMap->toId($color)), $color->getDisplayName() . " Concrete Powder"));
-			$this->register(new Glass(new BID(Ids::STAINED_GLASS, $colorIdMap->toId($color)), $color->getDisplayName() . " Stained Glass"));
-			$this->register(new GlassPane(new BID(Ids::STAINED_GLASS_PANE, $colorIdMap->toId($color)), $color->getDisplayName() . " Stained Glass Pane"));
-			$this->register(new GlazedTerracotta(BlockLegacyIdHelper::getGlazedTerracottaIdentifier($color), $color->getDisplayName() . " Glazed Terracotta"));
-			$this->register(new HardenedClay(new BID(Ids::STAINED_CLAY, $colorIdMap->toId($color)), $color->getDisplayName() . " Stained Clay"));
-			$this->register(new HardenedGlass(new BID(Ids::HARD_STAINED_GLASS, $colorIdMap->toId($color)), "Hardened " . $color->getDisplayName() . " Stained Glass"));
-			$this->register(new HardenedGlassPane(new BID(Ids::HARD_STAINED_GLASS_PANE, $colorIdMap->toId($color)), "Hardened " . $color->getDisplayName() . " Stained Glass Pane"));
-			$this->register(new Wool(new BID(Ids::WOOL, $colorIdMap->toId($color)), $color->getDisplayName() . " Wool"));
+			$coloredName = function(string $name) use($color) : string{
+				return $color->getDisplayName() . " " . $name;
+			};
+			$this->register(new Carpet(new BID(Ids::CARPET, $colorIdMap->toId($color)), $coloredName("Carpet")));
+			$this->register(new Concrete(new BID(Ids::CONCRETE, $colorIdMap->toId($color)), $coloredName("Concrete")));
+			$this->register(new ConcretePowder(new BID(Ids::CONCRETE_POWDER, $colorIdMap->toId($color)), $coloredName("Concrete Powder")));
+			$this->register(new Glass(new BID(Ids::STAINED_GLASS, $colorIdMap->toId($color)), $coloredName("Stained Glass")));
+			$this->register(new GlassPane(new BID(Ids::STAINED_GLASS_PANE, $colorIdMap->toId($color)), $coloredName("Stained Glass Pane")));
+			$this->register(new GlazedTerracotta(BlockLegacyIdHelper::getGlazedTerracottaIdentifier($color), $coloredName("Glazed Terracotta")));
+			$this->register(new HardenedClay(new BID(Ids::STAINED_CLAY, $colorIdMap->toId($color)), $coloredName("Stained Clay")));
+			$this->register(new HardenedGlass(new BID(Ids::HARD_STAINED_GLASS, $colorIdMap->toId($color)), "Hardened " . $coloredName("Stained Glass")));
+			$this->register(new HardenedGlassPane(new BID(Ids::HARD_STAINED_GLASS_PANE, $colorIdMap->toId($color)), "Hardened " . $coloredName("Stained Glass Pane")));
+			$this->register(new Wool(new BID(Ids::WOOL, $colorIdMap->toId($color)), $coloredName("Wool")));
 		}
 
 		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_ANDESITE), "Andesite Wall"));
