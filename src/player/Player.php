@@ -134,7 +134,7 @@ use const PHP_INT_MAX;
 /**
  * Main class that handles networking, recovery, and packet sending to the server part
  */
-class Player extends Human implements CommandSender, ChunkLoader, ChunkListener, IPlayer{
+class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	use PermissibleDelegateTrait {
 		recalculatePermissions as private delegateRecalculatePermissions;
 	}
@@ -213,6 +213,8 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 	protected $chunksPerTick;
 	/** @var ChunkSelector */
 	protected $chunkSelector;
+	/** @var TickingChunkLoader */
+	protected $chunkLoader;
 
 	/** @var bool[] map: raw UUID (string) => bool */
 	protected $hiddenPlayers = [];
@@ -293,8 +295,10 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$onGround = true;
 		}
 
+		$this->chunkLoader = new TickingChunkLoader($spawn);
+
 		//load the spawn chunk so we can see the terrain
-		$world->registerChunkLoader($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, true);
+		$world->registerChunkLoader($this->chunkLoader, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, true);
 		$world->registerChunkListener($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4);
 		$this->usedChunks[World::chunkHash($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4)] = UsedChunkStatus::NEEDED();
 
@@ -742,7 +746,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->networkSession->stopUsingChunk($x, $z);
 			unset($this->usedChunks[$index]);
 		}
-		$world->unregisterChunkLoader($this, $x, $z);
+		$world->unregisterChunkLoader($this->chunkLoader, $x, $z);
 		$world->unregisterChunkListener($this, $x, $z);
 		unset($this->loadQueue[$index]);
 	}
@@ -776,7 +780,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			++$count;
 
 			$this->usedChunks[$index] = UsedChunkStatus::NEEDED();
-			$this->getWorld()->registerChunkLoader($this, $X, $Z, true);
+			$this->getWorld()->registerChunkLoader($this->chunkLoader, $X, $Z, true);
 			$this->getWorld()->registerChunkListener($this, $X, $Z);
 
 			if(!$this->getWorld()->populateChunk($X, $Z)){
@@ -871,6 +875,7 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 
 		$this->loadQueue = $newOrder;
 		if(count($this->loadQueue) > 0 or count($unloadChunks) > 0){
+			$this->chunkLoader->setCurrentLocation($this->location);
 			$this->networkSession->syncViewAreaCenterPoint($this->location, $this->viewDistance);
 		}
 
@@ -2338,21 +2343,4 @@ class Player extends Human implements CommandSender, ChunkLoader, ChunkListener,
 			$this->nextChunkOrderRun = 0;
 		}
 	}
-
-	/**
-	 * @see ChunkLoader::getX()
-	 * @return float
-	 */
-	public function getX(){
-		return $this->location->getX();
-	}
-
-	/**
-	 * @see ChunkLoader::getZ()
-	 * @return float
-	 */
-	public function getZ(){
-		return $this->location->getZ();
-	}
-
 }
