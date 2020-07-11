@@ -30,8 +30,6 @@ namespace pocketmine\event;
  * without `@handleCancelled` will be called with this event.
  * Implementations may provide a direct setter for cancellation (typically by using `CancellableTrait`)
  * or implement an alternative logic (such as a function on another data field) for `isCancelled()`.
- * Furthermore, callers may interpret the cancellation for an addition meaning,
- * but such additional meaning is not to be implied by the `Cancellable` interface.
  */
 interface Cancellable{
 	/**
