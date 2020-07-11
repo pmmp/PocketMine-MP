@@ -486,6 +486,12 @@ class BlockFactory{
 
 		$this->registerElements();
 
+		$chemistryTableBreakInfo = new BlockBreakInfo(2.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_COMPOUND_CREATOR), "Compound Creator", $chemistryTableBreakInfo));
+		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_ELEMENT_CONSTRUCTOR), "Element Constructor", $chemistryTableBreakInfo));
+		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_LAB_TABLE), "Lab Table", $chemistryTableBreakInfo));
+		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_MATERIAL_REDUCER), "Material Reducer", $chemistryTableBreakInfo));
+
 		//region --- auto-generated TODOs ---
 		//TODO: minecraft:bamboo
 		//TODO: minecraft:bamboo_sapling
@@ -499,7 +505,6 @@ class BlockFactory{
 		//TODO: minecraft:cauldron
 		//TODO: minecraft:chain_command_block
 		//TODO: minecraft:chemical_heat
-		//TODO: minecraft:chemistry_table
 		//TODO: minecraft:chorus_flower
 		//TODO: minecraft:chorus_plant
 		//TODO: minecraft:command_block
