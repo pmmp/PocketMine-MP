@@ -165,11 +165,11 @@ class World implements ChunkManager{
 	private $loaderCounter = [];
 	/** @var ChunkLoader[][] */
 	private $chunkLoaders = [];
-	/** @var Player[][] */
-	private $playerLoaders = [];
 
 	/** @var ChunkListener[][] */
 	private $chunkListeners = [];
+	/** @var Player[][] */
+	private $playerChunkListeners = [];
 
 	/** @var ClientboundPacket[][] */
 	private $chunkPackets = [];
@@ -499,7 +499,7 @@ class World implements ChunkManager{
 	 * @return Player[]
 	 */
 	public function getChunkPlayers(int $chunkX, int $chunkZ) : array{
-		return $this->playerLoaders[World::chunkHash($chunkX, $chunkZ)] ?? [];
+		return $this->playerChunkListeners[World::chunkHash($chunkX, $chunkZ)] ?? [];
 	}
 
 	/**
@@ -536,15 +536,11 @@ class World implements ChunkManager{
 
 		if(!isset($this->chunkLoaders[$chunkHash = World::chunkHash($chunkX, $chunkZ)])){
 			$this->chunkLoaders[$chunkHash] = [];
-			$this->playerLoaders[$chunkHash] = [];
 		}elseif(isset($this->chunkLoaders[$chunkHash][$loaderId])){
 			return;
 		}
 
 		$this->chunkLoaders[$chunkHash][$loaderId] = $loader;
-		if($loader instanceof Player){
-			$this->playerLoaders[$chunkHash][$loaderId] = $loader;
-		}
 
 		if(!isset($this->loaders[$loaderId])){
 			$this->loaderCounter[$loaderId] = 1;
@@ -565,10 +561,8 @@ class World implements ChunkManager{
 		$loaderId = spl_object_id($loader);
 		if(isset($this->chunkLoaders[$chunkHash][$loaderId])){
 			unset($this->chunkLoaders[$chunkHash][$loaderId]);
-			unset($this->playerLoaders[$chunkHash][$loaderId]);
 			if(count($this->chunkLoaders[$chunkHash]) === 0){
 				unset($this->chunkLoaders[$chunkHash]);
-				unset($this->playerLoaders[$chunkHash]);
 				$this->unloadChunkRequest($chunkX, $chunkZ, true);
 			}
 
@@ -589,6 +583,9 @@ class World implements ChunkManager{
 		}else{
 			$this->chunkListeners[$hash] = [spl_object_id($listener) => $listener];
 		}
+		if($listener instanceof Player){
+			$this->playerChunkListeners[$hash][spl_object_id($listener)] = $listener;
+		}
 	}
 
 	/**
@@ -600,8 +597,10 @@ class World implements ChunkManager{
 		$hash = World::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunkListeners[$hash])){
 			unset($this->chunkListeners[$hash][spl_object_id($listener)]);
+			unset($this->playerChunkListeners[$hash][spl_object_id($listener)]);
 			if(count($this->chunkListeners[$hash]) === 0){
 				unset($this->chunkListeners[$hash]);
+				unset($this->playerChunkListeners[$hash]);
 			}
 		}
 	}
