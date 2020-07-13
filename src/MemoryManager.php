@@ -406,14 +406,6 @@ class MemoryManager{
 					"properties" => []
 				];
 
-				if(($parent = $reflection->getParentClass()) !== false){
-					$info["parent"] = $parent->getName();
-				}
-
-				if(count($reflection->getInterfaceNames()) > 0){
-					$info["implements"] = implode(", ", $reflection->getInterfaceNames());
-				}
-
 				for($original = $reflection; $reflection !== false; $reflection = $reflection->getParentClass()){
 					foreach($reflection->getProperties() as $property){
 						if($property->isStatic()){
