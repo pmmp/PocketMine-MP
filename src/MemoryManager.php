@@ -461,7 +461,7 @@ class MemoryManager{
 
 			++$refCounts[$hash];
 
-			$data = "(object) $hash@" . get_class($from);
+			$data = "(object) $hash";
 		}elseif(is_array($from)){
 			if($recursion >= 5){
 				return "(error) ARRAY RECURSION LIMIT REACHED";
