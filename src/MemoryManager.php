@@ -424,7 +424,7 @@ class MemoryManager{
 					}
 				}
 
-				fwrite($obData, "$hash@$className: " . json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
+				fwrite($obData, json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
 			}
 
 		}while($continue);
