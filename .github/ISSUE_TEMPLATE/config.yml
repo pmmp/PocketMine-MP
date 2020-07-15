@@ -10,5 +10,5 @@ contact_links:
     url: https://pmmp.rtfd.io
     about: PocketMine-MP documentation
   - name: Security/DoS vulnerability
-    url: mailto:team@pmmp.io
+    url: https://github.com/pmmp/PocketMine-MP/blob/stable/CONTTIBUTING.md
     about: Bug or exploit that can be used to attack servers. Please DO NOT report security vulnerabilities on the issue traacker. Instead, send an email to team@pmmp.io or contact a developer directly, IN PRIVATE.
