@@ -40,6 +40,6 @@ class Podzol extends Solid{
 	}
 
 	public function getHardness() : float{
-		return 2.5;
+		return 0.5;
 	}
 }
