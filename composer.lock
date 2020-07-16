@@ -1023,16 +1023,16 @@
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "0.12.2",
+            "version": "0.12.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "a670a59aff7cf96f75d21b974860ada10e25b2ee"
+                "reference": "937283265620af9e2005743134ebb4e197b12d8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/a670a59aff7cf96f75d21b974860ada10e25b2ee",
-                "reference": "a670a59aff7cf96f75d21b974860ada10e25b2ee",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/937283265620af9e2005743134ebb4e197b12d8e",
+                "reference": "937283265620af9e2005743134ebb4e197b12d8e",
                 "shasum": ""
             },
             "require": {
@@ -1041,7 +1041,7 @@
             },
             "require-dev": {
                 "consistence/coding-standard": "^3.0.1",
-                "dealerdirect/phpcodesniffer-composer-installer": "^0.4.4",
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
                 "ergebnis/composer-normalize": "^2.0.2",
                 "jakub-onderka/php-parallel-lint": "^1.0",
                 "phing/phing": "^2.16.0",
@@ -1070,7 +1070,7 @@
                 "MIT"
             ],
             "description": "Extra strict and opinionated rules for PHPStan",
-            "time": "2020-01-20T13:08:52+00:00"
+            "time": "2020-07-16T08:58:37+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
