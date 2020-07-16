@@ -2577,6 +2577,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 								}
 								$ev->call();
 								if($ev->isCancelled() or !$this->consumeObject($slot)){
+									foreach($slot->getAdditionalEffects() as $effect) {
+										$this->removeEffect($effect->getId());
+									}
+									
 									$this->inventory->sendContents($this);
 									return true;
 								}
