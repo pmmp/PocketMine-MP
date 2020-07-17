@@ -37,16 +37,16 @@ abstract class Button extends Flowable{
 	/** @var int */
 	protected $facing = Facing::DOWN;
 	/** @var bool */
-	protected $powered = false;
+	protected $pressed = false;
 
 	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeFacing($this->facing) | ($this->powered ? BlockLegacyMetadata::BUTTON_FLAG_POWERED : 0);
+		return BlockDataSerializer::writeFacing($this->facing) | ($this->pressed ? BlockLegacyMetadata::BUTTON_FLAG_POWERED : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		//TODO: in PC it's (6 - facing) for every meta except 0 (down)
 		$this->facing = BlockDataSerializer::readFacing($stateMeta & 0x07);
-		$this->powered = ($stateMeta & BlockLegacyMetadata::BUTTON_FLAG_POWERED) !== 0;
+		$this->pressed = ($stateMeta & BlockLegacyMetadata::BUTTON_FLAG_POWERED) !== 0;
 	}
 
 	public function getStateBitmask() : int{
@@ -62,8 +62,8 @@ abstract class Button extends Flowable{
 	abstract protected function getActivationTime() : int;
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->powered){
-			$this->powered = true;
+		if(!$this->pressed){
+			$this->pressed = true;
 			$this->pos->getWorld()->setBlock($this->pos, $this);
 			$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, $this->getActivationTime());
 			$this->pos->getWorld()->addSound($this->pos->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
@@ -73,8 +73,8 @@ abstract class Button extends Flowable{
 	}
 
 	public function onScheduledUpdate() : void{
-		if($this->powered){
-			$this->powered = false;
+		if($this->pressed){
+			$this->pressed = false;
 			$this->pos->getWorld()->setBlock($this->pos, $this);
 			$this->pos->getWorld()->addSound($this->pos->add(0.5, 0.5, 0.5), new RedstonePowerOffSound());
 		}
