@@ -279,6 +279,24 @@ class ItemFactory{
 		//TODO: RECORD_WARD
 		//TODO: RECORD_11
 		//TODO: RECORD_WAIT
+
+		//TODO: SUSPICIOUS_STEW
+		//TODO: HONEY_BOTTLE
+
+		self::registerItem(new LodestoneCompass());
+		self::registerItem(new Item(Item::NETHERITE_INGOT, 0, "Netherite Ingot"));
+		self::registerItem(new Sword(Item::NETHERITE_SWORD, 0, "Netherite Sword", TieredTool::TIER_NETHERITE));
+		self::registerItem(new Shovel(Item::NETHERITE_SHOVEL, 0, "Netherite Shovel", TieredTool::TIER_NETHERITE));
+		self::registerItem(new Pickaxe(Item::NETHERITE_PICKAXE, 0, "Netherite Pickaxe", TieredTool::TIER_NETHERITE));
+		self::registerItem(new Axe(Item::NETHERITE_AXE, 0, "Netherite Axe", TieredTool::TIER_NETHERITE));
+		self::registerItem(new Hoe(Item::NETHERITE_HOE, 0, "Netherite Hoe", TieredTool::TIER_NETHERITE));
+		self::registerItem(new NetheriteHelmet());
+		self::registerItem(new NetheriteChestplate());
+		self::registerItem(new NetheriteLeggings());
+		self::registerItem(new NetheriteBoots());
+		self::registerItem(new Item(Item::NETHERITE_SCRAP, 0, "Netherite Scrap"));
+		//TODO: WARPED_FUNGUS_ON_A_STICK
+		//TODO: RECORD_PIGSTEP
 	}
 
 	/**
