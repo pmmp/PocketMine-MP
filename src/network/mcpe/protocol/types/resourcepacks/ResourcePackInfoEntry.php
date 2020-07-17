@@ -91,14 +91,13 @@ class ResourcePackInfoEntry{
 	}
 
 	public static function read(PacketSerializer $in) : self{
-		return new self(
-			$uuid = $in->getString(),
-			$version = $in->getString(),
-			$sizeBytes = $in->getLLong(),
-			$encryptionKey = $in->getString(),
-			$subPackName = $in->getString(),
-			$contentId = $in->getString(),
-			$hasScripts = $in->getBool()
-		);
+		$uuid = $in->getString();
+		$version = $in->getString();
+		$sizeBytes = $in->getLLong();
+		$encryptionKey = $in->getString();
+		$subPackName = $in->getString();
+		$contentId = $in->getString();
+		$hasScripts = $in->getBool();
+		return new self($uuid, $version, $sizeBytes, $encryptionKey, $subPackName, $contentId, $hasScripts);
 	}
 }
