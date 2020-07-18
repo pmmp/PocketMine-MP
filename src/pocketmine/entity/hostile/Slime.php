@@ -238,16 +238,16 @@ class Slime extends Monster{
 	 * Checks if the entity's current position is a valid location to spawn this entity.
 	 */
 	public function canSpawnHere() : bool{
-		if($this->level->getProvider()->getGenerator() === Flat::class and $this->random->nextBoundedInt(4) !== 1){
+		if($this->level->random->nextBoundedInt(4) !== 1){
 			return false;
 		}else{
-			$biome = $this->level->getBiome($this->x, $this->z);
+			$biome = $this->level->getBiome($this->getFloorX(), $this->getFloorZ());
 
-			if(($biome->getId() === Biome::SWAMP and $this->y > 50 and $this->y < 70 and $this->random->nextFloat() < 0.5) or ($this->random->nextBoundedInt(10) === 0 and $this->y < 40)){
+			if(($biome->getId() === Biome::SWAMP and $this->y > 50 and $this->y < 70 and $this->level->random->nextFloat() < 0.5) or ($this->random->nextBoundedInt(10) === 0 and $this->y < 40)){
 				return parent::canSpawnHere();
 			}
 
-			return false;
+			return $this->level->getProvider()->getGenerator() === "flat";
 		}
 	}
 
