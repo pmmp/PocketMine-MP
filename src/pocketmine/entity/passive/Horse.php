@@ -99,8 +99,8 @@ class Horse extends AbstractHorse implements InventoryHolder{
 			$this->setVariant($this->namedtag->getInt("Variant"));
 			$this->setMarkVariant($this->namedtag->getInt("MarkVariant"));
 		}else{
-			$this->setVariant($this->random->nextBoundedInt(7));
-			$this->setMarkVariant($this->random->nextBoundedInt(5));
+			$this->setVariant(mt_rand(0, 7));
+			$this->setMarkVariant(mt_rand(0, 5));
 		}
 
 		$this->inventory = new HorseInventory($this);
