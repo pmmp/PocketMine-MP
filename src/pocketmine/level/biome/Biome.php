@@ -29,6 +29,7 @@ use pocketmine\entity\Creature;
 use pocketmine\entity\CreatureType;
 use pocketmine\entity\hostile\Creeper;
 use pocketmine\entity\hostile\Skeleton;
+use pocketmine\entity\hostile\Slime;
 use pocketmine\entity\hostile\Spider;
 use pocketmine\entity\hostile\Zombie;
 use pocketmine\entity\Monster;
@@ -112,7 +113,7 @@ abstract class Biome{
 		$this->spawnableMonsterList[] = new SpawnListEntry(Zombie::class, 100, 4, 4);
 		$this->spawnableMonsterList[] = new SpawnListEntry(Skeleton::class, 100, 4, 4);
 		$this->spawnableMonsterList[] = new SpawnListEntry(Creeper::class, 100, 4, 4);
-		//$this->spawnableMonsterList[] = new SpawnListEntry(Slime::class, 100, 4, 4);
+		$this->spawnableMonsterList[] = new SpawnListEntry(Slime::class, 100, 4, 4);
 		//$this->spawnableMonsterList[] = new SpawnListEntry(Enderman::class, 10, 1, 4);
 		//$this->spawnableMonsterList[] = new SpawnListEntry(Witch::class, 5, 1, 1);
 		$this->spawnableWaterCreatureList[] = new SpawnListEntry(Squid::class, 10, 4, 4);
@@ -251,13 +252,13 @@ abstract class Biome{
 	public function getSpawnableList(CreatureType $creatureType) : array{
 		$entityClass = $creatureType->getCreatureClass();
 		switch($entityClass){
-			case ($entityClass === WaterAnimal::class):
+			case WaterAnimal::class:
 				return $this->spawnableWaterCreatureList;
-			case ($entityClass === Creature::class):
+			case Creature::class:
 				return $this->spawnableCaveCreatureList;
-			case ($entityClass === Animal::class):
+			case Animal::class:
 				return $this->spawnableCreatureList;
-			case ($entityClass === Monster::class):
+			case Monster::class:
 				return $this->spawnableMonsterList;
 		}
 
