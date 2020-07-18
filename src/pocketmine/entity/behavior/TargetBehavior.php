@@ -53,9 +53,7 @@ abstract class TargetBehavior extends Behavior{
 		}elseif(!$target->isAlive()){
 			return false;
 		}else{
-			$d0 = $this->getTargetDistance();
-
-			if($this->mob->distanceSquared($target) > $d0 ** 2){
+			if($this->mob->distance($target) > $this->getTargetDistance()){
 				return false;
 			}
 
