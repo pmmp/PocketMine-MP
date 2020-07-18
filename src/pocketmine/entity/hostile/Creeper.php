@@ -147,10 +147,8 @@ class Creeper extends Monster implements Ageable{
 
 			if($this->level->getGameRules()->getBool(GameRules::RULE_MOB_GRIEFING, true)){
 				$exp->explodeA();
-				$exp->explodeB();
-			}else{
-				$exp->explodeB();
 			}
+			$exp->explodeB();
 		}
 	}
 
