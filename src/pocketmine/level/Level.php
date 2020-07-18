@@ -839,7 +839,7 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	protected function actuallyDoTick(int $currentTick) : void{
-		if(!$this->stopTime){
+		if(!$this->stopTime and $this->gameRules->getBool(GameRules::RULE_DO_DAYLIGHT_CYCLE, true)){
 			//this simulates an overflow, as would happen in any language which doesn't do stupid things to var types
 			if($this->time === PHP_INT_MAX){
 				$this->time = PHP_INT_MIN;
@@ -851,7 +851,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->sunAnglePercentage = $this->computeSunAnglePercentage(); //Sun angle depends on the current time
 		$this->skyLightReduction = $this->computeSkyLightReduction(); //Sky light reduction depends on the sun angle
 
-		if($this->gameRules->getBool(GameRules::RULE_DO_DAYLIGHT_CYCLE, true) and ++$this->sendTimeTicker === 200){
+		if(++$this->sendTimeTicker === 200){
 			$this->sendTime();
 			$this->sendTimeTicker = 0;
 		}
