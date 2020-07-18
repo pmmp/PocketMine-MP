@@ -80,6 +80,10 @@ class ItemFactory{
 		self::registerItem(new Shovel(Item::DIAMOND_SHOVEL, 0, "Diamond Shovel", TieredTool::TIER_DIAMOND));
 		self::registerItem(new Pickaxe(Item::DIAMOND_PICKAXE, 0, "Diamond Pickaxe", TieredTool::TIER_DIAMOND));
 		self::registerItem(new Axe(Item::DIAMOND_AXE, 0, "Diamond Axe", TieredTool::TIER_DIAMOND));
+		self::registerItem(new Sword(Item::NETHERITE_SWORD, 0, "Netherite Sword", TieredTool::TIER_NETHERITE));
+		self::registerItem(new Shovel(Item::NETHERITE_SHOVEL, 0, "Netherite Shovel", TieredTool::TIER_NETHERITE));
+		self::registerItem(new Pickaxe(Item::NETHERITE_PICAXE, 0, "Netherite Picaxe", TieredTool::TIER_NETHERITE));
+		self::registerItem(new Axe(Item::NETHERITE_AXE, 0, "Netherite Axe", TieredTool::TIER_NETHERITE));
 		self::registerItem(new Stick());
 		self::registerItem(new Bowl());
 		self::registerItem(new MushroomStew());
@@ -94,6 +98,7 @@ class ItemFactory{
 		self::registerItem(new Hoe(Item::STONE_HOE, 0, "Stone Hoe", TieredTool::TIER_STONE));
 		self::registerItem(new Hoe(Item::IRON_HOE, 0, "Iron Hoe", TieredTool::TIER_IRON));
 		self::registerItem(new Hoe(Item::DIAMOND_HOE, 0, "Diamond Hoe", TieredTool::TIER_DIAMOND));
+		self::registerItem(new Hoe(Item::NETHERITE_HOE, 0, "Netherite Hoe", TieredTool::TIER_NETHERITE));
 		self::registerItem(new Hoe(Item::GOLDEN_HOE, 0, "Golden Hoe", TieredTool::TIER_GOLD));
 		self::registerItem(new WheatSeeds());
 		self::registerItem(new Item(Item::WHEAT, 0, "Wheat"));
@@ -114,6 +119,10 @@ class ItemFactory{
 		self::registerItem(new DiamondChestplate());
 		self::registerItem(new DiamondLeggings());
 		self::registerItem(new DiamondBoots());
+		self::registerItem(new NetheriteHelmet());
+		self::registerItem(new NetheriteChestplate());
+		self::registerItem(new NetheriteLeggings());
+		self::registerItem(new NetheriteBoots());
 		self::registerItem(new GoldHelmet());
 		self::registerItem(new GoldChestplate());
 		self::registerItem(new GoldLeggings());
@@ -283,6 +292,9 @@ class ItemFactory{
 		self::registerItem(new Record(Item::RECORD_WAIT, LevelSoundEventPacket::SOUND_RECORD_WAIT));
 
 		self::registerItem(new Shield());
+		
+		self::registerItem(new Item(Item::NETHERITE_INGOT, 0, "Netherite Ingot"));
+		self::registerItem(new Item(Item::NETHERITE_SCRAP, 0, "Netherite Scrap"));
 	}
 
 	/**

@@ -262,5 +262,16 @@ interface ItemIds extends BlockIds{
 	public const RECORD_WAIT = 511;
 
 	public const SHIELD = 513;
-
+	public const NETHERITE_INGOT = 742;
+	public const NETHERITE_SWORD = 743;
+	public const NETHERITE_SHOVEL = 744;
+	public const NETHERITE_PICAXE = 745;
+	public const NETHERITE_AXE = 746;
+	public const NETHERITE_HOE = 747;
+	public const NETHERITE_HELMET = 748;
+	public const NETHERITE_CHESTPLATE = 749;
+	public const NETHERITE_LEGGINGS = 750;
+	public const NETHERITE_BOOTS = 751;
+	public const NETHERITE_SCRAP = 752;
+	
 }
