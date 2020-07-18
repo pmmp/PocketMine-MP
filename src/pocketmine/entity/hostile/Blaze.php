@@ -24,9 +24,9 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\hostile;
 
-use pocketmine\entity\behavior\FindAttackableTargetBehavior;
 use pocketmine\entity\behavior\HurtByTargetBehavior;
 use pocketmine\entity\behavior\LookAtPlayerBehavior;
+use pocketmine\entity\behavior\NearestAttackableTargetBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\RangedAttackBehavior;
 use pocketmine\entity\behavior\RandomStrollBehavior;
@@ -61,7 +61,7 @@ class Blaze extends Monster implements RangedAttackerMob{
 
 	protected function addBehaviors() : void{
 		$this->targetBehaviorPool->setBehavior(0, new HurtByTargetBehavior($this));
-		$this->targetBehaviorPool->setBehavior(1, new FindAttackableTargetBehavior($this, Player::class));
+		$this->targetBehaviorPool->setBehavior(1, new NearestAttackableTargetBehavior($this, Player::class));
 
 		$this->behaviorPool->setBehavior(1, new RangedAttackBehavior($this, 1.0, 30, 60, 10));
 		$this->behaviorPool->setBehavior(2, new RandomStrollBehavior($this, 1.0));

@@ -26,11 +26,11 @@ namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Ageable;
 use pocketmine\entity\Arthropod;
-use pocketmine\entity\behavior\FindAttackableTargetBehavior;
 use pocketmine\entity\behavior\FloatBehavior;
 use pocketmine\entity\behavior\LeapAtTargetBehavior;
 use pocketmine\entity\behavior\LookAtPlayerBehavior;
 use pocketmine\entity\behavior\MeleeAttackBehavior;
+use pocketmine\entity\behavior\NearestAttackableTargetBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\RandomStrollBehavior;
 use pocketmine\entity\Monster;
@@ -70,7 +70,7 @@ class Spider extends Monster implements Ageable, Arthropod{
 		$this->behaviorPool->setBehavior(4, new LookAtPlayerBehavior($this, 8.0));
 		$this->behaviorPool->setBehavior(5, new RandomLookAroundBehavior($this));
 
-		$this->targetBehaviorPool->setBehavior(0, new FindAttackableTargetBehavior($this, Player::class));
+		$this->targetBehaviorPool->setBehavior(0, new NearestAttackableTargetBehavior($this, Player::class));
 	}
 
 	public function getXpDropAmount() : int{

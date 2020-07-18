@@ -25,10 +25,10 @@ declare(strict_types=1);
 namespace pocketmine\entity\hostile;
 
 use pocketmine\entity\Ageable;
-use pocketmine\entity\behavior\FindAttackableTargetBehavior;
 use pocketmine\entity\behavior\FloatBehavior;
 use pocketmine\entity\behavior\LookAtPlayerBehavior;
 use pocketmine\entity\behavior\MeleeAttackBehavior;
+use pocketmine\entity\behavior\NearestAttackableTargetBehavior;
 use pocketmine\entity\behavior\RandomLookAroundBehavior;
 use pocketmine\entity\behavior\RandomStrollBehavior;
 use pocketmine\entity\Monster;
@@ -91,8 +91,8 @@ class Zombie extends Monster implements Ageable, Smite{
 		$this->behaviorPool->setBehavior(3, new LookAtPlayerBehavior($this, 8.0));
 		$this->behaviorPool->setBehavior(4, new RandomLookAroundBehavior($this));
 
-		$this->targetBehaviorPool->setBehavior(1, new FindAttackableTargetBehavior($this, Player::class));
-		$this->targetBehaviorPool->setBehavior(2, new FindAttackableTargetBehavior($this, Villager::class));
+		$this->targetBehaviorPool->setBehavior(1, new NearestAttackableTargetBehavior($this, Player::class));
+		$this->targetBehaviorPool->setBehavior(2, new NearestAttackableTargetBehavior($this, Villager::class));
 	}
 
 	public function entityBaseTick(int $diff = 1) : bool{

@@ -36,7 +36,7 @@ class NearestAttackableTargetBehavior extends TargetBehavior{
 	protected $targetEntity;
 	protected $targetEntitySelector;
 
-	public function __construct(Mob $mob, string $classTarget, bool $checkSight, int $chance = 10, bool $onlyNearby = false, ?\Closure $targetSelector = null){
+	public function __construct(Mob $mob, string $classTarget, bool $checkSight = true, int $chance = 10, bool $onlyNearby = false, ?\Closure $targetSelector = null){
 		parent::__construct($mob, $checkSight, $onlyNearby);
 
 		$this->targetClass = $classTarget;
@@ -67,7 +67,7 @@ class NearestAttackableTargetBehavior extends TargetBehavior{
 						$d *= $av * 0.7;
 					}
 
-					if($entity->distanceSquared($this->mob) > $d){
+					if($entity->distance($this->mob) > $d){
 						return false;
 					}
 				}
@@ -78,7 +78,7 @@ class NearestAttackableTargetBehavior extends TargetBehavior{
 	}
 
 	public function canStart() : bool{
-		if($this->targetChance > 0 and $this->mob->random->nextBoundedInt($this->targetChance) !== 0){
+		if($this->targetChance > 0 and $this->random->nextBoundedInt($this->targetChance) !== 0){
 			return false;
 		}else{
 			$d0 = $this->getTargetDistance();
@@ -103,7 +103,7 @@ class NearestAttackableTargetBehavior extends TargetBehavior{
 			$nearest = null;
 			$lastDistance = PHP_INT_MAX;
 			foreach($list as $entity){
-				if($d = $entity->distanceSquared($this->mob) < $lastDistance){
+				if($d = $entity->distance($this->mob) < $lastDistance){
 					$lastDistance = $d;
 					$nearest = $entity;
 				}
