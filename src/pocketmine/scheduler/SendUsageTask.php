@@ -134,7 +134,7 @@ class SendUsageTask extends AsyncTask{
 				$data["players"] = [
 					"count" => count($players),
 					"limit" => $server->getMaxPlayers(),
-					"currentList" => $players,
+					"currentList" => array_values($players),
 					"historyList" => array_values($playerList)
 				];
 

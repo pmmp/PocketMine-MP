@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\level\Position;
+use pocketmine\utils\Utils;
 
 /**
  * Called when a entity explodes
@@ -67,6 +68,7 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	 * @param Block[] $blocks
 	 */
 	public function setBlockList(array $blocks) : void{
+		Utils::validateArrayValueType($blocks, function(Block $_) : void{});
 		$this->blocks = $blocks;
 	}
 

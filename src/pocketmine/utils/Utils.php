@@ -685,6 +685,21 @@ class Utils{
 		}
 	}
 
+	/**
+	 * @phpstan-template TMemberType
+	 * @phpstan-param array<mixed, TMemberType> $array
+	 * @phpstan-param \Closure(TMemberType) : void $validator
+	 */
+	public static function validateArrayValueType(array $array, \Closure $validator) : void{
+		foreach($array as $k => $v){
+			try{
+				$validator($v);
+			}catch(\TypeError $e){
+				throw new \TypeError("Incorrect type of element at \"$k\": " . $e->getMessage(), 0, $e);
+			}
+		}
+	}
+
 	public static function recursiveUnlink(string $dir) : void{
 		if(is_dir($dir)){
 			$objects = scandir($dir, SCANDIR_SORT_NONE);

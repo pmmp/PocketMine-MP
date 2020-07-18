@@ -45,6 +45,7 @@ class Attribute{
 	public const FALL_DAMAGE = 13;
 	public const HORSE_JUMP_STRENGTH = 14;
 	public const ZOMBIE_SPAWN_REINFORCEMENTS = 15;
+	public const LAVA_MOVEMENT = 16;
 
 	/** @var int */
 	private $id;
@@ -84,6 +85,7 @@ class Attribute{
 		self::addAttribute(self::FALL_DAMAGE, "minecraft:fall_damage", 0.0, 340282346638528859811704183484516925440.0, 1.0);
 		self::addAttribute(self::HORSE_JUMP_STRENGTH, "minecraft:horse.jump_strength", 0.0, 2.0, 0.7);
 		self::addAttribute(self::ZOMBIE_SPAWN_REINFORCEMENTS, "minecraft:zombie.spawn_reinforcements", 0.0, 1.0, 0.0);
+		self::addAttribute(self::LAVA_MOVEMENT, "minecraft:lava_movement", 0.0, 340282346638528859811704183484516925440.0, 0.02);
 	}
 
 	/**

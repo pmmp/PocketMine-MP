@@ -201,12 +201,12 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->synchronized(function() use ($e, $trace) : void{
 			$this->critical(self::printExceptionMessage($e));
 			foreach(Utils::printableTrace($trace) as $line){
-				$this->debug($line, true);
+				$this->critical($line);
 			}
 			for($prev = $e->getPrevious(); $prev !== null; $prev = $prev->getPrevious()){
-				$this->debug("Previous: " . self::printExceptionMessage($prev), true);
+				$this->critical("Previous: " . self::printExceptionMessage($prev));
 				foreach(Utils::printableTrace($prev->getTrace()) as $line){
-					$this->debug("  " . $line, true);
+					$this->critical("  " . $line);
 				}
 			}
 		});
