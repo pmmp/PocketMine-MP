@@ -38,7 +38,7 @@ use pocketmine\item\ItemIds;
 use pocketmine\level\Position;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
-use pocketmine\network\mcpe\protocol\types\UIInventoryOffsets;
+use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 
@@ -63,8 +63,8 @@ class AnvilInventory extends ContainerInventory implements FakeInventory, FakeRe
 		return "Anvil";
 	}
 
-	public function getUIOffset() : int{
-		return UIInventoryOffsets::OFFSET_ANVIL;
+	public function getUIOffsets() : array{
+		return UIInventorySlotOffset::ANVIL;
 	}
 
 	public function getDefaultSize() : int{
@@ -238,10 +238,7 @@ class AnvilInventory extends ContainerInventory implements FakeInventory, FakeRe
 					$sacrifice->setCount(max(0, $sacrifice->getCount() - $materialCost));
 
 					$this->setItem(self::SLOT_SACRIFICE, $sacrifice);
-					$player->getUIInventory()->setItem(UIInventoryOffsets::OFFSET_ANVIL + 1, $sacrifice);
 				}
-
-				$player->getUIInventory()->setItem(UIInventoryOffsets::OFFSET_ANVIL, $output, false);
 
 				if(!$player->isCreative()){
 					$player->addXpLevels(max(-$player->getXpLevel(), -$levelCost));

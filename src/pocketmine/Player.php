@@ -164,6 +164,7 @@ use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\GameMode;
+use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
@@ -172,7 +173,6 @@ use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\network\mcpe\protocol\types\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\SkinData;
 use pocketmine\network\mcpe\protocol\types\SkinImage;
-use pocketmine\network\mcpe\protocol\types\UIInventoryOffsets;
 use pocketmine\network\mcpe\protocol\types\SpawnSettings;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
@@ -4266,9 +4266,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->craftingGrid->clearAll();
 		}
 
-		if(!$this->uiInventory->isSlotEmpty(UIInventoryOffsets::OFFSET_CURSOR)){ // cursor
-			if($this->inventory->canAddItem($item = $this->uiInventory->getItem(UIInventoryOffsets::OFFSET_CURSOR))){
-				$this->inventory->addItem($this->uiInventory->getItem(UIInventoryOffsets::OFFSET_CURSOR));
+		if(!$this->uiInventory->isSlotEmpty(UIInventorySlotOffset::CURSOR)){
+			if($this->inventory->canAddItem($item = $this->uiInventory->getItem(UIInventorySlotOffset::CURSOR))){
+				$this->inventory->addItem($this->uiInventory->getItem(UIInventorySlotOffset::CURSOR));
 			}else{
 				$this->dropItem($item);
 			}

@@ -23,7 +23,7 @@
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\protocol\types\UIInventoryOffsets;
+use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\WindowTypes;
 use pocketmine\Player;
 use pocketmine\tile\Beacon;
@@ -42,8 +42,8 @@ class BeaconInventory extends ContainerInventory implements FakeInventory, FakeR
 		return 1;
 	}
 
-	public function getUIOffset() : int{
-		return UIInventoryOffsets::OFFSET_BEACON;
+	public function getUIOffsets() : array{
+		return [UIInventorySlotOffset::BEACON_PAYMENT];
 	}
 
 	public function onResult(Player $player, Item $result) : bool{

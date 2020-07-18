@@ -26,5 +26,8 @@ namespace pocketmine\inventory;
 
 interface FakeInventory{
 
-	public function getUIOffset() : int;
+	/**
+	 * @return int[]
+	 */
+	public function getUIOffsets() : array;
 }
