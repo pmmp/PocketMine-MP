@@ -20,7 +20,7 @@
  *
  */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace pocketmine\entity;
 
@@ -31,8 +31,19 @@ use function max;
 abstract class Monster extends Mob{
 
 	protected function isValidLightLevel() : bool{
-		if($this->level->getBlockLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ()) < $this->random->nextBoundedInt(32)){
-			$i = max($this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY() + 1, $this->getFloorZ()), $this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY() - 1, $this->getFloorZ()), $this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ() + 1), $this->level->getBlockSkyLightAt($this->getFloorX(), $this->getFloorY(), $this->getFloorZ() - 1), $this->level->getBlockSkyLightAt($this->getFloorX() + 1, $this->getFloorY(), $this->getFloorZ()), $this->level->getBlockSkyLightAt($this->getFloorX() - 1, $this->getFloorY(), $this->getFloorZ()));
+		$x = $this->getFloorX();
+		$y = $this->getFloorY();
+		$z = $this->getFloorZ();
+
+		if($this->level->getBlockLightAt($x, $y, $z) < $this->random->nextBoundedInt(32)){
+			$i = max(
+				$this->level->getRealBlockSkyLightAt($x, $y + 1, $z),
+				$this->level->getRealBlockSkyLightAt($x, $y - 1, $z),
+				$this->level->getRealBlockSkyLightAt($x, $y, $z + 1),
+				$this->level->getRealBlockSkyLightAt($x, $y, $z - 1),
+				$this->level->getRealBlockSkyLightAt($x + 1, $y, $z),
+				$this->level->getRealBlockSkyLightAt($x - 1, $y, $z)
+			);
 
 			return $i <= $this->random->nextBoundedInt(8);
 		}
@@ -56,7 +67,10 @@ abstract class Monster extends Mob{
 	}
 
 	public function getBlockPathWeight(Vector3 $pos) : float{
-		return 0.5 - max($this->level->getBlockSkyLightAt($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ()), $this->level->getBlockLightAt($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ()));
+		return 0.5 - max(
+				$this->level->getRealBlockSkyLightAt($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ()),
+				$this->level->getBlockLightAt($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ())
+			);
 	}
 
 }
