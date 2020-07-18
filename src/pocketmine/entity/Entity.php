@@ -668,7 +668,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected $isKilled = false;
 
 	public function __construct(Level $level, CompoundTag $nbt){
-		$this->random = new Random($level->random->nextInt());
+		$this->random = new Random(intval(microtime(true) * 1000));
 		$this->constructed = true;
 		$this->timings = Timings::getEntityTimings($this);
 
