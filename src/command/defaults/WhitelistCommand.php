@@ -74,7 +74,7 @@ class WhitelistCommand extends VanillaCommand{
 				case "list":
 					$entries = $sender->getServer()->getWhitelisted()->getAll(true);
 					sort($entries, SORT_STRING);
-					$result = implode($entries, ", ");
+					$result = implode(", ", $entries);
 					$count = count($entries);
 
 					$sender->sendMessage(new TranslationContainer("commands.whitelist.list", [$count, $count]));
