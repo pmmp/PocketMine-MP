@@ -48,7 +48,7 @@ class Network{
 	/** @var int[] */
 	private $bannedIps = [];
 
-	/** @var BandwidthStatsTracker */
+	/** @var BidirectionalBandwidthStatsTracker */
 	private $bandwidthTracker;
 
 	/** @var string */
