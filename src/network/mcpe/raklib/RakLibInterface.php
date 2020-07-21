@@ -47,7 +47,6 @@ use function mt_rand;
 use function random_bytes;
 use function rtrim;
 use function substr;
-use function unserialize;
 use const PTHREADS_INHERIT_CONSTANTS;
 
 class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
