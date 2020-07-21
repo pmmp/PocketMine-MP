@@ -1587,14 +1587,15 @@ class Server{
 
 		$online = count($this->playerList);
 		$connecting = $this->network->getConnectionCount() - $online;
+		$bandwidthStats = $this->network->getBandwidthTracker();
 
 		echo "\x1b]0;" . $this->getName() . " " .
 			$this->getPocketMineVersion() .
 			" | Online $online/" . $this->getMaxPlayers() .
 			($connecting > 0 ? " (+$connecting connecting)" : "") .
 			" | Memory " . $usage .
-			" | U " . round($this->network->getUpload() / 1024, 2) .
-			" D " . round($this->network->getDownload() / 1024, 2) .
+			" | U " . round($bandwidthStats->getSend()->getAverageBytes() / 1024, 2) .
+			" D " . round($bandwidthStats->getReceive()->getAverageBytes() / 1024, 2) .
 			" kB/s | TPS " . $this->getTicksPerSecondAverage() .
 			" | Load " . $this->getTickUsageAverage() . "%\x07";
 
@@ -1640,7 +1641,7 @@ class Server{
 			$this->queryInfo = $queryRegenerateEvent->getQueryInfo();
 
 			$this->network->updateName();
-			$this->network->resetStatistics();
+			$this->network->getBandwidthTracker()->rotateAverageHistory();
 		}
 
 		if($this->sendUsageTicker > 0 and --$this->sendUsageTicker === 0){

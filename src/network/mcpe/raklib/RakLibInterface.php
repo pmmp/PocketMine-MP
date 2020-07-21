@@ -43,7 +43,6 @@ use raklib\utils\InternetAddress;
 use function addcslashes;
 use function bin2hex;
 use function implode;
-use function microtime;
 use function mt_rand;
 use function random_bytes;
 use function rtrim;
@@ -83,13 +82,9 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	/** @var SleeperNotifier */
 	private $sleeper;
 
-	/** @var float */
-	private $lastBandwidthReport;
-
 	public function __construct(Server $server){
 		$this->server = $server;
 		$this->rakServerId = mt_rand(0, PHP_INT_MAX);
-		$this->lastBandwidthReport = microtime(true);
 
 		$this->sleeper = new SleeperNotifier();
 
@@ -250,10 +245,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	public function handleBandwidthStats(int $bytesSentDiff, int $bytesReceivedDiff) : void{
-		$now = microtime(true);
-		$diff = $now - $this->lastBandwidthReport;
-		$this->lastBandwidthReport = $now;
-		$this->network->addStatistics($bytesSentDiff / $diff, $bytesReceivedDiff / $diff);
+		$this->network->getBandwidthTracker()->add($bytesSentDiff, $bytesReceivedDiff);
 	}
 
 	public function putPacket(int $sessionId, string $payload, bool $immediate = true) : void{
