@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use SOFe\Pathetique\Path;
 use function array_change_key_case;
 use function array_keys;
 use function array_pop;
@@ -80,7 +81,7 @@ class Config{
 	 */
 	private $nestedCache = [];
 
-	/** @var string */
+	/** @var Path */
 	private $file;
 	/** @var int */
 	private $type = Config::DETECT;
@@ -110,12 +111,12 @@ class Config{
 	];
 
 	/**
-	 * @param string  $file Path of the file to be loaded
+	 * @param Path    $file Path of the file to be loaded
 	 * @param int     $type Config type to load, -1 by default (detect)
 	 * @param mixed[] $default Array with the default values that will be written to the file if it did not exist
 	 * @phpstan-param array<string, mixed> $default
 	 */
-	public function __construct(string $file, int $type = Config::DETECT, array $default = []){
+	public function __construct(Path $file, int $type = Config::DETECT, array $default = []){
 		$this->load($file, $type, $default);
 	}
 
@@ -147,13 +148,12 @@ class Config{
 	 * @throws \InvalidArgumentException if config type could not be auto-detected
 	 * @throws \InvalidStateException if config type is invalid
 	 */
-	private function load(string $file, int $type = Config::DETECT, array $default = []) : void{
+	private function load(Path $file, int $type = Config::DETECT, array $default = []) : void{
 		$this->file = $file;
 
 		$this->type = $type;
 		if($this->type === Config::DETECT){
-			$extension = explode(".", basename($this->file));
-			$extension = strtolower(trim(array_pop($extension)));
+			$extension = strtolower($this->file->getExtension());
 			if(isset(Config::$formats[$extension])){
 				$this->type = Config::$formats[$extension];
 			}else{
@@ -161,14 +161,8 @@ class Config{
 			}
 		}
 
-		if(!file_exists($file)){
-			$this->config = $default;
-			$this->save();
-		}else{
-			$content = file_get_contents($this->file);
-			if($content === false){
-				throw new \RuntimeException("Unable to load config file");
-			}
+		if($this->file->exists()){
+			$content = $this->file->getContents();
 			$config = null;
 			switch($this->type){
 				case Config::PROPERTIES:
@@ -194,13 +188,16 @@ class Config{
 			if($this->fillDefaults($default, $this->config) > 0){
 				$this->save();
 			}
+		} else {
+			$this->config = $default;
+			$this->save();
 		}
 	}
 
 	/**
 	 * Returns the path of the config.
 	 */
-	public function getPath() : string{
+	public function getPath() : Path{
 		return $this->file;
 	}
 
@@ -231,7 +228,7 @@ class Config{
 				throw new \InvalidStateException("Config type is unknown, has not been set or not detected");
 		}
 
-		file_put_contents($this->file, $content);
+		$this->file->putContents($content);
 
 		$this->changed = false;
 	}
@@ -561,7 +558,7 @@ class Config{
 						break;
 				}
 				if(isset($result[$k])){
-					\GlobalLogger::get()->debug("[Config] Repeated property " . $k . " on file " . $this->file);
+					\GlobalLogger::get()->debug("[Config] Repeated property $k on file {$this->file->displayUtf8()}");
 				}
 				$result[$k] = $v;
 			}

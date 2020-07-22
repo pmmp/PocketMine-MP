@@ -30,7 +30,7 @@ use function error_reporting;
 trait CommonThreadPartsTrait{
 	/** @var \ClassLoader|null */
 	protected $classLoader;
-	/** @var string|null */
+	/** @var Path|null */
 	protected $composerAutoloaderPath;
 
 	/** @var bool */
@@ -41,7 +41,7 @@ trait CommonThreadPartsTrait{
 	}
 
 	public function setClassLoader(?\ClassLoader $loader = null) : void{
-		$this->composerAutoloaderPath = \pocketmine\COMPOSER_AUTOLOADER_PATH;
+		$this->composerAutoloaderPath = \pocketmine\composer_autoloader_path();
 
 		if($loader === null){
 			$loader = Server::getInstance()->getLoader();
@@ -58,7 +58,7 @@ trait CommonThreadPartsTrait{
 	 */
 	public function registerClassLoader() : void{
 		if($this->composerAutoloaderPath !== null){
-			require $this->composerAutoloaderPath;
+			require $this->composerAutoloaderPath->toString();
 		}
 		if($this->classLoader !== null){
 			$this->classLoader->register(false);

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\raklib;
 
+use SOFe\Pathetique\Path;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\Thread;
 use raklib\generic\Socket;
@@ -56,7 +57,7 @@ class RakLibServer extends Thread{
 	/** @var \Threaded */
 	protected $threadToMainBuffer;
 
-	/** @var string */
+	/** @var Path */
 	protected $mainPath;
 
 	/** @var int */
@@ -95,7 +96,7 @@ class RakLibServer extends Thread{
 		$this->mainToThreadBuffer = $mainToThreadBuffer;
 		$this->threadToMainBuffer = $threadToMainBuffer;
 
-		$this->mainPath = \pocketmine\PATH;
+		$this->mainPath = \pocketmine\path();
 
 		$this->protocolVersion = $overrideProtocolVersion ?? RakLib::DEFAULT_PROTOCOL_VERSION;
 
@@ -158,7 +159,7 @@ class RakLibServer extends Thread{
 				new SimpleProtocolAcceptor($this->protocolVersion),
 				new UserToRakLibThreadMessageReceiver(new PthreadsChannelReader($this->mainToThreadBuffer)),
 				new RakLibToUserThreadMessageSender(new PthreadsChannelWriter($this->threadToMainBuffer, $this->mainThreadNotifier)),
-				new ExceptionTraceCleaner($this->mainPath)
+				new ExceptionTraceCleaner($this->mainPath->toString())
 			);
 			$this->synchronized(function() : void{
 				$this->ready = true;

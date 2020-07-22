@@ -57,7 +57,7 @@ final class RuntimeBlockMapping{
 	private $startGamePaletteCache = null;
 
 	private function __construct(){
-		$tag = (new NetworkNbtSerializer())->read(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/required_block_states.nbt"))->getTag();
+		$tag = (new NetworkNbtSerializer())->read(\pocketmine\resource_path()->join("vanilla/required_block_states.nbt")->getContents())->getTag();
 		if(!($tag instanceof ListTag) or $tag->getTagType() !== NBT::TAG_Compound){ //this is a little redundant currently, but good for auto complete and makes phpstan happy
 			throw new \RuntimeException("Invalid blockstates table, expected TAG_List<TAG_Compound> root");
 		}
@@ -73,7 +73,7 @@ final class RuntimeBlockMapping{
 		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
-		$legacyStateMapReader = new PacketSerializer(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/r12_to_current_block_map.bin"));
+		$legacyStateMapReader = new PacketSerializer(file_get_contents(\pocketmine\resource_path()->join("vanilla/r12_to_current_block_map.bin")));
 		$nbtReader = new NetworkNbtSerializer();
 		while(!$legacyStateMapReader->feof()){
 			$id = $legacyStateMapReader->getString();

@@ -31,13 +31,14 @@ use pocketmine\plugin\PluginManager;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
+use SOFe\Pathetique\IOException;
+use SOFe\Pathetique\Path;
 use function base64_encode;
 use function date;
 use function error_get_last;
 use function fclose;
 use function file;
 use function file_exists;
-use function file_get_contents;
 use function fopen;
 use function fwrite;
 use function get_loaded_extensions;
@@ -94,17 +95,16 @@ class CrashDump{
 	private $data = [];
 	/** @var string */
 	private $encodedData = "";
-	/** @var string */
+	/** @var Path */
 	private $path;
 
 	public function __construct(Server $server){
 		$this->time = time();
 		$this->server = $server;
-		if(!is_dir($this->server->getDataPath() . "crashdumps")){
-			mkdir($this->server->getDataPath() . "crashdumps");
-		}
-		$this->path = $this->server->getDataPath() . "crashdumps/" . date("D_M_j-H.i.s-T_Y", $this->time) . ".log";
-		$fp = @fopen($this->path, "wb");
+		$crashdumps = $this->server->getDataPath()->join("crashdumps");
+		$crashdumps->mkdir();
+		$this->path = $crashdumps->join(date("D_M_j-H.i.s-T_Y", $this->time) . ".log");
+		$fp = @fopen($this->path->toString(), "wb");
 		if(!is_resource($fp)){
 			throw new \RuntimeException("Could not create Crash Dump");
 		}
@@ -124,7 +124,7 @@ class CrashDump{
 		fclose($this->fp);
 	}
 
-	public function getPath() : string{
+	public function getPath() : Path{
 		return $this->path;
 	}
 
@@ -185,9 +185,17 @@ class CrashDump{
 
 		if($this->server->getConfigGroup()->getProperty("auto-report.send-settings", true) !== false){
 			$this->data["parameters"] = (array) $argv;
-			$this->data["server.properties"] = @file_get_contents($this->server->getDataPath() . "server.properties");
-			$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $this->data["server.properties"]);
-			$this->data["pocketmine.yml"] = @file_get_contents($this->server->getDataPath() . "pocketmine.yml");
+			try{
+				$this->data["server.properties"] = $this->server->getDataPath()->join("server.properties")->getContents();
+				$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $this->data["server.properties"]);
+			}catch(IOException $e){
+				$this->data["server.properties"] = false;
+			}
+			try{
+				$this->data["pocketmine.yml"] = $this->server->getDataPath()->join("pocketmine.yml")->getContents();
+			}catch(IOException $e){
+				$this->data["pocketmine.yml"] = false;
+			}
 		}else{
 			$this->data["pocketmine.yml"] = "";
 			$this->data["server.properties"] = "";

@@ -34,7 +34,7 @@ interface WritableWorldProvider extends WorldProvider{
 	 * @phpstan-param class-string<Generator> $generator
 	 * @phpstan-param array<string, mixed>    $options
 	 */
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void;
+	public static function generate(Path $path, string $name, int $seed, string $generator, array $options = []) : void;
 
 	/**
 	 * Saves a chunk (usually to disk).

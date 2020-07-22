@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
+use SOFe\Pathetique\Path;
 use function define;
 use function defined;
 use function dirname;
@@ -33,5 +34,12 @@ if(defined('pocketmine\_CORE_CONSTANTS_INCLUDED')){
 }
 define('pocketmine\_CORE_CONSTANTS_INCLUDED', true);
 
-define('pocketmine\PATH', dirname(__DIR__) . '/');
-define('pocketmine\RESOURCE_PATH', dirname(__DIR__) . '/resources/');
+function path() : Path {
+	static $path = null;
+	return $path = $path ?? Path::new(__DIR__)->join("..")->tryCanonicalize();
+}
+
+function resource_path() : Path {
+	static $path = null;
+	return $path = $path ?? Path::new(__DIR__)->join("../resources")->tryCanonicalize();
+}

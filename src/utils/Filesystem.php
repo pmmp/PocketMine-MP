@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use SOFe\Pathetique\IOException;
+use SOFe\Pathetique\Path;
 use function fclose;
 use function fflush;
 use function flock;
@@ -57,24 +59,6 @@ final class Filesystem{
 		//NOOP
 	}
 
-	public static function recursiveUnlink(string $dir) : void{
-		if(is_dir($dir)){
-			$objects = scandir($dir, SCANDIR_SORT_NONE);
-			if($objects === false) throw new AssumptionFailedError("scandir() shouldn't return false when is_dir() returns true");
-			foreach($objects as $object){
-				if($object !== "." and $object !== ".."){
-					if(is_dir($dir . "/" . $object)){
-						self::recursiveUnlink($dir . "/" . $object);
-					}else{
-						unlink($dir . "/" . $object);
-					}
-				}
-			}
-			rmdir($dir);
-		}elseif(is_file($dir)){
-			unlink($dir);
-		}
-	}
 
 	/**
 	 * @param string $path
@@ -107,7 +91,7 @@ final class Filesystem{
 	 * @return int|null process ID of the process currently holding the lock failure, null on success.
 	 * @throws \InvalidArgumentException if the lock file path is invalid (e.g. parent directory doesn't exist, permission denied)
 	 */
-	public static function createLockFile(string $lockFilePath) : ?int{
+	public static function createLockFile(Path $lockFilePath) : ?int{
 		$resource = fopen($lockFilePath, "a+b");
 		if($resource === false){
 			throw new \InvalidArgumentException("Invalid lock file path");
@@ -126,25 +110,22 @@ final class Filesystem{
 		fwrite($resource, (string) getmypid());
 		fflush($resource);
 		flock($resource, LOCK_SH); //prevent acquiring an exclusive lock from another process, but allow reading
-		self::$lockFileHandles[realpath($lockFilePath)] = $resource; //keep the resource alive to preserve the lock
+		self::$lockFileHandles[$lockFilePath->canonicalize()->toString()] = $resource; //keep the resource alive to preserve the lock
 		return null;
 	}
 
 	/**
 	 * Releases a file lock previously acquired by createLockFile() and deletes the lock file.
 	 *
-	 * @throws \InvalidArgumentException if the lock file path is invalid (e.g. parent directory doesn't exist, permission denied)
+	 * @throws IOException if the lock file path is invalid (e.g. parent directory doesn't exist, permission denied)
 	 */
 	public static function releaseLockFile(string $lockFilePath) : void{
-		$lockFilePath = realpath($lockFilePath);
-		if($lockFilePath === false){
-			throw new \InvalidArgumentException("Invalid lock file path");
-		}
-		if(isset(self::$lockFileHandles[$lockFilePath])){
-			flock(self::$lockFileHandles[$lockFilePath], LOCK_UN);
-			fclose(self::$lockFileHandles[$lockFilePath]);
-			unset(self::$lockFileHandles[$lockFilePath]);
-			@unlink($lockFilePath);
+		$lockFilePath = $lockFilePath->canonicalize();
+		if(isset(self::$lockFileHandles[$lockFilePath->toString()])){
+			flock(self::$lockFileHandles[$lockFilePath->toString()], LOCK_UN);
+			fclose(self::$lockFileHandles[$lockFilePath->toString()]);
+			unset(self::$lockFileHandles[$lockFilePath->toString()]);
+			$lockFilePath->delete();
 		}
 	}
 }

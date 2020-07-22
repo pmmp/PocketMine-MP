@@ -286,7 +286,7 @@ class MemoryManager{
 	/**
 	 * Dumps the server memory into the specified output folder.
 	 */
-	public function dumpServerMemory(string $outputFolder, int $maxNesting, int $maxStringSize) : void{
+	public function dumpServerMemory(Path $outputFolder, int $maxNesting, int $maxStringSize) : void{
 		$logger = new \PrefixedLogger($this->server->getLogger(), "Memory Dump");
 		$logger->notice("After the memory dump is done, the server might crash");
 		self::dumpMemory($this->server, $outputFolder, $maxNesting, $maxStringSize, $logger);
@@ -304,17 +304,15 @@ class MemoryManager{
 	 *
 	 * @param mixed   $startingObject
 	 */
-	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
+	public static function dumpMemory($startingObject, Path $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
 		$hardLimit = ini_get('memory_limit');
 		if($hardLimit === false) throw new AssumptionFailedError("memory_limit INI directive should always exist");
 		ini_set('memory_limit', '-1');
 		gc_disable();
 
-		if(!file_exists($outputFolder)){
-			mkdir($outputFolder, 0777, true);
-		}
+		$outputFolder->mkdir(true);
 
-		$obData = fopen($outputFolder . "/objects.js", "wb+");
+		$obData = fopen($outputFolder->join("objects.js"), "wb+");
 
 		$data = [];
 
@@ -348,7 +346,7 @@ class MemoryManager{
 			}
 		}
 
-		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents($outputFolder->join("staticProperties.js"), json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		$logger->info("Wrote $staticCount static properties");
 
 		if(isset($GLOBALS)){ //This might be null if we're on a different thread
@@ -376,7 +374,7 @@ class MemoryManager{
 				$globalVariables[$varName] = self::continueDump($value, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 			}
 
-			file_put_contents($outputFolder . "/globalVariables.js", json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+			file_put_contents($outputFolder->join("globalVariables.js"), json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 			$logger->info("Wrote $globalCount global variables");
 		}
 
@@ -427,11 +425,11 @@ class MemoryManager{
 
 		fclose($obData);
 
-		file_put_contents($outputFolder . "/serverEntry.js", json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-		file_put_contents($outputFolder . "/referenceCounts.js", json_encode($refCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents($outputFolder->join("serverEntry.js"), json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents($outputFolder->join("referenceCounts.js"), json_encode($refCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
 		arsort($instanceCounts, SORT_NUMERIC);
-		file_put_contents($outputFolder . "/instanceCounts.js", json_encode($instanceCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents($outputFolder->join("instanceCounts.js"), json_encode($instanceCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
 		$logger->info("Finished!");
 

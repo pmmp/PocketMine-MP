@@ -49,7 +49,7 @@ class JavaWorldData extends BaseNbtWorldData{
 	 * @phpstan-param class-string<Generator> $generator
 	 * @phpstan-param array<string, mixed>    $options
 	 */
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = [], int $version = 19133) : void{
+	public static function generate(Path $path, string $name, int $seed, string $generator, array $options = [], int $version = 19133) : void{
 		Utils::testValidInstance($generator, Generator::class);
 		//TODO, add extra details
 		$worldData = CompoundTag::create()
@@ -74,14 +74,11 @@ class JavaWorldData extends BaseNbtWorldData{
 
 		$nbt = new BigEndianNbtSerializer();
 		$buffer = zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag("Data", $worldData))), ZLIB_ENCODING_GZIP);
-		file_put_contents($path . "level.dat", $buffer);
+		$path->join("level.dat")->putContents($buffer);
 	}
 
 	protected function load() : CompoundTag{
-		$rawLevelData = @file_get_contents($this->dataPath);
-		if($rawLevelData === false){
-			throw new CorruptedWorldException("Failed to read level.dat (permission denied or doesn't exist)");
-		}
+		$rawLevelData = $this->dataPath->getContents();
 		$nbt = new BigEndianNbtSerializer();
 		$decompressed = @zlib_decode($rawLevelData);
 		if($decompressed === false){
@@ -116,7 +113,7 @@ class JavaWorldData extends BaseNbtWorldData{
 	public function save() : void{
 		$nbt = new BigEndianNbtSerializer();
 		$buffer = zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag("Data", $this->compoundTag))), ZLIB_ENCODING_GZIP);
-		file_put_contents($this->dataPath, $buffer);
+		$this->dataPath->putContents($buffer);
 	}
 
 	public function getDifficulty() : int{

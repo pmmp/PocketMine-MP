@@ -95,7 +95,7 @@ final class WorldProviderManager{
 	 * @return string[]
 	 * @phpstan-return array<string, class-string<WorldProvider>>
 	 */
-	public function getMatchingProviders(string $path) : array{
+	public function getMatchingProviders(Path $path) : array{
 		$result = [];
 		foreach($this->providers as $alias => $provider){
 			if($provider::isValid($path)){

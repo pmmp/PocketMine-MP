@@ -28,16 +28,17 @@ use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\WorldException;
+use SOFe\Pathetique\Path;
 use function file_exists;
 
 abstract class BaseWorldProvider implements WorldProvider{
-	/** @var string */
+	/** @var Path */
 	protected $path;
 	/** @var WorldData */
 	protected $worldData;
 
-	public function __construct(string $path){
-		if(!file_exists($path)){
+	public function __construct(Path $path){
+		if(!$path->exists()){
 			throw new WorldException("World does not exist");
 		}
 
@@ -51,7 +52,7 @@ abstract class BaseWorldProvider implements WorldProvider{
 	 */
 	abstract protected function loadLevelData() : WorldData;
 
-	public function getPath() : string{
+	public function getPath() : Path{
 		return $this->path;
 	}
 

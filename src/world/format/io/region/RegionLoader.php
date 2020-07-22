@@ -67,7 +67,7 @@ class RegionLoader{
 	/** @var int */
 	public static $COMPRESSION_LEVEL = 7;
 
-	/** @var string */
+	/** @var Path */
 	protected $filePath;
 	/** @var resource */
 	protected $filePointer;
@@ -80,7 +80,7 @@ class RegionLoader{
 	/** @var int */
 	public $lastUsed = 0;
 
-	public function __construct(string $filePath){
+	public function __construct(Path $filePath){
 		$this->filePath = $filePath;
 		$this->garbageTable = new RegionGarbageMap([]);
 	}
@@ -89,14 +89,14 @@ class RegionLoader{
 	 * @throws CorruptedRegionException
 	 */
 	public function open() : void{
-		$exists = file_exists($this->filePath);
+		$exists = $this->filePath->exists();
 		if(!$exists){
-			touch($this->filePath);
-		}elseif(filesize($this->filePath) % 4096 !== 0){
+			touch($this->filePath->toString());
+		}elseif($this->filePath->getFileSize() % 4096 !== 0){
 			throw new CorruptedRegionException("Region file should be padded to a multiple of 4KiB");
 		}
 
-		$filePointer = fopen($this->filePath, "r+b");
+		$filePointer = fopen($this->filePath->toString(), "r+b");
 		if($filePointer === false) throw new AssumptionFailedError("fopen() should not fail here");
 		$this->filePointer = $filePointer;
 		stream_set_read_buffer($this->filePointer, 1024 * 16); //16KB
@@ -411,7 +411,7 @@ class RegionLoader{
 		return 1 - ($used / $size);
 	}
 
-	public function getFilePath() : string{
+	public function getFilePath() : Path{
 		return $this->filePath;
 	}
 

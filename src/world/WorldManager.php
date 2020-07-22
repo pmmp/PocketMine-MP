@@ -53,7 +53,7 @@ use function sprintf;
 use function trim;
 
 class WorldManager{
-	/** @var string */
+	/** @var Path */
 	private $dataPath;
 
 	/** @var WorldProviderManager */
@@ -75,7 +75,7 @@ class WorldManager{
 	/** @var int */
 	private $autoSaveTicker = 0;
 
-	public function __construct(Server $server, string $dataPath, WorldProviderManager $providerManager){
+	public function __construct(Server $server, Path $dataPath, WorldProviderManager $providerManager){
 		$this->server = $server;
 		$this->dataPath = $dataPath;
 		$this->providerManager = $providerManager;
@@ -224,10 +224,10 @@ class WorldManager{
 			}
 			$this->server->getLogger()->notice("Upgrading world \"$name\" to new format. This may take a while.");
 
-			$converter = new FormatConverter($provider, $this->providerManager->getDefault(), $this->server->getDataPath() . "world_conversion_backups", $this->server->getLogger());
+			$converter = new FormatConverter($provider, $this->providerManager->getDefault(), $this->server->getDataPath()->join("world_conversion_backups"), $this->server->getLogger());
 			$provider = $converter->execute();
 
-			$this->server->getLogger()->notice("Upgraded world \"$name\" to new format successfully. Backed up pre-conversion world at " . $converter->getBackupPath());
+			$this->server->getLogger()->notice("Upgraded world \"$name\" to new format successfully. Backed up pre-conversion world at {$converter->getBackupPath()->displayUtf8()}");
 		}
 
 		$world = new World($this->server, $name, $provider);
@@ -291,8 +291,8 @@ class WorldManager{
 		return true;
 	}
 
-	private function getWorldPath(string $name) : string{
-		return $this->dataPath . "/" . $name . "/";
+	private function getWorldPath(string $name) : Path{
+		return $this->dataPath->join($name);
 	}
 
 	public function isWorldGenerated(string $name) : bool{

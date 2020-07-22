@@ -58,7 +58,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 	 * @phpstan-param class-string<Generator> $generator
 	 * @phpstan-param array<string, mixed>    $options
 	 */
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
+	public static function generate(Path $path, string $name, int $seed, string $generator, array $options = []) : void{
 		Utils::testValidInstance($generator, Generator::class);
 		switch($generator){
 			case Flat::class:
@@ -107,14 +107,11 @@ class BedrockWorldData extends BaseNbtWorldData{
 
 		$nbt = new LittleEndianNbtSerializer();
 		$buffer = $nbt->write(new TreeRoot($worldData));
-		file_put_contents($path . "level.dat", Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
+		$path->join("level.dat")->putContents(Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 	}
 
 	protected function load() : CompoundTag{
-		$rawLevelData = @file_get_contents($this->dataPath);
-		if($rawLevelData === false){
-			throw new CorruptedWorldException("Failed to read level.dat (permission denied or doesn't exist)");
-		}
+		$rawLevelData = $this->dataPath->getContents();
 		if(strlen($rawLevelData) <= 8){
 			throw new CorruptedWorldException("Truncated level.dat");
 		}
@@ -170,7 +167,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 
 		$nbt = new LittleEndianNbtSerializer();
 		$buffer = $nbt->write(new TreeRoot($this->compoundTag));
-		file_put_contents($this->dataPath, Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
+		$this->dataPath->putContents(Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 	}
 
 	public function getDifficulty() : int{

@@ -39,23 +39,22 @@ use const FILE_SKIP_EMPTY_LINES;
  */
 class ScriptPluginLoader implements PluginLoader{
 
-	public function canLoadPlugin(string $path) : bool{
-		$ext = ".php";
-		return is_file($path) and substr($path, -strlen($ext)) === $ext;
+	public function canLoadPlugin(Path $path) : bool{
+		return $path->isFile() && $path->getExtension() === ".php";
 	}
 
 	/**
 	 * Loads the plugin contained in $file
 	 */
-	public function loadPlugin(string $file) : void{
-		include_once $file;
+	public function loadPlugin(Path $file) : void{
+		include_once $file->toString();
 	}
 
 	/**
 	 * Gets the PluginDescription from the file
 	 */
-	public function getPluginDescription(string $file) : ?PluginDescription{
-		$content = @file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	public function getPluginDescription(Path $file) : ?PluginDescription{
+		$content = @file($file->toString(), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 		if($content === false){
 			return null;
 		}

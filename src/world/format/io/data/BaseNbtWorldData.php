@@ -33,7 +33,7 @@ use function file_exists;
 
 abstract class BaseNbtWorldData implements WorldData{
 
-	/** @var string */
+	/** @var Path */
 	protected $dataPath;
 
 	/** @var CompoundTag */
@@ -43,11 +43,11 @@ abstract class BaseNbtWorldData implements WorldData{
 	 * @throws CorruptedWorldException
 	 * @throws UnsupportedWorldFormatException
 	 */
-	public function __construct(string $dataPath){
+	public function __construct(Path $dataPath){
 		$this->dataPath = $dataPath;
 
-		if(!file_exists($this->dataPath)){
-			throw new CorruptedWorldException("World data not found at $dataPath");
+		if(!$this->dataPath->exists()){
+			throw new CorruptedWorldException("World data not found at {$dataPath->displayUtf8()}");
 		}
 
 		try{

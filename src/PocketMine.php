@@ -34,6 +34,7 @@ namespace pocketmine {
 	use pocketmine\utils\Timezone;
 	use pocketmine\utils\VersionString;
 	use pocketmine\wizard\SetupWizard;
+	use SOFe\Pathetique\Path;
 
 	require_once __DIR__ . '/VersionInfo.php';
 
@@ -157,6 +158,39 @@ namespace pocketmine {
 		ini_set('assert.exception', '1');
 	}
 
+	function composer_autoloader_path() : Path {
+		static $bootstrap = null;
+		if($bootstrap === null) {
+			$opts = getopt("", ["bootstrap:"]);
+			if(isset($opts["bootstrap"])){
+				$bootstrap = Path::new($opts["bootstrap"]);
+			}else{
+				$bootstrap = Path::new(__DIR__)->join("../vendor/autoload.php");
+			}
+			try{
+				$bootstrap = $bootstrap->canonicalize();
+			}catch(IOException $e) {
+				// keep using the uncanonicalized value
+			}
+
+			if(!$bootstrap->isFile()){
+				critical_error("Composer autoloader not found at {$bootstrap->displayUtf8()}");
+				critical_error("Please install/update Composer dependencies or use provided builds.");
+				exit(1);
+			}
+		}
+		return $bootstrap;
+	}
+
+	function plugin_path() : Path {
+		static $path = null;
+		if($path === null) {
+			$opts = getopt("", ["plugins:"]);
+			$path = Path::new(isset($opts["plugins"]) ? $opts["plugins"] : "plugins");
+		}
+		return $path;
+	}
+
 	/**
 	 * @return void
 	 */
@@ -177,22 +211,9 @@ namespace pocketmine {
 		error_reporting(-1);
 		set_ini_entries();
 
-		$opts = getopt("", ["bootstrap:"]);
-		if(isset($opts["bootstrap"])){
-			$bootstrap = ($real = realpath($opts["bootstrap"])) !== false ? $real : $opts["bootstrap"];
-		}else{
-			$bootstrap = dirname(__FILE__, 2) . '/vendor/autoload.php';
-		}
-
-		if($bootstrap === false or !is_file($bootstrap)){
-			critical_error("Composer autoloader not found at " . $bootstrap);
-			critical_error("Please install/update Composer dependencies or use provided builds.");
-			exit(1);
-		}
-		define('pocketmine\COMPOSER_AUTOLOADER_PATH', $bootstrap);
-		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+		require_once(composer_autoloader_path());
 		if(extension_loaded('parallel')){
-			\parallel\bootstrap(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+			\parallel\bootstrap(composer_autoloader_path()->toString());
 		}
 
 		ErrorToExceptionHandler::set();
@@ -203,7 +224,7 @@ namespace pocketmine {
 		$gitHash = str_repeat("00", 20);
 
 		if(\Phar::running(true) === ""){
-			$gitHash = Git::getRepositoryStatePretty(\pocketmine\PATH);
+			$gitHash = Git::getRepositoryStatePretty(\pocketmine\path());
 		}else{
 			$phar = new \Phar(\Phar::running(false));
 			$meta = $phar->getMetadata();
@@ -214,18 +235,15 @@ namespace pocketmine {
 
 		define('pocketmine\GIT_COMMIT', $gitHash);
 
-		$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-ansi", "disable-ansi"]);
+		$opts = getopt("", ["data:", "no-wizard", "enable-ansi", "disable-ansi"]);
 
-		$dataPath = isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR;
-		define('pocketmine\PLUGIN_PATH', isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
+		$dataPath = Path::new(isset($opts["data"]) . $opts["data"] : ".")->tryCanonicalize();
 
-		if(!file_exists($dataPath)){
-			mkdir($dataPath, 0777, true);
-		}
+		$dataPath->mkdir(true);
 
-		$lockFilePath = $dataPath . '/server.lock';
-		if(($pid = Filesystem::createLockFile($lockFilePath)) !== null){
-			critical_error("Another " . \pocketmine\NAME . " instance (PID $pid) is already using this folder (" . realpath($dataPath) . ").");
+		$lockFilePath = $dataPath->join("server.lock");
+		if(($pid = Filesystem::createLockFile($lockFilePath->toString())) !== null){
+			critical_error("Another " . \pocketmine\NAME . " instance (PID $pid) is already using this folder ({$dataPath->toString()}).");
 			critical_error("Please stop the other server first before running a new one.");
 			exit(1);
 		}
@@ -241,14 +259,14 @@ namespace pocketmine {
 			Terminal::init();
 		}
 
-		$logger = new MainLogger($dataPath . "server.log");
+		$logger = new MainLogger($dataPath->join("server.log"));
 		\GlobalLogger::set($logger);
 
 		emit_performance_warnings($logger);
 
 		$exitCode = 0;
 		do{
-			if(!file_exists($dataPath . "server.properties") and !isset($opts["no-wizard"])){
+			if(!$dataPath->join("server.properties")->exists() and !isset($opts["no-wizard"])){
 				$installer = new SetupWizard($dataPath);
 				if(!$installer->run()){
 					$exitCode = -1;
@@ -262,7 +280,7 @@ namespace pocketmine {
 			$autoloader = new \BaseClassLoader();
 			$autoloader->register(false);
 
-			new Server($autoloader, $logger, $dataPath, \pocketmine\PLUGIN_PATH);
+			new Server($autoloader, $logger, $dataPath, plugin_path());
 
 			$logger->info("Stopping other threads");
 
@@ -281,7 +299,7 @@ namespace pocketmine {
 
 		echo Terminal::$FORMAT_RESET . PHP_EOL;
 
-		Filesystem::releaseLockFile($lockFilePath);
+		Filesystem::releaseLockFile($lockFilePath->toString());
 
 		exit($exitCode);
 	}

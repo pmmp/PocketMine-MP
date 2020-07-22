@@ -41,7 +41,7 @@ use function strlen;
 
 class ZippedResourcePack implements ResourcePack{
 
-	/** @var string */
+	/** @var Path */
 	protected $path;
 
 	/** @var Manifest */
@@ -54,18 +54,18 @@ class ZippedResourcePack implements ResourcePack{
 	protected $fileResource;
 
 	/**
-	 * @param string $zipPath Path to the resource pack zip
+	 * @param Path $zipPath Path to the resource pack zip
 	 * @throws ResourcePackException
 	 */
-	public function __construct(string $zipPath){
+	public function __construct(Path $zipPath){
 		$this->path = $zipPath;
 
-		if(!file_exists($zipPath)){
+		if(!$zipPath->exists()){
 			throw new ResourcePackException("File not found");
 		}
 
 		$archive = new \ZipArchive();
-		if(($openResult = $archive->open($zipPath)) !== true){
+		if(($openResult = $archive->open($zipPath->toString())) !== true){
 			throw new ResourcePackException("Encountered ZipArchive error code $openResult while trying to open $zipPath");
 		}
 
@@ -117,14 +117,14 @@ class ZippedResourcePack implements ResourcePack{
 
 		$this->manifest = $manifest;
 
-		$this->fileResource = fopen($zipPath, "rb");
+		$this->fileResource = fopen($zipPath->toString(), "rb");
 	}
 
 	public function __destruct(){
 		fclose($this->fileResource);
 	}
 
-	public function getPath() : string{
+	public function getPath() : Path{
 		return $this->path;
 	}
 
@@ -141,12 +141,12 @@ class ZippedResourcePack implements ResourcePack{
 	}
 
 	public function getPackSize() : int{
-		return filesize($this->path);
+		return $this->path->getFileSize();
 	}
 
 	public function getSha256(bool $cached = true) : string{
 		if($this->sha256 === null or !$cached){
-			$this->sha256 = hash_file("sha256", $this->path, true);
+			$this->sha256 = hash_file("sha256", $this->path->toString(), true);
 		}
 		return $this->sha256;
 	}

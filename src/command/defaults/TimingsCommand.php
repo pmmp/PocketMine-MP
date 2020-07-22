@@ -98,17 +98,15 @@ class TimingsCommand extends VanillaCommand{
 				$fileTimings = fopen("php://temp", "r+b");
 			}else{
 				$index = 0;
-				$timingFolder = $sender->getServer()->getDataPath() . "timings/";
+				$timingFolder = $sender->getServer()->getDataPath()->join("timings");
 
-				if(!file_exists($timingFolder)){
-					mkdir($timingFolder, 0777);
-				}
-				$timings = $timingFolder . "timings.txt";
-				while(file_exists($timings)){
-					$timings = $timingFolder . "timings" . (++$index) . ".txt";
+				$timingsFolder->mkdir();
+				$timings = $timingFolder->join("timings.txt");
+				while($timings->exists()){
+					$timings = $timingFolder->join("timings" . (++$index) . ".txt");
 				}
 
-				$fileTimings = fopen($timings, "a+b");
+				$fileTimings = fopen($timings->toString(), "a+b");
 			}
 			TimingsHandler::printTimings($fileTimings);
 
@@ -174,7 +172,7 @@ class TimingsCommand extends VanillaCommand{
 				});
 			}else{
 				fclose($fileTimings);
-				Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.timingsWrite", [$timings]));
+				Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.timingsWrite", [$timings->displayUtf8()]));
 			}
 		}else{
 			throw new InvalidCommandSyntaxException();

@@ -29,6 +29,6 @@ final class LegacyItemIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
 	use SingletonTrait;
 
 	public function __construct(){
-		parent::__construct(\pocketmine\RESOURCE_PATH . 'vanilla/item_id_map.json');
+		parent::__construct(\pocketmine\resource_path()->join("vanilla/item_id_map.json"));
 	}
 }

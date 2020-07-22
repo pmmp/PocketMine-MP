@@ -34,20 +34,20 @@ interface WorldProvider{
 	 * @throws CorruptedWorldException
 	 * @throws UnsupportedWorldFormatException
 	 */
-	public function __construct(string $path);
+	public function __construct(Path $path);
 
 	/**
 	 * Gets the build height limit of this world
 	 */
 	public function getWorldHeight() : int;
 
-	public function getPath() : string;
+	public function getPath() : Path;
 
 	/**
 	 * Tells if the path is a valid world.
 	 * This must tell if the current format supports opening the files in the directory
 	 */
-	public static function isValid(string $path) : bool;
+	public static function isValid(Path $path) : bool;
 
 	/**
 	 * Loads a chunk (usually from disk storage) and returns it. If the chunk does not exist, null is returned.

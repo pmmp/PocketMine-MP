@@ -41,16 +41,15 @@ class StaticPacketCache{
 	/**
 	 * @phpstan-return CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
 	 */
-	private static function loadCompoundFromFile(string $filePath) : CacheableNbt{
-		$rawNbt = @file_get_contents($filePath);
-		if($rawNbt === false) throw new \RuntimeException("Failed to read file");
+	private static function loadCompoundFromFile(Path $filePath) : CacheableNbt{
+		$rawNbt = $filePath->getContents();
 		return new CacheableNbt((new NetworkNbtSerializer())->read($rawNbt)->mustGetCompoundTag());
 	}
 
 	private static function make() : self{
 		return new self(
-			BiomeDefinitionListPacket::create(self::loadCompoundFromFile(\pocketmine\RESOURCE_PATH . '/vanilla/biome_definitions.nbt')),
-			AvailableActorIdentifiersPacket::create(self::loadCompoundFromFile(\pocketmine\RESOURCE_PATH . '/vanilla/entity_identifiers.nbt'))
+			BiomeDefinitionListPacket::create(self::loadCompoundFromFile(\pocketmine\resource_path()->join("/vanilla/biome_definitions.nbt"))),
+			AvailableActorIdentifiersPacket::create(self::loadCompoundFromFile(\pocketmine\resource_path()->join("/vanilla/entity_identifiers.nbt")))
 		);
 	}
 

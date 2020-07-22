@@ -99,6 +99,8 @@ use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\normal\Normal;
 use pocketmine\world\World;
 use pocketmine\world\WorldManager;
+use SOFe\Pathetique\IOException;
+use SOFe\Pathetique\Path;
 use function array_shift;
 use function array_sum;
 use function base64_encode;
@@ -107,8 +109,6 @@ use function copy;
 use function count;
 use function explode;
 use function file_exists;
-use function file_get_contents;
-use function file_put_contents;
 use function filemtime;
 use function get_class;
 use function getmypid;
@@ -259,9 +259,9 @@ class Server{
 
 	/** @var \DynamicClassLoader */
 	private $autoloader;
-	/** @var string */
+	/** @var Path */
 	private $dataPath;
-	/** @var string */
+	/** @var Path */
 	private $pluginPath;
 
 	/**
@@ -299,19 +299,19 @@ class Server{
 		return \pocketmine\BASE_VERSION;
 	}
 
-	public function getFilePath() : string{
-		return \pocketmine\PATH;
+	public function getFilePath() : Path{
+		return \pocketmine\path();
 	}
 
-	public function getResourcePath() : string{
-		return \pocketmine\RESOURCE_PATH;
+	public function getResourcePath() : Path{
+		return \pocketmine\resource_path();
 	}
 
-	public function getDataPath() : string{
+	public function getDataPath() : Path{
 		return $this->dataPath;
 	}
 
-	public function getPluginPath() : string{
+	public function getPluginPath() : Path{
 		return $this->pluginPath;
 	}
 
@@ -503,20 +503,20 @@ class Server{
 		return $result;
 	}
 
-	private function getPlayerDataPath(string $username) : string{
-		return $this->getDataPath() . '/players/' . strtolower($username) . '.dat';
+	private function getPlayerDataPath(string $username) : Path{
+		return $this->getDataPath()->join("players/" . strtolower($username) . ".dat");
 	}
 
 	/**
 	 * Returns whether the server has stored any saved data for this player.
 	 */
 	public function hasOfflinePlayerData(string $name) : bool{
-		return file_exists($this->getPlayerDataPath($name));
+		return $this->getPlayerDataPath($name)->exists();
 	}
 
 	private function handleCorruptedPlayerData(string $name) : void{
 		$path = $this->getPlayerDataPath($name);
-		rename($path, $path . '.bak');
+		$path->rename($path->setFileName($path->getFileName() . ".bak"));
 		$this->logger->error($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
 	}
 
@@ -524,10 +524,11 @@ class Server{
 		$name = strtolower($name);
 		$path = $this->getPlayerDataPath($name);
 
-		if(file_exists($path)){
-			$contents = @file_get_contents($path);
-			if($contents === false){
-				throw new \RuntimeException("Failed to read player data file \"$path\" (permission denied?)");
+		if($path->exists()){
+			try{
+				$contents = $path->getContents();
+			}catch(IOException $e)
+				throw new \RuntimeException("Failed to read player data file \"{$path->displayUtf8()}\": $e");
 			}
 			$decompressed = @zlib_decode($contents);
 			if($decompressed === false){
@@ -556,8 +557,8 @@ class Server{
 		if(!$ev->isCancelled()){
 			$nbt = new BigEndianNbtSerializer();
 			try{
-				file_put_contents($this->getPlayerDataPath($name), zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP));
-			}catch(\ErrorException $e){
+				$this->getPlayerDataPath($name)->putContents(zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP));
+			}catch(\ErrorException | IOException $e){
 				$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
 				$this->logger->logException($e);
 			}
@@ -748,7 +749,7 @@ class Server{
 		return self::$instance;
 	}
 
-	public function __construct(\DynamicClassLoader $autoloader, \AttachableThreadedLogger $logger, string $dataPath, string $pluginPath){
+	public function __construct(\DynamicClassLoader $autoloader, \AttachableThreadedLogger $logger, Path $dataPath, Path $pluginPath){
 		if(self::$instance !== null){
 			throw new \InvalidStateException("Only one server instance can exist at once");
 		}
@@ -760,33 +761,26 @@ class Server{
 		$this->logger = $logger;
 
 		try{
-			if(!file_exists($dataPath . "worlds/")){
-				mkdir($dataPath . "worlds/", 0777);
-			}
+			$dataPath->join("worlds")->mkdir();
+			$dataPath->join("players")->mkdir();
 
-			if(!file_exists($dataPath . "players/")){
-				mkdir($dataPath . "players/", 0777);
-			}
+			$pluginPath->mkdir();
 
-			if(!file_exists($pluginPath)){
-				mkdir($pluginPath, 0777);
-			}
-
-			$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
-			$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
+			$this->dataPath = $dataPath;
+			$this->pluginPath = $pulginPath;
 
 			$this->logger->info("Loading server configuration");
-			if(!file_exists($this->dataPath . "pocketmine.yml")){
-				$content = file_get_contents(\pocketmine\RESOURCE_PATH . "pocketmine.yml");
+			if(!$this->dataPath->join("pocketmine.yml")->exists()){
+				$content = \pocketmine\resource_path()->join("pocketmine.yml")->getContents();
 				if(\pocketmine\IS_DEVELOPMENT_BUILD){
 					$content = str_replace("preferred-channel: stable", "preferred-channel: beta", $content);
 				}
-				@file_put_contents($this->dataPath . "pocketmine.yml", $content);
+				$this->dataPath->join("pocketmine.yml")->putContents($content);
 			}
 
 			$this->configGroup = new ServerConfigGroup(
-				new Config($this->dataPath . "pocketmine.yml", Config::YAML, []),
-				new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
+				new Config($this->dataPath->join("pocketmine.yml"), Config::YAML, []),
+				new Config($this->dataPath->join("server.properties"), Config::PROPERTIES, [
 					"motd" => \pocketmine\NAME . " Server",
 					"server-port" => 19132,
 					"white-list" => false,
@@ -883,16 +877,16 @@ class Server{
 
 			$this->doTitleTick = ((bool) $this->configGroup->getProperty("console.title-tick", true)) && Terminal::hasFormattingCodes();
 
-			$this->operators = new Config($this->dataPath . "ops.txt", Config::ENUM);
-			$this->whitelist = new Config($this->dataPath . "white-list.txt", Config::ENUM);
-			if(file_exists($this->dataPath . "banned.txt") and !file_exists($this->dataPath . "banned-players.txt")){
-				@rename($this->dataPath . "banned.txt", $this->dataPath . "banned-players.txt");
+			$this->operators = new Config($this->dataPath->join("ops.txt"), Config::ENUM);
+			$this->whitelist = new Config($this->dataPath->join("white-list.txt"), Config::ENUM);
+			if($this->dataPath->join("banned.txt")->exists() and !$this->dataPath->join("banned-players.txt")->exists()){
+				$this->dataPath->join("banned.txt")->rename($this->dataPath->join("banned-players.txt"));
 			}
-			@touch($this->dataPath . "banned-players.txt");
-			$this->banByName = new BanList($this->dataPath . "banned-players.txt");
+			@touch($this->dataPath->join("banned-players.txt"));
+			$this->banByName = new BanList($this->dataPath->join("banned-players.txt"));
 			$this->banByName->load();
-			@touch($this->dataPath . "banned-ips.txt");
-			$this->banByIP = new BanList($this->dataPath . "banned-ips.txt");
+			@touch($this->dataPath->join("banned-ips.txt"));
+			$this->banByIP = new BanList($this->dataPath->join("banned-ips.txt"));
 			$this->banByIP->load();
 
 			$this->maxPlayers = $this->configGroup->getConfigInt("max-players", 20);
@@ -938,23 +932,23 @@ class Server{
 			Enchantment::init();
 			Biome::init();
 
-			$this->craftingManager = CraftingManagerFromDataHelper::make(\pocketmine\RESOURCE_PATH . '/vanilla/recipes.json');
+			$this->craftingManager = CraftingManagerFromDataHelper::make(\pocketmine\resource_path()->join("vanilla/recipes.json"));
 
-			$this->resourceManager = new ResourcePackManager($this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR, $this->logger);
+			$this->resourceManager = new ResourcePackManager($this->getDataPath()->join("resource_packs"), $this->logger);
 
 			$pluginGraylist = null;
-			$graylistFile = $this->dataPath . "plugin_list.yml";
-			if(!file_exists($graylistFile)){
-				copy(\pocketmine\RESOURCE_PATH . 'plugin_list.yml', $graylistFile);
+			$graylistFile = $this->dataPath->join("plugin_list.yml");
+			if(!$graylistFile->exists()){
+				\pocketmine\resource_path()->join("plugin_list.yml")->copy($graylistFile);
 			}
 			try{
-				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(file_get_contents($graylistFile)));
+				$pluginGraylist = PluginGraylist::fromArray(yaml_parse($graylistFile->getContents()));
 			}catch(\InvalidArgumentException $e){
-				$this->logger->emergency("Failed to load $graylistFile: " . $e->getMessage());
+				$this->logger->emergency("Failed to load {$graylistFile->displayUtf8()}: " . $e->getMessage());
 				$this->forceShutdown();
 				return;
 			}
-			$this->pluginManager = new PluginManager($this, ((bool) $this->configGroup->getProperty("plugins.legacy-data-dir", true)) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR, $pluginGraylist);
+			$this->pluginManager = new PluginManager($this, ((bool) $this->configGroup->getProperty("plugins.legacy-data-dir", true)) ? null : $this->getDataPath()->join("plugin_data"), $pluginGraylist);
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
@@ -968,7 +962,7 @@ class Server{
 				$this->logger->warning($this->language->translateString("pocketmine.level.badDefaultFormat", [$formatName]));
 			}
 
-			$this->worldManager = new WorldManager($this, $this->dataPath . "/worlds", $providerManager);
+			$this->worldManager = new WorldManager($this, $this->dataPath->join("worlds"), $providerManager);
 			$this->worldManager->setAutoSave($this->configGroup->getConfigBool("auto-save", $this->worldManager->getAutoSave()));
 			$this->worldManager->setAutoSaveInterval((int) $this->configGroup->getProperty("ticks-per.autosave", 6000));
 
@@ -1396,7 +1390,7 @@ class Server{
 
 		$errstr = preg_replace('/\s+/', ' ', trim($errstr));
 
-		$errfile = Filesystem::cleanPath($errfile);
+		$errfile = Filesystem::cleanPath($errfile->toString());
 
 		$this->logger->logException($e, $trace);
 
@@ -1430,12 +1424,12 @@ class Server{
 			$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.create"));
 			$dump = new CrashDump($this);
 
-			$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.submit", [$dump->getPath()]));
+			$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.submit", [$dump->getPath()->toString()]));
 
 			if($this->configGroup->getProperty("auto-report.enabled", true) !== false){
 				$report = true;
 
-				$stamp = $this->getDataPath() . "crashdumps/.last_crash";
+				$stamp = $this->getDataPath()->join("crashdumps/.last_crash");
 				$crashInterval = 120; //2 minutes
 				if(file_exists($stamp) and !($report = (filemtime($stamp) + $crashInterval < time()))){
 					$this->logger->debug("Not sending crashdump due to last crash less than $crashInterval seconds ago");

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\utils\AssumptionFailedError;
+use SOFe\Pathetique\Path;
 use function file_exists;
 use function fopen;
 use function is_dir;
@@ -39,11 +40,11 @@ use const DIRECTORY_SEPARATOR;
  */
 class DiskResourceProvider implements ResourceProvider{
 
-	/** @var string */
+	/** @var Path */
 	private $file;
 
-	public function __construct(string $path){
-		$this->file = rtrim(str_replace(DIRECTORY_SEPARATOR, "/", $path), "/") . "/";
+	public function __construct(Path $path){
+		$this->file = $path;
 	}
 
 	/**
@@ -53,9 +54,9 @@ class DiskResourceProvider implements ResourceProvider{
 	 * @return null|resource Resource data, or null
 	 */
 	public function getResource(string $filename){
-		$filename = rtrim(str_replace(DIRECTORY_SEPARATOR, "/", $filename), "/");
-		if(file_exists($this->file . $filename)){
-			$resource = fopen($this->file . $filename, "rb");
+		$path = $this->file->join($filename);
+		if($path->exists()){
+			$resource = fopen($path->toString(), "rb");
 			if($resource === false) throw new AssumptionFailedError("fopen() should not fail on a file which exists");
 			return $resource;
 		}
@@ -70,11 +71,11 @@ class DiskResourceProvider implements ResourceProvider{
 	 */
 	public function getResources() : array{
 		$resources = [];
-		if(is_dir($this->file)){
-			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file)) as $resource){
+		if($this->file->isDir()){
+			foreach($this->file->scanRecursively() as $resource){
 				if($resource->isFile()){
-					$path = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($this->file)));
-					$resources[$path] = $resource;
+					$path = $this->file->findPath($resource);
+					$resources[$path->toString()] = $resource;
 				}
 			}
 		}

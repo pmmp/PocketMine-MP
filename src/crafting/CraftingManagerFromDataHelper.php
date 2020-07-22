@@ -30,8 +30,8 @@ use function json_decode;
 
 final class CraftingManagerFromDataHelper{
 
-	public static function make(string $filePath) : CraftingManager{
-		$recipes = json_decode(file_get_contents($filePath), true);
+	public static function make(Path $filePath) : CraftingManager{
+		$recipes = json_decode(file_get_contents($filePath->toString()), true);
 		$result = new CraftingManager();
 
 		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);

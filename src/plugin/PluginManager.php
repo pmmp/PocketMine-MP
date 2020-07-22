@@ -36,6 +36,7 @@ use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
+use SOFe\Pathetique\Path;
 use function array_intersect;
 use function array_merge;
 use function class_exists;
@@ -83,15 +84,11 @@ class PluginManager{
 	/** @var PluginGraylist|null */
 	private $graylist;
 
-	public function __construct(Server $server, ?string $pluginDataDirectory, ?PluginGraylist $graylist = null){
+	public function __construct(Server $server, ?Path $pluginDataDirectory, ?PluginGraylist $graylist = null){
 		$this->server = $server;
 		$this->pluginDataDirectory = $pluginDataDirectory;
 		if($this->pluginDataDirectory !== null){
-			if(!file_exists($this->pluginDataDirectory)){
-				@mkdir($this->pluginDataDirectory, 0777, true);
-			}elseif(!is_dir($this->pluginDataDirectory)){
-				throw new \RuntimeException("Plugin data path $this->pluginDataDirectory exists and is not a directory");
-			}
+			$this->pluginDataDirectory->mkdir(true);
 		}
 
 		$this->graylist = $graylist;
@@ -116,17 +113,17 @@ class PluginManager{
 		return $this->plugins;
 	}
 
-	private function getDataDirectory(string $pluginPath, string $pluginName) : string{
+	private function getDataDirectory(Path $pluginPath, string $pluginName) : Path{
 		if($this->pluginDataDirectory !== null){
-			return $this->pluginDataDirectory . $pluginName;
+			return $this->pluginDataDirectory->join($pluginName);
 		}
-		return dirname($pluginPath) . DIRECTORY_SEPARATOR . $pluginName;
+		return $pluginPath->join("..")->join($pluginName);
 	}
 
 	/**
 	 * @param PluginLoader[] $loaders
 	 */
-	public function loadPlugin(string $path, ?array $loaders = null) : ?Plugin{
+	public function loadPlugin(Path $path, ?array $loaders = null) : ?Plugin{
 		foreach($loaders ?? $this->fileAssociations as $loader){
 			if($loader->canLoadPlugin($path)){
 				$description = $loader->getPluginDescription($path);
@@ -148,7 +145,7 @@ class PluginManager{
 						mkdir($dataFolder, 0777, true);
 					}
 
-					$prefixed = $loader->getAccessProtocol() . $path;
+					$prefixed = $path->setProtocol($loader->getAccessProtocol());
 					$loader->loadPlugin($prefixed);
 
 					$mainClass = $description->getMain();
@@ -170,7 +167,7 @@ class PluginManager{
 					 * @var Plugin $plugin
 					 * @see Plugin::__construct()
 					 */
-					$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed, new DiskResourceProvider($prefixed . "/resources/"));
+					$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed, new DiskResourceProvider($prefixed->join("resources")));
 					$this->plugins[$plugin->getDescription()->getName()] = $plugin;
 
 					return $plugin;
@@ -187,8 +184,8 @@ class PluginManager{
 	 *
 	 * @return Plugin[]
 	 */
-	public function loadPlugins(string $directory, ?array $newLoaders = null) : array{
-		if(!is_dir($directory)){
+	public function loadPlugins(Path $directory, ?array $newLoaders = null) : array{
+		if(!$directory->isDir()){
 			return [];
 		}
 
@@ -207,18 +204,20 @@ class PluginManager{
 			$loaders = $this->fileAssociations;
 		}
 
-		$files = iterator_to_array(new \FilesystemIterator($directory, \FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS));
+		$files = [];
+		foreach($directory->scan() as $file) {
+			$files[] = $file;
+		}
 		shuffle($files); //this prevents plugins implicitly relying on the filesystem name order when they should be using dependency properties
 		foreach($loaders as $loader){
 			foreach($files as $file){
-				if(!is_string($file)) throw new AssumptionFailedError("FilesystemIterator current should be string when using CURRENT_AS_PATHNAME");
 				if(!$loader->canLoadPlugin($file)){
 					continue;
 				}
 				try{
 					$description = $loader->getPluginDescription($file);
 				}catch(\RuntimeException $e){ //TODO: more specific exception handling
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.fileError", [$file, $directory, $e->getMessage()]));
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.fileError", [$file->displayUtf8(), $directory->displayUtf8(), $e->getMessage()]));
 					$this->server->getLogger()->logException($e);
 					continue;
 				}

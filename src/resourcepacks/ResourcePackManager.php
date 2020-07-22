@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\resourcepacks;
 
 use pocketmine\utils\Config;
+use SOFe\Pathetique\Path;
 use function array_keys;
 use function copy;
 use function count;
@@ -38,7 +39,7 @@ use const DIRECTORY_SEPARATOR;
 
 class ResourcePackManager{
 
-	/** @var string */
+	/** @var Path */
 	private $path;
 
 	/** @var bool */
@@ -51,23 +52,23 @@ class ResourcePackManager{
 	private $uuidList = [];
 
 	/**
-	 * @param string  $path Path to resource-packs directory.
+	 * @param Path $path Path to resource-packs directory.
 	 */
-	public function __construct(string $path, \Logger $logger){
+	public function __construct(Path $path, \Logger $logger){
 		$this->path = $path;
 
-		if(!file_exists($this->path)){
+		if(!$this->path->exists()){
 			$logger->debug("Resource packs path $path does not exist, creating directory");
-			mkdir($this->path);
-		}elseif(!is_dir($this->path)){
+			$this->path->mkdir();
+		}elseif(!$this->path->isDir()){
 			throw new \InvalidArgumentException("Resource packs path $path exists and is not a directory");
 		}
 
-		if(!file_exists($this->path . "resource_packs.yml")){
-			copy(\pocketmine\RESOURCE_PATH . "resource_packs.yml", $this->path . "resource_packs.yml");
+		if(!$this->path->join("resource_packs.yml")->exists()){
+			\pocketmine\resource_path()->join("resource_packs.yml")->copy($this->path->join("resource_packs.yml"));
 		}
 
-		$resourcePacksConfig = new Config($this->path . "resource_packs.yml", Config::YAML, []);
+		$resourcePacksConfig = new Config($this->path->join("resource_packs.yml"), Config::YAML, []);
 
 		$this->serverForceResources = (bool) $resourcePacksConfig->get("force_resources", false);
 
@@ -84,21 +85,19 @@ class ResourcePackManager{
 				continue;
 			}
 			try{
-				$packPath = $this->path . DIRECTORY_SEPARATOR . $pack;
-				if(!file_exists($packPath)){
+				$packPath = $this->path->join($pack);
+				if(!$packPath->exists()){
 					throw new ResourcePackException("File or directory not found");
 				}
-				if(is_dir($packPath)){
+				if($packPath->isDir()){
 					throw new ResourcePackException("Directory resource packs are unsupported");
 				}
 
 				$newPack = null;
-				//Detect the type of resource pack.
-				$info = new \SplFileInfo($packPath);
-				switch($info->getExtension()){
+				switch($packPath->getExtension()){
 					case "zip":
 					case "mcpack":
-						$newPack = new ZippedResourcePack($packPath);
+						$newPack = new ZippedResourcePack($packPath->toString());
 						break;
 				}
 
@@ -119,7 +118,7 @@ class ResourcePackManager{
 	/**
 	 * Returns the directory which resource packs are loaded from.
 	 */
-	public function getPath() : string{
+	public function getPath() : Path{
 		return $this->path;
 	}
 

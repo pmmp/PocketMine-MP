@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use SOFe\Pathetique\Path;
 use function is_file;
 use function strlen;
 use function substr;
@@ -39,23 +40,22 @@ class PharPluginLoader implements PluginLoader{
 		$this->loader = $loader;
 	}
 
-	public function canLoadPlugin(string $path) : bool{
-		$ext = ".phar";
-		return is_file($path) and substr($path, -strlen($ext)) === $ext;
+	public function canLoadPlugin(Path $path) : bool{
+		return $path->isFile() && $path->getExtension() === "phar";
 	}
 
 	/**
 	 * Loads the plugin contained in $file
 	 */
-	public function loadPlugin(string $file) : void{
-		$this->loader->addPath("$file/src");
+	public function loadPlugin(Path $file) : void{
+		$this->loader->addPath($file->join("src")->toString());
 	}
 
 	/**
 	 * Gets the PluginDescription from the file
 	 */
-	public function getPluginDescription(string $file) : ?PluginDescription{
-		$phar = new \Phar($file);
+	public function getPluginDescription(Path $file) : ?PluginDescription{
+		$phar = new \Phar($file->toString());
 		if(isset($phar["plugin.yml"])){
 			return new PluginDescription($phar["plugin.yml"]->getContent());
 		}

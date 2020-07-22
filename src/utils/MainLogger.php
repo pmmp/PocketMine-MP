@@ -27,6 +27,7 @@ use LogLevel;
 use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\thread\Thread;
 use pocketmine\thread\Worker;
+use SOFe\Pathetique\Path;
 use function fclose;
 use function fopen;
 use function fwrite;
@@ -41,7 +42,7 @@ use const PTHREADS_INHERIT_NONE;
 
 class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 
-	/** @var string */
+	/** @var Path */
 	protected $logFile;
 	/** @var \Threaded */
 	protected $logStream;
@@ -64,7 +65,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	/**
 	 * @throws \RuntimeException
 	 */
-	public function __construct(string $logFile, bool $logDebug = false){
+	public function __construct(Path $logFile, bool $logDebug = false){
 		parent::__construct();
 		touch($logFile);
 		$this->logFile = $logFile;

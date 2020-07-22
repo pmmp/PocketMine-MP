@@ -39,6 +39,7 @@ use function file_exists;
 use function is_dir;
 use function is_int;
 use function mkdir;
+use function preg_match;
 use function rename;
 use function scandir;
 use function strrpos;
@@ -59,10 +60,10 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	 */
 	abstract protected static function getPcWorldFormatVersion() : int;
 
-	public static function isValid(string $path) : bool{
-		if(file_exists($path . "/level.dat") and is_dir($path . "/region/")){
-			foreach(scandir($path . "/region/", SCANDIR_SORT_NONE) as $file){
-				if(substr($file, strrpos($file, ".") + 1) === static::getRegionFileExtension()){
+	public static function isValid(Path $path) : bool{
+		if($path->join("level.dat")->exists() && $path->join("region")->isDir()){
+			foreach($path->join("region")->scan() as $file){
+				if($file->getExtension() === static::getRegionFileExtension()){
 					//we don't care if other region types exist, we only care if this format is possible
 					return true;
 				}
@@ -77,15 +78,9 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	 * @phpstan-param class-string<Generator> $generator
 	 * @phpstan-param array<string, mixed>    $options
 	 */
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
+	public static function generate(Path $path, string $name, int $seed, string $generator, array $options = []) : void{
 		Utils::testValidInstance($generator, Generator::class);
-		if(!file_exists($path)){
-			mkdir($path, 0777, true);
-		}
-
-		if(!file_exists($path . "/region")){
-			mkdir($path . "/region", 0777);
-		}
+		$path->join("region")->mkdir(true);
 
 		JavaWorldData::generate($path, $name, $seed, $generator, $options, static::getPcWorldFormatVersion());
 	}
@@ -94,7 +89,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	protected $regions = [];
 
 	protected function loadLevelData() : WorldData{
-		return new JavaWorldData($this->getPath() . DIRECTORY_SEPARATOR . "level.dat");
+		return new JavaWorldData($this->getPath()->join("level.dat"));
 	}
 
 	public function doGarbageCollection() : void{
@@ -124,7 +119,8 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	 * Returns the path to a specific region file based on its X/Z coordinates
 	 */
 	protected function pathToRegion(int $regionX, int $regionZ) : string{
-		return $this->path . "/region/r.$regionX.$regionZ." . static::getRegionFileExtension();
+		$ext = static::getRegionFileExtension();
+		return $this->path->join("region")->join("r.$regionX.$regionZ.$ext");
 	}
 
 	protected function loadRegion(int $regionX, int $regionZ) : void{
@@ -140,8 +136,8 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 
 				$region->close(); //Do not write anything to the file
 
-				$backupPath = $path . ".bak." . time();
-				rename($path, $backupPath);
+				$backupPath = $path->withFileName($path->getFileName() . ".bak." . time());
+				$path->rename($backupPath);
 				$logger->error("Corrupted region file has been backed up to " . $backupPath);
 
 				$region = new RegionLoader($path);
@@ -223,15 +219,13 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		$this->getRegion($regionX, $regionZ)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->serializeChunk($chunk));
 	}
 
-	private function createRegionIterator() : \RegexIterator{
-		return new \RegexIterator(
-			new \FilesystemIterator(
-				$this->path . '/region/',
-				\FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
-			),
-			'/\/r\.(-?\d+)\.(-?\d+)\.' . static::getRegionFileExtension() . '$/',
-			\RegexIterator::GET_MATCH
-		);
+	private function createRegionIterator() : \Iterator{
+		$regex = '/\/r\.(-?\d+)\.(-?\d+)\.' . static::getRegionFileExtension() . '$/';
+		foreach($this->path->region->scan() as $file) {
+			if(preg_match($regex, $file->getFileName(), $match)) {
+				yield $match;
+			}
+		}
 	}
 
 	public function getAllChunks(bool $skipCorrupted = false, ?\Logger $logger = null) : \Generator{

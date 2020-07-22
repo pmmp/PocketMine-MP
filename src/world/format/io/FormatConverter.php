@@ -26,6 +26,7 @@ namespace pocketmine\world\format\io;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\world\generator\GeneratorManager;
+use SOFe\Pathetique\Path;
 use function basename;
 use function crc32;
 use function file_exists;
@@ -54,24 +55,22 @@ class FormatConverter{
 	/** @var int */
 	private $chunksPerProgressUpdate;
 
-	public function __construct(WorldProvider $oldProvider, string $newProvider, string $backupPath, \Logger $logger, int $chunksPerProgressUpdate = 256){
+	public function __construct(WorldProvider $oldProvider, string $newProvider, Path $backupPath, \Logger $logger, int $chunksPerProgressUpdate = 256){
 		$this->oldProvider = $oldProvider;
 		Utils::testValidInstance($newProvider, WritableWorldProvider::class);
 		$this->newProvider = $newProvider;
 		$this->logger = new \PrefixedLogger($logger, "World Converter: " . $this->oldProvider->getWorldData()->getName());
 		$this->chunksPerProgressUpdate = $chunksPerProgressUpdate;
 
-		if(!file_exists($backupPath)){
-			@mkdir($backupPath, 0777, true);
-		}
+		$backupPath->mkdir(true);
 		$nextSuffix = "";
 		do{
-			$this->backupPath = $backupPath . DIRECTORY_SEPARATOR . basename($this->oldProvider->getPath()) . $nextSuffix;
+			$this->backupPath = $backupPath->join($this->oldProvider->getPath()->getFileName() . $nextSuffix);
 			$nextSuffix = "_" . crc32(random_bytes(4));
-		}while(file_exists($this->backupPath));
+		}while($this->backupPath->exists());
 	}
 
-	public function getBackupPath() : string{
+	public function getBackupPath() : Path{
 		return $this->backupPath;
 	}
 
@@ -85,9 +84,9 @@ class FormatConverter{
 		$this->oldProvider->close();
 		$new->close();
 
-		$this->logger->info("Backing up pre-conversion world to " . $this->backupPath);
-		rename($path, $this->backupPath);
-		rename($new->getPath(), $path);
+		$this->logger->info("Backing up pre-conversion world to {$this->backupPath->displayUtf8()}");
+		$path->rename($this->backupPath);
+		$new->getPath()->rename($path);
 
 		$this->logger->info("Conversion completed");
 		/**
@@ -100,10 +99,10 @@ class FormatConverter{
 		$this->logger->info("Generating new world");
 		$data = $this->oldProvider->getWorldData();
 
-		$convertedOutput = rtrim($this->oldProvider->getPath(), "/" . DIRECTORY_SEPARATOR) . "_converted" . DIRECTORY_SEPARATOR;
-		if(file_exists($convertedOutput)){
+		$convertedOutput = $this->oldProvider->getPath()->setFileName($this->oldProvider->getPath()->getFileName() . "_converted");
+		if($convertedOutput->exists()){
 			$this->logger->info("Found previous conversion attempt, deleting...");
-			Filesystem::recursiveUnlink($convertedOutput);
+			$convertedOutput->delete();
 		}
 		$this->newProvider::generate($convertedOutput, $data->getName(), $data->getSeed(), GeneratorManager::getInstance()->getGenerator($data->getGenerator()), $data->getGeneratorOptions());
 

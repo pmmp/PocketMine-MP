@@ -31,6 +31,7 @@ use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
+use SOFe\Pathetique\Path;
 use function count;
 use function dirname;
 use function fclose;
@@ -61,7 +62,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	/** @var PluginDescription */
 	private $description;
 
-	/** @var string */
+	/** @var Path */
 	private $dataFolder;
 	/** @var Config|null */
 	private $config = null;
@@ -79,14 +80,14 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	/** @var ResourceProvider */
 	private $resourceProvider;
 
-	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file, ResourceProvider $resourceProvider){
+	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, Path $dataFolder, Path $file, ResourceProvider $resourceProvider){
 		$this->loader = $loader;
 		$this->server = $server;
 		$this->description = $description;
-		$this->dataFolder = rtrim($dataFolder, "/" . DIRECTORY_SEPARATOR) . "/";
+		$this->dataFolder = $dataFolder;
 		//TODO: this is accessed externally via reflection, not unused
-		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
-		$this->configFile = $this->dataFolder . "config.yml";
+		$this->file = $file;
+		$this->configFile = $this->dataFolder->join("config.yml");
 
 		$prefix = $this->getDescription()->getPrefix();
 		$this->logger = new PluginLogger($server->getLogger(), $prefix !== "" ? $prefix : $this->getName());
@@ -152,7 +153,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return !$this->isEnabled;
 	}
 
-	final public function getDataFolder() : string{
+	final public function getDataFolder() : Path{
 		return $this->dataFolder;
 	}
 
@@ -259,24 +260,18 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 * Saves an embedded resource to its relative location in the data folder
 	 */
 	public function saveResource(string $filename, bool $replace = false) : bool{
-		if(trim($filename) === ""){
-			return false;
-		}
-
 		if(($resource = $this->getResource($filename)) === null){
 			return false;
 		}
 
-		$out = $this->dataFolder . $filename;
-		if(!file_exists(dirname($out))){
-			mkdir(dirname($out), 0755, true);
-		}
+		$out = $this->dataFolder->join($filename);
+		$out->join("..")->mkdir(true, 0755);
 
-		if(file_exists($out) and !$replace){
+		if($out->exists() and !$replace){
 			return false;
 		}
 
-		$fp = fopen($out, "wb");
+		$fp = fopen($out->toString(), "wb");
 		if($fp === false) throw new AssumptionFailedError("fopen() should not fail with wb flags");
 
 		$ret = stream_copy_to_stream($resource, $fp) > 0;
@@ -307,10 +302,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	public function saveDefaultConfig() : bool{
-		if(!file_exists($this->configFile)){
-			return $this->saveResource("config.yml", false);
-		}
-		return false;
+		return $this->saveResource("config.yml");
 	}
 
 	public function reloadConfig() : void{
@@ -330,7 +322,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		return $this->description->getFullName();
 	}
 
-	protected function getFile() : string{
+	protected function getFile() : Path{
 		return $this->file;
 	}
 

@@ -109,14 +109,14 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	/**
 	 * @throws \LevelDBException
 	 */
-	private static function createDB(string $path) : \LevelDB{
-		return new \LevelDB($path . "/db", [
+	private static function createDB(Path $path) : \LevelDB{
+		return new \LevelDB($path->join("db"), [
 			"compression" => LEVELDB_ZLIB_RAW_COMPRESSION,
 			"block_size" => 64 * 1024 //64KB, big enough for most chunks
 		]);
 	}
 
-	public function __construct(string $path){
+	public function __construct(Path $path){
 		self::checkForLevelDBExtension();
 		parent::__construct($path);
 
@@ -129,24 +129,22 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	protected function loadLevelData() : WorldData{
-		return new BedrockWorldData($this->getPath() . DIRECTORY_SEPARATOR . "level.dat");
+		return new BedrockWorldData($this->getPath()->join("level.dat"));
 	}
 
 	public function getWorldHeight() : int{
 		return 256;
 	}
 
-	public static function isValid(string $path) : bool{
-		return file_exists($path . "/level.dat") and is_dir($path . "/db/");
+	public static function isValid(Path $path) : bool{
+		return $path->join("level.dat")->exists() && $path->join("db")->isDir();
 	}
 
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
+	public static function generate(Path $path, string $name, int $seed, string $generator, array $options = []) : void{
 		Utils::testValidInstance($generator, Generator::class);
 		self::checkForLevelDBExtension();
 
-		if(!file_exists($path . "/db")){
-			mkdir($path . "/db", 0777, true);
-		}
+		$path->join("db")->mkdir(true);
 
 		BedrockWorldData::generate($path, $name, $seed, $generator, $options);
 	}
