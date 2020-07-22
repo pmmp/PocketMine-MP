@@ -40,6 +40,7 @@ class PacketBatch{
 	/**
 	 * @return \Generator|Packet[]
 	 * @phpstan-return \Generator<int, Packet, void, void>
+	 * @throws PacketDecodeException
 	 */
 	public function getPackets(PacketPool $packetPool, int $max) : \Generator{
 		$serializer = new PacketSerializer($this->buffer);
