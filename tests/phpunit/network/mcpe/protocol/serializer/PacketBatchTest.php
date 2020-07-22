@@ -23,21 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\mcpe\protocol\serializer;
 
-use pocketmine\network\mcpe\protocol\Packet;
+use PHPUnit\Framework\TestCase;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
-use PHPUnit\Framework\TestCase;
 use pocketmine\network\mcpe\protocol\TestPacket;
+use function array_fill;
 
 class PacketBatchTest extends TestCase{
 
 	public function testDecodeTooBig() : void{
 		$limit = 10;
-		$write = new PacketBatch();
-		for($i = 0; $i < $limit + 1; $i++){
-			$write->putPacket(new TestPacket());
-		}
+		$write = PacketBatch::fromPackets(...array_fill(0, $limit + 1, new TestPacket()));
 		$read = new PacketBatch($write->getBuffer());
 		$this->expectException(PacketDecodeException::class);
 		$readCount = 0;
@@ -48,10 +45,7 @@ class PacketBatchTest extends TestCase{
 
 	public function testDecodeAtLimit() : void{
 		$limit = 10;
-		$write = new PacketBatch();
-		for($i = 0; $i < $limit; $i++){
-			$write->putPacket(new TestPacket());
-		}
+		$write = PacketBatch::fromPackets(...array_fill(0, $limit, new TestPacket()));
 		$read = new PacketBatch($write->getBuffer());
 		$readCount = 0;
 		foreach($read->getPackets(PacketPool::getInstance(), $limit) as $packet){

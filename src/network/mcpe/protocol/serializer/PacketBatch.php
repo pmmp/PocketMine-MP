@@ -37,11 +37,6 @@ class PacketBatch{
 		$this->serializer = new PacketSerializer($buffer ?? "");
 	}
 
-	public function putPacket(Packet $packet) : void{
-		$packet->encode();
-		$this->serializer->putString($packet->getSerializer()->getBuffer());
-	}
-
 	/**
 	 * @throws BinaryDataException
 	 */
@@ -72,7 +67,8 @@ class PacketBatch{
 	public static function fromPackets(Packet ...$packets) : self{
 		$result = new self();
 		foreach($packets as $packet){
-			$result->putPacket($packet);
+			$packet->encode();
+			$result->serializer->putString($packet->getSerializer()->getBuffer());
 		}
 		return $result;
 	}
