@@ -3811,9 +3811,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return;
 		}
 
-		$ev = new PlayerRespawnEvent($this, $this->getSpawn());
-		$ev->call();
-
 		$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getLevelNonNull());
 		$this->teleport($realSpawn);
 
@@ -3837,6 +3834,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$this->sendSettings();
 		$this->sendAllInventories();
+		
+		$ev = new PlayerRespawnEvent($this, $this->getSpawn());
+		$ev->call();
 
 		$this->spawnToAll();
 		$this->scheduleUpdate();
