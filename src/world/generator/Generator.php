@@ -29,6 +29,7 @@ namespace pocketmine\world\generator;
 use pocketmine\utils\Random;
 use pocketmine\utils\Utils;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\ChunkPos;
 use function preg_match;
 
 abstract class Generator{
@@ -74,7 +75,7 @@ abstract class Generator{
 		$this->random = new Random($seed);
 	}
 
-	abstract public function generateChunk(int $chunkX, int $chunkZ) : void;
+	abstract public function generateChunk(ChunkPos $chunkPos) : void;
 
-	abstract public function populateChunk(int $chunkX, int $chunkZ) : void;
+	abstract public function populateChunk(ChunkPos $chunkPos) : void;
 }

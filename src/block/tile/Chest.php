@@ -28,6 +28,7 @@ use pocketmine\block\inventory\DoubleChestInventory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\World;
 use function abs;
 
@@ -99,7 +100,7 @@ class Chest extends Spawnable implements Container, Nameable{
 			$this->inventory->removeAllViewers();
 
 			if($this->doubleInventory !== null){
-				if($this->isPaired() and $this->pos->getWorld()->isChunkLoaded($this->pairX >> 4, $this->pairZ >> 4)){
+				if($this->isPaired() and $this->pos->getWorld()->isChunkLoaded(ChunkPos::fromBlockCoords($this->pairX, $this->pairZ))){
 					$this->doubleInventory->removeAllViewers();
 					if(($pair = $this->getPair()) !== null){
 						$pair->doubleInventory = null;

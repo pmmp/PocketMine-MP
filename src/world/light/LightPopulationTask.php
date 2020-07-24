@@ -78,9 +78,9 @@ class LightPopulationTask extends AsyncTask{
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
 		/** @var ChunkPos $pos */
 		$pos = $this->fetchLocal(self::TLS_KEY_CHUNK_POS);
-		if(!$world->isClosed() and $world->isChunkLoaded($pos->getX(), $pos->getZ())){
+		if(!$world->isClosed() and $world->isChunkLoaded($pos)){
 			/** @var Chunk $chunk */
-			$chunk = $world->getChunk($pos->getX(), $pos->getZ());
+			$chunk = $world->getChunk($pos);
 			//TODO: calculated light information might not be valid if the terrain changed during light calculation
 
 			/** @var int[] $heightMapArray */

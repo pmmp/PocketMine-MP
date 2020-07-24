@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world;
 
 use pocketmine\math\Vector3;
+use function sqrt;
 
 final class ChunkPos{
 	/** @var int */
@@ -52,6 +53,14 @@ final class ChunkPos{
 		return $this->x === $other->x and $this->z === $other->z;
 	}
 
+	public function distanceSquared(ChunkPos $other) : int{
+		return ($this->x - $other->x) ** 2 + ($this->z - $other->z) ** 2;
+	}
+
+	public function distance(ChunkPos $other) : float{
+		return sqrt($this->distanceSquared($other));
+	}
+
 	public function hash() : int{
 		return $this->hash;
 	}
@@ -71,5 +80,9 @@ final class ChunkPos{
 
 	public static function fromVec3(Vector3 $vector3) : self{
 		return new self($vector3->getFloorX() >> 4, $vector3->getFloorZ() >> 4);
+	}
+
+	public static function fromBlockCoords(int $x, int $z) : self{
+		return new self($x >> 4, $z >> 4);
 	}
 }

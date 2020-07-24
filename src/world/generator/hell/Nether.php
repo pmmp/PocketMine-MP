@@ -26,6 +26,7 @@ namespace pocketmine\world\generator\hell;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\InvalidGeneratorOptionsException;
 use pocketmine\world\generator\noise\Simplex;
@@ -76,12 +77,14 @@ class Nether extends Generator{
 		$this->populators[] = $ores;*/
 	}
 
-	public function generateChunk(int $chunkX, int $chunkZ) : void{
+	public function generateChunk(ChunkPos $chunkPos) : void{
+		$chunkX = $chunkPos->getX();
+		$chunkZ = $chunkPos->getZ();
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 
 		$noise = $this->noiseBase->getFastNoise3D(16, 128, 16, 4, 8, 4, $chunkX * 16, 0, $chunkZ * 16);
 
-		$chunk = $this->world->getChunk($chunkX, $chunkZ);
+		$chunk = $this->world->getChunk($chunkPos);
 
 		$bedrock = VanillaBlocks::BEDROCK()->getFullId();
 		$netherrack = VanillaBlocks::NETHERRACK()->getFullId();
@@ -111,18 +114,18 @@ class Nether extends Generator{
 		}
 
 		foreach($this->generationPopulators as $populator){
-			$populator->populate($this->world, $chunkX, $chunkZ, $this->random);
+			$populator->populate($this->world, $chunkPos, $this->random);
 		}
 	}
 
-	public function populateChunk(int $chunkX, int $chunkZ) : void{
-		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
+	public function populateChunk(ChunkPos $chunkPos) : void{
+		$this->random->setSeed(0xdeadbeef ^ ($chunkPos->getX() << 8) ^ $chunkPos->getZ() ^ $this->seed);
 		foreach($this->populators as $populator){
-			$populator->populate($this->world, $chunkX, $chunkZ, $this->random);
+			$populator->populate($this->world, $chunkPos, $this->random);
 		}
 
-		$chunk = $this->world->getChunk($chunkX, $chunkZ);
+		$chunk = $this->world->getChunk($chunkPos);
 		$biome = Biome::getBiome($chunk->getBiomeId(7, 7));
-		$biome->populateChunk($this->world, $chunkX, $chunkZ, $this->random);
+		$biome->populateChunk($this->world, $chunkPos, $this->random);
 	}
 }

@@ -422,8 +422,7 @@ class World implements ChunkManager{
 		$this->unloadCallbacks = [];
 
 		foreach($this->chunks as $chunk){
-			$pos = $chunk->getPos();
-			$this->unloadChunk($pos->getX(), $pos->getZ(), false);
+			$this->unloadChunk($chunk->getPos(), false);
 		}
 
 		$this->save();
@@ -499,8 +498,8 @@ class World implements ChunkManager{
 	 *
 	 * @return Player[]
 	 */
-	public function getChunkPlayers(int $chunkX, int $chunkZ) : array{
-		return $this->playerChunkListeners[World::chunkHash($chunkX, $chunkZ)] ?? [];
+	public function getChunkPlayers(ChunkPos $chunkPos) : array{
+		return $this->playerChunkListeners[$chunkPos->hash] ?? [];
 	}
 
 	/**
@@ -510,15 +509,6 @@ class World implements ChunkManager{
 	 */
 	public function getChunkLoaders(int $chunkX, int $chunkZ) : array{
 		return $this->chunkLoaders[World::chunkHash($chunkX, $chunkZ)] ?? [];
-	}
-
-	/**
-	 * Returns an array of players who have the target position within their view distance.
-	 *
-	 * @return Player[]
-	 */
-	public function getViewersForPosition(Vector3 $pos) : array{
-		return $this->getChunkPlayers($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
 	}
 
 	/**
@@ -532,16 +522,16 @@ class World implements ChunkManager{
 		}
 	}
 
-	public function registerChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ, bool $autoLoad = true) : void{
+	public function registerChunkLoader(ChunkLoader $loader, ChunkPos $chunkPos, bool $autoLoad = true) : void{
 		$loaderId = spl_object_id($loader);
 
-		if(!isset($this->chunkLoaders[$chunkHash = World::chunkHash($chunkX, $chunkZ)])){
-			$this->chunkLoaders[$chunkHash] = [];
-		}elseif(isset($this->chunkLoaders[$chunkHash][$loaderId])){
+		if(!isset($this->chunkLoaders[$chunkPos->hash])){
+			$this->chunkLoaders[$chunkPos->hash] = [];
+		}elseif(isset($this->chunkLoaders[$chunkPos->hash][$loaderId])){
 			return;
 		}
 
-		$this->chunkLoaders[$chunkHash][$loaderId] = $loader;
+		$this->chunkLoaders[$chunkPos->hash][$loaderId] = $loader;
 
 		if(!isset($this->loaders[$loaderId])){
 			$this->loaderCounter[$loaderId] = 1;
@@ -550,21 +540,20 @@ class World implements ChunkManager{
 			++$this->loaderCounter[$loaderId];
 		}
 
-		$this->cancelUnloadChunkRequest($chunkX, $chunkZ);
+		$this->cancelUnloadChunkRequest($chunkPos);
 
 		if($autoLoad){
-			$this->loadChunk($chunkX, $chunkZ);
+			$this->loadChunk($chunkPos);
 		}
 	}
 
-	public function unregisterChunkLoader(ChunkLoader $loader, int $chunkX, int $chunkZ) : void{
-		$chunkHash = World::chunkHash($chunkX, $chunkZ);
+	public function unregisterChunkLoader(ChunkLoader $loader, ChunkPos $chunkPos) : void{
 		$loaderId = spl_object_id($loader);
-		if(isset($this->chunkLoaders[$chunkHash][$loaderId])){
-			unset($this->chunkLoaders[$chunkHash][$loaderId]);
-			if(count($this->chunkLoaders[$chunkHash]) === 0){
-				unset($this->chunkLoaders[$chunkHash]);
-				$this->unloadChunkRequest($chunkX, $chunkZ, true);
+		if(isset($this->chunkLoaders[$chunkPos->hash][$loaderId])){
+			unset($this->chunkLoaders[$chunkPos->hash][$loaderId]);
+			if(count($this->chunkLoaders[$chunkPos->hash]) === 0){
+				unset($this->chunkLoaders[$chunkPos->hash]);
+				$this->unloadChunkRequest($chunkPos, true);
 			}
 
 			if(--$this->loaderCounter[$loaderId] === 0){
@@ -577,15 +566,14 @@ class World implements ChunkManager{
 	/**
 	 * Registers a listener to receive events on a chunk.
 	 */
-	public function registerChunkListener(ChunkListener $listener, int $chunkX, int $chunkZ) : void{
-		$hash = World::chunkHash($chunkX, $chunkZ);
-		if(isset($this->chunkListeners[$hash])){
-			$this->chunkListeners[$hash][spl_object_id($listener)] = $listener;
+	public function registerChunkListener(ChunkListener $listener, ChunkPos $chunkPos) : void{
+		if(isset($this->chunkListeners[$chunkPos->hash])){
+			$this->chunkListeners[$chunkPos->hash][spl_object_id($listener)] = $listener;
 		}else{
-			$this->chunkListeners[$hash] = [spl_object_id($listener) => $listener];
+			$this->chunkListeners[$chunkPos->hash] = [spl_object_id($listener) => $listener];
 		}
 		if($listener instanceof Player){
-			$this->playerChunkListeners[$hash][spl_object_id($listener)] = $listener;
+			$this->playerChunkListeners[$chunkPos->hash][spl_object_id($listener)] = $listener;
 		}
 	}
 
@@ -594,14 +582,13 @@ class World implements ChunkManager{
 	 *
 	 * @see World::registerChunkListener()
 	 */
-	public function unregisterChunkListener(ChunkListener $listener, int $chunkX, int $chunkZ) : void{
-		$hash = World::chunkHash($chunkX, $chunkZ);
-		if(isset($this->chunkListeners[$hash])){
-			unset($this->chunkListeners[$hash][spl_object_id($listener)]);
-			unset($this->playerChunkListeners[$hash][spl_object_id($listener)]);
-			if(count($this->chunkListeners[$hash]) === 0){
-				unset($this->chunkListeners[$hash]);
-				unset($this->playerChunkListeners[$hash]);
+	public function unregisterChunkListener(ChunkListener $listener, ChunkPos $chunkPos) : void{
+		if(isset($this->chunkListeners[$chunkPos->hash])){
+			unset($this->chunkListeners[$chunkPos->hash][spl_object_id($listener)]);
+			unset($this->playerChunkListeners[$chunkPos->hash][spl_object_id($listener)]);
+			if(count($this->chunkListeners[$chunkPos->hash]) === 0){
+				unset($this->chunkListeners[$chunkPos->hash]);
+				unset($this->playerChunkListeners[$chunkPos->hash]);
 			}
 		}
 	}
@@ -626,8 +613,8 @@ class World implements ChunkManager{
 	 *
 	 * @return ChunkListener[]
 	 */
-	public function getChunkListeners(int $chunkX, int $chunkZ) : array{
-		return $this->chunkListeners[World::chunkHash($chunkX, $chunkZ)] ?? [];
+	public function getChunkListeners(ChunkPos $chunkPos) : array{
+		return $this->chunkListeners[$chunkPos->hash] ?? [];
 	}
 
 	/**
@@ -752,14 +739,14 @@ class World implements ChunkManager{
 					if(count($blocks) === 0){ //blocks can be set normally and then later re-set with direct send
 						continue;
 					}
-					World::getXZ($index, $chunkX, $chunkZ);
+					$chunkPos = ChunkPos::fromHash($index);
 					if(count($blocks) > 512){
-						$chunk = $this->getChunk($chunkX, $chunkZ);
-						foreach($this->getChunkPlayers($chunkX, $chunkZ) as $p){
+						$chunk = $this->getChunk($chunkPos);
+						foreach($this->getChunkPlayers($chunkPos) as $p){
 							$p->onChunkChanged($chunk);
 						}
 					}else{
-						$this->sendBlocks($this->getChunkPlayers($chunkX, $chunkZ), $blocks);
+						$this->sendBlocks($this->getChunkPlayers($chunkPos), $blocks);
 					}
 				}
 			}
@@ -777,8 +764,7 @@ class World implements ChunkManager{
 		}
 
 		foreach($this->chunkPackets as $index => $entries){
-			World::getXZ($index, $chunkX, $chunkZ);
-			$chunkPlayers = $this->getChunkPlayers($chunkX, $chunkZ);
+			$chunkPlayers = $this->getChunkPlayers(ChunkPos::fromHash($index));
 			if(count($chunkPlayers) > 0){
 				$this->server->broadcastPackets($chunkPlayers, $entries);
 			}
@@ -1237,7 +1223,7 @@ class World implements ChunkManager{
 	 * @return int bitmap, (id << 4) | data
 	 */
 	public function getFullBlock(int $x, int $y, int $z) : int{
-		return $this->getChunk($x >> 4, $z >> 4, false)->getFullBlock($x & 0x0f, $y, $z & 0x0f);
+		return $this->getChunk(ChunkPos::fromBlockCoords($x, $z), false)->getFullBlock($x & 0x0f, $y, $z & 0x0f);
 	}
 
 	public function isInWorld(int $x, int $y, int $z) : bool{
@@ -1346,17 +1332,17 @@ class World implements ChunkManager{
 		$block->writeStateToWorld();
 		$pos = $block->getPos();
 
-		$chunkHash = World::chunkHash($x >> 4, $z >> 4);
+		$chunkPos = ChunkPos::fromBlockCoords($x, $z);
 		$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
 
-		unset($this->blockCache[$chunkHash][$relativeBlockHash]);
+		unset($this->blockCache[$chunkPos->hash][$relativeBlockHash]);
 
-		if(!isset($this->changedBlocks[$chunkHash])){
-			$this->changedBlocks[$chunkHash] = [];
+		if(!isset($this->changedBlocks[$chunkPos->hash])){
+			$this->changedBlocks[$chunkPos->hash] = [];
 		}
-		$this->changedBlocks[$chunkHash][$relativeBlockHash] = $pos;
+		$this->changedBlocks[$chunkPos->hash][$relativeBlockHash] = $pos;
 
-		foreach($this->getChunkListeners($x >> 4, $z >> 4) as $listener){
+		foreach($this->getChunkListeners($chunkPos) as $listener){
 			$listener->onBlockChanged($pos);
 		}
 
@@ -1646,10 +1632,11 @@ class World implements ChunkManager{
 
 			for($x = $minX; $x <= $maxX; ++$x){
 				for($z = $minZ; $z <= $maxZ; ++$z){
-					if(!$this->isChunkLoaded($x, $z)){
+					$cpos = new ChunkPos($x, $z);
+					if(!$this->isChunkLoaded($cpos)){
 						continue;
 					}
-					foreach($this->getChunk($x, $z)->getEntities() as $ent){
+					foreach($this->getChunk($cpos)->getEntities() as $ent){
 						/** @var Entity|null $entity */
 						if($ent->canBeCollidedWith() and ($entity === null or ($ent !== $entity and $entity->canCollideWith($ent))) and $ent->boundingBox->intersectsWith($bb)){
 							$nearby[] = $ent;
@@ -1677,10 +1664,11 @@ class World implements ChunkManager{
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
-				if(!$this->isChunkLoaded($x, $z)){
+				$cpos = new ChunkPos($x, $z);
+				if(!$this->isChunkLoaded($cpos)){
 					continue;
 				}
-				foreach($this->getChunk($x, $z)->getEntities() as $ent){
+				foreach($this->getChunk($cpos)->getEntities() as $ent){
 					if($ent !== $entity and $ent->boundingBox->intersectsWith($bb)){
 						$nearby[] = $ent;
 					}
@@ -1720,10 +1708,11 @@ class World implements ChunkManager{
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
-				if(!$this->isChunkLoaded($x, $z)){
+				$cpos = new ChunkPos($x, $z);
+				if(!$this->isChunkLoaded($cpos)){
 					continue;
 				}
-				foreach($this->getChunk($x, $z)->getEntities() as $entity){
+				foreach($this->getChunk($cpos)->getEntities() as $entity){
 					if(!($entity instanceof $entityType) or $entity->isFlaggedForDespawn() or (!$includeDead and !$entity->isAlive())){
 						continue;
 					}
@@ -1769,7 +1758,7 @@ class World implements ChunkManager{
 	 * Returns the tile at the specified x,y,z coordinates, or null if it does not exist.
 	 */
 	public function getTileAt(int $x, int $y, int $z) : ?Tile{
-		return ($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null ? $chunk->getTile($x & 0x0f, $y, $z & 0x0f) : null;
+		return ($chunk = $this->getChunk(ChunkPos::fromBlockCoords($x, $z))) !== null ? $chunk->getTile($x & 0x0f, $y, $z & 0x0f) : null;
 	}
 
 	/**
@@ -1778,7 +1767,7 @@ class World implements ChunkManager{
 	 * @return int 0-15
 	 */
 	public function getBlockSkyLightAt(int $x, int $y, int $z) : int{
-		return $this->getChunk($x >> 4, $z >> 4, true)->getBlockSkyLight($x & 0x0f, $y, $z & 0x0f);
+		return $this->getChunk(ChunkPos::fromBlockCoords($x, $z), true)->getBlockSkyLight($x & 0x0f, $y, $z & 0x0f);
 	}
 
 	/**
@@ -1787,11 +1776,11 @@ class World implements ChunkManager{
 	 * @return int 0-15
 	 */
 	public function getBlockLightAt(int $x, int $y, int $z) : int{
-		return $this->getChunk($x >> 4, $z >> 4, true)->getBlockLight($x & 0x0f, $y, $z & 0x0f);
+		return $this->getChunk(ChunkPos::fromBlockCoords($x, $z), true)->getBlockLight($x & 0x0f, $y, $z & 0x0f);
 	}
 
 	public function getBiomeId(int $x, int $z) : int{
-		return $this->getChunk($x >> 4, $z >> 4, true)->getBiomeId($x & 0x0f, $z & 0x0f);
+		return $this->getChunk(ChunkPos::fromBlockCoords($x, $z), true)->getBiomeId($x & 0x0f, $z & 0x0f);
 	}
 
 	public function getBiome(int $x, int $z) : Biome{
@@ -1799,7 +1788,7 @@ class World implements ChunkManager{
 	}
 
 	public function setBiomeId(int $x, int $z, int $biomeId) : void{
-		$this->getChunk($x >> 4, $z >> 4, true)->setBiomeId($x & 0x0f, $z & 0x0f, $biomeId);
+		$this->getChunk(ChunkPos::fromBlockCoords($x, $z), true)->setBiomeId($x & 0x0f, $z & 0x0f, $biomeId);
 	}
 
 	/**
@@ -1813,23 +1802,16 @@ class World implements ChunkManager{
 	 * Returns the chunk at the specified X/Z coordinates. If the chunk is not loaded, attempts to (synchronously!!!)
 	 * load it.
 	 *
-	 * @param bool $create Whether to create an empty chunk as a placeholder if the chunk does not exist
+	 * @param bool     $create Whether to create an empty chunk as a placeholder if the chunk does not exist
 	 */
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk{
-		if(isset($this->chunks[$index = World::chunkHash($chunkX, $chunkZ)])){
-			return $this->chunks[$index];
-		}elseif($this->loadChunk($chunkX, $chunkZ, $create)){
-			return $this->chunks[$index];
+	public function getChunk(ChunkPos $chunkPos, bool $create = false) : ?Chunk{
+		if(isset($this->chunks[$chunkPos->hash])){
+			return $this->chunks[$chunkPos->hash];
+		}elseif($this->loadChunk($chunkPos, $create)){
+			return $this->chunks[$chunkPos->hash];
 		}
 
 		return null;
-	}
-
-	/**
-	 * Returns the chunk containing the given Vector3 position.
-	 */
-	public function getChunkAtPosition(Vector3 $pos, bool $create = false) : ?Chunk{
-		return $this->getChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $create);
 	}
 
 	/**
@@ -1837,7 +1819,7 @@ class World implements ChunkManager{
 	 *
 	 * @return (Chunk|null)[]
 	 */
-	public function getAdjacentChunks(int $x, int $z) : array{
+	public function getAdjacentChunks(ChunkPos $chunkPos) : array{
 		$result = [];
 		for($xx = 0; $xx <= 2; ++$xx){
 			for($zz = 0; $zz <= 2; ++$zz){
@@ -1845,57 +1827,56 @@ class World implements ChunkManager{
 				if($i === 4){
 					continue; //center chunk
 				}
-				$result[$i] = $this->getChunk($x + $xx - 1, $z + $zz - 1, false);
+				$result[$i] = $this->getChunk($chunkPos->add($xx, $zz), false);
 			}
 		}
 
 		return $result;
 	}
 
-	public function lockChunk(int $chunkX, int $chunkZ) : void{
-		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		if(isset($this->chunkLock[$chunkHash])){
-			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ is already locked");
+	public function lockChunk(ChunkPos $chunkPos) : void{
+		if(isset($this->chunkLock[$chunkPos->hash])){
+			throw new \InvalidArgumentException("Chunk $chunkPos is already locked");
 		}
-		$this->chunkLock[$chunkHash] = true;
+		$this->chunkLock[$chunkPos->hash] = true;
 	}
 
-	public function unlockChunk(int $chunkX, int $chunkZ) : void{
-		unset($this->chunkLock[World::chunkHash($chunkX, $chunkZ)]);
+	public function unlockChunk(ChunkPos $chunkPos) : void{
+		unset($this->chunkLock[$chunkPos->hash]);
 	}
 
-	public function isChunkLocked(int $chunkX, int $chunkZ) : bool{
-		return isset($this->chunkLock[World::chunkHash($chunkX, $chunkZ)]);
+	public function isChunkLocked(ChunkPos $chunkPos) : bool{
+		return isset($this->chunkLock[$chunkPos->hash]);
 	}
 
-	public function generateChunkCallback(int $x, int $z, ?Chunk $chunk) : void{
+	public function generateChunkCallback(ChunkPos $chunkPos, ?Chunk $chunk) : void{
 		Timings::$generationCallbackTimer->startTiming();
-		if(isset($this->chunkPopulationQueue[$index = World::chunkHash($x, $z)])){
+		if(isset($this->chunkPopulationQueue[$chunkPos->hash])){
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
-					$this->unlockChunk($x + $xx, $z + $zz);
+					$this->unlockChunk($chunkPos->add($xx, $zz));
 				}
 			}
-			unset($this->chunkPopulationQueue[$index]);
+			unset($this->chunkPopulationQueue[$chunkPos->hash]);
 
 			if($chunk !== null){
-				$oldChunk = $this->getChunk($x, $z, false);
-				$this->setChunk($x, $z, $chunk, false);
+				$oldChunk = $this->getChunk($chunkPos, false);
+				$this->setChunk($chunkPos, $chunk, false);
 				if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
 					(new ChunkPopulateEvent($this, $chunk))->call();
 
-					foreach($this->getChunkListeners($x, $z) as $listener){
+					foreach($this->getChunkListeners($chunkPos) as $listener){
 						$listener->onChunkPopulated($chunk);
 					}
 				}
 			}
-		}elseif($this->isChunkLocked($x, $z)){
-			$this->unlockChunk($x, $z);
+		}elseif($this->isChunkLocked($chunkPos)){
+			$this->unlockChunk($chunkPos);
 			if($chunk !== null){
-				$this->setChunk($x, $z, $chunk, false);
+				$this->setChunk($chunkPos, $chunk, false);
 			}
 		}elseif($chunk !== null){
-			$this->setChunk($x, $z, $chunk, false);
+			$this->setChunk($chunkPos, $chunk, false);
 		}
 		Timings::$generationCallbackTimer->stopTiming();
 	}
@@ -1903,15 +1884,14 @@ class World implements ChunkManager{
 	/**
 	 * @param bool       $deleteEntitiesAndTiles Whether to delete entities and tiles on the old chunk, or transfer them to the new one
 	 */
-	public function setChunk(int $chunkX, int $chunkZ, ?Chunk $chunk, bool $deleteEntitiesAndTiles = true) : void{
+	public function setChunk(ChunkPos $chunkPos, ?Chunk $chunk, bool $deleteEntitiesAndTiles = true) : void{
 		if($chunk === null){
 			return;
 		}
 
-		$chunk->setPos(new ChunkPos($chunkX, $chunkZ));
+		$chunk->setPos($chunkPos);
 
-		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$oldChunk = $this->getChunk($chunkX, $chunkZ, false);
+		$oldChunk = $this->getChunk($chunkPos, false);
 		if($oldChunk !== null and $oldChunk !== $chunk){
 			if($deleteEntitiesAndTiles){
 				foreach($oldChunk->getEntities() as $player){
@@ -1923,7 +1903,7 @@ class World implements ChunkManager{
 					$player->chunk = $chunk;
 				}
 				//TODO: this causes chunkloaders to receive false "unloaded" notifications
-				$this->unloadChunk($chunkX, $chunkZ, false, false);
+				$this->unloadChunk($chunkPos, false, false);
 			}else{
 				foreach($oldChunk->getEntities() as $entity){
 					$chunk->addEntity($entity);
@@ -1938,17 +1918,17 @@ class World implements ChunkManager{
 			}
 		}
 
-		$this->chunks[$chunkHash] = $chunk;
+		$this->chunks[$chunkPos->hash] = $chunk;
 
-		unset($this->blockCache[$chunkHash]);
-		unset($this->changedBlocks[$chunkHash]);
+		unset($this->blockCache[$chunkPos->hash]);
+		unset($this->changedBlocks[$chunkPos->hash]);
 		$chunk->setDirty();
 
-		if(!$this->isChunkInUse($chunkX, $chunkZ)){
-			$this->unloadChunkRequest($chunkX, $chunkZ);
+		if(!$this->isChunkInUse($chunkPos)){
+			$this->unloadChunkRequest($chunkPos);
 		}
 
-		foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
+		foreach($this->getChunkListeners($chunkPos) as $listener){
 			$listener->onChunkChanged($chunk);
 		}
 	}
@@ -1959,27 +1939,27 @@ class World implements ChunkManager{
 	 * @return int 0-255
 	 */
 	public function getHighestBlockAt(int $x, int $z) : int{
-		return $this->getChunk($x >> 4, $z >> 4, true)->getHighestBlockAt($x & 0x0f, $z & 0x0f);
+		return $this->getChunk(ChunkPos::fromBlockCoords($x, $z), true)->getHighestBlockAt($x & 0x0f, $z & 0x0f);
 	}
 
 	/**
 	 * Returns whether the given position is in a loaded area of terrain.
 	 */
 	public function isInLoadedTerrain(Vector3 $pos) : bool{
-		return $this->isChunkLoaded($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
+		return $this->isChunkLoaded(ChunkPos::fromVec3($pos));
 	}
 
-	public function isChunkLoaded(int $x, int $z) : bool{
-		return isset($this->chunks[World::chunkHash($x, $z)]);
+	public function isChunkLoaded(ChunkPos $chunkPos) : bool{
+		return isset($this->chunks[$chunkPos->hash]);
 	}
 
-	public function isChunkGenerated(int $x, int $z) : bool{
-		$chunk = $this->getChunk($x, $z);
+	public function isChunkGenerated(ChunkPos $chunkPos) : bool{
+		$chunk = $this->getChunk($chunkPos);
 		return $chunk !== null ? $chunk->isGenerated() : false;
 	}
 
-	public function isChunkPopulated(int $x, int $z) : bool{
-		$chunk = $this->getChunk($x, $z);
+	public function isChunkPopulated(ChunkPos $chunkPos) : bool{
+		$chunk = $this->getChunk($chunkPos);
 		return $chunk !== null ? $chunk->isPopulated() : false;
 	}
 
@@ -2047,13 +2027,12 @@ class World implements ChunkManager{
 			throw new \InvalidArgumentException("Invalid Tile world");
 		}
 
-		$chunkX = $pos->getFloorX() >> 4;
-		$chunkZ = $pos->getFloorZ() >> 4;
+		$chunkPos = ChunkPos::fromVec3($pos);
 
-		if(isset($this->chunks[$hash = World::chunkHash($chunkX, $chunkZ)])){
-			$this->chunks[$hash]->addTile($tile);
+		if(isset($this->chunks[$chunkPos->hash])){
+			$this->chunks[$chunkPos->hash]->addTile($tile);
 		}else{
-			throw new \InvalidStateException("Attempted to create tile " . get_class($tile) . " in unloaded chunk $chunkX $chunkZ");
+			throw new \InvalidStateException("Attempted to create tile " . get_class($tile) . " in unloaded chunk $chunkPos");
 		}
 
 		//delegate tile ticking to the corresponding block
@@ -2069,19 +2048,18 @@ class World implements ChunkManager{
 			throw new \InvalidArgumentException("Invalid Tile world");
 		}
 
-		$chunkX = $pos->getFloorX() >> 4;
-		$chunkZ = $pos->getFloorZ() >> 4;
+		$chunkPos = ChunkPos::fromVec3($pos);
 
-		if(isset($this->chunks[$hash = World::chunkHash($chunkX, $chunkZ)])){
-			$this->chunks[$hash]->removeTile($tile);
+		if(isset($this->chunks[$chunkPos->hash])){
+			$this->chunks[$chunkPos->hash]->removeTile($tile);
 		}
-		foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
+		foreach($this->getChunkListeners($chunkPos) as $listener){
 			$listener->onBlockChanged($pos->asVector3());
 		}
 	}
 
-	public function isChunkInUse(int $x, int $z) : bool{
-		return isset($this->chunkLoaders[$index = World::chunkHash($x, $z)]) and count($this->chunkLoaders[$index]) > 0;
+	public function isChunkInUse(ChunkPos $chunkPos) : bool{
+		return isset($this->chunkLoaders[$chunkPos->hash]) and count($this->chunkLoaders[$chunkPos->hash]) > 0;
 	}
 
 	/**
@@ -2093,27 +2071,27 @@ class World implements ChunkManager{
 	 *
 	 * @throws \InvalidStateException
 	 */
-	public function loadChunk(int $x, int $z, bool $create = true) : bool{
-		if(isset($this->chunks[$chunkHash = World::chunkHash($x, $z)])){
+	public function loadChunk(ChunkPos $chunkPos, bool $create = true) : bool{
+		if(isset($this->chunks[$chunkPos->hash])){
 			return true;
 		}
 
 		$this->timings->syncChunkLoadTimer->startTiming();
 
-		$this->cancelUnloadChunkRequest($x, $z);
+		$this->cancelUnloadChunkRequest($chunkPos);
 
 		$this->timings->syncChunkLoadDataTimer->startTiming();
 
 		$chunk = null;
 
 		try{
-			$chunk = $this->provider->loadChunk($x, $z);
+			$chunk = $this->provider->loadChunk($chunkPos);
 		}catch(CorruptedChunkException $e){
-			$this->logger->critical("Failed to load chunk x=$x z=$z: " . $e->getMessage());
+			$this->logger->critical("Failed to load chunk $chunkPos: " . $e->getMessage());
 		}
 
 		if($chunk === null and $create){
-			$chunk = new Chunk(new ChunkPos($x, $z));
+			$chunk = new Chunk($chunkPos);
 		}
 
 		$this->timings->syncChunkLoadDataTimer->stopTiming();
@@ -2123,8 +2101,8 @@ class World implements ChunkManager{
 			return false;
 		}
 
-		$this->chunks[$chunkHash] = $chunk;
-		unset($this->blockCache[$chunkHash]);
+		$this->chunks[$chunkPos->hash] = $chunk;
+		unset($this->blockCache[$chunkPos->hash]);
 
 		$chunk->initChunk($this);
 
@@ -2134,11 +2112,11 @@ class World implements ChunkManager{
 			$this->getServer()->getAsyncPool()->submitTask(new LightPopulationTask($this, $chunk));
 		}
 
-		if(!$this->isChunkInUse($x, $z)){
-			$this->logger->debug("Newly loaded chunk $x $z has no loaders registered, will be unloaded at next available opportunity");
-			$this->unloadChunkRequest($x, $z);
+		if(!$this->isChunkInUse($chunkPos)){
+			$this->logger->debug("Newly loaded chunk $chunkPos has no loaders registered, will be unloaded at next available opportunity");
+			$this->unloadChunkRequest($chunkPos);
 		}
-		foreach($this->getChunkListeners($x, $z) as $listener){
+		foreach($this->getChunkListeners($chunkPos) as $listener){
 			$listener->onChunkLoaded($chunk);
 		}
 
@@ -2147,38 +2125,36 @@ class World implements ChunkManager{
 		return true;
 	}
 
-	private function queueUnloadChunk(int $x, int $z) : void{
-		$this->unloadQueue[World::chunkHash($x, $z)] = microtime(true);
+	private function queueUnloadChunk(ChunkPos $chunkPos) : void{
+		$this->unloadQueue[$chunkPos->hash] = microtime(true);
 	}
 
-	public function unloadChunkRequest(int $x, int $z, bool $safe = true) : bool{
-		if(($safe and $this->isChunkInUse($x, $z)) or $this->isSpawnChunk($x, $z)){
+	public function unloadChunkRequest(ChunkPos $chunkPos, bool $safe = true) : bool{
+		if(($safe and $this->isChunkInUse($chunkPos)) or $this->isSpawnChunk($chunkPos)){
 			return false;
 		}
 
-		$this->queueUnloadChunk($x, $z);
+		$this->queueUnloadChunk($chunkPos);
 
 		return true;
 	}
 
-	public function cancelUnloadChunkRequest(int $x, int $z) : void{
-		unset($this->unloadQueue[World::chunkHash($x, $z)]);
+	public function cancelUnloadChunkRequest(ChunkPos $chunkPos) : void{
+		unset($this->unloadQueue[$chunkPos->hash]);
 	}
 
-	public function unloadChunk(int $x, int $z, bool $safe = true, bool $trySave = true) : bool{
-		if($safe and $this->isChunkInUse($x, $z)){
+	public function unloadChunk(ChunkPos $chunkPos, bool $safe = true, bool $trySave = true) : bool{
+		if($safe and $this->isChunkInUse($chunkPos)){
 			return false;
 		}
 
-		if(!$this->isChunkLoaded($x, $z)){
+		if(!$this->isChunkLoaded($chunkPos)){
 			return true;
 		}
 
 		$this->timings->doChunkUnload->startTiming();
 
-		$chunkHash = World::chunkHash($x, $z);
-
-		$chunk = $this->chunks[$chunkHash] ?? null;
+		$chunk = $this->chunks[$chunkPos->hash] ?? null;
 
 		if($chunk !== null){
 			$ev = new ChunkUnloadEvent($this, $chunk);
@@ -2198,16 +2174,16 @@ class World implements ChunkManager{
 				}
 			}
 
-			foreach($this->getChunkListeners($x, $z) as $listener){
+			foreach($this->getChunkListeners($chunkPos) as $listener){
 				$listener->onChunkUnloaded($chunk);
 			}
 
 			$chunk->onUnload();
 		}
 
-		unset($this->chunks[$chunkHash]);
-		unset($this->blockCache[$chunkHash]);
-		unset($this->changedBlocks[$chunkHash]);
+		unset($this->chunks[$chunkPos->hash]);
+		unset($this->blockCache[$chunkPos->hash]);
+		unset($this->changedBlocks[$chunkPos->hash]);
 
 		$this->timings->doChunkUnload->stopTiming();
 
@@ -2217,12 +2193,9 @@ class World implements ChunkManager{
 	/**
 	 * Returns whether the chunk at the specified coordinates is a spawn chunk
 	 */
-	public function isSpawnChunk(int $X, int $Z) : bool{
-		$spawn = $this->getSpawnLocation();
-		$spawnX = $spawn->x >> 4;
-		$spawnZ = $spawn->z >> 4;
-
-		return abs($X - $spawnX) <= 1 and abs($Z - $spawnZ) <= 1;
+	public function isSpawnChunk(ChunkPos $chunkPos) : bool{
+		//NOTE: change this to distance() if the radius ever becomes more than 1
+		return $chunkPos->distanceSquared(ChunkPos::fromVec3($this->getSpawnLocation())) <= 1;
 	}
 
 	public function getSafeSpawn(?Vector3 $spawn = null) : Position{
@@ -2232,7 +2205,7 @@ class World implements ChunkManager{
 
 		$max = $this->worldHeight;
 		$v = $spawn->floor();
-		$chunk = $this->getChunkAtPosition($v, false);
+		$chunk = $this->getChunk(ChunkPos::fromVec3($v), false);
 		$x = (int) $v->x;
 		$y = $v->y;
 		$z = (int) $v->z;
@@ -2343,26 +2316,26 @@ class World implements ChunkManager{
 		}
 	}
 
-	public function populateChunk(int $x, int $z, bool $force = false) : bool{
-		if(isset($this->chunkPopulationQueue[$index = World::chunkHash($x, $z)]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){
+	public function populateChunk(ChunkPos $chunkPos, bool $force = false) : bool{
+		if(isset($this->chunkPopulationQueue[$chunkPos->hash]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){
 			return false;
 		}
 		for($xx = -1; $xx <= 1; ++$xx){
 			for($zz = -1; $zz <= 1; ++$zz){
-				if($this->isChunkLocked($x + $xx, $z + $zz)){
+				if($this->isChunkLocked($chunkPos->add($xx, $zz))){
 					return false;
 				}
 			}
 		}
 
-		$chunk = $this->getChunk($x, $z, true);
+		$chunk = $this->getChunk($chunkPos, true);
 		if(!$chunk->isPopulated()){
 			Timings::$populationTimer->startTiming();
 
-			$this->chunkPopulationQueue[$index] = true;
+			$this->chunkPopulationQueue[$chunkPos->hash] = true;
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
-					$this->lockChunk($x + $xx, $z + $zz);
+					$this->lockChunk($chunkPos->add($xx, $zz));
 				}
 			}
 
@@ -2385,9 +2358,9 @@ class World implements ChunkManager{
 
 		foreach($this->chunks as $index => $chunk){
 			if(!isset($this->unloadQueue[$index])){
-				World::getXZ($index, $X, $Z);
-				if(!$this->isSpawnChunk($X, $Z)){
-					$this->unloadChunkRequest($X, $Z, true);
+				$chunkPos = ChunkPos::fromHash($index);
+				if(!$this->isSpawnChunk($chunkPos)){
+					$this->unloadChunkRequest($chunkPos, true);
 				}
 			}
 			$chunk->collectGarbage();
@@ -2403,7 +2376,7 @@ class World implements ChunkManager{
 			$maxUnload = 96;
 			$now = microtime(true);
 			foreach($this->unloadQueue as $index => $time){
-				World::getXZ($index, $X, $Z);
+				$chunkPos = ChunkPos::fromHash($index);
 
 				if(!$force){
 					if($maxUnload <= 0){
@@ -2414,8 +2387,8 @@ class World implements ChunkManager{
 				}
 
 				//If the chunk can't be unloaded, it stays on the queue
-				if($this->unloadChunk($X, $Z, true)){
-					unset($this->unloadQueue[$index]);
+				if($this->unloadChunk($chunkPos, true)){
+					unset($this->unloadQueue[$chunkPos->hash]);
 					--$maxUnload;
 				}
 			}

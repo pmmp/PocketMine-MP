@@ -25,7 +25,6 @@ namespace pocketmine\world\generator;
 
 use pocketmine\block\BlockFactory;
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\world\ChunkPos;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\World;
@@ -66,7 +65,7 @@ class PopulationTask extends AsyncTask{
 		$this->chunk = FastChunkSerializer::serialize($chunk);
 
 		$pos = $chunk->getPos();
-		foreach($world->getAdjacentChunks($pos->getX(), $pos->getZ()) as $i => $c){
+		foreach($world->getAdjacentChunks($pos) as $i => $c){
 			$this->{"chunk$i"} = $c !== null ? FastChunkSerializer::serialize($c) : null;
 		}
 
@@ -101,25 +100,25 @@ class PopulationTask extends AsyncTask{
 			}
 		}
 
-		$manager->setChunk($centerCPos->getX(), $centerCPos->getZ(), $chunk);
+		$manager->setChunk($centerCPos, $chunk);
 		if(!$chunk->isGenerated()){
-			$generator->generateChunk($centerCPos->getX(), $centerCPos->getZ());
-			$chunk = $manager->getChunk($centerCPos->getX(), $centerCPos->getZ());
+			$generator->generateChunk($centerCPos);
+			$chunk = $manager->getChunk($centerCPos);
 			$chunk->setGenerated();
 		}
 
 		foreach($chunks as $i => $c){
 			$cPos = $c->getPos();
-			$manager->setChunk($cPos->getX(), $cPos->getZ(), $c);
+			$manager->setChunk($cPos, $c);
 			if(!$c->isGenerated()){
-				$generator->generateChunk($cPos->getX(), $cPos->getZ());
-				$chunks[$i] = $manager->getChunk($cPos->getX(), $cPos->getZ());
+				$generator->generateChunk($centerCPos);
+				$chunks[$i] = $manager->getChunk($cPos);
 				$chunks[$i]->setGenerated();
 			}
 		}
 
-		$generator->populateChunk($centerCPos->getX(), $centerCPos->getZ());
-		$chunk = $manager->getChunk($centerCPos->getX(), $centerCPos->getZ());
+		$generator->populateChunk($centerCPos);
+		$chunk = $manager->getChunk($centerCPos);
 		$chunk->setPopulated();
 
 		$blockFactory = BlockFactory::getInstance();
@@ -154,12 +153,12 @@ class PopulationTask extends AsyncTask{
 				if($c !== null){
 					$c = FastChunkSerializer::deserialize($c);
 					$cpos = $c->getPos();
-					$world->generateChunkCallback($cpos->getX(), $cpos->getZ(), $this->state ? $c : null);
+					$world->generateChunkCallback($cpos, $this->state ? $c : null);
 				}
 			}
 
 			$pos = $chunk->getPos();
-			$world->generateChunkCallback($pos->getX(), $pos->getZ(), $this->state ? $chunk : null);
+			$world->generateChunkCallback($pos, $this->state ? $chunk : null);
 		}
 	}
 }

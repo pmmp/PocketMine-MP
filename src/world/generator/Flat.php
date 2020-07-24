@@ -173,16 +173,16 @@ class Flat extends Generator{
 		}
 	}
 
-	public function generateChunk(int $chunkX, int $chunkZ) : void{
+	public function generateChunk(ChunkPos $chunkPos) : void{
 		$chunk = clone $this->chunk;
-		$chunk->setPos(new ChunkPos($chunkX, $chunkZ));
-		$this->world->setChunk($chunkX, $chunkZ, $chunk);
+		$chunk->setPos($chunkPos);
+		$this->world->setChunk($chunkPos, $chunk);
 	}
 
-	public function populateChunk(int $chunkX, int $chunkZ) : void{
-		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
+	public function populateChunk(ChunkPos $chunkPos) : void{
+		$this->random->setSeed(0xdeadbeef ^ ($chunkPos->getX() << 8) ^ $chunkPos->getZ() ^ $this->seed);
 		foreach($this->populators as $populator){
-			$populator->populate($this->world, $chunkX, $chunkZ, $this->random);
+			$populator->populate($this->world, $chunkPos, $this->random);
 		}
 
 	}

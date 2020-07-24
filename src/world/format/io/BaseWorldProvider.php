@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
@@ -62,8 +63,8 @@ abstract class BaseWorldProvider implements WorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
-		return $this->readChunk($chunkX, $chunkZ);
+	public function loadChunk(ChunkPos $chunkPos) : ?Chunk{
+		return $this->readChunk($chunkPos);
 	}
 
 	public function saveChunk(Chunk $chunk) : void{
@@ -76,7 +77,7 @@ abstract class BaseWorldProvider implements WorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	abstract protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk;
+	abstract protected function readChunk(ChunkPos $chunkPos) : ?Chunk;
 
 	abstract protected function writeChunk(Chunk $chunk) : void;
 }

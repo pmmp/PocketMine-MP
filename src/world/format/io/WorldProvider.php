@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
@@ -54,7 +55,7 @@ interface WorldProvider{
 	 *
 	 * @throws CorruptedChunkException
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk;
+	public function loadChunk(ChunkPos $chunkPos) : ?Chunk;
 
 	/**
 	 * Performs garbage collection in the world provider, such as cleaning up regions in Region-based worlds.

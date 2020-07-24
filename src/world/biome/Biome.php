@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\utils\TreeType;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\generator\populator\Populator;
 
 abstract class Biome{
@@ -116,9 +117,9 @@ abstract class Biome{
 		$this->populators[] = $populator;
 	}
 
-	public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void{
+	public function populateChunk(ChunkManager $world, ChunkPos $chunkPos, Random $random) : void{
 		foreach($this->populators as $populator){
-			$populator->populate($world, $chunkX, $chunkZ, $random);
+			$populator->populate($world, $chunkPos, $random);
 		}
 	}
 

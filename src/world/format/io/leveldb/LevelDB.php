@@ -224,8 +224,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
-		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
+	protected function readChunk(ChunkPos $chunkPos) : ?Chunk{
+		$index = LevelDB::chunkIndex($chunkPos);
 
 		$chunkVersionRaw = $this->db->get($index . self::TAG_VERSION);
 		if($chunkVersionRaw === false){
@@ -394,7 +394,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		}
 
 		$chunk = new Chunk(
-			new ChunkPos($chunkX, $chunkZ),
+			$chunkPos,
 			$subChunks,
 			$entities,
 			$tiles,
@@ -415,7 +415,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	protected function writeChunk(Chunk $chunk) : void{
 		$idMap = LegacyBlockIdToStringIdMap::getInstance();
 		$pos = $chunk->getPos();
-		$index = LevelDB::chunkIndex($pos->getX(), $pos->getZ());
+		$index = LevelDB::chunkIndex($pos);
 
 		$write = new \LevelDBWriteBatch();
 		$write->put($index . self::TAG_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
@@ -486,8 +486,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		return $this->db;
 	}
 
-	public static function chunkIndex(int $chunkX, int $chunkZ) : string{
-		return Binary::writeLInt($chunkX) . Binary::writeLInt($chunkZ);
+	public static function chunkIndex(ChunkPos $chunkPos) : string{
+		return Binary::writeLInt($chunkPos->getX()) . Binary::writeLInt($chunkPos->getZ());
 	}
 
 	public function doGarbageCollection() : void{
@@ -504,7 +504,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				$chunkX = Binary::readLInt(substr($key, 0, 4));
 				$chunkZ = Binary::readLInt(substr($key, 4, 4));
 				try{
-					if(($chunk = $this->loadChunk($chunkX, $chunkZ)) !== null){
+					if(($chunk = $this->loadChunk(new ChunkPos($chunkX, $chunkZ))) !== null){
 						yield $chunk;
 					}
 				}catch(CorruptedChunkException $e){

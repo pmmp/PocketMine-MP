@@ -237,7 +237,7 @@ abstract class Entity{
 		$this->recalculateBoundingBox();
 
 		$this->chunkPos = ChunkPos::fromVec3($this->location);
-		$this->chunk = $this->getWorld()->getChunkAtPosition($this->location, false);
+		$this->chunk = $this->getWorld()->getChunk($this->chunkPos, false);
 		if($this->chunk === null){
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}
@@ -1333,17 +1333,16 @@ abstract class Entity{
 	}
 
 	protected function checkChunks() : void{
-		$chunkX = $this->location->getFloorX() >> 4;
-		$chunkZ = $this->location->getFloorZ() >> 4;
-		if($this->chunk === null or $chunkX !== $this->chunkPos->getX() or $chunkZ !== $this->chunkPos->getZ()){
+		$newChunkPos = ChunkPos::fromVec3($this->location);
+		if($this->chunk === null or !$newChunkPos->equals($this->chunkPos)){
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
-			$this->chunkPos = new ChunkPos($chunkX, $chunkZ);
-			$this->chunk = $this->getWorld()->getChunk($chunkX, $chunkZ, true);
+			$this->chunkPos = $newChunkPos;
+			$this->chunk = $this->getWorld()->getChunk($this->chunkPos, true);
 
 			if(!$this->justCreated){
-				$newChunk = $this->getWorld()->getViewersForPosition($this->location);
+				$newChunk = $this->getWorld()->getChunkPlayers($this->chunkPos);
 				foreach($this->hasSpawned as $player){
 					if(!isset($newChunk[spl_object_id($player)])){
 						$this->despawnFrom($player);
@@ -1497,7 +1496,7 @@ abstract class Entity{
 		//TODO: this will cause some visible lag during chunk resends; if the player uses a spawn egg in a chunk, the
 		//created entity won't be visible until after the resend arrives. However, this is better than possibly crashing
 		//the player by sending them entities too early.
-		if(!isset($this->hasSpawned[$id]) and $player->hasReceivedChunk($this->location->getFloorX() >> 4, $this->location->getFloorZ() >> 4)){
+		if(!isset($this->hasSpawned[$id]) and $player->hasReceivedChunk($this->chunkPos)){
 			$this->hasSpawned[$id] = $player;
 
 			$this->sendSpawnPacket($player);
@@ -1508,7 +1507,7 @@ abstract class Entity{
 		if($this->closed){
 			return;
 		}
-		foreach($this->getWorld()->getViewersForPosition($this->location) as $player){
+		foreach($this->getWorld()->getChunkPlayers($this->chunkPos) as $player){
 			$this->spawnTo($player);
 		}
 	}

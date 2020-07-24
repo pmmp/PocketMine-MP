@@ -28,8 +28,9 @@ namespace pocketmine\world\generator\populator;
 
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\ChunkPos;
 
 abstract class Populator{
 
-	abstract public function populate(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void;
+	abstract public function populate(ChunkManager $world, ChunkPos $chunkPos, Random $random) : void;
 }

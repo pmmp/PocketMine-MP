@@ -23,16 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\player;
 
-use pocketmine\world\World;
+use pocketmine\world\ChunkPos;
 
 //TODO: turn this into an interface?
 final class ChunkSelector{
 
 	/**
-	 * @preturn \Generator|int[]
-	 * @phpstan-return \Generator<int, int, void, void>
+	 * @preturn \Generator|ChunkPos[]
+	 * @phpstan-return \Generator<int, ChunkPos, void, void>
 	 */
-	public function selectChunks(int $radius, int $centerX, int $centerZ) : \Generator{
+	public function selectChunks(int $radius, ChunkPos $chunkPos) : \Generator{
 		$radiusSquared = $radius ** 2;
 
 		for($x = 0; $x < $radius; ++$x){
@@ -44,23 +44,23 @@ final class ChunkSelector{
 				//If the chunk is in the radius, others at the same offsets in different quadrants are also guaranteed to be.
 
 				/* Top right quadrant */
-				yield World::chunkHash($centerX + $x, $centerZ + $z);
+				yield $chunkPos->add($x, $z);
 				/* Top left quadrant */
-				yield World::chunkHash($centerX - $x - 1, $centerZ + $z);
+				yield $chunkPos->add(-$x - 1, $z);
 				/* Bottom right quadrant */
-				yield World::chunkHash($centerX + $x, $centerZ - $z - 1);
+				yield $chunkPos->add($x, -$z - 1);
 				/* Bottom left quadrant */
-				yield World::chunkHash($centerX - $x - 1, $centerZ - $z - 1);
+				yield $chunkPos->add(-$x - 1, -$z - 1);
 
 				if($x !== $z){
 					/* Top right quadrant mirror */
-					yield World::chunkHash($centerX + $z, $centerZ + $x);
+					yield $chunkPos->add($z, $x);
 					/* Top left quadrant mirror */
-					yield World::chunkHash($centerX - $z - 1, $centerZ + $x);
+					yield $chunkPos->add(-$z - 1, $x);
 					/* Bottom right quadrant mirror */
-					yield World::chunkHash($centerX + $z, $centerZ - $x - 1);
+					yield $chunkPos->add($z, -$x - 1);
 					/* Bottom left quadrant mirror */
-					yield World::chunkHash($centerX - $z - 1, $centerZ - $x - 1);
+					yield $chunkPos->add(-$z - 1, -$x - 1);
 				}
 			}
 		}

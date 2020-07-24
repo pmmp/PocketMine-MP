@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\light;
 
 use pocketmine\block\BlockFactory;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\World;
 use function max;
 
@@ -41,7 +42,7 @@ class SkyLightUpdate extends LightUpdate{
 	}
 
 	public function recalculateNode(int $x, int $y, int $z) : void{
-		$chunk = $this->world->getChunk($x >> 4, $z >> 4);
+		$chunk = $this->world->getChunk(ChunkPos::fromBlockCoords($x, $z));
 		if($chunk === null){
 			return;
 		}

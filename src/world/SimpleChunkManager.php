@@ -65,17 +65,16 @@ class SimpleChunkManager implements ChunkManager{
 		}
 	}
 
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk{
-		$hash = World::chunkHash($chunkX, $chunkZ);
-		return $this->chunks[$hash] ?? ($create ? $this->chunks[$hash] = new Chunk(new ChunkPos($chunkX, $chunkZ)) : null);
+	public function getChunk(ChunkPos $chunkPos, bool $create = false) : ?Chunk{
+		return $this->chunks[$chunkPos->hash] ?? ($create ? $this->chunks[$chunkPos->hash] = new Chunk($chunkPos) : null);
 	}
 
-	public function setChunk(int $chunkX, int $chunkZ, ?Chunk $chunk) : void{
+	public function setChunk(ChunkPos $chunkPos, ?Chunk $chunk) : void{
 		if($chunk === null){
-			unset($this->chunks[World::chunkHash($chunkX, $chunkZ)]);
+			unset($this->chunks[$chunkPos->hash]);
 			return;
 		}
-		$this->chunks[World::chunkHash($chunkX, $chunkZ)] = $chunk;
+		$this->chunks[$chunkPos->hash] = $chunk;
 	}
 
 	public function cleanChunks() : void{

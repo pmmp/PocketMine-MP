@@ -40,9 +40,9 @@ interface ChunkManager{
 	 */
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : void;
 
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk;
+	public function getChunk(ChunkPos $chunkPos, bool $create = false) : ?Chunk;
 
-	public function setChunk(int $chunkX, int $chunkZ, ?Chunk $chunk) : void;
+	public function setChunk(ChunkPos $chunkPos, ?Chunk $chunk) : void;
 
 	/**
 	 * Returns the height of the world

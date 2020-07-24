@@ -826,7 +826,7 @@ class NetworkSession{
 					return;
 				}
 				$currentWorld = $this->player->getLocation()->getWorld();
-				if($world !== $currentWorld or !$this->player->isUsingChunk($chunkPos->getX(), $chunkPos->getZ())){
+				if($world !== $currentWorld or !$this->player->isUsingChunk($chunkPos)){
 					$this->logger->debug("Tried to send no-longer-active chunk $chunkPos in world " . $world->getFolderName());
 					return;
 				}
@@ -841,7 +841,7 @@ class NetworkSession{
 		);
 	}
 
-	public function stopUsingChunk(int $chunkX, int $chunkZ) : void{
+	public function stopUsingChunk(ChunkPos $pos) : void{
 
 	}
 

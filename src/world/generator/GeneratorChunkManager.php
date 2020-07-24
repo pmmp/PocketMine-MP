@@ -23,16 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator;
 
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\SimpleChunkManager;
-use pocketmine\world\World;
 
 class GeneratorChunkManager extends SimpleChunkManager{
 
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk{
-		if(!isset($this->chunks[World::chunkHash($chunkX, $chunkZ)])){
+	public function getChunk(ChunkPos $chunkPos, bool $create = false) : ?Chunk{
+		if(!isset($this->chunks[$chunkPos->hash])){
 			throw new \InvalidArgumentException("Chunk does not exist");
 		}
-		return parent::getChunk($chunkX, $chunkZ, $create);
+		return parent::getChunk($chunkPos, $create);
 	}
 }

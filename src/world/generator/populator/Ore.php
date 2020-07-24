@@ -25,6 +25,7 @@ namespace pocketmine\world\generator\populator;
 
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\generator\object\Ore as ObjectOre;
 use pocketmine\world\generator\object\OreType;
 
@@ -32,7 +33,9 @@ class Ore extends Populator{
 	/** @var OreType[] */
 	private $oreTypes = [];
 
-	public function populate(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void{
+	public function populate(ChunkManager $world, ChunkPos $chunkPos, Random $random) : void{
+		$chunkX = $chunkPos->getX();
+		$chunkZ = $chunkPos->getZ();
 		foreach($this->oreTypes as $type){
 			$ore = new ObjectOre($random, $type);
 			for($i = 0; $i < $ore->type->clusterCount; ++$i){

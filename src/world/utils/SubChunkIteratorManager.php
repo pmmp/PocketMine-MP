@@ -25,6 +25,7 @@ namespace pocketmine\world\utils;
 
 use pocketmine\utils\Utils;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\SubChunk;
 use function assert;
@@ -61,7 +62,7 @@ class SubChunkIteratorManager{
 			$this->currentZ = $z >> 4;
 			$this->currentSubChunk = null;
 
-			$this->currentChunk = $this->world->getChunk($this->currentX, $this->currentZ, $create);
+			$this->currentChunk = $this->world->getChunk(new ChunkPos($this->currentX, $this->currentZ), $create);
 			if($this->currentChunk === null){
 				return false;
 			}

@@ -93,7 +93,7 @@ class ChunkCache implements ChunkListener{
 	 * @return CompressBatchPromise a promise of resolution which will contain a compressed chunk packet.
 	 */
 	public function request(ChunkPos $chunkPos) : CompressBatchPromise{
-		$this->world->registerChunkListener($this, $chunkPos->getX(), $chunkPos->getZ());
+		$this->world->registerChunkListener($this, $chunkPos);
 
 		if(isset($this->caches[$chunkPos->hash])){
 			++$this->hits;
@@ -109,7 +109,7 @@ class ChunkCache implements ChunkListener{
 			$this->world->getServer()->getAsyncPool()->submitTask(
 				new ChunkRequestTask(
 					$chunkPos,
-					$this->world->getChunk($chunkPos->getX(), $chunkPos->getZ()),
+					$this->world->getChunk($chunkPos),
 					$this->caches[$chunkPos->hash],
 					$this->compressor,
 					function() use ($chunkPos) : void{
@@ -195,7 +195,7 @@ class ChunkCache implements ChunkListener{
 	public function onChunkUnloaded(Chunk $chunk) : void{
 		$pos = $chunk->getPos();
 		$this->destroy($pos);
-		$this->world->unregisterChunkListener($this, $pos->getX(), $pos->getZ());
+		$this->world->unregisterChunkListener($this, $pos);
 	}
 
 	/**

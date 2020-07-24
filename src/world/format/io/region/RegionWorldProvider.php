@@ -27,6 +27,7 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\utils\Utils;
+use pocketmine\world\ChunkPos;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
 use pocketmine\world\format\io\data\JavaWorldData;
@@ -198,7 +199,9 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
+	protected function readChunk(ChunkPos $chunkPos) : ?Chunk{
+		$chunkX = $chunkPos->getX();
+		$chunkZ = $chunkPos->getZ();
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		assert(is_int($regionX) and is_int($regionZ));
@@ -247,7 +250,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 			for($chunkX = $rX; $chunkX < $rX + 32; ++$chunkX){
 				for($chunkZ = $rZ; $chunkZ < $rZ + 32; ++$chunkZ){
 					try{
-						$chunk = $this->loadChunk($chunkX, $chunkZ);
+						$chunk = $this->loadChunk(new ChunkPos($chunkX, $chunkZ));
 						if($chunk !== null){
 							yield $chunk;
 						}

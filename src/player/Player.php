@@ -297,10 +297,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->chunkLoader = new TickingChunkLoader($spawn);
 
+		$spawnChunkPos = ChunkPos::fromVec3($spawn);
 		//load the spawn chunk so we can see the terrain
-		$world->registerChunkLoader($this->chunkLoader, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, true);
-		$world->registerChunkListener($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4);
-		$this->usedChunks[World::chunkHash($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4)] = UsedChunkStatus::NEEDED();
+		$world->registerChunkLoader($this->chunkLoader, $spawnChunkPos, true);
+		$world->registerChunkListener($this, $spawnChunkPos);
+		$this->usedChunks[$spawnChunkPos->hash] = UsedChunkStatus::NEEDED();
 
 		parent::__construct($spawn, $this->playerInfo->getSkin(), $namedtag);
 		$this->onGround = $onGround; //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
@@ -719,8 +720,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if(parent::switchWorld($targetWorld)){
 			if($oldWorld !== null){
 				foreach($this->usedChunks as $index => $status){
-					World::getXZ($index, $X, $Z);
-					$this->unloadChunk($X, $Z, $oldWorld);
+					$this->unloadChunk(ChunkPos::fromHash($index), $oldWorld);
 				}
 			}
 
@@ -734,25 +734,24 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return false;
 	}
 
-	protected function unloadChunk(int $x, int $z, ?World $world = null) : void{
+	protected function unloadChunk(ChunkPos $chunkPos, ?World $world = null) : void{
 		$world = $world ?? $this->getWorld();
-		$index = World::chunkHash($x, $z);
-		if(isset($this->usedChunks[$index])){
-			foreach($world->getChunk($x, $z)->getEntities() as $entity){
+		if(isset($this->usedChunks[$chunkPos->hash])){
+			foreach($world->getChunk($chunkPos)->getEntities() as $entity){
 				if($entity !== $this){
 					$entity->despawnFrom($this);
 				}
 			}
-			$this->networkSession->stopUsingChunk($x, $z);
-			unset($this->usedChunks[$index]);
+			$this->networkSession->stopUsingChunk($chunkPos);
+			unset($this->usedChunks[$chunkPos->hash]);
 		}
-		$world->unregisterChunkLoader($this->chunkLoader, $x, $z);
-		$world->unregisterChunkListener($this, $x, $z);
-		unset($this->loadQueue[$index]);
+		$world->unregisterChunkLoader($this->chunkLoader, $chunkPos);
+		$world->unregisterChunkListener($this, $chunkPos);
+		unset($this->loadQueue[$chunkPos->hash]);
 	}
 
-	protected function spawnEntitiesOnChunk(int $chunkX, int $chunkZ) : void{
-		foreach($this->getWorld()->getChunk($chunkX, $chunkZ)->getEntities() as $entity){
+	protected function spawnEntitiesOnChunk(ChunkPos $pos) : void{
+		foreach($this->getWorld()->getChunk($pos)->getEntities() as $entity){
 			if($entity !== $this and !$entity->isFlaggedForDespawn()){
 				$entity->spawnTo($this);
 			}
@@ -777,10 +776,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			++$count;
 
 			$this->usedChunks[$chunkPos->hash] = UsedChunkStatus::NEEDED();
-			$this->getWorld()->registerChunkLoader($this->chunkLoader, $chunkPos->getX(), $chunkPos->getZ(), true);
-			$this->getWorld()->registerChunkListener($this, $chunkPos->getX(), $chunkPos->getZ());
+			$this->getWorld()->registerChunkLoader($this->chunkLoader, $chunkPos, true);
+			$this->getWorld()->registerChunkListener($this, $chunkPos);
 
-			if(!$this->getWorld()->populateChunk($chunkPos->getX(), $chunkPos->getZ())){
+			if(!$this->getWorld()->populateChunk($chunkPos)){
 				continue;
 			}
 
@@ -790,14 +789,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->networkSession->startUsingChunk($chunkPos, function(ChunkPos $chunkPos) : void{
 				$this->usedChunks[$chunkPos->hash] = UsedChunkStatus::SENT();
 				if($this->spawnChunkLoadCount === -1){
-					$this->spawnEntitiesOnChunk($chunkPos->getX(), $chunkPos->getZ());
+					$this->spawnEntitiesOnChunk($chunkPos);
 				}elseif($this->spawnChunkLoadCount++ === $this->spawnThreshold){
 					$this->spawnChunkLoadCount = -1;
 
 					foreach($this->usedChunks as $chunkHash => $status){
 						if($status->equals(UsedChunkStatus::SENT())){
-							World::getXZ($chunkHash, $_x, $_z);
-							$this->spawnEntitiesOnChunk($_x, $_z);
+							$this->spawnEntitiesOnChunk(ChunkPos::fromHash($chunkHash));
 						}
 					}
 
@@ -856,18 +854,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		foreach($this->chunkSelector->selectChunks(
 			$this->server->getAllowedViewDistance($this->viewDistance),
-			$this->location->getFloorX() >> 4,
-			$this->location->getFloorZ() >> 4
+			ChunkPos::fromVec3($this->location)
 		) as $hash){
-			if(!isset($this->usedChunks[$hash]) or $this->usedChunks[$hash]->equals(UsedChunkStatus::NEEDED())){
-				$newOrder[$hash] = true;
+			if(!isset($this->usedChunks[$hash->hash]) or $this->usedChunks[$hash->hash]->equals(UsedChunkStatus::NEEDED())){
+				$newOrder[$hash->hash] = true;
 			}
-			unset($unloadChunks[$hash]);
+			unset($unloadChunks[$hash->hash]);
 		}
 
 		foreach($unloadChunks as $index => $status){
-			World::getXZ($index, $X, $Z);
-			$this->unloadChunk($X, $Z);
+			$this->unloadChunk(ChunkPos::fromHash($index));
 		}
 
 		$this->loadQueue = $newOrder;
@@ -879,12 +875,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		Timings::$playerChunkOrderTimer->stopTiming();
 	}
 
-	public function isUsingChunk(int $chunkX, int $chunkZ) : bool{
-		return isset($this->usedChunks[World::chunkHash($chunkX, $chunkZ)]);
+	public function isUsingChunk(ChunkPos $chunkPos) : bool{
+		return isset($this->usedChunks[$chunkPos->hash]);
 	}
 
-	public function hasReceivedChunk(int $chunkX, int $chunkZ) : bool{
-		$status = $this->usedChunks[World::chunkHash($chunkX, $chunkZ)] ?? null;
+	public function hasReceivedChunk(ChunkPos $chunkPos) : bool{
+		$status = $this->usedChunks[$chunkPos->hash] ?? null;
 		return $status !== null and $status->equals(UsedChunkStatus::SENT());
 	}
 
@@ -1177,7 +1173,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->logger->debug("Moved too fast, reverting movement");
 			$this->logger->debug("Old position: " . $this->location->asVector3() . ", new position: " . $newPos);
 			$revert = true;
-		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos) or !$this->getWorld()->isChunkGenerated($newPos->getFloorX() >> 4, $newPos->getFloorZ() >> 4)){
+		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos) or !$this->getWorld()->isChunkGenerated(ChunkPos::fromVec3($newPos))){
 			$revert = true;
 			$this->nextChunkOrderRun = 0;
 		}
@@ -1983,8 +1979,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		if($this->location->isValid()){
 			foreach($this->usedChunks as $index => $status){
-				World::getXZ($index, $chunkX, $chunkZ);
-				$this->unloadChunk($chunkX, $chunkZ);
+				$this->unloadChunk(ChunkPos::fromHash($index));
 			}
 		}
 		$this->usedChunks = [];

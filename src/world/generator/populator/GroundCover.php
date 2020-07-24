@@ -29,13 +29,14 @@ use pocketmine\block\Liquid;
 use pocketmine\utils\Random;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\ChunkPos;
 use function count;
 use function min;
 
 class GroundCover extends Populator{
 
-	public function populate(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void{
-		$chunk = $world->getChunk($chunkX, $chunkZ);
+	public function populate(ChunkManager $world, ChunkPos $chunkPos, Random $random) : void{
+		$chunk = $world->getChunk($chunkPos);
 		$factory = BlockFactory::getInstance();
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){

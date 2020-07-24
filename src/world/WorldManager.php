@@ -278,13 +278,8 @@ class WorldManager{
 		if($backgroundGeneration){
 			$this->server->getLogger()->notice($this->server->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
 
-			$spawnLocation = $world->getSpawnLocation();
-			$centerX = $spawnLocation->getFloorX() >> 4;
-			$centerZ = $spawnLocation->getFloorZ() >> 4;
-
-			foreach((new ChunkSelector())->selectChunks(3, $centerX, $centerZ) as $index){
-				World::getXZ($index, $chunkX, $chunkZ);
-				$world->populateChunk($chunkX, $chunkZ, true);
+			foreach((new ChunkSelector())->selectChunks(3, ChunkPos::fromVec3($world->getSpawnLocation())) as $chunkPos){
+				$world->populateChunk($chunkPos, true);
 			}
 		}
 
