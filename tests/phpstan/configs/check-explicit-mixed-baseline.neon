@@ -156,16 +156,6 @@ parameters:
 			path: ../../../src/network/mcpe/raklib/RakLibInterface.php
 
 		-
-			message: "#^Cannot access offset 'down' on mixed\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/raklib/RakLibInterface.php
-
-		-
-			message: "#^Cannot access offset 'up' on mixed\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/raklib/RakLibInterface.php
-
-		-
 			message: "#^Parameter \\#1 \\$value of static method pocketmine\\\\permission\\\\PermissionParser\\:\\:defaultFromString\\(\\) expects bool\\|string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/permission/PermissionParser.php
