@@ -197,7 +197,7 @@ namespace pocketmine {
 
 		ErrorToExceptionHandler::set();
 
-		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
+		$version = new VersionString(VersionInfo::BASE_VERSION, VersionInfo::IS_DEVELOPMENT_BUILD, VersionInfo::BUILD_NUMBER);
 		define('pocketmine\VERSION', $version->getFullVersion(true));
 
 		$gitHash = str_repeat("00", 20);
@@ -225,7 +225,7 @@ namespace pocketmine {
 
 		$lockFilePath = $dataPath . '/server.lock';
 		if(($pid = Filesystem::createLockFile($lockFilePath)) !== null){
-			critical_error("Another " . \pocketmine\NAME . " instance (PID $pid) is already using this folder (" . realpath($dataPath) . ").");
+			critical_error("Another " . VersionInfo::NAME . " instance (PID $pid) is already using this folder (" . realpath($dataPath) . ").");
 			critical_error("Please stop the other server first before running a new one.");
 			exit(1);
 		}

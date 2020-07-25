@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\build\make_release;
 
 use pocketmine\utils\VersionString;
+use pocketmine\VersionInfo;
 use function dirname;
 use function fgets;
 use function file_get_contents;
@@ -32,7 +33,6 @@ use function preg_replace;
 use function sleep;
 use function sprintf;
 use function system;
-use const pocketmine\BASE_VERSION;
 use const STDIN;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
@@ -41,13 +41,13 @@ require_once dirname(__DIR__) . '/vendor/autoload.php';
 function replaceVersion(string $versionInfoPath, string $newVersion, bool $isDev) : void{
 	$versionInfo = file_get_contents($versionInfoPath);
 	$versionInfo = preg_replace(
-		$pattern = '/^const BASE_VERSION = "(\d+)\.(\d+)\.(\d+)(?:-(.*))?";$/m',
-		'const BASE_VERSION = "' . $newVersion . '";',
+		$pattern = '/^([\t ]*public )?const BASE_VERSION = "(\d+)\.(\d+)\.(\d+)(?:-(.*))?";$/m',
+		'$1const BASE_VERSION = "' . $newVersion . '";',
 		$versionInfo
 	);
 	$versionInfo = preg_replace(
-		'/^const IS_DEVELOPMENT_BUILD = (?:true|false);$/m',
-		'const IS_DEVELOPMENT_BUILD = ' . ($isDev ? 'true' : 'false') . ';',
+		'/^([\t ]*public )?const IS_DEVELOPMENT_BUILD = (?:true|false);$/m',
+		'$1const IS_DEVELOPMENT_BUILD = ' . ($isDev ? 'true' : 'false') . ';',
 		$versionInfo
 	);
 	file_put_contents($versionInfoPath, $versionInfo);
@@ -61,7 +61,7 @@ function main(array $argv) : void{
 	if(isset($argv[1])){
 		$currentVer = new VersionString($argv[1]);
 	}else{
-		$currentVer = new VersionString(BASE_VERSION);
+		$currentVer = new VersionString(VersionInfo::BASE_VERSION);
 	}
 	$nextVer = new VersionString(sprintf(
 		"%u.%u.%u",

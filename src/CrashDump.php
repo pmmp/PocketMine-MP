@@ -308,12 +308,12 @@ class CrashDump{
 	}
 
 	private function generalData() : void{
-		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
+		$version = new VersionString(VersionInfo::BASE_VERSION, VersionInfo::IS_DEVELOPMENT_BUILD, VersionInfo::BUILD_NUMBER);
 		$this->data["general"] = [];
 		$this->data["general"]["name"] = $this->server->getName();
-		$this->data["general"]["base_version"] = \pocketmine\BASE_VERSION;
-		$this->data["general"]["build"] = \pocketmine\BUILD_NUMBER;
-		$this->data["general"]["is_dev"] = \pocketmine\IS_DEVELOPMENT_BUILD;
+		$this->data["general"]["base_version"] = VersionInfo::BASE_VERSION;
+		$this->data["general"]["build"] = VersionInfo::BUILD_NUMBER;
+		$this->data["general"]["is_dev"] = VersionInfo::IS_DEVELOPMENT_BUILD;
 		$this->data["general"]["protocol"] = ProtocolInfo::CURRENT_PROTOCOL;
 		$this->data["general"]["git"] = \pocketmine\GIT_COMMIT;
 		$this->data["general"]["uname"] = php_uname("a");
