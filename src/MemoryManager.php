@@ -42,7 +42,6 @@ use function gc_disable;
 use function gc_enable;
 use function get_class;
 use function get_declared_classes;
-use function implode;
 use function ini_get;
 use function ini_set;
 use function is_array;
