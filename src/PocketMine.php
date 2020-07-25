@@ -197,23 +197,6 @@ namespace pocketmine {
 
 		ErrorToExceptionHandler::set();
 
-		$version = new VersionString(VersionInfo::BASE_VERSION, VersionInfo::IS_DEVELOPMENT_BUILD, VersionInfo::BUILD_NUMBER);
-		define('pocketmine\VERSION', $version->getFullVersion(true));
-
-		$gitHash = str_repeat("00", 20);
-
-		if(\Phar::running(true) === ""){
-			$gitHash = Git::getRepositoryStatePretty(\pocketmine\PATH);
-		}else{
-			$phar = new \Phar(\Phar::running(false));
-			$meta = $phar->getMetadata();
-			if(isset($meta["git"])){
-				$gitHash = $meta["git"];
-			}
-		}
-
-		define('pocketmine\GIT_COMMIT', $gitHash);
-
 		$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-ansi", "disable-ansi"]);
 
 		$dataPath = isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR;

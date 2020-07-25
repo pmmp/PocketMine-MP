@@ -160,7 +160,7 @@ class AutoUpdater{
 		if($this->updateInfo === null){
 			return;
 		}
-		$currentVersion = new VersionString(VersionInfo::BASE_VERSION, VersionInfo::IS_DEVELOPMENT_BUILD, VersionInfo::BUILD_NUMBER);
+		$currentVersion = VersionInfo::getVersionObj();
 		try{
 			$newVersion = new VersionString($this->updateInfo->base_version, $this->updateInfo->is_dev, $this->updateInfo->build);
 		}catch(\InvalidArgumentException $e){
