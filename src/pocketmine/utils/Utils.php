@@ -355,17 +355,6 @@ class Utils{
 		return $processors;
 	}
 
-	public static function arePhpVersionsCompatible(string $version, string $requiredVersion) : bool{
-		$versionParts = explode(".", $version);
-		$requiredVersionParts = explode(".", $requiredVersion);
-
-		if(count($versionParts) < 2 or count($requiredVersionParts) < 2){
-			throw new \InvalidArgumentException("The versions must include major and minor version!");
-		}
-
-		return $versionParts[0] === $requiredVersionParts[0] and $versionParts[1] === $requiredVersionParts[1] and (count($versionParts) < 3 or count($requiredVersionParts) < 3 or intval($versionParts[2]) >= intval($requiredVersionParts[2]));
-	}
-
 	/**
 	 * Returns a prettified hexdump
 	 */

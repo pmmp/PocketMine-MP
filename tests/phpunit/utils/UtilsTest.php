@@ -93,12 +93,4 @@ class UtilsTest extends TestCase{
 		//be careful with this test. The closure has to be declared on the same line as the assertion.
 		self::assertSame('closure@' . Utils::cleanPath(__FILE__) . '#L' . __LINE__, Utils::getNiceClosureName(function() : void{}));
 	}
-
-	public function testPhpVersionsCompatibility() : void{
-		self::assertTrue(Utils::arePhpVersionsCompatible("7.3", "7.3"));
-		self::assertTrue(Utils::arePhpVersionsCompatible("7.3.3", "7.3.3"));
-		self::assertTrue(Utils::arePhpVersionsCompatible("7.3.2", "7.3.1"));
-		self::assertFalse(Utils::arePhpVersionsCompatible("7.3.2", "7.3.3"));
-		self::assertFalse(Utils::arePhpVersionsCompatible("7.3", "7.4"));
-	}
 }
