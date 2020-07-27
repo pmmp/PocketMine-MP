@@ -198,10 +198,7 @@ class Creeper extends Monster implements Ageable{
 				return true;
 			}
 		}
-		return parent::onInteract($player, $item, $clickPos);
-	}
 
-	protected function isValidLightLevel() : bool{
-		return true;
+		return parent::onInteract($player, $item, $clickPos);
 	}
 }
