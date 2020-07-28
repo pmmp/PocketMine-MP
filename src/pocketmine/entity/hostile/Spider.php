@@ -70,7 +70,19 @@ class Spider extends Monster implements Ageable, Arthropod{
 		$this->behaviorPool->setBehavior(4, new LookAtPlayerBehavior($this, 8.0));
 		$this->behaviorPool->setBehavior(5, new RandomLookAroundBehavior($this));
 
-		$this->targetBehaviorPool->setBehavior(0, new NearestAttackableTargetBehavior($this, Player::class));
+		$this->targetBehaviorPool->setBehavior(0, new class($this, Player::class) extends NearestAttackableTargetBehavior{
+			public function canStart() : bool{
+				$canStart = parent::canStart();
+
+				if($this->mob instanceof Spider and $canStart){
+					if($this->mob->level->isDayTime() and !$this->mob->canSpawnHere()){
+						return false;
+					}
+				}
+
+				return $canStart;
+			}
+		});
 	}
 
 	public function getXpDropAmount() : int{
