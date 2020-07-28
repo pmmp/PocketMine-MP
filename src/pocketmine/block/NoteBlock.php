@@ -30,7 +30,7 @@ use pocketmine\Player;
 use pocketmine\tile\NoteBlock as TileNoteBlock;
 use pocketmine\tile\Tile;
 
-class Noteblock extends Solid{
+class NoteBlock extends Solid{
 
 	// TODO: Redstone power
 
