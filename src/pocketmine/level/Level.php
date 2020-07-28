@@ -70,6 +70,7 @@ use pocketmine\level\sound\Sound;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
+use pocketmine\math\VoxelRayTrace;
 use pocketmine\metadata\BlockMetadataStore;
 use pocketmine\metadata\Metadatable;
 use pocketmine\metadata\MetadataValue;
@@ -3286,6 +3287,52 @@ class Level implements ChunkManager, Metadatable{
 		$possibleCreatures = $this->getBiome($pos->x, $pos->z)->getSpawnableList($creatureType);
 
 		return empty($possibleCreatures) ? false : in_array($entry, $possibleCreatures);
+	}
+
+	public function getBlockDensity(Vector3 $vec, AxisAlignedBB $bb) : float{
+		$dX = 1 / (($bb->maxX - $bb->minX) * 2 + 1);
+		$dY = 1 / (($bb->maxY - $bb->minY) * 2 + 1);
+		$dZ = 1 / (($bb->maxZ - $bb->minZ) * 2 + 1);
+
+		$fX = (1 - floor(1 / $dX) * $dX) / 2;
+		$fZ = (1 - floor(1 / $dZ) * $dZ) / 2;
+
+		if($dX >= 0 and $dY >= 0 and $dZ >= 0){
+			$blocksDensity = 0;
+			$totalBlocks = 0;
+
+			for($vX = 0; $vX <= 1; $vX += $dX){
+				for($vY = 0; $vY <= 1; $vY += $dY){
+					for($vZ = 0; $vZ <= 1; $vZ += $dZ){
+						$x = $bb->minX + ($bb->maxX - $bb->minX) * $vX;
+						$y = $bb->minY + ($bb->maxY - $bb->minY) * $vY;
+						$z = $bb->minZ + ($bb->maxZ - $bb->minZ) * $vZ;
+
+						$start = new Vector3($x + $fX, $y, $z + $fZ);
+						$block = $this->getBlock($vec);
+
+						if($block->calculateIntercept($start, $vec) !== null){
+							++$blocksDensity;
+						}else{
+							foreach(VoxelRayTrace::betweenPoints($start, $vec) as $blockPos){
+								$block = $this->getBlockAt($blockPos->x, $blockPos->y, $blockPos->z);
+
+								if($block->calculateIntercept($start, $vec) !== null){
+									++$blocksDensity;
+									break;
+								}
+							}
+						}
+
+						++$totalBlocks;
+					}
+				}
+			}
+
+			return $blocksDensity / $totalBlocks;
+		}
+
+		return 0;
 	}
 
 	/**

@@ -188,8 +188,8 @@ class Explosion{
 
 			if($distance <= 1){
 				$motion = $entity->subtract($this->source)->normalize();
-
-				$impact = (1 - $distance) * ($exposure = 1);
+				$density = $entity->level->getBlockDensity($this->source, $entity->getBoundingBox());
+				$impact = (1 - $distance) * $density;
 
 				$damage = (int) ((($impact * $impact + $impact) / 2) * 8 * $explosionSize + 1);
 
