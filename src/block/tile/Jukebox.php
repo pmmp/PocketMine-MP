@@ -73,6 +73,13 @@ class Jukebox extends Spawnable{
 		$this->getPos()->getWorld()->addSound($this->getPos(), new RecordStopSound());
 	}
 
+	public function onBlockDestroyedHook(): void
+	{
+		if($this->ejectRecord()){
+			$this->stopSound();
+		}
+	}
+
 	public function readSaveData(CompoundTag $nbt) : void{
 		if(($tag = $nbt->getCompoundTag(self::TAG_RECORD)) !== null){
 			$record = Record::nbtDeserialize($tag);
