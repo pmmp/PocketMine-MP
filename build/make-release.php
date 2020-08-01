@@ -25,6 +25,7 @@ namespace pocketmine\build\make_release;
 
 use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
+use function defined;
 use function dirname;
 use function fgets;
 use function file_get_contents;
