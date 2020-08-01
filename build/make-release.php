@@ -38,7 +38,6 @@ use const STDIN;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
-
 function replaceVersion(string $versionInfoPath, string $newVersion, bool $isDev) : void{
 	$versionInfo = file_get_contents($versionInfoPath);
 	$versionInfo = preg_replace(
