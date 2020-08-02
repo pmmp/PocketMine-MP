@@ -23,36 +23,20 @@ declare(strict_types=1);
 
 namespace pocketmine\world\sound;
 
-use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
+use pocketmine\block\utils\RecordType;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class RecordSound implements Sound{
 
-	public const SOUND_MAP = [
-		ItemIds::RECORD_13 => LevelSoundEventPacket::SOUND_RECORD_13,
-		ItemIds::RECORD_CAT => LevelSoundEventPacket::SOUND_RECORD_CAT,
-		ItemIds::RECORD_BLOCKS => LevelSoundEventPacket::SOUND_RECORD_BLOCKS,
-		ItemIds::RECORD_CHIRP => LevelSoundEventPacket::SOUND_RECORD_CHIRP,
-		ItemIds::RECORD_FAR => LevelSoundEventPacket::SOUND_RECORD_FAR,
-		ItemIds::RECORD_MALL => LevelSoundEventPacket::SOUND_RECORD_MALL,
-		ItemIds::RECORD_MELLOHI => LevelSoundEventPacket::SOUND_RECORD_MELLOHI,
-		ItemIds::RECORD_STAL => LevelSoundEventPacket::SOUND_RECORD_STAL,
-		ItemIds::RECORD_STRAD => LevelSoundEventPacket::SOUND_RECORD_STRAD,
-		ItemIds::RECORD_WARD => LevelSoundEventPacket::SOUND_RECORD_WARD,
-		ItemIds::RECORD_11 => LevelSoundEventPacket::SOUND_RECORD_11,
-		ItemIds::RECORD_WAIT => LevelSoundEventPacket::SOUND_RECORD_WAIT,
-		// PIGSTEP
-	];
+	/** @var RecordType */
+	private $recordType;
 
-	/** @var int */
-	private $sound;
-
-	public function __construct(int $record){
-		$this->sound = self::SOUND_MAP[$record];
+	public function __construct(RecordType $recordType){
+		$this->recordType = $recordType;
 	}
 
 	public function encode(?Vector3 $pos){
-		return LevelSoundEventPacket::create($this->sound, $pos);
+		return LevelSoundEventPacket::create($this->recordType->getSoundId(), $pos);
 	}
 }

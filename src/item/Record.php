@@ -23,11 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-class Record extends Item{
+use pocketmine\block\utils\RecordType;
 
-	public function __construct(ItemIdentifier $identifier, string $name)
-	{
+class Record extends Item{
+	/** @var RecordType */
+	private $recordType;
+
+	public function __construct(ItemIdentifier $identifier, RecordType $recordType, string $name = "Unknown"){
+		$this->recordType = $recordType;
 		parent::__construct($identifier, $name);
+	}
+
+	public function getRecordType(): RecordType{
+		return $this->recordType;
 	}
 
 	public function getMaxStackSize() : int{

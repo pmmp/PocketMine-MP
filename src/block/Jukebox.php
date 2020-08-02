@@ -28,8 +28,12 @@ use pocketmine\item\Item;
 use pocketmine\item\Record;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\RecordSound;
+use pocketmine\world\sound\RecordStopSound;
 
 class Jukebox extends Opaque{
+	/** @var Record|null */
+	private $record = null;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::AXE, 0, 15.0));
@@ -41,15 +45,71 @@ class Jukebox extends Opaque{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
-			$jukebox = $this->pos->getWorld()->getTile($this->pos);
-			if($jukebox instanceof JukeboxTile){
-				if(!$jukebox->ejectRecord() and $item instanceof Record and $jukebox->insertRecord($item)){
+			if($this->hasRecord()){
+				$this->ejectRecord();
+			} else {
+				if($item instanceof Record) {
 					$player->getInventory()->remove($item);
+					$this->insertRecord($item);
 				}
 			}
 		}
+
+		$this->pos->getWorld()->setBlock($this->pos, $this);
+
 		return true;
 	}
 
-	//Note Jukebox has redstone effects, they are not implemented.
+	public function hasRecord() : bool{
+		return $this->record !== null;
+	}
+
+	public function ejectRecord() : void{
+		if($this->hasRecord()){
+			$this->getPos()->getWorld()->dropItem($this->getPos()->add(0.5, 1, 0.5), $this->record);
+			$this->record = null;
+			$this->stopSound();
+		}
+	}
+
+	public function insertRecord(Record $record) : void{
+		if(!$this->hasRecord()){
+			$this->record = $record;
+			$this->startSound();
+		}
+	}
+
+	public function startSound() : void{
+		if($this->record !== null){
+			$this->getPos()->getWorld()->addSound($this->getPos(), new RecordSound($this->record->getRecordType()));
+		}
+	}
+
+	public function stopSound() : void{
+		$this->getPos()->getWorld()->addSound($this->getPos(), new RecordStopSound());
+	}
+
+	public function onBreak(Item $item, ?Player $player = null): bool
+	{
+		$this->ejectRecord();
+		return parent::onBreak($item, $player);
+	}
+
+	public function readStateFromWorld(): void{
+		parent::readStateFromWorld();
+		$jukebox = $this->pos->getWorld()->getTile($this->pos);
+		if($jukebox instanceof JukeboxTile){
+			$this->record = $jukebox->getRecord();
+		}
+	}
+
+	public function writeStateToWorld(): void{
+		parent::writeStateToWorld();
+		$jukebox = $this->pos->getWorld()->getTile($this->pos);
+		if($jukebox instanceof JukeboxTile){
+			$jukebox->setRecord($this->record);
+		}
+	}
+
+	//TODO: Jukebox has redstone effects, they are not implemented.
 }

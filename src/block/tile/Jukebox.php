@@ -23,66 +23,27 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use pocketmine\world\World;
+use pocketmine\item\Item;
 use pocketmine\item\Record;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\world\sound\RecordSound;
-use pocketmine\world\sound\RecordStopSound;
 
-class Jukebox extends Spawnable{
-	public const TAG_RECORD = "record";
+class Jukebox extends Tile{
+	private const TAG_RECORD = "RecordItem"; //Item CompoundTag
 
 	/** @var Record|null */
 	private $record = null;
-
-	public function __construct(World $world, Vector3 $pos){
-		parent::__construct($world, $pos);
-	}
 
 	public function getRecord() : ?Record{
 		return $this->record;
 	}
 
-	public function ejectRecord() : bool{
-		if($this->record !== null){
-			$this->getPos()->getWorld()->dropItem($this->getPos()->add(0.5,1,0.5), $this->record);
-			$this->record = null;
-			$this->stopSound();
-			return true;
-		}
-		return false;
-	}
-
-	public function insertRecord(Record $record) : bool{
-		if($this->record === null){
-			$this->record = $record;
-			$this->startSound();
-			return true;
-		}
-		return false;
-	}
-
-	public function startSound() : void{
-		if($this->record !== null){
-			$this->getPos()->getWorld()->addSound($this->getPos(), new RecordSound($this->record->getId()));
-		}
-	}
-
-	public function stopSound() : void{
-		$this->getPos()->getWorld()->addSound($this->getPos(), new RecordStopSound());
-	}
-
-	public function onBlockDestroyedHook(): void
-	{
-		if($this->ejectRecord()){
-			$this->stopSound();
-		}
+	public function setRecord(?Record $record) : void{
+		$this->record = $record;
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if(($tag = $nbt->getCompoundTag(self::TAG_RECORD)) !== null){
-			$record = Record::nbtDeserialize($tag);
+			$record = Item::nbtDeserialize($tag);
 			if($record instanceof Record){
 				$this->record = $record;
 			}
@@ -94,6 +55,4 @@ class Jukebox extends Spawnable{
 			$nbt->setTag(self::TAG_RECORD, $this->record->nbtSerialize());
 		}
 	}
-
-	protected function addAdditionalSpawnData(CompoundTag $nbt): void{}
 }
