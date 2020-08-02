@@ -60,7 +60,7 @@ class Jukebox extends Opaque{
 		return true;
 	}
 
-	public function getRecord() : Record{
+	public function getRecord() : ?Record{
 		return $this->record;
 	}
 
