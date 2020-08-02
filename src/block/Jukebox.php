@@ -45,11 +45,11 @@ class Jukebox extends Opaque{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
-			if($this->hasRecord()){
+			if($this->record !== null){
 				$this->ejectRecord();
 			} else {
 				if($item instanceof Record) {
-					$player->getInventory()->remove($item);
+					$player->getInventory()->clear($player->getInventory()->getHeldItemIndex());
 					$this->insertRecord($item);
 				}
 			}
@@ -60,12 +60,12 @@ class Jukebox extends Opaque{
 		return true;
 	}
 
-	public function hasRecord() : bool{
-		return $this->record !== null;
+	public function getRecord() : Record{
+		return $this->record;
 	}
 
 	public function ejectRecord() : void{
-		if($this->hasRecord()){
+		if($this->record !== null){
 			$this->getPos()->getWorld()->dropItem($this->getPos()->add(0.5, 1, 0.5), $this->record);
 			$this->record = null;
 			$this->stopSound();
@@ -73,7 +73,7 @@ class Jukebox extends Opaque{
 	}
 
 	public function insertRecord(Record $record) : void{
-		if(!$this->hasRecord()){
+		if($this->record === null){
 			$this->record = $record;
 			$this->startSound();
 		}
@@ -89,10 +89,8 @@ class Jukebox extends Opaque{
 		$this->getPos()->getWorld()->addSound($this->getPos(), new RecordStopSound());
 	}
 
-	public function onBreak(Item $item, ?Player $player = null): bool
-	{
-		$this->ejectRecord();
-		return parent::onBreak($item, $player);
+	public function getDrops(Item $item): array{
+		return $this->record !== null ? [$this->record] : [];
 	}
 
 	public function readStateFromWorld(): void{
