@@ -149,6 +149,7 @@ use pocketmine\network\mcpe\protocol\types\CommandParameter;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\GameMode;
+use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\PersonaPieceTintColor;
 use pocketmine\network\mcpe\protocol\types\PersonaSkinPiece;
@@ -2392,18 +2393,20 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		/** @var InventoryAction[] $actions */
 		$actions = [];
 		$isCraftingPart = false;
-		$isFinalCraftingPart = false;
 		foreach($packet->actions as $networkInventoryAction){
 			if(
 				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO and (
 					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT or
 					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
+				) or (
+					$this->craftingTransaction !== null &&
+					!$networkInventoryAction->oldItem->equalsExact($networkInventoryAction->newItem) &&
+					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER &&
+					$networkInventoryAction->windowId === ContainerIds::UI &&
+					$networkInventoryAction->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT
 				)
 			){
 				$isCraftingPart = true;
-				if($networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT){
-					$isFinalCraftingPart = true;
-				}
 			}
 			try{
 				$action = $networkInventoryAction->createInventoryAction($this);
@@ -2426,23 +2429,24 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 			}
 
-			if($isFinalCraftingPart){
-				//we get the actions for this in several packets, so we need to wait until we have all the pieces before
-				//trying to execute it
-
-				$ret = true;
-				try{
-					$this->craftingTransaction->execute();
-				}catch(TransactionValidationException $e){
-					$this->server->getLogger()->debug("Failed to execute crafting transaction for " . $this->getName() . ": " . $e->getMessage());
-					$ret = false;
-				}
-
-				$this->craftingTransaction = null;
-				return $ret;
+			try{
+				$this->craftingTransaction->validate();
+			}catch(TransactionValidationException $e){
+				//transaction is incomplete - crafting transaction comes in lots of little bits, so we have to collect
+				//all of the parts before we can execute it
+				return true;
 			}
 
-			return true;
+			$ret = true;
+			try{
+				$this->craftingTransaction->execute();
+			}catch(TransactionValidationException $e){
+				$this->server->getLogger()->debug("Failed to execute crafting transaction for " . $this->getName() . ": " . $e->getMessage());
+				$ret = false;
+			}
+
+			$this->craftingTransaction = null;
+			return $ret;
 		}elseif($this->craftingTransaction !== null){
 			$this->server->getLogger()->debug("Got unexpected normal inventory action with incomplete crafting transaction from " . $this->getName() . ", refusing to execute crafting");
 			$this->craftingTransaction = null;
