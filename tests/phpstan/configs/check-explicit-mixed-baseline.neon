@@ -208,11 +208,6 @@ parameters:
 		-
 			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/inventory/CraftingManager.php
-
-		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
 			path: ../../../src/pocketmine/item/Item.php
 
 		-
