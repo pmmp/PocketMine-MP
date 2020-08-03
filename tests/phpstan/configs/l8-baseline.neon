@@ -146,11 +146,6 @@ parameters:
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
 
 		-
-			message: "#^Parameter \\#1 \\$object of function get_class expects object, pocketmine\\\\nbt\\\\tag\\\\Tag\\|null given\\.$#"
-			count: 1
-			path: ../../../src/item/Item.php
-
-		-
 			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:BLAST_PROTECTION\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
 			count: 1
 			path: ../../../src/item/enchantment/Enchantment.php
@@ -244,11 +239,6 @@ parameters:
 			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:VANISHING\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
 			count: 1
 			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\EnchantmentList\\:\\:getSlot\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\EnchantmentEntry but returns pocketmine\\\\item\\\\enchantment\\\\EnchantmentEntry\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/EnchantmentList.php
 
 		-
 			message: "#^Cannot call method getUsername\\(\\) on pocketmine\\\\player\\\\PlayerInfo\\|null\\.$#"
