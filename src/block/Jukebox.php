@@ -90,7 +90,7 @@ class Jukebox extends Opaque{
 	}
 
 	public function getDrops(Item $item): array{
-		return $this->record !== null ? [$this->record] : [];
+		return $this->record !== null ? [$this->asItem(), clone $this->record] : [$this->asItem()];
 	}
 
 	public function readStateFromWorld(): void{
