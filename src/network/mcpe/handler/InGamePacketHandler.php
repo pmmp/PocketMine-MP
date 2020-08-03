@@ -34,6 +34,7 @@ use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionException;
+use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
@@ -82,10 +83,12 @@ use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\NormalTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
+use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
@@ -215,19 +218,23 @@ class InGamePacketHandler extends PacketHandler{
 		$actions = [];
 
 		$isCraftingPart = false;
-		$isFinalCraftingPart = false;
 		$converter = TypeConverter::getInstance();
 		foreach($data->getActions() as $networkInventoryAction){
 			if(
-				$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO and (
-					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT or
-					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
+				(
+					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO and (
+						$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT or
+						$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
+					)
+				) or (
+					$this->craftingTransaction !== null &&
+					!$networkInventoryAction->oldItem->equals($networkInventoryAction->newItem) &&
+					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER &&
+					$networkInventoryAction->windowId === ContainerIds::UI &&
+					$networkInventoryAction->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT
 				)
 			){
 				$isCraftingPart = true;
-				if($networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT){
-					$isFinalCraftingPart = true;
-				}
 			}
 
 			try{
@@ -242,9 +249,6 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		if($isCraftingPart){
-			//we get the actions for this in several packets, so we need to wait until we have all the pieces before
-			//trying to execute it
-
 			if($this->craftingTransaction === null){
 				$this->craftingTransaction = new CraftingTransaction($this->player, $this->player->getServer()->getCraftingManager(), $actions);
 			}else{
@@ -253,29 +257,34 @@ class InGamePacketHandler extends PacketHandler{
 				}
 			}
 
-			if($isFinalCraftingPart){
-				try{
-					$this->session->getInvManager()->onTransactionStart($this->craftingTransaction);
-					$this->craftingTransaction->execute();
-				}catch(TransactionException $e){
-					$this->session->getLogger()->debug("Failed to execute crafting transaction: " . $e->getMessage());
+			try{
+				$this->craftingTransaction->validate();
+			}catch(TransactionValidationException $e){
+				//transaction is incomplete - crafting transaction comes in lots of little bits, so we have to collect
+				//all of the parts before we can execute it
+				return true;
+			}
+			try{
+				$this->session->getInvManager()->onTransactionStart($this->craftingTransaction);
+				$this->craftingTransaction->execute();
+			}catch(TransactionException $e){
+				$this->session->getLogger()->debug("Failed to execute crafting transaction: " . $e->getMessage());
 
-					//TODO: only sync slots that the client tried to change
-					foreach($this->craftingTransaction->getInventories() as $inventory){
-						$this->session->getInvManager()->syncContents($inventory);
-					}
-					/*
-					 * TODO: HACK!
-					 * we can't resend the contents of the crafting window, so we force the client to close it instead.
-					 * So people don't whine about messy desync issues when someone cancels CraftItemEvent, or when a crafting
-					 * transaction goes wrong.
-					 */
-					$this->session->sendDataPacket(ContainerClosePacket::create(InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID));
-
-					return false;
-				}finally{
-					$this->craftingTransaction = null;
+				//TODO: only sync slots that the client tried to change
+				foreach($this->craftingTransaction->getInventories() as $inventory){
+					$this->session->getInvManager()->syncContents($inventory);
 				}
+				/*
+				 * TODO: HACK!
+				 * we can't resend the contents of the crafting window, so we force the client to close it instead.
+				 * So people don't whine about messy desync issues when someone cancels CraftItemEvent, or when a crafting
+				 * transaction goes wrong.
+				 */
+				$this->session->sendDataPacket(ContainerClosePacket::create(InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID));
+
+				return false;
+			}finally{
+				$this->craftingTransaction = null;
 			}
 		}else{
 			//normal transaction fallthru
