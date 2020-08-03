@@ -28,8 +28,10 @@ use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\utils\AssumptionFailedError;
 use function array_map;
 use function file_get_contents;
+use function is_array;
 use function json_decode;
 use function json_encode;
 use function usort;
@@ -52,6 +54,9 @@ class CraftingManager{
 
 	public function init() : void{
 		$recipes = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla" . DIRECTORY_SEPARATOR . "recipes.json"), true);
+		if(!is_array($recipes)){
+			throw new AssumptionFailedError("recipes.json root should contain a map of recipe types");
+		}
 
 		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
 
