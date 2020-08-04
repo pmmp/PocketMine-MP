@@ -29,7 +29,7 @@ class Record extends Item{
 	/** @var RecordType */
 	private $recordType;
 
-	public function __construct(ItemIdentifier $identifier, RecordType $recordType, string $name = "Unknown"){
+	public function __construct(ItemIdentifier $identifier, RecordType $recordType, string $name){
 		$this->recordType = $recordType;
 		parent::__construct($identifier, $name);
 	}

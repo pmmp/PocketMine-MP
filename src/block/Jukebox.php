@@ -89,7 +89,7 @@ class Jukebox extends Opaque{
 		$this->getPos()->getWorld()->addSound($this->getPos(), new RecordStopSound());
 	}
 
-	public function getDrops(Item $item): array{
+	public function getDropsForCompatibleTool(Item $item): array{
 		return $this->record !== null ? [$this->asItem(), clone $this->record] : [$this->asItem()];
 	}
 
