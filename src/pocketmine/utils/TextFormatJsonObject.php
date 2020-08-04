@@ -23,6 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+/**
+ * @internal
+ * @see TextFormat::toJSON()
+ */
 final class TextFormatJsonObject implements \JsonSerializable{
 	/** @var string|null */
 	public $text = null;
