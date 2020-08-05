@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -33,8 +34,8 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\DoorSound;
 
 class Door extends Transparent{
-	/** @var int */
-	protected $facing = Facing::NORTH;
+	use HorizontalFacingTrait;
+
 	/** @var bool */
 	protected $top = false;
 	/** @var bool */

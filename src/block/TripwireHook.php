@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -31,9 +32,8 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class TripwireHook extends Flowable{
+	use HorizontalFacingTrait;
 
-	/** @var int */
-	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $connected = false;
 	/** @var bool */

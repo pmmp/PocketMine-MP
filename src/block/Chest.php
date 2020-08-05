@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -33,9 +34,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Chest extends Transparent{
-
-	/** @var int */
-	protected $facing = Facing::NORTH;
+	use HorizontalFacingTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::AXE));

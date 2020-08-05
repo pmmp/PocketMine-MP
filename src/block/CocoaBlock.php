@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\TreeType;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -36,9 +37,8 @@ use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class CocoaBlock extends Transparent{
+	use HorizontalFacingTrait;
 
-	/** @var int */
-	protected $facing = Facing::NORTH;
 	/** @var int */
 	protected $age = 0;
 

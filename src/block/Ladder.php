@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
@@ -34,9 +35,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Ladder extends Transparent{
-
-	/** @var int */
-	protected $facing = Facing::NORTH;
+	use HorizontalFacingTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.4, BlockToolType::AXE));

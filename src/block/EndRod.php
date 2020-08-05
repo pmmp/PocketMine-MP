@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -32,9 +33,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class EndRod extends Flowable{
-
-	/** @var int */
-	protected $facing = Facing::DOWN;
+	use AnyFacingTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());

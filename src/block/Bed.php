@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Bed as ItemBed;
 use pocketmine\item\Item;
@@ -40,9 +41,8 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
 
 class Bed extends Transparent{
+	use HorizontalFacingTrait;
 
-	/** @var int */
-	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $occupied = false;
 	/** @var bool */

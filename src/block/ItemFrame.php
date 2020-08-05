@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -33,10 +34,10 @@ use pocketmine\world\BlockTransaction;
 use function lcg_value;
 
 class ItemFrame extends Flowable{
+	use HorizontalFacingTrait;
+
 	public const ROTATIONS = 8;
 
-	/** @var int */
-	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $hasMap = false; //makes frame appear large if set
 	/** @var Item|null */
@@ -84,14 +85,6 @@ class ItemFrame extends Flowable{
 
 	public function getStateBitmask() : int{
 		return 0b111;
-	}
-
-	public function getFacing() : int{
-		return $this->facing;
-	}
-
-	public function setFacing(int $facing) : void{
-		$this->facing = $facing;
 	}
 
 	public function getFramedItem() : ?Item{

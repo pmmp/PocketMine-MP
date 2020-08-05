@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Comparator;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -34,11 +35,11 @@ use pocketmine\world\BlockTransaction;
 use function assert;
 
 class RedstoneComparator extends Flowable{
+	use HorizontalFacingTrait;
+
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
 
-	/** @var int */
-	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $isSubtractMode = false;
 	/** @var bool */
@@ -83,20 +84,6 @@ class RedstoneComparator extends Flowable{
 		$tile = $this->pos->getWorld()->getTile($this->pos);
 		assert($tile instanceof Comparator);
 		$tile->setSignalStrength($this->signalStrength);
-	}
-
-	/**
-	 * TODO: ad hoc, move to interface
-	 */
-	public function getFacing() : int{
-		return $this->facing;
-	}
-
-	/**
-	 * TODO: ad hoc, move to interface
-	 */
-	public function setFacing(int $facing) : void{
-		$this->facing = $facing;
 	}
 
 	public function isSubtractMode() : bool{

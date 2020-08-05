@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -33,9 +34,8 @@ use pocketmine\world\sound\RedstonePowerOffSound;
 use pocketmine\world\sound\RedstonePowerOnSound;
 
 abstract class Button extends Flowable{
+	use AnyFacingTrait;
 
-	/** @var int */
-	protected $facing = Facing::DOWN;
 	/** @var bool */
 	protected $pressed = false;
 

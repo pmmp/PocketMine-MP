@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -31,9 +32,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 final class ChemistryTable extends Opaque{
-
-	/** @var int */
-	private $facing = Facing::NORTH;
+	use HorizontalFacingTrait;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = Facing::opposite(BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x3));
