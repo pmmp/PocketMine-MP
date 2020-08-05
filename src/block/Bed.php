@@ -106,12 +106,6 @@ class Bed extends Transparent{
 
 	public function setOccupied(bool $occupied = true) : void{
 		$this->occupied = $occupied;
-		$this->pos->getWorld()->setBlock($this->pos, $this, false);
-
-		if(($other = $this->getOtherHalf()) !== null){
-			$other->occupied = $occupied;
-			$this->pos->getWorld()->setBlock($other->pos, $other, false);
-		}
 	}
 
 	private function getOtherHalfSide() : int{
@@ -163,6 +157,13 @@ class Bed extends Transparent{
 
 		return true;
 
+	}
+
+	public function onNearbyBlockChange() : void{
+		if(($other = $this->getOtherHalf()) !== null and $other->occupied !== $this->occupied){
+			$this->occupied = $other->occupied;
+			$this->pos->getWorld()->setBlock($this->pos, $this);
+		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

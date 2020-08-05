@@ -954,6 +954,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		if($b instanceof Bed){
 			$b->setOccupied();
+			$this->getWorld()->setBlock($pos, $b);
 		}
 
 		$this->sleeping = $pos;
@@ -970,6 +971,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$b = $this->getWorld()->getBlock($this->sleeping);
 			if($b instanceof Bed){
 				$b->setOccupied(false);
+				$this->getWorld()->setBlock($this->sleeping, $b);
 			}
 			(new PlayerBedLeaveEvent($this, $b))->call();
 
