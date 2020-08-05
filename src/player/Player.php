@@ -426,10 +426,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return parent::getUniqueId();
 	}
 
-	public function getPlayer() : ?Player{
-		return $this;
-	}
-
 	/**
 	 * TODO: not sure this should be nullable
 	 */
