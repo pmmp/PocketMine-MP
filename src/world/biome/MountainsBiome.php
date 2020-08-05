@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\world\biome;
 
+use pocketmine\block\VanillaBlocks;
+use pocketmine\world\generator\object\OreType;
+use pocketmine\world\generator\populator\Ore;
 use pocketmine\world\generator\populator\TallGrass;
 use pocketmine\world\generator\populator\Tree;
 
@@ -38,9 +41,13 @@ class MountainsBiome extends GrassyBiome{
 		$tallGrass = new TallGrass();
 		$tallGrass->setBaseAmount(1);
 
-		$this->addPopulator($tallGrass);
+		$ores = new Ore();
+		$ores->setOreTypes([
+			new OreType(VanillaBlocks::EMERALD_ORE(), 11, 1, 0, 32)
+		]);
 
-		//TODO: add emerald
+		$this->addPopulator($tallGrass);
+		$this->addPopulator($ores);
 
 		$this->setElevation(63, 127);
 
