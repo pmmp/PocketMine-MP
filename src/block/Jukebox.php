@@ -48,8 +48,7 @@ class Jukebox extends Opaque{
 			if($this->record !== null){
 				$this->ejectRecord();
 			}elseif($item instanceof Record){
-				$player->getInventory()->clear($player->getInventory()->getHeldItemIndex());
-				$this->insertRecord($item);
+				$this->insertRecord($item->pop());
 			}
 		}
 
