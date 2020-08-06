@@ -34,7 +34,7 @@ class Record extends Item{
 		parent::__construct($identifier, $name);
 	}
 
-	public function getRecordType(): RecordType{
+	public function getRecordType() : RecordType{
 		return $this->recordType;
 	}
 

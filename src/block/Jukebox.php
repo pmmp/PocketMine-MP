@@ -93,7 +93,7 @@ class Jukebox extends Opaque{
 		return $this->record !== null ? [$this->asItem(), clone $this->record] : [$this->asItem()];
 	}
 
-	public function readStateFromWorld(): void{
+	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		$jukebox = $this->pos->getWorld()->getTile($this->pos);
 		if($jukebox instanceof JukeboxTile){
@@ -101,7 +101,7 @@ class Jukebox extends Opaque{
 		}
 	}
 
-	public function writeStateToWorld(): void{
+	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
 		$jukebox = $this->pos->getWorld()->getTile($this->pos);
 		if($jukebox instanceof JukeboxTile){

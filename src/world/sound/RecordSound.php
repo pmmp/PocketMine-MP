@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\world\sound;
 
-use pocketmine\math\Vector3;
 use pocketmine\block\utils\RecordType;
+use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class RecordSound implements Sound{
