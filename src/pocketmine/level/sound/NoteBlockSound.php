@@ -75,7 +75,7 @@ class NoteBlockSound extends Sound{
 		$pk2 = new LevelSoundEventPacket();
 		$pk2->sound = LevelSoundEventPacket::SOUND_NOTE;
 		$pk2->position = $this;
-		$pk2->extraData = $this->instrument | $this->note;
+		$pk2->extraData = $this->instrument << 8 | $this->note;
 
 		return [$pk, $pk2];
 	}
