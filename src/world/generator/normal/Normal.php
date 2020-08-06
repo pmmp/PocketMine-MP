@@ -116,15 +116,16 @@ class Normal extends Generator{
 		$this->generationPopulators[] = $cover;
 
 		$ores = new Ore();
+		$stone = VanillaBlocks::STONE();
 		$ores->setOreTypes([
-			new OreType(VanillaBlocks::COAL_ORE(), 20, 16, 0, 128),
-			new OreType(VanillaBlocks::IRON_ORE(), 20, 8, 0, 64),
-			new OreType(VanillaBlocks::REDSTONE_ORE(), 8, 7, 0, 16),
-			new OreType(VanillaBlocks::LAPIS_LAZULI_ORE(), 1, 6, 0, 32),
-			new OreType(VanillaBlocks::GOLD_ORE(), 2, 8, 0, 32),
-			new OreType(VanillaBlocks::DIAMOND_ORE(), 1, 7, 0, 16),
-			new OreType(VanillaBlocks::DIRT(), 20, 32, 0, 128),
-			new OreType(VanillaBlocks::GRAVEL(), 10, 16, 0, 128)
+			new OreType(VanillaBlocks::COAL_ORE(), $stone, 20, 16, 0, 128),
+			new OreType(VanillaBlocks::IRON_ORE(), $stone, 20, 8, 0, 64),
+			new OreType(VanillaBlocks::REDSTONE_ORE(), $stone, 8, 7, 0, 16),
+			new OreType(VanillaBlocks::LAPIS_LAZULI_ORE(), $stone, 1, 6, 0, 32),
+			new OreType(VanillaBlocks::GOLD_ORE(), $stone, 2, 8, 0, 32),
+			new OreType(VanillaBlocks::DIAMOND_ORE(), $stone, 1, 7, 0, 16),
+			new OreType(VanillaBlocks::DIRT(), $stone, 20, 32, 0, 128),
+			new OreType(VanillaBlocks::GRAVEL(), $stone, 10, 16, 0, 128)
 		]);
 		$this->populators[] = $ores;
 	}
