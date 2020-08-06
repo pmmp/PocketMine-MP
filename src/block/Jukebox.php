@@ -36,7 +36,8 @@ class Jukebox extends Opaque{
 	private $record = null;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::AXE, 0, 15.0));
+		//TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.8, BlockToolType::AXE));
 	}
 
 	public function getFuelTime() : int{
