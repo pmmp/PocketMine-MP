@@ -47,8 +47,6 @@ class Flat extends Generator{
 	 */
 	private $structure;
 	/** @var int */
-	private $floorLevel;
-	/** @var int */
 	private $biome;
 	/** @var string */
 	private $preset;
@@ -127,8 +125,6 @@ class Flat extends Generator{
 		$this->biome = (int) ($preset[2] ?? 1);
 		$options = $preset[3] ?? "";
 		$this->structure = self::parseLayers($blocks);
-
-		$this->floorLevel = count($this->structure);
 
 		//TODO: more error checking
 		preg_match_all('#(([0-9a-z_]{1,})\(?([0-9a-z_ =:]{0,})\)?),?#', $options, $matches);
