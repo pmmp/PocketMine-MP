@@ -33,8 +33,8 @@ use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Facing;
 use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -485,7 +485,7 @@ class Block{
 	 */
 	public function getHorizontalSides() : \Generator{
 		$world = $this->pos->getWorld();
-		foreach($this->pos->sidesAroundAxis(Facing::AXIS_Y) as $vector3){
+		foreach($this->pos->sidesAroundAxis(Axis::Y) as $vector3){
 			yield $world->getBlock($vector3);
 		}
 	}

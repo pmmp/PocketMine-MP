@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 
 final class BlockDataSerializer{
@@ -69,14 +70,14 @@ final class BlockDataSerializer{
 	 */
 	public static function readHorizontalFacing(int $facing) : int{
 		$facing = self::readFacing($facing);
-		if(Facing::axis($facing) === Facing::AXIS_Y){
+		if(Facing::axis($facing) === Axis::Y){
 			throw new InvalidBlockStateException("Invalid Y-axis facing $facing");
 		}
 		return $facing;
 	}
 
 	public static function writeHorizontalFacing(int $facing) : int{
-		if(Facing::axis($facing) === Facing::AXIS_Y){
+		if(Facing::axis($facing) === Axis::Y){
 			throw new \InvalidArgumentException("Invalid Y-axis facing");
 		}
 		return self::writeFacing($facing);

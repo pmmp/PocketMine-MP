@@ -29,6 +29,7 @@ use pocketmine\block\utils\TreeType;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -74,7 +75,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(Facing::axis($face) !== Facing::AXIS_Y and $blockClicked instanceof Wood and $blockClicked->getTreeType()->equals(TreeType::JUNGLE())){
+		if(Facing::axis($face) !== Axis::Y and $blockClicked instanceof Wood and $blockClicked->getTreeType()->equals(TreeType::JUNGLE())){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
