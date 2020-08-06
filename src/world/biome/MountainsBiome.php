@@ -41,12 +41,13 @@ class MountainsBiome extends GrassyBiome{
 		$tallGrass = new TallGrass();
 		$tallGrass->setBaseAmount(1);
 
+		$this->addPopulator($tallGrass);
+
 		$ores = new Ore();
 		$ores->setOreTypes([
 			new OreType(VanillaBlocks::EMERALD_ORE(), 11, 1, 0, 32)
 		]);
 
-		$this->addPopulator($tallGrass);
 		$this->addPopulator($ores);
 
 		$this->setElevation(63, 127);
