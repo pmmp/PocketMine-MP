@@ -792,6 +792,13 @@ class NetworkSession{
 		$this->sendDataPacket(TextPacket::translation($key, $parameters));
 	}
 
+	/**
+	 * @param string[] $parameters
+	 */
+	public function onJukeboxPopup(string $key, array $parameters) : void{
+		$this->sendDataPacket(TextPacket::jukeboxPopup($key, $parameters));
+	}
+
 	public function onPopup(string $message) : void{
 		$this->sendDataPacket(TextPacket::popup($message));
 	}
