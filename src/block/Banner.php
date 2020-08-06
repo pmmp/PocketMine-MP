@@ -137,13 +137,15 @@ class Banner extends Transparent{
 	/**
 	 * @param Deque|BannerPattern[] $patterns
 	 * @phpstan-param Deque<BannerPattern> $patterns
+	 * @return $this
 	 */
-	public function setPatterns(Deque $patterns) : void{
+	public function setPatterns(Deque $patterns) : self{
 		$checked = $patterns->filter(function($v) : bool{ return $v instanceof BannerPattern; });
 		if($checked->count() !== $patterns->count()){
 			throw new \TypeError("Deque must only contain " . BannerPattern::class . " objects");
 		}
 		$this->patterns = $checked;
+		return $this;
 	}
 
 	/**

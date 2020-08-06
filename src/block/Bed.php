@@ -104,8 +104,10 @@ class Bed extends Transparent{
 		return $this->occupied;
 	}
 
-	public function setOccupied(bool $occupied = true) : void{
+	/** @return $this */
+	public function setOccupied(bool $occupied = true) : self{
 		$this->occupied = $occupied;
+		return $this;
 	}
 
 	private function getOtherHalfSide() : int{

@@ -90,24 +90,30 @@ class RedstoneComparator extends Flowable{
 		return $this->isSubtractMode;
 	}
 
-	public function setSubtractMode(bool $isSubtractMode) : void{
+	/** @return $this */
+	public function setSubtractMode(bool $isSubtractMode) : self{
 		$this->isSubtractMode = $isSubtractMode;
+		return $this;
 	}
 
 	public function isPowered() : bool{
 		return $this->powered;
 	}
 
-	public function setPowered(bool $powered) : void{
+	/** @return $this */
+	public function setPowered(bool $powered) : self{
 		$this->powered = $powered;
+		return $this;
 	}
 
 	public function getSignalStrength() : int{
 		return $this->signalStrength;
 	}
 
-	public function setSignalStrength(int $signalStrength) : void{
+	/** @return $this */
+	public function setSignalStrength(int $signalStrength) : self{
 		$this->signalStrength = $signalStrength;
+		return $this;
 	}
 
 	/**

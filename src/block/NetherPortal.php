@@ -54,12 +54,14 @@ class NetherPortal extends Transparent{
 
 	/**
 	 * @throws \InvalidArgumentException
+	 * @return $this
 	 */
-	public function setAxis(int $axis) : void{
+	public function setAxis(int $axis) : self{
 		if($axis !== Facing::AXIS_X and $axis !== Facing::AXIS_Z){
 			throw new \InvalidArgumentException("Invalid axis");
 		}
 		$this->axis = $axis;
+		return $this;
 	}
 
 	public function getLightLevel() : int{

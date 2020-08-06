@@ -81,13 +81,15 @@ class FlowerPot extends Flowable{
 		return $this->plant;
 	}
 
-	public function setPlant(?Block $plant) : void{
+	/** @return $this */
+	public function setPlant(?Block $plant) : self{
 		if($plant === null or $plant instanceof Air){
 			$this->plant = null;
 		}else{
 			$this->plant = clone $plant;
 		}
 		$this->occupied = $this->plant !== null;
+		return $this;
 	}
 
 	public function canAddPlant(Block $block) : bool{
