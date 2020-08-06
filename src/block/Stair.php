@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\StairShape;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -33,9 +34,8 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Stair extends Transparent{
+	use HorizontalFacingTrait;
 
-	/** @var int */
-	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $upsideDown = false;
 

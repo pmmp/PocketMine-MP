@@ -36,9 +36,7 @@ class ItemBlock extends Item{
 	protected $blockMeta;
 
 	/**
-	 * @param int            $blockId
 	 * @param int            $blockMeta usually 0-15 (placed blocks may only have meta values 0-15)
-	 * @param ItemIdentifier $identifier
 	 */
 	public function __construct(int $blockId, int $blockMeta, ItemIdentifier $identifier){
 		if($blockMeta < 0 || $blockMeta > 15){

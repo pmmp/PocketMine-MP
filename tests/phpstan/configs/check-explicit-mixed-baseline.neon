@@ -116,11 +116,6 @@ parameters:
 			path: ../../../src/command/defaults/VanillaCommand.php
 
 		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/crafting/CraftingManagerFromDataHelper.php
-
-		-
 			message: "#^Method pocketmine\\\\event\\\\EventPriority\\:\\:fromString\\(\\) should return int but returns mixed\\.$#"
 			count: 1
 			path: ../../../src/event/EventPriority.php

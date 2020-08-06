@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Comparator;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -34,11 +35,11 @@ use pocketmine\world\BlockTransaction;
 use function assert;
 
 class RedstoneComparator extends Flowable{
+	use HorizontalFacingTrait;
+
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
 
-	/** @var int */
-	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $isSubtractMode = false;
 	/** @var bool */
@@ -85,42 +86,34 @@ class RedstoneComparator extends Flowable{
 		$tile->setSignalStrength($this->signalStrength);
 	}
 
-	/**
-	 * TODO: ad hoc, move to interface
-	 */
-	public function getFacing() : int{
-		return $this->facing;
-	}
-
-	/**
-	 * TODO: ad hoc, move to interface
-	 */
-	public function setFacing(int $facing) : void{
-		$this->facing = $facing;
-	}
-
 	public function isSubtractMode() : bool{
 		return $this->isSubtractMode;
 	}
 
-	public function setSubtractMode(bool $isSubtractMode) : void{
+	/** @return $this */
+	public function setSubtractMode(bool $isSubtractMode) : self{
 		$this->isSubtractMode = $isSubtractMode;
+		return $this;
 	}
 
 	public function isPowered() : bool{
 		return $this->powered;
 	}
 
-	public function setPowered(bool $powered) : void{
+	/** @return $this */
+	public function setPowered(bool $powered) : self{
 		$this->powered = $powered;
+		return $this;
 	}
 
 	public function getSignalStrength() : int{
 		return $this->signalStrength;
 	}
 
-	public function setSignalStrength(int $signalStrength) : void{
+	/** @return $this */
+	public function setSignalStrength(int $signalStrength) : self{
 		$this->signalStrength = $signalStrength;
+		return $this;
 	}
 
 	/**

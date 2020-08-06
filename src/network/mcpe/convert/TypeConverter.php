@@ -180,12 +180,12 @@ class TypeConverter{
 	 * @throws \UnexpectedValueException
 	 */
 	public function createInventoryAction(NetworkInventoryAction $action, Player $player) : ?InventoryAction{
-		$old = TypeConverter::getInstance()->netItemStackToCore($action->oldItem);
-		$new = TypeConverter::getInstance()->netItemStackToCore($action->newItem);
-		if($old->equalsExact($new)){
+		if($action->oldItem->equals($action->newItem)){
 			//filter out useless noise in 1.13
 			return null;
 		}
+		$old = TypeConverter::getInstance()->netItemStackToCore($action->oldItem);
+		$new = TypeConverter::getInstance()->netItemStackToCore($action->newItem);
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
 				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){

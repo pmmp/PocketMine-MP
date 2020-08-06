@@ -25,6 +25,7 @@ namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
 use pocketmine\item\Item;
+use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -33,7 +34,7 @@ use pocketmine\world\BlockTransaction;
 trait PillarRotationTrait{
 
 	/** @var int */
-	protected $axis = Facing::AXIS_Y;
+	protected $axis = Axis::Y;
 
 	protected function getAxisMetaShift() : int{
 		return 2; //default
@@ -62,9 +63,9 @@ trait PillarRotationTrait{
 
 	protected function readAxisFromMeta(int $meta) : void{
 		static $map = [
-			0 => Facing::AXIS_Y,
-			1 => Facing::AXIS_X,
-			2 => Facing::AXIS_Z
+			0 => Axis::Y,
+			1 => Axis::X,
+			2 => Axis::Z
 		];
 		$axis = $meta >> $this->getAxisMetaShift();
 		if(!isset($map[$axis])){
@@ -75,9 +76,9 @@ trait PillarRotationTrait{
 
 	protected function writeAxisToMeta() : int{
 		static $bits = [
-			Facing::AXIS_Y => 0,
-			Facing::AXIS_Z => 2,
-			Facing::AXIS_X => 1
+			Axis::Y => 0,
+			Axis::Z => 2,
+			Axis::X => 1
 		];
 		return $bits[$this->axis] << $this->getAxisMetaShift();
 	}

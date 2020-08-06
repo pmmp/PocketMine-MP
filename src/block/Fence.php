@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use function count;
@@ -63,7 +64,7 @@ class Fence extends Transparent{
 		if($connectWest or $connectEast){
 			//X axis (west/east)
 			$bbs[] = AxisAlignedBB::one()
-				->squash(Facing::AXIS_Z, $inset)
+				->squash(Axis::Z, $inset)
 				->extend(Facing::UP, 0.5)
 				->trim(Facing::WEST, $connectWest ? 0 : $inset)
 				->trim(Facing::EAST, $connectEast ? 0 : $inset);
@@ -75,7 +76,7 @@ class Fence extends Transparent{
 		if($connectNorth or $connectSouth){
 			//Z axis (north/south)
 			$bbs[] = AxisAlignedBB::one()
-				->squash(Facing::AXIS_X, $inset)
+				->squash(Axis::X, $inset)
 				->extend(Facing::UP, 0.5)
 				->trim(Facing::NORTH, $connectNorth ? 0 : $inset)
 				->trim(Facing::SOUTH, $connectSouth ? 0 : $inset);

@@ -195,6 +195,6 @@ final class BlockLegacyIdHelper{
 			case DyeColor::BLACK()->id():
 				return new BlockIdentifier(Ids::BLACK_GLAZED_TERRACOTTA);
 		}
-		throw new AssumptionFailedError("Switch should cover all wood types");
+		throw new AssumptionFailedError("Switch should cover all colours");
 	}
 }

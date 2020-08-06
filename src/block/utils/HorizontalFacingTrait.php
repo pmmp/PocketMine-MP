@@ -21,28 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\player;
+namespace pocketmine\block\utils;
 
-use pocketmine\permission\ServerOperator;
+use pocketmine\math\Axis;
+use pocketmine\math\Facing;
 
-interface IPlayer extends ServerOperator{
+trait HorizontalFacingTrait{
+	/** @var int */
+	protected $facing = Facing::NORTH;
 
-	public function isOnline() : bool;
+	public function getFacing() : int{ return $this->facing; }
 
-	public function getName() : string;
-
-	public function isBanned() : bool;
-
-	public function setBanned(bool $banned) : void;
-
-	public function isWhitelisted() : bool;
-
-	public function setWhitelisted(bool $value) : void;
-
-	public function getFirstPlayed() : ?int;
-
-	public function getLastPlayed() : ?int;
-
-	public function hasPlayedBefore() : bool;
-
+	/** @return $this */
+	public function setFacing(int $facing) : self{
+		$axis = Facing::axis($facing);
+		if($axis !== Axis::X && $axis !== Axis::Z){
+			throw new \InvalidArgumentException("Facing must be horizontal");
+		}
+		$this->facing = $facing;
+		return $this;
+	}
 }

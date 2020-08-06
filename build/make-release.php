@@ -25,6 +25,7 @@ namespace pocketmine\build\make_release;
 
 use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
+use function defined;
 use function dirname;
 use function fgets;
 use function file_get_contents;
@@ -36,7 +37,6 @@ use function system;
 use const STDIN;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
-
 
 function replaceVersion(string $versionInfoPath, string $newVersion, bool $isDev) : void{
 	$versionInfo = file_get_contents($versionInfoPath);

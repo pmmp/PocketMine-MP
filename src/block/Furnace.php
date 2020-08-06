@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\Facing;
@@ -33,11 +34,11 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Furnace extends Opaque{
+	use HorizontalFacingTrait;
+
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
 
-	/** @var int */
-	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $lit = false; //this is set based on the blockID
 

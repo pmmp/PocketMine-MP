@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\Painting;
 use pocketmine\entity\object\PaintingMotive;
+use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -37,7 +38,7 @@ use function count;
 class PaintingItem extends Item{
 
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		if(Facing::axis($face) === Facing::AXIS_Y){
+		if(Facing::axis($face) === Axis::Y){
 			return ItemUseResult::NONE();
 		}
 

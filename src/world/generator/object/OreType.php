@@ -28,6 +28,8 @@ use pocketmine\block\Block;
 class OreType{
 	/** @var Block */
 	public $material;
+	/** @var Block */
+	public $replaces;
 	/** @var int */
 	public $clusterCount;
 	/** @var int */
@@ -37,8 +39,9 @@ class OreType{
 	/** @var int */
 	public $minHeight;
 
-	public function __construct(Block $material, int $clusterCount, int $clusterSize, int $minHeight, int $maxHeight){
+	public function __construct(Block $material, Block $replaces, int $clusterCount, int $clusterSize, int $minHeight, int $maxHeight){
 		$this->material = $material;
+		$this->replaces = $replaces;
 		$this->clusterCount = $clusterCount;
 		$this->clusterSize = $clusterSize;
 		$this->maxHeight = $maxHeight;

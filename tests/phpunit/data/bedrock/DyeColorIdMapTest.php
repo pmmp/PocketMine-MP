@@ -21,28 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\player;
+namespace pocketmine\data\bedrock;
 
-use pocketmine\permission\ServerOperator;
+use PHPUnit\Framework\TestCase;
+use pocketmine\block\utils\DyeColor;
 
-interface IPlayer extends ServerOperator{
+class DyeColorIdMapTest extends TestCase{
 
-	public function isOnline() : bool;
-
-	public function getName() : string;
-
-	public function isBanned() : bool;
-
-	public function setBanned(bool $banned) : void;
-
-	public function isWhitelisted() : bool;
-
-	public function setWhitelisted(bool $value) : void;
-
-	public function getFirstPlayed() : ?int;
-
-	public function getLastPlayed() : ?int;
-
-	public function hasPlayedBefore() : bool;
-
+	public function testAllColorsMapped() : void{
+		foreach(DyeColor::getAll() as $color){
+			$id = DyeColorIdMap::getInstance()->toId($color);
+			$color2 = DyeColorIdMap::getInstance()->fromId($id);
+			self::assertTrue($color->equals($color2));
+		}
+	}
 }

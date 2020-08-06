@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use function count;
@@ -51,7 +52,7 @@ class Thin extends Transparent{
 		$bbs = [];
 
 		if(isset($this->connections[Facing::WEST]) or isset($this->connections[Facing::EAST])){
-			$bb = AxisAlignedBB::one()->squash(Facing::AXIS_Z, $inset);
+			$bb = AxisAlignedBB::one()->squash(Axis::Z, $inset);
 
 			if(!isset($this->connections[Facing::WEST])){
 				$bb->trim(Facing::WEST, $inset);
@@ -62,7 +63,7 @@ class Thin extends Transparent{
 		}
 
 		if(isset($this->connections[Facing::NORTH]) or isset($this->connections[Facing::SOUTH])){
-			$bb = AxisAlignedBB::one()->squash(Facing::AXIS_X, $inset);
+			$bb = AxisAlignedBB::one()->squash(Axis::X, $inset);
 
 			if(!isset($this->connections[Facing::NORTH])){
 				$bb->trim(Facing::NORTH, $inset);

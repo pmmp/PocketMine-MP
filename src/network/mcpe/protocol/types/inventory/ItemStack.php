@@ -97,4 +97,17 @@ final class ItemStack{
 	public function getShieldBlockingTick() : ?int{
 		return $this->shieldBlockingTick;
 	}
+
+	public function equals(ItemStack $itemStack) : bool{
+		return
+			$this->id === $itemStack->id &&
+			$this->meta === $itemStack->meta &&
+			$this->count === $itemStack->count &&
+			$this->canPlaceOn === $itemStack->canPlaceOn &&
+			$this->canDestroy === $itemStack->canDestroy &&
+			$this->shieldBlockingTick === $itemStack->shieldBlockingTick && (
+				$this->nbt === $itemStack->nbt || //this covers null === null and fast object identity
+				($this->nbt !== null && $itemStack->nbt !== null && $this->nbt->equals($itemStack->nbt))
+			);
+	}
 }

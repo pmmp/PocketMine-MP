@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\AxisAlignedBB;
@@ -34,9 +35,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class EnderChest extends Transparent{
-
-	/** @var int */
-	protected $facing = Facing::NORTH;
+	use HorizontalFacingTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(22.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 3000.0));
