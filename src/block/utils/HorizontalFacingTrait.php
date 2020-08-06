@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\math\Axis;
 use pocketmine\math\Facing;
-use function in_array;
 
 trait HorizontalFacingTrait{
 	/** @var int */
@@ -34,7 +34,8 @@ trait HorizontalFacingTrait{
 
 	/** @return $this */
 	public function setFacing(int $facing) : self{
-		if(!in_array($facing, Facing::HORIZONTAL, true)){
+		$axis = Facing::axis($facing);
+		if($axis !== Axis::X && $axis !== Axis::Z){
 			throw new \InvalidArgumentException("Facing must be horizontal");
 		}
 		$this->facing = $facing;
