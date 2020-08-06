@@ -350,7 +350,7 @@ class ItemFactory{
 		$this->register(new Hoe(new ItemIdentifier(ItemIds::IRON_HOE, 0), "Iron Hoe", ToolTier::IRON()));
 		$this->register(new Hoe(new ItemIdentifier(ItemIds::STONE_HOE, 0), "Stone Hoe", ToolTier::STONE()));
 		$this->register(new Hoe(new ItemIdentifier(ItemIds::WOODEN_HOE, 0), "Wooden Hoe", ToolTier::WOOD()));
-		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::NETHERITE_PICKAXE), "Netherite Pickaxe", ToolTier::NETHERITE()));
+		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::NETHERITE_PICKAXE, 0), "Netherite Pickaxe", ToolTier::NETHERITE()));
 		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::DIAMOND_PICKAXE, 0), "Diamond Pickaxe", ToolTier::DIAMOND()));
 		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::GOLDEN_PICKAXE, 0), "Golden Pickaxe", ToolTier::GOLD()));
 		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::IRON_PICKAXE, 0), "Iron Pickaxe", ToolTier::IRON()));
@@ -362,7 +362,7 @@ class ItemFactory{
 		$this->register(new Shovel(new ItemIdentifier(ItemIds::IRON_SHOVEL, 0), "Iron Shovel", ToolTier::IRON()));
 		$this->register(new Shovel(new ItemIdentifier(ItemIds::STONE_SHOVEL, 0), "Stone Shovel", ToolTier::STONE()));
 		$this->register(new Shovel(new ItemIdentifier(ItemIds::WOODEN_SHOVEL, 0), "Wooden Shovel", ToolTier::WOOD()));
-		$this->register(new Sword(new ItemIdentifier(ItemIds::NETHERITE_SWORD), "Netherite Sword", ToolTier::NETHERITE()));
+		$this->register(new Sword(new ItemIdentifier(ItemIds::NETHERITE_SWORD, 0), "Netherite Sword", ToolTier::NETHERITE()));
 		$this->register(new Sword(new ItemIdentifier(ItemIds::DIAMOND_SWORD, 0), "Diamond Sword", ToolTier::DIAMOND()));
 		$this->register(new Sword(new ItemIdentifier(ItemIds::GOLDEN_SWORD, 0), "Golden Sword", ToolTier::GOLD()));
 		$this->register(new Sword(new ItemIdentifier(ItemIds::IRON_SWORD, 0), "Iron Sword", ToolTier::IRON()));
