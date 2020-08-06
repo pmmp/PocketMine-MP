@@ -125,6 +125,10 @@ class Squid extends WaterAnimal{
 		];
 	}
 
+	public function canSpawnHere() : bool{
+		return parent::canSpawnHere() and $this->y > 45 and $this->y < 63;
+	}
+
 	protected function applyGravity() : void{
 		if(!$this->isUnderwater()){
 			parent::applyGravity();

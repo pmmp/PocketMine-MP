@@ -37,6 +37,10 @@ abstract class WaterAnimal extends Mob implements Ageable{
 		return $this->isUnderwater();
 	}
 
+	public function canSpawnHere() : bool{
+		return true;
+	}
+
 	public function onAirExpired() : void{
 		$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 2);
 		$this->attack($ev);
