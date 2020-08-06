@@ -63,8 +63,8 @@ class Flat extends Generator{
 		if(isset($this->options["preset"]) and $this->options["preset"] != ""){
 			$this->preset = $this->options["preset"];
 		}else{
-			$this->preset = "2;7,2x3,2;1;";
-			//$this->preset = "2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)";
+			$this->preset = "2;bedrock,2xdirt,grass;1;";
+			//$this->preset = "2;bedrock,59xstone,3xdirt,grass;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)";
 		}
 
 		$this->parsePreset();
