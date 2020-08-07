@@ -1852,6 +1852,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
+	 * @param string[] $args
+	 */
+	public function sendJukeboxPopup(string $key, array $args) : void{
+		if($this->networkSession !== null){
+			$this->networkSession->onJukeboxPopup($key, $args);
+		}
+	}
+
+	/**
 	 * Sends a popup message to the player
 	 *
 	 * TODO: add translation type popups

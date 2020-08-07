@@ -397,6 +397,7 @@ use function assert;
  * @method static Opaque IRON_ORE()
  * @method static Trapdoor IRON_TRAPDOOR()
  * @method static ItemFrame ITEM_FRAME()
+ * @method static Jukebox JUKEBOX()
  * @method static WoodenButton JUNGLE_BUTTON()
  * @method static WoodenDoor JUNGLE_DOOR()
  * @method static WoodenFence JUNGLE_FENCE()
@@ -1062,6 +1063,7 @@ final class VanillaBlocks{
 		self::register("iron_ore", $factory->get(15));
 		self::register("iron_trapdoor", $factory->get(167));
 		self::register("item_frame", $factory->get(199));
+		self::register("jukebox", $factory->get(84));
 		self::register("jungle_button", $factory->get(398));
 		self::register("jungle_door", $factory->get(195));
 		self::register("jungle_fence", $factory->get(85, 3));

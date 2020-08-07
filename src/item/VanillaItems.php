@@ -247,6 +247,18 @@ use function assert;
  * @method static RawPorkchop RAW_PORKCHOP()
  * @method static RawRabbit RAW_RABBIT()
  * @method static RawSalmon RAW_SALMON()
+ * @method static Record RECORD_11()
+ * @method static Record RECORD_13()
+ * @method static Record RECORD_BLOCKS()
+ * @method static Record RECORD_CAT()
+ * @method static Record RECORD_CHIRP()
+ * @method static Record RECORD_FAR()
+ * @method static Record RECORD_MALL()
+ * @method static Record RECORD_MELLOHI()
+ * @method static Record RECORD_STAL()
+ * @method static Record RECORD_STRAD()
+ * @method static Record RECORD_WAIT()
+ * @method static Record RECORD_WARD()
  * @method static Banner RED_BANNER()
  * @method static Bed RED_BED()
  * @method static Dye RED_DYE()
@@ -535,6 +547,18 @@ final class VanillaItems{
 		self::register("raw_porkchop", $factory->get(319));
 		self::register("raw_rabbit", $factory->get(411));
 		self::register("raw_salmon", $factory->get(460));
+		self::register("record_11", $factory->get(510));
+		self::register("record_13", $factory->get(500));
+		self::register("record_blocks", $factory->get(502));
+		self::register("record_cat", $factory->get(501));
+		self::register("record_chirp", $factory->get(503));
+		self::register("record_far", $factory->get(504));
+		self::register("record_mall", $factory->get(505));
+		self::register("record_mellohi", $factory->get(506));
+		self::register("record_stal", $factory->get(507));
+		self::register("record_strad", $factory->get(508));
+		self::register("record_wait", $factory->get(511));
+		self::register("record_ward", $factory->get(509));
 		self::register("red_banner", $factory->get(446, 1));
 		self::register("red_bed", $factory->get(355, 14));
 		self::register("red_dye", $factory->get(351, 1));
