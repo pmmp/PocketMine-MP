@@ -49,7 +49,7 @@ class Jukebox extends Opaque{
 			if($this->record !== null){
 				$this->ejectRecord();
 			}elseif($item instanceof Record){
-				$player->sendJukeboxPopup("record.nowPlaying", ["%".$item->getRecordType()->getTranslationKey()]);
+				$player->sendJukeboxPopup("record.nowPlaying", ["%" . $item->getRecordType()->getTranslationKey()]);
 				$this->insertRecord($item->pop());
 			}
 		}
