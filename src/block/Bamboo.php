@@ -134,10 +134,6 @@ class Bamboo extends Transparent{
 		}
 	}
 
-	private function calculateHeight() : int{
-		//what if we're not the top block?
-	}
-
 	private function grow() : bool{
 		$world = $this->pos->getWorld();
 		if(!$world->getBlock($this->pos->up())->canBeReplaced()){
