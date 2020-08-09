@@ -24,13 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\utils\CloningRegistryTrait;
-use pocketmine\utils\RegistryTrait;
 use function assert;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
  * This must be regenerated whenever registry members are added, removed or changed.
- * @see RegistryTrait::_generateMethodAnnotations()
+ * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
  * @method static WoodenButton ACACIA_BUTTON()
  * @method static WoodenDoor ACACIA_DOOR()
@@ -55,6 +54,7 @@ use function assert;
  * @method static Wall ANDESITE_WALL()
  * @method static Anvil ANVIL()
  * @method static Flower AZURE_BLUET()
+ * @method static Bamboo BAMBOO()
  * @method static Banner BANNER()
  * @method static Transparent BARRIER()
  * @method static Bed BED()
@@ -721,6 +721,7 @@ final class VanillaBlocks{
 		self::register("andesite_wall", $factory->get(139, 4));
 		self::register("anvil", $factory->get(145));
 		self::register("azure_bluet", $factory->get(38, 3));
+		self::register("bamboo", $factory->get(418));
 		self::register("banner", $factory->get(176));
 		self::register("barrier", $factory->get(416));
 		self::register("bed", $factory->get(26));

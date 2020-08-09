@@ -34,6 +34,7 @@ use function gmp_mul;
 use function gmp_xor;
 
 class Bamboo extends Transparent{
+	public const MAX_HEIGHT = 16;
 
 	public const NO_LEAVES = 0;
 	public const SMALL_LEAVES = 1;
@@ -58,6 +59,34 @@ class Bamboo extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
+	}
+
+	public function getFuelTime() : int{
+		return 50;
+	}
+
+	public function isThick() : bool{ return $this->thick; }
+
+	/** @return $this */
+	public function setThick(bool $thick) : self{
+		$this->thick = $thick;
+		return $this;
+	}
+
+	public function isReady() : bool{ return $this->ready; }
+
+	/** @return $this */
+	public function setReady(bool $ready) : self{
+		$this->ready = $ready;
+		return $this;
+	}
+
+	public function getLeafSize() : int{ return $this->leafSize; }
+
+	/** @return $this */
+	public function setLeafSize(int $leafSize) : self{
+		$this->leafSize = $leafSize;
+		return $this;
 	}
 
 	/**
@@ -85,5 +114,91 @@ class Bamboo extends Transparent{
 		$retX = (($seed % 12) + 1) / 16;
 		$retZ = ((($seed >> 8) % 12) + 1) / 16;
 		return new Vector3($retX, 0, $retZ);
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		//TODO: tags would be better for this
+		return
+			$block->isSameType($this) ||
+			$block instanceof Dirt ||
+			$block instanceof Grass ||
+			$block instanceof Gravel ||
+			$block instanceof Sand ||
+			$block instanceof Mycelium ||
+			$block instanceof Podzol;
+	}
+
+	public function onNearbyBlockChange() : void{
+		if(!$this->canBeSupportedBy($this->pos->getWorld()->getBlock($this->pos->down()))){
+			$this->pos->getWorld()->useBreakOn($this->pos);
+		}
+	}
+
+	private function calculateHeight() : int{
+		//what if we're not the top block?
+	}
+
+	private function grow() : bool{
+		$world = $this->pos->getWorld();
+		if(!$world->getBlock($this->pos->up())->canBeReplaced()){
+			return false;
+		}
+
+		//TODO: check light level at the top block (unsure if it uses block light or not)
+
+		$height = 1;
+		while(($block = $world->getBlock($this->pos->subtract(0, $height, 0))) instanceof Bamboo and $block->isSameType($this)){
+			if(++$height >= self::MAX_HEIGHT){
+				//TODO: I think this may be decided by a random factor (12-16)
+				return false;
+			}
+		}
+
+		$newHeight = $height + 1;
+
+		$stemBlock = (clone $this)->setReady(false)->setLeafSize(self::NO_LEAVES);
+		if($newHeight >= 4 && !$stemBlock->isThick()){ //don't change it to false if height is less, because it might have been chopped
+			$stemBlock = $stemBlock->setThick(true);
+		}
+		$smallLeavesBlock = (clone $stemBlock)->setLeafSize(self::SMALL_LEAVES);
+		$bigLeavesBlock = (clone $stemBlock)->setLeafSize(self::LARGE_LEAVES);
+
+		$newBlocks = [];
+		if($newHeight === 2){
+			$newBlocks[] = $smallLeavesBlock;
+		}elseif($newHeight === 3){
+			$newBlocks[] = $smallLeavesBlock;
+			$newBlocks[] = $smallLeavesBlock;
+		}elseif($newHeight === 4){
+			$newBlocks[] = $bigLeavesBlock;
+			$newBlocks[] = $smallLeavesBlock;
+			$newBlocks[] = $stemBlock;
+			$newBlocks[] = $stemBlock;
+		}elseif($newHeight > 4){
+			$newBlocks[] = $bigLeavesBlock;
+			$newBlocks[] = $bigLeavesBlock;
+			$newBlocks[] = $smallLeavesBlock;
+			$newBlocks[] = $stemBlock; //to replace the bottom block that currently has leaves
+		}
+
+		foreach($newBlocks as $idx => $newBlock){
+			$world->setBlock($this->pos->subtract(0, $idx - 1, 0), $newBlock);
+		}
+		return true;
+	}
+
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
+	public function onRandomTick() : void{
+		$world = $this->pos->getWorld();
+		if($this->ready){
+			$this->ready = false;
+			$this->grow();
+		}elseif($world->getBlock($this->pos->up())->canBeReplaced()){
+			$this->ready = true;
+			$world->setBlock($this->pos, $this);
+		}
 	}
 }
