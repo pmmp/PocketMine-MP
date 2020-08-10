@@ -17,7 +17,7 @@ PLUGINS_DIR="$DATA_DIR/plugins"
 rm -rf "$DATA_DIR"
 rm PocketMine-MP.phar 2> /dev/null
 
-cd tests/plugins/PocketMine-DevTools
+cd tests/plugins/DevTools
 php -dphar.readonly=0 ./src/DevTools/ConsoleScript.php --make ./ --relative ./ --out ../../../DevTools.phar
 cd ../../..
 

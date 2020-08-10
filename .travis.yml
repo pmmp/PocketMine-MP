@@ -26,7 +26,7 @@ before_script:
  - pecl install channel://pecl.php.net/igbinary-3.1.2
  - git clone https://github.com/pmmp/pthreads.git
  - cd pthreads
- - git checkout 646dac62ae0d48c1ada7b007e15575fb84f7d71d
+ - git checkout 45579e1e622acd80f9c880f3a025ba3b98b8ebef
  - phpize
  - ./configure
  - make
