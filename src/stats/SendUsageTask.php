@@ -31,8 +31,8 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Internet;
 use pocketmine\utils\Process;
 use pocketmine\utils\Utils;
-use pocketmine\utils\VersionString;
 use pocketmine\uuid\UUID;
+use pocketmine\VersionInfo;
 use function array_map;
 use function array_values;
 use function count;
@@ -71,7 +71,7 @@ class SendUsageTask extends AsyncTask{
 			case self::TYPE_OPEN:
 				$data["event"] = "open";
 
-				$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
+				$version = VersionInfo::getVersionObj();
 
 				$data["server"] = [
 					"port" => $server->getPort(),
@@ -132,7 +132,7 @@ class SendUsageTask extends AsyncTask{
 				$data["players"] = [
 					"count" => count($players),
 					"limit" => $server->getMaxPlayers(),
-					"currentList" => $players,
+					"currentList" => array_values($players),
 					"historyList" => array_values($playerList)
 				];
 

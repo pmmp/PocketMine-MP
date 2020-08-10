@@ -30,7 +30,6 @@ use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginManager;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
-use pocketmine\utils\VersionString;
 use function base64_encode;
 use function date;
 use function error_get_last;
@@ -308,14 +307,14 @@ class CrashDump{
 	}
 
 	private function generalData() : void{
-		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
+		$version = VersionInfo::getVersionObj();
 		$this->data["general"] = [];
 		$this->data["general"]["name"] = $this->server->getName();
-		$this->data["general"]["base_version"] = \pocketmine\BASE_VERSION;
-		$this->data["general"]["build"] = \pocketmine\BUILD_NUMBER;
-		$this->data["general"]["is_dev"] = \pocketmine\IS_DEVELOPMENT_BUILD;
+		$this->data["general"]["base_version"] = VersionInfo::BASE_VERSION;
+		$this->data["general"]["build"] = VersionInfo::BUILD_NUMBER;
+		$this->data["general"]["is_dev"] = VersionInfo::IS_DEVELOPMENT_BUILD;
 		$this->data["general"]["protocol"] = ProtocolInfo::CURRENT_PROTOCOL;
-		$this->data["general"]["git"] = \pocketmine\GIT_COMMIT;
+		$this->data["general"]["git"] = VersionInfo::getGitHash();
 		$this->data["general"]["uname"] = php_uname("a");
 		$this->data["general"]["php"] = phpversion();
 		$this->data["general"]["zend"] = zend_version();
@@ -323,7 +322,7 @@ class CrashDump{
 		$this->data["general"]["os"] = Utils::getOS();
 		$this->data["general"]["composer_libraries"] = Versions::VERSIONS;
 		$this->addLine($this->server->getName() . " version: " . $version->getFullVersion(true) . " [Protocol " . ProtocolInfo::CURRENT_PROTOCOL . "]");
-		$this->addLine("Git commit: " . \pocketmine\GIT_COMMIT);
+		$this->addLine("Git commit: " . VersionInfo::getGitHash());
 		$this->addLine("uname -a: " . php_uname("a"));
 		$this->addLine("PHP Version: " . phpversion());
 		$this->addLine("Zend version: " . zend_version());

@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
+use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -89,7 +90,7 @@ class Vine extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockClicked->isSolid() or Facing::axis($face) === Facing::AXIS_Y){
+		if(!$blockClicked->isSolid() or Facing::axis($face) === Axis::Y){
 			return false;
 		}
 

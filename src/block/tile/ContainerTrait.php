@@ -56,8 +56,8 @@ trait ContainerTrait{
 			$inventory->getListeners()->add(...$listeners);
 		}
 
-		if($tag->hasTag(Container::TAG_LOCK, StringTag::class)){
-			$this->lock = $tag->getString(Container::TAG_LOCK);
+		if(($lockTag = $tag->getTag(Container::TAG_LOCK)) instanceof StringTag){
+			$this->lock = $lockTag->getValue();
 		}
 	}
 

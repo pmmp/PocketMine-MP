@@ -30,7 +30,7 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class EmotePacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::EMOTE_PACKET;
 
-	private const FLAG_SERVER = 1 << 0;
+	public const FLAG_SERVER = 1 << 0;
 
 	/** @var int */
 	private $entityRuntimeId;

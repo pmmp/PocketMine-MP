@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -59,8 +60,8 @@ class Lantern extends Transparent{
 			AxisAlignedBB::one()
 				->trim(Facing::UP,   $this->hanging ? 6 / 16 : 8 / 16)
 				->trim(Facing::DOWN, $this->hanging ? 2 / 16 : 0)
-				->squash(Facing::AXIS_X, 5 / 16)
-				->squash(Facing::AXIS_Z, 5 / 16)
+				->squash(Axis::X, 5 / 16)
+				->squash(Axis::Z, 5 / 16)
 		];
 	}
 

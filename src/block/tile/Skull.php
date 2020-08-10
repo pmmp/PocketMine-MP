@@ -51,9 +51,9 @@ class Skull extends Spawnable{
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		if($nbt->hasTag(self::TAG_SKULL_TYPE, ByteTag::class)){
+		if(($skullTypeTag = $nbt->getTag(self::TAG_SKULL_TYPE)) instanceof ByteTag){
 			try{
-				$this->skullType = SkullType::fromMagicNumber($nbt->getByte(self::TAG_SKULL_TYPE));
+				$this->skullType = SkullType::fromMagicNumber($skullTypeTag->getValue());
 			}catch(\InvalidArgumentException $e){
 				//bad data, drop it
 			}

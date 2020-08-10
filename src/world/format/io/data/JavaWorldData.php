@@ -93,20 +93,22 @@ class JavaWorldData extends BaseNbtWorldData{
 			throw new CorruptedWorldException($e->getMessage(), 0, $e);
 		}
 
-		if(!$worldData->hasTag("Data", CompoundTag::class)){
+		$dataTag = $worldData->getTag("Data");
+		if(!($dataTag instanceof CompoundTag)){
 			throw new CorruptedWorldException("Missing 'Data' key or wrong type");
 		}
-		return $worldData->getCompoundTag("Data");
+		return $dataTag;
 	}
 
 	protected function fix() : void{
-		if(!$this->compoundTag->hasTag("generatorName", StringTag::class)){
+		$generatorNameTag = $this->compoundTag->getTag("generatorName");
+		if(!($generatorNameTag instanceof StringTag)){
 			$this->compoundTag->setString("generatorName", "default");
-		}elseif(($generatorName = self::hackyFixForGeneratorClasspathInLevelDat($this->compoundTag->getString("generatorName"))) !== null){
+		}elseif(($generatorName = self::hackyFixForGeneratorClasspathInLevelDat($generatorNameTag->getValue())) !== null){
 			$this->compoundTag->setString("generatorName", $generatorName);
 		}
 
-		if(!$this->compoundTag->hasTag("generatorOptions", StringTag::class)){
+		if(!($this->compoundTag->getTag("generatorOptions") instanceof StringTag)){
 			$this->compoundTag->setString("generatorOptions", "");
 		}
 	}
@@ -134,8 +136,8 @@ class JavaWorldData extends BaseNbtWorldData{
 	}
 
 	public function getRainLevel() : float{
-		if($this->compoundTag->hasTag("rainLevel", FloatTag::class)){ //PocketMine/MCPE
-			return $this->compoundTag->getFloat("rainLevel");
+		if(($rainLevelTag = $this->compoundTag->getTag("rainLevel")) instanceof FloatTag){ //PocketMine/MCPE
+			return $rainLevelTag->getValue();
 		}
 
 		return (float) $this->compoundTag->getByte("raining", 0); //PC vanilla
@@ -155,8 +157,8 @@ class JavaWorldData extends BaseNbtWorldData{
 	}
 
 	public function getLightningLevel() : float{
-		if($this->compoundTag->hasTag("lightningLevel", FloatTag::class)){ //PocketMine/MCPE
-			return $this->compoundTag->getFloat("lightningLevel");
+		if(($lightningLevelTag = $this->compoundTag->getTag("lightningLevel")) instanceof FloatTag){ //PocketMine/MCPE
+			return $lightningLevelTag->getValue();
 		}
 
 		return (float) $this->compoundTag->getByte("thundering", 0); //PC vanilla

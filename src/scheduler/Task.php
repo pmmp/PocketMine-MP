@@ -37,14 +37,6 @@ abstract class Task{
 		return $this->taskHandler;
 	}
 
-	final public function getTaskId() : int{
-		if($this->taskHandler !== null){
-			return $this->taskHandler->getTaskId();
-		}
-
-		return -1;
-	}
-
 	public function getName() : string{
 		return Utils::getNiceClassName($this);
 	}

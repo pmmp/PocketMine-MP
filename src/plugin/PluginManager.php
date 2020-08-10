@@ -161,6 +161,11 @@ class PluginManager{
 						return null;
 					}
 
+					$permManager = PermissionManager::getInstance();
+					foreach($description->getPermissions() as $perm){
+						$permManager->addPermission($perm);
+					}
+
 					/**
 					 * @var Plugin $plugin
 					 * @see Plugin::__construct()
@@ -364,10 +369,6 @@ class PluginManager{
 		if(!$plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.enable", [$plugin->getDescription()->getFullName()]));
 
-			$permManager = PermissionManager::getInstance();
-			foreach($plugin->getDescription()->getPermissions() as $perm){
-				$permManager->addPermission($perm);
-			}
 			$plugin->getScheduler()->setEnabled(true);
 			$plugin->onEnableStateChange(true);
 
@@ -393,10 +394,6 @@ class PluginManager{
 			$plugin->onEnableStateChange(false);
 			$plugin->getScheduler()->shutdown();
 			HandlerListManager::global()->unregisterAll($plugin);
-			$permManager = PermissionManager::getInstance();
-			foreach($plugin->getDescription()->getPermissions() as $perm){
-				$permManager->removePermission($perm);
-			}
 		}
 	}
 

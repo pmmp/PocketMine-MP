@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use pocketmine\VersionInfo;
 use function array_merge;
 use function curl_close;
 use function curl_error;
@@ -223,7 +224,7 @@ class Internet{
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_CONNECTTIMEOUT_MS => (int) ($timeout * 1000),
 			CURLOPT_TIMEOUT_MS => (int) ($timeout * 1000),
-			CURLOPT_HTTPHEADER => array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 " . \pocketmine\NAME . "/" . \pocketmine\VERSION], $extraHeaders),
+			CURLOPT_HTTPHEADER => array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 " . VersionInfo::NAME . "/" . VersionInfo::getVersionObj()->getFullVersion(true)], $extraHeaders),
 			CURLOPT_HEADER => true
 		]);
 		try{

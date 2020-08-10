@@ -27,6 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\world\WorldInitEvent;
 use pocketmine\event\world\WorldLoadEvent;
 use pocketmine\event\world\WorldUnloadEvent;
+use pocketmine\player\ChunkSelector;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Limits;
@@ -42,7 +43,6 @@ use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\normal\Normal;
 use function array_keys;
 use function array_shift;
-use function asort;
 use function assert;
 use function count;
 use function implode;
@@ -282,21 +282,7 @@ class WorldManager{
 			$centerX = $spawnLocation->getFloorX() >> 4;
 			$centerZ = $spawnLocation->getFloorZ() >> 4;
 
-			$order = [];
-
-			for($X = -3; $X <= 3; ++$X){
-				for($Z = -3; $Z <= 3; ++$Z){
-					$distance = $X ** 2 + $Z ** 2;
-					$chunkX = $X + $centerX;
-					$chunkZ = $Z + $centerZ;
-					$index = World::chunkHash($chunkX, $chunkZ);
-					$order[$index] = $distance;
-				}
-			}
-
-			asort($order);
-
-			foreach($order as $index => $distance){
+			foreach((new ChunkSelector())->selectChunks(3, $centerX, $centerZ) as $index){
 				World::getXZ($index, $chunkX, $chunkZ);
 				$world->populateChunk($chunkX, $chunkZ, true);
 			}

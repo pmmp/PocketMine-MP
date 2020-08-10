@@ -21,29 +21,29 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item\enchantment;
+namespace pocketmine\player;
 
-class EnchantmentList{
+use pocketmine\math\Vector3;
+use pocketmine\world\ChunkLoader;
 
-	/**
-	 * @var \SplFixedArray|EnchantmentEntry[]
-	 * @phpstan-var \SplFixedArray<EnchantmentEntry>
-	 */
-	private $enchantments;
+final class TickingChunkLoader implements ChunkLoader{
 
-	public function __construct(int $size){
-		$this->enchantments = new \SplFixedArray($size);
+	/** @var Vector3 */
+	private $currentLocation;
+
+	public function __construct(Vector3 $currentLocation){
+		$this->currentLocation = $currentLocation;
 	}
 
-	public function setSlot(int $slot, EnchantmentEntry $entry) : void{
-		$this->enchantments[$slot] = $entry;
+	public function setCurrentLocation(Vector3 $currentLocation) : void{
+		$this->currentLocation = $currentLocation;
 	}
 
-	public function getSlot(int $slot) : EnchantmentEntry{
-		return $this->enchantments[$slot];
+	public function getX(){
+		return $this->currentLocation->getFloorX();
 	}
 
-	public function getSize() : int{
-		return $this->enchantments->getSize();
+	public function getZ(){
+		return $this->currentLocation->getFloorZ();
 	}
 }

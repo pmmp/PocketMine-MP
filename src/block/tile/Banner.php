@@ -26,6 +26,7 @@ namespace pocketmine\block\tile;
 use Ds\Deque;
 use pocketmine\block\utils\BannerPattern;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -59,38 +60,41 @@ class Banner extends Spawnable{
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		if($nbt->hasTag(self::TAG_BASE, IntTag::class)){
-			$this->baseColor = DyeColor::fromMagicNumber($nbt->getInt(self::TAG_BASE), true);
+		$colorIdMap = DyeColorIdMap::getInstance();
+		if(($baseColorTag = $nbt->getTag(self::TAG_BASE)) instanceof IntTag){
+			$this->baseColor = $colorIdMap->fromInvertedId($baseColorTag->getValue());
 		}
 
 		$patterns = $nbt->getListTag(self::TAG_PATTERNS);
 		if($patterns !== null){
 			/** @var CompoundTag $pattern */
 			foreach($patterns as $pattern){
-				$this->patterns[] = new BannerPattern($pattern->getString(self::TAG_PATTERN_NAME), DyeColor::fromMagicNumber($pattern->getInt(self::TAG_PATTERN_COLOR), true));
+				$this->patterns[] = new BannerPattern($pattern->getString(self::TAG_PATTERN_NAME), $colorIdMap->fromInvertedId($pattern->getInt(self::TAG_PATTERN_COLOR)));
 			}
 		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setInt(self::TAG_BASE, $this->baseColor->getInvertedMagicNumber());
+		$colorIdMap = DyeColorIdMap::getInstance();
+		$nbt->setInt(self::TAG_BASE, $colorIdMap->toInvertedId($this->baseColor));
 		$patterns = new ListTag();
 		foreach($this->patterns as $pattern){
 			$patterns->push(CompoundTag::create()
 				->setString(self::TAG_PATTERN_NAME, $pattern->getId())
-				->setInt(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
+				->setInt(self::TAG_PATTERN_COLOR, $colorIdMap->toInvertedId($pattern->getColor()))
 			);
 		}
 		$nbt->setTag(self::TAG_PATTERNS, $patterns);
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setInt(self::TAG_BASE, $this->baseColor->getInvertedMagicNumber());
+		$colorIdMap = DyeColorIdMap::getInstance();
+		$nbt->setInt(self::TAG_BASE, $colorIdMap->toInvertedId($this->baseColor));
 		$patterns = new ListTag();
 		foreach($this->patterns as $pattern){
 			$patterns->push(CompoundTag::create()
 				->setString(self::TAG_PATTERN_NAME, $pattern->getId())
-				->setInt(self::TAG_PATTERN_COLOR, $pattern->getColor()->getInvertedMagicNumber())
+				->setInt(self::TAG_PATTERN_COLOR, $colorIdMap->toInvertedId($pattern->getColor()))
 			);
 		}
 		$nbt->setTag(self::TAG_PATTERNS, $patterns);

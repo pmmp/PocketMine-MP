@@ -197,23 +197,6 @@ namespace pocketmine {
 
 		ErrorToExceptionHandler::set();
 
-		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
-		define('pocketmine\VERSION', $version->getFullVersion(true));
-
-		$gitHash = str_repeat("00", 20);
-
-		if(\Phar::running(true) === ""){
-			$gitHash = Git::getRepositoryStatePretty(\pocketmine\PATH);
-		}else{
-			$phar = new \Phar(\Phar::running(false));
-			$meta = $phar->getMetadata();
-			if(isset($meta["git"])){
-				$gitHash = $meta["git"];
-			}
-		}
-
-		define('pocketmine\GIT_COMMIT', $gitHash);
-
 		$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-ansi", "disable-ansi"]);
 
 		$dataPath = isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR;
@@ -225,7 +208,7 @@ namespace pocketmine {
 
 		$lockFilePath = $dataPath . '/server.lock';
 		if(($pid = Filesystem::createLockFile($lockFilePath)) !== null){
-			critical_error("Another " . \pocketmine\NAME . " instance (PID $pid) is already using this folder (" . realpath($dataPath) . ").");
+			critical_error("Another " . VersionInfo::NAME . " instance (PID $pid) is already using this folder (" . realpath($dataPath) . ").");
 			critical_error("Please stop the other server first before running a new one.");
 			exit(1);
 		}

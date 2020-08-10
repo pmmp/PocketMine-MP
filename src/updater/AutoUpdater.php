@@ -28,6 +28,7 @@ use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\VersionString;
+use pocketmine\VersionInfo;
 use function date;
 use function sprintf;
 use function str_repeat;
@@ -75,9 +76,9 @@ class AutoUpdater{
 				$this->showConsoleUpdate();
 			}
 		}else{
-			if(!\pocketmine\IS_DEVELOPMENT_BUILD and $this->getChannel() !== "stable"){
+			if(!VersionInfo::IS_DEVELOPMENT_BUILD and $this->getChannel() !== "stable"){
 				$this->showChannelSuggestionStable();
-			}elseif(\pocketmine\IS_DEVELOPMENT_BUILD and $this->getChannel() === "stable"){
+			}elseif(VersionInfo::IS_DEVELOPMENT_BUILD and $this->getChannel() === "stable"){
 				$this->showChannelSuggestionBeta();
 			}
 		}
@@ -159,7 +160,7 @@ class AutoUpdater{
 		if($this->updateInfo === null){
 			return;
 		}
-		$currentVersion = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
+		$currentVersion = VersionInfo::getVersionObj();
 		try{
 			$newVersion = new VersionString($this->updateInfo->base_version, $this->updateInfo->is_dev, $this->updateInfo->build);
 		}catch(\InvalidArgumentException $e){

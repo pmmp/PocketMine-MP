@@ -40,14 +40,15 @@ use pocketmine\block\tile\FlowerPot as TileFlowerPot;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
+use pocketmine\block\tile\Jukebox as TileJukebox;
 use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\Note as TileNote;
-use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\PillarRotationTrait;
 use pocketmine\block\utils\TreeType;
+use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\item\ToolTier;
@@ -232,6 +233,7 @@ class BlockFactory{
 		$this->register(new Opaque(new BID(Ids::IRON_ORE), "Iron Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
 		$this->register(new Trapdoor(new BID(Ids::IRON_TRAPDOOR), "Iron Trapdoor", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 25.0)));
 		$this->register(new ItemFrame(new BID(Ids::FRAME_BLOCK, 0, ItemIds::FRAME, TileItemFrame::class), "Item Frame"));
+		$this->register(new Jukebox(new BID(Ids::JUKEBOX, 0, ItemIds::JUKEBOX, TileJukebox::class), "Jukebox"));
 		$this->register(new Ladder(new BID(Ids::LADDER), "Ladder"));
 		$this->register(new Lantern(new BID(Ids::LANTERN), "Lantern", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new Opaque(new BID(Ids::LAPIS_BLOCK), "Lapis Lazuli Block", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
@@ -411,69 +413,6 @@ class BlockFactory{
 		$this->register(new WeightedPressurePlateLight(new BID(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE), "Weighted Pressure Plate Light"));
 		$this->register(new Wheat(new BID(Ids::WHEAT_BLOCK), "Wheat Block"));
 
-		//region ugly treetype -> blockID mapping tables
-		$woodenStairIds = [
-			TreeType::OAK()->id() => Ids::OAK_STAIRS,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_STAIRS,
-			TreeType::BIRCH()->id() => Ids::BIRCH_STAIRS,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_STAIRS,
-			TreeType::ACACIA()->id() => Ids::ACACIA_STAIRS,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_STAIRS
-		];
-		$fenceGateIds = [
-			TreeType::OAK()->id() => Ids::OAK_FENCE_GATE,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_FENCE_GATE,
-			TreeType::BIRCH()->id() => Ids::BIRCH_FENCE_GATE,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_FENCE_GATE,
-			TreeType::ACACIA()->id() => Ids::ACACIA_FENCE_GATE,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_FENCE_GATE
-		];
-
-		/** @var BID[] $woodenDoorIds */
-		$woodenDoorIds = [
-			TreeType::OAK()->id() => new BID(Ids::OAK_DOOR_BLOCK, 0, ItemIds::OAK_DOOR),
-			TreeType::SPRUCE()->id() => new BID(Ids::SPRUCE_DOOR_BLOCK, 0, ItemIds::SPRUCE_DOOR),
-			TreeType::BIRCH()->id() => new BID(Ids::BIRCH_DOOR_BLOCK, 0, ItemIds::BIRCH_DOOR),
-			TreeType::JUNGLE()->id() => new BID(Ids::JUNGLE_DOOR_BLOCK, 0, ItemIds::JUNGLE_DOOR),
-			TreeType::ACACIA()->id() => new BID(Ids::ACACIA_DOOR_BLOCK, 0, ItemIds::ACACIA_DOOR),
-			TreeType::DARK_OAK()->id() => new BID(Ids::DARK_OAK_DOOR_BLOCK, 0, ItemIds::DARK_OAK_DOOR)
-		];
-		$woodenPressurePlateIds = [
-			TreeType::OAK()->id() => Ids::WOODEN_PRESSURE_PLATE,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_PRESSURE_PLATE,
-			TreeType::BIRCH()->id() => Ids::BIRCH_PRESSURE_PLATE,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_PRESSURE_PLATE,
-			TreeType::ACACIA()->id() => Ids::ACACIA_PRESSURE_PLATE,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_PRESSURE_PLATE
-		];
-		$woodenButtonIds = [
-			TreeType::OAK()->id() => Ids::WOODEN_BUTTON,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_BUTTON,
-			TreeType::BIRCH()->id() => Ids::BIRCH_BUTTON,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_BUTTON,
-			TreeType::ACACIA()->id() => Ids::ACACIA_BUTTON,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_BUTTON
-		];
-		$woodenTrapdoorIds = [
-			TreeType::OAK()->id() => Ids::WOODEN_TRAPDOOR,
-			TreeType::SPRUCE()->id() => Ids::SPRUCE_TRAPDOOR,
-			TreeType::BIRCH()->id() => Ids::BIRCH_TRAPDOOR,
-			TreeType::JUNGLE()->id() => Ids::JUNGLE_TRAPDOOR,
-			TreeType::ACACIA()->id() => Ids::ACACIA_TRAPDOOR,
-			TreeType::DARK_OAK()->id() => Ids::DARK_OAK_TRAPDOOR
-		];
-
-		/** @var BIDFlattened[] $woodenSignIds */
-		$woodenSignIds = [
-			TreeType::OAK()->id() => new BIDFlattened(Ids::SIGN_POST, Ids::WALL_SIGN, 0, ItemIds::SIGN, TileSign::class),
-			TreeType::SPRUCE()->id() => new BIDFlattened(Ids::SPRUCE_STANDING_SIGN, Ids::SPRUCE_WALL_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class),
-			TreeType::BIRCH()->id() => new BIDFlattened(Ids::BIRCH_STANDING_SIGN, Ids::BIRCH_WALL_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class),
-			TreeType::JUNGLE()->id() => new BIDFlattened(Ids::JUNGLE_STANDING_SIGN, Ids::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class),
-			TreeType::ACACIA()->id() => new BIDFlattened(Ids::ACACIA_STANDING_SIGN, Ids::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, TileSign::class),
-			TreeType::DARK_OAK()->id() => new BIDFlattened(Ids::DARKOAK_STANDING_SIGN, Ids::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class)
-		];
-		//endregion
-
 		foreach(TreeType::getAll() as $treeType){
 			$magicNumber = $treeType->getMagicNumber();
 			$name = $treeType->getDisplayName();
@@ -490,15 +429,15 @@ class BlockFactory{
 			$this->register($wood);
 			$this->remap($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, ($magicNumber & 0x03) | 0b1100, $wood);
 
-			$this->register(new FenceGate(new BID($fenceGateIds[$treeType->id()]), $treeType->getDisplayName() . " Fence Gate"));
-			$this->register(new WoodenStairs(new BID($woodenStairIds[$treeType->id()]), $treeType->getDisplayName() . " Stairs"));
-			$this->register(new WoodenDoor($woodenDoorIds[$treeType->id()], $treeType->getDisplayName() . " Door"));
+			$this->register(new FenceGate(BlockLegacyIdHelper::getWoodenFenceIdentifier($treeType), $treeType->getDisplayName() . " Fence Gate"));
+			$this->register(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($treeType), $treeType->getDisplayName() . " Stairs"));
+			$this->register(new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($treeType), $treeType->getDisplayName() . " Door"));
 
-			$this->register(new WoodenButton(new BID($woodenButtonIds[$treeType->id()]), $treeType->getDisplayName() . " Button"));
-			$this->register(new WoodenPressurePlate(new BID($woodenPressurePlateIds[$treeType->id()]), $treeType->getDisplayName() . " Pressure Plate"));
-			$this->register(new WoodenTrapdoor(new BID($woodenTrapdoorIds[$treeType->id()]), $treeType->getDisplayName() . " Trapdoor"));
+			$this->register(new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($treeType), $treeType->getDisplayName() . " Button"));
+			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($treeType), $treeType->getDisplayName() . " Pressure Plate"));
+			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($treeType), $treeType->getDisplayName() . " Trapdoor"));
 
-			$this->register(new Sign($woodenSignIds[$treeType->id()], $treeType->getDisplayName() . " Sign"));
+			$this->register(new Sign(BlockLegacyIdHelper::getWoodenSignIdentifier($treeType), $treeType->getDisplayName() . " Sign"));
 		}
 
 		static $sandstoneTypes = [
@@ -517,62 +456,45 @@ class BlockFactory{
 			$this->register(new Opaque(new BID(Ids::RED_SANDSTONE, $variant), $prefix . "Red Sandstone", $sandstoneBreakInfo));
 		}
 
-		//region ugly glazed-terracotta colour -> ID mapping table
-		/** @var int[] */
-		$glazedTerracottaIds = [
-			DyeColor::WHITE()->id() => Ids::WHITE_GLAZED_TERRACOTTA,
-			DyeColor::ORANGE()->id() => Ids::ORANGE_GLAZED_TERRACOTTA,
-			DyeColor::MAGENTA()->id() => Ids::MAGENTA_GLAZED_TERRACOTTA,
-			DyeColor::LIGHT_BLUE()->id() => Ids::LIGHT_BLUE_GLAZED_TERRACOTTA,
-			DyeColor::YELLOW()->id() => Ids::YELLOW_GLAZED_TERRACOTTA,
-			DyeColor::LIME()->id() => Ids::LIME_GLAZED_TERRACOTTA,
-			DyeColor::PINK()->id() => Ids::PINK_GLAZED_TERRACOTTA,
-			DyeColor::GRAY()->id() => Ids::GRAY_GLAZED_TERRACOTTA,
-			DyeColor::LIGHT_GRAY()->id() => Ids::SILVER_GLAZED_TERRACOTTA,
-			DyeColor::CYAN()->id() => Ids::CYAN_GLAZED_TERRACOTTA,
-			DyeColor::PURPLE()->id() => Ids::PURPLE_GLAZED_TERRACOTTA,
-			DyeColor::BLUE()->id() => Ids::BLUE_GLAZED_TERRACOTTA,
-			DyeColor::BROWN()->id() => Ids::BROWN_GLAZED_TERRACOTTA,
-			DyeColor::GREEN()->id() => Ids::GREEN_GLAZED_TERRACOTTA,
-			DyeColor::RED()->id() => Ids::RED_GLAZED_TERRACOTTA,
-			DyeColor::BLACK()->id() => Ids::BLACK_GLAZED_TERRACOTTA
-		];
-		//endregion
-
+		$colorIdMap = DyeColorIdMap::getInstance();
 		foreach(DyeColor::getAll() as $color){
-			$this->register(new Carpet(new BID(Ids::CARPET, $color->getMagicNumber()), $color->getDisplayName() . " Carpet"));
-			$this->register(new Concrete(new BID(Ids::CONCRETE, $color->getMagicNumber()), $color->getDisplayName() . " Concrete"));
-			$this->register(new ConcretePowder(new BID(Ids::CONCRETE_POWDER, $color->getMagicNumber()), $color->getDisplayName() . " Concrete Powder"));
-			$this->register(new Glass(new BID(Ids::STAINED_GLASS, $color->getMagicNumber()), $color->getDisplayName() . " Stained Glass"));
-			$this->register(new GlassPane(new BID(Ids::STAINED_GLASS_PANE, $color->getMagicNumber()), $color->getDisplayName() . " Stained Glass Pane"));
-			$this->register(new GlazedTerracotta(new BID($glazedTerracottaIds[$color->id()]), $color->getDisplayName() . " Glazed Terracotta"));
-			$this->register(new HardenedClay(new BID(Ids::STAINED_CLAY, $color->getMagicNumber()), $color->getDisplayName() . " Stained Clay"));
-			$this->register(new HardenedGlass(new BID(Ids::HARD_STAINED_GLASS, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass"));
-			$this->register(new HardenedGlassPane(new BID(Ids::HARD_STAINED_GLASS_PANE, $color->getMagicNumber()), "Hardened " . $color->getDisplayName() . " Stained Glass Pane"));
-			$this->register(new Wool(new BID(Ids::WOOL, $color->getMagicNumber()), $color->getDisplayName() . " Wool"));
+			$coloredName = function(string $name) use($color) : string{
+				return $color->getDisplayName() . " " . $name;
+			};
+			$this->register(new Carpet(new BID(Ids::CARPET, $colorIdMap->toId($color)), $coloredName("Carpet")));
+			$this->register(new Concrete(new BID(Ids::CONCRETE, $colorIdMap->toId($color)), $coloredName("Concrete")));
+			$this->register(new ConcretePowder(new BID(Ids::CONCRETE_POWDER, $colorIdMap->toId($color)), $coloredName("Concrete Powder")));
+			$this->register(new Glass(new BID(Ids::STAINED_GLASS, $colorIdMap->toId($color)), $coloredName("Stained Glass")));
+			$this->register(new GlassPane(new BID(Ids::STAINED_GLASS_PANE, $colorIdMap->toId($color)), $coloredName("Stained Glass Pane")));
+			$this->register(new GlazedTerracotta(BlockLegacyIdHelper::getGlazedTerracottaIdentifier($color), $coloredName("Glazed Terracotta")));
+			$this->register(new HardenedClay(new BID(Ids::STAINED_CLAY, $colorIdMap->toId($color)), $coloredName("Stained Clay")));
+			$this->register(new HardenedGlass(new BID(Ids::HARD_STAINED_GLASS, $colorIdMap->toId($color)), "Hardened " . $coloredName("Stained Glass")));
+			$this->register(new HardenedGlassPane(new BID(Ids::HARD_STAINED_GLASS_PANE, $colorIdMap->toId($color)), "Hardened " . $coloredName("Stained Glass Pane")));
+			$this->register(new Wool(new BID(Ids::WOOL, $colorIdMap->toId($color)), $coloredName("Wool")));
 		}
 
-		static $wallTypes = [
-			Meta::WALL_ANDESITE => "Andesite",
-			Meta::WALL_BRICK => "Brick",
-			Meta::WALL_DIORITE => "Diorite",
-			Meta::WALL_END_STONE_BRICK => "End Stone Brick",
-			Meta::WALL_GRANITE => "Granite",
-			Meta::WALL_MOSSY_STONE_BRICK => "Mossy Stone Brick",
-			Meta::WALL_MOSSY_COBBLESTONE => "Mossy Cobblestone",
-			Meta::WALL_NETHER_BRICK => "Nether Brick",
-			Meta::WALL_COBBLESTONE => "Cobblestone",
-			Meta::WALL_PRISMARINE => "Prismarine",
-			Meta::WALL_RED_NETHER_BRICK => "Red Nether Brick",
-			Meta::WALL_RED_SANDSTONE => "Red Sandstone",
-			Meta::WALL_SANDSTONE => "Sandstone",
-			Meta::WALL_STONE_BRICK => "Stone Brick"
-		];
-		foreach($wallTypes as $magicNumber => $prefix){
-			$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, $magicNumber), $prefix . " Wall"));
-		}
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_ANDESITE), "Andesite Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_BRICK), "Brick Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_DIORITE), "Diorite Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_END_STONE_BRICK), "End Stone Brick Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_GRANITE), "Granite Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_MOSSY_STONE_BRICK), "Mossy Stone Brick Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_MOSSY_COBBLESTONE), "Mossy Cobblestone Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_NETHER_BRICK), "Nether Brick Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_COBBLESTONE), "Cobblestone Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_PRISMARINE), "Prismarine Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_RED_NETHER_BRICK), "Red Nether Brick Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_RED_SANDSTONE), "Red Sandstone Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_SANDSTONE), "Sandstone Wall"));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_STONE_BRICK), "Stone Brick Wall"));
 
 		$this->registerElements();
+
+		$chemistryTableBreakInfo = new BlockBreakInfo(2.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_COMPOUND_CREATOR), "Compound Creator", $chemistryTableBreakInfo));
+		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_ELEMENT_CONSTRUCTOR), "Element Constructor", $chemistryTableBreakInfo));
+		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_LAB_TABLE), "Lab Table", $chemistryTableBreakInfo));
+		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_MATERIAL_REDUCER), "Material Reducer", $chemistryTableBreakInfo));
 
 		//region --- auto-generated TODOs ---
 		//TODO: minecraft:bamboo
@@ -586,7 +508,6 @@ class BlockFactory{
 		//TODO: minecraft:cauldron
 		//TODO: minecraft:chain_command_block
 		//TODO: minecraft:chemical_heat
-		//TODO: minecraft:chemistry_table
 		//TODO: minecraft:chorus_flower
 		//TODO: minecraft:chorus_plant
 		//TODO: minecraft:command_block
@@ -640,126 +561,127 @@ class BlockFactory{
 	}
 
 	private function registerElements() : void{
-		$this->register(new Opaque(new BID(Ids::ELEMENT_0), "???", BlockBreakInfo::instant()));
+		$instaBreak = BlockBreakInfo::instant();
+		$this->register(new Opaque(new BID(Ids::ELEMENT_0), "???", $instaBreak));
 
-		$this->register(new Element(new BID(Ids::ELEMENT_1), "Hydrogen", BlockBreakInfo::instant(), "h", 1, 5));
-		$this->register(new Element(new BID(Ids::ELEMENT_2), "Helium", BlockBreakInfo::instant(), "he", 2, 7));
-		$this->register(new Element(new BID(Ids::ELEMENT_3), "Lithium", BlockBreakInfo::instant(), "li", 3, 0));
-		$this->register(new Element(new BID(Ids::ELEMENT_4), "Beryllium", BlockBreakInfo::instant(), "be", 4, 1));
-		$this->register(new Element(new BID(Ids::ELEMENT_5), "Boron", BlockBreakInfo::instant(), "b", 5, 4));
-		$this->register(new Element(new BID(Ids::ELEMENT_6), "Carbon", BlockBreakInfo::instant(), "c", 6, 5));
-		$this->register(new Element(new BID(Ids::ELEMENT_7), "Nitrogen", BlockBreakInfo::instant(), "n", 7, 5));
-		$this->register(new Element(new BID(Ids::ELEMENT_8), "Oxygen", BlockBreakInfo::instant(), "o", 8, 5));
-		$this->register(new Element(new BID(Ids::ELEMENT_9), "Fluorine", BlockBreakInfo::instant(), "f", 9, 6));
-		$this->register(new Element(new BID(Ids::ELEMENT_10), "Neon", BlockBreakInfo::instant(), "ne", 10, 7));
-		$this->register(new Element(new BID(Ids::ELEMENT_11), "Sodium", BlockBreakInfo::instant(), "na", 11, 0));
-		$this->register(new Element(new BID(Ids::ELEMENT_12), "Magnesium", BlockBreakInfo::instant(), "mg", 12, 1));
-		$this->register(new Element(new BID(Ids::ELEMENT_13), "Aluminum", BlockBreakInfo::instant(), "al", 13, 3));
-		$this->register(new Element(new BID(Ids::ELEMENT_14), "Silicon", BlockBreakInfo::instant(), "si", 14, 4));
-		$this->register(new Element(new BID(Ids::ELEMENT_15), "Phosphorus", BlockBreakInfo::instant(), "p", 15, 5));
-		$this->register(new Element(new BID(Ids::ELEMENT_16), "Sulfur", BlockBreakInfo::instant(), "s", 16, 5));
-		$this->register(new Element(new BID(Ids::ELEMENT_17), "Chlorine", BlockBreakInfo::instant(), "cl", 17, 6));
-		$this->register(new Element(new BID(Ids::ELEMENT_18), "Argon", BlockBreakInfo::instant(), "ar", 18, 7));
-		$this->register(new Element(new BID(Ids::ELEMENT_19), "Potassium", BlockBreakInfo::instant(), "k", 19, 0));
-		$this->register(new Element(new BID(Ids::ELEMENT_20), "Calcium", BlockBreakInfo::instant(), "ca", 20, 1));
-		$this->register(new Element(new BID(Ids::ELEMENT_21), "Scandium", BlockBreakInfo::instant(), "sc", 21, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_22), "Titanium", BlockBreakInfo::instant(), "ti", 22, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_23), "Vanadium", BlockBreakInfo::instant(), "v", 23, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_24), "Chromium", BlockBreakInfo::instant(), "cr", 24, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_25), "Manganese", BlockBreakInfo::instant(), "mn", 25, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_26), "Iron", BlockBreakInfo::instant(), "fe", 26, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_27), "Cobalt", BlockBreakInfo::instant(), "co", 27, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_28), "Nickel", BlockBreakInfo::instant(), "ni", 28, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_29), "Copper", BlockBreakInfo::instant(), "cu", 29, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_30), "Zinc", BlockBreakInfo::instant(), "zn", 30, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_31), "Gallium", BlockBreakInfo::instant(), "ga", 31, 3));
-		$this->register(new Element(new BID(Ids::ELEMENT_32), "Germanium", BlockBreakInfo::instant(), "ge", 32, 4));
-		$this->register(new Element(new BID(Ids::ELEMENT_33), "Arsenic", BlockBreakInfo::instant(), "as", 33, 4));
-		$this->register(new Element(new BID(Ids::ELEMENT_34), "Selenium", BlockBreakInfo::instant(), "se", 34, 5));
-		$this->register(new Element(new BID(Ids::ELEMENT_35), "Bromine", BlockBreakInfo::instant(), "br", 35, 6));
-		$this->register(new Element(new BID(Ids::ELEMENT_36), "Krypton", BlockBreakInfo::instant(), "kr", 36, 7));
-		$this->register(new Element(new BID(Ids::ELEMENT_37), "Rubidium", BlockBreakInfo::instant(), "rb", 37, 0));
-		$this->register(new Element(new BID(Ids::ELEMENT_38), "Strontium", BlockBreakInfo::instant(), "sr", 38, 1));
-		$this->register(new Element(new BID(Ids::ELEMENT_39), "Yttrium", BlockBreakInfo::instant(), "y", 39, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_40), "Zirconium", BlockBreakInfo::instant(), "zr", 40, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_41), "Niobium", BlockBreakInfo::instant(), "nb", 41, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_42), "Molybdenum", BlockBreakInfo::instant(), "mo", 42, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_43), "Technetium", BlockBreakInfo::instant(), "tc", 43, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_44), "Ruthenium", BlockBreakInfo::instant(), "ru", 44, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_45), "Rhodium", BlockBreakInfo::instant(), "rh", 45, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_46), "Palladium", BlockBreakInfo::instant(), "pd", 46, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_47), "Silver", BlockBreakInfo::instant(), "ag", 47, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_48), "Cadmium", BlockBreakInfo::instant(), "cd", 48, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_49), "Indium", BlockBreakInfo::instant(), "in", 49, 3));
-		$this->register(new Element(new BID(Ids::ELEMENT_50), "Tin", BlockBreakInfo::instant(), "sn", 50, 3));
-		$this->register(new Element(new BID(Ids::ELEMENT_51), "Antimony", BlockBreakInfo::instant(), "sb", 51, 4));
-		$this->register(new Element(new BID(Ids::ELEMENT_52), "Tellurium", BlockBreakInfo::instant(), "te", 52, 4));
-		$this->register(new Element(new BID(Ids::ELEMENT_53), "Iodine", BlockBreakInfo::instant(), "i", 53, 6));
-		$this->register(new Element(new BID(Ids::ELEMENT_54), "Xenon", BlockBreakInfo::instant(), "xe", 54, 7));
-		$this->register(new Element(new BID(Ids::ELEMENT_55), "Cesium", BlockBreakInfo::instant(), "cs", 55, 0));
-		$this->register(new Element(new BID(Ids::ELEMENT_56), "Barium", BlockBreakInfo::instant(), "ba", 56, 1));
-		$this->register(new Element(new BID(Ids::ELEMENT_57), "Lanthanum", BlockBreakInfo::instant(), "la", 57, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_58), "Cerium", BlockBreakInfo::instant(), "ce", 58, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_59), "Praseodymium", BlockBreakInfo::instant(), "pr", 59, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_60), "Neodymium", BlockBreakInfo::instant(), "nd", 60, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_61), "Promethium", BlockBreakInfo::instant(), "pm", 61, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_62), "Samarium", BlockBreakInfo::instant(), "sm", 62, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_63), "Europium", BlockBreakInfo::instant(), "eu", 63, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_64), "Gadolinium", BlockBreakInfo::instant(), "gd", 64, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_65), "Terbium", BlockBreakInfo::instant(), "tb", 65, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_66), "Dysprosium", BlockBreakInfo::instant(), "dy", 66, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_67), "Holmium", BlockBreakInfo::instant(), "ho", 67, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_68), "Erbium", BlockBreakInfo::instant(), "er", 68, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_69), "Thulium", BlockBreakInfo::instant(), "tm", 69, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_70), "Ytterbium", BlockBreakInfo::instant(), "yb", 70, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_71), "Lutetium", BlockBreakInfo::instant(), "lu", 71, 8));
-		$this->register(new Element(new BID(Ids::ELEMENT_72), "Hafnium", BlockBreakInfo::instant(), "hf", 72, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_73), "Tantalum", BlockBreakInfo::instant(), "ta", 73, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_74), "Tungsten", BlockBreakInfo::instant(), "w", 74, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_75), "Rhenium", BlockBreakInfo::instant(), "re", 75, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_76), "Osmium", BlockBreakInfo::instant(), "os", 76, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_77), "Iridium", BlockBreakInfo::instant(), "ir", 77, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_78), "Platinum", BlockBreakInfo::instant(), "pt", 78, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_79), "Gold", BlockBreakInfo::instant(), "au", 79, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_80), "Mercury", BlockBreakInfo::instant(), "hg", 80, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_81), "Thallium", BlockBreakInfo::instant(), "tl", 81, 3));
-		$this->register(new Element(new BID(Ids::ELEMENT_82), "Lead", BlockBreakInfo::instant(), "pb", 82, 3));
-		$this->register(new Element(new BID(Ids::ELEMENT_83), "Bismuth", BlockBreakInfo::instant(), "bi", 83, 3));
-		$this->register(new Element(new BID(Ids::ELEMENT_84), "Polonium", BlockBreakInfo::instant(), "po", 84, 4));
-		$this->register(new Element(new BID(Ids::ELEMENT_85), "Astatine", BlockBreakInfo::instant(), "at", 85, 6));
-		$this->register(new Element(new BID(Ids::ELEMENT_86), "Radon", BlockBreakInfo::instant(), "rn", 86, 7));
-		$this->register(new Element(new BID(Ids::ELEMENT_87), "Francium", BlockBreakInfo::instant(), "fr", 87, 0));
-		$this->register(new Element(new BID(Ids::ELEMENT_88), "Radium", BlockBreakInfo::instant(), "ra", 88, 1));
-		$this->register(new Element(new BID(Ids::ELEMENT_89), "Actinium", BlockBreakInfo::instant(), "ac", 89, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_90), "Thorium", BlockBreakInfo::instant(), "th", 90, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_91), "Protactinium", BlockBreakInfo::instant(), "pa", 91, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_92), "Uranium", BlockBreakInfo::instant(), "u", 92, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_93), "Neptunium", BlockBreakInfo::instant(), "np", 93, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_94), "Plutonium", BlockBreakInfo::instant(), "pu", 94, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_95), "Americium", BlockBreakInfo::instant(), "am", 95, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_96), "Curium", BlockBreakInfo::instant(), "cm", 96, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_97), "Berkelium", BlockBreakInfo::instant(), "bk", 97, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_98), "Californium", BlockBreakInfo::instant(), "cf", 98, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_99), "Einsteinium", BlockBreakInfo::instant(), "es", 99, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_100), "Fermium", BlockBreakInfo::instant(), "fm", 100, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_101), "Mendelevium", BlockBreakInfo::instant(), "md", 101, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_102), "Nobelium", BlockBreakInfo::instant(), "no", 102, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_103), "Lawrencium", BlockBreakInfo::instant(), "lr", 103, 9));
-		$this->register(new Element(new BID(Ids::ELEMENT_104), "Rutherfordium", BlockBreakInfo::instant(), "rf", 104, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_105), "Dubnium", BlockBreakInfo::instant(), "db", 105, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_106), "Seaborgium", BlockBreakInfo::instant(), "sg", 106, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_107), "Bohrium", BlockBreakInfo::instant(), "bh", 107, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_108), "Hassium", BlockBreakInfo::instant(), "hs", 108, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_109), "Meitnerium", BlockBreakInfo::instant(), "mt", 109, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_110), "Darmstadtium", BlockBreakInfo::instant(), "ds", 110, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_111), "Roentgenium", BlockBreakInfo::instant(), "rg", 111, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_112), "Copernicium", BlockBreakInfo::instant(), "cn", 112, 2));
-		$this->register(new Element(new BID(Ids::ELEMENT_113), "Nihonium", BlockBreakInfo::instant(), "nh", 113, 3));
-		$this->register(new Element(new BID(Ids::ELEMENT_114), "Flerovium", BlockBreakInfo::instant(), "fl", 114, 3));
-		$this->register(new Element(new BID(Ids::ELEMENT_115), "Moscovium", BlockBreakInfo::instant(), "mc", 115, 3));
-		$this->register(new Element(new BID(Ids::ELEMENT_116), "Livermorium", BlockBreakInfo::instant(), "lv", 116, 3));
-		$this->register(new Element(new BID(Ids::ELEMENT_117), "Tennessine", BlockBreakInfo::instant(), "ts", 117, 6));
-		$this->register(new Element(new BID(Ids::ELEMENT_118), "Oganesson", BlockBreakInfo::instant(), "og", 118, 7));
+		$this->register(new Element(new BID(Ids::ELEMENT_1), "Hydrogen", $instaBreak, "h", 1, 5));
+		$this->register(new Element(new BID(Ids::ELEMENT_2), "Helium", $instaBreak, "he", 2, 7));
+		$this->register(new Element(new BID(Ids::ELEMENT_3), "Lithium", $instaBreak, "li", 3, 0));
+		$this->register(new Element(new BID(Ids::ELEMENT_4), "Beryllium", $instaBreak, "be", 4, 1));
+		$this->register(new Element(new BID(Ids::ELEMENT_5), "Boron", $instaBreak, "b", 5, 4));
+		$this->register(new Element(new BID(Ids::ELEMENT_6), "Carbon", $instaBreak, "c", 6, 5));
+		$this->register(new Element(new BID(Ids::ELEMENT_7), "Nitrogen", $instaBreak, "n", 7, 5));
+		$this->register(new Element(new BID(Ids::ELEMENT_8), "Oxygen", $instaBreak, "o", 8, 5));
+		$this->register(new Element(new BID(Ids::ELEMENT_9), "Fluorine", $instaBreak, "f", 9, 6));
+		$this->register(new Element(new BID(Ids::ELEMENT_10), "Neon", $instaBreak, "ne", 10, 7));
+		$this->register(new Element(new BID(Ids::ELEMENT_11), "Sodium", $instaBreak, "na", 11, 0));
+		$this->register(new Element(new BID(Ids::ELEMENT_12), "Magnesium", $instaBreak, "mg", 12, 1));
+		$this->register(new Element(new BID(Ids::ELEMENT_13), "Aluminum", $instaBreak, "al", 13, 3));
+		$this->register(new Element(new BID(Ids::ELEMENT_14), "Silicon", $instaBreak, "si", 14, 4));
+		$this->register(new Element(new BID(Ids::ELEMENT_15), "Phosphorus", $instaBreak, "p", 15, 5));
+		$this->register(new Element(new BID(Ids::ELEMENT_16), "Sulfur", $instaBreak, "s", 16, 5));
+		$this->register(new Element(new BID(Ids::ELEMENT_17), "Chlorine", $instaBreak, "cl", 17, 6));
+		$this->register(new Element(new BID(Ids::ELEMENT_18), "Argon", $instaBreak, "ar", 18, 7));
+		$this->register(new Element(new BID(Ids::ELEMENT_19), "Potassium", $instaBreak, "k", 19, 0));
+		$this->register(new Element(new BID(Ids::ELEMENT_20), "Calcium", $instaBreak, "ca", 20, 1));
+		$this->register(new Element(new BID(Ids::ELEMENT_21), "Scandium", $instaBreak, "sc", 21, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_22), "Titanium", $instaBreak, "ti", 22, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_23), "Vanadium", $instaBreak, "v", 23, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_24), "Chromium", $instaBreak, "cr", 24, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_25), "Manganese", $instaBreak, "mn", 25, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_26), "Iron", $instaBreak, "fe", 26, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_27), "Cobalt", $instaBreak, "co", 27, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_28), "Nickel", $instaBreak, "ni", 28, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_29), "Copper", $instaBreak, "cu", 29, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_30), "Zinc", $instaBreak, "zn", 30, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_31), "Gallium", $instaBreak, "ga", 31, 3));
+		$this->register(new Element(new BID(Ids::ELEMENT_32), "Germanium", $instaBreak, "ge", 32, 4));
+		$this->register(new Element(new BID(Ids::ELEMENT_33), "Arsenic", $instaBreak, "as", 33, 4));
+		$this->register(new Element(new BID(Ids::ELEMENT_34), "Selenium", $instaBreak, "se", 34, 5));
+		$this->register(new Element(new BID(Ids::ELEMENT_35), "Bromine", $instaBreak, "br", 35, 6));
+		$this->register(new Element(new BID(Ids::ELEMENT_36), "Krypton", $instaBreak, "kr", 36, 7));
+		$this->register(new Element(new BID(Ids::ELEMENT_37), "Rubidium", $instaBreak, "rb", 37, 0));
+		$this->register(new Element(new BID(Ids::ELEMENT_38), "Strontium", $instaBreak, "sr", 38, 1));
+		$this->register(new Element(new BID(Ids::ELEMENT_39), "Yttrium", $instaBreak, "y", 39, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_40), "Zirconium", $instaBreak, "zr", 40, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_41), "Niobium", $instaBreak, "nb", 41, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_42), "Molybdenum", $instaBreak, "mo", 42, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_43), "Technetium", $instaBreak, "tc", 43, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_44), "Ruthenium", $instaBreak, "ru", 44, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_45), "Rhodium", $instaBreak, "rh", 45, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_46), "Palladium", $instaBreak, "pd", 46, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_47), "Silver", $instaBreak, "ag", 47, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_48), "Cadmium", $instaBreak, "cd", 48, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_49), "Indium", $instaBreak, "in", 49, 3));
+		$this->register(new Element(new BID(Ids::ELEMENT_50), "Tin", $instaBreak, "sn", 50, 3));
+		$this->register(new Element(new BID(Ids::ELEMENT_51), "Antimony", $instaBreak, "sb", 51, 4));
+		$this->register(new Element(new BID(Ids::ELEMENT_52), "Tellurium", $instaBreak, "te", 52, 4));
+		$this->register(new Element(new BID(Ids::ELEMENT_53), "Iodine", $instaBreak, "i", 53, 6));
+		$this->register(new Element(new BID(Ids::ELEMENT_54), "Xenon", $instaBreak, "xe", 54, 7));
+		$this->register(new Element(new BID(Ids::ELEMENT_55), "Cesium", $instaBreak, "cs", 55, 0));
+		$this->register(new Element(new BID(Ids::ELEMENT_56), "Barium", $instaBreak, "ba", 56, 1));
+		$this->register(new Element(new BID(Ids::ELEMENT_57), "Lanthanum", $instaBreak, "la", 57, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_58), "Cerium", $instaBreak, "ce", 58, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_59), "Praseodymium", $instaBreak, "pr", 59, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_60), "Neodymium", $instaBreak, "nd", 60, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_61), "Promethium", $instaBreak, "pm", 61, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_62), "Samarium", $instaBreak, "sm", 62, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_63), "Europium", $instaBreak, "eu", 63, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_64), "Gadolinium", $instaBreak, "gd", 64, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_65), "Terbium", $instaBreak, "tb", 65, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_66), "Dysprosium", $instaBreak, "dy", 66, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_67), "Holmium", $instaBreak, "ho", 67, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_68), "Erbium", $instaBreak, "er", 68, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_69), "Thulium", $instaBreak, "tm", 69, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_70), "Ytterbium", $instaBreak, "yb", 70, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_71), "Lutetium", $instaBreak, "lu", 71, 8));
+		$this->register(new Element(new BID(Ids::ELEMENT_72), "Hafnium", $instaBreak, "hf", 72, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_73), "Tantalum", $instaBreak, "ta", 73, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_74), "Tungsten", $instaBreak, "w", 74, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_75), "Rhenium", $instaBreak, "re", 75, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_76), "Osmium", $instaBreak, "os", 76, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_77), "Iridium", $instaBreak, "ir", 77, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_78), "Platinum", $instaBreak, "pt", 78, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_79), "Gold", $instaBreak, "au", 79, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_80), "Mercury", $instaBreak, "hg", 80, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_81), "Thallium", $instaBreak, "tl", 81, 3));
+		$this->register(new Element(new BID(Ids::ELEMENT_82), "Lead", $instaBreak, "pb", 82, 3));
+		$this->register(new Element(new BID(Ids::ELEMENT_83), "Bismuth", $instaBreak, "bi", 83, 3));
+		$this->register(new Element(new BID(Ids::ELEMENT_84), "Polonium", $instaBreak, "po", 84, 4));
+		$this->register(new Element(new BID(Ids::ELEMENT_85), "Astatine", $instaBreak, "at", 85, 6));
+		$this->register(new Element(new BID(Ids::ELEMENT_86), "Radon", $instaBreak, "rn", 86, 7));
+		$this->register(new Element(new BID(Ids::ELEMENT_87), "Francium", $instaBreak, "fr", 87, 0));
+		$this->register(new Element(new BID(Ids::ELEMENT_88), "Radium", $instaBreak, "ra", 88, 1));
+		$this->register(new Element(new BID(Ids::ELEMENT_89), "Actinium", $instaBreak, "ac", 89, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_90), "Thorium", $instaBreak, "th", 90, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_91), "Protactinium", $instaBreak, "pa", 91, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_92), "Uranium", $instaBreak, "u", 92, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_93), "Neptunium", $instaBreak, "np", 93, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_94), "Plutonium", $instaBreak, "pu", 94, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_95), "Americium", $instaBreak, "am", 95, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_96), "Curium", $instaBreak, "cm", 96, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_97), "Berkelium", $instaBreak, "bk", 97, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_98), "Californium", $instaBreak, "cf", 98, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_99), "Einsteinium", $instaBreak, "es", 99, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_100), "Fermium", $instaBreak, "fm", 100, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_101), "Mendelevium", $instaBreak, "md", 101, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_102), "Nobelium", $instaBreak, "no", 102, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_103), "Lawrencium", $instaBreak, "lr", 103, 9));
+		$this->register(new Element(new BID(Ids::ELEMENT_104), "Rutherfordium", $instaBreak, "rf", 104, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_105), "Dubnium", $instaBreak, "db", 105, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_106), "Seaborgium", $instaBreak, "sg", 106, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_107), "Bohrium", $instaBreak, "bh", 107, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_108), "Hassium", $instaBreak, "hs", 108, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_109), "Meitnerium", $instaBreak, "mt", 109, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_110), "Darmstadtium", $instaBreak, "ds", 110, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_111), "Roentgenium", $instaBreak, "rg", 111, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_112), "Copernicium", $instaBreak, "cn", 112, 2));
+		$this->register(new Element(new BID(Ids::ELEMENT_113), "Nihonium", $instaBreak, "nh", 113, 3));
+		$this->register(new Element(new BID(Ids::ELEMENT_114), "Flerovium", $instaBreak, "fl", 114, 3));
+		$this->register(new Element(new BID(Ids::ELEMENT_115), "Moscovium", $instaBreak, "mc", 115, 3));
+		$this->register(new Element(new BID(Ids::ELEMENT_116), "Livermorium", $instaBreak, "lv", 116, 3));
+		$this->register(new Element(new BID(Ids::ELEMENT_117), "Tennessine", $instaBreak, "ts", 117, 6));
+		$this->register(new Element(new BID(Ids::ELEMENT_118), "Oganesson", $instaBreak, "og", 118, 7));
 	}
 
 	/**

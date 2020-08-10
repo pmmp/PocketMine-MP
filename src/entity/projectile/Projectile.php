@@ -82,20 +82,20 @@ abstract class Projectile extends Entity{
 			$blockId = null;
 			$blockData = null;
 
-			if($nbt->hasTag("tileX", IntTag::class) and $nbt->hasTag("tileY", IntTag::class) and $nbt->hasTag("tileZ", IntTag::class)){
-				$blockPos = new Vector3($nbt->getInt("tileX"), $nbt->getInt("tileY"), $nbt->getInt("tileZ"));
+			if(($tileXTag = $nbt->getTag("tileX")) instanceof IntTag and ($tileYTag = $nbt->getTag("tileY")) instanceof IntTag and ($tileZTag = $nbt->getTag("tileZ")) instanceof IntTag){
+				$blockPos = new Vector3($tileXTag->getValue(), $tileYTag->getValue(), $tileZTag->getValue());
 			}else{
 				break;
 			}
 
-			if($nbt->hasTag("blockId", IntTag::class)){
-				$blockId = $nbt->getInt("blockId");
+			if(($blockIdTag = $nbt->getTag("blockId")) instanceof IntTag){
+				$blockId = $blockIdTag->getValue();
 			}else{
 				break;
 			}
 
-			if($nbt->hasTag("blockData", ByteTag::class)){
-				$blockData = $nbt->getByte("blockData");
+			if(($blockDataTag = $nbt->getTag("blockData")) instanceof ByteTag){
+				$blockData = $blockDataTag->getValue();
 			}else{
 				break;
 			}

@@ -27,6 +27,7 @@ use pocketmine\block\BlockLegacyIds;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteArrayTag;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\world\format\BiomeArray;
@@ -61,15 +62,14 @@ class McRegion extends RegionWorldProvider{
 		}catch(NbtDataException $e){
 			throw new CorruptedChunkException($e->getMessage(), 0, $e);
 		}
-		if(!$chunk->hasTag("Level")){
+		$chunk = $chunk->getTag("Level");
+		if(!($chunk instanceof CompoundTag)){
 			throw new CorruptedChunkException("'Level' key is missing from chunk NBT");
 		}
 
-		$chunk = $chunk->getCompoundTag("Level");
-
 		$subChunks = [];
-		$fullIds = $chunk->hasTag("Blocks", ByteArrayTag::class) ? $chunk->getByteArray("Blocks") : str_repeat("\x00", 32768);
-		$fullData = $chunk->hasTag("Data", ByteArrayTag::class) ? $chunk->getByteArray("Data") : str_repeat("\x00", 16384);
+		$fullIds = ($fullIdsTag = $chunk->getTag("Blocks")) instanceof ByteArrayTag ? $fullIdsTag->getValue() : str_repeat("\x00", 32768);
+		$fullData = ($fullDataTag = $chunk->getTag("Data")) instanceof ByteArrayTag ? $fullDataTag->getValue() : str_repeat("\x00", 16384);
 
 		for($y = 0; $y < 8; ++$y){
 			$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, [SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $y)]);
@@ -83,18 +83,18 @@ class McRegion extends RegionWorldProvider{
 			}
 		};
 		$biomeIds = null;
-		if($chunk->hasTag("BiomeColors", IntArrayTag::class)){
-			$biomeIds = $makeBiomeArray(ChunkUtils::convertBiomeColors($chunk->getIntArray("BiomeColors"))); //Convert back to original format
-		}elseif($chunk->hasTag("Biomes", ByteArrayTag::class)){
-			$biomeIds = $makeBiomeArray($chunk->getByteArray("Biomes"));
+		if(($biomeColorsTag = $chunk->getTag("BiomeColors")) instanceof IntArrayTag){
+			$biomeIds = $makeBiomeArray(ChunkUtils::convertBiomeColors($biomeColorsTag->getValue())); //Convert back to original format
+		}elseif(($biomesTag = $chunk->getTag("Biomes")) instanceof ByteArrayTag){
+			$biomeIds = $makeBiomeArray($biomesTag->getValue());
 		}
 
 		$result = new Chunk(
 			$chunk->getInt("xPos"),
 			$chunk->getInt("zPos"),
 			$subChunks,
-			$chunk->hasTag("Entities", ListTag::class) ? self::getCompoundList("Entities", $chunk->getListTag("Entities")) : [],
-			$chunk->hasTag("TileEntities", ListTag::class) ? self::getCompoundList("TileEntities", $chunk->getListTag("TileEntities")) : [],
+			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
+			($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
 			$biomeIds
 		);
 		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);

@@ -39,8 +39,6 @@ interface IPlayer extends ServerOperator{
 
 	public function setWhitelisted(bool $value) : void;
 
-	public function getPlayer() : ?Player;
-
 	public function getFirstPlayed() : ?int;
 
 	public function getLastPlayed() : ?int;

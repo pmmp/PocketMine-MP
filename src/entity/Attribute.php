@@ -46,6 +46,7 @@ class Attribute{
 	public const FALL_DAMAGE = self::MC_PREFIX . "fall_damage";
 	public const HORSE_JUMP_STRENGTH = self::MC_PREFIX . "horse.jump_strength";
 	public const ZOMBIE_SPAWN_REINFORCEMENTS = self::MC_PREFIX . "zombie.spawn_reinforcements";
+	public const LAVA_MOVEMENT = self::MC_PREFIX . "lava_movement";
 
 	/** @var string */
 	protected $id;

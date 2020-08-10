@@ -137,13 +137,17 @@ class InventoryTransaction{
 	 * @throws TransactionValidationException
 	 */
 	protected function matchItems(array &$needItems, array &$haveItems) : void{
+		$needItems = [];
+		$haveItems = [];
 		foreach($this->actions as $key => $action){
 			if(!$action->getTargetItem()->isNull()){
 				$needItems[] = $action->getTargetItem();
 			}
 
-			if(!$action->isValid($this->source)){
-				throw new TransactionValidationException("Action " . get_class($action) . " is not valid in the current transaction");
+			try{
+				$action->validate($this->source);
+			}catch(TransactionValidationException $e){
+				throw new TransactionValidationException(get_class($action) . ": " . $e->getMessage(), 0, $e);
 			}
 
 			if(!$action->getSourceItem()->isNull()){

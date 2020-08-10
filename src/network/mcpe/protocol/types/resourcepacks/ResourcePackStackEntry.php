@@ -59,10 +59,9 @@ class ResourcePackStackEntry{
 	}
 
 	public static function read(PacketSerializer $in) : self{
-		return new self(
-			$packId = $in->getString(),
-			$version = $in->getString(),
-			$subPackName = $in->getString()
-		);
+		$packId = $in->getString();
+		$version = $in->getString();
+		$subPackName = $in->getString();
+		return new self($packId, $version, $subPackName);
 	}
 }

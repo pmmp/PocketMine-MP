@@ -99,6 +99,13 @@ abstract class Command{
 	}
 
 	public function setPermission(?string $permission) : void{
+		if($permission !== null){
+			foreach(explode(";", $permission) as $perm){
+				if(PermissionManager::getInstance()->getPermission($perm) === null){
+					throw new \InvalidArgumentException("Cannot use non-existing permission \"$perm\"");
+				}
+			}
+		}
 		$this->permission = $permission;
 	}
 

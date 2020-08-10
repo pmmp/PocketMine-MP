@@ -47,8 +47,6 @@ class Flat extends Generator{
 	 */
 	private $structure;
 	/** @var int */
-	private $floorLevel;
-	/** @var int */
 	private $biome;
 	/** @var string */
 	private $preset;
@@ -65,23 +63,24 @@ class Flat extends Generator{
 		if(isset($this->options["preset"]) and $this->options["preset"] != ""){
 			$this->preset = $this->options["preset"];
 		}else{
-			$this->preset = "2;7,2x3,2;1;";
-			//$this->preset = "2;7,59x1,3x3,2;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)";
+			$this->preset = "2;bedrock,2xdirt,grass;1;";
+			//$this->preset = "2;bedrock,59xstone,3xdirt,grass;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)";
 		}
 
 		$this->parsePreset();
 
 		if(isset($this->options["decoration"])){
 			$ores = new Ore();
+			$stone = VanillaBlocks::STONE();
 			$ores->setOreTypes([
-				new OreType(VanillaBlocks::COAL_ORE(), 20, 16, 0, 128),
-				new OreType(VanillaBlocks::IRON_ORE(), 20, 8, 0, 64),
-				new OreType(VanillaBlocks::REDSTONE_ORE(), 8, 7, 0, 16),
-				new OreType(VanillaBlocks::LAPIS_LAZULI_ORE(), 1, 6, 0, 32),
-				new OreType(VanillaBlocks::GOLD_ORE(), 2, 8, 0, 32),
-				new OreType(VanillaBlocks::DIAMOND_ORE(), 1, 7, 0, 16),
-				new OreType(VanillaBlocks::DIRT(), 20, 32, 0, 128),
-				new OreType(VanillaBlocks::GRAVEL(), 10, 16, 0, 128)
+				new OreType(VanillaBlocks::COAL_ORE(), $stone, 20, 16, 0, 128),
+				new OreType(VanillaBlocks::IRON_ORE(), $stone, 20, 8, 0, 64),
+				new OreType(VanillaBlocks::REDSTONE_ORE(), $stone, 8, 7, 0, 16),
+				new OreType(VanillaBlocks::LAPIS_LAZULI_ORE(), $stone, 1, 6, 0, 32),
+				new OreType(VanillaBlocks::GOLD_ORE(), $stone, 2, 8, 0, 32),
+				new OreType(VanillaBlocks::DIAMOND_ORE(), $stone, 1, 7, 0, 16),
+				new OreType(VanillaBlocks::DIRT(), $stone, 20, 32, 0, 128),
+				new OreType(VanillaBlocks::GRAVEL(), $stone, 10, 16, 0, 128)
 			]);
 			$this->populators[] = $ores;
 		}
@@ -126,8 +125,6 @@ class Flat extends Generator{
 		$this->biome = (int) ($preset[2] ?? 1);
 		$options = $preset[3] ?? "";
 		$this->structure = self::parseLayers($blocks);
-
-		$this->floorLevel = count($this->structure);
 
 		//TODO: more error checking
 		preg_match_all('#(([0-9a-z_]{1,})\(?([0-9a-z_ =:]{0,})\)?),?#', $options, $matches);

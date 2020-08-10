@@ -21,38 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item\enchantment;
+namespace pocketmine\data\bedrock;
 
-class EnchantmentEntry{
+use PHPUnit\Framework\TestCase;
+use pocketmine\block\utils\DyeColor;
 
-	/** @var Enchantment[] */
-	private $enchantments;
-	/** @var int */
-	private $cost;
-	/** @var string */
-	private $randomName;
+class DyeColorIdMapTest extends TestCase{
 
-	/**
-	 * @param Enchantment[] $enchantments
-	 */
-	public function __construct(array $enchantments, int $cost, string $randomName){
-		$this->enchantments = $enchantments;
-		$this->cost = $cost;
-		$this->randomName = $randomName;
-	}
-
-	/**
-	 * @return Enchantment[]
-	 */
-	public function getEnchantments() : array{
-		return $this->enchantments;
-	}
-
-	public function getCost() : int{
-		return $this->cost;
-	}
-
-	public function getRandomName() : string{
-		return $this->randomName;
+	public function testAllColorsMapped() : void{
+		foreach(DyeColor::getAll() as $color){
+			$id = DyeColorIdMap::getInstance()->toId($color);
+			$color2 = DyeColorIdMap::getInstance()->fromId($id);
+			self::assertTrue($color->equals($color2));
+		}
 	}
 }

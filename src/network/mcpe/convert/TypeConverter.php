@@ -22,7 +22,10 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\block\inventory\AnvilInventory;
+use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\crafting\CraftingGrid;
+use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -38,11 +41,13 @@ use pocketmine\network\mcpe\protocol\types\GameMode as ProtocolGameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
+use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use function array_key_exists;
 
 class TypeConverter{
 	use SingletonTrait;
@@ -132,8 +137,8 @@ class TypeConverter{
 
 		if($compound !== null){
 			$compound = clone $compound;
-			if($compound->hasTag(self::DAMAGE_TAG, IntTag::class)){
-				$meta = $compound->getInt(self::DAMAGE_TAG);
+			if(($damageTag = $compound->getTag(self::DAMAGE_TAG)) instanceof IntTag){
+				$meta = $damageTag->getValue();
 				$compound->removeTag(self::DAMAGE_TAG);
 				if($compound->count() === 0){
 					$compound = null;
@@ -156,36 +161,57 @@ class TypeConverter{
 	}
 
 	/**
+	 * @param int[] $test
+	 * @phpstan-param array<int, int> $test
+	 * @phpstan-param \Closure(Inventory) : bool $c
+	 * @phpstan-return array{int, Inventory}
+	 */
+	protected function mapUIInventory(int $slot, array $test, ?Inventory $inventory, \Closure $c) : ?array{
+		if($inventory === null){
+			return null;
+		}
+		if(array_key_exists($slot, $test) && $c($inventory)){
+			return [$test[$slot], $inventory];
+		}
+		return null;
+	}
+
+	/**
 	 * @throws \UnexpectedValueException
 	 */
 	public function createInventoryAction(NetworkInventoryAction $action, Player $player) : ?InventoryAction{
-		$old = TypeConverter::getInstance()->netItemStackToCore($action->oldItem);
-		$new = TypeConverter::getInstance()->netItemStackToCore($action->newItem);
-		if($old->equalsExact($new)){
+		if($action->oldItem->equals($action->newItem)){
 			//filter out useless noise in 1.13
 			return null;
 		}
+		$old = TypeConverter::getInstance()->netItemStackToCore($action->oldItem);
+		$new = TypeConverter::getInstance()->netItemStackToCore($action->newItem);
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
 				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){
-					if($action->inventorySlot === 50){
+					if($action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
 						return null; //useless noise
 					}
-					if($action->inventorySlot >= 28 and $action->inventorySlot <= 31){
-						$window = $player->getCraftingGrid();
-						if($window->getGridWidth() !== CraftingGrid::SIZE_SMALL){
-							throw new \UnexpectedValueException("Expected small crafting grid");
-						}
-						$slot = $action->inventorySlot - 28;
-					}elseif($action->inventorySlot >= 32 and $action->inventorySlot <= 40){
-						$window = $player->getCraftingGrid();
-						if($window->getGridWidth() !== CraftingGrid::SIZE_BIG){
-							throw new \UnexpectedValueException("Expected big crafting grid");
-						}
-						$slot = $action->inventorySlot - 32;
-					}else{
-						throw new \UnexpectedValueException("Unhandled magic UI slot offset $action->inventorySlot");
+					$pSlot = $action->inventorySlot;
+
+					$craftingGrid = $player->getCraftingGrid();
+					$mapped =
+						$this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING2X2_INPUT, $craftingGrid,
+							function(Inventory $i) : bool{ return $i instanceof CraftingGrid && $i->getGridWidth() === CraftingGrid::SIZE_SMALL; }) ??
+						$this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING3X3_INPUT, $craftingGrid,
+							function(Inventory $i) : bool{ return $i instanceof CraftingGrid && $i->getGridWidth() === CraftingGrid::SIZE_BIG; });
+					if($mapped === null){
+						$current = $player->getCurrentWindow();
+						$mapped =
+							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ANVIL, $current,
+								function(Inventory $i) : bool{ return $i instanceof AnvilInventory; }) ??
+							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ENCHANTING_TABLE, $current,
+								function(Inventory $i) : bool{ return $i instanceof EnchantInventory; });
 					}
+					if($mapped === null){
+						throw new \UnexpectedValueException("Unmatched UI inventory slot offset $pSlot");
+					}
+					[$slot, $window] = $mapped;
 				}else{
 					$window = $player->getNetworkSession()->getInvManager()->getWindow($action->windowId);
 					$slot = $action->inventorySlot;

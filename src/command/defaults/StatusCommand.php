@@ -91,8 +91,9 @@ class StatusCommand extends VanillaCommand{
 		$sender->sendMessage(TextFormat::GOLD . "Current TPS: {$tpsColor}{$server->getTicksPerSecond()} ({$server->getTickUsage()}%)");
 		$sender->sendMessage(TextFormat::GOLD . "Average TPS: {$tpsColor}{$server->getTicksPerSecondAverage()} ({$server->getTickUsageAverage()}%)");
 
-		$sender->sendMessage(TextFormat::GOLD . "Network upload: " . TextFormat::RED . round($server->getNetwork()->getUpload() / 1024, 2) . " kB/s");
-		$sender->sendMessage(TextFormat::GOLD . "Network download: " . TextFormat::RED . round($server->getNetwork()->getDownload() / 1024, 2) . " kB/s");
+		$bandwidth = $server->getNetwork()->getBandwidthTracker();
+		$sender->sendMessage(TextFormat::GOLD . "Network upload: " . TextFormat::RED . round($bandwidth->getSend()->getAverageBytes() / 1024, 2) . " kB/s");
+		$sender->sendMessage(TextFormat::GOLD . "Network download: " . TextFormat::RED . round($bandwidth->getReceive()->getAverageBytes() / 1024, 2) . " kB/s");
 
 		$sender->sendMessage(TextFormat::GOLD . "Thread count: " . TextFormat::RED . Process::getThreadCount());
 

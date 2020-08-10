@@ -47,7 +47,6 @@ use function mt_rand;
 use function random_bytes;
 use function rtrim;
 use function substr;
-use function unserialize;
 use const PTHREADS_INHERIT_CONSTANTS;
 
 class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
@@ -221,7 +220,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	public function setName(string $name) : void{
 		$info = $this->server->getQueryInformation();
 
-		$this->interface->setOption("name", implode(";",
+		$this->interface->setName(implode(";",
 			[
 				"MCPE",
 				rtrim(addcslashes($name, ";"), '\\'),
@@ -237,18 +236,15 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	public function setPortCheck(bool $name) : void{
-		$this->interface->setOption("portChecking", $name);
+		$this->interface->setPortCheck($name);
 	}
 
 	public function setPacketLimit(int $limit) : void{
-		$this->interface->setOption("packetLimit", $limit);
+		$this->interface->setPacketsPerTickLimit($limit);
 	}
 
-	public function handleOption(string $option, string $value) : void{
-		if($option === "bandwidth"){
-			$v = unserialize($value);
-			$this->network->addStatistics($v["up"], $v["down"]);
-		}
+	public function handleBandwidthStats(int $bytesSentDiff, int $bytesReceivedDiff) : void{
+		$this->network->getBandwidthTracker()->add($bytesSentDiff, $bytesReceivedDiff);
 	}
 
 	public function putPacket(int $sessionId, string $payload, bool $immediate = true) : void{

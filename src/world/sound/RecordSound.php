@@ -21,29 +21,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\scheduler;
+namespace pocketmine\world\sound;
 
-use function file_put_contents;
+use pocketmine\block\utils\RecordType;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
-class FileWriteTask extends AsyncTask{
+class RecordSound implements Sound{
 
-	/** @var string */
-	private $path;
-	/** @var mixed */
-	private $contents;
-	/** @var int */
-	private $flags;
+	/** @var RecordType */
+	private $recordType;
 
-	/**
-	 * @param mixed  $contents
-	 */
-	public function __construct(string $path, $contents, int $flags = 0){
-		$this->path = $path;
-		$this->contents = $contents;
-		$this->flags = $flags;
+	public function __construct(RecordType $recordType){
+		$this->recordType = $recordType;
 	}
 
-	public function onRun() : void{
-		file_put_contents($this->path, $this->contents, $this->flags);
+	public function encode(?Vector3 $pos){
+		return LevelSoundEventPacket::create($this->recordType->getSoundId(), $pos);
 	}
 }

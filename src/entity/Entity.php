@@ -97,6 +97,10 @@ abstract class Entity{
 
 	/** @var Chunk|null */
 	public $chunk;
+	/** @var int */
+	private $chunkX;
+	/** @var int */
+	private $chunkZ;
 
 	/** @var EntityDamageEvent|null */
 	protected $lastDamageCause = null;
@@ -166,8 +170,6 @@ abstract class Entity{
 	public $noDamageTicks = 0;
 	/** @var bool */
 	protected $justCreated = true;
-	/** @var bool */
-	private $invulnerable = false;
 
 	/** @var AttributeMap */
 	protected $attributeMap;
@@ -239,6 +241,8 @@ abstract class Entity{
 		if($this->chunk === null){
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}
+		$this->chunkX = $this->location->getFloorX() >> 4;
+		$this->chunkZ = $this->location->getFloorZ() >> 4;
 
 		if($nbt !== null){
 			$this->motion = EntityDataHelper::parseVec3($nbt, "Motion", true);
@@ -466,7 +470,6 @@ abstract class Entity{
 		$nbt->setFloat("FallDistance", $this->fallDistance);
 		$nbt->setShort("Fire", $this->fireTicks);
 		$nbt->setByte("OnGround", $this->onGround ? 1 : 0);
-		$nbt->setByte("Invulnerable", $this->invulnerable ? 1 : 0);
 
 		return $nbt;
 	}
@@ -475,16 +478,15 @@ abstract class Entity{
 		$this->fireTicks = $nbt->getShort("Fire", 0);
 
 		$this->onGround = $nbt->getByte("OnGround", 0) !== 0;
-		$this->invulnerable = $nbt->getByte("Invulnerable", 0) !== 0;
 
 		$this->fallDistance = $nbt->getFloat("FallDistance", 0.0);
 
-		if($nbt->hasTag("CustomName", StringTag::class)){
-			$this->setNameTag($nbt->getString("CustomName"));
+		if(($customNameTag = $nbt->getTag("CustomName")) instanceof StringTag){
+			$this->setNameTag($customNameTag->getValue());
 
-			if($nbt->hasTag("CustomNameVisible", StringTag::class)){
+			if(($customNameVisibleTag = $nbt->getTag("CustomNameVisible")) instanceof StringTag){
 				//Older versions incorrectly saved this as a string (see 890f72dbf23a77f294169b79590770470041adc4)
-				$this->setNameTagVisible($nbt->getString("CustomNameVisible") !== "");
+				$this->setNameTagVisible($customNameVisibleTag->getValue() !== "");
 			}else{
 				$this->setNameTagVisible($nbt->getByte("CustomNameVisible", 1) !== 0);
 			}
@@ -1335,11 +1337,13 @@ abstract class Entity{
 	protected function checkChunks() : void{
 		$chunkX = $this->location->getFloorX() >> 4;
 		$chunkZ = $this->location->getFloorZ() >> 4;
-		if($this->chunk === null or ($this->chunk->getX() !== $chunkX or $this->chunk->getZ() !== $chunkZ)){
+		if($this->chunk === null or $chunkX !== $this->chunkX or $chunkZ !== $this->chunkZ){
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
 			$this->chunk = $this->getWorld()->getChunk($chunkX, $chunkZ, true);
+			$this->chunkX = $chunkX;
+			$this->chunkZ = $chunkZ;
 
 			if(!$this->justCreated){
 				$newChunk = $this->getWorld()->getViewersForPosition($this->location);

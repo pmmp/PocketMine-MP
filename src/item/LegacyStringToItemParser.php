@@ -32,6 +32,7 @@ use function is_int;
 use function is_numeric;
 use function is_string;
 use function json_decode;
+use function mb_strtolower;
 use function str_replace;
 use function strtolower;
 use function trim;
@@ -76,6 +77,10 @@ final class LegacyStringToItemParser{
 
 	public function addMapping(string $alias, int $id) : void{
 		$this->map[$alias] = $id;
+	}
+
+	public function parseId(string $input) : ?int{
+		return $this->map[mb_strtolower($this->reprocess($input))] ?? null;
 	}
 
 	/**

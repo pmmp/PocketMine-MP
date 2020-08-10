@@ -35,7 +35,7 @@ parameters:
 		- build/server-phar.php
 		- tests/phpunit
 	dynamicConstantNames:
-		- pocketmine\IS_DEVELOPMENT_BUILD
+		- pocketmine\VersionInfo::IS_DEVELOPMENT_BUILD
 		- pocketmine\DEBUG
 	stubFiles:
 		- tests/phpstan/stubs/JsonMapper.stub

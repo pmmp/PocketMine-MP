@@ -26,9 +26,11 @@ namespace pocketmine\item;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\block\utils\RecordType;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\Squid;
@@ -214,6 +216,18 @@ class ItemFactory{
 		$this->register(new RawPorkchop(new ItemIdentifier(ItemIds::RAW_PORKCHOP, 0), "Raw Porkchop"));
 		$this->register(new RawRabbit(new ItemIdentifier(ItemIds::RAW_RABBIT, 0), "Raw Rabbit"));
 		$this->register(new RawSalmon(new ItemIdentifier(ItemIds::RAW_SALMON, 0), "Raw Salmon"));
+		$this->register(new Record(new ItemIdentifier(ItemIds::RECORD_13, 0), RecordType::DISK_13(), "Record 13"));
+		$this->register(new Record(new ItemIdentifier(ItemIds::RECORD_CAT, 0), RecordType::DISK_CAT(), "Record Cat"));
+		$this->register(new Record(new ItemIdentifier(ItemIds::RECORD_BLOCKS, 0), RecordType::DISK_BLOCKS(), "Record Blocks"));
+		$this->register(new Record(new ItemIdentifier(ItemIds::RECORD_CHIRP, 0), RecordType::DISK_CHIRP(), "Record Chirp"));
+		$this->register(new Record(new ItemIdentifier(ItemIds::RECORD_FAR, 0), RecordType::DISK_FAR(), "Record Far"));
+		$this->register(new Record(new ItemIdentifier(ItemIds::RECORD_MALL, 0), RecordType::DISK_MALL(), "Record Mall"));
+		$this->register(new Record(new ItemIdentifier(ItemIds::RECORD_MELLOHI, 0), RecordType::DISK_MELLOHI(), "Record Mellohi"));
+		$this->register(new Record(new ItemIdentifier(ItemIds::RECORD_STAL, 0), RecordType::DISK_STAL(), "Record Stal"));
+		$this->register(new Record(new ItemIdentifier(ItemIds::RECORD_STRAD, 0), RecordType::DISK_STRAD(), "Record Strad"));
+		$this->register(new Record(new ItemIdentifier(ItemIds::RECORD_WARD, 0), RecordType::DISK_WARD(), "Record Ward"));
+		$this->register(new Record(new ItemIdentifier(ItemIds::RECORD_11, 0), RecordType::DISK_11(), "Record 11"));
+		$this->register(new Record(new ItemIdentifier(ItemIds::RECORD_WAIT, 0), RecordType::DISK_WAIT(), "Record Wait"));
 		$this->register(new Redstone(new ItemIdentifier(ItemIds::REDSTONE, 0), "Redstone"));
 		$this->register(new RottenFlesh(new ItemIdentifier(ItemIds::ROTTEN_FLESH, 0), "Rotten Flesh"));
 		$this->register(new Shears(new ItemIdentifier(ItemIds::SHEARS, 0), "Shears"));
@@ -243,12 +257,13 @@ class ItemFactory{
 			DyeColor::BLUE()->id() => 18,
 			DyeColor::WHITE()->id() => 19
 		];
+		$colorIdMap = DyeColorIdMap::getInstance();
 		foreach(DyeColor::getAll() as $color){
 			//TODO: use colour object directly
 			//TODO: add interface to dye-colour objects
-			$this->register(new Dye(new ItemIdentifier(ItemIds::DYE, $dyeMap[$color->id()] ?? $color->getInvertedMagicNumber()), $color->getDisplayName() . " Dye", $color));
-			$this->register(new Bed(new ItemIdentifier(ItemIds::BED, $color->getMagicNumber()), $color->getDisplayName() . " Bed", $color));
-			$this->register(new Banner(new ItemIdentifier(ItemIds::BANNER, $color->getInvertedMagicNumber()), $color->getDisplayName() . " Banner", $color));
+			$this->register(new Dye(new ItemIdentifier(ItemIds::DYE, $dyeMap[$color->id()] ?? $colorIdMap->toInvertedId($color)), $color->getDisplayName() . " Dye", $color));
+			$this->register(new Bed(new ItemIdentifier(ItemIds::BED, $colorIdMap->toId($color)), $color->getDisplayName() . " Bed", $color));
+			$this->register(new Banner(new ItemIdentifier(ItemIds::BANNER, $colorIdMap->toInvertedId($color)), $color->getDisplayName() . " Banner", $color));
 		}
 
 		foreach(Potion::ALL as $type){
@@ -292,18 +307,7 @@ class ItemFactory{
 		//TODO: minecraft:name_tag
 		//TODO: minecraft:phantom_membrane
 		//TODO: minecraft:rapid_fertilizer
-		//TODO: minecraft:record_11
-		//TODO: minecraft:record_13
-		//TODO: minecraft:record_blocks
-		//TODO: minecraft:record_cat
-		//TODO: minecraft:record_chirp
-		//TODO: minecraft:record_far
-		//TODO: minecraft:record_mall
-		//TODO: minecraft:record_mellohi
-		//TODO: minecraft:record_stal
-		//TODO: minecraft:record_strad
-		//TODO: minecraft:record_wait
-		//TODO: minecraft:record_ward
+		//TODO: minecraft:record_pigstep
 		//TODO: minecraft:saddle
 		//TODO: minecraft:shield
 		//TODO: minecraft:sparkler

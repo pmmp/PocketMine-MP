@@ -28,6 +28,7 @@ use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPattern;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -136,13 +137,15 @@ class Banner extends Transparent{
 	/**
 	 * @param Deque|BannerPattern[] $patterns
 	 * @phpstan-param Deque<BannerPattern> $patterns
+	 * @return $this
 	 */
-	public function setPatterns(Deque $patterns) : void{
+	public function setPatterns(Deque $patterns) : self{
 		$checked = $patterns->filter(function($v) : bool{ return $v instanceof BannerPattern; });
 		if($checked->count() !== $patterns->count()){
 			throw new \TypeError("Deque must only contain " . BannerPattern::class . " objects");
 		}
 		$this->patterns = $checked;
+		return $this;
 	}
 
 	/**
@@ -176,7 +179,7 @@ class Banner extends Transparent{
 	}
 
 	public function asItem() : Item{
-		return ItemFactory::getInstance()->get(ItemIds::BANNER, $this->baseColor->getInvertedMagicNumber());
+		return ItemFactory::getInstance()->get(ItemIds::BANNER, DyeColorIdMap::getInstance()->toInvertedId($this->baseColor));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

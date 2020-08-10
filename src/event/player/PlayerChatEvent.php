@@ -29,6 +29,7 @@ use pocketmine\event\CancellableTrait;
 use pocketmine\permission\PermissionManager;
 use pocketmine\player\Player;
 use pocketmine\Server;
+use pocketmine\utils\Utils;
 use function spl_object_id;
 
 /**
@@ -100,6 +101,7 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	 * @param CommandSender[] $recipients
 	 */
 	public function setRecipients(array $recipients) : void{
+		Utils::validateArrayValueType($recipients, function(CommandSender $_) : void{});
 		$this->recipients = $recipients;
 	}
 }

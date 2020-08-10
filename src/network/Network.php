@@ -48,10 +48,8 @@ class Network{
 	/** @var int[] */
 	private $bannedIps = [];
 
-	/** @var float */
-	private $upload = 0;
-	/** @var float */
-	private $download = 0;
+	/** @var BidirectionalBandwidthStatsTracker */
+	private $bandwidthTracker;
 
 	/** @var string */
 	private $name;
@@ -65,25 +63,10 @@ class Network{
 	public function __construct(\Logger $logger){
 		$this->sessionManager = new NetworkSessionManager();
 		$this->logger = $logger;
+		$this->bandwidthTracker = new BidirectionalBandwidthStatsTracker(5);
 	}
 
-	public function addStatistics(float $upload, float $download) : void{
-		$this->upload += $upload;
-		$this->download += $download;
-	}
-
-	public function getUpload() : float{
-		return $this->upload;
-	}
-
-	public function getDownload() : float{
-		return $this->download;
-	}
-
-	public function resetStatistics() : void{
-		$this->upload = 0;
-		$this->download = 0;
-	}
+	public function getBandwidthTracker() : BidirectionalBandwidthStatsTracker{ return $this->bandwidthTracker; }
 
 	/**
 	 * @return NetworkInterface[]

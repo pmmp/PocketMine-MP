@@ -52,6 +52,7 @@ use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
@@ -164,11 +165,11 @@ class World implements ChunkManager{
 	private $loaderCounter = [];
 	/** @var ChunkLoader[][] */
 	private $chunkLoaders = [];
-	/** @var Player[][] */
-	private $playerLoaders = [];
 
 	/** @var ChunkListener[][] */
 	private $chunkListeners = [];
+	/** @var Player[][] */
+	private $playerChunkListeners = [];
 
 	/** @var ClientboundPacket[][] */
 	private $chunkPackets = [];
@@ -498,7 +499,7 @@ class World implements ChunkManager{
 	 * @return Player[]
 	 */
 	public function getChunkPlayers(int $chunkX, int $chunkZ) : array{
-		return $this->playerLoaders[World::chunkHash($chunkX, $chunkZ)] ?? [];
+		return $this->playerChunkListeners[World::chunkHash($chunkX, $chunkZ)] ?? [];
 	}
 
 	/**
@@ -535,15 +536,11 @@ class World implements ChunkManager{
 
 		if(!isset($this->chunkLoaders[$chunkHash = World::chunkHash($chunkX, $chunkZ)])){
 			$this->chunkLoaders[$chunkHash] = [];
-			$this->playerLoaders[$chunkHash] = [];
 		}elseif(isset($this->chunkLoaders[$chunkHash][$loaderId])){
 			return;
 		}
 
 		$this->chunkLoaders[$chunkHash][$loaderId] = $loader;
-		if($loader instanceof Player){
-			$this->playerLoaders[$chunkHash][$loaderId] = $loader;
-		}
 
 		if(!isset($this->loaders[$loaderId])){
 			$this->loaderCounter[$loaderId] = 1;
@@ -564,10 +561,8 @@ class World implements ChunkManager{
 		$loaderId = spl_object_id($loader);
 		if(isset($this->chunkLoaders[$chunkHash][$loaderId])){
 			unset($this->chunkLoaders[$chunkHash][$loaderId]);
-			unset($this->playerLoaders[$chunkHash][$loaderId]);
 			if(count($this->chunkLoaders[$chunkHash]) === 0){
 				unset($this->chunkLoaders[$chunkHash]);
-				unset($this->playerLoaders[$chunkHash]);
 				$this->unloadChunkRequest($chunkX, $chunkZ, true);
 			}
 
@@ -588,6 +583,9 @@ class World implements ChunkManager{
 		}else{
 			$this->chunkListeners[$hash] = [spl_object_id($listener) => $listener];
 		}
+		if($listener instanceof Player){
+			$this->playerChunkListeners[$hash][spl_object_id($listener)] = $listener;
+		}
 	}
 
 	/**
@@ -599,8 +597,10 @@ class World implements ChunkManager{
 		$hash = World::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunkListeners[$hash])){
 			unset($this->chunkListeners[$hash][spl_object_id($listener)]);
+			unset($this->playerChunkListeners[$hash][spl_object_id($listener)]);
 			if(count($this->chunkListeners[$hash]) === 0){
 				unset($this->chunkListeners[$hash]);
+				unset($this->playerChunkListeners[$hash]);
 			}
 		}
 	}
@@ -829,7 +829,7 @@ class World implements ChunkManager{
 			}
 
 			$fullBlock = $this->getBlockAt($b->x, $b->y, $b->z);
-			$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, $fullBlock->getRuntimeId());
+			$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, RuntimeBlockMapping::getInstance()->toRuntimeId($fullBlock->getId(), $fullBlock->getMeta()));
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable){
@@ -2234,6 +2234,7 @@ class World implements ChunkManager{
 		$v = $spawn->floor();
 		$chunk = $this->getChunkAtPosition($v, false);
 		$x = (int) $v->x;
+		$y = $v->y;
 		$z = (int) $v->z;
 		if($chunk !== null and $chunk->isGenerated()){
 			$y = (int) min($max - 2, $v->y);
@@ -2258,11 +2259,9 @@ class World implements ChunkManager{
 					++$y;
 				}
 			}
-
-			$v->y = $y;
 		}
 
-		return new Position($spawn->x, $v->y, $spawn->z, $this);
+		return new Position($spawn->x, $y, $spawn->z, $this);
 	}
 
 	/**

@@ -25,6 +25,7 @@ namespace pocketmine\world\particle;
 
 use pocketmine\block\Block;
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
@@ -37,6 +38,6 @@ class TerrainParticle implements Particle{
 	}
 
 	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::TERRAIN, $this->block->getRuntimeId(), $pos);
+		return LevelEventPacket::standardParticle(ParticleIds::TERRAIN, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getId(), $this->block->getMeta()), $pos);
 	}
 }

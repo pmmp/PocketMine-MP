@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\block\utils\DyeColor;
+use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
@@ -48,16 +49,16 @@ class Bed extends Spawnable{
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		if($nbt->hasTag(self::TAG_COLOR, ByteTag::class)){
-			$this->color = DyeColor::fromMagicNumber($nbt->getByte(self::TAG_COLOR));
+		if(($colorTag = $nbt->getTag(self::TAG_COLOR)) instanceof ByteTag){
+			$this->color = DyeColorIdMap::getInstance()->fromId($colorTag->getValue());
 		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_COLOR, $this->color->getMagicNumber());
+		$nbt->setByte(self::TAG_COLOR, DyeColorIdMap::getInstance()->toId($this->color));
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_COLOR, $this->color->getMagicNumber());
+		$nbt->setByte(self::TAG_COLOR, DyeColorIdMap::getInstance()->toId($this->color));
 	}
 }

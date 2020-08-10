@@ -25,6 +25,4 @@ define('pocketmine\_PHPSTAN_ANALYSIS', true);
 
 //TODO: these need to be defined properly or removed
 define('pocketmine\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__, 2) . '/vendor/autoload.php');
-define('pocketmine\GIT_COMMIT', str_repeat('00', 20));
 define('pocketmine\PLUGIN_PATH', '');
-define('pocketmine\VERSION', '9.9.9');

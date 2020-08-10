@@ -38,7 +38,7 @@ class CheckTestCompletionTask extends Task{
 		$test = $this->plugin->getCurrentTest();
 		if($test === null){
 			if(!$this->plugin->startNextTest()){
-				$this->plugin->getScheduler()->cancelTask($this->getHandler()->getTaskId());
+				$this->getHandler()->cancel();
 				$this->plugin->onAllTestsCompleted();
 			}
 		}elseif($test->isFinished() or $test->isTimedOut()){

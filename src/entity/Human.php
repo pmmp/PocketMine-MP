@@ -105,7 +105,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 		return new Skin( //this throws if the skin is invalid
 			$skinTag->getString("Name"),
-			$skinTag->hasTag("Data", StringTag::class) ? $skinTag->getString("Data") : $skinTag->getByteArray("Data"), //old data (this used to be saved as a StringTag in older versions of PM)
+			($skinDataTag = $skinTag->getTag("Data")) instanceof StringTag ? $skinDataTag->getValue() : $skinTag->getByteArray("Data"), //old data (this used to be saved as a StringTag in older versions of PM)
 			$skinTag->getByteArray("CapeData", ""),
 			$skinTag->getString("GeometryName", ""),
 			$skinTag->getByteArray("GeometryData", "")
@@ -138,10 +138,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	 * @param Player[]|null $targets
 	 */
 	public function sendSkin(?array $targets = null) : void{
-		$pk = new PlayerSkinPacket();
-		$pk->uuid = $this->getUniqueId();
-		$pk->skin = SkinAdapterSingleton::get()->toSkinData($this->skin);
-		$this->server->broadcastPackets($targets ?? $this->hasSpawned, [$pk]);
+		$this->server->broadcastPackets($targets ?? $this->hasSpawned, [
+			PlayerSkinPacket::create($this->getUniqueId(), SkinAdapterSingleton::get()->toSkinData($this->skin))
+		]);
 	}
 
 	public function jump() : void{
@@ -195,8 +194,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	 * For Human entities which are not players, sets their properties such as nametag, skin and UUID from NBT.
 	 */
 	protected function initHumanData(CompoundTag $nbt) : void{
-		if($nbt->hasTag("NameTag", StringTag::class)){
-			$this->setNameTag($nbt->getString("NameTag"));
+		if(($nameTagTag = $nbt->getTag("NameTag")) instanceof StringTag){
+			$this->setNameTag($nameTagTag->getValue());
 		}
 
 		$this->uuid = UUID::fromData((string) $this->getId(), $this->skin->getSkinData(), $this->getNameTag());
@@ -252,8 +251,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$nbt->getFloat("XpP", 0.0));
 		$this->xpManager->setLifetimeTotalXp($nbt->getInt("XpTotal", 0));
 
-		if($nbt->hasTag("XpSeed", IntTag::class)){
-			$this->xpSeed = $nbt->getInt("XpSeed");
+		if(($xpSeedTag = $nbt->getTag("XpSeed")) instanceof IntTag){
+			$this->xpSeed = $xpSeedTag->getValue();
 		}else{
 			$this->xpSeed = random_int(Limits::INT32_MIN, Limits::INT32_MAX);
 		}

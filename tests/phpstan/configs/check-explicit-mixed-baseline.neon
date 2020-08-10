@@ -31,11 +31,6 @@ parameters:
 			path: ../../../src/MemoryManager.php
 
 		-
-			message: "#^Cannot access offset 'git' on mixed\\.$#"
-			count: 2
-			path: ../../../src/PocketMine.php
-
-		-
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 6
 			path: ../../../src/Server.php
@@ -91,6 +86,11 @@ parameters:
 			path: ../../../src/ServerConfigGroup.php
 
 		-
+			message: "#^Cannot access offset 'git' on mixed\\.$#"
+			count: 2
+			path: ../../../src/VersionInfo.php
+
+		-
 			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: ../../../src/command/CommandReader.php
@@ -114,11 +114,6 @@ parameters:
 			message: "#^Cannot cast mixed to float\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/VanillaCommand.php
-
-		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/crafting/CraftingManagerFromDataHelper.php
 
 		-
 			message: "#^Method pocketmine\\\\event\\\\EventPriority\\:\\:fromString\\(\\) should return int but returns mixed\\.$#"
@@ -152,16 +147,6 @@ parameters:
 
 		-
 			message: "#^Cannot cast mixed to int\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/raklib/RakLibInterface.php
-
-		-
-			message: "#^Cannot access offset 'down' on mixed\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/raklib/RakLibInterface.php
-
-		-
-			message: "#^Cannot access offset 'up' on mixed\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/raklib/RakLibInterface.php
 

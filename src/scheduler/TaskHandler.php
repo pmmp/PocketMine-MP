@@ -32,9 +32,6 @@ class TaskHandler{
 	protected $task;
 
 	/** @var int */
-	protected $taskId;
-
-	/** @var int */
 	protected $delay;
 
 	/** @var int */
@@ -54,9 +51,11 @@ class TaskHandler{
 	/** @var string */
 	private $ownerName;
 
-	public function __construct(Task $task, int $taskId, int $delay = -1, int $period = -1, ?string $ownerName = null){
+	public function __construct(Task $task, int $delay = -1, int $period = -1, ?string $ownerName = null){
+		if($task->getHandler() !== null){
+			throw new \InvalidArgumentException("Cannot assign multiple handlers to the same task");
+		}
 		$this->task = $task;
-		$this->taskId = $taskId;
 		$this->delay = $delay;
 		$this->period = $period;
 		$this->taskName = $task->getName();
@@ -75,10 +74,6 @@ class TaskHandler{
 
 	public function setNextRun(int $ticks) : void{
 		$this->nextRun = $ticks;
-	}
-
-	public function getTaskId() : int{
-		return $this->taskId;
 	}
 
 	public function getTask() : Task{
