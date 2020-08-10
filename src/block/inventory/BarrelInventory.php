@@ -54,7 +54,7 @@ class BarrelInventory extends BlockInventory{
 			$block = $this->getHolder()->getWorld()->getBlock($this->getHolder());
 			if($block instanceof Barrel){
 				$this->broadcastBlockEventPacket(true);
-				$block->setOpen(true);
+				$this->getHolder()->getWorld()->setBlock($this->getHolder(), $block->setOpen(true));
 			}
 			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getOpenSound());
 		}
@@ -66,7 +66,7 @@ class BarrelInventory extends BlockInventory{
 			$block = $this->getHolder()->getWorld()->getBlock($this->getHolder());
 			if($block instanceof Barrel){
 				$this->broadcastBlockEventPacket(false);
-				$block->setOpen(false);
+				$this->getHolder()->getWorld()->setBlock($this->getHolder(), $block->setOpen(false));
 			}
 			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getCloseSound());
 		}

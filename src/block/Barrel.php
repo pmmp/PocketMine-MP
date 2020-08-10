@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Barrel as TileBarrel;
+use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -32,9 +33,8 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Barrel extends Opaque{
+	use AnyFacingTrait;
 
-	/** @var int */
-	protected $facing = Facing::NORTH;
 	/** @var bool */
 	protected $open = false;
 
@@ -43,12 +43,12 @@ class Barrel extends Opaque{
 	}
 
 	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeFacing($this->facing) | ($this->open ? 0x08 : 0);
+		return BlockDataSerializer::writeFacing($this->facing) | ($this->open ? BlockLegacyMetadata::BARREL_OPEN : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataSerializer::readFacing($stateMeta & 0x07);
-		$this->open = ($stateMeta & 0x08) === 0x08;
+		$this->open = ($stateMeta & BlockLegacyMetadata::BARREL_OPEN) === BlockLegacyMetadata::BARREL_OPEN;
 	}
 
 	public function getStateBitmask() : int{
@@ -59,15 +59,15 @@ class Barrel extends Opaque{
 		return $this->open;
 	}
 
-	public function setOpen(bool $open) : void{
+	public function setOpen(bool $open) : Barrel{
 		$this->open = $open;
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		return $this;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			if(abs($player->getX() - $this->pos->getX()) < 2 && abs($player->getZ() - $this->pos->getZ()) < 2){
-				$y = $player->getPosition()->getY() + $player->getEyeHeight();
+			if(abs($player->getPosition()->getX() - $this->pos->getX()) < 2 && abs($player->getPosition()->getZ() - $this->pos->getZ()) < 2){
+				$y = $player->getEyePos()->getY();
 
 				if($y - $this->pos->getY() > 2){
 					$this->facing = Facing::UP;
