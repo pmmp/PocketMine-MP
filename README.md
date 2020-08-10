@@ -19,7 +19,7 @@
 ## For developers
  * [Building and running from source](BUILDING.md)
  * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/doxygen/) - Doxygen documentation generated from development
- * [DevTools](https://github.com/pmmp/PocketMine-DevTools/) - Development tools plugin for creating plugins
+ * [DevTools](https://github.com/pmmp/DevTools/) - Development tools plugin for creating plugins
  * [ExamplePlugin](https://github.com/pmmp/ExamplePlugin/) - Example plugin demonstrating some basic API features
  * [Contributing Guidelines](CONTRIBUTING.md)
 
