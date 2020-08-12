@@ -28,8 +28,10 @@ use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\utils\AssumptionFailedError;
 use function array_map;
 use function file_get_contents;
+use function is_array;
 use function json_decode;
 use function json_encode;
 use function usort;
@@ -52,41 +54,39 @@ class CraftingManager{
 
 	public function init() : void{
 		$recipes = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla" . DIRECTORY_SEPARATOR . "recipes.json"), true);
+		if(!is_array($recipes)){
+			throw new AssumptionFailedError("recipes.json root should contain a map of recipe types");
+		}
 
 		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
-		foreach($recipes as $recipe){
-			switch($recipe["type"]){
-				case "shapeless":
-					if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
-						break;
-					}
-					$this->registerShapelessRecipe(new ShapelessRecipe(
-						array_map($itemDeserializerFunc, $recipe["input"]),
-						array_map($itemDeserializerFunc, $recipe["output"])
-					));
-					break;
-				case "shaped":
-					if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
-						break;
-					}
-					$this->registerShapedRecipe(new ShapedRecipe(
-						$recipe["shape"],
-						array_map($itemDeserializerFunc, $recipe["input"]),
-						array_map($itemDeserializerFunc, $recipe["output"])
-					));
-					break;
-				case "smelting":
-					if($recipe["block"] !== "furnace"){ //TODO: filter others out for now to avoid breaking economics
-						break;
-					}
-					$this->registerFurnaceRecipe(new FurnaceRecipe(
-						Item::jsonDeserialize($recipe["output"]),
-						Item::jsonDeserialize($recipe["input"]))
-					);
-					break;
-				default:
-					break;
+
+		foreach($recipes["shapeless"] as $recipe){
+			if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
+				continue;
 			}
+			$this->registerShapelessRecipe(new ShapelessRecipe(
+				array_map($itemDeserializerFunc, $recipe["input"]),
+				array_map($itemDeserializerFunc, $recipe["output"])
+			));
+		}
+		foreach($recipes["shaped"] as $recipe){
+			if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
+				continue;
+			}
+			$this->registerShapedRecipe(new ShapedRecipe(
+				$recipe["shape"],
+				array_map($itemDeserializerFunc, $recipe["input"]),
+				array_map($itemDeserializerFunc, $recipe["output"])
+			));
+		}
+		foreach($recipes["smelting"] as $recipe){
+			if($recipe["block"] !== "furnace"){ //TODO: filter others out for now to avoid breaking economics
+				continue;
+			}
+			$this->registerFurnaceRecipe(new FurnaceRecipe(
+				Item::jsonDeserialize($recipe["output"]),
+				Item::jsonDeserialize($recipe["input"]))
+			);
 		}
 
 		$this->buildCraftingDataCache();

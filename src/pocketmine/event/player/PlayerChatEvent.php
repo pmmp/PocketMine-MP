@@ -29,7 +29,6 @@ use pocketmine\permission\PermissionManager;
 use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\utils\Utils;
-use function array_values;
 use function spl_object_id;
 
 /**

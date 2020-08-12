@@ -136,6 +136,8 @@ class InventoryTransaction{
 	 * @throws TransactionValidationException
 	 */
 	protected function matchItems(array &$needItems, array &$haveItems) : void{
+		$needItems = [];
+		$haveItems = [];
 		foreach($this->actions as $key => $action){
 			if(!$action->getTargetItem()->isNull()){
 				$needItems[] = $action->getTargetItem();

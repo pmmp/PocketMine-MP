@@ -1,12 +1,12 @@
 [submodule "src/pocketmine/lang/locale"]
 	path = src/pocketmine/lang/locale
-	url = https://github.com/pmmp/PocketMine-Language.git
+	url = https://github.com/pmmp/Language.git
 [submodule "tests/preprocessor"]
 	path = build/preprocessor
 	url = https://github.com/pmmp/preprocessor.git
-[submodule "tests/plugins/PocketMine-DevTools"]
-	path = tests/plugins/PocketMine-DevTools
-	url = https://github.com/pmmp/PocketMine-DevTools.git
+[submodule "tests/plugins/DevTools"]
+	path = tests/plugins/DevTools
+	url = https://github.com/pmmp/DevTools.git
 [submodule "build/php"]
 	path = build/php
 	url = https://github.com/pmmp/php-build-scripts.git

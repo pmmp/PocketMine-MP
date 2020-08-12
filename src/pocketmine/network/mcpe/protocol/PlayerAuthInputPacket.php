@@ -128,8 +128,8 @@ class PlayerAuthInputPacket extends DataPacket/* implements ServerboundPacket*/{
 	}
 
 	protected function decodePayload() : void{
-		$this->yaw = $this->getLFloat();
 		$this->pitch = $this->getLFloat();
+		$this->yaw = $this->getLFloat();
 		$this->position = $this->getVector3();
 		$this->moveVecX = $this->getLFloat();
 		$this->moveVecZ = $this->getLFloat();
@@ -143,8 +143,8 @@ class PlayerAuthInputPacket extends DataPacket/* implements ServerboundPacket*/{
 	}
 
 	protected function encodePayload() : void{
-		$this->putLFloat($this->yaw);
 		$this->putLFloat($this->pitch);
+		$this->putLFloat($this->yaw);
 		$this->putVector3($this->position);
 		$this->putLFloat($this->moveVecX);
 		$this->putLFloat($this->moveVecZ);
