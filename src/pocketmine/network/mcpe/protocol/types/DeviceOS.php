@@ -40,5 +40,6 @@ final class DeviceOS{
 	public const NINTENDO = 12;
 	public const XBOX = 13;
 	public const WINDOWS_PHONE = 14;
+	public const LINUX = 20;
 
 }
