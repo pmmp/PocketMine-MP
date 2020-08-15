@@ -144,7 +144,7 @@ class Bamboo extends Transparent{
 		//TODO: check light level at the top block (unsure if it uses block light or not)
 
 		$height = 1;
-		while(($world->getBlock($this->pos->subtract(0, $height, 0)))->isSameType($this)){
+		while($world->getBlock($this->pos->subtract(0, $height, 0))->isSameType($this)){
 			if(++$height >= self::MAX_HEIGHT){
 				//TODO: I think this may be decided by a random factor (12-16)
 				return false;
