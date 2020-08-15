@@ -294,12 +294,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "f126c8babe63220ca7141ff696761751c19ca756"
+                "reference": "b7e1b94b8ad6d987224b7770f5d451e2776adccc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/f126c8babe63220ca7141ff696761751c19ca756",
-                "reference": "f126c8babe63220ca7141ff696761751c19ca756",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/b7e1b94b8ad6d987224b7770f5d451e2776adccc",
+                "reference": "b7e1b94b8ad6d987224b7770f5d451e2776adccc",
                 "shasum": ""
             },
             "require": {
@@ -320,7 +320,7 @@
                 "LGPL-3.0"
             ],
             "description": "Classes and methods for conveniently handling binary data",
-            "time": "2020-06-17T12:14:53+00:00"
+            "time": "2020-08-01T15:26:01+00:00"
         },
         {
             "name": "pocketmine/callback-validator",
@@ -552,12 +552,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "a7c9da52c7efcd3383073357c10d3a989bfbb3f2"
+                "reference": "a036719cc0106ca03084211c622d2312d6b70674"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/a7c9da52c7efcd3383073357c10d3a989bfbb3f2",
-                "reference": "a7c9da52c7efcd3383073357c10d3a989bfbb3f2",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/a036719cc0106ca03084211c622d2312d6b70674",
+                "reference": "a036719cc0106ca03084211c622d2312d6b70674",
                 "shasum": ""
             },
             "require": {
@@ -579,7 +579,7 @@
                 "LGPL-3.0"
             ],
             "description": "PHP library containing math related code used in PocketMine-MP",
-            "time": "2020-08-06T13:19:36+00:00"
+            "time": "2020-08-06T13:25:43+00:00"
         },
         {
             "name": "pocketmine/nbt",
@@ -587,12 +587,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "b99216a32b96109db8f43c039c2f705c0ecd730a"
+                "reference": "0248f64793c36bbde9437c8271b75ebdf4a50326"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/b99216a32b96109db8f43c039c2f705c0ecd730a",
-                "reference": "b99216a32b96109db8f43c039c2f705c0ecd730a",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/0248f64793c36bbde9437c8271b75ebdf4a50326",
+                "reference": "0248f64793c36bbde9437c8271b75ebdf4a50326",
                 "shasum": ""
             },
             "require": {
@@ -601,8 +601,8 @@
                 "pocketmine/binaryutils": "dev-master"
             },
             "require-dev": {
-                "irstea/phpunit-shim": "^7.5",
-                "phpstan/phpstan": "^0.12.11"
+                "irstea/phpunit-shim": "^7.5 || ^8.0",
+                "phpstan/phpstan": "^0.12.29"
             },
             "type": "library",
             "autoload": {
@@ -615,7 +615,7 @@
                 "LGPL-3.0"
             ],
             "description": "PHP library for working with Named Binary Tags",
-            "time": "2020-06-17T13:22:22+00:00"
+            "time": "2020-08-01T15:53:15+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -623,12 +623,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "6fbccdb6a7cf47ebcb411803aa023cf688aae8c7"
+                "reference": "9e66d5b194d2d483854d791c54409057855810f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/6fbccdb6a7cf47ebcb411803aa023cf688aae8c7",
-                "reference": "6fbccdb6a7cf47ebcb411803aa023cf688aae8c7",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/9e66d5b194d2d483854d791c54409057855810f3",
+                "reference": "9e66d5b194d2d483854d791c54409057855810f3",
                 "shasum": ""
             },
             "require": {
@@ -654,7 +654,7 @@
                 "GPL-3.0"
             ],
             "description": "A RakNet server implementation written in PHP",
-            "time": "2020-07-21T12:33:41+00:00"
+            "time": "2020-08-02T14:51:48+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -810,16 +810,16 @@
         },
         {
             "name": "respect/validation",
-            "version": "2.0.13",
+            "version": "2.0.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Respect/Validation.git",
-                "reference": "78d1ce404cee8a25e2577ee5b829ee88e7ea1e4a"
+                "reference": "fc14c6c6695c3f870ad8810a2acddccec015841d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Respect/Validation/zipball/78d1ce404cee8a25e2577ee5b829ee88e7ea1e4a",
-                "reference": "78d1ce404cee8a25e2577ee5b829ee88e7ea1e4a",
+                "url": "https://api.github.com/repos/Respect/Validation/zipball/fc14c6c6695c3f870ad8810a2acddccec015841d",
+                "reference": "fc14c6c6695c3f870ad8810a2acddccec015841d",
                 "shasum": ""
             },
             "require": {
@@ -828,7 +828,6 @@
                 "symfony/polyfill-mbstring": "^1.2"
             },
             "require-dev": {
-                "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
                 "egulias/email-validator": "^2.1",
                 "malukenho/docheader": "^0.1",
                 "mikey179/vfsstream": "^1.6",
@@ -836,7 +835,7 @@
                 "phpstan/phpstan-deprecation-rules": "^0.11.0",
                 "phpstan/phpstan-phpunit": "^0.11.0",
                 "phpunit/phpunit": "^7.5",
-                "respect/coding-standard": "^1.0",
+                "respect/coding-standard": "^2.1",
                 "squizlabs/php_codesniffer": "^3.5",
                 "symfony/validator": "^3.0||^4.0",
                 "zendframework/zend-validator": "^2.1"
@@ -872,11 +871,11 @@
                 "validation",
                 "validator"
             ],
-            "time": "2020-07-19T00:20:19+00:00"
+            "time": "2020-07-25T18:34:16+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.18.0",
+            "version": "v1.18.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
@@ -1064,29 +1063,82 @@
             "time": "2020-06-29T13:22:24+00:00"
         },
         {
-            "name": "phar-io/manifest",
-            "version": "1.0.3",
+            "name": "nikic/php-parser",
+            "version": "v4.8.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/phar-io/manifest.git",
-                "reference": "7761fcacf03b4d4f16e7ccb606d4879ca431fcf4"
+                "url": "https://github.com/nikic/PHP-Parser.git",
+                "reference": "8c58eb4cd4f3883f82611abeac2efbc3dbed787e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phar-io/manifest/zipball/7761fcacf03b4d4f16e7ccb606d4879ca431fcf4",
-                "reference": "7761fcacf03b4d4f16e7ccb606d4879ca431fcf4",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/8c58eb4cd4f3883f82611abeac2efbc3dbed787e",
+                "reference": "8c58eb4cd4f3883f82611abeac2efbc3dbed787e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-tokenizer": "*",
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "ircmaxell/php-yacc": "^0.0.6",
+                "phpunit/phpunit": "^6.5 || ^7.0 || ^8.0 || ^9.0"
+            },
+            "bin": [
+                "bin/php-parse"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpParser\\": "lib/PhpParser"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nikita Popov"
+                }
+            ],
+            "description": "A PHP parser written in PHP",
+            "keywords": [
+                "parser",
+                "php"
+            ],
+            "time": "2020-08-09T10:23:20+00:00"
+        },
+        {
+            "name": "phar-io/manifest",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phar-io/manifest.git",
+                "reference": "85265efd3af7ba3ca4b2a2c34dbfc5788dd29133"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phar-io/manifest/zipball/85265efd3af7ba3ca4b2a2c34dbfc5788dd29133",
+                "reference": "85265efd3af7ba3ca4b2a2c34dbfc5788dd29133",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-phar": "*",
-                "phar-io/version": "^2.0",
-                "php": "^5.6 || ^7.0"
+                "ext-xmlwriter": "*",
+                "phar-io/version": "^3.0.1",
+                "php": "^7.2 || ^8.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0.x-dev"
+                    "dev-master": "2.0.x-dev"
                 }
             },
             "autoload": {
@@ -1116,24 +1168,24 @@
                 }
             ],
             "description": "Component for reading phar.io manifest information from a PHP Archive (PHAR)",
-            "time": "2018-07-08T19:23:20+00:00"
+            "time": "2020-06-27T14:33:11+00:00"
         },
         {
             "name": "phar-io/version",
-            "version": "2.0.1",
+            "version": "3.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phar-io/version.git",
-                "reference": "45a2ec53a73c70ce41d55cedef9063630abaf1b6"
+                "reference": "c6bb6825def89e0a32220f88337f8ceaf1975fa0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phar-io/version/zipball/45a2ec53a73c70ce41d55cedef9063630abaf1b6",
-                "reference": "45a2ec53a73c70ce41d55cedef9063630abaf1b6",
+                "url": "https://api.github.com/repos/phar-io/version/zipball/c6bb6825def89e0a32220f88337f8ceaf1975fa0",
+                "reference": "c6bb6825def89e0a32220f88337f8ceaf1975fa0",
                 "shasum": ""
             },
             "require": {
-                "php": "^5.6 || ^7.0"
+                "php": "^7.2 || ^8.0"
             },
             "type": "library",
             "autoload": {
@@ -1163,7 +1215,7 @@
                 }
             ],
             "description": "Library for handling version information and constraints",
-            "time": "2018-07-08T19:19:57+00:00"
+            "time": "2020-06-27T14:39:04+00:00"
         },
         {
             "name": "phpdocumentor/reflection-common",
@@ -1216,16 +1268,16 @@
         },
         {
             "name": "phpdocumentor/reflection-docblock",
-            "version": "5.2.0",
+            "version": "5.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-                "reference": "3170448f5769fe19f456173d833734e0ff1b84df"
+                "reference": "d870572532cd70bc3fab58f2e23ad423c8404c44"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/3170448f5769fe19f456173d833734e0ff1b84df",
-                "reference": "3170448f5769fe19f456173d833734e0ff1b84df",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/d870572532cd70bc3fab58f2e23ad423c8404c44",
+                "reference": "d870572532cd70bc3fab58f2e23ad423c8404c44",
                 "shasum": ""
             },
             "require": {
@@ -1264,7 +1316,7 @@
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
-            "time": "2020-07-20T20:05:34+00:00"
+            "time": "2020-08-15T11:14:08+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
@@ -1432,28 +1484,28 @@
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "0.12.11",
+            "version": "0.12.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "ab783a8ea634ea23305a8818c4750603e714489b"
+                "reference": "1dd916d181b0539dea5cd37e91546afb8b107e17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/ab783a8ea634ea23305a8818c4750603e714489b",
-                "reference": "ab783a8ea634ea23305a8818c4750603e714489b",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/1dd916d181b0539dea5cd37e91546afb8b107e17",
+                "reference": "1dd916d181b0539dea5cd37e91546afb8b107e17",
                 "shasum": ""
             },
             "require": {
-                "php": "~7.1",
-                "phpstan/phpstan": "^0.12.20"
+                "php": "^7.1 || ^8.0",
+                "phpstan/phpstan": "^0.12.33"
             },
             "conflict": {
                 "phpunit/phpunit": "<7.0"
             },
             "require-dev": {
                 "consistence/coding-standard": "^3.5",
-                "dealerdirect/phpcodesniffer-composer-installer": "^0.4.4",
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
                 "ergebnis/composer-normalize": "^2.0.2",
                 "jakub-onderka/php-parallel-lint": "^1.0",
                 "phing/phing": "^2.16.0",
@@ -1484,25 +1536,25 @@
                 "MIT"
             ],
             "description": "PHPUnit extensions and rules for PHPStan",
-            "time": "2020-06-01T16:43:31+00:00"
+            "time": "2020-08-05T13:28:50+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "0.12.3",
+            "version": "0.12.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "937283265620af9e2005743134ebb4e197b12d8e"
+                "reference": "9b86e1eb77c796628e239820a01a2d327d607a5e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/937283265620af9e2005743134ebb4e197b12d8e",
-                "reference": "937283265620af9e2005743134ebb4e197b12d8e",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/9b86e1eb77c796628e239820a01a2d327d607a5e",
+                "reference": "9b86e1eb77c796628e239820a01a2d327d607a5e",
                 "shasum": ""
             },
             "require": {
-                "php": "~7.1",
-                "phpstan/phpstan": "^0.12.6"
+                "php": "^7.1 || ^8.0",
+                "phpstan/phpstan": "^0.12.33"
             },
             "require-dev": {
                 "consistence/coding-standard": "^3.0.1",
@@ -1535,36 +1587,39 @@
                 "MIT"
             ],
             "description": "Extra strict and opinionated rules for PHPStan",
-            "time": "2020-07-16T08:58:37+00:00"
+            "time": "2020-07-21T14:49:47+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "8.0.2",
+            "version": "9.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "ca6647ffddd2add025ab3f21644a441d7c146cdc"
+                "reference": "4422fca28c3634e2de8c7c373af97a104dd1a45f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/ca6647ffddd2add025ab3f21644a441d7c146cdc",
-                "reference": "ca6647ffddd2add025ab3f21644a441d7c146cdc",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/4422fca28c3634e2de8c7c373af97a104dd1a45f",
+                "reference": "4422fca28c3634e2de8c7c373af97a104dd1a45f",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
+                "ext-libxml": "*",
                 "ext-xmlwriter": "*",
-                "php": "^7.3",
-                "phpunit/php-file-iterator": "^3.0",
-                "phpunit/php-text-template": "^2.0",
-                "phpunit/php-token-stream": "^4.0",
-                "sebastian/code-unit-reverse-lookup": "^2.0",
-                "sebastian/environment": "^5.0",
-                "sebastian/version": "^3.0",
-                "theseer/tokenizer": "^1.1.3"
+                "nikic/php-parser": "^4.8",
+                "php": "^7.3 || ^8.0",
+                "phpunit/php-file-iterator": "^3.0.3",
+                "phpunit/php-text-template": "^2.0.2",
+                "sebastian/code-unit-reverse-lookup": "^2.0.2",
+                "sebastian/complexity": "^2.0",
+                "sebastian/environment": "^5.1.2",
+                "sebastian/lines-of-code": "^1.0",
+                "sebastian/version": "^3.0.1",
+                "theseer/tokenizer": "^1.2.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^9.0"
+                "phpunit/phpunit": "^9.3"
             },
             "suggest": {
                 "ext-pcov": "*",
@@ -1573,7 +1628,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "8.0-dev"
+                    "dev-master": "9.1-dev"
                 }
             },
             "autoload": {
@@ -1605,7 +1660,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-05-23T08:02:54+00:00"
+            "time": "2020-08-13T15:04:53+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -1665,16 +1720,16 @@
         },
         {
             "name": "phpunit/php-invoker",
-            "version": "3.0.2",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-invoker.git",
-                "reference": "f6eedfed1085dd1f4c599629459a0277d25f9a66"
+                "reference": "7a85b66acc48cacffdf87dadd3694e7123674298"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-invoker/zipball/f6eedfed1085dd1f4c599629459a0277d25f9a66",
-                "reference": "f6eedfed1085dd1f4c599629459a0277d25f9a66",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-invoker/zipball/7a85b66acc48cacffdf87dadd3694e7123674298",
+                "reference": "7a85b66acc48cacffdf87dadd3694e7123674298",
                 "shasum": ""
             },
             "require": {
@@ -1690,7 +1745,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0-dev"
+                    "dev-master": "3.1-dev"
                 }
             },
             "autoload": {
@@ -1720,7 +1775,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-06-26T11:53:53+00:00"
+            "time": "2020-08-06T07:04:15+00:00"
         },
         {
             "name": "phpunit/php-text-template",
@@ -1833,72 +1888,17 @@
             "time": "2020-06-26T11:58:13+00:00"
         },
         {
-            "name": "phpunit/php-token-stream",
-            "version": "4.0.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/sebastianbergmann/php-token-stream.git",
-                "reference": "5672711b6b07b14d5ab694e700c62eeb82fcf374"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-token-stream/zipball/5672711b6b07b14d5ab694e700c62eeb82fcf374",
-                "reference": "5672711b6b07b14d5ab694e700c62eeb82fcf374",
-                "shasum": ""
-            },
-            "require": {
-                "ext-tokenizer": "*",
-                "php": "^7.3 || ^8.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^9.0"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "4.0-dev"
-                }
-            },
-            "autoload": {
-                "classmap": [
-                    "src/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "BSD-3-Clause"
-            ],
-            "authors": [
-                {
-                    "name": "Sebastian Bergmann",
-                    "email": "sebastian@phpunit.de"
-                }
-            ],
-            "description": "Wrapper around PHP's tokenizer extension.",
-            "homepage": "https://github.com/sebastianbergmann/php-token-stream/",
-            "keywords": [
-                "tokenizer"
-            ],
-            "funding": [
-                {
-                    "url": "https://github.com/sebastianbergmann",
-                    "type": "github"
-                }
-            ],
-            "time": "2020-06-27T06:36:25+00:00"
-        },
-        {
             "name": "phpunit/phpunit",
-            "version": "9.2.6",
+            "version": "9.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "1c6a9e4312e209e659f1fce3ce88dd197c2448f6"
+                "reference": "c638a0cac77347980352485912de48c99b42ad00"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/1c6a9e4312e209e659f1fce3ce88dd197c2448f6",
-                "reference": "1c6a9e4312e209e659f1fce3ce88dd197c2448f6",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c638a0cac77347980352485912de48c99b42ad00",
+                "reference": "c638a0cac77347980352485912de48c99b42ad00",
                 "shasum": ""
             },
             "require": {
@@ -1909,30 +1909,30 @@
                 "ext-mbstring": "*",
                 "ext-xml": "*",
                 "ext-xmlwriter": "*",
-                "myclabs/deep-copy": "^1.9.5",
-                "phar-io/manifest": "^1.0.3",
-                "phar-io/version": "^2.0.1",
-                "php": "^7.3",
-                "phpspec/prophecy": "^1.10.3",
-                "phpunit/php-code-coverage": "^8.0.2",
-                "phpunit/php-file-iterator": "^3.0.3",
-                "phpunit/php-invoker": "^3.0.2",
+                "myclabs/deep-copy": "^1.10.1",
+                "phar-io/manifest": "^2.0.1",
+                "phar-io/version": "^3.0.2",
+                "php": "^7.3 || ^8.0",
+                "phpspec/prophecy": "^1.11.1",
+                "phpunit/php-code-coverage": "^9.1.1",
+                "phpunit/php-file-iterator": "^3.0.4",
+                "phpunit/php-invoker": "^3.1",
                 "phpunit/php-text-template": "^2.0.2",
                 "phpunit/php-timer": "^5.0.1",
                 "sebastian/code-unit": "^1.0.5",
                 "sebastian/comparator": "^4.0.3",
-                "sebastian/diff": "^4.0.1",
+                "sebastian/diff": "^4.0.2",
                 "sebastian/environment": "^5.1.2",
                 "sebastian/exporter": "^4.0.2",
-                "sebastian/global-state": "^4.0",
+                "sebastian/global-state": "^5.0",
                 "sebastian/object-enumerator": "^4.0.2",
                 "sebastian/resource-operations": "^3.0.2",
-                "sebastian/type": "^2.1.1",
+                "sebastian/type": "^2.2.1",
                 "sebastian/version": "^3.0.1"
             },
             "require-dev": {
                 "ext-pdo": "*",
-                "phpspec/prophecy-phpunit": "^2.0"
+                "phpspec/prophecy-phpunit": "^2.0.1"
             },
             "suggest": {
                 "ext-soap": "*",
@@ -1944,7 +1944,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "9.2-dev"
+                    "dev-master": "9.3-dev"
                 }
             },
             "autoload": {
@@ -1983,7 +1983,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-07-13T17:55:55+00:00"
+            "time": "2020-08-11T15:36:12+00:00"
         },
         {
             "name": "sebastian/code-unit",
@@ -2157,6 +2157,59 @@
                 }
             ],
             "time": "2020-06-26T12:05:46+00:00"
+        },
+        {
+            "name": "sebastian/complexity",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sebastianbergmann/complexity.git",
+                "reference": "33fcd6a26656c6546f70871244ecba4b4dced097"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sebastianbergmann/complexity/zipball/33fcd6a26656c6546f70871244ecba4b4dced097",
+                "reference": "33fcd6a26656c6546f70871244ecba4b4dced097",
+                "shasum": ""
+            },
+            "require": {
+                "nikic/php-parser": "^4.7",
+                "php": "^7.3 || ^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian Bergmann",
+                    "email": "sebastian@phpunit.de",
+                    "role": "lead"
+                }
+            ],
+            "description": "Library for calculating the complexity of PHP code units",
+            "homepage": "https://github.com/sebastianbergmann/complexity",
+            "funding": [
+                {
+                    "url": "https://github.com/sebastianbergmann",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-07-25T14:01:34+00:00"
         },
         {
             "name": "sebastian/diff",
@@ -2354,26 +2407,26 @@
         },
         {
             "name": "sebastian/global-state",
-            "version": "4.0.0",
+            "version": "5.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/global-state.git",
-                "reference": "bdb1e7c79e592b8c82cb1699be3c8743119b8a72"
+                "reference": "22ae663c951bdc39da96603edc3239ed3a299097"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/bdb1e7c79e592b8c82cb1699be3c8743119b8a72",
-                "reference": "bdb1e7c79e592b8c82cb1699be3c8743119b8a72",
+                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/22ae663c951bdc39da96603edc3239ed3a299097",
+                "reference": "22ae663c951bdc39da96603edc3239ed3a299097",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.3",
+                "php": "^7.3 || ^8.0",
                 "sebastian/object-reflector": "^2.0",
                 "sebastian/recursion-context": "^4.0"
             },
             "require-dev": {
                 "ext-dom": "*",
-                "phpunit/phpunit": "^9.0"
+                "phpunit/phpunit": "^9.3"
             },
             "suggest": {
                 "ext-uopz": "*"
@@ -2381,7 +2434,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.0-dev"
+                    "dev-master": "5.0-dev"
                 }
             },
             "autoload": {
@@ -2404,7 +2457,66 @@
             "keywords": [
                 "global state"
             ],
-            "time": "2020-02-07T06:11:37+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/sebastianbergmann",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-08-07T04:09:03+00:00"
+        },
+        {
+            "name": "sebastian/lines-of-code",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sebastianbergmann/lines-of-code.git",
+                "reference": "e02bf626f404b5daec382a7b8a6a4456e49017e5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sebastianbergmann/lines-of-code/zipball/e02bf626f404b5daec382a7b8a6a4456e49017e5",
+                "reference": "e02bf626f404b5daec382a7b8a6a4456e49017e5",
+                "shasum": ""
+            },
+            "require": {
+                "nikic/php-parser": "^4.6",
+                "php": "^7.3 || ^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian Bergmann",
+                    "email": "sebastian@phpunit.de",
+                    "role": "lead"
+                }
+            ],
+            "description": "Library for counting the lines of code in PHP source code",
+            "homepage": "https://github.com/sebastianbergmann/lines-of-code",
+            "funding": [
+                {
+                    "url": "https://github.com/sebastianbergmann",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-07-22T18:33:42+00:00"
         },
         {
             "name": "sebastian/object-enumerator",
@@ -2723,7 +2835,7 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.18.0",
+            "version": "v1.18.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
