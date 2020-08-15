@@ -232,7 +232,9 @@ class Explosion{
 
 				$t->close();
 			}
+		}
 
+		foreach($this->affectedBlocks as $block){
 			$pos = new Vector3($block->x, $block->y, $block->z);
 
 			for($side = 0; $side <= 5; $side++){
