@@ -25,13 +25,7 @@ namespace pocketmine\utils;
 
 use function array_map;
 use function count;
-use function get_class;
-use function implode;
 use function mb_strtoupper;
-use function sprintf;
-use function strlen;
-use function strpos;
-use function substr;
 
 trait RegistryTrait{
 	/** @var object[] */

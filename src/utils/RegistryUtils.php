@@ -23,7 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function get_class;
+use function implode;
 use function mb_strtoupper;
+use function sprintf;
 
 final class RegistryUtils{
 
