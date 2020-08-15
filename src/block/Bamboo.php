@@ -39,7 +39,6 @@ use function gmp_xor;
 use function min;
 
 class Bamboo extends Transparent{
-	public const MAX_HEIGHT = 16;
 
 	public const NO_LEAVES = 0;
 	public const SMALL_LEAVES = 1;
@@ -203,7 +202,7 @@ class Bamboo extends Transparent{
 		$world = $this->pos->getWorld();
 		if($this->ready){
 			$this->ready = false;
-			$this->grow(self::MAX_HEIGHT, 1);
+			$this->grow(12 + (self::getOffsetSeed($this->pos->getFloorX(), 0, $this->pos->getFloorZ()) % 5), 1);
 		}elseif($world->getBlock($this->pos->up())->canBeReplaced()){
 			$this->ready = true;
 			$world->setBlock($this->pos, $this);
