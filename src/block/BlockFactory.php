@@ -494,7 +494,7 @@ class BlockFactory{
 		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_LAB_TABLE), "Lab Table", $chemistryTableBreakInfo));
 		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_MATERIAL_REDUCER), "Material Reducer", $chemistryTableBreakInfo));
 
-		//region --- auto-generated TODOs ---
+		//region --- auto-generated TODOs for bedrock-1.11.0 ---
 		//TODO: minecraft:bamboo
 		//TODO: minecraft:bamboo_sapling
 		//TODO: minecraft:barrel
@@ -526,7 +526,6 @@ class BlockFactory{
 		//TODO: minecraft:fletching_table
 		//TODO: minecraft:grindstone
 		//TODO: minecraft:jigsaw
-		//TODO: minecraft:jukebox
 		//TODO: minecraft:kelp
 		//TODO: minecraft:lava_cauldron
 		//TODO: minecraft:lectern
@@ -556,6 +555,108 @@ class BlockFactory{
 		//TODO: minecraft:sweet_berry_bush
 		//TODO: minecraft:turtle_egg
 		//TODO: minecraft:undyed_shulker_box
+		//endregion
+
+		//region --- auto-generated TODOs for bedrock-1.13.0 ---
+		//TODO: minecraft:camera
+		//TODO: minecraft:light_block
+		//TODO: minecraft:stickyPistonArmCollision
+		//TODO: minecraft:structure_void
+		//TODO: minecraft:wither_rose
+		//endregion
+
+		//region --- auto-generated TODOs for bedrock-1.14.0 ---
+		//TODO: minecraft:bee_nest
+		//TODO: minecraft:beehive
+		//TODO: minecraft:honey_block
+		//TODO: minecraft:honeycomb_block
+		//endregion
+
+		//region --- auto-generated TODOs for bedrock-1.16.0 ---
+		//TODO: minecraft:allow
+		//TODO: minecraft:ancient_debris
+		//TODO: minecraft:basalt
+		//TODO: minecraft:blackstone
+		//TODO: minecraft:blackstone_double_slab
+		//TODO: minecraft:blackstone_slab
+		//TODO: minecraft:blackstone_stairs
+		//TODO: minecraft:blackstone_wall
+		//TODO: minecraft:border_block
+		//TODO: minecraft:chain
+		//TODO: minecraft:chiseled_nether_bricks
+		//TODO: minecraft:chiseled_polished_blackstone
+		//TODO: minecraft:cracked_nether_bricks
+		//TODO: minecraft:cracked_polished_blackstone_bricks
+		//TODO: minecraft:crimson_button
+		//TODO: minecraft:crimson_door
+		//TODO: minecraft:crimson_double_slab
+		//TODO: minecraft:crimson_fence
+		//TODO: minecraft:crimson_fence_gate
+		//TODO: minecraft:crimson_fungus
+		//TODO: minecraft:crimson_hyphae
+		//TODO: minecraft:crimson_nylium
+		//TODO: minecraft:crimson_planks
+		//TODO: minecraft:crimson_pressure_plate
+		//TODO: minecraft:crimson_roots
+		//TODO: minecraft:crimson_slab
+		//TODO: minecraft:crimson_stairs
+		//TODO: minecraft:crimson_standing_sign
+		//TODO: minecraft:crimson_stem
+		//TODO: minecraft:crimson_trapdoor
+		//TODO: minecraft:crimson_wall_sign
+		//TODO: minecraft:crying_obsidian
+		//TODO: minecraft:deny
+		//TODO: minecraft:gilded_blackstone
+		//TODO: minecraft:lodestone
+		//TODO: minecraft:nether_gold_ore
+		//TODO: minecraft:nether_sprouts
+		//TODO: minecraft:netherite_block
+		//TODO: minecraft:polished_basalt
+		//TODO: minecraft:polished_blackstone
+		//TODO: minecraft:polished_blackstone_brick_double_slab
+		//TODO: minecraft:polished_blackstone_brick_slab
+		//TODO: minecraft:polished_blackstone_brick_stairs
+		//TODO: minecraft:polished_blackstone_brick_wall
+		//TODO: minecraft:polished_blackstone_bricks
+		//TODO: minecraft:polished_blackstone_button
+		//TODO: minecraft:polished_blackstone_double_slab
+		//TODO: minecraft:polished_blackstone_pressure_plate
+		//TODO: minecraft:polished_blackstone_slab
+		//TODO: minecraft:polished_blackstone_stairs
+		//TODO: minecraft:polished_blackstone_wall
+		//TODO: minecraft:quartz_bricks
+		//TODO: minecraft:respawn_anchor
+		//TODO: minecraft:shroomlight
+		//TODO: minecraft:soul_campfire
+		//TODO: minecraft:soul_fire
+		//TODO: minecraft:soul_lantern
+		//TODO: minecraft:soul_soil
+		//TODO: minecraft:soul_torch
+		//TODO: minecraft:stripped_crimson_hyphae
+		//TODO: minecraft:stripped_crimson_stem
+		//TODO: minecraft:stripped_warped_hyphae
+		//TODO: minecraft:stripped_warped_stem
+		//TODO: minecraft:target
+		//TODO: minecraft:twisting_vines
+		//TODO: minecraft:warped_button
+		//TODO: minecraft:warped_door
+		//TODO: minecraft:warped_double_slab
+		//TODO: minecraft:warped_fence
+		//TODO: minecraft:warped_fence_gate
+		//TODO: minecraft:warped_fungus
+		//TODO: minecraft:warped_hyphae
+		//TODO: minecraft:warped_nylium
+		//TODO: minecraft:warped_planks
+		//TODO: minecraft:warped_pressure_plate
+		//TODO: minecraft:warped_roots
+		//TODO: minecraft:warped_slab
+		//TODO: minecraft:warped_stairs
+		//TODO: minecraft:warped_standing_sign
+		//TODO: minecraft:warped_stem
+		//TODO: minecraft:warped_trapdoor
+		//TODO: minecraft:warped_wall_sign
+		//TODO: minecraft:warped_wart_block
+		//TODO: minecraft:weeping_vines
 		//endregion
 	}
 
