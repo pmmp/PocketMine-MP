@@ -560,8 +560,6 @@ class Block{
 	/**
 	 * Returns an additional fractional vector to shift the block's effective position by based on the current position.
 	 * Used to randomize position of things like bamboo canes and tall grass.
-	 *
-	 * @return Vector3|null
 	 */
 	public function getPosOffset() : ?Vector3{
 		return null;
