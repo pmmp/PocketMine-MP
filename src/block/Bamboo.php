@@ -30,11 +30,13 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function count;
 use function gmp_add;
 use function gmp_and;
 use function gmp_intval;
 use function gmp_mul;
 use function gmp_xor;
+use function min;
 
 class Bamboo extends Transparent{
 	public const MAX_HEIGHT = 16;
@@ -141,7 +143,7 @@ class Bamboo extends Transparent{
 		}
 	}
 
-	private function grow(int $maxHeight) : bool{
+	private function grow(int $maxHeight, int $growAmount) : bool{
 		$world = $this->pos->getWorld();
 		if(!$world->getBlock($this->pos->up())->canBeReplaced()){
 			return false;
@@ -157,7 +159,7 @@ class Bamboo extends Transparent{
 			}
 		}
 
-		$newHeight = $height + 1;
+		$newHeight = $height + $growAmount;
 
 		$stemBlock = (clone $this)->setReady(false)->setLeafSize(self::NO_LEAVES);
 		if($newHeight >= 4 && !$stemBlock->isThick()){ //don't change it to false if height is less, because it might have been chopped
@@ -181,12 +183,14 @@ class Bamboo extends Transparent{
 			$newBlocks[] = $bigLeavesBlock;
 			$newBlocks[] = $bigLeavesBlock;
 			$newBlocks[] = $smallLeavesBlock;
-			$newBlocks[] = $stemBlock; //to replace the bottom block that currently has leaves
+			for($i = 0, $max = min($growAmount, $newHeight - count($newBlocks)); $i < $max; ++$i){
+				$newBlocks[] = $stemBlock; //to replace the bottom blocks that currently have leaves
+			}
 		}
 
 		$tx = new BlockTransaction($this->pos->getWorld());
 		foreach($newBlocks as $idx => $newBlock){
-			$tx->addBlock($this->pos->subtract(0, $idx - 1, 0), $newBlock);
+			$tx->addBlock($this->pos->subtract(0, $idx - $growAmount, 0), $newBlock);
 		}
 		return $tx->apply();
 	}
@@ -199,7 +203,7 @@ class Bamboo extends Transparent{
 		$world = $this->pos->getWorld();
 		if($this->ready){
 			$this->ready = false;
-			$this->grow(self::MAX_HEIGHT);
+			$this->grow(self::MAX_HEIGHT, 1);
 		}elseif($world->getBlock($this->pos->up())->canBeReplaced()){
 			$this->ready = true;
 			$world->setBlock($this->pos, $this);
