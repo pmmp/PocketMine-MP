@@ -116,7 +116,7 @@ class ExampleClass{
 <!-- TODO: RFC and voting on the forums instead -->
 ### RFC and Voting
 * These are big Pull Requests or contributions that change important behavior.
-* RFCs will be tagged with the *PR: RFC* label
+* RFCs will be tagged with the *Type: Request For Comments* label
 * A vote will be held once the RFC is ready. All users can vote commenting on the Pull Request
 * Comments MUST use "Yes" or "No" on the FIRST sentence to signify the vote, except when they don't want it to be counted.
 * If your comment is a voting comment, specify the reason of your vote or it won't be counted.
