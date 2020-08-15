@@ -153,7 +153,6 @@ class Bamboo extends Transparent{
 		$height = 1;
 		while($world->getBlock($this->pos->subtract(0, $height, 0))->isSameType($this)){
 			if(++$height >= $maxHeight){
-				//TODO: I think this may be decided by a random factor (12-16)
 				return false;
 			}
 		}
