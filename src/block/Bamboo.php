@@ -27,6 +27,7 @@ use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\world\BlockTransaction;
 use function gmp_add;
 use function gmp_and;
 use function gmp_intval;
