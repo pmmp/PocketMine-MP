@@ -24,9 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function gmp_add;
 use function gmp_and;
@@ -120,7 +122,6 @@ class Bamboo extends Transparent{
 	private function canBeSupportedBy(Block $block) : bool{
 		//TODO: tags would be better for this
 		return
-			$block->isSameType($this) ||
 			$block instanceof Dirt ||
 			$block instanceof Grass ||
 			$block instanceof Gravel ||
@@ -129,8 +130,13 @@ class Bamboo extends Transparent{
 			$block instanceof Podzol;
 	}
 
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		return VanillaBlocks::BAMBOO_SAPLING()->place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	}
+
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->pos->getWorld()->getBlock($this->pos->down()))){
+		$below = $this->pos->getWorld()->getBlock($this->pos->down());
+		if(!$this->canBeSupportedBy($below) and !$below->isSameType($this)){
 			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}

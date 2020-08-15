@@ -55,6 +55,7 @@ use function assert;
  * @method static Anvil ANVIL()
  * @method static Flower AZURE_BLUET()
  * @method static Bamboo BAMBOO()
+ * @method static BambooSapling BAMBOO_SAPLING()
  * @method static Banner BANNER()
  * @method static Transparent BARRIER()
  * @method static Bed BED()
@@ -722,6 +723,7 @@ final class VanillaBlocks{
 		self::register("anvil", $factory->get(145));
 		self::register("azure_bluet", $factory->get(38, 3));
 		self::register("bamboo", $factory->get(418));
+		self::register("bamboo_sapling", $factory->get(419));
 		self::register("banner", $factory->get(176));
 		self::register("barrier", $factory->get(416));
 		self::register("bed", $factory->get(26));

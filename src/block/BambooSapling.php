@@ -23,6 +23,87 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-final class BambooSapling{
+use pocketmine\item\Item;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+use pocketmine\world\BlockTransaction;
 
+final class BambooSapling extends Flowable{
+
+	/** @var bool */
+	private $ready = false;
+
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->ready = ($stateMeta & BlockLegacyMetadata::SAPLING_FLAG_READY) !== 0;
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->ready ? BlockLegacyMetadata::SAPLING_FLAG_READY : 0;
+	}
+
+	public function getStateBitmask() : int{ return 0b1000; }
+
+	public function isReady() : bool{ return $this->ready; }
+
+	/** @return $this */
+	public function setReady(bool $ready) : self{
+		$this->ready = $ready;
+		return $this;
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		//TODO: tags would be better for this
+		return
+			$block instanceof Dirt ||
+			$block instanceof Grass ||
+			$block instanceof Gravel ||
+			$block instanceof Sand ||
+			$block instanceof Mycelium ||
+			$block instanceof Podzol;
+	}
+
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if(!$this->canBeSupportedBy($blockReplace->pos->getWorld()->getBlock($blockReplace->pos->down()))){
+			return false;
+		}
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	}
+
+	public function onNearbyBlockChange() : void{
+		if(!$this->canBeSupportedBy($this->pos->getWorld()->getBlock($this->pos->down()))){
+			$this->pos->getWorld()->useBreakOn($this->pos);
+		}
+	}
+
+	private function grow() : bool{
+		$world = $this->pos->getWorld();
+		if(!$world->getBlock($this->pos->up())->canBeReplaced()){
+			return false;
+		}
+
+		$tx = new BlockTransaction($world);
+		$bamboo = VanillaBlocks::BAMBOO();
+		$tx->addBlock($this->pos, $bamboo)
+			->addBlock($this->pos->up(), (clone $bamboo)->setLeafSize(Bamboo::SMALL_LEAVES));
+		return $tx->apply();
+	}
+
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
+	public function onRandomTick() : void{
+		$world = $this->pos->getWorld();
+		if($this->ready){
+			$this->ready = false;
+			$this->grow();
+		}elseif($world->getBlock($this->pos->up())->canBeReplaced()){
+			$this->ready = true;
+			$world->setBlock($this->pos, $this);
+		}
+	}
+
+	public function asItem() : Item{
+		return VanillaBlocks::BAMBOO()->asItem();
+	}
 }
