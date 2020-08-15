@@ -177,10 +177,11 @@ class Bamboo extends Transparent{
 			$newBlocks[] = $stemBlock; //to replace the bottom block that currently has leaves
 		}
 
+		$tx = new BlockTransaction($this->pos->getWorld());
 		foreach($newBlocks as $idx => $newBlock){
-			$world->setBlock($this->pos->subtract(0, $idx - 1, 0), $newBlock);
+			$tx->addBlock($this->pos->subtract(0, $idx - 1, 0), $newBlock);
 		}
-		return true;
+		return $tx->apply();
 	}
 
 	public function ticksRandomly() : bool{
