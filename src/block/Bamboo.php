@@ -135,7 +135,7 @@ class Bamboo extends Transparent{
 		}
 	}
 
-	private function grow() : bool{
+	private function grow(int $maxHeight) : bool{
 		$world = $this->pos->getWorld();
 		if(!$world->getBlock($this->pos->up())->canBeReplaced()){
 			return false;
@@ -145,7 +145,7 @@ class Bamboo extends Transparent{
 
 		$height = 1;
 		while($world->getBlock($this->pos->subtract(0, $height, 0))->isSameType($this)){
-			if(++$height >= self::MAX_HEIGHT){
+			if(++$height >= $maxHeight){
 				//TODO: I think this may be decided by a random factor (12-16)
 				return false;
 			}
@@ -193,7 +193,7 @@ class Bamboo extends Transparent{
 		$world = $this->pos->getWorld();
 		if($this->ready){
 			$this->ready = false;
-			$this->grow();
+			$this->grow(self::MAX_HEIGHT);
 		}elseif($world->getBlock($this->pos->up())->canBeReplaced()){
 			$this->ready = true;
 			$world->setBlock($this->pos, $this);
