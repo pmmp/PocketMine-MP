@@ -228,7 +228,10 @@ class Explosion{
 				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock, false); //TODO: should updating really be disabled here?
 				$this->world->updateAllLight($pos->x, $pos->y, $pos->z);
 			}
+		}
 
+		foreach($this->affectedBlocks as $block){
+			$pos = $block->getPos();
 			foreach(Facing::ALL as $side){
 				$sideBlock = $pos->getSide($side);
 				if(!$this->world->isInWorld($sideBlock->x, $sideBlock->y, $sideBlock->z)){
