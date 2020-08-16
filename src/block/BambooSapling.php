@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -71,7 +72,7 @@ final class BambooSapling extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item instanceof Fertilizer || $item->getBlock()->isSameType(VanillaBlocks::BAMBOO())){
+		if($item instanceof Fertilizer || $item instanceof ItemBamboo){
 			if($this->grow()){
 				$item->pop();
 				return true;

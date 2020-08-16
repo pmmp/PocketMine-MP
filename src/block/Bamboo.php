@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -150,7 +151,7 @@ class Bamboo extends Transparent{
 				$item->pop();
 				return true;
 			}
-		}elseif($item->getBlock()->isSameType($this)){
+		}elseif($item instanceof ItemBamboo){
 			if($this->seekToTop()->grow(PHP_INT_MAX, 1)){
 				$item->pop();
 				return true;
