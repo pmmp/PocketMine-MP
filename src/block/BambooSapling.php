@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -67,6 +68,16 @@ final class BambooSapling extends Flowable{
 			return false;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($item instanceof Fertilizer || $item->getBlock()->isSameType(VanillaBlocks::BAMBOO())){
+			if($this->grow()){
+				$item->pop();
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function onNearbyBlockChange() : void{

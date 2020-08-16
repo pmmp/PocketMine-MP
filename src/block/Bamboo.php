@@ -24,9 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\item\Fertilizer;
+use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function count;
 use function gmp_add;
@@ -35,6 +38,8 @@ use function gmp_intval;
 use function gmp_mul;
 use function gmp_xor;
 use function min;
+use function mt_rand;
+use const PHP_INT_MAX;
 
 class Bamboo extends Transparent{
 
@@ -107,6 +112,10 @@ class Bamboo extends Transparent{
 		return gmp_intval(gmp_and($fullResult, 0xffffffff));
 	}
 
+	private static function getMaxHeight(int $x, int $z) : int{
+		return 12 + (self::getOffsetSeed($x, 0, $z) % 5);
+	}
+
 	public function getPosOffset() : ?Vector3{
 		$seed = self::getOffsetSeed($this->pos->getFloorX(), 0, $this->pos->getFloorZ());
 		$retX = (($seed % 12) + 1) / 16;
@@ -123,6 +132,31 @@ class Bamboo extends Transparent{
 			$block instanceof Sand ||
 			$block instanceof Mycelium ||
 			$block instanceof Podzol;
+	}
+
+	private function seekToTop() : Bamboo{
+		$world = $this->pos->getWorld();
+		$top = $this;
+		while(($next = $world->getBlock($top->pos->up())) instanceof Bamboo && $next->isSameType($this)){
+			$top = $next;
+		}
+		return $top;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($item instanceof Fertilizer){
+			$top = $this->seekToTop();
+			if($top->grow(self::getMaxHeight($top->pos->getFloorX(), $top->pos->getFloorZ()), mt_rand(1, 2))){
+				$item->pop();
+				return true;
+			}
+		}elseif($item->getBlock()->isSameType($this)){
+			if($this->seekToTop()->grow(PHP_INT_MAX, 1)){
+				$item->pop();
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function onNearbyBlockChange() : void{
@@ -191,7 +225,7 @@ class Bamboo extends Transparent{
 		$world = $this->pos->getWorld();
 		if($this->ready){
 			$this->ready = false;
-			$this->grow(12 + (self::getOffsetSeed($this->pos->getFloorX(), 0, $this->pos->getFloorZ()) % 5), 1);
+			$this->grow(self::getMaxHeight($this->pos->getFloorX(), $this->pos->getFloorZ()), 1);
 		}elseif($world->getBlock($this->pos->up())->canBeReplaced()){
 			$this->ready = true;
 			$world->setBlock($this->pos, $this);
