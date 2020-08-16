@@ -24,11 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function count;
 use function gmp_add;
@@ -63,10 +61,6 @@ class Bamboo extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getFuelTime() : int{
-		return 50;
 	}
 
 	public function isThick() : bool{ return $this->thick; }
@@ -129,10 +123,6 @@ class Bamboo extends Transparent{
 			$block instanceof Sand ||
 			$block instanceof Mycelium ||
 			$block instanceof Podzol;
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		return VanillaBlocks::BAMBOO_SAPLING()->place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{

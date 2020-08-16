@@ -64,6 +64,7 @@ class ItemFactory{
 		$this->register(new Arrow(new ItemIdentifier(ItemIds::ARROW, 0), "Arrow"));
 
 		$this->register(new BakedPotato(new ItemIdentifier(ItemIds::BAKED_POTATO, 0), "Baked Potato"));
+		$this->register(new Bamboo(new ItemIdentifier(ItemIds::BAMBOO, 0), "Bamboo"), true);
 		$this->register(new Beetroot(new ItemIdentifier(ItemIds::BEETROOT, 0), "Beetroot"));
 		$this->register(new BeetrootSeeds(new ItemIdentifier(ItemIds::BEETROOT_SEEDS, 0), "Beetroot Seeds"));
 		$this->register(new BeetrootSoup(new ItemIdentifier(ItemIds::BEETROOT_SOUP, 0), "Beetroot Soup"));
