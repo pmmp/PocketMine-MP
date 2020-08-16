@@ -173,8 +173,6 @@ class Bamboo extends Transparent{
 			return false;
 		}
 
-		//TODO: check light level at the top block (unsure if it uses block light or not)
-
 		$height = 1;
 		while($world->getBlock($this->pos->subtract(0, $height, 0))->isSameType($this)){
 			if(++$height >= $maxHeight){
@@ -226,7 +224,9 @@ class Bamboo extends Transparent{
 		$world = $this->pos->getWorld();
 		if($this->ready){
 			$this->ready = false;
-			$this->grow(self::getMaxHeight($this->pos->getFloorX(), $this->pos->getFloorZ()), 1);
+			if($world->getFullLight($this->pos) < 9 || !$this->grow(self::getMaxHeight($this->pos->getFloorX(), $this->pos->getFloorZ()), 1)){
+				$world->setBlock($this->pos, $this);
+			}
 		}elseif($world->getBlock($this->pos->up())->canBeReplaced()){
 			$this->ready = true;
 			$world->setBlock($this->pos, $this);
