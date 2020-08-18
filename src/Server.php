@@ -69,6 +69,7 @@ use pocketmine\player\GameMode;
 use pocketmine\player\OfflinePlayer;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
+use pocketmine\plugin\ApiMap;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginEnableOrder;
@@ -182,6 +183,9 @@ class Server{
 
 	/** @var PluginManager */
 	private $pluginManager;
+
+	/** @var ApiMap */
+	private $apiMap;
 
 	/** @var float */
 	private $profilingTickRate = 20;
@@ -420,6 +424,80 @@ class Server{
 	 */
 	public function getPluginManager(){
 		return $this->pluginManager;
+	}
+	
+	/**
+	 * Returns the underlying server-scoped API map
+	 */
+	public function getApiMap() : ApiMap{
+		return $this->apiMap;
+	}
+
+	/**
+	 * Provides an API implementation of $interface.
+	 *
+	 * $interface can be either an (abstract, open or final) class or interface.
+	 * $impl must implement $interface.
+	 *
+	 * The $interface is used to identify various API types,
+	 * and users should not try to provide APIs for two $interfaces that extend one another.
+	 * For example, PocketMine can provide a default BanList interface provides an interface to track user bans,
+	 * which calls `provideApi(BanList::class)`, but it does not call `provideApi(DefaultBanList::class)`.
+	 * Nevertheless, if alternative implementations are not intended,
+	 * it is fine to provide $interface as the final class.
+	 * (TODO: change "can provide" to "provides" when the BanList API is changed)
+	 *
+	 * If the declaration of `$interface` has a `@purpose` tag in its documentation,
+	 * it is provided as part of the error message to describe the purpose of the interface
+	 * when two conflicting implementations are provided,
+	 * e.g. `@purpose ban list` would result in the error:
+	 *
+	 * > Multiple plugins are providing ban list. Please disable one of them or check configuration
+	 *
+	 * The default implementation (usually provided by the module declaring the interface)
+	 * should call `provideDefaultApi` so that other plugins can override it without triggering errors.
+	 *
+	 * @phpstan-template T of object
+	 * @phpstan-param class-string<T> $interface
+	 * @phpstan-param T $impl
+	 *
+	 * @throws \InvalidArgumentException if $impl is not an instance of $interface
+	 * @throws \RuntimeException if two non-default APIs are provided for the same interface
+	 *
+	 * @see Server::provideDefaultApi()
+	 */
+	public function provideApi(string $interface, Plugin $plugin, object $impl) : void{
+		$this->apiMap->provideApi($interface, $plugin, $impl, false);
+	}
+
+	/**
+	 * Provides a *default* API implementation of $interface.
+	 *
+	 * `provideDefaultApi` must only be called exactly once, by the module that declared `$interface`.
+	 *
+	 * @phpstan-template T of object
+	 * @phpstan-param class-string<T> $interface
+	 * @phpstan-param T $impl
+	 *
+	 * @throws \InvalidArgumentException if $impl is not an instance of $interface
+	 *
+	 * @see Server::provideApi() for detailed semantics of API provision
+	 */
+	public function provideDefaultApi(string $interface, Plugin $plugin, object $impl) : void{
+		$this->apiMap->provideApi($interface, $plugin, $impl, true);
+	}
+
+	/**
+	 * Retrieves the current implementation of `getApi`.
+	 *
+	 * Callers can check whether this implementation is default by getting `$default` by reference.
+	 *
+	 * @phpstan-template T of object
+	 * @phpstan-param class-string<T> $interface
+	 * @phpstan-return T|null
+	 */
+	public function getApi(string $interface, bool &$default = false) : ?object{
+		return $this->apiMap->getApi($interface, $default);
 	}
 
 	/**
@@ -958,6 +1036,8 @@ class Server{
 			$this->pluginManager = new PluginManager($this, ((bool) $this->configGroup->getProperty("plugins.legacy-data-dir", true)) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR, $pluginGraylist);
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
+
+			$this->apiMap = new ApiMap;
 
 			$providerManager = new WorldProviderManager();
 			if(
