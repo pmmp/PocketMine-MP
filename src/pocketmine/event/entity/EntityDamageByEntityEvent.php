@@ -98,14 +98,32 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	}
 
 	/**
-	 * Sets the Knockback of the event.
-	 * @param float $horizontalKnockback - The horizontal knockback of the player.
-	 * @param float|null $verticalKnockback - The vertical knockback of the player.
+	 * Sets the horizontal and possibly the vertical knockback if parameter is filled.
+	 *
+	 * @param float $horizontalKnockback - The horizontal knockback of the event.
+	 * @param float|null $verticalKnockback - The vertical knockback of the event.
 	 */
 	public function setKnockBack(float $horizontalKnockback, ?float $verticalKnockback = null) : void{
 		$this->horizontalKnockback = $horizontalKnockback;
 		if($verticalKnockback !== null) {
 			$this->verticalKnockback = $verticalKnockback;
 		}
+	}
+	
+	/**
+	 * Sets the horizontal knockback of the event directly. Added for clarification purposes.
+	 * @param float - The horizontal knockback of the event.
+	 */
+	public function setHorizontalKnockback(float $horizontalKnockback): void {
+		$this->horizontalKnockback = $horizontalKnockback;
+	}
+	
+	/** 
+	 * Sets the vertical knockback of the event directly without needing
+	 * to also set the horizontal knockback.
+	 * @param $knockback - The vertical knockback.
+	 */
+	public function setVerticalKnockback(float $knockback): void {
+		$this->verticalKnockback = $knockback;
 	}
 }
