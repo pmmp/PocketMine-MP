@@ -1727,7 +1727,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$ev->call();
 		if($ev->isCancelled()){
 			return false;
-		};
+		}
 		$this->setSneaking($sneak);
 		return true;
 	}
