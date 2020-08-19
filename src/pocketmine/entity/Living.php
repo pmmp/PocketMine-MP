@@ -539,8 +539,13 @@ abstract class Living extends Entity implements Damageable{
 		){
 			//TODO: knockback should not just apply for entity damage sources
 			//this doesn't matter for TNT right now because the PrimedTNT entity is considered the source, not the block.
-			$base = $source->getKnockBack();
-			$source->setKnockBack($base - min($base, $base * $this->getHighestArmorEnchantmentLevel(Enchantment::BLAST_PROTECTION) * 0.15));
+			
+			// Does calculations for vertical & horizontal knockback.
+			$baseHorizontal = $source->getHorizontalKnockback();
+			$baseVertical = $source->getVerticalKnockback();
+			$newHorizontal = $baseHorizontal - min($baseHorizontal, $baseHorizontal * $this->getHighestArmorEnchantmentLevel(Enchantment::BLAST_PROTECTION) * 0.15);
+			$newVertical = $baseVertical - min($baseVertical, $baseVertical * $this->getHighestArmorEnchantmentLevel(Enchantment::BLAST_PROTECTION) * 0.15);
+			$source->setKnockBack($newHorizontal, $newVertical);
 		}
 
 		parent::attack($source);
