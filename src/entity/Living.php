@@ -25,6 +25,7 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\Water;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\animation\DeathAnimation;
 use pocketmine\entity\animation\HurtAnimation;
@@ -607,6 +608,14 @@ abstract class Living extends Entity{
 
 			if($this->doAirSupplyTick($tickDiff)){
 				$hasUpdate = true;
+			}
+
+			if(
+				$this->isSwimming() && !$this->isUnderwater() &&
+				$this->getWorld()->getBlock($this->getPosition()->add(0, 1, 0))->getId() === BlockLegacyIds::AIR &&
+				!$this->getWorld()->getBlock($this->getPosition()->subtract(0, 1, 0)) instanceof Water
+			){
+				$this->setSwimming(false);
 			}
 		}
 
