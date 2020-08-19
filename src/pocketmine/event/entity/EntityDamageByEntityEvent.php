@@ -31,17 +31,21 @@ use pocketmine\entity\Living;
  * Called when an entity takes damage from another entity.
  */
 class EntityDamageByEntityEvent extends EntityDamageEvent{
+	
 	/** @var int */
 	private $damagerEntityId;
 	/** @var float */
-	private $knockBack;
+	private $horizontalKnockback;
+	/** @var float|null */
+	private $verticalKnockback;
 
 	/**
 	 * @param float[] $modifiers
 	 */
-	public function __construct(Entity $damager, Entity $entity, int $cause, float $damage, array $modifiers = [], float $knockBack = 0.4){
+	public function __construct(Entity $damager, Entity $entity, int $cause, float $damage, array $modifiers = [], float $horizontalKnockback = 0.4, ?float $verticalKnockback = null){
 		$this->damagerEntityId = $damager->getId();
-		$this->knockBack = $knockBack;
+		$this->horizontalKnockback = $horizontalKnockback;
+		$this->verticalKnockback = $verticalKnockback;
 		parent::__construct($entity, $cause, $damage, $modifiers);
 		$this->addAttackerModifiers($damager);
 	}
@@ -65,11 +69,43 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 		return $this->getEntity()->getLevelNonNull()->getServer()->findEntity($this->damagerEntityId);
 	}
 
+	/**
+	 * Returns the horizontal Knockback of the Event.
+	 * Use the function getHorizontalKnockback().
+	 
+	 * @return float - The horizontal knockback.
+	 * @deprecated
+	 */
 	public function getKnockBack() : float{
-		return $this->knockBack;
+		return $this->horizontalKnockback;
+	}
+	
+	/**
+	 * Returns the horizontal knockback value.
+	 * @return float - The horizontal knockback.
+	 */
+	public function getHorizontalKnockback(): float {
+		return $this->horizontalKnockback;
+	}
+	
+	/**
+	 * Returns the vertical knockback value. If internal knockback value
+	 * is null, it returns the horizontal knockback.
+	 * @return float - The vertical knockback.
+	 */
+	public function getVerticalKnockback(): float {
+		return $this->verticalKnockback ?? $this->horizontalKnockback;
 	}
 
-	public function setKnockBack(float $knockBack) : void{
-		$this->knockBack = $knockBack;
+	/**
+	 * Sets the Knockback of the event.
+	 * @param float $horizontalKnockback - The horizontal knockback of the player.
+	 * @param float|null $verticalKnockback - The vertical knockback of the player.
+	 */
+	public function setKnockBack(float $horizontalKnockback, ?float $verticalKnockback = null) : void{
+		$this->horizontalKnockback = $horizontalKnockback;
+		if($verticalKnockback !== null) {
+			$this->verticalKnockback = $verticalKnockback;
+		}
 	}
 }
