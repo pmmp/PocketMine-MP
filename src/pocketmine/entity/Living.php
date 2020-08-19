@@ -556,7 +556,7 @@ abstract class Living extends Entity implements Damageable{
 			if($e !== null){
 				$motion = $e->getMotion();
 				$this->knockBack($e, $source->getBaseDamage(), $motion->x, $motion->z, $source->getKnockBack());
-			}
+			
 		}elseif($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
 			if($e !== null){
@@ -576,13 +576,19 @@ abstract class Living extends Entity implements Damageable{
 		$this->broadcastEntityEvent(ActorEventPacket::HURT_ANIMATION);
 	}
 
-	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4) : void{
+	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4, ?float $baseY = null) : void{
+		
 		$f = sqrt($x * $x + $z * $z);
+		
 		if($f <= 0){
 			return;
 		}
+		
 		if(mt_rand() / mt_getrandmax() > $this->getAttributeMap()->getAttribute(Attribute::KNOCKBACK_RESISTANCE)->getValue()){
+			
 			$f = 1 / $f;
+			
+			$baseY = $baseY ?? $base;
 
 			$motion = clone $this->motion;
 
@@ -590,11 +596,11 @@ abstract class Living extends Entity implements Damageable{
 			$motion->y /= 2;
 			$motion->z /= 2;
 			$motion->x += $x * $f * $base;
-			$motion->y += $base;
+			$motion->y += $baseY;
 			$motion->z += $z * $f * $base;
 
-			if($motion->y > $base){
-				$motion->y = $base;
+			if($motion->y > $baseY){
+				$motion->y = $baseY;
 			}
 
 			$this->setMotion($motion);
