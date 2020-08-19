@@ -116,6 +116,8 @@ abstract class Living extends Entity{
 	protected $sprinting = false;
 	/** @var bool */
 	protected $sneaking = false;
+	/** @var bool */
+	protected $swimming = false;
 
 	abstract public function getName() : string;
 
@@ -221,6 +223,22 @@ abstract class Living extends Entity{
 			$this->setMovementSpeed($value ? ($moveSpeed * 1.3) : ($moveSpeed / 1.3));
 			$this->moveSpeedAttr->markSynchronized(false); //TODO: reevaluate this hack
 		}
+	}
+
+	public function setSwimming(bool $value = true) : void{
+		if($value !== $this->isSwimming()) {
+			$this->swimming = $value;
+			if($this->swimming){
+				$this->height = $this->eyeHeight = $this->width;
+				$this->recalculateBoundingBox();
+			}else{
+				$this->setScale($this->getScale());
+			}
+		}
+	}
+
+	public function isSwimming() : bool{
+		return $this->swimming;
 	}
 
 	public function getMovementSpeed() : float{
@@ -787,6 +805,7 @@ abstract class Living extends Entity{
 		$properties->setGenericFlag(EntityMetadataFlags::BREATHING, $this->breathing);
 		$properties->setGenericFlag(EntityMetadataFlags::SNEAKING, $this->sneaking);
 		$properties->setGenericFlag(EntityMetadataFlags::SPRINTING, $this->sprinting);
+		$properties->setGenericFlag(EntityMetadataFlags::SWIMMING, $this->swimming);
 	}
 
 	protected function onDispose() : void{

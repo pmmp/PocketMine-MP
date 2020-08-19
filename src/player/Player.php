@@ -68,6 +68,7 @@ use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerToggleFlightEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
+use pocketmine\event\player\PlayerToggleSwimEvent;
 use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
@@ -1213,8 +1214,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->broadcastMovement();
 
 			$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
-			//TODO: check swimming (adds 0.015 exhaustion in MCPE)
-			if($this->isSprinting()){
+			if($this->isSwimming()){
+				$this->hungerManager->exhaust(0.015 * $distance, PlayerExhaustEvent::CAUSE_SWIMMING);
+			}elseif($this->isSprinting()){
 				$this->hungerManager->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
 			}else{
 				$this->hungerManager->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
@@ -1725,7 +1727,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$ev->call();
 		if($ev->isCancelled()){
 			return false;
-		}
+		};
 		$this->setSneaking($sneak);
 		return true;
 	}
@@ -1742,6 +1744,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		//don't use setFlying() here, to avoid feedback loops - TODO: get rid of this hack
 		$this->flying = $fly;
 		$this->resetFallDistance();
+		return true;
+	}
+
+	public function toggleSwim(bool $swim) : bool{
+		$ev = new PlayerToggleSwimEvent($this, $swim);;
+		$ev->setCancelled(!$this->isUnderwater());
+		$ev->call();
+		if($ev->isCancelled()){
+			return false;
+		}
+		$this->setSwimming($swim);
 		return true;
 	}
 
@@ -2141,6 +2154,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->setSprinting(false);
 		$this->setSneaking(false);
+		$this->setSwimming(false);
 
 		$this->extinguish();
 		$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
