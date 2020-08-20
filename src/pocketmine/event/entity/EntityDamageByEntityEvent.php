@@ -31,7 +31,6 @@ use pocketmine\entity\Living;
  * Called when an entity takes damage from another entity.
  */
 class EntityDamageByEntityEvent extends EntityDamageEvent{
-
 	/** @var int */
 	private $damagerEntityId;
 	/** @var float */
@@ -77,7 +76,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 * @deprecated
 	 */
 	public function getKnockBack() : float{
-		return $this->horizontalKnockBack;
+	    return $this->horizontalKnockBack;
 	}
 
 	/**
@@ -85,7 +84,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 * @return float - The horizontal knockback.
 	 */
 	public function getHorizontalKnockBack(): float{
-		return $this->horizontalKnockBack;
+	    return $this->horizontalKnockBack;
 	}
 
 	/**
@@ -94,7 +93,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 * @return float - The vertical knockback.
 	 */
 	public function getVerticalKnockBack(): float{
-		return $this->verticalKnockBack ?? $this->horizontalKnockBack;
+	    return $this->verticalKnockBack ?? $this->horizontalKnockBack;
 	}
 
 	/**
@@ -108,8 +107,8 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 */
 	public function setKnockBack(float $horizontalKnockback, ?float $verticalKnockback = null) : void{
 		// Sets vertical and horizontal kb.
-	    $this->horizontalKnockBack = $horizontalKnockback;
-		$this->verticalKnockBack = ($verticalKnockback ?? $horizontalKnockback);
+        $this->horizontalKnockBack = $horizontalKnockback;
+        $this->verticalKnockBack = ($verticalKnockback ?? $horizontalKnockback);
 	}
 
 	/**
@@ -118,18 +117,18 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 */
 	public function setHorizontalKnockBack(float $horizontalKnockBack): void{
 	    // Sets the vertical knockback to the previous horizontal knockback.
-	    if($this->verticalKnockBack === null){
+        if($this->verticalKnockBack === null){
             $this->verticalKnockBack = $this->horizontalKnockBack;
-	    }
-		$this->horizontalKnockBack = $horizontalKnockBack;
+        }
+        $this->horizontalKnockBack = $horizontalKnockBack;
 	}
 
 	/**
 	 * Sets the vertical knockback of the event directly without needing
 	 * to also set the horizontal knockback.
-	 * @param $verticalKnockBack - The vertical knockback.
+	 * @param float $verticalKnockBack - The vertical knockback.
 	 */
 	public function setVerticalKnockBack(float $verticalKnockBack): void{
-		$this->verticalKnockBack = $verticalKnockBack;
+	    $this->verticalKnockBack = $verticalKnockBack;
 	}
 }

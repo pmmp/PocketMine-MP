@@ -533,7 +533,7 @@ abstract class Living extends Entity implements Damageable{
 
 		$this->applyDamageModifiers($source);
 
-		if ($source instanceof EntityDamageByEntityEvent and
+		if($source instanceof EntityDamageByEntityEvent and
             ($source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION or
 			$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION)
 		){
@@ -557,10 +557,9 @@ abstract class Living extends Entity implements Damageable{
 		if($source instanceof EntityDamageByChildEntityEvent){
 			$e = $source->getChild();
 			if($e !== null){
-                $motion = $e->getMotion();
-                $this->knockBack($e, $source->getBaseDamage(), $motion->x, $motion->z, $source->getHorizontalKnockBack(), $source->getVerticalKnockBack());
+			    $motion = $e->getMotion();
+			    $this->knockBack($e, $source->getBaseDamage(), $motion->x, $motion->z, $source->getHorizontalKnockBack(), $source->getVerticalKnockBack());
 			}
-
 		}elseif($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
 			if($e !== null){
@@ -582,10 +581,9 @@ abstract class Living extends Entity implements Damageable{
 
 	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4, ?float $baseY = null) : void{
 	    $f = sqrt($x * $x + $z * $z);
-		if($f <= 0){
-			return;
-		}
-		
+	    if($f <= 0){
+	        return;
+	    }
 		if(mt_rand() / mt_getrandmax() > $this->getAttributeMap()->getAttribute(Attribute::KNOCKBACK_RESISTANCE)->getValue()){
 			
 			$f = 1 / $f;
