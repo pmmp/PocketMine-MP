@@ -533,14 +533,22 @@ abstract class Living extends Entity implements Damageable{
 
 		$this->applyDamageModifiers($source);
 
-		if($source instanceof EntityDamageByEntityEvent and (
-			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION or
+		if
+        (
+            $source instanceof EntityDamageByEntityEvent and
+            ($source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION or
 			$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION)
-		){
+		)
+		{
 			//TODO: knockback should not just apply for entity damage sources
 			//this doesn't matter for TNT right now because the PrimedTNT entity is considered the source, not the block.
-			$base = $source->getKnockBack();
-			$source->setKnockBack($base - min($base, $base * $this->getHighestArmorEnchantmentLevel(Enchantment::BLAST_PROTECTION) * 0.15));
+			
+			// Does calculations for vertical & horizontal knockback.
+			$baseHorizontal = $source->getHorizontalKnockback();
+			$baseVertical = $source->getVerticalKnockback();
+			$newHorizontal = $baseHorizontal - min($baseHorizontal, $baseHorizontal * $this->getHighestArmorEnchantmentLevel(Enchantment::BLAST_PROTECTION) * 0.15);
+			$newVertical = $baseVertical - min($baseVertical, $baseVertical * $this->getHighestArmorEnchantmentLevel(Enchantment::BLAST_PROTECTION) * 0.15);
+			$source->setKnockBack($newHorizontal, $newVertical);
 		}
 
 		parent::attack($source);
@@ -553,16 +561,17 @@ abstract class Living extends Entity implements Damageable{
 
 		if($source instanceof EntityDamageByChildEntityEvent){
 			$e = $source->getChild();
-			if($e !== null){
-				$motion = $e->getMotion();
-				$this->knockBack($e, $source->getBaseDamage(), $motion->x, $motion->z, $source->getKnockBack());
-			
+			if($e !== null) {
+                $motion = $e->getMotion();
+                $this->knockBack($e, $source->getBaseDamage(), $motion->x, $motion->z, $source->getHorizontalKnockback(), $source->getVerticalKnockback());
+            }
+
 		}elseif($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
 			if($e !== null){
 				$deltaX = $this->x - $e->x;
 				$deltaZ = $this->z - $e->z;
-				$this->knockBack($e, $source->getBaseDamage(), $deltaX, $deltaZ, $source->getKnockBack());
+				$this->knockBack($e, $source->getBaseDamage(), $deltaX, $deltaZ, $source->getHorizontalKnockback(), $source->getVerticalKnockback());
 			}
 		}
 
@@ -576,7 +585,8 @@ abstract class Living extends Entity implements Damageable{
 		$this->broadcastEntityEvent(ActorEventPacket::HURT_ANIMATION);
 	}
 
-	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4, ?float $baseY = null) : void{
+	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4, ?float $baseY = null) : void
+        {
 		
 		$f = sqrt($x * $x + $z * $z);
 		
