@@ -31,21 +31,21 @@ use pocketmine\entity\Living;
  * Called when an entity takes damage from another entity.
  */
 class EntityDamageByEntityEvent extends EntityDamageEvent{
-	
+
 	/** @var int */
 	private $damagerEntityId;
 	/** @var float */
-	private $horizontalKnockback;
+	private $horizontalKnockBack;
 	/** @var float|null */
-	private $verticalKnockback;
+	private $verticalKnockBack;
 
 	/**
 	 * @param float[] $modifiers
 	 */
-	public function __construct(Entity $damager, Entity $entity, int $cause, float $damage, array $modifiers = [], float $horizontalKnockback = 0.4, ?float $verticalKnockback = null){
+	public function __construct(Entity $damager, Entity $entity, int $cause, float $damage, array $modifiers = [], float $horizontalKnockBack = 0.4, ?float $verticalKnockBack = null){
 		$this->damagerEntityId = $damager->getId();
-		$this->horizontalKnockback = $horizontalKnockback;
-		$this->verticalKnockback = $verticalKnockback;
+		$this->horizontalKnockBack = $horizontalKnockBack;
+		$this->verticalKnockBack = $verticalKnockBack;
 		parent::__construct($entity, $cause, $damage, $modifiers);
 		$this->addAttackerModifiers($damager);
 	}
@@ -72,29 +72,29 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	/**
 	 * Returns the horizontal Knockback of the Event.
 	 * Use the function getHorizontalKnockback().
-	 
+
 	 * @return float - The horizontal knockback.
 	 * @deprecated
 	 */
 	public function getKnockBack() : float{
-		return $this->horizontalKnockback;
+		return $this->horizontalKnockBack;
 	}
-	
+
 	/**
 	 * Returns the horizontal knockback value.
 	 * @return float - The horizontal knockback.
 	 */
-	public function getHorizontalKnockback(): float {
-		return $this->horizontalKnockback;
+	public function getHorizontalKnockBack(): float{
+		return $this->horizontalKnockBack;
 	}
-	
+
 	/**
 	 * Returns the vertical knockback value. If internal knockback value
 	 * is null, it returns the horizontal knockback.
 	 * @return float - The vertical knockback.
 	 */
-	public function getVerticalKnockback(): float {
-		return $this->verticalKnockback ?? $this->horizontalKnockback;
+	public function getVerticalKnockBack(): float{
+		return $this->verticalKnockBack ?? $this->horizontalKnockBack;
 	}
 
 	/**
@@ -108,29 +108,28 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 */
 	public function setKnockBack(float $horizontalKnockback, ?float $verticalKnockback = null) : void{
 		// Sets vertical and horizontal kb.
-	    $this->horizontalKnockback = $horizontalKnockback;
-		$this->verticalKnockback = ($verticalKnockback ?? $horizontalKnockback);
+	    $this->horizontalKnockBack = $horizontalKnockback;
+		$this->verticalKnockBack = ($verticalKnockback ?? $horizontalKnockback);
 	}
-	
+
 	/**
 	 * Sets the horizontal knockback of the event directly. Added for clarification purposes.
-	 * @param float - The horizontal knockback of the event.
+	 * @param float $horizontalKnockBack - The horizontal knockback of the event.
 	 */
-	public function setHorizontalKnockback(float $horizontalKnockback): void {
+	public function setHorizontalKnockBack(float $horizontalKnockBack): void{
 	    // Sets the vertical knockback to the previous horizontal knockback.
-	    if($this->verticalKnockback === null)
-        {
-            $this->verticalKnockback = $this->horizontalKnockback;
-        }
-		$this->horizontalKnockback = $horizontalKnockback;
+	    if($this->verticalKnockBack === null){
+            $this->verticalKnockBack = $this->horizontalKnockBack;
+	    }
+		$this->horizontalKnockBack = $horizontalKnockBack;
 	}
-	
-	/** 
+
+	/**
 	 * Sets the vertical knockback of the event directly without needing
 	 * to also set the horizontal knockback.
-	 * @param $verticalKnockback - The vertical knockback.
+	 * @param $verticalKnockBack - The vertical knockback.
 	 */
-	public function setVerticalKnockback(float $verticalKnockback): void {
-		$this->verticalKnockback = $verticalKnockback;
+	public function setVerticalKnockBack(float $verticalKnockBack): void{
+		$this->verticalKnockBack = $verticalKnockBack;
 	}
 }
