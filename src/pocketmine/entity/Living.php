@@ -569,8 +569,6 @@ abstract class Living extends Entity implements Damageable{
 		}elseif($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
 			if($e !== null){
-			    // Testing purposes
-                $source->setVerticalKnockback(4);
 				$deltaX = $this->x - $e->x;
 				$deltaZ = $this->z - $e->z;
 				$this->knockBack($e, $source->getBaseDamage(), $deltaX, $deltaZ, $source->getHorizontalKnockback(), $source->getVerticalKnockback());
