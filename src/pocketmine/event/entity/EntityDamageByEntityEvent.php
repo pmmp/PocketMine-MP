@@ -37,7 +37,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	private $horizontalKnockBack;
 	/** @var float|null */
 	private $verticalKnockBack;
-
+	
 	/**
 	 * @param float[] $modifiers
 	 */
@@ -48,7 +48,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 		parent::__construct($entity, $cause, $damage, $modifiers);
 		$this->addAttackerModifiers($damager);
 	}
-
+	
 	protected function addAttackerModifiers(Entity $damager) : void{
 		if($damager instanceof Living){ //TODO: move this to entity classes
 			if($damager->hasEffect(Effect::STRENGTH)){
@@ -60,14 +60,14 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 			}
 		}
 	}
-
+	
 	/**
 	 * Returns the attacking entity, or null if the attacker has been killed or closed.
 	 */
 	public function getDamager() : ?Entity{
 		return $this->getEntity()->getLevelNonNull()->getServer()->findEntity($this->damagerEntityId);
 	}
-
+	
 	/**
 	 * Returns the horizontal Knockback of the Event.
 	 * Use the function getHorizontalKnockback().
@@ -76,7 +76,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 * @deprecated
 	 */
 	public function getKnockBack() : float{
-	    return $this->horizontalKnockBack;
+		return $this->horizontalKnockBack;
 	}
 
 	/**
@@ -84,7 +84,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 * @return float - The horizontal knockback.
 	 */
 	public function getHorizontalKnockBack(): float{
-	    return $this->horizontalKnockBack;
+		return $this->horizontalKnockBack;
 	}
 
 	/**
@@ -93,7 +93,7 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 * @return float - The vertical knockback.
 	 */
 	public function getVerticalKnockBack(): float{
-	    return $this->verticalKnockBack ?? $this->horizontalKnockBack;
+		return $this->verticalKnockBack ?? $this->horizontalKnockBack;
 	}
 
 	/**
@@ -107,8 +107,8 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 */
 	public function setKnockBack(float $horizontalKnockback, ?float $verticalKnockback = null) : void{
 		// Sets vertical and horizontal kb.
-        $this->horizontalKnockBack = $horizontalKnockback;
-        $this->verticalKnockBack = ($verticalKnockback ?? $horizontalKnockback);
+		$this->horizontalKnockBack = $horizontalKnockback;
+		$this->verticalKnockBack = ($verticalKnockback ?? $horizontalKnockback);
 	}
 
 	/**
@@ -116,11 +116,11 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 * @param float $horizontalKnockBack - The horizontal knockback of the event.
 	 */
 	public function setHorizontalKnockBack(float $horizontalKnockBack): void{
-	    // Sets the vertical knockback to the previous horizontal knockback.
-        if($this->verticalKnockBack === null){
-            $this->verticalKnockBack = $this->horizontalKnockBack;
-        }
-        $this->horizontalKnockBack = $horizontalKnockBack;
+		// Sets the vertical knockback to the previous horizontal knockback.
+		if($this->verticalKnockBack === null){
+			$this->verticalKnockBack = $this->horizontalKnockBack;
+		}
+		$this->horizontalKnockBack = $horizontalKnockBack;
 	}
 
 	/**
@@ -129,6 +129,6 @@ class EntityDamageByEntityEvent extends EntityDamageEvent{
 	 * @param float $verticalKnockBack - The vertical knockback.
 	 */
 	public function setVerticalKnockBack(float $verticalKnockBack): void{
-	    $this->verticalKnockBack = $verticalKnockBack;
+		$this->verticalKnockBack = $verticalKnockBack;
 	}
 }
