@@ -1,0 +1,17 @@
+language: php
+php:
+  - 7.3
+  - 7.4
+
+before_script:
+  - phpenv config-rm xdebug.ini
+  - echo | pecl install channel://pecl.php.net/yaml-2.1.0
+  - git clone https://github.com/pmmp/pthreads.git
+  - cd pthreads
+  - git checkout e0f514dfde01c5e7e9cf94c43615918af482a45c
+  - phpize
+  - ./configure
+  - make
+  - make install
+  - cd ..
+  - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
