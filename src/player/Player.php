@@ -1562,6 +1562,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$target = $this->getWorld()->getBlock($pos);
 
 		$ev = new PlayerInteractEvent($this, $this->inventory->getItemInHand(), $target, null, $face, PlayerInteractEvent::LEFT_CLICK_BLOCK);
+		if($this->isSpectator()){
+			$ev->setCancelled();
+		}
 		$ev->call();
 		if($ev->isCancelled()){
 			return false;
