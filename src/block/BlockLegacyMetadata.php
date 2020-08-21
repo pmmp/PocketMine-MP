@@ -63,6 +63,25 @@ final class BlockLegacyMetadata{
 	public const COLORED_TORCH_RG_RED = 0;
 	public const COLORED_TORCH_RG_GREEN = 8;
 
+	public const CORAL_BLOCK_FLAG_DEAD = 0x8;
+
+	public const CORAL_FAN_EAST_WEST = 0;
+	public const CORAL_FAN_NORTH_SOUTH = 1;
+
+	public const CORAL_FAN_HANG_FLAG_DEAD = 0x2;
+
+	public const CORAL_FAN_HANG_TUBE = 0;
+	public const CORAL_FAN_HANG_BRAIN = 1;
+	public const CORAL_FAN_HANG2_BUBBLE = 0;
+	public const CORAL_FAN_HANG2_FIRE = 1;
+	public const CORAL_FAN_HANG3_HORN = 0;
+
+	public const CORAL_VARIANT_TUBE = 0;
+	public const CORAL_VARIANT_BRAIN = 1;
+	public const CORAL_VARIANT_BUBBLE = 2;
+	public const CORAL_VARIANT_FIRE = 3;
+	public const CORAL_VARIANT_HORN = 4;
+
 	public const DIRT_NORMAL = 0;
 	public const DIRT_COARSE = 1;
 
