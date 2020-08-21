@@ -40,7 +40,7 @@
       "pocketmine/snooze": "^0.1.0",
       "pocketmine/classloader": "dev-master",
       "pocketmine/log-pthreads": "dev-master",
-      "pocketmine/callback-validator": "^1.0.1",
+      "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/errorhandler": "^0.1.0",
       "pocketmine/uuid": "^0.1.0",
       "pocketmine/color": "^0.1.0",
