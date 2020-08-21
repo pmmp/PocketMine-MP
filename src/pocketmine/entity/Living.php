@@ -533,13 +533,13 @@ abstract class Living extends Entity implements Damageable{
 
 		$this->applyDamageModifiers($source);
 
-		if($source instanceof EntityDamageByEntityEvent and
-            ($source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION or
+		if($source instanceof EntityDamageByEntityEvent and (
+			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION or
 			$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION)
 		){
 			//TODO: knockback should not just apply for entity damage sources
 			//this doesn't matter for TNT right now because the PrimedTNT entity is considered the source, not the block.
-            $baseHorizontal = $source->getHorizontalKnockBack();
+			$baseHorizontal = $source->getHorizontalKnockBack();
 			$baseVertical = $source->getVerticalKnockBack();
 			$newHorizontal = $baseHorizontal - min($baseHorizontal, $baseHorizontal * $this->getHighestArmorEnchantmentLevel(Enchantment::BLAST_PROTECTION) * 0.15);
 			$newVertical = $baseVertical - min($baseVertical, $baseVertical * $this->getHighestArmorEnchantmentLevel(Enchantment::BLAST_PROTECTION) * 0.15);
@@ -557,8 +557,8 @@ abstract class Living extends Entity implements Damageable{
 		if($source instanceof EntityDamageByChildEntityEvent){
 			$e = $source->getChild();
 			if($e !== null){
-			    $motion = $e->getMotion();
-			    $this->knockBack($e, $source->getBaseDamage(), $motion->x, $motion->z, $source->getHorizontalKnockBack(), $source->getVerticalKnockBack());
+				$motion = $e->getMotion();
+				$this->knockBack($e, $source->getBaseDamage(), $motion->x, $motion->z, $source->getHorizontalKnockBack(), $source->getVerticalKnockBack());
 			}
 		}elseif($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
@@ -580,17 +580,17 @@ abstract class Living extends Entity implements Damageable{
 	}
 
 	public function knockBack(Entity $attacker, float $damage, float $x, float $z, float $base = 0.4, ?float $baseY = null) : void{
-	    $f = sqrt($x * $x + $z * $z);
-	    if($f <= 0){
-	        return;
-	    }
+		$f = sqrt($x * $x + $z * $z);
+		if($f <= 0){
+			return;
+		}
 		if(mt_rand() / mt_getrandmax() > $this->getAttributeMap()->getAttribute(Attribute::KNOCKBACK_RESISTANCE)->getValue()){
 			
 			$f = 1 / $f;
 			$baseY = $baseY ?? $base;
-
+			
 			$motion = clone $this->motion;
-
+			
 			$motion->x /= 2;
 			$motion->y /= 2;
 			$motion->z /= 2;
@@ -601,7 +601,6 @@ abstract class Living extends Entity implements Damageable{
 			if($motion->y > $baseY){
 				$motion->y = $baseY;
 			}
-
 			$this->setMotion($motion);
 		}
 	}
