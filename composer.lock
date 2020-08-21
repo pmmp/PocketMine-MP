@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "14c3872a6f5a52b6087ed40d636fcddc",
+    "content-hash": "592b2db776e304b517a6dc4b813d2948",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -137,16 +137,16 @@
         },
         {
             "name": "pocketmine/callback-validator",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/pmmp/CallbackValidator.git",
-                "reference": "4aef6bb25f97d0b830ba0b4f66834b1a9c86fc9a"
+                "url": "git@github.com:pmmp/CallbackValidator.git",
+                "reference": "8321aa3ccfe63639b0d08f0cbf270755cfc99fe2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/CallbackValidator/zipball/4aef6bb25f97d0b830ba0b4f66834b1a9c86fc9a",
-                "reference": "4aef6bb25f97d0b830ba0b4f66834b1a9c86fc9a",
+                "url": "https://api.github.com/repos/pmmp/CallbackValidator/zipball/8321aa3ccfe63639b0d08f0cbf270755cfc99fe2",
+                "reference": "8321aa3ccfe63639b0d08f0cbf270755cfc99fe2",
                 "shasum": ""
             },
             "require": {
@@ -157,6 +157,9 @@
                 "daverandom/callback-validator": "*"
             },
             "require-dev": {
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "0.12.38",
+                "phpstan/phpstan-strict-rules": "^0.12.4",
                 "phpunit/phpunit": "^7.5 || ^8.5 || ^9.0"
             },
             "type": "library",
@@ -176,7 +179,7 @@
                 }
             ],
             "description": "Fork of daverandom/callback-validator - Tools for validating callback signatures",
-            "time": "2020-03-17T12:04:22+00:00"
+            "time": "2020-08-21T19:51:42+00:00"
         },
         {
             "name": "pocketmine/classloader",
@@ -585,16 +588,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.8.0",
+            "version": "v4.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "8c58eb4cd4f3883f82611abeac2efbc3dbed787e"
+                "reference": "aaee038b912e567780949787d5fe1977be11a778"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/8c58eb4cd4f3883f82611abeac2efbc3dbed787e",
-                "reference": "8c58eb4cd4f3883f82611abeac2efbc3dbed787e",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/aaee038b912e567780949787d5fe1977be11a778",
+                "reference": "aaee038b912e567780949787d5fe1977be11a778",
                 "shasum": ""
             },
             "require": {
@@ -602,7 +605,7 @@
                 "php": ">=7.0"
             },
             "require-dev": {
-                "ircmaxell/php-yacc": "^0.0.6",
+                "ircmaxell/php-yacc": "^0.0.7",
                 "phpunit/phpunit": "^6.5 || ^7.0 || ^8.0 || ^9.0"
             },
             "bin": [
@@ -611,7 +614,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.8-dev"
+                    "dev-master": "4.9-dev"
                 }
             },
             "autoload": {
@@ -633,7 +636,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2020-08-09T10:23:20+00:00"
+            "time": "2020-08-18T19:48:01+00:00"
         },
         {
             "name": "phar-io/manifest",
