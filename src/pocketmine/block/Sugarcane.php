@@ -92,7 +92,7 @@ class Sugarcane extends Flowable{
 						if($ev->isCancelled()){
 							break;
 						}
-						$this->getLevelNonNull()->setBlock($b, BlockFactory::get(Block::SUGARCANE_BLOCK), true);
+						$this->getLevelNonNull()->setBlock($b, $ev->getNewState(), true);
 						break;
 					}
 				}
