@@ -707,10 +707,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$this->boundingBox->setBounds(
 			$this->x - $halfWidth,
-			$this->y,
+			$this->y + $this->ySize,
 			$this->z - $halfWidth,
 			$this->x + $halfWidth,
-			$this->y + $this->height,
+			$this->y + $this->height + $this->ySize,
 			$this->z + $halfWidth
 		);
 	}
