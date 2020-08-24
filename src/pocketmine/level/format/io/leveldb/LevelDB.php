@@ -131,7 +131,11 @@ class LevelDB extends BaseLevelProvider{
 			throw new LevelException("Truncated level.dat");
 		}
 		$nbt = new LittleEndianNBTStream();
-		$levelData = $nbt->read(substr($rawLevelData, 8));
+		try{
+			$levelData = $nbt->read(substr($rawLevelData, 8));
+		}catch(\UnexpectedValueException $e){
+			throw new LevelException("Invalid level.dat (" . $e->getMessage() . ")", 0, $e);
+		}
 		if($levelData instanceof CompoundTag){
 			$this->levelData = $levelData;
 		}else{
