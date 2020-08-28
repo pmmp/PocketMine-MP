@@ -26,11 +26,13 @@ namespace pmmp\TesterPlugin\tests;
 use pmmp\TesterPlugin\Test;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\MainLogger;
+use function ob_get_contents;
 
 class AsyncTaskMainLoggerTest extends Test{
 
-	public function run(){
+	public function run() : void{
 		$this->getPlugin()->getServer()->getAsyncPool()->submitTask(new class($this) extends AsyncTask{
 
 			/** @var bool */
@@ -43,7 +45,9 @@ class AsyncTaskMainLoggerTest extends Test{
 			public function onRun(){
 				ob_start();
 				MainLogger::getLogger()->info("Testing");
-				if(strpos(ob_get_contents(), "Testing") !== false){
+				$contents = ob_get_contents();
+				if($contents === false) throw new AssumptionFailedError("ob_get_contents() should not return false here");
+				if(strpos($contents, "Testing") !== false){
 					$this->success = true;
 				}
 				ob_end_flush();

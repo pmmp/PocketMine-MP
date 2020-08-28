@@ -41,6 +41,7 @@ class AsyncTaskPublishProgressRaceTest extends Test{
 		//this test is racy, but it should fail often enough to be a pest if something is broken
 
 		$this->getPlugin()->getServer()->getAsyncPool()->submitTask(new class($this) extends AsyncTask{
+			/** @var bool */
 			private static $success = false;
 
 			public function __construct(AsyncTaskPublishProgressRaceTest $t){
