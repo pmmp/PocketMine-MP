@@ -30,6 +30,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\entity\Entity;
 use pocketmine\level\Level;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
 use pocketmine\tile\Spawnable;
@@ -691,13 +692,14 @@ class Chunk{
 
 			$level->timings->syncChunkLoadEntitiesTimer->startTiming();
 			foreach($this->NBTentities as $nbt){
-				if(!$nbt->hasTag("id")){ //allow mixed types (because of leveldb)
+				$idTag = $nbt->getTag("id");
+				if(!($idTag instanceof IntTag) && !($idTag instanceof StringTag)){ //allow mixed types (because of leveldb)
 					$changed = true;
 					continue;
 				}
 
 				try{
-					$entity = Entity::createEntity($nbt->getTag("id")->getValue(), $level, $nbt);
+					$entity = Entity::createEntity($idTag->getValue(), $level, $nbt);
 					if(!($entity instanceof Entity)){
 						$changed = true;
 						continue;

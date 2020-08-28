@@ -45,6 +45,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
@@ -97,17 +98,15 @@ abstract class Living extends Entity implements Damageable{
 		//TODO: load/save armor inventory contents
 		$this->armorInventory->setEventProcessor(new ArmorInventoryEventProcessor($this));
 
-		$health = $this->getMaxHealth();
-
 		if($this->namedtag->hasTag("HealF", FloatTag::class)){
 			$health = $this->namedtag->getFloat("HealF");
 			$this->namedtag->removeTag("HealF");
-		}elseif($this->namedtag->hasTag("Health")){
-			$healthTag = $this->namedtag->getTag("Health");
-			$health = (float) $healthTag->getValue(); //Older versions of PocketMine-MP incorrectly saved this as a short instead of a float
-			if(!($healthTag instanceof FloatTag)){
-				$this->namedtag->removeTag("Health");
-			}
+		}elseif($this->namedtag->hasTag("Health", ShortTag::class)){
+			//Older versions of PocketMine-MP incorrectly saved this as a short instead of a float
+			$health = $this->namedtag->getShort("Health");
+			$this->namedtag->removeTag("Health");
+		}else{
+			$health = $this->namedtag->getFloat("Health");
 		}
 
 		$this->setHealth($health);

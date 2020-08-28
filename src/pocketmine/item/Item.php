@@ -42,6 +42,7 @@ use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
 use function array_map;
 use function base64_decode;
@@ -475,7 +476,12 @@ class Item implements ItemIds, \JsonSerializable{
 	public function getLore() : array{
 		$display = $this->getNamedTagEntry(self::TAG_DISPLAY);
 		if($display instanceof CompoundTag and ($lore = $display->getListTag(self::TAG_DISPLAY_LORE)) !== null){
-			return $lore->getAllValues();
+			return array_map(function(NamedTag $line) : string{
+				if(!($line instanceof StringTag)){
+					throw new AssumptionFailedError("Nobody bothered to handle this error case and we can't fix it until PM4, oops ... #blameshoghi");
+				}
+				return $line->getValue();
+			}, $lore->getValue());
 		}
 
 		return [];
