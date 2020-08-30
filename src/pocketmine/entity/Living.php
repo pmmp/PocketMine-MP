@@ -106,7 +106,7 @@ abstract class Living extends Entity implements Damageable{
 			$health = $this->namedtag->getShort("Health");
 			$this->namedtag->removeTag("Health");
 		}else{
-			$health = $this->namedtag->getFloat("Health");
+			$health = $this->namedtag->getFloat("Health", $this->getMaxHealth());
 		}
 
 		$this->setHealth($health);
