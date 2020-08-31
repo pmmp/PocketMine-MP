@@ -3254,12 +3254,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$emoteId = UUID::fromString($rawEmoteId);
 		$event = new PlayerEmoteEvent($this, $emoteId);
 		$event->call();
-		if ($event->isCancelled()) {
+		if($event->isCancelled()){
 			return true;
 		}
 
-		$newPacket = EmotePacket::create($this->getId(), $rawEmoteId, EmotePacket::FLAG_S2C);
-		$this->getLevelNonNull()->broadcastPacketToViewers($this, $newPacket);
+		$this->getLevelNonNull()->broadcastPacketToViewers($this, EmotePacket::create($this->getId(), $rawEmoteId, EmotePacket::FLAG_SERVER));
 
 		return true;
 	}

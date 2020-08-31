@@ -47,14 +47,10 @@ class EmoteListPacket extends DataPacket/* implements ClientboundPacket*/{
 		return $result;
 	}
 
-	public function getPlayerEntityRuntimeId() : int{
-		return $this->playerEntityRuntimeId;
-	}
+	public function getPlayerEntityRuntimeId() : int{ return $this->playerEntityRuntimeId; }
 
 	/** @return UUID[] */
-	public function getEmoteIds() : array{
-		return $this->emoteIds;
-	}
+	public function getEmoteIds() : array{ return $this->emoteIds; }
 
 	protected function decodePayload() : void{
 		$this->playerEntityRuntimeId = $this->getEntityRuntimeId();

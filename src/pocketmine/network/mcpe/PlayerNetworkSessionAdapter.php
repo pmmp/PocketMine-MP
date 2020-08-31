@@ -326,11 +326,11 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 		return true; //TODO: implement this properly - this is here to silence debug spam from MCPE dev builds
 	}
 
-	public function handleEmote(EmotePacket $packet): bool {
+	public function handleEmote(EmotePacket $packet) : bool{
 		return $this->player->handleEmote($packet);
 	}
 
-	public function handleEmoteList(EmoteListPacket $packet): bool {
+	public function handleEmoteList(EmoteListPacket $packet) : bool{
 		return $this->player->handleEmoteList($packet);
 	}
 }

@@ -27,26 +27,18 @@ use pocketmine\event\Cancellable;
 use pocketmine\Player;
 use pocketmine\utils\UUID;
 
-/**
- * Class PlayerEmoteEvent
- * @package pocketmine\event\player
- */
-class PlayerEmoteEvent extends PlayerEvent implements Cancellable {
+class PlayerEmoteEvent extends PlayerEvent implements Cancellable{
 
 	/** @var UUID */
 	protected $emoteId;
 
-	public function __construct(Player $player, UUID $emoteId) {
+	public function __construct(Player $player, UUID $emoteId){
 		$this->player = $player;
 		$this->emoteId = $emoteId;
 	}
 
 	public function getEmoteId() : UUID{
 		return $this->emoteId;
-	}
-
-	public function setEmoteId(UUID $emoteId) : void{
-		$this->emoteId = $emoteId;
 	}
 
 }
