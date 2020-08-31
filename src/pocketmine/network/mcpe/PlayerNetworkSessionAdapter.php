@@ -39,7 +39,6 @@ use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
-use pocketmine\network\mcpe\protocol\EmoteListPacket;
 use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;

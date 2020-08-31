@@ -839,13 +839,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	/**
-	 * @return UUID[]
-	 */
-	public function getEmoteIds() : array{
-		return $this->emoteIds;
-	}
-
-	/**
 	 * Called when a player changes their skin.
 	 * Plugin developers should not use this, use setSkin() and sendSkin() instead.
 	 */
