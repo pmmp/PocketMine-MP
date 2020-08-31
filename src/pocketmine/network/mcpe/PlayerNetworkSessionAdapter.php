@@ -329,8 +329,4 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	public function handleEmote(EmotePacket $packet) : bool{
 		return $this->player->handleEmote($packet);
 	}
-
-	public function handleEmoteList(EmoteListPacket $packet) : bool{
-		return $this->player->handleEmoteList($packet);
-	}
 }
