@@ -591,11 +591,6 @@ parameters:
 			path: ../../../src/pocketmine/command/defaults/SetWorldSpawnCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getPlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/TellCommand.php
-
-		-
 			message: "#^Cannot call method getTime\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/command/defaults/TimeCommand.php
@@ -774,11 +769,6 @@ parameters:
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\AddPlayerPacket\\:\\:\\$uuid \\(pocketmine\\\\utils\\\\UUID\\) does not accept pocketmine\\\\utils\\\\UUID\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/entity/Human.php
-
-		-
-			message: "#^Cannot call method getValue\\(\\) on pocketmine\\\\nbt\\\\tag\\\\NamedTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/entity/Living.php
 
 		-
 			message: "#^Parameter \\#1 \\$attribute of method pocketmine\\\\entity\\\\AttributeMap\\:\\:addAttribute\\(\\) expects pocketmine\\\\entity\\\\Attribute, pocketmine\\\\entity\\\\Attribute\\|null given\\.$#"
@@ -1226,11 +1216,6 @@ parameters:
 			path: ../../../src/pocketmine/level/format/Chunk.php
 
 		-
-			message: "#^Cannot call method getValue\\(\\) on pocketmine\\\\nbt\\\\tag\\\\NamedTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/format/Chunk.php
-
-		-
 			message: "#^Method pocketmine\\\\level\\\\format\\\\Chunk\\:\\:getSubChunk\\(\\) should return pocketmine\\\\level\\\\format\\\\SubChunkInterface but returns pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/format/Chunk.php
@@ -1646,16 +1631,6 @@ parameters:
 			path: ../../../src/pocketmine/tile/Spawnable.php
 
 		-
-			message: "#^Cannot clone non\\-object variable \\$customBlockDataTag of type pocketmine\\\\nbt\\\\tag\\\\NamedTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/tile/Tile.php
-
-		-
-			message: "#^Parameter \\#1 \\$tag of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setTag\\(\\) expects pocketmine\\\\nbt\\\\tag\\\\NamedTag, pocketmine\\\\nbt\\\\tag\\\\NamedTag\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/tile/Tile.php
-
-		-
 			message: "#^Cannot call method getBlockAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/tile/Tile.php
@@ -1709,11 +1684,6 @@ parameters:
 			message: "#^Method pocketmine\\\\utils\\\\Utils\\:\\:printable\\(\\) should return string but returns string\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/utils/Utils.php
-
-		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\StupidJsonDecodeTest\\:\\:\\$stupidJsonDecodeFunc \\(Closure\\) does not accept Closure\\|null\\.$#"
-			count: 1
-			path: ../../phpunit/network/mcpe/StupidJsonDecodeTest.php
 
 		-
 			message: "#^Cannot call method cancel\\(\\) on pocketmine\\\\scheduler\\\\TaskHandler\\|null\\.$#"
