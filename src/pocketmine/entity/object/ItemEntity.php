@@ -99,7 +99,7 @@ class ItemEntity extends Entity{
 
 			if($this->ticksLived % 25 === 0){
 				foreach($this->level->getCollidingEntities($this->getBoundingBox()->expandedCopy(0.5, 1, 0.5), $this) as $entity){
-					if($entity instanceof ItemEntity){
+					if($entity instanceof ItemEntity and !$entity->isFlaggedForDespawn()){
 						$item = $this->getItem();
 						if($item->getCount() < $item->getMaxStackSize()){
 							if($entity->getItem()->equals($item, true, true)){
