@@ -4182,10 +4182,12 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($targets !== null){
 			if(in_array($this, $targets, true)){
 				$this->forceMoveSync = $pos->asVector3();
+				$this->ySize = 0;
 			}
 			$this->server->broadcastPacket($targets, $pk);
 		}else{
 			$this->forceMoveSync = $pos->asVector3();
+			$this->ySize = 0;
 			$this->dataPacket($pk);
 		}
 	}

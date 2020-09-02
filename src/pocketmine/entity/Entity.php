@@ -868,7 +868,14 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	protected function recalculateBoundingBox() : void{
 		$halfWidth = $this->width / 2;
 
-		$this->boundingBox->setBounds($this->x - $halfWidth, $this->y, $this->z - $halfWidth, $this->x + $halfWidth, $this->y + $this->height, $this->z + $halfWidth);
+		$this->boundingBox->setBounds(
+			$this->x - $halfWidth,
+			$this->y + $this->ySize,
+			$this->z - $halfWidth,
+			$this->x + $halfWidth,
+			$this->y + $this->height + $this->ySize,
+			$this->z + $halfWidth
+		);
 	}
 
 	/**
@@ -2171,13 +2178,20 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 				$this->boundingBox->offset(0, 0, $dz);
 
+				$reverseDY = -$dy;
+				foreach($list as $bb){
+					$reverseDY = $bb->calculateYOffset($this->boundingBox, $reverseDY);
+				}
+				$dy += $reverseDY;
+				$this->boundingBox->offset(0, $reverseDY, 0);
+
 				if(($cx ** 2 + $cz ** 2) >= ($dx ** 2 + $dz ** 2)){
 					$dx = $cx;
 					$dy = $cy;
 					$dz = $cz;
 					$this->boundingBox->setBB($axisalignedbb1);
 				}else{
-					$this->ySize += 0.5; //FIXME: this should be the height of the block it walked up, not fixed 0.5
+					$this->ySize += $dy;
 				}
 			}
 		}

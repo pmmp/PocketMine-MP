@@ -26,7 +26,10 @@ namespace pocketmine\network\mcpe;
 use PHPUnit\Framework\TestCase;
 
 class StupidJsonDecodeTest extends TestCase{
-	/** @var \Closure */
+	/**
+	 * @var \Closure
+	 * @phpstan-var \Closure(string $json, bool $assoc=) : mixed
+	 */
 	private $stupidJsonDecodeFunc;
 
 	public function setUp() : void{

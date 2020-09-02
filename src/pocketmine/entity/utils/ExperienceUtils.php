@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\utils;
 
 use pocketmine\math\Math;
-
+use pocketmine\utils\AssumptionFailedError;
 use function max;
 
 abstract class ExperienceUtils{
@@ -60,6 +60,9 @@ abstract class ExperienceUtils{
 	 * This returns a floating-point number, the decimal part being the progress through the resulting level.
 	 */
 	public static function getLevelFromXp(int $xp) : float{
+		if($xp < 0){
+			throw new \InvalidArgumentException("XP must be at least 0");
+		}
 		if($xp <= self::getXpToReachLevel(16)){
 			$a = 1;
 			$b = 6;
@@ -75,6 +78,9 @@ abstract class ExperienceUtils{
 		}
 
 		$x = Math::solveQuadratic($a, $b, $c - $xp);
+		if(count($x) === 0){
+			throw new AssumptionFailedError("Expected at least 1 solution");
+		}
 
 		return max($x); //we're only interested in the positive solution
 	}

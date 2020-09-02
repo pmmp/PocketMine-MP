@@ -20,6 +20,8 @@ parameters:
 	checkExplicitMixed: true
 	bootstrapFiles:
 		- tests/phpstan/bootstrap.php
+	scanDirectories:
+	    - tests/plugins/TesterPlugin
 	scanFiles:
 		- src/pocketmine/PocketMine.php
 		- build/make-release.php
@@ -29,6 +31,7 @@ parameters:
 		- build/make-release.php
 		- build/server-phar.php
 		- tests/phpunit
+		- tests/plugins/TesterPlugin
 	dynamicConstantNames:
 		- pocketmine\IS_DEVELOPMENT_BUILD
 		- pocketmine\DEBUG
