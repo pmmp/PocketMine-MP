@@ -94,6 +94,7 @@ use const M_PI_2;
 abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public const MOTION_THRESHOLD = 0.00001;
+	protected const STEP_CLIP_MULTIPLIER = 0.4;
 
 	public const NETWORK_ID = -1;
 
@@ -1538,7 +1539,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		if($this->keepMovement){
 			$this->boundingBox->offset($dx, $dy, $dz);
 		}else{
-			$this->ySize *= 0.4;
+			$this->ySize *= self::STEP_CLIP_MULTIPLIER;
 
 			/*
 			if($this->isColliding){ //With cobweb?
@@ -1605,7 +1606,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 			$this->boundingBox->offset(0, 0, $dz);
 
-			if($this->stepHeight > 0 and $fallingFlag and $this->ySize < 0.05 and ($movX != $dx or $movZ != $dz)){
+			if($this->stepHeight > 0 and $fallingFlag and ($movX != $dx or $movZ != $dz)){
 				$cx = $dx;
 				$cy = $dy;
 				$cz = $dz;
