@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7ec1bf61515c3b157a1347560b551826",
+    "content-hash": "3a8f754965da97b4e3237fd32168a6aa",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -294,12 +294,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "b7e1b94b8ad6d987224b7770f5d451e2776adccc"
+                "reference": "0e25f4baab948cfb88de94375d04df20330957d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/b7e1b94b8ad6d987224b7770f5d451e2776adccc",
-                "reference": "b7e1b94b8ad6d987224b7770f5d451e2776adccc",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/0e25f4baab948cfb88de94375d04df20330957d7",
+                "reference": "0e25f4baab948cfb88de94375d04df20330957d7",
                 "shasum": ""
             },
             "require": {
@@ -307,7 +307,9 @@
                 "php-64bit": "*"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.12.8"
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "0.12.40",
+                "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
             "autoload": {
@@ -320,7 +322,7 @@
                 "LGPL-3.0"
             ],
             "description": "Classes and methods for conveniently handling binary data",
-            "time": "2020-08-01T15:26:01+00:00"
+            "time": "2020-08-28T20:45:19+00:00"
         },
         {
             "name": "pocketmine/callback-validator",
@@ -374,12 +376,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ClassLoader.git",
-                "reference": "a9e7f20efc7af2ecb6c5d3a29b9ce53e5bdcb7a4"
+                "reference": "14871a77ac5a7c4c0571391ad404b89bc15a3513"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/a9e7f20efc7af2ecb6c5d3a29b9ce53e5bdcb7a4",
-                "reference": "a9e7f20efc7af2ecb6c5d3a29b9ce53e5bdcb7a4",
+                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/14871a77ac5a7c4c0571391ad404b89bc15a3513",
+                "reference": "14871a77ac5a7c4c0571391ad404b89bc15a3513",
                 "shasum": ""
             },
             "require": {
@@ -391,7 +393,9 @@
                 "pocketmine/spl": "<0.4"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.38"
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "0.12.40",
+                "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
             "autoload": {
@@ -404,7 +408,7 @@
                 "LGPL-3.0"
             ],
             "description": "Ad-hoc autoloading components used by PocketMine-MP",
-            "time": "2020-08-21T17:22:02+00:00"
+            "time": "2020-08-27T11:43:41+00:00"
         },
         {
             "name": "pocketmine/color",
@@ -480,12 +484,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Log.git",
-                "reference": "23895dce020076e0217b2fbee50b39f523080b4f"
+                "reference": "cfac4a3ba23efa2f94802868787cf6f449255082"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Log/zipball/23895dce020076e0217b2fbee50b39f523080b4f",
-                "reference": "23895dce020076e0217b2fbee50b39f523080b4f",
+                "url": "https://api.github.com/repos/pmmp/Log/zipball/cfac4a3ba23efa2f94802868787cf6f449255082",
+                "reference": "cfac4a3ba23efa2f94802868787cf6f449255082",
                 "shasum": ""
             },
             "require": {
@@ -495,7 +499,7 @@
                 "pocketmine/spl": "<0.4"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.12.8",
+                "phpstan/phpstan": "0.12.40",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
@@ -509,7 +513,7 @@
                 "LGPL-3.0"
             ],
             "description": "Logging components used by PocketMine-MP and related projects",
-            "time": "2020-03-31T17:06:15+00:00"
+            "time": "2020-08-28T20:50:44+00:00"
         },
         {
             "name": "pocketmine/log-pthreads",
@@ -517,12 +521,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/LogPthreads.git",
-                "reference": "88ea500715908dfc5c99a0bbde8e823bae0534df"
+                "reference": "343333f45a1041641de36d9f9285fbc5349a2571"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/88ea500715908dfc5c99a0bbde8e823bae0534df",
-                "reference": "88ea500715908dfc5c99a0bbde8e823bae0534df",
+                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/343333f45a1041641de36d9f9285fbc5349a2571",
+                "reference": "343333f45a1041641de36d9f9285fbc5349a2571",
                 "shasum": ""
             },
             "require": {
@@ -534,7 +538,9 @@
                 "pocketmine/spl": "<0.4"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.12.18"
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "0.12.38",
+                "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
             "autoload": {
@@ -547,7 +553,7 @@
                 "LGPL-3.0"
             ],
             "description": "Logging components specialized for pthreads used by PocketMine-MP and related projects",
-            "time": "2020-03-31T18:31:56+00:00"
+            "time": "2020-08-22T12:07:54+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -555,12 +561,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "5e34660aaf7d6d13ec5b8d0c9f7675b49bed5903"
+                "reference": "d88b421571edf3b4a26ffb4c0b2df7cc3f7145ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/5e34660aaf7d6d13ec5b8d0c9f7675b49bed5903",
-                "reference": "5e34660aaf7d6d13ec5b8d0c9f7675b49bed5903",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/d88b421571edf3b4a26ffb4c0b2df7cc3f7145ac",
+                "reference": "d88b421571edf3b4a26ffb4c0b2df7cc3f7145ac",
                 "shasum": ""
             },
             "require": {
@@ -569,7 +575,9 @@
             },
             "require-dev": {
                 "irstea/phpunit-shim": "^7.5",
-                "phpstan/phpstan": "0.12.37"
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "0.12.40",
+                "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
             "autoload": {
@@ -582,7 +590,7 @@
                 "LGPL-3.0"
             ],
             "description": "PHP library containing math related code used in PocketMine-MP",
-            "time": "2020-08-16T18:42:45+00:00"
+            "time": "2020-08-28T20:57:04+00:00"
         },
         {
             "name": "pocketmine/nbt",
@@ -590,12 +598,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "590733fbaa40efe210e00ca8207489a528b6ecc5"
+                "reference": "7f715bd87e42a9b44cf5a8022e66a4a05280602d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/590733fbaa40efe210e00ca8207489a528b6ecc5",
-                "reference": "590733fbaa40efe210e00ca8207489a528b6ecc5",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/7f715bd87e42a9b44cf5a8022e66a4a05280602d",
+                "reference": "7f715bd87e42a9b44cf5a8022e66a4a05280602d",
                 "shasum": ""
             },
             "require": {
@@ -605,7 +613,9 @@
             },
             "require-dev": {
                 "irstea/phpunit-shim": "^7.5 || ^8.0",
-                "phpstan/phpstan": "^0.12.29"
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "0.12.40",
+                "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
             "autoload": {
@@ -618,7 +628,7 @@
                 "LGPL-3.0"
             ],
             "description": "PHP library for working with Named Binary Tags",
-            "time": "2020-08-17T16:36:10+00:00"
+            "time": "2020-08-28T21:02:57+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -626,12 +636,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "d20db2fc790d1a45492455ae0be4d9f59d56d45e"
+                "reference": "a40cf8a90c3081166b555826bc1def8a7a5c5cb9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/d20db2fc790d1a45492455ae0be4d9f59d56d45e",
-                "reference": "d20db2fc790d1a45492455ae0be4d9f59d56d45e",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/a40cf8a90c3081166b555826bc1def8a7a5c5cb9",
+                "reference": "a40cf8a90c3081166b555826bc1def8a7a5c5cb9",
                 "shasum": ""
             },
             "require": {
@@ -643,7 +653,7 @@
                 "pocketmine/log": "dev-master"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.12.18",
+                "phpstan/phpstan": "0.12.40",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
@@ -657,20 +667,20 @@
                 "GPL-3.0"
             ],
             "description": "A RakNet server implementation written in PHP",
-            "time": "2020-08-21T21:03:31+00:00"
+            "time": "2020-08-28T22:11:37+00:00"
         },
         {
             "name": "pocketmine/snooze",
-            "version": "0.1.2",
+            "version": "0.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Snooze.git",
-                "reference": "88420da3d9335dbcb3ee2decfd5e5453d057dcdf"
+                "reference": "849510fa62e57512b8467e3694e9b3add97038fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/88420da3d9335dbcb3ee2decfd5e5453d057dcdf",
-                "reference": "88420da3d9335dbcb3ee2decfd5e5453d057dcdf",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/849510fa62e57512b8467e3694e9b3add97038fd",
+                "reference": "849510fa62e57512b8467e3694e9b3add97038fd",
                 "shasum": ""
             },
             "require": {
@@ -678,7 +688,9 @@
                 "php-64bit": ">=7.2.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.12.8"
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "0.12.40",
+                "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
             "autoload": {
@@ -691,7 +703,7 @@
                 "LGPL-3.0"
             ],
             "description": "Thread notification management library for code using the pthreads extension",
-            "time": "2020-01-28T19:08:10+00:00"
+            "time": "2020-08-28T22:19:21+00:00"
         },
         {
             "name": "pocketmine/spl",
@@ -813,16 +825,16 @@
         },
         {
             "name": "respect/validation",
-            "version": "2.0.16",
+            "version": "2.0.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Respect/Validation.git",
-                "reference": "fc14c6c6695c3f870ad8810a2acddccec015841d"
+                "reference": "314aa36e37dd3812b7d80c7bda3e83da5ee22d11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Respect/Validation/zipball/fc14c6c6695c3f870ad8810a2acddccec015841d",
-                "reference": "fc14c6c6695c3f870ad8810a2acddccec015841d",
+                "url": "https://api.github.com/repos/Respect/Validation/zipball/314aa36e37dd3812b7d80c7bda3e83da5ee22d11",
+                "reference": "314aa36e37dd3812b7d80c7bda3e83da5ee22d11",
                 "shasum": ""
             },
             "require": {
@@ -834,9 +846,9 @@
                 "egulias/email-validator": "^2.1",
                 "malukenho/docheader": "^0.1",
                 "mikey179/vfsstream": "^1.6",
-                "phpstan/phpstan": "^0.11",
-                "phpstan/phpstan-deprecation-rules": "^0.11.0",
-                "phpstan/phpstan-phpunit": "^0.11.0",
+                "phpstan/phpstan": "^0.12",
+                "phpstan/phpstan-deprecation-rules": "^0.12",
+                "phpstan/phpstan-phpunit": "^0.12",
                 "phpunit/phpunit": "^7.5",
                 "respect/coding-standard": "^2.1",
                 "squizlabs/php_codesniffer": "^3.5",
@@ -874,7 +886,7 @@
                 "validation",
                 "validator"
             ],
-            "time": "2020-07-25T18:34:16+00:00"
+            "time": "2020-08-23T00:24:43+00:00"
         },
         {
             "name": "symfony/polyfill-mbstring",
@@ -1067,16 +1079,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.9.0",
+            "version": "v4.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "aaee038b912e567780949787d5fe1977be11a778"
+                "reference": "88e519766fc58bd46b8265561fb79b54e2e00b28"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/aaee038b912e567780949787d5fe1977be11a778",
-                "reference": "aaee038b912e567780949787d5fe1977be11a778",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/88e519766fc58bd46b8265561fb79b54e2e00b28",
+                "reference": "88e519766fc58bd46b8265561fb79b54e2e00b28",
                 "shasum": ""
             },
             "require": {
@@ -1115,7 +1127,7 @@
                 "parser",
                 "php"
             ],
-            "time": "2020-08-18T19:48:01+00:00"
+            "time": "2020-08-30T16:15:20+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -1543,16 +1555,16 @@
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "0.12.4",
+            "version": "0.12.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "9b86e1eb77c796628e239820a01a2d327d607a5e"
+                "reference": "334898a32217e4605e0f9cfa3d3fc3101bda26be"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/9b86e1eb77c796628e239820a01a2d327d607a5e",
-                "reference": "9b86e1eb77c796628e239820a01a2d327d607a5e",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/334898a32217e4605e0f9cfa3d3fc3101bda26be",
+                "reference": "334898a32217e4605e0f9cfa3d3fc3101bda26be",
                 "shasum": ""
             },
             "require": {
@@ -1590,20 +1602,20 @@
                 "MIT"
             ],
             "description": "Extra strict and opinionated rules for PHPStan",
-            "time": "2020-07-21T14:49:47+00:00"
+            "time": "2020-08-30T15:42:06+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.1.4",
+            "version": "9.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "4422fca28c3634e2de8c7c373af97a104dd1a45f"
+                "reference": "2ef92bec3186a827faf7362ff92ae4e8ec2e49d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/4422fca28c3634e2de8c7c373af97a104dd1a45f",
-                "reference": "4422fca28c3634e2de8c7c373af97a104dd1a45f",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2ef92bec3186a827faf7362ff92ae4e8ec2e49d2",
+                "reference": "2ef92bec3186a827faf7362ff92ae4e8ec2e49d2",
                 "shasum": ""
             },
             "require": {
@@ -1663,7 +1675,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-08-13T15:04:53+00:00"
+            "time": "2020-09-03T07:09:19+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -1892,16 +1904,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.3.7",
+            "version": "9.3.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "c638a0cac77347980352485912de48c99b42ad00"
+                "reference": "93d78d8e2a06393a0d0c1ead6fe9984f1af1f88c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c638a0cac77347980352485912de48c99b42ad00",
-                "reference": "c638a0cac77347980352485912de48c99b42ad00",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/93d78d8e2a06393a0d0c1ead6fe9984f1af1f88c",
+                "reference": "93d78d8e2a06393a0d0c1ead6fe9984f1af1f88c",
                 "shasum": ""
             },
             "require": {
@@ -1917,11 +1929,12 @@
                 "phar-io/version": "^3.0.2",
                 "php": "^7.3 || ^8.0",
                 "phpspec/prophecy": "^1.11.1",
-                "phpunit/php-code-coverage": "^9.1.1",
+                "phpunit/php-code-coverage": "^9.1.5",
                 "phpunit/php-file-iterator": "^3.0.4",
                 "phpunit/php-invoker": "^3.1",
                 "phpunit/php-text-template": "^2.0.2",
                 "phpunit/php-timer": "^5.0.1",
+                "sebastian/cli-parser": "^1.0",
                 "sebastian/code-unit": "^1.0.5",
                 "sebastian/comparator": "^4.0.3",
                 "sebastian/diff": "^4.0.2",
@@ -1986,7 +1999,59 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-08-11T15:36:12+00:00"
+            "time": "2020-08-27T06:30:58+00:00"
+        },
+        {
+            "name": "sebastian/cli-parser",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sebastianbergmann/cli-parser.git",
+                "reference": "2a4a38c56e62f7295bedb8b1b7439ad523d4ea82"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sebastianbergmann/cli-parser/zipball/2a4a38c56e62f7295bedb8b1b7439ad523d4ea82",
+                "reference": "2a4a38c56e62f7295bedb8b1b7439ad523d4ea82",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3 || ^8.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian Bergmann",
+                    "email": "sebastian@phpunit.de",
+                    "role": "lead"
+                }
+            ],
+            "description": "Library for parsing CLI options",
+            "homepage": "https://github.com/sebastianbergmann/cli-parser",
+            "funding": [
+                {
+                    "url": "https://github.com/sebastianbergmann",
+                    "type": "github"
+                }
+            ],
+            "time": "2020-08-12T10:49:21+00:00"
         },
         {
             "name": "sebastian/code-unit",
@@ -3050,5 +3115,8 @@
         "ext-zlib": ">=1.2.11"
     },
     "platform-dev": [],
+    "platform-overrides": {
+        "php": "7.3.0"
+    },
     "plugin-api-version": "1.1.0"
 }

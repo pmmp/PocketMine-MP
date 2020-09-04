@@ -68,5 +68,10 @@
          "pocketmine\\": "tests/phpunit/",
          "pocketmine\\phpstan\\rules\\": "tests/phpstan/rules"
       }
+   },
+   "config": {
+      "platform": {
+         "php": "7.3.0"
+      }
    }
 }
