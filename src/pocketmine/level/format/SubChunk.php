@@ -38,6 +38,8 @@ if(!defined(__NAMESPACE__ . '\ZERO_NIBBLE_ARRAY')){
 }
 
 class SubChunk implements SubChunkInterface{
+	private const ZERO_NIBBLE_ARRAY = ZERO_NIBBLE_ARRAY;
+
 	/** @var string */
 	protected $ids;
 	/** @var string */
@@ -68,7 +70,7 @@ class SubChunk implements SubChunkInterface{
 			substr_count($this->ids, "\x00") === 4096 and
 			(!$checkLight or (
 				substr_count($this->skyLight, "\xff") === 2048 and
-				$this->blockLight === ZERO_NIBBLE_ARRAY
+				$this->blockLight === self::ZERO_NIBBLE_ARRAY
 			))
 		);
 	}
@@ -230,14 +232,14 @@ class SubChunk implements SubChunkInterface{
 		 * reference to the const instead of duplicating the whole string. The string will only be duplicated when
 		 * modified, which is perfect for this purpose.
 		 */
-		if($this->data === ZERO_NIBBLE_ARRAY){
-			$this->data = ZERO_NIBBLE_ARRAY;
+		if($this->data === self::ZERO_NIBBLE_ARRAY){
+			$this->data = self::ZERO_NIBBLE_ARRAY;
 		}
-		if($this->skyLight === ZERO_NIBBLE_ARRAY){
-			$this->skyLight = ZERO_NIBBLE_ARRAY;
+		if($this->skyLight === self::ZERO_NIBBLE_ARRAY){
+			$this->skyLight = self::ZERO_NIBBLE_ARRAY;
 		}
-		if($this->blockLight === ZERO_NIBBLE_ARRAY){
-			$this->blockLight = ZERO_NIBBLE_ARRAY;
+		if($this->blockLight === self::ZERO_NIBBLE_ARRAY){
+			$this->blockLight = self::ZERO_NIBBLE_ARRAY;
 		}
 	}
 }
