@@ -98,7 +98,12 @@ class Sugarcane extends Flowable{
 				for($y = 1; $y < 3; ++$y){
 					$b = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + $y, $this->pos->z);
 					if($b->getId() === BlockLegacyIds::AIR){
-						$this->pos->getWorld()->setBlock($b->pos, VanillaBlocks::SUGARCANE());
+						$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
+						$ev->call();
+						if($ev->isCancelled()){
+							break;
+						}
+						$this->pos->getWorld()->setBlock($b->pos, $ev->getNewState());
 						break;
 					}
 				}

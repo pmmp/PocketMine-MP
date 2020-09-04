@@ -2207,6 +2207,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->networkSession->syncMovement($pos, $yaw, $pitch, $mode);
 
 		$this->forceMoveSync = $pos->asVector3();
+		$this->ySize = 0;
 	}
 
 	/**

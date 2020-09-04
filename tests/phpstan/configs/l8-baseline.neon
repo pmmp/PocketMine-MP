@@ -116,11 +116,6 @@ parameters:
 			path: ../../../src/command/defaults/SetWorldSpawnCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getPlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/TellCommand.php
-
-		-
 			message: "#^Cannot call method getTime\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/TimeCommand.php
@@ -417,11 +412,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$str of function trim expects string, string\\|null given\\.$#"
-			count: 4
-			path: ../../../src/permission/BanEntry.php
-
-		-
-			message: "#^Parameter \\#1 \\$date of static method pocketmine\\\\permission\\\\BanEntry\\:\\:parseDate\\(\\) expects string, string\\|null given\\.$#"
 			count: 1
 			path: ../../../src/permission/BanEntry.php
 
@@ -961,7 +951,7 @@ parameters:
 			path: ../../phpunit/event/HandlerListManagerTest.php
 
 		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\handler\\\\StupidJsonDecodeTest\\:\\:\\$stupidJsonDecodeFunc \\(Closure\\) does not accept Closure\\|null\\.$#"
+			message: "#^Cannot call method cancel\\(\\) on pocketmine\\\\scheduler\\\\TaskHandler\\|null\\.$#"
 			count: 1
-			path: ../../phpunit/network/mcpe/handler/StupidJsonDecodeTest.php
+			path: ../../plugins/TesterPlugin/src/pmmp/TesterPlugin/CheckTestCompletionTask.php
 

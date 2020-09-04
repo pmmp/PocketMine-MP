@@ -29,9 +29,13 @@ abstract class Test{
 	const RESULT_FAILED = 1;
 	const RESULT_ERROR = 2;
 
+	/** @var Main */
 	private $plugin;
+	/** @var int */
 	private $result = Test::RESULT_WAITING;
+	/** @var int */
 	private $startTime;
+	/** @var int */
 	private $timeout = 60; //seconds
 
 	public function __construct(Main $plugin){
@@ -42,7 +46,7 @@ abstract class Test{
 		return $this->plugin;
 	}
 
-	final public function start(){
+	final public function start() : void{
 		$this->startTime = time();
 		try{
 			$this->run();
@@ -55,11 +59,11 @@ abstract class Test{
 		}
 	}
 
-	public function tick(){
+	public function tick() : void{
 
 	}
 
-	abstract public function run();
+	abstract public function run() : void;
 
 	public function isFinished() : bool{
 		return $this->result !== Test::RESULT_WAITING;
@@ -69,7 +73,7 @@ abstract class Test{
 		return !$this->isFinished() and time() - $this->timeout > $this->startTime;
 	}
 
-	protected function setTimeout(int $timeout){
+	protected function setTimeout(int $timeout) : void{
 		$this->timeout = $timeout;
 	}
 
@@ -77,7 +81,7 @@ abstract class Test{
 		return $this->result;
 	}
 
-	public function setResult(int $result){
+	public function setResult(int $result) : void{
 		$this->result = $result;
 	}
 
