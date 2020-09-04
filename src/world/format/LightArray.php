@@ -82,10 +82,10 @@ final class LightArray{
 		 * reference to the const instead of duplicating the whole string. The string will only be duplicated when
 		 * modified, which is perfect for this purpose.
 		 */
-		if($this->data === ZERO_NIBBLE_ARRAY){
-			$this->data = ZERO_NIBBLE_ARRAY;
-		}elseif($this->data === FIFTEEN_NIBBLE_ARRAY){
-			$this->data = FIFTEEN_NIBBLE_ARRAY;
+		if($this->data === self::ZERO){
+			$this->data = self::ZERO;
+		}elseif($this->data === self::FIFTEEN){
+			$this->data = self::FIFTEEN;
 		}
 	}
 
