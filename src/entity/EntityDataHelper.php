@@ -45,6 +45,7 @@ final class EntityDataHelper{
 		if(!($yawPitch instanceof ListTag) or $yawPitch->getTagType() !== NBT::TAG_Float){
 			throw new \UnexpectedValueException("'Rotation' should be a List<Float>");
 		}
+		/** @var FloatTag[] $values */
 		$values = $yawPitch->getValue();
 		if(count($values) !== 2){
 			throw new \UnexpectedValueException("Expected exactly 2 entries for 'Rotation'");

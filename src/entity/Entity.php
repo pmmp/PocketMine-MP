@@ -1645,6 +1645,7 @@ abstract class Entity{
 
 	/**
 	 * @return MetadataProperty[]
+	 * @phpstan-return array<int, MetadataProperty>
 	 */
 	final protected function getSyncedNetworkData(bool $dirtyOnly) : array{
 		$this->syncNetworkData($this->networkProperties);
