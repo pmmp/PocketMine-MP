@@ -308,11 +308,18 @@ class Chunk{
 	 * TODO: fast adjacent light spread
 	 */
 	public function populateSkyLight(\SplFixedArray $lightFilters) : void{
-		$this->setAllBlockSkyLight(0);
+		$highestHeightMap = max($this->heightMap->getValues());
+		$lowestFullyLitSubChunk = ($highestHeightMap >> 4) + (($highestHeightMap & 0xf) !== 0 ? 1 : 0);
+		for($y = 0; $y < $lowestFullyLitSubChunk; $y++){
+			$this->getSubChunk($y)->setBlockSkyLightArray(LightArray::fill(0));
+		}
+		for($y = $lowestFullyLitSubChunk, $yMax = $this->subChunks->count(); $y < $yMax; $y++){
+			$this->getSubChunk($y)->setBlockSkyLightArray(LightArray::fill(15));
+		}
 
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
-				$y = ($this->subChunks->count() * 16) - 1;
+				$y = ($lowestFullyLitSubChunk * 16) - 1;
 				$heightMap = $this->getHeightMap($x, $z);
 
 				for(; $y >= $heightMap; --$y){
