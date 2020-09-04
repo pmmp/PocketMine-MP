@@ -894,6 +894,9 @@ class World implements ChunkManager{
 				$dz = mt_rand(-$randRange, $randRange);
 				$hash = World::chunkHash($dx + $chunkX, $dz + $chunkZ);
 				if(!isset($chunkTickList[$hash]) and isset($this->chunks[$hash])){
+					if(!$this->chunks[$hash]->isLightPopulated()){
+						continue;
+					}
 					//check adjacent chunks are loaded
 					for($cx = -1; $cx <= 1; ++$cx){
 						for($cz = -1; $cz <= 1; ++$cz){
