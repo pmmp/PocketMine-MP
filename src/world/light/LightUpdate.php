@@ -145,7 +145,7 @@ abstract class LightUpdate{
 			];
 
 			foreach($points as list($cx, $cy, $cz)){
-				if($this->subChunkHandler->moveTo($cx, $cy, $cz, true)){
+				if($this->subChunkHandler->moveTo($cx, $cy, $cz, false)){
 					$this->computeRemoveLight($cx, $cy, $cz, $oldAdjacentLight);
 				}elseif($this->getEffectiveLight($cx, $cy, $cz) > 0 and !isset($this->spreadVisited[$index = World::blockHash($cx, $cy, $cz)])){
 					$this->spreadVisited[$index] = true;
@@ -174,7 +174,7 @@ abstract class LightUpdate{
 			];
 
 			foreach($points as list($cx, $cy, $cz)){
-				if($this->subChunkHandler->moveTo($cx, $cy, $cz, true)){
+				if($this->subChunkHandler->moveTo($cx, $cy, $cz, false)){
 					$this->computeSpreadLight($cx, $cy, $cz, $newAdjacentLight);
 				}
 			}
