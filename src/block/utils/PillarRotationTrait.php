@@ -62,25 +62,24 @@ trait PillarRotationTrait{
 	}
 
 	protected function readAxisFromMeta(int $meta) : void{
-		static $map = [
+		$axis = $meta >> $this->getAxisMetaShift();
+		$mapped = [
 			0 => Axis::Y,
 			1 => Axis::X,
 			2 => Axis::Z
-		];
-		$axis = $meta >> $this->getAxisMetaShift();
-		if(!isset($map[$axis])){
+		][$axis] ?? null;
+		if($mapped === null){
 			throw new InvalidBlockStateException("Invalid axis meta $axis");
 		}
-		$this->axis = $map[$axis];
+		$this->axis = $mapped;
 	}
 
 	protected function writeAxisToMeta() : int{
-		static $bits = [
+		return [
 			Axis::Y => 0,
 			Axis::Z => 2,
 			Axis::X => 1
-		];
-		return $bits[$this->axis] << $this->getAxisMetaShift();
+		][$this->axis] << $this->getAxisMetaShift();
 	}
 
 	/**
