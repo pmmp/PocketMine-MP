@@ -129,10 +129,12 @@ abstract class LightUpdate{
 		}
 	}
 
-	public function execute() : void{
+	public function execute() : int{
 		$this->prepareNodes();
 
+		$touched = 0;
 		while(!$this->removalQueue->isEmpty()){
+			$touched++;
 			list($x, $y, $z, $oldAdjacentLight) = $this->removalQueue->dequeue();
 
 			$points = [
@@ -155,6 +157,7 @@ abstract class LightUpdate{
 		}
 
 		while(!$this->spreadQueue->isEmpty()){
+			$touched++;
 			list($x, $y, $z) = $this->spreadQueue->dequeue();
 
 			unset($this->spreadVisited[World::blockHash($x, $y, $z)]);
@@ -179,6 +182,8 @@ abstract class LightUpdate{
 				}
 			}
 		}
+
+		return $touched;
 	}
 
 	protected function computeRemoveLight(int $x, int $y, int $z, int $oldAdjacentLevel) : void{
