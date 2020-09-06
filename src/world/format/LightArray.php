@@ -45,12 +45,12 @@ final class LightArray{
 	/** @var string */
 	private $data;
 
-	public function __construct(?string $payload){
-		if($payload !== null and ($len = strlen($payload)) !== 2048){
+	public function __construct(string $payload){
+		if(($len = strlen($payload)) !== 2048){
 			throw new \InvalidArgumentException("Payload size must be 2048 bytes, but got $len bytes");
 		}
 
-		$this->data = $payload ?? self::ZERO;
+		$this->data = $payload;
 		$this->collectGarbage();
 	}
 
