@@ -561,11 +561,6 @@ parameters:
 			path: ../../../src/pocketmine/plugin/PluginManager.php
 
 		-
-			message: "#^Part \\$openResult \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
-
-		-
 			message: "#^Parameter \\#2 \\$code of class pocketmine\\\\resourcepacks\\\\ResourcePackException constructor expects int, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php

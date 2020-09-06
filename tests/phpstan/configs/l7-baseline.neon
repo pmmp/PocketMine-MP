@@ -756,7 +756,7 @@ parameters:
 			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
 
 		-
-			message: "#^Only numeric types are allowed in %, int\\|false given on the left side\\.$#"
+			message: "#^Only numeric types are allowed in %%, int\\|false given on the left side\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/format/io/region/RegionLoader.php
 

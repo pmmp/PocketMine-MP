@@ -40,9 +40,13 @@ class Potato extends Crops{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			ItemFactory::get(Item::POTATO, 0, $this->getDamage() >= 0x07 ? mt_rand(1, 4) : 1)
+		$result = [
+			ItemFactory::get(Item::POTATO, 0, $this->getDamage() >= 0x07 ? mt_rand(1, 5) : 1)
 		];
+		if($this->getDamage() >= 7 && mt_rand(0, 49) === 0){
+			$result[] = ItemFactory::get(Item::POISONOUS_POTATO);
+		}
+		return $result;
 	}
 
 	public function getPickedItem() : Item{
