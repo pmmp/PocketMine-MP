@@ -28,7 +28,7 @@ use pocketmine\utils\Utils;
 
 class HandlerListManager{
 
-	/** @var HandlerListManager */
+	/** @var HandlerListManager|null */
 	private static $globalInstance = null;
 
 	public static function global() : self{
