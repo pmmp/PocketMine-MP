@@ -84,9 +84,9 @@ class ResourcePackInfoEntry{
 		$out->putString($this->packId);
 		$out->putString($this->version);
 		$out->putLLong($this->sizeBytes);
-		$out->putString($this->encryptionKey ?? "");
-		$out->putString($this->subPackName ?? "");
-		$out->putString($this->contentId ?? "");
+		$out->putString($this->encryptionKey);
+		$out->putString($this->subPackName);
+		$out->putString($this->contentId);
 		$out->putBool($this->hasScripts);
 	}
 
