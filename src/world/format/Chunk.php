@@ -152,7 +152,7 @@ class Chunk{
 	 * Sets the blockstate at the given coordinate by internal ID.
 	 */
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
-		$this->getSubChunk($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
+		$this->getWritableSubChunk($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
 		$this->dirtyFlags |= self::DIRTY_FLAG_TERRAIN;
 	}
 
@@ -178,12 +178,12 @@ class Chunk{
 	 * @param int $level 0-15
 	 */
 	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : void{
-		$this->getSubChunk($y >> 4)->getBlockSkyLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
+		$this->getWritableSubChunk($y >> 4)->getBlockSkyLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
 	}
 
 	public function setAllBlockSkyLight(int $level) : void{
 		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
-			$this->getSubChunk($y)->setBlockSkyLightArray(LightArray::fill($level));
+			$this->getWritableSubChunk($y)->setBlockSkyLightArray(LightArray::fill($level));
 		}
 	}
 
@@ -209,12 +209,12 @@ class Chunk{
 	 * @param int $level 0-15
 	 */
 	public function setBlockLight(int $x, int $y, int $z, int $level) : void{
-		$this->getSubChunk($y >> 4)->getBlockLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
+		$this->getWritableSubChunk($y >> 4)->getBlockLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
 	}
 
 	public function setAllBlockLight(int $level) : void{
 		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
-			$this->getSubChunk($y)->setBlockLightArray(LightArray::fill($level));
+			$this->getWritableSubChunk($y)->setBlockLightArray(LightArray::fill($level));
 		}
 	}
 
@@ -340,10 +340,10 @@ class Chunk{
 		$highestHeightMap = max($this->heightMap->getValues());
 		$lowestFullyLitSubChunk = ($highestHeightMap >> 4) + (($highestHeightMap & 0xf) !== 0 ? 1 : 0);
 		for($y = 0; $y < $lowestFullyLitSubChunk; $y++){
-			$this->getSubChunk($y)->setBlockSkyLightArray(LightArray::fill(0));
+			$this->getWritableSubChunk($y)->setBlockSkyLightArray(LightArray::fill(0));
 		}
 		for($y = $lowestFullyLitSubChunk, $yMax = $this->subChunks->count(); $y < $yMax; $y++){
-			$this->getSubChunk($y)->setBlockSkyLightArray(LightArray::fill(15));
+			$this->getWritableSubChunk($y)->setBlockSkyLightArray(LightArray::fill(15));
 		}
 
 		for($x = 0; $x < 16; ++$x){
@@ -620,6 +620,13 @@ class Chunk{
 			return EmptySubChunk::getInstance(); //TODO: drop this and throw an exception here
 		}
 
+		return $this->subChunks[$y];
+	}
+
+	public function getWritableSubChunk(int $y) : SubChunk{
+		if($y < 0 || $y >= $this->subChunks->getSize()){
+			throw new \InvalidArgumentException("Cannot get subchunk $y for writing");
+		}
 		return $this->subChunks[$y];
 	}
 

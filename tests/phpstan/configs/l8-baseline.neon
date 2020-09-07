@@ -761,6 +761,11 @@ parameters:
 			path: ../../../src/world/format/Chunk.php
 
 		-
+			message: "#^Method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:getWritableSubChunk\\(\\) should return pocketmine\\\\world\\\\format\\\\SubChunk but returns pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/format/Chunk.php
+
+		-
 			message: "#^Method pocketmine\\\\world\\\\format\\\\HeightArray\\:\\:get\\(\\) should return int but returns int\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/format/HeightArray.php

@@ -40,8 +40,6 @@ interface SubChunkInterface{
 
 	public function getFullBlock(int $x, int $y, int $z) : int;
 
-	public function setFullBlock(int $x, int $y, int $z, int $block) : void;
-
 	/**
 	 * @return PalettedBlockArray[]
 	 */
@@ -51,9 +49,5 @@ interface SubChunkInterface{
 
 	public function getBlockSkyLightArray() : LightArray;
 
-	public function setBlockSkyLightArray(LightArray $data) : void;
-
 	public function getBlockLightArray() : LightArray;
-
-	public function setBlockLightArray(LightArray $data) : void;
 }
