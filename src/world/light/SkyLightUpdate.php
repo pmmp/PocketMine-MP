@@ -23,11 +23,29 @@ declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
-use pocketmine\block\BlockFactory;
+use pocketmine\world\ChunkManager;
 use pocketmine\world\World;
 use function max;
 
 class SkyLightUpdate extends LightUpdate{
+
+	/**
+	 * @var \SplFixedArray|bool[]
+	 * @phpstan-var \SplFixedArray<bool>
+	 */
+	private $lightDiffusers;
+
+	/**
+	 * @param \SplFixedArray|int[]  $lightFilters
+	 * @param \SplFixedArray|bool[] $lightDiffusers
+	 * @phpstan-param \SplFixedArray<int>  $lightFilters
+	 * @phpstan-param \SplFixedArray<bool> $lightDiffusers
+	 */
+	public function __construct(ChunkManager $world, \SplFixedArray $lightFilters, \SplFixedArray $lightDiffusers){
+		parent::__construct($world, $lightFilters);
+		$this->lightDiffusers = $lightDiffusers;
+	}
+
 	protected function updateLightArrayRef() : void{
 		$this->currentLightArray = $this->subChunkHandler->currentSubChunk->getBlockSkyLightArray();
 	}
@@ -51,7 +69,7 @@ class SkyLightUpdate extends LightUpdate{
 		$yPlusOne = $y + 1;
 
 		if($yPlusOne === $oldHeightMap){ //Block changed directly beneath the heightmap. Check if a block was removed or changed to a different light-filter.
-			$newHeightMap = $chunk->recalculateHeightMapColumn($x & 0x0f, $z & 0x0f, BlockFactory::getInstance()->lightFilter, BlockFactory::getInstance()->diffusesSkyLight);
+			$newHeightMap = $chunk->recalculateHeightMapColumn($x & 0x0f, $z & 0x0f, $this->lightFilters, $this->lightDiffusers);
 		}elseif($yPlusOne > $oldHeightMap){ //Block changed above the heightmap.
 			if($source->getLightFilter() > 0 or $source->diffusesSkyLight()){
 				$chunk->setHeightMap($x & 0xf, $z & 0xf, $yPlusOne);
@@ -72,7 +90,7 @@ class SkyLightUpdate extends LightUpdate{
 				$this->setAndUpdateLight($x, $i, $z, 15);
 			}
 		}else{ //No heightmap change, block changed "underground"
-			$this->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentLight($x, $y, $z) - BlockFactory::getInstance()->lightFilter[$source->getFullId()]));
+			$this->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentLight($x, $y, $z) - $this->lightFilters[$source->getFullId()]));
 		}
 	}
 }

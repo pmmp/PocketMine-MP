@@ -1162,16 +1162,17 @@ class World implements ChunkManager{
 	}
 
 	public function updateAllLight(int $x, int $y, int $z) : void{
+		$blockFactory = BlockFactory::getInstance();
 		$this->timings->doBlockSkyLightUpdates->startTiming();
 		if($this->skyLightUpdate === null){
-			$this->skyLightUpdate = new SkyLightUpdate($this);
+			$this->skyLightUpdate = new SkyLightUpdate($this, $blockFactory->lightFilter, $blockFactory->diffusesSkyLight);
 		}
 		$this->skyLightUpdate->recalculateNode($x, $y, $z);
 		$this->timings->doBlockSkyLightUpdates->stopTiming();
 
 		$this->timings->doBlockLightUpdates->startTiming();
 		if($this->blockLightUpdate === null){
-			$this->blockLightUpdate = new BlockLightUpdate($this);
+			$this->blockLightUpdate = new BlockLightUpdate($this, $blockFactory->lightFilter, $blockFactory->light);
 		}
 		$this->blockLightUpdate->recalculateNode($x, $y, $z);
 		$this->timings->doBlockLightUpdates->stopTiming();

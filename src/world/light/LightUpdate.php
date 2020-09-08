@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
-use pocketmine\block\BlockFactory;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\LightArray;
 use pocketmine\world\utils\SubChunkIteratorManager;
@@ -35,6 +34,12 @@ abstract class LightUpdate{
 
 	/** @var ChunkManager */
 	protected $world;
+
+	/**
+	 * @var \SplFixedArray|int[]
+	 * @phpstan-var \SplFixedArray<int>
+	 */
+	protected $lightFilters;
 
 	/**
 	 * @var int[][] blockhash => [x, y, z, new light level]
@@ -69,8 +74,14 @@ abstract class LightUpdate{
 	/** @var LightArray|null */
 	protected $currentLightArray = null;
 
-	public function __construct(ChunkManager $world){
+	/**
+	 * @param \SplFixedArray|int[] $lightFilters
+	 * @phpstan-param \SplFixedArray<int> $lightFilters
+	 */
+	public function __construct(ChunkManager $world, \SplFixedArray $lightFilters){
 		$this->world = $world;
+		$this->lightFilters = $lightFilters;
+
 		$this->removalQueue = new \SplQueue();
 		$this->spreadQueue = new \SplQueue();
 
@@ -208,7 +219,7 @@ abstract class LightUpdate{
 
 	protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel) : void{
 		$current = $this->currentLightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
-		$potentialLight = $newAdjacentLevel - BlockFactory::getInstance()->lightFilter[$this->subChunkHandler->currentSubChunk->getFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f)];
+		$potentialLight = $newAdjacentLevel - $this->lightFilters[$this->subChunkHandler->currentSubChunk->getFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f)];
 
 		if($current < $potentialLight){
 			$this->currentLightArray->set($x & 0xf, $y & 0xf, $z & 0xf, $potentialLight);
