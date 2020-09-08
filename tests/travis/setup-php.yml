@@ -38,7 +38,7 @@ before_script:
   - cd ..
   - git clone https://github.com/pmmp/ext-chunkutils2.git chunkutils
   - cd chunkutils
-  - git checkout d8d762a597ac0da6f333f862096d6af0e6286b75
+  - git checkout -f d8d762a597ac0da6f333f862096d6af0e6286b75
   - phpize
   - ./configure && make && make install
   - cd ..
