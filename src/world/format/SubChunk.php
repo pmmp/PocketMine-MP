@@ -46,8 +46,8 @@ class SubChunk implements SubChunkInterface{
 		$this->defaultBlock = $default;
 		$this->blockLayers = $blocks;
 
-		$this->skyLight = $skyLight ?? new LightArray(LightArray::FIFTEEN);
-		$this->blockLight = $blockLight ?? new LightArray(LightArray::ZERO);
+		$this->skyLight = $skyLight ?? LightArray::fill(15);
+		$this->blockLight = $blockLight ?? LightArray::fill(0);
 	}
 
 	public function isEmptyAuthoritative() : bool{

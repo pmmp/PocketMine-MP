@@ -56,10 +56,10 @@ class EmptySubChunk implements SubChunkInterface{
 	}
 
 	public function getBlockLightArray() : LightArray{
-		return new LightArray(LightArray::ZERO);
+		return LightArray::fill(0);
 	}
 
 	public function getBlockSkyLightArray() : LightArray{
-		return new LightArray(LightArray::FIFTEEN);
+		return LightArray::fill(15);
 	}
 }

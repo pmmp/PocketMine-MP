@@ -39,8 +39,8 @@ if(!defined(__NAMESPACE__ . '\FIFTEEN_NIBBLE_ARRAY')){
 
 final class LightArray{
 
-	public const ZERO = ZERO_NIBBLE_ARRAY;
-	public const FIFTEEN = FIFTEEN_NIBBLE_ARRAY;
+	private const ZERO = ZERO_NIBBLE_ARRAY;
+	private const FIFTEEN = FIFTEEN_NIBBLE_ARRAY;
 
 	/** @var string */
 	private $data;
