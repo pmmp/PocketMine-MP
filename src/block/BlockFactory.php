@@ -83,7 +83,7 @@ class BlockFactory{
 	 * @var \SplFixedArray|bool[]
 	 * @phpstan-var \SplFixedArray<bool>
 	 */
-	public $diffusesSkyLight;
+	public $blocksDirectSkyLight;
 	/**
 	 * @var \SplFixedArray|float[]
 	 * @phpstan-var \SplFixedArray<float>
@@ -95,7 +95,7 @@ class BlockFactory{
 
 		$this->light = \SplFixedArray::fromArray(array_fill(0, 16384, 0));
 		$this->lightFilter = \SplFixedArray::fromArray(array_fill(0, 16384, 1));
-		$this->diffusesSkyLight = \SplFixedArray::fromArray(array_fill(0, 16384, false));
+		$this->blocksDirectSkyLight = \SplFixedArray::fromArray(array_fill(0, 16384, false));
 		$this->blastResistance = \SplFixedArray::fromArray(array_fill(0, 16384, 0.0));
 
 		$this->register(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail"));
@@ -858,7 +858,7 @@ class BlockFactory{
 		$this->fullList[$index] = $block;
 		$this->light[$index] = $block->getLightLevel();
 		$this->lightFilter[$index] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
-		$this->diffusesSkyLight[$index] = $block->diffusesSkyLight();
+		$this->blocksDirectSkyLight[$index] = $block->blocksDirectSkyLight();
 		$this->blastResistance[$index] = $block->getBreakInfo()->getBlastResistance();
 	}
 

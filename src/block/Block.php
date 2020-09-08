@@ -292,14 +292,14 @@ class Block{
 	}
 
 	/**
-	 * Returns whether this block will diffuse sky light passing through it vertically.
-	 * Diffusion means that full-strength sky light passing through this block will not be reduced, but will start being filtered below the block.
-	 * Examples of this behaviour include leaves and cobwebs.
+	 * Returns whether this block blocks direct sky light from passing through it. This is independent from the light
+	 * filter value, which is used during propagation.
 	 *
-	 * Light-diffusing blocks are included by the heightmap.
+	 * In most cases, this is the same as isTransparent(); however, some special cases exist such as leaves and cobwebs,
+	 * which don't have any additional effect on light propagation, but don't allow direct sky light to pass through.
 	 */
-	public function diffusesSkyLight() : bool{
-		return false;
+	public function blocksDirectSkyLight() : bool{
+		return $this->getLightFilter() > 0;
 	}
 
 	public function isTransparent() : bool{

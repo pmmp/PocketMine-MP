@@ -63,7 +63,7 @@ class Leaves extends Transparent{
 		return 0b1100;
 	}
 
-	public function diffusesSkyLight() : bool{
+	public function blocksDirectSkyLight() : bool{
 		return true;
 	}
 
