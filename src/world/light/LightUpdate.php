@@ -32,9 +32,6 @@ use function max;
 //TODO: make light updates asynchronous
 abstract class LightUpdate{
 
-	/** @var ChunkManager */
-	protected $world;
-
 	/**
 	 * @var \SplFixedArray|int[]
 	 * @phpstan-var \SplFixedArray<int>
@@ -79,13 +76,12 @@ abstract class LightUpdate{
 	 * @phpstan-param \SplFixedArray<int> $lightFilters
 	 */
 	public function __construct(ChunkManager $world, \SplFixedArray $lightFilters){
-		$this->world = $world;
 		$this->lightFilters = $lightFilters;
 
 		$this->removalQueue = new \SplQueue();
 		$this->spreadQueue = new \SplQueue();
 
-		$this->subChunkHandler = new SubChunkIteratorManager($this->world);
+		$this->subChunkHandler = new SubChunkIteratorManager($world);
 		$this->subChunkHandler->onSubChunkChange(\Closure::fromCallable([$this, 'updateLightArrayRef']));
 	}
 
