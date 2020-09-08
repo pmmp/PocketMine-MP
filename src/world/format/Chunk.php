@@ -260,12 +260,10 @@ class Chunk{
 	/**
 	 * Recalculates the heightmap for the whole chunk.
 	 *
-	 * @param \SplFixedArray|int[]  $lightFilters
-	 * @param \SplFixedArray|bool[] $lightDiffusers
-	 * @phpstan-param \SplFixedArray<int>  $lightFilters
-	 * @phpstan-param \SplFixedArray<bool> $lightDiffusers
+	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
+	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
 	 */
-	public function recalculateHeightMap(\SplFixedArray $lightFilters, \SplFixedArray $lightDiffusers) : void{
+	public function recalculateHeightMap(\SplFixedArray $directSkyLightBlockers) : void{
 		$maxSubChunkY = $this->subChunks->count() - 1;
 		for(; $maxSubChunkY >= 0; $maxSubChunkY--){
 			if(!$this->getSubChunk($maxSubChunkY)->isEmptyFast()){
@@ -292,7 +290,7 @@ class Chunk{
 					$this->setHeightMap($x, $z, 0);
 				}else{
 					for(; $y >= 0; --$y){
-						if($lightFilters[$state = $this->getFullBlock($x, $y, $z)] > 1 or $lightDiffusers[$state]){
+						if($directSkyLightBlockers[$this->getFullBlock($x, $y, $z)]){
 							$this->setHeightMap($x, $z, $y + 1);
 							break;
 						}
@@ -307,17 +305,15 @@ class Chunk{
 	 *
 	 * @param int $x 0-15
 	 * @param int $z 0-15
-	 * @param \SplFixedArray|int[]  $lightFilters
-	 * @param \SplFixedArray|bool[] $lightDiffusers
-	 * @phpstan-param \SplFixedArray<int>  $lightFilters
-	 * @phpstan-param \SplFixedArray<bool> $lightDiffusers
+	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
+	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
 	 *
 	 * @return int New calculated heightmap value (0-256 inclusive)
 	 */
-	public function recalculateHeightMapColumn(int $x, int $z, \SplFixedArray $lightFilters, \SplFixedArray $lightDiffusers) : int{
+	public function recalculateHeightMapColumn(int $x, int $z, \SplFixedArray $directSkyLightBlockers) : int{
 		$y = $this->getHighestBlockAt($x, $z);
 		for(; $y >= 0; --$y){
-			if($lightFilters[$state = $this->getFullBlock($x, $y, $z)] > 1 or $lightDiffusers[$state]){
+			if($directSkyLightBlockers[$this->getFullBlock($x, $y, $z)]){
 				break;
 			}
 		}

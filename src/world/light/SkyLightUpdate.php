@@ -70,7 +70,7 @@ class SkyLightUpdate extends LightUpdate{
 		$yPlusOne = $y + 1;
 
 		if($yPlusOne === $oldHeightMap){ //Block changed directly beneath the heightmap. Check if a block was removed or changed to a different light-filter.
-			$newHeightMap = $chunk->recalculateHeightMapColumn($x & 0x0f, $z & 0x0f, $this->lightFilters, $this->directSkyLightBlockers);
+			$newHeightMap = $chunk->recalculateHeightMapColumn($x & 0x0f, $z & 0x0f, $this->directSkyLightBlockers);
 		}elseif($yPlusOne > $oldHeightMap){ //Block changed above the heightmap.
 			if($this->directSkyLightBlockers[$source]){
 				$chunk->setHeightMap($x & 0xf, $z & 0xf, $yPlusOne);

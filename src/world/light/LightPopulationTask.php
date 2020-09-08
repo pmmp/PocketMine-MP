@@ -61,7 +61,7 @@ class LightPopulationTask extends AsyncTask{
 		$chunk = FastChunkSerializer::deserialize($this->chunk);
 
 		$blockFactory = BlockFactory::getInstance();
-		$chunk->recalculateHeightMap($blockFactory->lightFilter, $blockFactory->blocksDirectSkyLight);
+		$chunk->recalculateHeightMap($blockFactory->blocksDirectSkyLight);
 		$chunk->populateSkyLight($blockFactory->lightFilter);
 		$chunk->setLightPopulated();
 
