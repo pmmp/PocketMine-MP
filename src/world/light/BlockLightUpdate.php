@@ -50,7 +50,9 @@ class BlockLightUpdate extends LightUpdate{
 	}
 
 	public function recalculateNode(int $x, int $y, int $z) : void{
-		$block = $this->world->getBlockAt($x, $y, $z);
-		$this->setAndUpdateLight($x, $y, $z, max($block->getLightLevel(), $this->getHighestAdjacentLight($x, $y, $z) - $this->lightFilters[$block->getFullId()]));
+		if($this->subChunkHandler->moveTo($x, $y, $z, false)){
+			$block = $this->subChunkHandler->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf);
+			$this->setAndUpdateLight($x, $y, $z, max($this->lightEmitters[$block], $this->getHighestAdjacentLight($x, $y, $z) - $this->lightFilters[$block]));
+		}
 	}
 }
