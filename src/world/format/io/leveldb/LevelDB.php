@@ -168,7 +168,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$stream->setOffset($offset);
 
 			$id = $idMap->stringToLegacy($tag->getString("name")) ?? BlockLegacyIds::INFO_UPDATE;
-			$data = $tag->getShort("val");
+			$data = $tag->getShort("val", 0);
 			$palette[] = ($id << 4) | $data;
 		}
 
