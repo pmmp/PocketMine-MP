@@ -23,6 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\event;
 
+use function assert;
+use function get_class;
+
 /**
  * This trait provides a basic boolean-setter-style implementation for `Cancellable` to reduce boilerplate.
  * The precise meaning of `setCancelled` is subject to definition by the class using this trait.
@@ -39,7 +42,8 @@ trait CancellableTrait{
 		return $this->isCancelled;
 	}
 
-	public function setCancelled(bool $value = true) : void{
-		$this->isCancelled = $value;
+	public function setCancelled() : void{
+		assert(func_num_args() === 0, get_class($this) . "::setCancelled() no longer supports uncancelling");
+		$this->isCancelled = true;
 	}
 }
