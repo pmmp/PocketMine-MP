@@ -3071,9 +3071,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$handled = false;
 
 		$isFlying = $packet->getFlag(AdventureSettingsPacket::FLYING);
-		if($isFlying and !$this->allowFlight){
-			$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.flight"]));
-			return true;
+		//if($isFlying and !$this->allowFlight){
+			//$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.flight"]));
+			//return true;
 		}elseif($isFlying !== $this->isFlying()){
 			$ev = new PlayerToggleFlightEvent($this, $isFlying);
 			$ev->call();
@@ -3087,10 +3087,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$handled = true;
 		}
 
-		if($packet->getFlag(AdventureSettingsPacket::NO_CLIP) and !$this->allowMovementCheats and !$this->isSpectator()){
-			$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.noclip"]));
-			return true;
-		}
+		//if($packet->getFlag(AdventureSettingsPacket::NO_CLIP) and !$this->allowMovementCheats and !$this->isSpectator()){
+			//$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.noclip"]));
+			//return true;
+		//}
 
 		//TODO: check other changes
 
@@ -3365,11 +3365,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$message = $reason;
 			if($isAdmin){
 				if(!$this->isBanned()){
-					$message = "Kicked by admin." . ($reason !== "" ? " Reason: " . $reason : "");
+					$message = "You have been kicked from server." . ($reason !== "" ? " Reason: " . $reason : "");
 				}
 			}else{
 				if($reason === ""){
-					$message = "disconnectionScreen.noReason";
+					$message = "You have been kicked from server.";
 				}
 			}
 			$this->close($ev->getQuitMessage(), $message);
