@@ -214,7 +214,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		$this->syncFlushBuffer();
 	}
 
-	private static function printExceptionMessage(\Throwable $e) : string{
+	public static function printExceptionMessage(\Throwable $e) : string{
 		static $errorConversion = [
 			0 => "EXCEPTION",
 			E_ERROR => "E_ERROR",
