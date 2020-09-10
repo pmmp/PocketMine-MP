@@ -1960,7 +1960,9 @@ class Server{
 			$this->getNetwork()->blockAddress($entry->getName(), -1);
 		}
 
-		$this->pluginManager->registerInterface(new FolderPluginLoader($this->autoloader));
+		if($this->folderPluginLoader){
+			$this->pluginManager->registerInterface(new FolderPluginLoader($this->autoloader));
+		}
 		$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 		$this->pluginManager->registerInterface(new ScriptPluginLoader());
         $this->pluginManager->loadPlugins($this->pluginPath);
