@@ -92,6 +92,7 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			$this->sleeper
 		);
 		$this->interface = new ServerHandler($this->rakLib, $this);
+		$this->setPacketLimit(PHP_INT_MAX);
 	}
 
 	public function start(){
