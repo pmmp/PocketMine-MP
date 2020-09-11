@@ -80,6 +80,7 @@ use function count;
 use function current;
 use function deg2rad;
 use function floor;
+use function fmod;
 use function get_class;
 use function in_array;
 use function is_a;
@@ -1312,7 +1313,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function getDirection() : ?int{
-		$rotation = ($this->yaw - 90) % 360;
+		$rotation = fmod($this->yaw - 90, 360);
 		if($rotation < 0){
 			$rotation += 360.0;
 		}
