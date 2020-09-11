@@ -303,6 +303,7 @@ class RegionLoader{
 			throw new CorruptedRegionException("Corrupted region header (unexpected end of file)");
 		}
 
+		/** @var int[] $data */
 		$data = unpack("N*", $headerRaw);
 
 		for($i = 0; $i < 1024; ++$i){
