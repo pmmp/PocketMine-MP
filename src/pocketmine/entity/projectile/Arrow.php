@@ -175,12 +175,15 @@ class Arrow extends Projectile{
 
 		$item = ItemFactory::get(Item::ARROW, 0, 1);
 
-		$playerInventory = $player->getInventory();
-		if($player->isSurvival() and !$playerInventory->canAddItem($item)){
-			return;
+		$pickupInventory = $player->getOffHandInventory();
+		if(!$pickupInventory->getItemInOffHand()->equals($item)){
+			$pickupInventory = $player->getInventory();
+			if(!$pickupInventory->canAddItem($item) and $player->isSurvival()){
+				return;
+			}
 		}
 
-		$ev = new InventoryPickupArrowEvent($playerInventory, $this);
+		$ev = new InventoryPickupArrowEvent($pickupInventory, $this);
 		if($this->pickupMode === self::PICKUP_NONE or ($this->pickupMode === self::PICKUP_CREATIVE and !$player->isCreative())){
 			$ev->setCancelled();
 		}
@@ -195,7 +198,7 @@ class Arrow extends Projectile{
 		$pk->target = $this->getId();
 		$this->server->broadcastPacket($this->getViewers(), $pk);
 
-		$playerInventory->addItem(clone $item);
+		$pickupInventory->addItem(clone $item);
 		$this->flagForDespawn();
 	}
 }
