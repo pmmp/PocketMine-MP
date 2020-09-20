@@ -110,7 +110,7 @@ class ChunkCache implements ChunkListener{
 				new ChunkRequestTask(
 					$chunkX,
 					$chunkZ,
-					$this->world->getOrLoadChunk($chunkX, $chunkZ),
+					$this->world->getChunk($chunkX, $chunkZ),
 					$this->caches[$chunkHash],
 					$this->compressor,
 					function() use ($chunkX, $chunkZ) : void{
