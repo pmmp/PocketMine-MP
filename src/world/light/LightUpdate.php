@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
-use pocketmine\world\ChunkManager;
 use pocketmine\world\format\LightArray;
 use pocketmine\world\utils\SubChunkIteratorManager;
 use pocketmine\world\World;
@@ -54,10 +53,10 @@ abstract class LightUpdate{
 	 * @param \SplFixedArray|int[] $lightFilters
 	 * @phpstan-param \SplFixedArray<int> $lightFilters
 	 */
-	public function __construct(ChunkManager $world, \SplFixedArray $lightFilters){
+	public function __construct(SubChunkIteratorManager $subChunkHandler, \SplFixedArray $lightFilters){
 		$this->lightFilters = $lightFilters;
 
-		$this->subChunkHandler = new SubChunkIteratorManager($world);
+		$this->subChunkHandler = $subChunkHandler;
 		$this->subChunkHandler->onSubChunkChange(\Closure::fromCallable([$this, 'updateLightArrayRef']));
 	}
 

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
-use pocketmine\world\ChunkManager;
+use pocketmine\world\utils\SubChunkIteratorManager;
 use function max;
 
 class BlockLightUpdate extends LightUpdate{
@@ -40,8 +40,8 @@ class BlockLightUpdate extends LightUpdate{
 	 * @phpstan-param \SplFixedArray<int> $lightFilters
 	 * @phpstan-param \SplFixedArray<int> $lightEmitters
 	 */
-	public function __construct(ChunkManager $world, \SplFixedArray $lightFilters, \SplFixedArray $lightEmitters){
-		parent::__construct($world, $lightFilters);
+	public function __construct(SubChunkIteratorManager $subChunkHandler, \SplFixedArray $lightFilters, \SplFixedArray $lightEmitters){
+		parent::__construct($subChunkHandler, $lightFilters);
 		$this->lightEmitters = $lightEmitters;
 	}
 

@@ -77,6 +77,7 @@ use pocketmine\world\particle\DestroyBlockParticle;
 use pocketmine\world\particle\Particle;
 use pocketmine\world\sound\BlockPlaceSound;
 use pocketmine\world\sound\Sound;
+use pocketmine\world\utils\SubChunkIteratorManager;
 use function abs;
 use function array_fill_keys;
 use function array_map;
@@ -1165,14 +1166,14 @@ class World implements ChunkManager{
 		$blockFactory = BlockFactory::getInstance();
 		$this->timings->doBlockSkyLightUpdates->startTiming();
 		if($this->skyLightUpdate === null){
-			$this->skyLightUpdate = new SkyLightUpdate($this, $blockFactory->lightFilter, $blockFactory->blocksDirectSkyLight);
+			$this->skyLightUpdate = new SkyLightUpdate(new SubChunkIteratorManager($this), $blockFactory->lightFilter, $blockFactory->blocksDirectSkyLight);
 		}
 		$this->skyLightUpdate->recalculateNode($x, $y, $z);
 		$this->timings->doBlockSkyLightUpdates->stopTiming();
 
 		$this->timings->doBlockLightUpdates->startTiming();
 		if($this->blockLightUpdate === null){
-			$this->blockLightUpdate = new BlockLightUpdate($this, $blockFactory->lightFilter, $blockFactory->light);
+			$this->blockLightUpdate = new BlockLightUpdate(new SubChunkIteratorManager($this), $blockFactory->lightFilter, $blockFactory->light);
 		}
 		$this->blockLightUpdate->recalculateNode($x, $y, $z);
 		$this->timings->doBlockLightUpdates->stopTiming();
