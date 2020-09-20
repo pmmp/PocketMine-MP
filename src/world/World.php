@@ -754,7 +754,7 @@ class World implements ChunkManager{
 					}
 					World::getXZ($index, $chunkX, $chunkZ);
 					if(count($blocks) > 512){
-						$chunk = $this->getOrLoadChunk($chunkX, $chunkZ);
+						$chunk = $this->getChunk($chunkX, $chunkZ);
 						foreach($this->getChunkPlayers($chunkX, $chunkZ) as $p){
 							$p->onChunkChanged($chunk);
 						}
