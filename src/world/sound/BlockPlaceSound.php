@@ -38,6 +38,6 @@ class BlockPlaceSound implements Sound{
 	}
 
 	public function encode(?Vector3 $pos){
-		return LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_PLACE, $pos, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getId(), $this->block->getMeta()));
+		return LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_PLACE, $pos, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()));
 	}
 }

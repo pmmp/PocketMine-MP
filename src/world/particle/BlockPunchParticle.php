@@ -44,6 +44,6 @@ class BlockPunchParticle implements Particle{
 	}
 
 	public function encode(Vector3 $pos){
-		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getId(), $this->block->getMeta()) | ($this->face << 24), $pos);
+		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()) | ($this->face << 24), $pos);
 	}
 }

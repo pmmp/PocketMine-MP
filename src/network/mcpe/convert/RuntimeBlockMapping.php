@@ -135,21 +135,15 @@ final class RuntimeBlockMapping{
 		return $table;
 	}
 
-	public function toRuntimeId(int $id, int $meta = 0) : int{
-		/*
-		 * try id+meta first
-		 * if not found, try id+0 (strip meta)
-		 * if still not found, return update! block
-		 */
-		return $this->legacyToRuntimeMap[($id << 4) | $meta] ?? $this->legacyToRuntimeMap[$id << 4] ?? $this->legacyToRuntimeMap[BlockLegacyIds::INFO_UPDATE << 4];
+	public function toRuntimeId(int $internalStateId) : int{
+		return $this->legacyToRuntimeMap[$internalStateId] ?? $this->legacyToRuntimeMap[BlockLegacyIds::INFO_UPDATE << 4];
 	}
 
 	/**
-	 * @return int[] [id, meta]
+	 * @return int
 	 */
-	public function fromRuntimeId(int $runtimeId) : array{
-		$v = $this->runtimeToLegacyMap[$runtimeId];
-		return [$v >> 4, $v & 0xf];
+	public function fromRuntimeId(int $runtimeId) : int{
+		return $this->runtimeToLegacyMap[$runtimeId];
 	}
 
 	private function registerMapping(int $staticRuntimeId, int $legacyId, int $legacyMeta) : void{

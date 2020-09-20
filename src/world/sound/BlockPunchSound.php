@@ -44,7 +44,7 @@ class BlockPunchSound implements Sound{
 		return LevelSoundEventPacket::create(
 			LevelSoundEventPacket::SOUND_HIT,
 			$pos,
-			RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getId(), $this->block->getMeta())
+			RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId())
 		);
 	}
 }

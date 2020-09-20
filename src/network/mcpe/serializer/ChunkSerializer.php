@@ -71,7 +71,7 @@ final class ChunkSerializer{
 				//zigzag and just shift directly.
 				$stream->putUnsignedVarInt(count($palette) << 1); //yes, this is intentionally zigzag
 				foreach($palette as $p){
-					$stream->put(Binary::writeUnsignedVarInt($blockMapper->toRuntimeId($p >> 4, $p & 0xf) << 1));
+					$stream->put(Binary::writeUnsignedVarInt($blockMapper->toRuntimeId($p) << 1));
 				}
 			}
 		}
