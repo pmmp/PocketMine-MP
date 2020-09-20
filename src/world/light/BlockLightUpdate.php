@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
-use pocketmine\world\utils\SubChunkIteratorManager;
+use pocketmine\world\utils\SubChunkExplorer;
 use function max;
 
 class BlockLightUpdate extends LightUpdate{
@@ -40,18 +40,18 @@ class BlockLightUpdate extends LightUpdate{
 	 * @phpstan-param \SplFixedArray<int> $lightFilters
 	 * @phpstan-param \SplFixedArray<int> $lightEmitters
 	 */
-	public function __construct(SubChunkIteratorManager $subChunkHandler, \SplFixedArray $lightFilters, \SplFixedArray $lightEmitters){
-		parent::__construct($subChunkHandler, $lightFilters);
+	public function __construct(SubChunkExplorer $subChunkExplorer, \SplFixedArray $lightFilters, \SplFixedArray $lightEmitters){
+		parent::__construct($subChunkExplorer, $lightFilters);
 		$this->lightEmitters = $lightEmitters;
 	}
 
 	protected function updateLightArrayRef() : void{
-		$this->currentLightArray = $this->subChunkHandler->currentSubChunk->getBlockLightArray();
+		$this->currentLightArray = $this->subChunkExplorer->currentSubChunk->getBlockLightArray();
 	}
 
 	public function recalculateNode(int $x, int $y, int $z) : void{
-		if($this->subChunkHandler->moveTo($x, $y, $z, false)){
-			$block = $this->subChunkHandler->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf);
+		if($this->subChunkExplorer->moveTo($x, $y, $z, false)){
+			$block = $this->subChunkExplorer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf);
 			$this->setAndUpdateLight($x, $y, $z, max($this->lightEmitters[$block], $this->getHighestAdjacentLight($x, $y, $z) - $this->lightFilters[$block]));
 		}
 	}

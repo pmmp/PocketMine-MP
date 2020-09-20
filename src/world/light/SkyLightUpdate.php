@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
-use pocketmine\world\utils\SubChunkIteratorManager;
+use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\World;
 use function max;
 
@@ -41,31 +41,31 @@ class SkyLightUpdate extends LightUpdate{
 	 * @phpstan-param \SplFixedArray<int>  $lightFilters
 	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
 	 */
-	public function __construct(SubChunkIteratorManager $subChunkHandler, \SplFixedArray $lightFilters, \SplFixedArray $directSkyLightBlockers){
-		parent::__construct($subChunkHandler, $lightFilters);
+	public function __construct(SubChunkExplorer $subChunkExplorer, \SplFixedArray $lightFilters, \SplFixedArray $directSkyLightBlockers){
+		parent::__construct($subChunkExplorer, $lightFilters);
 		$this->directSkyLightBlockers = $directSkyLightBlockers;
 	}
 
 	protected function updateLightArrayRef() : void{
-		$this->currentLightArray = $this->subChunkHandler->currentSubChunk->getBlockSkyLightArray();
+		$this->currentLightArray = $this->subChunkExplorer->currentSubChunk->getBlockSkyLightArray();
 	}
 
 	protected function getEffectiveLight(int $x, int $y, int $z) : int{
 		if($y >= World::Y_MAX){
-			$this->subChunkHandler->invalidate();
+			$this->subChunkExplorer->invalidate();
 			return 15;
 		}
 		return parent::getEffectiveLight($x, $y, $z);
 	}
 
 	public function recalculateNode(int $x, int $y, int $z) : void{
-		if(!$this->subChunkHandler->moveTo($x, $y, $z, false)){
+		if(!$this->subChunkExplorer->moveTo($x, $y, $z, false)){
 			return;
 		}
-		$chunk = $this->subChunkHandler->currentChunk;
+		$chunk = $this->subChunkExplorer->currentChunk;
 
 		$oldHeightMap = $chunk->getHeightMap($x & 0xf, $z & 0xf);
-		$source = $this->subChunkHandler->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf);
+		$source = $this->subChunkExplorer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf);
 
 		$yPlusOne = $y + 1;
 

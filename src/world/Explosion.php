@@ -39,7 +39,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\world\particle\HugeExplodeSeedParticle;
 use pocketmine\world\sound\ExplodeSound;
-use pocketmine\world\utils\SubChunkIteratorManager;
+use pocketmine\world\utils\SubChunkExplorer;
 use function ceil;
 use function floor;
 use function mt_rand;
@@ -62,8 +62,8 @@ class Explosion{
 	/** @var Entity|Block|null */
 	private $what;
 
-	/** @var SubChunkIteratorManager */
-	private $subChunkHandler;
+	/** @var SubChunkExplorer */
+	private $subChunkExplorer;
 
 	/**
 	 * @param Entity|Block|null $what
@@ -81,7 +81,7 @@ class Explosion{
 		$this->size = $size;
 
 		$this->what = $what;
-		$this->subChunkHandler = new SubChunkIteratorManager($this->world);
+		$this->subChunkExplorer = new SubChunkExplorer($this->world);
 	}
 
 	/**
@@ -123,11 +123,11 @@ class Explosion{
 							$pointerY += $shiftY;
 							$pointerZ += $shiftZ;
 
-							if(!$this->subChunkHandler->moveTo($vBlockX, $vBlockY, $vBlockZ, false)){
+							if(!$this->subChunkExplorer->moveTo($vBlockX, $vBlockY, $vBlockZ, false)){
 								continue;
 							}
 
-							$state = $this->subChunkHandler->currentSubChunk->getFullBlock($vBlockX & 0x0f, $vBlockY & 0x0f, $vBlockZ & 0x0f);
+							$state = $this->subChunkExplorer->currentSubChunk->getFullBlock($vBlockX & 0x0f, $vBlockY & 0x0f, $vBlockZ & 0x0f);
 
 							if($state !== 0){
 								$blastForce -= ($blockFactory->blastResistance[$state] / 5 + 0.3) * $this->stepLen;

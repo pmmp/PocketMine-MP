@@ -29,7 +29,7 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\format\SubChunk;
 use function assert;
 
-class SubChunkIteratorManager{
+class SubChunkExplorer{
 	/** @var ChunkManager */
 	public $world;
 

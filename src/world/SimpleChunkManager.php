@@ -28,7 +28,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Limits;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\utils\SubChunkIteratorManager;
+use pocketmine\world\utils\SubChunkExplorer;
 
 class SimpleChunkManager implements ChunkManager{
 
@@ -38,7 +38,7 @@ class SimpleChunkManager implements ChunkManager{
 	/** @var int */
 	protected $worldHeight;
 
-	/** @var SubChunkIteratorManager */
+	/** @var SubChunkExplorer */
 	protected $terrainPointer;
 
 	/**
@@ -46,7 +46,7 @@ class SimpleChunkManager implements ChunkManager{
 	 */
 	public function __construct(int $worldHeight = World::Y_MAX){
 		$this->worldHeight = $worldHeight;
-		$this->terrainPointer = new SubChunkIteratorManager($this);
+		$this->terrainPointer = new SubChunkExplorer($this);
 	}
 
 	public function getBlockAt(int $x, int $y, int $z) : Block{
