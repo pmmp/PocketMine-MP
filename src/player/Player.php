@@ -747,7 +747,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	protected function spawnEntitiesOnChunk(int $chunkX, int $chunkZ) : void{
-		foreach($this->getWorld()->getOrLoadChunk($chunkX, $chunkZ)->getEntities() as $entity){
+		foreach($this->getWorld()->getChunk($chunkX, $chunkZ)->getEntities() as $entity){
 			if($entity !== $this and !$entity->isFlaggedForDespawn()){
 				$entity->spawnTo($this);
 			}
