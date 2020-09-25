@@ -1235,7 +1235,7 @@ abstract class Entity{
 	/**
 	 * @return Block[]
 	 */
-	public function getBlocksAroundWithEntityInsideActions() : array{
+	protected function getBlocksAroundWithEntityInsideActions() : array{
 		if($this->blocksAround === null){
 			$inset = 0.001; //Offset against floating-point errors
 
