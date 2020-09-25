@@ -139,9 +139,6 @@ final class RuntimeBlockMapping{
 		return $this->legacyToRuntimeMap[$internalStateId] ?? $this->legacyToRuntimeMap[BlockLegacyIds::INFO_UPDATE << 4];
 	}
 
-	/**
-	 * @return int
-	 */
 	public function fromRuntimeId(int $runtimeId) : int{
 		return $this->runtimeToLegacyMap[$runtimeId];
 	}
