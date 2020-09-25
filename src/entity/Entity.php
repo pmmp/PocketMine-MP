@@ -775,24 +775,25 @@ abstract class Entity{
 	protected function tryChangeMovement() : void{
 		$friction = 1 - $this->drag;
 
+		$mY = $this->motion->y;
+
 		if($this->applyDragBeforeGravity()){
-			$this->motion->y *= $friction;
+			$mY *= $friction;
 		}
 
 		if($this->gravityEnabled){
-			$this->motion->y -= $this->gravity;
+			$mY -= $this->gravity;
 		}
 
 		if(!$this->applyDragBeforeGravity()){
-			$this->motion->y *= $friction;
+			$mY *= $friction;
 		}
 
 		if($this->onGround){
 			$friction *= $this->getWorld()->getBlockAt((int) floor($this->location->x), (int) floor($this->location->y - 1), (int) floor($this->location->z))->getFrictionFactor();
 		}
 
-		$this->motion->x *= $friction;
-		$this->motion->z *= $friction;
+		$this->motion = new Vector3($this->motion->x * $friction, $mY, $this->motion->z * $friction);
 	}
 
 	protected function checkObstruction(float $x, float $y, float $z) : bool{
