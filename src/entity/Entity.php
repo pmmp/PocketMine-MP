@@ -953,15 +953,11 @@ abstract class Entity{
 		if($this->hasMovementUpdate()){
 			$this->tryChangeMovement();
 
-			if(abs($this->motion->x) <= self::MOTION_THRESHOLD){
-				$this->motion->x = 0;
-			}
-			if(abs($this->motion->y) <= self::MOTION_THRESHOLD){
-				$this->motion->y = 0;
-			}
-			if(abs($this->motion->z) <= self::MOTION_THRESHOLD){
-				$this->motion->z = 0;
-			}
+			$this->motion = $this->motion->withComponents(
+				abs($this->motion->x) <= self::MOTION_THRESHOLD ? 0 : null,
+				abs($this->motion->y) <= self::MOTION_THRESHOLD ? 0 : null,
+				abs($this->motion->z) <= self::MOTION_THRESHOLD ? 0 : null
+			);
 
 			if($this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0){
 				$this->move($this->motion->x, $this->motion->y, $this->motion->z);
@@ -1205,17 +1201,11 @@ abstract class Entity{
 		$this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
 		$this->updateFallState($dy, $this->onGround);
 
-		if($movX != $dx){
-			$this->motion->x = 0;
-		}
-
-		if($movY != $dy){
-			$this->motion->y = 0;
-		}
-
-		if($movZ != $dz){
-			$this->motion->z = 0;
-		}
+		$this->motion = $this->motion->withComponents(
+			$movX != $dx ? 0 : null,
+			$movY != $dy ? 0 : null,
+			$movZ != $dz ? 0 : null
+		);
 
 		//TODO: vehicle collision events (first we need to spawn them!)
 

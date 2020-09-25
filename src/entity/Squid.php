@@ -97,7 +97,7 @@ class Squid extends WaterAnimal{
 		if($this->isAlive()){
 
 			if($this->location->y > 62 and $this->swimDirection !== null){
-				$this->swimDirection->y = -0.5;
+				$this->swimDirection = $this->swimDirection->withComponents(null, -0.5, null);
 			}
 
 			$inWater = $this->isUnderwater();

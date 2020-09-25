@@ -288,7 +288,7 @@ abstract class Living extends Entity{
 	 */
 	public function jump() : void{
 		if($this->onGround){
-			$this->motion->y = $this->getJumpVelocity(); //Y motion should already be 0 if we're jumping from the ground.
+			$this->motion = $this->motion->withComponents(null, $this->getJumpVelocity(), null); //Y motion should already be 0 if we're jumping from the ground.
 		}
 	}
 
