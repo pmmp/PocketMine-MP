@@ -219,9 +219,12 @@ abstract class Projectile extends Entity{
 			}
 		}
 
-		$this->location->x = $end->x;
-		$this->location->y = $end->y;
-		$this->location->z = $end->z;
+		$this->location = Location::fromObject(
+			$end,
+			$this->location->world,
+			$this->location->yaw,
+			$this->location->pitch
+		);
 		$this->recalculateBoundingBox();
 
 		if($hitResult !== null){

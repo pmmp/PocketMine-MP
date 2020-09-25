@@ -1192,9 +1192,14 @@ abstract class Entity{
 			$this->boundingBox = $moveBB;
 		}
 
-		$this->location->x = ($this->boundingBox->minX + $this->boundingBox->maxX) / 2;
-		$this->location->y = $this->boundingBox->minY - $this->ySize;
-		$this->location->z = ($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2;
+		$this->location = new Location(
+			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
+			$this->boundingBox->minY - $this->ySize,
+			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2,
+			$this->location->yaw,
+			$this->location->pitch,
+			$this->location->world
+		);
 
 		$this->checkChunks();
 		$this->checkBlockCollision();
@@ -1301,9 +1306,12 @@ abstract class Entity{
 			}
 		}
 
-		$this->location->x = $pos->x;
-		$this->location->y = $pos->y;
-		$this->location->z = $pos->z;
+		$this->location = Location::fromObject(
+			$pos,
+			$this->location->world,
+			$this->location->yaw,
+			$this->location->pitch
+		);
 
 		$this->recalculateBoundingBox();
 
