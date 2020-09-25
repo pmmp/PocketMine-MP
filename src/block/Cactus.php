@@ -68,9 +68,10 @@ class Cactus extends Transparent{
 		return [AxisAlignedBB::one()->contract($shrinkSize, 0, $shrinkSize)->trim(Facing::UP, $shrinkSize)];
 	}
 
-	public function onEntityInside(Entity $entity) : void{
+	public function onEntityInside(Entity $entity) : bool{
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_CONTACT, 1);
 		$entity->attack($ev);
+		return true;
 	}
 
 	public function onNearbyBlockChange() : void{

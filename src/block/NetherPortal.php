@@ -83,7 +83,8 @@ class NetherPortal extends Transparent{
 		return [];
 	}
 
-	public function onEntityInside(Entity $entity) : void{
+	public function onEntityInside(Entity $entity) : bool{
 		//TODO
+		return true;
 	}
 }

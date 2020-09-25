@@ -83,10 +83,12 @@ class TNT extends Opaque{
 		return true;
 	}
 
-	public function onEntityInside(Entity $entity) : void{
+	public function onEntityInside(Entity $entity) : bool{
 		if($entity instanceof Arrow and $entity->isOnFire()){
 			$this->ignite();
+			return false;
 		}
+		return true;
 	}
 
 	public function ignite(int $fuse = 80) : void{

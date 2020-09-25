@@ -1279,7 +1279,9 @@ abstract class Entity{
 		$vectors = [];
 
 		foreach($this->getBlocksAround() as $block){
-			$block->onEntityInside($this);
+			if(!$block->onEntityInside($this)){
+				$this->blocksAround = null;
+			}
 			if(($v = $block->addVelocityToEntity($this)) !== null){
 				$vectors[] = $v;
 			}

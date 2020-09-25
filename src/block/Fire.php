@@ -68,7 +68,7 @@ class Fire extends Flowable{
 		return true;
 	}
 
-	public function onEntityInside(Entity $entity) : void{
+	public function onEntityInside(Entity $entity) : bool{
 		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
 		$entity->attack($ev);
 
@@ -80,6 +80,7 @@ class Fire extends Flowable{
 		if(!$ev->isCancelled()){
 			$entity->setOnFire($ev->getDuration());
 		}
+		return true;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

@@ -37,8 +37,9 @@ class Cobweb extends Flowable{
 		return true;
 	}
 
-	public function onEntityInside(Entity $entity) : void{
+	public function onEntityInside(Entity $entity) : bool{
 		$entity->resetFallDistance();
+		return true;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

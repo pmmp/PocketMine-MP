@@ -536,9 +536,12 @@ class Block{
 	/**
 	 * Called when an entity's bounding box clips inside this block's cell. Note that the entity may not be intersecting
 	 * with the collision box or bounding box.
+	 *
+	 * @return bool Whether the block is still the same after the intersection. If it changed (e.g. due to an explosive
+	 * being ignited), this should return false.
 	 */
-	public function onEntityInside(Entity $entity) : void{
-
+	public function onEntityInside(Entity $entity) : bool{
+		return true;
 	}
 
 	/**
