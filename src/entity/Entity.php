@@ -772,10 +772,6 @@ abstract class Entity{
 		return false;
 	}
 
-	protected function applyGravity() : void{
-		$this->motion->y -= $this->gravity;
-	}
-
 	protected function tryChangeMovement() : void{
 		$friction = 1 - $this->drag;
 
@@ -784,7 +780,7 @@ abstract class Entity{
 		}
 
 		if($this->gravityEnabled){
-			$this->applyGravity();
+			$this->motion->y -= $this->gravity;
 		}
 
 		if(!$this->applyDragBeforeGravity()){
