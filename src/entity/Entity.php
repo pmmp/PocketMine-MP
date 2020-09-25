@@ -1233,12 +1233,9 @@ abstract class Entity{
 	}
 
 	/**
-	 * @deprecated WARNING: Despite what its name implies, this function DOES NOT return all the blocks around the entity.
-	 * Instead, it returns blocks which have reactions for an entity intersecting with them.
-	 *
 	 * @return Block[]
 	 */
-	public function getBlocksAround() : array{
+	public function getBlocksAroundWithEntityInsideActions() : array{
 		if($this->blocksAround === null){
 			$inset = 0.001; //Offset against floating-point errors
 
@@ -1278,7 +1275,7 @@ abstract class Entity{
 	protected function checkBlockCollision() : void{
 		$vectors = [];
 
-		foreach($this->getBlocksAround() as $block){
+		foreach($this->getBlocksAroundWithEntityInsideActions() as $block){
 			if(!$block->onEntityInside($this)){
 				$this->blocksAround = null;
 			}
