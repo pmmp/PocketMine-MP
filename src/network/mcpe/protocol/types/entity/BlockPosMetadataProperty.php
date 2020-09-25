@@ -44,9 +44,9 @@ final class BlockPosMetadataProperty implements MetadataProperty{
 	}
 
 	public static function read(PacketSerializer $in) : self{
-		$vec = new Vector3(0, 0, 0);
-		$in->getSignedBlockPosition($vec->x, $vec->y, $vec->z);
-		return new self($vec);
+		$x = $y = $z = 0;
+		$in->getSignedBlockPosition($x, $y, $z);
+		return new self(new Vector3($x, $y, $z));
 	}
 
 	public function write(PacketSerializer $out) : void{
