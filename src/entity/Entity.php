@@ -853,37 +853,37 @@ abstract class Entity{
 			$force = lcg_value() * 0.2 + 0.1;
 
 			if($direction === Facing::WEST){
-				$this->motion->x = -$force;
+				$this->motion = $this->motion->withComponents(-$force, null, null);
 
 				return true;
 			}
 
 			if($direction === Facing::EAST){
-				$this->motion->x = $force;
+				$this->motion = $this->motion->withComponents($force, null, null);
 
 				return true;
 			}
 
 			if($direction === Facing::DOWN){
-				$this->motion->y = -$force;
+				$this->motion = $this->motion->withComponents(null, -$force, null);
 
 				return true;
 			}
 
 			if($direction === Facing::UP){
-				$this->motion->y = $force;
+				$this->motion = $this->motion->withComponents(null, $force, null);
 
 				return true;
 			}
 
 			if($direction === Facing::NORTH){
-				$this->motion->z = -$force;
+				$this->motion = $this->motion->withComponents(null, null, -$force);
 
 				return true;
 			}
 
 			if($direction === Facing::SOUTH){
-				$this->motion->z = $force;
+				$this->motion = $this->motion->withComponents(null, null, $force);
 
 				return true;
 			}
