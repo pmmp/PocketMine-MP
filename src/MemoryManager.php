@@ -40,6 +40,7 @@ use function fwrite;
 use function gc_collect_cycles;
 use function gc_disable;
 use function gc_enable;
+use function gc_mem_caches;
 use function get_class;
 use function get_declared_classes;
 use function ini_get;
@@ -276,6 +277,7 @@ class MemoryManager{
 		}
 
 		$cycles = gc_collect_cycles();
+		gc_mem_caches();
 
 		Timings::$garbageCollectorTimer->stopTiming();
 

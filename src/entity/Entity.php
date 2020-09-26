@@ -893,7 +893,7 @@ abstract class Entity{
 	}
 
 	public function getHorizontalFacing() : int{
-		$angle = $this->location->yaw % 360;
+		$angle = fmod($this->location->yaw, 360);
 		if($angle < 0){
 			$angle += 360.0;
 		}
