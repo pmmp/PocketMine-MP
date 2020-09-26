@@ -1448,7 +1448,7 @@ class World implements ChunkManager{
 			$ev = new BlockBreakEvent($player, $target, $item, $player->isCreative(), $drops, $xpDrop);
 
 			if($target instanceof Air or ($player->isSurvival() and !$target->getBreakInfo()->isBreakable()) or $player->isSpectator()){
-				$ev->setCancelled();
+				$ev->cancel();
 			}
 
 			if($player->isAdventure(true) and !$ev->isCancelled()){
@@ -1462,7 +1462,9 @@ class World implements ChunkManager{
 					}
 				}
 
-				$ev->setCancelled(!$canBreak);
+				if(!$canBreak){
+					$ev->cancel();
+				}
 			}
 
 			$ev->call();
@@ -1538,7 +1540,7 @@ class World implements ChunkManager{
 		if($player !== null){
 			$ev = new PlayerInteractEvent($player, $item, $blockClicked, $clickVector, $face, PlayerInteractEvent::RIGHT_CLICK_BLOCK);
 			if($player->isSpectator()){
-				$ev->setCancelled(); //set it to cancelled so plugins can bypass this
+				$ev->cancel(); //set it to cancelled so plugins can bypass this
 			}
 
 			$ev->call();
@@ -1581,7 +1583,7 @@ class World implements ChunkManager{
 		if($player !== null){
 			$ev = new BlockPlaceEvent($player, $hand, $blockReplace, $blockClicked, $item);
 			if($player->isSpectator()){
-				$ev->setCancelled();
+				$ev->cancel();
 			}
 
 			if($player->isAdventure(true) and !$ev->isCancelled()){
@@ -1595,7 +1597,9 @@ class World implements ChunkManager{
 					}
 				}
 
-				$ev->setCancelled(!$canPlace);
+				if(!$canPlace){
+					$ev->cancel();
+				}
 			}
 
 			$ev->call();

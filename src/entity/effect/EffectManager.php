@@ -146,7 +146,9 @@ class EffectManager{
 		}
 
 		$ev = new EntityEffectAddEvent($this->entity, $effect, $oldEffect);
-		$ev->setCancelled($cancelled);
+		if($cancelled){
+			$ev->cancel();
+		}
 
 		$ev->call();
 		if($ev->isCancelled()){

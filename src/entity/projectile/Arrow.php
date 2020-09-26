@@ -178,7 +178,7 @@ class Arrow extends Projectile{
 
 		$ev = new InventoryPickupArrowEvent($playerInventory, $this);
 		if($this->pickupMode === self::PICKUP_NONE or ($this->pickupMode === self::PICKUP_CREATIVE and !$player->isCreative())){
-			$ev->setCancelled();
+			$ev->cancel();
 		}
 
 		$ev->call();

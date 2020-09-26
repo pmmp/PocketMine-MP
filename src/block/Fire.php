@@ -74,7 +74,7 @@ class Fire extends Flowable{
 
 		$ev = new EntityCombustByBlockEvent($this, $entity, 8);
 		if($entity instanceof Arrow){
-			$ev->setCancelled();
+			$ev->cancel();
 		}
 		$ev->call();
 		if(!$ev->isCancelled()){

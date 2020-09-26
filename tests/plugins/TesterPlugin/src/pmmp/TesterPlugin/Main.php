@@ -51,7 +51,7 @@ class Main extends PluginBase implements Listener{
 		//be asynchronous tests running. Instead we cancel this and stop the server of our own accord once all tests
 		//have completed.
 		if($event->getCommand() === "stop"){
-			$event->setCancelled();
+			$event->cancel();
 		}
 	}
 

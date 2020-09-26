@@ -39,7 +39,11 @@ trait CancellableTrait{
 		return $this->isCancelled;
 	}
 
-	public function setCancelled(bool $value = true) : void{
-		$this->isCancelled = $value;
+	public function cancel() : void{
+		$this->isCancelled = true;
+	}
+
+	public function uncancel() : void{
+		$this->isCancelled = false;
 	}
 }

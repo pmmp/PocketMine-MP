@@ -356,7 +356,7 @@ abstract class Living extends Entity{
 	public function applyDamageModifiers(EntityDamageEvent $source) : void{
 		if($this->lastDamageCause !== null and $this->attackTime > 0){
 			if($this->lastDamageCause->getBaseDamage() >= $source->getBaseDamage()){
-				$source->setCancelled();
+				$source->cancel();
 			}
 			$source->setModifier(-$this->lastDamageCause->getBaseDamage(), EntityDamageEvent::MODIFIER_PREVIOUS_DAMAGE_COOLDOWN);
 		}
@@ -437,7 +437,7 @@ abstract class Living extends Entity{
 
 	public function attack(EntityDamageEvent $source) : void{
 		if($this->noDamageTicks > 0){
-			$source->setCancelled();
+			$source->cancel();
 		}
 
 		if($this->effectManager->has(VanillaEffects::FIRE_RESISTANCE()) and (
@@ -446,7 +446,7 @@ abstract class Living extends Entity{
 				or $source->getCause() === EntityDamageEvent::CAUSE_LAVA
 			)
 		){
-			$source->setCancelled();
+			$source->cancel();
 		}
 
 		$this->applyDamageModifiers($source);

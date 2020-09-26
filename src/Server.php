@@ -549,7 +549,9 @@ class Server{
 
 	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag) : void{
 		$ev = new PlayerDataSaveEvent($nbtTag, $name);
-		$ev->setCancelled(!$this->shouldSavePlayerData());
+		if(!$this->shouldSavePlayerData()){
+			$ev->cancel();
+		}
 
 		$ev->call();
 
