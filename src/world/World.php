@@ -2143,7 +2143,7 @@ class World implements ChunkManager{
 
 		(new ChunkLoadEvent($this, $chunk, !$chunk->isGenerated()))->call();
 
-		if(!$chunk->isLightPopulated() and $chunk->isPopulated()){
+		if($chunk->isPopulated()){
 			$this->getServer()->getAsyncPool()->submitTask(new LightPopulationTask($this, $chunk));
 		}
 
