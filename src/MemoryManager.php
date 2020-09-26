@@ -399,24 +399,37 @@ class MemoryManager{
 				}
 
 				$objects[$hash] = true;
-
-				$reflection = new \ReflectionObject($object);
-
 				$info = [
 					"information" => "$hash@$className",
-					"properties" => []
 				];
-
-				foreach($reflection->getProperties() as $property){
-					if($property->isStatic()){
-						continue;
+				if($object instanceof \Closure){
+					$info["definition"] = Utils::getNiceClosureName($object);
+					$info["referencedVars"] = [];
+					$reflect = new \ReflectionFunction($object);
+					if(($closureThis = $reflect->getClosureThis()) !== null){
+						$info["this"] = self::continueDump($closureThis, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 					}
 
-					if(!$property->isPublic()){
-						$property->setAccessible(true);
+					//TODO: scan non-closures for statics as well
+					foreach($reflect->getStaticVariables() as $name => $variable){
+						$info["referencedVars"][$name] = self::continueDump($variable, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 					}
+				}else{
+					$reflection = new \ReflectionObject($object);
 
-					$info["properties"][$property->getName()] = self::continueDump($property->getValue($object), $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+					$info["properties"] = [];
+
+					foreach($reflection->getProperties() as $property){
+						if($property->isStatic()){
+							continue;
+						}
+
+						if(!$property->isPublic()){
+							$property->setAccessible(true);
+						}
+
+						$info["properties"][$property->getName()] = self::continueDump($property->getValue($object), $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+					}
 				}
 
 				fwrite($obData, json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
