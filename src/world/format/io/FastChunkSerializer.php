@@ -59,7 +59,7 @@ final class FastChunkSerializer{
 	 * TODO: tiles and entities
 	 */
 	public static function serialize(Chunk $chunk, bool $includeLight = true) : string{
-		$includeLight = $includeLight && $chunk->isLightPopulated();
+		$includeLight = $includeLight && $chunk->isLightPopulated() === true;
 
 		$stream = new BinaryStream();
 		$stream->putInt($chunk->getX());

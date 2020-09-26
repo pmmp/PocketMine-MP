@@ -58,7 +58,7 @@ class Chunk{
 	/** @var int */
 	private $dirtyFlags = 0;
 
-	/** @var bool */
+	/** @var bool|null */
 	protected $lightPopulated = false;
 	/** @var bool */
 	protected $terrainGenerated = false;
@@ -387,11 +387,11 @@ class Chunk{
 		$this->dirtyFlags |= self::DIRTY_FLAG_BIOMES;
 	}
 
-	public function isLightPopulated() : bool{
+	public function isLightPopulated() : ?bool{
 		return $this->lightPopulated;
 	}
 
-	public function setLightPopulated(bool $value = true) : void{
+	public function setLightPopulated(?bool $value = true) : void{
 		$this->lightPopulated = $value;
 	}
 

@@ -895,7 +895,13 @@ class World implements ChunkManager{
 				$dz = mt_rand(-$randRange, $randRange);
 				$hash = World::chunkHash($dx + $chunkX, $dz + $chunkZ);
 				if(!isset($chunkTickList[$hash]) and isset($this->chunks[$hash])){
-					if(!$this->chunks[$hash]->isLightPopulated()){
+					//TODO: this might need to be checked after adjacent chunks are loaded in future
+					$lightPopulatedState = $this->chunks[$hash]->isLightPopulated();
+					if($lightPopulatedState !== true){
+						if($lightPopulatedState === false){
+							$this->chunks[$hash]->setLightPopulated(null);
+							$this->server->getAsyncPool()->submitTask(new LightPopulationTask($this, $this->chunks[$hash]));
+						}
 						continue;
 					}
 					//check adjacent chunks are loaded
@@ -2142,10 +2148,6 @@ class World implements ChunkManager{
 		$chunk->initChunk($this);
 
 		(new ChunkLoadEvent($this, $chunk, !$chunk->isGenerated()))->call();
-
-		if($chunk->isPopulated()){
-			$this->getServer()->getAsyncPool()->submitTask(new LightPopulationTask($this, $chunk));
-		}
 
 		if(!$this->isChunkInUse($x, $z)){
 			$this->logger->debug("Newly loaded chunk $x $z has no loaders registered, will be unloaded at next available opportunity");
