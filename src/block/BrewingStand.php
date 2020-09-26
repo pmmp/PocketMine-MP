@@ -24,38 +24,82 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
+use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use function array_key_exists;
 
 class BrewingStand extends Transparent{
 
-	/** @var bool */
-	protected $eastSlot = false;
-	/** @var bool */
-	protected $northwestSlot = false;
-	/** @var bool */
-	protected $southwestSlot = false;
+	/**
+	 * @var BrewingStandSlot[]
+	 * @phpstan-var array<int, BrewingStandSlot>
+	 */
+	protected $slots = [];
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
 	}
 
 	protected function writeStateToMeta() : int{
-		return ($this->eastSlot ? BlockLegacyMetadata::BREWING_STAND_FLAG_EAST : 0) |
-			($this->southwestSlot ? BlockLegacyMetadata::BREWING_STAND_FLAG_SOUTHWEST : 0) |
-			($this->northwestSlot ? BlockLegacyMetadata::BREWING_STAND_FLAG_NORTHWEST : 0);
+		$flags = 0;
+		foreach([
+			BlockLegacyMetadata::BREWING_STAND_FLAG_EAST => BrewingStandSlot::EAST(),
+			BlockLegacyMetadata::BREWING_STAND_FLAG_NORTHWEST => BrewingStandSlot::NORTHWEST(),
+			BlockLegacyMetadata::BREWING_STAND_FLAG_SOUTHWEST => BrewingStandSlot::SOUTHWEST(),
+		] as $flag => $slot){
+			$flags |= (array_key_exists($slot->id(), $this->slots) ? $flag : 0);
+		}
+		return $flags;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->eastSlot = ($stateMeta & BlockLegacyMetadata::BREWING_STAND_FLAG_EAST) !== 0;
-		$this->southwestSlot = ($stateMeta & BlockLegacyMetadata::BREWING_STAND_FLAG_SOUTHWEST) !== 0;
-		$this->northwestSlot = ($stateMeta & BlockLegacyMetadata::BREWING_STAND_FLAG_NORTHWEST) !== 0;
+		$this->slots = [];
+		foreach([
+			BlockLegacyMetadata::BREWING_STAND_FLAG_EAST => BrewingStandSlot::EAST(),
+			BlockLegacyMetadata::BREWING_STAND_FLAG_NORTHWEST => BrewingStandSlot::NORTHWEST(),
+			BlockLegacyMetadata::BREWING_STAND_FLAG_SOUTHWEST => BrewingStandSlot::SOUTHWEST(),
+		] as $flag => $slot){
+			if(($stateMeta & $flag) !== 0){
+				$this->slots[$slot->id()] = $slot;
+			}
+		}
 	}
 
 	public function getStateBitmask() : int{
 		return 0b111;
+	}
+
+	public function hasSlot(BrewingStandSlot $slot) : bool{
+		return array_key_exists($slot->id(), $this->slots);
+	}
+
+	public function setSlot(BrewingStandSlot $slot, bool $occupied) : self{
+		if($occupied){
+			$this->slots[$slot->id()] = $slot;
+		}else{
+			unset($this->slots[$slot->id()]);
+		}
+		return $this;
+	}
+
+	/**
+	 * @return BrewingStandSlot[]
+	 * @phpstan-return array<int, BrewingStandSlot>
+	 */
+	public function getSlots() : array{
+		return $this->slots;
+	}
+
+	/** @param BrewingStandSlot[] $slots */
+	public function setSlots(array $slots) : self{
+		$this->slots = [];
+		foreach($slots as $slot){
+			$this->slots[$slot->id()] = $slot;
+		}
+		return $this;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
