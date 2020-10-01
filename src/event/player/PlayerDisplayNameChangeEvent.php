@@ -45,8 +45,4 @@ class PlayerDisplayNameChangeEvent extends PlayerEvent{
 	public function getNewName() : string{
 		return $this->newName;
 	}
-
-	public function setNewName(string $newName) : void{
-		$this->newName = $newName;
-	}
 }
