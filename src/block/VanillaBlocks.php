@@ -115,6 +115,7 @@ use function assert;
  * @method static Cake CAKE()
  * @method static Carrot CARROTS()
  * @method static CarvedPumpkin CARVED_PUMPKIN()
+ * @method static ChemicalHeat CHEMICAL_HEAT()
  * @method static Chest CHEST()
  * @method static Opaque CHISELED_QUARTZ()
  * @method static Opaque CHISELED_RED_SANDSTONE()
@@ -783,6 +784,7 @@ final class VanillaBlocks{
 		self::register("cake", $factory->get(92));
 		self::register("carrots", $factory->get(141));
 		self::register("carved_pumpkin", $factory->get(410));
+		self::register("chemical_heat", $factory->get(192));
 		self::register("chest", $factory->get(54, 2));
 		self::register("chiseled_quartz", $factory->get(155, 1));
 		self::register("chiseled_red_sandstone", $factory->get(179, 1));

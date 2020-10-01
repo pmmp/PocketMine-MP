@@ -502,6 +502,7 @@ class BlockFactory{
 		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_LAB_TABLE), "Lab Table", $chemistryTableBreakInfo));
 		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_MATERIAL_REDUCER), "Material Reducer", $chemistryTableBreakInfo));
 
+		$this->register(new ChemicalHeat(new BID(Ids::CHEMICAL_HEAT), "Heat Block", $chemistryTableBreakInfo));
 		//region --- auto-generated TODOs for bedrock-1.11.0 ---
 		//TODO: minecraft:bamboo
 		//TODO: minecraft:bamboo_sapling
