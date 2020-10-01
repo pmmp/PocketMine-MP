@@ -58,6 +58,7 @@ use function assert;
  * @method static BambooSapling BAMBOO_SAPLING()
  * @method static Banner BANNER()
  * @method static Transparent BARRIER()
+ * @method static Beacon BEACON()
  * @method static Bed BED()
  * @method static Bedrock BEDROCK()
  * @method static Beetroot BEETROOTS()
@@ -727,6 +728,7 @@ final class VanillaBlocks{
 		self::register("bamboo_sapling", $factory->get(419));
 		self::register("banner", $factory->get(176));
 		self::register("barrier", $factory->get(416));
+		self::register("beacon", $factory->get(138));
 		self::register("bed", $factory->get(26));
 		self::register("bedrock", $factory->get(7));
 		self::register("beetroots", $factory->get(244));
