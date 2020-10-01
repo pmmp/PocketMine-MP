@@ -138,6 +138,21 @@ final class BlockLegacyMetadata{
 
 	public const LIQUID_FLAG_FALLING = 0x08;
 
+	public const MUSHROOM_BLOCK_ALL_PORES = 0;
+	public const MUSHROOM_BLOCK_CAP_NORTHWEST_CORNER = 1;
+	public const MUSHROOM_BLOCK_CAP_NORTH_SIDE = 2;
+	public const MUSHROOM_BLOCK_CAP_NORTHEAST_CORNER = 3;
+	public const MUSHROOM_BLOCK_CAP_WEST_SIDE = 4;
+	public const MUSHROOM_BLOCK_CAP_TOP_ONLY = 5;
+	public const MUSHROOM_BLOCK_CAP_EAST_SIDE = 6;
+	public const MUSHROOM_BLOCK_CAP_SOUTHWEST_CORNER = 7;
+	public const MUSHROOM_BLOCK_CAP_SOUTH_SIDE = 8;
+	public const MUSHROOM_BLOCK_CAP_SOUTHEAST_CORNER = 9;
+	public const MUSHROOM_BLOCK_STEM = 10;
+	//11, 12 and 13 appear the same as 0
+	public const MUSHROOM_BLOCK_ALL_CAP = 14;
+	public const MUSHROOM_BLOCK_ALL_STEM = 15;
+
 	public const NETHER_PORTAL_AXIS_X = 1;
 	public const NETHER_PORTAL_AXIS_Z = 2;
 
