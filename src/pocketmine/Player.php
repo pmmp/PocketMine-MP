@@ -560,6 +560,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 	}
 
+	/**
+	 * @return Server
+	 */
+	public function getServer(){
+		return $this->server;
+	}
+
 	public function getRemoveFormat() : bool{
 		return $this->removeFormat;
 	}
