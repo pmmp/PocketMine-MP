@@ -52,6 +52,7 @@ use pocketmine\event\player\PlayerChangeSkinEvent;
 use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
+use pocketmine\event\player\PlayerDisplayNameChangeEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
@@ -622,7 +623,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function setDisplayName(string $name) : void{
-		$this->displayName = $name;
+		$ev = new PlayerDisplayNameChangeEvent($this, $this->displayName, $name);
+		$ev->call();
+
+		$this->displayName = $ev->getNewName();
 	}
 
 	/**
