@@ -851,6 +851,13 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	/**
+	 * @return Server
+	 */
+	public function getServer(){
+		return $this->server;
+	}
+
+	/**
 	 * Returns whether this entity will be saved when its chunk is unloaded.
 	 */
 	public function canSaveWithChunk() : bool{
