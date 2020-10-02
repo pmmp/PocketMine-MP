@@ -45,7 +45,7 @@ class MountainsBiome extends GrassyBiome{
 
 		$ores = new Ore();
 		$ores->setOreTypes([
-			new OreType(VanillaBlocks::EMERALD_ORE(), 11, 1, 0, 32)
+			new OreType(VanillaBlocks::EMERALD_ORE(), VanillaBlocks::STONE(), 11, 1, 0, 32)
 		]);
 
 		$this->addPopulator($ores);
