@@ -81,7 +81,6 @@ final class TileFactory{
 		//TODO: EndGateway
 		//TODO: EndPortal
 		//TODO: JigsawBlock
-		//TODO: Jukebox
 		//TODO: Lectern
 		//TODO: MovingBlock
 		//TODO: NetherReactor
