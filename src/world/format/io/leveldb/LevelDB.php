@@ -169,6 +169,11 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 			$id = $idMap->stringToLegacy($tag->getString("name")) ?? BlockLegacyIds::INFO_UPDATE;
 			$data = $tag->getShort("val");
+			if($id === BlockLegacyIds::AIR){
+				//TODO: quick and dirty hack for artifacts left behind by broken world editors
+				//we really need a proper state fixer, but this is a pressing issue.
+				$data = 0;
+			}
 			$palette[] = ($id << 4) | $data;
 		}
 
