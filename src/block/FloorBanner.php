@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SignLikeRotationTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -30,8 +31,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 final class FloorBanner extends BaseBanner{
-	/** @var int */
-	protected $rotation = 0;
+	use SignLikeRotationTrait;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->rotation = $stateMeta;
@@ -55,7 +55,7 @@ final class FloorBanner extends BaseBanner{
 		}
 
 		if($player !== null){
-			$this->rotation = ((int) floor((($player->getLocation()->getYaw() + 180) * 16 / 360) + 0.5)) & 0x0f;
+			$this->rotation = self::getRotationFromYaw($player->getLocation()->getYaw());
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
