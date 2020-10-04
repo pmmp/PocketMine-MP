@@ -48,7 +48,7 @@ class ItemBlock extends Item{
 		parent::__construct($identifier, $this->getBlock()->getName());
 	}
 
-	public function getBlock() : Block{
+	public function getBlock(?int $clickedFace = null) : Block{
 		return BlockFactory::getInstance()->get($this->blockId, $this->blockMeta);
 	}
 

@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\ItemFrame;
-use pocketmine\block\Sign;
+use pocketmine\block\BaseSign;
 use pocketmine\block\utils\SignText;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\InvalidSkinException;
@@ -606,7 +606,7 @@ class InGamePacketHandler extends PacketHandler{
 		$nbt = $packet->namedtag->getRoot();
 		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
 
-		if($block instanceof Sign){
+		if($block instanceof BaseSign){
 			if(($textBlobTag = $nbt->getTag("Text")) instanceof StringTag){
 				try{
 					$text = SignText::fromBlob($textBlobTag->getValue());

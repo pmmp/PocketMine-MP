@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\utils\DyeColor;
@@ -232,12 +233,12 @@ class ItemFactory{
 		$this->register(new Redstone(new ItemIdentifier(ItemIds::REDSTONE, 0), "Redstone"));
 		$this->register(new RottenFlesh(new ItemIdentifier(ItemIds::ROTTEN_FLESH, 0), "Rotten Flesh"));
 		$this->register(new Shears(new ItemIdentifier(ItemIds::SHEARS, 0), "Shears"));
-		$this->register(new Sign(BlockLegacyIds::STANDING_SIGN, 0, new ItemIdentifier(ItemIds::SIGN, 0)));
-		$this->register(new Sign(BlockLegacyIds::SPRUCE_STANDING_SIGN, 0, new ItemIdentifier(ItemIds::SPRUCE_SIGN, 0)));
-		$this->register(new Sign(BlockLegacyIds::BIRCH_STANDING_SIGN, 0, new ItemIdentifier(ItemIds::BIRCH_SIGN, 0)));
-		$this->register(new Sign(BlockLegacyIds::JUNGLE_STANDING_SIGN, 0, new ItemIdentifier(ItemIds::JUNGLE_SIGN, 0)));
-		$this->register(new Sign(BlockLegacyIds::ACACIA_STANDING_SIGN, 0, new ItemIdentifier(ItemIds::ACACIA_SIGN, 0)));
-		$this->register(new Sign(BlockLegacyIds::DARKOAK_STANDING_SIGN, 0, new ItemIdentifier(ItemIds::DARKOAK_SIGN, 0)));
+		$this->register(new Sign(new ItemIdentifier(ItemIds::SIGN, 0), VanillaBlocks::OAK_SIGN(), VanillaBlocks::OAK_WALL_SIGN()));
+		$this->register(new Sign(new ItemIdentifier(ItemIds::SPRUCE_SIGN, 0), VanillaBlocks::SPRUCE_SIGN(), VanillaBlocks::SPRUCE_WALL_SIGN()));
+		$this->register(new Sign(new ItemIdentifier(ItemIds::BIRCH_SIGN, 0), VanillaBlocks::BIRCH_SIGN(), VanillaBlocks::BIRCH_WALL_SIGN()));
+		$this->register(new Sign(new ItemIdentifier(ItemIds::JUNGLE_SIGN, 0), VanillaBlocks::JUNGLE_SIGN(), VanillaBlocks::JUNGLE_WALL_SIGN()));
+		$this->register(new Sign(new ItemIdentifier(ItemIds::ACACIA_SIGN, 0), VanillaBlocks::ACACIA_SIGN(), VanillaBlocks::ACACIA_WALL_SIGN()));
+		$this->register(new Sign(new ItemIdentifier(ItemIds::DARKOAK_SIGN, 0), VanillaBlocks::DARK_OAK_SIGN(), VanillaBlocks::DARK_OAK_WALL_SIGN()));
 		$this->register(new Snowball(new ItemIdentifier(ItemIds::SNOWBALL, 0), "Snowball"));
 		$this->register(new SpiderEye(new ItemIdentifier(ItemIds::SPIDER_EYE, 0), "Spider Eye"));
 		$this->register(new Steak(new ItemIdentifier(ItemIds::STEAK, 0), "Steak"));

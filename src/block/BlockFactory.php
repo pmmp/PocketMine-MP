@@ -443,7 +443,8 @@ class BlockFactory{
 			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($treeType), $treeType->getDisplayName() . " Pressure Plate"));
 			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($treeType), $treeType->getDisplayName() . " Trapdoor"));
 
-			$this->register(new Sign(BlockLegacyIdHelper::getWoodenSignIdentifier($treeType), $treeType->getDisplayName() . " Sign"));
+			$this->register(new FloorSign(BlockLegacyIdHelper::getWoodenFloorSignIdentifier($treeType), $treeType->getDisplayName() . " Sign"));
+			$this->register(new WallSign(BlockLegacyIdHelper::getWoodenWallSignIdentifier($treeType), $treeType->getDisplayName() . " Wall Sign"));
 		}
 
 		static $sandstoneTypes = [

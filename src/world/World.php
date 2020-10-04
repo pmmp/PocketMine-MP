@@ -1561,7 +1561,7 @@ class World implements ChunkManager{
 		}
 
 		if($item->canBePlaced()){
-			$hand = $item->getBlock();
+			$hand = $item->getBlock($face);
 			$hand->position($this, $blockReplace->getPos()->x, $blockReplace->getPos()->y, $blockReplace->getPos()->z);
 		}else{
 			return false;

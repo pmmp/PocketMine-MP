@@ -426,7 +426,7 @@ class Item implements \JsonSerializable{
 	/**
 	 * Returns the block corresponding to this Item.
 	 */
-	public function getBlock() : Block{
+	public function getBlock(?int $clickedFace = null) : Block{
 		return VanillaBlocks::AIR();
 	}
 

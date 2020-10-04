@@ -37,7 +37,7 @@ use function sprintf;
 
 /**
  * @deprecated
- * @see \pocketmine\block\Sign
+ * @see \pocketmine\block\BaseSign
  */
 class Sign extends Spawnable{
 	public const TAG_TEXT_BLOB = "Text";

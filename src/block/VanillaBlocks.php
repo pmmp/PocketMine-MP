@@ -40,10 +40,11 @@ use function assert;
  * @method static Planks ACACIA_PLANKS()
  * @method static WoodenPressurePlate ACACIA_PRESSURE_PLATE()
  * @method static Sapling ACACIA_SAPLING()
- * @method static Sign ACACIA_SIGN()
+ * @method static FloorSign ACACIA_SIGN()
  * @method static WoodenSlab ACACIA_SLAB()
  * @method static WoodenStairs ACACIA_STAIRS()
  * @method static WoodenTrapdoor ACACIA_TRAPDOOR()
+ * @method static WallSign ACACIA_WALL_SIGN()
  * @method static Wood ACACIA_WOOD()
  * @method static ActivatorRail ACTIVATOR_RAIL()
  * @method static Air AIR()
@@ -71,10 +72,11 @@ use function assert;
  * @method static Planks BIRCH_PLANKS()
  * @method static WoodenPressurePlate BIRCH_PRESSURE_PLATE()
  * @method static Sapling BIRCH_SAPLING()
- * @method static Sign BIRCH_SIGN()
+ * @method static FloorSign BIRCH_SIGN()
  * @method static WoodenSlab BIRCH_SLAB()
  * @method static WoodenStairs BIRCH_STAIRS()
  * @method static WoodenTrapdoor BIRCH_TRAPDOOR()
+ * @method static WallSign BIRCH_WALL_SIGN()
  * @method static Wood BIRCH_WOOD()
  * @method static Carpet BLACK_CARPET()
  * @method static Concrete BLACK_CONCRETE()
@@ -158,10 +160,11 @@ use function assert;
  * @method static Planks DARK_OAK_PLANKS()
  * @method static WoodenPressurePlate DARK_OAK_PRESSURE_PLATE()
  * @method static Sapling DARK_OAK_SAPLING()
- * @method static Sign DARK_OAK_SIGN()
+ * @method static FloorSign DARK_OAK_SIGN()
  * @method static WoodenSlab DARK_OAK_SLAB()
  * @method static WoodenStairs DARK_OAK_STAIRS()
  * @method static WoodenTrapdoor DARK_OAK_TRAPDOOR()
+ * @method static WallSign DARK_OAK_WALL_SIGN()
  * @method static Wood DARK_OAK_WOOD()
  * @method static Opaque DARK_PRISMARINE()
  * @method static Slab DARK_PRISMARINE_SLAB()
@@ -410,10 +413,11 @@ use function assert;
  * @method static Planks JUNGLE_PLANKS()
  * @method static WoodenPressurePlate JUNGLE_PRESSURE_PLATE()
  * @method static Sapling JUNGLE_SAPLING()
- * @method static Sign JUNGLE_SIGN()
+ * @method static FloorSign JUNGLE_SIGN()
  * @method static WoodenSlab JUNGLE_SLAB()
  * @method static WoodenStairs JUNGLE_STAIRS()
  * @method static WoodenTrapdoor JUNGLE_TRAPDOOR()
+ * @method static WallSign JUNGLE_WALL_SIGN()
  * @method static Wood JUNGLE_WOOD()
  * @method static ChemistryTable LAB_TABLE()
  * @method static Ladder LADDER()
@@ -496,10 +500,11 @@ use function assert;
  * @method static Planks OAK_PLANKS()
  * @method static WoodenPressurePlate OAK_PRESSURE_PLATE()
  * @method static Sapling OAK_SAPLING()
- * @method static Sign OAK_SIGN()
+ * @method static FloorSign OAK_SIGN()
  * @method static WoodenSlab OAK_SLAB()
  * @method static WoodenStairs OAK_STAIRS()
  * @method static WoodenTrapdoor OAK_TRAPDOOR()
+ * @method static WallSign OAK_WALL_SIGN()
  * @method static Wood OAK_WOOD()
  * @method static Opaque OBSIDIAN()
  * @method static Carpet ORANGE_CARPET()
@@ -624,10 +629,11 @@ use function assert;
  * @method static Planks SPRUCE_PLANKS()
  * @method static WoodenPressurePlate SPRUCE_PRESSURE_PLATE()
  * @method static Sapling SPRUCE_SAPLING()
- * @method static Sign SPRUCE_SIGN()
+ * @method static FloorSign SPRUCE_SIGN()
  * @method static WoodenSlab SPRUCE_SLAB()
  * @method static WoodenStairs SPRUCE_STAIRS()
  * @method static WoodenTrapdoor SPRUCE_TRAPDOOR()
+ * @method static WallSign SPRUCE_WALL_SIGN()
  * @method static Wood SPRUCE_WOOD()
  * @method static Opaque STONE()
  * @method static Slab STONE_BRICK_SLAB()
@@ -712,6 +718,7 @@ final class VanillaBlocks{
 		self::register("acacia_slab", $factory->get(158, 4));
 		self::register("acacia_stairs", $factory->get(163));
 		self::register("acacia_trapdoor", $factory->get(400));
+		self::register("acacia_wall_sign", $factory->get(446, 2));
 		self::register("acacia_wood", $factory->get(467, 4));
 		self::register("activator_rail", $factory->get(126));
 		self::register("air", $factory->get(0));
@@ -743,6 +750,7 @@ final class VanillaBlocks{
 		self::register("birch_slab", $factory->get(158, 2));
 		self::register("birch_stairs", $factory->get(135));
 		self::register("birch_trapdoor", $factory->get(401));
+		self::register("birch_wall_sign", $factory->get(442, 2));
 		self::register("birch_wood", $factory->get(467, 2));
 		self::register("black_carpet", $factory->get(171, 15));
 		self::register("black_concrete", $factory->get(236, 15));
@@ -830,6 +838,7 @@ final class VanillaBlocks{
 		self::register("dark_oak_slab", $factory->get(158, 5));
 		self::register("dark_oak_stairs", $factory->get(164));
 		self::register("dark_oak_trapdoor", $factory->get(402));
+		self::register("dark_oak_wall_sign", $factory->get(448, 2));
 		self::register("dark_oak_wood", $factory->get(467, 5));
 		self::register("dark_prismarine", $factory->get(168, 1));
 		self::register("dark_prismarine_slab", $factory->get(182, 3));
@@ -1082,6 +1091,7 @@ final class VanillaBlocks{
 		self::register("jungle_slab", $factory->get(158, 3));
 		self::register("jungle_stairs", $factory->get(136));
 		self::register("jungle_trapdoor", $factory->get(403));
+		self::register("jungle_wall_sign", $factory->get(444, 2));
 		self::register("jungle_wood", $factory->get(467, 3));
 		self::register("lab_table", $factory->get(238, 12));
 		self::register("ladder", $factory->get(65, 2));
@@ -1168,6 +1178,7 @@ final class VanillaBlocks{
 		self::register("oak_slab", $factory->get(158));
 		self::register("oak_stairs", $factory->get(53));
 		self::register("oak_trapdoor", $factory->get(96));
+		self::register("oak_wall_sign", $factory->get(68, 2));
 		self::register("oak_wood", $factory->get(467));
 		self::register("obsidian", $factory->get(49));
 		self::register("orange_carpet", $factory->get(171, 1));
@@ -1296,6 +1307,7 @@ final class VanillaBlocks{
 		self::register("spruce_slab", $factory->get(158, 1));
 		self::register("spruce_stairs", $factory->get(134));
 		self::register("spruce_trapdoor", $factory->get(404));
+		self::register("spruce_wall_sign", $factory->get(437, 2));
 		self::register("spruce_wood", $factory->get(467, 1));
 		self::register("stone", $factory->get(1));
 		self::register("stone_brick_slab", $factory->get(44, 5));

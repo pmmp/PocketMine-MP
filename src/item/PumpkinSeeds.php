@@ -28,7 +28,7 @@ use pocketmine\block\VanillaBlocks;
 
 class PumpkinSeeds extends Item{
 
-	public function getBlock() : Block{
+	public function getBlock(?int $clickedFace = null) : Block{
 		return VanillaBlocks::PUMPKIN_STEM();
 	}
 }
