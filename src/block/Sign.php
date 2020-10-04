@@ -59,11 +59,6 @@ class Sign extends Transparent{
 		$this->text = new SignText();
 	}
 
-	public function __clone(){
-		parent::__clone();
-		$this->text = clone $this->text;
-	}
-
 	public function getId() : int{
 		return $this->facing === Facing::UP ? parent::getId() : $this->idInfo->getSecondId();
 	}
