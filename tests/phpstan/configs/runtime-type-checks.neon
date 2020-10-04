@@ -3,7 +3,7 @@ parameters:
 		-
 			message: "#^Instanceof between pocketmine\\\\block\\\\utils\\\\BannerPattern and pocketmine\\\\block\\\\utils\\\\BannerPattern will always evaluate to true\\.$#"
 			count: 1
-			path: ../../../src/block/Banner.php
+			path: ../../../src/block/BaseBanner.php
 
 		-
 			message: "#^Call to function assert\\(\\) with bool will always evaluate to true\\.$#"
