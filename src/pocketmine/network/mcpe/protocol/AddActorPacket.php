@@ -140,7 +140,16 @@ class AddActorPacket extends DataPacket{
 		EntityIds::AGENT => "minecraft:agent",
 		EntityIds::ICE_BOMB => "minecraft:ice_bomb",
 		EntityIds::PHANTOM => "minecraft:phantom",
-		EntityIds::TRIPOD_CAMERA => "minecraft:tripod_camera"
+		EntityIds::TRIPOD_CAMERA => "minecraft:tripod_camera",
+		EntityIds::RAVAGER => "minecraft:ravager",
+		EntityIds::VILLAGER_V2 => "minecraft:villager_v2",
+		EntityIds::FOX => "minecraft:fox",
+		EntityIds::BEE => "minecraft:bee",
+		EntityIds::PIGLIN => "minecraft:piglin",
+		EntityIds::HOGLIN => "minecraft:hoglin",
+		EntityIds::STRIDER => "minecraft:strider",
+		EntityIds::ZOGLIN => "minecraft:zoglin",
+		EntityIds::WANDERING_TRADER => "minecraft:wandering_trader"
 	];
 
 	/** @var int|null */
