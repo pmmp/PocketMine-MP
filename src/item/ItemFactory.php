@@ -52,9 +52,6 @@ class ItemFactory{
 	/** @var Item[] */
 	private $list = [];
 
-	/** @var Item|null */
-	private static $air = null;
-
 	public function __construct(){
 		$this->registerArmorItems();
 		$this->registerSpawnEggs();
@@ -448,7 +445,7 @@ class ItemFactory{
 	}
 
 	public static function air() : Item{
-		return self::$air ?? (self::$air = self::getInstance()->get(ItemIds::AIR, 0, 0));
+		return self::getInstance()->get(ItemIds::AIR, 0, 0);
 	}
 
 	/**
