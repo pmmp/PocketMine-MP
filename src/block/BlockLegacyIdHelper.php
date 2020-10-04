@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\BlockIdentifier as BID;
-use pocketmine\block\BlockIdentifierFlattened as BIDFlattened;
 use pocketmine\block\BlockLegacyIds as Ids;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\DyeColor;
