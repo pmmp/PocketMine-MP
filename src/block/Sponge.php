@@ -43,4 +43,8 @@ class Sponge extends Opaque{
 	public function getStateBitmask() : int{
 		return 0b1;
 	}
+
+	public function getNonPersistentStateBitmask() : int{
+		return 0;
+	}
 }
