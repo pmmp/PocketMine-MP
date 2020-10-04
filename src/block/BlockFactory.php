@@ -101,9 +101,7 @@ class BlockFactory{
 
 		$this->register(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail"));
 		$this->register(new Air(new BID(Ids::AIR), "Air"));
-		$this->register(new Anvil(new BID(Ids::ANVIL, Meta::ANVIL_NORMAL), "Anvil"));
-		$this->register(new Anvil(new BID(Ids::ANVIL, Meta::ANVIL_SLIGHTLY_DAMAGED), "Slightly Damaged Anvil"));
-		$this->register(new Anvil(new BID(Ids::ANVIL, Meta::ANVIL_VERY_DAMAGED), "Very Damaged Anvil"));
+		$this->register(new Anvil(new BID(Ids::ANVIL), "Anvil"));
 		$this->register(new Bamboo(new BID(Ids::BAMBOO), "Bamboo", new BlockBreakInfo(2.0 /* 1.0 in PC */, BlockToolType::AXE)));
 		$this->register(new BambooSapling(new BID(Ids::BAMBOO_SAPLING), "Bamboo Sapling", BlockBreakInfo::instant()));
 		$this->register(new Banner(new BIDFlattened(Ids::STANDING_BANNER, Ids::WALL_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Banner"));
@@ -833,7 +831,7 @@ class BlockFactory{
 
 				$v = clone $block;
 				try{
-					$v->readStateFromData($id, $m & $stateMask);
+					$v->readStateFromData($id, $m);
 					if($v->getMeta() !== $m){
 						throw new InvalidBlockStateException("Corrupted meta"); //don't register anything that isn't the same when we read it back again
 					}

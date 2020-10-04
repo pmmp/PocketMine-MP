@@ -600,7 +600,6 @@ use function assert;
  * @method static Wall SANDSTONE_WALL()
  * @method static SeaLantern SEA_LANTERN()
  * @method static SeaPickle SEA_PICKLE()
- * @method static Anvil SLIGHTLY_DAMAGED_ANVIL()
  * @method static Opaque SMOOTH_QUARTZ()
  * @method static Slab SMOOTH_QUARTZ_SLAB()
  * @method static Stair SMOOTH_QUARTZ_STAIRS()
@@ -648,7 +647,6 @@ use function assert;
  * @method static Tripwire TRIPWIRE()
  * @method static TripwireHook TRIPWIRE_HOOK()
  * @method static UnderwaterTorch UNDERWATER_TORCH()
- * @method static Anvil VERY_DAMAGED_ANVIL()
  * @method static Vine VINES()
  * @method static Water WATER()
  * @method static WeightedPressurePlateHeavy WEIGHTED_PRESSURE_PLATE_HEAVY()
@@ -1270,7 +1268,6 @@ final class VanillaBlocks{
 		self::register("sandstone_wall", $factory->get(139, 5));
 		self::register("sea_lantern", $factory->get(169));
 		self::register("sea_pickle", $factory->get(411));
-		self::register("slightly_damaged_anvil", $factory->get(145, 4));
 		self::register("smooth_quartz", $factory->get(155, 3));
 		self::register("smooth_quartz_slab", $factory->get(421, 1));
 		self::register("smooth_quartz_stairs", $factory->get(440));
@@ -1318,7 +1315,6 @@ final class VanillaBlocks{
 		self::register("tripwire", $factory->get(132));
 		self::register("tripwire_hook", $factory->get(131));
 		self::register("underwater_torch", $factory->get(239, 5));
-		self::register("very_damaged_anvil", $factory->get(145, 8));
 		self::register("vines", $factory->get(106));
 		self::register("water", $factory->get(8));
 		self::register("weighted_pressure_plate_heavy", $factory->get(148));

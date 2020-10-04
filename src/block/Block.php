@@ -101,7 +101,10 @@ class Block{
 	}
 
 	public function asItem() : Item{
-		return ItemFactory::getInstance()->get($this->idInfo->getItemId(), $this->idInfo->getVariant());
+		return ItemFactory::getInstance()->get(
+			$this->idInfo->getItemId(),
+			$this->idInfo->getVariant() | ($this->writeStateToMeta() & ~$this->getNonPersistentStateBitmask())
+		);
 	}
 
 	public function getMeta() : int{
@@ -115,6 +118,10 @@ class Block{
 	 */
 	public function getStateBitmask() : int{
 		return 0;
+	}
+
+	public function getNonPersistentStateBitmask() : int{
+		return $this->getStateBitmask();
 	}
 
 	protected function writeStateToMeta() : int{
