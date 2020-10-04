@@ -30,7 +30,7 @@ use function assert;
 /**
  * This doc-block is generated automatically, do not modify it manually.
  * This must be regenerated whenever registry members are added, removed or changed.
- * @see RegistryTrait::_generateMethodAnnotations()
+ * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
  * @method static Boat ACACIA_BOAT()
  * @method static Apple APPLE()
@@ -40,13 +40,11 @@ use function assert;
  * @method static BeetrootSeeds BEETROOT_SEEDS()
  * @method static BeetrootSoup BEETROOT_SOUP()
  * @method static Boat BIRCH_BOAT()
- * @method static Banner BLACK_BANNER()
  * @method static Bed BLACK_BED()
  * @method static Dye BLACK_DYE()
  * @method static Item BLAZE_POWDER()
  * @method static BlazeRod BLAZE_ROD()
  * @method static Item BLEACH()
- * @method static Banner BLUE_BANNER()
  * @method static Bed BLUE_BED()
  * @method static Dye BLUE_DYE()
  * @method static Item BONE()
@@ -56,7 +54,6 @@ use function assert;
  * @method static Bowl BOWL()
  * @method static Bread BREAD()
  * @method static Item BRICK()
- * @method static Banner BROWN_BANNER()
  * @method static Bed BROWN_BED()
  * @method static Dye BROWN_DYE()
  * @method static Bucket BUCKET()
@@ -120,7 +117,6 @@ use function assert;
  * @method static CookedSalmon COOKED_SALMON()
  * @method static Cookie COOKIE()
  * @method static Skull CREEPER_HEAD()
- * @method static Banner CYAN_BANNER()
  * @method static Bed CYAN_BED()
  * @method static Dye CYAN_DYE()
  * @method static Boat DARK_OAK_BOAT()
@@ -164,10 +160,8 @@ use function assert;
  * @method static Pickaxe GOLDEN_PICKAXE()
  * @method static Shovel GOLDEN_SHOVEL()
  * @method static Sword GOLDEN_SWORD()
- * @method static Banner GRAY_BANNER()
  * @method static Bed GRAY_BED()
  * @method static Dye GRAY_DYE()
- * @method static Banner GREEN_BANNER()
  * @method static Bed GREEN_BED()
  * @method static Dye GREEN_DYE()
  * @method static Item GUNPOWDER()
@@ -192,16 +186,12 @@ use function assert;
  * @method static Armor LEATHER_CAP()
  * @method static Armor LEATHER_PANTS()
  * @method static Armor LEATHER_TUNIC()
- * @method static Banner LIGHT_BLUE_BANNER()
  * @method static Bed LIGHT_BLUE_BED()
  * @method static Dye LIGHT_BLUE_DYE()
- * @method static Banner LIGHT_GRAY_BANNER()
  * @method static Bed LIGHT_GRAY_BED()
  * @method static Dye LIGHT_GRAY_DYE()
- * @method static Banner LIME_BANNER()
  * @method static Bed LIME_BED()
  * @method static Dye LIME_DYE()
- * @method static Banner MAGENTA_BANNER()
  * @method static Bed MAGENTA_BED()
  * @method static Dye MAGENTA_DYE()
  * @method static Item MAGMA_CREAM()
@@ -216,12 +206,10 @@ use function assert;
  * @method static Item NETHER_STAR()
  * @method static ItemBlock NETHER_WART()
  * @method static Boat OAK_BOAT()
- * @method static Banner ORANGE_BANNER()
  * @method static Bed ORANGE_BED()
  * @method static Dye ORANGE_DYE()
  * @method static PaintingItem PAINTING()
  * @method static Item PAPER()
- * @method static Banner PINK_BANNER()
  * @method static Bed PINK_BED()
  * @method static Dye PINK_DYE()
  * @method static Skull PLAYER_HEAD()
@@ -234,7 +222,6 @@ use function assert;
  * @method static Pufferfish PUFFERFISH()
  * @method static PumpkinPie PUMPKIN_PIE()
  * @method static PumpkinSeeds PUMPKIN_SEEDS()
- * @method static Banner PURPLE_BANNER()
  * @method static Bed PURPLE_BED()
  * @method static Dye PURPLE_DYE()
  * @method static Item RABBIT_FOOT()
@@ -259,7 +246,6 @@ use function assert;
  * @method static Record RECORD_STRAD()
  * @method static Record RECORD_WAIT()
  * @method static Record RECORD_WARD()
- * @method static Banner RED_BANNER()
  * @method static Bed RED_BED()
  * @method static Dye RED_DYE()
  * @method static Redstone REDSTONE_DUST()
@@ -287,7 +273,6 @@ use function assert;
  * @method static LiquidBucket WATER_BUCKET()
  * @method static Item WHEAT()
  * @method static WheatSeeds WHEAT_SEEDS()
- * @method static Banner WHITE_BANNER()
  * @method static Bed WHITE_BED()
  * @method static Dye WHITE_DYE()
  * @method static Skull WITHER_SKELETON_SKULL()
@@ -298,7 +283,6 @@ use function assert;
  * @method static Sword WOODEN_SWORD()
  * @method static WritableBook WRITABLE_BOOK()
  * @method static WrittenBook WRITTEN_BOOK()
- * @method static Banner YELLOW_BANNER()
  * @method static Bed YELLOW_BED()
  * @method static Dye YELLOW_DYE()
  * @method static Skull ZOMBIE_HEAD()
@@ -340,13 +324,11 @@ final class VanillaItems{
 		self::register("beetroot_seeds", $factory->get(458));
 		self::register("beetroot_soup", $factory->get(459));
 		self::register("birch_boat", $factory->get(333, 2));
-		self::register("black_banner", $factory->get(446));
 		self::register("black_bed", $factory->get(355, 15));
 		self::register("black_dye", $factory->get(351, 16));
 		self::register("blaze_powder", $factory->get(377));
 		self::register("blaze_rod", $factory->get(369));
 		self::register("bleach", $factory->get(451));
-		self::register("blue_banner", $factory->get(446, 4));
 		self::register("blue_bed", $factory->get(355, 11));
 		self::register("blue_dye", $factory->get(351, 18));
 		self::register("bone", $factory->get(352));
@@ -356,7 +338,6 @@ final class VanillaItems{
 		self::register("bowl", $factory->get(281));
 		self::register("bread", $factory->get(297));
 		self::register("brick", $factory->get(336));
-		self::register("brown_banner", $factory->get(446, 3));
 		self::register("brown_bed", $factory->get(355, 12));
 		self::register("brown_dye", $factory->get(351, 17));
 		self::register("bucket", $factory->get(325));
@@ -420,7 +401,6 @@ final class VanillaItems{
 		self::register("cooked_salmon", $factory->get(463));
 		self::register("cookie", $factory->get(357));
 		self::register("creeper_head", $factory->get(397, 4));
-		self::register("cyan_banner", $factory->get(446, 6));
 		self::register("cyan_bed", $factory->get(355, 9));
 		self::register("cyan_dye", $factory->get(351, 6));
 		self::register("dark_oak_boat", $factory->get(333, 5));
@@ -464,10 +444,8 @@ final class VanillaItems{
 		self::register("golden_pickaxe", $factory->get(285));
 		self::register("golden_shovel", $factory->get(284));
 		self::register("golden_sword", $factory->get(283));
-		self::register("gray_banner", $factory->get(446, 8));
 		self::register("gray_bed", $factory->get(355, 7));
 		self::register("gray_dye", $factory->get(351, 8));
-		self::register("green_banner", $factory->get(446, 2));
 		self::register("green_bed", $factory->get(355, 13));
 		self::register("green_dye", $factory->get(351, 2));
 		self::register("gunpowder", $factory->get(289));
@@ -492,16 +470,12 @@ final class VanillaItems{
 		self::register("leather_cap", $factory->get(298));
 		self::register("leather_pants", $factory->get(300));
 		self::register("leather_tunic", $factory->get(299));
-		self::register("light_blue_banner", $factory->get(446, 12));
 		self::register("light_blue_bed", $factory->get(355, 3));
 		self::register("light_blue_dye", $factory->get(351, 12));
-		self::register("light_gray_banner", $factory->get(446, 7));
 		self::register("light_gray_bed", $factory->get(355, 8));
 		self::register("light_gray_dye", $factory->get(351, 7));
-		self::register("lime_banner", $factory->get(446, 10));
 		self::register("lime_bed", $factory->get(355, 5));
 		self::register("lime_dye", $factory->get(351, 10));
-		self::register("magenta_banner", $factory->get(446, 13));
 		self::register("magenta_bed", $factory->get(355, 2));
 		self::register("magenta_dye", $factory->get(351, 13));
 		self::register("magma_cream", $factory->get(378));
@@ -516,12 +490,10 @@ final class VanillaItems{
 		self::register("nether_star", $factory->get(399));
 		self::register("nether_wart", $factory->get(372));
 		self::register("oak_boat", $factory->get(333));
-		self::register("orange_banner", $factory->get(446, 14));
 		self::register("orange_bed", $factory->get(355, 1));
 		self::register("orange_dye", $factory->get(351, 14));
 		self::register("painting", $factory->get(321));
 		self::register("paper", $factory->get(339));
-		self::register("pink_banner", $factory->get(446, 9));
 		self::register("pink_bed", $factory->get(355, 6));
 		self::register("pink_dye", $factory->get(351, 9));
 		self::register("player_head", $factory->get(397, 3));
@@ -534,7 +506,6 @@ final class VanillaItems{
 		self::register("pufferfish", $factory->get(462));
 		self::register("pumpkin_pie", $factory->get(400));
 		self::register("pumpkin_seeds", $factory->get(361));
-		self::register("purple_banner", $factory->get(446, 5));
 		self::register("purple_bed", $factory->get(355, 10));
 		self::register("purple_dye", $factory->get(351, 5));
 		self::register("rabbit_foot", $factory->get(414));
@@ -559,7 +530,6 @@ final class VanillaItems{
 		self::register("record_strad", $factory->get(508));
 		self::register("record_wait", $factory->get(511));
 		self::register("record_ward", $factory->get(509));
-		self::register("red_banner", $factory->get(446, 1));
 		self::register("red_bed", $factory->get(355, 14));
 		self::register("red_dye", $factory->get(351, 1));
 		self::register("redstone_dust", $factory->get(331));
@@ -587,7 +557,6 @@ final class VanillaItems{
 		self::register("water_bucket", $factory->get(325, 8));
 		self::register("wheat", $factory->get(296));
 		self::register("wheat_seeds", $factory->get(295));
-		self::register("white_banner", $factory->get(446, 15));
 		self::register("white_bed", $factory->get(355));
 		self::register("white_dye", $factory->get(351, 19));
 		self::register("wither_skeleton_skull", $factory->get(397, 1));
@@ -598,7 +567,6 @@ final class VanillaItems{
 		self::register("wooden_sword", $factory->get(268));
 		self::register("writable_book", $factory->get(386));
 		self::register("written_book", $factory->get(387));
-		self::register("yellow_banner", $factory->get(446, 11));
 		self::register("yellow_bed", $factory->get(355, 4));
 		self::register("yellow_dye", $factory->get(351, 11));
 		self::register("zombie_head", $factory->get(397, 2));

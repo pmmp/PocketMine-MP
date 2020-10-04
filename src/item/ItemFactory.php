@@ -260,7 +260,11 @@ class ItemFactory{
 			//TODO: add interface to dye-colour objects
 			$this->register(new Dye(new ItemIdentifier(ItemIds::DYE, $dyeMap[$color->id()] ?? $colorIdMap->toInvertedId($color)), $color->getDisplayName() . " Dye", $color));
 			$this->register(new Bed(new ItemIdentifier(ItemIds::BED, $colorIdMap->toId($color)), $color->getDisplayName() . " Bed", $color));
-			$this->register(new Banner(new ItemIdentifier(ItemIds::BANNER, $colorIdMap->toInvertedId($color)), $color->getDisplayName() . " Banner", $color));
+			$this->register((new Banner(
+				new ItemIdentifier(ItemIds::BANNER, 0),
+				VanillaBlocks::BANNER(),
+				VanillaBlocks::WALL_BANNER()
+			))->setColor($color));
 		}
 
 		foreach(Potion::ALL as $type){

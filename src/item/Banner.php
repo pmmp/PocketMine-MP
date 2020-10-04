@@ -33,7 +33,7 @@ use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 
-class Banner extends Item{
+class Banner extends ItemBlockWallOrFloor{
 	public const TAG_PATTERNS = TileBanner::TAG_PATTERNS;
 	public const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
 	public const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
@@ -47,9 +47,9 @@ class Banner extends Item{
 	 */
 	private $patterns;
 
-	public function __construct(ItemIdentifier $identifier, string $name, DyeColor $color){
-		parent::__construct($identifier, $name);
-		$this->color = $color;
+	public function __construct(ItemIdentifier $identifier, Block $floorVariant, Block $wallVariant){
+		parent::__construct($identifier, $floorVariant, $wallVariant);
+		$this->color = DyeColor::BLACK();
 
 		$this->patterns = new Deque();
 	}
@@ -58,8 +58,14 @@ class Banner extends Item{
 		return $this->color;
 	}
 
-	public function getBlock(?int $clickedFace = null) : Block{
-		return VanillaBlocks::BANNER();
+	/** @return $this */
+	public function setColor(DyeColor $color) : self{
+		$this->color = $color;
+		return $this;
+	}
+
+	public function getMeta() : int{
+		return DyeColorIdMap::getInstance()->toInvertedId($this->color);
 	}
 
 	public function getMaxStackSize() : int{

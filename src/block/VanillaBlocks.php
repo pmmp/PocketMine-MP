@@ -57,7 +57,7 @@ use function assert;
  * @method static Flower AZURE_BLUET()
  * @method static Bamboo BAMBOO()
  * @method static BambooSapling BAMBOO_SAPLING()
- * @method static Banner BANNER()
+ * @method static FloorBanner BANNER()
  * @method static Transparent BARRIER()
  * @method static Beacon BEACON()
  * @method static Bed BED()
@@ -654,6 +654,7 @@ use function assert;
  * @method static TripwireHook TRIPWIRE_HOOK()
  * @method static UnderwaterTorch UNDERWATER_TORCH()
  * @method static Vine VINES()
+ * @method static WallBanner WALL_BANNER()
  * @method static Water WATER()
  * @method static WeightedPressurePlateHeavy WEIGHTED_PRESSURE_PLATE_HEAVY()
  * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
@@ -1328,6 +1329,7 @@ final class VanillaBlocks{
 		self::register("tripwire_hook", $factory->get(131));
 		self::register("underwater_torch", $factory->get(239, 5));
 		self::register("vines", $factory->get(106));
+		self::register("wall_banner", $factory->get(177, 2));
 		self::register("water", $factory->get(8));
 		self::register("weighted_pressure_plate_heavy", $factory->get(148));
 		self::register("weighted_pressure_plate_light", $factory->get(147));

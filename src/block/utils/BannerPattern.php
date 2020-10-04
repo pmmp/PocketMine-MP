@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-use pocketmine\block\Banner;
+use pocketmine\block\BaseBanner;
 
 /**
  * Contains information about a pattern layer on a banner.
- * @see Banner
+ * @see BaseBanner
  */
 class BannerPattern{
 	public const BORDER = "bo";

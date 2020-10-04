@@ -35,7 +35,7 @@ use pocketmine\world\World;
 
 /**
  * @deprecated
- * @see \pocketmine\block\Banner
+ * @see \pocketmine\block\BaseBanner
  */
 class Banner extends Spawnable{
 
