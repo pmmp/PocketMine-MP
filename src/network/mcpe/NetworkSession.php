@@ -610,11 +610,11 @@ class NetworkSession{
 
 		$this->logger->debug("Initiating resource packs phase");
 		$this->setHandler(new ResourcePacksPacketHandler($this, $this->server->getResourcePackManager(), function() : void{
-			$this->onResourcePacksDone();
+			$this->beginSpawnSequence();
 		}));
 	}
 
-	private function onResourcePacksDone() : void{
+	private function beginSpawnSequence() : void{
 		$this->createPlayer();
 
 		$this->setHandler(new PreSpawnPacketHandler($this->server, $this->player, $this));
@@ -623,7 +623,7 @@ class NetworkSession{
 		$this->logger->debug("Waiting for spawn chunks");
 	}
 
-	public function onTerrainReady() : void{
+	public function notifyTerrainReady() : void{
 		$this->logger->debug("Sending spawn notification, waiting for spawn response");
 		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::PLAYER_SPAWN));
 		$this->setHandler(new SpawnResponsePacketHandler(function() : void{

@@ -790,7 +790,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 						}
 					}
 
-					$this->networkSession->onTerrainReady();
+					$this->networkSession->notifyTerrainReady();
 				}
 			});
 		}
