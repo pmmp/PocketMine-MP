@@ -216,13 +216,7 @@ class InventoryManager{
 	}
 
 	public function syncCreative() : void{
-		$items = [];
 		$typeConverter = TypeConverter::getInstance();
-		if(!$this->player->isSpectator()){ //fill it for all gamemodes except spectator
-			foreach(CreativeInventory::getInstance()->getAll() as $i => $item){
-				$items[$i] = $typeConverter->coreItemStackToNet($item);
-			}
-		}
 
 		$nextEntryId = 1;
 		$this->session->sendDataPacket(CreativeContentPacket::create(array_map(function(Item $item) use($typeConverter, &$nextEntryId) : CreativeContentEntry{
