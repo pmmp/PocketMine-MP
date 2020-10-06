@@ -1950,8 +1950,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * Note for plugin developers: Prefer kick() instead of this method.
 	 * That way other plugins can have a say in whether the player is removed or not.
 	 *
-	 * @param string                      $reason Shown to the player, usually this will appear on their disconnect screen.
-	 * @param TranslationContainer|string $quitMessage Message to broadcast to online players (null will use default)
+	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
+	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
 	public function disconnect(string $reason, $quitMessage = null, bool $notify = true) : void{
 		if(!$this->isConnected()){
