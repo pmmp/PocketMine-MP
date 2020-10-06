@@ -183,8 +183,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/** @var int */
 	protected $messageCounter = 2;
-	/** @var bool */
-	protected $removeFormat = true;
 
 	/** @var int */
 	protected $firstPlayed;
@@ -345,9 +343,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$this->keepMovement = true;
-		if($this->isOp()){
-			$this->setRemoveFormat(false);
-		}
 
 		$this->setNameTagVisible();
 		$this->setNameTagAlwaysVisible();
@@ -483,14 +478,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function getServer() : Server{
 		return $this->server;
-	}
-
-	public function getRemoveFormat() : bool{
-		return $this->removeFormat;
-	}
-
-	public function setRemoveFormat(bool $remove = true) : void{
-		$this->removeFormat = $remove;
 	}
 
 	public function getScreenLineHeight() : int{
@@ -1370,7 +1357,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function chat(string $message) : bool{
 		$this->doCloseInventory();
 
-		$message = TextFormat::clean($message, $this->removeFormat);
+		$message = TextFormat::clean($message, false);
 		foreach(explode("\n", $message) as $messagePart){
 			if(trim($messagePart) !== "" and strlen($messagePart) <= 255 and $this->messageCounter-- > 0){
 				if(strpos($messagePart, './') === 0){

@@ -105,9 +105,8 @@ abstract class BaseSign extends Transparent{
 		if($size > 1000){
 			throw new \UnexpectedValueException($author->getName() . " tried to write $size bytes of text onto a sign (bigger than max 1000)");
 		}
-		$removeFormat = $author->getRemoveFormat();
-		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) use ($removeFormat) : string{
-			return TextFormat::clean($line, $removeFormat);
+		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) : string{
+			return TextFormat::clean($line, false);
 		}, $text->getLines())));
 		$ev->call();
 		if(!$ev->isCancelled()){
