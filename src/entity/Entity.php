@@ -735,25 +735,21 @@ abstract class Entity{
 	}
 
 	protected function broadcastMovement(bool $teleport = false) : void{
-		$pk = new MoveActorAbsolutePacket();
-		$pk->entityRuntimeId = $this->id;
-		$pk->position = $this->getOffsetPosition($this->location);
+		$this->server->broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
+			$this->id,
+			$this->getOffsetPosition($this->location),
 
-		//this looks very odd but is correct as of 1.5.0.7
-		//for arrows this is actually x/y/z rotation
-		//for mobs x and z are used for pitch and yaw, and y is used for headyaw
-		$pk->xRot = $this->location->pitch;
-		$pk->yRot = $this->location->yaw; //TODO: head yaw
-		$pk->zRot = $this->location->yaw;
-
-		if($teleport){
-			$pk->flags |= MoveActorAbsolutePacket::FLAG_TELEPORT;
-		}
-		if($this->onGround){
-			$pk->flags |= MoveActorAbsolutePacket::FLAG_GROUND;
-		}
-
-		$this->server->broadcastPackets($this->hasSpawned, [$pk]);
+			//this looks very odd but is correct as of 1.5.0.7
+			//for arrows this is actually x/y/z rotation
+			//for mobs x and z are used for pitch and yaw, and y is used for headyaw
+			$this->location->pitch,
+			$this->location->yaw,
+			$this->location->yaw,
+			(
+				($teleport ? MoveActorAbsolutePacket::FLAG_TELEPORT : 0) |
+				($this->onGround ? MoveActorAbsolutePacket::FLAG_GROUND : 0)
+			)
+		)]);
 	}
 
 	protected function broadcastMotion() : void{
