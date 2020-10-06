@@ -1925,7 +1925,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Kicks a player from the server
 	 *
-	 * @param TranslationContainer|string $quitMessage
+	 * @param TranslationContainer|string|null $quitMessage
 	 */
 	public function kick(string $reason = "", $quitMessage = null) : bool{
 		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
