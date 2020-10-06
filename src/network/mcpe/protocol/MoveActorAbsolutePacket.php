@@ -48,6 +48,17 @@ class MoveActorAbsolutePacket extends DataPacket implements ClientboundPacket, S
 	/** @var float */
 	public $zRot;
 
+	public static function create(int $entityRuntimeId, Vector3 $pos, float $xRot, float $yRot, float $zRot, int $flags = 0) : self{
+		$result = new self;
+		$result->entityRuntimeId = $entityRuntimeId;
+		$result->position = $pos->asVector3();
+		$result->xRot = $xRot;
+		$result->yRot = $yRot;
+		$result->zRot = $zRot;
+		$result->flags = $flags;
+		return $result;
+	}
+
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->flags = $in->getByte();
