@@ -753,11 +753,11 @@ abstract class Entity{
 			$pk->flags |= MoveActorAbsolutePacket::FLAG_GROUND;
 		}
 
-		$this->getWorld()->broadcastPacketToViewers($this->location, $pk);
+		$this->server->broadcastPackets($this->hasSpawned, [$pk]);
 	}
 
 	protected function broadcastMotion() : void{
-		$this->getWorld()->broadcastPacketToViewers($this->location, SetActorMotionPacket::create($this->id, $this->getMotion()));
+		$this->server->broadcastPackets($this->hasSpawned, [SetActorMotionPacket::create($this->id, $this->getMotion())]);
 	}
 
 	public function hasGravity() : bool{
