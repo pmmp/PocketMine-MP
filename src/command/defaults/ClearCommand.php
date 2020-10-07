@@ -106,7 +106,7 @@ class ClearCommand extends VanillaCommand{
 		}
 
 		//checking players inventory for all the items matching the criteria
-		if($item !== null and $item->getMeta() === 0 and $maxCount === 0){
+		if($item !== null and $maxCount === 0){
 			$count = 0;
 			$contents = array_merge($target->getInventory()->all($item), $target->getArmorInventory()->all($item));
 			foreach($contents as $content){
