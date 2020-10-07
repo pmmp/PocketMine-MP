@@ -63,10 +63,8 @@ class ClearCommand extends VanillaCommand{
 			}
 
 			$target = $sender;
-		}else{
-			if(count($args) < 1){
-				throw new InvalidCommandSyntaxException();
-			}
+		}elseif(count($args) < 1){
+			throw new InvalidCommandSyntaxException();
 		}
 
 		if(isset($args[0])){
