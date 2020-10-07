@@ -142,21 +142,23 @@ class ClearCommand extends VanillaCommand{
 					$target->getArmorInventory()->clear($index);
 				}
 
-				foreach($target->getInventory()->all($item) as $index => $i){
-					if($i->getCount() >= $maxCount){
-						$i->pop($maxCount);
-						$cleared += $maxCount;
-						$target->getInventory()->setItem($index, $i);
-						break;
-					}
+				if($maxCount > 0){
+					foreach($target->getInventory()->all($item) as $index => $i){
+						if($i->getCount() >= $maxCount){
+							$i->pop($maxCount);
+							$cleared += $maxCount;
+							$target->getInventory()->setItem($index, $i);
+							break;
+						}
 
-					if($maxCount <= 0){
-						break;
-					}
+						if($maxCount <= 0){
+							break;
+						}
 
-					$cleared += $i->getCount();
-					$maxCount -= $i->getCount();
-					$target->getInventory()->clear($index);
+						$cleared += $i->getCount();
+						$maxCount -= $i->getCount();
+						$target->getInventory()->clear($index);
+					}
 				}
 			}
 		}
