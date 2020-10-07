@@ -49,6 +49,7 @@ final class TileFactory{
 
 	public function __construct(){
 		$this->register(Banner::class, ["Banner", "minecraft:banner"]);
+		$this->register(Beacon::class, ["Beacon", "minecraft:beacon"]);
 		$this->register(Bed::class, ["Bed", "minecraft:bed"]);
 		$this->register(BrewingStand::class, ["BrewingStand", "minecraft:brewing_stand"]);
 		$this->register(Chest::class, ["Chest", "minecraft:chest"]);
