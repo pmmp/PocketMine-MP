@@ -33,7 +33,6 @@ use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function array_merge;
 use function count;
-use function is_numeric;
 
 class ClearCommand extends VanillaCommand{
 
@@ -94,13 +93,7 @@ class ClearCommand extends VanillaCommand{
 
 		$maxCount = -1;
 		if(isset($args[2])){
-			if(!is_numeric($args[2])){
-				$maxCount = -1;
-			}
-
-			if($item !== null){
-				$item->setCount($maxCount = $this->getInteger($sender, $args[2], 0));
-			}
+			$item->setCount($maxCount = $this->getInteger($sender, $args[2], 0));
 		}
 
 		//checking players inventory for all the items matching the criteria
