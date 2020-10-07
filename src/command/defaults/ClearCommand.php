@@ -55,17 +55,6 @@ class ClearCommand extends VanillaCommand{
 		}
 
 		$target = null;
-		if($sender instanceof Player){
-			if(!$sender->hasPermission("pocketmine.command.clear.self")){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
-				return true;
-			}
-
-			$target = $sender;
-		}elseif(count($args) < 1){
-			throw new InvalidCommandSyntaxException();
-		}
-
 		if(isset($args[0])){
 			if(!$sender->hasPermission("pocketmine.command.clear.other")){
 				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
@@ -73,6 +62,15 @@ class ClearCommand extends VanillaCommand{
 			}
 
 			$target = $sender->getServer()->getPlayer($args[0]);
+		}elseif($sender instanceof Player){
+			if(!$sender->hasPermission("pocketmine.command.clear.self")){
+				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.permission"));
+				return true;
+			}
+
+			$target = $sender;
+		}else{
+			throw new InvalidCommandSyntaxException();
 		}
 
 		if($target === null){
