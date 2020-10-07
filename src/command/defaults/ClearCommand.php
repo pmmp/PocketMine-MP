@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use InvalidArgumentException;
+use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\LegacyStringToItemParser;
@@ -113,7 +114,7 @@ class ClearCommand extends VanillaCommand{
 			}
 
 			if($count > 0){
-				$sender->sendMessage(new TranslationContainer("%commands.clear.testing", [$target->getName(), $count]));
+				Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.clear.testing", [$target->getName(), $count]));
 			}else{
 				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.clear.failure.no.items", [$target->getName()]));
 			}
@@ -168,7 +169,7 @@ class ClearCommand extends VanillaCommand{
 		}
 
 		if($cleared > 0){
-			$sender->sendMessage(new TranslationContainer("%commands.clear.success", [$target->getName(), $cleared]));
+			Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.clear.success", [$target->getName(), $cleared]));
 		}else{
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.clear.failure.no.items", [$target->getName()]));
 		}
