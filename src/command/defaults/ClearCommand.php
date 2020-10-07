@@ -135,12 +135,23 @@ class ClearCommand extends VanillaCommand{
 		}else{
 			//clear the item from targets inventory irrelevant of the count
 			if($maxCount === -1){
+				if(($index = $target->getArmorInventory()->first($item)) !== -1){
+					$cleared++;
+					$target->getArmorInventory()->clear($index);
+				}
+
 				foreach($target->getInventory()->all($item) as $index => $i){
 					$cleared += $i->getCount();
 					$target->getInventory()->clear($index);
 				}
 			}else{
-				//clear only the given amount of that particular item from players inventory
+				//clear only the given amount of that particular item from targets inventory
+				if(($index = $target->getArmorInventory()->first($item)) !== -1){
+					$cleared++;
+					$maxCount--;
+					$target->getArmorInventory()->clear($index);
+				}
+
 				foreach($target->getInventory()->all($item) as $index => $i){
 					if($i->getCount() >= $maxCount){
 						$i->pop($maxCount);
@@ -157,12 +168,6 @@ class ClearCommand extends VanillaCommand{
 					$maxCount -= $i->getCount();
 					$target->getInventory()->clear($index);
 				}
-			}
-
-			//vanilla behaviour, removes item from armor inventory, regardless of the count specified
-			if(($index = $target->getArmorInventory()->first($item)) !== -1){
-				$cleared++;
-				$target->getArmorInventory()->clear($index);
 			}
 		}
 
