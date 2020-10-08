@@ -497,7 +497,7 @@ parameters:
 
 		-
 			message: "#^Cannot call method sendDataPacket\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
-			count: 1
+			count: 2
 			path: ../../../src/player/Player.php
 
 		-
