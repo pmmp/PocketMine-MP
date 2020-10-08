@@ -1400,10 +1400,10 @@ class Server{
 				Network::$BATCH_THRESHOLD = -1;
 			}
 
-			$this->networkCompressionLevel = (int) $this->getProperty("network.compression-level", 7);
+			$this->networkCompressionLevel = (int) $this->getProperty("network.compression-level", 6);
 			if($this->networkCompressionLevel < 1 or $this->networkCompressionLevel > 9){
-				$this->logger->warning("Invalid network compression level $this->networkCompressionLevel set, setting to default 7");
-				$this->networkCompressionLevel = 7;
+				$this->logger->warning("Invalid network compression level $this->networkCompressionLevel set, setting to default 6");
+				$this->networkCompressionLevel = 6;
 			}
 			$this->networkCompressionAsync = (bool) $this->getProperty("network.async-compression", true);
 
