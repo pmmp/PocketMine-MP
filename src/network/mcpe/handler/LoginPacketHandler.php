@@ -121,7 +121,7 @@ class LoginPacketHandler extends PacketHandler{
 			$uuid,
 			$skin,
 			$clientData->LanguageCode,
-			$extraData->XUID,
+			$this->server->requiresAuthentication() ? $extraData->XUID : "",
 			(array) $clientData
 		);
 		($this->playerInfoConsumer)($playerInfo);
