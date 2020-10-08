@@ -401,7 +401,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$player->getNetworkSession()->sendDataPacket($pk);
 
 		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
-		$this->sendData($player, [EntityMetadataProperties::NAMETAG => new StringMetadataProperty($this->getNameTag())]);
+		$this->sendData([$player], [EntityMetadataProperties::NAMETAG => new StringMetadataProperty($this->getNameTag())]);
 
 		$player->getNetworkSession()->onMobArmorChange($this);
 

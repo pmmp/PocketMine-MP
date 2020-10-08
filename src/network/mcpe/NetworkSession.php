@@ -649,8 +649,7 @@ class NetworkSession{
 	}
 
 	public function onRespawn() : void{
-		$this->player->sendData($this->player);
-		$this->player->sendData($this->player->getViewers());
+		$this->player->sendData(null);
 
 		$this->syncAdventureSettings($this->player);
 		$this->invManager->syncAll();

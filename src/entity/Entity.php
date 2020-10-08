@@ -605,7 +605,7 @@ abstract class Entity{
 
 		$changedProperties = $this->getSyncedNetworkData(true);
 		if(count($changedProperties) > 0){
-			$this->sendData($this->hasSpawned, $changedProperties);
+			$this->sendData(null, $changedProperties);
 			$this->networkProperties->clearDirtyProperties();
 		}
 
@@ -1609,27 +1609,17 @@ abstract class Entity{
 	}
 
 	/**
-	 * @param Player[]|Player    $player
+	 * @param Player[]|null      $targets
 	 * @param MetadataProperty[] $data Properly formatted entity data, defaults to everything
+	 *
 	 * @phpstan-param array<int, MetadataProperty> $data
 	 */
-	public function sendData($player, ?array $data = null) : void{
-		if(!is_array($player)){
-			$player = [$player];
-		}
-
+	public function sendData(?array $targets, ?array $data = null) : void{
+		$targets = $targets ?? $this->hasSpawned;
 		$data = $data ?? $this->getSyncedNetworkData(false);
 
-		foreach($player as $p){
-			if($p === $this){
-				continue;
-			}
+		foreach($targets as $p){
 			$p->getNetworkSession()->syncActorData($this, $data);
-		}
-
-		if($this instanceof Player){
-			//TODO: bad hack, remove
-			$this->getNetworkSession()->syncActorData($this, $data);
 		}
 	}
 

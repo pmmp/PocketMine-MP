@@ -2185,6 +2185,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$properties->setBlockPos(EntityMetadataProperties::PLAYER_BED_POSITION, $this->sleeping ?? new Vector3(0, 0, 0));
 	}
 
+	public function sendData(?array $targets, ?array $data = null) : void{
+		if($targets === null){
+			$targets = $this->getViewers();
+			$targets[] = $this;
+		}
+		parent::sendData($targets, $data);
+	}
+
 	public function broadcastAnimation(Animation $animation, ?array $targets = null) : void{
 		if($this->spawned and $targets === null){
 			$targets = $this->getViewers();

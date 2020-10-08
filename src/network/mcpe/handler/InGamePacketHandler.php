@@ -506,22 +506,22 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			case PlayerActionPacket::ACTION_START_SPRINT:
 				if(!$this->player->toggleSprint(true)){
-					$this->player->sendData($this->player);
+					$this->player->sendData([$this->player]);
 				}
 				return true;
 			case PlayerActionPacket::ACTION_STOP_SPRINT:
 				if(!$this->player->toggleSprint(false)){
-					$this->player->sendData($this->player);
+					$this->player->sendData([$this->player]);
 				}
 				return true;
 			case PlayerActionPacket::ACTION_START_SNEAK:
 				if(!$this->player->toggleSneak(true)){
-					$this->player->sendData($this->player);
+					$this->player->sendData([$this->player]);
 				}
 				return true;
 			case PlayerActionPacket::ACTION_STOP_SNEAK:
 				if(!$this->player->toggleSneak(false)){
-					$this->player->sendData($this->player);
+					$this->player->sendData([$this->player]);
 				}
 				return true;
 			case PlayerActionPacket::ACTION_START_GLIDE:
