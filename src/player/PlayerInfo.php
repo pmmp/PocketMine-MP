@@ -88,4 +88,23 @@ class PlayerInfo{
 	public function getExtraData() : array{
 		return $this->extraData;
 	}
+
+	public function hasXboxData() : bool{
+		return $this->xuid !== "";
+	}
+
+	/**
+	 * Returns a new PlayerInfo with XBL player info stripped. This is used to ensure that non-XBL players can't spoof
+	 * XBL data.
+	 */
+	public function withoutXboxData() : self{
+		return new self(
+			$this->username,
+			$this->uuid,
+			$this->skin,
+			$this->locale,
+			"",
+			$this->extraData
+		);
+	}
 }

@@ -561,8 +561,6 @@ class NetworkSession{
 		if($error === null){
 			if($authenticated and $this->info->getXuid() === ""){
 				$error = "Expected XUID but none found";
-			}elseif(!$authenticated and $this->info->getXuid() !== ""){
-				$error = "Unexpected XUID for non-XBOX-authenticated player";
 			}elseif($clientPubKey === null){
 				$error = "Missing client public key"; //failsafe
 			}
@@ -576,9 +574,15 @@ class NetworkSession{
 
 		$this->authenticated = $authenticated;
 
-		if(!$this->authenticated and $authRequired){
-			$this->disconnect("disconnectionScreen.notAuthenticated");
-			return;
+		if(!$this->authenticated){
+			if($authRequired){
+				$this->disconnect("disconnectionScreen.notAuthenticated");
+				return;
+			}
+			if($this->info->hasXboxData()){
+				$this->logger->warning("Discarding unexpected XUID for non-authenticated player");
+				$this->info = $this->info->withoutXboxData();
+			}
 		}
 		$this->logger->debug("Xbox Live authenticated: " . ($this->authenticated ? "YES" : "NO"));
 
