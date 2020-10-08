@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\entity\Skin;
-use pocketmine\network\mcpe\protocol\types\SkinData;
-use pocketmine\network\mcpe\protocol\types\SkinImage;
+use pocketmine\network\mcpe\protocol\types\skin\SkinData;
+use pocketmine\network\mcpe\protocol\types\skin\SkinImage;
 use function is_array;
 use function is_string;
 use function json_decode;

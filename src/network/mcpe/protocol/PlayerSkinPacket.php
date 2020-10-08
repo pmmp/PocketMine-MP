@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\types\SkinData;
+use pocketmine\network\mcpe\protocol\types\skin\SkinData;
 use pocketmine\uuid\UUID;
 
 class PlayerSkinPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
