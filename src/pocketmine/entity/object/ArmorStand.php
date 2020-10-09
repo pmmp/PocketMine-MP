@@ -97,7 +97,7 @@ class ArmorStand extends Living{
 			$this->equipment->setItemInHand(Item::nbtDeserialize($this->namedtag->getCompoundTag(self::TAG_MAINHAND)));
 		}
 		if($this->namedtag->hasTag(self::TAG_OFFHAND, CompoundTag::class)){
-			$this->equipment->setItemInHand(Item::nbtDeserialize($this->namedtag->getCompoundTag(self::TAG_OFFHAND)));
+			$this->equipment->setOffhandItem(Item::nbtDeserialize($this->namedtag->getCompoundTag(self::TAG_OFFHAND)));
 		}
 
 		$this->setPose(min($this->namedtag->getInt(self::TAG_POSE_INDEX, 0), 12));
