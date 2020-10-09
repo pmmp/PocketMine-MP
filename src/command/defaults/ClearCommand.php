@@ -78,19 +78,19 @@ class ClearCommand extends VanillaCommand{
 		}
 
 		$item = null;
+		$maxCount = -1;
 		if(isset($args[1])){
 			try{
 				$item = LegacyStringToItemParser::getInstance()->parse($args[1]);
+
+				if(isset($args[2])){
+					$item->setCount($maxCount = $this->getInteger($sender, $args[2], 0));
+				}
 			}catch(InvalidArgumentException $e){
 				//vanilla checks this at argument parsing layer, can't come up with a better alternative
 				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.give.item.notFound", [$args[1]]));
 				return true;
 			}
-		}
-
-		$maxCount = -1;
-		if(isset($args[2])){
-			$item->setCount($maxCount = $this->getInteger($sender, $args[2], 0));
 		}
 
 		//checking players inventory for all the items matching the criteria
