@@ -125,9 +125,9 @@ class ClearCommand extends VanillaCommand{
 		}else{
 			//clear the item from targets inventory irrelevant of the count
 			if($maxCount === -1){
-				if(($index = $target->getArmorInventory()->first($item)) !== -1){
+				if(($slot = $target->getArmorInventory()->first($item)) !== -1){
 					$cleared++;
-					$target->getArmorInventory()->clear($index);
+					$target->getArmorInventory()->clear($slot);
 				}
 
 				foreach($target->getInventory()->all($item) as $index => $i){
@@ -136,10 +136,10 @@ class ClearCommand extends VanillaCommand{
 				}
 			}else{
 				//clear only the given amount of that particular item from targets inventory
-				if(($index = $target->getArmorInventory()->first($item)) !== -1){
+				if(($slot = $target->getArmorInventory()->first($item)) !== -1){
 					$cleared++;
 					$maxCount--;
-					$target->getArmorInventory()->clear($index);
+					$target->getArmorInventory()->clear($slot);
 				}
 
 				if($maxCount > 0){
