@@ -123,10 +123,7 @@ final class Process{
 		return count(ThreadManager::getInstance()->getAll()) + 2; //MainLogger + Main Thread
 	}
 
-	/**
-	 * @param int $pid
-	 */
-	public static function kill($pid) : void{
+	public static function kill(int $pid) : void{
 		$logger = \GlobalLogger::get();
 		if($logger instanceof MainLogger){
 			$logger->syncFlushBuffer();
