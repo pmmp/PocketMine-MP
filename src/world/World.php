@@ -173,7 +173,7 @@ class World implements ChunkManager{
 	private $playerChunkListeners = [];
 
 	/** @var ClientboundPacket[][] */
-	private $chunkPackets = [];
+	private $packetBuffersByChunk = [];
 
 	/** @var float[] */
 	private $unloadQueue = [];
@@ -525,10 +525,10 @@ class World implements ChunkManager{
 	 * Broadcasts a packet to every player who has the target position within their view distance.
 	 */
 	public function broadcastPacketToViewers(Vector3 $pos, ClientboundPacket $packet) : void{
-		if(!isset($this->chunkPackets[$index = World::chunkHash($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4)])){
-			$this->chunkPackets[$index] = [$packet];
+		if(!isset($this->packetBuffersByChunk[$index = World::chunkHash($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4)])){
+			$this->packetBuffersByChunk[$index] = [$packet];
 		}else{
-			$this->chunkPackets[$index][] = $packet;
+			$this->packetBuffersByChunk[$index][] = $packet;
 		}
 	}
 
@@ -776,7 +776,7 @@ class World implements ChunkManager{
 			$this->checkSleep();
 		}
 
-		foreach($this->chunkPackets as $index => $entries){
+		foreach($this->packetBuffersByChunk as $index => $entries){
 			World::getXZ($index, $chunkX, $chunkZ);
 			$chunkPlayers = $this->getChunkPlayers($chunkX, $chunkZ);
 			if(count($chunkPlayers) > 0){
@@ -784,7 +784,7 @@ class World implements ChunkManager{
 			}
 		}
 
-		$this->chunkPackets = [];
+		$this->packetBuffersByChunk = [];
 	}
 
 	public function checkSleep() : void{
