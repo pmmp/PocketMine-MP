@@ -163,7 +163,7 @@ class TimingsCommand extends VanillaCommand{
 							$sender->getServer()->getLogger()->logException($result);
 							return;
 						}
-						$response = json_decode($result[0], true);
+						$response = json_decode($result->getBody(), true);
 						if(is_array($response) && isset($response["id"])){
 							Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.timingsRead",
 								["https://" . $this->host . "/?id=" . $response["id"]]));
