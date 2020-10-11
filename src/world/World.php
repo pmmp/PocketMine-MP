@@ -525,7 +525,11 @@ class World implements ChunkManager{
 	 * Broadcasts a packet to every player who has the target position within their view distance.
 	 */
 	public function broadcastPacketToViewers(Vector3 $pos, ClientboundPacket $packet) : void{
-		if(!isset($this->packetBuffersByChunk[$index = World::chunkHash($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4)])){
+		$this->broadcastPacketToPlayersUsingChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $packet);
+	}
+
+	private function broadcastPacketToPlayersUsingChunk(int $chunkX, int $chunkZ, ClientboundPacket $packet) : void{
+		if(!isset($this->packetBuffersByChunk[$index = World::chunkHash($chunkX, $chunkZ)])){
 			$this->packetBuffersByChunk[$index] = [$packet];
 		}else{
 			$this->packetBuffersByChunk[$index][] = $packet;
