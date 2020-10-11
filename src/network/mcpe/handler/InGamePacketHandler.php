@@ -390,7 +390,9 @@ class InGamePacketHandler extends PacketHandler{
 			}else{
 				$blocks[] = $blockPos;
 			}
-			$this->player->getLocation()->getWorld()->sendBlocks([$this->player], $blocks);
+			foreach($this->player->getWorld()->createBlockUpdatePackets($blocks) as $packet){
+				$this->session->sendDataPacket($packet);
+			}
 		}
 	}
 
@@ -616,7 +618,9 @@ class InGamePacketHandler extends PacketHandler{
 
 				try{
 					if(!$block->updateText($this->player, $text)){
-						$this->player->getWorld()->sendBlocks([$this->player], [$pos]);
+						foreach($this->player->getWorld()->createBlockUpdatePackets([$pos]) as $updatePacket){
+							$this->session->sendDataPacket($updatePacket);
+						}
 					}
 				}catch(\UnexpectedValueException $e){
 					throw BadPacketException::wrap($e);

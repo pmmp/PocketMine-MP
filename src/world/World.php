@@ -763,7 +763,9 @@ class World implements ChunkManager{
 							$p->onChunkChanged($chunk);
 						}
 					}else{
-						$this->sendBlocks($this->getChunkPlayers($chunkX, $chunkZ), $blocks);
+						foreach($this->createBlockUpdatePackets($blocks) as $packet){
+							$this->broadcastPacketToPlayersUsingChunk($chunkX, $chunkZ, $packet);
+						}
 					}
 				}
 			}
@@ -822,10 +824,11 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * @param Player[]  $target
 	 * @param Vector3[] $blocks
+	 *
+	 * @return ClientboundPacket[]
 	 */
-	public function sendBlocks(array $target, array $blocks) : void{
+	public function createBlockUpdatePackets(array $blocks) : array{
 		$packets = [];
 
 		foreach($blocks as $b){
@@ -842,7 +845,7 @@ class World implements ChunkManager{
 			}
 		}
 
-		$this->server->broadcastPackets($target, $packets);
+		return $packets;
 	}
 
 	public function clearCache(bool $force = false) : void{
