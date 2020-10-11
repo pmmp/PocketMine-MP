@@ -427,7 +427,7 @@ class NetworkSession{
 		if(count($this->sendBuffer) > 0){
 			$promise = $this->server->prepareBatch(PacketBatch::fromPackets(...$this->sendBuffer), $this->compressor, $immediate);
 			$this->sendBuffer = [];
-			$this->queueCompressed($promise, $immediate);
+			$this->queueCompressedNoBufferFlush($promise, $immediate);
 		}
 	}
 
@@ -437,6 +437,10 @@ class NetworkSession{
 
 	public function queueCompressed(CompressBatchPromise $payload, bool $immediate = false) : void{
 		$this->flushSendBuffer($immediate); //Maintain ordering if possible
+		$this->queueCompressedNoBufferFlush($payload, $immediate);
+	}
+
+	private function queueCompressedNoBufferFlush(CompressBatchPromise $payload, bool $immediate = false) : void{
 		if($immediate){
 			//Skips all queues
 			$this->sendEncoded($payload->getResult(), true);
