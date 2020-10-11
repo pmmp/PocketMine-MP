@@ -92,6 +92,7 @@ class SetupWizard{
 		$config->save();
 
 		if(strtolower($this->getInput($this->lang->get("skip_installer"), "n", "y/N")) === "y"){
+			$this->IPDetails();
 			return true;
 		}
 
@@ -101,6 +102,7 @@ class SetupWizard{
 		$this->generateUserFiles();
 
 		$this->networkFunctions();
+		$this->IPDetails();
 
 		$this->endWizard();
 
@@ -218,7 +220,9 @@ LICENSE;
 		}
 
 		$config->save();
-
+	}
+	
+	private function IPDetails() : void{
 		$this->message($this->lang->get("ip_get"));
 
 		$externalIP = Internet::getIP();
