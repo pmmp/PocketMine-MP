@@ -114,7 +114,7 @@ abstract class Command{
 	 *
 	 * @return array<string, mixed>
 	 */
-	public function parseArguments(CommandSender $sender, Overload $overload, array $args) : array{
+	private function parseArguments(CommandSender $sender, Overload $overload, array $args) : array{
 		$result = [];
 		$offset = 0;
 		$parameters = $overload->getParameters();
