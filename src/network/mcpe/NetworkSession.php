@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use Ds\Set;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
+use pocketmine\command\Overload;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\Entity;
@@ -777,9 +778,9 @@ class NetworkSession{
 				0,
 				0,
 				$aliasObj,
-				[
-					[CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, 0, true)]
-				]
+				array_map(function(Overload $overload) : array{
+					return $overload->getParameters();
+				}, $command->getOverloads())
 			);
 
 			$pk->commandData[$command->getName()] = $data;

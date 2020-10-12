@@ -33,8 +33,12 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\TextFormat;
+use function array_slice;
+use function count;
 use function explode;
+use function implode;
 use function str_replace;
+use const PHP_INT_MAX;
 
 abstract class Command{
 
@@ -68,6 +72,9 @@ abstract class Command{
 	/** @var string|null */
 	private $permissionMessage = null;
 
+	/** @var Overload[] */
+	protected $overloads = [];
+
 	/** @var TimingsHandler|null */
 	public $timings = null;
 
@@ -88,7 +95,44 @@ abstract class Command{
 	 * @return mixed
 	 * @throws CommandException
 	 */
-	abstract public function execute(CommandSender $sender, string $commandLabel, array $args);
+	public function execute(CommandSender $sender, string $commandLabel, array $args){
+		if(!$this->testPermission($sender)){
+			return false;
+		}
+		foreach($this->overloads as $overload){
+			if($overload->canParse($sender, $args)){
+				$this->onRun($sender, $this->parseArguments($sender, $overload, $args));
+				return true;
+			}
+		}
+		return true;
+	}
+
+	public function parseArguments(CommandSender $sender, Overload $overload, array $args) : array{
+		$result = [];
+		$offset = 0;
+		foreach($overload->getParameters() as $parameter){
+			if($parameter->getLength() === PHP_INT_MAX){
+				$result[$parameter->getName()] = implode(" ", array_slice($args, $offset));
+				break;
+			}
+			$argument = implode(" ", array_slice($args, $offset, $parameter->getLength()));
+			if($parameter->canParse($sender, $argument)){
+				$result[$parameter->getName()] = $parameter->parse($sender, $argument);
+				if(!$parameter->isOptional){
+					$offset += $parameter->getLength();
+				}
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * @param mixed[]       $args An array containing objects or values
+	 */
+	public function onRun(CommandSender $sender, array $args){
+
+	}
 
 	public function getName() : string{
 		return $this->name;
@@ -107,6 +151,20 @@ abstract class Command{
 			}
 		}
 		$this->permission = $permission;
+	}
+
+	public function addOverload(Overload $overload){
+		$this->overloads[] = $overload;
+	}
+
+	/**
+	 * @return Overload[]
+	 */
+	public function getOverloads() : array{
+		if(count($this->overloads) === 0){
+			$this->overloads[] = new Overload($this);
+		}
+		return $this->overloads;
 	}
 
 	public function testPermission(CommandSender $target) : bool{
