@@ -70,6 +70,10 @@ class PlayerParameter extends EnumParameter{
 		return "target";
 	}
 
+	public function getFailMessage(CommandSender $sender) : string{
+		return $sender->getServer()->getLanguage()->translateString("%commands.generic.player.notFound");
+	}
+
 	/**
 	 * @return IPlayer|null
 	 */
