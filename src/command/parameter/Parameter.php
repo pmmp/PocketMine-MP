@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\parameter;
 
 use pocketmine\command\CommandSender;
+use pocketmine\command\Overload;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
@@ -31,6 +32,9 @@ use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 abstract class Parameter extends CommandParameter{
 	/** @var int the length of parameter */
 	protected $length = 1;
+
+	/** @var Overload */
+	protected $overload;
 
 	public function __construct(string $name, bool $optional = false){
 		$this->paramName = $name;
@@ -69,6 +73,13 @@ abstract class Parameter extends CommandParameter{
 	 */
 	abstract public function getTargetName() : string;
 
+	/**
+	 * Returns the translation of fail message
+	 */
+	public function getFailMessage(CommandSender $sender) : string{
+		return $sender->getServer()->getLanguage()->translateString("%commands.generic.usage", [$this->getOverload()->getCommand()->getUsage()]);
+	}
+
 	public function setEnum(?CommandEnum $enum) : self{
 		$this->enum = $enum;
 		return $this;
@@ -97,5 +108,14 @@ abstract class Parameter extends CommandParameter{
 
 	public function getLength() : int{
 		return $this->length;
+	}
+
+	public function getOverload() : Overload{
+		return $this->overload;
+	}
+
+	public function setOverload(Overload $overload) : self{
+		$this->overload = $overload;
+		return $this;
 	}
 }

@@ -26,6 +26,8 @@ namespace pocketmine\command;
 use pocketmine\command\parameter\defaults\TextParameter;
 use pocketmine\command\parameter\Parameter;
 use pocketmine\command\utils\CommandException;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
+
 use function array_shift;
 use function count;
 use function implode;
@@ -49,6 +51,7 @@ class Overload{
 				}
 			}
 		}
+		$parameter->setOverload($this);
 		$this->parameters[] = $parameter;
 		return $this;
 	}
@@ -76,7 +79,7 @@ class Overload{
 		$argsCount = count($args);
 
 		if($argsCount < count($this->parameters)){
-			return false;
+			throw new InvalidCommandSyntaxException();
 		}
 		$offset = 0;
 		foreach($this->getParameters() as $parameter){
@@ -85,6 +88,7 @@ class Overload{
 			}
 			$argument = implode(" ", array_slice($args, $offset, $parameter->getLength()));
 			if(!$parameter->canParse($sender, $argument)){
+				$sender->sendMessage($sender->getServer()->getLanguage()->translateString($parameter->getFailMessage()));
 				return false;
 			}
 			if(!$parameter->isOptional){
