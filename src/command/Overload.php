@@ -78,24 +78,30 @@ class Overload{
 	 */
 	public function canParse(CommandSender $sender, array $args) : bool{
 		$argsCount = count($args);
+		$parameterCount = count($this->parameters);
 
-		if($argsCount < count($this->parameters)){
+		if($argsCount < $parameterCount){
 			throw new InvalidCommandSyntaxException();
 		}
 		$offset = 0;
+		$parsed = false;
 		foreach($this->getParameters() as $parameter){
+			if($offset > $parameterCount){
+				break;
+			}
 			if($parameter->getLength() === PHP_INT_MAX){
-				return true;
+				$parsed = true;
+				break;
 			}
 			$argument = implode(" ", array_slice($args, $offset, $parameter->getLength()));
 			if(!$parameter->canParse($sender, $argument)){
-				$sender->sendMessage($sender->getServer()->getLanguage()->translateString($parameter->getFailMessage($sender)));
-				return false;
+				break;
 			}
 			if(!$parameter->isOptional){
 				$offset += $parameter->getLength();
 			}
+			$parsed = true;
 		}
-		return true;
+		return $parsed;
 	}
 }

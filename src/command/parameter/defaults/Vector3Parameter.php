@@ -43,9 +43,6 @@ class Vector3Parameter extends Parameter{
 	}
 
 	public function canParse(CommandSender $sender, string $argument) : bool{
-		if($sender->getServer()->getPlayer($argument) !== null){
-			return true;
-		}
 		$coordinateArgs = explode(" ", $argument);
 		if(count($coordinateArgs) !== 3){
 			return false;
@@ -54,10 +51,6 @@ class Vector3Parameter extends Parameter{
 	}
 
 	public function parse(CommandSender $sender, string $argument){
-		$target = $sender->getServer()->getPlayer($argument);
-		if($target !== null){
-			return $target->getPosition()->asVector3();
-		}
 		[$x, $y, $z] = explode(" ", $argument);
 		if($sender instanceof Player){
 			$x = $this->getCoordinates($x);

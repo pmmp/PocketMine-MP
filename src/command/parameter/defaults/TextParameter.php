@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\command\parameter\defaults;
 
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
-
 use const PHP_INT_MAX;
 
 class TextParameter extends StringParameter{

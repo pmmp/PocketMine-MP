@@ -26,6 +26,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\command;
 
+use pocketmine\command\parameter\Parameter;
 use pocketmine\command\utils\CommandException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\PermissionManager;
@@ -116,7 +117,18 @@ abstract class Command{
 	public function parseArguments(CommandSender $sender, Overload $overload, array $args) : array{
 		$result = [];
 		$offset = 0;
-		foreach($overload->getParameters() as $parameter){
+		$parameters = $overload->getParameters();
+		$argCount = count($parameters);
+		usort($parameters, function (Parameter $a, Parameter $b): int {
+			if($a->getLength() === PHP_INT_MAX){
+				return 1;
+			}
+			return -1;
+		});
+		foreach($parameters as $parameter){
+			if($offset > $argCount){
+				break;
+			}
 			if($parameter->getLength() === PHP_INT_MAX){
 				$result[$parameter->getName()] = implode(" ", array_slice($args, $offset));
 				break;
