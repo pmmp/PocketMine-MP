@@ -57,6 +57,9 @@ class Overload{
 		return $this->command;
 	}
 
+	/**
+	 * @return Parameter[]
+	 */
 	public function getParameters() : array{
 		if(count($this->parameters) === 0){
 			return [new TextParameter("args", true)]; //Prevents parameters from being sent with empty values
