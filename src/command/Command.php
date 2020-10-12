@@ -119,7 +119,7 @@ abstract class Command{
 		$offset = 0;
 		$parameters = $overload->getParameters();
 		$argCount = count($parameters);
-		usort($parameters, function (Parameter $a, Parameter $b): int {
+		usort($parameters, function(Parameter $a, Parameter $b) : int{
 			if($a->getLength() === PHP_INT_MAX){
 				return 1;
 			}
