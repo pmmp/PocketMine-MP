@@ -27,8 +27,6 @@ use pocketmine\command\parameter\defaults\TextParameter;
 use pocketmine\command\parameter\Parameter;
 use pocketmine\command\utils\CommandException;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-
-use function array_shift;
 use function count;
 use function implode;
 
