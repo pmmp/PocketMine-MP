@@ -63,9 +63,7 @@ class Vector3Parameter extends Parameter{
 			$x = $this->getCoordinates($x);
 			$y = $this->getCoordinates($y);
 			$z = $this->getCoordinates($z);
-			if(is_numeric($x) && is_numeric($y) && is_numeric($z)){
-				return new Vector3((float) $sender->getPosition()->getX() + $x, (float) $sender->getPosition()->getY() + $y, (float) $sender->getPosition()->getZ() + $z);
-			}
+			return new Vector3((float) $sender->getPosition()->getX() + $x, (float) $sender->getPosition()->getY() + $y, (float) $sender->getPosition()->getZ() + $z);
 		}
 		if(is_numeric($x) && is_numeric($y) && is_numeric($z)){
 			return new Vector3((float) $x, (float) $y, (float) $z);

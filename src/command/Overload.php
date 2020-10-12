@@ -75,6 +75,9 @@ class Overload{
 		return $parameters;
 	}
 
+	/**
+	 * @param string[] $args
+	 */
 	public function canParse(CommandSender $sender, array $args) : bool{
 		$argsCount = count($args);
 
@@ -88,7 +91,7 @@ class Overload{
 			}
 			$argument = implode(" ", array_slice($args, $offset, $parameter->getLength()));
 			if(!$parameter->canParse($sender, $argument)){
-				$sender->sendMessage($sender->getServer()->getLanguage()->translateString($parameter->getFailMessage()));
+				$sender->sendMessage($sender->getServer()->getLanguage()->translateString($parameter->getFailMessage($sender)));
 				return false;
 			}
 			if(!$parameter->isOptional){
@@ -96,13 +99,5 @@ class Overload{
 			}
 		}
 		return true;
-	}
-
-	public function parse(CommandSender $sender, array $args) : array{
-		$results = [];
-		foreach($this->parameters as $parameter){
-			$results[$parameter->getName()] = $parameter->parse($sender, ($parameter instanceof TextParameter ? implode(" ", $args) : array_shift($args)));
-		}
-		return $results;
 	}
 }

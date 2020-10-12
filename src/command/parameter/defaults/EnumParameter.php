@@ -59,18 +59,23 @@ abstract class EnumParameter extends Parameter{
 		return $this->caseSensitive;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function parseSilent(CommandSender $sender, string $argument){
-		if($this->isExact()){
+		if($this->enum !== null){
+			if($this->isExact()){
+				foreach($this->enum->getValues() as $name => $value){
+					if(($this->isCaseSensitive() ? $argument : mb_strtolower($argument)) === $value){
+						return $value;
+					}
+				}
+				return null;
+			}
 			foreach($this->enum->getValues() as $name => $value){
-				if(($this->isCaseSensitive() ? $argument : mb_strtolower($argument)) === $value){
+				if(mb_strpos($value, $this->isCaseSensitive() ? $argument : mb_strtolower($argument)) !== false){
 					return $value;
 				}
-			}
-			return null;
-		}
-		foreach($this->enum->getValues() as $name => $value){
-			if(mb_strpos($value, $this->isCaseSensitive() ? $argument : mb_strtolower($argument)) !== false){
-				return $value;
 			}
 		}
 		return null;

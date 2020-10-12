@@ -108,6 +108,11 @@ abstract class Command{
 		return true;
 	}
 
+	/**
+	 * @param string[] $args
+	 *
+	 * @return array<string, mixed>
+	 */
 	public function parseArguments(CommandSender $sender, Overload $overload, array $args) : array{
 		$result = [];
 		$offset = 0;
@@ -128,7 +133,7 @@ abstract class Command{
 	}
 
 	/**
-	 * @param mixed[]       $args An array containing objects or values
+	 * @param mixed[] $args An array containing objects or values
 	 */
 	public function onRun(CommandSender $sender, array $args){
 
@@ -153,7 +158,7 @@ abstract class Command{
 		$this->permission = $permission;
 	}
 
-	public function addOverload(Overload $overload){
+	public function addOverload(Overload $overload) : void{
 		$this->overloads[] = $overload;
 	}
 

@@ -34,7 +34,7 @@ class StringParameter extends Parameter{
 	}
 
 	public function parse(CommandSender $sender, string $argument){
-		return (string) $argument;
+		return $argument;
 	}
 
 	public function getNetworkType() : int{

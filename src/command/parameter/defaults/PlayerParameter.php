@@ -78,6 +78,7 @@ class PlayerParameter extends EnumParameter{
 	 * @return IPlayer|null
 	 */
 	public function parseSilent(CommandSender $sender, string $argument){
+		/** @var string|null $value */
 		$value = parent::parseSilent($sender, $argument);
 		if($value !== null){
 			if(!$this->isIncludeOffline()){
