@@ -58,7 +58,7 @@ class PluginDescription{
 	private $compatibleOperatingSystems = [];
 	/**
 	 * @var string[][]
-	 * @phpstan-var array<string, list<mixed>>
+	 * @phpstan-var array<string, list<string>>
 	 */
 	private $extensions = [];
 	/** @var string[] */
