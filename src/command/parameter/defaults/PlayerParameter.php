@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\parameter\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\lang\Language;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
 use pocketmine\player\IPlayer;
@@ -70,8 +71,8 @@ class PlayerParameter extends EnumParameter{
 		return "target";
 	}
 
-	public function getFailMessage(CommandSender $sender) : string{
-		return $sender->getServer()->getLanguage()->translateString("%commands.generic.player.notFound");
+	public function getFailMessage(Language $language) : string{
+		return $language->translateString("%commands.generic.player.notFound");
 	}
 
 	/**
@@ -92,11 +93,11 @@ class PlayerParameter extends EnumParameter{
 	}
 
 	public function prepare() : void{
-		$this->setEnum(new CommandEnum("player", array_map(function(Player $player) : string{
+		$this->enum = new CommandEnum("player", array_map(function(Player $player) : string{
 			if(mb_strpos($player->getName(), " ") !== false){
 				return "\"{$player->getName()}\"";
 			}
 			return $player->getName();
-		}, Server::getInstance()->getOnlinePlayers())));
+		}, Server::getInstance()->getOnlinePlayers()));
 	}
 }

@@ -24,28 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\command\parameter\defaults;
 
 use pocketmine\command\CommandSender;
-use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\command\parameter\Parameter;
+use function is_numeric;
 
-class IntegerParameter extends NumericParameter{
+abstract class NumericParameter extends Parameter{
 
-	public function parse(CommandSender $sender, string $argument){
-		return (int) $argument;
-	}
-
-	public function getNetworkType() : int{
-		return AvailableCommandsPacket::ARG_TYPE_INT;
-	}
-
-	public function getTargetName() : string{
-		return "int";
-	}
-
-	public function setPostfix(?string $postfix) : self{
-		$this->postfix = $postfix;
-		return $this;
-	}
-
-	public function getPostfix() : ?string{
-		return $this->postfix;
+	public function canParse(CommandSender $sender, string $argument) : bool{
+		return is_numeric($argument);
 	}
 }

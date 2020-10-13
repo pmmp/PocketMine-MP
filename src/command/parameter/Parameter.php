@@ -25,6 +25,7 @@ namespace pocketmine\command\parameter;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\Overload;
+use pocketmine\lang\Language;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
@@ -76,8 +77,8 @@ abstract class Parameter extends CommandParameter{
 	/**
 	 * Returns the translation of fail message
 	 */
-	public function getFailMessage() : string{
-		return "%commands.generic.usage";
+	public function getFailMessage(Language $language) : string{
+		return $language->translateString("%commands.generic.usage");
 	}
 
 	public function getEnum() : ?CommandEnum{

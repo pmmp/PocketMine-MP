@@ -175,7 +175,7 @@ abstract class Command{
 	 */
 	public function getOverloads() : array{
 		if(count($this->overloads) === 0){
-			$this->overloads[] = new Overload($this);
+			$this->overloads[] = new Overload();
 		}
 		return $this->overloads;
 	}
