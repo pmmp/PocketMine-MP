@@ -132,7 +132,7 @@ class PluginDescription{
 					$k = $v;
 					$v = "*";
 				}
-				$this->extensions[$k] = is_array($v) ? $v : [$v];
+				$this->extensions[$k] = array_map('strval', is_array($v) ? $v : [$v]);
 			}
 		}
 
