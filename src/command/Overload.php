@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
-use pocketmine\command\parameter\defaults\TextParameter;
 use pocketmine\command\parameter\Parameter;
 use pocketmine\command\utils\CommandException;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
@@ -61,9 +60,6 @@ class Overload{
 	 * @return Parameter[]
 	 */
 	public function getParameters() : array{
-		if(count($this->parameters) === 0){
-			return [new TextParameter("args", true)]; //Prevents parameters from being sent with empty values
-		}
 		$parameters = [];
 		foreach($this->parameters as $position => $parameter){
 			$parameter->prepare();
