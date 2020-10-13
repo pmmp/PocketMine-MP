@@ -80,11 +80,6 @@ abstract class Parameter extends CommandParameter{
 		return "%commands.generic.usage";
 	}
 
-	public function setEnum(?CommandEnum $enum) : self{
-		$this->enum = $enum;
-		return $this;
-	}
-
 	public function getEnum() : ?CommandEnum{
 		return $this->enum;
 	}

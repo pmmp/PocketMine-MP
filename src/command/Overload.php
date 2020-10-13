@@ -28,7 +28,6 @@ use pocketmine\command\parameter\Parameter;
 use pocketmine\command\utils\CommandException;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\utils\Utils;
-
 use function count;
 use function implode;
 
