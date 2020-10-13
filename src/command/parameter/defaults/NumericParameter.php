@@ -30,6 +30,10 @@ use function is_numeric;
 abstract class NumericParameter extends Parameter{
 
 	public function canParse(CommandSender $sender, string $argument) : bool{
-		return is_numeric($argument);
+		return is_numeric($argument) || $this->isOptional;
+	}
+
+	public function getDefault(){
+		return -1;
 	}
 }

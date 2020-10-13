@@ -43,6 +43,9 @@ class Vector3Parameter extends Parameter{
 	}
 
 	public function canParse(CommandSender $sender, string $argument) : bool{
+		if($this->isOptional){
+			return true;
+		}
 		$coordinateArgs = explode(" ", $argument);
 		if(count($coordinateArgs) !== 3){
 			return false;

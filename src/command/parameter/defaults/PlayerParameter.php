@@ -56,7 +56,7 @@ class PlayerParameter extends EnumParameter{
 		if(!parent::canParse($sender, $argument)){
 			return false;
 		}
-		return preg_match("/^([a-zA-Z_] [a-zA-Z_ 0-9]*)$/", $argument) !== false;
+		return preg_match("/^([a-zA-Z_] [a-zA-Z_ 0-9]*)$/", $argument) !== false || $this->isOptional;
 	}
 
 	public function parse(CommandSender $sender, string $argument){
