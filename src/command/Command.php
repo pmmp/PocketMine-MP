@@ -102,7 +102,10 @@ abstract class Command{
 		}
 		foreach($this->overloads as $overload){
 			if($overload->canParse($sender, $args)){
-				$this->onRun($sender, $this->parseArguments($sender, $overload, $args));
+				$handler = $overload->getCommandHandler();
+				if($handler !== null){
+					($handler)($sender, $this->parseArguments($sender, $overload, $args));
+				}
 				return true;
 			}
 		}
@@ -142,13 +145,6 @@ abstract class Command{
 			}
 		}
 		return $result;
-	}
-
-	/**
-	 * @param mixed[] $args An array containing objects or values
-	 */
-	public function onRun(CommandSender $sender, array $args){
-
 	}
 
 	public function getName() : string{

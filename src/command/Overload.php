@@ -27,18 +27,22 @@ use pocketmine\command\parameter\defaults\TextParameter;
 use pocketmine\command\parameter\Parameter;
 use pocketmine\command\utils\CommandException;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\utils\Utils;
+
 use function count;
 use function implode;
 
 class Overload{
-	/** @var Command */
-	protected $command;
-
+	/** @var \Closure|null */
+	protected $commandHandler = null;
 	/** @var Parameter[] */
 	protected $parameters = [];
 
-	public function __construct(Command $command){
-		$this->command = $command;
+	public function __construct(?\Closure $commandHandler = null){
+		if($commandHandler !== null){
+			Utils::validateCallableSignature(function(CommandSender $sender, array $args){}, $commandHandler);
+		}
+		$this->commandHandler = $commandHandler;
 	}
 
 	public function addParameter(Parameter $parameter) : self{
@@ -52,10 +56,6 @@ class Overload{
 		$parameter->setOverload($this);
 		$this->parameters[] = $parameter;
 		return $this;
-	}
-
-	public function getCommand() : Command{
-		return $this->command;
 	}
 
 	/**
@@ -103,5 +103,17 @@ class Overload{
 			$parsed = true;
 		}
 		return $parsed;
+	}
+
+	public function getCommandHandler() : ?\Closure{
+		return $this->commandHandler;
+	}
+
+	public function setCommandHandler(?\Closure $handler) : self{
+		if($handler !== null){
+			Utils::validateCallableSignature(function(CommandSender $sender, array $args){}, $handler);
+		}
+		$this->commandHandler = $handler;
+		return $this;
 	}
 }

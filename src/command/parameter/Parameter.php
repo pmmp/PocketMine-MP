@@ -76,8 +76,8 @@ abstract class Parameter extends CommandParameter{
 	/**
 	 * Returns the translation of fail message
 	 */
-	public function getFailMessage(CommandSender $sender) : string{
-		return $sender->getServer()->getLanguage()->translateString("%commands.generic.usage", [$this->getOverload()->getCommand()->getUsage()]);
+	public function getFailMessage() : string{
+		return "%commands.generic.usage";
 	}
 
 	public function setEnum(?CommandEnum $enum) : self{
