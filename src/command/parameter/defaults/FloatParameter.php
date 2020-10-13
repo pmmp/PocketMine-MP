@@ -39,4 +39,8 @@ class FloatParameter extends NumericParameter{
 	public function getTargetName() : string{
 		return "float";
 	}
+
+	public function getDefault(){
+		return -1;
+	}
 }

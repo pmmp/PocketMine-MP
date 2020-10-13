@@ -105,4 +105,9 @@ abstract class Parameter extends CommandParameter{
 		$this->overload = $overload;
 		return $this;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	abstract public function getDefault();
 }
