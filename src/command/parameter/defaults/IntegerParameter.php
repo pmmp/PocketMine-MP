@@ -39,4 +39,13 @@ class IntegerParameter extends FloatParameter{
 	public function getTargetName() : string{
 		return "int";
 	}
+
+	public function setPostfix(?string $postfix) : self{
+		$this->postfix = $postfix;
+		return $this;
+	}
+
+	public function getPostfix() : ?string{
+		return $this->postfix;
+	}
 }

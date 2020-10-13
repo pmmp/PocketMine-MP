@@ -84,15 +84,6 @@ abstract class Parameter extends CommandParameter{
 		return $this->enum;
 	}
 
-	public function setPostfix(?string $postfix) : Parameter{
-		$this->postfix = $postfix;
-		return $this;
-	}
-
-	public function getPostfix() : ?string{
-		return $this->postfix;
-	}
-
 	public function prepare() : void{
 	}
 
