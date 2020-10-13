@@ -872,10 +872,10 @@ class Server{
 				$netCompressionThreshold = (int) $this->configGroup->getProperty("network.batch-threshold", 256);
 			}
 
-			$netCompressionLevel = (int) $this->configGroup->getProperty("network.compression-level", 7);
+			$netCompressionLevel = (int) $this->configGroup->getProperty("network.compression-level", 6);
 			if($netCompressionLevel < 1 or $netCompressionLevel > 9){
-				$this->logger->warning("Invalid network compression level $netCompressionLevel set, setting to default 7");
-				$netCompressionLevel = 7;
+				$this->logger->warning("Invalid network compression level $netCompressionLevel set, setting to default 6");
+				$netCompressionLevel = 6;
 			}
 			ZlibCompressor::setInstance(new ZlibCompressor($netCompressionLevel, $netCompressionThreshold, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE));
 

@@ -23,6 +23,10 @@ declare(strict_types=1);
 
 define('pocketmine\_PHPSTAN_ANALYSIS', true);
 
+if(!defined('LEVELDB_ZLIB_RAW_COMPRESSION')){
+	//leveldb might not be loaded
+	define('LEVELDB_ZLIB_RAW_COMPRESSION', 4);
+}
 if(!extension_loaded('libdeflate')){
 	function libdeflate_deflate_compress(string $data, int $level = 6) : string{}
 }

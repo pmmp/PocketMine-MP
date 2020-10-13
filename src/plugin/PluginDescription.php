@@ -56,7 +56,7 @@ class PluginDescription{
 	private $compatibleOperatingSystems = [];
 	/**
 	 * @var string[][]
-	 * @phpstan-var array<string, list<mixed>>
+	 * @phpstan-var array<string, list<string>>
 	 */
 	private $extensions = [];
 	/** @var string[] */
@@ -130,7 +130,7 @@ class PluginDescription{
 					$k = $v;
 					$v = "*";
 				}
-				$this->extensions[$k] = is_array($v) ? $v : [$v];
+				$this->extensions[$k] = array_map('strval', is_array($v) ? $v : [$v]);
 			}
 		}
 
