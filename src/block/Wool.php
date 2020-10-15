@@ -23,9 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\ColorInMetadataTrait;
 use pocketmine\item\Item;
 
 class Wool extends Opaque{
+	use ColorInMetadataTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new class(0.8, BlockToolType::SHEARS) extends BlockBreakInfo{
