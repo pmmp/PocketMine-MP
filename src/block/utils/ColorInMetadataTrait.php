@@ -21,15 +21,39 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\ColorInMetadataTrait;
-use pocketmine\item\ToolTier;
+use pocketmine\block\Block;
+use pocketmine\data\bedrock\DyeColorIdMap;
 
-class Concrete extends Opaque{
-	use ColorInMetadataTrait;
+trait ColorInMetadataTrait{
+	use ColoredTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.8, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
+	/**
+	 * @see Block::readStateFromData()
+	 */
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->color = DyeColorIdMap::getInstance()->fromId($stateMeta);
+	}
+
+	/**
+	 * @see Block::writeStateToMeta()
+	 */
+	protected function writeStateToMeta() : int{
+		return DyeColorIdMap::getInstance()->toId($this->color);
+	}
+
+	/**
+	 * @see Block::getStateBitmask()
+	 */
+	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
+	/**
+	 * @see Block::getNonPersistentStateBitmask()
+	 */
+	public function getNonPersistentStateBitmask() : int{
+		return 0;
 	}
 }

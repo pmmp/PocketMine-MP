@@ -23,11 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\ColorInMetadataTrait;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\math\Facing;
 
 class ConcretePowder extends Opaque implements Fallable{
+	use ColorInMetadataTrait;
 	use FallableTrait {
 		onNearbyBlockChange as protected startFalling;
 	}
@@ -54,7 +56,7 @@ class ConcretePowder extends Opaque implements Fallable{
 				continue;
 			}
 			if($this->getSide($i) instanceof Water){
-				return BlockFactory::getInstance()->get(BlockLegacyIds::CONCRETE, $this->idInfo->getVariant());
+				return VanillaBlocks::CONCRETE()->setColor($this->color);
 			}
 		}
 
