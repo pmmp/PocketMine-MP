@@ -101,7 +101,6 @@ abstract class Command{
 			return false;
 		}
 		foreach($this->overloads as $overload){
-			var_dump($overload->canParse($sender, $args));
 			if($overload->canParse($sender, $args)){
 				$handler = $overload->getCommandHandler();
 				if($handler !== null){
