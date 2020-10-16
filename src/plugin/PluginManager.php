@@ -433,21 +433,12 @@ class PluginManager{
 					continue;
 				}
 
-				$handlerClosure = $method->getClosure($listener);
-
-				try{
-					$eventClass = $parameters[0]->getClass();
-				}catch(\ReflectionException $e){ //class doesn't exist
-					if(isset($tags["softDepend"]) && !isset($this->plugins[$tags["softDepend"]])){
-						$this->server->getLogger()->debug("Not registering @softDepend listener " . Utils::getNiceClosureName($handlerClosure) . "() because plugin \"" . $tags["softDepend"] . "\" not found");
-						continue;
-					}
-
-					throw $e;
-				}
+				$eventClass = $parameters[0]->getClass();
 				if($eventClass === null or !$eventClass->isSubclassOf(Event::class)){
 					continue;
 				}
+
+				$handlerClosure = $method->getClosure($listener);
 
 				try{
 					$priority = isset($tags["priority"]) ? EventPriority::fromString($tags["priority"]) : EventPriority::NORMAL;
