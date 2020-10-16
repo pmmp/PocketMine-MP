@@ -400,7 +400,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @param bool $playSound Whether to play level-up and XP gained sounds.
 	 */
 	public function addXp(int $amount, bool $playSound = true) : bool{
-		$this->totalXp += $amount;
+		if($amount > 0){
+			$this->totalXp += $amount;
+		}
 
 		$oldLevel = $this->getXpLevel();
 		$oldTotal = $this->getCurrentTotalXp();
