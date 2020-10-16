@@ -101,6 +101,7 @@ abstract class Command{
 			return false;
 		}
 		foreach($this->overloads as $overload){
+			var_dump($overload->canParse($sender, $args));
 			if($overload->canParse($sender, $args)){
 				$handler = $overload->getCommandHandler();
 				if($handler !== null){
@@ -139,9 +140,7 @@ abstract class Command{
 			$argument = implode(" ", array_slice($args, $offset, $parameter->getLength()));
 			if($parameter->canParse($sender, $argument)){
 				$result[$parameter->getName()] = $parameter->parse($sender, $argument);
-				if(!$parameter->isOptional){
-					$offset += $parameter->getLength();
-				}
+				$offset += $parameter->getLength();
 			}
 		}
 		return $result;
