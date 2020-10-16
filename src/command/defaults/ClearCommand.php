@@ -121,7 +121,7 @@ class ClearCommand extends VanillaCommand{
 
 			$target->getInventory()->clearAll();
 			$target->getArmorInventory()->clearAll();
-			$target->getCursorInventory()->clearAll();
+			//todo should the cursor inv be cleared?
 		}else{
 			//clear the item from targets inventory irrelevant of the count
 			if($maxCount === -1){
