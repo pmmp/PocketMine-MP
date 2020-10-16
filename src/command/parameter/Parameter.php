@@ -51,7 +51,7 @@ abstract class Parameter extends CommandParameter{
 	 * Returns whether parsing is possible
 	 */
 	public function canParse(CommandSender $sender, string $argument) : bool{
-		return $this->parse($sender, $argument) !== null || $this->isOptional;
+		return $this->parse($sender, $argument) !== null;
 	}
 
 	/**
@@ -109,7 +109,5 @@ abstract class Parameter extends CommandParameter{
 	/**
 	 * @return mixed
 	 */
-	public function getDefault(){
-		return null;
-	}
+	abstract public function getDefault();
 }

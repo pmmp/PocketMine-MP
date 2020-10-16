@@ -138,12 +138,7 @@ abstract class Command{
 			}
 			$argument = implode(" ", array_slice($args, $offset, $parameter->getLength()));
 			if($parameter->canParse($sender, $argument)){
-				try{
-					$parsed = $parameter->parse($sender, $argument);
-				}catch(\Throwable $e){
-					$parsed = $parameter->getDefault();
-				}
-				$result[$parameter->getName()] = $parsed;
+				$result[$parameter->getName()] = $parameter->parse($sender, $argument);
 				if(!$parameter->isOptional){
 					$offset += $parameter->getLength();
 				}
