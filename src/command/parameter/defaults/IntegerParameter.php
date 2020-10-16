@@ -48,8 +48,4 @@ class IntegerParameter extends NumericParameter{
 	public function getPostfix() : ?string{
 		return $this->postfix;
 	}
-
-	public function getDefault(){
-		return -1;
-	}
 }

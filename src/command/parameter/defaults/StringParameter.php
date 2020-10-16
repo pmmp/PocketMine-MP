@@ -44,8 +44,4 @@ class StringParameter extends Parameter{
 	public function getTargetName() : string{
 		return "string";
 	}
-
-	public function getDefault(){
-		return "";
-	}
 }
