@@ -102,7 +102,7 @@ class ClearCommand extends VanillaCommand{
 			}
 
 			if($count > 0){
-				Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.clear.testing", [$target->getName(), $count]));
+				$sender->sendMessage(new TranslationContainer("%commands.clear.testing", [$target->getName(), $count]));
 			}else{
 				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.clear.failure.no.items", [$target->getName()]));
 			}
