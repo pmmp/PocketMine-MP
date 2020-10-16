@@ -832,10 +832,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($this->getHealth() <= 0){
 			$this->respawn();
 		}
-
-		foreach($this->server->getOnlinePlayers() as $player){
-			$player->getNetworkSession()->syncAvailableCommands();
-		}
 	}
 
 	protected function orderChunks() : void{
@@ -1976,10 +1972,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->server->broadcastMessage($quitMessage);
 		}
 		$this->save();
-
-		foreach($this->server->getOnlinePlayers() as $player){
-			$player->getNetworkSession()->syncAvailableCommands();
-		}
 
 		$this->spawned = false;
 
