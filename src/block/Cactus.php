@@ -97,6 +97,9 @@ class Cactus extends Transparent{
 		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
 			if($this->age === 15){
 				for($y = 1; $y < 3; ++$y){
+					if(!$this->pos->getWorld()->isInWorld($this->pos->x, $this->pos->y + $y, $this->pos->z)){
+						break;
+					}
 					$b = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + $y, $this->pos->z);
 					if($b->getId() === BlockLegacyIds::AIR){
 						$ev = new BlockGrowEvent($b, VanillaBlocks::CACTUS());

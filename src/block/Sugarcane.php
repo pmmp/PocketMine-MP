@@ -57,6 +57,9 @@ class Sugarcane extends Flowable{
 		if($item instanceof Fertilizer){
 			if(!$this->getSide(Facing::DOWN)->isSameType($this)){
 				for($y = 1; $y < 3; ++$y){
+					if(!$this->pos->getWorld()->isInWorld($this->pos->x, $this->pos->y + $y, $this->pos->z)){
+						break;
+					}
 					$b = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + $y, $this->pos->z);
 					if($b->getId() === BlockLegacyIds::AIR){
 						$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
