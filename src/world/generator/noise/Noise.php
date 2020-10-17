@@ -294,34 +294,47 @@ abstract class Noise{
 			}
 		}
 
+
+		/**
+		 * The following code originally called trilinearLerp() in a loop, but it was later inlined to elide function
+		 * call overhead.
+		 * Later, it became apparent that some of the logic was being repeated unnecessarily in the inner loop, so the
+		 * code was changed further to avoid this, which produced visible performance improvements.
+		 *
+		 * In any language with a compiler, a compiler would most likely have noticed that these optimisations could be
+		 * made and made these changes automatically, but in PHP we don't have a compiler, so the task falls to us.
+		 *
+		 * @see Noise::trilinearLerp()
+		 */
 		for($xx = 0; $xx < $xSize; ++$xx){
+			$nx = (int) ($xx / $xSamplingRate) * $xSamplingRate;
+			$nnx = $nx + $xSamplingRate;
+
+			$dx1 = (($nnx - $xx) / ($nnx - $nx));
+			$dx2 = (($xx - $nx) / ($nnx - $nx));
+
 			for($zz = 0; $zz < $zSize; ++$zz){
+				$nz = (int) ($zz / $zSamplingRate) * $zSamplingRate;
+				$nnz = $nz + $zSamplingRate;
+
+				$dz1 = ($nnz - $zz) / ($nnz - $nz);
+				$dz2 = ($zz - $nz) / ($nnz - $nz);
+
 				for($yy = 0; $yy < $ySize; ++$yy){
 					if($xx % $xSamplingRate !== 0 or $zz % $zSamplingRate !== 0 or $yy % $ySamplingRate !== 0){
-						$nx = (int) ($xx / $xSamplingRate) * $xSamplingRate;
 						$ny = (int) ($yy / $ySamplingRate) * $ySamplingRate;
-						$nz = (int) ($zz / $zSamplingRate) * $zSamplingRate;
-
-						$nnx = $nx + $xSamplingRate;
 						$nny = $ny + $ySamplingRate;
-						$nnz = $nz + $zSamplingRate;
 
-						/**
-						 * This code has been manually inlined.
-						 * @see Noise::trilinearLerp()
-						 */
-						$dx1 = (($nnx - $xx) / ($nnx - $nx));
-						$dx2 = (($xx - $nx) / ($nnx - $nx));
 						$dy1 = (($nny - $yy) / ($nny - $ny));
 						$dy2 = (($yy - $ny) / ($nny - $ny));
 
-						$noiseArray[$xx][$zz][$yy] = (($nnz - $zz) / ($nnz - $nz)) * (
+						$noiseArray[$xx][$zz][$yy] = $dz1 * (
 								$dy1 * (
 									$dx1 * $noiseArray[$nx][$nz][$ny] + $dx2 * $noiseArray[$nnx][$nz][$ny]
 								) + $dy2 * (
 									$dx1 * $noiseArray[$nx][$nz][$nny] + $dx2 * $noiseArray[$nnx][$nz][$nny]
 								)
-							) + (($zz - $nz) / ($nnz - $nz)) * (
+							) + $dz2 * (
 								$dy1 * (
 									$dx1 * $noiseArray[$nx][$nnz][$ny] + $dx2 * $noiseArray[$nnx][$nnz][$ny]
 								) + $dy2 * (
