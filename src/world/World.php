@@ -96,6 +96,9 @@ use function lcg_value;
 use function max;
 use function microtime;
 use function min;
+use function morton2d_decode;
+use function morton2d_encode;
+use function morton3d_encode;
 use function mt_rand;
 use function spl_object_id;
 use function strtolower;
@@ -268,10 +271,11 @@ class World implements ChunkManager{
 	private $logger;
 
 	public static function chunkHash(int $x, int $z) : int{
-		return (($x & 0xFFFFFFFF) << 32) | ($z & 0xFFFFFFFF);
+		return morton2d_encode($x, $z);
 	}
 
 	public static function blockHash(int $x, int $y, int $z) : int{
+		//TODO: switch this to use morton3d (21 bits each only allows for 2M blocks, but Y would have 12 spare bits)
 		$shiftedY = $y - self::HALF_Y_MAX;
 		if($shiftedY < -512 or $shiftedY >= 512){
 			throw new \InvalidArgumentException("Y coordinate $y is out of range!");
@@ -283,18 +287,18 @@ class World implements ChunkManager{
 	 * Computes a small index relative to chunk base from the given coordinates.
 	 */
 	public static function chunkBlockHash(int $x, int $y, int $z) : int{
-		return ($y << 8) | (($z & 0xf) << 4) | ($x & 0xf);
+		return morton3d_encode($x, $y, $z);
 	}
 
 	public static function getBlockXYZ(int $hash, ?int &$x, ?int &$y, ?int &$z) : void{
+		//TODO: switch this to use morton3d
 		$x = $hash >> 37;
 		$y = ($hash << 27 >> 54) + self::HALF_Y_MAX;
 		$z = $hash << 37 >> 37;
 	}
 
 	public static function getXZ(int $hash, ?int &$x, ?int &$z) : void{
-		$x = $hash >> 32;
-		$z = ($hash & 0xFFFFFFFF) << 32 >> 32;
+		[$x, $z] = morton2d_decode($hash);
 	}
 
 	public static function getDifficultyFromString(string $str) : int{

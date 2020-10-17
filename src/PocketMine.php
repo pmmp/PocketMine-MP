@@ -88,6 +88,7 @@ namespace pocketmine {
 			"json" => "JSON",
 			"leveldb" => "LevelDB",
 			"mbstring" => "Multibyte String",
+			"morton" => "morton",
 			"openssl" => "OpenSSL",
 			"pcre" => "PCRE",
 			"phar" => "Phar",

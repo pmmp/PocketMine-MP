@@ -55,9 +55,18 @@ before_script:
   - make
   - make install
   - cd ..
+  - |
+    git clone https://github.com/pmmp/ext-morton.git -b 0.1.0 --depth=1
+    cd ext-morton
+    phpize
+    ./configure
+    make
+    make install
+    cd ..
   - echo "extension=pthreads.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - echo "extension=chunkutils2.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - echo "extension=leveldb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - echo "extension=morton.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 cache:
   - leveldb-mcpe
