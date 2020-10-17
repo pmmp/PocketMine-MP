@@ -158,13 +158,17 @@ class Normal extends Generator{
 		$stillWater = VanillaBlocks::WATER()->getFullId();
 		$stone = VanillaBlocks::STONE()->getFullId();
 
+		$baseX = $chunkX * 16;
+		$baseZ = $chunkZ * 16;
 		for($x = 0; $x < 16; ++$x){
+			$absoluteX = $baseX + $x;
 			for($z = 0; $z < 16; ++$z){
+				$absoluteZ = $baseZ + $z;
 				$minSum = 0;
 				$maxSum = 0;
 				$weightSum = 0;
 
-				$biome = $this->pickBiome($chunkX * 16 + $x, $chunkZ * 16 + $z);
+				$biome = $this->pickBiome($absoluteX, $absoluteZ);
 				$chunk->setBiomeId($x, $z, $biome->getId());
 
 				for($sx = -$this->gaussian->smoothSize; $sx <= $this->gaussian->smoothSize; ++$sx){
@@ -175,11 +179,11 @@ class Normal extends Generator{
 						if($sx === 0 and $sz === 0){
 							$adjacent = $biome;
 						}else{
-							$index = World::chunkHash($chunkX * 16 + $x + $sx, $chunkZ * 16 + $z + $sz);
+							$index = World::chunkHash($absoluteX + $sx, $absoluteZ + $sz);
 							if(isset($biomeCache[$index])){
 								$adjacent = $biomeCache[$index];
 							}else{
-								$biomeCache[$index] = $adjacent = $this->pickBiome($chunkX * 16 + $x + $sx, $chunkZ * 16 + $z + $sz);
+								$biomeCache[$index] = $adjacent = $this->pickBiome($absoluteX + $sx, $absoluteZ + $sz);
 							}
 						}
 
