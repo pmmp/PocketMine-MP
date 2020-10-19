@@ -24,13 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\command\parameter\defaults;
 
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
-use const PHP_INT_MAX;
 
 class TextParameter extends StringParameter{
 
 	public function __construct(string $name, bool $optional = false){
 		parent::__construct($name, $optional);
-		$this->setLength(PHP_INT_MAX);
+		$this->length = PHP_INT_MAX;
 	}
 
 	public function getNetworkType() : int{

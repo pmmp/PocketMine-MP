@@ -88,11 +88,6 @@ abstract class Parameter extends CommandParameter{
 	public function prepare() : void{
 	}
 
-	public function setLength(int $length) : self{
-		$this->length = $length;
-		return $this;
-	}
-
 	public function getLength() : int{
 		return $this->length;
 	}

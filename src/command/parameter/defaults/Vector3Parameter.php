@@ -32,14 +32,12 @@ use function count;
 use function explode;
 use function is_numeric;
 use function substr;
-use const PHP_INT_MAX;
-use const PHP_INT_MIN;
 
 class Vector3Parameter extends Parameter{
 
 	public function __construct(string $name, bool $optional = false){
 		parent::__construct($name, $optional);
-		$this->setLength(3);
+		$this->length = 3;
 	}
 
 	public function canParse(CommandSender $sender, string $argument) : bool{
