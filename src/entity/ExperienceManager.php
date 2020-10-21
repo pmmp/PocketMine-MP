@@ -151,12 +151,13 @@ class ExperienceManager{
 	 * @param bool $playSound Whether to play level-up and XP gained sounds.
 	 */
 	public function addXp(int $amount, bool $playSound = true) : bool{
-		$this->totalXp += $amount;
-
 		$oldLevel = $this->getXpLevel();
 		$oldTotal = $this->getCurrentTotalXp();
 
 		if($this->setCurrentTotalXp($oldTotal + $amount)){
+			if($amount > 0){
+				$this->totalXp += $amount;
+			}
 			if($playSound){
 				$newLevel = $this->getXpLevel();
 				if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){

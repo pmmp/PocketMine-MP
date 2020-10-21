@@ -262,6 +262,16 @@ class AsyncPool{
 		return $more;
 	}
 
+	/**
+	 * Returns an array of worker ID => task queue size
+	 *
+	 * @return int[]
+	 * @phpstan-return array<int, int>
+	 */
+	public function getTaskQueueSizes() : array{
+		return $this->workerUsage;
+	}
+
 	public function shutdownUnusedWorkers() : int{
 		$ret = 0;
 		$time = time();

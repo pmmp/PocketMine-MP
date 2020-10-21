@@ -25,6 +25,7 @@ namespace pocketmine\entity\utils;
 
 use pocketmine\math\Math;
 use pocketmine\utils\AssumptionFailedError;
+use function count;
 use function max;
 
 abstract class ExperienceUtils{
