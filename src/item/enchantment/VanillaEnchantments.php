@@ -62,44 +62,44 @@ final class VanillaEnchantments{
 	private static $mcpeIdMap = [];
 
 	protected static function setup() : void{
-		self::register("PROTECTION", new ProtectionEnchantment(Enchantment::PROTECTION, "%enchantment.protect.all", Enchantment::RARITY_COMMON, Enchantment::SLOT_ARMOR, Enchantment::SLOT_NONE, 4, 0.75, null));
-		self::register("FIRE_PROTECTION", new ProtectionEnchantment(Enchantment::FIRE_PROTECTION, "%enchantment.protect.fire", Enchantment::RARITY_UNCOMMON, Enchantment::SLOT_ARMOR, Enchantment::SLOT_NONE, 4, 1.25, [
+		self::register("PROTECTION", new ProtectionEnchantment(EnchantmentIds::PROTECTION, "%enchantment.protect.all", Rarity::COMMON, ItemFlags::ARMOR, ItemFlags::NONE, 4, 0.75, null));
+		self::register("FIRE_PROTECTION", new ProtectionEnchantment(EnchantmentIds::FIRE_PROTECTION, "%enchantment.protect.fire", Rarity::UNCOMMON, ItemFlags::ARMOR, ItemFlags::NONE, 4, 1.25, [
 			EntityDamageEvent::CAUSE_FIRE,
 			EntityDamageEvent::CAUSE_FIRE_TICK,
 			EntityDamageEvent::CAUSE_LAVA
 			//TODO: check fireballs
 		]));
-		self::register("FEATHER_FALLING", new ProtectionEnchantment(Enchantment::FEATHER_FALLING, "%enchantment.protect.fall", Enchantment::RARITY_UNCOMMON, Enchantment::SLOT_FEET, Enchantment::SLOT_NONE, 4, 2.5, [
+		self::register("FEATHER_FALLING", new ProtectionEnchantment(EnchantmentIds::FEATHER_FALLING, "%enchantment.protect.fall", Rarity::UNCOMMON, ItemFlags::FEET, ItemFlags::NONE, 4, 2.5, [
 			EntityDamageEvent::CAUSE_FALL
 		]));
-		self::register("BLAST_PROTECTION", new ProtectionEnchantment(Enchantment::BLAST_PROTECTION, "%enchantment.protect.explosion", Enchantment::RARITY_RARE, Enchantment::SLOT_ARMOR, Enchantment::SLOT_NONE, 4, 1.5, [
+		self::register("BLAST_PROTECTION", new ProtectionEnchantment(EnchantmentIds::BLAST_PROTECTION, "%enchantment.protect.explosion", Rarity::RARE, ItemFlags::ARMOR, ItemFlags::NONE, 4, 1.5, [
 			EntityDamageEvent::CAUSE_BLOCK_EXPLOSION,
 			EntityDamageEvent::CAUSE_ENTITY_EXPLOSION
 		]));
-		self::register("PROJECTILE_PROTECTION", new ProtectionEnchantment(Enchantment::PROJECTILE_PROTECTION, "%enchantment.protect.projectile", Enchantment::RARITY_UNCOMMON, Enchantment::SLOT_ARMOR, Enchantment::SLOT_NONE, 4, 1.5, [
+		self::register("PROJECTILE_PROTECTION", new ProtectionEnchantment(EnchantmentIds::PROJECTILE_PROTECTION, "%enchantment.protect.projectile", Rarity::UNCOMMON, ItemFlags::ARMOR, ItemFlags::NONE, 4, 1.5, [
 			EntityDamageEvent::CAUSE_PROJECTILE
 		]));
-		self::register("THORNS", new Enchantment(Enchantment::THORNS, "%enchantment.thorns", Enchantment::RARITY_MYTHIC, Enchantment::SLOT_TORSO, Enchantment::SLOT_HEAD | Enchantment::SLOT_LEGS | Enchantment::SLOT_FEET, 3));
-		self::register("RESPIRATION", new Enchantment(Enchantment::RESPIRATION, "%enchantment.oxygen", Enchantment::RARITY_RARE, Enchantment::SLOT_HEAD, Enchantment::SLOT_NONE, 3));
+		self::register("THORNS", new Enchantment(EnchantmentIds::THORNS, "%enchantment.thorns", Rarity::MYTHIC, ItemFlags::TORSO, ItemFlags::HEAD | ItemFlags::LEGS | ItemFlags::FEET, 3));
+		self::register("RESPIRATION", new Enchantment(EnchantmentIds::RESPIRATION, "%enchantment.oxygen", Rarity::RARE, ItemFlags::HEAD, ItemFlags::NONE, 3));
 
-		self::register("SHARPNESS", new SharpnessEnchantment(Enchantment::SHARPNESS, "%enchantment.damage.all", Enchantment::RARITY_COMMON, Enchantment::SLOT_SWORD, Enchantment::SLOT_AXE, 5));
+		self::register("SHARPNESS", new SharpnessEnchantment(EnchantmentIds::SHARPNESS, "%enchantment.damage.all", Rarity::COMMON, ItemFlags::SWORD, ItemFlags::AXE, 5));
 		//TODO: smite, bane of arthropods (these don't make sense now because their applicable mobs don't exist yet)
 
-		self::register("KNOCKBACK", new KnockbackEnchantment(Enchantment::KNOCKBACK, "%enchantment.knockback", Enchantment::RARITY_UNCOMMON, Enchantment::SLOT_SWORD, Enchantment::SLOT_NONE, 2));
-		self::register("FIRE_ASPECT", new FireAspectEnchantment(Enchantment::FIRE_ASPECT, "%enchantment.fire", Enchantment::RARITY_RARE, Enchantment::SLOT_SWORD, Enchantment::SLOT_NONE, 2));
+		self::register("KNOCKBACK", new KnockbackEnchantment(EnchantmentIds::KNOCKBACK, "%enchantment.knockback", Rarity::UNCOMMON, ItemFlags::SWORD, ItemFlags::NONE, 2));
+		self::register("FIRE_ASPECT", new FireAspectEnchantment(EnchantmentIds::FIRE_ASPECT, "%enchantment.fire", Rarity::RARE, ItemFlags::SWORD, ItemFlags::NONE, 2));
 
-		self::register("EFFICIENCY", new Enchantment(Enchantment::EFFICIENCY, "%enchantment.digging", Enchantment::RARITY_COMMON, Enchantment::SLOT_DIG, Enchantment::SLOT_SHEARS, 5));
-		self::register("SILK_TOUCH", new Enchantment(Enchantment::SILK_TOUCH, "%enchantment.untouching", Enchantment::RARITY_MYTHIC, Enchantment::SLOT_DIG, Enchantment::SLOT_SHEARS, 1));
-		self::register("UNBREAKING", new Enchantment(Enchantment::UNBREAKING, "%enchantment.durability", Enchantment::RARITY_UNCOMMON, Enchantment::SLOT_DIG | Enchantment::SLOT_ARMOR | Enchantment::SLOT_FISHING_ROD | Enchantment::SLOT_BOW, Enchantment::SLOT_TOOL | Enchantment::SLOT_CARROT_STICK | Enchantment::SLOT_ELYTRA, 3));
+		self::register("EFFICIENCY", new Enchantment(EnchantmentIds::EFFICIENCY, "%enchantment.digging", Rarity::COMMON, ItemFlags::DIG, ItemFlags::SHEARS, 5));
+		self::register("SILK_TOUCH", new Enchantment(EnchantmentIds::SILK_TOUCH, "%enchantment.untouching", Rarity::MYTHIC, ItemFlags::DIG, ItemFlags::SHEARS, 1));
+		self::register("UNBREAKING", new Enchantment(EnchantmentIds::UNBREAKING, "%enchantment.durability", Rarity::UNCOMMON, ItemFlags::DIG | ItemFlags::ARMOR | ItemFlags::FISHING_ROD | ItemFlags::BOW, ItemFlags::TOOL | ItemFlags::CARROT_STICK | ItemFlags::ELYTRA, 3));
 
-		self::register("POWER", new Enchantment(Enchantment::POWER, "%enchantment.arrowDamage", Enchantment::RARITY_COMMON, Enchantment::SLOT_BOW, Enchantment::SLOT_NONE, 5));
-		self::register("PUNCH", new Enchantment(Enchantment::PUNCH, "%enchantment.arrowKnockback", Enchantment::RARITY_RARE, Enchantment::SLOT_BOW, Enchantment::SLOT_NONE, 2));
-		self::register("FLAME", new Enchantment(Enchantment::FLAME, "%enchantment.arrowFire", Enchantment::RARITY_RARE, Enchantment::SLOT_BOW, Enchantment::SLOT_NONE, 1));
-		self::register("INFINITY", new Enchantment(Enchantment::INFINITY, "%enchantment.arrowInfinite", Enchantment::RARITY_MYTHIC, Enchantment::SLOT_BOW, Enchantment::SLOT_NONE, 1));
+		self::register("POWER", new Enchantment(EnchantmentIds::POWER, "%enchantment.arrowDamage", Rarity::COMMON, ItemFlags::BOW, ItemFlags::NONE, 5));
+		self::register("PUNCH", new Enchantment(EnchantmentIds::PUNCH, "%enchantment.arrowKnockback", Rarity::RARE, ItemFlags::BOW, ItemFlags::NONE, 2));
+		self::register("FLAME", new Enchantment(EnchantmentIds::FLAME, "%enchantment.arrowFire", Rarity::RARE, ItemFlags::BOW, ItemFlags::NONE, 1));
+		self::register("INFINITY", new Enchantment(EnchantmentIds::INFINITY, "%enchantment.arrowInfinite", Rarity::MYTHIC, ItemFlags::BOW, ItemFlags::NONE, 1));
 
-		self::register("MENDING", new Enchantment(Enchantment::MENDING, "%enchantment.mending", Enchantment::RARITY_RARE, Enchantment::SLOT_NONE, Enchantment::SLOT_ALL, 1));
+		self::register("MENDING", new Enchantment(EnchantmentIds::MENDING, "%enchantment.mending", Rarity::RARE, ItemFlags::NONE, ItemFlags::ALL, 1));
 
-		self::register("VANISHING", new Enchantment(Enchantment::VANISHING, "%enchantment.curse.vanishing", Enchantment::RARITY_MYTHIC, Enchantment::SLOT_NONE, Enchantment::SLOT_ALL, 1));
+		self::register("VANISHING", new Enchantment(EnchantmentIds::VANISHING, "%enchantment.curse.vanishing", Rarity::MYTHIC, ItemFlags::NONE, ItemFlags::ALL, 1));
 	}
 
 	protected static function register(string $name, Enchantment $member) : void{
