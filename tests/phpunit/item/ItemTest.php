@@ -24,14 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use PHPUnit\Framework\TestCase;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\VanillaEnchantments;
 
 class ItemTest extends TestCase{
-
-	public static function setUpBeforeClass() : void{
-		Enchantment::init();
-	}
 
 	/** @var Item */
 	private $item;
@@ -75,27 +71,27 @@ class ItemTest extends TestCase{
 	}
 
 	public function testHasEnchantment() : void{
-		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::EFFICIENCY(), 5));
-		self::assertTrue($this->item->hasEnchantment(Enchantment::EFFICIENCY()));
-		self::assertTrue($this->item->hasEnchantment(Enchantment::EFFICIENCY(), 5));
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::EFFICIENCY(), 5));
+		self::assertTrue($this->item->hasEnchantment(VanillaEnchantments::EFFICIENCY()));
+		self::assertTrue($this->item->hasEnchantment(VanillaEnchantments::EFFICIENCY(), 5));
 	}
 
 	public function testHasEnchantments() : void{
 		self::assertFalse($this->item->hasEnchantments());
-		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::FIRE_ASPECT()));
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::FIRE_ASPECT()));
 		self::assertTrue($this->item->hasEnchantments());
 	}
 
 	public function testGetEnchantmentLevel() : void{
-		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::EFFICIENCY(), 5));
-		self::assertSame(5, $this->item->getEnchantmentLevel(Enchantment::EFFICIENCY()));
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::EFFICIENCY(), 5));
+		self::assertSame(5, $this->item->getEnchantmentLevel(VanillaEnchantments::EFFICIENCY()));
 	}
 
 	public function testGetEnchantments() : void{
 		/** @var EnchantmentInstance[] $enchantments */
 		$enchantments = [
-			new EnchantmentInstance(Enchantment::EFFICIENCY(), 5),
-			new EnchantmentInstance(Enchantment::SHARPNESS(), 1)
+			new EnchantmentInstance(VanillaEnchantments::EFFICIENCY(), 5),
+			new EnchantmentInstance(VanillaEnchantments::SHARPNESS(), 1)
 		];
 		foreach($enchantments as $enchantment){
 			$this->item->addEnchantment($enchantment);
@@ -113,31 +109,31 @@ class ItemTest extends TestCase{
 	}
 
 	public function testOverwriteEnchantment() : void{
-		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::SHARPNESS()));
-		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::SHARPNESS(), 5));
-		self::assertSame(5, $this->item->getEnchantmentLevel(Enchantment::SHARPNESS()));
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS()));
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS(), 5));
+		self::assertSame(5, $this->item->getEnchantmentLevel(VanillaEnchantments::SHARPNESS()));
 	}
 
 	public function testRemoveAllEnchantments() : void{
-		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::FIRE_ASPECT()));
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::FIRE_ASPECT()));
 		self::assertCount(1, $this->item->getEnchantments());
 		$this->item->removeEnchantments();
 		self::assertEmpty($this->item->getEnchantments());
 	}
 
 	public function testRemoveEnchantment() : void{
-		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::KNOCKBACK()));
-		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::SHARPNESS()));
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::KNOCKBACK()));
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS()));
 		self::assertCount(2, $this->item->getEnchantments());
-		$this->item->removeEnchantment(Enchantment::SHARPNESS());
-		self::assertFalse($this->item->hasEnchantment(Enchantment::SHARPNESS()));
+		$this->item->removeEnchantment(VanillaEnchantments::SHARPNESS());
+		self::assertFalse($this->item->hasEnchantment(VanillaEnchantments::SHARPNESS()));
 	}
 
 	public function testRemoveEnchantmentLevel() : void{
-		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::FIRE_ASPECT(), 2));
-		$this->item->addEnchantment(new EnchantmentInstance(Enchantment::UNBREAKING()));
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::FIRE_ASPECT(), 2));
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::UNBREAKING()));
 		self::assertCount(2, $this->item->getEnchantments());
-		$this->item->removeEnchantment(Enchantment::FIRE_ASPECT(), 2);
-		self::assertFalse($this->item->hasEnchantment(Enchantment::FIRE_ASPECT()));
+		$this->item->removeEnchantment(VanillaEnchantments::FIRE_ASPECT(), 2);
+		self::assertFalse($this->item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT()));
 	}
 }

@@ -39,7 +39,6 @@ use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\TranslationContainer;
@@ -937,7 +936,6 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			Enchantment::init();
 			Biome::init();
 
 			$this->craftingManager = CraftingManagerFromDataHelper::make(\pocketmine\RESOURCE_PATH . '/vanilla/recipes.json');

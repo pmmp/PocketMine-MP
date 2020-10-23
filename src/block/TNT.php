@@ -28,7 +28,7 @@ use pocketmine\entity\Location;
 use pocketmine\entity\object\PrimedTNT;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\item\Durable;
-use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\FlintSteel;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -68,7 +68,7 @@ class TNT extends Opaque{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item instanceof FlintSteel or $item->hasEnchantment(Enchantment::FIRE_ASPECT())){
+		if($item instanceof FlintSteel or $item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT())){
 			if($item instanceof Durable){
 				$item->applyDamage(1);
 			}

@@ -41,6 +41,7 @@ use pocketmine\inventory\Inventory;
 use pocketmine\item\Armor;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\math\VoxelRayTrace;
@@ -346,7 +347,7 @@ abstract class Living extends Entity{
 	}
 
 	public function setOnFire(int $seconds) : void{
-		parent::setOnFire($seconds - (int) min($seconds, $seconds * $this->getHighestArmorEnchantmentLevel(Enchantment::FIRE_PROTECTION()) * 0.15));
+		parent::setOnFire($seconds - (int) min($seconds, $seconds * $this->getHighestArmorEnchantmentLevel(VanillaEnchantments::FIRE_PROTECTION()) * 0.15));
 	}
 
 	/**
@@ -393,7 +394,7 @@ abstract class Living extends Entity{
 		if($source instanceof EntityDamageByEntityEvent and ($attacker = $source->getDamager()) !== null){
 			$damage = 0;
 			foreach($this->armorInventory->getContents() as $k => $item){
-				if($item instanceof Armor and ($thornsLevel = $item->getEnchantmentLevel(Enchantment::THORNS())) > 0){
+				if($item instanceof Armor and ($thornsLevel = $item->getEnchantmentLevel(VanillaEnchantments::THORNS())) > 0){
 					if(mt_rand(0, 99) < $thornsLevel * 15){
 						$this->damageItem($item, 3);
 						$damage += ($thornsLevel > 10 ? $thornsLevel - 10 : 1 + mt_rand(0, 3));
@@ -458,7 +459,7 @@ abstract class Living extends Entity{
 			//TODO: knockback should not just apply for entity damage sources
 			//this doesn't matter for TNT right now because the PrimedTNT entity is considered the source, not the block.
 			$base = $source->getKnockBack();
-			$source->setKnockBack($base - min($base, $base * $this->getHighestArmorEnchantmentLevel(Enchantment::BLAST_PROTECTION()) * 0.15));
+			$source->setKnockBack($base - min($base, $base * $this->getHighestArmorEnchantmentLevel(VanillaEnchantments::BLAST_PROTECTION()) * 0.15));
 		}
 
 		parent::attack($source);
@@ -588,7 +589,7 @@ abstract class Living extends Entity{
 		if(!$this->canBreathe()){
 			$this->setBreathing(false);
 
-			if(($respirationLevel = $this->armorInventory->getHelmet()->getEnchantmentLevel(Enchantment::RESPIRATION())) <= 0 or
+			if(($respirationLevel = $this->armorInventory->getHelmet()->getEnchantmentLevel(VanillaEnchantments::RESPIRATION())) <= 0 or
 				lcg_value() <= (1 / ($respirationLevel + 1))
 			){
 				$ticks -= $tickDiff;

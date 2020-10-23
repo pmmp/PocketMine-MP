@@ -32,7 +32,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
-use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\Totem;
 use pocketmine\math\Vector3;
@@ -310,7 +310,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return array_filter(array_merge(
 			$this->inventory !== null ? array_values($this->inventory->getContents()) : [],
 			$this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : []
-		), function(Item $item) : bool{ return !$item->hasEnchantment(Enchantment::VANISHING()); });
+		), function(Item $item) : bool{ return !$item->hasEnchantment(VanillaEnchantments::VANISHING()); });
 	}
 
 	public function saveNBT() : CompoundTag{

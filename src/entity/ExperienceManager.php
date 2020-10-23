@@ -26,7 +26,7 @@ namespace pocketmine\entity;
 use pocketmine\entity\utils\ExperienceUtils;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\item\Durable;
-use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\world\sound\XpCollectSound;
 use pocketmine\world\sound\XpLevelUpSound;
 use function array_rand;
@@ -244,12 +244,12 @@ class ExperienceManager{
 		/** @var Durable[] $equipment */
 		$equipment = [];
 
-		if(($item = $this->entity->getInventory()->getItemInHand()) instanceof Durable and $item->hasEnchantment(Enchantment::MENDING())){
+		if(($item = $this->entity->getInventory()->getItemInHand()) instanceof Durable and $item->hasEnchantment(VanillaEnchantments::MENDING())){
 			$equipment[$mainHandIndex] = $item;
 		}
 		//TODO: check offhand
 		foreach($this->entity->getArmorInventory()->getContents() as $k => $armorItem){
-			if($armorItem instanceof Durable and $armorItem->hasEnchantment(Enchantment::MENDING())){
+			if($armorItem instanceof Durable and $armorItem->hasEnchantment(VanillaEnchantments::MENDING())){
 				$equipment[$k] = $armorItem;
 			}
 		}

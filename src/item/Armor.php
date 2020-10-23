@@ -27,8 +27,8 @@ use pocketmine\block\Block;
 use pocketmine\color\Color;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\ArmorInventory;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\ProtectionEnchantment;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -106,7 +106,7 @@ class Armor extends Durable{
 	}
 
 	protected function getUnbreakingDamageReduction(int $amount) : int{
-		if(($unbreakingLevel = $this->getEnchantmentLevel(Enchantment::UNBREAKING())) > 0){
+		if(($unbreakingLevel = $this->getEnchantmentLevel(VanillaEnchantments::UNBREAKING())) > 0){
 			$negated = 0;
 
 			$chance = 1 / ($unbreakingLevel + 1);

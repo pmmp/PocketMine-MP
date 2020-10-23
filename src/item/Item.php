@@ -32,8 +32,8 @@ use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
@@ -285,7 +285,7 @@ class Item implements \JsonSerializable{
 				if($level <= 0){
 					continue;
 				}
-				$type = Enchantment::get($magicNumber);
+				$type = VanillaEnchantments::byMcpeId($magicNumber);
 				if($type !== null){
 					$this->addEnchantment(new EnchantmentInstance($type, $level));
 				}
