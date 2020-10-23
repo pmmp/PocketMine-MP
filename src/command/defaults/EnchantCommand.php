@@ -69,13 +69,17 @@ class EnchantCommand extends VanillaCommand{
 
 		if(is_numeric($args[1])){
 			$enchantment = VanillaEnchantments::byMcpeId((int) $args[1]);
+			if(!($enchantment instanceof Enchantment)){
+				$sender->sendMessage(new TranslationContainer("commands.enchant.notFound", [$args[1]]));
+				return true;
+			}
 		}else{
-			$enchantment = VanillaEnchantments::fromString($args[1]);
-		}
-
-		if(!($enchantment instanceof Enchantment)){
-			$sender->sendMessage(new TranslationContainer("commands.enchant.notFound", [$args[1]]));
-			return true;
+			try{
+				$enchantment = VanillaEnchantments::fromString($args[1]);
+			}catch(\InvalidArgumentException $e){
+				$sender->sendMessage(new TranslationContainer("commands.enchant.notFound", [$args[1]]));
+				return true;
+			}
 		}
 
 		$level = 1;
