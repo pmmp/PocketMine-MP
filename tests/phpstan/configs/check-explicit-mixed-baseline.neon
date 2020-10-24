@@ -531,21 +531,6 @@ parameters:
 			path: ../../../src/pocketmine/plugin/PluginDescription.php
 
 		-
-			message: "#^Method pocketmine\\\\plugin\\\\PluginDescription\\:\\:getRequiredExtensions\\(\\) should return array\\<string, array\\<int, string\\>\\> but returns array\\<string, array\\<int, mixed\\>\\>\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#1 \\$str of function substr expects string, mixed given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/plugin/PluginDescription.php
-
-		-
-			message: "#^Part \\$constr \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/plugin/PluginDescription.php
-
-		-
 			message: "#^Parameter \\#1 \\$description of method pocketmine\\\\command\\\\Command\\:\\:setDescription\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/plugin/PluginManager.php
