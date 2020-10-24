@@ -1543,7 +1543,7 @@ class Server{
 					if(isset($options["generator"])){
 						$generatorOptions = explode(":", $options["generator"]);
 						$generator = GeneratorManager::getGenerator(array_shift($generatorOptions));
-						if(count($options) > 0){
+						if(count($generatorOptions) > 0){
 							$options["preset"] = implode(":", $generatorOptions);
 						}
 					}else{
