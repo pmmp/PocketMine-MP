@@ -527,7 +527,7 @@ class Utils{
 		$ret = explode("\n", $contents);
 		ob_end_clean();
 
-		if(count($ret) >= 1 and preg_match('/^.* refcount\\(([0-9]+)\\)\\{$/', trim($ret[0]), $m) > 0){
+		if(preg_match('/^.* refcount\\(([0-9]+)\\)\\{$/', trim($ret[0]), $m) > 0){
 			return ((int) $m[1]) - ($includeCurrent ? 3 : 4); //$value + zval call + extra call
 		}
 		return -1;
