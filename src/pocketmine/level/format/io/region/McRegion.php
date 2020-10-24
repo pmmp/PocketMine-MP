@@ -245,11 +245,13 @@ class McRegion extends BaseLevelProvider{
 
 		if($isValid){
 			$files = array_filter(scandir($path . "/region/", SCANDIR_SORT_NONE), function(string $file) : bool{
-				return substr($file, strrpos($file, ".") + 1, 2) === "mc"; //region file
+				$extPos = strrpos($file, ".");
+				return $extPos !== false && substr($file, $extPos + 1, 2) === "mc"; //region file
 			});
 
 			foreach($files as $f){
-				if(substr($f, strrpos($f, ".") + 1) !== static::REGION_FILE_EXTENSION){
+				$extPos = strrpos($f, ".");
+				if($extPos !== false && substr($f, $extPos + 1) !== static::REGION_FILE_EXTENSION){
 					$isValid = false;
 					break;
 				}
