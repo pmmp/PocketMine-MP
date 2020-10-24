@@ -30,7 +30,7 @@ use pocketmine\entity\Living;
 class Effect{
 
 	/** @var int */
-	protected $id;
+	protected $internalRuntimeId;
 	/** @var string */
 	protected $name;
 	/** @var Color */
@@ -41,14 +41,14 @@ class Effect{
 	protected $hasBubbles;
 
 	/**
-	 * @param int    $id Effect ID as per Minecraft PE
+	 * @param int    $internalRuntimeId Internal runtime ID, unique to this effect type. Used for comparisons.
 	 * @param string $name Translation key used for effect name
 	 * @param Color  $color Color of bubbles given by this effect
 	 * @param bool   $isBad Whether the effect is harmful
 	 * @param bool   $hasBubbles Whether the effect has potion bubbles. Some do not (e.g. Instant Damage has its own particles instead of bubbles)
 	 */
-	public function __construct(int $id, string $name, Color $color, bool $isBad = false, bool $hasBubbles = true){
-		$this->id = $id;
+	public function __construct(int $internalRuntimeId, string $name, Color $color, bool $isBad = false, bool $hasBubbles = true){
+		$this->internalRuntimeId = $internalRuntimeId;
 		$this->name = $name;
 		$this->color = $color;
 		$this->bad = $isBad;
@@ -56,10 +56,11 @@ class Effect{
 	}
 
 	/**
-	 * Returns the effect ID as per Minecraft PE
+	 * Returns a unique identifier for this effect type
+	 * WARNING: DO NOT STORE THIS - IT MAY CHANGE BETWEEN RESTARTS
 	 */
-	public function getId() : int{
-		return $this->id;
+	public function getRuntimeId() : int{
+		return $this->internalRuntimeId;
 	}
 
 	/**

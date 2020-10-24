@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe;
 
 use Ds\Set;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
+use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\Entity;
@@ -742,11 +743,12 @@ class NetworkSession{
 	}
 
 	public function onEntityEffectAdded(Living $entity, EffectInstance $effect, bool $replacesOldEffect) : void{
-		$this->sendDataPacket(MobEffectPacket::add($entity->getId(), $replacesOldEffect, $effect->getId(), $effect->getAmplifier(), $effect->isVisible(), $effect->getDuration()));
+		//TODO: we may need yet another effect <=> ID map in the future depending on protocol changes
+		$this->sendDataPacket(MobEffectPacket::add($entity->getId(), $replacesOldEffect, EffectIdMap::getInstance()->toId($effect->getType()), $effect->getAmplifier(), $effect->isVisible(), $effect->getDuration()));
 	}
 
 	public function onEntityEffectRemoved(Living $entity, EffectInstance $effect) : void{
-		$this->sendDataPacket(MobEffectPacket::remove($entity->getId(), $effect->getId()));
+		$this->sendDataPacket(MobEffectPacket::remove($entity->getId(), EffectIdMap::getInstance()->toId($effect->getType())));
 	}
 
 	public function onEntityRemoved(Entity $entity) : void{

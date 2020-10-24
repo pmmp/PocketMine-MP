@@ -25,6 +25,7 @@ namespace pocketmine\entity;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\animation\DeathAnimation;
 use pocketmine\entity\animation\HurtAnimation;
 use pocketmine\entity\animation\RespawnAnimation;
@@ -151,7 +152,7 @@ abstract class Living extends Entity{
 		$activeEffectsTag = $nbt->getListTag("ActiveEffects");
 		if($activeEffectsTag !== null){
 			foreach($activeEffectsTag as $e){
-				$effect = VanillaEffects::byMcpeId($e->getByte("Id"));
+				$effect = EffectIdMap::getInstance()->fromId($e->getByte("Id"));
 				if($effect === null){
 					continue;
 				}
@@ -240,7 +241,7 @@ abstract class Living extends Entity{
 			$effects = [];
 			foreach($this->effectManager->all() as $effect){
 				$effects[] = CompoundTag::create()
-					->setByte("Id", $effect->getId())
+					->setByte("Id", EffectIdMap::getInstance()->toId($effect->getType()))
 					->setByte("Amplifier", Binary::signByte($effect->getAmplifier()))
 					->setInt("Duration", $effect->getDuration())
 					->setByte("Ambient", $effect->isAmbient() ? 1 : 0)

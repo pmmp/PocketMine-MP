@@ -83,7 +83,7 @@ class EffectManager{
 	 * Removes the effect with the specified ID from the mob.
 	 */
 	public function remove(Effect $effectType) : void{
-		$index = $effectType->getId();
+		$index = $effectType->getRuntimeId();
 		if(isset($this->effects[$index])){
 			$effect = $this->effects[$index];
 			$hasExpired = $effect->hasExpired();
@@ -113,14 +113,14 @@ class EffectManager{
 	 * effect.
 	 */
 	public function get(Effect $effect) : ?EffectInstance{
-		return $this->effects[$effect->getId()] ?? null;
+		return $this->effects[$effect->getRuntimeId()] ?? null;
 	}
 
 	/**
 	 * Returns whether the specified effect is active on the mob.
 	 */
 	public function has(Effect $effect) : bool{
-		return isset($this->effects[$effect->getId()]);
+		return isset($this->effects[$effect->getRuntimeId()]);
 	}
 
 	/**
@@ -134,7 +134,7 @@ class EffectManager{
 		$oldEffect = null;
 		$cancelled = false;
 
-		$index = $effect->getType()->getId();
+		$index = $effect->getType()->getRuntimeId();
 		if(isset($this->effects[$index])){
 			$oldEffect = $this->effects[$index];
 			if(
