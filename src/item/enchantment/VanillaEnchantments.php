@@ -54,7 +54,7 @@ use pocketmine\utils\RegistryTrait;
 final class VanillaEnchantments{
 	use RegistryTrait;
 
-	/** @var int|null */
+	/** @var int */
 	private static $nextRtId = 0;
 
 	private static function newRtId() : int{
