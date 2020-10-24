@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item\enchantment;
+namespace pocketmine\data\bedrock;
 
 final class EnchantmentIds{
 

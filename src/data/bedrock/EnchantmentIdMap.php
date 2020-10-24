@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock;
 
 use pocketmine\item\enchantment\Enchantment;
-use pocketmine\item\enchantment\EnchantmentIds;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\utils\SingletonTrait;
 use function array_key_exists;
