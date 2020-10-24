@@ -40,12 +40,12 @@ trait ItemEnchantmentHandlingTrait{
 	}
 
 	public function hasEnchantment(Enchantment $enchantment, int $level = -1) : bool{
-		$id = $enchantment->getId();
+		$id = $enchantment->getRuntimeId();
 		return isset($this->enchantments[$id]) and ($level === -1 or $this->enchantments[$id]->getLevel() === $level);
 	}
 
 	public function getEnchantment(Enchantment $enchantment) : ?EnchantmentInstance{
-		return $this->enchantments[$enchantment->getId()] ?? null;
+		return $this->enchantments[$enchantment->getRuntimeId()] ?? null;
 	}
 
 	/**
@@ -54,7 +54,7 @@ trait ItemEnchantmentHandlingTrait{
 	public function removeEnchantment(Enchantment $enchantment, int $level = -1) : self{
 		$instance = $this->getEnchantment($enchantment);
 		if($instance !== null and ($level === -1 or $instance->getLevel() === $level)){
-			unset($this->enchantments[$enchantment->getId()]);
+			unset($this->enchantments[$enchantment->getRuntimeId()]);
 		}
 
 		return $this;
@@ -72,7 +72,7 @@ trait ItemEnchantmentHandlingTrait{
 	 * @return $this
 	 */
 	public function addEnchantment(EnchantmentInstance $enchantment) : self{
-		$this->enchantments[$enchantment->getId()] = $enchantment;
+		$this->enchantments[$enchantment->getRuntimeId()] = $enchantment;
 		return $this;
 	}
 

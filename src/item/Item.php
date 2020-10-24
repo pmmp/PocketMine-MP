@@ -31,9 +31,9 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\EnchantmentInstance;
-use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
@@ -285,7 +285,7 @@ class Item implements \JsonSerializable{
 				if($level <= 0){
 					continue;
 				}
-				$type = VanillaEnchantments::byMcpeId($magicNumber);
+				$type = EnchantmentIdMap::getInstance()->fromId($magicNumber);
 				if($type !== null){
 					$this->addEnchantment(new EnchantmentInstance($type, $level));
 				}
@@ -336,7 +336,7 @@ class Item implements \JsonSerializable{
 			$ench = new ListTag();
 			foreach($this->getEnchantments() as $enchantmentInstance){
 				$ench->push(CompoundTag::create()
-					->setShort("id", $enchantmentInstance->getType()->getId())
+					->setShort("id", EnchantmentIdMap::getInstance()->toId($enchantmentInstance->getType()))
 					->setShort("lvl", $enchantmentInstance->getLevel())
 				);
 			}

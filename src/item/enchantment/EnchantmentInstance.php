@@ -53,10 +53,11 @@ final class EnchantmentInstance{
 	}
 
 	/**
-	 * Returns the type identifier of this enchantment instance.
+	 * Returns the runtime type identifier of this enchantment instance.
+	 * WARNING: DO NOT STORE THIS IDENTIFIER - IT MAY CHANGE AFTER SERVER RESTART
 	 */
-	public function getId() : int{
-		return $this->enchantment->getId();
+	public function getRuntimeId() : int{
+		return $this->enchantment->getRuntimeId();
 	}
 
 	/**

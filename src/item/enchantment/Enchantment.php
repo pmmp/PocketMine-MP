@@ -31,7 +31,7 @@ use function constant;
 class Enchantment{
 
 	/** @var int */
-	private $id;
+	private $internalRuntimeId;
 	/** @var string */
 	private $name;
 	/** @var int */
@@ -43,8 +43,8 @@ class Enchantment{
 	/** @var int */
 	private $maxLevel;
 
-	public function __construct(int $id, string $name, int $rarity, int $primaryItemFlags, int $secondaryItemFlags, int $maxLevel){
-		$this->id = $id;
+	public function __construct(int $internalRuntimeId, string $name, int $rarity, int $primaryItemFlags, int $secondaryItemFlags, int $maxLevel){
+		$this->internalRuntimeId = $internalRuntimeId;
 		$this->name = $name;
 		$this->rarity = $rarity;
 		$this->primaryItemFlags = $primaryItemFlags;
@@ -53,10 +53,11 @@ class Enchantment{
 	}
 
 	/**
-	 * Returns the ID of this enchantment as per Minecraft PE
+	 * Returns the internal runtime ID of this enchantment.
+	 * WARNING: DO NOT STORE THIS IDENTIFIER - IT MAY CHANGE AFTER RESTART
 	 */
-	public function getId() : int{
-		return $this->id;
+	public function getRuntimeId() : int{
+		return $this->internalRuntimeId;
 	}
 
 	/**

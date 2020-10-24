@@ -25,7 +25,6 @@ namespace pocketmine\item\enchantment;
 
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\utils\RegistryTrait;
-use function array_key_exists;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -54,12 +53,6 @@ use function array_key_exists;
  */
 final class VanillaEnchantments{
 	use RegistryTrait;
-
-	/**
-	 * @var Enchantment[]
-	 * @phpstan-var array<int, Enchantment>
-	 */
-	private static $mcpeIdMap = [];
 
 	protected static function setup() : void{
 		self::register("PROTECTION", new ProtectionEnchantment(EnchantmentIds::PROTECTION, "%enchantment.protect.all", Rarity::COMMON, ItemFlags::ARMOR, ItemFlags::NONE, 4, 0.75, null));
@@ -103,17 +96,7 @@ final class VanillaEnchantments{
 	}
 
 	protected static function register(string $name, Enchantment $member) : void{
-		if(array_key_exists($member->getId(), self::$mcpeIdMap)){
-			throw new \InvalidArgumentException("MCPE enchantment ID " . $member->getId() . " is already assigned");
-		}
 		self::_registryRegister($name, $member);
-		self::$mcpeIdMap[$member->getId()] = $member;
-	}
-
-	public static function byMcpeId(int $id) : ?Enchantment{
-		//TODO: this shouldn't be in here, it's unnecessarily limiting
-		self::checkInit();
-		return self::$mcpeIdMap[$id] ?? null;
 	}
 
 	/**

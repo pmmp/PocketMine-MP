@@ -38,8 +38,8 @@ class ProtectionEnchantment extends Enchantment{
 	 *
 	 * @param int[]|null $applicableDamageTypes EntityDamageEvent::CAUSE_* constants which this enchantment type applies to, or null if it applies to all types of damage.
 	 */
-	public function __construct(int $id, string $name, int $rarity, int $primaryItemFlags, int $secondaryItemFlags, int $maxLevel, float $typeModifier, ?array $applicableDamageTypes){
-		parent::__construct($id, $name, $rarity, $primaryItemFlags, $secondaryItemFlags, $maxLevel);
+	public function __construct(int $internalRuntimeId, string $name, int $rarity, int $primaryItemFlags, int $secondaryItemFlags, int $maxLevel, float $typeModifier, ?array $applicableDamageTypes){
+		parent::__construct($internalRuntimeId, $name, $rarity, $primaryItemFlags, $secondaryItemFlags, $maxLevel);
 
 		$this->typeModifier = $typeModifier;
 		if($applicableDamageTypes !== null){
