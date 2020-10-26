@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use Ds\Deque;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPattern;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Banner as ItemBanner;
@@ -34,12 +33,10 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function assert;
-use function floor;
 
 abstract class BaseBanner extends Transparent{
 	/** @var DyeColor */

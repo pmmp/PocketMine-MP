@@ -28,7 +28,6 @@ use pocketmine\block\Block;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPattern;
 use pocketmine\block\utils\DyeColor;
-use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;

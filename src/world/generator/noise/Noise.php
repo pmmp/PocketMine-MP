@@ -294,7 +294,6 @@ abstract class Noise{
 			}
 		}
 
-
 		/**
 		 * The following code originally called trilinearLerp() in a loop, but it was later inlined to elide function
 		 * call overhead.

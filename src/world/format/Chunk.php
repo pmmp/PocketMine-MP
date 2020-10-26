@@ -40,6 +40,7 @@ use function array_fill;
 use function array_filter;
 use function array_map;
 use function count;
+use function max;
 use function str_repeat;
 
 class Chunk{
