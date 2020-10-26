@@ -29,6 +29,7 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Limits;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\utils\SubChunkExplorer;
+use pocketmine\world\utils\SubChunkExplorerStatus;
 
 class SimpleChunkManager implements ChunkManager{
 
@@ -50,14 +51,14 @@ class SimpleChunkManager implements ChunkManager{
 	}
 
 	public function getBlockAt(int $x, int $y, int $z) : Block{
-		if($this->terrainPointer->moveTo($x, $y, $z, false)){
+		if($this->terrainPointer->moveTo($x, $y, $z, false) !== SubChunkExplorerStatus::INVALID){
 			return BlockFactory::getInstance()->fromFullBlock($this->terrainPointer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf));
 		}
 		return VanillaBlocks::AIR();
 	}
 
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : void{
-		if($this->terrainPointer->moveTo($x, $y, $z, true)){
+		if($this->terrainPointer->moveTo($x, $y, $z, true) !== SubChunkExplorerStatus::INVALID){
 			$this->terrainPointer->currentSubChunk->setFullBlock($x & 0xf, $y & 0xf, $z & 0xf, $block->getFullId());
 			$this->terrainPointer->currentChunk->setDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
 		}else{

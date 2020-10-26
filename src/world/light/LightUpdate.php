@@ -25,6 +25,7 @@ namespace pocketmine\world\light;
 
 use pocketmine\world\format\LightArray;
 use pocketmine\world\utils\SubChunkExplorer;
+use pocketmine\world\utils\SubChunkExplorerStatus;
 use pocketmine\world\World;
 use function max;
 
@@ -65,7 +66,7 @@ abstract class LightUpdate{
 	abstract public function recalculateNode(int $x, int $y, int $z) : void;
 
 	protected function getEffectiveLight(int $x, int $y, int $z) : int{
-		if($this->subChunkExplorer->moveTo($x, $y, $z, false)){
+		if($this->subChunkExplorer->moveTo($x, $y, $z, false) !== SubChunkExplorerStatus::INVALID){
 			return $this->currentLightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
 		}
 		return 0;
@@ -95,7 +96,7 @@ abstract class LightUpdate{
 	private function prepareNodes() : LightPropagationContext{
 		$context = new LightPropagationContext();
 		foreach($this->updateNodes as $blockHash => [$x, $y, $z, $newLevel]){
-			if($this->subChunkExplorer->moveTo($x, $y, $z, false)){
+			if($this->subChunkExplorer->moveTo($x, $y, $z, false) !== SubChunkExplorerStatus::INVALID){
 				$oldLevel = $this->currentLightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
 
 				if($oldLevel !== $newLevel){
@@ -131,7 +132,7 @@ abstract class LightUpdate{
 			];
 
 			foreach($points as [$cx, $cy, $cz]){
-				if($this->subChunkExplorer->moveTo($cx, $cy, $cz, false)){
+				if($this->subChunkExplorer->moveTo($cx, $cy, $cz, false) !== SubChunkExplorerStatus::INVALID){
 					$this->computeRemoveLight($cx, $cy, $cz, $oldAdjacentLight, $context);
 				}elseif($this->getEffectiveLight($cx, $cy, $cz) > 0 and !isset($context->spreadVisited[$index = World::blockHash($cx, $cy, $cz)])){
 					$context->spreadVisited[$index] = true;
@@ -161,7 +162,7 @@ abstract class LightUpdate{
 			];
 
 			foreach($points as [$cx, $cy, $cz]){
-				if($this->subChunkExplorer->moveTo($cx, $cy, $cz, false)){
+				if($this->subChunkExplorer->moveTo($cx, $cy, $cz, false) !== SubChunkExplorerStatus::INVALID){
 					$this->computeSpreadLight($cx, $cy, $cz, $newAdjacentLight, $context);
 				}
 			}

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\light;
 
 use pocketmine\world\utils\SubChunkExplorer;
+use pocketmine\world\utils\SubChunkExplorerStatus;
 use function max;
 
 class BlockLightUpdate extends LightUpdate{
@@ -50,7 +51,7 @@ class BlockLightUpdate extends LightUpdate{
 	}
 
 	public function recalculateNode(int $x, int $y, int $z) : void{
-		if($this->subChunkExplorer->moveTo($x, $y, $z, false)){
+		if($this->subChunkExplorer->moveTo($x, $y, $z, false) !== SubChunkExplorerStatus::INVALID){
 			$block = $this->subChunkExplorer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf);
 			$this->setAndUpdateLight($x, $y, $z, max($this->lightEmitters[$block], $this->getHighestAdjacentLight($x, $y, $z) - $this->lightFilters[$block]));
 		}

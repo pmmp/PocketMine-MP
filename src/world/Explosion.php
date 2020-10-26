@@ -40,6 +40,7 @@ use pocketmine\math\Vector3;
 use pocketmine\world\particle\HugeExplodeSeedParticle;
 use pocketmine\world\sound\ExplodeSound;
 use pocketmine\world\utils\SubChunkExplorer;
+use pocketmine\world\utils\SubChunkExplorerStatus;
 use function ceil;
 use function floor;
 use function mt_rand;
@@ -123,7 +124,7 @@ class Explosion{
 							$pointerY += $shiftY;
 							$pointerZ += $shiftZ;
 
-							if(!$this->subChunkExplorer->moveTo($vBlockX, $vBlockY, $vBlockZ, false)){
+							if($this->subChunkExplorer->moveTo($vBlockX, $vBlockY, $vBlockZ, false) === SubChunkExplorerStatus::INVALID){
 								continue;
 							}
 

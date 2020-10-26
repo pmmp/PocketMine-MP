@@ -55,7 +55,10 @@ class SubChunkExplorer{
 		$this->world = $world;
 	}
 
-	public function moveTo(int $x, int $y, int $z, bool $create) : bool{
+	/**
+	 * @phpstan-return SubChunkExplorerStatus::*
+	 */
+	public function moveTo(int $x, int $y, int $z, bool $create) : int{
 		if($this->currentChunk === null or $this->currentX !== ($x >> 4) or $this->currentZ !== ($z >> 4)){
 			$this->currentX = $x >> 4;
 			$this->currentZ = $z >> 4;
@@ -63,7 +66,7 @@ class SubChunkExplorer{
 
 			$this->currentChunk = $this->world->getChunk($this->currentX, $this->currentZ, $create);
 			if($this->currentChunk === null){
-				return false;
+				return SubChunkExplorerStatus::INVALID;
 			}
 		}
 
@@ -72,7 +75,7 @@ class SubChunkExplorer{
 
 			if($this->currentY < 0 or $this->currentY >= $this->currentChunk->getHeight()){
 				$this->currentSubChunk = null;
-				return false;
+				return SubChunkExplorerStatus::INVALID;
 			}
 
 			$newSubChunk = $this->currentChunk->getSubChunk($y >> 4);
@@ -81,12 +84,16 @@ class SubChunkExplorer{
 			if($this->onSubChunkChangeFunc !== null){
 				($this->onSubChunkChangeFunc)();
 			}
+			return SubChunkExplorerStatus::MOVED;
 		}
 
-		return true;
+		return SubChunkExplorerStatus::OK;
 	}
 
-	public function moveToChunk(int $chunkX, int $chunkY, int $chunkZ, bool $create) : bool{
+	/**
+	 * @phpstan-return SubChunkExplorerStatus::*
+	 */
+	public function moveToChunk(int $chunkX, int $chunkY, int $chunkZ, bool $create) : int{
 		//this is a cold path, so we don't care much if it's a bit slower (extra fcall overhead)
 		return $this->moveTo($chunkX << 4, $chunkY << 4, $chunkZ << 4, $create);
 	}

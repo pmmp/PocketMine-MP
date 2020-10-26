@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\light;
 
 use pocketmine\world\utils\SubChunkExplorer;
+use pocketmine\world\utils\SubChunkExplorerStatus;
 use pocketmine\world\World;
 use function max;
 
@@ -59,7 +60,7 @@ class SkyLightUpdate extends LightUpdate{
 	}
 
 	public function recalculateNode(int $x, int $y, int $z) : void{
-		if(!$this->subChunkExplorer->moveTo($x, $y, $z, false)){
+		if($this->subChunkExplorer->moveTo($x, $y, $z, false) === SubChunkExplorerStatus::INVALID){
 			return;
 		}
 		$chunk = $this->subChunkExplorer->currentChunk;
