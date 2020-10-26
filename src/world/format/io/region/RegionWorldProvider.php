@@ -33,12 +33,12 @@ use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WorldData;
 use pocketmine\world\generator\Generator;
-use pocketmine\world\World;
 use function assert;
 use function file_exists;
 use function is_dir;
 use function is_int;
 use function mkdir;
+use function morton2d_encode;
 use function rename;
 use function scandir;
 use function strrpos;
@@ -118,7 +118,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	}
 
 	protected function getRegion(int $regionX, int $regionZ) : ?RegionLoader{
-		return $this->regions[World::chunkHash($regionX, $regionZ)] ?? null;
+		return $this->regions[morton2d_encode($regionX, $regionZ)] ?? null;
 	}
 
 	/**
@@ -129,7 +129,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	}
 
 	protected function loadRegion(int $regionX, int $regionZ) : void{
-		if(!isset($this->regions[$index = World::chunkHash($regionX, $regionZ)])){
+		if(!isset($this->regions[$index = morton2d_encode($regionX, $regionZ)])){
 			$path = $this->pathToRegion($regionX, $regionZ);
 
 			$region = new RegionLoader($path);
@@ -154,7 +154,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	}
 
 	protected function unloadRegion(int $regionX, int $regionZ) : void{
-		if(isset($this->regions[$hash = World::chunkHash($regionX, $regionZ)])){
+		if(isset($this->regions[$hash = morton2d_encode($regionX, $regionZ)])){
 			$this->regions[$hash]->close();
 			unset($this->regions[$hash]);
 		}
