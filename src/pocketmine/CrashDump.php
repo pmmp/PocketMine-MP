@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use Composer\InstalledVersions;
-use PackageVersions\Versions;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginLoadOrder;
@@ -44,7 +43,6 @@ use function get_loaded_extensions;
 use function implode;
 use function is_dir;
 use function is_resource;
-use function is_string;
 use function json_encode;
 use function json_last_error_msg;
 use function max;
