@@ -72,5 +72,4 @@ class AsyncTaskMainLoggerTest extends Test{
 		return "Verifies that the MainLogger is accessible by MainLogger::getLogger() in an AsyncTask";
 	}
 
-
 }
