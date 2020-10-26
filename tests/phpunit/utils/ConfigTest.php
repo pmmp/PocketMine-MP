@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use PHPUnit\Framework\TestCase;
+use function yaml_parse;
 
 class ConfigTest extends TestCase{
 

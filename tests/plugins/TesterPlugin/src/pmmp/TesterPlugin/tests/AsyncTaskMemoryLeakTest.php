@@ -25,6 +25,7 @@ namespace pmmp\TesterPlugin\tests;
 
 use pmmp\TesterPlugin\Test;
 use pocketmine\scheduler\AsyncTask;
+use function usleep;
 
 class AsyncTaskMemoryLeakTest extends Test{
 

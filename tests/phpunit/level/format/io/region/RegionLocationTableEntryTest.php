@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\level\format\io\region;
 
 use PHPUnit\Framework\TestCase;
+use function sprintf;
 
 class RegionLocationTableEntryTest extends TestCase{
 

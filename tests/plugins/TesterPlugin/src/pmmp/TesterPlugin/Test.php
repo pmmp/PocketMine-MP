@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pmmp\TesterPlugin;
 
+use function time;
+
 abstract class Test{
 	const RESULT_WAITING = -1;
 	const RESULT_OK = 0;

@@ -26,6 +26,7 @@ namespace pmmp\TesterPlugin;
 use pocketmine\event\Listener;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\plugin\PluginBase;
+use function array_shift;
 
 class Main extends PluginBase implements Listener{
 

@@ -28,7 +28,10 @@ use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\MainLogger;
+use function ob_end_flush;
 use function ob_get_contents;
+use function ob_start;
+use function strpos;
 
 class AsyncTaskMainLoggerTest extends Test{
 
