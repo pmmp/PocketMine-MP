@@ -86,6 +86,11 @@ class SubChunkExplorer{
 		return true;
 	}
 
+	public function moveToChunk(int $chunkX, int $chunkY, int $chunkZ, bool $create) : bool{
+		//this is a cold path, so we don't care much if it's a bit slower (extra fcall overhead)
+		return $this->moveTo($chunkX << 4, $chunkY << 4, $chunkZ << 4, $create);
+	}
+
 	/**
 	 * @phpstan-param \Closure() : void $callback
 	 */
