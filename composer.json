@@ -47,11 +47,11 @@
       "pocketmine/color": "^0.1.0",
       "adhocore/json-comment": "^0.1.0",
       "netresearch/jsonmapper": "^2.0",
-      "ocramius/package-versions": "^1.5",
-      "respect/validation": "^2.0"
+      "respect/validation": "^2.0",
+      "composer-runtime-api": "^2.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "0.12.50",
+      "phpstan/phpstan": "0.12.51",
       "phpstan/phpstan-phpunit": "^0.12.6",
       "phpstan/phpstan-strict-rules": "^0.12.2",
       "phpunit/phpunit": "^9.2"

@@ -62,7 +62,8 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	public static function isValid(string $path) : bool{
 		if(file_exists($path . "/level.dat") and is_dir($path . "/region/")){
 			foreach(scandir($path . "/region/", SCANDIR_SORT_NONE) as $file){
-				if(substr($file, strrpos($file, ".") + 1) === static::getRegionFileExtension()){
+				$extPos = strrpos($file, ".");
+				if($extPos !== false && substr($file, $extPos + 1) === static::getRegionFileExtension()){
 					//we don't care if other region types exist, we only care if this format is possible
 					return true;
 				}

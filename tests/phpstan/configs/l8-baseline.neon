@@ -6,11 +6,6 @@ parameters:
 			path: ../../../build/make-release.php
 
 		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\world\\\\generator\\\\GeneratorManager\\:\\:getGenerator\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/Server.php
-
-		-
 			message: "#^Parameter \\#1 \\$constraint of method pocketmine\\\\block\\\\BaseRail\\:\\:getPossibleConnectionDirectionsOneConstraint\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/block/BaseRail.php
@@ -61,46 +56,6 @@ parameters:
 			path: ../../../src/command/SimpleCommandMap.php
 
 		-
-			message: "#^Parameter \\#1 \\$target of method pocketmine\\\\permission\\\\BanList\\:\\:addBan\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getPlayerExact\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanCommand.php
-
-		-
-			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanIpCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$ip of method pocketmine\\\\command\\\\defaults\\\\BanIpCommand\\:\\:processIPBan\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanIpCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getPlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanIpCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getOfflinePlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/DeopCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getPlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/KickCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getOfflinePlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/OpCommand.php
-
-		-
 			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/ParticleCommand.php
@@ -139,101 +94,6 @@ parameters:
 			message: "#^Parameter \\#3 \\$repetitions of class pocketmine\\\\event\\\\inventory\\\\CraftItemEvent constructor expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:BLAST_PROTECTION\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:EFFICIENCY\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:FEATHER_FALLING\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:FIRE_ASPECT\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:FIRE_PROTECTION\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:FLAME\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:INFINITY\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:KNOCKBACK\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:MENDING\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:POWER\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:PROJECTILE_PROTECTION\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:PROTECTION\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:PUNCH\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:RESPIRATION\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:SHARPNESS\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:SILK_TOUCH\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:THORNS\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:UNBREAKING\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:VANISHING\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
 
 		-
 			message: "#^Cannot call method getUsername\\(\\) on pocketmine\\\\player\\\\PlayerInfo\\|null\\.$#"
@@ -292,11 +152,6 @@ parameters:
 
 		-
 			message: "#^Cannot call method sendData\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
-			count: 2
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
-			message: "#^Cannot call method getViewers\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
@@ -409,11 +264,6 @@ parameters:
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\raklib\\\\RakLibServer\\:\\:\\$mainThreadNotifier \\(pocketmine\\\\snooze\\\\SleeperNotifier\\) does not accept pocketmine\\\\snooze\\\\SleeperNotifier\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/raklib/RakLibServer.php
-
-		-
-			message: "#^Parameter \\#1 \\$str of function trim expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/permission/BanEntry.php
 
 		-
 			message: "#^Method pocketmine\\\\permission\\\\DefaultPermissions\\:\\:registerPermission\\(\\) should return pocketmine\\\\permission\\\\Permission but returns pocketmine\\\\permission\\\\Permission\\|null\\.$#"
@@ -602,7 +452,7 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$closure of static method pocketmine\\\\utils\\\\Utils\\:\\:getNiceClosureName\\(\\) expects Closure, Closure\\|null given\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/plugin/PluginManager.php
 
 		-
@@ -657,11 +507,6 @@ parameters:
 
 		-
 			message: "#^Method pocketmine\\\\utils\\\\Config\\:\\:fixYAMLIndexes\\(\\) should return string but returns string\\|null\\.$#"
-			count: 1
-			path: ../../../src/utils/Config.php
-
-		-
-			message: "#^Parameter \\#1 \\$str of function trim expects string, string\\|null given\\.$#"
 			count: 1
 			path: ../../../src/utils/Config.php
 

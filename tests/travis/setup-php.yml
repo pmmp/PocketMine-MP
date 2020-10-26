@@ -67,6 +67,6 @@ before_script:
   - echo "extension=chunkutils2.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - echo "extension=leveldb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - echo "extension=morton.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-
+  - composer self-update --2
 cache:
   - leveldb-mcpe
