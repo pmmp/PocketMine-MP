@@ -256,7 +256,7 @@ abstract class BaseInventory implements Inventory{
 					$count -= $diff;
 				}
 			}elseif($slot->isNull()){
-				$count -= $this->getMaxStackSize();
+				$count -= min($this->getMaxStackSize(), $item->getMaxStackSize());
 			}
 
 			if($count <= 0){
