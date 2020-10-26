@@ -61,7 +61,6 @@ class ConfigTest extends TestCase{
 	/**
 	 * @dataProvider fixYamlIndexesProvider
 	 *
-	 * @param string  $test
 	 * @param mixed[] $expected
 	 */
 	public function testFixYamlIndexes(string $test, array $expected) : void{
