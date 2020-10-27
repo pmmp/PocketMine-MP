@@ -53,27 +53,31 @@ class Sugarcane extends Flowable{
 		return 0b1111;
 	}
 
+	private function grow() : void{
+		for($y = 1; $y < 3; ++$y){
+			if(!$this->pos->getWorld()->isInWorld($this->pos->x, $this->pos->y + $y, $this->pos->z)){
+				break;
+			}
+			$b = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + $y, $this->pos->z);
+			if($b->getId() === BlockLegacyIds::AIR){
+				$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
+				$ev->call();
+				if($ev->isCancelled()){
+					break;
+				}
+				$this->pos->getWorld()->setBlock($b->pos, $ev->getNewState());
+			}else{
+				break;
+			}
+		}
+		$this->age = 0;
+		$this->pos->getWorld()->setBlock($this->pos, $this);
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
 			if(!$this->getSide(Facing::DOWN)->isSameType($this)){
-				for($y = 1; $y < 3; ++$y){
-					if(!$this->pos->getWorld()->isInWorld($this->pos->x, $this->pos->y + $y, $this->pos->z)){
-						break;
-					}
-					$b = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + $y, $this->pos->z);
-					if($b->getId() === BlockLegacyIds::AIR){
-						$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
-						$ev->call();
-						if($ev->isCancelled()){
-							break;
-						}
-						$this->pos->getWorld()->setBlock($b->pos, $ev->getNewState());
-					}else{
-						break;
-					}
-				}
-				$this->age = 0;
-				$this->pos->getWorld()->setBlock($this->pos, $this);
+				$this->grow();
 			}
 
 			$item->pop();
@@ -98,20 +102,7 @@ class Sugarcane extends Flowable{
 	public function onRandomTick() : void{
 		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
 			if($this->age === 15){
-				for($y = 1; $y < 3; ++$y){
-					$b = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + $y, $this->pos->z);
-					if($b->getId() === BlockLegacyIds::AIR){
-						$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
-						$ev->call();
-						if($ev->isCancelled()){
-							break;
-						}
-						$this->pos->getWorld()->setBlock($b->pos, $ev->getNewState());
-						break;
-					}
-				}
-				$this->age = 0;
-				$this->pos->getWorld()->setBlock($this->pos, $this);
+				$this->grow();
 			}else{
 				++$this->age;
 				$this->pos->getWorld()->setBlock($this->pos, $this);
