@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
+use pocketmine\world\format\LightArray;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use pocketmine\world\World;
@@ -47,8 +48,8 @@ class SkyLightUpdate extends LightUpdate{
 		$this->directSkyLightBlockers = $directSkyLightBlockers;
 	}
 
-	protected function updateLightArrayRef() : void{
-		$this->currentLightArray = $this->subChunkExplorer->currentSubChunk->getBlockSkyLightArray();
+	protected function getCurrentLightArray() : LightArray{
+		return $this->subChunkExplorer->currentSubChunk->getBlockSkyLightArray();
 	}
 
 	protected function getEffectiveLight(int $x, int $y, int $z) : int{

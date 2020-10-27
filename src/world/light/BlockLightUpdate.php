@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
+use pocketmine\world\format\LightArray;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use function max;
@@ -46,8 +47,8 @@ class BlockLightUpdate extends LightUpdate{
 		$this->lightEmitters = $lightEmitters;
 	}
 
-	protected function updateLightArrayRef() : void{
-		$this->currentLightArray = $this->subChunkExplorer->currentSubChunk->getBlockLightArray();
+	protected function getCurrentLightArray() : LightArray{
+		return $this->subChunkExplorer->currentSubChunk->getBlockLightArray();
 	}
 
 	public function recalculateNode(int $x, int $y, int $z) : void{
