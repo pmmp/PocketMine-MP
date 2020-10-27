@@ -61,10 +61,10 @@ class PopulationTask extends AsyncTask{
 	public function __construct(World $world, Chunk $chunk){
 		$this->state = true;
 		$this->worldId = $world->getId();
-		$this->chunk = FastChunkSerializer::serialize($chunk);
+		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
 
 		foreach($world->getAdjacentChunks($chunk->getX(), $chunk->getZ()) as $i => $c){
-			$this->{"chunk$i"} = $c !== null ? FastChunkSerializer::serialize($c) : null;
+			$this->{"chunk$i"} = $c !== null ? FastChunkSerializer::serializeWithoutLight($c) : null;
 		}
 
 		$this->storeLocal(self::TLS_KEY_WORLD, $world);
@@ -117,10 +117,10 @@ class PopulationTask extends AsyncTask{
 		$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
 		$chunk->setPopulated();
 
-		$this->chunk = FastChunkSerializer::serialize($chunk);
+		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
 
 		foreach($chunks as $i => $c){
-			$this->{"chunk$i"} = $c->isDirty() ? FastChunkSerializer::serialize($c) : null;
+			$this->{"chunk$i"} = $c->isDirty() ? FastChunkSerializer::serializeWithoutLight($c) : null;
 		}
 
 		$manager->cleanChunks();
