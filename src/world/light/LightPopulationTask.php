@@ -28,6 +28,8 @@ use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\format\LightArray;
+use pocketmine\world\SimpleChunkManager;
+use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\World;
 use function igbinary_serialize;
 use function igbinary_unserialize;
@@ -61,9 +63,18 @@ class LightPopulationTask extends AsyncTask{
 		/** @var Chunk $chunk */
 		$chunk = FastChunkSerializer::deserialize($this->chunk);
 
+		$manager = new SimpleChunkManager();
+		$manager->setChunk($this->chunkX, $this->chunkZ, $chunk);
+
 		$blockFactory = BlockFactory::getInstance();
-		$chunk->recalculateHeightMap($blockFactory->blocksDirectSkyLight);
-		$chunk->populateSkyLight($blockFactory->lightFilter);
+		foreach([
+			"Block" => new BlockLightUpdate(new SubChunkExplorer($manager), $blockFactory->lightFilter, $blockFactory->light),
+			"Sky" => new SkyLightUpdate(new SubChunkExplorer($manager), $blockFactory->lightFilter, $blockFactory->blocksDirectSkyLight),
+		] as $name => $update){
+			$update->recalculateChunk($this->chunkX, $this->chunkZ);
+			$update->execute();
+		}
+
 		$chunk->setLightPopulated();
 
 		$this->resultHeightMap = igbinary_serialize($chunk->getHeightMapArray());

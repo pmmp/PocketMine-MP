@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\light;
 
 use pocketmine\world\format\LightArray;
+use pocketmine\world\format\SubChunk;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use function max;
@@ -56,5 +57,49 @@ class BlockLightUpdate extends LightUpdate{
 			$block = $this->subChunkExplorer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf);
 			$this->setAndUpdateLight($x, $y, $z, max($this->lightEmitters[$block], $this->getHighestAdjacentLight($x, $y, $z) - $this->lightFilters[$block]));
 		}
+	}
+
+	public function recalculateChunk(int $chunkX, int $chunkZ) : int{
+		if($this->subChunkExplorer->moveToChunk($chunkX, 0, $chunkZ, false) === SubChunkExplorerStatus::INVALID){
+			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ does not exist");
+		}
+		$chunk = $this->subChunkExplorer->currentChunk;
+
+		$lightSources = 0;
+		foreach($chunk->getSubChunks() as $subChunkY => $subChunk){
+			$subChunk->setBlockLightArray(LightArray::fill(0));
+
+			foreach($subChunk->getBlockLayers() as $layer){
+				foreach($layer->getPalette() as $state){
+					if($this->lightEmitters[$state] > 0){
+						$lightSources += $this->scanForLightEmittingBlocks($subChunk, $chunkX << 4, $subChunkY << 4, $chunkZ << 4);
+						break 2;
+					}
+				}
+			}
+		}
+
+		return $lightSources;
+	}
+
+	private function scanForLightEmittingBlocks(SubChunk $subChunk, int $baseX, int $baseY, int $baseZ) : int{
+		$lightSources = 0;
+		for($x = 0; $x < 16; ++$x){
+			for($z = 0; $z < 16; ++$z){
+				for($y = 0; $y < 16; ++$y){
+					$light = $this->lightEmitters[$subChunk->getFullBlock($x, $y, $z)];
+					if($light > 0){
+						$this->setAndUpdateLight(
+							$baseX + $x,
+							$baseY + $y,
+							$baseZ + $z,
+							$light
+						);
+						$lightSources++;
+					}
+				}
+			}
+		}
+		return $lightSources;
 	}
 }

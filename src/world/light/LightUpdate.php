@@ -61,6 +61,12 @@ abstract class LightUpdate{
 
 	abstract public function recalculateNode(int $x, int $y, int $z) : void;
 
+	/**
+	 * Scans for all light sources in the target chunk and adds them to the propagation queue.
+	 * This erases preexisting light in the chunk.
+	 */
+	abstract public function recalculateChunk(int $chunkX, int $chunkZ) : int;
+
 	protected function getEffectiveLight(int $x, int $y, int $z) : int{
 		if($this->subChunkExplorer->moveTo($x, $y, $z, false) !== SubChunkExplorerStatus::INVALID){
 			return $this->getCurrentLightArray()->get($x & 0xf, $y & 0xf, $z & 0xf);

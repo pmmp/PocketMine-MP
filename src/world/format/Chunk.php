@@ -40,7 +40,6 @@ use function array_fill;
 use function array_filter;
 use function array_map;
 use function count;
-use function max;
 use function str_repeat;
 
 class Chunk{
@@ -321,47 +320,6 @@ class Chunk{
 
 		$this->setHeightMap($x, $z, $y + 1);
 		return $y + 1;
-	}
-
-	/**
-	 * Performs basic sky light population on the chunk.
-	 * This does not cater for adjacent sky light, this performs direct sky light population only. This may cause some strange visual artifacts
-	 * if the chunk is light-populated after being terrain-populated.
-	 *
-	 * @param \SplFixedArray|int[] $lightFilters
-	 * @phpstan-param \SplFixedArray<int> $lightFilters
-	 *
-	 * TODO: fast adjacent light spread
-	 */
-	public function populateSkyLight(\SplFixedArray $lightFilters) : void{
-		$highestHeightMap = max($this->heightMap->getValues());
-		$lowestFullyLitSubChunk = ($highestHeightMap >> 4) + (($highestHeightMap & 0xf) !== 0 ? 1 : 0);
-		for($y = 0; $y < $lowestFullyLitSubChunk; $y++){
-			$this->getWritableSubChunk($y)->setBlockSkyLightArray(LightArray::fill(0));
-		}
-		for($y = $lowestFullyLitSubChunk, $yMax = $this->subChunks->count(); $y < $yMax; $y++){
-			$this->getWritableSubChunk($y)->setBlockSkyLightArray(LightArray::fill(15));
-		}
-
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
-				$y = ($lowestFullyLitSubChunk * 16) - 1;
-				$heightMap = $this->getHeightMap($x, $z);
-
-				for(; $y >= $heightMap; --$y){
-					$this->setBlockSkyLight($x, $y, $z, 15);
-				}
-
-				$light = 15;
-				for(; $y >= 0; --$y){
-					$light -= $lightFilters[$this->getFullBlock($x, $y, $z)];
-					if($light <= 0){
-						break;
-					}
-					$this->setBlockSkyLight($x, $y, $z, $light);
-				}
-			}
-		}
 	}
 
 	/**

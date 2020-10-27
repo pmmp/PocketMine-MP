@@ -96,4 +96,68 @@ class SkyLightUpdate extends LightUpdate{
 			$this->setAndUpdateLight($x, $y, $z, max(0, $this->getHighestAdjacentLight($x, $y, $z) - $this->lightFilters[$source]));
 		}
 	}
+
+	public function recalculateChunk(int $chunkX, int $chunkZ) : int{
+		if($this->subChunkExplorer->moveToChunk($chunkX, 0, $chunkZ, false) === SubChunkExplorerStatus::INVALID){
+			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ does not exist");
+		}
+		$chunk = $this->subChunkExplorer->currentChunk;
+
+		$chunk->recalculateHeightMap($this->directSkyLightBlockers);
+
+		//setAndUpdateLight() won't bother propagating from nodes that are already what we want to change them to, so we
+		//have to avoid filling full light for any subchunk that contains a heightmap Y coordinate
+		$highestHeightMapPlusOne = max($chunk->getHeightMapArray()) + 1;
+		$lowestClearSubChunk = ($highestHeightMapPlusOne >> 4) + (($highestHeightMapPlusOne & 0xf) !== 0 ? 1 : 0);
+		$chunkHeight = $chunk->getSubChunks()->count();
+		for($y = 0; $y < $lowestClearSubChunk && $y < $chunkHeight; $y++){
+			$chunk->getWritableSubChunk($y)->setBlockSkyLightArray(LightArray::fill(0));
+		}
+		for($y = $lowestClearSubChunk, $yMax = $chunkHeight; $y < $yMax; $y++){
+			$chunk->getWritableSubChunk($y)->setBlockSkyLightArray(LightArray::fill(15));
+		}
+
+		$lightSources = 0;
+
+		$baseX = $chunkX << 4;
+		$baseZ = $chunkZ << 4;
+		for($x = 0; $x < 16; ++$x){
+			for($z = 0; $z < 16; ++$z){
+				$currentHeight = $chunk->getHeightMap($x, $z);
+				$maxAdjacentHeight = 0;
+				if($x !== 0){
+					$maxAdjacentHeight = max($maxAdjacentHeight, $chunk->getHeightMap($x - 1, $z));
+				}
+				if($x !== 15){
+					$maxAdjacentHeight = max($maxAdjacentHeight, $chunk->getHeightMap($x + 1, $z));
+				}
+				if($z !== 0){
+					$maxAdjacentHeight = max($maxAdjacentHeight, $chunk->getHeightMap($x, $z - 1));
+				}
+				if($z !== 15){
+					$maxAdjacentHeight = max($maxAdjacentHeight, $chunk->getHeightMap($x, $z + 1));
+				}
+
+				/*
+				 * We skip the top two blocks between current height and max adjacent (if there's a difference) because:
+				 * - the block next to the highest adjacent will do nothing during propagation (it's surrounded by 15s)
+				 * - the block below that block will do the same as the node in the highest adjacent
+				 * NOTE: If block opacity becomes direction-aware in the future, the second point will become invalid.
+				 */
+				$nodeColumnEnd = max($currentHeight, $maxAdjacentHeight - 2);
+
+				for($y = $currentHeight; $y <= $nodeColumnEnd; $y++){
+					$this->setAndUpdateLight($x + $baseX, $y, $z + $baseZ, 15);
+					$lightSources++;
+				}
+				for($y = $nodeColumnEnd + 1, $yMax = $lowestClearSubChunk * 16; $y < $yMax; $y++){
+					if($this->subChunkExplorer->moveTo($x + $baseX, $y, $z + $baseZ, false) !== SubChunkExplorerStatus::INVALID){
+						$this->getCurrentLightArray()->set($x, $y & 0xf, $z, 15);
+					}
+				}
+			}
+		}
+
+		return $lightSources;
+	}
 }
