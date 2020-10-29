@@ -1235,7 +1235,7 @@ class World implements ChunkManager{
 			if(
 				!$this->isInWorld($x1, $y1, $z1) ||
 				($chunk = $this->getChunk($x1 >> 4, $z1 >> 4)) === null ||
-				!$chunk->isLightPopulated()
+				$chunk->isLightPopulated() !== true
 			){
 				continue;
 			}
@@ -1260,7 +1260,7 @@ class World implements ChunkManager{
 			if(
 				!$this->isInWorld($x1, $y1, $z1) ||
 				($chunk = $this->getChunk($x1 >> 4, $z1 >> 4)) === null ||
-				!$chunk->isLightPopulated()
+				$chunk->isLightPopulated() !== true
 			){
 				continue;
 			}
