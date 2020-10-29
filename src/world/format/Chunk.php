@@ -157,68 +157,6 @@ class Chunk{
 	}
 
 	/**
-	 * Returns the sky light level at the specified chunk block coordinates
-	 *
-	 * @param int $x 0-15
-	 * @param int $y 0-255
-	 * @param int $z 0-15
-	 *
-	 * @return int 0-15
-	 */
-	public function getBlockSkyLight(int $x, int $y, int $z) : int{
-		return $this->getSubChunk($y >> 4)->getBlockSkyLightArray()->get($x & 0xf, $y & 0x0f, $z & 0xf);
-	}
-
-	/**
-	 * Sets the sky light level at the specified chunk block coordinates
-	 *
-	 * @param int $x 0-15
-	 * @param int $y 0-255
-	 * @param int $z 0-15
-	 * @param int $level 0-15
-	 */
-	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : void{
-		$this->getWritableSubChunk($y >> 4)->getBlockSkyLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
-	}
-
-	public function setAllBlockSkyLight(int $level) : void{
-		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
-			$this->getWritableSubChunk($y)->setBlockSkyLightArray(LightArray::fill($level));
-		}
-	}
-
-	/**
-	 * Returns the block light level at the specified chunk block coordinates
-	 *
-	 * @param int $x 0-15
-	 * @param int $y 0-255
-	 * @param int $z 0-15
-	 *
-	 * @return int 0-15
-	 */
-	public function getBlockLight(int $x, int $y, int $z) : int{
-		return $this->getSubChunk($y >> 4)->getBlockLightArray()->get($x & 0xf, $y & 0x0f, $z & 0xf);
-	}
-
-	/**
-	 * Sets the block light level at the specified chunk block coordinates
-	 *
-	 * @param int $x 0-15
-	 * @param int $y 0-255
-	 * @param int $z 0-15
-	 * @param int $level 0-15
-	 */
-	public function setBlockLight(int $x, int $y, int $z, int $level) : void{
-		$this->getWritableSubChunk($y >> 4)->getBlockLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
-	}
-
-	public function setAllBlockLight(int $level) : void{
-		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
-			$this->getWritableSubChunk($y)->setBlockLightArray(LightArray::fill($level));
-		}
-	}
-
-	/**
 	 * Returns the Y coordinate of the highest non-air block at the specified X/Z chunk block coordinates
 	 *
 	 * @param int $x 0-15
