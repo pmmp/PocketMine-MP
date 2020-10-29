@@ -1697,7 +1697,7 @@ class World implements ChunkManager{
 					if(!$this->isChunkLoaded($x, $z)){
 						continue;
 					}
-					foreach($this->getOrLoadChunk($x, $z)->getEntities() as $ent){
+					foreach($this->getChunk($x, $z)->getEntities() as $ent){
 						/** @var Entity|null $entity */
 						if($ent->canBeCollidedWith() and ($entity === null or ($ent !== $entity and $entity->canCollideWith($ent))) and $ent->boundingBox->intersectsWith($bb)){
 							$nearby[] = $ent;
@@ -1728,7 +1728,7 @@ class World implements ChunkManager{
 				if(!$this->isChunkLoaded($x, $z)){
 					continue;
 				}
-				foreach($this->getOrLoadChunk($x, $z)->getEntities() as $ent){
+				foreach($this->getChunk($x, $z)->getEntities() as $ent){
 					if($ent !== $entity and $ent->boundingBox->intersectsWith($bb)){
 						$nearby[] = $ent;
 					}
@@ -1771,7 +1771,7 @@ class World implements ChunkManager{
 				if(!$this->isChunkLoaded($x, $z)){
 					continue;
 				}
-				foreach($this->getOrLoadChunk($x, $z)->getEntities() as $entity){
+				foreach($this->getChunk($x, $z)->getEntities() as $entity){
 					if(!($entity instanceof $entityType) or $entity->isFlaggedForDespawn() or (!$includeDead and !$entity->isAlive())){
 						continue;
 					}
