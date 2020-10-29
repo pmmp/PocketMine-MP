@@ -740,6 +740,9 @@ class World implements ChunkManager{
 		while($this->neighbourBlockUpdateQueue->count() > 0){
 			$index = $this->neighbourBlockUpdateQueue->dequeue();
 			World::getBlockXYZ($index, $x, $y, $z);
+			if(!$this->isChunkLoaded($x >> 4, $z >> 4)){
+				continue;
+			}
 
 			$block = $this->getBlockAt($x, $y, $z);
 			$block->readStateFromWorld(); //for blocks like fences, force recalculation of connected AABBs
