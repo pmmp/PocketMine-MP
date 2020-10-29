@@ -1232,7 +1232,11 @@ class World implements ChunkManager{
 			[$x, $y, $z + 1],
 			[$x, $y, $z - 1]
 		] as [$x1, $y1, $z1]){
-			if(!$this->isInWorld($x1, $y1, $z1)){
+			if(
+				!$this->isInWorld($x1, $y1, $z1) ||
+				($chunk = $this->getChunk($x1 >> 4, $z1 >> 4)) === null ||
+				!$chunk->isLightPopulated()
+			){
 				continue;
 			}
 			$max = max($max, $this->getBlockSkyLightAt($x1, $y1, $z1));
@@ -1253,7 +1257,11 @@ class World implements ChunkManager{
 			[$x, $y, $z + 1],
 			[$x, $y, $z - 1]
 		] as [$x1, $y1, $z1]){
-			if(!$this->isInWorld($x1, $y1, $z1)){
+			if(
+				!$this->isInWorld($x1, $y1, $z1) ||
+				($chunk = $this->getChunk($x1 >> 4, $z1 >> 4)) === null ||
+				!$chunk->isLightPopulated()
+			){
 				continue;
 			}
 			$max = max($max, $this->getBlockLightAt($x1, $y1, $z1));
