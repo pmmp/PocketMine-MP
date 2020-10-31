@@ -46,7 +46,7 @@ class SimpleChunkManager implements ChunkManager{
 
 	public function getBlockAt(int $x, int $y, int $z) : Block{
 		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
-			return BlockFactory::getInstance()->fromFullBlock($chunk->getFullBlock($x & 0xf, $y, $z));
+			return BlockFactory::getInstance()->fromFullBlock($chunk->getFullBlock($x & 0xf, $y, $z & 0xf));
 		}
 		return VanillaBlocks::AIR();
 	}
