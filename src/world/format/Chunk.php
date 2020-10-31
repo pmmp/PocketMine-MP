@@ -145,7 +145,7 @@ class Chunk{
 	 * @return int bitmap, (id << 4) | meta
 	 */
 	public function getFullBlock(int $x, int $y, int $z) : int{
-		return $this->getSubChunk($y >> 4)->getFullBlock($x, $y & 0x0f, $z);
+		return $this->getSubChunkChecked($y >> 4)->getFullBlock($x, $y & 0x0f, $z);
 	}
 
 	/**
