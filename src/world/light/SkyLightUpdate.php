@@ -24,11 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\world\light;
 
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\HeightArray;
 use pocketmine\world\format\LightArray;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use pocketmine\world\World;
-use function array_fill;
 use function max;
 
 class SkyLightUpdate extends LightUpdate{
@@ -75,6 +75,7 @@ class SkyLightUpdate extends LightUpdate{
 
 		if($yPlusOne === $oldHeightMap){ //Block changed directly beneath the heightmap. Check if a block was removed or changed to a different light-filter.
 			$newHeightMap = self::recalculateHeightMapColumn($chunk, $x & 0x0f, $z & 0x0f, $this->directSkyLightBlockers);
+			$chunk->setHeightMap($x & 0xf, $z & 0xf, $newHeightMap);
 		}elseif($yPlusOne > $oldHeightMap){ //Block changed above the heightmap.
 			if($this->directSkyLightBlockers[$source]){
 				$chunk->setHeightMap($x & 0xf, $z & 0xf, $yPlusOne);
@@ -105,7 +106,8 @@ class SkyLightUpdate extends LightUpdate{
 		}
 		$chunk = $this->subChunkExplorer->currentChunk;
 
-		self::recalculateHeightMap($chunk, $this->directSkyLightBlockers);
+		$newHeightMap = self::recalculateHeightMap($chunk, $this->directSkyLightBlockers);
+		$chunk->setHeightMapArray($newHeightMap->getValues());
 
 		//setAndUpdateLight() won't bother propagating from nodes that are already what we want to change them to, so we
 		//have to avoid filling full light for any subchunk that contains a heightmap Y coordinate
@@ -169,16 +171,16 @@ class SkyLightUpdate extends LightUpdate{
 	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
 	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
 	 */
-	private static function recalculateHeightMap(Chunk $chunk, \SplFixedArray $directSkyLightBlockers) : void{
+	private static function recalculateHeightMap(Chunk $chunk, \SplFixedArray $directSkyLightBlockers) : HeightArray{
 		$maxSubChunkY = $chunk->getSubChunks()->count() - 1;
 		for(; $maxSubChunkY >= 0; $maxSubChunkY--){
 			if(!$chunk->getSubChunk($maxSubChunkY)->isEmptyFast()){
 				break;
 			}
 		}
+		$result = HeightArray::fill(0);
 		if($maxSubChunkY === -1){ //whole column is definitely empty
-			$chunk->setHeightMapArray(array_fill(0, 256, 0));
-			return;
+			return $result;
 		}
 
 		for($z = 0; $z < 16; ++$z){
@@ -193,17 +195,18 @@ class SkyLightUpdate extends LightUpdate{
 				}
 
 				if($y === null){ //no blocks in the column
-					$chunk->setHeightMap($x, $z, 0);
+					$result->set($x, $z, 0);
 				}else{
 					for(; $y >= 0; --$y){
 						if($directSkyLightBlockers[$chunk->getFullBlock($x, $y, $z)]){
-							$chunk->setHeightMap($x, $z, $y + 1);
+							$result->set($x, $z, $y + 1);
 							break;
 						}
 					}
 				}
 			}
 		}
+		return $result;
 	}
 
 	/**
@@ -224,7 +227,6 @@ class SkyLightUpdate extends LightUpdate{
 			}
 		}
 
-		$chunk->setHeightMap($x, $z, $y + 1);
 		return $y + 1;
 	}
 }
