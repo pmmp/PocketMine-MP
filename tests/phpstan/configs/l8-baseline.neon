@@ -526,27 +526,7 @@ parameters:
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/SimpleChunkManager.php
-
-		-
-			message: "#^Cannot call method setFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/SimpleChunkManager.php
-
-		-
-			message: "#^Cannot call method setDirtyFlag\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/SimpleChunkManager.php
-
-		-
 			message: "#^Parameter \\#1 \\$chunk of method pocketmine\\\\player\\\\Player\\:\\:onChunkChanged\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
 
@@ -556,17 +536,7 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Cannot call method getBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Cannot call method setBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Cannot call method getHighestBlockAt\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
 
