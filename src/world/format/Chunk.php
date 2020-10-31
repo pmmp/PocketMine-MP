@@ -145,14 +145,14 @@ class Chunk{
 	 * @return int bitmap, (id << 4) | meta
 	 */
 	public function getFullBlock(int $x, int $y, int $z) : int{
-		return $this->getSubChunkChecked($y >> 4)->getFullBlock($x, $y & 0x0f, $z);
+		return $this->getSubChunk($y >> 4)->getFullBlock($x, $y & 0x0f, $z);
 	}
 
 	/**
 	 * Sets the blockstate at the given coordinate by internal ID.
 	 */
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
-		$this->getSubChunkChecked($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
+		$this->getSubChunk($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
 		$this->dirtyFlags |= self::DIRTY_FLAG_TERRAIN;
 	}
 
@@ -166,7 +166,7 @@ class Chunk{
 	 */
 	public function getHighestBlockAt(int $x, int $z) : int{
 		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
-			$height = $this->getSubChunkChecked($y)->getHighestBlockAt($x, $z) | ($y << 4);
+			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z) | ($y << 4);
 			if($height !== -1){
 				return $height;
 			}
@@ -204,7 +204,7 @@ class Chunk{
 	public function recalculateHeightMap(\SplFixedArray $directSkyLightBlockers) : void{
 		$maxSubChunkY = $this->subChunks->count() - 1;
 		for(; $maxSubChunkY >= 0; $maxSubChunkY--){
-			if(!$this->getSubChunkChecked($maxSubChunkY)->isEmptyFast()){
+			if(!$this->getSubChunk($maxSubChunkY)->isEmptyFast()){
 				break;
 			}
 		}
@@ -217,7 +217,7 @@ class Chunk{
 			for($x = 0; $x < 16; ++$x){
 				$y = null;
 				for($subChunkY = $maxSubChunkY; $subChunkY >= 0; $subChunkY--){
-					$subHighestBlockY = $this->getSubChunkChecked($subChunkY)->getHighestBlockAt($x, $z);
+					$subHighestBlockY = $this->getSubChunk($subChunkY)->getHighestBlockAt($x, $z);
 					if($subHighestBlockY !== -1){
 						$y = ($subChunkY * 16) + $subHighestBlockY;
 						break;
@@ -505,7 +505,7 @@ class Chunk{
 		$this->dirtyFlags = 0;
 	}
 
-	public function getSubChunkChecked(int $y) : SubChunk{
+	public function getSubChunk(int $y) : SubChunk{
 		if($y < 0 || $y >= $this->subChunks->getSize()){
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}

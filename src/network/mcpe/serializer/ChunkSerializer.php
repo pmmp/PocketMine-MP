@@ -43,7 +43,7 @@ final class ChunkSerializer{
 	 */
 	public static function getSubChunkCount(Chunk $chunk) : int{
 		for($count = $chunk->getSubChunks()->count(); $count > 0; --$count){
-			if($chunk->getSubChunkChecked($count - 1)->isEmptyFast()){
+			if($chunk->getSubChunk($count - 1)->isEmptyFast()){
 				continue;
 			}
 			return $count;
@@ -56,7 +56,7 @@ final class ChunkSerializer{
 		$stream = new PacketSerializer();
 		$subChunkCount = self::getSubChunkCount($chunk);
 		for($y = 0; $y < $subChunkCount; ++$y){
-			$layers = $chunk->getSubChunkChecked($y)->getBlockLayers();
+			$layers = $chunk->getSubChunk($y)->getBlockLayers();
 			$stream->putByte(8); //version
 
 			$stream->putByte(count($layers));

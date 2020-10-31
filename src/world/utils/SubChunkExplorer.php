@@ -77,7 +77,7 @@ class SubChunkExplorer{
 				return SubChunkExplorerStatus::INVALID;
 			}
 
-			$this->currentSubChunk = $this->currentChunk->getSubChunkChecked($y >> 4);
+			$this->currentSubChunk = $this->currentChunk->getSubChunk($y >> 4);
 			if($this->onSubChunkChangeFunc !== null){
 				($this->onSubChunkChangeFunc)();
 			}
