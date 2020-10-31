@@ -505,17 +505,6 @@ class Chunk{
 		$this->dirtyFlags = 0;
 	}
 
-	/**
-	 * Returns the subchunk at the specified subchunk Y coordinate, or an empty, unmodifiable stub if it does not exist or the coordinate is out of range.
-	 */
-	public function getSubChunk(int $y) : SubChunkInterface{
-		if($y < 0 or $y >= $this->subChunks->getSize()){
-			return EmptySubChunk::getInstance(); //TODO: drop this and throw an exception here
-		}
-
-		return $this->subChunks[$y];
-	}
-
 	public function getSubChunkChecked(int $y) : SubChunk{
 		if($y < 0 || $y >= $this->subChunks->getSize()){
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
