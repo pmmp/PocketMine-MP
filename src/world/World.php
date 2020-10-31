@@ -1291,16 +1291,6 @@ class World implements ChunkManager{
 		}
 	}
 
-	/**
-	 * @return int bitmap, (id << 4) | data
-	 */
-	public function getFullBlock(int $x, int $y, int $z) : int{
-		if(($chunk = $this->getOrLoadChunk($x >> 4, $z >> 4, false)) !== null){
-			return $chunk->getFullBlock($x & 0x0f, $y, $z & 0x0f);
-		}
-		return BlockLegacyIds::AIR << 4; //TODO: this should throw (ungenerated chunk)
-	}
-
 	public function isInWorld(int $x, int $y, int $z) : bool{
 		return (
 			$x <= Limits::INT32_MAX and $x >= Limits::INT32_MIN and
