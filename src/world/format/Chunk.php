@@ -166,7 +166,7 @@ class Chunk{
 	 */
 	public function getHighestBlockAt(int $x, int $z) : int{
 		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
-			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z) | ($y << 4);
+			$height = $this->getSubChunkChecked($y)->getHighestBlockAt($x, $z) | ($y << 4);
 			if($height !== -1){
 				return $height;
 			}
@@ -204,7 +204,7 @@ class Chunk{
 	public function recalculateHeightMap(\SplFixedArray $directSkyLightBlockers) : void{
 		$maxSubChunkY = $this->subChunks->count() - 1;
 		for(; $maxSubChunkY >= 0; $maxSubChunkY--){
-			if(!$this->getSubChunk($maxSubChunkY)->isEmptyFast()){
+			if(!$this->getSubChunkChecked($maxSubChunkY)->isEmptyFast()){
 				break;
 			}
 		}
@@ -217,7 +217,7 @@ class Chunk{
 			for($x = 0; $x < 16; ++$x){
 				$y = null;
 				for($subChunkY = $maxSubChunkY; $subChunkY >= 0; $subChunkY--){
-					$subHighestBlockY = $this->getSubChunk($subChunkY)->getHighestBlockAt($x, $z);
+					$subHighestBlockY = $this->getSubChunkChecked($subChunkY)->getHighestBlockAt($x, $z);
 					if($subHighestBlockY !== -1){
 						$y = ($subChunkY * 16) + $subHighestBlockY;
 						break;

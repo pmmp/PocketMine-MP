@@ -27,7 +27,6 @@ use pocketmine\utils\Utils;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\SubChunk;
-use function assert;
 
 class SubChunkExplorer{
 	/** @var ChunkManager */
@@ -78,9 +77,7 @@ class SubChunkExplorer{
 				return SubChunkExplorerStatus::INVALID;
 			}
 
-			$newSubChunk = $this->currentChunk->getSubChunk($y >> 4);
-			assert($newSubChunk instanceof SubChunk, "chunk inside valid bounds should always be a SubChunk instance");
-			$this->currentSubChunk = $newSubChunk;
+			$this->currentSubChunk = $this->currentChunk->getSubChunkChecked($y >> 4);
 			if($this->onSubChunkChangeFunc !== null){
 				($this->onSubChunkChangeFunc)();
 			}
