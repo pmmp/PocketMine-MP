@@ -1839,7 +1839,10 @@ class World implements ChunkManager{
 	 * @return int 0-15
 	 */
 	public function getPotentialBlockSkyLightAt(int $x, int $y, int $z) : int{
-		return $this->getOrLoadChunk($x >> 4, $z >> 4, true)->getSubChunk($y >> 4)->getBlockSkyLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4, false)) !== null){
+			return $chunk->getSubChunk($y >> 4)->getBlockSkyLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
+		}
+		return 0; //TODO: this should probably throw instead (light not calculated yet)
 	}
 
 	/**
@@ -1848,7 +1851,10 @@ class World implements ChunkManager{
 	 * @return int 0-15
 	 */
 	public function getBlockLightAt(int $x, int $y, int $z) : int{
-		return $this->getOrLoadChunk($x >> 4, $z >> 4, true)->getSubChunk($y >> 4)->getBlockLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4, false)) !== null){
+			return $chunk->getSubChunk($y >> 4)->getBlockLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
+		}
+		return 0; //TODO: this should probably throw instead (light not calculated yet)
 	}
 
 	public function getBiomeId(int $x, int $z) : int{
