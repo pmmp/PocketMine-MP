@@ -1242,6 +1242,14 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * Returns the highest block sky light available in the positions adjacent to the given coordinates, adjusted for
+	 * the world's current time of day and weather conditions.
+	 */
+	public function getHighestAdjacentRealBlockSkyLight(int $x, int $y, int $z) : int{
+		return $this->getHighestAdjacentBlockSkyLight($x, $y, $z) - $this->skyLightReduction;
+	}
+
+	/**
 	 * Returns the highest block light level available in the positions adjacent to the specified block coordinates.
 	 */
 	public function getHighestAdjacentBlockLight(int $x, int $y, int $z) : int{

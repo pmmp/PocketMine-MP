@@ -60,7 +60,7 @@ class FrostedIce extends Ice{
 		if((!$this->checkAdjacentBlocks(4) or mt_rand(0, 2) === 0) and
 			max( //TODO: move this to World
 				$this->pos->getWorld()->getHighestAdjacentBlockLight($this->pos->x, $this->pos->y, $this->pos->z),
-				$this->pos->getWorld()->getHighestAdjacentBlockSkyLight($this->pos->x, $this->pos->y, $this->pos->z) - $this->pos->getWorld()->getSkyLightReduction()
+				$this->pos->getWorld()->getHighestAdjacentRealBlockSkyLight($this->pos->x, $this->pos->y, $this->pos->z)
 			) >= 12 - $this->age){
 			if($this->tryMelt()){
 				foreach($this->getAllSides() as $block){
