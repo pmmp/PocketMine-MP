@@ -152,7 +152,7 @@ class Chunk{
 	 * Sets the blockstate at the given coordinate by internal ID.
 	 */
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
-		$this->getWritableSubChunk($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
+		$this->getSubChunkChecked($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
 		$this->dirtyFlags |= self::DIRTY_FLAG_TERRAIN;
 	}
 
@@ -516,9 +516,9 @@ class Chunk{
 		return $this->subChunks[$y];
 	}
 
-	public function getWritableSubChunk(int $y) : SubChunk{
+	public function getSubChunkChecked(int $y) : SubChunk{
 		if($y < 0 || $y >= $this->subChunks->getSize()){
-			throw new \InvalidArgumentException("Cannot get subchunk $y for writing");
+			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
 		return $this->subChunks[$y];
 	}

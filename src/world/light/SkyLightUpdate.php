@@ -111,10 +111,10 @@ class SkyLightUpdate extends LightUpdate{
 		$lowestClearSubChunk = ($highestHeightMapPlusOne >> 4) + (($highestHeightMapPlusOne & 0xf) !== 0 ? 1 : 0);
 		$chunkHeight = $chunk->getSubChunks()->count();
 		for($y = 0; $y < $lowestClearSubChunk && $y < $chunkHeight; $y++){
-			$chunk->getWritableSubChunk($y)->setBlockSkyLightArray(LightArray::fill(0));
+			$chunk->getSubChunkChecked($y)->setBlockSkyLightArray(LightArray::fill(0));
 		}
 		for($y = $lowestClearSubChunk, $yMax = $chunkHeight; $y < $yMax; $y++){
-			$chunk->getWritableSubChunk($y)->setBlockSkyLightArray(LightArray::fill(15));
+			$chunk->getSubChunkChecked($y)->setBlockSkyLightArray(LightArray::fill(15));
 		}
 
 		$lightSources = 0;
