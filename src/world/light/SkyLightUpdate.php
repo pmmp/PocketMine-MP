@@ -23,10 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\world\light;
 
+use pocketmine\world\format\Chunk;
 use pocketmine\world\format\LightArray;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use pocketmine\world\World;
+use function array_fill;
 use function max;
 
 class SkyLightUpdate extends LightUpdate{
@@ -72,7 +74,7 @@ class SkyLightUpdate extends LightUpdate{
 		$yPlusOne = $y + 1;
 
 		if($yPlusOne === $oldHeightMap){ //Block changed directly beneath the heightmap. Check if a block was removed or changed to a different light-filter.
-			$newHeightMap = $chunk->recalculateHeightMapColumn($x & 0x0f, $z & 0x0f, $this->directSkyLightBlockers);
+			$newHeightMap = self::recalculateHeightMapColumn($chunk, $x & 0x0f, $z & 0x0f, $this->directSkyLightBlockers);
 		}elseif($yPlusOne > $oldHeightMap){ //Block changed above the heightmap.
 			if($this->directSkyLightBlockers[$source]){
 				$chunk->setHeightMap($x & 0xf, $z & 0xf, $yPlusOne);
@@ -103,7 +105,7 @@ class SkyLightUpdate extends LightUpdate{
 		}
 		$chunk = $this->subChunkExplorer->currentChunk;
 
-		$chunk->recalculateHeightMap($this->directSkyLightBlockers);
+		self::recalculateHeightMap($chunk, $this->directSkyLightBlockers);
 
 		//setAndUpdateLight() won't bother propagating from nodes that are already what we want to change them to, so we
 		//have to avoid filling full light for any subchunk that contains a heightmap Y coordinate
@@ -159,5 +161,70 @@ class SkyLightUpdate extends LightUpdate{
 		}
 
 		return $lightSources;
+	}
+
+	/**
+	 * Recalculates the heightmap for the whole chunk.
+	 *
+	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
+	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
+	 */
+	private static function recalculateHeightMap(Chunk $chunk, \SplFixedArray $directSkyLightBlockers) : void{
+		$maxSubChunkY = $chunk->getSubChunks()->count() - 1;
+		for(; $maxSubChunkY >= 0; $maxSubChunkY--){
+			if(!$chunk->getSubChunk($maxSubChunkY)->isEmptyFast()){
+				break;
+			}
+		}
+		if($maxSubChunkY === -1){ //whole column is definitely empty
+			$chunk->setHeightMapArray(array_fill(0, 256, 0));
+			return;
+		}
+
+		for($z = 0; $z < 16; ++$z){
+			for($x = 0; $x < 16; ++$x){
+				$y = null;
+				for($subChunkY = $maxSubChunkY; $subChunkY >= 0; $subChunkY--){
+					$subHighestBlockY = $chunk->getSubChunk($subChunkY)->getHighestBlockAt($x, $z);
+					if($subHighestBlockY !== -1){
+						$y = ($subChunkY * 16) + $subHighestBlockY;
+						break;
+					}
+				}
+
+				if($y === null){ //no blocks in the column
+					$chunk->setHeightMap($x, $z, 0);
+				}else{
+					for(; $y >= 0; --$y){
+						if($directSkyLightBlockers[$chunk->getFullBlock($x, $y, $z)]){
+							$chunk->setHeightMap($x, $z, $y + 1);
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Recalculates the heightmap for the block column at the specified X/Z chunk coordinates
+	 *
+	 * @param int $x 0-15
+	 * @param int $z 0-15
+	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
+	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
+	 *
+	 * @return int New calculated heightmap value (0-256 inclusive)
+	 */
+	private static function recalculateHeightMapColumn(Chunk $chunk, int $x, int $z, \SplFixedArray $directSkyLightBlockers) : int{
+		$y = $chunk->getHighestBlockAt($x, $z);
+		for(; $y >= 0; --$y){
+			if($directSkyLightBlockers[$chunk->getFullBlock($x, $y, $z)]){
+				break;
+			}
+		}
+
+		$chunk->setHeightMap($x, $z, $y + 1);
+		return $y + 1;
 	}
 }
