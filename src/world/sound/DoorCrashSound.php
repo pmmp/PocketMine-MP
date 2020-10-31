@@ -28,7 +28,7 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
 class DoorCrashSound implements Sound{
 
-	public function encode(?Vector3 $pos){
-		return LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_DOOR_CRASH, 0, $pos);
+	public function encode(?Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_DOOR_CRASH, 0, $pos)];
 	}
 }

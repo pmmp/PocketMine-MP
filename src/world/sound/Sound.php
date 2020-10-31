@@ -29,7 +29,7 @@ use pocketmine\network\mcpe\protocol\ClientboundPacket;
 interface Sound{
 
 	/**
-	 * @return ClientboundPacket|ClientboundPacket[]
+	 * @return ClientboundPacket[]
 	 */
-	public function encode(?Vector3 $pos);
+	public function encode(?Vector3 $pos) : array;
 }

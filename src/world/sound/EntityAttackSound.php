@@ -31,12 +31,12 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
  */
 class EntityAttackSound implements Sound{
 
-	public function encode(?Vector3 $pos){
-		return LevelSoundEventPacket::create(
+	public function encode(?Vector3 $pos) : array{
+		return [LevelSoundEventPacket::create(
 			LevelSoundEventPacket::SOUND_ATTACK_STRONG, //TODO: seems like ATTACK is dysfunctional
 			$pos,
 			-1,
 			"minecraft:player"
-		);
+		)];
 	}
 }

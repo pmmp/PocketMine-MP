@@ -39,7 +39,7 @@ class DoorSound implements Sound{
 		return $this->pitch;
 	}
 
-	public function encode(?Vector3 $pos){
-		return LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_DOOR, (int) ($this->pitch * 1000), $pos);
+	public function encode(?Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_DOOR, (int) ($this->pitch * 1000), $pos)];
 	}
 }

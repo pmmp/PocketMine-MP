@@ -477,9 +477,6 @@ class World implements ChunkManager{
 	 */
 	public function addSound(Vector3 $pos, Sound $sound, ?array $players = null) : void{
 		$pk = $sound->encode($pos);
-		if(!is_array($pk)){
-			$pk = [$pk];
-		}
 		if(count($pk) > 0){
 			if($players === null){
 				foreach($pk as $e){

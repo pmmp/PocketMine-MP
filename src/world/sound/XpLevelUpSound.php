@@ -41,9 +41,9 @@ class XpLevelUpSound implements Sound{
 		return $this->xpLevel;
 	}
 
-	public function encode(?Vector3 $pos){
+	public function encode(?Vector3 $pos) : array{
 		//No idea why such odd numbers, but this works...
 		//TODO: check arbitrary volume
-		return LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_LEVELUP, $pos, 0x10000000 * intdiv(min(30, $this->xpLevel), 5));
+		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_LEVELUP, $pos, 0x10000000 * intdiv(min(30, $this->xpLevel), 5))];
 	}
 }
