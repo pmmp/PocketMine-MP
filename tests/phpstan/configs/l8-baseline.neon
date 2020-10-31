@@ -566,12 +566,7 @@ parameters:
 			path: ../../../src/world/format/Chunk.php
 
 		-
-			message: "#^Method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:getSubChunk\\(\\) should return pocketmine\\\\world\\\\format\\\\SubChunkInterface but returns pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/format/Chunk.php
-
-		-
-			message: "#^Method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:getSubChunkChecked\\(\\) should return pocketmine\\\\world\\\\format\\\\SubChunk but returns pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			message: "#^Method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:getSubChunk\\(\\) should return pocketmine\\\\world\\\\format\\\\SubChunk but returns pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/format/Chunk.php
 
@@ -796,7 +791,7 @@ parameters:
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Cannot call method getSubChunkChecked\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			message: "#^Cannot call method getSubChunk\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 2
 			path: ../../../src/world/light/SkyLightUpdate.php
 
