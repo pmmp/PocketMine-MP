@@ -108,6 +108,7 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\sound\EntityAttackNoDamageSound;
 use pocketmine\world\sound\EntityAttackSound;
+use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\World;
 use function abs;
 use function assert;
@@ -1572,6 +1573,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$block = $target->getSide($face);
 		if($block->getId() === BlockLegacyIds::FIRE){
 			$this->getWorld()->setBlock($block->getPos(), VanillaBlocks::AIR());
+			$this->getWorld()->addSound($block->getPos()->add(0.5, 0.5, 0.5), new FireExtinguishSound());
 			return true;
 		}
 
