@@ -53,14 +53,14 @@ class BlockLightUpdate extends LightUpdate{
 	}
 
 	public function recalculateNode(int $x, int $y, int $z) : void{
-		if($this->subChunkExplorer->moveTo($x, $y, $z, false) !== SubChunkExplorerStatus::INVALID){
+		if($this->subChunkExplorer->moveTo($x, $y, $z) !== SubChunkExplorerStatus::INVALID){
 			$block = $this->subChunkExplorer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf);
 			$this->setAndUpdateLight($x, $y, $z, max($this->lightEmitters[$block], $this->getHighestAdjacentLight($x, $y, $z) - $this->lightFilters[$block]));
 		}
 	}
 
 	public function recalculateChunk(int $chunkX, int $chunkZ) : int{
-		if($this->subChunkExplorer->moveToChunk($chunkX, 0, $chunkZ, false) === SubChunkExplorerStatus::INVALID){
+		if($this->subChunkExplorer->moveToChunk($chunkX, 0, $chunkZ) === SubChunkExplorerStatus::INVALID){
 			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ does not exist");
 		}
 		$chunk = $this->subChunkExplorer->currentChunk;

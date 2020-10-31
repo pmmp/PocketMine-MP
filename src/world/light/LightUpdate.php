@@ -68,7 +68,7 @@ abstract class LightUpdate{
 	abstract public function recalculateChunk(int $chunkX, int $chunkZ) : int;
 
 	protected function getEffectiveLight(int $x, int $y, int $z) : int{
-		if($this->subChunkExplorer->moveTo($x, $y, $z, false) !== SubChunkExplorerStatus::INVALID){
+		if($this->subChunkExplorer->moveTo($x, $y, $z) !== SubChunkExplorerStatus::INVALID){
 			return $this->getCurrentLightArray()->get($x & 0xf, $y & 0xf, $z & 0xf);
 		}
 		return 0;
@@ -98,7 +98,7 @@ abstract class LightUpdate{
 	private function prepareNodes() : LightPropagationContext{
 		$context = new LightPropagationContext();
 		foreach($this->updateNodes as $blockHash => [$x, $y, $z, $newLevel]){
-			if($this->subChunkExplorer->moveTo($x, $y, $z, false) !== SubChunkExplorerStatus::INVALID){
+			if($this->subChunkExplorer->moveTo($x, $y, $z) !== SubChunkExplorerStatus::INVALID){
 				$lightArray = $this->getCurrentLightArray();
 				$oldLevel = $lightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
 
@@ -135,7 +135,7 @@ abstract class LightUpdate{
 			];
 
 			foreach($points as [$cx, $cy, $cz]){
-				if($this->subChunkExplorer->moveTo($cx, $cy, $cz, false) !== SubChunkExplorerStatus::INVALID){
+				if($this->subChunkExplorer->moveTo($cx, $cy, $cz) !== SubChunkExplorerStatus::INVALID){
 					$this->computeRemoveLight($cx, $cy, $cz, $oldAdjacentLight, $context);
 				}elseif($this->getEffectiveLight($cx, $cy, $cz) > 0 and !isset($context->spreadVisited[$index = World::blockHash($cx, $cy, $cz)])){
 					$context->spreadVisited[$index] = true;
@@ -165,7 +165,7 @@ abstract class LightUpdate{
 			];
 
 			foreach($points as [$cx, $cy, $cz]){
-				if($this->subChunkExplorer->moveTo($cx, $cy, $cz, false) !== SubChunkExplorerStatus::INVALID){
+				if($this->subChunkExplorer->moveTo($cx, $cy, $cz) !== SubChunkExplorerStatus::INVALID){
 					$this->computeSpreadLight($cx, $cy, $cz, $newAdjacentLight, $context);
 				}
 			}

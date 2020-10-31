@@ -124,7 +124,7 @@ class Explosion{
 							$pointerY += $shiftY;
 							$pointerZ += $shiftZ;
 
-							if($this->subChunkExplorer->moveTo($vBlockX, $vBlockY, $vBlockZ, false) === SubChunkExplorerStatus::INVALID){
+							if($this->subChunkExplorer->moveTo($vBlockX, $vBlockY, $vBlockZ) === SubChunkExplorerStatus::INVALID){
 								continue;
 							}
 

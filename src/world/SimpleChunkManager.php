@@ -51,14 +51,14 @@ class SimpleChunkManager implements ChunkManager{
 	}
 
 	public function getBlockAt(int $x, int $y, int $z) : Block{
-		if($this->terrainPointer->moveTo($x, $y, $z, false) !== SubChunkExplorerStatus::INVALID){
+		if($this->terrainPointer->moveTo($x, $y, $z) !== SubChunkExplorerStatus::INVALID){
 			return BlockFactory::getInstance()->fromFullBlock($this->terrainPointer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf));
 		}
 		return VanillaBlocks::AIR();
 	}
 
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : void{
-		if($this->terrainPointer->moveTo($x, $y, $z, true) !== SubChunkExplorerStatus::INVALID){
+		if($this->terrainPointer->moveTo($x, $y, $z) !== SubChunkExplorerStatus::INVALID){
 			$this->terrainPointer->currentSubChunk->setFullBlock($x & 0xf, $y & 0xf, $z & 0xf, $block->getFullId());
 			$this->terrainPointer->currentChunk->setDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
 		}else{
@@ -66,9 +66,8 @@ class SimpleChunkManager implements ChunkManager{
 		}
 	}
 
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk{
-		$hash = World::chunkHash($chunkX, $chunkZ);
-		return $this->chunks[$hash] ?? ($create ? $this->chunks[$hash] = new Chunk($chunkX, $chunkZ) : null);
+	public function getChunk(int $chunkX, int $chunkZ) : ?Chunk{
+		return $this->chunks[World::chunkHash($chunkX, $chunkZ)] ?? null;
 	}
 
 	public function setChunk(int $chunkX, int $chunkZ, ?Chunk $chunk) : void{

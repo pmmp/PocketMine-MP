@@ -61,7 +61,7 @@ class SkyLightUpdate extends LightUpdate{
 	}
 
 	public function recalculateNode(int $x, int $y, int $z) : void{
-		if($this->subChunkExplorer->moveTo($x, $y, $z, false) === SubChunkExplorerStatus::INVALID){
+		if($this->subChunkExplorer->moveTo($x, $y, $z) === SubChunkExplorerStatus::INVALID){
 			return;
 		}
 		$chunk = $this->subChunkExplorer->currentChunk;
@@ -98,7 +98,7 @@ class SkyLightUpdate extends LightUpdate{
 	}
 
 	public function recalculateChunk(int $chunkX, int $chunkZ) : int{
-		if($this->subChunkExplorer->moveToChunk($chunkX, 0, $chunkZ, false) === SubChunkExplorerStatus::INVALID){
+		if($this->subChunkExplorer->moveToChunk($chunkX, 0, $chunkZ) === SubChunkExplorerStatus::INVALID){
 			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ does not exist");
 		}
 		$chunk = $this->subChunkExplorer->currentChunk;
@@ -151,7 +151,7 @@ class SkyLightUpdate extends LightUpdate{
 					$lightSources++;
 				}
 				for($y = $nodeColumnEnd + 1, $yMax = $lowestClearSubChunk * 16; $y < $yMax; $y++){
-					if($this->subChunkExplorer->moveTo($x + $baseX, $y, $z + $baseZ, false) !== SubChunkExplorerStatus::INVALID){
+					if($this->subChunkExplorer->moveTo($x + $baseX, $y, $z + $baseZ) !== SubChunkExplorerStatus::INVALID){
 						$this->getCurrentLightArray()->set($x, $y & 0xf, $z, 15);
 					}
 				}
