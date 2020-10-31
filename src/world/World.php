@@ -33,6 +33,7 @@ use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\UnknownBlock;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\ExperienceOrb;
@@ -1329,7 +1330,6 @@ class World implements ChunkManager{
 	 * @param bool $addToCache Whether to cache the block object created by this method call.
 	 */
 	public function getBlockAt(int $x, int $y, int $z, bool $cached = true, bool $addToCache = true) : Block{
-		$fullState = 0;
 		$relativeBlockHash = null;
 		$chunkHash = World::chunkHash($x >> 4, $z >> 4);
 
@@ -1342,13 +1342,15 @@ class World implements ChunkManager{
 
 			$chunk = $this->chunks[$chunkHash] ?? null;
 			if($chunk !== null){
-				$fullState = $chunk->getFullBlock($x & 0x0f, $y, $z & 0x0f);
+				$block = BlockFactory::getInstance()->fromFullBlock($chunk->getFullBlock($x & 0x0f, $y, $z & 0x0f));
 			}else{
 				$addToCache = false;
+				$block = VanillaBlocks::AIR();
 			}
+		}else{
+			$block = VanillaBlocks::AIR();
 		}
 
-		$block = BlockFactory::getInstance()->fromFullBlock($fullState);
 		$block->position($this, $x, $y, $z);
 
 		static $dynamicStateRead = false;
