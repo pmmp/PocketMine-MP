@@ -1858,7 +1858,10 @@ class World implements ChunkManager{
 	}
 
 	public function getBiomeId(int $x, int $z) : int{
-		return $this->getOrLoadChunk($x >> 4, $z >> 4, true)->getBiomeId($x & 0x0f, $z & 0x0f);
+		if(($chunk = $this->getOrLoadChunk($x >> 4, $z >> 4, false)) !== null){
+			return $chunk->getBiomeId($x & 0x0f, $z & 0x0f);
+		}
+		return Biome::OCEAN; //TODO: this should probably throw instead (terrain not generated yet)
 	}
 
 	public function getBiome(int $x, int $z) : Biome{
