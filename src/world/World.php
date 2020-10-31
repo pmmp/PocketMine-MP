@@ -1195,7 +1195,7 @@ class World implements ChunkManager{
 	 * @return int 0-15
 	 */
 	public function getRealBlockSkyLightAt(int $x, int $y, int $z) : int{
-		$light = $this->getBlockSkyLightAt($x, $y, $z) - $this->skyLightReduction;
+		$light = $this->getPotentialBlockSkyLightAt($x, $y, $z) - $this->skyLightReduction;
 		return $light < 0 ? 0 : $light;
 	}
 
@@ -1219,7 +1219,7 @@ class World implements ChunkManager{
 	/**
 	 * Returns the highest block light level available in the positions adjacent to the specified block coordinates.
 	 */
-	public function getHighestAdjacentBlockSkyLight(int $x, int $y, int $z) : int{
+	public function getHighestAdjacentPotentialBlockSkyLight(int $x, int $y, int $z) : int{
 		$max = 0;
 		foreach([
 			[$x + 1, $y, $z],
@@ -1236,7 +1236,7 @@ class World implements ChunkManager{
 			){
 				continue;
 			}
-			$max = max($max, $this->getBlockSkyLightAt($x1, $y1, $z1));
+			$max = max($max, $this->getPotentialBlockSkyLightAt($x1, $y1, $z1));
 		}
 		return $max;
 	}
@@ -1246,7 +1246,7 @@ class World implements ChunkManager{
 	 * the world's current time of day and weather conditions.
 	 */
 	public function getHighestAdjacentRealBlockSkyLight(int $x, int $y, int $z) : int{
-		return $this->getHighestAdjacentBlockSkyLight($x, $y, $z) - $this->skyLightReduction;
+		return $this->getHighestAdjacentPotentialBlockSkyLight($x, $y, $z) - $this->skyLightReduction;
 	}
 
 	/**
@@ -1838,7 +1838,7 @@ class World implements ChunkManager{
 	 *
 	 * @return int 0-15
 	 */
-	public function getBlockSkyLightAt(int $x, int $y, int $z) : int{
+	public function getPotentialBlockSkyLightAt(int $x, int $y, int $z) : int{
 		return $this->getOrLoadChunk($x >> 4, $z >> 4, true)->getSubChunk($y >> 4)->getBlockSkyLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
 	}
 
