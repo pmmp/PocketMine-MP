@@ -35,12 +35,12 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\player\Player;
+use pocketmine\world\biome\Biome;
 use pocketmine\world\World;
 use function array_fill;
 use function array_filter;
 use function array_map;
 use function count;
-use function str_repeat;
 
 class Chunk{
 	public const DIRTY_FLAG_TERRAIN = 1 << 0;
@@ -106,7 +106,7 @@ class Chunk{
 
 		$val = ($this->subChunks->getSize() * 16);
 		$this->heightMap = $heightMap ?? new HeightArray(array_fill(0, 256, $val));
-		$this->biomeIds = $biomeIds ?? new BiomeArray(str_repeat("\x00", 256));
+		$this->biomeIds = $biomeIds ?? BiomeArray::fill(Biome::OCEAN);
 
 		$this->NBTtiles = $tiles;
 		$this->NBTentities = $entities;

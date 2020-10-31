@@ -25,6 +25,7 @@ namespace pocketmine\world\format;
 
 use function chr;
 use function ord;
+use function str_repeat;
 use function strlen;
 
 final class BiomeArray{
@@ -40,6 +41,10 @@ final class BiomeArray{
 			throw new \InvalidArgumentException("Biome array is expected to be exactly 256 bytes");
 		}
 		$this->payload = $payload;
+	}
+
+	public static function fill(int $biomeId) : self{
+		return new BiomeArray(str_repeat(chr($biomeId), 256));
 	}
 
 	private static function idx(int $x, int $z) : int{
