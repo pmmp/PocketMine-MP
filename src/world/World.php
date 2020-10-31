@@ -1834,8 +1834,11 @@ class World implements ChunkManager{
 	 * @return int 0-15
 	 */
 	public function getPotentialBlockSkyLightAt(int $x, int $y, int $z) : int{
+		if(!$this->isInWorld($x, $y, $z)){
+			return $y >= self::Y_MAX ? 15 : 0;
+		}
 		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
-			return $chunk->getSubChunk($y >> 4)->getBlockSkyLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
+			return $chunk->getSubChunkChecked($y >> 4)->getBlockSkyLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
 		}
 		return 0; //TODO: this should probably throw instead (light not calculated yet)
 	}
@@ -1846,8 +1849,11 @@ class World implements ChunkManager{
 	 * @return int 0-15
 	 */
 	public function getBlockLightAt(int $x, int $y, int $z) : int{
+		if(!$this->isInWorld($x, $y, $z)){
+			return 0;
+		}
 		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
-			return $chunk->getSubChunk($y >> 4)->getBlockLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
+			return $chunk->getSubChunkChecked($y >> 4)->getBlockLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
 		}
 		return 0; //TODO: this should probably throw instead (light not calculated yet)
 	}
