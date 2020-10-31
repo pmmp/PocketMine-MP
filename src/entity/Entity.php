@@ -55,6 +55,7 @@ use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
+use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use function abs;
 use function array_map;
@@ -214,6 +215,8 @@ abstract class Entity{
 	protected $immobile = false;
 	/** @var bool */
 	protected $invisible = false;
+	/** @var bool */
+	protected $silent = false;
 
 	/** @var int|null */
 	protected $ownerId = null;
@@ -354,6 +357,14 @@ abstract class Entity{
 
 	public function setInvisible(bool $value = true) : void{
 		$this->invisible = $value;
+	}
+
+	public function isSilent() : bool{
+		return $this->silent;
+	}
+
+	public function setSilent(bool $value = true) : void{
+		$this->silent = $value;
 	}
 
 	/**
@@ -1656,6 +1667,7 @@ abstract class Entity{
 		$properties->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, true);
 		$properties->setGenericFlag(EntityMetadataFlags::IMMOBILE, $this->immobile);
 		$properties->setGenericFlag(EntityMetadataFlags::INVISIBLE, $this->invisible);
+		$properties->setGenericFlag(EntityMetadataFlags::SILENT, $this->silent);
 		$properties->setGenericFlag(EntityMetadataFlags::ONFIRE, $this->isOnFire());
 		$properties->setGenericFlag(EntityMetadataFlags::WALLCLIMBING, $this->canClimbWalls);
 	}
@@ -1665,6 +1677,16 @@ abstract class Entity{
 	 */
 	public function broadcastAnimation(Animation $animation, ?array $targets = null) : void{
 		$this->server->broadcastPackets($targets ?? $this->getViewers(), $animation->encode());
+	}
+
+	/**
+	 * Broadcasts a sound caused by the entity. If the entity is considered "silent", the sound will be dropped.
+	 * @param Player[]|null $targets
+	 */
+	public function broadcastSound(Sound $sound, ?array $targets = null) : void{
+		if(!$this->silent){
+			$this->server->broadcastPackets($targets ?? $this->getViewers(), $sound->encode($this->location));
+		}
 	}
 
 	public function __destruct(){

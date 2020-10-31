@@ -300,7 +300,7 @@ abstract class Living extends Entity{
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev);
 
-			$this->getWorld()->addSound($this->location, $damage > 4 ?
+			$this->broadcastSound($damage > 4 ?
 				new EntityLongFallSound($this) :
 				new EntityShortFallSound($this)
 			);
@@ -312,7 +312,7 @@ abstract class Living extends Entity{
 				$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
 			}
 			if($fallBlock->getId() !== BlockLegacyIds::AIR){
-				$this->getWorld()->addSound($this->location, new EntityLandSound($this, $fallBlock));
+				$this->broadcastSound(new EntityLandSound($this, $fallBlock));
 			}
 		}
 	}
@@ -433,7 +433,7 @@ abstract class Living extends Entity{
 	private function damageItem(Durable $item, int $durabilityRemoved) : void{
 		$item->applyDamage($durabilityRemoved);
 		if($item->isBroken()){
-			$this->getWorld()->addSound($this->location, new ItemBreakSound());
+			$this->broadcastSound(new ItemBreakSound());
 		}
 	}
 

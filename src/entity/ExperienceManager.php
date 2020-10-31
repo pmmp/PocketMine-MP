@@ -87,7 +87,7 @@ class ExperienceManager{
 			if($playSound){
 				$newLevel = $this->getXpLevel();
 				if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
-					$this->entity->getWorld()->addSound($this->entity->getPosition(), new XpLevelUpSound($newLevel));
+					$this->entity->broadcastSound(new XpLevelUpSound($newLevel));
 				}
 			}
 
@@ -161,9 +161,9 @@ class ExperienceManager{
 			if($playSound){
 				$newLevel = $this->getXpLevel();
 				if((int) ($newLevel / 5) > (int) ($oldLevel / 5)){
-					$this->entity->getWorld()->addSound($this->entity->getPosition(), new XpLevelUpSound($newLevel));
+					$this->entity->broadcastSound(new XpLevelUpSound($newLevel));
 				}elseif($this->getCurrentTotalXp() > $oldTotal){
-					$this->entity->getWorld()->addSound($this->entity->getPosition(), new XpCollectSound());
+					$this->entity->broadcastSound(new XpCollectSound());
 				}
 			}
 

@@ -137,7 +137,7 @@ class Arrow extends Projectile{
 
 	protected function onHit(ProjectileHitEvent $event) : void{
 		$this->setCritical(false);
-		$this->getWorld()->addSound($this->location, new ArrowHitSound());
+		$this->broadcastSound(new ArrowHitSound());
 	}
 
 	protected function onHitBlock(Block $blockHit, RayTraceResult $hitResult) : void{

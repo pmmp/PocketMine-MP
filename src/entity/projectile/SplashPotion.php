@@ -92,7 +92,7 @@ class SplashPotion extends Throwable{
 		}
 
 		$this->getWorld()->addParticle($this->location, $particle);
-		$this->getWorld()->addSound($this->location, new PotionSplashSound());
+		$this->broadcastSound(new PotionSplashSound());
 
 		if($hasEffects){
 			if(!$this->willLinger()){
