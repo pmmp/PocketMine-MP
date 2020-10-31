@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\utils;
 
-use pocketmine\utils\Utils;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\SubChunk;
@@ -43,12 +42,6 @@ class SubChunkExplorer{
 	protected $currentY;
 	/** @var int */
 	protected $currentZ;
-
-	/**
-	 * @var \Closure|null
-	 * @phpstan-var (\Closure() : void)|null
-	 */
-	private $onSubChunkChangeFunc = null;
 
 	public function __construct(ChunkManager $world){
 		$this->world = $world;
@@ -78,9 +71,6 @@ class SubChunkExplorer{
 			}
 
 			$this->currentSubChunk = $this->currentChunk->getSubChunk($y >> 4);
-			if($this->onSubChunkChangeFunc !== null){
-				($this->onSubChunkChangeFunc)();
-			}
 			return SubChunkExplorerStatus::MOVED;
 		}
 
@@ -93,14 +83,6 @@ class SubChunkExplorer{
 	public function moveToChunk(int $chunkX, int $chunkY, int $chunkZ) : int{
 		//this is a cold path, so we don't care much if it's a bit slower (extra fcall overhead)
 		return $this->moveTo($chunkX << 4, $chunkY << 4, $chunkZ << 4);
-	}
-
-	/**
-	 * @phpstan-param \Closure() : void $callback
-	 */
-	public function onSubChunkChange(\Closure $callback) : void{
-		Utils::validateCallableSignature(function() : void{}, $callback);
-		$this->onSubChunkChangeFunc = $callback;
 	}
 
 	/**
