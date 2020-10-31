@@ -80,7 +80,7 @@ class FloatingTextParticle implements Particle{
 		$this->invisible = $value;
 	}
 
-	public function encode(Vector3 $pos){
+	public function encode(Vector3 $pos) : array{
 		$p = [];
 
 		if($this->entityId === null){

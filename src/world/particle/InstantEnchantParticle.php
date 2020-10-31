@@ -36,7 +36,7 @@ class InstantEnchantParticle implements Particle{
 		$this->color = $color;
 	}
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::MOB_SPELL_INSTANTANEOUS, $this->color->toARGB(), $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::standardParticle(ParticleIds::MOB_SPELL_INSTANTANEOUS, $this->color->toARGB(), $pos)];
 	}
 }

@@ -29,7 +29,7 @@ use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
 class BubbleParticle implements Particle{
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::BUBBLE, 0, $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::standardParticle(ParticleIds::BUBBLE, 0, $pos)];
 	}
 }

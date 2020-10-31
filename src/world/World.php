@@ -493,9 +493,6 @@ class World implements ChunkManager{
 	 */
 	public function addParticle(Vector3 $pos, Particle $particle, ?array $players = null) : void{
 		$pk = $particle->encode($pos);
-		if(!is_array($pk)){
-			$pk = [$pk];
-		}
 		if(count($pk) > 0){
 			if($players === null){
 				foreach($pk as $e){

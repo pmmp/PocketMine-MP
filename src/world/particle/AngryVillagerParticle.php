@@ -29,7 +29,7 @@ use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
 class AngryVillagerParticle implements Particle{
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::VILLAGER_ANGRY, 0, $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::standardParticle(ParticleIds::VILLAGER_ANGRY, 0, $pos)];
 	}
 }

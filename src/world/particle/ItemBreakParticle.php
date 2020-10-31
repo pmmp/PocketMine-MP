@@ -36,7 +36,7 @@ class ItemBreakParticle implements Particle{
 		$this->item = $item;
 	}
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::ITEM_BREAK, ($this->item->getId() << 16) | $this->item->getMeta(), $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::standardParticle(ParticleIds::ITEM_BREAK, ($this->item->getId() << 16) | $this->item->getMeta(), $pos)];
 	}
 }

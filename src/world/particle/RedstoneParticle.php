@@ -35,7 +35,7 @@ class RedstoneParticle implements Particle{
 		$this->lifetime = $lifetime;
 	}
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::REDSTONE, $this->lifetime, $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::standardParticle(ParticleIds::REDSTONE, $this->lifetime, $pos)];
 	}
 }

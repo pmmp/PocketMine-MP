@@ -49,7 +49,7 @@ class PotionSplashParticle implements Particle{
 		return $this->color;
 	}
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_SPLASH, $this->color->toARGB(), $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_SPLASH, $this->color->toARGB(), $pos)];
 	}
 }

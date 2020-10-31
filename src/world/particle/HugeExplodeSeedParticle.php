@@ -29,7 +29,7 @@ use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
 class HugeExplodeSeedParticle implements Particle{
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::HUGE_EXPLODE_SEED, 0, $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::standardParticle(ParticleIds::HUGE_EXPLODE_SEED, 0, $pos)];
 	}
 }

@@ -35,7 +35,7 @@ class HeartParticle implements Particle{
 		$this->scale = $scale;
 	}
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::HEART, $this->scale, $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::standardParticle(ParticleIds::HEART, $this->scale, $pos)];
 	}
 }

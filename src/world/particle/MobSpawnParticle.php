@@ -38,7 +38,7 @@ class MobSpawnParticle implements Particle{
 		$this->height = $height;
 	}
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_SPAWN, ($this->width & 0xff) | (($this->height & 0xff) << 8), $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_SPAWN, ($this->width & 0xff) | (($this->height & 0xff) << 8), $pos)];
 	}
 }
