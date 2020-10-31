@@ -36,7 +36,6 @@ use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\SubChunkConverter;
 use pocketmine\world\format\SubChunk;
-use function str_repeat;
 use function zlib_decode;
 
 class McRegion extends RegionWorldProvider{
@@ -68,8 +67,8 @@ class McRegion extends RegionWorldProvider{
 		}
 
 		$subChunks = [];
-		$fullIds = ($fullIdsTag = $chunk->getTag("Blocks")) instanceof ByteArrayTag ? $fullIdsTag->getValue() : str_repeat("\x00", 32768);
-		$fullData = ($fullDataTag = $chunk->getTag("Data")) instanceof ByteArrayTag ? $fullDataTag->getValue() : str_repeat("\x00", 16384);
+		$fullIds = self::readFixedSizeByteArray($chunk, "Blocks", 32768);
+		$fullData = self::readFixedSizeByteArray($chunk, "Data", 16384);
 
 		for($y = 0; $y < 8; ++$y){
 			$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, [SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $y)]);

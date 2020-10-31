@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io\region;
 
 use pocketmine\nbt\NBT;
+use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\utils\Utils;
@@ -41,6 +42,7 @@ use function mkdir;
 use function morton2d_encode;
 use function rename;
 use function scandir;
+use function strlen;
 use function strrpos;
 use function substr;
 use function time;
@@ -194,6 +196,18 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 			$result[] = $tag;
 		}
 		return $result;
+	}
+
+	protected static function readFixedSizeByteArray(CompoundTag $chunk, string $tagName, int $length) : string{
+		$tag = $chunk->getTag($tagName);
+		if(!($tag instanceof ByteArrayTag)){
+			throw new CorruptedChunkException("Expected TAG_ByteArray for '$tagName'");
+		}
+		$data = $tag->getValue();
+		if(strlen($data) !== $length){
+			throw new CorruptedChunkException("Expected '$tagName' payload to have exactly $length bytes, but have " . strlen($data));
+		}
+		return $data;
 	}
 
 	/**

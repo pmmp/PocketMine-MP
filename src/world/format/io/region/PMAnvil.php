@@ -36,7 +36,10 @@ class PMAnvil extends RegionWorldProvider{
 	use LegacyAnvilChunkTrait;
 
 	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
-		return new SubChunk(BlockLegacyIds::AIR << 4, [SubChunkConverter::convertSubChunkXZY($subChunk->getByteArray("Blocks"), $subChunk->getByteArray("Data"))]);
+		return new SubChunk(BlockLegacyIds::AIR << 4, [SubChunkConverter::convertSubChunkXZY(
+			self::readFixedSizeByteArray($subChunk, "Blocks", 4096),
+			self::readFixedSizeByteArray($subChunk, "Data", 2048)
+		)]);
 	}
 
 	protected static function getRegionFileExtension() : string{
