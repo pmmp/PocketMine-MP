@@ -32,7 +32,6 @@ class HandlerListManagerTest extends TestCase{
 	/** @var \Closure */
 	private $resolveParentFunc;
 
-
 	public function setUp() : void{
 		/** @see HandlerListManager::isValidClass() */
 		$this->isValidFunc = (new \ReflectionMethod(HandlerListManager::class, 'isValidClass'))->getClosure();
