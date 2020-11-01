@@ -31,6 +31,7 @@ use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\DyeColorIdMap;
+use pocketmine\data\bedrock\EntityLegacyIds;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\Squid;
@@ -39,7 +40,6 @@ use pocketmine\entity\Zombie;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\types\entity\EntityLegacyIds;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
 
