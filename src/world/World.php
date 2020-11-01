@@ -930,6 +930,13 @@ class World implements ChunkManager{
 				$dz = mt_rand(-$randRange, $randRange);
 				$hash = World::chunkHash($dx + $chunkX, $dz + $chunkZ);
 				if(!isset($chunkTickList[$hash]) and isset($this->chunks[$hash])){
+					if(
+						!$this->chunks[$hash]->isGenerated() ||
+						!$this->chunks[$hash]->isPopulated() ||
+						$this->isChunkLocked($dx + $chunkX, $dz + $chunkZ)
+					){
+						continue;
+					}
 					//TODO: this might need to be checked after adjacent chunks are loaded in future
 					$lightPopulatedState = $this->chunks[$hash]->isLightPopulated();
 					if($lightPopulatedState !== true){
