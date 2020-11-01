@@ -67,7 +67,6 @@ use pocketmine\world\biome\Biome;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WritableWorldProvider;
-use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\GeneratorRegisterTask;
 use pocketmine\world\generator\GeneratorUnregisterTask;
@@ -105,6 +104,7 @@ use function mt_rand;
 use function spl_object_id;
 use function strtolower;
 use function trim;
+use function var_dump;
 use const M_PI;
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
@@ -253,7 +253,10 @@ class World implements ChunkManager{
 	/** @var bool */
 	private $doingTick = false;
 
-	/** @var string|Generator */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<\pocketmine\world\generator\Generator>
+	 */
 	private $generator;
 
 	/** @var bool */
