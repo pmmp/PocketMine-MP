@@ -68,7 +68,7 @@ class GeneratorRegisterTask extends AsyncTask{
 		 * @var Generator $generator
 		 * @see Generator::__construct()
 		 */
-		$generator = new $this->generatorClass($manager, $this->seed, igbinary_unserialize($this->settings));
+		$generator = new $this->generatorClass($this->seed, igbinary_unserialize($this->settings));
 		$this->worker->saveToThreadStore("generation.world{$this->worldId}.generator", $generator);
 	}
 }
