@@ -536,11 +536,6 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Cannot call method setBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Cannot call method isPopulated\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/World.php

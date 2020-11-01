@@ -1869,7 +1869,18 @@ class World implements ChunkManager{
 	}
 
 	public function setBiomeId(int $x, int $z, int $biomeId) : void{
-		$this->getOrLoadChunk($x >> 4, $z >> 4, true)->setBiomeId($x & 0x0f, $z & 0x0f, $biomeId);
+		$chunkX = $x >> 4;
+		$chunkZ = $z >> 4;
+		if($this->isChunkLocked($chunkX, $chunkZ)){
+			//the changes would be overwritten when the generation finishes
+			throw new WorldException("Chunk is currently locked for async generation/population");
+		}
+		if(($chunk = $this->getOrLoadChunk($chunkX, $chunkZ, false)) !== null){
+			$chunk->setBiomeId($x & 0x0f, $z & 0x0f, $biomeId);
+		}else{
+			//if we allowed this, the modifications would be lost when the chunk is created
+			throw new WorldException("Cannot set biome in a non-generated chunk");
+		}
 	}
 
 	/**
