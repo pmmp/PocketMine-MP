@@ -1401,6 +1401,14 @@ class World implements ChunkManager{
 		if(!$this->isInWorld($x, $y, $z)){
 			throw new \InvalidArgumentException("Pos x=$x,y=$y,z=$z is outside of the world bounds");
 		}
+		$chunkX = $x >> 4;
+		$chunkZ = $z >> 4;
+		if($this->isChunkLocked($chunkX, $chunkZ)){
+			throw new WorldException("Terrain is locked for generation/population");
+		}
+		if(!$this->loadChunk($chunkX, $chunkZ, false)){ //current expected behaviour is to try to load the terrain synchronously
+			throw new WorldException("Cannot set a block in un-generated terrain");
+		}
 
 		$this->timings->setBlock->startTiming();
 
