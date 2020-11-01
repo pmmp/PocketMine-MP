@@ -53,7 +53,6 @@ use pocketmine\level\format\io\ChunkRequestTask;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\level\format\io\exception\UnsupportedChunkFormatException;
 use pocketmine\level\format\io\LevelProvider;
-use pocketmine\level\generator\Generator;
 use pocketmine\level\generator\GeneratorManager;
 use pocketmine\level\generator\GeneratorRegisterTask;
 use pocketmine\level\generator\GeneratorUnregisterTask;
@@ -289,7 +288,10 @@ class Level implements ChunkManager, Metadatable{
 	/** @var bool */
 	private $doingTick = false;
 
-	/** @var string|Generator */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<\pocketmine\level\generator\Generator>
+	 */
 	private $generator;
 
 	/** @var bool */

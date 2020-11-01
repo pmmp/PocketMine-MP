@@ -566,11 +566,6 @@ parameters:
 			path: ../../../src/pocketmine/level/Explosion.php
 
 		-
-			message: "#^Parameter \\#2 \\$generatorClass of class pocketmine\\\\level\\\\generator\\\\GeneratorRegisterTask constructor expects string, pocketmine\\\\level\\\\generator\\\\Generator\\|string given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
 			message: "#^Cannot access offset 'priority' on array\\('priority' \\=\\> int, 'data' \\=\\> pocketmine\\\\math\\\\Vector3\\)\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Level.php

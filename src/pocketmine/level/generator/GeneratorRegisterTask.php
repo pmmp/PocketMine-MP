@@ -35,7 +35,10 @@ use function unserialize;
 
 class GeneratorRegisterTask extends AsyncTask{
 
-	/** @var string */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<Generator>
+	 */
 	public $generatorClass;
 	/** @var string */
 	public $settings;
@@ -48,6 +51,7 @@ class GeneratorRegisterTask extends AsyncTask{
 
 	/**
 	 * @param mixed[] $generatorSettings
+	 * @phpstan-param class-string<Generator> $generatorClass
 	 * @phpstan-param array<string, mixed> $generatorSettings
 	 */
 	public function __construct(Level $level, string $generatorClass, array $generatorSettings = []){
