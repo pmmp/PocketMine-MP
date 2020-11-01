@@ -58,6 +58,7 @@ use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\player\Player;
+use pocketmine\scheduler\AsyncPool;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\Limits;
@@ -271,6 +272,9 @@ class World implements ChunkManager{
 	/** @var \Logger */
 	private $logger;
 
+	/** @var AsyncPool */
+	private $workerPool;
+
 	public static function chunkHash(int $x, int $z) : int{
 		return morton2d_encode($x, $z);
 	}
@@ -353,11 +357,12 @@ class World implements ChunkManager{
 	/**
 	 * Init the default world data
 	 */
-	public function __construct(Server $server, string $name, WritableWorldProvider $provider){
+	public function __construct(Server $server, string $name, WritableWorldProvider $provider, AsyncPool $workerPool){
 		$this->worldId = static::$worldIdCounter++;
 		$this->server = $server;
 
 		$this->provider = $provider;
+		$this->workerPool = $workerPool;
 
 		$this->displayName = $this->provider->getWorldData()->getName();
 		$this->logger = new \PrefixedLogger($server->getLogger(), "World: $this->displayName");
@@ -400,14 +405,13 @@ class World implements ChunkManager{
 
 	public function registerGeneratorToWorker(int $worker) : void{
 		$this->generatorRegisteredWorkers[$worker] = true;
-		$this->server->getAsyncPool()->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getWorldData()->getGeneratorOptions()), $worker);
+		$this->workerPool->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getWorldData()->getGeneratorOptions()), $worker);
 	}
 
 	public function unregisterGenerator() : void{
-		$pool = $this->server->getAsyncPool();
-		foreach($pool->getRunningWorkers() as $i){
+		foreach($this->workerPool->getRunningWorkers() as $i){
 			if(isset($this->generatorRegisteredWorkers[$i])){
-				$pool->submitTaskToWorker(new GeneratorUnregisterTask($this), $i);
+				$this->workerPool->submitTaskToWorker(new GeneratorUnregisterTask($this), $i);
 			}
 		}
 		$this->generatorRegisteredWorkers = [];
@@ -931,7 +935,7 @@ class World implements ChunkManager{
 					if($lightPopulatedState !== true){
 						if($lightPopulatedState === false){
 							$this->chunks[$hash]->setLightPopulated(null);
-							$this->server->getAsyncPool()->submitTask(new LightPopulationTask($this, $this->chunks[$hash]));
+							$this->workerPool->submitTask(new LightPopulationTask($this, $this->chunks[$hash]));
 						}
 						continue;
 					}
@@ -2452,11 +2456,11 @@ class World implements ChunkManager{
 			}
 
 			$task = new PopulationTask($this, $chunk);
-			$workerId = $this->server->getAsyncPool()->selectWorker();
+			$workerId = $this->workerPool->selectWorker();
 			if(!isset($this->generatorRegisteredWorkers[$workerId])){
 				$this->registerGeneratorToWorker($workerId);
 			}
-			$this->server->getAsyncPool()->submitTaskToWorker($task, $workerId);
+			$this->workerPool->submitTaskToWorker($task, $workerId);
 
 			Timings::$populationTimer->stopTiming();
 			return false;
