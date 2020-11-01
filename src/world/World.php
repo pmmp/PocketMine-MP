@@ -91,7 +91,6 @@ use function floor;
 use function get_class;
 use function gettype;
 use function is_a;
-use function is_array;
 use function is_object;
 use function lcg_value;
 use function max;

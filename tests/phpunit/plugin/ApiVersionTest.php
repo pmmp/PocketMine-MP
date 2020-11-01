@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use PHPUnit\Framework\TestCase;
+use function sort;
 
 class ApiVersionTest extends TestCase{
 
