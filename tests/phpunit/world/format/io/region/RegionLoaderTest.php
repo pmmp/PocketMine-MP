@@ -82,8 +82,6 @@ class RegionLoaderTest extends TestCase{
 
 	/**
 	 * @dataProvider outOfBoundsCoordsProvider
-	 * @param int $x
-	 * @param int $z
 	 *
 	 * @throws ChunkException
 	 * @throws \InvalidArgumentException
@@ -109,9 +107,6 @@ class RegionLoaderTest extends TestCase{
 
 	/**
 	 * @dataProvider outOfBoundsCoordsProvider
-	 *
-	 * @param int $x
-	 * @param int $z
 	 *
 	 * @throws \InvalidArgumentException
 	 * @throws \pocketmine\world\format\io\exception\CorruptedChunkException
