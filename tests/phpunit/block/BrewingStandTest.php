@@ -39,7 +39,6 @@ class BrewingStandTest extends TestCase{
 	}
 
 	/**
-	 *
 	 * @dataProvider slotsProvider
 	 *
 	 * @param BrewingStandSlot[] $slots

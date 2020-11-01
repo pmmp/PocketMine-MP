@@ -49,10 +49,6 @@ class ApiVersionTest extends TestCase{
 
 	/**
 	 * @dataProvider compatibleApiProvider
-	 *
-	 * @param string $myVersion
-	 * @param string $wantVersion
-	 * @param bool   $expected
 	 */
 	public function testCompatibleApi(string $myVersion, string $wantVersion, bool $expected) : void{
 		self::assertSame($expected, ApiVersion::isCompatible($myVersion, [$wantVersion]), "my version: $myVersion, their version: $wantVersion, expect " . ($expected ? "yes" : "no"));
