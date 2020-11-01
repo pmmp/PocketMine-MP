@@ -25,6 +25,7 @@ namespace pocketmine\world\generator\biome;
 
 use pocketmine\utils\Random;
 use pocketmine\world\biome\Biome;
+use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\biome\UnknownBiome;
 use pocketmine\world\generator\noise\Simplex;
 
@@ -55,9 +56,10 @@ abstract class BiomeSelector{
 	public function recalculate() : void{
 		$this->map = new \SplFixedArray(64 * 64);
 
+		$biomeRegistry = BiomeRegistry::getInstance();
 		for($i = 0; $i < 64; ++$i){
 			for($j = 0; $j < 64; ++$j){
-				$biome = Biome::getBiome($this->lookup($i / 63, $j / 63));
+				$biome = $biomeRegistry->getBiome($this->lookup($i / 63, $j / 63));
 				if($biome instanceof UnknownBiome){
 					throw new \RuntimeException("Unknown biome returned by selector with ID " . $biome->getId());
 				}

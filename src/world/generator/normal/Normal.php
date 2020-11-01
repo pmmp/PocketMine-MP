@@ -25,6 +25,7 @@ namespace pocketmine\world\generator\normal;
 
 use pocketmine\block\VanillaBlocks;
 use pocketmine\world\biome\Biome;
+use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\generator\biome\BiomeSelector;
 use pocketmine\world\generator\Gaussian;
@@ -227,7 +228,7 @@ class Normal extends Generator{
 		}
 
 		$chunk = $world->getChunk($chunkX, $chunkZ);
-		$biome = Biome::getBiome($chunk->getBiomeId(7, 7));
+		$biome = BiomeRegistry::getInstance()->getBiome($chunk->getBiomeId(7, 7));
 		$biome->populateChunk($world, $chunkX, $chunkZ, $this->random);
 	}
 }

@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world\generator;
 
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\world\biome\Biome;
 use pocketmine\world\SimpleChunkManager;
 use pocketmine\world\World;
 use function igbinary_serialize;
@@ -60,7 +59,6 @@ class GeneratorRegisterTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		Biome::init();
 		$manager = new SimpleChunkManager($this->worldHeight);
 		$this->worker->saveToThreadStore("generation.world{$this->worldId}.manager", $manager);
 

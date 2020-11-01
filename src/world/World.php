@@ -64,6 +64,7 @@ use pocketmine\timings\Timings;
 use pocketmine\utils\Limits;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\world\biome\Biome;
+use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WritableWorldProvider;
@@ -1879,7 +1880,7 @@ class World implements ChunkManager{
 	}
 
 	public function getBiome(int $x, int $z) : Biome{
-		return Biome::getBiome($this->getBiomeId($x, $z));
+		return BiomeRegistry::getInstance()->getBiome($this->getBiomeId($x, $z));
 	}
 
 	public function setBiomeId(int $x, int $z, int $biomeId) : void{

@@ -25,6 +25,7 @@ namespace pocketmine\world\generator\hell;
 
 use pocketmine\block\VanillaBlocks;
 use pocketmine\world\biome\Biome;
+use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\InvalidGeneratorOptionsException;
@@ -84,9 +85,7 @@ class Nether extends Generator{
 
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
-
-				$biome = Biome::getBiome(Biome::HELL);
-				$chunk->setBiomeId($x, $z, $biome->getId());
+				$chunk->setBiomeId($x, $z, Biome::HELL);
 
 				for($y = 0; $y < 128; ++$y){
 					if($y === 0 or $y === 127){
@@ -117,7 +116,7 @@ class Nether extends Generator{
 		}
 
 		$chunk = $world->getChunk($chunkX, $chunkZ);
-		$biome = Biome::getBiome($chunk->getBiomeId(7, 7));
+		$biome = BiomeRegistry::getInstance()->getBiome($chunk->getBiomeId(7, 7));
 		$biome->populateChunk($world, $chunkX, $chunkZ, $this->random);
 	}
 }
