@@ -29,13 +29,13 @@ namespace pocketmine\world\format;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\player\Player;
-use pocketmine\world\biome\Biome;
 use pocketmine\world\World;
 use function array_fill;
 use function array_filter;
@@ -106,7 +106,7 @@ class Chunk{
 
 		$val = ($this->subChunks->getSize() * 16);
 		$this->heightMap = $heightMap ?? new HeightArray(array_fill(0, 256, $val));
-		$this->biomeIds = $biomeIds ?? BiomeArray::fill(Biome::OCEAN);
+		$this->biomeIds = $biomeIds ?? BiomeArray::fill(BiomeIds::OCEAN);
 
 		$this->NBTtiles = $tiles;
 		$this->NBTentities = $entities;

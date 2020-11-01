@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\generator\normal;
 
 use pocketmine\block\VanillaBlocks;
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\ChunkManager;
@@ -74,38 +75,38 @@ class Normal extends Generator{
 			protected function lookup(float $temperature, float $rainfall) : int{
 				if($rainfall < 0.25){
 					if($temperature < 0.7){
-						return Biome::OCEAN;
+						return BiomeIds::OCEAN;
 					}elseif($temperature < 0.85){
-						return Biome::RIVER;
+						return BiomeIds::RIVER;
 					}else{
-						return Biome::SWAMP;
+						return BiomeIds::SWAMP;
 					}
 				}elseif($rainfall < 0.60){
 					if($temperature < 0.25){
-						return Biome::ICE_PLAINS;
+						return BiomeIds::ICE_PLAINS;
 					}elseif($temperature < 0.75){
-						return Biome::PLAINS;
+						return BiomeIds::PLAINS;
 					}else{
-						return Biome::DESERT;
+						return BiomeIds::DESERT;
 					}
 				}elseif($rainfall < 0.80){
 					if($temperature < 0.25){
-						return Biome::TAIGA;
+						return BiomeIds::TAIGA;
 					}elseif($temperature < 0.75){
-						return Biome::FOREST;
+						return BiomeIds::FOREST;
 					}else{
-						return Biome::BIRCH_FOREST;
+						return BiomeIds::BIRCH_FOREST;
 					}
 				}else{
 					//FIXME: This will always cause River to be used since the rainfall is always greater than 0.8 if we
 					//reached this branch. However I don't think that substituting temperature for rainfall is correct given
 					//that mountain biomes are supposed to be pretty cold.
 					if($rainfall < 0.25){
-						return Biome::MOUNTAINS;
+						return BiomeIds::MOUNTAINS;
 					}elseif($rainfall < 0.70){
-						return Biome::SMALL_MOUNTAINS;
+						return BiomeIds::SMALL_MOUNTAINS;
 					}else{
-						return Biome::RIVER;
+						return BiomeIds::RIVER;
 					}
 				}
 			}

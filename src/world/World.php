@@ -34,6 +34,7 @@ use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\ExperienceOrb;
@@ -1876,7 +1877,7 @@ class World implements ChunkManager{
 		if(($chunk = $this->getOrLoadChunk($x >> 4, $z >> 4, false)) !== null){
 			return $chunk->getBiomeId($x & 0x0f, $z & 0x0f);
 		}
-		return Biome::OCEAN; //TODO: this should probably throw instead (terrain not generated yet)
+		return BiomeIds::OCEAN; //TODO: this should probably throw instead (terrain not generated yet)
 	}
 
 	public function getBiome(int $x, int $z) : Biome{
