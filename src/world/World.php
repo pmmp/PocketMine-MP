@@ -586,7 +586,7 @@ class World implements ChunkManager{
 		$this->cancelUnloadChunkRequest($chunkX, $chunkZ);
 
 		if($autoLoad){
-			$this->loadChunk($chunkX, $chunkZ);
+			$this->loadChunk($chunkX, $chunkZ, true);
 		}
 	}
 
@@ -1847,7 +1847,7 @@ class World implements ChunkManager{
 	 * Returns the tile at the specified x,y,z coordinates, or null if it does not exist.
 	 */
 	public function getTileAt(int $x, int $y, int $z) : ?Tile{
-		return ($chunk = $this->getOrLoadChunk($x >> 4, $z >> 4)) !== null ? $chunk->getTile($x & 0x0f, $y, $z & 0x0f) : null;
+		return ($chunk = $this->getOrLoadChunk($x >> 4, $z >> 4, false)) !== null ? $chunk->getTile($x & 0x0f, $y, $z & 0x0f) : null;
 	}
 
 	/**
@@ -1919,7 +1919,7 @@ class World implements ChunkManager{
 	 *
 	 * @param bool $create Whether to create an empty chunk as a placeholder if the chunk does not exist
 	 */
-	public function getOrLoadChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk{
+	public function getOrLoadChunk(int $chunkX, int $chunkZ, bool $create) : ?Chunk{
 		if(isset($this->chunks[$index = World::chunkHash($chunkX, $chunkZ)])){
 			return $this->chunks[$index];
 		}elseif($this->loadChunk($chunkX, $chunkZ, $create)){
@@ -2086,12 +2086,12 @@ class World implements ChunkManager{
 	}
 
 	public function isChunkGenerated(int $x, int $z) : bool{
-		$chunk = $this->getOrLoadChunk($x, $z);
+		$chunk = $this->getOrLoadChunk($x, $z, false);
 		return $chunk !== null ? $chunk->isGenerated() : false;
 	}
 
 	public function isChunkPopulated(int $x, int $z) : bool{
-		$chunk = $this->getOrLoadChunk($x, $z);
+		$chunk = $this->getOrLoadChunk($x, $z, false);
 		return $chunk !== null ? $chunk->isPopulated() : false;
 	}
 
@@ -2205,7 +2205,7 @@ class World implements ChunkManager{
 	 *
 	 * @throws \InvalidStateException
 	 */
-	public function loadChunk(int $x, int $z, bool $create = true) : bool{
+	public function loadChunk(int $x, int $z, bool $create) : bool{
 		if(isset($this->chunks[$chunkHash = World::chunkHash($x, $z)])){
 			return true;
 		}
