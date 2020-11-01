@@ -68,31 +68,15 @@ abstract class BiomeSelector{
 		}
 	}
 
-	/**
-	 * @param float $x
-	 * @param float $z
-	 *
-	 * @return float
-	 */
-	public function getTemperature($x, $z){
+	public function getTemperature(float $x, float $z) : float{
 		return ($this->temperature->noise2D($x, $z, true) + 1) / 2;
 	}
 
-	/**
-	 * @param float $x
-	 * @param float $z
-	 *
-	 * @return float
-	 */
-	public function getRainfall($x, $z){
+	public function getRainfall(float $x, float $z) : float{
 		return ($this->rainfall->noise2D($x, $z, true) + 1) / 2;
 	}
 
-	/**
-	 * @param int $x
-	 * @param int $z
-	 */
-	public function pickBiome($x, $z) : Biome{
+	public function pickBiome(float $x, float $z) : Biome{
 		$temperature = (int) ($this->getTemperature($x, $z) * 63);
 		$rainfall = (int) ($this->getRainfall($x, $z) * 63);
 
