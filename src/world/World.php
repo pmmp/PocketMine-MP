@@ -106,7 +106,6 @@ use function mt_rand;
 use function spl_object_id;
 use function strtolower;
 use function trim;
-use function var_dump;
 use const M_PI;
 use const PHP_INT_MAX;
 use const PHP_INT_MIN;
