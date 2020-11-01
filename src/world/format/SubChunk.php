@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format;
 
+use function array_map;
 use function array_values;
 use function count;
 
@@ -140,5 +141,14 @@ class SubChunk{
 
 		$this->skyLight->collectGarbage();
 		$this->blockLight->collectGarbage();
+	}
+
+	public function __clone(){
+		$this->blockLayers = array_map(function(PalettedBlockArray $array) : PalettedBlockArray{
+			return clone $array;
+		}, $this->blockLayers);
+
+		$this->skyLight = clone $this->skyLight;
+		$this->blockLight = clone $this->blockLight;
 	}
 }

@@ -476,6 +476,15 @@ class Chunk{
 		}
 	}
 
+	public function __clone(){
+		//we don't bother cloning entities or tiles since it's impractical to do so (too many dependencies)
+		$this->subChunks = \SplFixedArray::fromArray(array_map(function(SubChunk $subChunk) : SubChunk{
+			return clone $subChunk;
+		}, $this->subChunks->toArray()));
+		$this->heightMap = clone $this->heightMap;
+		$this->biomeIds = clone $this->biomeIds;
+	}
+
 	/**
 	 * Hashes the given chunk block coordinates into a single integer.
 	 *
