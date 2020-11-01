@@ -2023,16 +2023,18 @@ class World implements ChunkManager{
 		$oldChunk = $this->getOrLoadChunk($chunkX, $chunkZ, false);
 		if($oldChunk !== null and $oldChunk !== $chunk){
 			if($deleteEntitiesAndTiles){
-				foreach($oldChunk->getEntities() as $player){
-					if(!($player instanceof Player)){
-						continue;
+				foreach($oldChunk->getEntities() as $entity){
+					if($entity instanceof Player){
+						$chunk->addEntity($entity);
+						$oldChunk->removeEntity($entity);
+						$entity->chunk = $chunk;
+					}else{
+						$entity->close();
 					}
-					$chunk->addEntity($player);
-					$oldChunk->removeEntity($player);
-					$player->chunk = $chunk;
 				}
-				//TODO: this causes chunkloaders to receive false "unloaded" notifications
-				$this->unloadChunk($chunkX, $chunkZ, false, false);
+				foreach($oldChunk->getTiles() as $tile){
+					$tile->close();
+				}
 			}else{
 				foreach($oldChunk->getEntities() as $entity){
 					$chunk->addEntity($entity);
