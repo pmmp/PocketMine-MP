@@ -1749,7 +1749,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function toggleSwim(bool $swim) : bool{
 		$ev = new PlayerToggleSwimEvent($this, $swim);;
-		$ev->setCancelled(!$this->isUnderwater());
+		if(!$this->isUnderwater()){
+			$ev->cancel();
+		}
 		$ev->call();
 		if($ev->isCancelled()){
 			return false;
