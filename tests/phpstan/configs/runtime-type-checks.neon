@@ -61,11 +61,6 @@ parameters:
 			path: ../../../src/pocketmine/level/Level.php
 
 		-
-			message: "#^Call to function assert\\(\\) with bool will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
 			message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<pocketmine\\\\level\\\\generator\\\\Generator\\> and 'pocketmine\\\\\\\\level\\\\\\\\generator\\\\\\\\Generator' will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/generator/GeneratorManager.php
