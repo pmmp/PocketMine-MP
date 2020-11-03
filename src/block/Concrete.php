@@ -24,12 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\ColorInMetadataTrait;
+use pocketmine\block\utils\DyeColor;
 use pocketmine\item\ToolTier;
 
 class Concrete extends Opaque{
 	use ColorInMetadataTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+		$this->color = DyeColor::WHITE();
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.8, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
 	}
 }
