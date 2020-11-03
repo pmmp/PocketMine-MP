@@ -111,6 +111,7 @@ use pocketmine\world\sound\EntityAttackSound;
 use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\World;
 use function abs;
+use function array_key_exists;
 use function assert;
 use function count;
 use function explode;
@@ -673,6 +674,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function getItemUseDuration() : int{
 		return $this->startAction === -1 ? -1 : ($this->server->getTick() - $this->startAction);
+	}
+
+	/**
+	 * Returns the server tick on which the player's cooldown period expires for the given item.
+	 */
+	public function getItemCooldownExpiry(Item $item) : int{
+		$this->checkItemCooldowns();
+		return $this->usedItemsCooldown[$item->getId()] ?? 0;
 	}
 
 	/**
