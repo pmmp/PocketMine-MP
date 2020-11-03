@@ -190,10 +190,14 @@ class ItemFactory{
 		$this->register(new ItemBlock(new ItemIdentifier(ItemIds::REPEATER, 0), VanillaBlocks::REDSTONE_REPEATER()));
 		$this->register(new ItemBlock(new ItemIdentifier(ItemIds::SPRUCE_DOOR, 0), VanillaBlocks::SPRUCE_DOOR()));
 		$this->register(new ItemBlock(new ItemIdentifier(ItemIds::SUGARCANE, 0), VanillaBlocks::SUGARCANE()));
-		//TODO: fix metadata for buckets with still liquid in them
-		//the meta values are intentionally hardcoded because block IDs will change in the future
-		$this->register(new LiquidBucket(new ItemIdentifier(ItemIds::BUCKET, 8), "Water Bucket", VanillaBlocks::WATER()));
-		$this->register(new LiquidBucket(new ItemIdentifier(ItemIds::BUCKET, 10), "Lava Bucket", VanillaBlocks::LAVA()));
+
+		//the meta values for buckets are intentionally hardcoded because block IDs will change in the future
+		$waterBucket = new LiquidBucket(new ItemIdentifier(ItemIds::BUCKET, 8), "Water Bucket", VanillaBlocks::WATER());
+		$this->register($waterBucket);
+		$this->remap(new ItemIdentifier(ItemIds::BUCKET, 9), $waterBucket);
+		$lavaBucket = new LiquidBucket(new ItemIdentifier(ItemIds::BUCKET, 10), "Lava Bucket", VanillaBlocks::LAVA());
+		$this->register($lavaBucket);
+		$this->remap(new ItemIdentifier(ItemIds::BUCKET, 11), $lavaBucket);
 		$this->register(new Melon(new ItemIdentifier(ItemIds::MELON, 0), "Melon"));
 		$this->register(new MelonSeeds(new ItemIdentifier(ItemIds::MELON_SEEDS, 0), "Melon Seeds"));
 		$this->register(new MilkBucket(new ItemIdentifier(ItemIds::BUCKET, 1), "Milk Bucket"));
@@ -409,6 +413,14 @@ class ItemFactory{
 		}
 
 		$this->list[self::getListOffset($id, $variant)] = clone $item;
+	}
+
+	public function remap(ItemIdentifier $identifier, Item $item, bool $override = false) : void{
+		if(!$override && $this->isRegistered($identifier->getId(), $identifier->getMeta())){
+			throw new \RuntimeException("Trying to overwrite an already registered item");
+		}
+
+		$this->list[self::getListOffset($identifier->getId(), $identifier->getMeta())] = clone $item;
 	}
 
 	/**
