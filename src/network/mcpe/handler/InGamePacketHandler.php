@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\BaseSign;
-use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\utils\SignText;
+use pocketmine\crafting\CraftingGrid;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerEditBookEvent;
@@ -339,8 +339,8 @@ class InGamePacketHandler extends PacketHandler{
 				if(!$this->player->interactBlock($blockPos, $data->getFace(), $clickPos)){
 					$this->onFailedBlockAction($blockPos, $data->getFace());
 				}elseif(
-					$this->player->getWorld()->getBlock($blockPos)->getId() === BlockLegacyIds::CRAFTING_TABLE &&
-					!array_key_exists($windowId = InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID, $this->openHardcodedWindows)
+					!array_key_exists($windowId = InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID, $this->openHardcodedWindows) &&
+					$this->player->getCraftingGrid()->getGridWidth() === CraftingGrid::SIZE_BIG
 				){
 					//TODO: HACK! crafting grid doesn't fit very well into the current PM container system, so this hack
 					//allows it to carry on working approximately the same way as it did in 1.14
