@@ -61,6 +61,22 @@ class FenceGate extends Transparent{
 		return 0b1111;
 	}
 
+	public function isOpen() : bool{ return $this->open; }
+
+	/** @return $this */
+	public function setOpen(bool $open) : self{
+		$this->open = $open;
+		return $this;
+	}
+
+	public function isInWall() : bool{ return $this->inWall; }
+
+	/** @return $this */
+	public function setInWall(bool $inWall) : self{
+		$this->inWall = $inWall;
+		return $this;
+	}
+
 	/**
 	 * @return AxisAlignedBB[]
 	 */

@@ -55,4 +55,36 @@ class Tripwire extends Flowable{
 	public function getStateBitmask() : int{
 		return 0b1111;
 	}
+
+	public function isTriggered() : bool{ return $this->triggered; }
+
+	/** @return $this */
+	public function setTriggered(bool $triggered) : self{
+		$this->triggered = $triggered;
+		return $this;
+	}
+
+	public function isSuspended() : bool{ return $this->suspended; }
+
+	/** @return $this */
+	public function setSuspended(bool $suspended) : self{
+		$this->suspended = $suspended;
+		return $this;
+	}
+
+	public function isConnected() : bool{ return $this->connected; }
+
+	/** @return $this */
+	public function setConnected(bool $connected) : self{
+		$this->connected = $connected;
+		return $this;
+	}
+
+	public function isDisarmed() : bool{ return $this->disarmed; }
+
+	/** @return $this */
+	public function setDisarmed(bool $disarmed) : self{
+		$this->disarmed = $disarmed;
+		return $this;
+	}
 }

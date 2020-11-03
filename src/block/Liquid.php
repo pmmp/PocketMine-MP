@@ -84,6 +84,22 @@ abstract class Liquid extends Transparent{
 		return 0b1111;
 	}
 
+	public function isFalling() : bool{ return $this->falling; }
+
+	/** @return $this */
+	public function setFalling(bool $falling) : self{
+		$this->falling = $falling;
+		return $this;
+	}
+
+	public function getDecay() : int{ return $this->decay; }
+
+	/** @return $this */
+	public function setDecay(int $decay) : self{
+		$this->decay = $decay;
+		return $this;
+	}
+
 	public function hasEntityCollision() : bool{
 		return true;
 	}

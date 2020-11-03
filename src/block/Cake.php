@@ -67,6 +67,17 @@ class Cake extends Transparent implements FoodSource{
 		];
 	}
 
+	public function getBites() : int{ return $this->bites; }
+
+	/** @return $this */
+	public function setBites(int $bites) : self{
+		if($bites < 0 || $bites > 6){
+			throw new \InvalidArgumentException("Bites must be in range 0-6");
+		}
+		$this->bites = $bites;
+		return $this;
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() !== BlockLegacyIds::AIR){

@@ -74,6 +74,17 @@ class Sugarcane extends Flowable{
 		$this->pos->getWorld()->setBlock($this->pos, $this);
 	}
 
+	public function getAge() : int{ return $this->age; }
+
+	/** @return $this */
+	public function setAge(int $age) : self{
+		if($age < 0 || $age > 15){
+			throw new \InvalidArgumentException("Age must be in range 0-15");
+		}
+		$this->age = $age;
+		return $this;
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
 			if(!$this->getSide(Facing::DOWN)->isSameType($this)){

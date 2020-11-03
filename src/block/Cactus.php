@@ -56,6 +56,17 @@ class Cactus extends Transparent{
 		return 0b1111;
 	}
 
+	public function getAge() : int{ return $this->age; }
+
+	/** @return $this */
+	public function setAge(int $age) : self{
+		if($age < 0 || $age > 15){
+			throw new \InvalidArgumentException("Age must be in range 0-15");
+		}
+		$this->age = $age;
+		return $this;
+	}
+
 	public function hasEntityCollision() : bool{
 		return true;
 	}

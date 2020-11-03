@@ -48,6 +48,14 @@ class Lantern extends Transparent{
 		return 0b1;
 	}
 
+	public function isHanging() : bool{ return $this->hanging; }
+
+	/** @return $this */
+	public function setHanging(bool $hanging) : self{
+		$this->hanging = $hanging;
+		return $this;
+	}
+
 	public function getLightLevel() : int{
 		return 15;
 	}

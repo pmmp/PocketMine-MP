@@ -100,6 +100,12 @@ class Bed extends Transparent{
 		return $this->head;
 	}
 
+	/** @return $this */
+	public function setHead(bool $head) : self{
+		$this->head = $head;
+		return $this;
+	}
+
 	public function isOccupied() : bool{
 		return $this->occupied;
 	}

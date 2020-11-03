@@ -64,6 +64,17 @@ class Anvil extends Transparent implements Fallable{
 		return 0b11;
 	}
 
+	public function getDamage() : int{ return $this->damage; }
+
+	/** @return $this */
+	public function setDamage(int $damage) : self{
+		if($damage < 0 || $damage > 2){
+			throw new \InvalidArgumentException("Damage must be in range 0-2");
+		}
+		$this->damage = $damage;
+		return $this;
+	}
+
 	/**
 	 * @return AxisAlignedBB[]
 	 */

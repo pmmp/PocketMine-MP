@@ -48,6 +48,17 @@ class FrostedIce extends Ice{
 		return 0b11;
 	}
 
+	public function getAge() : int{ return $this->age; }
+
+	/** @return $this */
+	public function setAge(int $age) : self{
+		if($age < 0 || $age > 3){
+			throw new \InvalidArgumentException("Age must be in range 0-3");
+		}
+		$this->age = $age;
+		return $this;
+	}
+
 	public function onNearbyBlockChange() : void{
 		if(!$this->checkAdjacentBlocks(2)){
 			$this->pos->getWorld()->useBreakOn($this->pos);
