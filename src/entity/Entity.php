@@ -243,7 +243,7 @@ abstract class Entity{
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->recalculateBoundingBox();
 
-		$this->chunk = $this->getWorld()->getChunkAtPosition($this->location, false);
+		$this->chunk = $this->getWorld()->getOrLoadChunkAtPosition($this->location, false);
 		if($this->chunk === null){
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}

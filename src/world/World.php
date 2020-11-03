@@ -1936,7 +1936,7 @@ class World implements ChunkManager{
 	/**
 	 * Returns the chunk containing the given Vector3 position.
 	 */
-	public function getChunkAtPosition(Vector3 $pos, bool $create = false) : ?Chunk{
+	public function getOrLoadChunkAtPosition(Vector3 $pos, bool $create = false) : ?Chunk{
 		return $this->getOrLoadChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $create);
 	}
 
@@ -2342,7 +2342,7 @@ class World implements ChunkManager{
 
 		$max = $this->worldHeight;
 		$v = $spawn->floor();
-		$chunk = $this->getChunkAtPosition($v, false);
+		$chunk = $this->getOrLoadChunkAtPosition($v, false);
 		$x = (int) $v->x;
 		$y = $v->y;
 		$z = (int) $v->z;
