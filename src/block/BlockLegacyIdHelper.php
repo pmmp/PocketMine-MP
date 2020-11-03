@@ -214,4 +214,17 @@ final class BlockLegacyIdHelper{
 		}
 		throw new AssumptionFailedError("Switch should cover all colours");
 	}
+
+	public static function getStoneSlabIdentifier(int $stoneSlabId, int $meta) : BlockIdentifierFlattened{
+		$id = [
+			1 => [Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB],
+			2 => [Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2],
+			3 => [Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3],
+			4 => [Ids::STONE_SLAB4, Ids::DOUBLE_STONE_SLAB4]
+		][$stoneSlabId] ?? null;
+		if($id === null){
+			throw new \InvalidArgumentException("Stone slab type should be 1, 2, 3 or 4");
+		}
+		return new BlockIdentifierFlattened($id[0], $id[1], $meta);
+	}
 }
