@@ -49,7 +49,7 @@ class Position extends Vector3{
 	/**
 	 * @return Position
 	 */
-	public static function fromObject(Vector3 $pos, ?World $world = null){
+	public static function fromObject(Vector3 $pos, ?World $world){
 		return new Position($pos->x, $pos->y, $pos->z, $world);
 	}
 

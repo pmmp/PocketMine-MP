@@ -43,7 +43,7 @@ class Location extends Position{
 	/**
 	 * @return Location
 	 */
-	public static function fromObject(Vector3 $pos, ?World $world = null, float $yaw = 0.0, float $pitch = 0.0){
+	public static function fromObject(Vector3 $pos, ?World $world, float $yaw = 0.0, float $pitch = 0.0){
 		return new Location($pos->x, $pos->y, $pos->z, $yaw, $pitch, $world ?? (($pos instanceof Position) ? $pos->world : null));
 	}
 
