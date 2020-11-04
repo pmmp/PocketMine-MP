@@ -1215,6 +1215,11 @@ class World implements ChunkManager{
 	}
 
 	public function updateAllLight(int $x, int $y, int $z) : void{
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) === null || $chunk->isLightPopulated() !== true){
+			$this->logger->debug("Skipped runtime light update of x=$x,y=$y,z=$z because the target area has not received base light calculation");
+			return;
+		}
+
 		$blockFactory = BlockFactory::getInstance();
 		$this->timings->doBlockSkyLightUpdates->startTiming();
 		if($this->skyLightUpdate === null){
