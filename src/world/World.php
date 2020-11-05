@@ -2268,7 +2268,6 @@ class World implements ChunkManager{
 
 	private function initChunk(Chunk $chunk) : void{
 		if($chunk->NBTentities !== null){
-			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_ENTITIES, true);
 			$this->timings->syncChunkLoadEntitiesTimer->startTiming();
 			$entityFactory = EntityFactory::getInstance();
 			foreach($chunk->NBTentities as $nbt){
@@ -2291,11 +2290,11 @@ class World implements ChunkManager{
 				}
 			}
 
+			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_ENTITIES, true);
 			$chunk->NBTentities = null;
 			$this->timings->syncChunkLoadEntitiesTimer->stopTiming();
 		}
 		if($chunk->NBTtiles !== null){
-			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_TILES, true);
 			$this->timings->syncChunkLoadTileEntitiesTimer->startTiming();
 			$tileFactory = TileFactory::getInstance();
 			foreach($chunk->NBTtiles as $nbt){
@@ -2307,6 +2306,7 @@ class World implements ChunkManager{
 				}
 			}
 
+			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_TILES, true);
 			$chunk->NBTtiles = null;
 			$this->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
 		}
