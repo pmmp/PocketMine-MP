@@ -531,6 +531,11 @@ parameters:
 			path: ../../../src/data/bedrock/LegacyToStringBidirectionalIdMap.php
 
 		-
+			message: "#^Parameter \\#1 \\$value of class pocketmine\\\\nbt\\\\tag\\\\StringTag constructor expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/entity/EntityFactory.php
+
+		-
 			message: "#^Method pocketmine\\\\entity\\\\EntityFactory\\:\\:getSaveId\\(\\) should return string but returns string\\|false\\.$#"
 			count: 1
 			path: ../../../src/entity/EntityFactory.php

@@ -227,6 +227,14 @@ final class EntityFactory{
 		return $entity;
 	}
 
+	public function injectSaveId(string $class, CompoundTag $saveData) : void{
+		if(isset($this->saveNames[$class])){
+			$saveData->setTag("id", new StringTag(reset($this->saveNames[$class])));
+		}else{
+			throw new \InvalidArgumentException("Entity $class is not registered");
+		}
+	}
+
 	/**
 	 * @phpstan-param class-string<Entity> $class
 	 */

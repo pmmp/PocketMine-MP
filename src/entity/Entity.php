@@ -473,7 +473,7 @@ abstract class Entity{
 		$nbt = EntityDataHelper::createBaseNBT($this->location, $this->motion, $this->location->yaw, $this->location->pitch);
 
 		if(!($this instanceof Player)){
-			$nbt->setString("id", EntityFactory::getInstance()->getSaveId(get_class($this)));
+			EntityFactory::getInstance()->injectSaveId(get_class($this), $nbt);
 
 			if($this->getNameTag() !== ""){
 				$nbt->setString("CustomName", $this->getNameTag());
