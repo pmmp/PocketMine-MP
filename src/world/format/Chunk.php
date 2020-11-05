@@ -28,15 +28,10 @@ namespace pocketmine\world\format;
 
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Tile;
-use pocketmine\block\tile\TileFactory;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntityFactory;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\player\Player;
-use pocketmine\world\World;
 use function array_fill;
 use function array_filter;
 use function array_map;
@@ -84,10 +79,10 @@ class Chunk{
 	protected $biomeIds;
 
 	/** @var CompoundTag[]|null */
-	protected $NBTtiles;
+	public $NBTtiles;
 
 	/** @var CompoundTag[]|null */
-	protected $NBTentities;
+	public $NBTentities;
 
 	/**
 	 * @param SubChunk[]    $subChunks
@@ -343,55 +338,6 @@ class Chunk{
 	 */
 	public function getNBTentities() : array{
 		return $this->NBTentities ?? array_map(function(Entity $entity) : CompoundTag{ return $entity->saveNBT(); }, $this->getSavableEntities());
-	}
-
-	/**
-	 * Deserializes tiles and entities from NBT
-	 */
-	public function initChunk(World $world) : void{
-		if($this->NBTentities !== null){
-			$this->dirtyFlags |= self::DIRTY_FLAG_ENTITIES;
-			$world->timings->syncChunkLoadEntitiesTimer->startTiming();
-			$entityFactory = EntityFactory::getInstance();
-			foreach($this->NBTentities as $nbt){
-				try{
-					$entity = $entityFactory->createFromData($world, $nbt);
-					if(!($entity instanceof Entity)){
-						$saveIdTag = $nbt->getTag("id") ?? $nbt->getTag("identifier");
-						$saveId = "<unknown>";
-						if($saveIdTag instanceof StringTag){
-							$saveId = $saveIdTag->getValue();
-						}elseif($saveIdTag instanceof IntTag){ //legacy MCPE format
-							$saveId = "legacy(" . $saveIdTag->getValue() . ")";
-						}
-						$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown entity type $saveId");
-						continue;
-					}
-				}catch(\Exception $t){ //TODO: this shouldn't be here
-					$world->getLogger()->logException($t);
-					continue;
-				}
-			}
-
-			$this->NBTentities = null;
-			$world->timings->syncChunkLoadEntitiesTimer->stopTiming();
-		}
-		if($this->NBTtiles !== null){
-			$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
-			$world->timings->syncChunkLoadTileEntitiesTimer->startTiming();
-			$tileFactory = TileFactory::getInstance();
-			foreach($this->NBTtiles as $nbt){
-				if(($tile = $tileFactory->createFromData($world, $nbt)) !== null){
-					$world->addTile($tile);
-				}else{
-					$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
-					continue;
-				}
-			}
-
-			$this->NBTtiles = null;
-			$world->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
-		}
 	}
 
 	public function getBiomeIdArray() : string{

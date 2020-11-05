@@ -32,10 +32,12 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
+use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\ItemEntity;
@@ -54,6 +56,8 @@ use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
@@ -2245,7 +2249,7 @@ class World implements ChunkManager{
 		$this->chunks[$chunkHash] = $chunk;
 		unset($this->blockCache[$chunkHash]);
 
-		$chunk->initChunk($this);
+		$this->initChunk($chunk);
 
 		(new ChunkLoadEvent($this, $chunk, !$chunk->isGenerated()))->call();
 
@@ -2260,6 +2264,52 @@ class World implements ChunkManager{
 		$this->timings->syncChunkLoadTimer->stopTiming();
 
 		return true;
+	}
+
+	private function initChunk(Chunk $chunk) : void{
+		if($chunk->NBTentities !== null){
+			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_ENTITIES, true);
+			$this->timings->syncChunkLoadEntitiesTimer->startTiming();
+			$entityFactory = EntityFactory::getInstance();
+			foreach($chunk->NBTentities as $nbt){
+				try{
+					$entity = $entityFactory->createFromData($this, $nbt);
+					if(!($entity instanceof Entity)){
+						$saveIdTag = $nbt->getTag("id") ?? $nbt->getTag("identifier");
+						$saveId = "<unknown>";
+						if($saveIdTag instanceof StringTag){
+							$saveId = $saveIdTag->getValue();
+						}elseif($saveIdTag instanceof IntTag){ //legacy MCPE format
+							$saveId = "legacy(" . $saveIdTag->getValue() . ")";
+						}
+						$this->getLogger()->warning("Chunk " . $chunk->getX() . " " . $chunk->getZ() . ": Deleted unknown entity type $saveId");
+						continue;
+					}
+				}catch(\Exception $t){ //TODO: this shouldn't be here
+					$this->getLogger()->logException($t);
+					continue;
+				}
+			}
+
+			$chunk->NBTentities = null;
+			$this->timings->syncChunkLoadEntitiesTimer->stopTiming();
+		}
+		if($chunk->NBTtiles !== null){
+			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_TILES, true);
+			$this->timings->syncChunkLoadTileEntitiesTimer->startTiming();
+			$tileFactory = TileFactory::getInstance();
+			foreach($chunk->NBTtiles as $nbt){
+				if(($tile = $tileFactory->createFromData($this, $nbt)) !== null){
+					$this->addTile($tile);
+				}else{
+					$this->getLogger()->warning("Chunk " . $chunk->getX() . " " . $chunk->getZ() . ": Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
+					continue;
+				}
+			}
+
+			$chunk->NBTtiles = null;
+			$this->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
+		}
 	}
 
 	private function queueUnloadChunk(int $x, int $z) : void{
