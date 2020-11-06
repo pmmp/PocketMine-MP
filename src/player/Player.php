@@ -2365,7 +2365,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function onChunkChanged(Chunk $chunk) : void{
-		if(isset($this->usedChunks[$hash = World::chunkHash($chunk->getX(), $chunk->getZ())])){
+		$status = $this->usedChunks[$hash = World::chunkHash($chunk->getX(), $chunk->getZ())] ?? null;
+		if($status !== null && !$status->equals(UsedChunkStatus::NEEDED())){
 			$this->usedChunks[$hash] = UsedChunkStatus::NEEDED();
 			$this->nextChunkOrderRun = 0;
 		}
