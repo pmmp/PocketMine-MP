@@ -317,7 +317,7 @@ class Item implements \JsonSerializable{
 
 		$this->hasCustomName() ?
 			$display->setString(self::TAG_DISPLAY_NAME, $this->getCustomName()) :
-			$display->removeTag(self::TAG_DISPLAY);
+			$display->removeTag(self::TAG_DISPLAY_NAME);
 
 		if(count($this->lore) > 0){
 			$loreTag = new ListTag();
