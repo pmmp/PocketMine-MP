@@ -77,16 +77,15 @@ class WorldTimings{
 		$this->doChunkGC = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "doChunkGC");
 		$this->entityTick = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "entityTick");
 
-		$this->syncChunkSendTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkSend");
-		$this->syncChunkSendPrepareTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkSendPrepare");
+		Timings::init(); //make sure the timers we want are available
+		$this->syncChunkSendTimer = new TimingsHandler("** " . $name . "syncChunkSend", Timings::$playerChunkSendTimer);
+		$this->syncChunkSendPrepareTimer = new TimingsHandler("** " . $name . "syncChunkSendPrepare", Timings::$playerChunkSendTimer);
 
-		$this->syncChunkLoadTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkLoad");
-		$this->syncChunkLoadDataTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkLoad - Data");
-		$this->syncChunkLoadEntitiesTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkLoad - Entities");
-		$this->syncChunkLoadTileEntitiesTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkLoad - TileEntities");
-
-		Timings::init(); //make sure the timer we want is available
-		$this->syncChunkSaveTimer = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "syncChunkSave", Timings::$worldSaveTimer);
+		$this->syncChunkLoadTimer = new TimingsHandler("** " . $name . "syncChunkLoad", Timings::$worldLoadTimer);
+		$this->syncChunkLoadDataTimer = new TimingsHandler("** " . $name . "syncChunkLoad - Data");
+		$this->syncChunkLoadEntitiesTimer = new TimingsHandler("** " . $name . "syncChunkLoad - Entities");
+		$this->syncChunkLoadTileEntitiesTimer = new TimingsHandler("** " . $name . "syncChunkLoad - TileEntities");
+		$this->syncChunkSaveTimer = new TimingsHandler("** " . $name . "syncChunkSave", Timings::$worldSaveTimer);
 
 		$this->doTick = new TimingsHandler($name . "doTick");
 	}
