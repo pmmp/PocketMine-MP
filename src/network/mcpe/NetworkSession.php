@@ -956,8 +956,12 @@ class NetworkSession{
 			return true; //keep ticking until timeout
 		}
 
+		if($this->player !== null){
+			$this->player->doChunkRequests();
+		}
+
 		$this->flushSendBuffer();
 
-		return false;
+		return true;
 	}
 }

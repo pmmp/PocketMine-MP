@@ -810,10 +810,6 @@ class World implements ChunkManager{
 
 		}
 
-		foreach($this->players as $p){
-			$p->doChunkRequests();
-		}
-
 		if($this->sleepTicks > 0 and --$this->sleepTicks <= 0){
 			$this->checkSleep();
 		}
