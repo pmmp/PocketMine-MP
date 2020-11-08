@@ -122,13 +122,25 @@ class Armor extends Durable{
 		return 0;
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
-		$existing = $player->getArmorInventory()->getItem($this->getArmorSlot());
+	public function fastEquip(Player $player) : ItemUseResult{
+		$armorInventory = $player->getArmorInventory();
+
+		$existing = $armorInventory->getItem($this->getArmorSlot());
+		$armorInventory->setItem($this->getArmorSlot(), $this->pop());
+
 		if(!$existing->isNull()){
-			return ItemUseResult::FAIL();
+			$player->getInventory()->addItem($existing);
 		}
-		$player->getArmorInventory()->setItem($this->getArmorSlot(), $this->pop());
+
 		return ItemUseResult::SUCCESS();
+	}
+
+	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
+		return $this->fastEquip($player);
+	}
+
+	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+		return $this->fastEquip($player);
 	}
 
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
