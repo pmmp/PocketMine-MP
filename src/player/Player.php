@@ -756,6 +756,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
+	/**
+	 * Requests chunks from the world to be sent, up to a set limit every tick. This operates on the results of the most recent chunk
+	 * order.
+	 */
 	protected function requestChunks() : void{
 		if(!$this->isConnected()){
 			return;
@@ -809,6 +813,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		Timings::$playerChunkSendTimer->stopTiming();
 	}
 
+	/**
+	 * Called by the network system when the pre-spawn sequence is completed (e.g. after sending spawn chunks).
+	 * This fires join events and broadcasts join messages to other online players.
+	 */
 	public function doFirstSpawn() : void{
 		if($this->spawned){
 			return;
@@ -844,6 +852,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
+	/**
+	 * Calculates which new chunks this player needs to use, and which currently-used chunks it needs to stop using.
+	 * This is based on factors including the player's current render radius and current position.
+	 */
 	protected function orderChunks() : void{
 		if(!$this->isConnected() or $this->viewDistance === -1){
 			return;
@@ -879,15 +891,25 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		Timings::$playerChunkOrderTimer->stopTiming();
 	}
 
+	/**
+	 * Returns whether the player is using the chunk with the given coordinates, irrespective of whether the chunk has
+	 * been sent yet.
+	 */
 	public function isUsingChunk(int $chunkX, int $chunkZ) : bool{
 		return isset($this->usedChunks[World::chunkHash($chunkX, $chunkZ)]);
 	}
 
+	/**
+	 * Returns whether the target chunk has been sent to this player.
+	 */
 	public function hasReceivedChunk(int $chunkX, int $chunkZ) : bool{
 		$status = $this->usedChunks[World::chunkHash($chunkX, $chunkZ)] ?? null;
 		return $status !== null and $status->equals(UsedChunkStatus::SENT());
 	}
 
+	/**
+	 * Ticks the chunk-requesting mechanism.
+	 */
 	public function doChunkRequests() : void{
 		if($this->nextChunkOrderRun !== PHP_INT_MAX and $this->nextChunkOrderRun-- <= 0){
 			$this->nextChunkOrderRun = PHP_INT_MAX;
