@@ -80,15 +80,14 @@ class LevelTimings{
 		$this->entityTick = new TimingsHandler("** " . $name . "entityTick");
 		$this->tileEntityTick = new TimingsHandler("** " . $name . "tileEntityTick");
 
-		$this->syncChunkSendTimer = new TimingsHandler("** " . $name . "syncChunkSend");
-		$this->syncChunkSendPrepareTimer = new TimingsHandler("** " . $name . "syncChunkSendPrepare");
+		Timings::init(); //make sure the timers we want are available
+		$this->syncChunkSendTimer = new TimingsHandler("** " . $name . "syncChunkSend", Timings::$playerChunkSendTimer);
+		$this->syncChunkSendPrepareTimer = new TimingsHandler("** " . $name . "syncChunkSendPrepare", Timings::$playerChunkSendTimer);
 
-		$this->syncChunkLoadTimer = new TimingsHandler("** " . $name . "syncChunkLoad");
+		$this->syncChunkLoadTimer = new TimingsHandler("** " . $name . "syncChunkLoad", Timings::$worldLoadTimer);
 		$this->syncChunkLoadDataTimer = new TimingsHandler("** " . $name . "syncChunkLoad - Data");
 		$this->syncChunkLoadEntitiesTimer = new TimingsHandler("** " . $name . "syncChunkLoad - Entities");
 		$this->syncChunkLoadTileEntitiesTimer = new TimingsHandler("** " . $name . "syncChunkLoad - TileEntities");
-
-		Timings::init(); //make sure the timer we want is available
 		$this->syncChunkSaveTimer = new TimingsHandler("** " . $name . "syncChunkSave", Timings::$worldSaveTimer);
 
 		$this->doTick = new TimingsHandler($name . "doTick");
