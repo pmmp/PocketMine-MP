@@ -958,6 +958,14 @@ class NetworkSession{
 
 		if($this->player !== null){
 			$this->player->doChunkRequests();
+
+			$dirtyAttributes = $this->player->getAttributeMap()->needSend();
+			$this->syncAttributes($this->player, $dirtyAttributes);
+			foreach($dirtyAttributes as $attribute){
+				//TODO: we might need to send these to other players in the future
+				//if that happens, this will need to become more complex than a flag on the attribute itself
+				$attribute->markSynchronized();
+			}
 		}
 
 		$this->flushSendBuffer();

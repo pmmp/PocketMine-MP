@@ -1322,13 +1322,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->lastUpdate = $currentTick;
 
-		//TODO: move this to network session ticking (this is specifically related to net sync)
-		$dirtyAttributes = $this->attributeMap->needSend();
-		$this->networkSession->syncAttributes($this, $dirtyAttributes);
-		foreach($dirtyAttributes as $attribute){
-			$attribute->markSynchronized();
-		}
-
 		if(!$this->isAlive() and $this->spawned){
 			$this->onDeathUpdate($tickDiff);
 			return true;
