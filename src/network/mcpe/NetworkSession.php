@@ -326,7 +326,6 @@ class NetworkSession{
 			$stream = new PacketBatch($this->compressor->decompress($payload));
 		}catch(DecompressionException $e){
 			$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
-			//TODO: this isn't incompatible game version if we already established protocol version
 			throw BadPacketException::wrap($e, "Compressed packet batch decode error");
 		}finally{
 			Timings::$playerNetworkReceiveDecompressTimer->stopTiming();
