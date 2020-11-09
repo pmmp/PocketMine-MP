@@ -1445,6 +1445,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function useHeldItem() : bool{
 		$directionVector = $this->getDirectionVector();
 		$item = $this->inventory->getItemInHand();
+		$oldItem = clone $item;
 
 		$ev = new PlayerItemUseEvent($this, $item, $directionVector);
 		if($this->hasItemCooldown($item) or $this->isSpectator()){
@@ -1463,7 +1464,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$this->resetItemCooldown($item);
-		if($this->hasFiniteResources()){
+		if($this->hasFiniteResources() and !$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
 			$this->inventory->setItemInHand($item);
 		}
 
@@ -1480,6 +1481,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function consumeHeldItem() : bool{
 		$slot = $this->inventory->getItemInHand();
 		if($slot instanceof ConsumableItem){
+			$oldItem = clone $slot;
+
 			$ev = new PlayerItemConsumeEvent($this, $slot);
 			if($this->hasItemCooldown($slot)){
 				$ev->cancel();
@@ -1493,7 +1496,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->setUsingItem(false);
 			$this->resetItemCooldown($slot);
 
-			if($this->hasFiniteResources()){
+			if($this->hasFiniteResources() and !$slot->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
 				$slot->pop();
 				$this->inventory->setItemInHand($slot);
 				$this->inventory->addItem($slot->getResidue());
@@ -1517,10 +1520,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				return false;
 			}
 
+			$oldItem = clone $item;
+
 			$result = $item->onReleaseUsing($this);
 			if($result->equals(ItemUseResult::SUCCESS())){
 				$this->resetItemCooldown($item);
-				$this->inventory->setItemInHand($item);
+				if(!$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
+					$this->inventory->setItemInHand($item);
+				}
 				return true;
 			}
 
