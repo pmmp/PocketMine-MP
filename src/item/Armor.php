@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
 use pocketmine\color\Color;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\ArmorInventory;
@@ -122,7 +121,7 @@ class Armor extends Durable{
 		return 0;
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
 		$existing = $player->getArmorInventory()->getItem($this->getArmorSlot());
 		if(!$existing->isNull()){
 			return ItemUseResult::FAIL();
