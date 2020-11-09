@@ -33,7 +33,7 @@ use pocketmine\utils\EnumTrait;
  * @method static self STARTUP()
  * @method static self POSTWORLD()
  */
-final class PluginLoadOrder{
+final class PluginEnableOrder{
 	use EnumTrait;
 
 	protected static function setup() : void{

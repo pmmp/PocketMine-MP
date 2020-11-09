@@ -80,7 +80,7 @@ class PluginDescription{
 	private $website = "";
 	/** @var string */
 	private $prefix = "";
-	/** @var PluginLoadOrder */
+	/** @var PluginEnableOrder */
 	private $order;
 
 	/** @var Permission[] */
@@ -146,12 +146,12 @@ class PluginDescription{
 
 		if(isset($plugin["load"])){
 			try{
-				$this->order = PluginLoadOrder::fromString($plugin["load"]);
+				$this->order = PluginEnableOrder::fromString($plugin["load"]);
 			}catch(\InvalidArgumentException $e){
 				throw new PluginException("Invalid Plugin \"load\"");
 			}
 		}else{
-			$this->order = PluginLoadOrder::POSTWORLD();
+			$this->order = PluginEnableOrder::POSTWORLD();
 		}
 
 		$this->authors = [];
@@ -281,7 +281,7 @@ class PluginDescription{
 		return $this->name;
 	}
 
-	public function getOrder() : PluginLoadOrder{
+	public function getOrder() : PluginEnableOrder{
 		return $this->order;
 	}
 

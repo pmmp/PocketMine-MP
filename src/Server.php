@@ -69,7 +69,7 @@ use pocketmine\player\Player;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginGraylist;
-use pocketmine\plugin\PluginLoadOrder;
+use pocketmine\plugin\PluginEnableOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\plugin\PluginOwned;
 use pocketmine\plugin\ScriptPluginLoader;
@@ -976,7 +976,7 @@ class Server{
 			register_shutdown_function([$this, "crashDump"]);
 
 			$this->pluginManager->loadPlugins($this->pluginPath);
-			$this->enablePlugins(PluginLoadOrder::STARTUP());
+			$this->enablePlugins(PluginEnableOrder::STARTUP());
 
 			foreach((array) $this->configGroup->getProperty("worlds", []) as $name => $options){
 				if($options === null){
@@ -1025,7 +1025,7 @@ class Server{
 				$this->worldManager->setDefaultWorld($world);
 			}
 
-			$this->enablePlugins(PluginLoadOrder::POSTWORLD());
+			$this->enablePlugins(PluginEnableOrder::POSTWORLD());
 
 			$this->network->registerInterface(new RakLibInterface($this));
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp(), $this->getPort()]));
@@ -1258,14 +1258,14 @@ class Server{
 		}
 	}
 
-	public function enablePlugins(PluginLoadOrder $type) : void{
+	public function enablePlugins(PluginEnableOrder $type) : void{
 		foreach($this->pluginManager->getPlugins() as $plugin){
 			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder()->equals($type)){
 				$this->pluginManager->enablePlugin($plugin);
 			}
 		}
 
-		if($type->equals(PluginLoadOrder::POSTWORLD())){
+		if($type->equals(PluginEnableOrder::POSTWORLD())){
 			$this->commandMap->registerServerAliases();
 		}
 	}
