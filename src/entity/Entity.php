@@ -1358,7 +1358,7 @@ abstract class Entity{
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
-			$this->chunk = $this->getWorld()->getOrLoadChunk($chunkX, $chunkZ, true);
+			$this->chunk = $this->getWorld()->loadChunk($chunkX, $chunkZ, true);
 			$this->chunkX = $chunkX;
 			$this->chunkZ = $chunkZ;
 

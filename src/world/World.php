@@ -1411,7 +1411,7 @@ class World implements ChunkManager{
 		if($this->isChunkLocked($chunkX, $chunkZ)){
 			throw new WorldException("Terrain is locked for generation/population");
 		}
-		if(!$this->loadChunk($chunkX, $chunkZ, false)){ //current expected behaviour is to try to load the terrain synchronously
+		if($this->loadChunk($chunkX, $chunkZ, false) === null){ //current expected behaviour is to try to load the terrain synchronously
 			throw new WorldException("Cannot set a block in un-generated terrain");
 		}
 
@@ -1852,7 +1852,7 @@ class World implements ChunkManager{
 	 * Returns the tile at the specified x,y,z coordinates, or null if it does not exist.
 	 */
 	public function getTileAt(int $x, int $y, int $z) : ?Tile{
-		return ($chunk = $this->getOrLoadChunk($x >> 4, $z >> 4, false)) !== null ? $chunk->getTile($x & 0x0f, $y, $z & 0x0f) : null;
+		return ($chunk = $this->loadChunk($x >> 4, $z >> 4, false)) !== null ? $chunk->getTile($x & 0x0f, $y, $z & 0x0f) : null;
 	}
 
 	/**
@@ -1886,7 +1886,7 @@ class World implements ChunkManager{
 	}
 
 	public function getBiomeId(int $x, int $z) : int{
-		if(($chunk = $this->getOrLoadChunk($x >> 4, $z >> 4, false)) !== null){
+		if(($chunk = $this->loadChunk($x >> 4, $z >> 4, false)) !== null){
 			return $chunk->getBiomeId($x & 0x0f, $z & 0x0f);
 		}
 		return BiomeIds::OCEAN; //TODO: this should probably throw instead (terrain not generated yet)
@@ -1903,7 +1903,7 @@ class World implements ChunkManager{
 			//the changes would be overwritten when the generation finishes
 			throw new WorldException("Chunk is currently locked for async generation/population");
 		}
-		if(($chunk = $this->getOrLoadChunk($chunkX, $chunkZ, false)) !== null){
+		if(($chunk = $this->loadChunk($chunkX, $chunkZ, false)) !== null){
 			$chunk->setBiomeId($x & 0x0f, $z & 0x0f, $biomeId);
 		}else{
 			//if we allowed this, the modifications would be lost when the chunk is created
@@ -1918,22 +1918,6 @@ class World implements ChunkManager{
 		return $this->chunks;
 	}
 
-	/**
-	 * Returns the chunk at the specified X/Z coordinates. If the chunk is not loaded, attempts to (synchronously!!!)
-	 * load it.
-	 *
-	 * @param bool $create Whether to create an empty chunk as a placeholder if the chunk does not exist
-	 */
-	public function getOrLoadChunk(int $chunkX, int $chunkZ, bool $create) : ?Chunk{
-		if(isset($this->chunks[$index = World::chunkHash($chunkX, $chunkZ)])){
-			return $this->chunks[$index];
-		}elseif($this->loadChunk($chunkX, $chunkZ, $create)){
-			return $this->chunks[$index];
-		}
-
-		return null;
-	}
-
 	public function getChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		return $this->chunks[World::chunkHash($chunkX, $chunkZ)] ?? null;
 	}
@@ -1942,7 +1926,7 @@ class World implements ChunkManager{
 	 * Returns the chunk containing the given Vector3 position.
 	 */
 	public function getOrLoadChunkAtPosition(Vector3 $pos, bool $create = false) : ?Chunk{
-		return $this->getOrLoadChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $create);
+		return $this->loadChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $create);
 	}
 
 	/**
@@ -1958,7 +1942,7 @@ class World implements ChunkManager{
 				if($i === 4){
 					continue; //center chunk
 				}
-				$result[$i] = $this->getOrLoadChunk($x + $xx - 1, $z + $zz - 1, false);
+				$result[$i] = $this->loadChunk($x + $xx - 1, $z + $zz - 1, false);
 			}
 		}
 
@@ -1992,7 +1976,7 @@ class World implements ChunkManager{
 			unset($this->chunkPopulationQueue[$index]);
 
 			if($chunk !== null){
-				$oldChunk = $this->getOrLoadChunk($x, $z, false);
+				$oldChunk = $this->loadChunk($x, $z, false);
 				$this->setChunk($x, $z, $chunk, false);
 				if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
 					(new ChunkPopulateEvent($this, $chunk))->call();
@@ -2025,7 +2009,7 @@ class World implements ChunkManager{
 		$chunk->setZ($chunkZ);
 
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$oldChunk = $this->getOrLoadChunk($chunkX, $chunkZ, false);
+		$oldChunk = $this->loadChunk($chunkX, $chunkZ, false);
 		if($oldChunk !== null and $oldChunk !== $chunk){
 			if($deleteEntitiesAndTiles){
 				foreach($oldChunk->getEntities() as $entity){
@@ -2075,7 +2059,7 @@ class World implements ChunkManager{
 	 * @return int 0-255, or -1 if the chunk is not generated
 	 */
 	public function getHighestBlockAt(int $x, int $z) : int{
-		if(($chunk = $this->getOrLoadChunk($x >> 4, $z >> 4, false)) !== null){
+		if(($chunk = $this->loadChunk($x >> 4, $z >> 4, false)) !== null){
 			return $chunk->getHighestBlockAt($x & 0x0f, $z & 0x0f);
 		}
 		return -1; //TODO: this should probably throw an exception (terrain not generated yet)
@@ -2093,12 +2077,12 @@ class World implements ChunkManager{
 	}
 
 	public function isChunkGenerated(int $x, int $z) : bool{
-		$chunk = $this->getOrLoadChunk($x, $z, false);
+		$chunk = $this->loadChunk($x, $z, false);
 		return $chunk !== null ? $chunk->isGenerated() : false;
 	}
 
 	public function isChunkPopulated(int $x, int $z) : bool{
-		$chunk = $this->getOrLoadChunk($x, $z, false);
+		$chunk = $this->loadChunk($x, $z, false);
 		return $chunk !== null ? $chunk->isPopulated() : false;
 	}
 
@@ -2204,17 +2188,18 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Attempts to load a chunk from the world provider (if not already loaded).
+	 * Attempts to load a chunk from the world provider (if not already loaded). If the chunk is already loaded, it is
+	 * returned directly.
 	 *
 	 * @param bool $create Whether to create an empty chunk to load if the chunk cannot be loaded from disk.
 	 *
-	 * @return bool if loading the chunk was successful
+	 * @return Chunk|null the requested chunk, or null on failure.
 	 *
 	 * @throws \InvalidStateException
 	 */
-	public function loadChunk(int $x, int $z, bool $create) : bool{
+	public function loadChunk(int $x, int $z, bool $create) : ?Chunk{
 		if(isset($this->chunks[$chunkHash = World::chunkHash($x, $z)])){
-			return true;
+			return $this->chunks[$chunkHash];
 		}
 
 		$this->timings->syncChunkLoadTimer->startTiming();
@@ -2239,7 +2224,7 @@ class World implements ChunkManager{
 
 		if($chunk === null){
 			$this->timings->syncChunkLoadTimer->stopTiming();
-			return false;
+			return null;
 		}
 
 		$this->chunks[$chunkHash] = $chunk;
@@ -2259,7 +2244,7 @@ class World implements ChunkManager{
 
 		$this->timings->syncChunkLoadTimer->stopTiming();
 
-		return true;
+		return $chunk;
 	}
 
 	private function initChunk(Chunk $chunk) : void{
@@ -2516,7 +2501,7 @@ class World implements ChunkManager{
 			}
 		}
 
-		$chunk = $this->getOrLoadChunk($x, $z, true);
+		$chunk = $this->loadChunk($x, $z, true);
 		if(!$chunk->isPopulated()){
 			Timings::$populationTimer->startTiming();
 
