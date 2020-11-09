@@ -500,7 +500,7 @@ class Item implements \JsonSerializable{
 	/**
 	 * Called when a player uses this item on a block.
 	 */
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		return ItemUseResult::NONE();
 	}
 

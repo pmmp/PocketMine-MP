@@ -1618,7 +1618,7 @@ class World implements ChunkManager{
 					return true;
 				}
 
-				$result = $item->onActivate($player, $blockReplace, $blockClicked, $face, $clickVector);
+				$result = $item->onInteractBlock($player, $blockReplace, $blockClicked, $face, $clickVector);
 				if(!$result->equals(ItemUseResult::NONE())){
 					return $result->equals(ItemUseResult::SUCCESS());
 				}
