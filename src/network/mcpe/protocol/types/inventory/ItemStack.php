@@ -115,6 +115,7 @@ final class ItemStack implements \JsonSerializable{
 			);
 	}
 
+	/** @return mixed[] */
 	public function jsonSerialize() : array{
 		$result = [
 			"id" => $this->id,
