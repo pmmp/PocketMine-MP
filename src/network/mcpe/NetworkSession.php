@@ -97,6 +97,7 @@ use pocketmine\network\NetworkSessionManager;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
+use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
@@ -563,7 +564,7 @@ class NetworkSession{
 			return;
 		}
 		if($error === null){
-			if($authenticated and $this->info->getXuid() === ""){
+			if($authenticated and !($this->info instanceof XboxLivePlayerInfo)){
 				$error = "Expected XUID but none found";
 			}elseif($clientPubKey === null){
 				$error = "Missing client public key"; //failsafe
@@ -583,7 +584,7 @@ class NetworkSession{
 				$this->disconnect("disconnectionScreen.notAuthenticated");
 				return;
 			}
-			if($this->info->hasXboxData()){
+			if($this->info instanceof XboxLivePlayerInfo){
 				$this->logger->warning("Discarding unexpected XUID for non-authenticated player");
 				$this->info = $this->info->withoutXboxData();
 			}

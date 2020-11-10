@@ -40,8 +40,6 @@ class PlayerInfo{
 	private $skin;
 	/** @var string */
 	private $locale;
-	/** @var string */
-	private $xuid;
 	/**
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
@@ -52,12 +50,11 @@ class PlayerInfo{
 	 * @param mixed[] $extraData
 	 * @phpstan-param array<string, mixed> $extraData
 	 */
-	public function __construct(string $username, UUID $uuid, Skin $skin, string $locale, string $xuid, array $extraData = []){
+	public function __construct(string $username, UUID $uuid, Skin $skin, string $locale, array $extraData = []){
 		$this->username = TextFormat::clean($username);
 		$this->uuid = $uuid;
 		$this->skin = $skin;
 		$this->locale = $locale;
-		$this->xuid = $xuid;
 		$this->extraData = $extraData;
 	}
 
@@ -77,34 +74,11 @@ class PlayerInfo{
 		return $this->locale;
 	}
 
-	public function getXuid() : string{
-		return $this->xuid;
-	}
-
 	/**
 	 * @return mixed[]
 	 * @phpstan-return array<string, mixed>
 	 */
 	public function getExtraData() : array{
 		return $this->extraData;
-	}
-
-	public function hasXboxData() : bool{
-		return $this->xuid !== "";
-	}
-
-	/**
-	 * Returns a new PlayerInfo with XBL player info stripped. This is used to ensure that non-XBL players can't spoof
-	 * XBL data.
-	 */
-	public function withoutXboxData() : self{
-		return new self(
-			$this->username,
-			$this->uuid,
-			$this->skin,
-			$this->locale,
-			"",
-			$this->extraData
-		);
 	}
 }
