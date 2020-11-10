@@ -206,7 +206,7 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Parameter \\#1 \\$name of static method pocketmine\\\\plugin\\\\PluginLoadOrder\\:\\:fromString\\(\\) expects string, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$name of static method pocketmine\\\\plugin\\\\PluginEnableOrder\\:\\:fromString\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
