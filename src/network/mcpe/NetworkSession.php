@@ -602,17 +602,17 @@ class NetworkSession{
 					$this->cipher = new EncryptionContext($encryptionKey);
 
 					$this->setHandler(new HandshakePacketHandler(function() : void{
-						$this->onLoginSuccess();
+						$this->onServerLoginSuccess();
 					}));
 					$this->logger->debug("Enabled encryption");
 				}));
 			}else{
-				$this->onLoginSuccess();
+				$this->onServerLoginSuccess();
 			}
 		}
 	}
 
-	private function onLoginSuccess() : void{
+	private function onServerLoginSuccess() : void{
 		$this->loggedIn = true;
 
 		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::LOGIN_SUCCESS));
@@ -636,24 +636,24 @@ class NetworkSession{
 		$this->logger->debug("Sending spawn notification, waiting for spawn response");
 		$this->sendDataPacket(PlayStatusPacket::create(PlayStatusPacket::PLAYER_SPAWN));
 		$this->setHandler(new SpawnResponsePacketHandler(function() : void{
-			$this->onSpawn();
+			$this->onClientSpawnResponse();
 		}));
 	}
 
-	private function onSpawn() : void{
+	private function onClientSpawnResponse() : void{
 		$this->logger->debug("Received spawn response, entering in-game phase");
 		$this->player->setImmobile(false); //TODO: HACK: we set this during the spawn sequence to prevent the client sending junk movements
 		$this->player->doFirstSpawn();
 		$this->setHandler(new InGamePacketHandler($this->player, $this));
 	}
 
-	public function onDeath() : void{
+	public function onServerDeath() : void{
 		if($this->handler instanceof InGamePacketHandler){ //TODO: this is a bad fix for pre-spawn death, this shouldn't be reachable at all at this stage :(
 			$this->setHandler(new DeathPacketHandler($this->player, $this));
 		}
 	}
 
-	public function onRespawn() : void{
+	public function onServerRespawn() : void{
 		$this->player->sendData(null);
 
 		$this->syncAdventureSettings($this->player);

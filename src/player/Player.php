@@ -2149,7 +2149,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->startDeathAnimation();
 
-		$this->networkSession->onDeath();
+		$this->networkSession->onServerDeath();
 	}
 
 	protected function onDeathUpdate(int $tickDiff) : bool{
@@ -2187,7 +2187,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->spawnToAll();
 		$this->scheduleUpdate();
 
-		$this->networkSession->onRespawn();
+		$this->networkSession->onServerRespawn();
 	}
 
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
