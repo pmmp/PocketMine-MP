@@ -356,11 +356,6 @@ parameters:
 			path: ../../../src/player/Player.php
 
 		-
-			message: "#^Cannot call method syncAttributes\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
 			message: "#^Cannot call method onTitle\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
 			count: 1
 			path: ../../../src/player/Player.php
@@ -544,11 +539,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$chunk of class pocketmine\\\\world\\\\generator\\\\PopulationTask constructor expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
-
-		-
-			message: "#^Method pocketmine\\\\world\\\\biome\\\\Biome\\:\\:getBiome\\(\\) should return pocketmine\\\\world\\\\biome\\\\Biome but returns pocketmine\\\\world\\\\biome\\\\Biome\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/biome/Biome.php
 
 		-
 			message: "#^Method pocketmine\\\\world\\\\biome\\\\BiomeRegistry\\:\\:getBiome\\(\\) should return pocketmine\\\\world\\\\biome\\\\Biome but returns pocketmine\\\\world\\\\biome\\\\Biome\\|null\\.$#"
