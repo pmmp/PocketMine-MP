@@ -230,21 +230,34 @@ class InventoryTransaction{
 	protected function findResultItem(Item $needOrigin, array $possibleActions) : ?Item{
 		assert(count($possibleActions) > 0);
 
+		$candidate = null;
+		$newList = $possibleActions;
 		foreach($possibleActions as $i => $action){
 			if($action->getSourceItem()->equalsExact($needOrigin)){
-				$newList = $possibleActions;
+				if($candidate !== null){
+					/*
+					 * we found multiple possible actions that match the origin action
+					 * this means that there are multiple ways that this chain could play out
+					 * if we cared so much about this, we could build all the possible chains in parallel and see which
+					 * variation managed to complete the chain, but this has an extremely high complexity which is not
+					 * worth the trouble for this scenario (we don't usually expect to see chains longer than a couple
+					 * of actions in here anyway), and might still result in multiple possible results.
+					 */
+					return null;
+				}
+				$candidate = $action;
 				unset($newList[$i]);
-				if(count($newList) === 0){
-					return $action->getTargetItem();
-				}
-				$result = $this->findResultItem($action->getTargetItem(), $newList);
-				if($result !== null){
-					return $result;
-				}
 			}
 		}
+		if($candidate === null){
+			//chaining is not possible with this origin, none of the actions are valid
+			return null;
+		}
 
-		return null;
+		if(count($newList) === 0){
+			return $candidate->getTargetItem();
+		}
+		return $this->findResultItem($candidate->getTargetItem(), $newList);
 	}
 
 	/**
