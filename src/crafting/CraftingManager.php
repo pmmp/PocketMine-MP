@@ -24,11 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\compression\CompressBatchPromise;
-use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
-use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe as ProtocolFurnaceRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
@@ -39,7 +36,6 @@ use pocketmine\utils\Binary;
 use pocketmine\uuid\UUID;
 use function array_map;
 use function json_encode;
-use function spl_object_id;
 use function str_repeat;
 use function usort;
 
@@ -52,20 +48,20 @@ class CraftingManager{
 	/** @var FurnaceRecipeManager */
 	protected $furnaceRecipeManager;
 
-	/** @var CompressBatchPromise[] */
-	private $craftingDataCaches = [];
+	/** @var CraftingDataPacket|null */
+	private $craftingDataCache = null;
 
 	public function __construct(){
 		$this->furnaceRecipeManager = new FurnaceRecipeManager();
 		$this->furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(function(FurnaceRecipe $recipe) : void{
-			$this->craftingDataCaches = [];
+			$this->craftingDataCache = null;
 		});
 	}
 
 	/**
 	 * Rebuilds the cached CraftingDataPacket.
 	 */
-	private function buildCraftingDataCache(Compressor $compressor) : CompressBatchPromise{
+	private function buildCraftingDataCache() : CraftingDataPacket{
 		Timings::$craftingDataCacheRebuildTimer->startTiming();
 		$pk = new CraftingDataPacket();
 		$pk->cleanRecipes = true;
@@ -126,24 +122,18 @@ class CraftingManager{
 			);
 		}
 
-		$promise = new CompressBatchPromise();
-		$promise->resolve($compressor->compress(PacketBatch::fromPackets($pk)->getBuffer()));
-
-		Timings::$craftingDataCacheRebuildTimer->stopTiming();
-		return $promise;
+		return $pk;
 	}
 
 	/**
 	 * Returns a pre-compressed CraftingDataPacket for sending to players. Rebuilds the cache if it is not found.
 	 */
-	public function getCraftingDataPacket(Compressor $compressor) : CompressBatchPromise{
-		$compressorId = spl_object_id($compressor);
-
-		if(!isset($this->craftingDataCaches[$compressorId])){
-			$this->craftingDataCaches[$compressorId] = $this->buildCraftingDataCache($compressor);
+	public function getCraftingDataPacket() : CraftingDataPacket{
+		if($this->craftingDataCache === null){
+			$this->craftingDataCache = $this->buildCraftingDataCache();
 		}
 
-		return $this->craftingDataCaches[$compressorId];
+		return $this->craftingDataCache;
 	}
 
 	/**
@@ -215,13 +205,13 @@ class CraftingManager{
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
-		$this->craftingDataCaches = [];
+		$this->craftingDataCache = null;
 	}
 
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
-		$this->craftingDataCaches = [];
+		$this->craftingDataCache = null;
 	}
 
 	/**
