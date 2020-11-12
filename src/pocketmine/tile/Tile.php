@@ -39,7 +39,6 @@ use pocketmine\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
-use function current;
 use function get_class;
 use function in_array;
 use function is_a;
@@ -74,8 +73,8 @@ abstract class Tile extends Position{
 	 */
 	private static $knownTiles = [];
 	/**
-	 * @var string[][]
-	 * @phpstan-var array<class-string<Tile>, list<string>>
+	 * @var string[]
+	 * @phpstan-var array<class-string<Tile>, string>
 	 */
 	private static $saveNames = [];
 
@@ -138,7 +137,7 @@ abstract class Tile extends Position{
 				self::$knownTiles[$name] = $className;
 			}
 
-			self::$saveNames[$className] = $saveNames;
+			self::$saveNames[$className] = reset($saveNames);
 
 			return true;
 		}
@@ -154,8 +153,7 @@ abstract class Tile extends Position{
 			throw new \InvalidStateException("Tile is not registered");
 		}
 
-		reset(self::$saveNames[static::class]);
-		return current(self::$saveNames[static::class]);
+		return self::$saveNames[static::class];
 	}
 
 	public function __construct(Level $level, CompoundTag $nbt){

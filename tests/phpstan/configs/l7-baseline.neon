@@ -391,6 +391,11 @@ parameters:
 			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
 
 		-
+			message: "#^Array \\(array\\<class\\-string\\<pocketmine\\\\entity\\\\Entity\\>, string\\>\\) does not accept string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
 			message: "#^Parameter \\#1 \\$index of method pocketmine\\\\inventory\\\\BaseInventory\\:\\:setItem\\(\\) expects int, int\\|string given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/entity/Human.php
@@ -984,6 +989,11 @@ parameters:
 			message: "#^Parameter \\#2 \\$value of class pocketmine\\\\nbt\\\\tag\\\\IntTag constructor expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/pocketmine/tile/Spawnable.php
+
+		-
+			message: "#^Array \\(array\\<class\\-string\\<pocketmine\\\\tile\\\\Tile\\>, string\\>\\) does not accept string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Tile.php
 
 		-
 			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"

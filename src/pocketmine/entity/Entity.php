@@ -77,7 +77,6 @@ use function abs;
 use function assert;
 use function cos;
 use function count;
-use function current;
 use function deg2rad;
 use function floor;
 use function fmod;
@@ -334,8 +333,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 */
 	private static $knownEntities = [];
 	/**
-	 * @var string[][]
-	 * @phpstan-var array<class-string<Entity>, list<string>>
+	 * @var string[]
+	 * @phpstan-var array<class-string<Entity>, string>
 	 */
 	private static $saveNames = [];
 
@@ -414,7 +413,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 				self::$knownEntities[$name] = $className;
 			}
 
-			self::$saveNames[$className] = $saveNames;
+			self::$saveNames[$className] = reset($saveNames);
 
 			return true;
 		}
@@ -872,8 +871,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		if(!isset(self::$saveNames[static::class])){
 			throw new \InvalidStateException("Entity " . static::class . " is not registered");
 		}
-		reset(self::$saveNames[static::class]);
-		return current(self::$saveNames[static::class]);
+		return self::$saveNames[static::class];
 	}
 
 	public function saveNBT() : void{
