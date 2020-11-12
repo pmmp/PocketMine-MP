@@ -118,6 +118,9 @@ abstract class Timings{
 	/** @var TimingsHandler[] */
 	public static $pluginTaskTimingMap = [];
 
+	/** @var TimingsHandler */
+	public static $broadcastPackets;
+
 	public static function init() : void{
 		if(self::$initialized){
 			return;
@@ -137,6 +140,8 @@ abstract class Timings{
 		self::$playerNetworkReceiveTimer = new TimingsHandler("Player Network Receive");
 		self::$playerNetworkReceiveDecompressTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Receive - Decompression", self::$playerNetworkReceiveTimer);
 		self::$playerNetworkReceiveDecryptTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Receive - Decryption", self::$playerNetworkReceiveTimer);
+
+		self::$broadcastPackets = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Broadcast Packets", self::$playerNetworkSendTimer);
 
 		self::$playerChunkOrderTimer = new TimingsHandler("Player Order Chunks");
 		self::$playerChunkSendTimer = new TimingsHandler("Player Send Chunks");

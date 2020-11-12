@@ -1182,54 +1182,56 @@ class Server{
 			throw new \InvalidArgumentException("Cannot broadcast empty list of packets");
 		}
 
-		/** @var NetworkSession[] $recipients */
-		$recipients = [];
-		foreach($players as $player){
-			if($player->isConnected()){
-				$recipients[] = $player->getNetworkSession();
+		return Timings::$broadcastPackets->time(function() use ($players, $packets) : bool{
+			/** @var NetworkSession[] $recipients */
+			$recipients = [];
+			foreach($players as $player){
+				if($player->isConnected()){
+					$recipients[] = $player->getNetworkSession();
+				}
 			}
-		}
-		if(count($recipients) === 0){
-			return false;
-		}
+			if(count($recipients) === 0){
+				return false;
+			}
 
-		$ev = new DataPacketSendEvent($recipients, $packets);
-		$ev->call();
-		if($ev->isCancelled()){
-			return false;
-		}
-		$recipients = $ev->getTargets();
+			$ev = new DataPacketSendEvent($recipients, $packets);
+			$ev->call();
+			if($ev->isCancelled()){
+				return false;
+			}
+			$recipients = $ev->getTargets();
 
-		$stream = PacketBatch::fromPackets(...$ev->getPackets());
+			$stream = PacketBatch::fromPackets(...$ev->getPackets());
 
-		/** @var Compressor[] $compressors */
-		$compressors = [];
-		/** @var NetworkSession[][] $compressorTargets */
-		$compressorTargets = [];
-		foreach($recipients as $recipient){
-			$compressor = $recipient->getCompressor();
-			$compressorId = spl_object_id($compressor);
-			//TODO: different compressors might be compatible, it might not be necessary to split them up by object
-			$compressors[$compressorId] = $compressor;
-			$compressorTargets[$compressorId][] = $recipient;
-		}
+			/** @var Compressor[] $compressors */
+			$compressors = [];
+			/** @var NetworkSession[][] $compressorTargets */
+			$compressorTargets = [];
+			foreach($recipients as $recipient){
+				$compressor = $recipient->getCompressor();
+				$compressorId = spl_object_id($compressor);
+				//TODO: different compressors might be compatible, it might not be necessary to split them up by object
+				$compressors[$compressorId] = $compressor;
+				$compressorTargets[$compressorId][] = $recipient;
+			}
 
-		foreach($compressors as $compressorId => $compressor){
-			if(!$compressor->willCompress($stream->getBuffer())){
-				foreach($compressorTargets[$compressorId] as $target){
-					foreach($ev->getPackets() as $pk){
-						$target->addToSendBuffer($pk);
+			foreach($compressors as $compressorId => $compressor){
+				if(!$compressor->willCompress($stream->getBuffer())){
+					foreach($compressorTargets[$compressorId] as $target){
+						foreach($ev->getPackets() as $pk){
+							$target->addToSendBuffer($pk);
+						}
+					}
+				}else{
+					$promise = $this->prepareBatch($stream, $compressor);
+					foreach($compressorTargets[$compressorId] as $target){
+						$target->queueCompressed($promise);
 					}
 				}
-			}else{
-				$promise = $this->prepareBatch($stream, $compressor);
-				foreach($compressorTargets[$compressorId] as $target){
-					$target->queueCompressed($promise);
-				}
 			}
-		}
 
-		return true;
+			return true;
+		});
 	}
 
 	/**
