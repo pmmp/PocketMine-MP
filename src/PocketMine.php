@@ -130,7 +130,6 @@ namespace pocketmine {
 	}
 
 	/**
-	 * @param \Logger $logger
 	 * @return void
 	 */
 	function emit_performance_warnings(\Logger $logger){
