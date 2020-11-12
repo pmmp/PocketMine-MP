@@ -66,8 +66,8 @@ final class EntityFactory{
 	 */
 	private $creationFuncs = [];
 	/**
-	 * @var string[][]
-	 * @phpstan-var array<class-string<Entity>, list<string>>
+	 * @var string[]
+	 * @phpstan-var array<class-string<Entity>, string>
 	 */
 	private $saveNames = [];
 
@@ -201,7 +201,7 @@ final class EntityFactory{
 			$this->creationFuncs[$legacyMcpeSaveId] = $creationFunc;
 		}
 
-		$this->saveNames[$className] = $saveNames;
+		$this->saveNames[$className] = reset($saveNames);
 	}
 
 	/**
@@ -229,7 +229,7 @@ final class EntityFactory{
 
 	public function injectSaveId(string $class, CompoundTag $saveData) : void{
 		if(isset($this->saveNames[$class])){
-			$saveData->setTag("id", new StringTag(reset($this->saveNames[$class])));
+			$saveData->setTag("id", new StringTag($this->saveNames[$class]));
 		}else{
 			throw new \InvalidArgumentException("Entity $class is not registered");
 		}
@@ -240,7 +240,7 @@ final class EntityFactory{
 	 */
 	public function getSaveId(string $class) : string{
 		if(isset($this->saveNames[$class])){
-			return reset($this->saveNames[$class]);
+			return $this->saveNames[$class];
 		}
 		throw new \InvalidArgumentException("Entity $class is not registered");
 	}

@@ -42,8 +42,8 @@ final class TileFactory{
 	 */
 	private $knownTiles = [];
 	/**
-	 * @var string[][]
-	 * @phpstan-var array<class-string<Tile>, list<string>>
+	 * @var string[]
+	 * @phpstan-var array<class-string<Tile>, string>
 	 */
 	private $saveNames = [];
 
@@ -108,7 +108,7 @@ final class TileFactory{
 			$this->knownTiles[$name] = $className;
 		}
 
-		$this->saveNames[$className] = $saveNames;
+		$this->saveNames[$className] = reset($saveNames);
 	}
 
 	/**
@@ -136,7 +136,7 @@ final class TileFactory{
 	 */
 	public function getSaveId(string $class) : string{
 		if(isset($this->saveNames[$class])){
-			return reset($this->saveNames[$class]);
+			return $this->saveNames[$class];
 		}
 		throw new \InvalidArgumentException("Tile $class is not registered");
 	}

@@ -461,7 +461,7 @@ parameters:
 			path: ../../../src/block/tile/Spawnable.php
 
 		-
-			message: "#^Method pocketmine\\\\block\\\\tile\\\\TileFactory\\:\\:getSaveId\\(\\) should return string but returns string\\|false\\.$#"
+			message: "#^Array \\(array\\<class\\-string\\<pocketmine\\\\block\\\\tile\\\\Tile\\>, string\\>\\) does not accept string\\|false\\.$#"
 			count: 1
 			path: ../../../src/block/tile/TileFactory.php
 
@@ -529,16 +529,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/data/bedrock/LegacyToStringBidirectionalIdMap.php
-
-		-
-			message: "#^Parameter \\#1 \\$value of class pocketmine\\\\nbt\\\\tag\\\\StringTag constructor expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/entity/EntityFactory.php
-
-		-
-			message: "#^Method pocketmine\\\\entity\\\\EntityFactory\\:\\:getSaveId\\(\\) should return string but returns string\\|false\\.$#"
-			count: 1
-			path: ../../../src/entity/EntityFactory.php
 
 		-
 			message: "#^Parameter \\#1 \\$index of method pocketmine\\\\inventory\\\\BaseInventory\\:\\:setItem\\(\\) expects int, int\\|string given\\.$#"
