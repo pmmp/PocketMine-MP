@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\handler;
 use pocketmine\data\bedrock\LegacyItemIdToStringIdMap;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\CraftingDataCache;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
@@ -100,7 +101,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$this->session->getInvManager()->syncAll();
 		$this->session->getInvManager()->syncCreative();
 		$this->session->getInvManager()->syncSelectedHotbarSlot();
-		$this->session->sendDataPacket($this->server->getCraftingManager()->getCraftingDataPacket());
+		$this->session->sendDataPacket(CraftingDataCache::getInstance()->getCache($this->server->getCraftingManager()));
 
 		$this->session->syncPlayerList($this->server->getOnlinePlayers());
 	}

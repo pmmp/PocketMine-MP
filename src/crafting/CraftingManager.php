@@ -23,23 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
+use Ds\Set;
 use pocketmine\item\Item;
-use pocketmine\network\mcpe\convert\TypeConverter;
-use pocketmine\network\mcpe\protocol\CraftingDataPacket;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe as ProtocolFurnaceRecipe;
-use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
-use pocketmine\network\mcpe\protocol\types\recipe\ShapedRecipe as ProtocolShapedRecipe;
-use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe as ProtocolShapelessRecipe;
-use pocketmine\timings\Timings;
-use pocketmine\utils\Binary;
-use pocketmine\uuid\UUID;
-use function array_map;
+use pocketmine\utils\DestructorCallbackTrait;
 use function json_encode;
-use function str_repeat;
 use function usort;
 
 class CraftingManager{
+	use DestructorCallbackTrait;
+
 	/** @var ShapedRecipe[][] */
 	protected $shapedRecipes = [];
 	/** @var ShapelessRecipe[][] */
@@ -48,93 +40,24 @@ class CraftingManager{
 	/** @var FurnaceRecipeManager */
 	protected $furnaceRecipeManager;
 
-	/** @var CraftingDataPacket|null */
-	private $craftingDataCache = null;
+	/**
+	 * @var Set
+	 * @phpstan-var Set<\Closure() : void>
+	 */
+	private $recipeRegisteredCallbacks;
 
 	public function __construct(){
+		$this->recipeRegisteredCallbacks = new Set();
 		$this->furnaceRecipeManager = new FurnaceRecipeManager();
 		$this->furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(function(FurnaceRecipe $recipe) : void{
-			$this->craftingDataCache = null;
+			foreach($this->recipeRegisteredCallbacks as $callback){
+				$callback();
+			}
 		});
 	}
 
-	/**
-	 * Rebuilds the cached CraftingDataPacket.
-	 */
-	private function buildCraftingDataCache() : CraftingDataPacket{
-		Timings::$craftingDataCacheRebuildTimer->startTiming();
-		$pk = new CraftingDataPacket();
-		$pk->cleanRecipes = true;
-
-		$counter = 0;
-		$nullUUID = UUID::fromData(str_repeat("\x00", 16));
-		$converter = TypeConverter::getInstance();
-		foreach($this->shapelessRecipes as $list){
-			foreach($list as $recipe){
-				$pk->entries[] = new ProtocolShapelessRecipe(
-					CraftingDataPacket::ENTRY_SHAPELESS,
-					Binary::writeInt($counter++),
-					array_map(function(Item $item) use ($converter) : RecipeIngredient{
-						return $converter->coreItemStackToRecipeIngredient($item);
-					}, $recipe->getIngredientList()),
-					array_map(function(Item $item) use ($converter) : ItemStack{
-						return $converter->coreItemStackToNet($item);
-					}, $recipe->getResults()),
-					$nullUUID,
-					"crafting_table",
-					50,
-					$counter
-				);
-			}
-		}
-		foreach($this->shapedRecipes as $list){
-			foreach($list as $recipe){
-				$inputs = [];
-
-				for($row = 0, $height = $recipe->getHeight(); $row < $height; ++$row){
-					for($column = 0, $width = $recipe->getWidth(); $column < $width; ++$column){
-						$inputs[$row][$column] = $converter->coreItemStackToRecipeIngredient($recipe->getIngredient($column, $row));
-					}
-				}
-				$pk->entries[] = $r = new ProtocolShapedRecipe(
-					CraftingDataPacket::ENTRY_SHAPED,
-					Binary::writeInt($counter++),
-					$inputs,
-					array_map(function(Item $item) use ($converter) : ItemStack{
-						return $converter->coreItemStackToNet($item);
-					}, $recipe->getResults()),
-					$nullUUID,
-					"crafting_table",
-					50,
-					$counter
-				);
-			}
-		}
-
-		foreach($this->furnaceRecipeManager->getAll() as $recipe){
-			$input = $converter->coreItemStackToNet($recipe->getInput());
-			$pk->entries[] = new ProtocolFurnaceRecipe(
-				CraftingDataPacket::ENTRY_FURNACE_DATA,
-				$input->getId(),
-				$input->getMeta(),
-				$converter->coreItemStackToNet($recipe->getResult()),
-				"furnace"
-			);
-		}
-
-		return $pk;
-	}
-
-	/**
-	 * Returns a pre-compressed CraftingDataPacket for sending to players. Rebuilds the cache if it is not found.
-	 */
-	public function getCraftingDataPacket() : CraftingDataPacket{
-		if($this->craftingDataCache === null){
-			$this->craftingDataCache = $this->buildCraftingDataCache();
-		}
-
-		return $this->craftingDataCache;
-	}
+	/** @phpstan-return Set<\Closure() : void> */
+	public function getRecipeRegisteredCallbacks() : Set{ return $this->recipeRegisteredCallbacks; }
 
 	/**
 	 * Function used to arrange Shapeless Recipe ingredient lists into a consistent order.
@@ -205,13 +128,17 @@ class CraftingManager{
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
-		$this->craftingDataCache = null;
+		foreach($this->recipeRegisteredCallbacks as $callback){
+			$callback();
+		}
 	}
 
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
-		$this->craftingDataCache = null;
+		foreach($this->recipeRegisteredCallbacks as $callback){
+			$callback();
+		}
 	}
 
 	/**
