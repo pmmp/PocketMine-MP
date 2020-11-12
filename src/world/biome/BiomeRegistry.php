@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\biome;
 
 use pocketmine\block\utils\TreeType;
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\utils\SingletonTrait;
 
 final class BiomeRegistry{
@@ -38,20 +39,20 @@ final class BiomeRegistry{
 	public function __construct(){
 		$this->biomes = new \SplFixedArray(Biome::MAX_BIOMES);
 
-		$this->register(Biome::OCEAN, new OceanBiome());
-		$this->register(Biome::PLAINS, new PlainBiome());
-		$this->register(Biome::DESERT, new DesertBiome());
-		$this->register(Biome::MOUNTAINS, new MountainsBiome());
-		$this->register(Biome::FOREST, new ForestBiome());
-		$this->register(Biome::TAIGA, new TaigaBiome());
-		$this->register(Biome::SWAMP, new SwampBiome());
-		$this->register(Biome::RIVER, new RiverBiome());
+		$this->register(BiomeIds::OCEAN, new OceanBiome());
+		$this->register(BiomeIds::PLAINS, new PlainBiome());
+		$this->register(BiomeIds::DESERT, new DesertBiome());
+		$this->register(BiomeIds::MOUNTAINS, new MountainsBiome());
+		$this->register(BiomeIds::FOREST, new ForestBiome());
+		$this->register(BiomeIds::TAIGA, new TaigaBiome());
+		$this->register(BiomeIds::SWAMP, new SwampBiome());
+		$this->register(BiomeIds::RIVER, new RiverBiome());
 
-		$this->register(Biome::ICE_PLAINS, new IcePlainsBiome());
+		$this->register(BiomeIds::ICE_PLAINS, new IcePlainsBiome());
 
-		$this->register(Biome::SMALL_MOUNTAINS, new SmallMountainsBiome());
+		$this->register(BiomeIds::SMALL_MOUNTAINS, new SmallMountainsBiome());
 
-		$this->register(Biome::BIRCH_FOREST, new ForestBiome(TreeType::BIRCH()));
+		$this->register(BiomeIds::BIRCH_FOREST, new ForestBiome(TreeType::BIRCH()));
 	}
 
 	public function register(int $id, Biome $biome) : void{

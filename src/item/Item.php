@@ -31,8 +31,8 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\entity\Entity;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
@@ -285,7 +285,7 @@ class Item implements \JsonSerializable{
 				if($level <= 0){
 					continue;
 				}
-				$type = Enchantment::get($magicNumber);
+				$type = EnchantmentIdMap::getInstance()->fromId($magicNumber);
 				if($type !== null){
 					$this->addEnchantment(new EnchantmentInstance($type, $level));
 				}
@@ -317,7 +317,7 @@ class Item implements \JsonSerializable{
 
 		$this->hasCustomName() ?
 			$display->setString(self::TAG_DISPLAY_NAME, $this->getCustomName()) :
-			$display->removeTag(self::TAG_DISPLAY);
+			$display->removeTag(self::TAG_DISPLAY_NAME);
 
 		if(count($this->lore) > 0){
 			$loreTag = new ListTag();
@@ -336,7 +336,7 @@ class Item implements \JsonSerializable{
 			$ench = new ListTag();
 			foreach($this->getEnchantments() as $enchantmentInstance){
 				$ench->push(CompoundTag::create()
-					->setShort("id", $enchantmentInstance->getType()->getId())
+					->setShort("id", EnchantmentIdMap::getInstance()->toId($enchantmentInstance->getType()))
 					->setShort("lvl", $enchantmentInstance->getLevel())
 				);
 			}
@@ -426,7 +426,7 @@ class Item implements \JsonSerializable{
 	/**
 	 * Returns the block corresponding to this Item.
 	 */
-	public function getBlock() : Block{
+	public function getBlock(?int $clickedFace = null) : Block{
 		return VanillaBlocks::AIR();
 	}
 
@@ -500,7 +500,7 @@ class Item implements \JsonSerializable{
 	/**
 	 * Called when a player uses this item on a block.
 	 */
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		return ItemUseResult::NONE();
 	}
 

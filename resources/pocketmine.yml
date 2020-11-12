@@ -84,7 +84,7 @@ network:
   #Set to 0 to compress everything, -1 to disable.
   batch-threshold: 256
   #Compression level used when sending batched packets. Higher = more CPU, less bandwidth usage
-  compression-level: 7
+  compression-level: 6
   #Use AsyncTasks for compression. Adds half/one tick delay, less CPU load on main thread
   async-compression: false
   #Experimental, only for Windows. Tries to use UPnP to automatically port forward

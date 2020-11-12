@@ -50,6 +50,14 @@ class DoublePlant extends Flowable{
 		return 0b1000;
 	}
 
+	public function isTop() : bool{ return $this->top; }
+
+	/** @return $this */
+	public function setTop(bool $top) : self{
+		$this->top = $top;
+		return $this;
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$id = $blockReplace->getSide(Facing::DOWN)->getId();
 		if(($id === BlockLegacyIds::GRASS or $id === BlockLegacyIds::DIRT) and $blockReplace->getSide(Facing::UP)->canBeReplaced()){

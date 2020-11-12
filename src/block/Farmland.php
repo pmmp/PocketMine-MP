@@ -49,6 +49,17 @@ class Farmland extends Transparent{
 		return 0b111;
 	}
 
+	public function getWetness() : int{ return $this->wetness; }
+
+	/** @return $this */
+	public function setWetness(int $wetness) : self{
+		if($wetness < 0 || $wetness > 7){
+			throw new \InvalidArgumentException("Wetness must be in range 0-7");
+		}
+		$this->wetness = $wetness;
+		return $this;
+	}
+
 	/**
 	 * @return AxisAlignedBB[]
 	 */

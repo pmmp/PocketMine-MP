@@ -75,8 +75,10 @@ class EncryptionContext{
 		$decrypted = $this->decryptCipher->decryptUpdate($encrypted);
 		$payload = substr($decrypted, 0, -8);
 
-		if(($expected = $this->calculateChecksum($this->decryptCounter++, $payload)) !== ($actual = substr($decrypted, -8))){
-			throw new DecryptionException("Encrypted payload has invalid checksum (expected " . bin2hex($expected) . ", got " . bin2hex($actual) . ")");
+		$packetCounter = $this->decryptCounter++;
+
+		if(($expected = $this->calculateChecksum($packetCounter, $payload)) !== ($actual = substr($decrypted, -8))){
+			throw new DecryptionException("Encrypted packet $packetCounter has invalid checksum (expected " . bin2hex($expected) . ", got " . bin2hex($actual) . ")");
 		}
 
 		return $payload;

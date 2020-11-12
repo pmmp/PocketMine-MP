@@ -91,6 +91,21 @@ parameters:
 			path: ../../../src/block/Block.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Cactus.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Cactus.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Cactus.php
+
+		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/Cactus.php
@@ -181,17 +196,17 @@ parameters:
 			path: ../../../src/block/FrostedIce.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentRealBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/FrostedIce.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentRealBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/FrostedIce.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentRealBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/FrostedIce.php
 
@@ -396,6 +411,21 @@ parameters:
 			path: ../../../src/block/SnowLayer.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Sugarcane.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Sugarcane.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Sugarcane.php
+
+		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 2
 			path: ../../../src/block/Sugarcane.php
@@ -451,17 +481,7 @@ parameters:
 			path: ../../../src/command/CommandReader.php
 
 		-
-			message: "#^Parameter \\#2 \\$params of class pocketmine\\\\lang\\\\TranslationContainer constructor expects array\\<float\\|int\\|string\\>, array\\<int, string\\|null\\> given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanCommand.php
-
-		-
 			message: "#^Only booleans are allowed in an if condition, int\\|false given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanIpCommand.php
-
-		-
-			message: "#^Parameter \\#2 \\$params of class pocketmine\\\\lang\\\\TranslationContainer constructor expects array\\<float\\|int\\|string\\>, array\\<int, string\\|null\\> given\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/BanIpCommand.php
 
@@ -509,6 +529,11 @@ parameters:
 			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/data/bedrock/LegacyToStringBidirectionalIdMap.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of class pocketmine\\\\nbt\\\\tag\\\\StringTag constructor expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/entity/EntityFactory.php
 
 		-
 			message: "#^Method pocketmine\\\\entity\\\\EntityFactory\\:\\:getSaveId\\(\\) should return string but returns string\\|false\\.$#"
@@ -619,11 +644,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$string of method Mdanter\\\\Ecc\\\\Serializer\\\\PublicKey\\\\DerPublicKeySerializer\\:\\:parse\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/auth/ProcessLoginTask.php
-
-		-
-			message: "#^Parameter \\#2 \\$resourcePatch of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/convert/LegacySkinAdapter.php
 
 		-
 			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\BaseNbtSerializer\\:\\:read\\(\\) expects string, string\\|false given\\.$#"
@@ -836,11 +856,6 @@ parameters:
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#2 \\$generatorClass of class pocketmine\\\\world\\\\generator\\\\GeneratorRegisterTask constructor expects string, pocketmine\\\\world\\\\generator\\\\Generator\\|string given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Cannot access offset 'priority' on array\\('priority' \\=\\> int, 'data' \\=\\> pocketmine\\\\math\\\\Vector3\\)\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
@@ -1001,17 +1016,12 @@ parameters:
 			path: ../../../src/world/format/io/FormatConverter.php
 
 		-
-			message: "#^Only numeric types are allowed in %, int\\|false given on the left side\\.$#"
+			message: "#^Only numeric types are allowed in %%, int\\|false given on the left side\\.$#"
 			count: 1
 			path: ../../../src/world/format/io/region/RegionLoader.php
 
 		-
 			message: "#^Argument of an invalid type array\\<int, string\\>\\|false supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/region/RegionWorldProvider.php
-
-		-
-			message: "#^Only numeric types are allowed in \\+, int\\|false given on the left side\\.$#"
 			count: 1
 			path: ../../../src/world/format/io/region/RegionWorldProvider.php
 

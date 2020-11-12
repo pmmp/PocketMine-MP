@@ -44,7 +44,8 @@ class Torch extends Flowable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = $stateMeta === 5 ? Facing::UP : BlockDataSerializer::readHorizontalFacing(6 - $stateMeta);
+		$facingMeta = $stateMeta & 0x7;
+		$this->facing = $facingMeta === 5 ? Facing::UP : BlockDataSerializer::readHorizontalFacing(6 - $facingMeta);
 	}
 
 	public function getStateBitmask() : int{

@@ -47,4 +47,10 @@ class Bedrock extends Opaque{
 	public function burnsForever() : bool{
 		return $this->burnsForever;
 	}
+
+	/** @return $this */
+	public function setBurnsForever(bool $burnsForever) : self{
+		$this->burnsForever = $burnsForever;
+		return $this;
+	}
 }

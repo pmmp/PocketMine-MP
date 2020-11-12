@@ -74,7 +74,7 @@ class PrimedTNT extends Entity implements Explosive{
 
 		$this->fuse = $nbt->getShort("Fuse", 80);
 
-		$this->getWorld()->addSound($this->location, new IgniteSound());
+		$this->broadcastSound(new IgniteSound());
 	}
 
 	public function canCollideWith(Entity $entity) : bool{

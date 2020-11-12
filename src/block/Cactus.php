@@ -56,6 +56,17 @@ class Cactus extends Transparent{
 		return 0b1111;
 	}
 
+	public function getAge() : int{ return $this->age; }
+
+	/** @return $this */
+	public function setAge(int $age) : self{
+		if($age < 0 || $age > 15){
+			throw new \InvalidArgumentException("Age must be in range 0-15");
+		}
+		$this->age = $age;
+		return $this;
+	}
+
 	public function hasEntityCollision() : bool{
 		return true;
 	}
@@ -97,6 +108,9 @@ class Cactus extends Transparent{
 		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
 			if($this->age === 15){
 				for($y = 1; $y < 3; ++$y){
+					if(!$this->pos->getWorld()->isInWorld($this->pos->x, $this->pos->y + $y, $this->pos->z)){
+						break;
+					}
 					$b = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + $y, $this->pos->z);
 					if($b->getId() === BlockLegacyIds::AIR){
 						$ev = new BlockGrowEvent($b, VanillaBlocks::CACTUS());

@@ -151,6 +151,7 @@ final class FastChunkSerializer{
 		$chunk->setGenerated($terrainGenerated);
 		$chunk->setPopulated($terrainPopulated);
 		$chunk->setLightPopulated($lightPopulated);
+		$chunk->clearDirtyFlags();
 
 		return $chunk;
 	}

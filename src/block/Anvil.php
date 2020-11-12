@@ -40,20 +40,39 @@ class Anvil extends Transparent implements Fallable{
 	use FallableTrait;
 	use HorizontalFacingTrait;
 
+	/** @var int */
+	private $damage = 0;
+
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0));
 	}
 
 	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing);
+		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->damage << 2);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta);
+		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x3);
+		$this->damage = BlockDataSerializer::readBoundedInt("damage", $stateMeta >> 2, 0, 2);
 	}
 
 	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
+	public function getNonPersistentStateBitmask() : int{
 		return 0b11;
+	}
+
+	public function getDamage() : int{ return $this->damage; }
+
+	/** @return $this */
+	public function setDamage(int $damage) : self{
+		if($damage < 0 || $damage > 2){
+			throw new \InvalidArgumentException("Damage must be in range 0-2");
+		}
+		$this->damage = $damage;
+		return $this;
 	}
 
 	/**

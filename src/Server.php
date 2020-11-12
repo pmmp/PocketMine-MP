@@ -39,7 +39,6 @@ use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\TranslationContainer;
@@ -69,8 +68,8 @@ use pocketmine\player\OfflinePlayer;
 use pocketmine\player\Player;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
+use pocketmine\plugin\PluginEnableOrder;
 use pocketmine\plugin\PluginGraylist;
-use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\plugin\PluginOwned;
 use pocketmine\plugin\ScriptPluginLoader;
@@ -91,7 +90,6 @@ use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\uuid\UUID;
-use pocketmine\world\biome\Biome;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\Generator;
@@ -872,10 +870,10 @@ class Server{
 				$netCompressionThreshold = (int) $this->configGroup->getProperty("network.batch-threshold", 256);
 			}
 
-			$netCompressionLevel = (int) $this->configGroup->getProperty("network.compression-level", 7);
+			$netCompressionLevel = (int) $this->configGroup->getProperty("network.compression-level", 6);
 			if($netCompressionLevel < 1 or $netCompressionLevel > 9){
-				$this->logger->warning("Invalid network compression level $netCompressionLevel set, setting to default 7");
-				$netCompressionLevel = 7;
+				$this->logger->warning("Invalid network compression level $netCompressionLevel set, setting to default 6");
+				$netCompressionLevel = 6;
 			}
 			ZlibCompressor::setInstance(new ZlibCompressor($netCompressionLevel, $netCompressionThreshold, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE));
 
@@ -937,9 +935,6 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			Enchantment::init();
-			Biome::init();
-
 			$this->craftingManager = CraftingManagerFromDataHelper::make(\pocketmine\RESOURCE_PATH . '/vanilla/recipes.json');
 
 			$this->resourceManager = new ResourcePackManager($this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR, $this->logger);
@@ -981,7 +976,7 @@ class Server{
 			register_shutdown_function([$this, "crashDump"]);
 
 			$this->pluginManager->loadPlugins($this->pluginPath);
-			$this->enablePlugins(PluginLoadOrder::STARTUP());
+			$this->enablePlugins(PluginEnableOrder::STARTUP());
 
 			foreach((array) $this->configGroup->getProperty("worlds", []) as $name => $options){
 				if($options === null){
@@ -993,7 +988,7 @@ class Server{
 					if(isset($options["generator"])){
 						$generatorOptions = explode(":", $options["generator"]);
 						$generator = GeneratorManager::getInstance()->getGenerator(array_shift($generatorOptions));
-						if(count($options) > 0){
+						if(count($generatorOptions) > 0){
 							$options["preset"] = implode(":", $generatorOptions);
 						}
 					}else{
@@ -1030,7 +1025,7 @@ class Server{
 				$this->worldManager->setDefaultWorld($world);
 			}
 
-			$this->enablePlugins(PluginLoadOrder::POSTWORLD());
+			$this->enablePlugins(PluginEnableOrder::POSTWORLD());
 
 			$this->network->registerInterface(new RakLibInterface($this));
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp(), $this->getPort()]));
@@ -1187,54 +1182,56 @@ class Server{
 			throw new \InvalidArgumentException("Cannot broadcast empty list of packets");
 		}
 
-		/** @var NetworkSession[] $recipients */
-		$recipients = [];
-		foreach($players as $player){
-			if($player->isConnected()){
-				$recipients[] = $player->getNetworkSession();
+		return Timings::$broadcastPackets->time(function() use ($players, $packets) : bool{
+			/** @var NetworkSession[] $recipients */
+			$recipients = [];
+			foreach($players as $player){
+				if($player->isConnected()){
+					$recipients[] = $player->getNetworkSession();
+				}
 			}
-		}
-		if(count($recipients) === 0){
-			return false;
-		}
+			if(count($recipients) === 0){
+				return false;
+			}
 
-		$ev = new DataPacketSendEvent($recipients, $packets);
-		$ev->call();
-		if($ev->isCancelled()){
-			return false;
-		}
-		$recipients = $ev->getTargets();
+			$ev = new DataPacketSendEvent($recipients, $packets);
+			$ev->call();
+			if($ev->isCancelled()){
+				return false;
+			}
+			$recipients = $ev->getTargets();
 
-		$stream = PacketBatch::fromPackets(...$ev->getPackets());
+			$stream = PacketBatch::fromPackets(...$ev->getPackets());
 
-		/** @var Compressor[] $compressors */
-		$compressors = [];
-		/** @var NetworkSession[][] $compressorTargets */
-		$compressorTargets = [];
-		foreach($recipients as $recipient){
-			$compressor = $recipient->getCompressor();
-			$compressorId = spl_object_id($compressor);
-			//TODO: different compressors might be compatible, it might not be necessary to split them up by object
-			$compressors[$compressorId] = $compressor;
-			$compressorTargets[$compressorId][] = $recipient;
-		}
+			/** @var Compressor[] $compressors */
+			$compressors = [];
+			/** @var NetworkSession[][] $compressorTargets */
+			$compressorTargets = [];
+			foreach($recipients as $recipient){
+				$compressor = $recipient->getCompressor();
+				$compressorId = spl_object_id($compressor);
+				//TODO: different compressors might be compatible, it might not be necessary to split them up by object
+				$compressors[$compressorId] = $compressor;
+				$compressorTargets[$compressorId][] = $recipient;
+			}
 
-		foreach($compressors as $compressorId => $compressor){
-			if(!$compressor->willCompress($stream->getBuffer())){
-				foreach($compressorTargets[$compressorId] as $target){
-					foreach($ev->getPackets() as $pk){
-						$target->addToSendBuffer($pk);
+			foreach($compressors as $compressorId => $compressor){
+				if(!$compressor->willCompress($stream->getBuffer())){
+					foreach($compressorTargets[$compressorId] as $target){
+						foreach($ev->getPackets() as $pk){
+							$target->addToSendBuffer($pk);
+						}
+					}
+				}else{
+					$promise = $this->prepareBatch($stream, $compressor);
+					foreach($compressorTargets[$compressorId] as $target){
+						$target->queueCompressed($promise);
 					}
 				}
-			}else{
-				$promise = $this->prepareBatch($stream, $compressor);
-				foreach($compressorTargets[$compressorId] as $target){
-					$target->queueCompressed($promise);
-				}
 			}
-		}
 
-		return true;
+			return true;
+		});
 	}
 
 	/**
@@ -1263,14 +1260,14 @@ class Server{
 		}
 	}
 
-	public function enablePlugins(PluginLoadOrder $type) : void{
+	public function enablePlugins(PluginEnableOrder $type) : void{
 		foreach($this->pluginManager->getPlugins() as $plugin){
 			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder()->equals($type)){
 				$this->pluginManager->enablePlugin($plugin);
 			}
 		}
 
-		if($type->equals(PluginLoadOrder::POSTWORLD())){
+		if($type->equals(PluginEnableOrder::POSTWORLD())){
 			$this->commandMap->registerServerAliases();
 		}
 	}
@@ -1472,7 +1469,7 @@ class Server{
 						"reportPaste" => base64_encode($dump->getEncodedData())
 					], 10, [], $postUrlError);
 
-					if($reply !== false and ($data = json_decode($reply)) !== null){
+					if($reply !== null and ($data = json_decode($reply->getBody())) !== null){
 						if(isset($data->crashId) and isset($data->crashUrl)){
 							$reportId = $data->crashId;
 							$reportUrl = $data->crashUrl;

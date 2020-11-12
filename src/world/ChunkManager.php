@@ -40,7 +40,7 @@ interface ChunkManager{
 	 */
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : void;
 
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk;
+	public function getChunk(int $chunkX, int $chunkZ) : ?Chunk;
 
 	public function setChunk(int $chunkX, int $chunkZ, ?Chunk $chunk) : void;
 

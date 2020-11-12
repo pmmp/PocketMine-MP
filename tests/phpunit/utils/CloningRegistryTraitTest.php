@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use PHPUnit\Framework\TestCase;
-use pocketmine\block\VanillaBlocks;
 
 final class CloningRegistryTraitTest extends TestCase{
 

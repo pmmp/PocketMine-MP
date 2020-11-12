@@ -84,6 +84,22 @@ abstract class Liquid extends Transparent{
 		return 0b1111;
 	}
 
+	public function isFalling() : bool{ return $this->falling; }
+
+	/** @return $this */
+	public function setFalling(bool $falling) : self{
+		$this->falling = $falling;
+		return $this;
+	}
+
+	public function getDecay() : int{ return $this->decay; }
+
+	/** @return $this */
+	public function setDecay(int $decay) : self{
+		$this->decay = $decay;
+		return $this;
+	}
+
 	public function hasEntityCollision() : bool{
 		return true;
 	}
@@ -172,6 +188,8 @@ abstract class Liquid extends Transparent{
 
 		$decay = $this->getEffectiveFlowDecay($this);
 
+		$world = $this->pos->getWorld();
+
 		for($j = 0; $j < 4; ++$j){
 
 			$x = $this->pos->x;
@@ -188,7 +206,7 @@ abstract class Liquid extends Transparent{
 				++$z;
 			}
 
-			$sideBlock = $this->pos->getWorld()->getBlockAt($x, $y, $z);
+			$sideBlock = $world->getBlockAt($x, $y, $z);
 			$blockDecay = $this->getEffectiveFlowDecay($sideBlock);
 
 			if($blockDecay < 0){
@@ -196,7 +214,7 @@ abstract class Liquid extends Transparent{
 					continue;
 				}
 
-				$blockDecay = $this->getEffectiveFlowDecay($this->pos->getWorld()->getBlockAt($x, $y - 1, $z));
+				$blockDecay = $this->getEffectiveFlowDecay($world->getBlockAt($x, $y - 1, $z));
 
 				if($blockDecay >= 0){
 					$realDecay = $blockDecay - ($decay - 8);
@@ -218,14 +236,14 @@ abstract class Liquid extends Transparent{
 
 		if($this->falling){
 			if(
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z - 1)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z + 1)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x - 1, $this->pos->y, $this->pos->z)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x + 1, $this->pos->y, $this->pos->z)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + 1, $this->pos->z - 1)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + 1, $this->pos->z + 1)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x - 1, $this->pos->y + 1, $this->pos->z)) or
-				!$this->canFlowInto($this->pos->getWorld()->getBlockAt($this->pos->x + 1, $this->pos->y + 1, $this->pos->z))
+				!$this->canFlowInto($world->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z - 1)) or
+				!$this->canFlowInto($world->getBlockAt($this->pos->x, $this->pos->y, $this->pos->z + 1)) or
+				!$this->canFlowInto($world->getBlockAt($this->pos->x - 1, $this->pos->y, $this->pos->z)) or
+				!$this->canFlowInto($world->getBlockAt($this->pos->x + 1, $this->pos->y, $this->pos->z)) or
+				!$this->canFlowInto($world->getBlockAt($this->pos->x, $this->pos->y + 1, $this->pos->z - 1)) or
+				!$this->canFlowInto($world->getBlockAt($this->pos->x, $this->pos->y + 1, $this->pos->z + 1)) or
+				!$this->canFlowInto($world->getBlockAt($this->pos->x - 1, $this->pos->y + 1, $this->pos->z)) or
+				!$this->canFlowInto($world->getBlockAt($this->pos->x + 1, $this->pos->y + 1, $this->pos->z))
 			){
 				$vector = $vector->normalize()->add(0, -6, 0);
 			}

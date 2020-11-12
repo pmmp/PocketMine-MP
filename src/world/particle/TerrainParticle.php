@@ -37,7 +37,7 @@ class TerrainParticle implements Particle{
 		$this->block = $b;
 	}
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::TERRAIN, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()), $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::standardParticle(ParticleIds::TERRAIN, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()), $pos)];
 	}
 }

@@ -87,6 +87,30 @@ class Door extends Transparent{
 		}
 	}
 
+	public function isTop() : bool{ return $this->top; }
+
+	/** @return $this */
+	public function setTop(bool $top) : self{
+		$this->top = $top;
+		return $this;
+	}
+
+	public function isHingeRight() : bool{ return $this->hingeRight; }
+
+	/** @return $this */
+	public function setHingeRight(bool $hingeRight) : self{
+		$this->hingeRight = $hingeRight;
+		return $this;
+	}
+
+	public function isOpen() : bool{ return $this->open; }
+
+	/** @return $this */
+	public function setOpen(bool $open) : self{
+		$this->open = $open;
+		return $this;
+	}
+
 	public function isSolid() : bool{
 		return false;
 	}

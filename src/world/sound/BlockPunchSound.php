@@ -40,11 +40,11 @@ class BlockPunchSound implements Sound{
 		$this->block = $block;
 	}
 
-	public function encode(?Vector3 $pos){
-		return LevelSoundEventPacket::create(
+	public function encode(?Vector3 $pos) : array{
+		return [LevelSoundEventPacket::create(
 			LevelSoundEventPacket::SOUND_HIT,
 			$pos,
 			RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId())
-		);
+		)];
 	}
 }

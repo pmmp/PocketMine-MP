@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator;
 
-use pocketmine\block\BlockFactory;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
+use pocketmine\world\SimpleChunkManager;
 use pocketmine\world\World;
 
 class PopulationTask extends AsyncTask{
@@ -62,10 +62,10 @@ class PopulationTask extends AsyncTask{
 	public function __construct(World $world, Chunk $chunk){
 		$this->state = true;
 		$this->worldId = $world->getId();
-		$this->chunk = FastChunkSerializer::serialize($chunk);
+		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
 
 		foreach($world->getAdjacentChunks($chunk->getX(), $chunk->getZ()) as $i => $c){
-			$this->{"chunk$i"} = $c !== null ? FastChunkSerializer::serialize($c) : null;
+			$this->{"chunk$i"} = $c !== null ? FastChunkSerializer::serializeWithoutLight($c) : null;
 		}
 
 		$this->storeLocal(self::TLS_KEY_WORLD, $world);
@@ -74,7 +74,7 @@ class PopulationTask extends AsyncTask{
 	public function onRun() : void{
 		$manager = $this->worker->getFromThreadStore("generation.world{$this->worldId}.manager");
 		$generator = $this->worker->getFromThreadStore("generation.world{$this->worldId}.generator");
-		if(!($manager instanceof GeneratorChunkManager) or !($generator instanceof Generator)){
+		if(!($manager instanceof SimpleChunkManager) or !($generator instanceof Generator)){
 			$this->state = false;
 			return;
 		}
@@ -100,7 +100,7 @@ class PopulationTask extends AsyncTask{
 
 		$manager->setChunk($chunk->getX(), $chunk->getZ(), $chunk);
 		if(!$chunk->isGenerated()){
-			$generator->generateChunk($chunk->getX(), $chunk->getZ());
+			$generator->generateChunk($manager, $chunk->getX(), $chunk->getZ());
 			$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
 			$chunk->setGenerated();
 		}
@@ -108,25 +108,20 @@ class PopulationTask extends AsyncTask{
 		foreach($chunks as $i => $c){
 			$manager->setChunk($c->getX(), $c->getZ(), $c);
 			if(!$c->isGenerated()){
-				$generator->generateChunk($c->getX(), $c->getZ());
+				$generator->generateChunk($manager, $c->getX(), $c->getZ());
 				$chunks[$i] = $manager->getChunk($c->getX(), $c->getZ());
 				$chunks[$i]->setGenerated();
 			}
 		}
 
-		$generator->populateChunk($chunk->getX(), $chunk->getZ());
+		$generator->populateChunk($manager, $chunk->getX(), $chunk->getZ());
 		$chunk = $manager->getChunk($chunk->getX(), $chunk->getZ());
 		$chunk->setPopulated();
 
-		$blockFactory = BlockFactory::getInstance();
-		$chunk->recalculateHeightMap($blockFactory->blocksDirectSkyLight);
-		$chunk->populateSkyLight($blockFactory->lightFilter);
-		$chunk->setLightPopulated();
-
-		$this->chunk = FastChunkSerializer::serialize($chunk);
+		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
 
 		foreach($chunks as $i => $c){
-			$this->{"chunk$i"} = $c->isDirty() ? FastChunkSerializer::serialize($c) : null;
+			$this->{"chunk$i"} = $c->isDirty() ? FastChunkSerializer::serializeWithoutLight($c) : null;
 		}
 
 		$manager->cleanChunks();

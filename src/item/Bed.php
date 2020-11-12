@@ -41,7 +41,7 @@ class Bed extends Item{
 		return $this->color;
 	}
 
-	public function getBlock() : Block{
+	public function getBlock(?int $clickedFace = null) : Block{
 		return VanillaBlocks::BED();
 	}
 

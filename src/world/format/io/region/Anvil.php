@@ -36,7 +36,10 @@ class Anvil extends RegionWorldProvider{
 	}
 
 	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
-		return new SubChunk(BlockLegacyIds::AIR << 4, [SubChunkConverter::convertSubChunkYZX($subChunk->getByteArray("Blocks"), $subChunk->getByteArray("Data"))]);
+		return new SubChunk(BlockLegacyIds::AIR << 4, [SubChunkConverter::convertSubChunkYZX(
+			self::readFixedSizeByteArray($subChunk, "Blocks", 4096),
+			self::readFixedSizeByteArray($subChunk, "Data", 2048)
+		)]);
 		//ignore legacy light information
 	}
 

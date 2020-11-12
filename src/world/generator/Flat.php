@@ -57,8 +57,8 @@ class Flat extends Generator{
 	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
-	public function __construct(ChunkManager $world, int $seed, array $options = []){
-		parent::__construct($world, $seed, $options);
+	public function __construct(int $seed, array $options = []){
+		parent::__construct($seed, $options);
 
 		if(isset($this->options["preset"]) and $this->options["preset"] != ""){
 			$this->preset = $this->options["preset"];
@@ -156,7 +156,7 @@ class Flat extends Generator{
 
 		$count = count($this->structure);
 		for($sy = 0; $sy < $count; $sy += 16){
-			$subchunk = $this->chunk->getWritableSubChunk($sy >> 4);
+			$subchunk = $this->chunk->getSubChunk($sy >> 4);
 			for($y = 0; $y < 16 and isset($this->structure[$y | $sy]); ++$y){
 				$id = $this->structure[$y | $sy];
 
@@ -169,17 +169,17 @@ class Flat extends Generator{
 		}
 	}
 
-	public function generateChunk(int $chunkX, int $chunkZ) : void{
+	public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
 		$chunk = clone $this->chunk;
 		$chunk->setX($chunkX);
 		$chunk->setZ($chunkZ);
-		$this->world->setChunk($chunkX, $chunkZ, $chunk);
+		$world->setChunk($chunkX, $chunkZ, $chunk);
 	}
 
-	public function populateChunk(int $chunkX, int $chunkZ) : void{
+	public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 		foreach($this->populators as $populator){
-			$populator->populate($this->world, $chunkX, $chunkZ, $this->random);
+			$populator->populate($world, $chunkX, $chunkZ, $this->random);
 		}
 
 	}

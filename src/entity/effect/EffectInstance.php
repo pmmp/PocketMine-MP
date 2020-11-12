@@ -58,10 +58,6 @@ class EffectInstance{
 		$this->color = $overrideColor ?? $effectType->getColor();
 	}
 
-	public function getId() : int{
-		return $this->effectType->getId();
-	}
-
 	public function getType() : Effect{
 		return $this->effectType;
 	}

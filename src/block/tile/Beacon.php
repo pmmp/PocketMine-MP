@@ -41,8 +41,8 @@ final class Beacon extends Spawnable{
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		//TODO: PC uses Primary and Secondary (capitalized first letter), we don't read them here because the IDs would be different
-		$this->primaryEffect = $nbt->getInt(self::TAG_PRIMARY);
-		$this->secondaryEffect = $nbt->getInt(self::TAG_SECONDARY);
+		$this->primaryEffect = $nbt->getInt(self::TAG_PRIMARY, 0);
+		$this->secondaryEffect = $nbt->getInt(self::TAG_SECONDARY, 0);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{

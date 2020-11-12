@@ -60,6 +60,22 @@ class TripwireHook extends Flowable{
 		return 0b1111;
 	}
 
+	public function isConnected() : bool{ return $this->connected; }
+
+	/** @return $this */
+	public function setConnected(bool $connected) : self{
+		$this->connected = $connected;
+		return $this;
+	}
+
+	public function isPowered() : bool{ return $this->powered; }
+
+	/** @return $this */
+	public function setPowered(bool $powered) : self{
+		$this->powered = $powered;
+		return $this;
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(Facing::axis($face) !== Axis::Y){
 			//TODO: check face is valid

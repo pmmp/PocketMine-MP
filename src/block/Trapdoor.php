@@ -57,6 +57,22 @@ class Trapdoor extends Transparent{
 		return 0b1111;
 	}
 
+	public function isOpen() : bool{ return $this->open; }
+
+	/** @return $this */
+	public function setOpen(bool $open) : self{
+		$this->open = $open;
+		return $this;
+	}
+
+	public function isTop() : bool{ return $this->top; }
+
+	/** @return $this */
+	public function setTop(bool $top) : self{
+		$this->top = $top;
+		return $this;
+	}
+
 	/**
 	 * @return AxisAlignedBB[]
 	 */

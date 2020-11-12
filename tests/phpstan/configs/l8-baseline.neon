@@ -6,11 +6,6 @@ parameters:
 			path: ../../../build/make-release.php
 
 		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\world\\\\generator\\\\GeneratorManager\\:\\:getGenerator\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/Server.php
-
-		-
 			message: "#^Parameter \\#1 \\$constraint of method pocketmine\\\\block\\\\BaseRail\\:\\:getPossibleConnectionDirectionsOneConstraint\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/block/BaseRail.php
@@ -61,46 +56,6 @@ parameters:
 			path: ../../../src/command/SimpleCommandMap.php
 
 		-
-			message: "#^Parameter \\#1 \\$target of method pocketmine\\\\permission\\\\BanList\\:\\:addBan\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getPlayerExact\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanCommand.php
-
-		-
-			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanIpCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$ip of method pocketmine\\\\command\\\\defaults\\\\BanIpCommand\\:\\:processIPBan\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanIpCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getPlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanIpCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getOfflinePlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/DeopCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getPlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/KickCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getOfflinePlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/OpCommand.php
-
-		-
 			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/ParticleCommand.php
@@ -139,101 +94,6 @@ parameters:
 			message: "#^Parameter \\#3 \\$repetitions of class pocketmine\\\\event\\\\inventory\\\\CraftItemEvent constructor expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:BLAST_PROTECTION\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:EFFICIENCY\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:FEATHER_FALLING\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:FIRE_ASPECT\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:FIRE_PROTECTION\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:FLAME\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:INFINITY\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:KNOCKBACK\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:MENDING\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:POWER\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:PROJECTILE_PROTECTION\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:PROTECTION\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:PUNCH\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:RESPIRATION\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:SHARPNESS\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:SILK_TOUCH\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:THORNS\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:UNBREAKING\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
-
-		-
-			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:VANISHING\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\Enchantment but returns pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null\\.$#"
-			count: 1
-			path: ../../../src/item/enchantment/Enchantment.php
 
 		-
 			message: "#^Cannot call method getUsername\\(\\) on pocketmine\\\\player\\\\PlayerInfo\\|null\\.$#"
@@ -292,11 +152,6 @@ parameters:
 
 		-
 			message: "#^Cannot call method sendData\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
-			count: 2
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
-			message: "#^Cannot call method getViewers\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
@@ -411,11 +266,6 @@ parameters:
 			path: ../../../src/network/mcpe/raklib/RakLibServer.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of function trim expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/permission/BanEntry.php
-
-		-
 			message: "#^Method pocketmine\\\\permission\\\\DefaultPermissions\\:\\:registerPermission\\(\\) should return pocketmine\\\\permission\\\\Permission but returns pocketmine\\\\permission\\\\Permission\\|null\\.$#"
 			count: 1
 			path: ../../../src/permission/DefaultPermissions.php
@@ -476,7 +326,7 @@ parameters:
 			path: ../../../src/player/Player.php
 
 		-
-			message: "#^Cannot call method onTerrainReady\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
+			message: "#^Cannot call method notifyTerrainReady\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
 			count: 1
 			path: ../../../src/player/Player.php
 
@@ -497,16 +347,11 @@ parameters:
 
 		-
 			message: "#^Cannot call method sendDataPacket\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
-			count: 1
+			count: 2
 			path: ../../../src/player/Player.php
 
 		-
 			message: "#^Cannot call method syncGameMode\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
-			message: "#^Cannot call method syncAttributes\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
 			count: 1
 			path: ../../../src/player/Player.php
 
@@ -576,12 +421,12 @@ parameters:
 			path: ../../../src/player/Player.php
 
 		-
-			message: "#^Cannot call method onDeath\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
+			message: "#^Cannot call method onServerDeath\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
 			count: 1
 			path: ../../../src/player/Player.php
 
 		-
-			message: "#^Cannot call method onRespawn\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
+			message: "#^Cannot call method onServerRespawn\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
 			count: 1
 			path: ../../../src/player/Player.php
 
@@ -602,7 +447,7 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$closure of static method pocketmine\\\\utils\\\\Utils\\:\\:getNiceClosureName\\(\\) expects Closure, Closure\\|null given\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/plugin/PluginManager.php
 
 		-
@@ -661,11 +506,6 @@ parameters:
 			path: ../../../src/utils/Config.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of function trim expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/utils/Config.php
-
-		-
 			message: "#^Method pocketmine\\\\utils\\\\Utils\\:\\:printable\\(\\) should return string but returns string\\|null\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
@@ -681,58 +521,13 @@ parameters:
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/SimpleChunkManager.php
-
-		-
-			message: "#^Cannot call method setFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/SimpleChunkManager.php
-
-		-
-			message: "#^Cannot call method setDirtyFlag\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/SimpleChunkManager.php
-
-		-
 			message: "#^Parameter \\#1 \\$chunk of method pocketmine\\\\player\\\\Player\\:\\:onChunkChanged\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
 
 		-
 			message: "#^Cannot call method getEntities\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 3
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Cannot call method getBlockSkyLight\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Cannot call method getBlockLight\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Cannot call method getBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Cannot call method setBiomeId\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Cannot call method getHighestBlockAt\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
 			path: ../../../src/world/World.php
 
 		-
@@ -746,27 +541,12 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Method pocketmine\\\\world\\\\biome\\\\Biome\\:\\:getBiome\\(\\) should return pocketmine\\\\world\\\\biome\\\\Biome but returns pocketmine\\\\world\\\\biome\\\\Biome\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/biome/Biome.php
-
-		-
 			message: "#^Method pocketmine\\\\world\\\\biome\\\\BiomeRegistry\\:\\:getBiome\\(\\) should return pocketmine\\\\world\\\\biome\\\\Biome but returns pocketmine\\\\world\\\\biome\\\\Biome\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/biome/BiomeRegistry.php
 
 		-
-			message: "#^Only booleans are allowed in an if condition, bool\\|null given\\.$#"
-			count: 2
-			path: ../../../src/world/format/Chunk.php
-
-		-
-			message: "#^Method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:getSubChunk\\(\\) should return pocketmine\\\\world\\\\format\\\\SubChunkInterface but returns pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/format/Chunk.php
-
-		-
-			message: "#^Method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:getWritableSubChunk\\(\\) should return pocketmine\\\\world\\\\format\\\\SubChunk but returns pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			message: "#^Method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:getSubChunk\\(\\) should return pocketmine\\\\world\\\\format\\\\SubChunk but returns pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/format/Chunk.php
 
@@ -831,22 +611,7 @@ parameters:
 			path: ../../../src/world/generator/PopulationTask.php
 
 		-
-			message: "#^Cannot call method recalculateHeightMap\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/generator/PopulationTask.php
-
-		-
-			message: "#^Cannot call method populateSkyLight\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/generator/PopulationTask.php
-
-		-
-			message: "#^Cannot call method setLightPopulated\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/generator/PopulationTask.php
-
-		-
-			message: "#^Parameter \\#1 \\$chunk of static method pocketmine\\\\world\\\\format\\\\io\\\\FastChunkSerializer\\:\\:serialize\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
+			message: "#^Parameter \\#1 \\$chunk of static method pocketmine\\\\world\\\\format\\\\io\\\\FastChunkSerializer\\:\\:serializeWithoutLight\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
 			count: 2
 			path: ../../../src/world/generator/PopulationTask.php
 
@@ -931,14 +696,14 @@ parameters:
 			path: ../../../src/world/light/BlockLightUpdate.php
 
 		-
-			message: "#^Cannot call method get\\(\\) on pocketmine\\\\world\\\\format\\\\LightArray\\|null\\.$#"
-			count: 4
-			path: ../../../src/world/light/LightUpdate.php
+			message: "#^Cannot call method getSubChunks\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/light/BlockLightUpdate.php
 
 		-
-			message: "#^Cannot call method set\\(\\) on pocketmine\\\\world\\\\format\\\\LightArray\\|null\\.$#"
-			count: 3
-			path: ../../../src/world/light/LightUpdate.php
+			message: "#^Parameter \\#4 \\$newLevel of method pocketmine\\\\world\\\\light\\\\LightUpdate\\:\\:setAndUpdateLight\\(\\) expects int, int\\<1, max\\>\\|null given\\.$#"
+			count: 1
+			path: ../../../src/world/light/BlockLightUpdate.php
 
 		-
 			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
@@ -957,7 +722,7 @@ parameters:
 
 		-
 			message: "#^Cannot call method getHeightMap\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
+			count: 6
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
@@ -966,23 +731,53 @@ parameters:
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Cannot call method recalculateHeightMapColumn\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/light/SkyLightUpdate.php
-
-		-
-			message: "#^Only booleans are allowed in an if condition, bool\\|null given\\.$#"
+			message: "#^Parameter \\#1 \\$chunk of static method pocketmine\\\\world\\\\light\\\\SkyLightUpdate\\:\\:recalculateHeightMapColumn\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
 			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
 			message: "#^Cannot call method setHeightMap\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
+			count: 2
+			path: ../../../src/world/light/SkyLightUpdate.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, bool\\|null given\\.$#"
+			count: 3
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
 			message: "#^Only numeric types are allowed in \\-, int\\|null given on the right side\\.$#"
 			count: 1
+			path: ../../../src/world/light/SkyLightUpdate.php
+
+		-
+			message: "#^Parameter \\#1 \\$chunk of static method pocketmine\\\\world\\\\light\\\\SkyLightUpdate\\:\\:recalculateHeightMap\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
+			count: 1
+			path: ../../../src/world/light/SkyLightUpdate.php
+
+		-
+			message: "#^Cannot call method setHeightMapArray\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/light/SkyLightUpdate.php
+
+		-
+			message: "#^Cannot call method getHeightMapArray\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/light/SkyLightUpdate.php
+
+		-
+			message: "#^Only numeric types are allowed in \\+, int\\|false given on the left side\\.$#"
+			count: 1
+			path: ../../../src/world/light/SkyLightUpdate.php
+
+		-
+			message: "#^Cannot call method getSubChunks\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/light/SkyLightUpdate.php
+
+		-
+			message: "#^Cannot call method getSubChunk\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			count: 2
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-

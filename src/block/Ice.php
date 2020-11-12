@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 
@@ -42,7 +42,7 @@ class Ice extends Transparent{
 	}
 
 	public function onBreak(Item $item, ?Player $player = null) : bool{
-		if(($player === null or $player->isSurvival()) and !$item->hasEnchantment(Enchantment::SILK_TOUCH())){
+		if(($player === null or $player->isSurvival()) and !$item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
 			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::WATER());
 			return true;
 		}

@@ -24,64 +24,24 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Sign as TileSign;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\SignText;
 use pocketmine\event\block\SignChangeEvent;
-use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
-use pocketmine\world\BlockTransaction;
 use function array_map;
 use function assert;
-use function floor;
 use function strlen;
 
-class Sign extends Transparent{
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
-
+abstract class BaseSign extends Transparent{
 	//TODO: conditionally useless properties, find a way to fix
-
-	/** @var int */
-	protected $rotation = 0;
-
-	/** @var int */
-	protected $facing = Facing::UP;
 
 	/** @var SignText */
 	protected $text;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::AXE));
 		$this->text = new SignText();
-	}
-
-	public function __clone(){
-		parent::__clone();
-		$this->text = clone $this->text;
-	}
-
-	public function getId() : int{
-		return $this->facing === Facing::UP ? parent::getId() : $this->idInfo->getSecondId();
-	}
-
-	protected function writeStateToMeta() : int{
-		if($this->facing === Facing::UP){
-			return $this->rotation;
-		}
-		return BlockDataSerializer::writeHorizontalFacing($this->facing);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		if($id === $this->idInfo->getSecondId()){
-			$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
-		}else{
-			$this->facing = Facing::UP;
-			$this->rotation = $stateMeta;
-		}
 	}
 
 	public function readStateFromWorld() : void{
@@ -99,10 +59,6 @@ class Sign extends Transparent{
 		$tile->setText($this->text);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
-	}
-
 	public function isSolid() : bool{
 		return false;
 	}
@@ -114,21 +70,10 @@ class Sign extends Transparent{
 		return [];
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face !== Facing::DOWN){
-			$this->facing = $face;
-			if($face === Facing::UP){
-				$this->rotation = $player !== null ? ((int) floor((($player->getLocation()->getYaw() + 180) * 16 / 360) + 0.5)) & 0x0f : 0;
-			}
-
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
-
-		return false;
-	}
+	abstract protected function getSupportingFace() : int;
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::opposite($this->facing))->getId() === BlockLegacyIds::AIR){
+		if($this->getSide($this->getSupportingFace())->getId() === BlockLegacyIds::AIR){
 			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
@@ -160,9 +105,8 @@ class Sign extends Transparent{
 		if($size > 1000){
 			throw new \UnexpectedValueException($author->getName() . " tried to write $size bytes of text onto a sign (bigger than max 1000)");
 		}
-		$removeFormat = $author->getRemoveFormat();
-		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) use ($removeFormat) : string{
-			return TextFormat::clean($line, $removeFormat);
+		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) : string{
+			return TextFormat::clean($line, false);
 		}, $text->getLines())));
 		$ev->call();
 		if(!$ev->isCancelled()){

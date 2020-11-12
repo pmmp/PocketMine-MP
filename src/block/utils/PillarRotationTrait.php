@@ -82,6 +82,15 @@ trait PillarRotationTrait{
 		][$this->axis] << $this->getAxisMetaShift();
 	}
 
+	/** @see Axis */
+	public function getAxis() : int{ return $this->axis; }
+
+	/** @return $this */
+	public function setAxis(int $axis) : self{
+		$this->axis = $axis;
+		return $this;
+	}
+
 	/**
 	 * @see Block::place()
 	 */

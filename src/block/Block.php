@@ -30,7 +30,7 @@ use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\entity\Entity;
-use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\Axis;
@@ -101,7 +101,10 @@ class Block{
 	}
 
 	public function asItem() : Item{
-		return ItemFactory::getInstance()->get($this->idInfo->getItemId(), $this->idInfo->getVariant());
+		return ItemFactory::getInstance()->get(
+			$this->idInfo->getItemId(),
+			$this->idInfo->getVariant() | ($this->writeStateToMeta() & ~$this->getNonPersistentStateBitmask())
+		);
 	}
 
 	public function getMeta() : int{
@@ -115,6 +118,10 @@ class Block{
 	 */
 	public function getStateBitmask() : int{
 		return 0;
+	}
+
+	public function getNonPersistentStateBitmask() : int{
+		return $this->getStateBitmask();
 	}
 
 	protected function writeStateToMeta() : int{
@@ -140,7 +147,7 @@ class Block{
 	}
 
 	public function writeStateToWorld() : void{
-		$this->pos->getWorld()->getChunkAtPosition($this->pos)->setFullBlock($this->pos->x & 0xf, $this->pos->y, $this->pos->z & 0xf, $this->getFullId());
+		$this->pos->getWorld()->getOrLoadChunkAtPosition($this->pos)->setFullBlock($this->pos->x & 0xf, $this->pos->y, $this->pos->z & 0xf, $this->getFullId());
 
 		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $this->pos->getWorld()->getTile($this->pos);
@@ -350,7 +357,7 @@ class Block{
 	 */
 	public function getDrops(Item $item) : array{
 		if($this->breakInfo->isToolCompatible($item)){
-			if($this->isAffectedBySilkTouch() and $item->hasEnchantment(Enchantment::SILK_TOUCH())){
+			if($this->isAffectedBySilkTouch() and $item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
 				return $this->getSilkTouchDrops($item);
 			}
 
@@ -382,7 +389,7 @@ class Block{
 	 * Returns how much XP will be dropped by breaking this block with the given item.
 	 */
 	public function getXpDropForTool(Item $item) : int{
-		if($item->hasEnchantment(Enchantment::SILK_TOUCH()) or !$this->breakInfo->isToolCompatible($item)){
+		if($item->hasEnchantment(VanillaEnchantments::SILK_TOUCH()) or !$this->breakInfo->isToolCompatible($item)){
 			return 0;
 		}
 

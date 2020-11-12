@@ -35,7 +35,7 @@ class SmokeParticle implements Particle{
 		$this->scale = $scale;
 	}
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::SMOKE, $this->scale, $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::standardParticle(ParticleIds::SMOKE, $this->scale, $pos)];
 	}
 }

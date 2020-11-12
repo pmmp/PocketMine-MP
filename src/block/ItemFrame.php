@@ -122,6 +122,19 @@ class ItemFrame extends Flowable{
 		return $this;
 	}
 
+	public function hasMap() : bool{ return $this->hasMap; }
+
+	/**
+	 * This can be set irrespective of whether the frame actually contains a map or not. When set, the frame stretches
+	 * to the edges of the block without leaving space around the edges.
+	 *
+	 * @return $this
+	 */
+	public function setHasMap(bool $hasMap) : self{
+		$this->hasMap = $hasMap;
+		return $this;
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->framedItem !== null){
 			$this->itemRotation = ($this->itemRotation + 1) % self::ROTATIONS;

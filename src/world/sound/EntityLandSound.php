@@ -44,13 +44,13 @@ class EntityLandSound implements Sound{
 		$this->blockLandedOn = $blockLandedOn;
 	}
 
-	public function encode(?Vector3 $pos){
-		return LevelSoundEventPacket::create(
+	public function encode(?Vector3 $pos) : array{
+		return [LevelSoundEventPacket::create(
 			LevelSoundEventPacket::SOUND_LAND,
 			$pos,
 			RuntimeBlockMapping::getInstance()->toRuntimeId($this->blockLandedOn->getFullId()),
 			$this->entity::getNetworkTypeId()
 			//TODO: does isBaby have any relevance here?
-		);
+		)];
 	}
 }

@@ -230,7 +230,7 @@ class WorldManager{
 			$this->server->getLogger()->notice("Upgraded world \"$name\" to new format successfully. Backed up pre-conversion world at " . $converter->getBackupPath());
 		}
 
-		$world = new World($this->server, $name, $provider);
+		$world = new World($this->server, $name, $provider, $this->server->getAsyncPool());
 
 		$this->worlds[$world->getId()] = $world;
 		$world->setAutoSave($this->autoSave);
@@ -266,7 +266,7 @@ class WorldManager{
 		$providerClass::generate($path, $name, $seed, $generator, $options);
 
 		/** @see WritableWorldProvider::__construct() */
-		$world = new World($this->server, $name, new $providerClass($path));
+		$world = new World($this->server, $name, new $providerClass($path), $this->server->getAsyncPool());
 		$this->worlds[$world->getId()] = $world;
 
 		$world->setAutoSave($this->autoSave);

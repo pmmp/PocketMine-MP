@@ -95,12 +95,12 @@ class PreSpawnPacketHandler extends PacketHandler{
 		foreach($this->player->getEffects()->all() as $effect){
 			$this->session->onEntityEffectAdded($this->player, $effect, false);
 		}
-		$this->player->sendData($this->player);
+		$this->player->sendData([$this->player]);
 
 		$this->session->getInvManager()->syncAll();
 		$this->session->getInvManager()->syncCreative();
 		$this->session->getInvManager()->syncSelectedHotbarSlot();
-		$this->session->queueCompressed($this->server->getCraftingManager()->getCraftingDataPacket($this->session->getCompressor()));
+		$this->session->sendDataPacket($this->server->getCraftingManager()->getCraftingDataPacket());
 
 		$this->session->syncPlayerList($this->server->getOnlinePlayers());
 	}

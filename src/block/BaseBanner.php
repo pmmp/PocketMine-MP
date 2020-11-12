@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use Ds\Deque;
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPattern;
-use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Banner as ItemBanner;
@@ -34,25 +33,12 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function assert;
-use function floor;
 
-class Banner extends Transparent{
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
-
-	//TODO: conditionally useless properties, find a way to fix
-
-	/** @var int */
-	protected $rotation = 0;
-
-	/** @var int */
-	protected $facing = Facing::UP;
-
+abstract class BaseBanner extends Transparent{
 	/** @var DyeColor */
 	protected $baseColor;
 
@@ -62,7 +48,7 @@ class Banner extends Transparent{
 	 */
 	protected $patterns;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::AXE));
 		$this->baseColor = DyeColor::BLACK();
 		$this->patterns = new Deque();
@@ -72,30 +58,6 @@ class Banner extends Transparent{
 		parent::__clone();
 		//pattern objects are considered immutable, so they don't need to be copied
 		$this->patterns = $this->patterns->copy();
-	}
-
-	public function getId() : int{
-		return $this->facing === Facing::UP ? parent::getId() : $this->idInfo->getSecondId();
-	}
-
-	protected function writeStateToMeta() : int{
-		if($this->facing === Facing::UP){
-			return $this->rotation;
-		}
-		return BlockDataSerializer::writeHorizontalFacing($this->facing);
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		if($id === $this->idInfo->getSecondId()){
-			$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
-		}else{
-			$this->facing = Facing::UP;
-			$this->rotation = $stateMeta;
-		}
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
 	}
 
 	public function readStateFromWorld() : void{
@@ -160,20 +122,14 @@ class Banner extends Transparent{
 			$this->baseColor = $item->getColor();
 			$this->setPatterns($item->getPatterns());
 		}
-		if($face !== Facing::DOWN){
-			$this->facing = $face;
-			if($face === Facing::UP){
-				$this->rotation = $player !== null ? ((int) floor((($player->getLocation()->getYaw() + 180) * 16 / 360) + 0.5)) & 0x0f : 0;
-			}
 
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
-
-		return false;
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
+	abstract protected function getSupportingFace() : int;
+
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::opposite($this->facing))->getId() === BlockLegacyIds::AIR){
+		if($this->getSide($this->getSupportingFace())->getId() === BlockLegacyIds::AIR){
 			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}

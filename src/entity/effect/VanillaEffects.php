@@ -62,9 +62,6 @@ use function assert;
 final class VanillaEffects{
 	use RegistryTrait;
 
-	/** @var Effect[] */
-	private static $mcpeIdMap = [];
-
 	protected static function setup() : void{
 		self::register("absorption", new AbsorptionEffect(22, "%potion.absorption", new Color(0x25, 0x52, 0xa5)));
 		//TODO: bad_omen
@@ -99,13 +96,6 @@ final class VanillaEffects{
 
 	protected static function register(string $name, Effect $member) : void{
 		self::_registryRegister($name, $member);
-		assert(!isset(self::$mcpeIdMap[$member->getId()]));
-		self::$mcpeIdMap[$member->getId()] = $member;
-	}
-
-	public static function byMcpeId(int $id) : ?Effect{
-		self::checkInit();
-		return self::$mcpeIdMap[$id] ?? null;
 	}
 
 	/**

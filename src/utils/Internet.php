@@ -84,28 +84,28 @@ class Internet{
 		}
 
 		$ip = self::getURL("http://api.ipify.org/");
-		if($ip !== false){
-			return self::$ip = $ip;
+		if($ip !== null){
+			return self::$ip = $ip->getBody();
 		}
 
 		$ip = self::getURL("http://checkip.dyndns.org/");
-		if($ip !== false and preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', trim(strip_tags($ip)), $matches) > 0){
+		if($ip !== null and preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', trim(strip_tags($ip->getBody())), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://www.checkip.org/");
-		if($ip !== false and preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip, $matches) > 0){
+		if($ip !== null and preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip->getBody(), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://checkmyip.org/");
-		if($ip !== false and preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip, $matches) > 0){
+		if($ip !== null and preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip->getBody(), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://ifconfig.me/ip");
-		if($ip !== false and trim($ip) != ""){
-			return self::$ip = trim($ip);
+		if($ip !== null and ($addr = trim($ip->getBody())) != ""){
+			return self::$ip = $addr;
 		}
 
 		return false;
@@ -139,23 +139,17 @@ class Internet{
 	 * GETs an URL using cURL
 	 * NOTE: This is a blocking operation and can take a significant amount of time. It is inadvisable to use this method on the main thread.
 	 *
-	 * @param int      $timeout default 10
-	 * @param string[] $extraHeaders
-	 * @param string   $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-	 * @param string[] $headers reference parameter
-	 * @param int      $httpCode reference parameter
+	 * @param int         $timeout default 10
+	 * @param string[]    $extraHeaders
+	 * @param string|null $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
 	 * @phpstan-param list<string>          $extraHeaders
-	 * @phpstan-param array<string, string> $headers
-	 *
-	 * @return string|false
 	 */
-	public static function getURL(string $page, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
+	public static function getURL(string $page, int $timeout = 10, array $extraHeaders = [], &$err = null) : ?InternetRequestResult{
 		try{
-			list($ret, $headers, $httpCode) = self::simpleCurl($page, $timeout, $extraHeaders);
-			return $ret;
+			return self::simpleCurl($page, $timeout, $extraHeaders);
 		}catch(InternetException $ex){
 			$err = $ex->getMessage();
-			return false;
+			return null;
 		}
 	}
 
@@ -165,25 +159,19 @@ class Internet{
 	 *
 	 * @param string[]|string $args
 	 * @param string[]        $extraHeaders
-	 * @param string          $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
-	 * @param string[]        $headers reference parameter
-	 * @param int             $httpCode reference parameter
+	 * @param string|null     $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
 	 * @phpstan-param string|array<string, string> $args
 	 * @phpstan-param list<string>                 $extraHeaders
-	 * @phpstan-param array<string, string>        $headers
-	 *
-	 * @return string|false
 	 */
-	public static function postURL(string $page, $args, int $timeout = 10, array $extraHeaders = [], &$err = null, &$headers = null, &$httpCode = null){
+	public static function postURL(string $page, $args, int $timeout = 10, array $extraHeaders = [], &$err = null) : ?InternetRequestResult{
 		try{
-			list($ret, $headers, $httpCode) = self::simpleCurl($page, $timeout, $extraHeaders, [
+			return self::simpleCurl($page, $timeout, $extraHeaders, [
 				CURLOPT_POST => 1,
 				CURLOPT_POSTFIELDS => $args
 			]);
-			return $ret;
 		}catch(InternetException $ex){
 			$err = $ex->getMessage();
-			return false;
+			return null;
 		}
 	}
 
@@ -199,12 +187,9 @@ class Internet{
 	 * @phpstan-param list<string>                     $extraHeaders
 	 * @phpstan-param (\Closure(resource) : void)|null $onSuccess
 	 *
-	 * @return array a plain array of three [result body : string, headers : string[][], HTTP response code : int]. Headers are grouped by requests with strtolower(header name) as keys and header value as values
-	 * @phpstan-return array{string, list<array<string, string>>, int}
-	 *
 	 * @throws InternetException if a cURL error occurs
 	 */
-	public static function simpleCurl(string $page, $timeout = 10, array $extraHeaders = [], array $extraOpts = [], ?\Closure $onSuccess = null) : array{
+	public static function simpleCurl(string $page, $timeout = 10, array $extraHeaders = [], array $extraOpts = [], ?\Closure $onSuccess = null) : InternetRequestResult{
 		if(!self::$online){
 			throw new InternetException("Cannot execute web request while offline");
 		}
@@ -233,6 +218,7 @@ class Internet{
 				throw new InternetException(curl_error($ch));
 			}
 			if(!is_string($raw)) throw new AssumptionFailedError("curl_exec() should return string|false when CURLOPT_RETURNTRANSFER is set");
+			/** @var int $httpCode */
 			$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 			$rawHeaders = substr($raw, 0, $headerSize);
@@ -251,7 +237,7 @@ class Internet{
 			if($onSuccess !== null){
 				$onSuccess($ch);
 			}
-			return [$body, $headers, $httpCode];
+			return new InternetRequestResult($headers, $body, $httpCode);
 		}finally{
 			curl_close($ch);
 		}

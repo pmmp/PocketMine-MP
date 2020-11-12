@@ -32,7 +32,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
-use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\Totem;
 use pocketmine\math\Vector3;
@@ -296,7 +296,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$this->effectManager->add(new EffectInstance(VanillaEffects::ABSORPTION(), 5 * 20, 1));
 
 			$this->broadcastAnimation(new TotemUseAnimation($this));
-			$this->getWorld()->addSound($this->location->add(0, $this->eyeHeight, 0), new TotemUseSound());
+			$this->broadcastSound(new TotemUseSound());
 
 			$hand = $this->inventory->getItemInHand();
 			if($hand instanceof Totem){
@@ -310,7 +310,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return array_filter(array_merge(
 			$this->inventory !== null ? array_values($this->inventory->getContents()) : [],
 			$this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : []
-		), function(Item $item) : bool{ return !$item->hasEnchantment(Enchantment::VANISHING()); });
+		), function(Item $item) : bool{ return !$item->hasEnchantment(VanillaEnchantments::VANISHING()); });
 	}
 
 	public function saveNBT() : CompoundTag{
@@ -401,7 +401,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$player->getNetworkSession()->sendDataPacket($pk);
 
 		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
-		$this->sendData($player, [EntityMetadataProperties::NAMETAG => new StringMetadataProperty($this->getNameTag())]);
+		$this->sendData([$player], [EntityMetadataProperties::NAMETAG => new StringMetadataProperty($this->getNameTag())]);
 
 		$player->getNetworkSession()->onMobArmorChange($this);
 

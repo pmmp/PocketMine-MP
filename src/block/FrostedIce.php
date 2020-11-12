@@ -48,6 +48,17 @@ class FrostedIce extends Ice{
 		return 0b11;
 	}
 
+	public function getAge() : int{ return $this->age; }
+
+	/** @return $this */
+	public function setAge(int $age) : self{
+		if($age < 0 || $age > 3){
+			throw new \InvalidArgumentException("Age must be in range 0-3");
+		}
+		$this->age = $age;
+		return $this;
+	}
+
 	public function onNearbyBlockChange() : void{
 		if(!$this->checkAdjacentBlocks(2)){
 			$this->pos->getWorld()->useBreakOn($this->pos);
@@ -60,7 +71,7 @@ class FrostedIce extends Ice{
 		if((!$this->checkAdjacentBlocks(4) or mt_rand(0, 2) === 0) and
 			max( //TODO: move this to World
 				$this->pos->getWorld()->getHighestAdjacentBlockLight($this->pos->x, $this->pos->y, $this->pos->z),
-				$this->pos->getWorld()->getHighestAdjacentBlockSkyLight($this->pos->x, $this->pos->y, $this->pos->z) - $this->pos->getWorld()->getSkyLightReduction()
+				$this->pos->getWorld()->getHighestAdjacentRealBlockSkyLight($this->pos->x, $this->pos->y, $this->pos->z)
 			) >= 12 - $this->age){
 			if($this->tryMelt()){
 				foreach($this->getAllSides() as $block){

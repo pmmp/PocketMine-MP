@@ -28,7 +28,6 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Limits;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\utils\SubChunkExplorer;
 
 class SimpleChunkManager implements ChunkManager{
 
@@ -38,36 +37,30 @@ class SimpleChunkManager implements ChunkManager{
 	/** @var int */
 	protected $worldHeight;
 
-	/** @var SubChunkExplorer */
-	protected $terrainPointer;
-
 	/**
 	 * SimpleChunkManager constructor.
 	 */
 	public function __construct(int $worldHeight = World::Y_MAX){
 		$this->worldHeight = $worldHeight;
-		$this->terrainPointer = new SubChunkExplorer($this);
 	}
 
 	public function getBlockAt(int $x, int $y, int $z) : Block{
-		if($this->terrainPointer->moveTo($x, $y, $z, false)){
-			return BlockFactory::getInstance()->fromFullBlock($this->terrainPointer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf));
+		if($this->isInWorld($x, $y, $z) && ($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
+			return BlockFactory::getInstance()->fromFullBlock($chunk->getFullBlock($x & 0xf, $y, $z & 0xf));
 		}
 		return VanillaBlocks::AIR();
 	}
 
 	public function setBlockAt(int $x, int $y, int $z, Block $block) : void{
-		if($this->terrainPointer->moveTo($x, $y, $z, true)){
-			$this->terrainPointer->currentSubChunk->setFullBlock($x & 0xf, $y & 0xf, $z & 0xf, $block->getFullId());
-			$this->terrainPointer->currentChunk->setDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
+			$chunk->setFullBlock($x & 0xf, $y, $z & 0xf, $block->getFullId());
 		}else{
 			throw new \InvalidArgumentException("Cannot set block at coordinates x=$x,y=$y,z=$z, terrain is not loaded or out of bounds");
 		}
 	}
 
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk{
-		$hash = World::chunkHash($chunkX, $chunkZ);
-		return $this->chunks[$hash] ?? ($create ? $this->chunks[$hash] = new Chunk($chunkX, $chunkZ) : null);
+	public function getChunk(int $chunkX, int $chunkZ) : ?Chunk{
+		return $this->chunks[World::chunkHash($chunkX, $chunkZ)] ?? null;
 	}
 
 	public function setChunk(int $chunkX, int $chunkZ, ?Chunk $chunk) : void{

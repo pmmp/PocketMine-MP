@@ -43,4 +43,16 @@ class Sponge extends Opaque{
 	public function getStateBitmask() : int{
 		return 0b1;
 	}
+
+	public function getNonPersistentStateBitmask() : int{
+		return 0;
+	}
+
+	public function isWet() : bool{ return $this->wet; }
+
+	/** @return $this */
+	public function setWet(bool $wet) : self{
+		$this->wet = $wet;
+		return $this;
+	}
 }

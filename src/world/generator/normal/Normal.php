@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\world\generator\normal;
 
 use pocketmine\block\VanillaBlocks;
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\world\biome\Biome;
+use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\generator\biome\BiomeSelector;
 use pocketmine\world\generator\Gaussian;
@@ -61,8 +63,8 @@ class Normal extends Generator{
 	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
-	public function __construct(ChunkManager $world, int $seed, array $options = []){
-		parent::__construct($world, $seed, $options);
+	public function __construct(int $seed, array $options = []){
+		parent::__construct($seed, $options);
 
 		$this->gaussian = new Gaussian(2);
 
@@ -73,38 +75,38 @@ class Normal extends Generator{
 			protected function lookup(float $temperature, float $rainfall) : int{
 				if($rainfall < 0.25){
 					if($temperature < 0.7){
-						return Biome::OCEAN;
+						return BiomeIds::OCEAN;
 					}elseif($temperature < 0.85){
-						return Biome::RIVER;
+						return BiomeIds::RIVER;
 					}else{
-						return Biome::SWAMP;
+						return BiomeIds::SWAMP;
 					}
 				}elseif($rainfall < 0.60){
 					if($temperature < 0.25){
-						return Biome::ICE_PLAINS;
+						return BiomeIds::ICE_PLAINS;
 					}elseif($temperature < 0.75){
-						return Biome::PLAINS;
+						return BiomeIds::PLAINS;
 					}else{
-						return Biome::DESERT;
+						return BiomeIds::DESERT;
 					}
 				}elseif($rainfall < 0.80){
 					if($temperature < 0.25){
-						return Biome::TAIGA;
+						return BiomeIds::TAIGA;
 					}elseif($temperature < 0.75){
-						return Biome::FOREST;
+						return BiomeIds::FOREST;
 					}else{
-						return Biome::BIRCH_FOREST;
+						return BiomeIds::BIRCH_FOREST;
 					}
 				}else{
 					//FIXME: This will always cause River to be used since the rainfall is always greater than 0.8 if we
 					//reached this branch. However I don't think that substituting temperature for rainfall is correct given
 					//that mountain biomes are supposed to be pretty cold.
 					if($rainfall < 0.25){
-						return Biome::MOUNTAINS;
+						return BiomeIds::MOUNTAINS;
 					}elseif($rainfall < 0.70){
-						return Biome::SMALL_MOUNTAINS;
+						return BiomeIds::SMALL_MOUNTAINS;
 					}else{
-						return Biome::RIVER;
+						return BiomeIds::RIVER;
 					}
 				}
 			}
@@ -145,12 +147,12 @@ class Normal extends Generator{
 		return $this->selector->pickBiome($x + $xNoise - 1, $z + $zNoise - 1);
 	}
 
-	public function generateChunk(int $chunkX, int $chunkZ) : void{
+	public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 
 		$noise = $this->noiseBase->getFastNoise3D(16, 128, 16, 4, 8, 4, $chunkX * 16, 0, $chunkZ * 16);
 
-		$chunk = $this->world->getChunk($chunkX, $chunkZ);
+		$chunk = $world->getChunk($chunkX, $chunkZ);
 
 		$biomeCache = [];
 
@@ -158,13 +160,17 @@ class Normal extends Generator{
 		$stillWater = VanillaBlocks::WATER()->getFullId();
 		$stone = VanillaBlocks::STONE()->getFullId();
 
+		$baseX = $chunkX * 16;
+		$baseZ = $chunkZ * 16;
 		for($x = 0; $x < 16; ++$x){
+			$absoluteX = $baseX + $x;
 			for($z = 0; $z < 16; ++$z){
+				$absoluteZ = $baseZ + $z;
 				$minSum = 0;
 				$maxSum = 0;
 				$weightSum = 0;
 
-				$biome = $this->pickBiome($chunkX * 16 + $x, $chunkZ * 16 + $z);
+				$biome = $this->pickBiome($absoluteX, $absoluteZ);
 				$chunk->setBiomeId($x, $z, $biome->getId());
 
 				for($sx = -$this->gaussian->smoothSize; $sx <= $this->gaussian->smoothSize; ++$sx){
@@ -175,11 +181,11 @@ class Normal extends Generator{
 						if($sx === 0 and $sz === 0){
 							$adjacent = $biome;
 						}else{
-							$index = World::chunkHash($chunkX * 16 + $x + $sx, $chunkZ * 16 + $z + $sz);
+							$index = World::chunkHash($absoluteX + $sx, $absoluteZ + $sz);
 							if(isset($biomeCache[$index])){
 								$adjacent = $biomeCache[$index];
 							}else{
-								$biomeCache[$index] = $adjacent = $this->pickBiome($chunkX * 16 + $x + $sx, $chunkZ * 16 + $z + $sz);
+								$biomeCache[$index] = $adjacent = $this->pickBiome($absoluteX + $sx, $absoluteZ + $sz);
 							}
 						}
 
@@ -212,18 +218,18 @@ class Normal extends Generator{
 		}
 
 		foreach($this->generationPopulators as $populator){
-			$populator->populate($this->world, $chunkX, $chunkZ, $this->random);
+			$populator->populate($world, $chunkX, $chunkZ, $this->random);
 		}
 	}
 
-	public function populateChunk(int $chunkX, int $chunkZ) : void{
+	public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 		foreach($this->populators as $populator){
-			$populator->populate($this->world, $chunkX, $chunkZ, $this->random);
+			$populator->populate($world, $chunkX, $chunkZ, $this->random);
 		}
 
-		$chunk = $this->world->getChunk($chunkX, $chunkZ);
-		$biome = Biome::getBiome($chunk->getBiomeId(7, 7));
-		$biome->populateChunk($this->world, $chunkX, $chunkZ, $this->random);
+		$chunk = $world->getChunk($chunkX, $chunkZ);
+		$biome = BiomeRegistry::getInstance()->getBiome($chunk->getBiomeId(7, 7));
+		$biome->populateChunk($world, $chunkX, $chunkZ, $this->random);
 	}
 }

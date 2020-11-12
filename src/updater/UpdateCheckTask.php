@@ -50,8 +50,8 @@ class UpdateCheckTask extends AsyncTask{
 		$response = Internet::getURL($this->endpoint . "?channel=" . $this->channel, 4, [], $error);
 		$this->error = $error;
 
-		if($response !== false){
-			$response = json_decode($response, true);
+		if($response !== null){
+			$response = json_decode($response->getBody(), true);
 			if(is_array($response)){
 				if(isset($response["error"]) and is_string($response["error"])){
 					$this->error = $response["error"];

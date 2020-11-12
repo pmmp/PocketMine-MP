@@ -73,6 +73,22 @@ class Stair extends Transparent{
 		}
 	}
 
+	public function isUpsideDown() : bool{ return $this->upsideDown; }
+
+	/** @return $this */
+	public function setUpsideDown(bool $upsideDown) : self{
+		$this->upsideDown = $upsideDown;
+		return $this;
+	}
+
+	public function getShape() : StairShape{ return $this->shape; }
+
+	/** @return $this */
+	public function setShape(StairShape $shape) : self{
+		$this->shape = $shape;
+		return $this;
+	}
+
 	protected function recalculateCollisionBoxes() : array{
 		$topStepFace = $this->upsideDown ? Facing::DOWN : Facing::UP;
 		$bbs = [

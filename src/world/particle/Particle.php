@@ -29,8 +29,8 @@ use pocketmine\network\mcpe\protocol\ClientboundPacket;
 interface Particle{
 
 	/**
-	 * @return ClientboundPacket|ClientboundPacket[]
+	 * @return ClientboundPacket[]
 	 */
-	public function encode(Vector3 $pos);
+	public function encode(Vector3 $pos) : array;
 
 }

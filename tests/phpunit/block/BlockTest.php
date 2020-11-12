@@ -116,8 +116,6 @@ class BlockTest extends TestCase{
 
 	/**
 	 * @dataProvider blockGetProvider
-	 * @param int $id
-	 * @param int $meta
 	 */
 	public function testBlockGet(int $id, int $meta) : void{
 		$block = $this->blockFactory->get($id, $meta);

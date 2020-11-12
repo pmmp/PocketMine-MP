@@ -37,7 +37,7 @@ class Skull extends Item{
 		$this->skullType = $skullType;
 	}
 
-	public function getBlock() : Block{
+	public function getBlock(?int $clickedFace = null) : Block{
 		return VanillaBlocks::MOB_HEAD();
 	}
 

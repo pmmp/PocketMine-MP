@@ -32,7 +32,6 @@ class HandlerListManagerTest extends TestCase{
 	/** @var \Closure */
 	private $resolveParentFunc;
 
-
 	public function setUp() : void{
 		/** @see HandlerListManager::isValidClass() */
 		$this->isValidFunc = (new \ReflectionMethod(HandlerListManager::class, 'isValidClass'))->getClosure();
@@ -54,9 +53,6 @@ class HandlerListManagerTest extends TestCase{
 	/**
 	 * @dataProvider isValidClassProvider
 	 *
-	 * @param \ReflectionClass $class
-	 * @param bool             $isValid
-	 * @param string           $reason
 	 * @phpstan-param \ReflectionClass<Event> $class
 	 */
 	public function testIsValidClass(\ReflectionClass $class, bool $isValid, string $reason) : void{
@@ -77,8 +73,6 @@ class HandlerListManagerTest extends TestCase{
 	/**
 	 * @dataProvider resolveParentClassProvider
 	 *
-	 * @param \ReflectionClass      $class
-	 * @param \ReflectionClass|null $expect
 	 * @phpstan-param \ReflectionClass<Event>      $class
 	 * @phpstan-param \ReflectionClass<Event>|null $expect
 	 */

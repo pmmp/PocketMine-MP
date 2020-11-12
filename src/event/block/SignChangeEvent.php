@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\event\block;
 
-use pocketmine\block\Sign;
+use pocketmine\block\BaseSign;
 use pocketmine\block\utils\SignText;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
@@ -35,7 +35,7 @@ use pocketmine\player\Player;
 class SignChangeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Sign */
+	/** @var BaseSign */
 	private $sign;
 
 	/** @var Player */
@@ -44,14 +44,14 @@ class SignChangeEvent extends BlockEvent implements Cancellable{
 	/** @var SignText */
 	private $text;
 
-	public function __construct(Sign $sign, Player $player, SignText $text){
+	public function __construct(BaseSign $sign, Player $player, SignText $text){
 		parent::__construct($sign);
 		$this->sign = $sign;
 		$this->player = $player;
 		$this->text = $text;
 	}
 
-	public function getSign() : Sign{
+	public function getSign() : BaseSign{
 		return $this->sign;
 	}
 

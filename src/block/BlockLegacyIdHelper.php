@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\BlockIdentifier as BID;
-use pocketmine\block\BlockIdentifierFlattened as BIDFlattened;
 use pocketmine\block\BlockLegacyIds as Ids;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\DyeColor;
@@ -34,20 +33,38 @@ use pocketmine\utils\AssumptionFailedError;
 
 final class BlockLegacyIdHelper{
 
-	public static function getWoodenSignIdentifier(TreeType $treeType) : BIDFlattened{
+	public static function getWoodenFloorSignIdentifier(TreeType $treeType) : BID{
 		switch($treeType->id()){
 			case TreeType::OAK()->id():
-				return new BIDFlattened(Ids::SIGN_POST, Ids::WALL_SIGN, 0, ItemIds::SIGN, TileSign::class);
+				return new BID(Ids::SIGN_POST, 0, ItemIds::SIGN, TileSign::class);
 			case TreeType::SPRUCE()->id():
-				return new BIDFlattened(Ids::SPRUCE_STANDING_SIGN, Ids::SPRUCE_WALL_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class);
+				return new BID(Ids::SPRUCE_STANDING_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class);
 			case TreeType::BIRCH()->id():
-				return new BIDFlattened(Ids::BIRCH_STANDING_SIGN, Ids::BIRCH_WALL_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class);
+				return new BID(Ids::BIRCH_STANDING_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class);
 			case TreeType::JUNGLE()->id():
-				return new BIDFlattened(Ids::JUNGLE_STANDING_SIGN, Ids::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class);
+				return new BID(Ids::JUNGLE_STANDING_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class);
 			case TreeType::ACACIA()->id():
-				return new BIDFlattened(Ids::ACACIA_STANDING_SIGN, Ids::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, TileSign::class);
+				return new BID(Ids::ACACIA_STANDING_SIGN,0, ItemIds::ACACIA_SIGN, TileSign::class);
 			case TreeType::DARK_OAK()->id():
-				return new BIDFlattened(Ids::DARKOAK_STANDING_SIGN, Ids::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class);
+				return new BID(Ids::DARKOAK_STANDING_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class);
+		}
+		throw new AssumptionFailedError("Switch should cover all wood types");
+	}
+
+	public static function getWoodenWallSignIdentifier(TreeType $treeType) : BID{
+		switch($treeType->id()){
+			case TreeType::OAK()->id():
+				return new BID(Ids::WALL_SIGN, 0, ItemIds::SIGN, TileSign::class);
+			case TreeType::SPRUCE()->id():
+				return new BID(Ids::SPRUCE_WALL_SIGN, 0, ItemIds::SPRUCE_SIGN, TileSign::class);
+			case TreeType::BIRCH()->id():
+				return new BID(Ids::BIRCH_WALL_SIGN, 0, ItemIds::BIRCH_SIGN, TileSign::class);
+			case TreeType::JUNGLE()->id():
+				return new BID(Ids::JUNGLE_WALL_SIGN, 0, ItemIds::JUNGLE_SIGN, TileSign::class);
+			case TreeType::ACACIA()->id():
+				return new BID(Ids::ACACIA_WALL_SIGN, 0, ItemIds::ACACIA_SIGN, TileSign::class);
+			case TreeType::DARK_OAK()->id():
+				return new BID(Ids::DARKOAK_WALL_SIGN, 0, ItemIds::DARKOAK_SIGN, TileSign::class);
 		}
 		throw new AssumptionFailedError("Switch should cover all wood types");
 	}
@@ -196,5 +213,18 @@ final class BlockLegacyIdHelper{
 				return new BlockIdentifier(Ids::BLACK_GLAZED_TERRACOTTA);
 		}
 		throw new AssumptionFailedError("Switch should cover all colours");
+	}
+
+	public static function getStoneSlabIdentifier(int $stoneSlabId, int $meta) : BlockIdentifierFlattened{
+		$id = [
+			1 => [Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB],
+			2 => [Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2],
+			3 => [Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3],
+			4 => [Ids::STONE_SLAB4, Ids::DOUBLE_STONE_SLAB4]
+		][$stoneSlabId] ?? null;
+		if($id === null){
+			throw new \InvalidArgumentException("Stone slab type should be 1, 2, 3 or 4");
+		}
+		return new BlockIdentifierFlattened($id[0], $id[1], $meta);
 	}
 }

@@ -51,7 +51,6 @@ class UtilsTest extends TestCase{
 	}
 
 	/**
-	 * @param string $docComment
 	 * @dataProvider parseDocCommentNewlineProvider
 	 */
 	public function testParseDocCommentNewlines(string $docComment) : void{

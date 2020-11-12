@@ -23,10 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format;
 
+use function array_map;
 use function array_values;
 use function count;
 
-class SubChunk implements SubChunkInterface{
+class SubChunk{
 	/** @var int */
 	private $defaultBlock;
 	/** @var PalettedBlockArray[] */
@@ -50,11 +51,20 @@ class SubChunk implements SubChunkInterface{
 		$this->blockLight = $blockLight ?? LightArray::fill(0);
 	}
 
+	/**
+	 * Returns whether this subchunk contains any non-air blocks.
+	 * This function will do a slow check, usually by garbage collecting first.
+	 * This is typically useful for disk saving.
+	 */
 	public function isEmptyAuthoritative() : bool{
 		$this->collectGarbage();
 		return $this->isEmptyFast();
 	}
 
+	/**
+	 * Returns a non-authoritative bool to indicate whether the chunk contains any blocks.
+	 * This may report non-empty erroneously if the chunk has been modified and not garbage-collected.
+	 */
 	public function isEmptyFast() : bool{
 		return count($this->blockLayers) === 0;
 	}
@@ -131,5 +141,14 @@ class SubChunk implements SubChunkInterface{
 
 		$this->skyLight->collectGarbage();
 		$this->blockLight->collectGarbage();
+	}
+
+	public function __clone(){
+		$this->blockLayers = array_map(function(PalettedBlockArray $array) : PalettedBlockArray{
+			return clone $array;
+		}, $this->blockLayers);
+
+		$this->skyLight = clone $this->skyLight;
+		$this->blockLight = clone $this->blockLight;
 	}
 }

@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\world\generator\hell;
 
 use pocketmine\block\VanillaBlocks;
-use pocketmine\world\biome\Biome;
+use pocketmine\data\bedrock\BiomeIds;
+use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\InvalidGeneratorOptionsException;
@@ -58,8 +59,8 @@ class Nether extends Generator{
 	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
-	public function __construct(ChunkManager $world, int $seed, array $options = []){
-		parent::__construct($world, $seed, $options);
+	public function __construct(int $seed, array $options = []){
+		parent::__construct($seed, $options);
 
 		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 64);
 		$this->random->setSeed($this->seed);
@@ -71,12 +72,12 @@ class Nether extends Generator{
 		$this->populators[] = $ores;
 	}
 
-	public function generateChunk(int $chunkX, int $chunkZ) : void{
+	public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 
 		$noise = $this->noiseBase->getFastNoise3D(16, 128, 16, 4, 8, 4, $chunkX * 16, 0, $chunkZ * 16);
 
-		$chunk = $this->world->getChunk($chunkX, $chunkZ);
+		$chunk = $world->getChunk($chunkX, $chunkZ);
 
 		$bedrock = VanillaBlocks::BEDROCK()->getFullId();
 		$netherrack = VanillaBlocks::NETHERRACK()->getFullId();
@@ -84,9 +85,7 @@ class Nether extends Generator{
 
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
-
-				$biome = Biome::getBiome(Biome::HELL);
-				$chunk->setBiomeId($x, $z, $biome->getId());
+				$chunk->setBiomeId($x, $z, BiomeIds::HELL);
 
 				for($y = 0; $y < 128; ++$y){
 					if($y === 0 or $y === 127){
@@ -106,18 +105,18 @@ class Nether extends Generator{
 		}
 
 		foreach($this->generationPopulators as $populator){
-			$populator->populate($this->world, $chunkX, $chunkZ, $this->random);
+			$populator->populate($world, $chunkX, $chunkZ, $this->random);
 		}
 	}
 
-	public function populateChunk(int $chunkX, int $chunkZ) : void{
+	public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 		foreach($this->populators as $populator){
-			$populator->populate($this->world, $chunkX, $chunkZ, $this->random);
+			$populator->populate($world, $chunkX, $chunkZ, $this->random);
 		}
 
-		$chunk = $this->world->getChunk($chunkX, $chunkZ);
-		$biome = Biome::getBiome($chunk->getBiomeId(7, 7));
-		$biome->populateChunk($this->world, $chunkX, $chunkZ, $this->random);
+		$chunk = $world->getChunk($chunkX, $chunkZ);
+		$biome = BiomeRegistry::getInstance()->getBiome($chunk->getBiomeId(7, 7));
+		$biome->populateChunk($world, $chunkX, $chunkZ, $this->random);
 	}
 }

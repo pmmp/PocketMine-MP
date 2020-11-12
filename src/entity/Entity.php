@@ -55,6 +55,7 @@ use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
+use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use function abs;
 use function array_map;
@@ -63,8 +64,8 @@ use function cos;
 use function count;
 use function deg2rad;
 use function floor;
+use function fmod;
 use function get_class;
-use function is_array;
 use function is_infinite;
 use function is_nan;
 use function lcg_value;
@@ -214,6 +215,8 @@ abstract class Entity{
 	protected $immobile = false;
 	/** @var bool */
 	protected $invisible = false;
+	/** @var bool */
+	protected $silent = false;
 
 	/** @var int|null */
 	protected $ownerId = null;
@@ -240,7 +243,7 @@ abstract class Entity{
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->recalculateBoundingBox();
 
-		$this->chunk = $this->getWorld()->getChunkAtPosition($this->location, false);
+		$this->chunk = $this->getWorld()->getOrLoadChunkAtPosition($this->location, false);
 		if($this->chunk === null){
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}
@@ -356,6 +359,14 @@ abstract class Entity{
 		$this->invisible = $value;
 	}
 
+	public function isSilent() : bool{
+		return $this->silent;
+	}
+
+	public function setSilent(bool $value = true) : void{
+		$this->silent = $value;
+	}
+
 	/**
 	 * Returns whether the entity is able to climb blocks such as ladders or vines.
 	 */
@@ -462,7 +473,7 @@ abstract class Entity{
 		$nbt = EntityDataHelper::createBaseNBT($this->location, $this->motion, $this->location->yaw, $this->location->pitch);
 
 		if(!($this instanceof Player)){
-			$nbt->setString("id", EntityFactory::getInstance()->getSaveId(get_class($this)));
+			EntityFactory::getInstance()->injectSaveId(get_class($this), $nbt);
 
 			if($this->getNameTag() !== ""){
 				$nbt->setString("CustomName", $this->getNameTag());
@@ -605,7 +616,7 @@ abstract class Entity{
 
 		$changedProperties = $this->getSyncedNetworkData(true);
 		if(count($changedProperties) > 0){
-			$this->sendData($this->hasSpawned, $changedProperties);
+			$this->sendData(null, $changedProperties);
 			$this->networkProperties->clearDirtyProperties();
 		}
 
@@ -735,29 +746,25 @@ abstract class Entity{
 	}
 
 	protected function broadcastMovement(bool $teleport = false) : void{
-		$pk = new MoveActorAbsolutePacket();
-		$pk->entityRuntimeId = $this->id;
-		$pk->position = $this->getOffsetPosition($this->location);
+		$this->server->broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
+			$this->id,
+			$this->getOffsetPosition($this->location),
 
-		//this looks very odd but is correct as of 1.5.0.7
-		//for arrows this is actually x/y/z rotation
-		//for mobs x and z are used for pitch and yaw, and y is used for headyaw
-		$pk->xRot = $this->location->pitch;
-		$pk->yRot = $this->location->yaw; //TODO: head yaw
-		$pk->zRot = $this->location->yaw;
-
-		if($teleport){
-			$pk->flags |= MoveActorAbsolutePacket::FLAG_TELEPORT;
-		}
-		if($this->onGround){
-			$pk->flags |= MoveActorAbsolutePacket::FLAG_GROUND;
-		}
-
-		$this->getWorld()->broadcastPacketToViewers($this->location, $pk);
+			//this looks very odd but is correct as of 1.5.0.7
+			//for arrows this is actually x/y/z rotation
+			//for mobs x and z are used for pitch and yaw, and y is used for headyaw
+			$this->location->pitch,
+			$this->location->yaw,
+			$this->location->yaw,
+			(
+				($teleport ? MoveActorAbsolutePacket::FLAG_TELEPORT : 0) |
+				($this->onGround ? MoveActorAbsolutePacket::FLAG_GROUND : 0)
+			)
+		)]);
 	}
 
 	protected function broadcastMotion() : void{
-		$this->getWorld()->broadcastPacketToViewers($this->location, SetActorMotionPacket::create($this->id, $this->getMotion()));
+		$this->server->broadcastPackets($this->hasSpawned, [SetActorMotionPacket::create($this->id, $this->getMotion())]);
 	}
 
 	public function hasGravity() : bool{
@@ -1024,8 +1031,14 @@ abstract class Entity{
 				$this->fall($this->fallDistance);
 				$this->resetFallDistance();
 			}
-		}elseif($distanceThisTick < 0){
+		}elseif($distanceThisTick < $this->fallDistance){
+			//we've fallen some distance (distanceThisTick is negative)
+			//or we ascended back towards where fall distance was measured from initially (distanceThisTick is positive but less than existing fallDistance)
 			$this->fallDistance -= $distanceThisTick;
+		}else{
+			//we ascended past the apex where fall distance was originally being measured from
+			//reset it so it will be measured starting from the new, higher position
+			$this->fallDistance = 0;
 		}
 	}
 
@@ -1345,7 +1358,7 @@ abstract class Entity{
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
-			$this->chunk = $this->getWorld()->getOrLoadChunk($chunkX, $chunkZ, true);
+			$this->chunk = $this->getWorld()->loadChunk($chunkX, $chunkZ, true);
 			$this->chunkX = $chunkX;
 			$this->chunkZ = $chunkZ;
 
@@ -1613,27 +1626,17 @@ abstract class Entity{
 	}
 
 	/**
-	 * @param Player[]|Player    $player
+	 * @param Player[]|null      $targets
 	 * @param MetadataProperty[] $data Properly formatted entity data, defaults to everything
+	 *
 	 * @phpstan-param array<int, MetadataProperty> $data
 	 */
-	public function sendData($player, ?array $data = null) : void{
-		if(!is_array($player)){
-			$player = [$player];
-		}
-
+	public function sendData(?array $targets, ?array $data = null) : void{
+		$targets = $targets ?? $this->hasSpawned;
 		$data = $data ?? $this->getSyncedNetworkData(false);
 
-		foreach($player as $p){
-			if($p === $this){
-				continue;
-			}
+		foreach($targets as $p){
 			$p->getNetworkSession()->syncActorData($this, $data);
-		}
-
-		if($this instanceof Player){
-			//TODO: bad hack, remove
-			$this->getNetworkSession()->syncActorData($this, $data);
 		}
 	}
 
@@ -1664,6 +1667,7 @@ abstract class Entity{
 		$properties->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, true);
 		$properties->setGenericFlag(EntityMetadataFlags::IMMOBILE, $this->immobile);
 		$properties->setGenericFlag(EntityMetadataFlags::INVISIBLE, $this->invisible);
+		$properties->setGenericFlag(EntityMetadataFlags::SILENT, $this->silent);
 		$properties->setGenericFlag(EntityMetadataFlags::ONFIRE, $this->isOnFire());
 		$properties->setGenericFlag(EntityMetadataFlags::WALLCLIMBING, $this->canClimbWalls);
 	}
@@ -1673,6 +1677,16 @@ abstract class Entity{
 	 */
 	public function broadcastAnimation(Animation $animation, ?array $targets = null) : void{
 		$this->server->broadcastPackets($targets ?? $this->getViewers(), $animation->encode());
+	}
+
+	/**
+	 * Broadcasts a sound caused by the entity. If the entity is considered "silent", the sound will be dropped.
+	 * @param Player[]|null $targets
+	 */
+	public function broadcastSound(Sound $sound, ?array $targets = null) : void{
+		if(!$this->silent){
+			$this->server->broadcastPackets($targets ?? $this->getViewers(), $sound->encode($this->location));
+		}
 	}
 
 	public function __destruct(){

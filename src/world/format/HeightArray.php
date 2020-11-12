@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format;
 
+use function array_fill;
 use function count;
 
 final class HeightArray{
@@ -42,6 +43,10 @@ final class HeightArray{
 			throw new \InvalidArgumentException("Expected exactly 256 values");
 		}
 		$this->array = \SplFixedArray::fromArray($values);
+	}
+
+	public static function fill(int $value) : self{
+		return new self(array_fill(0, 256, $value));
 	}
 
 	private static function idx(int $x, int $z) : int{

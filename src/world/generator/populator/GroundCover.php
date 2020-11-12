@@ -27,7 +27,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\Liquid;
 use pocketmine\utils\Random;
-use pocketmine\world\biome\Biome;
+use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\ChunkManager;
 use function count;
 use function min;
@@ -37,9 +37,10 @@ class GroundCover extends Populator{
 	public function populate(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void{
 		$chunk = $world->getChunk($chunkX, $chunkZ);
 		$factory = BlockFactory::getInstance();
+		$biomeRegistry = BiomeRegistry::getInstance();
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
-				$biome = Biome::getBiome($chunk->getBiomeId($x, $z));
+				$biome = $biomeRegistry->getBiome($chunk->getBiomeId($x, $z));
 				$cover = $biome->getGroundCover();
 				if(count($cover) > 0){
 					$diffY = 0;

@@ -53,6 +53,17 @@ class NetherWartPlant extends Flowable{
 		return 0b11;
 	}
 
+	public function getAge() : int{ return $this->age; }
+
+	/** @return $this */
+	public function setAge(int $age) : self{
+		if($age < 0 || $age > 3){
+			throw new \InvalidArgumentException("Age must be in range 0-3");
+		}
+		$this->age = $age;
+		return $this;
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() === BlockLegacyIds::SOUL_SAND){

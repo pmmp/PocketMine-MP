@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\nbt\tag\CompoundTag;
 use function lcg_value;
 use function min;
@@ -89,7 +89,7 @@ abstract class Durable extends Item{
 	}
 
 	protected function getUnbreakingDamageReduction(int $amount) : int{
-		if(($unbreakingLevel = $this->getEnchantmentLevel(Enchantment::UNBREAKING())) > 0){
+		if(($unbreakingLevel = $this->getEnchantmentLevel(VanillaEnchantments::UNBREAKING())) > 0){
 			$negated = 0;
 
 			$chance = 1 / ($unbreakingLevel + 1);

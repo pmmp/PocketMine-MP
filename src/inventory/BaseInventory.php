@@ -210,11 +210,11 @@ abstract class BaseInventory implements Inventory{
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			$slot = $this->getItem($i);
 			if($item->equals($slot)){
-				if(($diff = $slot->getMaxStackSize() - $slot->getCount()) > 0){
+				if(($diff = min($slot->getMaxStackSize(), $item->getMaxStackSize()) - $slot->getCount()) > 0){
 					$count -= $diff;
 				}
 			}elseif($slot->isNull()){
-				$count -= $this->getMaxStackSize();
+				$count -= min($this->getMaxStackSize(), $item->getMaxStackSize());
 			}
 
 			if($count <= 0){

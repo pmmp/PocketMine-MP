@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
-class LevelSoundEventPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
+class LevelSoundEventPacket extends DataPacket implements ClientboundPacket, GarbageServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::LEVEL_SOUND_EVENT_PACKET;
 
 	public const SOUND_ITEM_USE_ON = 0;

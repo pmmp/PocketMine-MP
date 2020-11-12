@@ -123,6 +123,32 @@ final class BlockDataSerializer{
 		return 5 - self::writeHorizontalFacing($value);
 	}
 
+	public static function readCoralFacing(int $value) : int{
+		$result = [
+			0 => Facing::WEST,
+			1 => Facing::EAST,
+			2 => Facing::NORTH,
+			3 => Facing::SOUTH
+		][$value] ?? null;
+		if($result === null){
+			throw new \InvalidArgumentException("Invalid coral facing $value");
+		}
+		return $result;
+	}
+
+	public static function writeCoralFacing(int $value) : int{
+		$result = [
+			Facing::WEST => 0,
+			Facing::EAST => 1,
+			Facing::NORTH => 2,
+			Facing::SOUTH => 3
+		][$value] ?? null;
+		if($result === null){
+			throw new \InvalidArgumentException("Invalid Y-axis facing $value");
+		}
+		return $result;
+	}
+
 	public static function readBoundedInt(string $name, int $v, int $min, int $max) : int{
 		if($v < $min or $v > $max){
 			throw new InvalidBlockStateException("$name should be in range $min - $max, got $v");

@@ -70,6 +70,8 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $serverCommandTimer;
 	/** @var TimingsHandler */
+	public static $worldLoadTimer;
+	/** @var TimingsHandler */
 	public static $worldSaveTimer;
 	/** @var TimingsHandler */
 	public static $populationTimer;
@@ -116,6 +118,9 @@ abstract class Timings{
 	/** @var TimingsHandler[] */
 	public static $pluginTaskTimingMap = [];
 
+	/** @var TimingsHandler */
+	public static $broadcastPackets;
+
 	public static function init() : void{
 		if(self::$initialized){
 			return;
@@ -136,11 +141,14 @@ abstract class Timings{
 		self::$playerNetworkReceiveDecompressTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Receive - Decompression", self::$playerNetworkReceiveTimer);
 		self::$playerNetworkReceiveDecryptTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Receive - Decryption", self::$playerNetworkReceiveTimer);
 
+		self::$broadcastPackets = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Broadcast Packets", self::$playerNetworkSendTimer);
+
 		self::$playerChunkOrderTimer = new TimingsHandler("Player Order Chunks");
 		self::$playerChunkSendTimer = new TimingsHandler("Player Send Chunks");
 		self::$connectionTimer = new TimingsHandler("Connection Handler");
 		self::$schedulerTimer = new TimingsHandler("Scheduler");
 		self::$serverCommandTimer = new TimingsHandler("Server Command");
+		self::$worldLoadTimer = new TimingsHandler("World Load");
 		self::$worldSaveTimer = new TimingsHandler("World Save");
 		self::$populationTimer = new TimingsHandler("World Population");
 		self::$generationCallbackTimer = new TimingsHandler("World Generation Callback");

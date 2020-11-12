@@ -101,12 +101,11 @@ class BlockFactory{
 
 		$this->register(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL), "Activator Rail"));
 		$this->register(new Air(new BID(Ids::AIR), "Air"));
-		$this->register(new Anvil(new BID(Ids::ANVIL, Meta::ANVIL_NORMAL), "Anvil"));
-		$this->register(new Anvil(new BID(Ids::ANVIL, Meta::ANVIL_SLIGHTLY_DAMAGED), "Slightly Damaged Anvil"));
-		$this->register(new Anvil(new BID(Ids::ANVIL, Meta::ANVIL_VERY_DAMAGED), "Very Damaged Anvil"));
+		$this->register(new Anvil(new BID(Ids::ANVIL), "Anvil"));
 		$this->register(new Bamboo(new BID(Ids::BAMBOO), "Bamboo", new BlockBreakInfo(2.0 /* 1.0 in PC */, BlockToolType::AXE)));
 		$this->register(new BambooSapling(new BID(Ids::BAMBOO_SAPLING), "Bamboo Sapling", BlockBreakInfo::instant()));
-		$this->register(new Banner(new BIDFlattened(Ids::STANDING_BANNER, Ids::WALL_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Banner"));
+		$this->register(new FloorBanner(new BID(Ids::STANDING_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Banner"));
+		$this->register(new WallBanner(new BID(Ids::WALL_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Wall Banner"));
 		$this->register(new Transparent(new BID(Ids::BARRIER), "Barrier", BlockBreakInfo::indestructible()));
 		$this->register(new Beacon(new BID(Ids::BEACON, 0, null, TileBeacon::class), "Beacon", new BlockBreakInfo(3.0)));
 		$this->register(new Bed(new BID(Ids::BED_BLOCK, 0, ItemIds::BED, TileBed::class), "Bed Block"));
@@ -367,35 +366,35 @@ class BlockFactory{
 
 		//TODO: in the future this won't be the same for all the types
 		$stoneSlabBreakInfo = new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_BRICK), "Brick", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_COBBLESTONE), "Cobblestone", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_FAKE_WOODEN), "Fake Wooden", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_NETHER_BRICK), "Nether Brick", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_QUARTZ), "Quartz", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_SANDSTONE), "Sandstone", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_SMOOTH_STONE), "Smooth Stone", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB, Ids::DOUBLE_STONE_SLAB, Meta::STONE_SLAB_STONE_BRICK), "Stone Brick", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_DARK_PRISMARINE), "Dark Prismarine", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_MOSSY_COBBLESTONE), "Mossy Cobblestone", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_PRISMARINE), "Prismarine", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_PRISMARINE_BRICKS), "Prismarine Bricks", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_PURPUR), "Purpur", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_RED_NETHER_BRICK), "Red Nether Brick", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_RED_SANDSTONE), "Red Sandstone", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB2, Ids::DOUBLE_STONE_SLAB2, Meta::STONE_SLAB2_SMOOTH_SANDSTONE), "Smooth Sandstone", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_ANDESITE), "Andesite", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_DIORITE), "Diorite", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_END_STONE_BRICK), "End Stone Brick", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_GRANITE), "Granite", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_POLISHED_ANDESITE), "Polished Andesite", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_POLISHED_DIORITE), "Polished Diorite", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_POLISHED_GRANITE), "Polished Granite", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB3, Ids::DOUBLE_STONE_SLAB3, Meta::STONE_SLAB3_SMOOTH_RED_SANDSTONE), "Smooth Red Sandstone", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB4, Ids::DOUBLE_STONE_SLAB4, Meta::STONE_SLAB4_CUT_RED_SANDSTONE), "Cut Red Sandstone", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB4, Ids::DOUBLE_STONE_SLAB4, Meta::STONE_SLAB4_CUT_SANDSTONE), "Cut Sandstone", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB4, Ids::DOUBLE_STONE_SLAB4, Meta::STONE_SLAB4_MOSSY_STONE_BRICK), "Mossy Stone Brick", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB4, Ids::DOUBLE_STONE_SLAB4, Meta::STONE_SLAB4_SMOOTH_QUARTZ), "Smooth Quartz", $stoneSlabBreakInfo));
-		$this->register(new Slab(new BIDFlattened(Ids::STONE_SLAB4, Ids::DOUBLE_STONE_SLAB4, Meta::STONE_SLAB4_STONE), "Stone", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_BRICK), "Brick", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_COBBLESTONE), "Cobblestone", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_FAKE_WOODEN), "Fake Wooden", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_NETHER_BRICK), "Nether Brick", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_QUARTZ), "Quartz", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_SANDSTONE), "Sandstone", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_SMOOTH_STONE), "Smooth Stone", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_STONE_BRICK), "Stone Brick", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_DARK_PRISMARINE), "Dark Prismarine", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_MOSSY_COBBLESTONE), "Mossy Cobblestone", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_PRISMARINE), "Prismarine", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_PRISMARINE_BRICKS), "Prismarine Bricks", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_PURPUR), "Purpur", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_RED_NETHER_BRICK), "Red Nether Brick", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_RED_SANDSTONE), "Red Sandstone", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_SMOOTH_SANDSTONE), "Smooth Sandstone", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_ANDESITE), "Andesite", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_DIORITE), "Diorite", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_END_STONE_BRICK), "End Stone Brick", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_GRANITE), "Granite", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_POLISHED_ANDESITE), "Polished Andesite", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_POLISHED_DIORITE), "Polished Diorite", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_POLISHED_GRANITE), "Polished Granite", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_SMOOTH_RED_SANDSTONE), "Smooth Red Sandstone", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_CUT_RED_SANDSTONE), "Cut Red Sandstone", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_CUT_SANDSTONE), "Cut Sandstone", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_MOSSY_STONE_BRICK), "Mossy Stone Brick", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_SMOOTH_QUARTZ), "Smooth Quartz", $stoneSlabBreakInfo));
+		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_STONE), "Stone", $stoneSlabBreakInfo));
 		$this->register(new Opaque(new BID(Ids::STONECUTTER), "Stonecutter", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new Sugarcane(new BID(Ids::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane"));
 		$this->register(new TNT(new BID(Ids::TNT), "TNT"));
@@ -445,7 +444,8 @@ class BlockFactory{
 			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($treeType), $treeType->getDisplayName() . " Pressure Plate"));
 			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($treeType), $treeType->getDisplayName() . " Trapdoor"));
 
-			$this->register(new Sign(BlockLegacyIdHelper::getWoodenSignIdentifier($treeType), $treeType->getDisplayName() . " Sign"));
+			$this->register(new FloorSign(BlockLegacyIdHelper::getWoodenFloorSignIdentifier($treeType), $treeType->getDisplayName() . " Sign"));
+			$this->register(new WallSign(BlockLegacyIdHelper::getWoodenWallSignIdentifier($treeType), $treeType->getDisplayName() . " Wall Sign"));
 		}
 
 		static $sandstoneTypes = [
@@ -469,17 +469,17 @@ class BlockFactory{
 			$coloredName = function(string $name) use($color) : string{
 				return $color->getDisplayName() . " " . $name;
 			};
-			$this->register(new Carpet(new BID(Ids::CARPET, $colorIdMap->toId($color)), $coloredName("Carpet")));
-			$this->register(new Concrete(new BID(Ids::CONCRETE, $colorIdMap->toId($color)), $coloredName("Concrete")));
-			$this->register(new ConcretePowder(new BID(Ids::CONCRETE_POWDER, $colorIdMap->toId($color)), $coloredName("Concrete Powder")));
 			$this->register(new Glass(new BID(Ids::STAINED_GLASS, $colorIdMap->toId($color)), $coloredName("Stained Glass")));
 			$this->register(new GlassPane(new BID(Ids::STAINED_GLASS_PANE, $colorIdMap->toId($color)), $coloredName("Stained Glass Pane")));
 			$this->register(new GlazedTerracotta(BlockLegacyIdHelper::getGlazedTerracottaIdentifier($color), $coloredName("Glazed Terracotta")));
 			$this->register(new HardenedClay(new BID(Ids::STAINED_CLAY, $colorIdMap->toId($color)), $coloredName("Stained Clay")));
 			$this->register(new HardenedGlass(new BID(Ids::HARD_STAINED_GLASS, $colorIdMap->toId($color)), "Hardened " . $coloredName("Stained Glass")));
 			$this->register(new HardenedGlassPane(new BID(Ids::HARD_STAINED_GLASS_PANE, $colorIdMap->toId($color)), "Hardened " . $coloredName("Stained Glass Pane")));
-			$this->register(new Wool(new BID(Ids::WOOL, $colorIdMap->toId($color)), $coloredName("Wool")));
 		}
+		$this->register(new Carpet(new BID(Ids::CARPET), "Carpet"));
+		$this->register(new Concrete(new BID(Ids::CONCRETE), "Concrete"));
+		$this->register(new ConcretePowder(new BID(Ids::CONCRETE_POWDER), "Concrete Powder"));
+		$this->register(new Wool(new BID(Ids::WOOL), "Wool"));
 
 		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_ANDESITE), "Andesite Wall"));
 		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_BRICK), "Brick Wall"));
@@ -833,7 +833,7 @@ class BlockFactory{
 
 				$v = clone $block;
 				try{
-					$v->readStateFromData($id, $m & $stateMask);
+					$v->readStateFromData($id, $m);
 					if($v->getMeta() !== $m){
 						throw new InvalidBlockStateException("Corrupted meta"); //don't register anything that isn't the same when we read it back again
 					}

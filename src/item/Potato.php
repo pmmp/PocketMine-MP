@@ -28,7 +28,7 @@ use pocketmine\block\VanillaBlocks;
 
 class Potato extends Food{
 
-	public function getBlock() : Block{
+	public function getBlock(?int $clickedFace = null) : Block{
 		return VanillaBlocks::POTATOES();
 	}
 

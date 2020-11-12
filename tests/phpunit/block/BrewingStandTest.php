@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\block\utils\BrewingStandSlot;
+use function count;
 
 class BrewingStandTest extends TestCase{
 
@@ -38,7 +39,6 @@ class BrewingStandTest extends TestCase{
 	}
 
 	/**
-	 *
 	 * @dataProvider slotsProvider
 	 *
 	 * @param BrewingStandSlot[] $slots

@@ -24,14 +24,17 @@ declare(strict_types=1);
 namespace pocketmine\world\generator;
 
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\world\biome\Biome;
+use pocketmine\world\SimpleChunkManager;
 use pocketmine\world\World;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 
 class GeneratorRegisterTask extends AsyncTask{
 
-	/** @var string */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<Generator>
+	 */
 	public $generatorClass;
 	/** @var string */
 	public $settings;
@@ -44,6 +47,7 @@ class GeneratorRegisterTask extends AsyncTask{
 
 	/**
 	 * @param mixed[] $generatorSettings
+	 * @phpstan-param class-string<Generator> $generatorClass
 	 * @phpstan-param array<string, mixed> $generatorSettings
 	 */
 	public function __construct(World $world, string $generatorClass, array $generatorSettings = []){
@@ -55,15 +59,14 @@ class GeneratorRegisterTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		Biome::init();
-		$manager = new GeneratorChunkManager($this->worldHeight);
+		$manager = new SimpleChunkManager($this->worldHeight);
 		$this->worker->saveToThreadStore("generation.world{$this->worldId}.manager", $manager);
 
 		/**
 		 * @var Generator $generator
 		 * @see Generator::__construct()
 		 */
-		$generator = new $this->generatorClass($manager, $this->seed, igbinary_unserialize($this->settings));
+		$generator = new $this->generatorClass($this->seed, igbinary_unserialize($this->settings));
 		$this->worker->saveToThreadStore("generation.world{$this->worldId}.generator", $generator);
 	}
 }

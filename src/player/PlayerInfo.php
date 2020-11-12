@@ -40,8 +40,6 @@ class PlayerInfo{
 	private $skin;
 	/** @var string */
 	private $locale;
-	/** @var string */
-	private $xuid;
 	/**
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
@@ -52,12 +50,11 @@ class PlayerInfo{
 	 * @param mixed[] $extraData
 	 * @phpstan-param array<string, mixed> $extraData
 	 */
-	public function __construct(string $username, UUID $uuid, Skin $skin, string $locale, string $xuid, array $extraData = []){
+	public function __construct(string $username, UUID $uuid, Skin $skin, string $locale, array $extraData = []){
 		$this->username = TextFormat::clean($username);
 		$this->uuid = $uuid;
 		$this->skin = $skin;
 		$this->locale = $locale;
-		$this->xuid = $xuid;
 		$this->extraData = $extraData;
 	}
 
@@ -75,10 +72,6 @@ class PlayerInfo{
 
 	public function getLocale() : string{
 		return $this->locale;
-	}
-
-	public function getXuid() : string{
-		return $this->xuid;
 	}
 
 	/**

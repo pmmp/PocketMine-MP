@@ -36,7 +36,7 @@ class BlockForceFieldParticle implements Particle{
 		$this->data = $data; //TODO: proper encode/decode of data
 	}
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::standardParticle(ParticleIds::BLOCK_FORCE_FIELD, $this->data, $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::standardParticle(ParticleIds::BLOCK_FORCE_FIELD, $this->data, $pos)];
 	}
 }

@@ -21,18 +21,25 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator;
+namespace pocketmine\world\format;
 
-use pocketmine\world\format\Chunk;
-use pocketmine\world\SimpleChunkManager;
-use pocketmine\world\World;
+use PHPUnit\Framework\TestCase;
 
-class GeneratorChunkManager extends SimpleChunkManager{
+class ChunkTest extends TestCase{
 
-	public function getChunk(int $chunkX, int $chunkZ, bool $create = false) : ?Chunk{
-		if(!isset($this->chunks[World::chunkHash($chunkX, $chunkZ)])){
-			throw new \InvalidArgumentException("Chunk does not exist");
-		}
-		return parent::getChunk($chunkX, $chunkZ, $create);
+	public function testClone() : void{
+		$chunk = new Chunk(0, 0);
+		$chunk->setFullBlock(0, 0, 0, 1);
+		$chunk->setBiomeId(0, 0, 1);
+		$chunk->setHeightMap(0, 0, 1);
+
+		$chunk2 = clone $chunk;
+		$chunk2->setFullBlock(0, 0, 0, 2);
+		$chunk2->setBiomeId(0, 0, 2);
+		$chunk2->setHeightMap(0, 0, 2);
+
+		self::assertNotSame($chunk->getFullBlock(0, 0, 0), $chunk2->getFullBlock(0, 0, 0));
+		self::assertNotSame($chunk->getBiomeId(0, 0), $chunk2->getBiomeId(0, 0));
+		self::assertNotSame($chunk->getHeightMap(0, 0), $chunk2->getHeightMap(0, 0));
 	}
 }

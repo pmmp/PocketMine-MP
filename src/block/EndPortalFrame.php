@@ -55,6 +55,14 @@ class EndPortalFrame extends Opaque{
 		return 0b111;
 	}
 
+	public function hasEye() : bool{ return $this->eye; }
+
+	/** @return $this */
+	public function setEye(bool $eye) : self{
+		$this->eye = $eye;
+		return $this;
+	}
+
 	public function getLightLevel() : int{
 		return 1;
 	}

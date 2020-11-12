@@ -37,7 +37,7 @@ class DestroyBlockParticle implements Particle{
 		$this->block = $b;
 	}
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_DESTROY, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()), $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_DESTROY, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()), $pos)];
 	}
 }

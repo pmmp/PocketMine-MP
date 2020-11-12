@@ -48,8 +48,6 @@ abstract class Generator{
 		return $convertedSeed;
 	}
 
-	/** @var ChunkManager */
-	protected $world;
 	/** @var int */
 	protected $seed;
 	/**
@@ -62,19 +60,16 @@ abstract class Generator{
 	protected $random;
 
 	/**
-	 * @throws InvalidGeneratorOptionsException
-	 *
 	 * @param mixed[] $options
 	 * @phpstan-param array<string, mixed> $options
 	 */
-	public function __construct(ChunkManager $world, int $seed, array $options = []){
-		$this->world = $world;
+	public function __construct(int $seed, array $options = []){
 		$this->seed = $seed;
 		$this->options = $options;
 		$this->random = new Random($seed);
 	}
 
-	abstract public function generateChunk(int $chunkX, int $chunkZ) : void;
+	abstract public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void;
 
-	abstract public function populateChunk(int $chunkX, int $chunkZ) : void;
+	abstract public function populateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void;
 }

@@ -52,6 +52,25 @@ class SeaPickle extends Transparent{
 		return 0b111;
 	}
 
+	public function getCount() : int{ return $this->count; }
+
+	/** @return $this */
+	public function setCount(int $count) : self{
+		if($count < 1 || $count > 4){
+			throw new \InvalidArgumentException("Count must be in range 1-4");
+		}
+		$this->count = $count;
+		return $this;
+	}
+
+	public function isUnderwater() : bool{ return $this->underwater; }
+
+	/** @return $this */
+	public function setUnderwater(bool $underwater) : self{
+		$this->underwater = $underwater;
+		return $this;
+	}
+
 	public function isSolid() : bool{
 		return false;
 	}

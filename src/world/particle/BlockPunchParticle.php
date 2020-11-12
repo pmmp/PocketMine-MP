@@ -43,7 +43,7 @@ class BlockPunchParticle implements Particle{
 		$this->face = $face;
 	}
 
-	public function encode(Vector3 $pos){
-		return LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()) | ($this->face << 24), $pos);
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()) | ($this->face << 24), $pos)];
 	}
 }

@@ -58,6 +58,14 @@ class Sapling extends Flowable{
 		return 0b1000;
 	}
 
+	public function isReady() : bool{ return $this->ready; }
+
+	/** @return $this */
+	public function setReady(bool $ready) : self{
+		$this->ready = $ready;
+		return $this;
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() === BlockLegacyIds::GRASS or $down->getId() === BlockLegacyIds::DIRT or $down->getId() === BlockLegacyIds::FARMLAND){

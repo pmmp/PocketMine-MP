@@ -28,19 +28,14 @@ namespace pocketmine\world\format;
 
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Tile;
-use pocketmine\block\tile\TileFactory;
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntityFactory;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\StringTag;
 use pocketmine\player\Player;
-use pocketmine\world\World;
 use function array_fill;
 use function array_filter;
 use function array_map;
 use function count;
-use function str_repeat;
 
 class Chunk{
 	public const DIRTY_FLAG_TERRAIN = 1 << 0;
@@ -84,10 +79,10 @@ class Chunk{
 	protected $biomeIds;
 
 	/** @var CompoundTag[]|null */
-	protected $NBTtiles;
+	public $NBTtiles;
 
 	/** @var CompoundTag[]|null */
-	protected $NBTentities;
+	public $NBTentities;
 
 	/**
 	 * @param SubChunk[]    $subChunks
@@ -106,7 +101,7 @@ class Chunk{
 
 		$val = ($this->subChunks->getSize() * 16);
 		$this->heightMap = $heightMap ?? new HeightArray(array_fill(0, 256, $val));
-		$this->biomeIds = $biomeIds ?? new BiomeArray(str_repeat("\x00", 256));
+		$this->biomeIds = $biomeIds ?? BiomeArray::fill(BiomeIds::OCEAN);
 
 		$this->NBTtiles = $tiles;
 		$this->NBTentities = $entities;
@@ -152,70 +147,8 @@ class Chunk{
 	 * Sets the blockstate at the given coordinate by internal ID.
 	 */
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
-		$this->getWritableSubChunk($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
+		$this->getSubChunk($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
 		$this->dirtyFlags |= self::DIRTY_FLAG_TERRAIN;
-	}
-
-	/**
-	 * Returns the sky light level at the specified chunk block coordinates
-	 *
-	 * @param int $x 0-15
-	 * @param int $y 0-255
-	 * @param int $z 0-15
-	 *
-	 * @return int 0-15
-	 */
-	public function getBlockSkyLight(int $x, int $y, int $z) : int{
-		return $this->getSubChunk($y >> 4)->getBlockSkyLightArray()->get($x & 0xf, $y & 0x0f, $z & 0xf);
-	}
-
-	/**
-	 * Sets the sky light level at the specified chunk block coordinates
-	 *
-	 * @param int $x 0-15
-	 * @param int $y 0-255
-	 * @param int $z 0-15
-	 * @param int $level 0-15
-	 */
-	public function setBlockSkyLight(int $x, int $y, int $z, int $level) : void{
-		$this->getWritableSubChunk($y >> 4)->getBlockSkyLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
-	}
-
-	public function setAllBlockSkyLight(int $level) : void{
-		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
-			$this->getWritableSubChunk($y)->setBlockSkyLightArray(LightArray::fill($level));
-		}
-	}
-
-	/**
-	 * Returns the block light level at the specified chunk block coordinates
-	 *
-	 * @param int $x 0-15
-	 * @param int $y 0-255
-	 * @param int $z 0-15
-	 *
-	 * @return int 0-15
-	 */
-	public function getBlockLight(int $x, int $y, int $z) : int{
-		return $this->getSubChunk($y >> 4)->getBlockLightArray()->get($x & 0xf, $y & 0x0f, $z & 0xf);
-	}
-
-	/**
-	 * Sets the block light level at the specified chunk block coordinates
-	 *
-	 * @param int $x 0-15
-	 * @param int $y 0-255
-	 * @param int $z 0-15
-	 * @param int $level 0-15
-	 */
-	public function setBlockLight(int $x, int $y, int $z, int $level) : void{
-		$this->getWritableSubChunk($y >> 4)->getBlockLightArray()->set($x & 0xf, $y & 0x0f, $z & 0xf, $level);
-	}
-
-	public function setAllBlockLight(int $level) : void{
-		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
-			$this->getWritableSubChunk($y)->setBlockLightArray(LightArray::fill($level));
-		}
 	}
 
 	/**
@@ -255,112 +188,6 @@ class Chunk{
 	 */
 	public function setHeightMap(int $x, int $z, int $value) : void{
 		$this->heightMap->set($x, $z, $value);
-	}
-
-	/**
-	 * Recalculates the heightmap for the whole chunk.
-	 *
-	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
-	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
-	 */
-	public function recalculateHeightMap(\SplFixedArray $directSkyLightBlockers) : void{
-		$maxSubChunkY = $this->subChunks->count() - 1;
-		for(; $maxSubChunkY >= 0; $maxSubChunkY--){
-			if(!$this->getSubChunk($maxSubChunkY)->isEmptyFast()){
-				break;
-			}
-		}
-		if($maxSubChunkY === -1){ //whole column is definitely empty
-			$this->setHeightMapArray(array_fill(0, 256, 0));
-			return;
-		}
-
-		for($z = 0; $z < 16; ++$z){
-			for($x = 0; $x < 16; ++$x){
-				$y = null;
-				for($subChunkY = $maxSubChunkY; $subChunkY >= 0; $subChunkY--){
-					$subHighestBlockY = $this->getSubChunk($subChunkY)->getHighestBlockAt($x, $z);
-					if($subHighestBlockY !== -1){
-						$y = ($subChunkY * 16) + $subHighestBlockY;
-						break;
-					}
-				}
-
-				if($y === null){ //no blocks in the column
-					$this->setHeightMap($x, $z, 0);
-				}else{
-					for(; $y >= 0; --$y){
-						if($directSkyLightBlockers[$this->getFullBlock($x, $y, $z)]){
-							$this->setHeightMap($x, $z, $y + 1);
-							break;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * Recalculates the heightmap for the block column at the specified X/Z chunk coordinates
-	 *
-	 * @param int $x 0-15
-	 * @param int $z 0-15
-	 * @param \SplFixedArray|bool[] $directSkyLightBlockers
-	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
-	 *
-	 * @return int New calculated heightmap value (0-256 inclusive)
-	 */
-	public function recalculateHeightMapColumn(int $x, int $z, \SplFixedArray $directSkyLightBlockers) : int{
-		$y = $this->getHighestBlockAt($x, $z);
-		for(; $y >= 0; --$y){
-			if($directSkyLightBlockers[$this->getFullBlock($x, $y, $z)]){
-				break;
-			}
-		}
-
-		$this->setHeightMap($x, $z, $y + 1);
-		return $y + 1;
-	}
-
-	/**
-	 * Performs basic sky light population on the chunk.
-	 * This does not cater for adjacent sky light, this performs direct sky light population only. This may cause some strange visual artifacts
-	 * if the chunk is light-populated after being terrain-populated.
-	 *
-	 * @param \SplFixedArray|int[] $lightFilters
-	 * @phpstan-param \SplFixedArray<int> $lightFilters
-	 *
-	 * TODO: fast adjacent light spread
-	 */
-	public function populateSkyLight(\SplFixedArray $lightFilters) : void{
-		$highestHeightMap = max($this->heightMap->getValues());
-		$lowestFullyLitSubChunk = ($highestHeightMap >> 4) + (($highestHeightMap & 0xf) !== 0 ? 1 : 0);
-		for($y = 0; $y < $lowestFullyLitSubChunk; $y++){
-			$this->getWritableSubChunk($y)->setBlockSkyLightArray(LightArray::fill(0));
-		}
-		for($y = $lowestFullyLitSubChunk, $yMax = $this->subChunks->count(); $y < $yMax; $y++){
-			$this->getWritableSubChunk($y)->setBlockSkyLightArray(LightArray::fill(15));
-		}
-
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
-				$y = ($lowestFullyLitSubChunk * 16) - 1;
-				$heightMap = $this->getHeightMap($x, $z);
-
-				for(; $y >= $heightMap; --$y){
-					$this->setBlockSkyLight($x, $y, $z, 15);
-				}
-
-				$light = 15;
-				for(; $y >= 0; --$y){
-					$light -= $lightFilters[$this->getFullBlock($x, $y, $z)];
-					if($light <= 0){
-						break;
-					}
-					$this->setBlockSkyLight($x, $y, $z, $light);
-				}
-			}
-		}
 	}
 
 	/**
@@ -513,55 +340,6 @@ class Chunk{
 		return $this->NBTentities ?? array_map(function(Entity $entity) : CompoundTag{ return $entity->saveNBT(); }, $this->getSavableEntities());
 	}
 
-	/**
-	 * Deserializes tiles and entities from NBT
-	 */
-	public function initChunk(World $world) : void{
-		if($this->NBTentities !== null){
-			$this->dirtyFlags |= self::DIRTY_FLAG_ENTITIES;
-			$world->timings->syncChunkLoadEntitiesTimer->startTiming();
-			$entityFactory = EntityFactory::getInstance();
-			foreach($this->NBTentities as $nbt){
-				try{
-					$entity = $entityFactory->createFromData($world, $nbt);
-					if(!($entity instanceof Entity)){
-						$saveIdTag = $nbt->getTag("id") ?? $nbt->getTag("identifier");
-						$saveId = "<unknown>";
-						if($saveIdTag instanceof StringTag){
-							$saveId = $saveIdTag->getValue();
-						}elseif($saveIdTag instanceof IntTag){ //legacy MCPE format
-							$saveId = "legacy(" . $saveIdTag->getValue() . ")";
-						}
-						$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown entity type $saveId");
-						continue;
-					}
-				}catch(\Exception $t){ //TODO: this shouldn't be here
-					$world->getLogger()->logException($t);
-					continue;
-				}
-			}
-
-			$this->NBTentities = null;
-			$world->timings->syncChunkLoadEntitiesTimer->stopTiming();
-		}
-		if($this->NBTtiles !== null){
-			$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
-			$world->timings->syncChunkLoadTileEntitiesTimer->startTiming();
-			$tileFactory = TileFactory::getInstance();
-			foreach($this->NBTtiles as $nbt){
-				if(($tile = $tileFactory->createFromData($world, $nbt)) !== null){
-					$world->addTile($tile);
-				}else{
-					$world->getLogger()->warning("Chunk $this->x $this->z: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
-					continue;
-				}
-			}
-
-			$this->NBTtiles = null;
-			$world->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
-		}
-	}
-
 	public function getBiomeIdArray() : string{
 		return $this->biomeIds->getData();
 	}
@@ -608,20 +386,9 @@ class Chunk{
 		$this->dirtyFlags = 0;
 	}
 
-	/**
-	 * Returns the subchunk at the specified subchunk Y coordinate, or an empty, unmodifiable stub if it does not exist or the coordinate is out of range.
-	 */
-	public function getSubChunk(int $y) : SubChunkInterface{
-		if($y < 0 or $y >= $this->subChunks->getSize()){
-			return EmptySubChunk::getInstance(); //TODO: drop this and throw an exception here
-		}
-
-		return $this->subChunks[$y];
-	}
-
-	public function getWritableSubChunk(int $y) : SubChunk{
+	public function getSubChunk(int $y) : SubChunk{
 		if($y < 0 || $y >= $this->subChunks->getSize()){
-			throw new \InvalidArgumentException("Cannot get subchunk $y for writing");
+			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
 		return $this->subChunks[$y];
 	}
@@ -653,6 +420,15 @@ class Chunk{
 		foreach($this->subChunks as $y => $subChunk){
 			$subChunk->collectGarbage();
 		}
+	}
+
+	public function __clone(){
+		//we don't bother cloning entities or tiles since it's impractical to do so (too many dependencies)
+		$this->subChunks = \SplFixedArray::fromArray(array_map(function(SubChunk $subChunk) : SubChunk{
+			return clone $subChunk;
+		}, $this->subChunks->toArray()));
+		$this->heightMap = clone $this->heightMap;
+		$this->biomeIds = clone $this->biomeIds;
 	}
 
 	/**

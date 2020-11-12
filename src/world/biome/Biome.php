@@ -24,37 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\world\biome;
 
 use pocketmine\block\Block;
-use pocketmine\block\utils\TreeType;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\generator\populator\Populator;
 
 abstract class Biome{
 
-	public const OCEAN = 0;
-	public const PLAINS = 1;
-	public const DESERT = 2;
-	public const MOUNTAINS = 3;
-	public const FOREST = 4;
-	public const TAIGA = 5;
-	public const SWAMP = 6;
-	public const RIVER = 7;
-
-	public const HELL = 8;
-
-	public const ICE_PLAINS = 12;
-
-	public const SMALL_MOUNTAINS = 20;
-
-	public const BIRCH_FOREST = 27;
-
 	public const MAX_BIOMES = 256;
-
-	/**
-	 * @var Biome[]|\SplFixedArray
-	 * @phpstan-var \SplFixedArray<Biome>
-	 */
-	private static $biomes;
 
 	/** @var int */
 	private $id;
@@ -76,37 +52,6 @@ abstract class Biome{
 	protected $rainfall = 0.5;
 	/** @var float */
 	protected $temperature = 0.5;
-
-	protected static function register(int $id, Biome $biome) : void{
-		self::$biomes[$id] = $biome;
-		$biome->setId($id);
-	}
-
-	public static function init() : void{
-		self::$biomes = new \SplFixedArray(self::MAX_BIOMES);
-
-		self::register(self::OCEAN, new OceanBiome());
-		self::register(self::PLAINS, new PlainBiome());
-		self::register(self::DESERT, new DesertBiome());
-		self::register(self::MOUNTAINS, new MountainsBiome());
-		self::register(self::FOREST, new ForestBiome());
-		self::register(self::TAIGA, new TaigaBiome());
-		self::register(self::SWAMP, new SwampBiome());
-		self::register(self::RIVER, new RiverBiome());
-
-		self::register(self::ICE_PLAINS, new IcePlainsBiome());
-
-		self::register(self::SMALL_MOUNTAINS, new SmallMountainsBiome());
-
-		self::register(self::BIRCH_FOREST, new ForestBiome(TreeType::BIRCH()));
-	}
-
-	public static function getBiome(int $id) : Biome{
-		if(self::$biomes[$id] === null){
-			self::register($id, new UnknownBiome());
-		}
-		return self::$biomes[$id];
-	}
 
 	public function clearPopulators() : void{
 		$this->populators = [];

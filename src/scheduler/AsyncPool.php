@@ -25,6 +25,7 @@ namespace pocketmine\scheduler;
 
 use pocketmine\utils\Utils;
 use function array_keys;
+use function array_map;
 use function assert;
 use function count;
 use function spl_object_id;
@@ -260,6 +261,16 @@ class AsyncPool{
 			}
 		}
 		return $more;
+	}
+
+	/**
+	 * Returns an array of worker ID => task queue size
+	 *
+	 * @return int[]
+	 * @phpstan-return array<int, int>
+	 */
+	public function getTaskQueueSizes() : array{
+		return array_map(function(\SplQueue $queue) : int{ return $queue->count(); }, $this->taskQueues);
 	}
 
 	public function shutdownUnusedWorkers() : int{

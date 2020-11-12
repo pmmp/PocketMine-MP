@@ -40,13 +40,13 @@ class EntityLongFallSound implements Sound{
 		$this->entity = $entity;
 	}
 
-	public function encode(?Vector3 $pos){
-		return LevelSoundEventPacket::create(
+	public function encode(?Vector3 $pos) : array{
+		return [LevelSoundEventPacket::create(
 			LevelSoundEventPacket::SOUND_FALL_BIG,
 			$pos,
 			-1,
 			$this->entity::getNetworkTypeId()
 			//TODO: is isBaby relevant here?
-		);
+		)];
 	}
 }

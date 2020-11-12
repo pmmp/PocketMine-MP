@@ -63,6 +63,22 @@ class Leaves extends Transparent{
 		return 0b1100;
 	}
 
+	public function isNoDecay() : bool{ return $this->noDecay; }
+
+	/** @return $this */
+	public function setNoDecay(bool $noDecay) : self{
+		$this->noDecay = $noDecay;
+		return $this;
+	}
+
+	public function isCheckDecay() : bool{ return $this->checkDecay; }
+
+	/** @return $this */
+	public function setCheckDecay(bool $checkDecay) : self{
+		$this->checkDecay = $checkDecay;
+		return $this;
+	}
+
 	public function blocksDirectSkyLight() : bool{
 		return true;
 	}

@@ -53,6 +53,14 @@ abstract class Button extends Flowable{
 		return 0b1111;
 	}
 
+	public function isPressed() : bool{ return $this->pressed; }
+
+	/** @return $this */
+	public function setPressed(bool $pressed) : self{
+		$this->pressed = $pressed;
+		return $this;
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		//TODO: check valid target block
 		$this->facing = $face;

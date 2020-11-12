@@ -21,45 +21,35 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol\types\skin;
 
-class SkinAnimation{
+final class PersonaPieceTintColor{
 
-	public const TYPE_HEAD = 1;
-	public const TYPE_BODY_32 = 2;
-	public const TYPE_BODY_64 = 3;
+	public const PIECE_TYPE_PERSONA_EYES = "persona_eyes";
+	public const PIECE_TYPE_PERSONA_HAIR = "persona_hair";
+	public const PIECE_TYPE_PERSONA_MOUTH = "persona_mouth";
 
-	/** @var SkinImage */
-	private $image;
-	/** @var int */
-	private $type;
-	/** @var float */
-	private $frames;
+	/** @var string */
+	private $pieceType;
+	/** @var string[] */
+	private $colors;
 
-	public function __construct(SkinImage $image, int $type, float $frames){
-		$this->image = $image;
-		$this->type = $type;
-		$this->frames = $frames;
+	/**
+	 * @param string[] $colors
+	 */
+	public function __construct(string $pieceType, array $colors){
+		$this->pieceType = $pieceType;
+		$this->colors = $colors;
+	}
+
+	public function getPieceType() : string{
+		return $this->pieceType;
 	}
 
 	/**
-	 * Image of the animation.
+	 * @return string[]
 	 */
-	public function getImage() : SkinImage{
-		return $this->image;
-	}
-
-	/**
-	 * The type of animation you are applying.
-	 */
-	public function getType() : int{
-		return $this->type;
-	}
-
-	/**
-	 * The total amount of frames in an animation.
-	 */
-	public function getFrames() : float{
-		return $this->frames;
+	public function getColors() : array{
+		return $this->colors;
 	}
 }

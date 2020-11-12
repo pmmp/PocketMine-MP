@@ -23,12 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use pocketmine\block\Block;
 use pocketmine\color\Color;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\ArmorInventory;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\ProtectionEnchantment;
+use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -106,7 +105,7 @@ class Armor extends Durable{
 	}
 
 	protected function getUnbreakingDamageReduction(int $amount) : int{
-		if(($unbreakingLevel = $this->getEnchantmentLevel(Enchantment::UNBREAKING())) > 0){
+		if(($unbreakingLevel = $this->getEnchantmentLevel(VanillaEnchantments::UNBREAKING())) > 0){
 			$negated = 0;
 
 			$chance = 1 / ($unbreakingLevel + 1);
@@ -122,12 +121,15 @@ class Armor extends Durable{
 		return 0;
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onClickAir(Player $player, Vector3 $directionVector) : ItemUseResult{
 		$existing = $player->getArmorInventory()->getItem($this->getArmorSlot());
-		if(!$existing->isNull()){
-			return ItemUseResult::FAIL();
-		}
 		$player->getArmorInventory()->setItem($this->getArmorSlot(), $this->pop());
+		if($this->getCount() === 0){
+			$player->getInventory()->setItemInHand($existing);
+		}else{ //if the stack size was bigger than 1 (usually won't happen, but might be caused by plugins
+			$player->getInventory()->setItemInHand($this);
+			$player->getInventory()->addItem($existing);
+		}
 		return ItemUseResult::SUCCESS();
 	}
 

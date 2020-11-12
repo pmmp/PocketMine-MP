@@ -29,6 +29,9 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\item\Item;
 
+/**
+ * Called when a furnace is about to consume a new fuel item.
+ */
 class FurnaceBurnEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
@@ -56,18 +59,31 @@ class FurnaceBurnEvent extends BlockEvent implements Cancellable{
 		return $this->fuel;
 	}
 
+	/**
+	 * Returns the number of ticks that the furnace will be powered for.
+	 */
 	public function getBurnTime() : int{
 		return $this->burnTime;
 	}
 
+	/**
+	 * Sets the number of ticks that the given fuel will power the furnace for.
+	 */
 	public function setBurnTime(int $burnTime) : void{
 		$this->burnTime = $burnTime;
 	}
 
+	/**
+	 * Returns whether the fuel item will be consumed.
+	 */
 	public function isBurning() : bool{
 		return $this->burning;
 	}
 
+	/**
+	 * Sets whether the fuel will be consumed. If false, the furnace will smelt as if it consumed fuel, but no fuel
+	 * will be deducted.
+	 */
 	public function setBurning(bool $burning) : void{
 		$this->burning = $burning;
 	}

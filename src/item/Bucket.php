@@ -36,7 +36,7 @@ class Bucket extends Item{
 		return 16;
 	}
 
-	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		//TODO: move this to generic placement logic
 		if($blockClicked instanceof Liquid and $blockClicked->isSource()){
 			$stack = clone $this;

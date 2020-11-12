@@ -28,7 +28,7 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class ChestOpenSound implements Sound{
 
-	public function encode(?Vector3 $pos){
-		return LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_CHEST_OPEN, $pos);
+	public function encode(?Vector3 $pos) : array{
+		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_CHEST_OPEN, $pos)];
 	}
 }

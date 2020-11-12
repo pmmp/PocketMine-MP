@@ -83,8 +83,8 @@ abstract class Timezone{
 			return;
 		}
 
-		if($response = Internet::getURL("http://ip-api.com/json") //If system timezone detection fails or timezone is an invalid value.
-			and $ip_geolocation_data = json_decode($response, true)
+		if(($response = Internet::getURL("http://ip-api.com/json")) !== null //If system timezone detection fails or timezone is an invalid value.
+			and $ip_geolocation_data = json_decode($response->getBody(), true)
 			and $ip_geolocation_data['status'] !== 'fail'
 			and date_default_timezone_set($ip_geolocation_data['timezone'])
 		){

@@ -59,6 +59,17 @@ class SnowLayer extends Flowable implements Fallable{
 		return 0b111;
 	}
 
+	public function getLayers() : int{ return $this->layers; }
+
+	/** @return $this */
+	public function setLayers(int $layers) : self{
+		if($layers < 1 || $layers > 8){
+			throw new \InvalidArgumentException("Layers must be in range 1-8");
+		}
+		$this->layers = $layers;
+		return $this;
+	}
+
 	public function canBeReplaced() : bool{
 		return $this->layers < 8;
 	}
