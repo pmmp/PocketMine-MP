@@ -26,13 +26,11 @@ namespace pocketmine {
 	use pocketmine\errorhandler\ErrorToExceptionHandler;
 	use pocketmine\thread\ThreadManager;
 	use pocketmine\utils\Filesystem;
-	use pocketmine\utils\Git;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Process;
 	use pocketmine\utils\ServerKiller;
 	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Timezone;
-	use pocketmine\utils\VersionString;
 	use pocketmine\wizard\SetupWizard;
 
 	require_once __DIR__ . '/VersionInfo.php';

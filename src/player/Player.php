@@ -111,7 +111,6 @@ use pocketmine\world\sound\EntityAttackSound;
 use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\World;
 use function abs;
-use function array_key_exists;
 use function assert;
 use function count;
 use function explode;
