@@ -31,6 +31,8 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
+use PHPStan\Type\Type;
+use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
 use pocketmine\utils\EnumTrait;
 use function sprintf;
@@ -48,23 +50,41 @@ class DisallowEnumComparisonRule implements Rule{
 		if(!($node instanceof Identical) and !($node instanceof NotIdentical)){
 			return [];
 		}
-		
-		$result = [];
-		foreach([$node->left, $node->right] as $n){
-			$type = $scope->getType($n);
-			if(!($type instanceof ObjectType)){
-				continue;
-			}
-			$class = $type->getClassReflection();
-			if($class === null or !$class->hasTraitUse(EnumTrait::class)){
-				continue;
-			}
-			$result[] = RuleErrorBuilder::message(sprintf(
-				'Strict comparison using %s involving enum %s is not reliable.',
+
+		$leftType = $scope->getType($node->left);
+		$rightType = $scope->getType($node->right);
+		$leftEnum = $this->checkForEnumTypes($leftType);
+		$rightEnum = $this->checkForEnumTypes($rightType);
+		if($leftEnum && $rightEnum){
+			return [RuleErrorBuilder::message(sprintf(
+				'Strict comparison using %s involving enum types %s and %s is not reliable.',
 				$node instanceof Identical ? '===' : '!==',
-				$type->describe(VerbosityLevel::value())
-			))->build();
+				$leftType->describe(VerbosityLevel::value()),
+				$rightType->describe(VerbosityLevel::value())
+			))->build()];
 		}
-		return $result;
+		return [];
+	}
+
+	private function checkForEnumTypes(Type $comparedType) : bool{
+		//TODO: what we really want to do here is iterate over the contained types, but there's no universal way to
+		//do that. This might break with other circumstances.
+		if($comparedType instanceof ObjectType){
+			$types = [$comparedType];
+		}elseif($comparedType instanceof UnionType){
+			$types = $comparedType->getTypes();
+		}else{
+			return false;
+		}
+		foreach($types as $containedType){
+			if(!($containedType instanceof ObjectType)){
+				continue;
+			}
+			$class = $containedType->getClassReflection();
+			if($class !== null and $class->hasTraitUse(EnumTrait::class)){
+				return true;
+			}
+		}
+		return false;
 	}
 }
