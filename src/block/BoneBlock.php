@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\PillarRotationTrait;
+use pocketmine\block\utils\PillarRotationInMetadataTrait;
 use pocketmine\item\ToolTier;
 
 class BoneBlock extends Opaque{
-	use PillarRotationTrait;
+	use PillarRotationInMetadataTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));

@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\PillarRotationTrait;
+use pocketmine\block\utils\PillarRotationInMetadataTrait;
 
 class HayBale extends Opaque{
-	use PillarRotationTrait;
+	use PillarRotationInMetadataTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5));
