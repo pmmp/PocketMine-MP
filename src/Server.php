@@ -570,7 +570,7 @@ class Server{
 	 *
 	 * @see Server::getPlayerExact()
 	 */
-	public function getPlayer(string $name) : ?Player{
+	public function getPlayerByPrefix(string $name) : ?Player{
 		$found = null;
 		$name = strtolower($name);
 		$delta = PHP_INT_MAX;

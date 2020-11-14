@@ -61,7 +61,7 @@ class BanIpCommand extends VanillaCommand{
 
 			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.banip.success", [$value]));
 		}else{
-			if(($player = $sender->getServer()->getPlayer($value)) instanceof Player){
+			if(($player = $sender->getServer()->getPlayerByPrefix($value)) instanceof Player){
 				$ip = $player->getNetworkSession()->getIp();
 				$this->processIPBan($ip, $sender, $reason);
 

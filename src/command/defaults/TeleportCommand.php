@@ -48,7 +48,7 @@ class TeleportCommand extends VanillaCommand{
 	}
 
 	private function findPlayer(CommandSender $sender, string $playerName) : ?Player{
-		$subject = $sender->getServer()->getPlayer($playerName);
+		$subject = $sender->getServer()->getPlayerByPrefix($playerName);
 		if($subject === null){
 			$sender->sendMessage(TextFormat::RED . "Can't find player " . $playerName);
 			return null;

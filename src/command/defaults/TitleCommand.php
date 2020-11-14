@@ -50,7 +50,7 @@ class TitleCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $sender->getServer()->getPlayer($args[0]);
+		$player = $sender->getServer()->getPlayerByPrefix($args[0]);
 		if($player === null){
 			$sender->sendMessage(new TranslationContainer("commands.generic.player.notFound"));
 			return true;
