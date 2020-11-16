@@ -141,6 +141,7 @@ class BlockFactory{
 
 		$this->register(new Cobweb(new BID(Ids::COBWEB), "Cobweb"));
 		$this->register(new CocoaBlock(new BID(Ids::COCOA), "Cocoa Block"));
+		$this->register(new CoralBlock(new BID(Ids::CORAL_BLOCK), "Coral Block", new BlockBreakInfo(7.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new CraftingTable(new BID(Ids::CRAFTING_TABLE), "Crafting Table"));
 		$this->register(new DaylightSensor(new BIDFlattened(Ids::DAYLIGHT_DETECTOR, Ids::DAYLIGHT_DETECTOR_INVERTED, 0, null, TileDaylightSensor::class), "Daylight Sensor"));
 		$this->register(new DeadBush(new BID(Ids::DEADBUSH), "Dead Bush"));
@@ -525,7 +526,6 @@ class BlockFactory{
 		//TODO: minecraft:composter
 		//TODO: minecraft:conduit
 		//TODO: minecraft:coral
-		//TODO: minecraft:coral_block
 		//TODO: minecraft:coral_fan
 		//TODO: minecraft:coral_fan_dead
 		//TODO: minecraft:coral_fan_hang

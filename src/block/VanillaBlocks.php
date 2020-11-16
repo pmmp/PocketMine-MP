@@ -127,6 +127,7 @@ use function assert;
  * @method static ChemistryTable COMPOUND_CREATOR()
  * @method static Concrete CONCRETE()
  * @method static ConcretePowder CONCRETE_POWDER()
+ * @method static CoralBlock CORAL_BLOCK()
  * @method static Flower CORNFLOWER()
  * @method static Opaque CRACKED_STONE_BRICKS()
  * @method static CraftingTable CRAFTING_TABLE()
@@ -743,6 +744,7 @@ final class VanillaBlocks{
 		self::register("compound_creator", $factory->get(238));
 		self::register("concrete", $factory->get(236));
 		self::register("concrete_powder", $factory->get(237));
+		self::register("coral_block", $factory->get(387));
 		self::register("cornflower", $factory->get(38, 9));
 		self::register("cracked_stone_bricks", $factory->get(98, 2));
 		self::register("crafting_table", $factory->get(58));
