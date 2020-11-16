@@ -41,29 +41,23 @@ final class CoralType{
 		__construct as Enum___construct;
 	}
 
-	/** @var int */
-	private $magicNumber;
 	/** @var string */
 	private $displayName;
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("tube", "Tube", 0),
-			new self("brain", "Brain", 1),
-			new self("bubble", "Bubble", 2),
-			new self("fire", "Fire", 3),
-			new self("horn", "Horn", 4),
+			new self("tube", "Tube"),
+			new self("brain", "Brain"),
+			new self("bubble", "Bubble"),
+			new self("fire", "Fire"),
+			new self("horn", "Horn"),
 		);
 	}
 
-	private function __construct(string $name, string $displayName, int $magicNumber){
+	private function __construct(string $name, string $displayName){
 		$this->Enum___construct($name);
-		$this->magicNumber = $magicNumber; //TODO: remove this
 		$this->displayName = $displayName;
 	}
 
 	public function getDisplayName() : string{ return $this->displayName; }
-
-	/** @deprecated  */
-	public function getMagicNumber() : int{ return $this->magicNumber; }
 }
