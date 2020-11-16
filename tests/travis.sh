@@ -11,7 +11,7 @@ while getopts "t:" OPTION 2> /dev/null; do
 done
 
 #Run-the-server tests
-DATA_DIR="test_data"
+DATA_DIR="$(pwd)/test_data"
 PLUGINS_DIR="$DATA_DIR/plugins"
 
 rm -rf "$DATA_DIR"
