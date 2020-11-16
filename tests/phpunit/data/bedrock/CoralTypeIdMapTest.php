@@ -32,7 +32,7 @@ class CoralTypeIdMapTest extends TestCase{
 		foreach(CoralType::getAll() as $type){
 			$id = CoralTypeIdMap::getInstance()->toId($type);
 			$type2 = CoralTypeIdMap::getInstance()->fromId($id);
-			self::assertTrue($type->equals($type2));
+			self::assertTrue($type2 !== null && $type->equals($type2));
 		}
 	}
 }
