@@ -231,10 +231,7 @@ class NetworkSession{
 		//TODO: this really has no business being in NetworkSession at all - what about allowing it to be provided by PlayerCreationEvent?
 		$namedtag = $this->server->getOfflinePlayerData($this->info->getUsername());
 
-		/**
-		 * @var Player $player
-		 * @see Player::__construct()
-		 */
+		/** @see Player::__construct() */
 		$this->player = new $class($this->server, $this, $this->info, $this->authenticated, $namedtag);
 
 		$this->invManager = new InventoryManager($this->player, $this);
