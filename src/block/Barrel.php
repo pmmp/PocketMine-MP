@@ -59,6 +59,7 @@ class Barrel extends Opaque{
 		return $this->open;
 	}
 
+	/** @return $this */
 	public function setOpen(bool $open) : Barrel{
 		$this->open = $open;
 		return $this;
