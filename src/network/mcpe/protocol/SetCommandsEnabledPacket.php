@@ -33,6 +33,12 @@ class SetCommandsEnabledPacket extends DataPacket implements ClientboundPacket{
 	/** @var bool */
 	public $enabled;
 
+	public static function create(bool $enabled) : self{
+		$result = new self;
+		$result->enabled = $enabled;
+		return $result;
+	}
+
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->enabled = $in->getBool();
 	}
