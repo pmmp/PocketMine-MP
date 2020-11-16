@@ -42,6 +42,8 @@ final class BlockLegacyMetadata{
 	public const BAMBOO_LEAF_SIZE_SHIFT = 1;
 	public const BAMBOO_LEAF_SIZE_MASK = 0x03;
 
+	public const BARREL_FLAG_OPEN = 0x08;
+
 	public const BED_FLAG_HEAD = 0x08;
 	public const BED_FLAG_OCCUPIED = 0x04;
 

@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Property pocketmine\\\\block\\\\tile\\\\Barrel\\:\\:\\$inventory \\(pocketmine\\\\block\\\\inventory\\\\BarrelInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/block/tile/Barrel.php
+
+		-
 			message: "#^Property pocketmine\\\\block\\\\tile\\\\BrewingStand\\:\\:\\$inventory \\(pocketmine\\\\block\\\\inventory\\\\BrewingStandInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/block/tile/BrewingStand.php
