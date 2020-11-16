@@ -30,7 +30,7 @@ If you use a custom binary, you'll need to replace `composer` usages in this gui
 Preprocessor requires that the `cpp` (c preprocessor) is available in your PATH.
 
 ## Building `PocketMine-MP.phar`
-Run `build/server-phar.php` using your preferred PHP binary. It'll drop a `PocketMine-MP.phar` into the current working directory.
+Run `composer make-server` using your preferred PHP binary. It'll drop a `PocketMine-MP.phar` into the current working directory.
 
 You can also use the `--out` option to change the output filename.
 
