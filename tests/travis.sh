@@ -19,7 +19,9 @@ rm PocketMine-MP.phar 2> /dev/null
 mkdir "$DATA_DIR"
 mkdir "$PLUGINS_DIR"
 
+cd tests/plugins/DevTools
 php -dphar.readonly=0 ./src/DevTools/ConsoleScript.php --make ./ --relative ./ --out ../../../plugins/DevTools.phar
+cd ../../..
 composer make-server
 
 if [ -f PocketMine-MP.phar ]; then
