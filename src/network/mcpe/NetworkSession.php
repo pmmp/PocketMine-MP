@@ -258,7 +258,7 @@ class NetworkSession{
 	}
 
 	public function isConnected() : bool{
-		return $this->connected;
+		return $this->connected && !$this->disconnectGuard;
 	}
 
 	public function getIp() : string{
@@ -503,7 +503,7 @@ class NetworkSession{
 	public function disconnect(string $reason, bool $notify = true) : void{
 		$this->tryDisconnect(function() use ($reason, $notify) : void{
 			if($this->player !== null){
-				$this->player->disconnect($reason, null, $notify);
+				$this->player->onPostDisconnect($reason, null);
 			}
 			$this->doServerDisconnect($reason, $notify);
 		}, $reason);
@@ -518,7 +518,7 @@ class NetworkSession{
 		$this->tryDisconnect(function() use ($ip, $port, $reason) : void{
 			$this->sendDataPacket(TransferPacket::create($ip, $port), true);
 			if($this->player !== null){
-				$this->player->disconnect($reason, null, false);
+				$this->player->onPostDisconnect($reason, null);
 			}
 			$this->doServerDisconnect($reason, false);
 		}, $reason);
@@ -527,9 +527,9 @@ class NetworkSession{
 	/**
 	 * Called by the Player when it is closed (for example due to getting kicked).
 	 */
-	public function onPlayerDestroyed(string $reason, bool $notify = true) : void{
-		$this->tryDisconnect(function() use ($reason, $notify) : void{
-			$this->doServerDisconnect($reason, $notify);
+	public function onPlayerDestroyed(string $reason) : void{
+		$this->tryDisconnect(function() use ($reason) : void{
+			$this->doServerDisconnect($reason, true);
 		}, $reason);
 	}
 
@@ -551,7 +551,7 @@ class NetworkSession{
 	public function onClientDisconnect(string $reason) : void{
 		$this->tryDisconnect(function() use ($reason) : void{
 			if($this->player !== null){
-				$this->player->disconnect($reason, null, false);
+				$this->player->onPostDisconnect($reason, null);
 			}
 		}, $reason);
 	}

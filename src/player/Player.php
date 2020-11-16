@@ -1986,15 +1986,31 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * Note for plugin developers: Prefer kick() instead of this method.
 	 * That way other plugins can have a say in whether the player is removed or not.
 	 *
+	 * Note for internals developers: Do not call this from network sessions. It will cause a feedback loop.
+	 *
 	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
 	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function disconnect(string $reason, $quitMessage = null, bool $notify = true) : void{
+	public function disconnect(string $reason, $quitMessage = null) : void{
 		if(!$this->isConnected()){
 			return;
 		}
 
-		$this->networkSession->onPlayerDestroyed($reason, $notify);
+		$this->networkSession->onPlayerDestroyed($reason);
+		$this->onPostDisconnect($reason, $quitMessage);
+	}
+
+	/**
+	 * @internal
+	 * This method executes post-disconnect actions and cleanups.
+	 *
+	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
+	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
+	 */
+	public function onPostDisconnect(string $reason, $quitMessage) : void{
+		if($this->isConnected()){
+			throw new \InvalidStateException("Player is still connected");
+		}
 
 		//prevent the player receiving their own disconnect message
 		PermissionManager::getInstance()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
