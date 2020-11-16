@@ -509,9 +509,6 @@ class BlockFactory{
 
 		$this->register(new ChemicalHeat(new BID(Ids::CHEMICAL_HEAT), "Heat Block", $chemistryTableBreakInfo));
 		//region --- auto-generated TODOs for bedrock-1.11.0 ---
-		//TODO: minecraft:bamboo
-		//TODO: minecraft:bamboo_sapling
-		//TODO: minecraft:beacon
 		//TODO: minecraft:bell
 		//TODO: minecraft:blast_furnace
 		//TODO: minecraft:bubble_column
@@ -519,7 +516,6 @@ class BlockFactory{
 		//TODO: minecraft:cartography_table
 		//TODO: minecraft:cauldron
 		//TODO: minecraft:chain_command_block
-		//TODO: minecraft:chemical_heat
 		//TODO: minecraft:chorus_flower
 		//TODO: minecraft:chorus_plant
 		//TODO: minecraft:command_block
