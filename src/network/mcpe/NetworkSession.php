@@ -520,7 +520,6 @@ class NetworkSession{
 	public function transfer(string $ip, int $port, string $reason = "transfer") : void{
 		$this->tryDisconnect(function() use ($ip, $port, $reason) : void{
 			$this->sendDataPacket(TransferPacket::create($ip, $port), true);
-			$this->disconnect($reason, false);
 			if($this->player !== null){
 				$this->player->disconnect($reason, null, false);
 			}
