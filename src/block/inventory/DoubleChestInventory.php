@@ -26,9 +26,7 @@ namespace pocketmine\block\inventory;
 use pocketmine\inventory\BaseInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
-use pocketmine\player\Player;
 use pocketmine\world\Position;
-use function count;
 
 class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 	/** @var ChestInventory */
@@ -74,19 +72,9 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 		return $result;
 	}
 
-	public function onOpen(Player $who) : void{
-		parent::onOpen($who);
-
-		if(count($this->getViewers()) === 1 and $this->right->getHolder()->isValid()){
-			$this->right->broadcastBlockEventPacket(true);
-		}
-	}
-
-	public function onClose(Player $who) : void{
-		if(count($this->getViewers()) === 1 and $this->right->getHolder()->isValid()){
-			$this->right->broadcastBlockEventPacket(false);
-		}
-		parent::onClose($who);
+	protected function animateBlock(bool $isOpen) : void{
+		$this->left->animateBlock($isOpen);
+		$this->right->animateBlock($isOpen);
 	}
 
 	public function getLeftSide() : ChestInventory{
