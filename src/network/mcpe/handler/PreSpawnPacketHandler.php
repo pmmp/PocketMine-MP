@@ -24,16 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\data\bedrock\LegacyItemIdToStringIdMap;
+use pocketmine\network\mcpe\cache\CraftingDataCache;
+use pocketmine\network\mcpe\cache\StaticPacketCache;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\convert\TypeConverter;
-use pocketmine\network\mcpe\CraftingDataCache;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\SpawnSettings;
-use pocketmine\network\mcpe\StaticPacketCache;
 use pocketmine\player\Player;
 use pocketmine\Server;
 

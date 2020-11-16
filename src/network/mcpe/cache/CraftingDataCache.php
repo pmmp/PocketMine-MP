@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe;
+namespace pocketmine\network\mcpe\cache;
 
 use pocketmine\crafting\CraftingManager;
 use pocketmine\item\Item;

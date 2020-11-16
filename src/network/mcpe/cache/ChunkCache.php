@@ -21,9 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe;
+namespace pocketmine\network\mcpe\cache;
 
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\ChunkRequestTask;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\world\ChunkListener;

@@ -37,6 +37,7 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
 use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
+use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\DecompressionException;

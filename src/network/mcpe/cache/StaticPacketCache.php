@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe;
+namespace pocketmine\network\mcpe\cache;
 
 use pocketmine\network\mcpe\protocol\AvailableActorIdentifiersPacket;
 use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
