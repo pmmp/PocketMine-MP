@@ -1495,7 +1495,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->setUsingItem(false);
 			$this->resetItemCooldown($slot);
 
-			if($this->hasFiniteResources() and !$slot->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
+			if($this->hasFiniteResources() && $oldItem->equalsExact($this->inventory->getItemInHand())){
 				$slot->pop();
 				$this->inventory->setItemInHand($slot);
 				$this->inventory->addItem($slot->getResidue());
