@@ -865,7 +865,7 @@ class BlockFactory{
 	/**
 	 * Returns a new Block instance with the specified ID, meta and position.
 	 */
-	public function get(int $id, int $meta = 0) : Block{
+	public function get(int $id, int $meta) : Block{
 		if($meta < 0 or $meta > 0xf){
 			throw new \InvalidArgumentException("Block meta value $meta is out of bounds");
 		}

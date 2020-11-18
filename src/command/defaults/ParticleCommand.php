@@ -186,7 +186,7 @@ class ParticleCommand extends VanillaCommand{
 				break;
 			case "terrain":
 				if($data !== null and $data !== 0){
-					return new TerrainParticle(BlockFactory::getInstance()->get($data));
+					return new TerrainParticle(BlockFactory::getInstance()->get($data, 0));
 				}
 				break;
 			case "heart":

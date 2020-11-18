@@ -51,7 +51,7 @@ class BlockTest extends TestCase{
 	public function testDeliberateOverrideBlock() : void{
 		$block = new MyCustomBlock(new BlockIdentifier(BlockLegacyIds::COBBLESTONE), "Cobblestone", BlockBreakInfo::instant());
 		$this->blockFactory->register($block, true);
-		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->get($block->getId()));
+		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->get($block->getId(), 0));
 	}
 
 	/**
@@ -62,7 +62,7 @@ class BlockTest extends TestCase{
 			if(!$this->blockFactory->isRegistered($i)){
 				$b = new StrangeNewBlock(new BlockIdentifier($i), "Strange New Block", BlockBreakInfo::instant());
 				$this->blockFactory->register($b);
-				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->get($b->getId()));
+				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->get($b->getId(), 0));
 				return;
 			}
 		}
@@ -93,8 +93,8 @@ class BlockTest extends TestCase{
 	 */
 	public function testBlockFactoryClone() : void{
 		for($i = 0; $i < 256; ++$i){
-			$b1 = $this->blockFactory->get($i);
-			$b2 = $this->blockFactory->get($i);
+			$b1 = $this->blockFactory->get($i, 0);
+			$b2 = $this->blockFactory->get($i, 0);
 			self::assertNotSame($b1, $b2);
 		}
 	}
@@ -126,7 +126,7 @@ class BlockTest extends TestCase{
 
 	public function testBlockIds() : void{
 		for($i = 0; $i < 256; ++$i){
-			$b = $this->blockFactory->get($i);
+			$b = $this->blockFactory->get($i, 0);
 			self::assertContains($i, $b->getIdInfo()->getAllBlockIds());
 		}
 	}
