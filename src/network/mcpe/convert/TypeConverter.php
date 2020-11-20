@@ -184,8 +184,8 @@ class TypeConverter{
 			//filter out useless noise in 1.13
 			return null;
 		}
-		$old = TypeConverter::getInstance()->netItemStackToCore($action->oldItem);
-		$new = TypeConverter::getInstance()->netItemStackToCore($action->newItem);
+		$old = $this->netItemStackToCore($action->oldItem);
+		$new = $this->netItemStackToCore($action->newItem);
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
 				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){
