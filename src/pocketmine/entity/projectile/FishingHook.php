@@ -147,7 +147,7 @@ class FishingHook extends Projectile{
 		$hasUpdate = parent::onUpdate($currentTick);
 
 		if($owner instanceof Player){
-			if(!($owner->getInventory()->getItemInHand() instanceof FishingRod) or !$owner->isAlive() or $owner->isClosed() or $owner->distanceSquared($this) > 1024){
+			if($owner->isClosed() or !$owner->isAlive() or !($owner->getInventory()->getItemInHand() instanceof FishingRod) or $owner->distanceSquared($this) > 1024){
 				$this->flagForDespawn();
 			}
 
