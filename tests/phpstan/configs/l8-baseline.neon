@@ -241,11 +241,6 @@ parameters:
 			path: ../../../src/pocketmine/Server.php
 
 		-
-			message: "#^Parameter \\#1 \\$name of static method pocketmine\\\\level\\\\generator\\\\GeneratorManager\\:\\:getGenerator\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Server.php
-
-		-
 			message: "#^Parameter \\#1 \\$uuid of method pocketmine\\\\Server\\:\\:updatePlayerListData\\(\\) expects pocketmine\\\\utils\\\\UUID, pocketmine\\\\utils\\\\UUID\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Server.php
@@ -534,46 +529,6 @@ parameters:
 			message: "#^Cannot call method stopTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/command/SimpleCommandMap.php
-
-		-
-			message: "#^Parameter \\#1 \\$target of method pocketmine\\\\permission\\\\BanList\\:\\:addBan\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/BanCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getPlayerExact\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/BanCommand.php
-
-		-
-			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/BanIpCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$ip of method pocketmine\\\\command\\\\defaults\\\\BanIpCommand\\:\\:processIPBan\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/BanIpCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getPlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/BanIpCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getOfflinePlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/DeopCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getPlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/KickCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$name of method pocketmine\\\\Server\\:\\:getOfflinePlayer\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/OpCommand.php
 
 		-
 			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
@@ -1536,11 +1491,6 @@ parameters:
 			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of function trim expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/permission/BanEntry.php
-
-		-
 			message: "#^Method pocketmine\\\\permission\\\\DefaultPermissions\\:\\:registerPermission\\(\\) should return pocketmine\\\\permission\\\\Permission but returns pocketmine\\\\permission\\\\Permission\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/permission/DefaultPermissions.php
@@ -1667,11 +1617,6 @@ parameters:
 
 		-
 			message: "#^Method pocketmine\\\\utils\\\\Config\\:\\:fixYAMLIndexes\\(\\) should return string but returns string\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/utils/Config.php
-
-		-
-			message: "#^Parameter \\#1 \\$str of function trim expects string, string\\|null given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/utils/Config.php
 

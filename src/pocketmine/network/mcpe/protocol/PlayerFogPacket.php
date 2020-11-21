@@ -25,31 +25,49 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\nbt\NetworkLittleEndianNBTStream;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\NetworkSession;
+use function count;
 
-class UpdateBlockPropertiesPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_PROPERTIES_PACKET;
+class PlayerFogPacket extends DataPacket/* implements ClientboundPacket*/{
+	public const NETWORK_ID = ProtocolInfo::PLAYER_FOG_PACKET;
 
-	/** @var string */
-	private $nbt;
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
+	private $fogLayers;
 
-	public static function create(CompoundTag $data) : self{
+	/**
+	 * @param string[] $fogLayers
+	 * @phpstan-param list<string> $fogLayers
+	 */
+	public static function create(array $fogLayers) : self{
 		$result = new self;
-		$result->nbt = (new NetworkLittleEndianNBTStream())->write($data);
+		$result->fogLayers = $fogLayers;
 		return $result;
 	}
 
+	/**
+	 * @return string[]
+	 * @phpstan-return list<string>
+	 */
+	public function getFogLayers() : array{ return $this->fogLayers; }
+
 	protected function decodePayload() : void{
-		$this->nbt = $this->getRemaining();
+		$this->fogLayers = [];
+		for($i = 0, $len = $this->getUnsignedVarInt(); $i < $len; ++$i){
+			$this->fogLayers[] = $this->getString();
+		}
 	}
 
 	protected function encodePayload() : void{
-		$this->put($this->nbt);
+		$this->putUnsignedVarInt(count($this->fogLayers));
+		foreach($this->fogLayers as $fogLayer){
+			$this->putString($fogLayer);
+		}
 	}
 
 	public function handle(NetworkSession $handler) : bool{
-		return $handler->handleUpdateBlockProperties($this);
+		return $handler->handlePlayerFog($this);
 	}
 }

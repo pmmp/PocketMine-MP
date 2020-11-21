@@ -108,9 +108,6 @@ class CraftingTransaction extends InventoryTransaction{
 			}
 		}
 
-		if($iterations < 1){
-			throw new TransactionValidationException("Tried to craft zero times");
-		}
 		if(count($txItems) > 0){
 			//all items should be destroyed in this process
 			throw new TransactionValidationException("Expected 0 ingredients left over, have " . count($txItems));
@@ -166,6 +163,7 @@ class CraftingTransaction extends InventoryTransaction{
 		 */
 		$pk = new ContainerClosePacket();
 		$pk->windowId = Player::HARDCODED_CRAFTING_GRID_WINDOW_ID;
+		$pk->server = true;
 		$this->source->dataPacket($pk);
 	}
 

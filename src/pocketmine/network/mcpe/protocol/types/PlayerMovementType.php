@@ -21,17 +21,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\scheduler;
+namespace pocketmine\network\mcpe\protocol\types;
 
-use function gc_collect_cycles;
-use function gc_enable;
-use function gc_mem_caches;
+final class PlayerMovementType{
 
-class GarbageCollectionTask extends AsyncTask{
-
-	public function onRun(){
-		gc_enable();
-		gc_collect_cycles();
-		gc_mem_caches();
-	}
+	public const LEGACY = 0; //MovePlayerPacket
+	public const SERVER_AUTHORITATIVE_V1 = 1; //PlayerAuthInputPacket
+	public const SERVER_AUTHORITATIVE_V2_REWIND = 2; //PlayerAuthInputPacket + a bunch of junk that solves a nonexisting problem
 }

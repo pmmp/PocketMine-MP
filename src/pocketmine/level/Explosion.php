@@ -155,7 +155,6 @@ class Explosion{
 	 * and creating sounds and particles.
 	 */
 	public function explodeB() : bool{
-		$send = [];
 		$updateBlocks = [];
 
 		$source = (new Vector3($this->source->x, $this->source->y, $this->source->z))->floor();
@@ -255,7 +254,6 @@ class Explosion{
 					$updateBlocks[$index] = true;
 				}
 			}
-			$send[] = new Vector3($block->x - $source->x, $block->y - $source->y, $block->z - $source->z);
 		}
 
 		$this->level->broadcastLevelEvent($source, LevelEventPacket::EVENT_PARTICLE_EXPLOSION, (int) ceil($this->size));

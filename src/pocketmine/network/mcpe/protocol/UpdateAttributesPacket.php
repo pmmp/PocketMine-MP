@@ -35,15 +35,19 @@ class UpdateAttributesPacket extends DataPacket{
 	public $entityRuntimeId;
 	/** @var Attribute[] */
 	public $entries = [];
+	/** @var int */
+	public $tick = 0;
 
 	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->entries = $this->getAttributeList();
+		$this->tick = $this->getUnsignedVarLong();
 	}
 
 	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putAttributeList(...$this->entries);
+		$this->putUnsignedVarLong($this->tick);
 	}
 
 	public function handle(NetworkSession $session) : bool{

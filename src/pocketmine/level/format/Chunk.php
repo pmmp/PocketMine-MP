@@ -945,6 +945,7 @@ class Chunk{
 		$chunk->setGenerated($terrainGenerated);
 		$chunk->setPopulated($terrainPopulated);
 		$chunk->setLightPopulated($lightPopulated);
+		$chunk->setChanged(false);
 
 		return $chunk;
 	}

@@ -54,13 +54,17 @@ class PlayerAuthInputPacket extends DataPacket/* implements ServerboundPacket*/{
 	private $playMode;
 	/** @var Vector3|null */
 	private $vrGazeDirection = null;
+	/** @var int */
+	private $tick;
+	/** @var Vector3 */
+	private $delta;
 
 	/**
 	 * @param int          $inputMode @see InputMode
 	 * @param int          $playMode @see PlayMode
 	 * @param Vector3|null $vrGazeDirection only used when PlayMode::VR
 	 */
-	public static function create(Vector3 $position, float $pitch, float $yaw, float $headYaw, float $moveVecX, float $moveVecZ, int $inputFlags, int $inputMode, int $playMode, ?Vector3 $vrGazeDirection = null) : self{
+	public static function create(Vector3 $position, float $pitch, float $yaw, float $headYaw, float $moveVecX, float $moveVecZ, int $inputFlags, int $inputMode, int $playMode, ?Vector3 $vrGazeDirection, int $tick, Vector3 $delta) : self{
 		if($playMode === PlayMode::VR and $vrGazeDirection === null){
 			//yuck, can we get a properly written packet just once? ...
 			throw new \InvalidArgumentException("Gaze direction must be provided for VR play mode");
@@ -78,6 +82,8 @@ class PlayerAuthInputPacket extends DataPacket/* implements ServerboundPacket*/{
 		if($vrGazeDirection !== null){
 			$result->vrGazeDirection = $vrGazeDirection->asVector3();
 		}
+		$result->tick = $tick;
+		$result->delta = $delta;
 		return $result;
 	}
 
@@ -127,6 +133,10 @@ class PlayerAuthInputPacket extends DataPacket/* implements ServerboundPacket*/{
 		return $this->vrGazeDirection;
 	}
 
+	public function getTick() : int{ return $this->tick; }
+
+	public function getDelta() : Vector3{ return $this->delta; }
+
 	protected function decodePayload() : void{
 		$this->pitch = $this->getLFloat();
 		$this->yaw = $this->getLFloat();
@@ -140,6 +150,8 @@ class PlayerAuthInputPacket extends DataPacket/* implements ServerboundPacket*/{
 		if($this->playMode === PlayMode::VR){
 			$this->vrGazeDirection = $this->getVector3();
 		}
+		$this->tick = $this->getUnsignedVarLong();
+		$this->delta = $this->getVector3();
 	}
 
 	protected function encodePayload() : void{
@@ -156,6 +168,8 @@ class PlayerAuthInputPacket extends DataPacket/* implements ServerboundPacket*/{
 			assert($this->vrGazeDirection !== null);
 			$this->putVector3($this->vrGazeDirection);
 		}
+		$this->putUnsignedVarLong($this->tick);
+		$this->putVector3($this->delta);
 	}
 
 	public function handle(NetworkSession $handler) : bool{

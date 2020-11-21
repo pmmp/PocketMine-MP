@@ -71,7 +71,6 @@ class PacketPool{
 		static::registerPacket(new BlockPickRequestPacket());
 		static::registerPacket(new ActorPickRequestPacket());
 		static::registerPacket(new PlayerActionPacket());
-		static::registerPacket(new ActorFallPacket());
 		static::registerPacket(new HurtArmorPacket());
 		static::registerPacket(new SetActorDataPacket());
 		static::registerPacket(new SetActorMotionPacket());
@@ -166,7 +165,6 @@ class PacketPool{
 		static::registerPacket(new MapCreateLockedCopyPacket());
 		static::registerPacket(new StructureTemplateDataRequestPacket());
 		static::registerPacket(new StructureTemplateDataResponsePacket());
-		static::registerPacket(new UpdateBlockPropertiesPacket());
 		static::registerPacket(new ClientCacheBlobStatusPacket());
 		static::registerPacket(new ClientCacheMissResponsePacket());
 		static::registerPacket(new EducationSettingsPacket());
@@ -189,6 +187,12 @@ class PacketPool{
 		static::registerPacket(new PositionTrackingDBClientRequestPacket());
 		static::registerPacket(new DebugInfoPacket());
 		static::registerPacket(new PacketViolationWarningPacket());
+		static::registerPacket(new MotionPredictionHintsPacket());
+		static::registerPacket(new AnimateEntityPacket());
+		static::registerPacket(new CameraShakePacket());
+		static::registerPacket(new PlayerFogPacket());
+		static::registerPacket(new CorrectPlayerMovePredictionPacket());
+		static::registerPacket(new ItemComponentPacket());
 	}
 
 	/**

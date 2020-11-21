@@ -54,9 +54,9 @@ class StatusCommand extends VanillaCommand{
 		$server = $sender->getServer();
 		$sender->sendMessage(TextFormat::GREEN . "---- " . TextFormat::WHITE . "Server status" . TextFormat::GREEN . " ----");
 
-		$time = microtime(true) - \pocketmine\START_TIME;
+		$time = (int) (microtime(true) - \pocketmine\START_TIME);
 
-		$seconds = floor($time % 60);
+		$seconds = $time % 60;
 		$minutes = null;
 		$hours = null;
 		$days = null;
@@ -100,7 +100,6 @@ class StatusCommand extends VanillaCommand{
 		$sender->sendMessage(TextFormat::GOLD . "Total memory: " . TextFormat::RED . number_format(round(($mUsage[1] / 1024) / 1024, 2), 2) . " MB.");
 		$sender->sendMessage(TextFormat::GOLD . "Total virtual memory: " . TextFormat::RED . number_format(round(($mUsage[2] / 1024) / 1024, 2), 2) . " MB.");
 		$sender->sendMessage(TextFormat::GOLD . "Heap memory: " . TextFormat::RED . number_format(round(($rUsage[0] / 1024) / 1024, 2), 2) . " MB.");
-		$sender->sendMessage(TextFormat::GOLD . "Maximum memory (system): " . TextFormat::RED . number_format(round(($mUsage[2] / 1024) / 1024, 2), 2) . " MB.");
 
 		if($server->getProperty("memory.global-limit") > 0){
 			$sender->sendMessage(TextFormat::GOLD . "Maximum memory (manager): " . TextFormat::RED . number_format(round($server->getProperty("memory.global-limit"), 2), 2) . " MB.");

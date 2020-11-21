@@ -41,6 +41,7 @@ use function rtrim;
 use function sprintf;
 use function str_replace;
 use function unlink;
+use const PHP_EOL;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -127,6 +128,10 @@ function buildPhar(string $pharPath, string $basePath, array $includedPaths, arr
 function main() : void{
 	if(ini_get("phar.readonly") == 1){
 		echo "Set phar.readonly to 0 with -dphar.readonly=0" . PHP_EOL;
+		exit(1);
+	}
+	if(file_exists(dirname(__DIR__) . '/vendor/phpunit')){
+		echo "Remove Composer dev dependencies before building (composer install --no-dev)" . PHP_EOL;
 		exit(1);
 	}
 

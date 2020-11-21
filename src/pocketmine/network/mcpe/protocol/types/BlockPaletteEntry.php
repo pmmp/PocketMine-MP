@@ -21,17 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\scheduler;
+namespace pocketmine\network\mcpe\protocol\types;
 
-use function gc_collect_cycles;
-use function gc_enable;
-use function gc_mem_caches;
+use pocketmine\nbt\tag\CompoundTag;
 
-class GarbageCollectionTask extends AsyncTask{
+final class BlockPaletteEntry{
 
-	public function onRun(){
-		gc_enable();
-		gc_collect_cycles();
-		gc_mem_caches();
+	/** @var string */
+	private $name;
+	/** @var CompoundTag */
+	private $states;
+
+	public function __construct(string $name, CompoundTag $states){
+		$this->name = $name;
+		$this->states = $states;
 	}
+
+	public function getName() : string{ return $this->name; }
+
+	public function getStates() : CompoundTag{ return $this->states; }
 }

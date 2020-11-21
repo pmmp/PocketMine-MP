@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine;
 
-use PackageVersions\Versions;
+use Composer\InstalledVersions;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginLoadOrder;
@@ -54,6 +54,7 @@ use function php_uname;
 use function phpinfo;
 use function phpversion;
 use function preg_replace;
+use function sprintf;
 use function str_split;
 use function strpos;
 use function substr;
@@ -338,6 +339,15 @@ class CrashDump{
 
 	private function generalData() : void{
 		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
+		$composerLibraries = [];
+		foreach(InstalledVersions::getInstalledPackages() as $package){
+			$composerLibraries[$package] = sprintf(
+				"%s@%s",
+				InstalledVersions::getPrettyVersion($package) ?? "unknown",
+				InstalledVersions::getReference($package) ?? "unknown"
+			);
+		}
+
 		$this->data["general"] = [];
 		$this->data["general"]["name"] = $this->server->getName();
 		$this->data["general"]["base_version"] = \pocketmine\BASE_VERSION;
@@ -350,7 +360,7 @@ class CrashDump{
 		$this->data["general"]["zend"] = zend_version();
 		$this->data["general"]["php_os"] = PHP_OS;
 		$this->data["general"]["os"] = Utils::getOS();
-		$this->data["general"]["composer_libraries"] = Versions::VERSIONS;
+		$this->data["general"]["composer_libraries"] = $composerLibraries;
 		$this->addLine($this->server->getName() . " version: " . $version->getFullVersion(true) . " [Protocol " . ProtocolInfo::CURRENT_PROTOCOL . "]");
 		$this->addLine("Git commit: " . \pocketmine\GIT_COMMIT);
 		$this->addLine("uname -a: " . php_uname("a"));
@@ -358,7 +368,7 @@ class CrashDump{
 		$this->addLine("Zend version: " . zend_version());
 		$this->addLine("OS : " . PHP_OS . ", " . Utils::getOS());
 		$this->addLine("Composer libraries: ");
-		foreach(Versions::VERSIONS as $library => $libraryVersion){
+		foreach($composerLibraries as $library => $libraryVersion){
 			$this->addLine("- $library $libraryVersion");
 		}
 	}

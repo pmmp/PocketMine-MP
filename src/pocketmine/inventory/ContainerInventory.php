@@ -64,6 +64,7 @@ abstract class ContainerInventory extends BaseInventory{
 	public function onClose(Player $who) : void{
 		$pk = new ContainerClosePacket();
 		$pk->windowId = $who->getWindowId($this);
+		$pk->server = $who->getClosingWindowId() !== $pk->windowId;
 		$who->dataPacket($pk);
 		parent::onClose($who);
 	}

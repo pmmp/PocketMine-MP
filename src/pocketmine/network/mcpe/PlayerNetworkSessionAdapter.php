@@ -29,7 +29,6 @@ use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\maps\MapData;
 use pocketmine\maps\MapManager;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
-use pocketmine\network\mcpe\protocol\ActorFallPacket;
 use pocketmine\network\mcpe\protocol\ActorPickRequestPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
@@ -189,10 +188,6 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
 		return $this->player->handlePlayerAction($packet);
-	}
-
-	public function handleActorFall(ActorFallPacket $packet) : bool{
-		return true; //Not used
 	}
 
 	public function handleAnimate(AnimatePacket $packet) : bool{

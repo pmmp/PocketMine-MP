@@ -79,9 +79,6 @@ class ItemTest extends TestCase{
 
 	/**
 	 * @dataProvider itemFromStringProvider
-	 * @param string $string
-	 * @param int    $id
-	 * @param int    $meta
 	 */
 	public function testFromStringSingle(string $string, int $id, int $meta) : void{
 		$item = ItemFactory::fromStringSingle($string);

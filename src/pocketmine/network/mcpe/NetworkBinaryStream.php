@@ -35,6 +35,9 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\NamedTag;
+use pocketmine\network\mcpe\convert\ItemTranslator;
+use pocketmine\network\mcpe\convert\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\types\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
 use pocketmine\network\mcpe\protocol\types\GameRuleType;
@@ -47,6 +50,7 @@ use pocketmine\network\mcpe\protocol\types\StructureEditorData;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
+use function assert;
 use function count;
 use function strlen;
 
@@ -91,7 +95,8 @@ class NetworkBinaryStream extends BinaryStream{
 			$skinImage = $this->getSkinImage();
 			$animationType = $this->getLInt();
 			$animationFrames = $this->getLFloat();
-			$animations[] = new SkinAnimation($skinImage, $animationType, $animationFrames);
+			$expressionType = $this->getLInt();
+			$animations[] = new SkinAnimation($skinImage, $animationType, $animationFrames, $expressionType);
 		}
 		$capeData = $this->getSkinImage();
 		$geometryData = $this->getString();
@@ -187,14 +192,16 @@ class NetworkBinaryStream extends BinaryStream{
 	}
 
 	public function getSlot() : Item{
-		$id = $this->getVarInt();
-		if($id === 0){
+		$netId = $this->getVarInt();
+		if($netId === 0){
 			return ItemFactory::get(0, 0, 0);
 		}
 
 		$auxValue = $this->getVarInt();
-		$data = $auxValue >> 8;
+		$netData = $auxValue >> 8;
 		$cnt = $auxValue & 0xff;
+
+		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkId($netId, $netData);
 
 		$nbtLen = $this->getLShort();
 
@@ -224,12 +231,12 @@ class NetworkBinaryStream extends BinaryStream{
 			$this->getString();
 		}
 
-		if($id === ItemIds::SHIELD){
+		if($netId === ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield")){
 			$this->getVarLong(); //"blocking tick" (ffs mojang)
 		}
 		if($nbt !== null){
 			if($nbt->hasTag(self::DAMAGE_TAG, IntTag::class)){
-				$data = $nbt->getInt(self::DAMAGE_TAG);
+				$meta = $nbt->getInt(self::DAMAGE_TAG);
 				$nbt->removeTag(self::DAMAGE_TAG);
 				if($nbt->count() === 0){
 					$nbt = null;
@@ -243,7 +250,7 @@ class NetworkBinaryStream extends BinaryStream{
 			}
 		}
 		end:
-		return ItemFactory::get($id, $data, $cnt, $nbt);
+		return ItemFactory::get($id, $meta, $cnt, $nbt);
 	}
 
 	public function putSlot(Item $item) : void{
@@ -253,8 +260,10 @@ class NetworkBinaryStream extends BinaryStream{
 			return;
 		}
 
-		$this->putVarInt($item->getId());
-		$auxValue = (($item->getDamage() & 0x7fff) << 8) | $item->getCount();
+		[$netId, $netData] = ItemTranslator::getInstance()->toNetworkId($item->getId(), $item->getDamage());
+
+		$this->putVarInt($netId);
+		$auxValue = (($netData & 0x7fff) << 8) | $item->getCount();
 		$this->putVarInt($auxValue);
 
 		$nbt = null;
@@ -285,20 +294,18 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putVarInt(0); //CanPlaceOn entry count (TODO)
 		$this->putVarInt(0); //CanDestroy entry count (TODO)
 
-		if($item->getId() === ItemIds::SHIELD){
+		if($netId === ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield")){
 			$this->putVarLong(0); //"blocking tick" (ffs mojang)
 		}
 	}
 
 	public function getRecipeIngredient() : Item{
-		$id = $this->getVarInt();
-		if($id === 0){
+		$netId = $this->getVarInt();
+		if($netId === 0){
 			return ItemFactory::get(ItemIds::AIR, 0, 0);
 		}
-		$meta = $this->getVarInt();
-		if($meta === 0x7fff){
-			$meta = -1;
-		}
+		$netData = $this->getVarInt();
+		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($netId, $netData);
 		$count = $this->getVarInt();
 		return ItemFactory::get($id, $meta, $count);
 	}
@@ -307,8 +314,14 @@ class NetworkBinaryStream extends BinaryStream{
 		if($item->isNull()){
 			$this->putVarInt(0);
 		}else{
-			$this->putVarInt($item->getId());
-			$this->putVarInt($item->getDamage() & 0x7fff);
+			if($item->hasAnyDamageValue()){
+				[$netId, ] = ItemTranslator::getInstance()->toNetworkId($item->getId(), 0);
+				$netData = 0x7fff;
+			}else{
+				[$netId, $netData] = ItemTranslator::getInstance()->toNetworkId($item->getId(), $item->getDamage());
+			}
+			$this->putVarInt($netId);
+			$this->putVarInt($netData);
 			$this->putVarInt($item->getCount());
 		}
 	}
@@ -749,6 +762,25 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putVarInt($structureEditorData->structureBlockType);
 		$this->putStructureSettings($structureEditorData->structureSettings);
 		$this->putVarInt($structureEditorData->structureRedstoneSaveMove);
+	}
+
+	public function getNbtRoot() : NamedTag{
+		$offset = $this->getOffset();
+		try{
+			$result = (new NetworkLittleEndianNBTStream())->read($this->getBuffer(), false, $offset, 512);
+			assert($result instanceof NamedTag, "doMultiple is false so we should definitely have a NamedTag here");
+			return $result;
+		}finally{
+			$this->setOffset($offset);
+		}
+	}
+
+	public function getNbtCompoundRoot() : CompoundTag{
+		$root = $this->getNbtRoot();
+		if(!($root instanceof CompoundTag)){
+			throw new \UnexpectedValueException("Expected TAG_Compound root");
+		}
+		return $root;
 	}
 
 	public function readGenericTypeNetworkId() : int{

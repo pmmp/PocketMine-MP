@@ -37,11 +37,11 @@ interface ProtocolInfo{
 	 */
 
 	/** Actual Minecraft: PE protocol version */
-	public const CURRENT_PROTOCOL = 408;
+	public const CURRENT_PROTOCOL = 419;
 	/** Current Minecraft PE version reported by the server. This is usually the earliest currently supported version. */
-	public const MINECRAFT_VERSION = 'v1.16.20';
+	public const MINECRAFT_VERSION = 'v1.16.100';
 	/** Version number sent to clients in ping responses. */
-	public const MINECRAFT_VERSION_NETWORK = '1.16.20';
+	public const MINECRAFT_VERSION_NETWORK = '1.16.100';
 
 	public const LOGIN_PACKET = 0x01;
 	public const PLAY_STATUS_PACKET = 0x02;
@@ -79,7 +79,7 @@ interface ProtocolInfo{
 	public const BLOCK_PICK_REQUEST_PACKET = 0x22;
 	public const ACTOR_PICK_REQUEST_PACKET = 0x23;
 	public const PLAYER_ACTION_PACKET = 0x24;
-	public const ACTOR_FALL_PACKET = 0x25;
+
 	public const HURT_ARMOR_PACKET = 0x26;
 	public const SET_ACTOR_DATA_PACKET = 0x27;
 	public const SET_ACTOR_MOTION_PACKET = 0x28;
@@ -176,7 +176,7 @@ interface ProtocolInfo{
 	public const MAP_CREATE_LOCKED_COPY_PACKET = 0x83;
 	public const STRUCTURE_TEMPLATE_DATA_REQUEST_PACKET = 0x84;
 	public const STRUCTURE_TEMPLATE_DATA_RESPONSE_PACKET = 0x85;
-	public const UPDATE_BLOCK_PROPERTIES_PACKET = 0x86;
+
 	public const CLIENT_CACHE_BLOB_STATUS_PACKET = 0x87;
 	public const CLIENT_CACHE_MISS_RESPONSE_PACKET = 0x88;
 	public const EDUCATION_SETTINGS_PACKET = 0x89;
@@ -199,5 +199,11 @@ interface ProtocolInfo{
 	public const POSITION_TRACKING_D_B_CLIENT_REQUEST_PACKET = 0x9a;
 	public const DEBUG_INFO_PACKET = 0x9b;
 	public const PACKET_VIOLATION_WARNING_PACKET = 0x9c;
+	public const MOTION_PREDICTION_HINTS_PACKET = 0x9d;
+	public const ANIMATE_ENTITY_PACKET = 0x9e;
+	public const CAMERA_SHAKE_PACKET = 0x9f;
+	public const PLAYER_FOG_PACKET = 0xa0;
+	public const CORRECT_PLAYER_MOVE_PREDICTION_PACKET = 0xa1;
+	public const ITEM_COMPONENT_PACKET = 0xa2;
 
 }
