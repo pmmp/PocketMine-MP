@@ -14,8 +14,4 @@ cache:
   - $HOME/.composer/cache/vcs
 
 notifications:
- email:
-  recipients:
-   - team@pmmp.io
-  on_success: change
-  on_failure: always
+ email: false
