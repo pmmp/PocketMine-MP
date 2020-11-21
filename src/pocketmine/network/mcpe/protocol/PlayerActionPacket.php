@@ -43,7 +43,7 @@ class PlayerActionPacket extends DataPacket{
 	public const ACTION_STOP_SPRINT = 10;
 	public const ACTION_START_SNEAK = 11;
 	public const ACTION_STOP_SNEAK = 12;
-	public const ACTION_DIMENSION_CHANGE_REQUEST = 13; //sent when dying in different dimension
+	public const ACTION_CREATIVE_PLAYER_DESTROY_BLOCK = 13;
 	public const ACTION_DIMENSION_CHANGE_ACK = 14; //sent when spawning in a different dimension to tell the server we spawned
 	public const ACTION_START_GLIDE = 15;
 	public const ACTION_STOP_GLIDE = 16;

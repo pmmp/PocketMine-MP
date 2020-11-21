@@ -44,12 +44,12 @@ class MoveActorDeltaPacket extends DataPacket{
 	public $entityRuntimeId;
 	/** @var int */
 	public $flags;
-	/** @var int */
-	public $xDiff = 0;
-	/** @var int */
-	public $yDiff = 0;
-	/** @var int */
-	public $zDiff = 0;
+	/** @var float */
+	public $xPos = 0;
+	/** @var float */
+	public $yPos = 0;
+	/** @var float */
+	public $zPos = 0;
 	/** @var float */
 	public $xRot = 0.0;
 	/** @var float */
@@ -57,9 +57,9 @@ class MoveActorDeltaPacket extends DataPacket{
 	/** @var float */
 	public $zRot = 0.0;
 
-	private function maybeReadCoord(int $flag) : int{
+	private function maybeReadCoord(int $flag) : float{
 		if(($this->flags & $flag) !== 0){
-			return $this->getVarInt();
+			return $this->getLFloat();
 		}
 		return 0;
 	}
@@ -74,17 +74,17 @@ class MoveActorDeltaPacket extends DataPacket{
 	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
 		$this->flags = $this->getLShort();
-		$this->xDiff = $this->maybeReadCoord(self::FLAG_HAS_X);
-		$this->yDiff = $this->maybeReadCoord(self::FLAG_HAS_Y);
-		$this->zDiff = $this->maybeReadCoord(self::FLAG_HAS_Z);
+		$this->xPos = $this->maybeReadCoord(self::FLAG_HAS_X);
+		$this->yPos = $this->maybeReadCoord(self::FLAG_HAS_Y);
+		$this->zPos = $this->maybeReadCoord(self::FLAG_HAS_Z);
 		$this->xRot = $this->maybeReadRotation(self::FLAG_HAS_ROT_X);
 		$this->yRot = $this->maybeReadRotation(self::FLAG_HAS_ROT_Y);
 		$this->zRot = $this->maybeReadRotation(self::FLAG_HAS_ROT_Z);
 	}
 
-	private function maybeWriteCoord(int $flag, int $val) : void{
+	private function maybeWriteCoord(int $flag, float $val) : void{
 		if(($this->flags & $flag) !== 0){
-			$this->putVarInt($val);
+			$this->putLFloat($val);
 		}
 	}
 
@@ -97,9 +97,9 @@ class MoveActorDeltaPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
 		$this->putLShort($this->flags);
-		$this->maybeWriteCoord(self::FLAG_HAS_X, $this->xDiff);
-		$this->maybeWriteCoord(self::FLAG_HAS_Y, $this->yDiff);
-		$this->maybeWriteCoord(self::FLAG_HAS_Z, $this->zDiff);
+		$this->maybeWriteCoord(self::FLAG_HAS_X, $this->xPos);
+		$this->maybeWriteCoord(self::FLAG_HAS_Y, $this->yPos);
+		$this->maybeWriteCoord(self::FLAG_HAS_Z, $this->zPos);
 		$this->maybeWriteRotation(self::FLAG_HAS_ROT_X, $this->xRot);
 		$this->maybeWriteRotation(self::FLAG_HAS_ROT_Y, $this->yRot);
 		$this->maybeWriteRotation(self::FLAG_HAS_ROT_Z, $this->zRot);

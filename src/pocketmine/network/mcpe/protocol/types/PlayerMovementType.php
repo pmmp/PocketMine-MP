@@ -21,31 +21,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\network\mcpe\protocol\types;
 
-#include <rules/DataPacket.h>
+final class PlayerMovementType{
 
-use pocketmine\network\mcpe\NetworkSession;
-
-class ContainerClosePacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::CONTAINER_CLOSE_PACKET;
-
-	/** @var int */
-	public $windowId;
-	/** @var bool */
-	public $server = false;
-
-	protected function decodePayload(){
-		$this->windowId = $this->getByte();
-		$this->server = $this->getBool();
-	}
-
-	protected function encodePayload(){
-		$this->putByte($this->windowId);
-		$this->putBool($this->server);
-	}
-
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleContainerClose($this);
-	}
+	public const LEGACY = 0; //MovePlayerPacket
+	public const SERVER_AUTHORITATIVE_V1 = 1; //PlayerAuthInputPacket
+	public const SERVER_AUTHORITATIVE_V2_REWIND = 2; //PlayerAuthInputPacket + a bunch of junk that solves a nonexisting problem
 }

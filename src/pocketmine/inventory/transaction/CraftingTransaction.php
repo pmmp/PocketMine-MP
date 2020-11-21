@@ -163,6 +163,7 @@ class CraftingTransaction extends InventoryTransaction{
 		 */
 		$pk = new ContainerClosePacket();
 		$pk->windowId = Player::HARDCODED_CRAFTING_GRID_WINDOW_ID;
+		$pk->server = true;
 		$this->source->dataPacket($pk);
 	}
 

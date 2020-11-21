@@ -21,35 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\network\mcpe\protocol\types;
 
-#include <rules/DataPacket.h>
+final class ItemTypeEntry{
 
-use pocketmine\network\mcpe\NetworkSession;
-
-class ActorFallPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::ACTOR_FALL_PACKET;
-
+	/** @var string */
+	private $stringId;
 	/** @var int */
-	public $entityRuntimeId;
-	/** @var float */
-	public $fallDistance;
+	private $numericId;
 	/** @var bool */
-	public $isInVoid;
+	private $componentBased;
 
-	protected function decodePayload(){
-		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->fallDistance = $this->getLFloat();
-		$this->isInVoid = $this->getBool();
+	public function __construct(string $stringId, int $numericId, bool $componentBased){
+		$this->stringId = $stringId;
+		$this->numericId = $numericId;
+		$this->componentBased = $componentBased;
 	}
 
-	protected function encodePayload(){
-		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putLFloat($this->fallDistance);
-		$this->putBool($this->isInVoid);
-	}
+	public function getStringId() : string{ return $this->stringId; }
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleActorFall($this);
-	}
+	public function getNumericId() : int{ return $this->numericId; }
+
+	public function isComponentBased() : bool{ return $this->componentBased; }
 }

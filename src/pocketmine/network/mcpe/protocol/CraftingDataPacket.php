@@ -30,6 +30,7 @@ use pocketmine\inventory\ShapedRecipe;
 use pocketmine\inventory\ShapelessRecipe;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\PotionContainerChangeRecipe;
@@ -124,13 +125,12 @@ class CraftingDataPacket extends DataPacket{
 					break;
 				case self::ENTRY_FURNACE:
 				case self::ENTRY_FURNACE_DATA:
-					$inputId = $this->getVarInt();
-					$inputData = -1;
-					if($recipeType === self::ENTRY_FURNACE_DATA){
-						$inputData = $this->getVarInt();
-						if($inputData === 0x7fff){
-							$inputData = -1;
-						}
+					$inputIdNet = $this->getVarInt();
+					if($recipeType === self::ENTRY_FURNACE){
+						[$inputId, $inputData] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($inputIdNet, 0x7fff);
+					}else{
+						$inputMetaNet = $this->getVarInt();
+						[$inputId, $inputData] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($inputIdNet, $inputMetaNet);
 					}
 					$entry["input"] = ItemFactory::get($inputId, $inputData);
 					$entry["output"] = $out = $this->getSlot();
@@ -150,18 +150,25 @@ class CraftingDataPacket extends DataPacket{
 			$this->decodedEntries[] = $entry;
 		}
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$input = $this->getVarInt();
-			$inputMeta = $this->getVarInt();
-			$ingredient = $this->getVarInt();
-			$ingredientMeta = $this->getVarInt();
-			$output = $this->getVarInt();
-			$outputMeta = $this->getVarInt();
+			$inputIdNet = $this->getVarInt();
+			$inputMetaNet = $this->getVarInt();
+			[$input, $inputMeta] = ItemTranslator::getInstance()->fromNetworkId($inputIdNet, $inputMetaNet);
+			$ingredientIdNet = $this->getVarInt();
+			$ingredientMetaNet = $this->getVarInt();
+			[$ingredient, $ingredientMeta] = ItemTranslator::getInstance()->fromNetworkId($ingredientIdNet, $ingredientMetaNet);
+			$outputIdNet = $this->getVarInt();
+			$outputMetaNet = $this->getVarInt();
+			[$output, $outputMeta] = ItemTranslator::getInstance()->fromNetworkId($outputIdNet, $outputMetaNet);
 			$this->potionTypeRecipes[] = new PotionTypeRecipe($input, $inputMeta, $ingredient, $ingredientMeta, $output, $outputMeta);
 		}
 		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
-			$input = $this->getVarInt();
-			$ingredient = $this->getVarInt();
-			$output = $this->getVarInt();
+			//TODO: we discard inbound ID here, not safe because netID on its own might map to internalID+internalMeta for us
+			$inputIdNet = $this->getVarInt();
+			[$input, ] = ItemTranslator::getInstance()->fromNetworkId($inputIdNet, 0);
+			$ingredientIdNet = $this->getVarInt();
+			[$ingredient, ] = ItemTranslator::getInstance()->fromNetworkId($ingredientIdNet, 0);
+			$outputIdNet = $this->getVarInt();
+			[$output, ] = ItemTranslator::getInstance()->fromNetworkId($outputIdNet, 0);
 			$this->potionContainerRecipes[] = new PotionContainerChangeRecipe($input, $ingredient, $output);
 		}
 		$this->cleanRecipes = $this->getBool();
@@ -230,15 +237,18 @@ class CraftingDataPacket extends DataPacket{
 	}
 
 	private static function writeFurnaceRecipe(FurnaceRecipe $recipe, NetworkBinaryStream $stream) : int{
-		$stream->putVarInt($recipe->getInput()->getId());
-		$result = CraftingDataPacket::ENTRY_FURNACE;
-		if(!$recipe->getInput()->hasAnyDamageValue()){ //Data recipe
-			$stream->putVarInt($recipe->getInput()->getDamage());
-			$result = CraftingDataPacket::ENTRY_FURNACE_DATA;
+		$input = $recipe->getInput();
+		if($input->hasAnyDamageValue()){
+			[$netId, ] = ItemTranslator::getInstance()->toNetworkId($input->getId(), 0);
+			$netData = 0x7fff;
+		}else{
+			[$netId, $netData] = ItemTranslator::getInstance()->toNetworkId($input->getId(), $input->getDamage());
 		}
+		$stream->putVarInt($netId);
+		$stream->putVarInt($netData);
 		$stream->putSlot($recipe->getResult());
 		$stream->putString("furnace"); //TODO: blocktype (no prefix) (this might require internal API breaks)
-		return $result;
+		return CraftingDataPacket::ENTRY_FURNACE_DATA;
 	}
 
 	/**
