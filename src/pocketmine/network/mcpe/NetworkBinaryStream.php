@@ -50,6 +50,7 @@ use pocketmine\network\mcpe\protocol\types\StructureEditorData;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryStream;
 use pocketmine\utils\UUID;
+use function assert;
 use function count;
 use function strlen;
 
@@ -765,7 +766,9 @@ class NetworkBinaryStream extends BinaryStream{
 	public function getNbtRoot() : NamedTag{
 		$offset = $this->getOffset();
 		try{
-			return (new NetworkLittleEndianNBTStream())->read($this->getBuffer(), false, $offset, 512);
+			$result = (new NetworkLittleEndianNBTStream())->read($this->getBuffer(), false, $offset, 512);
+			assert($result instanceof NamedTag, "doMultiple is false so we should definitely have a NamedTag here");
+			return $result;
 		}finally{
 			$this->setOffset($offset);
 		}
