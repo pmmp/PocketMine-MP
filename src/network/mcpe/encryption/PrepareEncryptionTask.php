@@ -27,6 +27,7 @@ use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use Mdanter\Ecc\EccFactory;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\utils\AssumptionFailedError;
 use function random_bytes;
 
 class PrepareEncryptionTask extends AsyncTask{
@@ -74,6 +75,9 @@ class PrepareEncryptionTask extends AsyncTask{
 		 * @phpstan-var \Closure(string $encryptionKey, string $handshakeJwt) : void $callback
 		 */
 		$callback = $this->fetchLocal(self::TLS_KEY_ON_COMPLETION);
+		if($this->aesKey === null || $this->handshakeJwt === null){
+			throw new AssumptionFailedError("Something strange happened here ...");
+		}
 		$callback($this->aesKey, $this->handshakeJwt);
 	}
 }
