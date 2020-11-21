@@ -3092,7 +3092,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$this->stopSleep();
 				break;
 			case PlayerActionPacket::ACTION_RESPAWN:
-			case PlayerActionPacket::ACTION_DIMENSION_CHANGE_REQUEST:
 				if($this->isAlive()){
 					break;
 				}
@@ -3124,12 +3123,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$block = $this->level->getBlock($pos);
 				$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, $block->getRuntimeId() | ($packet->face << 24));
 				//TODO: destroy-progress level event
-				break;
-			case PlayerActionPacket::ACTION_START_GLIDE:
-				$this->toggleGlide(true);
-				break;
-			case PlayerActionPacket::ACTION_STOP_GLIDE:
-				$this->toggleGlide(false);
 				break;
 			case PlayerActionPacket::ACTION_START_SWIMMING:
 				if(!$this->isSwimming()){
