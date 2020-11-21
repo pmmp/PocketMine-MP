@@ -49,13 +49,9 @@ class DeathPacketHandler extends PacketHandler{
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
-		switch($packet->action){
-			case PlayerActionPacket::ACTION_RESPAWN:
-				$this->player->respawn();
-				return true;
-			case PlayerActionPacket::ACTION_DIMENSION_CHANGE_REQUEST:
-				//TODO: players send this when they die in another dimension
-				break;
+		if($packet->action === PlayerActionPacket::ACTION_RESPAWN){
+			$this->player->respawn();
+			return true;
 		}
 
 		return false;

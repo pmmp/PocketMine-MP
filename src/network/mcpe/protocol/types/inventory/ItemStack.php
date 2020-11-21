@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\protocol\types\inventory;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
-use pocketmine\network\mcpe\protocol\types\FixedItemIds;
 use function base64_encode;
 use function count;
 
@@ -52,9 +51,6 @@ final class ItemStack implements \JsonSerializable{
 	 * @param string[] $canDestroy
 	 */
 	public function __construct(int $id, int $meta, int $count, ?CompoundTag $nbt, array $canPlaceOn, array $canDestroy, ?int $shieldBlockingTick = null){
-		if(($shieldBlockingTick !== null) !== ($id === FixedItemIds::SHIELD)){
-			throw new \InvalidArgumentException("Blocking tick must only be provided for shield items");
-		}
 		$this->id = $id;
 		$this->meta = $meta;
 		$this->count = $count;

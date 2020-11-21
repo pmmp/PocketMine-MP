@@ -28,8 +28,13 @@ use function count;
 
 final class ItemStackResponse{
 
-	/** @var bool */
-	private $ok;
+	public const RESULT_OK = 0;
+	public const RESULT_ERROR = 1;
+	//TODO: there are a ton more possible result types but we don't need them yet and they are wayyyyyy too many for me
+	//to waste my time on right now...
+
+	/** @var int */
+	private $result;
 	/** @var int */
 	private $requestId;
 	/** @var ItemStackResponseContainerInfo[] */
@@ -38,13 +43,13 @@ final class ItemStackResponse{
 	/**
 	 * @param ItemStackResponseContainerInfo[] $containerInfos
 	 */
-	public function __construct(bool $ok, int $requestId, array $containerInfos){
-		$this->ok = $ok;
+	public function __construct(int $result, int $requestId, array $containerInfos){
+		$this->result = $result;
 		$this->requestId = $requestId;
 		$this->containerInfos = $containerInfos;
 	}
 
-	public function isOk() : bool{ return $this->ok; }
+	public function getResult() : int{ return $this->result; }
 
 	public function getRequestId() : int{ return $this->requestId; }
 
@@ -52,17 +57,17 @@ final class ItemStackResponse{
 	public function getContainerInfos() : array{ return $this->containerInfos; }
 
 	public static function read(PacketSerializer $in) : self{
-		$ok = $in->getBool();
+		$result = $in->getByte();
 		$requestId = $in->readGenericTypeNetworkId();
 		$containerInfos = [];
 		for($i = 0, $len = $in->getUnsignedVarInt(); $i < $len; ++$i){
 			$containerInfos[] = ItemStackResponseContainerInfo::read($in);
 		}
-		return new self($ok, $requestId, $containerInfos);
+		return new self($result, $requestId, $containerInfos);
 	}
 
 	public function write(PacketSerializer $out) : void{
-		$out->putBool($this->ok);
+		$out->putByte($this->result);
 		$out->writeGenericTypeNetworkId($this->requestId);
 		$out->putUnsignedVarInt(count($this->containerInfos));
 		foreach($this->containerInfos as $containerInfo){

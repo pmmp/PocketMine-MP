@@ -32,19 +32,24 @@ class ContainerClosePacket extends DataPacket implements ClientboundPacket, Serv
 
 	/** @var int */
 	public $windowId;
+	/** @var bool */
+	public $server = false;
 
-	public static function create(int $windowId) : self{
+	public static function create(int $windowId, bool $server) : self{
 		$result = new self;
 		$result->windowId = $windowId;
+		$result->server = $server;
 		return $result;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->windowId = $in->getByte();
+		$this->server = $in->getBool();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putByte($this->windowId);
+		$out->putBool($this->server);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

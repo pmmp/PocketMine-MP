@@ -55,6 +55,14 @@ class TypeConverter{
 	private const DAMAGE_TAG = "Damage"; //TAG_Int
 	private const DAMAGE_TAG_CONFLICT_RESOLUTION = "___Damage_ProtocolCollisionResolution___";
 
+	/** @var int */
+	private $shieldRuntimeId;
+
+	public function __construct(){
+		//TODO: inject stuff via constructor
+		$this->shieldRuntimeId = ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield");
+	}
+
 	/**
 	 * Returns a client-friendly gamemode of the specified real gamemode
 	 * This function takes care of handling gamemodes known to MCPE (as of 1.1.0.3, that includes Survival, Creative and Adventure)
@@ -92,16 +100,30 @@ class TypeConverter{
 	}
 
 	public function coreItemStackToRecipeIngredient(Item $itemStack) : RecipeIngredient{
-		$meta = $itemStack->getMeta();
-		return new RecipeIngredient($itemStack->getId(), $meta === -1 ? 0x7fff : $meta, $itemStack->getCount());
+		if($itemStack->isNull()){
+			return new RecipeIngredient(0, 0, 0);
+		}
+		if($itemStack->hasAnyDamageValue()){
+			[$id, ] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), 0);
+			$meta = 0x7fff;
+		}else{
+			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), $itemStack->getMeta());
+		}
+		return new RecipeIngredient($id, $meta, $itemStack->getCount());
 	}
 
 	public function recipeIngredientToCoreItemStack(RecipeIngredient $ingredient) : Item{
-		$meta = $ingredient->getMeta();
-		return ItemFactory::getInstance()->get($ingredient->getId(), $meta === 0x7fff ? -1 : $meta, $ingredient->getCount());
+		if($ingredient->getId() === 0){
+			return ItemFactory::getInstance()->get(ItemIds::AIR, 0, 0);
+		}
+		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($ingredient->getId(), $ingredient->getMeta());
+		return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
 	}
 
 	public function coreItemStackToNet(Item $itemStack) : ItemStack{
+		if($itemStack->isNull()){
+			return ItemStack::null();
+		}
 		$nbt = null;
 		if($itemStack->hasNamedTag()){
 			$nbt = clone $itemStack->getNamedTag();
@@ -117,23 +139,26 @@ class TypeConverter{
 			}
 			$nbt->setInt(self::DAMAGE_TAG, $itemStack->getDamage());
 		}
-		$id = $itemStack->getId();
-		$meta = $itemStack->getMeta();
+		[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), $itemStack->getMeta());
 
 		return new ItemStack(
 			$id,
-			$meta === -1 ? 0x7fff : $meta,
+			$meta,
 			$itemStack->getCount(),
 			$nbt,
 			[],
 			[],
-			$id === ItemIds::SHIELD ? 0 : null
+			$id === $this->shieldRuntimeId ? 0 : null
 		);
 	}
 
 	public function netItemStackToCore(ItemStack $itemStack) : Item{
+		if($itemStack->getId() === 0){
+			return ItemFactory::getInstance()->get(ItemIds::AIR, 0, 0);
+		}
 		$compound = $itemStack->getNbt();
-		$meta = $itemStack->getMeta();
+
+		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkId($itemStack->getId(), $itemStack->getMeta());
 
 		if($compound !== null){
 			$compound = clone $compound;
@@ -153,8 +178,8 @@ class TypeConverter{
 
 		end:
 		return ItemFactory::getInstance()->get(
-			$itemStack->getId(),
-			$meta !== 0x7fff ? $meta : -1,
+			$id,
+			$meta,
 			$itemStack->getCount(),
 			$compound
 		);

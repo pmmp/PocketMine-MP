@@ -29,6 +29,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
+use pocketmine\network\mcpe\convert\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
@@ -44,7 +45,6 @@ use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\ShortMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\entity\Vec3MetadataProperty;
-use pocketmine\network\mcpe\protocol\types\FixedItemIds;
 use pocketmine\network\mcpe\protocol\types\FloatGameRule;
 use pocketmine\network\mcpe\protocol\types\GameRule;
 use pocketmine\network\mcpe\protocol\types\GameRuleType;
@@ -108,7 +108,8 @@ class PacketSerializer extends BinaryStream{
 			$skinImage = $this->getSkinImage();
 			$animationType = $this->getLInt();
 			$animationFrames = $this->getLFloat();
-			$animations[] = new SkinAnimation($skinImage, $animationType, $animationFrames);
+			$expressionType = $this->getLInt();
+			$animations[] = new SkinAnimation($skinImage, $animationType, $animationFrames, $expressionType);
 		}
 		$capeData = $this->getSkinImage();
 		$geometryData = $this->getString();
@@ -157,6 +158,7 @@ class PacketSerializer extends BinaryStream{
 			$this->putSkinImage($animation->getImage());
 			$this->putLInt($animation->getType());
 			$this->putLFloat($animation->getFrames());
+			$this->putLInt($animation->getExpressionType());
 		}
 		$this->putSkinImage($skin->getCapeImage());
 		$this->putString($skin->getGeometryData());
@@ -242,7 +244,7 @@ class PacketSerializer extends BinaryStream{
 		}
 
 		$shieldBlockingTick = null;
-		if($id === FixedItemIds::SHIELD){
+		if($id === ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield")){
 			$shieldBlockingTick = $this->getVarLong();
 		}
 
@@ -279,8 +281,8 @@ class PacketSerializer extends BinaryStream{
 		}
 
 		$blockingTick = $item->getShieldBlockingTick();
-		if($blockingTick !== null){
-			$this->putVarLong($blockingTick);
+		if($item->getId() === ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield")){
+			$this->putVarLong($blockingTick ?? 0);
 		}
 	}
 

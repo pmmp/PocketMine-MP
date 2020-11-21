@@ -39,26 +39,32 @@ class SetActorDataPacket extends DataPacket implements ClientboundPacket, Server
 	 */
 	public $metadata;
 
+	/** @var int */
+	public $tick = 0;
+
 	/**
 	 * @param MetadataProperty[] $metadata
 	 * @phpstan-param array<int, MetadataProperty> $metadata
 	 */
-	public static function create(int $entityRuntimeId, array $metadata) : self{
+	public static function create(int $entityRuntimeId, array $metadata, int $tick) : self{
 
 		$result = new self;
 		$result->entityRuntimeId = $entityRuntimeId;
 		$result->metadata = $metadata;
+		$result->tick = $tick;
 		return $result;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->metadata = $in->getEntityMetadata();
+		$this->tick = $in->getUnsignedVarLong();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityRuntimeId($this->entityRuntimeId);
 		$out->putEntityMetadata($this->metadata);
+		$out->putUnsignedVarLong($this->tick);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

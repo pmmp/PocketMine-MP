@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\Experiments;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackStackEntry;
 use function count;
 
@@ -40,10 +41,11 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 	/** @var ResourcePackStackEntry[] */
 	public $resourcePackStack = [];
 
-	/** @var bool */
-	public $isExperimental = false;
 	/** @var string */
 	public $baseGameVersion = ProtocolInfo::MINECRAFT_VERSION_NETWORK;
+
+	/** @var Experiments */
+	public $experiments;
 
 	/**
 	 * @param ResourcePackStackEntry[] $resourcePacks
@@ -51,12 +53,12 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 	 *
 	 * @return ResourcePackStackPacket
 	 */
-	public static function create(array $resourcePacks, array $behaviorPacks, bool $mustAccept, bool $isExperimental = false) : self{
+	public static function create(array $resourcePacks, array $behaviorPacks, bool $mustAccept, Experiments $experiments) : self{
 		$result = new self;
 		$result->mustAccept = $mustAccept;
 		$result->resourcePackStack = $resourcePacks;
 		$result->behaviorPackStack = $behaviorPacks;
-		$result->isExperimental = $isExperimental;
+		$result->experiments = $experiments;
 		return $result;
 	}
 
@@ -72,8 +74,8 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 			$this->resourcePackStack[] = ResourcePackStackEntry::read($in);
 		}
 
-		$this->isExperimental = $in->getBool();
 		$this->baseGameVersion = $in->getString();
+		$this->experiments = Experiments::read($in);
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
@@ -89,8 +91,8 @@ class ResourcePackStackPacket extends DataPacket implements ClientboundPacket{
 			$entry->write($out);
 		}
 
-		$out->putBool($this->isExperimental);
 		$out->putString($this->baseGameVersion);
+		$this->experiments->write($out);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

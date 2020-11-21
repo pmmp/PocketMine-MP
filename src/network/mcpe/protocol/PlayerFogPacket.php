@@ -26,45 +26,48 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\types\entity\Attribute;
-use function array_values;
+use function count;
 
-class UpdateAttributesPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::UPDATE_ATTRIBUTES_PACKET;
-
-	/** @var int */
-	public $entityRuntimeId;
-	/** @var Attribute[] */
-	public $entries = [];
-	/** @var int */
-	public $tick = 0;
+class PlayerFogPacket extends DataPacket implements ClientboundPacket{
+	public const NETWORK_ID = ProtocolInfo::PLAYER_FOG_PACKET;
 
 	/**
-	 * @param Attribute[] $attributes
-	 *
-	 * @return UpdateAttributesPacket
+	 * @var string[]
+	 * @phpstan-var list<string>
 	 */
-	public static function create(int $entityRuntimeId, array $attributes, int $tick) : self{
+	private $fogLayers;
+
+	/**
+	 * @param string[] $fogLayers
+	 * @phpstan-param list<string> $fogLayers
+	 */
+	public static function create(array $fogLayers) : self{
 		$result = new self;
-		$result->entityRuntimeId = $entityRuntimeId;
-		$result->entries = $attributes;
-		$result->tick = $tick;
+		$result->fogLayers = $fogLayers;
 		return $result;
 	}
 
+	/**
+	 * @return string[]
+	 * @phpstan-return list<string>
+	 */
+	public function getFogLayers() : array{ return $this->fogLayers; }
+
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->entityRuntimeId = $in->getEntityRuntimeId();
-		$this->entries = $in->getAttributeList();
-		$this->tick = $in->getUnsignedVarLong();
+		$this->fogLayers = [];
+		for($i = 0, $len = $in->getUnsignedVarInt(); $i < $len; ++$i){
+			$this->fogLayers[] = $in->getString();
+		}
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putEntityRuntimeId($this->entityRuntimeId);
-		$out->putAttributeList(...array_values($this->entries));
-		$out->putUnsignedVarLong($this->tick);
+		$out->putUnsignedVarInt(count($this->fogLayers));
+		foreach($this->fogLayers as $fogLayer){
+			$out->putString($fogLayer);
+		}
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{
-		return $handler->handleUpdateAttributes($this);
+		return $handler->handlePlayerFog($this);
 	}
 }

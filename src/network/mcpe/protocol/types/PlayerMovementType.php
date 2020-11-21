@@ -21,46 +21,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types\login;
+namespace pocketmine\network\mcpe\protocol\types;
 
-/**
- * Model class for LoginPacket JSON data for JsonMapper
- */
-final class ClientDataAnimationFrame{
+final class PlayerMovementType{
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $ImageHeight;
-
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $ImageWidth;
-
-	/**
-	 * @var float
-	 * @required
-	 */
-	public $Frames;
-
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $Type;
-
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $Image;
-
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $AnimationExpression;
+	public const LEGACY = 0; //MovePlayerPacket
+	public const SERVER_AUTHORITATIVE_V1 = 1; //PlayerAuthInputPacket
+	public const SERVER_AUTHORITATIVE_V2_REWIND = 2; //PlayerAuthInputPacket + a bunch of junk that solves a nonexisting problem
 }

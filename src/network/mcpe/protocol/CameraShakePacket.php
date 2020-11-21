@@ -25,41 +25,48 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 
-class UpdateBlockPropertiesPacket extends DataPacket implements ClientboundPacket{
-	public const NETWORK_ID = ProtocolInfo::UPDATE_BLOCK_PROPERTIES_PACKET;
+class CameraShakePacket extends DataPacket implements ClientboundPacket{
+	public const NETWORK_ID = ProtocolInfo::CAMERA_SHAKE_PACKET;
 
-	/**
-	 * @var CacheableNbt
-	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
-	 */
-	private $blockProperties;
+	public const TYPE_POSITIONAL = 0;
+	public const TYPE_ROTATIONAL = 1;
 
-	public static function create(CompoundTag $data) : self{
+	/** @var float */
+	private $intensity;
+	/** @var float */
+	private $duration;
+	/** @var int */
+	private $shakeType;
+
+	public static function create(float $intensity, float $duration, int $shakeType) : self{
 		$result = new self;
-		$result->blockProperties = new CacheableNbt($data);
+		$result->intensity = $intensity;
+		$result->duration = $duration;
+		$result->shakeType = $shakeType;
 		return $result;
 	}
 
-	/**
-	 * @phpstan-return CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
-	 */
-	public function getBlockProperties() : CacheableNbt{
-		return $this->blockProperties;
-	}
+	public function getIntensity() : float{ return $this->intensity; }
+
+	public function getDuration() : float{ return $this->duration; }
+
+	public function getShakeType() : int{ return $this->shakeType; }
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->blockProperties = new CacheableNbt($in->getNbtCompoundRoot());
+		$this->intensity = $in->getLFloat();
+		$this->duration = $in->getLFloat();
+		$this->shakeType = $in->getByte();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->put($this->blockProperties->getEncodedNbt());
+		$out->putLFloat($this->intensity);
+		$out->putLFloat($this->duration);
+		$out->putByte($this->shakeType);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{
-		return $handler->handleUpdateBlockProperties($this);
+		return $handler->handleCameraShake($this);
 	}
 }

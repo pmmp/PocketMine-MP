@@ -727,7 +727,7 @@ class NetworkSession{
 		if(count($attributes) > 0){
 			$this->sendDataPacket(UpdateAttributesPacket::create($entity->getId(), array_map(function(Attribute $attr) : NetworkAttribute{
 				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
-			}, $attributes)));
+			}, $attributes), 0));
 		}
 	}
 
@@ -736,7 +736,7 @@ class NetworkSession{
 	 * @phpstan-param array<int, MetadataProperty> $properties
 	 */
 	public function syncActorData(Entity $entity, array $properties) : void{
-		$this->sendDataPacket(SetActorDataPacket::create($entity->getId(), $properties));
+		$this->sendDataPacket(SetActorDataPacket::create($entity->getId(), $properties, 0));
 	}
 
 	public function onEntityEffectAdded(Living $entity, EffectInstance $effect, bool $replacesOldEffect) : void{

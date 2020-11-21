@@ -21,46 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types\login;
+namespace pocketmine\network\mcpe\protocol\types;
 
-/**
- * Model class for LoginPacket JSON data for JsonMapper
- */
-final class ClientDataAnimationFrame{
+use pocketmine\nbt\tag\CompoundTag;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $ImageHeight;
+final class ItemComponentPacketEntry{
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $ImageWidth;
+	/** @var string */
+	private $name;
+	/** @var CompoundTag */
+	private $componentNbt;
 
-	/**
-	 * @var float
-	 * @required
-	 */
-	public $Frames;
+	public function __construct(string $name, CompoundTag $componentNbt){
+		$this->name = $name;
+		$this->componentNbt = $componentNbt;
+	}
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $Type;
+	public function getName() : string{ return $this->name; }
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $Image;
-
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $AnimationExpression;
+	public function getComponentNbt() : CompoundTag{ return $this->componentNbt; }
 }

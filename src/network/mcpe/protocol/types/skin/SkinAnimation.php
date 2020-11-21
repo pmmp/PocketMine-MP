@@ -29,17 +29,23 @@ class SkinAnimation{
 	public const TYPE_BODY_32 = 2;
 	public const TYPE_BODY_64 = 3;
 
+	public const EXPRESSION_LINEAR = 0; //???
+	public const EXPRESSION_BLINKING = 1;
+
 	/** @var SkinImage */
 	private $image;
 	/** @var int */
 	private $type;
 	/** @var float */
 	private $frames;
+	/** @var int */
+	private $expressionType;
 
-	public function __construct(SkinImage $image, int $type, float $frames){
+	public function __construct(SkinImage $image, int $type, float $frames, int $expressionType){
 		$this->image = $image;
 		$this->type = $type;
 		$this->frames = $frames;
+		$this->expressionType = $expressionType;
 	}
 
 	/**
@@ -62,4 +68,6 @@ class SkinAnimation{
 	public function getFrames() : float{
 		return $this->frames;
 	}
+
+	public function getExpressionType() : int{ return $this->expressionType; }
 }

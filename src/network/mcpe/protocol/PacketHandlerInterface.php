@@ -97,8 +97,6 @@ interface PacketHandlerInterface{
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool;
 
-	public function handleActorFall(ActorFallPacket $packet) : bool;
-
 	public function handleHurtArmor(HurtArmorPacket $packet) : bool;
 
 	public function handleSetActorData(SetActorDataPacket $packet) : bool;
@@ -287,8 +285,6 @@ interface PacketHandlerInterface{
 
 	public function handleStructureTemplateDataResponse(StructureTemplateDataResponsePacket $packet) : bool;
 
-	public function handleUpdateBlockProperties(UpdateBlockPropertiesPacket $packet) : bool;
-
 	public function handleClientCacheBlobStatus(ClientCacheBlobStatusPacket $packet) : bool;
 
 	public function handleClientCacheMissResponse(ClientCacheMissResponsePacket $packet) : bool;
@@ -332,4 +328,16 @@ interface PacketHandlerInterface{
 	public function handleDebugInfo(DebugInfoPacket $packet) : bool;
 
 	public function handlePacketViolationWarning(PacketViolationWarningPacket $packet) : bool;
+
+	public function handleMotionPredictionHints(MotionPredictionHintsPacket $packet) : bool;
+
+	public function handleAnimateEntity(AnimateEntityPacket $packet) : bool;
+
+	public function handleCameraShake(CameraShakePacket $packet) : bool;
+
+	public function handlePlayerFog(PlayerFogPacket $packet) : bool;
+
+	public function handleCorrectPlayerMovePrediction(CorrectPlayerMovePredictionPacket $packet) : bool;
+
+	public function handleItemComponent(ItemComponentPacket $packet) : bool;
 }

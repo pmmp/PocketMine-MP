@@ -45,12 +45,12 @@ class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
 	public $entityRuntimeId;
 	/** @var int */
 	public $flags;
-	/** @var int */
-	public $xDiff = 0;
-	/** @var int */
-	public $yDiff = 0;
-	/** @var int */
-	public $zDiff = 0;
+	/** @var float */
+	public $xPos = 0;
+	/** @var float */
+	public $yPos = 0;
+	/** @var float */
+	public $zPos = 0;
 	/** @var float */
 	public $xRot = 0.0;
 	/** @var float */
@@ -61,9 +61,9 @@ class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
 	/**
 	 * @throws BinaryDataException
 	 */
-	private function maybeReadCoord(int $flag, PacketSerializer $in) : int{
+	private function maybeReadCoord(int $flag, PacketSerializer $in) : float{
 		if(($this->flags & $flag) !== 0){
-			return $in->getVarInt();
+			return $in->getLFloat();
 		}
 		return 0;
 	}
@@ -81,17 +81,17 @@ class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->flags = $in->getLShort();
-		$this->xDiff = $this->maybeReadCoord(self::FLAG_HAS_X, $in);
-		$this->yDiff = $this->maybeReadCoord(self::FLAG_HAS_Y, $in);
-		$this->zDiff = $this->maybeReadCoord(self::FLAG_HAS_Z, $in);
+		$this->xPos = $this->maybeReadCoord(self::FLAG_HAS_X, $in);
+		$this->yPos = $this->maybeReadCoord(self::FLAG_HAS_Y, $in);
+		$this->zPos = $this->maybeReadCoord(self::FLAG_HAS_Z, $in);
 		$this->xRot = $this->maybeReadRotation(self::FLAG_HAS_ROT_X, $in);
 		$this->yRot = $this->maybeReadRotation(self::FLAG_HAS_ROT_Y, $in);
 		$this->zRot = $this->maybeReadRotation(self::FLAG_HAS_ROT_Z, $in);
 	}
 
-	private function maybeWriteCoord(int $flag, int $val, PacketSerializer $out) : void{
+	private function maybeWriteCoord(int $flag, float $val, PacketSerializer $out) : void{
 		if(($this->flags & $flag) !== 0){
-			$out->putVarInt($val);
+			$out->putLFloat($val);
 		}
 	}
 
@@ -104,15 +104,15 @@ class MoveActorDeltaPacket extends DataPacket implements ClientboundPacket{
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityRuntimeId($this->entityRuntimeId);
 		$out->putLShort($this->flags);
-		$this->maybeWriteCoord(self::FLAG_HAS_X, $this->xDiff, $out);
-		$this->maybeWriteCoord(self::FLAG_HAS_Y, $this->yDiff, $out);
-		$this->maybeWriteCoord(self::FLAG_HAS_Z, $this->zDiff, $out);
+		$this->maybeWriteCoord(self::FLAG_HAS_X, $this->xPos, $out);
+		$this->maybeWriteCoord(self::FLAG_HAS_Y, $this->yPos, $out);
+		$this->maybeWriteCoord(self::FLAG_HAS_Z, $this->zPos, $out);
 		$this->maybeWriteRotation(self::FLAG_HAS_ROT_X, $this->xRot, $out);
 		$this->maybeWriteRotation(self::FLAG_HAS_ROT_Y, $this->yRot, $out);
 		$this->maybeWriteRotation(self::FLAG_HAS_ROT_Z, $this->zRot, $out);
 	}
 
-	public function handle(PacketHandlerInterface $handler) : bool{
-		return $handler->handleMoveActorDelta($this);
+	public function handle(PacketHandlerInterface $session) : bool{
+		return $session->handleMoveActorDelta($this);
 	}
 }

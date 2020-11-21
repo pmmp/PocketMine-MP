@@ -60,7 +60,8 @@ final class ClientDataToSkinDataHelper{
 					self::safeB64Decode($animation->Image, "AnimatedImageData.$k.Image")
 				),
 				$animation->Type,
-				$animation->Frames
+				$animation->Frames,
+				$animation->AnimationExpression
 			);
 		}
 		return new SkinData(

@@ -26,13 +26,17 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
-use pocketmine\nbt\tag\ListTag;
+use pocketmine\nbt\TreeRoot;
+use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\types\CacheableNbt;
+use pocketmine\network\mcpe\protocol\types\BlockPaletteEntry;
 use pocketmine\network\mcpe\protocol\types\EducationEditionOffer;
+use pocketmine\network\mcpe\protocol\types\Experiments;
 use pocketmine\network\mcpe\protocol\types\GameRule;
 use pocketmine\network\mcpe\protocol\types\GeneratorType;
+use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\network\mcpe\protocol\types\MultiplayerGameVisibility;
+use pocketmine\network\mcpe\protocol\types\PlayerMovementType;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\types\SpawnSettings;
 use function count;
@@ -104,6 +108,8 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	 * @phpstan-var array<string, GameRule>
 	 */
 	public $gameRules = [];
+	/** @var Experiments */
+	public $experiments;
 	/** @var bool */
 	public $hasBonusChestEnabled = false;
 	/** @var bool */
@@ -147,8 +153,8 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public $premiumWorldTemplateId = "";
 	/** @var bool */
 	public $isTrial = false;
-	/** @var bool */
-	public $isMovementServerAuthoritative = false;
+	/** @var int */
+	public $playerMovementType = PlayerMovementType::LEGACY;
 	/** @var int */
 	public $currentTick = 0; //only used if isTrial is true
 	/** @var int */
@@ -159,15 +165,15 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public $enableNewInventorySystem = false; //TODO
 
 	/**
-	 * @var CacheableNbt
-	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\ListTag>
+	 * @var BlockPaletteEntry[]
+	 * @phpstan-var list<BlockPaletteEntry>
 	 */
-	public $blockTable;
+	public $blockPalette = [];
 	/**
-	 * @var int[] string (name) => int16 (legacyID)
-	 * @phpstan-var array<string, int>
+	 * @var ItemTypeEntry[]
+	 * @phpstan-var list<ItemTypeEntry>
 	 */
-	public $itemTable = [];
+	public $itemTable;
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityUniqueId = $in->getEntityUniqueId();
@@ -201,6 +207,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$this->commandsEnabled = $in->getBool();
 		$this->isTexturePacksRequired = $in->getBool();
 		$this->gameRules = $in->getGameRules();
+		$this->experiments = Experiments::read($in);
 		$this->hasBonusChestEnabled = $in->getBool();
 		$this->hasStartWithMapEnabled = $in->getBool();
 		$this->defaultPlayerPermission = $in->getVarInt();
@@ -226,23 +233,25 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$this->worldName = $in->getString();
 		$this->premiumWorldTemplateId = $in->getString();
 		$this->isTrial = $in->getBool();
-		$this->isMovementServerAuthoritative = $in->getBool();
+		$this->playerMovementType = $in->getVarInt();
 		$this->currentTick = $in->getLLong();
 
 		$this->enchantmentSeed = $in->getVarInt();
 
-		$blockTable = $in->getNbtRoot()->getTag();
-		if(!($blockTable instanceof ListTag)){
-			throw new \UnexpectedValueException("Wrong block table root NBT tag type");
+		$this->blockPalette = [];
+		for($i = 0, $len = $in->getUnsignedVarInt(); $i < $len; ++$i){
+			$blockName = $in->getString();
+			$state = $in->getNbtCompoundRoot();
+			$this->blockPalette[] = new BlockPaletteEntry($blockName, $state);
 		}
-		$this->blockTable = new CacheableNbt($blockTable);
 
 		$this->itemTable = [];
 		for($i = 0, $count = $in->getUnsignedVarInt(); $i < $count; ++$i){
-			$id = $in->getString();
-			$legacyId = $in->getSignedLShort();
+			$stringId = $in->getString();
+			$numericId = $in->getSignedLShort();
+			$isComponentBased = $in->getBool();
 
-			$this->itemTable[$id] = $legacyId;
+			$this->itemTable[] = new ItemTypeEntry($stringId, $numericId, $isComponentBased);
 		}
 
 		$this->multiplayerCorrelationId = $in->getString();
@@ -281,6 +290,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$out->putBool($this->commandsEnabled);
 		$out->putBool($this->isTexturePacksRequired);
 		$out->putGameRules($this->gameRules);
+		$this->experiments->write($out);
 		$out->putBool($this->hasBonusChestEnabled);
 		$out->putBool($this->hasStartWithMapEnabled);
 		$out->putVarInt($this->defaultPlayerPermission);
@@ -305,31 +315,27 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$out->putString($this->worldName);
 		$out->putString($this->premiumWorldTemplateId);
 		$out->putBool($this->isTrial);
-		$out->putBool($this->isMovementServerAuthoritative);
+		$out->putVarInt($this->playerMovementType);
 		$out->putLLong($this->currentTick);
 
 		$out->putVarInt($this->enchantmentSeed);
 
-		$out->put($this->blockTable->getEncodedNbt());
+		$out->putUnsignedVarInt(count($this->blockPalette));
+		$nbtWriter = new NetworkNbtSerializer();
+		foreach($this->blockPalette as $entry){
+			$out->putString($entry->getName());
+			$out->put($nbtWriter->write(new TreeRoot($entry->getStates())));
+		}
 
-		$out->put(self::serializeItemTable($this->itemTable));
+		$out->putUnsignedVarInt(count($this->itemTable));
+		foreach($this->itemTable as $entry){
+			$out->putString($entry->getStringId());
+			$out->putLShort($entry->getNumericId());
+			$out->putBool($entry->isComponentBased());
+		}
 
 		$out->putString($this->multiplayerCorrelationId);
 		$out->putBool($this->enableNewInventorySystem);
-	}
-
-	/**
-	 * @param int[] $table
-	 * @phpstan-param array<string, int> $table
-	 */
-	private static function serializeItemTable(array $table) : string{
-		$stream = new PacketSerializer();
-		$stream->putUnsignedVarInt(count($table));
-		foreach($table as $name => $legacyId){
-			$stream->putString($name);
-			$stream->putLShort($legacyId);
-		}
-		return $stream->getBuffer();
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

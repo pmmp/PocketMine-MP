@@ -47,7 +47,6 @@ use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
-use pocketmine\network\mcpe\protocol\ActorFallPacket;
 use pocketmine\network\mcpe\protocol\ActorPickRequestPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
@@ -279,7 +278,7 @@ class InGamePacketHandler extends PacketHandler{
 				 * So people don't whine about messy desync issues when someone cancels CraftItemEvent, or when a crafting
 				 * transaction goes wrong.
 				 */
-				$this->session->sendDataPacket(ContainerClosePacket::create(InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID));
+				$this->session->sendDataPacket(ContainerClosePacket::create(InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID, true));
 
 				return false;
 			}finally{
@@ -536,7 +535,10 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerActionPacket::ACTION_STOP_SWIMMING:
 				//TODO: handle this when it doesn't spam every damn tick (yet another spam bug!!)
 				break;
-			case PlayerActionPacket::ACTION_INTERACT_BLOCK: //ignored (for now)
+			case PlayerActionPacket::ACTION_INTERACT_BLOCK: //TODO: ignored (for now)
+				break;
+			case PlayerActionPacket::ACTION_CREATIVE_PLAYER_DESTROY_BLOCK:
+				//TODO: do we need to handle this?
 				break;
 			default:
 				$this->session->getLogger()->debug("Unhandled/unknown player action type " . $packet->action);
@@ -546,10 +548,6 @@ class InGamePacketHandler extends PacketHandler{
 		$this->player->setUsingItem(false);
 
 		return true;
-	}
-
-	public function handleActorFall(ActorFallPacket $packet) : bool{
-		return true; //Not used
 	}
 
 	public function handleAnimate(AnimatePacket $packet) : bool{
@@ -565,7 +563,7 @@ class InGamePacketHandler extends PacketHandler{
 			$this->session->getInvManager()->onClientRemoveWindow($packet->windowId);
 		}
 
-		$this->session->sendDataPacket(ContainerClosePacket::create($packet->windowId));
+		$this->session->sendDataPacket(ContainerClosePacket::create($packet->windowId, false));
 		return true;
 	}
 

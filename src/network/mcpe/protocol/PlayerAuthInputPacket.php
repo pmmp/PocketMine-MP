@@ -54,13 +54,17 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 	private $playMode;
 	/** @var Vector3|null */
 	private $vrGazeDirection = null;
+	/** @var int */
+	private $tick;
+	/** @var Vector3 */
+	private $delta;
 
 	/**
 	 * @param int          $inputMode @see InputMode
 	 * @param int          $playMode @see PlayMode
 	 * @param Vector3|null $vrGazeDirection only used when PlayMode::VR
 	 */
-	public static function create(Vector3 $position, float $pitch, float $yaw, float $headYaw, float $moveVecX, float $moveVecZ, int $inputFlags, int $inputMode, int $playMode, ?Vector3 $vrGazeDirection = null) : self{
+	public static function create(Vector3 $position, float $pitch, float $yaw, float $headYaw, float $moveVecX, float $moveVecZ, int $inputFlags, int $inputMode, int $playMode, ?Vector3 $vrGazeDirection, int $tick, Vector3 $delta) : self{
 		if($playMode === PlayMode::VR and $vrGazeDirection === null){
 			//yuck, can we get a properly written packet just once? ...
 			throw new \InvalidArgumentException("Gaze direction must be provided for VR play mode");
@@ -78,6 +82,8 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		if($vrGazeDirection !== null){
 			$result->vrGazeDirection = $vrGazeDirection->asVector3();
 		}
+		$result->tick = $tick;
+		$result->delta = $delta;
 		return $result;
 	}
 
@@ -140,6 +146,8 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 		if($this->playMode === PlayMode::VR){
 			$this->vrGazeDirection = $in->getVector3();
 		}
+		$this->tick = $in->getUnsignedVarLong();
+		$this->delta = $in->getVector3();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
@@ -156,6 +164,8 @@ class PlayerAuthInputPacket extends DataPacket implements ServerboundPacket{
 			assert($this->vrGazeDirection !== null);
 			$out->putVector3($this->vrGazeDirection);
 		}
+		$out->putUnsignedVarLong($this->tick);
+		$out->putVector3($this->delta);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

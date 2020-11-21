@@ -56,6 +56,8 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 	public $teleportCause = 0;
 	/** @var int */
 	public $teleportItem = 0;
+	/** @var int */
+	public $tick = 0;
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
@@ -70,6 +72,7 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 			$this->teleportCause = $in->getLInt();
 			$this->teleportItem = $in->getLInt();
 		}
+		$this->tick = $in->getUnsignedVarLong();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
@@ -85,6 +88,7 @@ class MovePlayerPacket extends DataPacket implements ClientboundPacket, Serverbo
 			$out->putLInt($this->teleportCause);
 			$out->putLInt($this->teleportItem);
 		}
+		$out->putUnsignedVarLong($this->tick);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

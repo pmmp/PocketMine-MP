@@ -21,46 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types\login;
+namespace pocketmine\network\mcpe\protocol\types;
 
-/**
- * Model class for LoginPacket JSON data for JsonMapper
- */
-final class ClientDataAnimationFrame{
+final class ItemTypeEntry{
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $ImageHeight;
+	/** @var string */
+	private $stringId;
+	/** @var int */
+	private $numericId;
+	/** @var bool */
+	private $componentBased;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $ImageWidth;
+	public function __construct(string $stringId, int $numericId, bool $componentBased){
+		$this->stringId = $stringId;
+		$this->numericId = $numericId;
+		$this->componentBased = $componentBased;
+	}
 
-	/**
-	 * @var float
-	 * @required
-	 */
-	public $Frames;
+	public function getStringId() : string{ return $this->stringId; }
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $Type;
+	public function getNumericId() : int{ return $this->numericId; }
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $Image;
-
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $AnimationExpression;
+	public function isComponentBased() : bool{ return $this->componentBased; }
 }
