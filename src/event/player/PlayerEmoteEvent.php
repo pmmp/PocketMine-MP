@@ -30,6 +30,7 @@ use pocketmine\player\Player;
 class PlayerEmoteEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
+	/** @var string */
 	private $emoteId;
 
 	public function __construct(Player $player, string $emoteId){
