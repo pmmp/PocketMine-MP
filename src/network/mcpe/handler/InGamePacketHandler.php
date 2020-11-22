@@ -824,7 +824,7 @@ class InGamePacketHandler extends PacketHandler{
 		return true; //TODO: implement this properly - this is here to silence debug spam from MCPE dev builds
 	}
 
-	public function handleEmote(EmotePacket $packet): bool{
+	public function handleEmote(EmotePacket $packet) : bool{
 		$event = new PlayerEmoteEvent($this->player, $packet->getEmoteId());
 		$event->call();
 		if($event->isCancelled()){
