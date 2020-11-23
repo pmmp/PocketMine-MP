@@ -140,7 +140,16 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		if($skinTag->hasTag("AnimatedImageData", ListTag::class)){
 			foreach($skinTag->getListTag("AnimatedImageData")->getValue() as $tag){
 				if($tag instanceof CompoundTag){
-					$animations[] = new SkinAnimation(new SkinImage($tag->getInt("ImageHeight"), $tag->getInt("ImageWidth"), $tag->getByteArray("Image")), $tag->getByte("Type"), $tag->getFloat("Frames"));
+					$animations[] = new SkinAnimation(
+						new SkinImage(
+							$tag->getInt("ImageHeight"),
+							$tag->getInt("ImageWidth"),
+							$tag->getByteArray("Image")
+						),
+						$tag->getByte("Type"),
+						$tag->getFloat("Frames"),
+						$tag->getByte("ExpressionType", SkinAnimation::EXPRESSION_LINEAR)
+					);
 				}
 			}
 		}
@@ -856,6 +865,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 					return new CompoundTag("", [
 						new ByteTag("Type", $animation->getType()),
 						new FloatTag("Frames", $animation->getFrames()),
+						new ByteTag("ExpressionType", $animation->getExpressionType()),
 						new ByteArrayTag("Image", $animation->getImage()->getData()),
 						new IntTag("ImageHeight", $animation->getImage()->getHeight()),
 						new IntTag("ImageWidth", $animation->getImage()->getWidth())
