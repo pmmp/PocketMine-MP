@@ -39,14 +39,22 @@ class PlayerCreationEvent extends Event{
 	/** @var int */
 	private $port;
 
-	/** @var string */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<Player>
+	 */
 	private $baseClass;
-	/** @var string */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<Player>
+	 */
 	private $playerClass;
 
 	/**
 	 * @param string          $baseClass
 	 * @param string          $playerClass
+	 * @phpstan-param class-string<Player> $baseClass
+	 * @phpstan-param class-string<Player> $playerClass
 	 */
 	public function __construct(SourceInterface $interface, $baseClass, $playerClass, string $address, int $port){
 		$this->interface = $interface;
@@ -80,6 +88,7 @@ class PlayerCreationEvent extends Event{
 
 	/**
 	 * @return string
+	 * @phpstan-return class-string<Player>
 	 */
 	public function getBaseClass(){
 		return $this->baseClass;
@@ -87,6 +96,7 @@ class PlayerCreationEvent extends Event{
 
 	/**
 	 * @param string $class
+	 * @phpstan-param class-string<Player> $class
 	 *
 	 * @return void
 	 */
@@ -100,6 +110,7 @@ class PlayerCreationEvent extends Event{
 
 	/**
 	 * @return string
+	 * @phpstan-return class-string<Player>
 	 */
 	public function getPlayerClass(){
 		return $this->playerClass;
@@ -107,6 +118,7 @@ class PlayerCreationEvent extends Event{
 
 	/**
 	 * @param string $class
+	 * @phpstan-param class-string<Player> $class
 	 *
 	 * @return void
 	 */
