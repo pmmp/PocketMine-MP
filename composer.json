@@ -46,7 +46,7 @@
       "pocketmine/uuid": "^0.1.0",
       "pocketmine/color": "^0.1.0",
       "adhocore/json-comment": "^0.1.0",
-      "netresearch/jsonmapper": "^2.0",
+      "netresearch/jsonmapper": "^3.1.1",
       "respect/validation": "^2.0",
       "composer-runtime-api": "^2.0"
    },
