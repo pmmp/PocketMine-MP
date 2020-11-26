@@ -2056,13 +2056,14 @@ class World implements ChunkManager{
 	/**
 	 * Gets the highest block Y value at a specific $x and $z
 	 *
-	 * @return int 0-255, or -1 if the chunk is not generated
+	 * @return int 0-255
+	 * @throws WorldException if the terrain is not generated
 	 */
 	public function getHighestBlockAt(int $x, int $z) : int{
 		if(($chunk = $this->loadChunk($x >> 4, $z >> 4, false)) !== null){
 			return $chunk->getHighestBlockAt($x & 0x0f, $z & 0x0f);
 		}
-		return -1; //TODO: this should probably throw an exception (terrain not generated yet)
+		throw new WorldException("Cannot get highest block in an ungenerated chunk");
 	}
 
 	/**
