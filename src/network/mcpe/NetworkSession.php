@@ -164,6 +164,8 @@ class NetworkSession{
 	private $compressedQueue;
 	/** @var Compressor */
 	private $compressor;
+	/** @var bool */
+	private $forceAsyncCompression = true;
 
 	/** @var PacketPool */
 	private $packetPool;
@@ -424,7 +426,13 @@ class NetworkSession{
 
 	private function flushSendBuffer(bool $immediate = false) : void{
 		if(count($this->sendBuffer) > 0){
-			$promise = $this->server->prepareBatch(PacketBatch::fromPackets(...$this->sendBuffer), $this->compressor, $immediate);
+			$syncMode = null; //automatic
+			if($immediate){
+				$syncMode = true;
+			}elseif($this->forceAsyncCompression){
+				$syncMode = false;
+			}
+			$promise = $this->server->prepareBatch(PacketBatch::fromPackets(...$this->sendBuffer), $this->compressor, $syncMode);
 			$this->sendBuffer = [];
 			$this->queueCompressedNoBufferFlush($promise, $immediate);
 		}
@@ -641,6 +649,7 @@ class NetworkSession{
 		$this->logger->debug("Received spawn response, entering in-game phase");
 		$this->player->setImmobile(false); //TODO: HACK: we set this during the spawn sequence to prevent the client sending junk movements
 		$this->player->doFirstSpawn();
+		$this->forceAsyncCompression = false;
 		$this->setHandler(new InGamePacketHandler($this->player, $this));
 	}
 

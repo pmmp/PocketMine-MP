@@ -1236,18 +1236,21 @@ class Server{
 
 	/**
 	 * Broadcasts a list of packets in a batch to a list of players
+	 *
+	 * @param bool|null $sync Compression on the main thread (true) or workers (false). Default is automatic (null).
 	 */
-	public function prepareBatch(PacketBatch $stream, Compressor $compressor, bool $forceSync = false) : CompressBatchPromise{
+	public function prepareBatch(PacketBatch $stream, Compressor $compressor, ?bool $sync = null) : CompressBatchPromise{
 		try{
 			Timings::$playerNetworkSendCompressTimer->startTiming();
 
 			$buffer = $stream->getBuffer();
-			if(!$compressor->willCompress($buffer)){
-				$forceSync = true;
+
+			if($sync === null){
+				$sync = !($this->networkCompressionAsync && $compressor->willCompress($buffer));
 			}
 
 			$promise = new CompressBatchPromise();
-			if(!$forceSync and $this->networkCompressionAsync){
+			if(!$sync){
 				$task = new CompressBatchTask($buffer, $promise, $compressor);
 				$this->asyncPool->submitTask($task);
 			}else{
