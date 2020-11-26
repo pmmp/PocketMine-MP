@@ -43,13 +43,13 @@ final class CreativeContentEntry{
 	public function getItem() : Item{ return $this->item; }
 
 	public static function read(NetworkBinaryStream $in) : self{
-		$entryId = $in->readGenericTypeNetworkId();
+		$entryId = $in->getUnsignedVarInt();
 		$item = $in->getSlot();
 		return new self($entryId, $item);
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
-		$out->writeGenericTypeNetworkId($this->entryId);
+		$out->putUnsignedVarInt($this->entryId);
 		$out->putSlot($this->item);
 	}
 }
