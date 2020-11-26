@@ -2371,6 +2371,9 @@ class World implements ChunkManager{
 		return abs($X - $spawnX) <= 1 and abs($Z - $spawnZ) <= 1;
 	}
 
+	/**
+	 * @throws WorldException if the terrain is not generated
+	 */
 	public function getSafeSpawn(?Vector3 $spawn = null) : Position{
 		if(!($spawn instanceof Vector3) or $spawn->y < 1){
 			$spawn = $this->getSpawnLocation();
@@ -2379,31 +2382,31 @@ class World implements ChunkManager{
 		$max = $this->worldHeight;
 		$v = $spawn->floor();
 		$chunk = $this->getOrLoadChunkAtPosition($v, false);
+		if($chunk === null || !$chunk->isGenerated()){
+			throw new WorldException("Cannot find a safe spawn point in non-generated terrain");
+		}
 		$x = (int) $v->x;
-		$y = $v->y;
 		$z = (int) $v->z;
-		if($chunk !== null and $chunk->isGenerated()){
-			$y = (int) min($max - 2, $v->y);
-			$wasAir = $this->getBlockAt($x, $y - 1, $z)->getId() === BlockLegacyIds::AIR; //TODO: bad hack, clean up
-			for(; $y > 0; --$y){
-				if($this->getBlockAt($x, $y, $z)->isFullCube()){
-					if($wasAir){
-						$y++;
-						break;
-					}
-				}else{
-					$wasAir = true;
+		$y = (int) min($max - 2, $v->y);
+		$wasAir = $this->getBlockAt($x, $y - 1, $z)->getId() === BlockLegacyIds::AIR; //TODO: bad hack, clean up
+		for(; $y > 0; --$y){
+			if($this->getBlockAt($x, $y, $z)->isFullCube()){
+				if($wasAir){
+					$y++;
+					break;
 				}
+			}else{
+				$wasAir = true;
 			}
+		}
 
-			for(; $y >= 0 and $y < $max; ++$y){
-				if(!$this->getBlockAt($x, $y + 1, $z)->isFullCube()){
-					if(!$this->getBlockAt($x, $y, $z)->isFullCube()){
-						return new Position($spawn->x, $y === (int) $spawn->y ? $spawn->y : $y, $spawn->z, $this);
-					}
-				}else{
-					++$y;
+		for(; $y >= 0 and $y < $max; ++$y){
+			if(!$this->getBlockAt($x, $y + 1, $z)->isFullCube()){
+				if(!$this->getBlockAt($x, $y, $z)->isFullCube()){
+					return new Position($spawn->x, $y === (int) $spawn->y ? $spawn->y : $y, $spawn->z, $this);
 				}
+			}else{
+				++$y;
 			}
 		}
 
