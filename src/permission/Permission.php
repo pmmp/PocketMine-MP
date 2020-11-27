@@ -77,7 +77,7 @@ class Permission{
 	 * @return bool[]
 	 * @phpstan-return array<string, bool>
 	 */
-	public function &getChildren() : array{
+	public function getChildren() : array{
 		return $this->children;
 	}
 
