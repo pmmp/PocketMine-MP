@@ -121,4 +121,10 @@ class Permission{
 		$this->children[$name] = $value;
 		$this->recalculatePermissibles();
 	}
+
+	public function removeChild(string $name) : void{
+		unset($this->children[$name]);
+		$this->recalculatePermissibles();
+
+	}
 }
