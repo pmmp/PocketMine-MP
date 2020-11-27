@@ -28,7 +28,7 @@ abstract class DefaultPermissions{
 
 	public static function registerPermission(Permission $perm, ?Permission $parent = null) : Permission{
 		if($parent instanceof Permission){
-			$parent->getChildren()[$perm->getName()] = true;
+			$parent->addChild($perm->getName(), true);
 		}
 		PermissionManager::getInstance()->addPermission($perm);
 

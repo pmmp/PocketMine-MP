@@ -116,4 +116,9 @@ class Permission{
 			$p->recalculatePermissions();
 		}
 	}
+
+	public function addChild(string $name, bool $value) : void{
+		$this->children[$name] = $value;
+		$this->recalculatePermissibles();
+	}
 }
