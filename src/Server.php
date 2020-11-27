@@ -519,30 +519,32 @@ class Server{
 	}
 
 	public function getOfflinePlayerData(string $name) : ?CompoundTag{
-		$name = strtolower($name);
-		$path = $this->getPlayerDataPath($name);
+		return Timings::$syncPlayerDataLoad->time(function() use ($name) : ?CompoundTag{
+			$name = strtolower($name);
+			$path = $this->getPlayerDataPath($name);
 
-		if(file_exists($path)){
-			$contents = @file_get_contents($path);
-			if($contents === false){
-				throw new \RuntimeException("Failed to read player data file \"$path\" (permission denied?)");
-			}
-			$decompressed = @zlib_decode($contents);
-			if($decompressed === false){
-				$this->logger->debug("Failed to decompress raw player data for \"$name\"");
-				$this->handleCorruptedPlayerData($name);
-				return null;
-			}
+			if(file_exists($path)){
+				$contents = @file_get_contents($path);
+				if($contents === false){
+					throw new \RuntimeException("Failed to read player data file \"$path\" (permission denied?)");
+				}
+				$decompressed = @zlib_decode($contents);
+				if($decompressed === false){
+					$this->logger->debug("Failed to decompress raw player data for \"$name\"");
+					$this->handleCorruptedPlayerData($name);
+					return null;
+				}
 
-			try{
-				return (new BigEndianNbtSerializer())->read($decompressed)->mustGetCompoundTag();
-			}catch(NbtDataException $e){ //zlib decode error / corrupt data
-				$this->logger->debug("Failed to decode NBT data for \"$name\": " . $e->getMessage());
-				$this->handleCorruptedPlayerData($name);
-				return null;
+				try{
+					return (new BigEndianNbtSerializer())->read($decompressed)->mustGetCompoundTag();
+				}catch(NbtDataException $e){ //zlib decode error / corrupt data
+					$this->logger->debug("Failed to decode NBT data for \"$name\": " . $e->getMessage());
+					$this->handleCorruptedPlayerData($name);
+					return null;
+				}
 			}
-		}
-		return null;
+			return null;
+		});
 	}
 
 	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag) : void{
@@ -554,13 +556,15 @@ class Server{
 		$ev->call();
 
 		if(!$ev->isCancelled()){
-			$nbt = new BigEndianNbtSerializer();
-			try{
-				file_put_contents($this->getPlayerDataPath($name), zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP));
-			}catch(\ErrorException $e){
-				$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
-				$this->logger->logException($e);
-			}
+			Timings::$syncPlayerDataSave->time(function() use ($name, $ev) : void{
+				$nbt = new BigEndianNbtSerializer();
+				try{
+					file_put_contents($this->getPlayerDataPath($name), zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP));
+				}catch(\ErrorException $e){
+					$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
+					$this->logger->logException($e);
+				}
+			});
 		}
 	}
 

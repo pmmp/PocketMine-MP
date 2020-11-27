@@ -107,6 +107,11 @@ abstract class Timings{
 	/** @var TimingsHandler */
 	public static $craftingDataCacheRebuildTimer;
 
+	/** @var TimingsHandler */
+	public static $syncPlayerDataLoad;
+	/** @var TimingsHandler */
+	public static $syncPlayerDataSave;
+
 	/** @var TimingsHandler[] */
 	public static $entityTypeTimingMap = [];
 	/** @var TimingsHandler[] */
@@ -154,6 +159,9 @@ abstract class Timings{
 		self::$generationCallbackTimer = new TimingsHandler("World Generation Callback");
 		self::$permissibleCalculationTimer = new TimingsHandler("Permissible Calculation");
 		self::$permissionDefaultTimer = new TimingsHandler("Default Permission Calculation");
+
+		self::$syncPlayerDataLoad = new TimingsHandler("Player Data Load");
+		self::$syncPlayerDataSave = new TimingsHandler("Player Data Save");
 
 		self::$entityMoveTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "entityMove");
 		self::$playerCheckNearEntitiesTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "checkNearEntities");
