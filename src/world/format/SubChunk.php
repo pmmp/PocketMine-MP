@@ -69,6 +69,12 @@ class SubChunk{
 		return count($this->blockLayers) === 0;
 	}
 
+	/**
+	 * Returns the block used as the default. This is assumed to refer to air.
+	 * If all the blocks in a subchunk layer are equal to this block, the layer is assumed to be empty.
+	 */
+	public function getEmptyBlockId() : int{ return $this->emptyBlockId; }
+
 	public function getFullBlock(int $x, int $y, int $z) : int{
 		if(count($this->blockLayers) === 0){
 			return $this->emptyBlockId;
