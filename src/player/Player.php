@@ -2174,7 +2174,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function respawn() : void{
 		if($this->server->isHardcore()){
-			$this->setBanned(true);
+			if($this->kick("You have been banned because you died in hardcore mode")){ //this allows plugins to prevent the ban by cancelling PlayerKickEvent
+				$this->server->getNameBans()->addBan($this->getName(), "Died in hardcore mode");
+			}
 			return;
 		}
 
