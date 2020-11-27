@@ -116,27 +116,4 @@ class Permission{
 			$p->recalculatePermissions();
 		}
 	}
-
-	/**
-	 * @param string|Permission $name
-	 *
-	 * @return Permission|null Permission if $name is a string, null if it's a Permission
-	 */
-	public function addParent($name, bool $value) : ?Permission{
-		if($name instanceof Permission){
-			$name->getChildren()[$this->getName()] = $value;
-			$name->recalculatePermissibles();
-			return null;
-		}else{
-			$perm = PermissionManager::getInstance()->getPermission($name);
-			if($perm === null){
-				$perm = new Permission($name);
-				PermissionManager::getInstance()->addPermission($perm);
-			}
-
-			$this->addParent($perm, $value);
-
-			return $perm;
-		}
-	}
 }
