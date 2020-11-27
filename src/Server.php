@@ -537,7 +537,7 @@ class Server{
 
 				try{
 					return (new BigEndianNbtSerializer())->read($decompressed)->mustGetCompoundTag();
-				}catch(NbtDataException $e){ //zlib decode error / corrupt data
+				}catch(NbtDataException $e){ //corrupt data
 					$this->logger->debug("Failed to decode NBT data for \"$name\": " . $e->getMessage());
 					$this->handleCorruptedPlayerData($name);
 					return null;
