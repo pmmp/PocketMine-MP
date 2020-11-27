@@ -157,7 +157,7 @@ class PermissionManager{
 	}
 
 	/**
-	 * @return array|Permissible[]
+	 * @return Permissible[]
 	 */
 	public function getPermissionSubscriptions(string $permission) : array{
 		return $this->permSubs[$permission] ?? [];
