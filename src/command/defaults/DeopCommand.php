@@ -57,12 +57,11 @@ class DeopCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $sender->getServer()->getOfflinePlayer($name);
-		$player->setOp(false);
-		if($player instanceof Player){
+		$sender->getServer()->removeOp($name);
+		if(($player = $sender->getServer()->getPlayerExact($name)) !== null){
 			$player->sendMessage(TextFormat::GRAY . "You are no longer op!");
 		}
-		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.deop.success", [$player->getName()]));
+		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.deop.success", [$name]));
 
 		return true;
 	}

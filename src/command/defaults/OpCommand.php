@@ -57,12 +57,11 @@ class OpCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $sender->getServer()->getOfflinePlayer($name);
-		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.op.success", [$player->getName()]));
-		if($player instanceof Player){
+		$sender->getServer()->addOp($name);
+		if(($player = $sender->getServer()->getPlayerExact($name)) !== null){
 			$player->sendMessage(TextFormat::GRAY . "You are now op!");
 		}
-		$player->setOp(true);
+		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.op.success", [$name]));
 		return true;
 	}
 }

@@ -99,12 +99,12 @@ class WhitelistCommand extends VanillaCommand{
 			}
 			switch(strtolower($args[0])){
 				case "add":
-					$sender->getServer()->getOfflinePlayer($args[1])->setWhitelisted(true);
+					$sender->getServer()->addWhitelist($args[1]);
 					Command::broadcastCommandMessage($sender, new TranslationContainer("commands.whitelist.add.success", [$args[1]]));
 
 					return true;
 				case "remove":
-					$sender->getServer()->getOfflinePlayer($args[1])->setWhitelisted(false);
+					$sender->getServer()->removeWhitelist($args[1]);
 					Command::broadcastCommandMessage($sender, new TranslationContainer("commands.whitelist.remove.success", [$args[1]]));
 
 					return true;
