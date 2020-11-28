@@ -47,13 +47,17 @@ class PermissibleBase implements Permissible{
 		//TODO: permissions need to be recalculated here, or inherited permissions won't work
 	}
 
+	private function getRootPermissible() : Permissible{
+		return $this->parent ?? $this;
+	}
+
 	public function isOp() : bool{
 		return $this->op;
 	}
 
 	public function onOpStatusChange(bool $value) : void{
 		$this->op = $value;
-		$this->recalculatePermissions();
+		$this->getRootPermissible()->recalculatePermissions();
 	}
 
 	/**
@@ -93,13 +97,13 @@ class PermissibleBase implements Permissible{
 			throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}
 
-		$result = new PermissionAttachment($plugin, $this->parent ?? $this);
+		$result = new PermissionAttachment($plugin, $this->getRootPermissible());
 		$this->attachments[spl_object_id($result)] = $result;
 		if($name !== null and $value !== null){
 			$result->setPermission($name, $value);
 		}
 
-		$this->recalculatePermissions();
+		$this->getRootPermissible()->recalculatePermissions();
 
 		return $result;
 	}
@@ -111,7 +115,7 @@ class PermissibleBase implements Permissible{
 				$ex->attachmentRemoved($attachment);
 			}
 
-			$this->recalculatePermissions();
+			$this->getRootPermissible()->recalculatePermissions();
 
 		}
 
@@ -123,12 +127,12 @@ class PermissibleBase implements Permissible{
 		$this->clearPermissions();
 		$permManager = PermissionManager::getInstance();
 		$defaults = $permManager->getDefaultPermissions($this->isOp());
-		$permManager->subscribeToDefaultPerms($this->isOp(), $this->parent ?? $this);
+		$permManager->subscribeToDefaultPerms($this->isOp(), $this->getRootPermissible());
 
 		foreach($defaults as $perm){
 			$name = $perm->getName();
-			$this->permissions[$name] = new PermissionAttachmentInfo($this->parent ?? $this, $name, null, true);
-			$permManager->subscribeToPermission($name, $this->parent ?? $this);
+			$this->permissions[$name] = new PermissionAttachmentInfo($this->getRootPermissible(), $name, null, true);
+			$permManager->subscribeToPermission($name, $this->getRootPermissible());
 			$this->calculateChildPermissions($perm->getChildren(), false, null);
 		}
 
@@ -141,10 +145,10 @@ class PermissibleBase implements Permissible{
 
 	public function clearPermissions() : void{
 		$permManager = PermissionManager::getInstance();
-		$permManager->unsubscribeFromAllPermissions($this->parent ?? $this);
+		$permManager->unsubscribeFromAllPermissions($this->getRootPermissible());
 
-		$permManager->unsubscribeFromDefaultPerms(false, $this->parent ?? $this);
-		$permManager->unsubscribeFromDefaultPerms(true, $this->parent ?? $this);
+		$permManager->unsubscribeFromDefaultPerms(false, $this->getRootPermissible());
+		$permManager->unsubscribeFromDefaultPerms(true, $this->getRootPermissible());
 
 		$this->permissions = [];
 	}
@@ -157,8 +161,8 @@ class PermissibleBase implements Permissible{
 		foreach($children as $name => $v){
 			$perm = $permManager->getPermission($name);
 			$value = ($v xor $invert);
-			$this->permissions[$name] = new PermissionAttachmentInfo($this->parent ?? $this, $name, $attachment, $value);
-			$permManager->subscribeToPermission($name, $this->parent ?? $this);
+			$this->permissions[$name] = new PermissionAttachmentInfo($this->getRootPermissible(), $name, $attachment, $value);
+			$permManager->subscribeToPermission($name, $this->getRootPermissible());
 
 			if($perm instanceof Permission){
 				$this->calculateChildPermissions($perm->getChildren(), !$value, $attachment);
