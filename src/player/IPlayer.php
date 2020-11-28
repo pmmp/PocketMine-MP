@@ -25,8 +25,6 @@ namespace pocketmine\player;
 
 interface IPlayer{
 
-	public function isOnline() : bool;
-
 	public function getName() : string;
 
 	public function getFirstPlayed() : ?int;

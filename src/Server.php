@@ -500,7 +500,7 @@ class Server{
 		$result = $this->getPlayerExact($name);
 
 		if($result === null){
-			$result = new OfflinePlayer($this, $name);
+			$result = new OfflinePlayer($name, $this->getOfflinePlayerData($name));
 		}
 
 		return $result;

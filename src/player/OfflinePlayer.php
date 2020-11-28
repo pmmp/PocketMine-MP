@@ -25,33 +25,21 @@ namespace pocketmine\player;
 
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\LongTag;
-use pocketmine\Server;
 
 class OfflinePlayer implements IPlayer{
 
 	/** @var string */
 	private $name;
-	/** @var Server */
-	private $server;
 	/** @var CompoundTag|null */
-	private $namedtag = null;
+	private $namedtag;
 
-	public function __construct(Server $server, string $name){
-		$this->server = $server;
+	public function __construct(string $name, ?CompoundTag $namedtag){
 		$this->name = $name;
-		$this->namedtag = $this->server->getOfflinePlayerData($this->name);
-	}
-
-	public function isOnline() : bool{
-		return $this->getPlayer() !== null;
+		$this->namedtag = $namedtag;
 	}
 
 	public function getName() : string{
 		return $this->name;
-	}
-
-	public function getPlayer() : ?Player{
-		return $this->server->getPlayerExact($this->name);
 	}
 
 	public function getFirstPlayed() : ?int{
