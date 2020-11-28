@@ -70,30 +70,6 @@ class OfflinePlayer implements IPlayer{
 		}
 	}
 
-	public function isBanned() : bool{
-		return $this->server->getNameBans()->isBanned($this->name);
-	}
-
-	public function setBanned(bool $banned) : void{
-		if($banned){
-			$this->server->getNameBans()->addBan($this->name, null, null, null);
-		}else{
-			$this->server->getNameBans()->remove($this->name);
-		}
-	}
-
-	public function isWhitelisted() : bool{
-		return $this->server->isWhitelisted($this->name);
-	}
-
-	public function setWhitelisted(bool $value) : void{
-		if($value){
-			$this->server->addWhitelist($this->name);
-		}else{
-			$this->server->removeWhitelist($this->name);
-		}
-	}
-
 	public function getPlayer() : ?Player{
 		return $this->server->getPlayerExact($this->name);
 	}

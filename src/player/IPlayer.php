@@ -31,14 +31,6 @@ interface IPlayer extends ServerOperator{
 
 	public function getName() : string;
 
-	public function isBanned() : bool;
-
-	public function setBanned(bool $banned) : void;
-
-	public function isWhitelisted() : bool;
-
-	public function setWhitelisted(bool $value) : void;
-
 	public function getFirstPlayed() : ?int;
 
 	public function getLastPlayed() : ?int;

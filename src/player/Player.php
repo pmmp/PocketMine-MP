@@ -368,31 +368,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return "";
 	}
 
-	public function isBanned() : bool{
-		return $this->server->getNameBans()->isBanned($this->username);
-	}
-
-	public function setBanned(bool $banned) : void{
-		if($banned){
-			$this->server->getNameBans()->addBan($this->getName(), null, null, null);
-			$this->kick("You have been banned");
-		}else{
-			$this->server->getNameBans()->remove($this->getName());
-		}
-	}
-
-	public function isWhitelisted() : bool{
-		return $this->server->isWhitelisted($this->username);
-	}
-
-	public function setWhitelisted(bool $value) : void{
-		if($value){
-			$this->server->addWhitelist($this->username);
-		}else{
-			$this->server->removeWhitelist($this->username);
-		}
-	}
-
 	public function isAuthenticated() : bool{
 		return $this->authenticated;
 	}
