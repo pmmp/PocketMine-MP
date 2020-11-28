@@ -97,7 +97,6 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\PlayerMetadataFlags;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
-use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
@@ -524,9 +523,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function recalculatePermissions() : void{
-		$permManager = PermissionManager::getInstance();
-		$permManager->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
-		$permManager->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+		$this->server->unsubscribeFromBroadcastChannel(Server::BROADCAST_CHANNEL_USERS, $this);
+		$this->server->unsubscribeFromBroadcastChannel(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 
 		if($this->perm === null){
 			return;
@@ -538,10 +536,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		if($this->spawned){
 			if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
-				$permManager->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+				$this->server->subscribeToBroadcastChannel(Server::BROADCAST_CHANNEL_USERS, $this);
 			}
 			if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
-				$permManager->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+				$this->server->subscribeToBroadcastChannel(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 			}
 
 			$this->networkSession->syncAvailableCommands();
@@ -781,10 +779,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 		$this->spawned = true;
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
-			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $this);
+			$this->server->subscribeToBroadcastChannel(Server::BROADCAST_CHANNEL_USERS, $this);
 		}
 		if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
-			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+			$this->server->subscribeToBroadcastChannel(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
 		}
 
 		$ev = new PlayerJoinEvent($this,
@@ -1363,7 +1361,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
 					Timings::$playerCommandTimer->stopTiming();
 				}else{
-					$ev = new PlayerChatEvent($this, $ev->getMessage());
+					$ev = new PlayerChatEvent($this, $ev->getMessage(), $this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_USERS));
 					$ev->call();
 					if(!$ev->isCancelled()){
 						$this->server->broadcastMessage($this->getServer()->getLanguage()->translateString($ev->getFormat(), [$ev->getPlayer()->getDisplayName(), $ev->getMessage()]), $ev->getRecipients());
@@ -1972,8 +1970,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		//prevent the player receiving their own disconnect message
-		PermissionManager::getInstance()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
-		PermissionManager::getInstance()->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
+		$this->server->unsubscribeFromAllBroadcastChannels($this);
 
 		$ev = new PlayerQuitEvent($this, $quitMessage ?? $this->getLeaveMessage(), $reason);
 		$ev->call();

@@ -62,7 +62,6 @@ use pocketmine\network\query\QueryInfo;
 use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
-use pocketmine\permission\PermissionManager;
 use pocketmine\player\GameMode;
 use pocketmine\player\OfflinePlayer;
 use pocketmine\player\Player;
@@ -276,6 +275,12 @@ class Server{
 
 	/** @var Player[] */
 	private $playerList = [];
+
+	/**
+	 * @var CommandSender[][]
+	 * @phpstan-var array<string, array<int, CommandSender>>
+	 */
+	private $broadcastSubscribers = [];
 
 	public function getName() : string{
 		return VersionInfo::NAME;
@@ -1063,8 +1068,8 @@ class Server{
 
 			//TODO: move console parts to a separate component
 			$consoleSender = new ConsoleCommandSender($this, $this->language);
-			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
-			PermissionManager::getInstance()->subscribeToPermission(Server::BROADCAST_CHANNEL_USERS, $consoleSender);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $consoleSender);
 
 			$consoleNotifier = new SleeperNotifier();
 			$this->console = new CommandReader($consoleNotifier);
@@ -1085,18 +1090,50 @@ class Server{
 	}
 
 	/**
+	 * Subscribes to a particular message broadcast channel.
+	 * The channel ID can be any arbitrary string.
+	 */
+	public function subscribeToBroadcastChannel(string $channelId, CommandSender $subscriber) : void{
+		$this->broadcastSubscribers[$channelId][spl_object_id($subscriber)] = $subscriber;
+	}
+
+	/**
+	 * Unsubscribes from a particular message broadcast channel.
+	 */
+	public function unsubscribeFromBroadcastChannel(string $channelId, CommandSender $subscriber) : void{
+		if(isset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)])){
+			unset($this->broadcastSubscribers[$channelId][spl_object_id($subscriber)]);
+			if(count($this->broadcastSubscribers[$channelId]) === 0){
+				unset($this->broadcastSubscribers[$channelId]);
+			}
+		}
+	}
+
+	/**
+	 * Unsubscribes from all broadcast channels.
+	 */
+	public function unsubscribeFromAllBroadcastChannels(CommandSender $subscriber) : void{
+		foreach($this->broadcastSubscribers as $channelId => $recipients){
+			$this->unsubscribeFromBroadcastChannel($channelId, $subscriber);
+		}
+	}
+
+	/**
+	 * Returns a list of all the CommandSenders subscribed to the given broadcast channel.
+	 *
+	 * @return CommandSender[]
+	 * @phpstan-return array<int, CommandSender>
+	 */
+	public function getBroadcastChannelSubscribers(string $channelId) : array{
+		return $this->broadcastSubscribers[$channelId] ?? [];
+	}
+
+	/**
 	 * @param TranslationContainer|string $message
 	 * @param CommandSender[]|null        $recipients
 	 */
 	public function broadcastMessage($message, ?array $recipients = null) : int{
-		if(!is_array($recipients)){
-			$recipients = [];
-			foreach(PermissionManager::getInstance()->getPermissionSubscriptions(self::BROADCAST_CHANNEL_USERS) as $permissible){
-				if($permissible instanceof CommandSender and $permissible->hasPermission(self::BROADCAST_CHANNEL_USERS)){
-					$recipients[spl_object_id($permissible)] = $permissible; // do not send messages directly, or some might be repeated
-				}
-			}
-		}
+		$recipients = $recipients ?? $this->getBroadcastChannelSubscribers(self::BROADCAST_CHANNEL_USERS);
 
 		foreach($recipients as $recipient){
 			$recipient->sendMessage($message);
@@ -1108,12 +1145,12 @@ class Server{
 	/**
 	 * @return Player[]
 	 */
-	private function selectPermittedPlayers(string $permission) : array{
+	private function getPlayerBroadcastSubscribers(string $channelId) : array{
 		/** @var Player[] $players */
 		$players = [];
-		foreach(PermissionManager::getInstance()->getPermissionSubscriptions($permission) as $permissible){
-			if($permissible instanceof Player and $permissible->hasPermission($permission)){
-				$players[spl_object_id($permissible)] = $permissible; //prevent duplication
+		foreach($this->broadcastSubscribers[$channelId] as $subscriber){
+			if($subscriber instanceof Player){
+				$players[spl_object_id($subscriber)] = $subscriber;
 			}
 		}
 		return $players;
@@ -1123,7 +1160,7 @@ class Server{
 	 * @param Player[]|null $recipients
 	 */
 	public function broadcastTip(string $tip, ?array $recipients = null) : int{
-		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
+		$recipients = $recipients ?? $this->getPlayerBroadcastSubscribers(self::BROADCAST_CHANNEL_USERS);
 
 		foreach($recipients as $recipient){
 			$recipient->sendTip($tip);
@@ -1136,7 +1173,7 @@ class Server{
 	 * @param Player[]|null $recipients
 	 */
 	public function broadcastPopup(string $popup, ?array $recipients = null) : int{
-		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
+		$recipients = $recipients ?? $this->getPlayerBroadcastSubscribers(self::BROADCAST_CHANNEL_USERS);
 
 		foreach($recipients as $recipient){
 			$recipient->sendPopup($popup);
@@ -1152,7 +1189,7 @@ class Server{
 	 * @param Player[]|null $recipients
 	 */
 	public function broadcastTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1, ?array $recipients = null) : int{
-		$recipients = $recipients ?? $this->selectPermittedPlayers(self::BROADCAST_CHANNEL_USERS);
+		$recipients = $recipients ?? $this->getPlayerBroadcastSubscribers(self::BROADCAST_CHANNEL_USERS);
 
 		foreach($recipients as $recipient){
 			$recipient->sendTitle($title, $subtitle, $fadeIn, $stay, $fadeOut);
