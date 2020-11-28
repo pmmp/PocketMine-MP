@@ -36,9 +36,15 @@ class PlayerCreationEvent extends Event{
 	/** @var NetworkSession */
 	private $session;
 
-	/** @var string */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<Player>
+	 */
 	private $baseClass = Player::class;
-	/** @var string */
+	/**
+	 * @var string
+	 * @phpstan-var class-string<Player>
+	 */
 	private $playerClass = Player::class;
 
 	public function __construct(NetworkSession $session){
@@ -59,6 +65,7 @@ class PlayerCreationEvent extends Event{
 
 	/**
 	 * @return string
+	 * @phpstan-return class-string<Player>
 	 */
 	public function getBaseClass(){
 		return $this->baseClass;
@@ -66,6 +73,7 @@ class PlayerCreationEvent extends Event{
 
 	/**
 	 * @param string $class
+	 * @phpstan-param class-string<Player> $class
 	 */
 	public function setBaseClass($class) : void{
 		if(!is_a($class, $this->baseClass, true)){
@@ -77,6 +85,7 @@ class PlayerCreationEvent extends Event{
 
 	/**
 	 * @return string
+	 * @phpstan-return class-string<Player>
 	 */
 	public function getPlayerClass(){
 		return $this->playerClass;
@@ -84,6 +93,7 @@ class PlayerCreationEvent extends Event{
 
 	/**
 	 * @param string $class
+	 * @phpstan-param class-string<Player> $class
 	 */
 	public function setPlayerClass($class) : void{
 		if(!is_a($class, $this->baseClass, true)){
