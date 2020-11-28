@@ -535,10 +535,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		return min(100, 7 * $this->getXpLevel());
 	}
 
-	/**
-	 * @return PlayerInventory
-	 */
-	public function getInventory(){
+	public function getInventory() : ?PlayerInventory{
 		return $this->inventory;
 	}
 
