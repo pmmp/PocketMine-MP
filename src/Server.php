@@ -1090,7 +1090,12 @@ class Server{
 	 */
 	public function broadcastMessage($message, ?array $recipients = null) : int{
 		if(!is_array($recipients)){
-			return $this->broadcast($message, self::BROADCAST_CHANNEL_USERS);
+			$recipients = [];
+			foreach(PermissionManager::getInstance()->getPermissionSubscriptions(self::BROADCAST_CHANNEL_USERS) as $permissible){
+				if($permissible instanceof CommandSender and $permissible->hasPermission(self::BROADCAST_CHANNEL_USERS)){
+					$recipients[spl_object_id($permissible)] = $permissible; // do not send messages directly, or some might be repeated
+				}
+			}
 		}
 
 		foreach($recipients as $recipient){
@@ -1151,27 +1156,6 @@ class Server{
 
 		foreach($recipients as $recipient){
 			$recipient->sendTitle($title, $subtitle, $fadeIn, $stay, $fadeOut);
-		}
-
-		return count($recipients);
-	}
-
-	/**
-	 * @param TranslationContainer|string $message
-	 */
-	public function broadcast($message, string $permissions) : int{
-		/** @var CommandSender[] $recipients */
-		$recipients = [];
-		foreach(explode(";", $permissions) as $permission){
-			foreach(PermissionManager::getInstance()->getPermissionSubscriptions($permission) as $permissible){
-				if($permissible instanceof CommandSender and $permissible->hasPermission($permission)){
-					$recipients[spl_object_id($permissible)] = $permissible; // do not send messages directly, or some might be repeated
-				}
-			}
-		}
-
-		foreach($recipients as $recipient){
-			$recipient->sendMessage($message);
 		}
 
 		return count($recipients);
