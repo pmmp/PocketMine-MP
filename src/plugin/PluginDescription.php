@@ -83,7 +83,10 @@ class PluginDescription{
 	/** @var PluginEnableOrder */
 	private $order;
 
-	/** @var Permission[] */
+	/**
+	 * @var Permission[][]
+	 * @phpstan-var array<string, list<Permission>>
+	 */
 	private $permissions = [];
 
 	/**
@@ -286,7 +289,8 @@ class PluginDescription{
 	}
 
 	/**
-	 * @return Permission[]
+	 * @return Permission[][]
+	 * @phpstan-return array<string, list<Permission>>
 	 */
 	public function getPermissions() : array{
 		return $this->permissions;

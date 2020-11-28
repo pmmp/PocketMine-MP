@@ -29,11 +29,14 @@ use pocketmine\timings\Timings;
 use function spl_object_id;
 
 class PermissibleBase implements Permissible{
-	/** @var bool */
-	private $op;
-
 	/** @var Permissible|null */
 	private $parent;
+
+	/**
+	 * @var PermissionAttachmentInfo[]
+	 * @phpstan-var array<string, PermissionAttachmentInfo>
+	 */
+	private $rootPermissions = [];
 
 	/** @var PermissionAttachment[] */
 	private $attachments = [];
@@ -43,7 +46,11 @@ class PermissibleBase implements Permissible{
 
 	public function __construct(?Permissible $permissible, bool $isOp){
 		$this->parent = $permissible;
-		$this->op = $isOp;
+		$this->setCorePermission(DefaultPermissions::ROOT_USER);
+		if($isOp){
+			//this HAS to be set AFTER the user perm, so that notop overrides work correctly
+			$this->setCorePermission(DefaultPermissions::ROOT_OPERATOR);
+		}
 		//TODO: permissions need to be recalculated here, or inherited permissions won't work
 	}
 
@@ -52,12 +59,20 @@ class PermissibleBase implements Permissible{
 	}
 
 	public function isOp() : bool{
-		return $this->op;
+		return $this->hasPermission(DefaultPermissions::ROOT_OPERATOR);
 	}
 
 	public function onOpStatusChange(bool $value) : void{
-		$this->op = $value;
+		if($value){
+			$this->setCorePermission(DefaultPermissions::ROOT_OPERATOR);
+		}else{
+			unset($this->rootPermissions[DefaultPermissions::ROOT_OPERATOR]);
+		}
 		$this->getRootPermissible()->recalculatePermissions();
+	}
+
+	private function setCorePermission(string $perm) : void{
+		$this->rootPermissions[$perm] = new PermissionAttachmentInfo($this->getRootPermissible(), $perm, null, true);
 	}
 
 	/**
@@ -117,14 +132,16 @@ class PermissibleBase implements Permissible{
 	public function recalculatePermissions() : void{
 		Timings::$permissibleCalculationTimer->startTiming();
 
-		$this->clearPermissions();
 		$permManager = PermissionManager::getInstance();
-		$defaults = $permManager->getDefaultPermissions($this->isOp());
-		$permManager->subscribeToDefaultPerms($this->isOp(), $this->getRootPermissible());
+		$permManager->unsubscribeFromAllPermissions($this->getRootPermissible());
+		$this->permissions = [];
 
-		foreach($defaults as $perm){
-			$name = $perm->getName();
-			$this->permissions[$name] = new PermissionAttachmentInfo($this->getRootPermissible(), $name, null, true);
+		foreach($this->rootPermissions as $name => $attachmentInfo){
+			$perm = $permManager->getPermission($name);
+			if($perm === null){
+				throw new \InvalidStateException("Unregistered root permission $name");
+			}
+			$this->permissions[$name] = $attachmentInfo;
 			$permManager->subscribeToPermission($name, $this->getRootPermissible());
 			$this->calculateChildPermissions($perm->getChildren(), false, null);
 		}
@@ -137,13 +154,10 @@ class PermissibleBase implements Permissible{
 	}
 
 	public function clearPermissions() : void{
-		$permManager = PermissionManager::getInstance();
-		$permManager->unsubscribeFromAllPermissions($this->getRootPermissible());
-
-		$permManager->unsubscribeFromDefaultPerms(false, $this->getRootPermissible());
-		$permManager->unsubscribeFromDefaultPerms(true, $this->getRootPermissible());
+		PermissionManager::getInstance()->unsubscribeFromAllPermissions($this->getRootPermissible());
 
 		$this->permissions = [];
+		$this->rootPermissions = [];
 	}
 
 	/**
