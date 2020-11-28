@@ -422,7 +422,7 @@ abstract class Living extends Entity implements Damageable{
 		return $result;
 	}
 
-	public function getArmorInventory() : ArmorInventory{
+	public function getArmorInventory() : ?ArmorInventory{
 		return $this->armorInventory;
 	}
 
