@@ -50,26 +50,6 @@ class OfflinePlayer implements IPlayer{
 		return $this->name;
 	}
 
-	public function getServer() : Server{
-		return $this->server;
-	}
-
-	public function isOp() : bool{
-		return $this->server->isOp($this->name);
-	}
-
-	public function setOp(bool $value) : void{
-		if($value === $this->isOp()){
-			return;
-		}
-
-		if($value){
-			$this->server->addOp($this->name);
-		}else{
-			$this->server->removeOp($this->name);
-		}
-	}
-
 	public function getPlayer() : ?Player{
 		return $this->server->getPlayerExact($this->name);
 	}
