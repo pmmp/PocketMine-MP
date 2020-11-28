@@ -79,14 +79,7 @@ class PermissibleBase implements Permissible{
 			return $this->permissions[$name]->getValue();
 		}
 
-		if(($perm = PermissionManager::getInstance()->getPermission($name)) !== null){
-			$perm = $perm->getDefault();
-
-			return $perm === Permission::DEFAULT_TRUE or ($this->isOp() and $perm === Permission::DEFAULT_OP) or (!$this->isOp() and $perm === Permission::DEFAULT_NOT_OP);
-		}else{
-			return Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_TRUE or ($this->isOp() and Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_OP) or (!$this->isOp() and Permission::$DEFAULT_PERMISSION === Permission::DEFAULT_NOT_OP);
-		}
-
+		return false;
 	}
 
 	/**
