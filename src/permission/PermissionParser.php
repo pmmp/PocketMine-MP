@@ -119,44 +119,4 @@ class PermissionParser{
 
 		return new Permission($name, $desc, $default, $children);
 	}
-
-	/**
-	 * @param Permission[] $permissions
-	 *
-	 * @return mixed[]
-	 * @phpstan-return array<string, array<string, mixed>>
-	 */
-	public static function emitPermissions(array $permissions) : array{
-		$result = [];
-		foreach($permissions as $permission){
-			$result[$permission->getName()] = self::emitPermission($permission);
-		}
-		ksort($result);
-		return $result;
-	}
-
-	/**
-	 * @return mixed[]
-	 * @phpstan-return array<string, mixed>
-	 */
-	private static function emitPermission(Permission $permission) : array{
-		$result = [
-			"description" => $permission->getDescription(),
-			"default" => $permission->getDefault()
-		];
-		$children = [];
-		foreach($permission->getChildren() as $name => $bool){
-			//TODO: really? wtf??? this system is so overengineered it makes my head hurt...
-			$child = PermissionManager::getInstance()->getPermission($name);
-			if($child === null){
-				throw new \UnexpectedValueException("Permission child should be a registered permission");
-			}
-			$children[$name] = self::emitPermission($child);
-		}
-		if(count($children) > 0){
-			ksort($children);
-			$result["children"] = $children;
-		}
-		return $result;
-	}
 }
