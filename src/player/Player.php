@@ -281,7 +281,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->xuid = $this->playerInfo instanceof XboxLivePlayerInfo ? $this->playerInfo->getXuid() : "";
 
-		$this->perm = new PermissibleBase($this);
+		$this->perm = new PermissibleBase($this, $this->server->isOp($this->username));
 		$this->chunksPerTick = (int) $this->server->getConfigGroup()->getProperty("chunk-sending.per-tick", 4);
 		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
 		$this->chunkSelector = new ChunkSelector();
@@ -523,24 +523,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $this->isConnected();
 	}
 
-	public function isOp() : bool{
-		return $this->server->isOp($this->getName());
-	}
-
-	public function setOp(bool $value) : void{
-		if($value === $this->isOp()){
-			return;
-		}
-
-		if($value){
-			$this->server->addOp($this->getName());
-		}else{
-			$this->server->removeOp($this->getName());
-		}
-
-		$this->networkSession->syncAdventureSettings($this);
-	}
-
 	public function recalculatePermissions() : void{
 		$permManager = PermissionManager::getInstance();
 		$permManager->unsubscribeFromPermission(Server::BROADCAST_CHANNEL_USERS, $this);
@@ -551,6 +533,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$this->delegateRecalculatePermissions();
+
+		$this->networkSession->syncAdventureSettings($this);
 
 		if($this->spawned){
 			if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){

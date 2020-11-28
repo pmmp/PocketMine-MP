@@ -25,7 +25,11 @@ namespace pocketmine\permission;
 
 use pocketmine\plugin\Plugin;
 
-interface Permissible extends ServerOperator{
+interface Permissible{
+
+	public function isOp() : bool;
+
+	public function onOpStatusChange(bool $value) : void;
 
 	/**
 	 * Checks if this instance has a permission overridden

@@ -29,11 +29,11 @@ use pocketmine\timings\Timings;
 use function spl_object_id;
 
 class PermissibleBase implements Permissible{
-	/** @var ServerOperator */
-	private $opable;
+	/** @var bool */
+	private $op;
 
 	/** @var Permissible|null */
-	private $parent = null;
+	private $parent;
 
 	/** @var PermissionAttachment[] */
 	private $attachments = [];
@@ -41,19 +41,19 @@ class PermissibleBase implements Permissible{
 	/** @var PermissionAttachmentInfo[] */
 	private $permissions = [];
 
-	public function __construct(ServerOperator $opable){
-		$this->opable = $opable;
-		if($opable instanceof Permissible){
-			$this->parent = $opable;
-		}
+	public function __construct(?Permissible $permissible, bool $isOp){
+		$this->parent = $permissible;
+		$this->op = $isOp;
+		//TODO: permissions need to be recalculated here, or inherited permissions won't work
 	}
 
 	public function isOp() : bool{
-		return $this->opable->isOp();
+		return $this->op;
 	}
 
-	public function setOp(bool $value) : void{
-		$this->opable->setOp($value);
+	public function onOpStatusChange(bool $value) : void{
+		$this->op = $value;
+		$this->recalculatePermissions();
 	}
 
 	/**
