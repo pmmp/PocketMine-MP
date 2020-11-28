@@ -112,7 +112,7 @@ class ZippedResourcePack implements ResourcePack{
 			/** @var Manifest $manifest */
 			$manifest = $mapper->map($manifest, new Manifest());
 		}catch(\JsonMapper_Exception $e){
-			throw new ResourcePackException("manifest.json is missing required fields");
+			throw new ResourcePackException("Invalid manifest.json contents: " . $e->getMessage(), 0, $e);
 		}
 
 		$this->manifest = $manifest;
