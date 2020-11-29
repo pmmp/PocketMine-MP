@@ -55,7 +55,6 @@ abstract class DefaultPermissions{
 
 		self::registerPermission(new Permission(self::ROOT . ".broadcast.admin", "Allows the user to receive administrative broadcasts"), [$operatorRoot, $broadcastRoot]);
 		self::registerPermission(new Permission(self::ROOT . ".broadcast.user", "Allows the user to receive user broadcasts"), [$everyoneRoot, $broadcastRoot]);
-		$broadcastRoot->recalculatePermissibles();
 
 		//this allows using ALL commands if assigned, irrespective of what group the player is in
 		$commandRoot = self::registerPermission(new Permission(self::ROOT . ".command", "Allows using all PocketMine commands"), [$parent]);
@@ -69,29 +68,24 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(self::ROOT . ".command.whitelist.enable", "Allows the user to enable the server whitelist"), [$whitelist]);
 		self::registerPermission(new Permission(self::ROOT . ".command.whitelist.disable", "Allows the user to disable the server whitelist"), [$whitelist]);
 		self::registerPermission(new Permission(self::ROOT . ".command.whitelist.list", "Allows the user to list all players on the server whitelist"), [$whitelist]);
-		$whitelist->recalculatePermissibles();
 
 		$ban = self::registerPermission(new Permission(self::ROOT . ".command.ban", "Allows the user to ban people"), $operatorCommand);
 		self::registerPermission(new Permission(self::ROOT . ".command.ban.player", "Allows the user to ban players"), [$ban]);
 		self::registerPermission(new Permission(self::ROOT . ".command.ban.ip", "Allows the user to ban IP addresses"), [$ban]);
 		self::registerPermission(new Permission(self::ROOT . ".command.ban.list", "Allows the user to list banned players"), [$ban]);
-		$ban->recalculatePermissibles();
 
 		$unban = self::registerPermission(new Permission(self::ROOT . ".command.unban", "Allows the user to unban people"), $operatorCommand);
 		self::registerPermission(new Permission(self::ROOT . ".command.unban.player", "Allows the user to unban players"), [$unban]);
 		self::registerPermission(new Permission(self::ROOT . ".command.unban.ip", "Allows the user to unban IP addresses"), [$unban]);
-		$unban->recalculatePermissibles();
 
 		$op = self::registerPermission(new Permission(self::ROOT . ".command.op", "Allows the user to change operators"), $operatorCommand);
 		self::registerPermission(new Permission(self::ROOT . ".command.op.give", "Allows the user to give a player operator status"), [$op]);
 		self::registerPermission(new Permission(self::ROOT . ".command.op.take", "Allows the user to take a player's operator status"), [$op]);
-		$op->recalculatePermissibles();
 
 		$save = self::registerPermission(new Permission(self::ROOT . ".command.save", "Allows the user to save the worlds"), $operatorCommand);
 		self::registerPermission(new Permission(self::ROOT . ".command.save.enable", "Allows the user to enable automatic saving"), [$save]);
 		self::registerPermission(new Permission(self::ROOT . ".command.save.disable", "Allows the user to disable automatic saving"), [$save]);
 		self::registerPermission(new Permission(self::ROOT . ".command.save.perform", "Allows the user to perform a manual save"), [$save]);
-		$save->recalculatePermissibles();
 
 		$time = self::registerPermission(new Permission(self::ROOT . ".command.time", "Allows the user to alter the time"), $operatorCommand);
 		self::registerPermission(new Permission(self::ROOT . ".command.time.add", "Allows the user to fast-forward time"), [$time]);
@@ -99,12 +93,10 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(self::ROOT . ".command.time.start", "Allows the user to restart the time"), [$time]);
 		self::registerPermission(new Permission(self::ROOT . ".command.time.stop", "Allows the user to stop the time"), [$time]);
 		self::registerPermission(new Permission(self::ROOT . ".command.time.query", "Allows the user query the time"), [$time]);
-		$time->recalculatePermissibles();
 
 		$kill = self::registerPermission(new Permission(self::ROOT . ".command.kill", "Allows the user to kill players"), $operatorCommand);
 		self::registerPermission(new Permission(self::ROOT . ".command.kill.self", "Allows the user to commit suicide"), [$kill, $everyoneRoot]);
 		self::registerPermission(new Permission(self::ROOT . ".command.kill.other", "Allows the user to kill other players"), [$kill]);
-		$kill->recalculatePermissibles();
 
 		self::registerPermission(new Permission(self::ROOT . ".command.me", "Allows the user to perform a chat action"), $everyoneCommand);
 		self::registerPermission(new Permission(self::ROOT . ".command.tell", "Allows the user to privately message another player"), $everyoneCommand);
@@ -132,9 +124,5 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(self::ROOT . ".command.transferserver", "Allows the user to transfer self to another server"), $operatorCommand);
 		self::registerPermission(new Permission(self::ROOT . ".command.title", "Allows the user to send a title to the specified player"), $operatorCommand);
 		self::registerPermission(new Permission(self::ROOT . ".command.difficulty", "Allows the user to change the game difficulty"), $operatorCommand);
-
-		$commandRoot->recalculatePermissibles();
-
-		$parent->recalculatePermissibles();
 	}
 }
