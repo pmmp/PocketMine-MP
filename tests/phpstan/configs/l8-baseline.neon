@@ -446,6 +446,11 @@ parameters:
 			path: ../../../src/plugin/PluginBase.php
 
 		-
+			message: "#^Cannot call method addChild\\(\\) on pocketmine\\\\permission\\\\Permission\\|null\\.$#"
+			count: 4
+			path: ../../../src/plugin/PluginManager.php
+
+		-
 			message: "#^Parameter \\#1 \\$closure of static method pocketmine\\\\utils\\\\Utils\\:\\:getNiceClosureName\\(\\) expects Closure, Closure\\|null given\\.$#"
 			count: 2
 			path: ../../../src/plugin/PluginManager.php
