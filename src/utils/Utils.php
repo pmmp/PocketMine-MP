@@ -521,4 +521,20 @@ class Utils{
 			throw new \InvalidArgumentException("Text must be valid UTF-8");
 		}
 	}
+
+	/**
+	 * Checks whether the array is incrementally indexed from int(0), used for distinguishing JSON/YAML arrays vs objects
+	 *
+	 * @param array $array
+	 * @return bool
+	 */
+	public static function isArrayLinear(array $array) : bool{
+		$i = 0;
+		foreach($array as $key => $_) {
+			if($key !== $i++) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

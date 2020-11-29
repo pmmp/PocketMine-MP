@@ -68,6 +68,8 @@ class Config{
 	public const ENUM = 5; // .txt, .list, .enum
 	public const ENUMERATION = Config::ENUM;
 
+	public const PROPERTIES_REGEX = '/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um';
+
 	/**
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
@@ -545,7 +547,7 @@ class Config{
 	 */
 	private function parseProperties(string $content) : array{
 		$result = [];
-		if(preg_match_all('/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um', $content, $matches) > 0){ //false or 0 matches
+		if(preg_match_all(self::PROPERTIES_REGEX, $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
 				$v = trim($matches[2][$i]);
 				switch(strtolower($v)){
