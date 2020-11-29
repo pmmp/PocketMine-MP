@@ -43,10 +43,6 @@ class PermissionManager{
 	protected $permissions = [];
 	/** @var Permissible[][] */
 	protected $permSubs = [];
-	/** @var Permissible[] */
-	protected $defSubs = [];
-	/** @var Permissible[] */
-	protected $defSubsOp = [];
 
 	public function getPermission(string $name) : ?Permission{
 		return $this->permissions[$name] ?? null;
