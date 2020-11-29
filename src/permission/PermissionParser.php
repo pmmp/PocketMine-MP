@@ -79,7 +79,7 @@ class PermissionParser{
 	 * @phpstan-param array<string, array<string, mixed>> $data
 	 *
 	 * @return Permission[][]
-	 * @phpstan-return array<string, list<Permission>
+	 * @phpstan-return array<string, list<Permission>>
 	 */
 	public static function loadPermissions(array $data, string $default = self::DEFAULT_OP) : array{
 		$result = [];
