@@ -35,6 +35,20 @@ class NetworkStackLatencyPacket extends DataPacket implements ClientboundPacket,
 	/** @var bool */
 	public $needResponse;
 
+	public static function request(int $timestampNs) : self{
+		$result = new self;
+		$result->timestamp = $timestampNs;
+		$result->needResponse = true;
+		return $result;
+	}
+
+	public static function response(int $timestampNs) : self{
+		$result = new self;
+		$result->timestamp = $timestampNs;
+		$result->needResponse = false;
+		return $result;
+	}
+
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->timestamp = $in->getLLong();
 		$this->needResponse = $in->getBool();
