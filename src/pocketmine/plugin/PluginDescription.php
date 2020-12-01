@@ -157,7 +157,7 @@ class PluginDescription{
 		$this->authors = [];
 		if(isset($plugin["author"])){
 			if(is_array($plugin["author"])){
-				$this->authors = $authors["author"];
+				$this->authors = $plugin["author"];
 			}else{
 				$this->authors[] = $plugin["author"];
 			}
