@@ -152,12 +152,6 @@ class PermissibleBase implements Permissible{
 		Timings::$permissibleCalculationTimer->stopTiming();
 	}
 
-	public function clearPermissions() : void{
-		PermissionManager::getInstance()->unsubscribeFromAllPermissions($this->getRootPermissible());
-
-		$this->permissions = [];
-	}
-
 	/**
 	 * @param bool[]                    $children
 	 */
@@ -180,5 +174,12 @@ class PermissibleBase implements Permissible{
 	 */
 	public function getEffectivePermissions() : array{
 		return $this->permissions;
+	}
+
+	public function destroyCycles() : void{
+		PermissionManager::getInstance()->unsubscribeFromAllPermissions($this->getRootPermissible());
+		$this->permissions = []; //PermissionAttachmentInfo doesn't reference Permissible anymore, but it references PermissionAttachment which does
+		$this->attachments = []; //this might still be a problem if the attachments are still referenced, but we can't do anything about that
+		$this->parent = null;
 	}
 }
