@@ -69,7 +69,7 @@ class RakLibServer extends Thread{
 	/** @var SleeperNotifier */
 	protected $mainThreadNotifier;
 
-	/** @var \Throwable|null */
+	/** @var string|null */
 	public $crashInfo = null;
 
 	/**
@@ -111,22 +111,22 @@ class RakLibServer extends Thread{
 
 			if($error !== null){
 				$this->logger->emergency("Fatal error: " . $error["message"] . " in " . $error["file"] . " on line " . $error["line"]);
-				$this->setCrashInfo(new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']));
+				$this->setCrashInfo($error['message']);
 			}else{
 				$this->logger->emergency("RakLib shutdown unexpectedly");
 			}
 		}
 	}
 
-	public function getCrashInfo() : ?\Throwable{
+	public function getCrashInfo() : ?string{
 		return $this->crashInfo;
 	}
 
-	private function setCrashInfo(\Throwable $e) : void{
-		$this->synchronized(function(\Throwable $e) : void{
-			$this->crashInfo = $e;
+	private function setCrashInfo(string $info) : void{
+		$this->synchronized(function(string $info) : void{
+			$this->crashInfo = $info;
 			$this->notify();
-		}, $e);
+		}, $info);
 	}
 
 	public function startAndWait(int $options = PTHREADS_INHERIT_NONE) : void{
@@ -136,7 +136,7 @@ class RakLibServer extends Thread{
 				$this->wait();
 			}
 			if($this->crashInfo !== null){
-				throw $this->crashInfo;
+				throw new \RuntimeException("RakLib failed to start: $this->crashInfo");
 			}
 		});
 	}
@@ -167,7 +167,7 @@ class RakLibServer extends Thread{
 			$manager->run();
 			$this->cleanShutdown = true;
 		}catch(\Throwable $e){
-			$this->setCrashInfo($e);
+			$this->setCrashInfo($e->getMessage());
 			$this->logger->logException($e);
 		}
 	}
