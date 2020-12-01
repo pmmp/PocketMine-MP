@@ -682,7 +682,7 @@ class Server{
 		$this->operators->set(strtolower($name), true);
 
 		if(($player = $this->getPlayerExact($name)) !== null){
-			$player->onOpStatusChange(true);
+			$player->setBasePermission(DefaultPermissions::ROOT_OPERATOR, true);
 		}
 		$this->operators->save();
 	}
@@ -691,7 +691,7 @@ class Server{
 		$this->operators->remove(strtolower($name));
 
 		if(($player = $this->getPlayerExact($name)) !== null){
-			$player->onOpStatusChange(false);
+			$player->unsetBasePermission(DefaultPermissions::ROOT_OPERATOR);
 		}
 		$this->operators->save();
 	}
