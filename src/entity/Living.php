@@ -784,6 +784,8 @@ abstract class Living extends Entity{
 
 	protected function onDispose() : void{
 		$this->armorInventory->removeAllViewers();
+		$this->effectManager->getEffectAddHooks()->clear();
+		$this->effectManager->getEffectRemoveHooks()->clear();
 		parent::onDispose();
 	}
 
