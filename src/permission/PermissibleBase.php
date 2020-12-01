@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use Ds\Set;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
 use pocketmine\timings\Timings;
@@ -46,7 +47,15 @@ class PermissibleBase implements Permissible{
 	/** @var PermissionAttachmentInfo[] */
 	private $permissions = [];
 
+	/**
+	 * @var Set|\Closure[]
+	 * @phpstan-var Set<\Closure() : void>
+	 */
+	private $permissionRecalculationCallbacks;
+
 	public function __construct(?Permissible $permissible, bool $isOp){
+		$this->permissionRecalculationCallbacks = new Set();
+
 		$this->parent = $permissible;
 
 		//TODO: we can't setBasePermission here directly due to bad architecture that causes recalculatePermissions to explode
@@ -149,6 +158,11 @@ class PermissibleBase implements Permissible{
 			$this->calculateChildPermissions($attachment->getPermissions(), false, $attachment);
 		}
 
+		foreach($this->permissionRecalculationCallbacks as $closure){
+			//TODO: provide a diff of permissions
+			$closure();
+		}
+
 		Timings::$permissibleCalculationTimer->stopTiming();
 	}
 
@@ -170,6 +184,12 @@ class PermissibleBase implements Permissible{
 	}
 
 	/**
+	 * @return \Closure[]|Set
+	 * @phpstan-return Set<\Closure() : void>
+	 */
+	public function getPermissionRecalculationCallbacks() : Set{ return $this->permissionRecalculationCallbacks; }
+
+	/**
 	 * @return PermissionAttachmentInfo[]
 	 */
 	public function getEffectivePermissions() : array{
@@ -181,5 +201,6 @@ class PermissibleBase implements Permissible{
 		$this->permissions = []; //PermissionAttachmentInfo doesn't reference Permissible anymore, but it references PermissionAttachment which does
 		$this->attachments = []; //this might still be a problem if the attachments are still referenced, but we can't do anything about that
 		$this->parent = null;
+		$this->permissionRecalculationCallbacks->clear();
 	}
 }

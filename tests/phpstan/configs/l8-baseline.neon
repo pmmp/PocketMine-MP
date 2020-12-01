@@ -121,6 +121,11 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
+			message: "#^Parameter \\#1 \\$for of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAdventureSettings\\(\\) expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			count: 3
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
 			message: "#^Parameter \\#1 \\$clientPub of class pocketmine\\\\network\\\\mcpe\\\\encryption\\\\PrepareEncryptionTask constructor expects Mdanter\\\\Ecc\\\\Crypto\\\\Key\\\\PublicKeyInterface, Mdanter\\\\Ecc\\\\Crypto\\\\Key\\\\PublicKeyInterface\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
@@ -153,11 +158,6 @@ parameters:
 		-
 			message: "#^Cannot call method sendData\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
 			count: 1
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
-			message: "#^Parameter \\#1 \\$for of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAdventureSettings\\(\\) expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
-			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
@@ -287,16 +287,11 @@ parameters:
 
 		-
 			message: "#^Cannot call method syncAdventureSettings\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
-			count: 4
+			count: 3
 			path: ../../../src/player/Player.php
 
 		-
 			message: "#^Cannot call method syncViewAreaRadius\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
-			message: "#^Cannot call method syncAvailableCommands\\(\\) on pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\|null\\.$#"
 			count: 1
 			path: ../../../src/player/Player.php
 

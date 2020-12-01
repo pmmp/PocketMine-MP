@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use Ds\Set;
 use pocketmine\plugin\Plugin;
 
 trait PermissibleDelegateTrait{
@@ -68,6 +69,14 @@ trait PermissibleDelegateTrait{
 
 	public function recalculatePermissions() : void{
 		$this->perm->recalculatePermissions();
+	}
+
+	/**
+	 * @return Set|\Closure[]
+	 * @phpstan-return Set<\Closure() : void>
+	 */
+	public function getPermissionRecalculationCallbacks() : Set{
+		return $this->perm->getPermissionRecalculationCallbacks();
 	}
 
 	/**

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use Ds\Set;
 use pocketmine\plugin\Plugin;
 
 interface Permissible{
@@ -66,6 +67,12 @@ interface Permissible{
 	public function removeAttachment(PermissionAttachment $attachment) : void;
 
 	public function recalculatePermissions() : void;
+
+	/**
+	 * @return Set|\Closure[]
+	 * @phpstan-return Set<\Closure() : void>
+	 */
+	public function getPermissionRecalculationCallbacks() : Set;
 
 	/**
 	 * @return PermissionAttachmentInfo[]

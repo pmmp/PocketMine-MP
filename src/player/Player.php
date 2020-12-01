@@ -136,9 +136,7 @@ use const PHP_INT_MAX;
  * Main class that handles networking, recovery, and packet sending to the server part
  */
 class Player extends Human implements CommandSender, ChunkListener, IPlayer{
-	use PermissibleDelegateTrait {
-		recalculatePermissions as private delegateRecalculatePermissions;
-	}
+	use PermissibleDelegateTrait;
 
 	private const MOVES_PER_TICK = 2;
 	private const MOVE_BACKLOG_SIZE = 100 * self::MOVES_PER_TICK; //100 ticks backlog (5 seconds)
@@ -524,30 +522,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $this->isConnected();
 	}
 
-	public function recalculatePermissions() : void{
-		$this->server->unsubscribeFromBroadcastChannel(Server::BROADCAST_CHANNEL_USERS, $this);
-		$this->server->unsubscribeFromBroadcastChannel(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
-
-		if($this->perm === null){
-			return;
-		}
-
-		$this->delegateRecalculatePermissions();
-
-		$this->networkSession->syncAdventureSettings($this);
-
-		if($this->spawned){
-			if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
-				$this->server->subscribeToBroadcastChannel(Server::BROADCAST_CHANNEL_USERS, $this);
-			}
-			if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
-				$this->server->subscribeToBroadcastChannel(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
-			}
-
-			$this->networkSession->syncAvailableCommands();
-		}
-	}
-
 	public function isConnected() : bool{
 		return $this->networkSession !== null and $this->networkSession->isConnected();
 	}
@@ -771,6 +745,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		Timings::$playerChunkSendTimer->stopTiming();
 	}
 
+	private function recheckBroadcastPermissions() : void{
+		foreach([Server::BROADCAST_CHANNEL_USERS, Server::BROADCAST_CHANNEL_ADMINISTRATIVE] as $channel){
+			if($this->hasPermission($channel)){
+				$this->server->subscribeToBroadcastChannel($channel, $this);
+			}else{
+				$this->server->unsubscribeFromBroadcastChannel($channel, $this);
+			}
+		}
+	}
+
 	/**
 	 * Called by the network system when the pre-spawn sequence is completed (e.g. after sending spawn chunks).
 	 * This fires join events and broadcasts join messages to other online players.
@@ -780,12 +764,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 		$this->spawned = true;
-		if($this->hasPermission(Server::BROADCAST_CHANNEL_USERS)){
-			$this->server->subscribeToBroadcastChannel(Server::BROADCAST_CHANNEL_USERS, $this);
-		}
-		if($this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE)){
-			$this->server->subscribeToBroadcastChannel(Server::BROADCAST_CHANNEL_ADMINISTRATIVE, $this);
-		}
+		$this->recheckBroadcastPermissions();
+		$this->getPermissionRecalculationCallbacks()->add(function() : void{
+			$this->recheckBroadcastPermissions();
+		});
 
 		$ev = new PlayerJoinEvent($this,
 			new TranslationContainer(TextFormat::YELLOW . "%multiplayer.player.joined", [

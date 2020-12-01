@@ -250,6 +250,16 @@ class NetworkSession{
 			$effectManager->getEffectAddHooks()->remove($effectAddHook);
 			$effectManager->getEffectRemoveHooks()->remove($effectRemoveHook);
 		});
+
+		$permissionHooks = $this->player->getPermissionRecalculationCallbacks();
+		$permissionHooks->add($permHook = function() : void{
+			$this->logger->debug("Syncing available commands and adventure settings due to permission recalculation");
+			$this->syncAdventureSettings($this->player);
+			$this->syncAvailableCommands();
+		});
+		$this->disposeHooks->add(static function() use ($permissionHooks, $permHook) : void{
+			$permissionHooks->remove($permHook);
+		});
 	}
 
 	public function getPlayer() : ?Player{
