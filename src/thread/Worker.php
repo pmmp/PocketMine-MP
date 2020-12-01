@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\thread;
 
-use const PTHREADS_INHERIT_ALL;
+use const PTHREADS_INHERIT_NONE;
 
 /**
  * This class must be extended by all custom threading classes
@@ -31,7 +31,7 @@ use const PTHREADS_INHERIT_ALL;
 abstract class Worker extends \Worker{
 	use CommonThreadPartsTrait;
 
-	public function start(int $options = PTHREADS_INHERIT_ALL) : bool{
+	public function start(int $options = PTHREADS_INHERIT_NONE) : bool{
 		//this is intentionally not traitified
 		ThreadManager::getInstance()->add($this);
 
