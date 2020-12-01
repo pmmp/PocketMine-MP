@@ -46,10 +46,15 @@ class PermissibleBase implements Permissible{
 
 	public function __construct(?Permissible $permissible, bool $isOp){
 		$this->parent = $permissible;
-		$this->setCorePermission(DefaultPermissions::ROOT_USER);
+
+		//TODO: we can't setBasePermission here directly due to bad architecture that causes recalculatePermissions to explode
+		//so, this hack has to be done here to prevent permission recalculations until it's fixed...
+		$rootPerms = [DefaultPermissions::ROOT_USER => true];
 		if($isOp){
-			//this HAS to be set AFTER the user perm, so that notop overrides work correctly
-			$this->setCorePermission(DefaultPermissions::ROOT_OPERATOR);
+			$rootPerms[DefaultPermissions::ROOT_OPERATOR] = true;
+		}
+		foreach($rootPerms as $perm => $isGranted){
+			$this->rootPermissions[$perm] = new PermissionAttachmentInfo($this->getRootPermissible(), $perm, null, $isGranted);
 		}
 		//TODO: permissions need to be recalculated here, or inherited permissions won't work
 	}
@@ -58,21 +63,17 @@ class PermissibleBase implements Permissible{
 		return $this->parent ?? $this;
 	}
 
-	public function isOp() : bool{
-		return $this->hasPermission(DefaultPermissions::ROOT_OPERATOR);
-	}
-
-	public function onOpStatusChange(bool $value) : void{
-		if($value){
-			$this->setCorePermission(DefaultPermissions::ROOT_OPERATOR);
-		}else{
-			unset($this->rootPermissions[DefaultPermissions::ROOT_OPERATOR]);
+	public function setBasePermission($name, bool $grant) : void{
+		if($name instanceof Permission){
+			$name = $name->getName();
 		}
+		$this->rootPermissions[$name] = new PermissionAttachmentInfo($this->getRootPermissible(), $name, null, $grant);
 		$this->getRootPermissible()->recalculatePermissions();
 	}
 
-	private function setCorePermission(string $perm) : void{
-		$this->rootPermissions[$perm] = new PermissionAttachmentInfo($this->getRootPermissible(), $perm, null, true);
+	public function unsetBasePermission($name) : void{
+		unset($this->rootPermissions[$name instanceof Permission ? $name->getName() : $name]);
+		$this->getRootPermissible()->recalculatePermissions();
 	}
 
 	/**

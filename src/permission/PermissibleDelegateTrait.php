@@ -30,12 +30,18 @@ trait PermissibleDelegateTrait{
 	/** @var PermissibleBase */
 	private $perm;
 
-	public function isOp() : bool{
-		return $this->perm->isOp();
+	/**
+	 * @param Permission|string $name
+	 */
+	public function setBasePermission($name, bool $value) : void{
+		$this->perm->setBasePermission($name, $value);
 	}
 
-	public function onOpStatusChange(bool $value) : void{
-		$this->perm->onOpStatusChange($value);
+	/**
+	 * @param Permission|string $name
+	 */
+	public function unsetBasePermission($name) : void{
+		$this->perm->unsetBasePermission($name);
 	}
 
 	/**

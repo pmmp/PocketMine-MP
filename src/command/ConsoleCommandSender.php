@@ -76,10 +76,6 @@ class ConsoleCommandSender implements CommandSender{
 		return "CONSOLE";
 	}
 
-	public function onOpStatusChange(bool $value) : void{
-
-	}
-
 	public function getScreenLineHeight() : int{
 		return $this->lineHeight ?? PHP_INT_MAX;
 	}

@@ -27,9 +27,25 @@ use pocketmine\plugin\Plugin;
 
 interface Permissible{
 
-	public function isOp() : bool;
+	/**
+	 * Assigns a baseline permission to the permissible. This is **always** calculated before anything else, which means
+	 * that permissions set using addAttachment() will always override base permissions.
+	 * You probably don't want to use this if you're not assigning (denying) operator permissions.
+	 *
+	 * @internal
+	 * @see Permissible::addAttachment() for normal permission assignments
+	 * @param Permission|string $name
+	 */
+	public function setBasePermission($name, bool $grant) : void;
 
-	public function onOpStatusChange(bool $value) : void;
+	/**
+	 * Unsets a baseline permission previously set. If it wasn't already set, this will have no effect.
+	 * Note that this might have different results than setting the permission to false.
+	 *
+	 * @internal
+	 * @param Permission|string $name
+	 */
+	public function unsetBasePermission($name) : void;
 
 	/**
 	 * Checks if this instance has a permission overridden
