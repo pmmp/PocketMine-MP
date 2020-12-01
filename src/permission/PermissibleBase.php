@@ -30,9 +30,6 @@ use pocketmine\timings\Timings;
 use function spl_object_id;
 
 class PermissibleBase implements Permissible{
-	/** @var Permissible|null */
-	private $parent;
-
 	/**
 	 * @var bool[]
 	 * @phpstan-var array<string, bool>
@@ -53,10 +50,8 @@ class PermissibleBase implements Permissible{
 	 */
 	private $permissionRecalculationCallbacks;
 
-	public function __construct(?Permissible $permissible, bool $isOp){
+	public function __construct(bool $isOp){
 		$this->permissionRecalculationCallbacks = new Set();
-
-		$this->parent = $permissible;
 
 		//TODO: we can't setBasePermission here directly due to bad architecture that causes recalculatePermissions to explode
 		//so, this hack has to be done here to prevent permission recalculations until it's fixed...
@@ -66,21 +61,17 @@ class PermissibleBase implements Permissible{
 		//TODO: permissions need to be recalculated here, or inherited permissions won't work
 	}
 
-	private function getRootPermissible() : Permissible{
-		return $this->parent ?? $this;
-	}
-
 	public function setBasePermission($name, bool $grant) : void{
 		if($name instanceof Permission){
 			$name = $name->getName();
 		}
 		$this->rootPermissions[$name] = $grant;
-		$this->getRootPermissible()->recalculatePermissions();
+		$this->recalculatePermissions();
 	}
 
 	public function unsetBasePermission($name) : void{
 		unset($this->rootPermissions[$name instanceof Permission ? $name->getName() : $name]);
-		$this->getRootPermissible()->recalculatePermissions();
+		$this->recalculatePermissions();
 	}
 
 	/**
@@ -113,13 +104,13 @@ class PermissibleBase implements Permissible{
 			throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}
 
-		$result = new PermissionAttachment($plugin, $this->getRootPermissible());
+		$result = new PermissionAttachment($plugin, $this);
 		$this->attachments[spl_object_id($result)] = $result;
 		if($name !== null and $value !== null){
 			$result->setPermission($name, $value);
 		}
 
-		$this->getRootPermissible()->recalculatePermissions();
+		$this->recalculatePermissions();
 
 		return $result;
 	}
@@ -131,7 +122,7 @@ class PermissibleBase implements Permissible{
 				$ex->attachmentRemoved($attachment);
 			}
 
-			$this->getRootPermissible()->recalculatePermissions();
+			$this->recalculatePermissions();
 
 		}
 
@@ -141,7 +132,7 @@ class PermissibleBase implements Permissible{
 		Timings::$permissibleCalculationTimer->startTiming();
 
 		$permManager = PermissionManager::getInstance();
-		$permManager->unsubscribeFromAllPermissions($this->getRootPermissible());
+		$permManager->unsubscribeFromAllPermissions($this);
 		$this->permissions = [];
 
 		foreach($this->rootPermissions as $name => $isGranted){
@@ -150,7 +141,7 @@ class PermissibleBase implements Permissible{
 				throw new \InvalidStateException("Unregistered root permission $name");
 			}
 			$this->permissions[$name] = new PermissionAttachmentInfo($name, null, $isGranted);
-			$permManager->subscribeToPermission($name, $this->getRootPermissible());
+			$permManager->subscribeToPermission($name, $this);
 			$this->calculateChildPermissions($perm->getChildren(), false, null);
 		}
 
@@ -175,7 +166,7 @@ class PermissibleBase implements Permissible{
 			$perm = $permManager->getPermission($name);
 			$value = ($v xor $invert);
 			$this->permissions[$name] = new PermissionAttachmentInfo($name, $attachment, $value);
-			$permManager->subscribeToPermission($name, $this->getRootPermissible());
+			$permManager->subscribeToPermission($name, $this);
 
 			if($perm instanceof Permission){
 				$this->calculateChildPermissions($perm->getChildren(), !$value, $attachment);
@@ -197,10 +188,9 @@ class PermissibleBase implements Permissible{
 	}
 
 	public function destroyCycles() : void{
-		PermissionManager::getInstance()->unsubscribeFromAllPermissions($this->getRootPermissible());
+		PermissionManager::getInstance()->unsubscribeFromAllPermissions($this);
 		$this->permissions = []; //PermissionAttachmentInfo doesn't reference Permissible anymore, but it references PermissionAttachment which does
 		$this->attachments = []; //this might still be a problem if the attachments are still referenced, but we can't do anything about that
-		$this->parent = null;
 		$this->permissionRecalculationCallbacks->clear();
 	}
 }

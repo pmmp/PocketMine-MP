@@ -278,7 +278,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->xuid = $this->playerInfo instanceof XboxLivePlayerInfo ? $this->playerInfo->getXuid() : "";
 
-		$this->perm = new PermissibleBase($this, $this->server->isOp($this->username));
+		$this->perm = new PermissibleBase($this->server->isOp($this->username));
 		$this->chunksPerTick = (int) $this->server->getConfigGroup()->getProperty("chunk-sending.per-tick", 4);
 		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
 		$this->chunkSelector = new ChunkSelector();
