@@ -33,10 +33,12 @@ class PermissibleBase implements Permissible{
 	private $parent;
 
 	/**
-	 * @var PermissionAttachmentInfo[]
-	 * @phpstan-var array<string, PermissionAttachmentInfo>
+	 * @var bool[]
+	 * @phpstan-var array<string, bool>
 	 */
-	private $rootPermissions = [];
+	private $rootPermissions = [
+		DefaultPermissions::ROOT_USER => true
+	];
 
 	/** @var PermissionAttachment[] */
 	private $attachments = [];
@@ -49,12 +51,8 @@ class PermissibleBase implements Permissible{
 
 		//TODO: we can't setBasePermission here directly due to bad architecture that causes recalculatePermissions to explode
 		//so, this hack has to be done here to prevent permission recalculations until it's fixed...
-		$rootPerms = [DefaultPermissions::ROOT_USER => true];
 		if($isOp){
-			$rootPerms[DefaultPermissions::ROOT_OPERATOR] = true;
-		}
-		foreach($rootPerms as $perm => $isGranted){
-			$this->rootPermissions[$perm] = new PermissionAttachmentInfo($this->getRootPermissible(), $perm, null, $isGranted);
+			$this->rootPermissions[DefaultPermissions::ROOT_OPERATOR] = true;
 		}
 		//TODO: permissions need to be recalculated here, or inherited permissions won't work
 	}
@@ -67,7 +65,7 @@ class PermissibleBase implements Permissible{
 		if($name instanceof Permission){
 			$name = $name->getName();
 		}
-		$this->rootPermissions[$name] = new PermissionAttachmentInfo($this->getRootPermissible(), $name, null, $grant);
+		$this->rootPermissions[$name] = $grant;
 		$this->getRootPermissible()->recalculatePermissions();
 	}
 
@@ -137,12 +135,12 @@ class PermissibleBase implements Permissible{
 		$permManager->unsubscribeFromAllPermissions($this->getRootPermissible());
 		$this->permissions = [];
 
-		foreach($this->rootPermissions as $name => $attachmentInfo){
+		foreach($this->rootPermissions as $name => $isGranted){
 			$perm = $permManager->getPermission($name);
 			if($perm === null){
 				throw new \InvalidStateException("Unregistered root permission $name");
 			}
-			$this->permissions[$name] = $attachmentInfo;
+			$this->permissions[$name] = new PermissionAttachmentInfo($this->getRootPermissible(), $name, null, $isGranted);
 			$permManager->subscribeToPermission($name, $this->getRootPermissible());
 			$this->calculateChildPermissions($perm->getChildren(), false, null);
 		}
@@ -158,7 +156,6 @@ class PermissibleBase implements Permissible{
 		PermissionManager::getInstance()->unsubscribeFromAllPermissions($this->getRootPermissible());
 
 		$this->permissions = [];
-		$this->rootPermissions = [];
 	}
 
 	/**
