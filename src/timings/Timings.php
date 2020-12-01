@@ -79,8 +79,6 @@ abstract class Timings{
 	public static $generationCallbackTimer;
 	/** @var TimingsHandler */
 	public static $permissibleCalculationTimer;
-	/** @var TimingsHandler */
-	public static $permissionDefaultTimer;
 
 	/** @var TimingsHandler */
 	public static $entityMoveTimer;
@@ -158,7 +156,6 @@ abstract class Timings{
 		self::$populationTimer = new TimingsHandler("World Population");
 		self::$generationCallbackTimer = new TimingsHandler("World Generation Callback");
 		self::$permissibleCalculationTimer = new TimingsHandler("Permissible Calculation");
-		self::$permissionDefaultTimer = new TimingsHandler("Default Permission Calculation");
 
 		self::$syncPlayerDataLoad = new TimingsHandler("Player Data Load");
 		self::$syncPlayerDataSave = new TimingsHandler("Player Data Save");
