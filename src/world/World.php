@@ -968,7 +968,7 @@ class World implements ChunkManager{
 
 			$chunk = $this->chunks[$index];
 			foreach($chunk->getEntities() as $entity){
-				$entity->scheduleUpdate();
+				$entity->onRandomUpdate();
 			}
 
 			foreach($chunk->getSubChunks() as $Y => $subChunk){

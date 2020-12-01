@@ -999,6 +999,14 @@ abstract class Entity{
 	}
 
 	/**
+	 * Called when a random update is performed on the chunk the entity is in. This happens when the chunk is within the
+	 * ticking chunk range of a player (or chunk loader).
+	 */
+	public function onRandomUpdate() : void{
+		$this->scheduleUpdate();
+	}
+
+	/**
 	 * Flags the entity as needing a movement update on the next tick. Setting this forces a movement update even if the
 	 * entity's motion is zero. Used to trigger movement updates when blocks change near entities.
 	 */

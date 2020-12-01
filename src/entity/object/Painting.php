@@ -132,6 +132,10 @@ class Painting extends Entity{
 		}
 	}
 
+	public function onRandomUpdate() : void{
+		//NOOP
+	}
+
 	public function hasMovementUpdate() : bool{
 		return false;
 	}
