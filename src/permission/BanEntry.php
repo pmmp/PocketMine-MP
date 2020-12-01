@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use pocketmine\utils\AssumptionFailedError;
 use function array_shift;
 use function count;
 use function explode;
@@ -142,7 +143,9 @@ class BanEntry{
 	private static function parseDate(string $date) : \DateTime{
 		$datetime = \DateTime::createFromFormat(self::$format, $date);
 		if(!($datetime instanceof \DateTime)){
-			throw new \RuntimeException("Corrupted date/time: " . implode(", ", \DateTime::getLastErrors()["errors"]));
+			$lastErrors = \DateTime::getLastErrors();
+			if($lastErrors === false) throw new AssumptionFailedError("DateTime::getLastErrors() should not be returning false in here");
+			throw new \RuntimeException("Corrupted date/time: " . implode(", ", $lastErrors["errors"]));
 		}
 
 		return $datetime;
