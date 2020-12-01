@@ -840,6 +840,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
+	 * @return UsedChunkStatus[] chunkHash => status
+	 * @phpstan-return array<int, UsedChunkStatus>
+	 */
+	public function getUsedChunks() : array{
+		return $this->usedChunks;
+	}
+
+	/**
 	 * Returns whether the target chunk has been sent to this player.
 	 */
 	public function hasReceivedChunk(int $chunkX, int $chunkZ) : bool{
