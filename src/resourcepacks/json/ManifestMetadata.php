@@ -23,28 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\resourcepacks\json;
 
-/**
- * Model for JsonMapper to represent resource pack manifest.json contents.
- */
-final class Manifest{
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $format_version;
-
-	/**
-	 * @var ManifestHeader
-	 * @required
-	 */
-	public $header;
-
-	/**
-	 * @var ManifestModuleEntry[]
-	 * @required
-	 */
-	public $modules;
-
-	/** @var ManifestMetadata */
-	public $metadata;
+final class ManifestMetadata{
+	/** @var string[]|null */
+	public $authors = null;
+	/** @var string|null */
+	public $license = null;
+	/** @var string|null */
+	public $url = null;
 }
