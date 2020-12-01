@@ -24,9 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\permission;
 
 class PermissionAttachmentInfo{
-	/** @var Permissible */
-	private $permissible;
-
 	/** @var string */
 	private $permission;
 
@@ -36,15 +33,10 @@ class PermissionAttachmentInfo{
 	/** @var bool */
 	private $value;
 
-	public function __construct(Permissible $permissible, string $permission, ?PermissionAttachment $attachment, bool $value){
-		$this->permissible = $permissible;
+	public function __construct(string $permission, ?PermissionAttachment $attachment, bool $value){
 		$this->permission = $permission;
 		$this->attachment = $attachment;
 		$this->value = $value;
-	}
-
-	public function getPermissible() : Permissible{
-		return $this->permissible;
 	}
 
 	public function getPermission() : string{

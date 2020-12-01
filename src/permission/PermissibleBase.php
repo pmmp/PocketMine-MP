@@ -140,7 +140,7 @@ class PermissibleBase implements Permissible{
 			if($perm === null){
 				throw new \InvalidStateException("Unregistered root permission $name");
 			}
-			$this->permissions[$name] = new PermissionAttachmentInfo($this->getRootPermissible(), $name, null, $isGranted);
+			$this->permissions[$name] = new PermissionAttachmentInfo($name, null, $isGranted);
 			$permManager->subscribeToPermission($name, $this->getRootPermissible());
 			$this->calculateChildPermissions($perm->getChildren(), false, null);
 		}
@@ -166,7 +166,7 @@ class PermissibleBase implements Permissible{
 		foreach($children as $name => $v){
 			$perm = $permManager->getPermission($name);
 			$value = ($v xor $invert);
-			$this->permissions[$name] = new PermissionAttachmentInfo($this->getRootPermissible(), $name, $attachment, $value);
+			$this->permissions[$name] = new PermissionAttachmentInfo($name, $attachment, $value);
 			$permManager->subscribeToPermission($name, $this->getRootPermissible());
 
 			if($perm instanceof Permission){
