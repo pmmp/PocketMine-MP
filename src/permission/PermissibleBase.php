@@ -35,9 +35,7 @@ class PermissibleBase implements Permissible{
 	 * @var bool[]
 	 * @phpstan-var array<string, bool>
 	 */
-	private $rootPermissions = [
-		DefaultPermissions::ROOT_USER => true
-	];
+	private $rootPermissions;
 
 	/** @var PermissionAttachment[] */
 	private $attachments = [];
@@ -60,9 +58,7 @@ class PermissibleBase implements Permissible{
 
 		//TODO: we can't setBasePermission here directly due to bad architecture that causes recalculatePermissions to explode
 		//so, this hack has to be done here to prevent permission recalculations until it's fixed...
-		foreach($basePermissions as $permission => $isGranted){
-			$this->rootPermissions[$permission] = $isGranted;
-		}
+		$this->rootPermissions = $basePermissions;
 		//TODO: permissions need to be recalculated here, or inherited permissions won't work
 	}
 
