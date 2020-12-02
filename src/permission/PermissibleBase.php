@@ -144,7 +144,7 @@ class PermissibleBase implements Permissible{
 			}
 			$this->permissions[$name] = new PermissionAttachmentInfo($name, null, $isGranted);
 			$permManager->subscribeToPermission($name, $this);
-			$this->calculateChildPermissions($perm->getChildren(), false, null);
+			$this->calculateChildPermissions($perm->getChildren(), !$isGranted, null);
 		}
 
 		foreach($this->attachments as $attachment){
