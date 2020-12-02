@@ -103,6 +103,9 @@ class Network{
 				foreach($this->bannedIps as $ip => $until){
 					$interface->blockAddress($ip);
 				}
+				foreach($this->rawPacketHandlers as $handler){
+					$interface->addRawPacketFilter($handler->getPattern());
+				}
 			}
 			$interface->setName($this->name);
 			return true;
