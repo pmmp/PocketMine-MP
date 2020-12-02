@@ -27,8 +27,10 @@ use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\network\mcpe\StandardPacketBroadcaster;
 use pocketmine\network\Network;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
@@ -81,6 +83,9 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	/** @var SleeperNotifier */
 	private $sleeper;
 
+	/** @var PacketBroadcaster */
+	private $broadcaster;
+
 	public function __construct(Server $server){
 		$this->server = $server;
 		$this->rakServerId = mt_rand(0, PHP_INT_MAX);
@@ -106,6 +111,8 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->interface = new UserToRakLibThreadMessageSender(
 			new PthreadsChannelWriter($mainToThreadBuffer)
 		);
+
+		$this->broadcaster = new StandardPacketBroadcaster($this->server);
 	}
 
 	public function start() : void{
@@ -158,6 +165,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$this->network->getSessionManager(),
 			PacketPool::getInstance(),
 			new RakLibPacketSender($sessionId, $this),
+			$this->broadcaster,
 			ZlibCompressor::getInstance(), //TODO: this shouldn't be hardcoded, but we might need the RakNet protocol version to select it
 			$address,
 			$port

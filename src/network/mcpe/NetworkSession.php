@@ -177,16 +177,20 @@ class NetworkSession{
 	/** @var PacketSender */
 	private $sender;
 
+	/** @var PacketBroadcaster */
+	private $broadcaster;
+
 	/**
 	 * @var \Closure[]|Set
 	 * @phpstan-var Set<\Closure() : void>
 	 */
 	private $disposeHooks;
 
-	public function __construct(Server $server, NetworkSessionManager $manager, PacketPool $packetPool, PacketSender $sender, Compressor $compressor, string $ip, int $port){
+	public function __construct(Server $server, NetworkSessionManager $manager, PacketPool $packetPool, PacketSender $sender, PacketBroadcaster $broadcaster, Compressor $compressor, string $ip, int $port){
 		$this->server = $server;
 		$this->manager = $manager;
 		$this->sender = $sender;
+		$this->broadcaster = $broadcaster;
 		$this->ip = $ip;
 		$this->port = $port;
 
@@ -448,6 +452,8 @@ class NetworkSession{
 			$this->queueCompressedNoBufferFlush($promise, $immediate);
 		}
 	}
+
+	public function getBroadcaster() : PacketBroadcaster{ return $this->broadcaster; }
 
 	public function getCompressor() : Compressor{
 		return $this->compressor;

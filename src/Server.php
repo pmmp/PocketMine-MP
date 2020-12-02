@@ -52,6 +52,7 @@ use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
 use pocketmine\network\mcpe\encryption\EncryptionContext;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
@@ -1227,33 +1228,17 @@ class Server{
 			}
 			$recipients = $ev->getTargets();
 
-			$stream = PacketBatch::fromPackets(...$ev->getPackets());
-
-			/** @var Compressor[] $compressors */
-			$compressors = [];
-			/** @var NetworkSession[][] $compressorTargets */
-			$compressorTargets = [];
+			/** @var PacketBroadcaster[] $broadcasters */
+			$broadcasters = [];
+			/** @var NetworkSession[][] $broadcasterTargets */
+			$broadcasterTargets = [];
 			foreach($recipients as $recipient){
-				$compressor = $recipient->getCompressor();
-				$compressorId = spl_object_id($compressor);
-				//TODO: different compressors might be compatible, it might not be necessary to split them up by object
-				$compressors[$compressorId] = $compressor;
-				$compressorTargets[$compressorId][] = $recipient;
+				$broadcaster = $recipient->getBroadcaster();
+				$broadcasters[spl_object_id($broadcaster)] = $broadcaster;
+				$broadcasterTargets[spl_object_id($broadcaster)][] = $recipient;
 			}
-
-			foreach($compressors as $compressorId => $compressor){
-				if(!$compressor->willCompress($stream->getBuffer())){
-					foreach($compressorTargets[$compressorId] as $target){
-						foreach($ev->getPackets() as $pk){
-							$target->addToSendBuffer($pk);
-						}
-					}
-				}else{
-					$promise = $this->prepareBatch($stream, $compressor);
-					foreach($compressorTargets[$compressorId] as $target){
-						$target->queueCompressed($promise);
-					}
-				}
+			foreach($broadcasters as $broadcaster){
+				$broadcaster->broadcastPackets($broadcasterTargets[spl_object_id($broadcaster)], $packets);
 			}
 
 			return true;
