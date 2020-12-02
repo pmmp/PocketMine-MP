@@ -66,7 +66,11 @@ interface Permissible{
 
 	public function removeAttachment(PermissionAttachment $attachment) : void;
 
-	public function recalculatePermissions() : void;
+	/**
+	 * @return bool[] changed permission name => old value
+	 * @phpstan-return array<string, bool>
+	 */
+	public function recalculatePermissions() : array;
 
 	/**
 	 * @return Set|\Closure[]

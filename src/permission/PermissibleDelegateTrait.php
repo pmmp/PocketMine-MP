@@ -67,8 +67,8 @@ trait PermissibleDelegateTrait{
 		$this->perm->removeAttachment($attachment);
 	}
 
-	public function recalculatePermissions() : void{
-		$this->perm->recalculatePermissions();
+	public function recalculatePermissions() : array{
+		return $this->perm->recalculatePermissions();
 	}
 
 	/**

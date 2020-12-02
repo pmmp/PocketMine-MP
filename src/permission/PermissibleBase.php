@@ -129,7 +129,7 @@ class PermissibleBase implements Permissible{
 
 	}
 
-	public function recalculatePermissions() : void{
+	public function recalculatePermissions() : array{
 		Timings::$permissibleCalculationTimer->startTiming();
 
 		$permManager = PermissionManager::getInstance();
@@ -179,6 +179,7 @@ class PermissibleBase implements Permissible{
 		});
 
 		Timings::$permissibleCalculationTimer->stopTiming();
+		return $diff;
 	}
 
 	/**
