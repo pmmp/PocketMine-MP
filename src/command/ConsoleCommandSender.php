@@ -25,6 +25,7 @@ namespace pocketmine\command;
 
 use pocketmine\lang\Language;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\Server;
@@ -44,7 +45,7 @@ class ConsoleCommandSender implements CommandSender{
 
 	public function __construct(Server $server, Language $language){
 		$this->server = $server;
-		$this->perm = new PermissibleBase(true);
+		$this->perm = new PermissibleBase([DefaultPermissions::ROOT_OPERATOR => true]);
 		$this->language = $language;
 	}
 

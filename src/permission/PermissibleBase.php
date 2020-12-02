@@ -51,13 +51,17 @@ class PermissibleBase implements Permissible{
 	 */
 	private $permissionRecalculationCallbacks;
 
-	public function __construct(bool $isOp){
+	/**
+	 * @param bool[] $basePermissions
+	 * @phpstan-param array<string, bool> $basePermissions
+	 */
+	public function __construct(array $basePermissions){
 		$this->permissionRecalculationCallbacks = new Set();
 
 		//TODO: we can't setBasePermission here directly due to bad architecture that causes recalculatePermissions to explode
 		//so, this hack has to be done here to prevent permission recalculations until it's fixed...
-		if($isOp){
-			$this->rootPermissions[DefaultPermissions::ROOT_OPERATOR] = true;
+		foreach($basePermissions as $permission => $isGranted){
+			$this->rootPermissions[$permission] = $isGranted;
 		}
 		//TODO: permissions need to be recalculated here, or inherited permissions won't work
 	}
