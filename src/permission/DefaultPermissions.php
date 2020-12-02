@@ -26,6 +26,7 @@ namespace pocketmine\permission;
 abstract class DefaultPermissions{
 	public const ROOT = "pocketmine";
 
+	public const ROOT_CONSOLE = "pocketmine.group.console";
 	public const ROOT_OPERATOR = "pocketmine.group.operator";
 	public const ROOT_USER = "pocketmine.group.user";
 
@@ -46,7 +47,8 @@ abstract class DefaultPermissions{
 	}
 
 	public static function registerCorePermissions() : void{
-		$operatorRoot = self::registerPermission(new Permission(self::ROOT_OPERATOR, "Grants all operator permissions"));
+		$consoleRoot = self::registerPermission(new Permission(self::ROOT_CONSOLE, "Grants all console permissions"));
+		$operatorRoot = self::registerPermission(new Permission(self::ROOT_OPERATOR, "Grants all operator permissions"), [$consoleRoot]);
 		$everyoneRoot = self::registerPermission(new Permission(self::ROOT_USER, "Grants all non-sensitive permissions that everyone gets by default"), [$operatorRoot]);
 
 		self::registerPermission(new Permission(self::ROOT . ".broadcast.admin", "Allows the user to receive administrative broadcasts"), [$operatorRoot]);
@@ -101,7 +103,7 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(self::ROOT . ".command.seed", "Allows the user to view the seed of the world"), [$operatorRoot]);
 		self::registerPermission(new Permission(self::ROOT . ".command.status", "Allows the user to view the server performance"), [$operatorRoot]);
 		self::registerPermission(new Permission(self::ROOT . ".command.gc", "Allows the user to fire garbage collection tasks"), [$operatorRoot]);
-		self::registerPermission(new Permission(self::ROOT . ".command.dumpmemory", "Allows the user to dump memory contents"), []); //TODO: this should be exclusively granted to CONSOLE
+		self::registerPermission(new Permission(self::ROOT . ".command.dumpmemory", "Allows the user to dump memory contents"), [$consoleRoot]);
 		self::registerPermission(new Permission(self::ROOT . ".command.timings", "Allows the user to records timings for all plugin events"), [$operatorRoot]);
 		self::registerPermission(new Permission(self::ROOT . ".command.spawnpoint", "Allows the user to change player's spawnpoint"), [$operatorRoot]);
 		self::registerPermission(new Permission(self::ROOT . ".command.setworldspawn", "Allows the user to change the world spawn"), [$operatorRoot]);

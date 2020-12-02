@@ -45,7 +45,7 @@ class ConsoleCommandSender implements CommandSender{
 
 	public function __construct(Server $server, Language $language){
 		$this->server = $server;
-		$this->perm = new PermissibleBase([DefaultPermissions::ROOT_OPERATOR => true]);
+		$this->perm = new PermissibleBase([DefaultPermissions::ROOT_CONSOLE => true]);
 		$this->language = $language;
 	}
 
