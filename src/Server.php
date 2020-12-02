@@ -60,6 +60,7 @@ use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\Network;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\query\QueryInfo;
+use pocketmine\network\query\DedicatedQueryNetworkInterface;
 use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
@@ -1037,10 +1038,15 @@ class Server{
 
 			$this->enablePlugins(PluginEnableOrder::POSTWORLD());
 
-			$this->network->registerInterface(new RakLibInterface($this));
+			$useQuery = $this->configGroup->getConfigBool("enable-query", true);
+			if(!$this->network->registerInterface(new RakLibInterface($this)) && $useQuery){
+				//RakLib would normally handle the transport for Query packets
+				//if it's not registered we need to make sure Query still works
+				$this->network->registerInterface(new DedicatedQueryNetworkInterface($this->getIp(), $this->getPort(), new \PrefixedLogger($this->logger, "Dedicated Query Interface")));
+			}
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.networkStart", [$this->getIp(), $this->getPort()]));
 
-			if($this->configGroup->getConfigBool("enable-query", true)){
+			if($useQuery){
 				$this->network->registerRawPacketHandler(new QueryHandler($this));
 			}
 
