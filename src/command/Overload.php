@@ -38,7 +38,7 @@ class Overload{
 
 	public function __construct(?\Closure $commandHandler = null){
 		if($commandHandler !== null){
-			Utils::validateCallableSignature(function(CommandSender $sender, array $args){}, $commandHandler);
+			Utils::validateCallableSignature(function(CommandSender $sender, array $args) : void{}, $commandHandler);
 		}
 		$this->commandHandler = $commandHandler;
 	}
@@ -106,7 +106,7 @@ class Overload{
 
 	public function setCommandHandler(?\Closure $handler) : self{
 		if($handler !== null){
-			Utils::validateCallableSignature(function(CommandSender $sender, array $args){}, $handler);
+			Utils::validateCallableSignature(function(CommandSender $sender, array $args) : void{}, $handler);
 		}
 		$this->commandHandler = $handler;
 		return $this;
