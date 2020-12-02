@@ -33,10 +33,14 @@ class PermissionAttachmentInfo{
 	/** @var bool */
 	private $value;
 
-	public function __construct(string $permission, ?PermissionAttachment $attachment, bool $value){
+	/** @var PermissionAttachmentInfo|null */
+	private $groupPermission;
+
+	public function __construct(string $permission, ?PermissionAttachment $attachment, bool $value, ?PermissionAttachmentInfo $groupPermission){
 		$this->permission = $permission;
 		$this->attachment = $attachment;
 		$this->value = $value;
+		$this->groupPermission = $groupPermission;
 	}
 
 	public function getPermission() : string{
@@ -50,4 +54,10 @@ class PermissionAttachmentInfo{
 	public function getValue() : bool{
 		return $this->value;
 	}
+
+	/**
+	 * Returns the info of the permission group that caused this permission to be set, if any.
+	 * If null, the permission was set explicitly, either by a permission attachment or base permission.
+	 */
+	public function getGroupPermissionInfo() : ?PermissionAttachmentInfo{ return $this->groupPermission; }
 }

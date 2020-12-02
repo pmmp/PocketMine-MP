@@ -146,13 +146,13 @@ class PermissibleBase implements Permissible{
 			if($perm === null){
 				throw new \InvalidStateException("Unregistered root permission $name");
 			}
-			$this->permissions[$name] = new PermissionAttachmentInfo($name, null, $isGranted);
+			$this->permissions[$name] = new PermissionAttachmentInfo($name, null, $isGranted, null);
 			$permManager->subscribeToPermission($name, $this);
-			$this->calculateChildPermissions($perm->getChildren(), !$isGranted, null);
+			$this->calculateChildPermissions($perm->getChildren(), !$isGranted, null, $this->permissions[$name]);
 		}
 
 		foreach($this->attachments as $attachment){
-			$this->calculateChildPermissions($attachment->getPermissions(), false, $attachment);
+			$this->calculateChildPermissions($attachment->getPermissions(), false, $attachment, null);
 		}
 
 		$diff = [];
@@ -189,16 +189,16 @@ class PermissibleBase implements Permissible{
 	/**
 	 * @param bool[]                    $children
 	 */
-	private function calculateChildPermissions(array $children, bool $invert, ?PermissionAttachment $attachment) : void{
+	private function calculateChildPermissions(array $children, bool $invert, ?PermissionAttachment $attachment, ?PermissionAttachmentInfo $parent) : void{
 		$permManager = PermissionManager::getInstance();
 		foreach($children as $name => $v){
 			$perm = $permManager->getPermission($name);
 			$value = ($v xor $invert);
-			$this->permissions[$name] = new PermissionAttachmentInfo($name, $attachment, $value);
+			$this->permissions[$name] = new PermissionAttachmentInfo($name, $attachment, $value, $parent);
 			$permManager->subscribeToPermission($name, $this);
 
 			if($perm instanceof Permission){
-				$this->calculateChildPermissions($perm->getChildren(), !$value, $attachment);
+				$this->calculateChildPermissions($perm->getChildren(), !$value, $attachment, $this->permissions[$name]);
 			}
 		}
 	}
