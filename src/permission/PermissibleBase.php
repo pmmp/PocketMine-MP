@@ -162,13 +162,11 @@ class PermissibleBase implements Permissible{
 				if(!isset($oldPermissions[$name])){
 					$diff[$name] = false;
 				}elseif($oldPermissions[$name]->getValue() !== $permissionAttachmentInfo->getValue()){
-					//permission was previously unset OR the value of the permission changed
-					//we don't care who assigned the permission, only that the result is different
-					$diff[$name] = $oldPermissions[$name]->getValue();
+					continue;
 				}
 				unset($oldPermissions[$name]);
 			}
-			//oldPermissions now only contains permissions that are no longer set after recalculation
+			//oldPermissions now only contains permissions that changed or are no longer set
 			foreach($oldPermissions as $permissionAttachmentInfo){
 				$diff[$permissionAttachmentInfo->getPermission()] = $permissionAttachmentInfo->getValue();
 			}
