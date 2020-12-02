@@ -91,7 +91,7 @@ class Network{
 		$this->sessionManager->tick();
 	}
 
-	public function registerInterface(NetworkInterface $interface) : void{
+	public function registerInterface(NetworkInterface $interface) : bool{
 		$ev = new NetworkInterfaceRegisterEvent($interface);
 		$ev->call();
 		if(!$ev->isCancelled()){
@@ -105,7 +105,9 @@ class Network{
 				}
 			}
 			$interface->setName($this->name);
+			return true;
 		}
+		return false;
 	}
 
 	/**
