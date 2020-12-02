@@ -89,6 +89,7 @@ abstract class AsyncTask extends \Threaded{
 		}
 
 		$this->finished = true;
+		$this->worker->getNotifier()->wakeupSleeper();
 	}
 
 	public function isCrashed() : bool{

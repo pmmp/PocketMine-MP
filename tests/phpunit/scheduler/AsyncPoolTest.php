@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\snooze\SleeperHandler;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Terminal;
 use function define;
@@ -44,7 +45,7 @@ class AsyncPoolTest extends TestCase{
 		Terminal::init();
 		@define('pocketmine\\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__, 3) . '/vendor/autoload.php');
 		$this->mainLogger = new MainLogger(tempnam(sys_get_temp_dir(), "pmlog"));
-		$this->pool = new AsyncPool(2, 1024, new \BaseClassLoader(), $this->mainLogger);
+		$this->pool = new AsyncPool(2, 1024, new \BaseClassLoader(), $this->mainLogger, new SleeperHandler());
 	}
 
 	public function tearDown() : void{

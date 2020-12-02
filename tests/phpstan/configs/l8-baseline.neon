@@ -461,6 +461,11 @@ parameters:
 			path: ../../../src/scheduler/AsyncTask.php
 
 		-
+			message: "#^Cannot call method getNotifier\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
+			count: 1
+			path: ../../../src/scheduler/AsyncTask.php
+
+		-
 			message: "#^Cannot call method count\\(\\) on ArrayObject\\<int, array\\<string, mixed\\>\\>\\|null\\.$#"
 			count: 1
 			path: ../../../src/scheduler/AsyncTask.php
