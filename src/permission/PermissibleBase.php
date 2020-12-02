@@ -27,6 +27,7 @@ use Ds\Set;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
 use pocketmine\timings\Timings;
+use function count;
 use function spl_object_id;
 
 class PermissibleBase implements Permissible{
@@ -46,7 +47,7 @@ class PermissibleBase implements Permissible{
 
 	/**
 	 * @var Set|\Closure[]
-	 * @phpstan-var Set<\Closure() : void>
+	 * @phpstan-var Set<\Closure(array<string, bool> $changedPermissionsOldValues) : void>
 	 */
 	private $permissionRecalculationCallbacks;
 
@@ -133,6 +134,7 @@ class PermissibleBase implements Permissible{
 
 		$permManager = PermissionManager::getInstance();
 		$permManager->unsubscribeFromAllPermissions($this);
+		$oldPermissions = $this->permissions;
 		$this->permissions = [];
 
 		foreach($this->rootPermissions as $name => $isGranted){
@@ -149,10 +151,32 @@ class PermissibleBase implements Permissible{
 			$this->calculateChildPermissions($attachment->getPermissions(), false, $attachment);
 		}
 
-		foreach($this->permissionRecalculationCallbacks as $closure){
-			//TODO: provide a diff of permissions
-			$closure();
-		}
+		$diff = [];
+		Timings::$permissibleCalculationDiffTimer->time(function() use ($oldPermissions, &$diff) : void{
+			foreach($this->permissions as $permissionAttachmentInfo){
+				$name = $permissionAttachmentInfo->getPermission();
+				if(!isset($oldPermissions[$name])){
+					$diff[$name] = false;
+				}elseif($oldPermissions[$name]->getValue() !== $permissionAttachmentInfo->getValue()){
+					//permission was previously unset OR the value of the permission changed
+					//we don't care who assigned the permission, only that the result is different
+					$diff[$name] = $oldPermissions[$name]->getValue();
+				}
+				unset($oldPermissions[$name]);
+			}
+			//oldPermissions now only contains permissions that are no longer set after recalculation
+			foreach($oldPermissions as $permissionAttachmentInfo){
+				$diff[$permissionAttachmentInfo->getPermission()] = $permissionAttachmentInfo->getValue();
+			}
+		});
+
+		Timings::$permissibleCalculationCallbackTimer->time(function() use ($diff) : void{
+			if(count($diff) > 0){
+				foreach($this->permissionRecalculationCallbacks as $closure){
+					$closure($diff);
+				}
+			}
+		});
 
 		Timings::$permissibleCalculationTimer->stopTiming();
 	}
@@ -176,7 +200,7 @@ class PermissibleBase implements Permissible{
 
 	/**
 	 * @return \Closure[]|Set
-	 * @phpstan-return Set<\Closure() : void>
+	 * @phpstan-return Set<\Closure(array<string, bool> $changedPermissionsOldValues) : void>
 	 */
 	public function getPermissionRecalculationCallbacks() : Set{ return $this->permissionRecalculationCallbacks; }
 

@@ -765,8 +765,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 		$this->spawned = true;
 		$this->recheckBroadcastPermissions();
-		$this->getPermissionRecalculationCallbacks()->add(function() : void{
-			$this->recheckBroadcastPermissions();
+		$this->getPermissionRecalculationCallbacks()->add(function(array $changedPermissionsOldValues) : void{
+			if(isset($changedPermissionsOldValues[Server::BROADCAST_CHANNEL_ADMINISTRATIVE]) || isset($changedPermissionsOldValues[Server::BROADCAST_CHANNEL_USERS])){
+				$this->recheckBroadcastPermissions();
+			}
 		});
 
 		$ev = new PlayerJoinEvent($this,

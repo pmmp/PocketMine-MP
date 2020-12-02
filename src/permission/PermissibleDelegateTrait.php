@@ -73,7 +73,7 @@ trait PermissibleDelegateTrait{
 
 	/**
 	 * @return Set|\Closure[]
-	 * @phpstan-return Set<\Closure() : void>
+	 * @phpstan-return Set<\Closure(array<string, bool> $changedPermissionsOldValues) : void>
 	 */
 	public function getPermissionRecalculationCallbacks() : Set{
 		return $this->perm->getPermissionRecalculationCallbacks();
