@@ -590,7 +590,7 @@ class World implements ChunkManager{
 		$this->cancelUnloadChunkRequest($chunkX, $chunkZ);
 
 		if($autoLoad){
-			$this->loadChunk($chunkX, $chunkZ, true);
+			$this->loadChunk($chunkX, $chunkZ, false);
 		}
 	}
 
