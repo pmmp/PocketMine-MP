@@ -2054,10 +2054,10 @@ class World implements ChunkManager{
 			foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
 				$listener->onChunkLoaded($chunk);
 			}
-		}
-
-		foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
-			$listener->onChunkChanged($chunk);
+		}else{
+			foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
+				$listener->onChunkChanged($chunk);
+			}
 		}
 	}
 
