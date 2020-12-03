@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 class ChunkTest extends TestCase{
 
 	public function testClone() : void{
-		$chunk = new Chunk(0, 0);
+		$chunk = new Chunk();
 		$chunk->setFullBlock(0, 0, 0, 1);
 		$chunk->setBiomeId(0, 0, 1);
 		$chunk->setHeightMap(0, 0, 1);

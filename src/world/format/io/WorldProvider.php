@@ -75,6 +75,7 @@ interface WorldProvider{
 	 * Returns a generator which yields all the chunks in this world.
 	 *
 	 * @return \Generator|Chunk[]
+	 * @phpstan-return \Generator<array{int, int}, Chunk, void, void>
 	 * @throws CorruptedChunkException
 	 */
 	public function getAllChunks(bool $skipCorrupted = false, ?\Logger $logger = null) : \Generator;

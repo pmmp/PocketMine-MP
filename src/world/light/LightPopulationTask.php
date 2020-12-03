@@ -52,15 +52,15 @@ class LightPopulationTask extends AsyncTask{
 	/** @var string */
 	private $resultBlockLightArrays;
 
-	public function __construct(World $world, Chunk $chunk){
+	public function __construct(World $world, int $chunkX, int $chunkZ, Chunk $chunk){
 		$this->storeLocal(self::TLS_KEY_WORLD, $world);
-		[$this->chunkX, $this->chunkZ] = [$chunk->getX(), $chunk->getZ()];
+		[$this->chunkX, $this->chunkZ] = [$chunkX, $chunkZ];
 		$chunk->setLightPopulated(null);
 		$this->chunk = FastChunkSerializer::serialize($chunk);
 	}
 
 	public function onRun() : void{
-		$chunk = FastChunkSerializer::deserialize($this->chunk, $this->chunkX, $this->chunkZ);
+		$chunk = FastChunkSerializer::deserialize($this->chunk);
 
 		$manager = new SimpleChunkManager();
 		$manager->setChunk($this->chunkX, $this->chunkZ, $chunk);

@@ -107,7 +107,7 @@ final class FastChunkSerializer{
 	/**
 	 * Deserializes a fast-serialized chunk
 	 */
-	public static function deserialize(string $data, int $chunkX, int $chunkZ) : Chunk{
+	public static function deserialize(string $data) : Chunk{
 		$stream = new BinaryStream($data);
 
 		$flags = $stream->getByte();
@@ -144,7 +144,7 @@ final class FastChunkSerializer{
 			}
 		}
 
-		$chunk = new Chunk($chunkX, $chunkZ, $subChunks, null, null, $biomeIds, $heightMap);
+		$chunk = new Chunk($subChunks, null, null, $biomeIds, $heightMap);
 		$chunk->setGenerated($terrainGenerated);
 		$chunk->setPopulated($terrainPopulated);
 		$chunk->setLightPopulated($lightPopulated);

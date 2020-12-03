@@ -33,8 +33,8 @@ class ChunkLoadEvent extends ChunkEvent{
 	/** @var bool */
 	private $newChunk;
 
-	public function __construct(World $world, Chunk $chunk, bool $newChunk){
-		parent::__construct($world, $chunk);
+	public function __construct(World $world, int $chunkX, int $chunkZ, Chunk $chunk, bool $newChunk){
+		parent::__construct($world, $chunkX, $chunkZ, $chunk);
 		$this->newChunk = $newChunk;
 	}
 

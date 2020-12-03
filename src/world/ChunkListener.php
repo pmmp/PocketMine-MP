@@ -43,23 +43,23 @@ interface ChunkListener{
 	/**
 	 * This method will be called when a Chunk is replaced by a new one
 	 */
-	public function onChunkChanged(Chunk $chunk) : void;
+	public function onChunkChanged(int $chunkX, int $chunkZ, Chunk $chunk) : void;
 
 	/**
 	 * This method will be called when a registered chunk is loaded
 	 */
-	public function onChunkLoaded(Chunk $chunk) : void;
+	public function onChunkLoaded(int $chunkX, int $chunkZ, Chunk $chunk) : void;
 
 	/**
 	 * This method will be called when a registered chunk is unloaded
 	 */
-	public function onChunkUnloaded(Chunk $chunk) : void;
+	public function onChunkUnloaded(int $chunkX, int $chunkZ, Chunk $chunk) : void;
 
 	/**
 	 * This method will be called when a registered chunk is populated
 	 * Usually it'll be sent with another call to onChunkChanged()
 	 */
-	public function onChunkPopulated(Chunk $chunk) : void;
+	public function onChunkPopulated(int $chunkX, int $chunkZ, Chunk $chunk) : void;
 
 	/**
 	 * This method will be called when a block changes in a registered chunk

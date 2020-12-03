@@ -66,11 +66,11 @@ abstract class BaseWorldProvider implements WorldProvider{
 		return $this->readChunk($chunkX, $chunkZ);
 	}
 
-	public function saveChunk(Chunk $chunk) : void{
+	public function saveChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		if(!$chunk->isGenerated()){
 			throw new \InvalidStateException("Cannot save un-generated chunk");
 		}
-		$this->writeChunk($chunk);
+		$this->writeChunk($chunkX, $chunkZ, $chunk);
 	}
 
 	/**
@@ -78,5 +78,5 @@ abstract class BaseWorldProvider implements WorldProvider{
 	 */
 	abstract protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk;
 
-	abstract protected function writeChunk(Chunk $chunk) : void;
+	abstract protected function writeChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void;
 }

@@ -228,10 +228,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		return null;
 	}
 
-	protected function writeChunk(Chunk $chunk) : void{
-		$chunkX = $chunk->getX();
-		$chunkZ = $chunk->getZ();
-
+	protected function writeChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		$this->loadRegion($regionX, $regionZ);
 
@@ -263,7 +260,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 					try{
 						$chunk = $this->loadChunk($chunkX, $chunkZ);
 						if($chunk !== null){
-							yield $chunk;
+							yield [$chunkX, $chunkZ] => $chunk;
 						}
 					}catch(CorruptedChunkException $e){
 						if(!$skipCorrupted){

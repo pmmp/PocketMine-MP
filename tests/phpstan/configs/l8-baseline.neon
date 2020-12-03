@@ -526,7 +526,7 @@ parameters:
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#1 \\$chunk of method pocketmine\\\\player\\\\Player\\:\\:onChunkChanged\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
+			message: "#^Parameter \\#3 \\$chunk of method pocketmine\\\\player\\\\Player\\:\\:onChunkChanged\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
 
@@ -593,16 +593,6 @@ parameters:
 		-
 			message: "#^Cannot call method setGenerated\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 2
-			path: ../../../src/world/generator/PopulationTask.php
-
-		-
-			message: "#^Cannot call method getX\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 5
-			path: ../../../src/world/generator/PopulationTask.php
-
-		-
-			message: "#^Cannot call method getZ\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 5
 			path: ../../../src/world/generator/PopulationTask.php
 
 		-

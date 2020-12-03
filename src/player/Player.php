@@ -2358,18 +2358,18 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		onChunkUnloaded as private;
 	}
 
-	public function onChunkChanged(Chunk $chunk) : void{
-		$status = $this->usedChunks[$hash = World::chunkHash($chunk->getX(), $chunk->getZ())] ?? null;
+	public function onChunkChanged(int $chunkX, int $chunkZ, Chunk $chunk) : void{
+		$status = $this->usedChunks[$hash = World::chunkHash($chunkX, $chunkZ)] ?? null;
 		if($status !== null && !$status->equals(UsedChunkStatus::NEEDED())){
 			$this->usedChunks[$hash] = UsedChunkStatus::NEEDED();
 			$this->nextChunkOrderRun = 0;
 		}
 	}
 
-	public function onChunkUnloaded(Chunk $chunk) : void{
-		if($this->isUsingChunk($chunk->getX(), $chunk->getZ())){
-			$this->logger->debug("Detected forced unload of chunk " . $chunk->getX() . " " . $chunk->getZ());
-			$this->unloadChunk($chunk->getX(), $chunk->getZ());
+	public function onChunkUnloaded(int $chunkX, int $chunkZ, Chunk $chunk) : void{
+		if($this->isUsingChunk($chunkX, $chunkZ)){
+			$this->logger->debug("Detected forced unload of chunk " . $chunkX . " " . $chunkZ);
+			$this->unloadChunk($chunkX, $chunkZ);
 		}
 	}
 }

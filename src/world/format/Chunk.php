@@ -46,11 +46,6 @@ class Chunk{
 	public const MAX_SUBCHUNKS = 16;
 
 	/** @var int */
-	protected $x;
-	/** @var int */
-	protected $z;
-
-	/** @var int */
 	private $dirtyFlags = 0;
 
 	/** @var bool|null */
@@ -89,10 +84,7 @@ class Chunk{
 	 * @param CompoundTag[] $entities
 	 * @param CompoundTag[] $tiles
 	 */
-	public function __construct(int $chunkX, int $chunkZ, array $subChunks = [], ?array $entities = null, ?array $tiles = null, ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null){
-		$this->x = $chunkX;
-		$this->z = $chunkZ;
-
+	public function __construct(array $subChunks = [], ?array $entities = null, ?array $tiles = null, ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null){
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
 		foreach($this->subChunks as $y => $null){
@@ -105,22 +97,6 @@ class Chunk{
 
 		$this->NBTtiles = $tiles;
 		$this->NBTentities = $entities;
-	}
-
-	public function getX() : int{
-		return $this->x;
-	}
-
-	public function getZ() : int{
-		return $this->z;
-	}
-
-	public function setX(int $x) : void{
-		$this->x = $x;
-	}
-
-	public function setZ(int $z) : void{
-		$this->z = $z;
 	}
 
 	/**
