@@ -2513,7 +2513,10 @@ class World implements ChunkManager{
 			}
 		}
 
-		$chunk = $this->loadChunk($x, $z, true);
+		$chunk = $this->loadChunk($x, $z, false);
+		if($chunk === null){
+			$chunk = new Chunk($x, $z);
+		}
 		if(!$chunk->isPopulated()){
 			Timings::$populationTimer->startTiming();
 
