@@ -76,10 +76,6 @@ class RegisteredListener{
 		$this->timings->stopTiming();
 	}
 
-	public function __destruct(){
-		$this->timings->remove();
-	}
-
 	public function isHandlingCancelled() : bool{
 		return $this->handleCancelled;
 	}
