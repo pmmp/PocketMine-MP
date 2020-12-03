@@ -78,7 +78,7 @@ class PopulationTask extends AsyncTask{
 			return;
 		}
 		$generator = $context->getGenerator();
-		$manager = $context->getChunkManager();
+		$manager = new SimpleChunkManager($context->getWorldHeight());
 
 		/** @var Chunk[] $chunks */
 		$chunks = [];
@@ -124,8 +124,6 @@ class PopulationTask extends AsyncTask{
 		foreach($chunks as $i => $c){
 			$this->{"chunk$i"} = $c->isDirty() ? FastChunkSerializer::serializeWithoutLight($c) : null;
 		}
-
-		$manager->cleanChunks();
 	}
 
 	public function onCompletion() : void{

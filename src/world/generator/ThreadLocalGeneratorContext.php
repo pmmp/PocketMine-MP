@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator;
 
-use pocketmine\world\SimpleChunkManager;
-
 /**
  * Manages thread-local caches for generators and the things needed to support them
  */
@@ -49,15 +47,15 @@ final class ThreadLocalGeneratorContext{
 
 	/** @var Generator */
 	private $generator;
-	/** @var SimpleChunkManager */
-	private $chunkManager;
+	/** @var int */
+	private $worldHeight;
 
-	public function __construct(Generator $generator, SimpleChunkManager $chunkManager){
+	public function __construct(Generator $generator, int $worldHeight){
 		$this->generator = $generator;
-		$this->chunkManager = $chunkManager;
+		$this->worldHeight = $worldHeight;
 	}
 
 	public function getGenerator() : Generator{ return $this->generator; }
 
-	public function getChunkManager() : SimpleChunkManager{ return $this->chunkManager; }
+	public function getWorldHeight() : int{ return $this->worldHeight; }
 }

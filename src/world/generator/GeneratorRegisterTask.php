@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world\generator;
 
 use pocketmine\scheduler\AsyncTask;
-use pocketmine\world\SimpleChunkManager;
 use pocketmine\world\World;
 use function igbinary_serialize;
 use function igbinary_unserialize;
@@ -59,12 +58,11 @@ class GeneratorRegisterTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		$manager = new SimpleChunkManager($this->worldHeight);
 		/**
 		 * @var Generator $generator
 		 * @see Generator::__construct()
 		 */
 		$generator = new $this->generatorClass($this->seed, igbinary_unserialize($this->settings));
-		ThreadLocalGeneratorContext::register(new ThreadLocalGeneratorContext($generator, $manager), $this->worldId);
+		ThreadLocalGeneratorContext::register(new ThreadLocalGeneratorContext($generator, $this->worldHeight), $this->worldId);
 	}
 }
