@@ -99,7 +99,6 @@ trait LegacyAnvilChunkTrait{
 			$biomeArray
 		);
 		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
-		$result->setGenerated();
 		return $result;
 	}
 

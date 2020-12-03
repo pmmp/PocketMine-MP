@@ -95,7 +95,6 @@ class McRegion extends RegionWorldProvider{
 			$biomeIds
 		);
 		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
-		$result->setGenerated(true);
 		return $result;
 	}
 

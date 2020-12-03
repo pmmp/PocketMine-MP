@@ -67,9 +67,6 @@ abstract class BaseWorldProvider implements WorldProvider{
 	}
 
 	public function saveChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
-		if(!$chunk->isGenerated()){
-			throw new \InvalidStateException("Cannot save un-generated chunk");
-		}
 		$this->writeChunk($chunkX, $chunkZ, $chunk);
 	}
 

@@ -536,16 +536,6 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Cannot call method isPopulated\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Parameter \\#2 \\$chunk of class pocketmine\\\\world\\\\generator\\\\PopulationTask constructor expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Method pocketmine\\\\world\\\\biome\\\\BiomeRegistry\\:\\:getBiome\\(\\) should return pocketmine\\\\world\\\\biome\\\\Biome but returns pocketmine\\\\world\\\\biome\\\\Biome\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/biome/BiomeRegistry.php
@@ -591,13 +581,8 @@ parameters:
 			path: ../../../src/world/generator/PopulationTask.php
 
 		-
-			message: "#^Cannot call method setGenerated\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 2
-			path: ../../../src/world/generator/PopulationTask.php
-
-		-
-			message: "#^Cannot call method isGenerated\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
+			message: "#^Cannot call method setDirtyFlag\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
+			count: 4
 			path: ../../../src/world/generator/PopulationTask.php
 
 		-

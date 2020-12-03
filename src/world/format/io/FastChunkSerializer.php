@@ -63,42 +63,40 @@ final class FastChunkSerializer{
 		$stream = new BinaryStream();
 		$stream->putByte(
 			($includeLight ? self::FLAG_HAS_LIGHT : 0) |
-			($chunk->isPopulated() ? self::FLAG_POPULATED : 0) |
-			($chunk->isGenerated() ? self::FLAG_GENERATED : 0)
+			($chunk->isPopulated() ? self::FLAG_POPULATED : 0)
 		);
-		if($chunk->isGenerated()){
-			//subchunks
-			$subChunks = $chunk->getSubChunks();
-			$count = $subChunks->count();
-			$stream->putByte($count);
 
-			foreach($subChunks as $y => $subChunk){
-				$stream->putByte($y);
-				$stream->putInt($subChunk->getEmptyBlockId());
-				$layers = $subChunk->getBlockLayers();
-				$stream->putByte(count($layers));
-				foreach($layers as $blocks){
-					$wordArray = $blocks->getWordArray();
-					$palette = $blocks->getPalette();
+		//subchunks
+		$subChunks = $chunk->getSubChunks();
+		$count = $subChunks->count();
+		$stream->putByte($count);
 
-					$stream->putByte($blocks->getBitsPerBlock());
-					$stream->put($wordArray);
-					$serialPalette = pack("L*", ...$palette);
-					$stream->putInt(strlen($serialPalette));
-					$stream->put($serialPalette);
-				}
+		foreach($subChunks as $y => $subChunk){
+			$stream->putByte($y);
+			$stream->putInt($subChunk->getEmptyBlockId());
+			$layers = $subChunk->getBlockLayers();
+			$stream->putByte(count($layers));
+			foreach($layers as $blocks){
+				$wordArray = $blocks->getWordArray();
+				$palette = $blocks->getPalette();
 
-				if($includeLight){
-					$stream->put($subChunk->getBlockSkyLightArray()->getData());
-					$stream->put($subChunk->getBlockLightArray()->getData());
-				}
+				$stream->putByte($blocks->getBitsPerBlock());
+				$stream->put($wordArray);
+				$serialPalette = pack("L*", ...$palette);
+				$stream->putInt(strlen($serialPalette));
+				$stream->put($serialPalette);
 			}
 
-			//biomes
-			$stream->put($chunk->getBiomeIdArray());
 			if($includeLight){
-				$stream->put(pack("S*", ...$chunk->getHeightMapArray()));
+				$stream->put($subChunk->getBlockSkyLightArray()->getData());
+				$stream->put($subChunk->getBlockLightArray()->getData());
 			}
+		}
+
+		//biomes
+		$stream->put($chunk->getBiomeIdArray());
+		if($includeLight){
+			$stream->put(pack("S*", ...$chunk->getHeightMapArray()));
 		}
 
 		return $stream->getBuffer();
@@ -113,39 +111,36 @@ final class FastChunkSerializer{
 		$flags = $stream->getByte();
 		$lightPopulated = (bool) ($flags & self::FLAG_HAS_LIGHT);
 		$terrainPopulated = (bool) ($flags & self::FLAG_POPULATED);
-		$terrainGenerated = (bool) ($flags & self::FLAG_GENERATED);
 
 		$subChunks = [];
 		$biomeIds = null;
 		$heightMap = null;
-		if($terrainGenerated){
-			$count = $stream->getByte();
-			for($subCount = 0; $subCount < $count; ++$subCount){
-				$y = $stream->getByte();
-				$airBlockId = $stream->getInt();
 
-				/** @var PalettedBlockArray[] $layers */
-				$layers = [];
-				for($i = 0, $layerCount = $stream->getByte(); $i < $layerCount; ++$i){
-					$bitsPerBlock = $stream->getByte();
-					$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
-					$palette = array_values(unpack("L*", $stream->get($stream->getInt())));
+		$count = $stream->getByte();
+		for($subCount = 0; $subCount < $count; ++$subCount){
+			$y = $stream->getByte();
+			$airBlockId = $stream->getInt();
 
-					$layers[] = PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
-				}
-				$subChunks[$y] = new SubChunk(
-					$airBlockId, $layers, $lightPopulated ? new LightArray($stream->get(2048)) : null, $lightPopulated ? new LightArray($stream->get(2048)) : null
-				);
+			/** @var PalettedBlockArray[] $layers */
+			$layers = [];
+			for($i = 0, $layerCount = $stream->getByte(); $i < $layerCount; ++$i){
+				$bitsPerBlock = $stream->getByte();
+				$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
+				$palette = array_values(unpack("L*", $stream->get($stream->getInt())));
+
+				$layers[] = PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 			}
+			$subChunks[$y] = new SubChunk(
+				$airBlockId, $layers, $lightPopulated ? new LightArray($stream->get(2048)) : null, $lightPopulated ? new LightArray($stream->get(2048)) : null
+			);
+		}
 
-			$biomeIds = new BiomeArray($stream->get(256));
-			if($lightPopulated){
-				$heightMap = new HeightArray(array_values(unpack("S*", $stream->get(512))));
-			}
+		$biomeIds = new BiomeArray($stream->get(256));
+		if($lightPopulated){
+			$heightMap = new HeightArray(array_values(unpack("S*", $stream->get(512))));
 		}
 
 		$chunk = new Chunk($subChunks, null, null, $biomeIds, $heightMap);
-		$chunk->setGenerated($terrainGenerated);
 		$chunk->setPopulated($terrainPopulated);
 		$chunk->setLightPopulated($lightPopulated);
 		$chunk->clearDirtyFlags();

@@ -91,7 +91,7 @@ class PopulationTask extends AsyncTask{
 		/** @var Chunk[] $chunks */
 		$chunks = [];
 
-		$chunk = $this->chunk !== null ? FastChunkSerializer::deserialize($this->chunk) : new Chunk();
+		$chunk = $this->chunk !== null ? FastChunkSerializer::deserialize($this->chunk) : null;
 
 		for($i = 0; $i < 9; ++$i){
 			if($i === 4){
@@ -99,27 +99,29 @@ class PopulationTask extends AsyncTask{
 			}
 			$ck = $this->{"chunk$i"};
 			if($ck === null){
-				$chunks[$i] = new Chunk();
+				$chunks[$i] = null;
 			}else{
 				$chunks[$i] = FastChunkSerializer::deserialize($ck);
 			}
 		}
 
 		$manager->setChunk($this->chunkX, $this->chunkZ, $chunk);
-		if(!$chunk->isGenerated()){
+		if($chunk === null){
 			$generator->generateChunk($manager, $this->chunkX, $this->chunkZ);
 			$chunk = $manager->getChunk($this->chunkX, $this->chunkZ);
-			$chunk->setGenerated();
+			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
+			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
 		}
 
 		foreach($chunks as $i => $c){
 			$cX = (-1 + $i % 3) + $this->chunkX;
 			$cZ = (-1 + intdiv($i, 3)) + $this->chunkZ;
 			$manager->setChunk($cX, $cZ, $c);
-			if(!$c->isGenerated()){
+			if($c === null){
 				$generator->generateChunk($manager, $cX, $cZ);
 				$chunks[$i] = $manager->getChunk($cX, $cZ);
-				$chunks[$i]->setGenerated();
+				$chunks[$i]->setDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
+				$chunks[$i]->setDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
 			}
 		}
 

@@ -406,7 +406,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		//TODO: tile ticks, biome states (?)
 
-		$chunk->setGenerated();
 		$chunk->setPopulated();
 		if($hasBeenUpgraded){
 			$chunk->setDirty(); //trigger rewriting chunk to disk if it was converted from an older format

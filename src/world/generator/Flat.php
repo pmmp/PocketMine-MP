@@ -146,7 +146,6 @@ class Flat extends Generator{
 
 	protected function generateBaseChunk() : void{
 		$this->chunk = new Chunk();
-		$this->chunk->setGenerated();
 
 		for($Z = 0; $Z < 16; ++$Z){
 			for($X = 0; $X < 16; ++$X){

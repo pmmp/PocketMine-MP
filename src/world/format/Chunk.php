@@ -51,8 +51,6 @@ class Chunk{
 	/** @var bool|null */
 	protected $lightPopulated = false;
 	/** @var bool */
-	protected $terrainGenerated = false;
-	/** @var bool */
 	protected $terrainPopulated = false;
 
 	/**
@@ -204,15 +202,6 @@ class Chunk{
 
 	public function setPopulated(bool $value = true) : void{
 		$this->terrainPopulated = $value;
-		$this->dirtyFlags |= self::DIRTY_FLAG_TERRAIN;
-	}
-
-	public function isGenerated() : bool{
-		return $this->terrainGenerated;
-	}
-
-	public function setGenerated(bool $value = true) : void{
-		$this->terrainGenerated = $value;
 		$this->dirtyFlags |= self::DIRTY_FLAG_TERRAIN;
 	}
 

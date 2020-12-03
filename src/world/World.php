@@ -936,7 +936,6 @@ class World implements ChunkManager{
 				$hash = World::chunkHash($dx + $chunkX, $dz + $chunkZ);
 				if(!isset($chunkTickList[$hash]) and isset($this->chunks[$hash])){
 					if(
-						!$this->chunks[$hash]->isGenerated() ||
 						!$this->chunks[$hash]->isPopulated() ||
 						$this->isChunkLocked($dx + $chunkX, $dz + $chunkZ)
 					){
@@ -1025,7 +1024,7 @@ class World implements ChunkManager{
 		$this->timings->syncChunkSaveTimer->startTiming();
 		try{
 			foreach($this->chunks as $chunkHash => $chunk){
-				if($chunk->isDirty() and $chunk->isGenerated()){
+				if($chunk->isDirty()){
 					self::getXZ($chunkHash, $chunkX, $chunkZ);
 					$this->provider->saveChunk($chunkX, $chunkZ, $chunk);
 					$chunk->clearDirtyFlags();
@@ -2085,8 +2084,7 @@ class World implements ChunkManager{
 	}
 
 	public function isChunkGenerated(int $x, int $z) : bool{
-		$chunk = $this->loadChunk($x, $z);
-		return $chunk !== null ? $chunk->isGenerated() : false;
+		return $this->loadChunk($x, $z) !== null;
 	}
 
 	public function isChunkPopulated(int $x, int $z) : bool{
@@ -2337,7 +2335,7 @@ class World implements ChunkManager{
 				return false;
 			}
 
-			if($trySave and $this->getAutoSave() and $chunk->isGenerated() and $chunk->isDirty()){
+			if($trySave and $this->getAutoSave() and $chunk->isDirty()){
 				$this->timings->syncChunkSaveTimer->startTiming();
 				try{
 					$this->provider->saveChunk($x, $z, $chunk);
@@ -2384,7 +2382,7 @@ class World implements ChunkManager{
 		$max = $this->worldHeight;
 		$v = $spawn->floor();
 		$chunk = $this->getOrLoadChunkAtPosition($v);
-		if($chunk === null || !$chunk->isGenerated()){
+		if($chunk === null){
 			throw new WorldException("Cannot find a safe spawn point in non-generated terrain");
 		}
 		$x = (int) $v->x;
