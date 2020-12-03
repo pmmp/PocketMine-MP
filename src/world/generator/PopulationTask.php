@@ -105,7 +105,7 @@ class PopulationTask extends AsyncTask{
 			}
 		}
 
-		$manager->setChunk($this->chunkX, $this->chunkZ, $chunk);
+		$manager->setChunk($this->chunkX, $this->chunkZ, $chunk ?? new Chunk());
 		if($chunk === null){
 			$generator->generateChunk($manager, $this->chunkX, $this->chunkZ);
 			$chunk = $manager->getChunk($this->chunkX, $this->chunkZ);
@@ -116,7 +116,7 @@ class PopulationTask extends AsyncTask{
 		foreach($chunks as $i => $c){
 			$cX = (-1 + $i % 3) + $this->chunkX;
 			$cZ = (-1 + intdiv($i, 3)) + $this->chunkZ;
-			$manager->setChunk($cX, $cZ, $c);
+			$manager->setChunk($cX, $cZ, $c ?? new Chunk());
 			if($c === null){
 				$generator->generateChunk($manager, $cX, $cZ);
 				$chunks[$i] = $manager->getChunk($cX, $cZ);
