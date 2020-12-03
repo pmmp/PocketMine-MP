@@ -28,6 +28,7 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\SimpleChunkManager;
 use pocketmine\world\World;
+use function intdiv;
 
 class PopulationTask extends AsyncTask{
 	private const TLS_KEY_WORLD = "world";
@@ -36,6 +37,11 @@ class PopulationTask extends AsyncTask{
 	public $state;
 	/** @var int */
 	public $worldId;
+	/** @var int */
+	private $chunkX;
+	/** @var int */
+	private $chunkZ;
+
 	/** @var string */
 	public $chunk;
 
@@ -62,6 +68,8 @@ class PopulationTask extends AsyncTask{
 	public function __construct(World $world, Chunk $chunk){
 		$this->state = true;
 		$this->worldId = $world->getId();
+		$this->chunkX = $chunk->getX();
+		$this->chunkZ = $chunk->getZ();
 		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
 
 		foreach($world->getAdjacentChunks($chunk->getX(), $chunk->getZ()) as $i => $c){
@@ -83,7 +91,7 @@ class PopulationTask extends AsyncTask{
 		/** @var Chunk[] $chunks */
 		$chunks = [];
 
-		$chunk = FastChunkSerializer::deserialize($this->chunk);
+		$chunk = FastChunkSerializer::deserialize($this->chunk, $this->chunkX, $this->chunkZ);
 
 		for($i = 0; $i < 9; ++$i){
 			if($i === 4){
@@ -93,9 +101,9 @@ class PopulationTask extends AsyncTask{
 			$zz = -1 + (int) ($i / 3);
 			$ck = $this->{"chunk$i"};
 			if($ck === null){
-				$chunks[$i] = new Chunk($chunk->getX() + $xx, $chunk->getZ() + $zz);
+				$chunks[$i] = new Chunk($this->chunkX + $xx, $this->chunkZ + $zz);
 			}else{
-				$chunks[$i] = FastChunkSerializer::deserialize($ck);
+				$chunks[$i] = FastChunkSerializer::deserialize($ck, $this->chunkX + $xx, $this->chunkZ + $zz);
 			}
 		}
 
@@ -134,7 +142,7 @@ class PopulationTask extends AsyncTask{
 				$world->registerGeneratorToWorker($this->worker->getAsyncWorkerId());
 			}
 
-			$chunk = FastChunkSerializer::deserialize($this->chunk);
+			$chunk = FastChunkSerializer::deserialize($this->chunk, $this->chunkX, $this->chunkZ);
 
 			for($i = 0; $i < 9; ++$i){
 				if($i === 4){
@@ -142,12 +150,15 @@ class PopulationTask extends AsyncTask{
 				}
 				$c = $this->{"chunk$i"};
 				if($c !== null){
-					$c = FastChunkSerializer::deserialize($c);
-					$world->generateChunkCallback($c->getX(), $c->getZ(), $this->state ? $c : null);
+					$xx = -1 + $i % 3;
+					$zz = -1 + intdiv($i, 3);
+
+					$c = FastChunkSerializer::deserialize($c, $this->chunkX + $xx, $this->chunkZ + $zz);
+					$world->generateChunkCallback($this->chunkX + $xx, $this->chunkZ + $zz, $this->state ? $c : null);
 				}
 			}
 
-			$world->generateChunkCallback($chunk->getX(), $chunk->getZ(), $this->state ? $chunk : null);
+			$world->generateChunkCallback($this->chunkX, $this->chunkZ, $this->state ? $chunk : null);
 		}
 	}
 }

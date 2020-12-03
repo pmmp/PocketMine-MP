@@ -61,8 +61,6 @@ final class FastChunkSerializer{
 		$includeLight = $includeLight && $chunk->isLightPopulated() === true;
 
 		$stream = new BinaryStream();
-		$stream->putInt($chunk->getX());
-		$stream->putInt($chunk->getZ());
 		$stream->putByte(
 			($includeLight ? self::FLAG_HAS_LIGHT : 0) |
 			($chunk->isPopulated() ? self::FLAG_POPULATED : 0) |
@@ -109,11 +107,9 @@ final class FastChunkSerializer{
 	/**
 	 * Deserializes a fast-serialized chunk
 	 */
-	public static function deserialize(string $data) : Chunk{
+	public static function deserialize(string $data, int $chunkX, int $chunkZ) : Chunk{
 		$stream = new BinaryStream($data);
 
-		$x = $stream->getInt();
-		$z = $stream->getInt();
 		$flags = $stream->getByte();
 		$lightPopulated = (bool) ($flags & self::FLAG_HAS_LIGHT);
 		$terrainPopulated = (bool) ($flags & self::FLAG_POPULATED);
@@ -148,7 +144,7 @@ final class FastChunkSerializer{
 			}
 		}
 
-		$chunk = new Chunk($x, $z, $subChunks, null, null, $biomeIds, $heightMap);
+		$chunk = new Chunk($chunkX, $chunkZ, $subChunks, null, null, $biomeIds, $heightMap);
 		$chunk->setGenerated($terrainGenerated);
 		$chunk->setPopulated($terrainPopulated);
 		$chunk->setLightPopulated($lightPopulated);

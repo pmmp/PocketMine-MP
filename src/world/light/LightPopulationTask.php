@@ -60,7 +60,7 @@ class LightPopulationTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		$chunk = FastChunkSerializer::deserialize($this->chunk);
+		$chunk = FastChunkSerializer::deserialize($this->chunk, $this->chunkX, $this->chunkZ);
 
 		$manager = new SimpleChunkManager();
 		$manager->setChunk($this->chunkX, $this->chunkZ, $chunk);
