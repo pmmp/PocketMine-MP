@@ -2507,10 +2507,7 @@ class World implements ChunkManager{
 		}
 
 		$chunk = $this->loadChunk($x, $z);
-		if($chunk === null){
-			$chunk = new Chunk();
-		}
-		if(!$chunk->isPopulated()){
+		if($chunk === null || !$chunk->isPopulated()){
 			Timings::$populationTimer->startTiming();
 
 			$this->chunkPopulationQueue[$index] = true;

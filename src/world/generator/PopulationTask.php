@@ -42,35 +42,35 @@ class PopulationTask extends AsyncTask{
 	/** @var int */
 	private $chunkZ;
 
-	/** @var string */
+	/** @var string|null */
 	public $chunk;
 
-	/** @var string */
+	/** @var string|null */
 	public $chunk0;
-	/** @var string */
+	/** @var string|null */
 	public $chunk1;
-	/** @var string */
+	/** @var string|null */
 	public $chunk2;
-	/** @var string */
+	/** @var string|null */
 	public $chunk3;
 
 	//center chunk
 
-	/** @var string */
+	/** @var string|null */
 	public $chunk5;
-	/** @var string */
+	/** @var string|null */
 	public $chunk6;
-	/** @var string */
+	/** @var string|null */
 	public $chunk7;
-	/** @var string */
+	/** @var string|null */
 	public $chunk8;
 
-	public function __construct(World $world, int $chunkX, int $chunkZ, Chunk $chunk){
+	public function __construct(World $world, int $chunkX, int $chunkZ, ?Chunk $chunk){
 		$this->state = true;
 		$this->worldId = $world->getId();
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
-		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
+		$this->chunk = $chunk !== null ? FastChunkSerializer::serializeWithoutLight($chunk) : null;
 
 		foreach($world->getAdjacentChunks($chunkX, $chunkZ) as $i => $c){
 			$this->{"chunk$i"} = $c !== null ? FastChunkSerializer::serializeWithoutLight($c) : null;
@@ -91,7 +91,7 @@ class PopulationTask extends AsyncTask{
 		/** @var Chunk[] $chunks */
 		$chunks = [];
 
-		$chunk = FastChunkSerializer::deserialize($this->chunk);
+		$chunk = $this->chunk !== null ? FastChunkSerializer::deserialize($this->chunk) : new Chunk();
 
 		for($i = 0; $i < 9; ++$i){
 			if($i === 4){
@@ -142,7 +142,7 @@ class PopulationTask extends AsyncTask{
 				$world->registerGeneratorToWorker($this->worker->getAsyncWorkerId());
 			}
 
-			$chunk = FastChunkSerializer::deserialize($this->chunk);
+			$chunk = $this->chunk !== null ? FastChunkSerializer::deserialize($this->chunk) : null;
 
 			for($i = 0; $i < 9; ++$i){
 				if($i === 4){
