@@ -1366,7 +1366,16 @@ abstract class Entity{
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
-			$this->chunk = $this->getWorld()->loadChunk($chunkX, $chunkZ, true);
+			$this->chunk = $this->getWorld()->loadChunk($chunkX, $chunkZ, false);
+			if($this->chunk === null){
+				//TODO: this is a non-ideal solution for a hard problem
+				//when this happens the entity won't be tracked by any chunk, so we can't have it hanging around in memory
+				//we also can't allow this to cause chunk generation, nor can we just create an empty ungenerated chunk
+				//for it, because an empty chunk won't get saved, so the entity will vanish anyway. Therefore, this is
+				//the cleanest way to make sure this doesn't result in leaks.
+				$this->getWorld()->getLogger()->debug("Entity $this->id is in ungenerated terrain, flagging for despawn");
+				$this->flagForDespawn();
+			}
 			$this->chunkX = $chunkX;
 			$this->chunkZ = $chunkZ;
 
