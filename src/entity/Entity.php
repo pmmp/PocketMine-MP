@@ -243,7 +243,7 @@ abstract class Entity{
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->recalculateBoundingBox();
 
-		$this->chunk = $this->getWorld()->getOrLoadChunkAtPosition($this->location, false);
+		$this->chunk = $this->getWorld()->getOrLoadChunkAtPosition($this->location);
 		if($this->chunk === null){
 			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
 		}
@@ -1366,7 +1366,7 @@ abstract class Entity{
 			if($this->chunk !== null){
 				$this->chunk->removeEntity($this);
 			}
-			$this->chunk = $this->getWorld()->loadChunk($chunkX, $chunkZ, false);
+			$this->chunk = $this->getWorld()->loadChunk($chunkX, $chunkZ);
 			if($this->chunk === null){
 				//TODO: this is a non-ideal solution for a hard problem
 				//when this happens the entity won't be tracked by any chunk, so we can't have it hanging around in memory

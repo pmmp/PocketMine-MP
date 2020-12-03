@@ -590,7 +590,7 @@ class World implements ChunkManager{
 		$this->cancelUnloadChunkRequest($chunkX, $chunkZ);
 
 		if($autoLoad){
-			$this->loadChunk($chunkX, $chunkZ, false);
+			$this->loadChunk($chunkX, $chunkZ);
 		}
 	}
 
@@ -1411,7 +1411,7 @@ class World implements ChunkManager{
 		if($this->isChunkLocked($chunkX, $chunkZ)){
 			throw new WorldException("Terrain is locked for generation/population");
 		}
-		if($this->loadChunk($chunkX, $chunkZ, false) === null){ //current expected behaviour is to try to load the terrain synchronously
+		if($this->loadChunk($chunkX, $chunkZ) === null){ //current expected behaviour is to try to load the terrain synchronously
 			throw new WorldException("Cannot set a block in un-generated terrain");
 		}
 
@@ -1852,7 +1852,7 @@ class World implements ChunkManager{
 	 * Returns the tile at the specified x,y,z coordinates, or null if it does not exist.
 	 */
 	public function getTileAt(int $x, int $y, int $z) : ?Tile{
-		return ($chunk = $this->loadChunk($x >> 4, $z >> 4, false)) !== null ? $chunk->getTile($x & 0x0f, $y, $z & 0x0f) : null;
+		return ($chunk = $this->loadChunk($x >> 4, $z >> 4)) !== null ? $chunk->getTile($x & 0x0f, $y, $z & 0x0f) : null;
 	}
 
 	/**
@@ -1886,7 +1886,7 @@ class World implements ChunkManager{
 	}
 
 	public function getBiomeId(int $x, int $z) : int{
-		if(($chunk = $this->loadChunk($x >> 4, $z >> 4, false)) !== null){
+		if(($chunk = $this->loadChunk($x >> 4, $z >> 4)) !== null){
 			return $chunk->getBiomeId($x & 0x0f, $z & 0x0f);
 		}
 		return BiomeIds::OCEAN; //TODO: this should probably throw instead (terrain not generated yet)
@@ -1903,7 +1903,7 @@ class World implements ChunkManager{
 			//the changes would be overwritten when the generation finishes
 			throw new WorldException("Chunk is currently locked for async generation/population");
 		}
-		if(($chunk = $this->loadChunk($chunkX, $chunkZ, false)) !== null){
+		if(($chunk = $this->loadChunk($chunkX, $chunkZ)) !== null){
 			$chunk->setBiomeId($x & 0x0f, $z & 0x0f, $biomeId);
 		}else{
 			//if we allowed this, the modifications would be lost when the chunk is created
@@ -1925,8 +1925,8 @@ class World implements ChunkManager{
 	/**
 	 * Returns the chunk containing the given Vector3 position.
 	 */
-	public function getOrLoadChunkAtPosition(Vector3 $pos, bool $create = false) : ?Chunk{
-		return $this->loadChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $create);
+	public function getOrLoadChunkAtPosition(Vector3 $pos) : ?Chunk{
+		return $this->loadChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
 	}
 
 	/**
@@ -1942,7 +1942,7 @@ class World implements ChunkManager{
 				if($i === 4){
 					continue; //center chunk
 				}
-				$result[$i] = $this->loadChunk($x + $xx - 1, $z + $zz - 1, false);
+				$result[$i] = $this->loadChunk($x + $xx - 1, $z + $zz - 1);
 			}
 		}
 
@@ -1976,7 +1976,7 @@ class World implements ChunkManager{
 			unset($this->chunkPopulationQueue[$index]);
 
 			if($chunk !== null){
-				$oldChunk = $this->loadChunk($x, $z, false);
+				$oldChunk = $this->loadChunk($x, $z);
 				$this->setChunk($x, $z, $chunk, false);
 				if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
 					(new ChunkPopulateEvent($this, $chunk))->call();
@@ -2009,7 +2009,7 @@ class World implements ChunkManager{
 		$chunk->setZ($chunkZ);
 
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$oldChunk = $this->loadChunk($chunkX, $chunkZ, false);
+		$oldChunk = $this->loadChunk($chunkX, $chunkZ);
 		if($oldChunk !== null and $oldChunk !== $chunk){
 			if($deleteEntitiesAndTiles){
 				foreach($oldChunk->getEntities() as $entity){
@@ -2068,7 +2068,7 @@ class World implements ChunkManager{
 	 * @throws WorldException if the terrain is not generated
 	 */
 	public function getHighestBlockAt(int $x, int $z) : int{
-		if(($chunk = $this->loadChunk($x >> 4, $z >> 4, false)) !== null){
+		if(($chunk = $this->loadChunk($x >> 4, $z >> 4)) !== null){
 			return $chunk->getHighestBlockAt($x & 0x0f, $z & 0x0f);
 		}
 		throw new WorldException("Cannot get highest block in an ungenerated chunk");
@@ -2086,12 +2086,12 @@ class World implements ChunkManager{
 	}
 
 	public function isChunkGenerated(int $x, int $z) : bool{
-		$chunk = $this->loadChunk($x, $z, false);
+		$chunk = $this->loadChunk($x, $z);
 		return $chunk !== null ? $chunk->isGenerated() : false;
 	}
 
 	public function isChunkPopulated(int $x, int $z) : bool{
-		$chunk = $this->loadChunk($x, $z, false);
+		$chunk = $this->loadChunk($x, $z);
 		return $chunk !== null ? $chunk->isPopulated() : false;
 	}
 
@@ -2200,13 +2200,11 @@ class World implements ChunkManager{
 	 * Attempts to load a chunk from the world provider (if not already loaded). If the chunk is already loaded, it is
 	 * returned directly.
 	 *
-	 * @param bool $create Whether to create an empty chunk to load if the chunk cannot be loaded from disk.
-	 *
 	 * @return Chunk|null the requested chunk, or null on failure.
 	 *
 	 * @throws \InvalidStateException
 	 */
-	public function loadChunk(int $x, int $z, bool $create) : ?Chunk{
+	public function loadChunk(int $x, int $z) : ?Chunk{
 		if(isset($this->chunks[$chunkHash = World::chunkHash($x, $z)])){
 			return $this->chunks[$chunkHash];
 		}
@@ -2225,10 +2223,6 @@ class World implements ChunkManager{
 			$this->logger->critical("Failed to load chunk x=$x z=$z: " . $e->getMessage());
 		}
 
-		if($chunk === null and $create){
-			$chunk = new Chunk($x, $z);
-		}
-
 		$this->timings->syncChunkLoadDataTimer->stopTiming();
 
 		if($chunk === null){
@@ -2241,7 +2235,7 @@ class World implements ChunkManager{
 
 		$this->initChunk($chunk);
 
-		(new ChunkLoadEvent($this, $chunk, !$chunk->isGenerated()))->call();
+		(new ChunkLoadEvent($this, $chunk, false))->call();
 
 		if(!$this->isChunkInUse($x, $z)){
 			$this->logger->debug("Newly loaded chunk $x $z has no loaders registered, will be unloaded at next available opportunity");
@@ -2390,7 +2384,7 @@ class World implements ChunkManager{
 
 		$max = $this->worldHeight;
 		$v = $spawn->floor();
-		$chunk = $this->getOrLoadChunkAtPosition($v, false);
+		$chunk = $this->getOrLoadChunkAtPosition($v);
 		if($chunk === null || !$chunk->isGenerated()){
 			throw new WorldException("Cannot find a safe spawn point in non-generated terrain");
 		}
@@ -2513,7 +2507,7 @@ class World implements ChunkManager{
 			}
 		}
 
-		$chunk = $this->loadChunk($x, $z, false);
+		$chunk = $this->loadChunk($x, $z);
 		if($chunk === null){
 			$chunk = new Chunk($x, $z);
 		}
