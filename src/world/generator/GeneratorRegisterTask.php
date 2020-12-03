@@ -60,13 +60,11 @@ class GeneratorRegisterTask extends AsyncTask{
 
 	public function onRun() : void{
 		$manager = new SimpleChunkManager($this->worldHeight);
-		$this->worker->saveToThreadStore("generation.world{$this->worldId}.manager", $manager);
-
 		/**
 		 * @var Generator $generator
 		 * @see Generator::__construct()
 		 */
 		$generator = new $this->generatorClass($this->seed, igbinary_unserialize($this->settings));
-		$this->worker->saveToThreadStore("generation.world{$this->worldId}.generator", $generator);
+		ThreadLocalGeneratorContext::register(new ThreadLocalGeneratorContext($generator, $manager), $this->worldId);
 	}
 }

@@ -36,7 +36,6 @@ class GeneratorUnregisterTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		$this->worker->removeFromThreadStore("generation.world{$this->worldId}.manager");
-		$this->worker->removeFromThreadStore("generation.world{$this->worldId}.generator");
+		ThreadLocalGeneratorContext::unregister($this->worldId);
 	}
 }

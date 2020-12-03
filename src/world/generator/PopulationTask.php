@@ -72,12 +72,13 @@ class PopulationTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		$manager = $this->worker->getFromThreadStore("generation.world{$this->worldId}.manager");
-		$generator = $this->worker->getFromThreadStore("generation.world{$this->worldId}.generator");
-		if(!($manager instanceof SimpleChunkManager) or !($generator instanceof Generator)){
+		$context = ThreadLocalGeneratorContext::fetch($this->worldId);
+		if($context === null){
 			$this->state = false;
 			return;
 		}
+		$generator = $context->getGenerator();
+		$manager = $context->getChunkManager();
 
 		/** @var Chunk[] $chunks */
 		$chunks = [];
