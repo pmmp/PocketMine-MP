@@ -87,6 +87,7 @@ use pocketmine\world\sound\Sound;
 use pocketmine\world\utils\SubChunkExplorer;
 use function abs;
 use function array_fill_keys;
+use function array_key_exists;
 use function array_map;
 use function array_merge;
 use function array_sum;
@@ -405,6 +406,16 @@ class World implements ChunkManager{
 		}
 
 		$this->timings = new WorldTimings($this);
+
+		$this->workerPool->addWorkerStartHook($workerStartHook = function(int $workerId) : void{
+			if(array_key_exists($workerId, $this->generatorRegisteredWorkers)){
+				$this->logger->debug("Worker $workerId with previously registered generator restarted, flagging as unregistered");
+				unset($this->generatorRegisteredWorkers[$workerId]);
+			}
+		});
+		$this->addOnUnloadCallback(function() use ($workerStartHook) : void{
+			$this->workerPool->removeWorkerStartHook($workerStartHook);
+		});
 	}
 
 	public function getTickRateTime() : float{
@@ -412,8 +423,9 @@ class World implements ChunkManager{
 	}
 
 	public function registerGeneratorToWorker(int $worker) : void{
-		$this->generatorRegisteredWorkers[$worker] = true;
+		$this->logger->debug("Registering generator on worker $worker");
 		$this->workerPool->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getWorldData()->getGeneratorOptions()), $worker);
+		$this->generatorRegisteredWorkers[$worker] = true;
 	}
 
 	public function unregisterGenerator() : void{
