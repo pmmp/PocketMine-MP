@@ -1509,6 +1509,13 @@ class World implements ChunkManager{
 	 */
 	public function useBreakOn(Vector3 $vector, Item &$item = null, ?Player $player = null, bool $createParticles = false) : bool{
 		$vector = $vector->floor();
+
+		$chunkX = $vector->getFloorX() >> 4;
+		$chunkZ = $vector->getFloorZ() >> 4;
+		if(!$this->isChunkLoaded($chunkX, $chunkZ) || !$this->isChunkGenerated($chunkX, $chunkZ) || $this->isChunkLocked($chunkX, $chunkZ)){
+			return false;
+		}
+
 		$target = $this->getBlock($vector);
 		$affectedBlocks = $target->getAffectedBlocks();
 
@@ -1612,6 +1619,11 @@ class World implements ChunkManager{
 
 		if(!$this->isInWorld($blockReplace->getPos()->x, $blockReplace->getPos()->y, $blockReplace->getPos()->z)){
 			//TODO: build height limit messages for custom world heights and mcregion cap
+			return false;
+		}
+		$chunkX = $blockReplace->getPos()->getFloorX() >> 4;
+		$chunkZ = $blockReplace->getPos()->getFloorZ() >> 4;
+		if(!$this->isChunkLoaded($chunkX, $chunkZ) || !$this->isChunkGenerated($chunkX, $chunkZ) || $this->isChunkLocked($chunkX, $chunkZ)){
 			return false;
 		}
 
