@@ -53,7 +53,6 @@ use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
-use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
@@ -97,12 +96,8 @@ abstract class Entity{
 	/** @var EntityMetadataCollection */
 	private $networkProperties;
 
-	/** @var Chunk|null */
-	public $chunk;
-	/** @var int */
-	private $chunkX;
-	/** @var int */
-	private $chunkZ;
+	/** @var Location */
+	private $worldLastKnownLocation;
 
 	/** @var EntityDamageEvent|null */
 	protected $lastDamageCause = null;
@@ -234,6 +229,7 @@ abstract class Entity{
 		$this->server = $location->getWorld()->getServer();
 
 		$this->location = $location->asLocation();
+		$this->worldLastKnownLocation = $this->location->asLocation();
 		assert(
 			!is_nan($this->location->x) and !is_infinite($this->location->x) and
 			!is_nan($this->location->y) and !is_infinite($this->location->y) and
@@ -242,13 +238,6 @@ abstract class Entity{
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->recalculateBoundingBox();
-
-		$this->chunk = $this->getWorld()->getOrLoadChunkAtPosition($this->location);
-		if($this->chunk === null){
-			throw new \InvalidStateException("Cannot create entities in unloaded chunks");
-		}
-		$this->chunkX = $this->location->getFloorX() >> 4;
-		$this->chunkZ = $this->location->getFloorZ() >> 4;
 
 		if($nbt !== null){
 			$this->motion = EntityDataHelper::parseVec3($nbt, "Motion", true);
@@ -265,7 +254,6 @@ abstract class Entity{
 
 		$this->initEntity($nbt ?? new CompoundTag());
 
-		$this->chunk->addEntity($this);
 		$this->getWorld()->addEntity($this);
 
 		$this->lastUpdate = $this->server->getTick();
@@ -1360,45 +1348,8 @@ abstract class Entity{
 	}
 
 	protected function checkChunks() : void{
-		$chunkX = $this->location->getFloorX() >> 4;
-		$chunkZ = $this->location->getFloorZ() >> 4;
-		if($this->chunk === null or $chunkX !== $this->chunkX or $chunkZ !== $this->chunkZ){
-			if($this->chunk !== null){
-				$this->chunk->removeEntity($this);
-			}
-			$this->chunk = $this->getWorld()->loadChunk($chunkX, $chunkZ);
-			if($this->chunk === null){
-				//TODO: this is a non-ideal solution for a hard problem
-				//when this happens the entity won't be tracked by any chunk, so we can't have it hanging around in memory
-				//we also can't allow this to cause chunk generation, nor can we just create an empty ungenerated chunk
-				//for it, because an empty chunk won't get saved, so the entity will vanish anyway. Therefore, this is
-				//the cleanest way to make sure this doesn't result in leaks.
-				$this->getWorld()->getLogger()->debug("Entity $this->id is in ungenerated terrain, flagging for despawn");
-				$this->flagForDespawn();
-			}
-			$this->chunkX = $chunkX;
-			$this->chunkZ = $chunkZ;
-
-			if(!$this->justCreated){
-				$newChunk = $this->getWorld()->getViewersForPosition($this->location);
-				foreach($this->hasSpawned as $player){
-					if(!isset($newChunk[spl_object_id($player)])){
-						$this->despawnFrom($player);
-					}else{
-						unset($newChunk[spl_object_id($player)]);
-					}
-				}
-				foreach($newChunk as $player){
-					$this->spawnTo($player);
-				}
-			}
-
-			if($this->chunk === null){
-				return;
-			}
-
-			$this->chunk->addEntity($this);
-		}
+		$this->getWorld()->onEntityMoved($this, $this->worldLastKnownLocation);
+		$this->worldLastKnownLocation = $this->location->asLocation();
 	}
 
 	protected function resetLastMovements() : void{
@@ -1477,9 +1428,6 @@ abstract class Entity{
 
 		if($this->location->isValid()){
 			$this->getWorld()->removeEntity($this);
-			if($this->chunk !== null){
-				$this->chunk->removeEntity($this);
-			}
 			$this->despawnFromAll();
 		}
 
@@ -1492,7 +1440,6 @@ abstract class Entity{
 			$targetWorld
 		);
 		$this->getWorld()->addEntity($this);
-		$this->chunk = null;
 
 		return true;
 	}
@@ -1622,9 +1569,6 @@ abstract class Entity{
 	 */
 	protected function onDispose() : void{
 		$this->despawnFromAll();
-		if($this->chunk !== null){
-			$this->chunk->removeEntity($this);
-		}
 		if($this->location->isValid()){
 			$this->getWorld()->removeEntity($this);
 		}
@@ -1637,7 +1581,6 @@ abstract class Entity{
 	 * It is expected that the object is unusable after this is called.
 	 */
 	protected function destroyCycles() : void{
-		$this->chunk = null;
 		$this->location = null;
 		$this->lastDamageCause = null;
 	}

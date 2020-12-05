@@ -2038,7 +2038,6 @@ class World implements ChunkManager{
 					if($entity instanceof Player){
 						$chunk->addEntity($entity);
 						$oldChunk->removeEntity($entity);
-						$entity->chunk = $chunk;
 					}else{
 						$entity->close();
 					}
@@ -2050,7 +2049,6 @@ class World implements ChunkManager{
 				foreach($oldChunk->getEntities() as $entity){
 					$chunk->addEntity($entity);
 					$oldChunk->removeEntity($entity);
-					$entity->chunk = $chunk;
 				}
 
 				foreach($oldChunk->getTiles() as $tile){
@@ -2142,6 +2140,11 @@ class World implements ChunkManager{
 		if($entity->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Entity world");
 		}
+		$chunk = $this->getOrLoadChunkAtPosition($entity->getPosition());
+		if($chunk === null){
+			throw new \InvalidArgumentException("Cannot add an Entity in an ungenerated chunk");
+		}
+		$chunk->addEntity($entity);
 
 		if($entity instanceof Player){
 			$this->players[$entity->getId()] = $entity;
@@ -2158,6 +2161,11 @@ class World implements ChunkManager{
 		if($entity->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Entity world");
 		}
+		$pos = $entity->getPosition();
+		$chunk = $this->getChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
+		if($chunk !== null){ //we don't care if the chunk already went out of scope
+			$chunk->removeEntity($entity);
+		}
 
 		if($entity instanceof Player){
 			unset($this->players[$entity->getId()]);
@@ -2166,6 +2174,50 @@ class World implements ChunkManager{
 
 		unset($this->entities[$entity->getId()]);
 		unset($this->updateEntities[$entity->getId()]);
+	}
+
+	/**
+	 * @internal
+	 */
+	public function onEntityMoved(Entity $entity, Position $oldPosition) : void{
+		$newPosition = $entity->getPosition();
+
+		$oldChunkX = $oldPosition->getFloorX() >> 4;
+		$oldChunkZ = $oldPosition->getFloorZ() >> 4;
+		$newChunkX = $newPosition->getFloorX() >> 4;
+		$newChunkZ = $newPosition->getFloorZ() >> 4;
+
+		if($oldChunkX !== $newChunkX || $oldChunkZ !== $newChunkZ){
+			$oldChunk = $this->getChunk($oldChunkX, $oldChunkZ);
+			if($oldChunk !== null){
+				$oldChunk->removeEntity($entity);
+			}
+			$newChunk = $this->loadChunk($newChunkX, $newChunkZ);
+			if($newChunk === null){
+				//TODO: this is a non-ideal solution for a hard problem
+				//when this happens the entity won't be tracked by any chunk, so we can't have it hanging around in memory
+				//we also can't allow this to cause chunk generation, nor can we just create an empty ungenerated chunk
+				//for it, because an empty chunk won't get saved, so the entity will vanish anyway. Therefore, this is
+				//the cleanest way to make sure this doesn't result in leaks.
+				$this->logger->debug("Entity " . $entity->getId() . " is in ungenerated terrain, flagging for despawn");
+				$entity->flagForDespawn();
+				$entity->despawnFromAll();
+			}else{
+				$newViewers = $this->getViewersForPosition($newPosition);
+				foreach($entity->getViewers() as $player){
+					if(!isset($newViewers[spl_object_id($player)])){
+						$entity->despawnFrom($player);
+					}else{
+						unset($newViewers[spl_object_id($player)]);
+					}
+				}
+				foreach($newViewers as $player){
+					$entity->spawnTo($player);
+				}
+
+				$newChunk->addEntity($entity);
+			}
+		}
 	}
 
 	/**
