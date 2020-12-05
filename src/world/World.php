@@ -2180,6 +2180,10 @@ class World implements ChunkManager{
 	 * @internal
 	 */
 	public function onEntityMoved(Entity $entity, Position $oldPosition) : void{
+		if(!array_key_exists($entity->getId(), $this->entities)){
+			//this can happen if the entity was teleported before addEntity() was called
+			return;
+		}
 		$newPosition = $entity->getPosition();
 
 		$oldChunkX = $oldPosition->getFloorX() >> 4;
