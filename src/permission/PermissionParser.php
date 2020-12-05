@@ -81,7 +81,7 @@ class PermissionParser{
 	 * @return Permission[][]
 	 * @phpstan-return array<string, list<Permission>>
 	 */
-	public static function loadPermissions(array $data, string $default = self::DEFAULT_OP) : array{
+	public static function loadPermissions(array $data, string $default = self::DEFAULT_FALSE) : array{
 		$result = [];
 		foreach($data as $key => $entry){
 			self::loadPermission($key, $entry, $default, $result);
@@ -98,7 +98,7 @@ class PermissionParser{
 	 *
 	 * @throws \Exception
 	 */
-	public static function loadPermission(string $name, array $data, string $default = self::DEFAULT_OP, array &$output = []) : void{
+	public static function loadPermission(string $name, array $data, string $default = self::DEFAULT_FALSE, array &$output = []) : void{
 		$desc = null;
 		$children = [];
 		if(isset($data["default"])){
