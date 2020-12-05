@@ -165,18 +165,15 @@ class TypeConverter{
 			if(($damageTag = $compound->getTag(self::DAMAGE_TAG)) instanceof IntTag){
 				$meta = $damageTag->getValue();
 				$compound->removeTag(self::DAMAGE_TAG);
-				if($compound->count() === 0){
+				if(($conflicted = $compound->getTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION)) !== null){
+					$compound->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
+					$compound->setTag(self::DAMAGE_TAG, $conflicted);
+				}elseif($compound->count() === 0){
 					$compound = null;
-					goto end;
 				}
-			}
-			if(($conflicted = $compound->getTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION)) !== null){
-				$compound->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
-				$compound->setTag(self::DAMAGE_TAG, $conflicted);
 			}
 		}
 
-		end:
 		return ItemFactory::getInstance()->get(
 			$id,
 			$meta,

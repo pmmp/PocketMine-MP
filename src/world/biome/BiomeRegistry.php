@@ -48,6 +48,8 @@ final class BiomeRegistry{
 		$this->register(BiomeIds::SWAMP, new SwampBiome());
 		$this->register(BiomeIds::RIVER, new RiverBiome());
 
+		$this->register(BiomeIds::HELL, new HellBiome());
+
 		$this->register(BiomeIds::ICE_PLAINS, new IcePlainsBiome());
 
 		$this->register(BiomeIds::SMALL_MOUNTAINS, new SmallMountainsBiome());

@@ -196,21 +196,6 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method getTag\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/convert/TypeConverter.php
-
-		-
-			message: "#^Cannot call method removeTag\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/convert/TypeConverter.php
-
-		-
-			message: "#^Cannot call method setTag\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/convert/TypeConverter.php
-
-		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\LevelSoundEventPacket\\:\\:\\$position \\(pocketmine\\\\math\\\\Vector3\\) does not accept pocketmine\\\\math\\\\Vector3\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/LevelSoundEventPacket.php
