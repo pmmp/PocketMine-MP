@@ -238,18 +238,15 @@ class NetworkBinaryStream extends BinaryStream{
 			if($nbt->hasTag(self::DAMAGE_TAG, IntTag::class)){
 				$meta = $nbt->getInt(self::DAMAGE_TAG);
 				$nbt->removeTag(self::DAMAGE_TAG);
-				if($nbt->count() === 0){
+				if(($conflicted = $nbt->getTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION)) !== null){
+					$nbt->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
+					$conflicted->setName(self::DAMAGE_TAG);
+					$nbt->setTag($conflicted);
+				}elseif($nbt->count() === 0){
 					$nbt = null;
-					goto end;
 				}
 			}
-			if(($conflicted = $nbt->getTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION)) !== null){
-				$nbt->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
-				$conflicted->setName(self::DAMAGE_TAG);
-				$nbt->setTag($conflicted);
-			}
 		}
-		end:
 		return ItemFactory::get($id, $meta, $cnt, $nbt);
 	}
 
