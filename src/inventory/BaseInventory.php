@@ -27,6 +27,7 @@ use Ds\Set;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\player\Player;
+use function array_map;
 use function array_slice;
 use function count;
 use function max;
@@ -95,7 +96,9 @@ abstract class BaseInventory implements Inventory{
 			$items = array_slice($items, 0, $this->getSize(), true);
 		}
 
-		$oldContents = $this->slots->toArray();
+		$oldContents = array_map(function(?Item $item) : Item{
+			return $item ?? ItemFactory::air();
+		}, $this->slots->toArray());
 
 		$listeners = $this->listeners->toArray();
 		$this->listeners->clear();
