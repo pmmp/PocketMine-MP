@@ -82,7 +82,7 @@ use const STR_PAD_RIGHT;
 /**
  * Big collection of functions
  */
-class Utils{
+final class Utils{
 	public const OS_WINDOWS = "win";
 	public const OS_IOS = "ios";
 	public const OS_MACOS = "mac";
