@@ -84,6 +84,9 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(self::ROOT . ".command.kill.self", "Allows the user to commit suicide"), [$everyoneRoot]);
 		self::registerPermission(new Permission(self::ROOT . ".command.kill.other", "Allows the user to kill other players"), [$operatorRoot]);
 
+		self::registerPermission(new Permission(self::ROOT . ".command.clear.self", "Allows the user to clear their own inventory"), [$everyoneRoot]);
+		self::registerPermission(new Permission(self::ROOT . ".command.clear.other", "Allows the user to clear inventory of other players"), [$operatorRoot]);
+
 		self::registerPermission(new Permission(self::ROOT . ".command.me", "Allows the user to perform a chat action"), [$everyoneRoot]);
 		self::registerPermission(new Permission(self::ROOT . ".command.tell", "Allows the user to privately message another player"), [$everyoneRoot]);
 		self::registerPermission(new Permission(self::ROOT . ".command.say", "Allows the user to talk as the console"), [$operatorRoot]);
