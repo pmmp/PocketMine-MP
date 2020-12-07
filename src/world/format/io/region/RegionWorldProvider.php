@@ -130,7 +130,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		return $this->path . "/region/r.$regionX.$regionZ." . static::getRegionFileExtension();
 	}
 
-	protected function loadRegion(int $regionX, int $regionZ) : void{
+	protected function loadRegion(int $regionX, int $regionZ) : RegionLoader{
 		if(!isset($this->regions[$index = morton2d_encode($regionX, $regionZ)])){
 			$path = $this->pathToRegion($regionX, $regionZ);
 
@@ -153,6 +153,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 
 			$this->regions[$index] = $region;
 		}
+		return $this->regions[$index];
 	}
 
 	protected function unloadRegion(int $regionX, int $regionZ) : void{
@@ -221,9 +222,8 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		if(!file_exists($this->pathToRegion($regionX, $regionZ))){
 			return null;
 		}
-		$this->loadRegion($regionX, $regionZ);
 
-		$chunkData = $this->getRegion($regionX, $regionZ)->readChunk($chunkX & 0x1f, $chunkZ & 0x1f);
+		$chunkData = $this->loadRegion($regionX, $regionZ)->readChunk($chunkX & 0x1f, $chunkZ & 0x1f);
 		if($chunkData !== null){
 			return $this->deserializeChunk($chunkData);
 		}
@@ -233,9 +233,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 
 	protected function writeChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		$this->loadRegion($regionX, $regionZ);
-
-		$this->getRegion($regionX, $regionZ)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->serializeChunk($chunk));
+		$this->loadRegion($regionX, $regionZ)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->serializeChunk($chunk));
 	}
 
 	private function createRegionIterator() : \RegexIterator{
@@ -285,8 +283,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		foreach($this->createRegionIterator() as $region){
 			$regionX = ((int) $region[1]);
 			$regionZ = ((int) $region[2]);
-			$this->loadRegion($regionX, $regionZ);
-			$count += $this->getRegion($regionX, $regionZ)->calculateChunkCount();
+			$count += $this->loadRegion($regionX, $regionZ)->calculateChunkCount();
 			$this->unloadRegion($regionX, $regionZ);
 		}
 		return $count;
