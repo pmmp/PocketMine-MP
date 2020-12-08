@@ -71,8 +71,8 @@ class PluginGraylist{
 	 */
 	public static function fromArray(array $array) : PluginGraylist{
 		$validator = new Validator(
-			new Key("mode", new In(['whitelist', 'blacklist'], true), false),
-			new Key("plugins", new AllOf(new ArrayType(), new Each(new StringType())), false)
+			new Key("mode", new In(['whitelist', 'blacklist'], true), true),
+			new Key("plugins", new AllOf(new ArrayType(), new Each(new StringType())), true)
 		);
 		$validator->setName('plugin_list.yml');
 		try{
