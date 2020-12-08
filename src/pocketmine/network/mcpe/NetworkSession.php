@@ -72,6 +72,7 @@ use pocketmine\network\mcpe\protocol\EducationSettingsPacket;
 use pocketmine\network\mcpe\protocol\EmoteListPacket;
 use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\EventPacket;
+use pocketmine\network\mcpe\protocol\FilterTextPacket;
 use pocketmine\network\mcpe\protocol\GameRulesChangedPacket;
 use pocketmine\network\mcpe\protocol\GuiDataPickItemPacket;
 use pocketmine\network\mcpe\protocol\HurtArmorPacket;
@@ -814,6 +815,10 @@ abstract class NetworkSession{
 	}
 
 	public function handleItemComponent(ItemComponentPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleFilterText(FilterTextPacket $packet) : bool{
 		return false;
 	}
 }

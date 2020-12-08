@@ -1441,21 +1441,6 @@ parameters:
 			path: ../../../src/pocketmine/level/light/SkyLightUpdate.php
 
 		-
-			message: "#^Cannot call method getTag\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
-
-		-
-			message: "#^Cannot call method removeTag\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
-
-		-
-			message: "#^Cannot call method setTag\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
-
-		-
 			message: "#^Argument of an invalid type array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null supplied for foreach, only iterables are supported\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php

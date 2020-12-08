@@ -391,6 +391,9 @@ class McRegion extends BaseLevelProvider{
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		assert(is_int($regionX) and is_int($regionZ));
 
+		if(!file_exists($this->pathToRegion($regionX, $regionZ))){
+			return null;
+		}
 		$this->loadRegion($regionX, $regionZ);
 
 		$chunkData = $this->getRegion($regionX, $regionZ)->readChunk($chunkX & 0x1f, $chunkZ & 0x1f);

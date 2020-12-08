@@ -123,7 +123,16 @@ class PermissionAttachment{
 			if($this->permissions[$name] === $value){
 				return;
 			}
-			unset($this->permissions[$name]); //Fixes children getting overwritten
+			/* Because of the way child permissions are calculated, permissions which were set later in time are
+			 * preferred over earlier ones when conflicts in inherited permission values occur.
+			 * Here's the kicker: This behaviour depends on PHP's internal array ordering, which maintains insertion
+			 * order -- BUT -- assigning to an existing index replaces the old value WITHOUT changing the order.
+			 * (what crazy person thought relying on this this was a good idea?!?!?!?!?!)
+			 *
+			 * This removes the old value so that the new value will be added at the end of the array's internal order
+			 * instead of directly taking the place of the older value.
+			 */
+			unset($this->permissions[$name]);
 		}
 		$this->permissions[$name] = $value;
 		$this->permissible->recalculatePermissions();

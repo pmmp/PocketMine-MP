@@ -64,6 +64,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 			$this->getString();
 			$this->getString();
 			$this->getBool();
+			$this->getBool();
 		}
 	}
 
@@ -89,6 +90,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 			$this->putString(""); //TODO: subpack name
 			$this->putString(""); //TODO: content identity
 			$this->putBool(false); //TODO: seems useless for resource packs
+			$this->putBool(false); //TODO: supports RTX
 		}
 	}
 

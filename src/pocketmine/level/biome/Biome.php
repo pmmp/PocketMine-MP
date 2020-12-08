@@ -143,6 +143,8 @@ abstract class Biome{
 		self::register(self::SWAMP, new SwampBiome());
 		self::register(self::RIVER, new RiverBiome());
 
+		self::register(self::HELL, new HellBiome());
+
 		self::register(self::ICE_PLAINS, new IcePlainsBiome());
 		self::register(self::HELL, new HellBiome());
 		self::register(self::END, new EndBiome());
