@@ -311,7 +311,7 @@ class CrashDump{
 
 	private function determinePluginFromFile(string $filePath, bool $crashFrame) : bool{
 		$frameCleanPath = Utils::cleanPath($filePath); //this will be empty in phar stub
-		if(strpos($frameCleanPath, "plugins") === 0 and file_exists($filePath)){
+		if(strpos($frameCleanPath, "plugins") === 0){
 			$this->addLine();
 			if($crashFrame){
 				$this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");
@@ -321,15 +321,17 @@ class CrashDump{
 				$this->data["plugin_involvement"] = self::PLUGIN_INVOLVEMENT_INDIRECT;
 			}
 
-			$reflection = new \ReflectionClass(PluginBase::class);
-			$file = $reflection->getProperty("file");
-			$file->setAccessible(true);
-			foreach($this->server->getPluginManager()->getPlugins() as $plugin){
-				$filePath = Utils::cleanPath($file->getValue($plugin));
-				if(strpos($frameCleanPath, $filePath) === 0){
-					$this->data["plugin"] = $plugin->getName();
-					$this->addLine("BAD PLUGIN: " . $plugin->getDescription()->getFullName());
-					break;
+			if(file_exists($filePath)){
+				$reflection = new \ReflectionClass(PluginBase::class);
+				$file = $reflection->getProperty("file");
+				$file->setAccessible(true);
+				foreach($this->server->getPluginManager()->getPlugins() as $plugin){
+					$filePath = Utils::cleanPath($file->getValue($plugin));
+					if(strpos($frameCleanPath, $filePath) === 0){
+						$this->data["plugin"] = $plugin->getName();
+						$this->addLine("BAD PLUGIN: " . $plugin->getDescription()->getFullName());
+						break;
+					}
 				}
 			}
 			return true;
