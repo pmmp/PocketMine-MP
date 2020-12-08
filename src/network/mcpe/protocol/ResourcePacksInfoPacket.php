@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\types\resourcepacks\BehaviorPackInfoEntry;
 use pocketmine\network\mcpe\protocol\types\resourcepacks\ResourcePackInfoEntry;
 use function count;
 
@@ -36,14 +37,14 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	public $mustAccept = false; //if true, forces client to use selected resource packs
 	/** @var bool */
 	public $hasScripts = false; //if true, causes disconnect for any platform that doesn't support scripts yet
-	/** @var ResourcePackInfoEntry[] */
+	/** @var BehaviorPackInfoEntry[] */
 	public $behaviorPackEntries = [];
 	/** @var ResourcePackInfoEntry[] */
 	public $resourcePackEntries = [];
 
 	/**
 	 * @param ResourcePackInfoEntry[] $resourcePacks
-	 * @param ResourcePackInfoEntry[] $behaviorPacks
+	 * @param BehaviorPackInfoEntry[] $behaviorPacks
 	 *
 	 * @return ResourcePacksInfoPacket
 	 */
@@ -61,7 +62,7 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 		$this->hasScripts = $in->getBool();
 		$behaviorPackCount = $in->getLShort();
 		while($behaviorPackCount-- > 0){
-			$this->behaviorPackEntries[] = ResourcePackInfoEntry::read($in);
+			$this->behaviorPackEntries[] = BehaviorPackInfoEntry::read($in);
 		}
 
 		$resourcePackCount = $in->getLShort();
