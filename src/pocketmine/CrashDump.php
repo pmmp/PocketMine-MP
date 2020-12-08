@@ -310,8 +310,8 @@ class CrashDump{
 	}
 
 	private function determinePluginFromFile(string $filePath, bool $crashFrame) : bool{
-		$frameCleanPath = Utils::cleanPath($filePath); //this will be empty in phar stub
-		if(strpos($frameCleanPath, "plugins") === 0){
+		$frameCleanPath = Utils::cleanPath($filePath);
+		if(strpos($frameCleanPath, Utils::CLEAN_PATH_SRC_PREFIX) !== 0){
 			$this->addLine();
 			if($crashFrame){
 				$this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");

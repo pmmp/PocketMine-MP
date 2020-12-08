@@ -106,6 +106,9 @@ class Utils{
 	public const OS_BSD = "bsd";
 	public const OS_UNKNOWN = "other";
 
+	public const CLEAN_PATH_SRC_PREFIX = "pmsrc";
+	public const CLEAN_PATH_PLUGINS_PREFIX = "plugins";
+
 	/** @var string|null */
 	public static $os;
 	/** @var UUID|null */
@@ -604,13 +607,13 @@ class Utils{
 		//remove relative paths
 		//TODO: make these paths dynamic so they can be unit-tested against
 		static $cleanPaths = [
-			\pocketmine\PLUGIN_PATH => "plugins", //this has to come BEFORE \pocketmine\PATH because it's inside that by default on src installations
-			\pocketmine\PATH => ""
+			\pocketmine\PLUGIN_PATH => self::CLEAN_PATH_PLUGINS_PREFIX, //this has to come BEFORE \pocketmine\PATH because it's inside that by default on src installations
+			\pocketmine\PATH => self::CLEAN_PATH_SRC_PREFIX
 		];
 		foreach($cleanPaths as $cleanPath => $replacement){
 			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
 			if(strpos($result, $cleanPath) === 0){
-				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");
+				$result = ltrim(str_replace($cleanPath, "[$replacement]", $result), "/");
 			}
 		}
 		return $result;
