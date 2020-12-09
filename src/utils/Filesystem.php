@@ -40,7 +40,9 @@ use function rtrim;
 use function scandir;
 use function str_replace;
 use function stream_get_contents;
+use function strlen;
 use function strpos;
+use function uasort;
 use function unlink;
 use const DIRECTORY_SEPARATOR;
 use const LOCK_EX;
@@ -52,6 +54,13 @@ use const SCANDIR_SORT_NONE;
 final class Filesystem{
 	/** @var resource[] */
 	private static $lockFileHandles = [];
+	/**
+	 * @var string[]
+	 * @phpstan-var array<string, string>
+	 */
+	private static $cleanedPaths = [
+		\pocketmine\PATH => self::CLEAN_PATH_SRC_PREFIX
+	];
 
 	public const CLEAN_PATH_SRC_PREFIX = "pmsrc";
 	public const CLEAN_PATH_PLUGINS_PREFIX = "plugins";
@@ -79,6 +88,19 @@ final class Filesystem{
 		}
 	}
 
+	public static function addCleanedPath(string $path, string $replacement) : void{
+		self::$cleanedPaths[$path] = $replacement;
+		uksort(self::$cleanedPaths, function(string $str1, string $str2) : int{
+			return strlen($str2) <=> strlen($str1); //longest first
+		});
+	}
+
+	/**
+	 * @return string[]
+	 * @phpstan-return array<string, string>
+	 */
+	public static function getCleanedPaths() : array{ return self::$cleanedPaths; }
+
 	/**
 	 * @param string $path
 	 *
@@ -88,12 +110,7 @@ final class Filesystem{
 		$result = str_replace([DIRECTORY_SEPARATOR, ".php", "phar://"], ["/", "", ""], $path);
 
 		//remove relative paths
-		//TODO: make these paths dynamic so they can be unit-tested against
-		static $cleanPaths = [
-			\pocketmine\PLUGIN_PATH => self::CLEAN_PATH_PLUGINS_PREFIX, //this has to come BEFORE \pocketmine\PATH because it's inside that by default on src installations
-			\pocketmine\PATH => self::CLEAN_PATH_SRC_PREFIX
-		];
-		foreach($cleanPaths as $cleanPath => $replacement){
+		foreach(self::$cleanedPaths as $cleanPath => $replacement){
 			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
 			if(strpos($result, $cleanPath) === 0){
 				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");

@@ -198,7 +198,8 @@ namespace pocketmine {
 		$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-ansi", "disable-ansi"]);
 
 		$dataPath = isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR;
-		define('pocketmine\PLUGIN_PATH', isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR);
+		$pluginPath = isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR;
+		Filesystem::addCleanedPath($pluginPath, Filesystem::CLEAN_PATH_PLUGINS_PREFIX);
 
 		if(!file_exists($dataPath)){
 			mkdir($dataPath, 0777, true);
@@ -243,7 +244,7 @@ namespace pocketmine {
 			$autoloader = new \BaseClassLoader();
 			$autoloader->register(false);
 
-			new Server($autoloader, $logger, $dataPath, \pocketmine\PLUGIN_PATH);
+			new Server($autoloader, $logger, $dataPath, $pluginPath);
 
 			$logger->info("Stopping other threads");
 

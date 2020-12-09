@@ -33,4 +33,3 @@ if(!extension_loaded('libdeflate')){
 
 //TODO: these need to be defined properly or removed
 define('pocketmine\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__, 2) . '/vendor/autoload.php');
-define('pocketmine\PLUGIN_PATH', '');

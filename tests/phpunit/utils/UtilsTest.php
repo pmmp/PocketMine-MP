@@ -33,9 +33,6 @@ class UtilsTest extends TestCase{
 		if(!defined('pocketmine\PATH')){
 			define('pocketmine\PATH', 'dummy');
 		}
-		if(!defined('pocketmine\PLUGIN_PATH')){
-			define('pocketmine\PLUGIN_PATH', 'dummy');
-		}
 	}
 
 	/**
