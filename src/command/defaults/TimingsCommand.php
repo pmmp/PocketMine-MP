@@ -36,6 +36,7 @@ use function fclose;
 use function file_exists;
 use function fopen;
 use function fseek;
+use function fwrite;
 use function http_build_query;
 use function is_array;
 use function json_decode;
@@ -47,6 +48,7 @@ use const CURLOPT_FOLLOWLOCATION;
 use const CURLOPT_HTTPHEADER;
 use const CURLOPT_POST;
 use const CURLOPT_POSTFIELDS;
+use const PHP_EOL;
 
 class TimingsCommand extends VanillaCommand{
 
@@ -110,7 +112,10 @@ class TimingsCommand extends VanillaCommand{
 
 				$fileTimings = fopen($timings, "a+b");
 			}
-			TimingsHandler::printTimings($fileTimings);
+			$lines = TimingsHandler::printTimings();
+			foreach($lines as $line){
+				fwrite($fileTimings, $line . PHP_EOL);
+			}
 
 			if($paste){
 				fseek($fileTimings, 0);

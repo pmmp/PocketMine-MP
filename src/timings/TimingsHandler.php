@@ -26,9 +26,7 @@ namespace pocketmine\timings;
 use pocketmine\entity\Living;
 use pocketmine\Server;
 use function count;
-use function fwrite;
 use function hrtime;
-use const PHP_EOL;
 
 class TimingsHandler{
 	/** @var bool */
@@ -36,11 +34,9 @@ class TimingsHandler{
 	/** @var int */
 	private static $timingStart = 0;
 
-	/**
-	 * @param resource $fp
-	 */
-	public static function printTimings($fp) : void{
-		fwrite($fp, "Minecraft" . PHP_EOL);
+	/** @return string[] */
+	public static function printTimings() : array{
+		$result = ["Minecraft"];
 
 		foreach(TimingsRecord::getAll() as $timings){
 			$time = $timings->getTotalTime();
@@ -52,11 +48,11 @@ class TimingsHandler{
 
 			$avg = $time / $count;
 
-			fwrite($fp, "    " . $timings->getName() . " Time: $time Count: " . $count . " Avg: $avg Violations: " . $timings->getViolations() . PHP_EOL);
+			$result[] = "    " . $timings->getName() . " Time: $time Count: " . $count . " Avg: $avg Violations: " . $timings->getViolations();
 		}
 
-		fwrite($fp, "# Version " . Server::getInstance()->getVersion() . PHP_EOL);
-		fwrite($fp, "# " . Server::getInstance()->getName() . " " . Server::getInstance()->getPocketMineVersion() . PHP_EOL);
+		$result[] = "# Version " . Server::getInstance()->getVersion();
+		$result[] = "# " . Server::getInstance()->getName() . " " . Server::getInstance()->getPocketMineVersion();
 
 		$entities = 0;
 		$livingEntities = 0;
@@ -69,11 +65,12 @@ class TimingsHandler{
 			}
 		}
 
-		fwrite($fp, "# Entities " . $entities . PHP_EOL);
-		fwrite($fp, "# LivingEntities " . $livingEntities . PHP_EOL);
+		$result[] = "# Entities " . $entities;
+		$result[] = "# LivingEntities " . $livingEntities;
 
 		$sampleTime = hrtime(true) - self::$timingStart;
-		fwrite($fp, "Sample time $sampleTime (" . ($sampleTime / 1000000000) . "s)" . PHP_EOL);
+		$result[] = "Sample time $sampleTime (" . ($sampleTime / 1000000000) . "s)";
+		return $result;
 	}
 
 	public static function isEnabled() : bool{
