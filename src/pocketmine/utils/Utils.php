@@ -613,7 +613,7 @@ class Utils{
 		foreach($cleanPaths as $cleanPath => $replacement){
 			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
 			if(strpos($result, $cleanPath) === 0){
-				$result = ltrim(str_replace($cleanPath, "[$replacement]", $result), "/");
+				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");
 			}
 		}
 		return $result;
