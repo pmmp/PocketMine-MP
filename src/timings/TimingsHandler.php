@@ -27,14 +27,13 @@ use pocketmine\entity\Living;
 use pocketmine\Server;
 use function count;
 use function fwrite;
-use function microtime;
-use function round;
+use function hrtime;
 use const PHP_EOL;
 
 class TimingsHandler{
 	/** @var bool */
 	private static $enabled = false;
-	/** @var float */
+	/** @var int */
 	private static $timingStart = 0;
 
 	/**
@@ -53,7 +52,7 @@ class TimingsHandler{
 
 			$avg = $time / $count;
 
-			fwrite($fp, "    " . $timings->getName() . " Time: " . round($time * 1000000000) . " Count: " . $count . " Avg: " . round($avg * 1000000000) . " Violations: " . $timings->getViolations() . PHP_EOL);
+			fwrite($fp, "    " . $timings->getName() . " Time: $time Count: " . $count . " Avg: $avg Violations: " . $timings->getViolations() . PHP_EOL);
 		}
 
 		fwrite($fp, "# Version " . Server::getInstance()->getVersion() . PHP_EOL);
@@ -73,8 +72,8 @@ class TimingsHandler{
 		fwrite($fp, "# Entities " . $entities . PHP_EOL);
 		fwrite($fp, "# LivingEntities " . $livingEntities . PHP_EOL);
 
-		$sampleTime = microtime(true) - self::$timingStart;
-		fwrite($fp, "Sample time " . round($sampleTime * 1000000000) . " (" . $sampleTime . "s)" . PHP_EOL);
+		$sampleTime = hrtime(true) - self::$timingStart;
+		fwrite($fp, "Sample time $sampleTime (" . ($sampleTime / 1000000000) . "s)" . PHP_EOL);
 	}
 
 	public static function isEnabled() : bool{
@@ -93,7 +92,7 @@ class TimingsHandler{
 	public static function reload() : void{
 		TimingsRecord::clearRecords();
 		if(self::$enabled){
-			self::$timingStart = microtime(true);
+			self::$timingStart = hrtime(true);
 		}
 	}
 
@@ -123,11 +122,11 @@ class TimingsHandler{
 
 	public function startTiming() : void{
 		if(self::$enabled){
-			$this->internalStartTiming(microtime(true));
+			$this->internalStartTiming(hrtime(true));
 		}
 	}
 
-	private function internalStartTiming(float $now) : void{
+	private function internalStartTiming(int $now) : void{
 		if(++$this->timingDepth === 1){
 			if($this->record === null){
 				$this->record = new TimingsRecord($this);
@@ -141,11 +140,11 @@ class TimingsHandler{
 
 	public function stopTiming() : void{
 		if(self::$enabled){
-			$this->internalStopTiming(microtime(true));
+			$this->internalStopTiming(hrtime(true));
 		}
 	}
 
-	private function internalStopTiming(float $now) : void{
+	private function internalStopTiming(int $now) : void{
 		if($this->timingDepth === 0){
 			//TODO: it would be nice to bail here, but since we'd have to track timing depth across resets
 			//and enable/disable, it would have a performance impact. Therefore, considering the limited

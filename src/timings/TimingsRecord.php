@@ -54,8 +54,8 @@ final class TimingsRecord{
 	public static function tick(bool $measure = true) : void{
 		if($measure){
 			foreach(self::$records as $record){
-				if($record->curTickTotal > 0.05){
-					$record->violations += (int) round($record->curTickTotal / 0.05);
+				if($record->curTickTotal > 50000000){
+					$record->violations += (int) round($record->curTickTotal / 50000000);
 				}
 				$record->curTickTotal = 0;
 				$record->curCount = 0;
@@ -78,11 +78,11 @@ final class TimingsRecord{
 	private $count = 0;
 	/** @var int */
 	private $curCount = 0;
-	/** @var float */
+	/** @var int */
 	private $start = 0;
-	/** @var float */
+	/** @var int */
 	private $totalTime = 0;
-	/** @var float */
+	/** @var int */
 	private $curTickTotal = 0;
 	/** @var int */
 	private $violations = 0;
@@ -107,11 +107,11 @@ final class TimingsRecord{
 
 	public function getViolations() : int{ return $this->violations; }
 
-	public function startTiming(float $now) : void{
+	public function startTiming(int $now) : void{
 		$this->start = $now;
 	}
 
-	public function stopTiming(float $now) : void{
+	public function stopTiming(int $now) : void{
 		if($this->start == 0){
 			return;
 		}
