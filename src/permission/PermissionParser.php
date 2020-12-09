@@ -25,6 +25,7 @@ namespace pocketmine\permission;
 
 use function is_array;
 use function is_bool;
+use function is_string;
 use function strtolower;
 
 class PermissionParser{
@@ -108,6 +109,9 @@ class PermissionParser{
 		if(isset($data["children"])){
 			if(is_array($data["children"])){
 				foreach($data["children"] as $k => $v){
+					if(!is_string($k)){
+						throw new \InvalidArgumentException("Permission name should be string");
+					}
 					if(is_array($v)){
 						self::loadPermission($k, $v, $default, $output);
 					}
