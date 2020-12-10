@@ -28,7 +28,7 @@ jobs:
         uses: shivammathur/setup-php@2.9.0
         with:
           # Setup PHP version.
-          php-version: "${{ php-version }}"
+          php-version: "${{ matrix.php-version }}"
           # Setup PHP extensions.
           extensions: mbstring, yaml, :xdebug
           ini-values: extension=pthreads.so
