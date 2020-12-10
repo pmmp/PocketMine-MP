@@ -36,7 +36,7 @@ jobs:
           tools: composer:v2
 
       - name: Install pthreads
-        run: -|
+        run: |
           git clone https://github.com/pmmp/pthreads.git
           cd pthreads
           git checkout b81ab29df58fa0fb239a9d5ca1c2380a0d087feb
