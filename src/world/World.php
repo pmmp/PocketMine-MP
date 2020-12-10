@@ -2136,11 +2136,13 @@ class World implements ChunkManager{
 		if($entity->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Entity world");
 		}
-		$chunk = $this->getOrLoadChunkAtPosition($entity->getPosition());
+		$pos = $entity->getPosition()->asVector3();
+		$chunk = $this->getOrLoadChunkAtPosition($pos);
 		if($chunk === null){
 			throw new \InvalidArgumentException("Cannot add an Entity in an ungenerated chunk");
 		}
 		$chunk->addEntity($entity);
+		$entity->worldLastKnownLocation = $pos;
 
 		if($entity instanceof Player){
 			$this->players[$entity->getId()] = $entity;
@@ -2157,7 +2159,7 @@ class World implements ChunkManager{
 		if($entity->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Entity world");
 		}
-		$pos = $entity->getPosition();
+		$pos = $entity->worldLastKnownLocation;
 		$chunk = $this->getChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
 		if($chunk !== null){ //we don't care if the chunk already went out of scope
 			$chunk->removeEntity($entity);
@@ -2175,11 +2177,12 @@ class World implements ChunkManager{
 	/**
 	 * @internal
 	 */
-	public function onEntityMoved(Entity $entity, Position $oldPosition) : void{
+	public function onEntityMoved(Entity $entity) : void{
 		if(!array_key_exists($entity->getId(), $this->entities)){
 			//this can happen if the entity was teleported before addEntity() was called
 			return;
 		}
+		$oldPosition = $entity->worldLastKnownLocation;
 		$newPosition = $entity->getPosition();
 
 		$oldChunkX = $oldPosition->getFloorX() >> 4;
@@ -2216,6 +2219,7 @@ class World implements ChunkManager{
 				}
 
 				$newChunk->addEntity($entity);
+				$entity->worldLastKnownLocation = $newPosition->asVector3();
 			}
 		}
 	}

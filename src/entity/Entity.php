@@ -96,8 +96,8 @@ abstract class Entity{
 	/** @var EntityMetadataCollection */
 	private $networkProperties;
 
-	/** @var Location */
-	private $worldLastKnownLocation;
+	/** @var Vector3 */
+	public $worldLastKnownLocation;
 
 	/** @var EntityDamageEvent|null */
 	protected $lastDamageCause = null;
@@ -1210,7 +1210,7 @@ abstract class Entity{
 			$this->location->world
 		);
 
-		$this->checkChunks();
+		$this->getWorld()->onEntityMoved($this);
 		$this->checkBlockCollision();
 		$this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
 		$this->updateFallState($dy, $this->onGround);
@@ -1309,15 +1309,17 @@ abstract class Entity{
 			return false;
 		}
 
-		if($pos instanceof Position and $pos->isValid() and $pos->getWorld() !== $this->getWorld()){
-			if(!$this->switchWorld($pos->getWorld())){
-				return false;
-			}
+		$oldWorld = $this->getWorld();
+		//TODO: staying in the same world when the target is invalid is probably not expected behaviour... this should bail instead
+		$newWorld = $pos instanceof Position && $pos->isValid() ? $pos->getWorld() : $oldWorld;
+		if($oldWorld !== $newWorld){
+			$this->despawnFromAll();
+			$oldWorld->removeEntity($this);
 		}
 
 		$this->location = Location::fromObject(
 			$pos,
-			$this->location->world,
+			$newWorld,
 			$this->location->yaw,
 			$this->location->pitch
 		);
@@ -1326,7 +1328,11 @@ abstract class Entity{
 
 		$this->blocksAround = null;
 
-		$this->checkChunks();
+		if($oldWorld !== $newWorld){
+			$newWorld->addEntity($this);
+		}else{
+			$newWorld->onEntityMoved($this);
+		}
 
 		return true;
 	}
@@ -1345,11 +1351,6 @@ abstract class Entity{
 		}
 
 		return false;
-	}
-
-	protected function checkChunks() : void{
-		$this->getWorld()->onEntityMoved($this, $this->worldLastKnownLocation);
-		$this->worldLastKnownLocation = $this->location->asLocation();
 	}
 
 	protected function resetLastMovements() : void{
@@ -1419,29 +1420,6 @@ abstract class Entity{
 		}
 
 		return false;
-	}
-
-	protected function switchWorld(World $targetWorld) : bool{
-		if($this->closed){
-			return false;
-		}
-
-		if($this->location->isValid()){
-			$this->getWorld()->removeEntity($this);
-			$this->despawnFromAll();
-		}
-
-		$this->location = new Location(
-			$this->location->x,
-			$this->location->y,
-			$this->location->z,
-			$this->location->yaw,
-			$this->location->pitch,
-			$targetWorld
-		);
-		$this->getWorld()->addEntity($this);
-
-		return true;
 	}
 
 	public function getId() : int{

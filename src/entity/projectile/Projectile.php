@@ -261,7 +261,7 @@ abstract class Projectile extends Entity{
 			$this->location->pitch = (atan2($this->motion->y, $f) * 180 / M_PI);
 		}
 
-		$this->checkChunks();
+		$this->getWorld()->onEntityMoved($this);
 		$this->checkBlockCollision();
 
 		Timings::$entityMoveTimer->stopTiming();
