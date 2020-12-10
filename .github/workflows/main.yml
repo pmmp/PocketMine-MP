@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version:
+          - "7.3"
+          - "7.4"
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+
+      - name: Setup PHP
+        # You may pin to the exact commit or the version.
+        # uses: shivammathur/setup-php@5efdcae81a18d7690bc4e26697a4a7d3d7c7f1a6
+        uses: shivammathur/setup-php@2.9.0
+        with:
+          # Setup PHP version.
+          php-version: "${{ php-version }}"
+          # Setup PHP extensions.
+          extensions: mbstring, yaml, :xdebug
+          ini-values: extension=pthreads.so
+          # Setup popular tools globally.
+          tools: composer:v2
+
+      - name: Install pthreads
+        run: -|
+          git clone https://github.com/pmmp/pthreads.git
+          cd pthreads
+          git checkout b81ab29df58fa0fb239a9d5ca1c2380a0d087feb
+          phpize
+          ./configure
+          make
+          make install
+          cd ..
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction
+
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
+      
+      - name: Run PHPUnit tests
+        run: ./vendor/bin/phpunit --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit
+        
+      - name: Run integration tests
+        run: ./tests/travis.sh -t4
