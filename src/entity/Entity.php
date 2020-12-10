@@ -96,9 +96,6 @@ abstract class Entity{
 	/** @var EntityMetadataCollection */
 	private $networkProperties;
 
-	/** @var Vector3 */
-	public $worldLastKnownLocation;
-
 	/** @var EntityDamageEvent|null */
 	protected $lastDamageCause = null;
 
@@ -229,7 +226,6 @@ abstract class Entity{
 		$this->server = $location->getWorld()->getServer();
 
 		$this->location = $location->asLocation();
-		$this->worldLastKnownLocation = $this->location->asLocation();
 		assert(
 			!is_nan($this->location->x) and !is_infinite($this->location->x) and
 			!is_nan($this->location->y) and !is_infinite($this->location->y) and

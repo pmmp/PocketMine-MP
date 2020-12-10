@@ -148,6 +148,11 @@ class World implements ChunkManager{
 
 	/** @var Entity[] */
 	private $entities = [];
+	/**
+	 * @var Vector3[]
+	 * @phpstan-var array<int, Vector3>
+	 */
+	private $entityLastKnownPositions = [];
 
 	/** @var Entity[] */
 	public $updateEntities = [];
@@ -2142,7 +2147,7 @@ class World implements ChunkManager{
 			throw new \InvalidArgumentException("Cannot add an Entity in an ungenerated chunk");
 		}
 		$chunk->addEntity($entity);
-		$entity->worldLastKnownLocation = $pos;
+		$this->entityLastKnownPositions[$entity->getId()] = $pos;
 
 		if($entity instanceof Player){
 			$this->players[$entity->getId()] = $entity;
@@ -2159,11 +2164,12 @@ class World implements ChunkManager{
 		if($entity->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Entity world");
 		}
-		$pos = $entity->worldLastKnownLocation;
+		$pos = $this->entityLastKnownPositions[$entity->getId()];
 		$chunk = $this->getChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
 		if($chunk !== null){ //we don't care if the chunk already went out of scope
 			$chunk->removeEntity($entity);
 		}
+		unset($this->entityLastKnownPositions[$entity->getId()]);
 
 		if($entity instanceof Player){
 			unset($this->players[$entity->getId()]);
@@ -2178,11 +2184,11 @@ class World implements ChunkManager{
 	 * @internal
 	 */
 	public function onEntityMoved(Entity $entity) : void{
-		if(!array_key_exists($entity->getId(), $this->entities)){
+		if(!array_key_exists($entity->getId(), $this->entityLastKnownPositions)){
 			//this can happen if the entity was teleported before addEntity() was called
 			return;
 		}
-		$oldPosition = $entity->worldLastKnownLocation;
+		$oldPosition = $this->entityLastKnownPositions[$entity->getId()];
 		$newPosition = $entity->getPosition();
 
 		$oldChunkX = $oldPosition->getFloorX() >> 4;
@@ -2219,9 +2225,9 @@ class World implements ChunkManager{
 				}
 
 				$newChunk->addEntity($entity);
-				$entity->worldLastKnownLocation = $newPosition->asVector3();
 			}
 		}
+		$this->entityLastKnownPositions[$entity->getId()] = $newPosition->asVector3();
 	}
 
 	/**
