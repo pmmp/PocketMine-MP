@@ -30,7 +30,7 @@ jobs:
       - name: Compile PHP
         if: steps.php-build-cache.outputs.cache-hit != 'true'
         run: |
-          sudo apt update && sudo apt install -y re2c libtool
+          sudo apt update && sudo apt install -y re2c libtool libtool-bin
           ./build/php/compile.sh -j8 -f #we don't need additional extensions right now
           export PATH=$(pwd)/bin/php7/bin:$PATH
 
