@@ -38,6 +38,14 @@ jobs:
       - name: Install Composer
         run: curl -sS https://getcomposer.org/installer | php
 
+      - name: Restore Composer package cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.composer/cache/files
+            ~/.composer/cache/vcs
+          key: composer-cache
+
       - name: Install Composer dependencies
         run: php composer.phar install --prefer-dist --no-interaction
 
