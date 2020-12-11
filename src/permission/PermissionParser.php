@@ -23,9 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-use function is_array;
 use function is_bool;
-use function is_string;
 use function strtolower;
 
 class PermissionParser{
@@ -101,31 +99,18 @@ class PermissionParser{
 	 */
 	public static function loadPermission(string $name, array $data, string $default = self::DEFAULT_FALSE, array &$output = []) : void{
 		$desc = null;
-		$children = [];
 		if(isset($data["default"])){
 			$default = PermissionParser::defaultFromString($data["default"]);
 		}
 
 		if(isset($data["children"])){
-			if(is_array($data["children"])){
-				foreach($data["children"] as $k => $v){
-					if(!is_string($k)){
-						throw new \InvalidArgumentException("Permission name should be string");
-					}
-					if(is_array($v)){
-						self::loadPermission($k, $v, $default, $output);
-					}
-					$children[$k] = true;
-				}
-			}else{
-				throw new \InvalidStateException("'children' key is of wrong type");
-			}
+			throw new \InvalidArgumentException("Nested permission declarations are no longer supported. Declare each permission separately.");
 		}
 
 		if(isset($data["description"])){
 			$desc = $data["description"];
 		}
 
-		$output[$default][] = new Permission($name, $desc, $children);
+		$output[$default][] = new Permission($name, $desc);
 	}
 }
