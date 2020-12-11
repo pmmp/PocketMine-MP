@@ -25,14 +25,15 @@ jobs:
         with:
           path: "./bin"
           key: "php-build-${{ hashFiles('./build/php/compile.sh') }}"
-          restore-keys: "php-build-"
 
       - name: Compile PHP
         if: steps.php-build-cache.outputs.cache-hit != 'true'
         run: |
           sudo apt update && sudo apt install -y re2c libtool libtool-bin
           ./build/php/compile.sh -j8 -f #we don't need additional extensions right now
-          export PATH=$(pwd)/bin/php7/bin:$PATH
+
+      - name: Prefix PHP to PATH
+        run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
 
       - name: Install Composer
         run: curl -sS https://getcomposer.org/installer | php
