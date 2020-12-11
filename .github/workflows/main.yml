@@ -24,13 +24,13 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "./bin"
-          key: "php-build-${{ hashFiles('./build/php/compile.sh') }}"
+          key: "php-build-generic-${{ hashFiles('./build/php/compile.sh') }}"
 
       - name: Compile PHP
         if: steps.php-build-cache.outputs.cache-hit != 'true'
         run: |
           sudo apt update && sudo apt install -y re2c libtool libtool-bin
-          ./build/php/compile.sh -j8 -f #we don't need additional extensions right now
+          march=x86-64 ./build/php/compile.sh -j8
 
       - name: Prefix PHP to PATH
         run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
