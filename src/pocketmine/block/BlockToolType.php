@@ -35,5 +35,6 @@ interface BlockToolType{
 	public const TYPE_PICKAXE = 1 << 2;
 	public const TYPE_AXE = 1 << 3;
 	public const TYPE_SHEARS = 1 << 4;
+	public const TYPE_HOE = 1 << 5;
 
 }

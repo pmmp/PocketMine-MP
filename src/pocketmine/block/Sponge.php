@@ -31,6 +31,10 @@ class Sponge extends Solid{
 		$this->meta = $meta;
 	}
 
+	public function getToolType() : int{
+		return BlockToolType::TYPE_HOE;
+	}
+
 	public function getHardness() : float{
 		return 0.6;
 	}
