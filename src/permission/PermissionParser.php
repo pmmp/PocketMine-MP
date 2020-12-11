@@ -82,35 +82,22 @@ class PermissionParser{
 	 */
 	public static function loadPermissions(array $data, string $default = self::DEFAULT_FALSE) : array{
 		$result = [];
-		foreach($data as $key => $entry){
-			self::loadPermission($key, $entry, $default, $result);
-		}
+		foreach($data as $name => $entry){
+			$desc = null;
+			if(isset($entry["default"])){
+				$default = PermissionParser::defaultFromString($entry["default"]);
+			}
 
+			if(isset($entry["children"])){
+				throw new \InvalidArgumentException("Nested permission declarations are no longer supported. Declare each permission separately.");
+			}
+
+			if(isset($entry["description"])){
+				$desc = $entry["description"];
+			}
+
+			$result[$default][] = new Permission($name, $desc);
+		}
 		return $result;
-	}
-
-	/**
-	 * @param mixed[]        $data
-	 * @param Permission[][] $output reference parameter
-	 * @phpstan-param array<string, mixed> $data
-	 * @phpstan-param array<string, list<Permission>> $output
-	 *
-	 * @throws \Exception
-	 */
-	public static function loadPermission(string $name, array $data, string $default = self::DEFAULT_FALSE, array &$output = []) : void{
-		$desc = null;
-		if(isset($data["default"])){
-			$default = PermissionParser::defaultFromString($data["default"]);
-		}
-
-		if(isset($data["children"])){
-			throw new \InvalidArgumentException("Nested permission declarations are no longer supported. Declare each permission separately.");
-		}
-
-		if(isset($data["description"])){
-			$desc = $data["description"];
-		}
-
-		$output[$default][] = new Permission($name, $desc);
 	}
 }
