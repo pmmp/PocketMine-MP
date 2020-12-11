@@ -19,7 +19,7 @@ jobs:
 
       - name: Restore PHP build cache
         id: php-build-cache
-        uses: actions/cach@v2
+        uses: actions/cache@v2
         with:
           path: "./bin"
           key: "php-build-${{ hashFiles('./build/php/compile.sh') }}"
