@@ -138,7 +138,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		}
 	}
 
-	public function closeSession(int $sessionId, string $reason) : void{
+	public function onClientDisconnect(int $sessionId, string $reason) : void{
 		if(isset($this->sessions[$sessionId])){
 			$session = $this->sessions[$sessionId];
 			unset($this->sessions[$sessionId]);
@@ -158,7 +158,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->rakLib->quit();
 	}
 
-	public function openSession(int $sessionId, string $address, int $port, int $clientID) : void{
+	public function onClientConnect(int $sessionId, string $address, int $port, int $clientID) : void{
 		$session = new NetworkSession(
 			$this->server,
 			$this->network->getSessionManager(),
@@ -172,7 +172,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->sessions[$sessionId] = $session;
 	}
 
-	public function handleEncapsulated(int $sessionId, string $packet) : void{
+	public function onPacketReceive(int $sessionId, string $packet) : void{
 		if(isset($this->sessions[$sessionId])){
 			if($packet === "" or $packet[0] !== self::MCPE_RAKNET_PACKET_ID){
 				return;
@@ -208,7 +208,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->interface->unblockAddress($address);
 	}
 
-	public function handleRaw(string $address, int $port, string $payload) : void{
+	public function onRawPacketReceive(string $address, int $port, string $payload) : void{
 		$this->network->processRawPacket($this, $address, $port, $payload);
 	}
 
@@ -220,7 +220,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->interface->addRawPacketFilter($regex);
 	}
 
-	public function notifyACK(int $sessionId, int $identifierACK) : void{
+	public function onPacketAck(int $sessionId, int $identifierACK) : void{
 
 	}
 
@@ -250,7 +250,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->interface->setPacketsPerTickLimit($limit);
 	}
 
-	public function handleBandwidthStats(int $bytesSentDiff, int $bytesReceivedDiff) : void{
+	public function onBandwidthStatsUpdate(int $bytesSentDiff, int $bytesReceivedDiff) : void{
 		$this->network->getBandwidthTracker()->add($bytesSentDiff, $bytesReceivedDiff);
 	}
 
@@ -265,7 +265,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		}
 	}
 
-	public function updatePing(int $sessionId, int $pingMS) : void{
+	public function onPingMeasure(int $sessionId, int $pingMS) : void{
 		if(isset($this->sessions[$sessionId])){
 			$this->sessions[$sessionId]->updatePing($pingMS);
 		}
