@@ -637,12 +637,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "a40cf8a90c3081166b555826bc1def8a7a5c5cb9"
+                "reference": "4272f15bc47941b59e1d597ca544465f4a59725e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/a40cf8a90c3081166b555826bc1def8a7a5c5cb9",
-                "reference": "a40cf8a90c3081166b555826bc1def8a7a5c5cb9",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/4272f15bc47941b59e1d597ca544465f4a59725e",
+                "reference": "4272f15bc47941b59e1d597ca544465f4a59725e",
                 "shasum": ""
             },
             "require": {
@@ -654,7 +654,7 @@
                 "pocketmine/log": "dev-master"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.40",
+                "phpstan/phpstan": "0.12.59",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
@@ -672,7 +672,7 @@
                 "issues": "https://github.com/pmmp/RakLib/issues",
                 "source": "https://github.com/pmmp/RakLib/tree/master"
             },
-            "time": "2020-08-28T22:11:37+00:00"
+            "time": "2020-12-12T02:09:57+00:00"
         },
         {
             "name": "pocketmine/snooze",

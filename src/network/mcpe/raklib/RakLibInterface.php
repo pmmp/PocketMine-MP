@@ -155,7 +155,6 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	public function shutdown() : void{
 		$this->server->getTickSleeper()->removeNotifier($this->sleeper);
-		$this->interface->shutdown();
 		$this->rakLib->quit();
 	}
 
