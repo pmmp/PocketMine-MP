@@ -42,7 +42,7 @@ use function str_replace;
 use function stream_get_contents;
 use function strlen;
 use function strpos;
-use function uasort;
+use function uksort;
 use function unlink;
 use const DIRECTORY_SEPARATOR;
 use const LOCK_EX;
