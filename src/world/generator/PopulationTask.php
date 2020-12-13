@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\generator;
 
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\SimpleChunkManager;
@@ -33,8 +34,6 @@ use function intdiv;
 class PopulationTask extends AsyncTask{
 	private const TLS_KEY_WORLD = "world";
 
-	/** @var bool */
-	public $state;
 	/** @var int */
 	public $worldId;
 	/** @var int */
@@ -66,7 +65,6 @@ class PopulationTask extends AsyncTask{
 	public $chunk8;
 
 	public function __construct(World $world, int $chunkX, int $chunkZ, ?Chunk $chunk){
-		$this->state = true;
 		$this->worldId = $world->getId();
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
@@ -82,8 +80,7 @@ class PopulationTask extends AsyncTask{
 	public function onRun() : void{
 		$context = ThreadLocalGeneratorContext::fetch($this->worldId);
 		if($context === null){
-			$this->state = false;
-			return;
+			throw new AssumptionFailedError("Generator context should have been initialized before any PopulationTask execution");
 		}
 		$generator = $context->getGenerator();
 		$manager = new SimpleChunkManager($context->getWorldHeight());
@@ -140,10 +137,6 @@ class PopulationTask extends AsyncTask{
 		/** @var World $world */
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
 		if(!$world->isClosed()){
-			if(!$this->state){
-				$world->registerGeneratorToWorker($this->worker->getAsyncWorkerId());
-			}
-
 			$chunk = $this->chunk !== null ? FastChunkSerializer::deserialize($this->chunk) : null;
 
 			for($i = 0; $i < 9; ++$i){
@@ -156,11 +149,11 @@ class PopulationTask extends AsyncTask{
 					$zz = -1 + intdiv($i, 3);
 
 					$c = FastChunkSerializer::deserialize($c);
-					$world->generateChunkCallback($this->chunkX + $xx, $this->chunkZ + $zz, $this->state ? $c : null);
+					$world->generateChunkCallback($this->chunkX + $xx, $this->chunkZ + $zz, $c);
 				}
 			}
 
-			$world->generateChunkCallback($this->chunkX, $this->chunkZ, $this->state ? $chunk : null);
+			$world->generateChunkCallback($this->chunkX, $this->chunkZ, $chunk);
 		}
 	}
 }
