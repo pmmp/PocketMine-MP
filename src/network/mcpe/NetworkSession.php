@@ -31,7 +31,6 @@ use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
-use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
@@ -230,16 +229,7 @@ class NetworkSession{
 	}
 
 	protected function createPlayer() : void{
-		$ev = new PlayerCreationEvent($this);
-		$ev->call();
-		$class = $ev->getPlayerClass();
-
-		//TODO: make this async
-		//TODO: this really has no business being in NetworkSession at all - what about allowing it to be provided by PlayerCreationEvent?
-		$namedtag = $this->server->getOfflinePlayerData($this->info->getUsername());
-
-		/** @see Player::__construct() */
-		$this->player = new $class($this->server, $this, $this->info, $this->authenticated, $namedtag);
+		$this->player = $this->server->createPlayer($this, $this->info, $this->authenticated);
 
 		$this->invManager = new InventoryManager($this->player, $this);
 

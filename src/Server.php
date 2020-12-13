@@ -35,6 +35,7 @@ use pocketmine\command\SimpleCommandMap;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\event\HandlerListManager;
+use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketSendEvent;
@@ -67,6 +68,7 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\OfflinePlayer;
 use pocketmine\player\Player;
+use pocketmine\player\PlayerInfo;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginEnableOrder;
@@ -573,6 +575,23 @@ class Server{
 				}
 			});
 		}
+	}
+
+	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated) : Player{
+		$ev = new PlayerCreationEvent($session);
+		$ev->call();
+		$class = $ev->getPlayerClass();
+
+		//TODO: make this async
+		//TODO: what about allowing this to be provided by PlayerCreationEvent?
+		$namedtag = $this->getOfflinePlayerData($playerInfo->getUsername());
+
+		/**
+		 * @see Player::__construct()
+		 * @var Player $player
+		 */
+		$player = new $class($this, $session, $playerInfo, $authenticated, $namedtag);
+		return $player;
 	}
 
 	/**
