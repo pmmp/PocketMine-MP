@@ -127,6 +127,7 @@ final class CraftingDataCache{
 			);
 		}
 
+		Timings::$craftingDataCacheRebuildTimer->stopTiming();
 		return $pk;
 	}
 }
