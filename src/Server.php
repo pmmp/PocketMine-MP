@@ -635,27 +635,6 @@ class Server{
 	}
 
 	/**
-	 * Returns a list of online players whose names contain with the given string (case insensitive).
-	 * If an exact match is found, only that match is returned.
-	 *
-	 * @return Player[]
-	 */
-	public function matchPlayer(string $partialName) : array{
-		$partialName = strtolower($partialName);
-		$matchedPlayers = [];
-		foreach($this->getOnlinePlayers() as $player){
-			if(strtolower($player->getName()) === $partialName){
-				$matchedPlayers = [$player];
-				break;
-			}elseif(stripos($player->getName(), $partialName) !== false){
-				$matchedPlayers[] = $player;
-			}
-		}
-
-		return $matchedPlayers;
-	}
-
-	/**
 	 * Returns the player online with the specified raw UUID, or null if not found
 	 */
 	public function getPlayerByRawUUID(string $rawUUID) : ?Player{
