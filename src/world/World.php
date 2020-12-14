@@ -66,6 +66,7 @@ use pocketmine\player\Player;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\world\biome\Biome;
@@ -2141,6 +2142,13 @@ class World implements ChunkManager{
 		if($entity->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Entity world");
 		}
+		if(array_key_exists($entity->getId(), $this->entities)){
+			if($this->entities[$entity->getId()] === $entity){
+				throw new \InvalidArgumentException("Entity " . $entity->getId() . " has already been added to this world");
+			}else{
+				throw new AssumptionFailedError("Found two different entities sharing entity ID " . $entity->getId());
+			}
+		}
 		$pos = $entity->getPosition()->asVector3();
 		$chunk = $this->getOrLoadChunkAtPosition($pos);
 		if($chunk === null){
@@ -2163,6 +2171,9 @@ class World implements ChunkManager{
 	public function removeEntity(Entity $entity) : void{
 		if($entity->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Entity world");
+		}
+		if(!array_key_exists($entity->getId(), $this->entities)){
+			throw new \InvalidArgumentException("Entity is not tracked by this world (possibly already removed?)");
 		}
 		$pos = $this->entityLastKnownPositions[$entity->getId()];
 		$chunk = $this->getChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
