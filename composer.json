@@ -7,7 +7,6 @@
    "require": {
       "php": ">=7.3.0",
       "php-64bit": "*",
-      "ext-bcmath": "*",
       "ext-curl": "*",
       "ext-ctype": "*",
       "ext-date": "*",

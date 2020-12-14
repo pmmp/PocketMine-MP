@@ -73,7 +73,6 @@ namespace pocketmine {
 		}
 
 		$extensions = [
-			"bcmath" => "BC Math",
 			"curl" => "cURL",
 			"ctype" => "ctype",
 			"date" => "Date",
