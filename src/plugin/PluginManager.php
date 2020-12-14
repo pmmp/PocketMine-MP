@@ -38,7 +38,10 @@ use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
+use function array_diff_assoc;
 use function array_intersect;
+use function array_key_exists;
+use function array_keys;
 use function array_merge;
 use function class_exists;
 use function count;
@@ -210,18 +213,12 @@ class PluginManager{
 	/**
 	 * @param string[]|null $newLoaders
 	 * @phpstan-param list<class-string<PluginLoader>> $newLoaders
-	 *
-	 * @return Plugin[]
 	 */
-	public function loadPlugins(string $directory, ?array $newLoaders = null) : array{
+	public function triagePlugins(string $directory, PluginLoadTriage $triage, ?array $newLoaders = null) : void{
 		if(!is_dir($directory)){
-			return [];
+			return;
 		}
 
-		$plugins = [];
-		$loadedPlugins = [];
-		$dependencies = [];
-		$softDependencies = [];
 		if(is_array($newLoaders)){
 			$loaders = [];
 			foreach($newLoaders as $key){
@@ -261,7 +258,7 @@ class PluginManager{
 					$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.spacesDiscouraged", [$name]));
 				}
 
-				if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
+				if(isset($triage->plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
 					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.duplicateError", [$name]));
 					continue;
 				}
@@ -282,7 +279,7 @@ class PluginManager{
 					continue;
 				}
 
-				if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
+				if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)){
 					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
 						$name,
 						$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleOS", [implode(", ", $description->getCompatibleOperatingSystems())])
@@ -308,67 +305,83 @@ class PluginManager{
 					]));
 					continue;
 				}
-				$plugins[$name] = $file;
+				$triage->plugins[$name] = $file;
 
-				$softDependencies[$name] = array_merge($softDependencies[$name] ?? [], $description->getSoftDepend());
-				$dependencies[$name] = $description->getDepend();
+				$triage->softDependencies[$name] = array_merge($triage->softDependencies[$name] ?? [], $description->getSoftDepend());
+				$triage->dependencies[$name] = $description->getDepend();
 
 				foreach($description->getLoadBefore() as $before){
-					if(isset($softDependencies[$before])){
-						$softDependencies[$before][] = $name;
+					if(isset($triage->softDependencies[$before])){
+						$triage->softDependencies[$before][] = $name;
 					}else{
-						$softDependencies[$before] = [$name];
+						$triage->softDependencies[$before] = [$name];
 					}
 				}
 			}
 		}
+	}
 
-		while(count($plugins) > 0){
+	/**
+	 * @return Plugin[]
+	 */
+	public function loadPlugins(string $directory) : array{
+		$triage = new PluginLoadTriage();
+		$this->triagePlugins($directory, $triage);
+
+		$loadedPlugins = [];
+
+		while(count($triage->plugins) > 0){
 			$loadedThisLoop = 0;
-			foreach($plugins as $name => $file){
-				if(isset($dependencies[$name])){
-					foreach($dependencies[$name] as $key => $dependency){
+			foreach($triage->plugins as $name => $file){
+				if(isset($triage->dependencies[$name])){
+					foreach($triage->dependencies[$name] as $key => $dependency){
 						if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
-							unset($dependencies[$name][$key]);
-						}elseif(!isset($plugins[$dependency])){
-							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
-								$name,
-								$this->server->getLanguage()->translateString("%pocketmine.plugin.unknownDependency", [$dependency])
-							]));
-							unset($plugins[$name]);
-							continue 2;
+							$this->server->getLogger()->debug("Successfully resolved hard dependency \"$dependency\" for plugin \"$name\"");
+							unset($triage->dependencies[$name][$key]);
+						}elseif(array_key_exists($dependency, $triage->plugins)){
+							$this->server->getLogger()->debug("Deferring resolution of dependency \"$dependency\" for plugin \"$name\" (found but not loaded yet)");
 						}
 					}
 
-					if(count($dependencies[$name]) === 0){
-						unset($dependencies[$name]);
+					if(count($triage->dependencies[$name]) === 0){
+						unset($triage->dependencies[$name]);
 					}
 				}
 
-				if(isset($softDependencies[$name])){
-					foreach($softDependencies[$name] as $key => $dependency){
+				if(isset($triage->softDependencies[$name])){
+					foreach($triage->softDependencies[$name] as $key => $dependency){
 						if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
 							$this->server->getLogger()->debug("Successfully resolved soft dependency \"$dependency\" for plugin \"$name\"");
-							unset($softDependencies[$name][$key]);
-						}elseif(!isset($plugins[$dependency])){
-							//this dependency is never going to be resolved, so don't bother trying
-							$this->server->getLogger()->debug("Skipping resolution of missing soft dependency \"$dependency\" for plugin \"$name\"");
-							unset($softDependencies[$name][$key]);
-						}else{
+							unset($triage->softDependencies[$name][$key]);
+						}elseif(array_key_exists($dependency, $triage->plugins)){
 							$this->server->getLogger()->debug("Deferring resolution of soft dependency \"$dependency\" for plugin \"$name\" (found but not loaded yet)");
 						}
 					}
 
-					if(count($softDependencies[$name]) === 0){
-						unset($softDependencies[$name]);
+					if(count($triage->softDependencies[$name]) === 0){
+						unset($triage->softDependencies[$name]);
 					}
 				}
 
-				if(!isset($dependencies[$name]) and !isset($softDependencies[$name])){
-					unset($plugins[$name]);
+				if(!isset($triage->dependencies[$name]) and !isset($triage->softDependencies[$name])){
+					unset($triage->plugins[$name]);
 					$loadedThisLoop++;
-					if(($plugin = $this->loadPlugin($file, $loaders)) instanceof Plugin){
+					$oldRegisteredLoaders = $this->fileAssociations;
+					if(($plugin = $this->loadPlugin($file, $this->fileAssociations)) instanceof Plugin){
 						$loadedPlugins[$name] = $plugin;
+						$diffLoaders = [];
+						foreach($this->fileAssociations as $k => $loader){
+							if(!array_key_exists($k, $oldRegisteredLoaders)){
+								$diffLoaders[] = $k;
+							}
+						}
+						if(count($diffLoaders) !== 0){
+							$this->server->getLogger()->debug("Plugin $name registered a new plugin loader during load, scanning for new plugins");
+							$plugins = $triage->plugins;
+							$this->triagePlugins($directory, $triage, $diffLoaders);
+							$diffPlugins = array_diff_assoc($triage->plugins, $plugins);
+							$this->server->getLogger()->debug("Re-triage found plugins: " . implode(", ", array_keys($diffPlugins)));
+						}
 					}else{
 						$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.genericLoadError", [$name]));
 					}
@@ -377,10 +390,51 @@ class PluginManager{
 
 			if($loadedThisLoop === 0){
 				//No plugins loaded :(
-				foreach($plugins as $name => $file){
+				foreach($triage->plugins as $name => $file){
+					if(isset($triage->dependencies[$name])){
+						$unknownDependencies = [];
+
+						foreach($triage->dependencies[$name] as $k => $dependency){
+							if($this->getPlugin($dependency) === null && !array_key_exists($dependency, $triage->plugins)){
+								//assume that the plugin is never going to be loaded
+								//however, this assumption could be broken by a missing soft dependency getting ignored ...
+								//... or a loadbefore getting ignored, e.g. a folder plugin trying to loadbefore devtools ...
+								$unknownDependencies[$dependency] = $dependency;
+							}
+						}
+
+						if(count($unknownDependencies) > 0){
+							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+								$name,
+								$this->server->getLanguage()->translateString("%pocketmine.plugin.unknownDependency", [implode(", ", $unknownDependencies)])
+							]));
+							unset($triage->plugins[$name]);
+							continue;
+						}
+					}
+				}
+
+				foreach($triage->plugins as $name => $file){
+					if(isset($triage->softDependencies[$name])){
+						foreach($triage->softDependencies[$name] as $k => $dependency){
+							if($this->getPlugin($dependency) === null && !array_key_exists($dependency, $triage->plugins)){
+								//TODO: another plugin with an unresolved soft dependency might cause our soft dependency to be resolved
+								//wtf are we supposed to do if that happens???
+								$this->server->getLogger()->debug("Skipping resolution of missing soft dependency \"$dependency\" for plugin \"$name\"");
+								unset($triage->softDependencies[$name][$k]);
+							}
+						}
+						if(count($triage->softDependencies[$name]) === 0){
+							unset($triage->softDependencies[$name]);
+							continue 2; //go back to the top and try again
+						}
+					}
+				}
+
+				foreach($triage->plugins as $name => $file){
 					$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.circularDependency"]));
 				}
-				$plugins = [];
+				break;
 			}
 		}
 
