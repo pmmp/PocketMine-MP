@@ -390,6 +390,26 @@ class PluginManager{
 
 			if($loadedThisLoop === 0){
 				//No plugins loaded :(
+
+				//check for skippable soft dependencies first, in case the dependents could resolve hard dependencies
+				foreach($triage->plugins as $name => $file){
+					if(isset($triage->softDependencies[$name])){
+						foreach($triage->softDependencies[$name] as $k => $dependency){
+							if($this->getPlugin($dependency) === null && !array_key_exists($dependency, $triage->plugins)){
+								//TODO: another plugin with an unresolved soft dependency might cause our soft
+								//dependency to be resolved after we already decided to ignore it
+								//wtf are we supposed to do if that happens???
+								$this->server->getLogger()->debug("Skipping resolution of missing soft dependency \"$dependency\" for plugin \"$name\"");
+								unset($triage->softDependencies[$name][$k]);
+							}
+						}
+						if(count($triage->softDependencies[$name]) === 0){
+							unset($triage->softDependencies[$name]);
+							continue 2; //go back to the top and try again
+						}
+					}
+				}
+
 				foreach($triage->plugins as $name => $file){
 					if(isset($triage->dependencies[$name])){
 						$unknownDependencies = [];
@@ -397,8 +417,8 @@ class PluginManager{
 						foreach($triage->dependencies[$name] as $k => $dependency){
 							if($this->getPlugin($dependency) === null && !array_key_exists($dependency, $triage->plugins)){
 								//assume that the plugin is never going to be loaded
-								//however, this assumption could be broken by a missing soft dependency getting ignored ...
-								//... or a loadbefore getting ignored, e.g. a folder plugin trying to loadbefore devtools ...
+								//by this point all soft dependencies have been ignored if they were able to be, so
+								//there's no chance of this dependency ever being resolved
 								$unknownDependencies[$dependency] = $dependency;
 							}
 						}
@@ -410,23 +430,6 @@ class PluginManager{
 							]));
 							unset($triage->plugins[$name]);
 							continue;
-						}
-					}
-				}
-
-				foreach($triage->plugins as $name => $file){
-					if(isset($triage->softDependencies[$name])){
-						foreach($triage->softDependencies[$name] as $k => $dependency){
-							if($this->getPlugin($dependency) === null && !array_key_exists($dependency, $triage->plugins)){
-								//TODO: another plugin with an unresolved soft dependency might cause our soft dependency to be resolved
-								//wtf are we supposed to do if that happens???
-								$this->server->getLogger()->debug("Skipping resolution of missing soft dependency \"$dependency\" for plugin \"$name\"");
-								unset($triage->softDependencies[$name][$k]);
-							}
-						}
-						if(count($triage->softDependencies[$name]) === 0){
-							unset($triage->softDependencies[$name]);
-							continue 2; //go back to the top and try again
 						}
 					}
 				}
