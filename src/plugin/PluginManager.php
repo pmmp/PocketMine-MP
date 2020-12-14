@@ -198,6 +198,7 @@ class PluginManager{
 					 */
 					$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed, new DiskResourceProvider($prefixed . "/resources/"));
 					$this->plugins[$plugin->getDescription()->getName()] = $plugin;
+					$this->resolveLoadedDependency($plugin);
 
 					return $plugin;
 				}
@@ -385,6 +386,19 @@ class PluginManager{
 		}
 
 		return $loadedPlugins;
+	}
+
+	public function resolveLoadedDependency(Plugin $plugin) : int {
+		$resolved = 0;
+		foreach($this->plugins as $loadedPlugin) {
+			foreach($loadedPlugin->getDescription()->getSoftDepend() as $pluginName) {
+				if($plugin->getName() === $pluginName) {
+					$loadedPlugin->onDependencyResolution();
+					$resolved += 1;
+				}
+			}
+		}
+		return $resolved;
 	}
 
 	public function isPluginEnabled(Plugin $plugin) : bool{

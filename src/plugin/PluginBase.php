@@ -117,6 +117,15 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	}
 
 	/**
+	 * Called when a plugin soft dependency is resolved
+	 *
+	 * @return void
+	 */
+	public function onDependencyResolution() : void {
+
+	}
+
+	/**
 	 * Called when the plugin is disabled
 	 * Use this to free open things and finish actions
 	 *

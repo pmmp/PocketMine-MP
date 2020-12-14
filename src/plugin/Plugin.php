@@ -39,6 +39,13 @@ interface Plugin{
 	public function isEnabled() : bool;
 
 	/**
+	 * Called when a plugin soft dependency is resolved
+	 *
+	 * @return void
+	 */
+	public function onDependencyResolution() : void;
+
+	/**
 	 * Called by the plugin manager when the plugin is enabled or disabled to inform the plugin of its enabled state.
 	 *
 	 * @internal This is intended for core use only and should not be used by plugins
