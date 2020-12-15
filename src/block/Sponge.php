@@ -29,7 +29,7 @@ class Sponge extends Opaque{
 	protected $wet = false;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::HOE));
 	}
 
 	protected function writeStateToMeta() : int{

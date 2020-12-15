@@ -23,9 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-use function is_array;
 use function is_bool;
-use function is_string;
 use function strtolower;
 
 class PermissionParser{
@@ -84,48 +82,22 @@ class PermissionParser{
 	 */
 	public static function loadPermissions(array $data, string $default = self::DEFAULT_FALSE) : array{
 		$result = [];
-		foreach($data as $key => $entry){
-			self::loadPermission($key, $entry, $default, $result);
-		}
-
-		return $result;
-	}
-
-	/**
-	 * @param mixed[]        $data
-	 * @param Permission[][] $output reference parameter
-	 * @phpstan-param array<string, mixed> $data
-	 * @phpstan-param array<string, list<Permission>> $output
-	 *
-	 * @throws \Exception
-	 */
-	public static function loadPermission(string $name, array $data, string $default = self::DEFAULT_FALSE, array &$output = []) : void{
-		$desc = null;
-		$children = [];
-		if(isset($data["default"])){
-			$default = PermissionParser::defaultFromString($data["default"]);
-		}
-
-		if(isset($data["children"])){
-			if(is_array($data["children"])){
-				foreach($data["children"] as $k => $v){
-					if(!is_string($k)){
-						throw new \InvalidArgumentException("Permission name should be string");
-					}
-					if(is_array($v)){
-						self::loadPermission($k, $v, $default, $output);
-					}
-					$children[$k] = true;
-				}
-			}else{
-				throw new \InvalidStateException("'children' key is of wrong type");
+		foreach($data as $name => $entry){
+			$desc = null;
+			if(isset($entry["default"])){
+				$default = PermissionParser::defaultFromString($entry["default"]);
 			}
-		}
 
-		if(isset($data["description"])){
-			$desc = $data["description"];
-		}
+			if(isset($entry["children"])){
+				throw new \InvalidArgumentException("Nested permission declarations are no longer supported. Declare each permission separately.");
+			}
 
-		$output[$default][] = new Permission($name, $desc, $children);
+			if(isset($entry["description"])){
+				$desc = $entry["description"];
+			}
+
+			$result[$default][] = new Permission($name, $desc);
+		}
+		return $result;
 	}
 }

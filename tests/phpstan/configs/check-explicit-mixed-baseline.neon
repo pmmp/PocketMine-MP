@@ -96,7 +96,7 @@ parameters:
 			path: ../../../src/command/CommandReader.php
 
 		-
-			message: "#^Parameter \\#2 \\$host of class class@anonymous/src/command/defaults/TimingsCommand\\.php\\:125 constructor expects string, mixed given\\.$#"
+			message: "#^Parameter \\#2 \\$host of class class@anonymous/src/command/defaults/TimingsCommand\\.php\\:130 constructor expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/TimingsCommand.php
 

@@ -164,7 +164,10 @@ class RakLibServer extends Thread{
 				$this->ready = true;
 				$this->notify();
 			});
-			$manager->run();
+			while(!$this->isKilled){
+				$manager->tickProcessor();
+			}
+			$manager->waitShutdown();
 			$this->cleanShutdown = true;
 		}catch(\Throwable $e){
 			$this->setCrashInfo($e->getMessage());

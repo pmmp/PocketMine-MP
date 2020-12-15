@@ -35,6 +35,7 @@ use pocketmine\command\SimpleCommandMap;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\event\HandlerListManager;
+use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketSendEvent;
@@ -58,15 +59,16 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\Network;
+use pocketmine\network\query\DedicatedQueryNetworkInterface;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\query\QueryInfo;
-use pocketmine\network\query\DedicatedQueryNetworkInterface;
 use pocketmine\network\upnp\UPnP;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\OfflinePlayer;
 use pocketmine\player\Player;
+use pocketmine\player\PlayerInfo;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginEnableOrder;
@@ -575,6 +577,23 @@ class Server{
 		}
 	}
 
+	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated) : Player{
+		$ev = new PlayerCreationEvent($session);
+		$ev->call();
+		$class = $ev->getPlayerClass();
+
+		//TODO: make this async
+		//TODO: what about allowing this to be provided by PlayerCreationEvent?
+		$namedtag = $this->getOfflinePlayerData($playerInfo->getUsername());
+
+		/**
+		 * @see Player::__construct()
+		 * @var Player $player
+		 */
+		$player = new $class($this, $session, $playerInfo, $authenticated, $namedtag);
+		return $player;
+	}
+
 	/**
 	 * Returns an online player whose name begins with or equals the given string (case insensitive).
 	 * The closest match will be returned, or null if there are no online matches.
@@ -613,27 +632,6 @@ class Server{
 		}
 
 		return null;
-	}
-
-	/**
-	 * Returns a list of online players whose names contain with the given string (case insensitive).
-	 * If an exact match is found, only that match is returned.
-	 *
-	 * @return Player[]
-	 */
-	public function matchPlayer(string $partialName) : array{
-		$partialName = strtolower($partialName);
-		$matchedPlayers = [];
-		foreach($this->getOnlinePlayers() as $player){
-			if(strtolower($player->getName()) === $partialName){
-				$matchedPlayers = [$player];
-				break;
-			}elseif(stripos($player->getName(), $partialName) !== false){
-				$matchedPlayers[] = $player;
-			}
-		}
-
-		return $matchedPlayers;
 	}
 
 	/**
