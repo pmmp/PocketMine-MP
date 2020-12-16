@@ -94,14 +94,49 @@ abstract class UPnP{
 			"HOST: 239.255.255.250:1900\r\n" .
 			"MAN: \"ssdp:discover\"\r\n" .
 			"ST: upnp:rootdevice\r\n\r\n";
-		if(!@socket_sendto($socket, $contents, strlen($contents), 0, "239.255.255.250", 1900)){
+		$sendbyte = @socket_sendto($socket, $contents, strlen($contents), 0, "239.255.255.250", 1900);
+		if($sendbyte === false){
 			throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
 		}
-		if(!@socket_recvfrom($socket, $buffer, 1024, 0, $responseHost, $responsePort)){
+		if($sendbyte !== strlen($contents)){
+			throw new \RuntimeException("Socket error: Unable to send the entire contents.");
+		}
+		if(@socket_recvfrom($socket, $buffer, 1024, 0, $responseHost, $responsePort) === false){
 			throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
 		}
 		socket_close($socket);
-		if($buffer === false || !preg_match('/location\s*:\s*(.+)\n/i', $buffer, $matches)){
+		$pregResult = preg_match('/location\s*:\s*(.+)\n/i', $buffer, $matches);
+		if($pregResult === false){
+			// you can use preg_last_error_msg() since PHP 8.
+			$errormsg = "";
+			switch(preg_last_error()){
+				case PREG_NO_ERROR:
+					$errormsg = "no error but preg_match returned false";
+					break;
+				case PREG_INTERNAL_ERROR:
+					$errormsg = "internal error";
+					break;
+				case PREG_BACKTRACK_LIMIT_ERROR:
+					$errormsg = "backtrack limit error";
+					break;
+				case PREG_RECURSION_LIMIT_ERROR:
+					$errormsg = "recursion limit error";
+					break;
+				case PREG_BAD_UTF8_ERROR:
+					$errormsg = "bad utf8 error";
+				break;
+				case PREG_BAD_UTF8_OFFSET_ERROR:
+					$errormsg = "bad utf8 offset error";
+					break;
+				case PREG_JIT_STACKLIMIT_ERROR:
+					$errormsg = "jit stacklimit error";
+					break;
+				default:
+					$errormsg = "unknown error";
+			}
+			throw new \RuntimeException("Preg error: " . $errormsg);
+		}
+		if($pregResult === 0){
 			throw new \RuntimeException("Unable to find the router. Ensure that network discovery is enabled in Control Panel.");
 		}
 		$location = trim($matches[1]);
@@ -109,6 +144,14 @@ abstract class UPnP{
 		if($url === false){
 			throw new \RuntimeException("Failed to parse the router's url: {$location}");
 		}
+		if(!isset($url['host'])){
+			throw new \RuntimeException("Failed to recognize the host name from the router's url: {$location}");
+		}
+		$urlHost = $url['host'];
+		if(!isset($url['port'])){
+			throw new \RuntimeException("Failed to recognize the port number from the router's url: {$location}");
+		}
+		$urlPort = $url['port'];
 		$response = Internet::getURL($location, 3, [], $err, $headers, $httpCode);
 		if($response === false){
 			throw new \RuntimeException("Unable to access XML: {$err}");
@@ -137,7 +180,7 @@ abstract class UPnP{
 			throw new \RuntimeException("Your router does not support portforwarding");
 		}
 		$controlURL = (string) $xpathResult[0];
-		$serviceURL = sprintf("%s:%d/%s", $url['host'], $url['port'], $controlURL);
+		$serviceURL = sprintf("%s:%d/%s", $urlHost, $urlPort, $controlURL);
 		return $serviceURL;
 	}
 
@@ -171,8 +214,8 @@ abstract class UPnP{
 			'SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"'
 		];
 
-		if(!Internet::postURL(self::$serviceURL, $contents, 3, $headers)){
-			throw new \RuntimeException("Failed to portforward using UPnP. Ensure that network discovery is enabled in Control Panel.");
+		if(Internet::postURL(self::$serviceURL, $contents, 3, $headers, $err) === false){
+			throw new \RuntimeException("Failed to portforward using UPnP: " . $err);
 		}
 	}
 
@@ -201,7 +244,7 @@ abstract class UPnP{
 			'SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#DeletePortMapping"'
 		];
 
-		if(!Internet::postURL(self::$serviceURL, $contents, 3, $headers)){
+		if(Internet::postURL(self::$serviceURL, $contents, 3, $headers) === false){
 			return false;
 		}
 
