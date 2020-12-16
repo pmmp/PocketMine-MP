@@ -1,7 +1,6 @@
 includes:
 	- tests/phpstan/configs/actual-problems.neon
 	- tests/phpstan/configs/check-explicit-mixed-baseline.neon
-	- tests/phpstan/configs/com-dotnet-magic.neon
 	- tests/phpstan/configs/gc-hacks.neon
 	- tests/phpstan/configs/l7-baseline.neon
 	- tests/phpstan/configs/l8-baseline.neon
