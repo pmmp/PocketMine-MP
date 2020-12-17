@@ -659,8 +659,10 @@ class Item implements ItemIds, \JsonSerializable{
 	 * Returns an item after burning fuel
 	 */
 	public function getFuelResidue() : Item{
-		$this->pop();
-		return $this;
+		$item = clone $this;
+		$item->pop();
+
+		return $item;
 	}
 
 	/**
