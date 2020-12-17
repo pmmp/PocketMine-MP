@@ -656,6 +656,14 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
+	 * Returns an item after burning fuel
+	 */
+	public function getFuelResidue() : Item{
+		$this->pop();
+		return $this;
+	}
+
+	/**
 	 * Returns how many points of damage this item will deal to an entity when used as a weapon.
 	 */
 	public function getAttackPoints() : int{
