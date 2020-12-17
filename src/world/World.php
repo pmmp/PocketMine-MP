@@ -2589,8 +2589,37 @@ class World implements ChunkManager{
 		}
 	}
 
-	public function populateChunk(int $x, int $z, bool $force = false) : bool{
-		if(isset($this->chunkPopulationQueue[$index = World::chunkHash($x, $z)]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){
+	/**
+	 * Attempts to initiate asynchronous generation/population of the target chunk, if it's currently reasonable to do
+	 * so (and if it isn't already generated/populated).
+	 *
+	 * This method can fail for the following reasons:
+	 * - The generation queue for this world is currently full (intended to prevent CPU overload with non-essential generation)
+	 * - The target chunk is already being generated/populated
+	 * - The target chunk is locked for use by another async operation (usually population)
+	 *
+	 * @return bool whether the chunk has been successfully populated already
+	 * TODO: the return values don't make a lot of sense, but currently stuff depends on them :<
+	 */
+	public function requestChunkPopulation(int $chunkX, int $chunkZ) : bool{
+		if(count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize){
+			return false;
+		}
+		return $this->orderChunkPopulation($chunkX, $chunkZ);
+	}
+
+	/**
+	 * Initiates asynchronous generation/population of the target chunk, if it's not already generated/populated.
+	 *
+	 * This method can fail for the following reasons:
+	 * - The target chunk is already being generated/populated
+	 * - The target chunk is locked for use by another async operation (usually population)
+	 *
+	 * @return bool whether the chunk has been successfully populated already
+	 * TODO: the return values don't make sense, but currently stuff depends on them :<
+	 */
+	public function orderChunkPopulation(int $x, int $z) : bool{
+		if(isset($this->chunkPopulationQueue[$index = World::chunkHash($x, $z)])){
 			return false;
 		}
 		for($xx = -1; $xx <= 1; ++$xx){

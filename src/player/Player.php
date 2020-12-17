@@ -724,7 +724,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->getWorld()->registerChunkLoader($this->chunkLoader, $X, $Z, true);
 			$this->getWorld()->registerChunkListener($this, $X, $Z);
 
-			if(!$this->getWorld()->populateChunk($X, $Z)){
+			if(!$this->getWorld()->requestChunkPopulation($X, $Z)){
 				continue;
 			}
 
