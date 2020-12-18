@@ -21,7 +21,7 @@ curl -sSL https://github.com/php/pecl-file_formats-yaml/archive/2.2.0.tar.gz | t
 cd ..
 
 CFLAGS="$CFLAGS -march=x86-64"
-CXXFLAGS="CXXFLAGS -march=x86-64"
+CXXFLAGS="$CXXFLAGS -march=x86-64"
 
 ./buildconf --force
 ./configure \
