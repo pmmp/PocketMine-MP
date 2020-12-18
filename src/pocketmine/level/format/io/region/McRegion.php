@@ -182,7 +182,9 @@ class McRegion extends BaseLevelProvider{
 
 		$heightMap = [];
 		if($chunk->hasTag("HeightMap", ByteArrayTag::class)){
-			$heightMap = array_values(unpack("C*", $chunk->getByteArray("HeightMap")));
+			/** @var int[] $unpackedHeightMap */
+			$unpackedHeightMap = unpack("C*", $chunk->getByteArray("HeightMap")); //unpack() will never fail here
+			$heightMap = array_values($unpackedHeightMap);
 		}elseif($chunk->hasTag("HeightMap", IntArrayTag::class)){
 			$heightMap = $chunk->getIntArray("HeightMap"); #blameshoghicp
 		}

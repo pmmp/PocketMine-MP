@@ -27,6 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\utils\AssumptionFailedError;
 use function assert;
 use function get_class;
 use function strlen;
@@ -72,7 +73,9 @@ class BatchPacket extends DataPacket{
 	}
 
 	protected function encodePayload(){
-		$this->put(zlib_encode($this->payload, ZLIB_ENCODING_RAW, $this->compressionLevel));
+		$encoded = zlib_encode($this->payload, ZLIB_ENCODING_RAW, $this->compressionLevel);
+		if($encoded === false) throw new AssumptionFailedError("ZLIB compression failed");
+		$this->put($encoded);
 	}
 
 	/**

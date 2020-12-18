@@ -94,7 +94,7 @@ class UUID{
 	}
 
 	public static function fromRandom() : UUID{
-		return self::fromData(Binary::writeInt(time()), Binary::writeShort(getmypid()), Binary::writeShort(getmyuid()), Binary::writeInt(mt_rand(-0x7fffffff, 0x7fffffff)), Binary::writeInt(mt_rand(-0x7fffffff, 0x7fffffff)));
+		return self::fromData(Binary::writeInt(time()), Binary::writeShort(($pid = getmypid()) !== false ? $pid : 0), Binary::writeShort(($uid = getmyuid()) !== false ? $uid : 0), Binary::writeInt(mt_rand(-0x7fffffff, 0x7fffffff)), Binary::writeInt(mt_rand(-0x7fffffff, 0x7fffffff)));
 	}
 
 	public function toBinary() : string{

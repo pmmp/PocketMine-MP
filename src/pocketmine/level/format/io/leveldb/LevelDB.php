@@ -368,7 +368,9 @@ class LevelDB extends BaseLevelProvider{
 				if(($maps2d = $this->db->get($index . self::TAG_DATA_2D)) !== false){
 					$binaryStream->setBuffer($maps2d, 0);
 
-					$heightMap = array_values(unpack("v*", $binaryStream->get(512)));
+					/** @var int[] $unpackedHeightMap */
+					$unpackedHeightMap = unpack("v*", $binaryStream->get(512)); //unpack() will never fail here
+					$heightMap = array_values($unpackedHeightMap);
 					$biomeIds = $binaryStream->get(256);
 				}
 				break;
@@ -411,8 +413,13 @@ class LevelDB extends BaseLevelProvider{
 					$subChunks[$yy] = new SubChunk($ids, $data, $skyLight, $blockLight);
 				}
 
-				$heightMap = array_values(unpack("C*", $binaryStream->get(256)));
-				$biomeIds = ChunkUtils::convertBiomeColors(array_values(unpack("N*", $binaryStream->get(1024))));
+				/** @var int[] $unpackedHeightMap */
+				$unpackedHeightMap = unpack("C*", $binaryStream->get(256)); //unpack() will never fail here, but static analysers don't know that
+				$heightMap = array_values($unpackedHeightMap);
+
+				/** @var int[] $unpackedBiomeIds */
+				$unpackedBiomeIds = unpack("N*", $binaryStream->get(1024)); //nor here
+				$biomeIds = ChunkUtils::convertBiomeColors(array_values($unpackedBiomeIds));
 				break;
 			default:
 				//TODO: set chunks read-only so the version on disk doesn't get overwritten

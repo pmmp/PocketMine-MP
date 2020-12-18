@@ -921,7 +921,9 @@ class Chunk{
 
 			$biomeIds = $stream->get(256);
 			if($lightPopulated){
-				$heightMap = array_values(unpack("v*", $stream->get(512)));
+				/** @var int[] $unpackedHeightMap */
+				$unpackedHeightMap = unpack("v*", $stream->get(512)); //unpack() will never fail here
+				$heightMap = array_values($unpackedHeightMap);
 			}
 		}
 
