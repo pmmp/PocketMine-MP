@@ -59,9 +59,11 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.composer/cache/files
-            ~/.composer/cache/vcs
-          key: composer-cache
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ hashFiles('./composer.json') }}"
+          restore-keys: |
+            composer-v2-cache-
 
       - name: Install Composer dependencies
         run: php composer.phar install --prefer-dist --no-interaction
