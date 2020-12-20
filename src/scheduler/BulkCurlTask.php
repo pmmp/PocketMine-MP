@@ -44,20 +44,23 @@ class BulkCurlTask extends AsyncTask{
 	 * "timeout", "extraHeaders" and "extraOpts". Documentation of these options are same as those in
 	 * {@link Utils::simpleCurl}.
 	 *
-	 * @param mixed[][]  $operations
-	 * @phpstan-param list<array{page: string, timeout?: float, extraHeaders?: list<string>, extraOpts?: array<int, mixed>}> $operations
+	 * @param BulkCurlTaskOperation[]  $operations
+	 * @phpstan-param list<BulkCurlTaskOperation> $operations
 	 */
 	public function __construct(array $operations){
 		$this->operations = igbinary_serialize($operations);
 	}
 
 	public function onRun() : void{
-		/** @phpstan-var list<array{page: string, timeout?: float, extraHeaders?: list<string>, extraOpts?: array<int, mixed>}> $operations */
+		/**
+		 * @var BulkCurlTaskOperation[] $operations
+		 * @phpstan-var list<BulkCurlTaskOperation> $operations
+		 */
 		$operations = igbinary_unserialize($this->operations);
 		$results = [];
 		foreach($operations as $op){
 			try{
-				$results[] = Internet::simpleCurl($op["page"], $op["timeout"] ?? 10, $op["extraHeaders"] ?? [], $op["extraOpts"] ?? []);
+				$results[] = Internet::simpleCurl($op->getPage(), $op->getTimeout(), $op->getExtraHeaders(), $op->getExtraOpts());
 			}catch(InternetException $e){
 				$results[] = $e;
 			}
