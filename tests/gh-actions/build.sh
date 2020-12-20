@@ -31,24 +31,24 @@ CXXFLAGS="$CXXFLAGS -march=x86-64"
 	--enable-cli \
 	--disable-cgi \
 	--disable-phpdbg \
-	--disable-session \
-	--without-pear \
-	--without-sqlite3 \
+	--disable-mbregex \
 	--disable-pdo \
+	--disable-session \
+	--enable-mbstring \
 	--enable-pthreads \
-	--with-yaml \
-	--with-libxml \
-	--enable-xml \
 	--enable-simplexml \
+	--enable-sockets \
+	--enable-xml \
 	--enable-xmlreader \
 	--enable-xmlwriter \
-	--enable-mbstring \
-	--disable-mbregex \
-	--enable-sockets \
 	--with-curl \
-	--with-zlib \
-	--with-zip \
 	--with-gmp \
-	--with-openssl
+	--with-libxml \
+	--with-openssl \
+	--with-yaml \
+	--with-zip \
+	--with-zlib \
+	--without-pear \
+	--without-sqlite3
 
 make -j8 install
