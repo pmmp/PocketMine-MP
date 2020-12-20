@@ -61,7 +61,7 @@ jobs:
           path: |
             ~/.cache/composer/files
             ~/.cache/composer/vcs
-          key: "composer-v2-cache-${{ hashFiles('./composer.json') }}"
+          key: "composer-v2-cache-${{ hashFiles('./composer.lock') }}"
           restore-keys: |
             composer-v2-cache-
 
