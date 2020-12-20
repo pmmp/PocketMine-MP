@@ -7,7 +7,6 @@
    "require": {
       "php": ">=7.3.0",
       "php-64bit": "*",
-      "ext-bcmath": "*",
       "ext-chunkutils2": "^0.1.0",
       "ext-curl": "*",
       "ext-crypto": "^0.3.1",
@@ -51,7 +50,7 @@
       "composer-runtime-api": "^2.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "0.12.59",
+      "phpstan/phpstan": "0.12.63",
       "phpstan/phpstan-phpunit": "^0.12.6",
       "phpstan/phpstan-strict-rules": "^0.12.2",
       "phpunit/phpunit": "^9.2"

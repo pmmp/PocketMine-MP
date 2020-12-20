@@ -132,8 +132,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 		}
 
 		if($this->remainingFuelTime > 0 and $ev->isBurning()){
-			$fuel->pop();
-			$this->inventory->setFuel($fuel);
+			$this->inventory->setFuel($fuel->getFuelResidue());
 		}
 	}
 

@@ -28,6 +28,7 @@ use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginManager;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use function base64_encode;
@@ -149,7 +150,8 @@ class CrashDump{
 		if($json === false){
 			throw new \RuntimeException("Failed to encode crashdump JSON: " . json_last_error_msg());
 		}
-		$this->encodedData = zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9);
+		$zlibEncoded = zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9);
+		if($zlibEncoded === false) throw new AssumptionFailedError("ZLIB compression failed");
 		foreach(str_split(base64_encode($this->encodedData), 76) as $line){
 			$this->addLine($line);
 		}

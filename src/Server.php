@@ -112,7 +112,6 @@ use function file_get_contents;
 use function file_put_contents;
 use function filemtime;
 use function get_class;
-use function getmypid;
 use function implode;
 use function ini_set;
 use function is_a;
@@ -1383,7 +1382,7 @@ class Server{
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 			$this->logger->emergency("Crashed while crashing, killing process");
-			@Process::kill(getmypid());
+			@Process::kill(Process::pid());
 		}
 
 	}
@@ -1516,7 +1515,7 @@ class Server{
 			echo "--- Waiting $spacing seconds to throttle automatic restart (you can kill the process safely now) ---" . PHP_EOL;
 			sleep($spacing);
 		}
-		@Process::kill(getmypid());
+		@Process::kill(Process::pid());
 		exit(1);
 	}
 

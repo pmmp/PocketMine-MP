@@ -365,7 +365,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 				try{
 					$binaryStream->get(256); //heightmap, discard it
-					$biomeArray = new BiomeArray(ChunkUtils::convertBiomeColors(array_values(unpack("N*", $binaryStream->get(1024))))); //never throws
+					/** @var int[] $unpackedBiomeArray */
+					$unpackedBiomeArray = unpack("N*", $binaryStream->get(1024)); //unpack() will never fail here
+					$biomeArray = new BiomeArray(ChunkUtils::convertBiomeColors(array_values($unpackedBiomeArray))); //never throws
 				}catch(BinaryDataException $e){
 					throw new CorruptedChunkException($e->getMessage(), 0, $e);
 				}

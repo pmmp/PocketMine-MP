@@ -73,7 +73,6 @@ namespace pocketmine {
 		}
 
 		$extensions = [
-			"bcmath" => "BC Math",
 			"chunkutils2" => "PocketMine ChunkUtils v2",
 			"curl" => "cURL",
 			"crypto" => "php-crypto",
@@ -254,7 +253,7 @@ namespace pocketmine {
 
 			if(ThreadManager::getInstance()->stopAll() > 0){
 				$logger->debug("Some threads could not be stopped, performing a force-kill");
-				Process::kill(getmypid());
+				Process::kill(Process::pid());
 			}
 		}while(false);
 
