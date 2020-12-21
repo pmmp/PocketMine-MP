@@ -8,7 +8,26 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
+  build-php:
+    name: Prepare PHP
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2 #needed for build.sh
+      - name: Check for PHP build cache
+        id: php-build-cache
+        uses: actions/cache@v2
+        with:
+          path: "./bin"
+          key: "php-build-generic-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+
+      - name: Compile PHP
+        if: steps.php-build-cache.outputs.cache-hit != 'true'
+        run: ./tests/gh-actions/build.sh
+
   build:
+    name: Tests
+    needs: build-php
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -26,9 +45,9 @@ jobs:
           path: "./bin"
           key: "php-build-generic-${{ hashFiles('./tests/gh-actions/build.sh') }}"
 
-      - name: Compile PHP
+      - name: Check PHP build cache restored successfully
         if: steps.php-build-cache.outputs.cache-hit != 'true'
-        run: ./tests/gh-actions/build.sh
+        run: exit 1
 
       - name: Prefix PHP to PATH
         run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
@@ -40,9 +59,11 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.composer/cache/files
-            ~/.composer/cache/vcs
-          key: composer-cache
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
 
       - name: Install Composer dependencies
         run: php composer.phar install --prefer-dist --no-interaction

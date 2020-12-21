@@ -89,30 +89,31 @@ CXXFLAGS="$CXXFLAGS -march=x86-64"
 	--enable-cli \
 	--disable-cgi \
 	--disable-phpdbg \
-	--disable-session \
-	--without-pear \
-	--without-sqlite3 \
-	--disable-pdo \
-	--enable-pthreads \
-	--with-yaml \
-	--with-libxml \
-	--enable-xml \
-	--enable-simplexml \
-	--enable-xmlreader \
-	--enable-xmlwriter \
-	--enable-mbstring \
 	--disable-mbregex \
-	--enable-sockets \
-	--with-curl \
-	--with-zlib \
-	--with-zip \
-	--with-gmp \
-	--with-openssl \
-	--with-leveldb="$INSTALL_DIR" \
-	--enable-igbinary \
-	--enable-morton \
+	--disable-pdo \
+	--disable-session \
 	--enable-chunkutils2 \
 	--enable-ds \
+	--enable-igbinary \
+	--enable-mbstring \
+	--enable-morton \
+	--enable-pthreads \
+	--enable-simplexml \
+	--enable-sockets \
+	--enable-xml \
+	--enable-xmlreader \
+	--enable-xmlwriter \
 	--with-crypto \
+	--with-curl \
+	--with-gmp \
+	--with-leveldb="$INSTALL_DIR" \
+	--with-libxml \
+	--with-openssl \
+	--with-openssl \
+	--with-yaml \
+	--with-zip \
+	--with-zlib \
+	--without-pear \
+	--without-sqlite3
 
 make -j8 install
