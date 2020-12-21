@@ -45,7 +45,7 @@ jobs:
           path: "./bin"
           key: "php-build-generic-${{ hashFiles('./tests/gh-actions/build.sh') }}"
 
-      - name: Check PHP build cache restored successfully
+      - name: Kill build on PHP build cache miss (should never happen)
         if: steps.php-build-cache.outputs.cache-hit != 'true'
         run: exit 1
 
