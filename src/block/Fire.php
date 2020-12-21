@@ -33,6 +33,7 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
+use pocketmine\world\format\Chunk;
 use function intdiv;
 use function max;
 use function min;
@@ -206,6 +207,9 @@ class Fire extends Flowable{
 						continue;
 					}
 
+					if(!$world->isChunkLoaded(($this->position->x + $x) >> Chunk::COORD_BIT_SIZE, ($this->position->z + $z) >> Chunk::COORD_BIT_SIZE)){
+						continue;
+					}
 					$block = $world->getBlockAt($this->position->x + $x, $this->position->y + $y, $this->position->z + $z);
 					if($block->getId() !== BlockLegacyIds::AIR){
 						continue;
