@@ -316,25 +316,25 @@ class NetworkSession{
 		}
 
 		if($this->cipher !== null){
-			Timings::$playerNetworkReceiveDecryptTimer->startTiming();
+			Timings::$playerNetworkReceiveDecrypt->startTiming();
 			try{
 				$payload = $this->cipher->decrypt($payload);
 			}catch(DecryptionException $e){
 				$this->logger->debug("Encrypted packet: " . base64_encode($payload));
 				throw BadPacketException::wrap($e, "Packet decryption error");
 			}finally{
-				Timings::$playerNetworkReceiveDecryptTimer->stopTiming();
+				Timings::$playerNetworkReceiveDecrypt->stopTiming();
 			}
 		}
 
-		Timings::$playerNetworkReceiveDecompressTimer->startTiming();
+		Timings::$playerNetworkReceiveDecompress->startTiming();
 		try{
 			$stream = new PacketBatch($this->compressor->decompress($payload));
 		}catch(DecompressionException $e){
 			$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
 			throw BadPacketException::wrap($e, "Compressed packet batch decode error");
 		}finally{
-			Timings::$playerNetworkReceiveDecompressTimer->stopTiming();
+			Timings::$playerNetworkReceiveDecompress->stopTiming();
 		}
 
 		try{
@@ -484,9 +484,9 @@ class NetworkSession{
 
 	private function sendEncoded(string $payload, bool $immediate = false) : void{
 		if($this->cipher !== null){
-			Timings::$playerNetworkSendEncryptTimer->startTiming();
+			Timings::$playerNetworkSendEncrypt->startTiming();
 			$payload = $this->cipher->encrypt($payload);
-			Timings::$playerNetworkSendEncryptTimer->stopTiming();
+			Timings::$playerNetworkSendEncrypt->stopTiming();
 		}
 		$this->sender->send($payload, $immediate);
 	}
@@ -859,12 +859,12 @@ class NetworkSession{
 					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
 					return;
 				}
-				$currentWorld->timings->syncChunkSendTimer->startTiming();
+				$currentWorld->timings->syncChunkSend->startTiming();
 				try{
 					$this->queueCompressed($promise);
 					$onCompletion($chunkX, $chunkZ);
 				}finally{
-					$currentWorld->timings->syncChunkSendTimer->stopTiming();
+					$currentWorld->timings->syncChunkSend->stopTiming();
 				}
 			}
 		);

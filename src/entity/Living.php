@@ -552,7 +552,7 @@ abstract class Living extends Entity{
 	}
 
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
-		Timings::$timerLivingEntityBaseTick->startTiming();
+		Timings::$livingEntityBaseTick->startTiming();
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
@@ -576,7 +576,7 @@ abstract class Living extends Entity{
 			$this->attackTime -= $tickDiff;
 		}
 
-		Timings::$timerLivingEntityBaseTick->stopTiming();
+		Timings::$livingEntityBaseTick->stopTiming();
 
 		return $hasUpdate;
 	}

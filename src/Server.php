@@ -1079,11 +1079,11 @@ class Server{
 			$consoleNotifier = new SleeperNotifier();
 			$this->console = new CommandReader($consoleNotifier);
 			$this->tickSleeper->addNotifier($consoleNotifier, function() use ($consoleSender) : void{
-				Timings::$serverCommandTimer->startTiming();
+				Timings::$serverCommand->startTiming();
 				while(($line = $this->console->getLine()) !== null){
 					$this->dispatchCommand($consoleSender, $line);
 				}
-				Timings::$serverCommandTimer->stopTiming();
+				Timings::$serverCommand->stopTiming();
 			});
 			$this->console->start(PTHREADS_INHERIT_NONE);
 
@@ -1255,7 +1255,7 @@ class Server{
 	 */
 	public function prepareBatch(PacketBatch $stream, Compressor $compressor, ?bool $sync = null) : CompressBatchPromise{
 		try{
-			Timings::$playerNetworkSendCompressTimer->startTiming();
+			Timings::$playerNetworkSendCompress->startTiming();
 
 			$buffer = $stream->getBuffer();
 
@@ -1273,7 +1273,7 @@ class Server{
 
 			return $promise;
 		}finally{
-			Timings::$playerNetworkSendCompressTimer->stopTiming();
+			Timings::$playerNetworkSendCompress->stopTiming();
 		}
 	}
 
@@ -1595,7 +1595,7 @@ class Server{
 	}
 
 	private function titleTick() : void{
-		Timings::$titleTickTimer->startTiming();
+		Timings::$titleTick->startTiming();
 		$d = Process::getRealMemoryUsage();
 
 		$u = Process::getAdvancedMemoryUsage();
@@ -1615,7 +1615,7 @@ class Server{
 			" kB/s | TPS " . $this->getTicksPerSecondAverage() .
 			" | Load " . $this->getTickUsageAverage() . "%\x07";
 
-		Timings::$titleTickTimer->stopTiming();
+		Timings::$titleTick->stopTiming();
 	}
 
 	/**
@@ -1627,23 +1627,23 @@ class Server{
 			return;
 		}
 
-		Timings::$serverTickTimer->startTiming();
+		Timings::$serverTick->startTiming();
 
 		++$this->tickCounter;
 
-		Timings::$schedulerTimer->startTiming();
+		Timings::$scheduler->startTiming();
 		$this->pluginManager->tickSchedulers($this->tickCounter);
-		Timings::$schedulerTimer->stopTiming();
+		Timings::$scheduler->stopTiming();
 
-		Timings::$schedulerAsyncTimer->startTiming();
+		Timings::$schedulerAsync->startTiming();
 		$this->asyncPool->collectTasks();
-		Timings::$schedulerAsyncTimer->stopTiming();
+		Timings::$schedulerAsync->stopTiming();
 
 		$this->worldManager->tick($this->tickCounter);
 
-		Timings::$connectionTimer->startTiming();
+		Timings::$connection->startTiming();
 		$this->network->tick();
-		Timings::$connectionTimer->stopTiming();
+		Timings::$connection->stopTiming();
 
 		if(($this->tickCounter % 20) === 0){
 			if($this->doTitleTick){
@@ -1677,7 +1677,7 @@ class Server{
 
 		$this->getMemoryManager()->check();
 
-		Timings::$serverTickTimer->stopTiming();
+		Timings::$serverTick->stopTiming();
 
 		$now = microtime(true);
 		$this->currentTPS = min(20, 1 / max(0.001, $now - $tickTime));

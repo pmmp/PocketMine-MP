@@ -787,7 +787,7 @@ class World implements ChunkManager{
 
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
-		Timings::$tickEntityTimer->startTiming();
+		Timings::$tickEntity->startTiming();
 		foreach($this->updateEntities as $id => $entity){
 			if($entity->isClosed() or !$entity->onUpdate($currentTick)){
 				unset($this->updateEntities[$id]);
@@ -796,7 +796,7 @@ class World implements ChunkManager{
 				$entity->close();
 			}
 		}
-		Timings::$tickEntityTimer->stopTiming();
+		Timings::$tickEntity->stopTiming();
 		$this->timings->entityTick->stopTiming();
 
 		$this->timings->doTickTiles->startTiming();
@@ -1039,7 +1039,7 @@ class World implements ChunkManager{
 	}
 
 	public function saveChunks() : void{
-		$this->timings->syncChunkSaveTimer->startTiming();
+		$this->timings->syncChunkSave->startTiming();
 		try{
 			foreach($this->chunks as $chunkHash => $chunk){
 				if($chunk->isDirty()){
@@ -1049,7 +1049,7 @@ class World implements ChunkManager{
 				}
 			}
 		}finally{
-			$this->timings->syncChunkSaveTimer->stopTiming();
+			$this->timings->syncChunkSave->stopTiming();
 		}
 	}
 
@@ -1997,7 +1997,7 @@ class World implements ChunkManager{
 	}
 
 	public function generateChunkCallback(int $x, int $z, ?Chunk $chunk) : void{
-		Timings::$generationCallbackTimer->startTiming();
+		Timings::$generationCallback->startTiming();
 		if(isset($this->chunkPopulationQueue[$index = World::chunkHash($x, $z)])){
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
@@ -2025,7 +2025,7 @@ class World implements ChunkManager{
 		}elseif($chunk !== null){
 			$this->setChunk($x, $z, $chunk, false);
 		}
-		Timings::$generationCallbackTimer->stopTiming();
+		Timings::$generationCallback->stopTiming();
 	}
 
 	/**
@@ -2303,11 +2303,11 @@ class World implements ChunkManager{
 			return $this->chunks[$chunkHash];
 		}
 
-		$this->timings->syncChunkLoadTimer->startTiming();
+		$this->timings->syncChunkLoad->startTiming();
 
 		$this->cancelUnloadChunkRequest($x, $z);
 
-		$this->timings->syncChunkLoadDataTimer->startTiming();
+		$this->timings->syncChunkLoadData->startTiming();
 
 		$chunk = null;
 
@@ -2317,10 +2317,10 @@ class World implements ChunkManager{
 			$this->logger->critical("Failed to load chunk x=$x z=$z: " . $e->getMessage());
 		}
 
-		$this->timings->syncChunkLoadDataTimer->stopTiming();
+		$this->timings->syncChunkLoadData->stopTiming();
 
 		if($chunk === null){
-			$this->timings->syncChunkLoadTimer->stopTiming();
+			$this->timings->syncChunkLoad->stopTiming();
 			return null;
 		}
 
@@ -2339,14 +2339,14 @@ class World implements ChunkManager{
 			$listener->onChunkLoaded($x, $z, $chunk);
 		}
 
-		$this->timings->syncChunkLoadTimer->stopTiming();
+		$this->timings->syncChunkLoad->stopTiming();
 
 		return $chunk;
 	}
 
 	private function initChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		if($chunk->NBTentities !== null){
-			$this->timings->syncChunkLoadEntitiesTimer->startTiming();
+			$this->timings->syncChunkLoadEntities->startTiming();
 			$entityFactory = EntityFactory::getInstance();
 			foreach($chunk->NBTentities as $nbt){
 				try{
@@ -2370,10 +2370,10 @@ class World implements ChunkManager{
 
 			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_ENTITIES, true);
 			$chunk->NBTentities = null;
-			$this->timings->syncChunkLoadEntitiesTimer->stopTiming();
+			$this->timings->syncChunkLoadEntities->stopTiming();
 		}
 		if($chunk->NBTtiles !== null){
-			$this->timings->syncChunkLoadTileEntitiesTimer->startTiming();
+			$this->timings->syncChunkLoadTileEntities->startTiming();
 			$tileFactory = TileFactory::getInstance();
 			foreach($chunk->NBTtiles as $nbt){
 				if(($tile = $tileFactory->createFromData($this, $nbt)) !== null){
@@ -2386,7 +2386,7 @@ class World implements ChunkManager{
 
 			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_TILES, true);
 			$chunk->NBTtiles = null;
-			$this->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
+			$this->timings->syncChunkLoadTileEntities->stopTiming();
 		}
 	}
 
@@ -2433,11 +2433,11 @@ class World implements ChunkManager{
 			}
 
 			if($trySave and $this->getAutoSave() and $chunk->isDirty()){
-				$this->timings->syncChunkSaveTimer->startTiming();
+				$this->timings->syncChunkSave->startTiming();
 				try{
 					$this->provider->saveChunk($x, $z, $chunk);
 				}finally{
-					$this->timings->syncChunkSaveTimer->stopTiming();
+					$this->timings->syncChunkSave->stopTiming();
 				}
 			}
 
@@ -2632,7 +2632,7 @@ class World implements ChunkManager{
 
 		$chunk = $this->loadChunk($x, $z);
 		if($chunk === null || !$chunk->isPopulated()){
-			Timings::$populationTimer->startTiming();
+			Timings::$population->startTiming();
 
 			$this->chunkPopulationQueue[$index] = true;
 			for($xx = -1; $xx <= 1; ++$xx){
@@ -2648,7 +2648,7 @@ class World implements ChunkManager{
 			}
 			$this->workerPool->submitTaskToWorker($task, $workerId);
 
-			Timings::$populationTimer->stopTiming();
+			Timings::$population->stopTiming();
 			return false;
 		}
 

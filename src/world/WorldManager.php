@@ -374,7 +374,7 @@ class WorldManager{
 	}
 
 	private function doAutoSave() : void{
-		Timings::$worldSaveTimer->startTiming();
+		Timings::$worldSave->startTiming();
 		foreach($this->worlds as $world){
 			foreach($world->getPlayers() as $player){
 				if($player->spawned){
@@ -383,6 +383,6 @@ class WorldManager{
 			}
 			$world->save(false);
 		}
-		Timings::$worldSaveTimer->stopTiming();
+		Timings::$worldSave->stopTiming();
 	}
 }
