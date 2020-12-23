@@ -5,9 +5,7 @@ on:
   pull_request:
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build-php:
     name: Prepare PHP
     runs-on: ubuntu-latest
@@ -25,18 +23,13 @@ jobs:
         if: steps.php-build-cache.outputs.cache-hit != 'true'
         run: ./tests/gh-actions/build.sh
 
-  build:
-    name: Tests
+  phpstan:
+    name: PHPStan analysis
     needs: build-php
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-        with:
-          submodules: true
 
       - name: Restore PHP build cache
         id: php-build-cache
@@ -45,7 +38,7 @@ jobs:
           path: "./bin"
           key: "php-build-generic-${{ hashFiles('./tests/gh-actions/build.sh') }}"
 
-      - name: Check PHP build cache restored successfully
+      - name: Kill build on PHP build cache miss (should never happen)
         if: steps.php-build-cache.outputs.cache-hit != 'true'
         run: exit 1
 
@@ -70,9 +63,85 @@ jobs:
 
       - name: Run PHPStan
         run: ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
-      
+
+  phpunit:
+    name: PHPUnit tests
+    needs: build-php
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Restore PHP build cache
+        id: php-build-cache
+        uses: actions/cache@v2
+        with:
+          path: "./bin"
+          key: "php-build-generic-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+
+      - name: Kill build on PHP build cache miss (should never happen)
+        if: steps.php-build-cache.outputs.cache-hit != 'true'
+        run: exit 1
+
+      - name: Prefix PHP to PATH
+        run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
+
+      - name: Install Composer
+        run: curl -sS https://getcomposer.org/installer | php
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: php composer.phar install --prefer-dist --no-interaction
+
       - name: Run PHPUnit tests
         run: ./vendor/bin/phpunit --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit
-        
+
+  integration:
+    name: Integration tests
+    needs: build-php
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Restore PHP build cache
+        id: php-build-cache
+        uses: actions/cache@v2
+        with:
+          path: "./bin"
+          key: "php-build-generic-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+
+      - name: Kill build on PHP build cache miss (should never happen)
+        if: steps.php-build-cache.outputs.cache-hit != 'true'
+        run: exit 1
+
+      - name: Prefix PHP to PATH
+        run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
+
+      - name: Install Composer
+        run: curl -sS https://getcomposer.org/installer | php
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: php composer.phar install --no-dev --prefer-dist --no-interaction
+
       - name: Run integration tests
         run: ./tests/travis.sh -t4
