@@ -170,6 +170,7 @@ class CrashDump{
 		}
 		$zlibEncoded = zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9);
 		if($zlibEncoded === false) throw new AssumptionFailedError("ZLIB compression failed");
+		$this->encodedData = $zlibEncoded;
 		foreach(str_split(base64_encode($this->encodedData), 76) as $line){
 			$this->addLine($line);
 		}
