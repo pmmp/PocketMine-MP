@@ -27,10 +27,12 @@ trait SingletonTrait{
 	/** @var self|null */
 	private static $instance = null;
 
+	/** @return static */
 	private static function make() : self{
 		return new self;
 	}
 
+	/** @return static */
 	public static function getInstance() : self{
 		if(self::$instance === null){
 			self::$instance = self::make();
@@ -38,6 +40,7 @@ trait SingletonTrait{
 		return self::$instance;
 	}
 
+	/** @param static $instance */
 	public static function setInstance(self $instance) : void{
 		self::$instance = $instance;
 	}
