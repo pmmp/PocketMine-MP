@@ -21,8 +21,6 @@
 
 declare(strict_types=1);
 
-define('pocketmine\_PHPSTAN_ANALYSIS', true);
-
 if(!defined('LEVELDB_ZLIB_RAW_COMPRESSION')){
 	//leveldb might not be loaded
 	define('LEVELDB_ZLIB_RAW_COMPRESSION', 4);

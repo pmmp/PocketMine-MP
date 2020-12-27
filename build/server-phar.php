@@ -26,7 +26,6 @@ namespace pocketmine\build\server_phar;
 use pocketmine\utils\Git;
 use function array_map;
 use function count;
-use function defined;
 use function dirname;
 use function file_exists;
 use function getcwd;
@@ -174,6 +173,4 @@ STUB
 	}
 }
 
-if(!defined('pocketmine\_PHPSTAN_ANALYSIS')){
-	main();
-}
+main();
