@@ -1306,8 +1306,7 @@ abstract class Entity{
 		}
 
 		$oldWorld = $this->getWorld();
-		//TODO: staying in the same world when the target is invalid is probably not expected behaviour... this should bail instead
-		$newWorld = $pos instanceof Position && $pos->isValid() ? $pos->getWorld() : $oldWorld;
+		$newWorld = $pos instanceof Position ? $pos->getWorld() : $oldWorld;
 		if($oldWorld !== $newWorld){
 			$this->despawnFromAll();
 			$oldWorld->removeEntity($this);
