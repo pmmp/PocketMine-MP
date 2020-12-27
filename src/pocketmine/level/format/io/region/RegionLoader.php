@@ -182,6 +182,23 @@ class RegionLoader{
 		return $this->isChunkGenerated(self::getChunkOffset($x, $z));
 	}
 
+	private function disposeGarbageArea(RegionLocationTableEntry $oldLocation) : void{
+		/* release the area containing the old copy to the garbage pool */
+		$this->garbageTable->add($oldLocation);
+
+		$endGarbage = $this->garbageTable->end();
+		$nextSector = $this->nextSector;
+		for(; $endGarbage !== null and $endGarbage->getLastSector() + 1 === $nextSector; $endGarbage = $this->garbageTable->end()){
+			$nextSector = $endGarbage->getFirstSector();
+			$this->garbageTable->remove($endGarbage);
+		}
+
+		if($nextSector !== $this->nextSector){
+			$this->nextSector = $nextSector;
+			ftruncate($this->filePointer, $this->nextSector << 12);
+		}
+	}
+
 	/**
 	 * @return void
 	 * @throws ChunkException
@@ -226,20 +243,7 @@ class RegionLoader{
 		$this->writeLocationIndex($index);
 
 		if($oldLocation !== null){
-			/* release the area containing the old copy to the garbage pool */
-			$this->garbageTable->add($oldLocation);
-
-			$endGarbage = $this->garbageTable->end();
-			$nextSector = $this->nextSector;
-			for(; $endGarbage !== null and $endGarbage->getLastSector() + 1 === $nextSector; $endGarbage = $this->garbageTable->end()){
-				$nextSector = $endGarbage->getFirstSector();
-				$this->garbageTable->remove($endGarbage);
-			}
-
-			if($nextSector !== $this->nextSector){
-				$this->nextSector = $nextSector;
-				ftruncate($this->filePointer, $this->nextSector << 12);
-			}
+			$this->disposeGarbageArea($oldLocation);
 		}
 	}
 
@@ -249,8 +253,12 @@ class RegionLoader{
 	 */
 	public function removeChunk(int $x, int $z){
 		$index = self::getChunkOffset($x, $z);
+		$oldLocation = $this->locationTable[$index];
 		$this->locationTable[$index] = null;
 		$this->writeLocationIndex($index);
+		if($oldLocation !== null){
+			$this->disposeGarbageArea($oldLocation);
+		}
 	}
 
 	/**
