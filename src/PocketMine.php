@@ -267,7 +267,5 @@ namespace pocketmine {
 		exit($exitCode);
 	}
 
-	if(!defined('pocketmine\_PHPSTAN_ANALYSIS')){
-		\pocketmine\server();
-	}
+	\pocketmine\server();
 }
