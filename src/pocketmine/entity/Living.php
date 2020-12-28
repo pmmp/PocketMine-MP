@@ -363,13 +363,20 @@ abstract class Living extends Entity implements Damageable{
 			return false;
 		}
 
+		$this->applyConsumptionResults($consumable);
+		return true;
+	}
+
+	/**
+	 * Applies effects from consuming the object. This shouldn't do any can-consume checks (those are expected to be
+	 * handled by the caller).
+	 */
+	protected function applyConsumptionResults(Consumable $consumable) : void{
 		foreach($consumable->getAdditionalEffects() as $effect){
 			$this->addEffect($effect);
 		}
 
 		$consumable->onConsume($this);
-
-		return true;
 	}
 
 	/**
