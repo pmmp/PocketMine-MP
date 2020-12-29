@@ -157,16 +157,20 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	public function consumeObject(Consumable $consumable) : bool{
-		if($consumable instanceof FoodSource){
-			if($consumable->requiresHunger() and !$this->hungerManager->isHungry()){
-				return false;
-			}
+		if($consumable instanceof FoodSource && $consumable->requiresHunger() and !$this->hungerManager->isHungry()){
+			return false;
+		}
 
+		return parent::consumeObject($consumable);
+	}
+
+	protected function applyConsumptionResults(Consumable $consumable) : void{
+		if($consumable instanceof FoodSource){
 			$this->hungerManager->addFood($consumable->getFoodRestore());
 			$this->hungerManager->addSaturation($consumable->getSaturationRestore());
 		}
 
-		return parent::consumeObject($consumable);
+		parent::applyConsumptionResults($consumable);
 	}
 
 	public function getXpManager() : ExperienceManager{

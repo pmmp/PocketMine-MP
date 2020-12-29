@@ -269,13 +269,20 @@ abstract class Living extends Entity{
 	 * etc.
 	 */
 	public function consumeObject(Consumable $consumable) : bool{
+		$this->applyConsumptionResults($consumable);
+		return true;
+	}
+
+	/**
+	 * Applies effects from consuming the object. This shouldn't do any can-consume checks (those are expected to be
+	 * handled by the caller).
+	 */
+	protected function applyConsumptionResults(Consumable $consumable) : void{
 		foreach($consumable->getAdditionalEffects() as $effect){
 			$this->effectManager->add($effect);
 		}
 
 		$consumable->onConsume($this);
-
-		return true;
 	}
 
 	/**
