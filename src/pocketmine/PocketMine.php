@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine {
 
+	use Composer\InstalledVersions;
 	use pocketmine\utils\Git;
 	use pocketmine\utils\MainLogger;
 	use pocketmine\utils\Process;
@@ -204,6 +205,19 @@ namespace pocketmine {
 		}
 
 		define('pocketmine\GIT_COMMIT', $gitHash);
+
+		$composerGitHash = InstalledVersions::getReference('pocketmine/pocketmine-mp');
+		if($composerGitHash !== null){
+			$currentGitHash = explode("-", \pocketmine\GIT_COMMIT)[0];
+			if($currentGitHash !== $composerGitHash){
+				critical_error("Composer dependencies and/or autoloader are out of sync.");
+				critical_error("- Current revision is $currentGitHash");
+				critical_error("- Composer dependencies were last synchronized for revision $composerGitHash");
+				critical_error("Out-of-sync Composer dependencies may result in crashes and classes not being found.");
+				critical_error("Please synchronize Composer dependencies before running the server.");
+				exit(1);
+			}
+		}
 
 		$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-ansi", "disable-ansi"]);
 
