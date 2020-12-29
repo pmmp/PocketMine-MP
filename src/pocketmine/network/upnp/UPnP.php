@@ -107,7 +107,7 @@ abstract class UPnP{
 		socket_close($socket);
 		$pregResult = preg_match('/location\s*:\s*(.+)\n/i', $buffer, $matches);
 		if($pregResult === false){
-			// you can use preg_last_error_msg() since PHP 8.
+			//TODO: replace with preg_last_error_msg() in PHP 8.
 			$errormsg = "";
 			switch(preg_last_error()){
 				case PREG_NO_ERROR:
@@ -176,7 +176,6 @@ abstract class UPnP{
 			'/controlURL'
 		);
 		if($xpathResult === false || count($xpathResult) === 0){
-			// if result is false or [], i.e. error or notfound
 			throw new \RuntimeException("Your router does not support portforwarding");
 		}
 		$controlURL = (string) $xpathResult[0];
