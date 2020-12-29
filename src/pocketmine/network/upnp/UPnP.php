@@ -79,7 +79,20 @@ use const SO_RCVTIMEO;
 abstract class UPnP{
 	/** @var string|null */
 	private static $serviceURL = null;
-	
+
+	private static function makePcreError() : \RuntimeException{
+		$errorCode = preg_last_error();
+		$message = [
+			PREG_INTERNAL_ERROR => "Internal error",
+			PREG_BACKTRACK_LIMIT_ERROR => "Backtrack limit reached",
+			PREG_RECURSION_LIMIT_ERROR => "Recursion limit reached",
+			PREG_BAD_UTF8_ERROR => "Malformed UTF-8",
+			PREG_BAD_UTF8_OFFSET_ERROR => "Bad UTF-8 offset",
+			PREG_JIT_STACKLIMIT_ERROR => "PCRE JIT stack limit reached"
+		][$errorCode] ?? "Unknown (code $errorCode)";
+		throw new \RuntimeException("PCRE error: $message");
+	}
+
 	public static function getServiceUrl() : string{
 		$socket = @socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 		if($socket === false){
@@ -108,33 +121,7 @@ abstract class UPnP{
 		$pregResult = preg_match('/location\s*:\s*(.+)\n/i', $buffer, $matches);
 		if($pregResult === false){
 			//TODO: replace with preg_last_error_msg() in PHP 8.
-			$errormsg = "";
-			switch(preg_last_error()){
-				case PREG_NO_ERROR:
-					$errormsg = "no error but preg_match returned false";
-					break;
-				case PREG_INTERNAL_ERROR:
-					$errormsg = "internal error";
-					break;
-				case PREG_BACKTRACK_LIMIT_ERROR:
-					$errormsg = "backtrack limit error";
-					break;
-				case PREG_RECURSION_LIMIT_ERROR:
-					$errormsg = "recursion limit error";
-					break;
-				case PREG_BAD_UTF8_ERROR:
-					$errormsg = "bad utf8 error";
-				break;
-				case PREG_BAD_UTF8_OFFSET_ERROR:
-					$errormsg = "bad utf8 offset error";
-					break;
-				case PREG_JIT_STACKLIMIT_ERROR:
-					$errormsg = "jit stacklimit error";
-					break;
-				default:
-					$errormsg = "unknown error";
-			}
-			throw new \RuntimeException("Preg error: " . $errormsg);
+			throw self::makePcreError();
 		}
 		if($pregResult === 0){
 			throw new \RuntimeException("Unable to find the router. Ensure that network discovery is enabled in Control Panel.");
