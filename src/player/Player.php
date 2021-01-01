@@ -74,6 +74,7 @@ use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
+use pocketmine\inventory\PlayerOffHandInventory;
 use pocketmine\item\ConsumableItem;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
@@ -178,6 +179,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected $permanentWindows = [];
 	/** @var PlayerCursorInventory */
 	protected $cursorInventory;
+	/** @var PlayerOffHandInventory */
+	protected $offHandInventory;
 	/** @var CraftingGrid */
 	protected $craftingGrid;
 
@@ -2019,6 +2022,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function onDispose() : void{
 		$this->disconnect("Player destroyed");
 		$this->cursorInventory->removeAllViewers();
+		$this->offHandInventory->removeAllViewers();
 		$this->craftingGrid->removeAllViewers();
 		parent::onDispose();
 	}
@@ -2026,6 +2030,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function destroyCycles() : void{
 		$this->networkSession = null;
 		$this->cursorInventory = null;
+		$this->offHandInventory = null;
 		$this->craftingGrid = null;
 		$this->spawnPosition = null;
 		$this->perm = null;
@@ -2259,15 +2264,19 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	protected function addDefaultWindows() : void{
 		$this->cursorInventory = new PlayerCursorInventory($this);
+		$this->offHandInventory = new PlayerOffHandInventory($this);
 		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
-
-		$this->addPermanentInventories($this->inventory, $this->armorInventory, $this->cursorInventory);
+		$this->addPermanentInventories($this->inventory, $this->armorInventory, $this->cursorInventory, $this->offHandInventory);
 
 		//TODO: more windows
 	}
 
 	public function getCursorInventory() : PlayerCursorInventory{
 		return $this->cursorInventory;
+	}
+
+	public function getOffHandInventory(): PlayerOffHandInventory{
+		return $this->offHandInventory;
 	}
 
 	public function getCraftingGrid() : CraftingGrid{
@@ -2284,7 +2293,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function doCloseInventory() : void{
 		/** @var Inventory[] $inventories */
-		$inventories = [$this->craftingGrid, $this->cursorInventory];
+		$inventories = [$this->craftingGrid, $this->cursorInventory, $this->offHandInventory];
 		foreach($inventories as $inventory){
 			$contents = $inventory->getContents();
 			if(count($contents) > 0){

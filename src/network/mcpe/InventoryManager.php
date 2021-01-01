@@ -84,6 +84,7 @@ class InventoryManager{
 		$this->add(ContainerIds::INVENTORY, $this->player->getInventory());
 		$this->add(ContainerIds::ARMOR, $this->player->getArmorInventory());
 		$this->add(ContainerIds::UI, $this->player->getCursorInventory());
+		$this->add(ContainerIds::OFFHAND, $this->player->getOffHandInventory());
 	}
 
 	private function add(int $id, Inventory $inventory) : void{
