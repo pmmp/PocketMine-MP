@@ -108,8 +108,10 @@ abstract class DataPacket implements Packet{
 	 */
 	abstract protected function decodePayload(PacketSerializer $in) : void;
 
-	final public function encode() : void{
+	final public function encode(?int $protocolId = null) : void{
 		$this->buf = new PacketSerializer();
+		$this->buf->setProtocolId($protocolId);
+
 		$this->encodeHeader($this->buf);
 		$this->encodePayload($this->buf);
 	}

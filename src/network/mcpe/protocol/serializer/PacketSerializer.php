@@ -31,6 +31,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\convert\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute;
@@ -66,7 +67,18 @@ use function strlen;
 
 class PacketSerializer extends BinaryStream{
 
-	/**
+    /** @var int|null */
+    private $protocolId = null;
+
+    public function setProtocolId(?int $protocolId) : void{
+        $this->protocolId = $protocolId;
+    }
+
+    public function getProtocolId() : int{
+        return $this->protocolId ?? ProtocolInfo::CURRENT_PROTOCOL;
+    }
+
+    /**
 	 * @throws BinaryDataException
 	 */
 	public function getString() : string{

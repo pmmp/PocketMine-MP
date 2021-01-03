@@ -42,7 +42,7 @@ interface Packet{
 	 */
 	public function decode() : void;
 
-	public function encode() : void;
+	public function encode(?int $protocolId = null) : void;
 
 	/**
 	 * Performs handling for this packet. Usually you'll want an appropriately named method in the session handler for

@@ -214,8 +214,9 @@ class PacketPool{
 	/**
 	 * @throws BinaryDataException
 	 */
-	public function getPacket(string $buffer) : Packet{
+	public function getPacket(?int $protocolId, string $buffer) : Packet{
 		$serializer = new PacketSerializer($buffer);
+		$serializer->setProtocolId($protocolId);
 		$pk = $this->getPacketById($serializer->getUnsignedVarInt() & DataPacket::PID_MASK);
 		$pk->setSerializer($serializer);
 

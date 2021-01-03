@@ -291,7 +291,7 @@ class PluginManager{
 				}
 
 				if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
-					$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
+					$serverMcpeProtocols = ProtocolInfo::ACCEPTED_PROTOCOL;
 					if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
 						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
 							$name,
