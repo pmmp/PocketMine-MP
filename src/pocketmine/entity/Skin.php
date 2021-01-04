@@ -43,8 +43,13 @@ class Skin{
 		128 * 64 * 4,
 		128 * 128 * 4,
 		256 * 128 * 4,
-		256 * 256 * 4
+		256 * 256 * 4,
+		512 * 256 * 4,
+		512 * 512 * 4
 	];
+
+	public const MIN_SKIN_SIZE = 64 * 32 * 4;
+	public const MAX_SKIN_SIZE = 512 * 512 * 4;
 
 	/** @var string */
 	private $skinId;
@@ -125,7 +130,7 @@ class Skin{
 			throw new InvalidSkinException("Skin ID must not be empty");
 		}
 		$len = strlen($this->skinImage->getData());
-		if(!in_array($len, self::ACCEPTED_SKIN_SIZES, true)){
+		if($len < self::MIN_SKIN_SIZE or $len > self::MAX_SKIN_SIZE){
 			throw new InvalidSkinException("Invalid skin data size $len bytes (allowed sizes: " . implode(", ", self::ACCEPTED_SKIN_SIZES) . ")");
 		}
 		$capeData = $this->cape->getImage()->getData();
