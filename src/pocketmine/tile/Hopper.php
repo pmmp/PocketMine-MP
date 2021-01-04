@@ -20,7 +20,7 @@
  *
  */
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace pocketmine\tile;
 
@@ -31,6 +31,7 @@ use pocketmine\inventory\HopperInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\level\Level;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 
 class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
@@ -104,14 +105,10 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 		if($this->isOnTransferCooldown()){
 			$this->transferCooldown--;
 		}else{
-			$transfer = false;
-
-			if(!$this->isEmpty()){
-				$transfer = $this->transferItemOut();
-			}
+			$transfer = $this->pushItems();
 
 			if(!$transfer and !$this->isFull()){
-				$transfer = $this->pullItemFromTop();
+				$transfer = $this->pullItems();
 			}
 
 			if($transfer){
@@ -127,6 +124,8 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 	}
 
 	public function isFull() : bool{
+		if($this->inventory->getSize() < $this->inventory->getDefaultSize()) return false;
+
 		foreach($this->inventory->getContents(true) as $slot => $item){
 			if($item->getMaxStackSize() !== $item->getCount()){
 				return false;
@@ -135,23 +134,62 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 		return true;
 	}
 
-	public function transferItemOut() : bool{
-		$tile = $this->level->getTile($this->getSide($this->getBlock()->getDamage()));
+	public function pushItems() : bool{
+		$tile = $this->level->getTile($this->getSide($direction = $this->getBlock()->getDamage()));
 
-		if($tile instanceof InventoryHolder){
-			$targetInventory = $tile->getInventory();
+		if($tile instanceof Furnace){
+			$inv = $tile->getInventory();
 
-			foreach($this->inventory->getContents() as $slot => $item){
-				$item->setCount(1);
+			for($i = 0, $size = $this->inventory->getSize(); $i < $size; $i++){
+				$item = $this->inventory->getItem($i);
+				if($item->isNull()){
+					continue;
+				}
 
-				if($targetInventory->canAddItem($item)){
-					$targetInventory->addItem($item);
-					$this->inventory->removeItem($item);
+				$itemToAdd = (clone $item)->setCount(1);
+				if($direction === Vector3::SIDE_DOWN){
+					$smelting = $inv->getSmelting();
 
-					if($tile instanceof Hopper){
-						$tile->setTransferCooldown(8);
+					if($smelting->isNull()){
+						$inv->setSmelting($itemToAdd);
+						$item->pop();
+						$this->inventory->setItem($i, $item);
+						return true;
+					}elseif($smelting->equals($itemToAdd, true, false)){
+						$inv->setSmelting($smelting->setCount($smelting->getCount() + 1));
+						$item->pop();
+						$this->inventory->setItem($i, $item);
+						return true;
 					}
+				}elseif($item->getFuelTime() > 0){
+					$fuel = $inv->getFuel();
 
+					if($fuel->isNull()){
+						$inv->setFuel($itemToAdd);
+						$item->pop();
+						$this->inventory->setItem($i, $item);
+						return true;
+					}elseif($fuel->equals($itemToAdd, true, false)){
+						$inv->setFuel($fuel->setCount($fuel->getCount() + 1));
+						$item->pop();
+						$this->inventory->setItem($i, $item);
+						return true;
+					}
+				}
+			}
+		}elseif($tile instanceof Container){
+			$inv = $tile->getInventory();
+
+			for($i = 0, $size = $this->inventory->getSize(); $i < $size; $i++){
+				$item = $this->inventory->getItem($i);
+				if($item->isNull()){
+					continue;
+				}
+
+				$itemToAdd = (clone $item)->setCount(1);
+				if(count($inv->addItem($itemToAdd)) === 0){
+					$item->pop();
+					$this->inventory->setItem($i, $item);
 					return true;
 				}
 			}
@@ -160,22 +198,28 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 		return false;
 	}
 
-	public function pullItemFromTop() : bool{
+	public function pullItems() : bool{
 		$tile = $this->level->getTile($this->up());
 
 		if($tile instanceof InventoryHolder){
+			if($tile instanceof Hopper){
+				return false;
+			}
 			$inv = $tile->getInventory();
-			foreach($inv->getContents() as $slot => $item){
-				if($inv instanceof FurnaceInventory){
-					//So only results of Furnaces go trough
-					if($slot !== 2) continue;
+
+			for($i = 0, $size = $inv->getSize(); $i < $size; $i++){
+				if($inv instanceof FurnaceInventory and $i !== 2){ //So only results of Furnaces go trough
+					continue;
+				}
+				$item = $inv->getItem($i);
+				if($item->isNull()){
+					continue;
 				}
 
-				$item->setCount(1);
-
-				if($this->inventory->canAddItem($item)){
-					$this->inventory->addItem($item);
-					$inv->removeItem($item);
+				$itemToAdd = (clone $item)->setCount(1);
+				if(count($this->inventory->addItem($itemToAdd)) === 0){
+					$item->pop();
+					$inv->setItem($i, $item);
 
 					return true;
 				}
@@ -188,7 +232,6 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 				$item = $entity->getItem();
 				if($this->inventory->canAddItem($item)){
 					$this->inventory->addItem($item);
-
 					$entity->flagForDespawn();
 
 					return true;
