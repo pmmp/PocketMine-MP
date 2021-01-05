@@ -9,7 +9,11 @@ jobs:
   build-php:
     name: Prepare PHP
     runs-on: ubuntu-latest
-    
+
+    strategy:
+      matrix:
+        php: [7.3.25, 7.4.13]
+
     steps:
       - uses: actions/checkout@v2 #needed for build.sh
       - name: Check for PHP build cache
@@ -17,16 +21,20 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "./bin"
-          key: "php-build-generic-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+          key: "php-build-generic-${{ matrix.php }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
 
       - name: Compile PHP
         if: steps.php-build-cache.outputs.cache-hit != 'true'
-        run: ./tests/gh-actions/build.sh
+        run: ./tests/gh-actions/build.sh "${{ matrix.php }}"
 
   phpstan:
     name: PHPStan analysis
     needs: build-php
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php: [7.3.25, 7.4.13]
 
     steps:
       - uses: actions/checkout@v2
@@ -36,7 +44,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "./bin"
-          key: "php-build-generic-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+          key: "php-build-generic-${{ matrix.php }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
 
       - name: Kill build on PHP build cache miss (should never happen)
         if: steps.php-build-cache.outputs.cache-hit != 'true'
@@ -54,7 +62,7 @@ jobs:
           path: |
             ~/.cache/composer/files
             ~/.cache/composer/vcs
-          key: "composer-v2-cache-${{ hashFiles('./composer.lock') }}"
+          key: "composer-v2-cache-${{ matrix.php }}-${{ hashFiles('./composer.lock') }}"
           restore-keys: |
             composer-v2-cache-
 
@@ -68,6 +76,10 @@ jobs:
     name: PHPUnit tests
     needs: build-php
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [7.3.25, 7.4.13]
+
     steps:
       - uses: actions/checkout@v2
 
@@ -76,7 +88,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "./bin"
-          key: "php-build-generic-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+          key: "php-build-generic-${{ matrix.php }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
 
       - name: Kill build on PHP build cache miss (should never happen)
         if: steps.php-build-cache.outputs.cache-hit != 'true'
@@ -94,7 +106,7 @@ jobs:
           path: |
             ~/.cache/composer/files
             ~/.cache/composer/vcs
-          key: "composer-v2-cache-${{ hashFiles('./composer.lock') }}"
+          key: "composer-v2-cache-${{ matrix.php }}-${{ hashFiles('./composer.lock') }}"
           restore-keys: |
             composer-v2-cache-
 
@@ -108,6 +120,10 @@ jobs:
     name: Integration tests
     needs: build-php
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [7.3.25, 7.4.13]
+
     steps:
       - uses: actions/checkout@v2
         with:
@@ -118,7 +134,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "./bin"
-          key: "php-build-generic-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+          key: "php-build-generic-${{ matrix.php }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
 
       - name: Kill build on PHP build cache miss (should never happen)
         if: steps.php-build-cache.outputs.cache-hit != 'true'
@@ -136,7 +152,7 @@ jobs:
           path: |
             ~/.cache/composer/files
             ~/.cache/composer/vcs
-          key: "composer-v2-cache-${{ hashFiles('./composer.lock') }}"
+          key: "composer-v2-cache-${{ matrix.php }}-${{ hashFiles('./composer.lock') }}"
           restore-keys: |
             composer-v2-cache-
 
