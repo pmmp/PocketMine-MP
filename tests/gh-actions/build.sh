@@ -20,24 +20,24 @@ export CXXFLAGS="$CXXFLAGS -march=x86-64"
 function build_leveldb {
 	local LEVELDB_VERSION="$1"
 	echo "Building LevelDB"
-        rm -rf "./leveldb-mcpe" || true
+	rm -rf "./leveldb-mcpe" || true
 	rm -rf "./leveldb-mcpe-build" || true
-        mkdir "./leveldb-mcpe"
-        curl -fsSL "https://github.com/pmmp/leveldb/archive/$LEVELDB_VERSION.tar.gz" | tar -zx
-        mv "./leveldb-$LEVELDB_VERSION" leveldb-mcpe-build
-        cd leveldb-mcpe-build
-        CFLAGS="-fPIC" CXXFLAGS="-fPIC" cmake . \
-            -DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
-            -DCMAKE_PREFIX_PATH="$INSTALL_DIR" \
-            -DCMAKE_INSTALL_LIBDIR=lib \
-            -DLEVELDB_BUILD_TESTS=OFF \
-            -DLEVELDB_BUILD_BENCHMARKS=OFF \
-            -DLEVELDB_SNAPPY=OFF \
-            -DLEVELDB_ZSTD=OFF \
-            -DLEVELDB_TCMALLOC=OFF \
-            -DCMAKE_BUILD_TYPE=Release
-        make -j4 install
-        cd ..
+	mkdir "./leveldb-mcpe"
+	curl -fsSL "https://github.com/pmmp/leveldb/archive/$LEVELDB_VERSION.tar.gz" | tar -zx
+	mv "./leveldb-$LEVELDB_VERSION" leveldb-mcpe-build
+	cd leveldb-mcpe-build
+	CFLAGS="-fPIC" CXXFLAGS="-fPIC" cmake . \
+		-DCMAKE_INSTALL_PREFIX="$INSTALL_DIR" \
+		-DCMAKE_PREFIX_PATH="$INSTALL_DIR" \
+		-DCMAKE_INSTALL_LIBDIR=lib \
+		-DLEVELDB_BUILD_TESTS=OFF \
+		-DLEVELDB_BUILD_BENCHMARKS=OFF \
+		-DLEVELDB_SNAPPY=OFF \
+		-DLEVELDB_ZSTD=OFF \
+		-DLEVELDB_TCMALLOC=OFF \
+		-DCMAKE_BUILD_TYPE=Release
+	make -j4 install
+	cd ..
 }
 build_leveldb 84348b9b826cc280cde659185695d2170b54824c
 
