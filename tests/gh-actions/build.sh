@@ -41,11 +41,12 @@ function build_leveldb {
 }
 build_leveldb 84348b9b826cc280cde659185695d2170b54824c
 
+rm -rf php-build
 git clone https://github.com/php-build/php-build.git
 cd php-build
 ./install-dependencies.sh
 echo '"pthreads",,"https://github.com/pmmp/pthreads.git",,,"extension",' >> share/php-build/extension/definition
-echo '"leveldb",,"https://github.com/pmmp/php-leveldb.git",,"--with-leveldb=\\"'$INSTALL_DIR'\\"","extension",' >> share/php-build/extension/definition
+echo '"leveldb",,"https://github.com/pmmp/php-leveldb.git",,"--with-leveldb='$INSTALL_DIR'","extension",' >> share/php-build/extension/definition
 echo '"chunkutils2",,"https://github.com/pmmp/ext-chunkutils2.git",,,"extension",' >> share/php-build/extension/definition
 echo '"morton",,"https://github.com/pmmp/ext-morton.git",,,"extension",' >> share/php-build/extension/definition
 PHP_BUILD_INSTALL_EXTENSION="\
