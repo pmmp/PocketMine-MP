@@ -221,8 +221,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected $moveRateLimit = 10 * self::MOVES_PER_TICK;
 	/** @var float|null */
 	protected $lastMovementProcess = null;
-	/** @var Vector3|null */
-	protected $forceMoveSync = null;
 
 	/** @var int */
 	protected $inAirTicks = 0;
@@ -1106,39 +1104,19 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
-	/**
-	 * Sets the coordinates the player will move to next. This is processed at the end of each tick. Unless you have
-	 * some particularly specialized logic, you probably want to use teleport() instead of this.
-	 *
-	 * This is used for processing movements sent by the player over network.
-	 *
-	 * @param Vector3 $newPos Coordinates of the player's feet, centered horizontally at the base of their bounding box.
-	 *
-	 * @return bool if the
-	 */
-	public function updateNextPosition(Vector3 $newPos) : bool{
-		//TODO: teleport acks are a network specific thing and shouldn't be here
-
-		$newPos = $newPos->asVector3();
-		if($this->forceMoveSync !== null and $newPos->distanceSquared($this->forceMoveSync) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
-			$this->sendPosition($this->location, null, null, MovePlayerPacket::MODE_RESET);
-			$this->logger->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $this->location->asVector3());
-			//Still getting movements from before teleport, ignore them
-			return false;
-		}
-
-		// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
-		$this->forceMoveSync = null;
-
-		$this->handleMovement($newPos);
-		return true;
-	}
-
 	public function getInAirTicks() : int{
 		return $this->inAirTicks;
 	}
 
-	protected function handleMovement(Vector3 $newPos) : void{
+	/**
+	 * Attempts to move the player to the given coordinates. Unless you have some particularly specialized logic, you
+	 * probably want to use teleport() instead of this.
+	 *
+	 * This is used for processing movements sent by the player over network.
+	 *
+	 * @param Vector3 $newPos Coordinates of the player's feet, centered horizontally at the base of their bounding box.
+	 */
+	public function handleMovement(Vector3 $newPos) : void{
 		$this->moveRateLimit--;
 		if($this->moveRateLimit < 0){
 			return;
@@ -2222,7 +2200,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function sendPosition(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL) : void{
 		$this->networkSession->syncMovement($pos, $yaw, $pitch, $mode);
 
-		$this->forceMoveSync = $pos->asVector3();
 		$this->ySize = 0;
 	}
 
