@@ -99,9 +99,13 @@ class LanguageManager{
                     return substr($filename, -4) === ".ini";
                 });
 
+                if(!isset($this->languages[self::FALLBACK_LANGUAGE])){
+                    $this->languages[self::FALLBACK_LANGUAGE] = new Language(self::FALLBACK_LANGUAGE, self::loadLang($path, self::FALLBACK_LANGUAGE));
+                }
+
                 foreach($files as $file){
                     $code = explode(".", $file)[0];
-                    $this->languages[$code] = new Language($code, self::loadLang($path, $code));
+                    $this->languages[$code] = new Language($code, self::loadLang($path, $code), $this->languages[self::FALLBACK_LANGUAGE]);
                 }
             }
         }

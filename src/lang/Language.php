@@ -35,15 +35,17 @@ class Language{
     private $langCode;
     /** @var string[] */
     private $langValues;
+    /** @var Language|null */
+    private $fallbackLang;
 
     /**
      * Language constructor.
-     * @param string $langCode
      * @param string[] $langValues
      */
-    public function __construct(string $langCode, array $langValues){
+    public function __construct(string $langCode, array $langValues, Language $fallbackLang = null){
         $this->langCode = $langCode;
         $this->langValues = $langValues;
+        $this->fallbackLang = $fallbackLang;
     }
 
 	public function getName() : string{
@@ -86,8 +88,12 @@ class Language{
         return $this->langValues[$id] ?? null;
 	}
 
+    protected function fallbackInternalGet(string $id) : ?string{
+        return ($this->fallbackLang !== null ? $this->fallbackLang->get($id) : null);
+    }
+
 	public function get(string $id) : string{
-		return $this->internalGet($id) ?? $id;
+		return $this->internalGet($id) ?? $this->fallbackInternalGet($id) ?? $id;
 	}
 
 	protected function parseTranslation(string $text, ?string $onlyPrefix = null) : string{
