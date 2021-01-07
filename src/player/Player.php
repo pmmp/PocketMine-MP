@@ -2033,14 +2033,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Handles player data saving
-	 *
-	 * @throws \InvalidStateException if the player is closed
 	 */
 	public function save() : void{
-		if($this->closed){
-			throw new \InvalidStateException("Tried to save closed player");
-		}
-
 		$nbt = $this->saveNBT();
 
 		if($this->location->isValid()){
