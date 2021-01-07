@@ -706,6 +706,10 @@ class NetworkSession{
 			$pk->onGround = $this->player->onGround;
 
 			$this->sendDataPacket($pk);
+
+			if($this->handler instanceof InGamePacketHandler){
+				$this->handler->forceMoveSync = true;
+			}
 		}
 	}
 

@@ -127,6 +127,9 @@ class InGamePacketHandler extends PacketHandler{
 	/** @var Vector3|null */
 	protected $lastRightClickPos = null;
 
+	/** @var bool */
+	public $forceMoveSync = false;
+
 	/**
 	 * TODO: HACK! This tracks GUIs for inventories that the server considers "always open" so that the client can't
 	 * open them twice. (1.16 hack)
@@ -157,7 +160,21 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$this->player->setRotation($yaw, $pitch);
-		$this->player->updateNextPosition($packet->position->round(4)->subtract(0, 1.62, 0));
+
+		$curPos = $this->player->getLocation();
+		$newPos = $packet->position->subtract(0, 1.62, 0);
+
+		if($this->forceMoveSync and $newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+			$this->session->syncMovement($curPos, null, null, MovePlayerPacket::MODE_RESET);
+			$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
+			//Still getting movements from before teleport, ignore them
+			return false;
+		}
+
+		// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
+		$this->forceMoveSync = false;
+
+		$this->player->handleMovement($newPos);
 
 		return true;
 	}
