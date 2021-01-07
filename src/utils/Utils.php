@@ -183,7 +183,14 @@ final class Utils{
 		}
 
 		$machine = php_uname("a");
-		$machine .= ($cpuinfo = @file("/proc/cpuinfo")) !== false ? implode(preg_grep("/(model name|Processor|Serial)/", $cpuinfo)) : "";
+		$cpuinfo = @file("/proc/cpuinfo");
+		if($cpuinfo !== false){
+			$cpuinfoLines = preg_grep("/(model name|Processor|Serial)/", $cpuinfo);
+			if($cpuinfoLines === false){
+				throw new AssumptionFailedError("Pattern is valid, so this shouldn't fail ...");
+			}
+			$machine .= implode("", $cpuinfoLines);
+		}
 		$machine .= sys_get_temp_dir();
 		$machine .= $extra;
 		$os = Utils::getOS();

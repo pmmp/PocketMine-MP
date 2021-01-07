@@ -126,7 +126,9 @@ final class FastChunkSerializer{
 			for($i = 0, $layerCount = $stream->getByte(); $i < $layerCount; ++$i){
 				$bitsPerBlock = $stream->getByte();
 				$words = $stream->get(PalettedBlockArray::getExpectedWordArraySize($bitsPerBlock));
-				$palette = array_values(unpack("L*", $stream->get($stream->getInt())));
+				/** @var int[] $unpackedPalette */
+				$unpackedPalette = unpack("L*", $stream->get($stream->getInt())); //unpack() will never fail here
+				$palette = array_values($unpackedPalette);
 
 				$layers[] = PalettedBlockArray::fromData($bitsPerBlock, $words, $palette);
 			}
@@ -137,7 +139,9 @@ final class FastChunkSerializer{
 
 		$biomeIds = new BiomeArray($stream->get(256));
 		if($lightPopulated){
-			$heightMap = new HeightArray(array_values(unpack("S*", $stream->get(512))));
+			/** @var int[] $unpackedHeightMap */
+			$unpackedHeightMap = unpack("S*", $stream->get(512)); //unpack() will never fail here
+			$heightMap = new HeightArray(array_values($unpackedHeightMap));
 		}
 
 		$chunk = new Chunk($subChunks, null, null, $biomeIds, $heightMap);

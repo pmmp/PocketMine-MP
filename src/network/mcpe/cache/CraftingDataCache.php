@@ -67,7 +67,7 @@ final class CraftingDataCache{
 	 * Rebuilds the cached CraftingDataPacket.
 	 */
 	private function buildCraftingDataCache(CraftingManager $manager) : CraftingDataPacket{
-		Timings::$craftingDataCacheRebuildTimer->startTiming();
+		Timings::$craftingDataCacheRebuild->startTiming();
 		$pk = new CraftingDataPacket();
 		$pk->cleanRecipes = true;
 
@@ -127,7 +127,7 @@ final class CraftingDataCache{
 			);
 		}
 
-		Timings::$craftingDataCacheRebuildTimer->stopTiming();
+		Timings::$craftingDataCacheRebuild->stopTiming();
 		return $pk;
 	}
 }

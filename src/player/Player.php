@@ -651,16 +651,19 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function setPosition(Vector3 $pos) : bool{
 		$oldWorld = $this->location->isValid() ? $this->location->getWorld() : null;
 		if(parent::setPosition($pos)){
-			if($oldWorld !== null){
-				foreach($this->usedChunks as $index => $status){
-					World::getXZ($index, $X, $Z);
-					$this->unloadChunk($X, $Z, $oldWorld);
+			$newWorld = $this->getWorld();
+			if($oldWorld !== $newWorld){
+				if($oldWorld !== null){
+					foreach($this->usedChunks as $index => $status){
+						World::getXZ($index, $X, $Z);
+						$this->unloadChunk($X, $Z, $oldWorld);
+					}
 				}
-			}
 
-			$this->usedChunks = [];
-			$this->loadQueue = [];
-			$this->networkSession->onEnterWorld();
+				$this->usedChunks = [];
+				$this->loadQueue = [];
+				$this->networkSession->onEnterWorld();
+			}
 
 			return true;
 		}
@@ -705,7 +708,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		Timings::$playerChunkSendTimer->startTiming();
+		Timings::$playerChunkSend->startTiming();
 
 		$count = 0;
 		foreach($this->loadQueue as $index => $distance){
@@ -724,7 +727,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->getWorld()->registerChunkLoader($this->chunkLoader, $X, $Z, true);
 			$this->getWorld()->registerChunkListener($this, $X, $Z);
 
-			if(!$this->getWorld()->populateChunk($X, $Z)){
+			if(!$this->getWorld()->requestChunkPopulation($X, $Z)){
 				continue;
 			}
 
@@ -750,7 +753,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			});
 		}
 
-		Timings::$playerChunkSendTimer->stopTiming();
+		Timings::$playerChunkSend->stopTiming();
 	}
 
 	private function recheckBroadcastPermissions() : void{
@@ -811,7 +814,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		Timings::$playerChunkOrderTimer->startTiming();
+		Timings::$playerChunkOrder->startTiming();
 
 		$newOrder = [];
 		$unloadChunks = $this->usedChunks;
@@ -838,7 +841,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->networkSession->syncViewAreaCenterPoint($this->location, $this->viewDistance);
 		}
 
-		Timings::$playerChunkOrderTimer->stopTiming();
+		Timings::$playerChunkOrder->stopTiming();
 	}
 
 	/**
@@ -1296,14 +1299,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->inAirTicks += $tickDiff;
 			}
 
-			Timings::$timerEntityBaseTick->startTiming();
+			Timings::$entityBaseTick->startTiming();
 			$this->entityBaseTick($tickDiff);
-			Timings::$timerEntityBaseTick->stopTiming();
+			Timings::$entityBaseTick->stopTiming();
 
 			if(!$this->isSpectator() and $this->isAlive()){
-				Timings::$playerCheckNearEntitiesTimer->startTiming();
+				Timings::$playerCheckNearEntities->startTiming();
 				$this->checkNearEntities();
-				Timings::$playerCheckNearEntitiesTimer->stopTiming();
+				Timings::$playerCheckNearEntities->stopTiming();
 			}
 
 			if($this->blockBreakHandler !== null and !$this->blockBreakHandler->update()){
@@ -1359,9 +1362,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				}
 
 				if(strpos($ev->getMessage(), "/") === 0){
-					Timings::$playerCommandTimer->startTiming();
+					Timings::$playerCommand->startTiming();
 					$this->server->dispatchCommand($ev->getPlayer(), substr($ev->getMessage(), 1));
-					Timings::$playerCommandTimer->stopTiming();
+					Timings::$playerCommand->stopTiming();
 				}else{
 					$ev = new PlayerChatEvent($this, $ev->getMessage(), $this->server->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_USERS));
 					$ev->call();

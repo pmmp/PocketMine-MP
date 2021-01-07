@@ -130,7 +130,7 @@ class PermissibleBase implements Permissible{
 	}
 
 	public function recalculatePermissions() : array{
-		Timings::$permissibleCalculationTimer->startTiming();
+		Timings::$permissibleCalculation->startTiming();
 
 		$permManager = PermissionManager::getInstance();
 		$permManager->unsubscribeFromAllPermissions($this);
@@ -152,7 +152,7 @@ class PermissibleBase implements Permissible{
 		}
 
 		$diff = [];
-		Timings::$permissibleCalculationDiffTimer->time(function() use ($oldPermissions, &$diff) : void{
+		Timings::$permissibleCalculationDiff->time(function() use ($oldPermissions, &$diff) : void{
 			foreach($this->permissions as $permissionAttachmentInfo){
 				$name = $permissionAttachmentInfo->getPermission();
 				if(!isset($oldPermissions[$name])){
@@ -168,7 +168,7 @@ class PermissibleBase implements Permissible{
 			}
 		});
 
-		Timings::$permissibleCalculationCallbackTimer->time(function() use ($diff) : void{
+		Timings::$permissibleCalculationCallback->time(function() use ($diff) : void{
 			if(count($diff) > 0){
 				foreach($this->permissionRecalculationCallbacks as $closure){
 					$closure($diff);
@@ -176,7 +176,7 @@ class PermissibleBase implements Permissible{
 			}
 		});
 
-		Timings::$permissibleCalculationTimer->stopTiming();
+		Timings::$permissibleCalculation->stopTiming();
 		return $diff;
 	}
 

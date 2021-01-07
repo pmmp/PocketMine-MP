@@ -29,6 +29,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\player\Player;
 use pocketmine\scheduler\BulkCurlTask;
+use pocketmine\scheduler\BulkCurlTaskOperation;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\InternetException;
 use function count;
@@ -139,9 +140,11 @@ class TimingsCommand extends VanillaCommand{
 					 */
 					public function __construct(CommandSender $sender, string $host, string $agent, array $data){
 						parent::__construct([
-							[
-								"page" => "https://$host?upload=true",
-								"extraOpts" => [
+							new BulkCurlTaskOperation(
+								"https://$host?upload=true",
+								10,
+								[],
+								[
 									CURLOPT_HTTPHEADER => [
 										"User-Agent: $agent",
 										"Content-Type: application/x-www-form-urlencoded"
@@ -151,7 +154,7 @@ class TimingsCommand extends VanillaCommand{
 									CURLOPT_AUTOREFERER => false,
 									CURLOPT_FOLLOWLOCATION => false
 								]
-							]
+							)
 						]);
 						$this->host = $host;
 						$this->storeLocal(self::TLS_KEY_SENDER, $sender);

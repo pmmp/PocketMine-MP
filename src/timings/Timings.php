@@ -38,76 +38,76 @@ abstract class Timings{
 	private static $initialized = false;
 
 	/** @var TimingsHandler */
-	public static $fullTickTimer;
+	public static $fullTick;
 	/** @var TimingsHandler */
-	public static $serverTickTimer;
+	public static $serverTick;
 	/** @var TimingsHandler */
-	public static $memoryManagerTimer;
+	public static $memoryManager;
 	/** @var TimingsHandler */
-	public static $garbageCollectorTimer;
+	public static $garbageCollector;
 	/** @var TimingsHandler */
-	public static $titleTickTimer;
+	public static $titleTick;
 	/** @var TimingsHandler */
-	public static $playerNetworkSendTimer;
+	public static $playerNetworkSend;
 	/** @var TimingsHandler */
-	public static $playerNetworkSendCompressTimer;
+	public static $playerNetworkSendCompress;
 	/** @var TimingsHandler */
-	public static $playerNetworkSendEncryptTimer;
+	public static $playerNetworkSendEncrypt;
 	/** @var TimingsHandler */
-	public static $playerNetworkReceiveTimer;
+	public static $playerNetworkReceive;
 	/** @var TimingsHandler */
-	public static $playerNetworkReceiveDecompressTimer;
+	public static $playerNetworkReceiveDecompress;
 	/** @var TimingsHandler */
-	public static $playerNetworkReceiveDecryptTimer;
+	public static $playerNetworkReceiveDecrypt;
 	/** @var TimingsHandler */
-	public static $playerChunkOrderTimer;
+	public static $playerChunkOrder;
 	/** @var TimingsHandler */
-	public static $playerChunkSendTimer;
+	public static $playerChunkSend;
 	/** @var TimingsHandler */
-	public static $connectionTimer;
+	public static $connection;
 	/** @var TimingsHandler */
-	public static $schedulerTimer;
+	public static $scheduler;
 	/** @var TimingsHandler */
-	public static $serverCommandTimer;
+	public static $serverCommand;
 	/** @var TimingsHandler */
-	public static $worldLoadTimer;
+	public static $worldLoad;
 	/** @var TimingsHandler */
-	public static $worldSaveTimer;
+	public static $worldSave;
 	/** @var TimingsHandler */
-	public static $populationTimer;
+	public static $population;
 	/** @var TimingsHandler */
-	public static $generationCallbackTimer;
+	public static $generationCallback;
 	/** @var TimingsHandler */
-	public static $permissibleCalculationTimer;
+	public static $permissibleCalculation;
 	/** @var TimingsHandler */
-	public static $permissibleCalculationDiffTimer;
+	public static $permissibleCalculationDiff;
 	/** @var TimingsHandler */
-	public static $permissibleCalculationCallbackTimer;
+	public static $permissibleCalculationCallback;
 
 	/** @var TimingsHandler */
-	public static $entityMoveTimer;
+	public static $entityMove;
 	/** @var TimingsHandler */
-	public static $playerCheckNearEntitiesTimer;
+	public static $playerCheckNearEntities;
 	/** @var TimingsHandler */
-	public static $tickEntityTimer;
+	public static $tickEntity;
 	/** @var TimingsHandler */
-	public static $tickTileEntityTimer;
+	public static $tickTileEntity;
 
 	/** @var TimingsHandler */
-	public static $timerEntityBaseTick;
+	public static $entityBaseTick;
 	/** @var TimingsHandler */
-	public static $timerLivingEntityBaseTick;
+	public static $livingEntityBaseTick;
 
 	/** @var TimingsHandler */
-	public static $schedulerSyncTimer;
+	public static $schedulerSync;
 	/** @var TimingsHandler */
-	public static $schedulerAsyncTimer;
+	public static $schedulerAsync;
 
 	/** @var TimingsHandler */
-	public static $playerCommandTimer;
+	public static $playerCommand;
 
 	/** @var TimingsHandler */
-	public static $craftingDataCacheRebuildTimer;
+	public static $craftingDataCacheRebuild;
 
 	/** @var TimingsHandler */
 	public static $syncPlayerDataLoad;
@@ -134,51 +134,51 @@ abstract class Timings{
 		}
 		self::$initialized = true;
 
-		self::$fullTickTimer = new TimingsHandler("Full Server Tick");
-		self::$serverTickTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Full Server Tick", self::$fullTickTimer);
-		self::$memoryManagerTimer = new TimingsHandler("Memory Manager");
-		self::$garbageCollectorTimer = new TimingsHandler("Garbage Collector", self::$memoryManagerTimer);
-		self::$titleTickTimer = new TimingsHandler("Console Title Tick");
+		self::$fullTick = new TimingsHandler("Full Server Tick");
+		self::$serverTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Full Server Tick", self::$fullTick);
+		self::$memoryManager = new TimingsHandler("Memory Manager");
+		self::$garbageCollector = new TimingsHandler("Garbage Collector", self::$memoryManager);
+		self::$titleTick = new TimingsHandler("Console Title Tick");
 
-		self::$playerNetworkSendTimer = new TimingsHandler("Player Network Send");
-		self::$playerNetworkSendCompressTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression", self::$playerNetworkSendTimer);
-		self::$playerNetworkSendEncryptTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Encryption", self::$playerNetworkSendTimer);
+		self::$playerNetworkSend = new TimingsHandler("Player Network Send");
+		self::$playerNetworkSendCompress = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Compression", self::$playerNetworkSend);
+		self::$playerNetworkSendEncrypt = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Send - Encryption", self::$playerNetworkSend);
 
-		self::$playerNetworkReceiveTimer = new TimingsHandler("Player Network Receive");
-		self::$playerNetworkReceiveDecompressTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Receive - Decompression", self::$playerNetworkReceiveTimer);
-		self::$playerNetworkReceiveDecryptTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Receive - Decryption", self::$playerNetworkReceiveTimer);
+		self::$playerNetworkReceive = new TimingsHandler("Player Network Receive");
+		self::$playerNetworkReceiveDecompress = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Receive - Decompression", self::$playerNetworkReceive);
+		self::$playerNetworkReceiveDecrypt = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Player Network Receive - Decryption", self::$playerNetworkReceive);
 
-		self::$broadcastPackets = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Broadcast Packets", self::$playerNetworkSendTimer);
+		self::$broadcastPackets = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Broadcast Packets", self::$playerNetworkSend);
 
-		self::$playerChunkOrderTimer = new TimingsHandler("Player Order Chunks");
-		self::$playerChunkSendTimer = new TimingsHandler("Player Send Chunks");
-		self::$connectionTimer = new TimingsHandler("Connection Handler");
-		self::$schedulerTimer = new TimingsHandler("Scheduler");
-		self::$serverCommandTimer = new TimingsHandler("Server Command");
-		self::$worldLoadTimer = new TimingsHandler("World Load");
-		self::$worldSaveTimer = new TimingsHandler("World Save");
-		self::$populationTimer = new TimingsHandler("World Population");
-		self::$generationCallbackTimer = new TimingsHandler("World Generation Callback");
-		self::$permissibleCalculationTimer = new TimingsHandler("Permissible Calculation");
-		self::$permissibleCalculationDiffTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Permissible Calculation - Diff", self::$permissibleCalculationTimer);
-		self::$permissibleCalculationCallbackTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Permissible Calculation - Callbacks", self::$permissibleCalculationTimer);
+		self::$playerChunkOrder = new TimingsHandler("Player Order Chunks");
+		self::$playerChunkSend = new TimingsHandler("Player Send Chunks");
+		self::$connection = new TimingsHandler("Connection Handler");
+		self::$scheduler = new TimingsHandler("Scheduler");
+		self::$serverCommand = new TimingsHandler("Server Command");
+		self::$worldLoad = new TimingsHandler("World Load");
+		self::$worldSave = new TimingsHandler("World Save");
+		self::$population = new TimingsHandler("World Population");
+		self::$generationCallback = new TimingsHandler("World Generation Callback");
+		self::$permissibleCalculation = new TimingsHandler("Permissible Calculation");
+		self::$permissibleCalculationDiff = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Permissible Calculation - Diff", self::$permissibleCalculation);
+		self::$permissibleCalculationCallback = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Permissible Calculation - Callbacks", self::$permissibleCalculation);
 
 		self::$syncPlayerDataLoad = new TimingsHandler("Player Data Load");
 		self::$syncPlayerDataSave = new TimingsHandler("Player Data Save");
 
-		self::$entityMoveTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "entityMove");
-		self::$playerCheckNearEntitiesTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "checkNearEntities");
-		self::$tickEntityTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickEntity");
-		self::$tickTileEntityTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickTileEntity");
+		self::$entityMove = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "entityMove");
+		self::$playerCheckNearEntities = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "checkNearEntities");
+		self::$tickEntity = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickEntity");
+		self::$tickTileEntity = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickTileEntity");
 
-		self::$timerEntityBaseTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "entityBaseTick");
-		self::$timerLivingEntityBaseTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "livingEntityBaseTick");
+		self::$entityBaseTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "entityBaseTick");
+		self::$livingEntityBaseTick = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "livingEntityBaseTick");
 
-		self::$schedulerSyncTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Scheduler - Sync Tasks");
-		self::$schedulerAsyncTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Scheduler - Async Tasks");
+		self::$schedulerSync = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Scheduler - Sync Tasks");
+		self::$schedulerAsync = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "Scheduler - Async Tasks");
 
-		self::$playerCommandTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "playerCommand");
-		self::$craftingDataCacheRebuildTimer = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "craftingDataCacheRebuild");
+		self::$playerCommand = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "playerCommand");
+		self::$craftingDataCacheRebuild = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "craftingDataCacheRebuild");
 
 	}
 
@@ -192,7 +192,7 @@ abstract class Timings{
 		}
 
 		if(!isset(self::$pluginTaskTimingMap[$name])){
-			self::$pluginTaskTimingMap[$name] = new TimingsHandler($name, self::$schedulerSyncTimer);
+			self::$pluginTaskTimingMap[$name] = new TimingsHandler($name, self::$schedulerSync);
 		}
 
 		return self::$pluginTaskTimingMap[$name];
@@ -202,9 +202,9 @@ abstract class Timings{
 		$entityType = (new \ReflectionClass($entity))->getShortName();
 		if(!isset(self::$entityTypeTimingMap[$entityType])){
 			if($entity instanceof Player){
-				self::$entityTypeTimingMap[$entityType] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickEntity - EntityPlayer", self::$tickEntityTimer);
+				self::$entityTypeTimingMap[$entityType] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickEntity - EntityPlayer", self::$tickEntity);
 			}else{
-				self::$entityTypeTimingMap[$entityType] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickEntity - " . $entityType, self::$tickEntityTimer);
+				self::$entityTypeTimingMap[$entityType] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickEntity - " . $entityType, self::$tickEntity);
 			}
 		}
 
@@ -214,7 +214,7 @@ abstract class Timings{
 	public static function getTileEntityTimings(Tile $tile) : TimingsHandler{
 		$tileType = (new \ReflectionClass($tile))->getShortName();
 		if(!isset(self::$tileEntityTypeTimingMap[$tileType])){
-			self::$tileEntityTypeTimingMap[$tileType] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickTileEntity - " . $tileType, self::$tickTileEntityTimer);
+			self::$tileEntityTypeTimingMap[$tileType] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "tickTileEntity - " . $tileType, self::$tickTileEntity);
 		}
 
 		return self::$tileEntityTypeTimingMap[$tileType];
@@ -224,7 +224,7 @@ abstract class Timings{
 		$pid = $pk->pid();
 		if(!isset(self::$packetReceiveTimingMap[$pid])){
 			$pkName = (new \ReflectionClass($pk))->getShortName();
-			self::$packetReceiveTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "receivePacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkReceiveTimer);
+			self::$packetReceiveTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "receivePacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkReceive);
 		}
 
 		return self::$packetReceiveTimingMap[$pid];
@@ -234,7 +234,7 @@ abstract class Timings{
 		$pid = $pk->pid();
 		if(!isset(self::$packetSendTimingMap[$pid])){
 			$pkName = (new \ReflectionClass($pk))->getShortName();
-			self::$packetSendTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "sendPacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkSendTimer);
+			self::$packetSendTimingMap[$pid] = new TimingsHandler(self::INCLUDED_BY_OTHER_TIMINGS_PREFIX . "sendPacket - " . $pkName . " [0x" . dechex($pid) . "]", self::$playerNetworkSend);
 		}
 
 		return self::$packetSendTimingMap[$pid];

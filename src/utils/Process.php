@@ -30,6 +30,8 @@ use function fclose;
 use function file;
 use function file_get_contents;
 use function function_exists;
+use function getmypid;
+use function getmyuid;
 use function hexdec;
 use function memory_get_usage;
 use function posix_kill;
@@ -172,5 +174,21 @@ final class Process{
 		}
 
 		return proc_close($process);
+	}
+
+	public static function pid() : int{
+		$result = getmypid();
+		if($result === false){
+			throw new \LogicException("getmypid() doesn't work on this platform");
+		}
+		return $result;
+	}
+
+	public static function uid() : int{
+		$result = getmyuid();
+		if($result === false){
+			throw new \LogicException("getmyuid() doesn't work on this platform");
+		}
+		return $result;
 	}
 }

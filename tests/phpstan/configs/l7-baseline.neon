@@ -511,7 +511,7 @@ parameters:
 			path: ../../../src/command/defaults/TimingsCommand.php
 
 		-
-			message: "#^Parameter \\#4 \\$data of class class@anonymous/src/command/defaults/TimingsCommand\\.php\\:130 constructor expects array\\<string, string\\>, array\\<string, string\\|false\\> given\\.$#"
+			message: "#^Parameter \\#4 \\$data of class class@anonymous/src/command/defaults/TimingsCommand\\.php\\:131 constructor expects array\\<string, string\\>, array\\<string, string\\|false\\> given\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/TimingsCommand.php
 

@@ -87,7 +87,7 @@ trait EnumTrait{
 		}
 		$this->enumName = $enumName;
 		if(self::$nextId === null){
-			self::$nextId = getmypid(); //this provides enough base entropy to prevent hardcoding
+			self::$nextId = Process::pid(); //this provides enough base entropy to prevent hardcoding
 		}
 		$this->runtimeId = self::$nextId++;
 	}

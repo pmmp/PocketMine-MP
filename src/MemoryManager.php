@@ -228,7 +228,7 @@ class MemoryManager{
 	 * Called every tick to update the memory manager state.
 	 */
 	public function check() : void{
-		Timings::$memoryManagerTimer->startTiming();
+		Timings::$memoryManager->startTiming();
 
 		if(($this->memoryLimit > 0 or $this->globalMemoryLimit > 0) and ++$this->checkTicker >= $this->checkRate){
 			$this->checkTicker = 0;
@@ -261,11 +261,11 @@ class MemoryManager{
 			$this->triggerGarbageCollector();
 		}
 
-		Timings::$memoryManagerTimer->stopTiming();
+		Timings::$memoryManager->stopTiming();
 	}
 
 	public function triggerGarbageCollector() : int{
-		Timings::$garbageCollectorTimer->startTiming();
+		Timings::$garbageCollector->startTiming();
 
 		if($this->garbageCollectionAsync){
 			$pool = $this->server->getAsyncPool();
@@ -280,7 +280,7 @@ class MemoryManager{
 		$cycles = gc_collect_cycles();
 		gc_mem_caches();
 
-		Timings::$garbageCollectorTimer->stopTiming();
+		Timings::$garbageCollector->stopTiming();
 
 		return $cycles;
 	}

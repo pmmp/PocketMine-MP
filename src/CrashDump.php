@@ -28,6 +28,7 @@ use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginManager;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use function base64_encode;
@@ -47,6 +48,7 @@ use function json_encode;
 use function json_last_error_msg;
 use function max;
 use function mb_strtoupper;
+use function microtime;
 use function mkdir;
 use function ob_end_clean;
 use function ob_get_contents;
@@ -59,7 +61,6 @@ use function sprintf;
 use function str_split;
 use function strpos;
 use function substr;
-use function time;
 use function zend_version;
 use function zlib_encode;
 use const FILE_IGNORE_NEW_LINES;
@@ -75,7 +76,7 @@ class CrashDump{
 	 * having their content changed, version format changing, etc.
 	 * It is not necessary to increase this when adding new fields.
 	 */
-	private const FORMAT_VERSION = 3;
+	private const FORMAT_VERSION = 4;
 
 	private const PLUGIN_INVOLVEMENT_NONE = "none";
 	private const PLUGIN_INVOLVEMENT_DIRECT = "direct";
@@ -85,7 +86,7 @@ class CrashDump{
 	private $server;
 	/** @var resource */
 	private $fp;
-	/** @var int */
+	/** @var float */
 	private $time;
 	/**
 	 * @var mixed[]
@@ -98,12 +99,12 @@ class CrashDump{
 	private $path;
 
 	public function __construct(Server $server){
-		$this->time = time();
+		$this->time = microtime(true);
 		$this->server = $server;
 		if(!is_dir($this->server->getDataPath() . "crashdumps")){
 			mkdir($this->server->getDataPath() . "crashdumps");
 		}
-		$this->path = $this->server->getDataPath() . "crashdumps/" . date("D_M_j-H.i.s-T_Y", $this->time) . ".log";
+		$this->path = $this->server->getDataPath() . "crashdumps/" . date("D_M_j-H.i.s-T_Y", (int) $this->time) . ".log";
 		$fp = @fopen($this->path, "wb");
 		if(!is_resource($fp)){
 			throw new \RuntimeException("Could not create Crash Dump");
@@ -111,7 +112,8 @@ class CrashDump{
 		$this->fp = $fp;
 		$this->data["format_version"] = self::FORMAT_VERSION;
 		$this->data["time"] = $this->time;
-		$this->addLine($this->server->getName() . " Crash Dump " . date("D M j H:i:s T Y", $this->time));
+		$this->data["uptime"] = $this->time - $this->server->getStartTime();
+		$this->addLine($this->server->getName() . " Crash Dump " . date("D M j H:i:s T Y", (int) $this->time));
 		$this->addLine();
 		$this->baseCrash();
 		$this->generalData();
@@ -149,7 +151,9 @@ class CrashDump{
 		if($json === false){
 			throw new \RuntimeException("Failed to encode crashdump JSON: " . json_last_error_msg());
 		}
-		$this->encodedData = zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9);
+		$zlibEncoded = zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9);
+		if($zlibEncoded === false) throw new AssumptionFailedError("ZLIB compression failed");
+		$this->encodedData = $zlibEncoded;
 		foreach(str_split(base64_encode($this->encodedData), 76) as $line){
 			$this->addLine($line);
 		}

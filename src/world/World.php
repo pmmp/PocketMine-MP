@@ -66,6 +66,7 @@ use pocketmine\player\Player;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\world\biome\Biome;
@@ -786,7 +787,7 @@ class World implements ChunkManager{
 
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
-		Timings::$tickEntityTimer->startTiming();
+		Timings::$tickEntity->startTiming();
 		foreach($this->updateEntities as $id => $entity){
 			if($entity->isClosed() or !$entity->onUpdate($currentTick)){
 				unset($this->updateEntities[$id]);
@@ -795,7 +796,7 @@ class World implements ChunkManager{
 				$entity->close();
 			}
 		}
-		Timings::$tickEntityTimer->stopTiming();
+		Timings::$tickEntity->stopTiming();
 		$this->timings->entityTick->stopTiming();
 
 		$this->timings->doTickTiles->startTiming();
@@ -1038,7 +1039,7 @@ class World implements ChunkManager{
 	}
 
 	public function saveChunks() : void{
-		$this->timings->syncChunkSaveTimer->startTiming();
+		$this->timings->syncChunkSave->startTiming();
 		try{
 			foreach($this->chunks as $chunkHash => $chunk){
 				if($chunk->isDirty()){
@@ -1048,7 +1049,7 @@ class World implements ChunkManager{
 				}
 			}
 		}finally{
-			$this->timings->syncChunkSaveTimer->stopTiming();
+			$this->timings->syncChunkSave->stopTiming();
 		}
 	}
 
@@ -1996,7 +1997,7 @@ class World implements ChunkManager{
 	}
 
 	public function generateChunkCallback(int $x, int $z, ?Chunk $chunk) : void{
-		Timings::$generationCallbackTimer->startTiming();
+		Timings::$generationCallback->startTiming();
 		if(isset($this->chunkPopulationQueue[$index = World::chunkHash($x, $z)])){
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
@@ -2024,7 +2025,7 @@ class World implements ChunkManager{
 		}elseif($chunk !== null){
 			$this->setChunk($x, $z, $chunk, false);
 		}
-		Timings::$generationCallbackTimer->stopTiming();
+		Timings::$generationCallback->stopTiming();
 	}
 
 	/**
@@ -2141,6 +2142,13 @@ class World implements ChunkManager{
 		if($entity->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Entity world");
 		}
+		if(array_key_exists($entity->getId(), $this->entities)){
+			if($this->entities[$entity->getId()] === $entity){
+				throw new \InvalidArgumentException("Entity " . $entity->getId() . " has already been added to this world");
+			}else{
+				throw new AssumptionFailedError("Found two different entities sharing entity ID " . $entity->getId());
+			}
+		}
 		$pos = $entity->getPosition()->asVector3();
 		$chunk = $this->getOrLoadChunkAtPosition($pos);
 		if($chunk === null){
@@ -2163,6 +2171,9 @@ class World implements ChunkManager{
 	public function removeEntity(Entity $entity) : void{
 		if($entity->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Entity world");
+		}
+		if(!array_key_exists($entity->getId(), $this->entities)){
+			throw new \InvalidArgumentException("Entity is not tracked by this world (possibly already removed?)");
 		}
 		$pos = $this->entityLastKnownPositions[$entity->getId()];
 		$chunk = $this->getChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
@@ -2292,11 +2303,11 @@ class World implements ChunkManager{
 			return $this->chunks[$chunkHash];
 		}
 
-		$this->timings->syncChunkLoadTimer->startTiming();
+		$this->timings->syncChunkLoad->startTiming();
 
 		$this->cancelUnloadChunkRequest($x, $z);
 
-		$this->timings->syncChunkLoadDataTimer->startTiming();
+		$this->timings->syncChunkLoadData->startTiming();
 
 		$chunk = null;
 
@@ -2306,10 +2317,10 @@ class World implements ChunkManager{
 			$this->logger->critical("Failed to load chunk x=$x z=$z: " . $e->getMessage());
 		}
 
-		$this->timings->syncChunkLoadDataTimer->stopTiming();
+		$this->timings->syncChunkLoadData->stopTiming();
 
 		if($chunk === null){
-			$this->timings->syncChunkLoadTimer->stopTiming();
+			$this->timings->syncChunkLoad->stopTiming();
 			return null;
 		}
 
@@ -2328,14 +2339,14 @@ class World implements ChunkManager{
 			$listener->onChunkLoaded($x, $z, $chunk);
 		}
 
-		$this->timings->syncChunkLoadTimer->stopTiming();
+		$this->timings->syncChunkLoad->stopTiming();
 
 		return $chunk;
 	}
 
 	private function initChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		if($chunk->NBTentities !== null){
-			$this->timings->syncChunkLoadEntitiesTimer->startTiming();
+			$this->timings->syncChunkLoadEntities->startTiming();
 			$entityFactory = EntityFactory::getInstance();
 			foreach($chunk->NBTentities as $nbt){
 				try{
@@ -2359,10 +2370,10 @@ class World implements ChunkManager{
 
 			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_ENTITIES, true);
 			$chunk->NBTentities = null;
-			$this->timings->syncChunkLoadEntitiesTimer->stopTiming();
+			$this->timings->syncChunkLoadEntities->stopTiming();
 		}
 		if($chunk->NBTtiles !== null){
-			$this->timings->syncChunkLoadTileEntitiesTimer->startTiming();
+			$this->timings->syncChunkLoadTileEntities->startTiming();
 			$tileFactory = TileFactory::getInstance();
 			foreach($chunk->NBTtiles as $nbt){
 				if(($tile = $tileFactory->createFromData($this, $nbt)) !== null){
@@ -2375,7 +2386,7 @@ class World implements ChunkManager{
 
 			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_TILES, true);
 			$chunk->NBTtiles = null;
-			$this->timings->syncChunkLoadTileEntitiesTimer->stopTiming();
+			$this->timings->syncChunkLoadTileEntities->stopTiming();
 		}
 	}
 
@@ -2422,11 +2433,11 @@ class World implements ChunkManager{
 			}
 
 			if($trySave and $this->getAutoSave() and $chunk->isDirty()){
-				$this->timings->syncChunkSaveTimer->startTiming();
+				$this->timings->syncChunkSave->startTiming();
 				try{
 					$this->provider->saveChunk($x, $z, $chunk);
 				}finally{
-					$this->timings->syncChunkSaveTimer->stopTiming();
+					$this->timings->syncChunkSave->stopTiming();
 				}
 			}
 
@@ -2578,8 +2589,37 @@ class World implements ChunkManager{
 		}
 	}
 
-	public function populateChunk(int $x, int $z, bool $force = false) : bool{
-		if(isset($this->chunkPopulationQueue[$index = World::chunkHash($x, $z)]) or (count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize and !$force)){
+	/**
+	 * Attempts to initiate asynchronous generation/population of the target chunk, if it's currently reasonable to do
+	 * so (and if it isn't already generated/populated).
+	 *
+	 * This method can fail for the following reasons:
+	 * - The generation queue for this world is currently full (intended to prevent CPU overload with non-essential generation)
+	 * - The target chunk is already being generated/populated
+	 * - The target chunk is locked for use by another async operation (usually population)
+	 *
+	 * @return bool whether the chunk has been successfully populated already
+	 * TODO: the return values don't make a lot of sense, but currently stuff depends on them :<
+	 */
+	public function requestChunkPopulation(int $chunkX, int $chunkZ) : bool{
+		if(count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize){
+			return false;
+		}
+		return $this->orderChunkPopulation($chunkX, $chunkZ);
+	}
+
+	/**
+	 * Initiates asynchronous generation/population of the target chunk, if it's not already generated/populated.
+	 *
+	 * This method can fail for the following reasons:
+	 * - The target chunk is already being generated/populated
+	 * - The target chunk is locked for use by another async operation (usually population)
+	 *
+	 * @return bool whether the chunk has been successfully populated already
+	 * TODO: the return values don't make sense, but currently stuff depends on them :<
+	 */
+	public function orderChunkPopulation(int $x, int $z) : bool{
+		if(isset($this->chunkPopulationQueue[$index = World::chunkHash($x, $z)])){
 			return false;
 		}
 		for($xx = -1; $xx <= 1; ++$xx){
@@ -2592,7 +2632,7 @@ class World implements ChunkManager{
 
 		$chunk = $this->loadChunk($x, $z);
 		if($chunk === null || !$chunk->isPopulated()){
-			Timings::$populationTimer->startTiming();
+			Timings::$population->startTiming();
 
 			$this->chunkPopulationQueue[$index] = true;
 			for($xx = -1; $xx <= 1; ++$xx){
@@ -2608,7 +2648,7 @@ class World implements ChunkManager{
 			}
 			$this->workerPool->submitTaskToWorker($task, $workerId);
 
-			Timings::$populationTimer->stopTiming();
+			Timings::$population->stopTiming();
 			return false;
 		}
 

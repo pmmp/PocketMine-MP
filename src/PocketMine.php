@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine {
 
+	use Composer\InstalledVersions;
 	use pocketmine\errorhandler\ErrorToExceptionHandler;
 	use pocketmine\thread\ThreadManager;
 	use pocketmine\utils\Filesystem;
@@ -73,7 +74,6 @@ namespace pocketmine {
 		}
 
 		$extensions = [
-			"bcmath" => "BC Math",
 			"chunkutils2" => "PocketMine ChunkUtils v2",
 			"curl" => "cURL",
 			"crypto" => "php-crypto",
@@ -189,6 +189,20 @@ namespace pocketmine {
 		}
 		define('pocketmine\COMPOSER_AUTOLOADER_PATH', $bootstrap);
 		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+
+		$composerGitHash = InstalledVersions::getReference('pocketmine/pocketmine-mp');
+		if($composerGitHash !== null){
+			//we can't verify dependency versions if we were installed without using git
+			$currentGitHash = explode("-", VersionInfo::getGitHash())[0];
+			if($currentGitHash !== $composerGitHash){
+				critical_error("Composer dependencies and/or autoloader are out of sync.");
+				critical_error("- Current revision is $currentGitHash");
+				critical_error("- Composer dependencies were last synchronized for revision $composerGitHash");
+				critical_error("Out-of-sync Composer dependencies may result in crashes and classes not being found.");
+				critical_error("Please synchronize Composer dependencies before running the server.");
+				exit(1);
+			}
+		}
 		if(extension_loaded('parallel')){
 			\parallel\bootstrap(\pocketmine\COMPOSER_AUTOLOADER_PATH);
 		}
@@ -254,7 +268,7 @@ namespace pocketmine {
 
 			if(ThreadManager::getInstance()->stopAll() > 0){
 				$logger->debug("Some threads could not be stopped, performing a force-kill");
-				Process::kill(getmypid());
+				Process::kill(Process::pid());
 			}
 		}while(false);
 
@@ -268,7 +282,5 @@ namespace pocketmine {
 		exit($exitCode);
 	}
 
-	if(!defined('pocketmine\_PHPSTAN_ANALYSIS')){
-		\pocketmine\server();
-	}
+	\pocketmine\server();
 }

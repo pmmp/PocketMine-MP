@@ -959,9 +959,9 @@ abstract class Entity{
 
 		$this->updateMovement();
 
-		Timings::$timerEntityBaseTick->startTiming();
+		Timings::$entityBaseTick->startTiming();
 		$hasUpdate = $this->entityBaseTick($tickDiff);
-		Timings::$timerEntityBaseTick->stopTiming();
+		Timings::$entityBaseTick->stopTiming();
 
 		$this->timings->stopTiming();
 
@@ -1073,7 +1073,7 @@ abstract class Entity{
 	protected function move(float $dx, float $dy, float $dz) : void{
 		$this->blocksAround = null;
 
-		Timings::$entityMoveTimer->startTiming();
+		Timings::$entityMove->startTiming();
 
 		$movX = $dx;
 		$movY = $dy;
@@ -1219,7 +1219,7 @@ abstract class Entity{
 
 		//TODO: vehicle collision events (first we need to spawn them!)
 
-		Timings::$entityMoveTimer->stopTiming();
+		Timings::$entityMove->stopTiming();
 	}
 
 	protected function checkGroundState(float $movX, float $movY, float $movZ, float $dx, float $dy, float $dz) : void{
@@ -1306,8 +1306,7 @@ abstract class Entity{
 		}
 
 		$oldWorld = $this->getWorld();
-		//TODO: staying in the same world when the target is invalid is probably not expected behaviour... this should bail instead
-		$newWorld = $pos instanceof Position && $pos->isValid() ? $pos->getWorld() : $oldWorld;
+		$newWorld = $pos instanceof Position ? $pos->getWorld() : $oldWorld;
 		if($oldWorld !== $newWorld){
 			$this->despawnFromAll();
 			$oldWorld->removeEntity($this);

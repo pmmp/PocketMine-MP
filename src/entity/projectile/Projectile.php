@@ -173,7 +173,7 @@ abstract class Projectile extends Entity{
 	public function move(float $dx, float $dy, float $dz) : void{
 		$this->blocksAround = null;
 
-		Timings::$entityMoveTimer->startTiming();
+		Timings::$entityMove->startTiming();
 
 		$start = $this->location->asVector3();
 		$end = $start->addVector($this->motion);
@@ -264,7 +264,7 @@ abstract class Projectile extends Entity{
 		$this->getWorld()->onEntityMoved($this);
 		$this->checkBlockCollision();
 
-		Timings::$entityMoveTimer->stopTiming();
+		Timings::$entityMove->stopTiming();
 	}
 
 	/**
