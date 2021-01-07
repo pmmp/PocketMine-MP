@@ -2031,10 +2031,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		throw new \BadMethodCallException("Players can't be saved with chunks");
 	}
 
-	/**
-	 * Handles player data saving
-	 */
-	public function save() : void{
+	public function getSaveData() : CompoundTag{
 		$nbt = $this->saveNBT();
 
 		if($this->location->isValid()){
@@ -2063,7 +2060,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$nbt->setLong("firstPlayed", $this->firstPlayed);
 		$nbt->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
 
-		$this->server->saveOfflinePlayerData($this->username, $nbt);
+		return $nbt;
+	}
+
+	/**
+	 * Handles player data saving
+	 */
+	public function save() : void{
+		$this->server->saveOfflinePlayerData($this->username, $this->getSaveData());
 	}
 
 	protected function onDeath() : void{
