@@ -100,6 +100,7 @@ class TNT extends Opaque{
 		$tnt = new PrimedTNT(Location::fromObject($this->pos->add(0.5, 0, 0.5), $this->pos->getWorld()));
 		$tnt->setFuse($fuse);
 		$tnt->setMotion(new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));
+
 		$tnt->spawnToAll();
 		$tnt->broadcastSound(new IgniteSound());
 	}
