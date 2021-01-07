@@ -35,7 +35,6 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\world\Explosion;
 use pocketmine\world\Position;
-use pocketmine\world\sound\IgniteSound;
 
 class PrimedTNT extends Entity implements Explosive{
 
@@ -73,8 +72,6 @@ class PrimedTNT extends Entity implements Explosive{
 		parent::initEntity($nbt);
 
 		$this->fuse = $nbt->getShort("Fuse", 80);
-
-		$this->broadcastSound(new IgniteSound());
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
