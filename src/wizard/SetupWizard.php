@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace pocketmine\wizard;
 
 use pocketmine\lang\Language;
+use pocketmine\lang\LanguageManager;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\player\GameMode;
 use pocketmine\utils\Config;
@@ -39,6 +40,7 @@ use function sleep;
 use function strtolower;
 use function trim;
 use const PHP_EOL;
+use const pocketmine\RESOURCE_PATH;
 use const STDIN;
 
 class SetupWizard{
@@ -59,7 +61,7 @@ class SetupWizard{
 		$this->message(VersionInfo::NAME . " set-up wizard");
 
 		try{
-			$langs = Language::getLanguageList();
+			$langs = LanguageManager::getLanguageList();
 		}catch(LanguageNotFoundException $e){
 			$this->error("No language files found, please use provided builds or clone the repository recursively.");
 			return false;
@@ -78,7 +80,7 @@ class SetupWizard{
 			}
 		}while($lang === null);
 
-		$this->lang = new Language($lang);
+		$this->lang = new Language($lang, LanguageManager::loadLang(RESOURCE_PATH . 'locale/', $lang));
 
 		$this->message($this->lang->get("language_has_been_selected"));
 
