@@ -105,7 +105,12 @@ class LanguageManager{
 
                 foreach($files as $file){
                     $code = explode(".", $file)[0];
-                    $this->languages[$code] = new Language($code, self::loadLang($path, $code), $this->languages[self::FALLBACK_LANGUAGE]);
+
+                    if(!isset($this->languages[$code])) {
+                        $this->languages[$code] = new Language($code, self::loadLang($path, $code), $this->languages[self::FALLBACK_LANGUAGE]);
+                    } else {
+                        $this->languages[$code]->supplement(self::loadLang($path, $code));
+                    }
                 }
             }
         }

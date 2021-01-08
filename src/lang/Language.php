@@ -59,6 +59,14 @@ class Language{
         return $this->langCode;
     }
 
+    /**
+     * Complements the language pack.
+     * @param string[] $langValues
+     */
+    public function supplement(array $langValues) : void{
+        $this->langValues = array_merge($this->langValues, $langValues);
+    }
+
 	/**
 	 * @param (float|int|string)[] $params
 	 */
