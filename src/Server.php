@@ -1568,9 +1568,6 @@ class Server{
 		$this->uniquePlayers = [];
 	}
 
-    /**
-     * @return LanguageManager
-     */
     public function getLanguageManager(): LanguageManager{
         return $this->languageManager;
     }
