@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\Fallable;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -44,9 +45,6 @@ class FallingBlock extends Entity{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::FALLING_BLOCK; }
 
-	public $width = 0.98;
-	public $height = 0.98;
-
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
 
@@ -59,6 +57,8 @@ class FallingBlock extends Entity{
 		$this->block = $block;
 		parent::__construct($location, $nbt);
 	}
+
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.98, 0.98); }
 
 	public static function parseBlockNBT(BlockFactory $factory, CompoundTag $nbt) : Block{
 		$blockId = 0;
@@ -102,7 +102,7 @@ class FallingBlock extends Entity{
 
 		if(!$this->isFlaggedForDespawn()){
 			$world = $this->getWorld();
-			$pos = $this->location->add(-$this->width / 2, $this->height, -$this->width / 2)->floor();
+			$pos = $this->location->add(-$this->size->getWidth() / 2, $this->size->getHeight(), -$this->size->getWidth() / 2)->floor();
 
 			$this->block->position($world, $pos->x, $pos->y, $pos->z);
 

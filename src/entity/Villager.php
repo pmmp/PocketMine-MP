@@ -38,13 +38,14 @@ class Villager extends Living implements Ageable{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::VILLAGER; }
 
-	public $width = 0.6;
-	public $height = 1.8;
-
 	/** @var bool */
 	private $baby = false;
 	/** @var int */
 	private $profession = self::PROFESSION_FARMER;
+
+	protected function getInitialSizeInfo() : EntitySizeInfo{
+		return new EntitySizeInfo(1.8, 0.6); //TODO: eye height??
+	}
 
 	public function getName() : string{
 		return "Villager";

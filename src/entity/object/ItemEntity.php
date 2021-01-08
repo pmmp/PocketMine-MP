@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\object;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
@@ -54,9 +55,6 @@ class ItemEntity extends Entity{
 	/** @var Item */
 	protected $item;
 
-	public $width = 0.25;
-	public $height = 0.25;
-
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
 
@@ -72,6 +70,8 @@ class ItemEntity extends Entity{
 		$this->item = $item;
 		parent::__construct($location, $nbt);
 	}
+
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
