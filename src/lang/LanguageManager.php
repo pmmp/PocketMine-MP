@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
+use function array_search;
 use function array_filter;
 use function array_map;
 use function explode;
@@ -33,12 +34,15 @@ use function scandir;
 use function substr;
 use function is_array;
 use const INI_SCANNER_RAW;
+use const pocketmine\RESOURCE_PATH;
 use const SCANDIR_SORT_NONE;
 
 class LanguageManager{
 
     /** @var Language[] */
     private $languages = [];
+    /** @var Language */
+    private static $fallbackLanguage;
     /** @var string */
     public const FALLBACK_LANGUAGE = 'eng';
 
@@ -54,7 +58,7 @@ class LanguageManager{
      */
     public static function getLanguageList(string $path = "") : array{
         if($path === ""){
-            $path = \pocketmine\RESOURCE_PATH . "locale/";
+            $path = RESOURCE_PATH . "locale/";
         }
 
         if(is_dir($path)){
@@ -99,15 +103,21 @@ class LanguageManager{
                     return substr($filename, -4) === ".ini";
                 });
 
-                if(!isset($this->languages[self::FALLBACK_LANGUAGE])){
-                    $this->languages[self::FALLBACK_LANGUAGE] = new Language(self::FALLBACK_LANGUAGE, self::loadLang($path, self::FALLBACK_LANGUAGE));
+                if(self::$fallbackLanguage === null){
+                    if(array_search(LanguageManager::FALLBACK_LANGUAGE . ".ini", $files)){
+                        $this->languages[LanguageManager::FALLBACK_LANGUAGE] = new Language(LanguageManager::FALLBACK_LANGUAGE, $path);
+                        self::$fallbackLanguage = $this->languages[LanguageManager::FALLBACK_LANGUAGE];
+                        unset($files[LanguageManager::FALLBACK_LANGUAGE . ".ini"]);
+                    } else {
+                        throw new LanguageNotFoundException("Fallback Language not found");
+                    }
                 }
 
                 foreach($files as $file){
                     $code = explode(".", $file)[0];
 
-                    if(!isset($this->languages[$code])) {
-                        $this->languages[$code] = new Language($code, self::loadLang($path, $code), $this->languages[self::FALLBACK_LANGUAGE]);
+                    if(!isset($this->languages[$code])){
+                        $this->languages[$code] = new Language($code, $path);
                     } else {
                         $this->languages[$code]->supplement(self::loadLang($path, $code));
                     }
@@ -116,11 +126,15 @@ class LanguageManager{
         }
     }
 
+    public static function getFallbackLanguage() : Language{
+        return self::$fallbackLanguage;
+    }
+
     /**
      * @return string[]
      * @phpstan-return array<string, string>
      */
-    public static function loadLang(string $path, string $languageCode) : array {
+    public static function loadLang(string $path, string $languageCode) : array{
         $file = $path . $languageCode . ".ini";
 
         if(file_exists($file)){

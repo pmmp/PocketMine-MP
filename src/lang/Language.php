@@ -28,6 +28,7 @@ use function str_replace;
 use function strlen;
 use function strpos;
 use function substr;
+use const pocketmine\RESOURCE_PATH;
 
 class Language{
 
@@ -38,14 +39,15 @@ class Language{
     /** @var Language|null */
     private $fallbackLang;
 
-    /**
-     * Language constructor.
-     * @param string[] $langValues
-     */
-    public function __construct(string $langCode, array $langValues, Language $fallbackLang = null){
-        $this->langCode = $langCode;
-        $this->langValues = $langValues;
-        $this->fallbackLang = $fallbackLang;
+    public function __construct(string $lang, ?string $path = null, string $fallback = LanguageManager::FALLBACK_LANGUAGE){
+        $this->langCode = $lang;
+        if($path === null){
+            $path = RESOURCE_PATH . "locale/";
+        }
+        $this->langValues = LanguageManager::loadLang($path, $lang);
+        if($lang != $fallback){
+            $this->fallbackLang = LanguageManager::getFallbackLanguage();
+        }
     }
 
 	public function getName() : string{

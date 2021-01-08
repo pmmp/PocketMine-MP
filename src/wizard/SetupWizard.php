@@ -80,7 +80,7 @@ class SetupWizard{
 			}
 		}while($lang === null);
 
-        $this->lang = new Language($lang, LanguageManager::loadLang(RESOURCE_PATH . 'locale/', $lang), new Language(LanguageManager::FALLBACK_LANGUAGE, LanguageManager::loadLang(RESOURCE_PATH . 'locale/', LanguageManager::FALLBACK_LANGUAGE)));
+        $this->lang = new Language($lang, RESOURCE_PATH . 'locale/');
 
 		$this->message($this->lang->get("language_has_been_selected"));
 
