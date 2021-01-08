@@ -1626,8 +1626,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return false;
 		}
 		if($entity instanceof ItemEntity or $entity instanceof Arrow){
-			$this->kick("Attempting to attack an invalid entity");
-			$this->logger->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidEntity", [$this->getName()]));
+			$this->logger->debug("Attempted to attack non-attackable entity " . get_class($entity));
 			return false;
 		}
 
