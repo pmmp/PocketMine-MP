@@ -34,6 +34,7 @@ use pocketmine\entity\Living;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\cache\ChunkCache;
@@ -900,12 +901,9 @@ class NetworkSession{
 
 	/**
 	 * TODO: expand this to more than just humans
-	 * TODO: offhand
 	 */
-	public function onMobEquipmentChange(Human $mob) : void{
-		//TODO: we could send zero for slot here because remote players don't need to know which slot was selected
-		$inv = $mob->getInventory();
-		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), TypeConverter::getInstance()->coreItemStackToNet($inv->getItemInHand()), $inv->getHeldItemIndex(), ContainerIds::INVENTORY));
+	public function onMobEquipmentChange(Human $mob, bool $isOffhand, Item $equipment) : void{
+		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), TypeConverter::getInstance()->coreItemStackToNet($equipment), 0, $isOffhand ? ContainerIds::OFFHAND : ContainerIds::INVENTORY));
 	}
 
 	public function onMobArmorChange(Living $mob) : void{

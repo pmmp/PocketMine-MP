@@ -82,6 +82,7 @@ class InventoryManager{
 		$this->session = $session;
 
 		$this->add(ContainerIds::INVENTORY, $this->player->getInventory());
+		$this->add(ContainerIds::OFFHAND, $this->player->getOffhandInventory());
 		$this->add(ContainerIds::ARMOR, $this->player->getArmorInventory());
 		$this->add(ContainerIds::UI, $this->player->getCursorInventory());
 	}

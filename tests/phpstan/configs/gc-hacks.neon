@@ -41,6 +41,11 @@ parameters:
 			path: ../../../src/entity/Human.php
 
 		-
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$offhandInventory \\(pocketmine\\\\inventory\\\\PlayerOffhandInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/entity/Human.php
+
+		-
 			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$enderChestInventory \\(pocketmine\\\\block\\\\inventory\\\\EnderChestInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/entity/Human.php

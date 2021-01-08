@@ -88,7 +88,7 @@ class PlayerInventory extends BaseInventory{
 			$this->holder->getNetworkSession()->getInvManager()->syncSelectedHotbarSlot();
 		}
 		foreach($this->holder->getViewers() as $viewer){
-			$viewer->getNetworkSession()->onMobEquipmentChange($this->holder);
+			$viewer->getNetworkSession()->onMobEquipmentChange($this->holder, false, $this->getItemInHand());
 		}
 	}
 
@@ -105,7 +105,7 @@ class PlayerInventory extends BaseInventory{
 	public function setItemInHand(Item $item) : void{
 		$this->setItem($this->getHeldItemIndex(), $item);
 		foreach($this->holder->getViewers() as $viewer){
-			$viewer->getNetworkSession()->onMobEquipmentChange($this->holder);
+			$viewer->getNetworkSession()->onMobEquipmentChange($this->holder, false, $this->getItemInHand());
 		}
 	}
 
