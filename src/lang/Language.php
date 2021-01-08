@@ -97,7 +97,7 @@ class Language{
 	}
 
     protected function fallbackInternalGet(string $id) : ?string{
-        return ($this->fallbackLang !== null ? $this->fallbackLang->get($id) : null);
+        return $this->fallbackLang !== null ? $this->fallbackLang->translateString($id) : null;
     }
 
 	public function get(string $id) : string{
