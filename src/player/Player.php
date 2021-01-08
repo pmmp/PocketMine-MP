@@ -95,6 +95,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\PlayerMetadataFlags;
+use pocketmine\network\mcpe\protocol\types\LanguageCodeMapping;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
@@ -171,6 +172,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected $authenticated;
 	/** @var PlayerInfo */
 	protected $playerInfo;
+    /** @var Language */
+    protected $language;
 
 	/** @var Inventory|null */
 	protected $currentWindow = null;
@@ -278,6 +281,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->xuid = $this->playerInfo instanceof XboxLivePlayerInfo ? $this->playerInfo->getXuid() : "";
+
+        $this->language = $server->getLanguageManager()->get(LanguageCodeMapping::get($playerInfo->getLocale()));
 
 		$rootPermissions = [DefaultPermissions::ROOT_USER => true];
 		if($this->server->isOp($this->username)){
@@ -564,7 +569,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function getLanguage() : Language{
-		return $this->server->getLanguage();
+		return $this->language;
 	}
 
 	/**
