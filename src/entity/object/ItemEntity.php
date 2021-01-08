@@ -210,7 +210,7 @@ class ItemEntity extends Entity{
 		$pk->position = $this->location->asVector3();
 		$pk->motion = $this->getMotion();
 		$pk->item = TypeConverter::getInstance()->coreItemStackToNet($this->getItem());
-		$pk->metadata = $this->getSyncedNetworkData(false);
+		$pk->metadata = $this->getAllNetworkData();
 
 		$player->getNetworkSession()->sendDataPacket($pk);
 	}
