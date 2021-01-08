@@ -1657,7 +1657,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$entity->attack($ev);
 
-		$soundPos = $entity->getPosition()->add(0, $entity->width / 2, 0);
+		$soundPos = $entity->getPosition()->add(0, $entity->height / 2, 0);
 		if($ev->isCancelled()){
 			$this->getWorld()->addSound($soundPos, new EntityAttackNoDamageSound());
 			return false;
