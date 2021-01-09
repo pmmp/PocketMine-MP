@@ -118,13 +118,8 @@ abstract class Entity{
 	/** @var bool */
 	public $onGround = false;
 
-	/** @var float */
-	public $eyeHeight = null;
-
-	/** @var float */
-	public $height;
-	/** @var float */
-	public $width;
+	/** @var EntitySizeInfo */
+	public $size;
 
 	/** @var float */
 	private $health = 20.0;
@@ -218,9 +213,7 @@ abstract class Entity{
 	public function __construct(Location $location, ?CompoundTag $nbt = null){
 		$this->timings = Timings::getEntityTimings($this);
 
-		if($this->eyeHeight === null){
-			$this->eyeHeight = $this->height / 2 + 0.1;
-		}
+		$this->size = $this->getInitialSizeInfo();
 
 		$this->id = self::nextRuntimeId();
 		$this->server = $location->getWorld()->getServer();
@@ -258,6 +251,8 @@ abstract class Entity{
 		$this->scheduleUpdate();
 
 	}
+
+	abstract protected function getInitialSizeInfo() : EntitySizeInfo;
 
 	public function getNameTag() : string{
 		return $this->nameTag;
@@ -299,11 +294,7 @@ abstract class Entity{
 		if($value <= 0){
 			throw new \InvalidArgumentException("Scale must be greater than 0");
 		}
-		$multiplier = $value / $this->getScale();
-
-		$this->width *= $multiplier;
-		$this->height *= $multiplier;
-		$this->eyeHeight *= $multiplier;
+		$this->size = $this->getInitialSizeInfo()->scale($value);
 
 		$this->scale = $value;
 
@@ -315,14 +306,14 @@ abstract class Entity{
 	}
 
 	protected function recalculateBoundingBox() : void{
-		$halfWidth = $this->width / 2;
+		$halfWidth = $this->size->getWidth() / 2;
 
 		$this->boundingBox = new AxisAlignedBB(
 			$this->location->x - $halfWidth,
 			$this->location->y + $this->ySize,
 			$this->location->z - $halfWidth,
 			$this->location->x + $halfWidth,
-			$this->location->y + $this->height + $this->ySize,
+			$this->location->y + $this->size->getHeight() + $this->ySize,
 			$this->location->z + $halfWidth
 		);
 	}
@@ -598,7 +589,7 @@ abstract class Entity{
 			}
 		}
 
-		$changedProperties = $this->getSyncedNetworkData(true);
+		$changedProperties = $this->getDirtyNetworkData();
 		if(count($changedProperties) > 0){
 			$this->sendData(null, $changedProperties);
 			$this->networkProperties->clearDirtyProperties();
@@ -1042,7 +1033,7 @@ abstract class Entity{
 	}
 
 	public function getEyeHeight() : float{
-		return $this->eyeHeight;
+		return $this->size->getEyeHeight();
 	}
 
 	public function getEyePos() : Vector3{
@@ -1445,7 +1436,7 @@ abstract class Entity{
 		$pk->attributes = array_map(function(Attribute $attr) : NetworkAttribute{
 			return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
 		}, $this->attributeMap->getAll());
-		$pk->metadata = $this->getSyncedNetworkData(false);
+		$pk->metadata = $this->getAllNetworkData();
 
 		$player->getNetworkSession()->sendDataPacket($pk);
 	}
@@ -1566,7 +1557,7 @@ abstract class Entity{
 	 */
 	public function sendData(?array $targets, ?array $data = null) : void{
 		$targets = $targets ?? $this->hasSpawned;
-		$data = $data ?? $this->getSyncedNetworkData(false);
+		$data = $data ?? $this->getAllNetworkData();
 
 		foreach($targets as $p){
 			$p->getNetworkSession()->syncActorData($this, $data);
@@ -1577,16 +1568,24 @@ abstract class Entity{
 	 * @return MetadataProperty[]
 	 * @phpstan-return array<int, MetadataProperty>
 	 */
-	final protected function getSyncedNetworkData(bool $dirtyOnly) : array{
+	final protected function getDirtyNetworkData() : array{
 		$this->syncNetworkData($this->networkProperties);
+		return $this->networkProperties->getDirty();
+	}
 
-		return $dirtyOnly ? $this->networkProperties->getDirty() : $this->networkProperties->getAll();
+	/**
+	 * @return MetadataProperty[]
+	 * @phpstan-return array<int, MetadataProperty>
+	 */
+	final protected function getAllNetworkData() : array{
+		$this->syncNetworkData($this->networkProperties);
+		return $this->networkProperties->getAll();
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		$properties->setByte(EntityMetadataProperties::ALWAYS_SHOW_NAMETAG, $this->alwaysShowNameTag ? 1 : 0);
-		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->height);
-		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->width);
+		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->size->getHeight());
+		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->size->getWidth());
 		$properties->setFloat(EntityMetadataProperties::SCALE, $this->scale);
 		$properties->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
 		$properties->setLong(EntityMetadataProperties::OWNER_EID, $this->ownerId ?? -1);

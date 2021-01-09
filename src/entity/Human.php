@@ -74,10 +74,6 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	/** @var UUID */
 	protected $uuid;
 
-	public $width = 0.6;
-	public $height = 1.8;
-	public $eyeHeight = 1.62;
-
 	/** @var Skin */
 	protected $skin;
 
@@ -93,6 +89,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->skin = $skin;
 		parent::__construct($location, $nbt);
 	}
+
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(1.8, 0.6, 1.62); }
 
 	/**
 	 * @throws InvalidSkinException
@@ -401,7 +399,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$pk->yaw = $this->location->yaw;
 		$pk->pitch = $this->location->pitch;
 		$pk->item = TypeConverter::getInstance()->coreItemStackToNet($this->getInventory()->getItemInHand());
-		$pk->metadata = $this->getSyncedNetworkData(false);
+		$pk->metadata = $this->getAllNetworkData();
 		$player->getNetworkSession()->sendDataPacket($pk);
 
 		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately

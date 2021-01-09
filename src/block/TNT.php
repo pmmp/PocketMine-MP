@@ -34,6 +34,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
+use pocketmine\world\sound\IgniteSound;
 use function cos;
 use function sin;
 use const M_PI;
@@ -101,6 +102,7 @@ class TNT extends Opaque{
 		$tnt->setMotion(new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));
 
 		$tnt->spawnToAll();
+		$tnt->broadcastSound(new IgniteSound());
 	}
 
 	public function getFlameEncouragement() : int{

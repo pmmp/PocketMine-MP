@@ -1209,7 +1209,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		if($exceededRateLimit){ //client and server positions will be out of sync if this happens
-			$this->server->getLogger()->debug("Player " . $this->getName() . " exceeded movement rate limit, forcing to last accepted position");
+			$this->logger->debug("Exceeded movement rate limit, forcing to last accepted position");
 			$this->sendPosition($this->location, $this->location->getYaw(), $this->location->getPitch(), MovePlayerPacket::MODE_RESET);
 		}
 	}
@@ -1626,8 +1626,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return false;
 		}
 		if($entity instanceof ItemEntity or $entity instanceof Arrow){
-			$this->kick("Attempting to attack an invalid entity");
-			$this->logger->warning($this->getServer()->getLanguage()->translateString("pocketmine.player.invalidEntity", [$this->getName()]));
+			$this->logger->debug("Attempted to attack non-attackable entity " . get_class($entity));
 			return false;
 		}
 
@@ -1657,7 +1656,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$entity->attack($ev);
 
-		$soundPos = $entity->getPosition()->add(0, $entity->width / 2, 0);
+		$soundPos = $entity->getPosition()->add(0, $entity->size->getHeight() / 2, 0);
 		if($ev->isCancelled()){
 		    if(!$this->isSilent() && !$this->isAdventure()){
                 $this->getWorld()->addSound($soundPos, new EntityAttackNoDamageSound());
@@ -2033,16 +2032,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		throw new \BadMethodCallException("Players can't be saved with chunks");
 	}
 
-	/**
-	 * Handles player data saving
-	 *
-	 * @throws \InvalidStateException if the player is closed
-	 */
-	public function save() : void{
-		if($this->closed){
-			throw new \InvalidStateException("Tried to save closed player");
-		}
-
+	public function getSaveData() : CompoundTag{
 		$nbt = $this->saveNBT();
 
 		if($this->location->isValid()){
@@ -2071,7 +2061,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$nbt->setLong("firstPlayed", $this->firstPlayed);
 		$nbt->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
 
-		$this->server->saveOfflinePlayerData($this->username, $nbt);
+		return $nbt;
+	}
+
+	/**
+	 * Handles player data saving
+	 */
+	public function save() : void{
+		$this->server->saveOfflinePlayerData($this->username, $this->getSaveData());
 	}
 
 	protected function onDeath() : void{
