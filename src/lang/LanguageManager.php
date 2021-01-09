@@ -127,7 +127,7 @@ class LanguageManager{
     }
 
     public static function getFallbackLanguage() : Language{
-        return self::$fallbackLanguage;
+        return self::$fallbackLanguage ?? new Language(LanguageManager::FALLBACK_LANGUAGE, RESOURCE_PATH . "locale/");
     }
 
     /**
