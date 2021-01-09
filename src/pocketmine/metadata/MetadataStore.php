@@ -29,7 +29,10 @@ namespace pocketmine\metadata;
 use pocketmine\plugin\Plugin;
 
 abstract class MetadataStore{
-	/** @var \SplObjectStorage[]|MetadataValue[][] */
+	/**
+	 * @var \SplObjectStorage[]|MetadataValue[][]
+	 * @phpstan-var array<string, \SplObjectStorage<Plugin, MetadataValue>>
+	 */
 	private $metadataMap;
 
 	/**
@@ -41,6 +44,7 @@ abstract class MetadataStore{
 		$owningPlugin = $newMetadataValue->getOwningPlugin();
 
 		if(!isset($this->metadataMap[$key])){
+			/** @phpstan-var \SplObjectStorage<Plugin, MetadataValue> $entry */
 			$entry = new \SplObjectStorage();
 			$this->metadataMap[$key] = $entry;
 		}else{
@@ -92,7 +96,6 @@ abstract class MetadataStore{
 	 * @return void
 	 */
 	public function invalidateAll(Plugin $owningPlugin){
-		/** @var \SplObjectStorage|MetadataValue[] $values */
 		foreach($this->metadataMap as $values){
 			if(isset($values[$owningPlugin])){
 				$values[$owningPlugin]->invalidate();
