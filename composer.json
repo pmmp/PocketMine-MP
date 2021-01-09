@@ -60,7 +60,8 @@
    "config": {
       "platform": {
          "php": "7.3.0"
-      }
+      },
+      "sort-packages": true
    },
    "scripts": {
       "make-devtools": "@php -dphar.readonly=0 tests/plugins/DevTools/src/DevTools/ConsoleScript.php --make tests/plugins/DevTools --out plugins/DevTools.phar",
