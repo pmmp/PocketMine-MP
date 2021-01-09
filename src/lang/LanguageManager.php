@@ -104,10 +104,11 @@ class LanguageManager{
                 });
 
                 if(self::$fallbackLanguage === null){
-                    if(array_search(LanguageManager::FALLBACK_LANGUAGE . ".ini", $files)){
+                    $fallbackLanguageKey = array_search(LanguageManager::FALLBACK_LANGUAGE . ".ini", $files, true);
+                    if($fallbackLanguageKey !== false){
                         $this->languages[LanguageManager::FALLBACK_LANGUAGE] = new Language(LanguageManager::FALLBACK_LANGUAGE, $path);
                         self::$fallbackLanguage = $this->languages[LanguageManager::FALLBACK_LANGUAGE];
-                        unset($files[LanguageManager::FALLBACK_LANGUAGE . ".ini"]);
+                        unset($fallbackLanguageKey);
                     } else {
                         throw new LanguageNotFoundException("Fallback Language not found");
                     }

@@ -81,6 +81,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
 use pocketmine\lang\Language;
+use pocketmine\lang\LanguageManager;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -282,7 +283,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->xuid = $this->playerInfo instanceof XboxLivePlayerInfo ? $this->playerInfo->getXuid() : "";
 
-        $this->language = $server->getLanguageManager()->get(LanguageCodeMapping::get($playerInfo->getLocale()));
+		if(($languageCode = LanguageCodeMapping::get($playerInfo->getLocale())) !== null) {
+            if (($language = $server->getLanguageManager()->get($languageCode)) !== null) {
+                $this->language = $language;
+            }
+        } else $this->language = LanguageManager::getFallbackLanguage();
 
 		$rootPermissions = [DefaultPermissions::ROOT_USER => true];
 		if($this->server->isOp($this->username)){
