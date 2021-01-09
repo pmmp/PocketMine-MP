@@ -32,42 +32,39 @@ use const pocketmine\RESOURCE_PATH;
 
 class Language{
 
-    /** @var string */
-    private $langCode;
-    /** @var string[] */
-    private $langValues;
-    /** @var Language|null */
-    private $fallbackLang;
+	/** @var string */
+	private $langCode;
+	/** @var string[] */
+	private $langValues;
+	/** @var Language|null */
+	private $fallbackLang;
 
-    public function __construct(string $lang, ?string $path = null, string $fallback = LanguageManager::FALLBACK_LANGUAGE){
-        $this->langCode = $lang;
-        if($path === null){
-            $path = RESOURCE_PATH . "locale/";
-        }
-        $this->langValues = LanguageManager::loadLang($path, $lang);
-        if($lang != $fallback){
-            $this->fallbackLang = LanguageManager::getFallbackLanguage();
-        }
-    }
+	public function __construct(string $lang, ?string $path = null, string $fallback = LanguageManager::FALLBACK_LANGUAGE){
+		$this->langCode = $lang;
+		if($path === null){
+			$path = RESOURCE_PATH . "locale/";
+		}
+		$this->langValues = LanguageManager::loadLang($path, $lang);
+		if($lang != $fallback){
+			$this->fallbackLang = LanguageManager::getFallbackLanguage();
+		}
+	}
 
 	public function getName() : string{
 		return $this->get("language.name");
 	}
 
-    /**
-     * @return string
-     */
-    public function getLangCode() : string{
-        return $this->langCode;
-    }
+	public function getLangCode() : string{
+		return $this->langCode;
+	}
 
     /**
      * Complements the language pack.
      * @param string[] $langValues
      */
-    public function supplement(array $langValues) : void{
-        $this->langValues = array_merge($this->langValues, $langValues);
-    }
+	public function supplement(array $langValues) : void{
+		$this->langValues = array_merge($this->langValues, $langValues);
+	}
 
 	/**
 	 * @param (float|int|string)[] $params
@@ -98,9 +95,9 @@ class Language{
         return $this->langValues[$id] ?? null;
 	}
 
-    protected function fallbackInternalGet(string $id) : ?string{
-        return $this->fallbackLang !== null ? $this->fallbackLang->translateString($id) : null;
-    }
+	protected function fallbackInternalGet(string $id) : ?string{
+		return $this->fallbackLang !== null ? $this->fallbackLang->translateString($id) : null;
+	}
 
 	public function get(string $id) : string{
 		return $this->internalGet($id) ?? $this->fallbackInternalGet($id) ?? $id;

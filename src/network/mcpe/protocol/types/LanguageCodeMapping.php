@@ -28,44 +28,44 @@ namespace pocketmine\network\mcpe\protocol\types;
  */
 final class LanguageCodeMapping{
 
-    /** @var string[] */
-    public const LANGUAGE_MAPPINGS = [
-        'bg_BG' => 'bul',
-        'cs_CZ' => 'ces',
-        'da_DK' => 'dan',
-        'de_DE' => 'deu',
-        'el_GR' => 'eli',
-        'en_GB' => 'eng',
-        'en_US' => 'eng',
-        'es_ES' => 'spa',
-        'es_MX' => 'spa',
-        'fi_FI' => 'fin',
-        'fr_CA' => 'fra',
-        'fr_FR' => 'fra',
-        'hu_HU' => 'hun',
-        'id_ID' => 'ind',
-        'it_IT' => 'ita',
-        'ja_JP' => 'jpn',
-        'ko_KR' => 'kor',
-        'nb_NO' => 'nor',
-        'nl_NL' => 'nld',
-        'pl_PL' => 'pol',
-        'pt_BR' => 'por',
-        'pt_PT' => 'por',
-        'ru_RU' => 'rus',
-        'sk_SK' => 'slv',
-        'sv_SE' => 'swe',
-        'tr_TR' => 'tur',
-        'uk_UA' => 'ukr',
-        'zh_CN' => 'chs',
-        'zh_TW' => 'zho'
-    ];
+	/** @var string[] */
+	public const LANGUAGE_MAPPINGS = [
+		'bg_BG' => 'bul',
+		'cs_CZ' => 'ces',
+		'da_DK' => 'dan',
+		'de_DE' => 'deu',
+		'el_GR' => 'eli',
+		'en_GB' => 'eng',
+		'en_US' => 'eng',
+		'es_ES' => 'spa',
+		'es_MX' => 'spa',
+		'fi_FI' => 'fin',
+		'fr_CA' => 'fra',
+		'fr_FR' => 'fra',
+		'hu_HU' => 'hun',
+		'id_ID' => 'ind',
+		'it_IT' => 'ita',
+		'ja_JP' => 'jpn',
+		'ko_KR' => 'kor',
+		'nb_NO' => 'nor',
+		'nl_NL' => 'nld',
+		'pl_PL' => 'pol',
+		'pt_BR' => 'por',
+		'pt_PT' => 'por',
+		'ru_RU' => 'rus',
+		'sk_SK' => 'slv',
+		'sv_SE' => 'swe',
+		'tr_TR' => 'tur',
+		'uk_UA' => 'ukr',
+		'zh_CN' => 'chs',
+		'zh_TW' => 'zho'
+	];
 
-    private function __construct(){
-        //NOOP
-    }
+	private function __construct(){
+		//NOOP
+	}
 
-    public static function get(string $code) : ?string{
-        return self::LANGUAGE_MAPPINGS[$code];
-    }
+	public static function get(string $code) : ?string{
+		return self::LANGUAGE_MAPPINGS[$code];
+	}
 }

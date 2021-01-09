@@ -173,8 +173,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected $authenticated;
 	/** @var PlayerInfo */
 	protected $playerInfo;
-    /** @var Language */
-    protected $language;
+	/** @var Language */
+	protected $language;
 
 	/** @var Inventory|null */
 	protected $currentWindow = null;

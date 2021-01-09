@@ -825,14 +825,14 @@ class Server{
 
 			$this->forceLanguage = (bool) $this->configGroup->getProperty("settings.force-language", false);
 			$selectedLang = $this->configGroup->getConfigString("language", $this->configGroup->getProperty("settings.language", LanguageManager::FALLBACK_LANGUAGE));
-            $this->languageManager = new LanguageManager(RESOURCE_PATH . 'locale/');
+			$this->languageManager = new LanguageManager(RESOURCE_PATH . 'locale/');
 
-            if(($language = $this->languageManager->get($selectedLang)) !== null){
-                $this->language = $language;
-            } else {
-                $this->logger->emergency("Fallback language \"" . LanguageManager::FALLBACK_LANGUAGE . "\" not found");
-                return;
-            }
+			if(($language = $this->languageManager->get($selectedLang)) !== null){
+				$this->language = $language;
+			} else {
+				$this->logger->emergency("Fallback language \"" . LanguageManager::FALLBACK_LANGUAGE . "\" not found");
+				return;
+			}
 
 			$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLangCode()]));
 
@@ -1568,9 +1568,9 @@ class Server{
 		$this->uniquePlayers = [];
 	}
 
-    public function getLanguageManager(): LanguageManager{
-        return $this->languageManager;
-    }
+	public function getLanguageManager(): LanguageManager{
+		return $this->languageManager;
+	}
 
 	/**
 	 * @return Language

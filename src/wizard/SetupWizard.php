@@ -80,11 +80,11 @@ class SetupWizard{
 			}
 		}while($lang === null);
 
-        $this->lang = new Language($lang, RESOURCE_PATH . 'locale/');
+		$this->lang = new Language($lang, RESOURCE_PATH . 'locale/');
 
-        if($this->lang === null){
-            $this->error("Fallback Language not found");
-        }
+		if($this->lang === null){
+			$this->error("Fallback Language not found");
+		}
 
 		$this->message($this->lang->get("language_has_been_selected"));
 
