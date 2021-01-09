@@ -249,8 +249,8 @@ class Server{
 	/** @var bool */
 	private $networkCompressionAsync = true;
 
-    /** @var LanguageManager */
-    private $languageManager;
+	/** @var LanguageManager */
+	private $languageManager;
 	/** @var Language */
 	private $language;
 	/** @var bool */
