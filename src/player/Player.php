@@ -283,11 +283,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->xuid = $this->playerInfo instanceof XboxLivePlayerInfo ? $this->playerInfo->getXuid() : "";
 
-		if(($languageCode = LanguageCodeMapping::get($playerInfo->getLocale())) !== null) {
-            if (($language = $server->getLanguageManager()->get($languageCode)) !== null) {
-                $this->language = $language;
-            }
-        } else $this->language = LanguageManager::getFallbackLanguage();
+        if(($languageCode = LanguageCodeMapping::get($playerInfo->getLocale())) !== null) {
+			if (($language = $server->getLanguageManager()->get($languageCode)) !== null) {
+				$this->language = $language;
+			}
+		} else $this->language = LanguageManager::getFallbackLanguage();
 
 		$rootPermissions = [DefaultPermissions::ROOT_USER => true];
 		if($this->server->isOp($this->username)){

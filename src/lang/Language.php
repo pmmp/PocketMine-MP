@@ -92,7 +92,7 @@ class Language{
 	}
 
 	protected function internalGet(string $id) : ?string{
-        return $this->langValues[$id] ?? null;
+		return $this->langValues[$id] ?? null;
 	}
 
 	protected function fallbackInternalGet(string $id) : ?string{
