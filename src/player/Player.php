@@ -530,6 +530,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function getNetworkSession() : NetworkSession{
+		if($this->networkSession === null){
+			throw new \InvalidStateException("Player is not connected");
+		}
 		return $this->networkSession;
 	}
 
