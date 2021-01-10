@@ -421,7 +421,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function setAllowFlight(bool $value) : void{
 		$this->allowFlight = $value;
-		$this->networkSession->syncAdventureSettings($this);
+		$this->getNetworkSession()->syncAdventureSettings($this);
 	}
 
 	public function getAllowFlight() : bool{
@@ -432,7 +432,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($this->flying !== $value){
 			$this->flying = $value;
 			$this->resetFallDistance();
-			$this->networkSession->syncAdventureSettings($this);
+			$this->getNetworkSession()->syncAdventureSettings($this);
 		}
 	}
 
@@ -442,7 +442,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function setAutoJump(bool $value) : void{
 		$this->autoJump = $value;
-		$this->networkSession->syncAdventureSettings($this);
+		$this->getNetworkSession()->syncAdventureSettings($this);
 	}
 
 	public function hasAutoJump() : bool{
@@ -516,7 +516,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->nextChunkOrderRun = 0;
 
-		$this->networkSession->syncViewAreaRadius($this->viewDistance);
+		$this->getNetworkSession()->syncViewAreaRadius($this->viewDistance);
 
 		$this->logger->debug("Setting view distance to " . $this->viewDistance . " (requested " . $distance . ")");
 	}
@@ -663,7 +663,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 				$this->usedChunks = [];
 				$this->loadQueue = [];
-				$this->networkSession->onEnterWorld();
+				$this->getNetworkSession()->onEnterWorld();
 			}
 
 			return true;
@@ -684,7 +684,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					}
 				}
 			}
-			$this->networkSession->stopUsingChunk($x, $z);
+			$this->getNetworkSession()->stopUsingChunk($x, $z);
 			unset($this->usedChunks[$index]);
 		}
 		$world->unregisterChunkLoader($this->chunkLoader, $x, $z);
@@ -735,7 +735,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			unset($this->loadQueue[$index]);
 			$this->usedChunks[$index] = UsedChunkStatus::REQUESTED();
 
-			$this->networkSession->startUsingChunk($X, $Z, function(int $chunkX, int $chunkZ) use ($index) : void{
+			$this->getNetworkSession()->startUsingChunk($X, $Z, function(int $chunkX, int $chunkZ) use ($index) : void{
 				$this->usedChunks[$index] = UsedChunkStatus::SENT();
 				if($this->spawnChunkLoadCount === -1){
 					$this->spawnEntitiesOnChunk($chunkX, $chunkZ);
@@ -749,7 +749,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 						}
 					}
 
-					$this->networkSession->notifyTerrainReady();
+					$this->getNetworkSession()->notifyTerrainReady();
 				}
 			});
 		}
@@ -839,7 +839,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->loadQueue = $newOrder;
 		if(count($this->loadQueue) > 0 or count($unloadChunks) > 0){
 			$this->chunkLoader->setCurrentLocation($this->location);
-			$this->networkSession->syncViewAreaCenterPoint($this->location, $this->viewDistance);
+			$this->getNetworkSession()->syncViewAreaCenterPoint($this->location, $this->viewDistance);
 		}
 
 		Timings::$playerChunkOrder->stopTiming();
@@ -917,7 +917,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}else{
 			$this->spawnPosition = null;
 		}
-		$this->networkSession->syncPlayerSpawnPoint($this->getSpawn());
+		$this->getNetworkSession()->syncPlayerSpawnPoint($this->getSpawn());
 	}
 
 	public function isSleeping() : bool{
@@ -961,7 +961,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 			$this->getWorld()->setSleepTicks(0);
 
-			$this->networkSession->sendDataPacket(AnimatePacket::create($this->getId(), AnimatePacket::ACTION_STOP_SLEEP));
+			$this->getNetworkSession()->sendDataPacket(AnimatePacket::create($this->getId(), AnimatePacket::ACTION_STOP_SLEEP));
 		}
 	}
 
@@ -1014,7 +1014,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->spawnToAll();
 		}
 
-		$this->networkSession->syncGameMode($this->gamemode);
+		$this->getNetworkSession()->syncGameMode($this->gamemode);
 		return true;
 	}
 
@@ -1238,7 +1238,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function setMotion(Vector3 $motion) : bool{
 		if(parent::setMotion($motion)){
 			$this->broadcastMotion();
-			$this->networkSession->sendDataPacket(SetActorMotionPacket::create($this->id, $motion));
+			$this->getNetworkSession()->sendDataPacket(SetActorMotionPacket::create($this->id, $motion));
 
 			return true;
 		}
@@ -1753,35 +1753,35 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($subtitle !== ""){
 			$this->sendSubTitle($subtitle);
 		}
-		$this->networkSession->onTitle($title);
+		$this->getNetworkSession()->onTitle($title);
 	}
 
 	/**
 	 * Sets the subtitle message, without sending a title.
 	 */
 	public function sendSubTitle(string $subtitle) : void{
-		$this->networkSession->onSubTitle($subtitle);
+		$this->getNetworkSession()->onSubTitle($subtitle);
 	}
 
 	/**
 	 * Adds small text to the user's screen.
 	 */
 	public function sendActionBarMessage(string $message) : void{
-		$this->networkSession->onActionBar($message);
+		$this->getNetworkSession()->onActionBar($message);
 	}
 
 	/**
 	 * Removes the title from the client's screen.
 	 */
 	public function removeTitles() : void{
-		$this->networkSession->onClearTitle();
+		$this->getNetworkSession()->onClearTitle();
 	}
 
 	/**
 	 * Resets the title duration settings to defaults and removes any existing titles.
 	 */
 	public function resetTitles() : void{
-		$this->networkSession->onResetTitleOptions();
+		$this->getNetworkSession()->onResetTitleOptions();
 	}
 
 	/**
@@ -1793,7 +1793,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function setTitleDuration(int $fadeIn, int $stay, int $fadeOut) : void{
 		if($fadeIn >= 0 and $stay >= 0 and $fadeOut >= 0){
-			$this->networkSession->onTitleDuration($fadeIn, $stay, $fadeOut);
+			$this->getNetworkSession()->onTitleDuration($fadeIn, $stay, $fadeOut);
 		}
 	}
 
@@ -1808,7 +1808,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		$this->networkSession->onRawChatMessage($this->getLanguage()->translateString($message));
+		$this->getNetworkSession()->onRawChatMessage($this->getLanguage()->translateString($message));
 	}
 
 	/**
@@ -1819,7 +1819,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			foreach($parameters as $i => $p){
 				$parameters[$i] = $this->getLanguage()->translateString($p, [], "pocketmine.");
 			}
-			$this->networkSession->onTranslatedChatMessage($this->getLanguage()->translateString($message, $parameters, "pocketmine."), $parameters);
+			$this->getNetworkSession()->onTranslatedChatMessage($this->getLanguage()->translateString($message, $parameters, "pocketmine."), $parameters);
 		}else{
 			$this->sendMessage($this->getLanguage()->translateString($message, $parameters));
 		}
@@ -1829,9 +1829,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param string[] $args
 	 */
 	public function sendJukeboxPopup(string $key, array $args) : void{
-		if($this->networkSession !== null){
-			$this->networkSession->onJukeboxPopup($key, $args);
-		}
+		$this->getNetworkSession()->onJukeboxPopup($key, $args);
 	}
 
 	/**
@@ -1840,11 +1838,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * TODO: add translation type popups
 	 */
 	public function sendPopup(string $message) : void{
-		$this->networkSession->onPopup($message);
+		$this->getNetworkSession()->onPopup($message);
 	}
 
 	public function sendTip(string $message) : void{
-		$this->networkSession->onTip($message);
+		$this->getNetworkSession()->onTip($message);
 	}
 
 	/**
@@ -1854,7 +1852,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function sendForm(Form $form) : void{
 		$id = $this->formIdCounter++;
-		if($this->networkSession->onFormSent($id, $form)){
+		if($this->getNetworkSession()->onFormSent($id, $form)){
 			$this->forms[$id] = $form;
 		}
 	}
@@ -1893,7 +1891,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$ev = new PlayerTransferEvent($this, $address, $port, $message);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$this->networkSession->transfer($ev->getAddress(), $ev->getPort(), $ev->getMessage());
+			$this->getNetworkSession()->transfer($ev->getAddress(), $ev->getPort(), $ev->getMessage());
 			return true;
 		}
 
@@ -1938,7 +1936,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		$this->networkSession->onPlayerDestroyed($reason);
+		$this->getNetworkSession()->onPlayerDestroyed($reason);
 		$this->onPostDisconnect($reason, $quitMessage);
 	}
 
@@ -2103,7 +2101,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->startDeathAnimation();
 
-		$this->networkSession->onServerDeath();
+		$this->getNetworkSession()->onServerDeath();
 	}
 
 	protected function onDeathUpdate(int $tickDiff) : bool{
@@ -2143,7 +2141,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->spawnToAll();
 		$this->scheduleUpdate();
 
-		$this->networkSession->onServerRespawn();
+		$this->getNetworkSession()->onServerRespawn();
 	}
 
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
@@ -2198,7 +2196,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * TODO: remove this
 	 */
 	public function sendPosition(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL) : void{
-		$this->networkSession->syncMovement($pos, $yaw, $pitch, $mode);
+		$this->getNetworkSession()->syncMovement($pos, $yaw, $pitch, $mode);
 
 		$this->ySize = 0;
 	}
@@ -2303,7 +2301,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->removeCurrentWindow();
 
 		$this->logger->debug("Opening inventory " . get_class($inventory) . "#" . spl_object_id($inventory));
-		$this->networkSession->getInvManager()->onCurrentWindowChange($inventory);
+		$this->getNetworkSession()->getInvManager()->onCurrentWindowChange($inventory);
 		$inventory->onOpen($this);
 		$this->currentWindow = $inventory;
 		return true;
@@ -2316,7 +2314,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->logger->debug("Closing inventory " . get_class($this->currentWindow) . "#" . spl_object_id($this->currentWindow));
 			$this->currentWindow->onClose($this);
 			if($this->isConnected()){
-				$this->networkSession->getInvManager()->onCurrentWindowRemove();
+				$this->getNetworkSession()->getInvManager()->onCurrentWindowRemove();
 			}
 			$this->currentWindow = null;
 		}
