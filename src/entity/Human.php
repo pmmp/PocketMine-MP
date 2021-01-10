@@ -30,6 +30,8 @@ use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
+use pocketmine\inventory\CallbackInventoryListener;
+use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\enchantment\VanillaEnchantments;
@@ -56,6 +58,7 @@ use pocketmine\utils\Limits;
 use pocketmine\uuid\UUID;
 use pocketmine\world\sound\TotemUseSound;
 use function array_filter;
+use function array_key_exists;
 use function array_merge;
 use function array_values;
 use function min;
@@ -210,6 +213,23 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->xpManager = new ExperienceManager($this);
 
 		$this->inventory = new PlayerInventory($this);
+		$syncHeldItem = function() : void{
+			foreach($this->getViewers() as $viewer){
+				$viewer->getNetworkSession()->onMobEquipmentChange($this);
+			}
+		};
+		$this->inventory->getListeners()->add(new CallbackInventoryListener(
+			function(Inventory $unused, int $slot, Item $unused2) use ($syncHeldItem) : void{
+				if($slot === $this->inventory->getHeldItemIndex()){
+					$syncHeldItem();
+				}
+			},
+			function(Inventory $unused, array $oldItems) use ($syncHeldItem) : void{
+				if(array_key_exists($this->inventory->getHeldItemIndex(), $oldItems)){
+					$syncHeldItem();
+				}
+			}
+		));
 		$this->enderChestInventory = new EnderChestInventory();
 		$this->initHumanData($nbt);
 
@@ -217,6 +237,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if($inventoryTag !== null){
 			$armorListeners = $this->armorInventory->getListeners()->toArray();
 			$this->armorInventory->getListeners()->clear();
+			$inventoryListeners = $this->inventory->getListeners()->toArray();
+			$this->inventory->getListeners()->clear();
 
 			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
@@ -231,6 +253,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			}
 
 			$this->armorInventory->getListeners()->add(...$armorListeners);
+			$this->inventory->getListeners()->add(...$inventoryListeners);
 		}
 
 		$enderChestInventoryTag = $nbt->getListTag("EnderChestInventory");

@@ -104,9 +104,6 @@ class PlayerInventory extends BaseInventory{
 	 */
 	public function setItemInHand(Item $item) : void{
 		$this->setItem($this->getHeldItemIndex(), $item);
-		foreach($this->holder->getViewers() as $viewer){
-			$viewer->getNetworkSession()->onMobEquipmentChange($this->holder);
-		}
 	}
 
 	/**
