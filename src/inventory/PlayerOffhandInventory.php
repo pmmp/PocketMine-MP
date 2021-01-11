@@ -47,7 +47,7 @@ final class PlayerOffhandInventory extends BaseInventory{
 	/**
 	 * Sets the item in the offhand slot to the specified item
 	 */
-	public function setItemInOffhand(Item $item){
+	public function setItemInOffhand(Item $item) : void{
 		$this->setItem(0, $item);
 	}
 
