@@ -289,7 +289,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$type = $source->getCause();
 		if($type !== EntityDamageEvent::CAUSE_SUICIDE and $type !== EntityDamageEvent::CAUSE_VOID
-			and $this->inventory->getItemInHand() instanceof Totem){ //TODO: check offhand as well (when it's implemented)
+			and ($this->inventory->getItemInHand() instanceof Totem or $this->offhandInventory->getItemInHand() instanceof Totem)){
 
 			$compensation = $this->getHealth() - $source->getFinalDamage() - 1;
 			if($compensation < 0){
@@ -311,10 +311,16 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$this->broadcastAnimation(new TotemUseAnimation($this));
 			$this->broadcastSound(new TotemUseSound());
 
-			$hand = $this->inventory->getItemInHand();
+			$hand = $this->offhandInventory->getItemInHand();
 			if($hand instanceof Totem){
 				$hand->pop(); //Plugins could alter max stack size
-				$this->inventory->setItemInHand($hand);
+				$this->offhandInventory->setItemInHand($hand);
+			}else{
+				$hand = $this->inventory->getItemInHand();
+				if($hand instanceof Totem){
+					$hand->pop();
+					$this->inventory->setItemInHand($hand);
+				}
 			}
 		}
 	}
