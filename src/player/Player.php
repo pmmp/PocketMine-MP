@@ -1805,6 +1805,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param TranslationContainer|string $message
 	 */
 	public function sendMessage($message) : void{
+	    if (!$this->isConnected()){
+	        return;
+        }
+
 		if($message instanceof TranslationContainer){
 			$this->sendTranslation($message->getText(), $message->getParameters());
 			return;

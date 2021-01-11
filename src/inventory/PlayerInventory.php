@@ -85,13 +85,13 @@ class PlayerInventory extends BaseInventory{
 		$this->itemInHandIndex = $hotbarSlot;
 
 		if($this->holder instanceof Player and $send){
-		    if(($session = $this->holder->getNetworkSession())->isConnected()){
-                $session->getInvManager()->syncSelectedHotbarSlot();
+		    if($this->holder->isConnected()){
+                $this->holder->getNetworkSession()->getInvManager()->syncSelectedHotbarSlot();
             }
 		}
 		foreach($this->holder->getViewers() as $viewer){
-            if(($session = $viewer->getNetworkSession())->isConnected()){
-                $session->onMobEquipmentChange($this->holder);
+            if($viewer->isConnected()){
+                $viewer->getNetworkSession()->onMobEquipmentChange($this->holder);
             }
 		}
 	}
@@ -109,27 +109,6 @@ class PlayerInventory extends BaseInventory{
 	public function setItemInHand(Item $item) : void{
 		$this->setItem($this->getHeldItemIndex(), $item);
 	}
-
-    protected function onSlotChange(int $index, Item $before) : void
-    {
-        foreach($this->listeners as $listener){
-            $listener->onSlotChange($this, $index, $before);
-        }
-
-        foreach($this->viewers as $viewer){
-            if(($session = $viewer->getNetworkSession())->isConnected()) {
-                $session->getInvManager()->syncSlot($this, $index);
-            }
-        }
-
-        if($index === $this->getHeldItemIndex()){
-            foreach($this->holder->getViewers() as $viewer){
-                if(($session = $viewer->getNetworkSession())->isConnected()){
-                    $session->onMobEquipmentChange($this->holder);
-                }
-            }
-        }
-    }
 
 	/**
 	 * Returns the number of slots in the hotbar.
