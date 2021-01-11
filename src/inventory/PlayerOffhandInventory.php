@@ -37,10 +37,16 @@ final class PlayerOffhandInventory extends BaseInventory{
 
 	public function getHolder() : Human{ return $this->holder; }
 
+	/**
+	 * Returns the item in offhand
+	 */
 	public function getItemInOffhand() : Item{
 		return $this->getItem(0);
 	}
 
+	/**
+	 * Sets the item in the offhand slot to the specified item
+	 */
 	public function setItemInOffhand(Item $item){
 		$this->setItem(0, $item);
 	}
