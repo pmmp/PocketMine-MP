@@ -35,7 +35,19 @@ final class PlayerOffhandInventory extends BaseInventory{
 		parent::__construct(1);
 	}
 
+	public function getDefaultSize() : int{
+		return 1;
+	}
+
 	public function getHolder() : Human{ return $this->holder; }
+
+	public function getItemInOffhand() : Item{
+		return $this->getItem(0);
+	}
+
+	public function setItemInOffhand(Item $item){
+		$this->setItem(0, $item);
+	}
 
 	protected function onSlotChange(int $index, Item $before) : void{
 		parent::onSlotChange($index, $before);
