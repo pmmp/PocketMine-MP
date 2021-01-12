@@ -2,7 +2,7 @@
 ## Pre-requisites
 - A bash shell (git bash is sufficient for Windows)
 - [`git`](https://git-scm.com) available in your shell
-- PHP 7.3 or newer available in your shell
+- PHP 7.4 or newer available in your shell
 - [`composer`](https://getcomposer.org) available in your shell
 
 ## Custom PHP binaries
