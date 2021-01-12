@@ -1373,7 +1373,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return false;
 		}
 
-		$this->inventory->setHeldItemIndex($hotbarSlot, false);
+		$this->inventory->setHeldItemIndex($hotbarSlot);
 		$this->setUsingItem(false);
 
 		return true;

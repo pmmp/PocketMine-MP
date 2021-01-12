@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
+use Ds\Set;
 use pocketmine\entity\Human;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
@@ -35,8 +36,15 @@ class PlayerInventory extends BaseInventory{
 	/** @var int */
 	protected $itemInHandIndex = 0;
 
+	/**
+	 * @var \Closure[]|Set
+	 * @phpstan-var Set<\Closure(int $oldIndex) : void>
+	 */
+	protected $heldItemIndexChangeListeners;
+
 	public function __construct(Human $player){
 		$this->holder = $player;
+		$this->heldItemIndexChangeListeners = new Set();
 		parent::__construct(36);
 	}
 
@@ -73,24 +81,26 @@ class PlayerInventory extends BaseInventory{
 	/**
 	 * Sets which hotbar slot the player is currently loading.
 	 *
-	 * @param int  $hotbarSlot 0-8 index of the hotbar slot to hold
-	 * @param bool $send Whether to send updates back to the inventory holder. This should usually be true for plugin calls.
-	 *                    It should only be false to prevent feedback loops of equipment packets between client and server.
+	 * @param int $hotbarSlot 0-8 index of the hotbar slot to hold
 	 *
 	 * @throws \InvalidArgumentException if the hotbar slot is out of range
 	 */
-	public function setHeldItemIndex(int $hotbarSlot, bool $send = true) : void{
+	public function setHeldItemIndex(int $hotbarSlot) : void{
 		$this->throwIfNotHotbarSlot($hotbarSlot);
 
+		$oldIndex = $this->itemInHandIndex;
 		$this->itemInHandIndex = $hotbarSlot;
 
-		if($this->holder instanceof Player and $send){
-			$this->holder->getNetworkSession()->getInvManager()->syncSelectedHotbarSlot();
-		}
-		foreach($this->holder->getViewers() as $viewer){
-			$viewer->getNetworkSession()->onMobEquipmentChange($this->holder);
+		foreach($this->heldItemIndexChangeListeners as $callback){
+			$callback($oldIndex);
 		}
 	}
+
+	/**
+	 * @return \Closure[]|Set
+	 * @phpstan-return Set<\Closure(int $oldIndex) : void>
+	 */
+	public function getHeldItemIndexChangeListeners() : Set{ return $this->heldItemIndexChangeListeners; }
 
 	/**
 	 * Returns the currently-held item.

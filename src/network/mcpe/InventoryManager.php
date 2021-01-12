@@ -76,6 +76,8 @@ class InventoryManager{
 	 * @phpstan-var array<int, array<int, Item>>
 	 */
 	private $initiatedSlotChanges = [];
+	/** @var int */
+	private $clientSelectedHotbarSlot = -1;
 
 	public function __construct(Player $player, NetworkSession $session){
 		$this->player = $player;
@@ -84,6 +86,10 @@ class InventoryManager{
 		$this->add(ContainerIds::INVENTORY, $this->player->getInventory());
 		$this->add(ContainerIds::ARMOR, $this->player->getArmorInventory());
 		$this->add(ContainerIds::UI, $this->player->getCursorInventory());
+
+		$this->player->getInventory()->getHeldItemIndexChangeListeners()->add(function() : void{
+			$this->syncSelectedHotbarSlot();
+		});
 	}
 
 	private function add(int $id, Inventory $inventory) : void{
@@ -206,13 +212,21 @@ class InventoryManager{
 		}
 	}
 
+	public function onClientSelectHotbarSlot(int $slot) : void{
+		$this->clientSelectedHotbarSlot = $slot;
+	}
+
 	public function syncSelectedHotbarSlot() : void{
-		$this->session->sendDataPacket(MobEquipmentPacket::create(
-			$this->player->getId(),
-			TypeConverter::getInstance()->coreItemStackToNet($this->player->getInventory()->getItemInHand()),
-			$this->player->getInventory()->getHeldItemIndex(),
-			ContainerIds::INVENTORY
-		));
+		$selected = $this->player->getInventory()->getHeldItemIndex();
+		if($selected !== $this->clientSelectedHotbarSlot){
+			$this->session->sendDataPacket(MobEquipmentPacket::create(
+				$this->player->getId(),
+				TypeConverter::getInstance()->coreItemStackToNet($this->player->getInventory()->getItemInHand()),
+				$selected,
+				ContainerIds::INVENTORY
+			));
+			$this->clientSelectedHotbarSlot = $selected;
+		}
 	}
 
 	public function syncCreative() : void{

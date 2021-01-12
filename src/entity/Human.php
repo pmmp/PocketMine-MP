@@ -264,7 +264,12 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			}
 		}
 
-		$this->inventory->setHeldItemIndex($nbt->getInt("SelectedInventorySlot", 0), false);
+		$this->inventory->setHeldItemIndex($nbt->getInt("SelectedInventorySlot", 0));
+		$this->inventory->getHeldItemIndexChangeListeners()->add(function(int $oldIndex) : void{
+			foreach($this->getViewers() as $viewer){
+				$viewer->getNetworkSession()->onMobEquipmentChange($this);
+			}
+		});
 
 		$this->hungerManager->setFood((float) $nbt->getInt("foodLevel", (int) $this->hungerManager->getFood()));
 		$this->hungerManager->setExhaustion($nbt->getFloat("foodExhaustionLevel", $this->hungerManager->getExhaustion()));
@@ -457,6 +462,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	protected function onDispose() : void{
 		$this->inventory->removeAllViewers();
+		$this->inventory->getHeldItemIndexChangeListeners()->clear();
 		$this->enderChestInventory->removeAllViewers();
 		parent::onDispose();
 	}
