@@ -352,12 +352,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ClassLoader.git",
-                "reference": "67ad4a426f00bca9f1361d8e4bc99188fbfbf9d9"
+                "reference": "f5d5e0ae6982686151d744d4c8b31e66c27001f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/67ad4a426f00bca9f1361d8e4bc99188fbfbf9d9",
-                "reference": "67ad4a426f00bca9f1361d8e4bc99188fbfbf9d9",
+                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/f5d5e0ae6982686151d744d4c8b31e66c27001f4",
+                "reference": "f5d5e0ae6982686151d744d4c8b31e66c27001f4",
                 "shasum": ""
             },
             "require": {
@@ -388,7 +388,7 @@
                 "issues": "https://github.com/pmmp/ClassLoader/issues",
                 "source": "https://github.com/pmmp/ClassLoader/tree/master"
             },
-            "time": "2020-12-17T17:02:45+00:00"
+            "time": "2021-01-06T21:09:10+00:00"
         },
         {
             "name": "pocketmine/color",
@@ -513,12 +513,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/LogPthreads.git",
-                "reference": "a01bd5dd4ea09c0c921c1f2cd74a75e26e69eb75"
+                "reference": "273e4ba9715c7eb916c6e50e0b92ac43b7ac389e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/a01bd5dd4ea09c0c921c1f2cd74a75e26e69eb75",
-                "reference": "a01bd5dd4ea09c0c921c1f2cd74a75e26e69eb75",
+                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/273e4ba9715c7eb916c6e50e0b92ac43b7ac389e",
+                "reference": "273e4ba9715c7eb916c6e50e0b92ac43b7ac389e",
                 "shasum": ""
             },
             "require": {
@@ -549,7 +549,7 @@
                 "issues": "https://github.com/pmmp/LogPthreads/issues",
                 "source": "https://github.com/pmmp/LogPthreads/tree/master"
             },
-            "time": "2020-12-17T16:35:10+00:00"
+            "time": "2021-01-06T21:23:23+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -640,12 +640,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "bd21d30af4f3b0d9a83e697922cd57dbefeb146f"
+                "reference": "c2a4f728ab816bde2713345ffaad79410c6eadd4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/bd21d30af4f3b0d9a83e697922cd57dbefeb146f",
-                "reference": "bd21d30af4f3b0d9a83e697922cd57dbefeb146f",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/c2a4f728ab816bde2713345ffaad79410c6eadd4",
+                "reference": "c2a4f728ab816bde2713345ffaad79410c6eadd4",
                 "shasum": ""
             },
             "require": {
@@ -675,7 +675,7 @@
                 "issues": "https://github.com/pmmp/RakLib/issues",
                 "source": "https://github.com/pmmp/RakLib/tree/master"
             },
-            "time": "2020-12-17T17:49:46+00:00"
+            "time": "2021-01-06T20:59:43+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -920,16 +920,16 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.20.0",
+            "version": "v1.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "39d483bdf39be819deabf04ec872eb0b2410b531"
+                "reference": "f377a3dd1fde44d37b9831d68dc8dea3ffd28e13"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/39d483bdf39be819deabf04ec872eb0b2410b531",
-                "reference": "39d483bdf39be819deabf04ec872eb0b2410b531",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/f377a3dd1fde44d37b9831d68dc8dea3ffd28e13",
+                "reference": "f377a3dd1fde44d37b9831d68dc8dea3ffd28e13",
                 "shasum": ""
             },
             "require": {
@@ -941,7 +941,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.20-dev"
+                    "dev-main": "1.22-dev"
                 },
                 "thanks": {
                     "name": "symfony/polyfill",
@@ -980,7 +980,7 @@
                 "shim"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.20.0"
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.22.0"
             },
             "funding": [
                 {
@@ -996,7 +996,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-10-23T14:02:19+00:00"
+            "time": "2021-01-07T16:49:33+00:00"
         }
     ],
     "packages-dev": [
@@ -3072,16 +3072,16 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.20.0",
+            "version": "v1.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
-                "reference": "f4ba089a5b6366e453971d3aad5fe8e897b37f41"
+                "reference": "c6c942b1ac76c82448322025e084cadc56048b4e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/f4ba089a5b6366e453971d3aad5fe8e897b37f41",
-                "reference": "f4ba089a5b6366e453971d3aad5fe8e897b37f41",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/c6c942b1ac76c82448322025e084cadc56048b4e",
+                "reference": "c6c942b1ac76c82448322025e084cadc56048b4e",
                 "shasum": ""
             },
             "require": {
@@ -3093,7 +3093,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.20-dev"
+                    "dev-main": "1.22-dev"
                 },
                 "thanks": {
                     "name": "symfony/polyfill",
@@ -3131,7 +3131,7 @@
                 "portable"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.20.0"
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.22.0"
             },
             "funding": [
                 {
@@ -3147,7 +3147,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-10-23T14:02:19+00:00"
+            "time": "2021-01-07T16:49:33+00:00"
         },
         {
             "name": "theseer/tokenizer",
