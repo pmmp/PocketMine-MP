@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4d776995a3d8476bf76f529ecbd568e7",
+    "content-hash": "a0b7eefe1ad35462d08e876d942b9003",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -1000,16 +1000,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.66",
+            "version": "0.12.67",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "4110a2425c6bd53acbdfcda07885e87b66e9ba3e"
+                "reference": "ced7a5d9c5dba908c1c00cea3f1d4ad74da71b86"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/4110a2425c6bd53acbdfcda07885e87b66e9ba3e",
-                "reference": "4110a2425c6bd53acbdfcda07885e87b66e9ba3e",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/ced7a5d9c5dba908c1c00cea3f1d4ad74da71b86",
+                "reference": "ced7a5d9c5dba908c1c00cea3f1d4ad74da71b86",
                 "shasum": ""
             },
             "require": {
@@ -1040,7 +1040,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/0.12.66"
+                "source": "https://github.com/phpstan/phpstan/tree/0.12.67"
             },
             "funding": [
                 {
@@ -1056,7 +1056,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-01-11T16:43:15+00:00"
+            "time": "2021-01-14T14:16:19+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
