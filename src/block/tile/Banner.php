@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use Ds\Deque;
 use pocketmine\block\utils\BannerPattern;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\DyeColorIdMap;
@@ -48,14 +47,13 @@ class Banner extends Spawnable{
 	private $baseColor;
 
 	/**
-	 * @var BannerPattern[]|Deque
-	 * @phpstan-var Deque<BannerPattern>
+	 * @var BannerPattern[]
+	 * @phpstan-var list<BannerPattern>
 	 */
-	private $patterns;
+	private $patterns = [];
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->baseColor = DyeColor::BLACK();
-		$this->patterns = new Deque();
 		parent::__construct($world, $pos);
 	}
 
@@ -115,18 +113,18 @@ class Banner extends Spawnable{
 	}
 
 	/**
-	 * @return BannerPattern[]|Deque
-	 * @phpstan-return Deque<BannerPattern>
+	 * @return BannerPattern[]
+	 * @phpstan-return list<BannerPattern>
 	 */
-	public function getPatterns() : Deque{
+	public function getPatterns() : array{
 		return $this->patterns;
 	}
 
 	/**
-	 * @param BannerPattern[]|Deque $patterns
-	 * @phpstan-param Deque<BannerPattern> $patterns
+	 * @param BannerPattern[] $patterns
+	 * @phpstan-param list<BannerPattern> $patterns
 	 */
-	public function setPatterns(Deque $patterns) : void{
+	public function setPatterns(array $patterns) : void{
 		$this->patterns = $patterns;
 	}
 
