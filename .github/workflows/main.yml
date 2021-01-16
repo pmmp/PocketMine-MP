@@ -33,6 +33,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         php: [7.4.13]
 
@@ -77,6 +78,7 @@ jobs:
     needs: build-php
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         php: [7.4.13]
 
@@ -121,6 +123,7 @@ jobs:
     needs: build-php
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         php: [7.4.13]
 

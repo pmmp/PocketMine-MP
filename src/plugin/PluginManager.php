@@ -459,8 +459,16 @@ class PluginManager{
 					continue;
 				}
 
-				$eventClass = $parameters[0]->getClass();
-				if($eventClass === null or !$eventClass->isSubclassOf(Event::class)){
+				$paramType = $parameters[0]->getType();
+				//isBuiltin() returns false for builtin classes ..................
+				if($paramType instanceof \ReflectionNamedType && !$paramType->isBuiltin()){
+					/** @phpstan-var class-string $paramClass */
+					$paramClass = $paramType->getName();
+					$eventClass = new \ReflectionClass($paramClass);
+					if(!$eventClass->isSubclassOf(Event::class)){
+						continue;
+					}
+				}else{
 					continue;
 				}
 
