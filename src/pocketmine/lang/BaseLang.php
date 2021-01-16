@@ -41,7 +41,7 @@ use const SCANDIR_SORT_NONE;
 
 class BaseLang{
 
-	public const FALLBACK_LANGUAGE = "eng";
+	public const FALLBACK_LANGUAGE = "fr";
 
 	/**
 	 * @return string[]
