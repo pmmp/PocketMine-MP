@@ -60,30 +60,34 @@ class TaskScheduler{
 	}
 
 	/**
+	 * @param Task|callable $task
 	 * @return TaskHandler
 	 */
-	public function scheduleTask(Task $task){
+	public function scheduleTask($task){
 		return $this->addTask($task, -1, -1);
 	}
 
 	/**
+	 * @param Task|callable $task
 	 * @return TaskHandler
 	 */
-	public function scheduleDelayedTask(Task $task, int $delay){
+	public function scheduleDelayedTask($task, int $delay){
 		return $this->addTask($task, $delay, -1);
 	}
 
 	/**
+	 * @param Task|callable $task
 	 * @return TaskHandler
 	 */
-	public function scheduleRepeatingTask(Task $task, int $period){
+	public function scheduleRepeatingTask($task, int $period){
 		return $this->addTask($task, -1, $period);
 	}
 
 	/**
+     * @param Task|callable $task
 	 * @return TaskHandler
 	 */
-	public function scheduleDelayedRepeatingTask(Task $task, int $delay, int $period){
+	public function scheduleDelayedRepeatingTask($task, int $delay, int $period){
 		return $this->addTask($task, $delay, $period);
 	}
 
@@ -119,11 +123,27 @@ class TaskScheduler{
 	}
 
 	/**
+	 * @param Task|callable $task
 	 * @return TaskHandler
 	 *
 	 * @throws \InvalidStateException
 	 */
-	private function addTask(Task $task, int $delay, int $period){
+	private function addTask($task, int $delay, int $period){
+		if(!$task instanceof Task) {
+			$task = new class($task) extends Task {
+                
+			    /** @var callable */
+                private $callback;
+
+				public function __construct(callable $callback) {
+					$this->callback = $callback;
+				}
+				
+				public function onRun(int $currentTick) {
+					($this->callback)($currentTick);
+				}
+			};
+		}
 		if(!$this->enabled){
 			throw new \InvalidStateException("Tried to schedule task to disabled scheduler");
 		}
