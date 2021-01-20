@@ -317,8 +317,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logIn", [
 			TextFormat::AQUA . $this->username . TextFormat::WHITE,
-			$this->networkSession->getIp(),
-			$this->networkSession->getPort(),
+			$session->getIp(),
+			$session->getPort(),
 			$this->id,
 			$this->getWorld()->getDisplayName(),
 			round($this->location->x, 4),
