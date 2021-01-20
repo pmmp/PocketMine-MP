@@ -27,6 +27,8 @@ use pocketmine\level\format\ChunkException;
 use pocketmine\level\format\io\exception\CorruptedChunkException;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
+use pocketmine\utils\BinaryDataException;
+use pocketmine\utils\BinaryStream;
 use function assert;
 use function ceil;
 use function chr;
@@ -145,34 +147,34 @@ class RegionLoader{
 
 		fseek($this->filePointer, $this->locationTable[$index]->getFirstSector() << 12);
 
-		$prefix = fread($this->filePointer, 4);
-		if($prefix === false or strlen($prefix) !== 4){
-			throw new CorruptedChunkException("Corrupted chunk header detected (unexpected end of file reading length prefix)");
-		}
-		$length = Binary::readInt($prefix);
+		/*
+		 * this might cause us to read some junk, but under normal circumstances it won't be any more than 4096 bytes wasted.
+		 * doing this in a single call is faster than making two seeks and reads to fetch the chunk.
+		 * this relies on the assumption that the end of the file is always padded to a multiple of 4096 bytes.
+		 */
+		$bytesToRead = $this->locationTable[$index]->getSectorCount() << 12;
+		$payload = fread($this->filePointer, $bytesToRead);
 
-		if($length <= 0){ //TODO: if we reached here, the locationTable probably needs updating
-			return null;
+		if($payload === false || strlen($payload) !== $bytesToRead){
+			throw new CorruptedChunkException("Corrupted chunk detected (unexpected EOF, truncated or non-padded chunk found)");
 		}
-		if($length > self::MAX_SECTOR_LENGTH){ //corrupted
-			throw new CorruptedChunkException("Length for chunk x=$x,z=$z ($length) is larger than maximum " . self::MAX_SECTOR_LENGTH);
-		}
+		$stream = new BinaryStream($payload);
 
-		if($length > ($this->locationTable[$index]->getSectorCount() << 12)){ //Invalid chunk, bigger than defined number of sectors
-			throw new CorruptedChunkException("Chunk length mismatch (expected " . ($this->locationTable[$index]->getSectorCount() << 12) . " sectors, got $length sectors)");
-		}
+		try{
+			$length = $stream->getInt();
+			if($length <= 0){ //TODO: if we reached here, the locationTable probably needs updating
+				return null;
+			}
 
-		$chunkData = fread($this->filePointer, $length);
-		if($chunkData === false or strlen($chunkData) !== $length){
-			throw new CorruptedChunkException("Corrupted chunk detected (unexpected end of file reading chunk data)");
-		}
+			$compression = $stream->getByte();
+			if($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
+				throw new CorruptedChunkException("Invalid compression type (got $compression, expected " . self::COMPRESSION_ZLIB . " or " . self::COMPRESSION_GZIP . ")");
+			}
 
-		$compression = ord($chunkData[0]);
-		if($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
-			throw new CorruptedChunkException("Invalid compression type (got $compression, expected " . self::COMPRESSION_ZLIB . " or " . self::COMPRESSION_GZIP . ")");
+			return $stream->get($length - 1); //length prefix includes the compression byte
+		}catch(BinaryDataException $e){
+			throw new CorruptedChunkException("Corrupted chunk detected: " . $e->getMessage(), 0, $e);
 		}
-
-		return substr($chunkData, 1);
 	}
 
 	/**
