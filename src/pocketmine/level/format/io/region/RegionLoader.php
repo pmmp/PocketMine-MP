@@ -340,6 +340,8 @@ class RegionLoader{
 		/** @var int[] $usedOffsets */
 		$usedOffsets = [];
 
+		$fileSize = filesize($this->filePath);
+		if($fileSize === false) throw new AssumptionFailedError("filesize() should not return false here");
 		for($i = 0; $i < 1024; ++$i){
 			$entry = $this->locationTable[$i];
 			if($entry === null){
@@ -352,8 +354,7 @@ class RegionLoader{
 
 			//TODO: more validity checks
 
-			fseek($this->filePointer, $fileOffset);
-			if(feof($this->filePointer)){
+			if($fileOffset >= $fileSize){
 				throw new CorruptedRegionException("Region file location offset x=$x,z=$z points to invalid file location $fileOffset");
 			}
 			if(isset($usedOffsets[$offset])){
