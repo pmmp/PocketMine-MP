@@ -5,7 +5,7 @@
    "homepage": "https://pmmp.io",
    "license": "LGPL-3.0",
    "require": {
-      "php": ">=7.3.0",
+      "php": ">=7.4.0",
       "php-64bit": "*",
       "ext-chunkutils2": "^0.1.0",
       "ext-curl": "*",
@@ -50,7 +50,7 @@
       "composer-runtime-api": "^2.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "0.12.64",
+      "phpstan/phpstan": "0.12.67",
       "phpstan/phpstan-phpunit": "^0.12.6",
       "phpstan/phpstan-strict-rules": "^0.12.2",
       "phpunit/phpunit": "^9.2"
@@ -71,8 +71,9 @@
    },
    "config": {
       "platform": {
-         "php": "7.3.0"
-      }
+         "php": "7.4.0"
+      },
+      "sort-packages": true
    },
    "scripts": {
       "make-devtools": "@php -dphar.readonly=0 tests/plugins/DevTools/src/DevTools/ConsoleScript.php --make tests/plugins/DevTools --out plugins/DevTools.phar",

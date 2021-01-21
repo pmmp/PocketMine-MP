@@ -448,6 +448,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
+		$this->session->getInvManager()->onClientSelectHotbarSlot($packet->hotbarSlot);
 		if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
 			$this->session->getInvManager()->syncSelectedHotbarSlot();
 		}

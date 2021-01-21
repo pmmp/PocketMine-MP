@@ -85,7 +85,6 @@ final class WorldProviderManager{
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
 
-		/** @var WorldProvider $class */
 		$this->providers[$name] = $class;
 	}
 
