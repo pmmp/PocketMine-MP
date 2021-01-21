@@ -83,7 +83,7 @@ class LoginPacketHandler extends PacketHandler{
 	}
 
 	public function handleLogin(LoginPacket $packet) : bool{
-	    $this->session->setProtocolId($packet->protocol);
+		$this->session->setProtocolId($packet->protocol);
 
 		if(!$this->isCompatibleProtocol($packet->protocol)){
 			$this->session->sendDataPacket(PlayStatusPacket::create($packet->protocol < ProtocolInfo::CURRENT_PROTOCOL ? PlayStatusPacket::LOGIN_FAILED_CLIENT : PlayStatusPacket::LOGIN_FAILED_SERVER), true);

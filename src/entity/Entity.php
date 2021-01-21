@@ -1477,7 +1477,7 @@ abstract class Entity{
 		$id = spl_object_id($player);
 		if(isset($this->hasSpawned[$id])){
 			if($send && $player->isConnected()){
-                $player->getNetworkSession()->onEntityRemoved($this);
+				$player->getNetworkSession()->onEntityRemoved($this);
 			}
 			unset($this->hasSpawned[$id]);
 		}
@@ -1560,16 +1560,15 @@ abstract class Entity{
 		$data = $data ?? $this->getAllNetworkData();
 
 		foreach($targets as $p){
-		    if($p->isConnected()){
-                $p->getNetworkSession()->syncActorData($this, $data);
-            }
+			if($p->isConnected()){
+				$p->getNetworkSession()->syncActorData($this, $data);
+			}
 		}
 	}
 
-	public function isValid(): bool
-    {
-        return $this->location->isValid();
-    }
+	public function isValid() : bool{
+		return $this->location->isValid();
+	}
 
 	/**
 	 * @return MetadataProperty[]

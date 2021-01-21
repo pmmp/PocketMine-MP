@@ -88,20 +88,18 @@ class Lava extends Liquid{
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
-        if($entity->ticksLived % 10 === 0){
-            $entity->fallDistance *= 0.5;
+		$entity->fallDistance *= 0.5;
 
-            $ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
-            $entity->attack($ev);
+		$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_LAVA, 4);
+		$entity->attack($ev);
 
-            $ev = new EntityCombustByBlockEvent($this, $entity, 15);
-            $ev->call();
-            if(!$ev->isCancelled()){
-                $entity->setOnFire($ev->getDuration());
-            }
+		$ev = new EntityCombustByBlockEvent($this, $entity, 15);
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$entity->setOnFire($ev->getDuration());
+		}
 
-            $entity->resetFallDistance();
-        }
+		$entity->resetFallDistance();
 		return true;
 	}
 }

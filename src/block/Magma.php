@@ -44,7 +44,7 @@ class Magma extends Opaque{
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
-		if($entity instanceof Living and !$entity->isSneaking() and $entity->ticksLived % 10 === 0){
+		if($entity instanceof Living and !$entity->isSneaking()){
 			$ev = new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1);
 			$entity->attack($ev);
 		}

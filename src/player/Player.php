@@ -1661,9 +1661,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$soundPos = $entity->getPosition()->add(0, $entity->size->getHeight() / 2, 0);
 		if($ev->isCancelled()){
-		    if(!$this->isSilent() && !$this->isAdventure()){
-                $this->getWorld()->addSound($soundPos, new EntityAttackNoDamageSound());
-            }
+			if(!$this->isSilent() && !$this->isAdventure()){
+				$this->getWorld()->addSound($soundPos, new EntityAttackNoDamageSound());
+			}
 			return false;
 		}
 		$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
@@ -1805,9 +1805,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param TranslationContainer|string $message
 	 */
 	public function sendMessage($message) : void{
-	    if (!$this->isConnected()){
-	        return;
-        }
+		if(!$this->isConnected()){
+			return;
+		}
 
 		if($message instanceof TranslationContainer){
 			$this->sendTranslation($message->getText(), $message->getParameters());

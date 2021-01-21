@@ -571,10 +571,8 @@ abstract class Living extends Entity{
 			if($this->isInsideOfSolid()){
 				$hasUpdate = true;
 
-				if($this->ticksLived % 20 === 0){
-                    $ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
-                    $this->attack($ev);
-                }
+				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
+				$this->attack($ev);
 			}
 
 			if($this->doAirSupplyTick($tickDiff)){

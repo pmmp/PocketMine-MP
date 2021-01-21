@@ -98,9 +98,9 @@ class SplashPotion extends Throwable{
 		if($hasEffects){
 			if(!$this->willLinger()){
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
-				    if($entity instanceof Player and $entity->isSpectator()){
-				        return;
-                    }
+					if($entity instanceof Player and $entity->isSpectator()){
+						return;
+					}
 
 					if($entity instanceof Living and $entity->isAlive()){
 						$distanceSquared = $entity->getEyePos()->distanceSquared($this->location);

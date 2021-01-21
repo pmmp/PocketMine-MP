@@ -63,10 +63,10 @@ final class ItemStackResponseSlotInfo{
 		$count = $in->getByte();
 		$itemStackId = $in->readGenericTypeNetworkId();
 		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_200){
-            $customName = $in->getString();
-        }else{
-		    $customName = '';
-        }
+			$customName = $in->getString();
+		}else{
+			$customName = '';
+		}
 		return new self($slot, $hotbarSlot, $count, $itemStackId, $customName);
 	}
 
@@ -76,7 +76,7 @@ final class ItemStackResponseSlotInfo{
 		$out->putByte($this->count);
 		$out->writeGenericTypeNetworkId($this->itemStackId);
 		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_200){
-            $out->putString($this->customName);
-        }
+			$out->putString($this->customName);
+		}
 	}
 }

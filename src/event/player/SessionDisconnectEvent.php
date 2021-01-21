@@ -23,12 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\player\PlayerInfo;
-use function array_keys;
-use function count;
 
 class SessionDisconnectEvent extends Event{
 	/** @var NetworkSession */
@@ -38,7 +34,7 @@ class SessionDisconnectEvent extends Event{
 		$this->session = $session;
 	}
 
-    public function getSession(): NetworkSession{
-        return $this->session;
-    }
+	public function getSession() : NetworkSession{
+		return $this->session;
+	}
 }

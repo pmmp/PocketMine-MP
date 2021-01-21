@@ -2219,11 +2219,11 @@ class World implements ChunkManager{
 				//we also can't allow this to cause chunk generation, nor can we just create an empty ungenerated chunk
 				//for it, because an empty chunk won't get saved, so the entity will vanish anyway. Therefore, this is
 				//the cleanest way to make sure this doesn't result in leaks.
-                if (!$entity instanceof Player){
-                    $this->logger->debug("Entity " . $entity->getId() . " is in ungenerated terrain, flagging for despawn");
-                    $entity->flagForDespawn();
-                    $entity->despawnFromAll();
-                }
+				if(!$entity instanceof Player){
+					$this->logger->debug("Entity " . $entity->getId() . " is in ungenerated terrain, flagging for despawn");
+					$entity->flagForDespawn();
+					$entity->despawnFromAll();
+				}
 			}else{
 				$newViewers = $this->getViewersForPosition($newPosition);
 				foreach($entity->getViewers() as $player){

@@ -67,18 +67,18 @@ use function strlen;
 
 class PacketSerializer extends BinaryStream{
 
-    /** @var int|null */
-    private $protocolId = null;
+	/** @var int|null */
+	private $protocolId = null;
 
-    public function setProtocolId(?int $protocolId) : void{
-        $this->protocolId = $protocolId;
-    }
+	public function setProtocolId(?int $protocolId) : void{
+		$this->protocolId = $protocolId;
+	}
 
-    public function getProtocolId() : int{
-        return $this->protocolId ?? ProtocolInfo::CURRENT_PROTOCOL;
-    }
+	public function getProtocolId() : int{
+		return $this->protocolId ?? ProtocolInfo::CURRENT_PROTOCOL;
+	}
 
-    /**
+	/**
 	 * @throws BinaryDataException
 	 */
 	public function getString() : string{

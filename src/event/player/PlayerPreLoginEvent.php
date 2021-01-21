@@ -86,9 +86,9 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 		return $this->session->getPort();
 	}
 
-    public function getSession(): NetworkSession{
-        return $this->session;
-    }
+	public function getSession() : NetworkSession{
+		return $this->session;
+	}
 
 	public function isAuthRequired() : bool{
 		return $this->authRequired;
