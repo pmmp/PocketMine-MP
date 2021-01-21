@@ -1560,9 +1560,16 @@ abstract class Entity{
 		$data = $data ?? $this->getAllNetworkData();
 
 		foreach($targets as $p){
-			$p->getNetworkSession()->syncActorData($this, $data);
+		    if($p->isConnected()){
+                $p->getNetworkSession()->syncActorData($this, $data);
+            }
 		}
 	}
+
+	public function isValid(): bool
+    {
+        return $this->location->isValid();
+    }
 
 	/**
 	 * @return MetadataProperty[]

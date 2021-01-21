@@ -38,6 +38,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use pocketmine\player\Player;
 use pocketmine\world\particle\PotionSplashParticle;
 use pocketmine\world\sound\PotionSplashSound;
 use function count;
@@ -97,6 +98,10 @@ class SplashPotion extends Throwable{
 		if($hasEffects){
 			if(!$this->willLinger()){
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
+				    if($entity instanceof Player and $entity->isSpectator()){
+				        return;
+                    }
+
 					if($entity instanceof Living and $entity->isAlive()){
 						$distanceSquared = $entity->getEyePos()->distanceSquared($this->location);
 						if($distanceSquared > 16){ //4 blocks

@@ -351,7 +351,7 @@ class NetworkSession{
 		}
 
 		try{
-			foreach($stream->getPackets($this->getProtocolId(), $this->packetPool, 1000) as $packet){
+			foreach($stream->getPackets($this->getProtocolId(), $this->packetPool, 500) as $packet){
 				try{
 					$this->handleDataPacket($packet);
 				}catch(BadPacketException $e){
