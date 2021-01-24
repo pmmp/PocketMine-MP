@@ -1486,11 +1486,6 @@ parameters:
 			path: ../../../src/pocketmine/plugin/PluginBase.php
 
 		-
-			message: "#^Parameter \\#1 \\$closure of static method pocketmine\\\\utils\\\\Utils\\:\\:getNiceClosureName\\(\\) expects Closure, Closure\\|null given\\.$#"
-			count: 3
-			path: ../../../src/pocketmine/plugin/PluginManager.php
-
-		-
 			message: "#^Cannot call method handleException\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/scheduler/AsyncTask.php
