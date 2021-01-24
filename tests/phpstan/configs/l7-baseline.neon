@@ -61,16 +61,6 @@ parameters:
 			path: ../../../src/pocketmine/PocketMine.php
 
 		-
-			message: "#^Parameter \\#1 \\$filename of function is_file expects string, array\\<int, mixed\\>\\|string given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Binary operation \"\\.\" between 'Composer autoloader…' and array\\<int, mixed\\>\\|string\\|false results in an error\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/PocketMine.php
-
-		-
 			message: "#^Binary operation \"\\.\" between array\\<int, mixed\\>\\|string\\|false and '/'\\|'\\\\\\\\' results in an error\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/PocketMine.php
@@ -156,51 +146,6 @@ parameters:
 			path: ../../../src/pocketmine/block/Cactus.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Farmland.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Farmland.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Farmland.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Grass.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Grass.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Grass.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Grass.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Grass.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Grass.php
-
-		-
 			message: "#^Parameter \\#1 \\$min of function mt_rand expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/pocketmine/block/Grass.php
@@ -209,36 +154,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$max of function mt_rand expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/pocketmine/block/Grass.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getHighestAdjacentBlockLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Ice.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getHighestAdjacentBlockLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Ice.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getHighestAdjacentBlockLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Ice.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 23
-			path: ../../../src/pocketmine/block/Liquid.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 23
-			path: ../../../src/pocketmine/block/Liquid.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 23
-			path: ../../../src/pocketmine/block/Liquid.php
 
 		-
 			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
@@ -294,36 +209,6 @@ parameters:
 			message: "#^Parameter \\#4 \\$z of static method pocketmine\\\\level\\\\generator\\\\object\\\\Tree\\:\\:growTree\\(\\) expects int, float\\|int given\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/block/Sapling.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Sapling.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Sapling.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Sapling.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/SnowLayer.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getBlockLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/SnowLayer.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getBlockLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/SnowLayer.php
 
 		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
@@ -403,21 +288,6 @@ parameters:
 		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/entity/Living.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/entity/Living.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/entity/Living.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
 			path: ../../../src/pocketmine/entity/object/Painting.php
 
 		-
@@ -433,21 +303,6 @@ parameters:
 		-
 			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"
 			count: 3
-			path: ../../../src/pocketmine/entity/projectile/Projectile.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/entity/projectile/Projectile.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/entity/projectile/Projectile.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
 			path: ../../../src/pocketmine/entity/projectile/Projectile.php
 
 		-
@@ -686,11 +541,6 @@ parameters:
 			path: ../../../src/pocketmine/level/Level.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\format\\\\Chunk\\:\\:setBlock\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:chunkBlockHash\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Level.php
@@ -769,16 +619,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\ChunkManager\\:\\:setBlockDataAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/generator/object/TallGrass.php
-
-		-
-			message: "#^Method pocketmine\\\\metadata\\\\MetadataStore\\:\\:getMetadataInternal\\(\\) should return array\\<pocketmine\\\\metadata\\\\MetadataValue\\> but returns array\\<pocketmine\\\\metadata\\\\MetadataValue\\>\\|SplObjectStorage\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/metadata/MetadataStore.php
-
-		-
-			message: "#^Cannot call method count\\(\\) on array\\<pocketmine\\\\metadata\\\\MetadataValue\\>\\|SplObjectStorage\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/metadata/MetadataStore.php
 
 		-
 			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
@@ -983,20 +823,5 @@ parameters:
 		-
 			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"
 			count: 3
-			path: ../../../src/pocketmine/tile/Tile.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/tile/Tile.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/tile/Tile.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
 			path: ../../../src/pocketmine/tile/Tile.php
 
