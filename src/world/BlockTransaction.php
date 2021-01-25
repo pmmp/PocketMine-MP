@@ -103,6 +103,7 @@ class BlockTransaction{
 
 	/**
 	 * @return \Generator|mixed[] [int $x, int $y, int $z, Block $block]
+	 * @phpstan-return \Generator<int, array{int, int, int, Block}, void, void>
 	 */
 	public function getBlocks() : \Generator{
 		foreach($this->blocks as $x => $yLine){
