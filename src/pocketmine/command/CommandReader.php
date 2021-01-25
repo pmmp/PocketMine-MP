@@ -25,23 +25,18 @@ namespace pocketmine\command;
 
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\Thread;
-use pocketmine\utils\Utils;
-use function extension_loaded;
 use function fclose;
 use function fgets;
 use function fopen;
 use function fstat;
-use function getopt;
 use function is_resource;
 use function microtime;
 use function preg_replace;
 use function readline;
-use function readline_add_history;
 use function stream_isatty;
 use function stream_select;
 use function trim;
 use function usleep;
-use const STDIN;
 
 class CommandReader extends Thread{
 
@@ -65,12 +60,6 @@ class CommandReader extends Thread{
 	public function __construct(?SleeperNotifier $notifier = null){
 		$this->buffer = new \Threaded;
 		$this->notifier = $notifier;
-
-		$opts = getopt("", ["disable-readline", "enable-readline"]);
-
-		if(extension_loaded("readline") and (Utils::getOS() === Utils::OS_WINDOWS ? isset($opts["enable-readline"]) : !isset($opts["disable-readline"])) and !$this->isPipe(STDIN)){
-			$this->type = self::TYPE_READLINE;
-		}
 	}
 
 	/**
@@ -128,41 +117,34 @@ class CommandReader extends Thread{
 	 */
 	private function readLine() : bool{
 		$line = "";
-		if($this->type === self::TYPE_READLINE){
-			if(($raw = readline("> ")) !== false and ($line = trim($raw)) !== ""){
-				readline_add_history($line);
-			}else{
-				return true;
-			}
-		}else{
-			if(!is_resource(self::$stdin)){
-				$this->initStdin();
-			}
 
-			switch($this->type){
-				/** @noinspection PhpMissingBreakStatementInspection */
-				case self::TYPE_STREAM:
-					//stream_select doesn't work on piped streams for some reason
-					$r = [self::$stdin];
-					$w = $e = null;
-					if(($count = stream_select($r, $w, $e, 0, 200000)) === 0){ //nothing changed in 200000 microseconds
-						return true;
-					}elseif($count === false){ //stream error
-						$this->initStdin();
-					}
+		if(!is_resource(self::$stdin)){
+			$this->initStdin();
+		}
 
-				case self::TYPE_PIPED:
-					if(($raw = fgets(self::$stdin)) === false){ //broken pipe or EOF
-						$this->initStdin();
-						$this->synchronized(function() : void{
-							$this->wait(200000);
-						}); //prevent CPU waste if it's end of pipe
-						return true; //loop back round
-					}
+		switch($this->type){
+			/** @noinspection PhpMissingBreakStatementInspection */
+			case self::TYPE_STREAM:
+				//stream_select doesn't work on piped streams for some reason
+				$r = [self::$stdin];
+				$w = $e = null;
+				if(($count = stream_select($r, $w, $e, 0, 200000)) === 0){ //nothing changed in 200000 microseconds
+					return true;
+				}elseif($count === false){ //stream error
+					$this->initStdin();
+				}
 
-					$line = trim($raw);
-					break;
-			}
+			case self::TYPE_PIPED:
+				if(($raw = fgets(self::$stdin)) === false){ //broken pipe or EOF
+					$this->initStdin();
+					$this->synchronized(function() : void{
+						$this->wait(200000);
+					}); //prevent CPU waste if it's end of pipe
+					return true; //loop back round
+				}
+
+				$line = trim($raw);
+				break;
 		}
 
 		if($line !== ""){
@@ -193,17 +175,11 @@ class CommandReader extends Thread{
 	 */
 	public function run(){
 		$this->registerClassLoader();
-
-		if($this->type !== self::TYPE_READLINE){
-			$this->initStdin();
-		}
+		$this->initStdin();
 
 		while(!$this->shutdown and $this->readLine());
 
-		if($this->type !== self::TYPE_READLINE){
-			fclose(self::$stdin);
-		}
-
+		fclose(self::$stdin);
 	}
 
 	public function getThreadName() : string{
