@@ -451,16 +451,22 @@ class MemoryManager{
 
 					$info["properties"] = [];
 
-					foreach($reflection->getProperties() as $property){
-						if($property->isStatic()){
-							continue;
-						}
+					for($original = $reflection; $reflection !== false; $reflection = $reflection->getParentClass()){
+						foreach($reflection->getProperties() as $property){
+							if($property->isStatic()){
+								continue;
+							}
 
-						if(!$property->isPublic()){
-							$property->setAccessible(true);
-						}
+							$name = $property->getName();
+							if($reflection !== $original and !$property->isPublic()){
+								$name = $reflection->getName() . ":" . $name;
+							}
+							if(!$property->isPublic()){
+								$property->setAccessible(true);
+							}
 
-						$info["properties"][$property->getName()] = self::continueDump($property->getValue($object), $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+							$info["properties"][$name] = self::continueDump($property->getValue($object), $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+						}
 					}
 				}
 
