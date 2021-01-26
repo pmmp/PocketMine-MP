@@ -4,6 +4,9 @@
 </p>
 
 ![CI](https://github.com/pmmp/PocketMine-MP/workflows/CI/badge.svg)
+[![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/pmmp/PocketMine-MP?label=release&logo=github)](https://github.com/pmmp/PocketMine-MP/releases)
+[![Docker Image Version (latest semver)](https://img.shields.io/docker/v/pmmp/pocketmine-mp?logo=docker&label=image)](https://hub.docker.com/r/pmmp/pocketmine-mp)
+[![Discord](https://img.shields.io/discord/373199722573201408?label=discord&color=7289DA&logo=discord)](https://discord.gg/bmSAZBG)
 
 ## Getting started
 - [Documentation](http://pmmp.readthedocs.org/)
