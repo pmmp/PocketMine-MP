@@ -117,7 +117,7 @@ class Utils{
 	/**
 	 * Generates an unique identifier to a callable
 	 *
-	 * @phpstan-param callable(mixed...) : mixed $variable
+	 * @phpstan-param anyCallable $variable
 	 *
 	 * @return string
 	 */
@@ -134,7 +134,7 @@ class Utils{
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
 	 *
-	 * @phpstan-param \Closure(mixed...) : mixed $closure
+	 * @phpstan-param anyClosure $closure
 	 * @throws \ReflectionException
 	 */
 	public static function getNiceClosureName(\Closure $closure) : string{
@@ -688,8 +688,8 @@ class Utils{
 	 *
 	 * @param callable $signature Dummy callable with the required parameters and return type
 	 * @param callable $subject Callable to check the signature of
-	 * @phpstan-param callable(mixed...) : mixed $signature
-	 * @phpstan-param callable(mixed...) : mixed $subject
+	 * @phpstan-param anyCallable $signature
+	 * @phpstan-param anyCallable $subject
 	 *
 	 * @throws \DaveRandom\CallbackValidator\InvalidCallbackException
 	 * @throws \TypeError
