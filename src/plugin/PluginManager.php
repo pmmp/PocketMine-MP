@@ -473,6 +473,7 @@ class PluginManager{
 				}
 
 				$handlerClosure = $method->getClosure($listener);
+				if($handlerClosure === null) throw new AssumptionFailedError("This should never happen");
 
 				try{
 					$priority = isset($tags["priority"]) ? EventPriority::fromString($tags["priority"]) : EventPriority::NORMAL;

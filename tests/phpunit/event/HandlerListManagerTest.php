@@ -27,9 +27,15 @@ use PHPUnit\Framework\TestCase;
 
 class HandlerListManagerTest extends TestCase{
 
-	/** @var \Closure */
+	/**
+	 * @var \Closure
+	 * @phpstan-var \Closure(\ReflectionClass<Event>) : bool
+	 */
 	private $isValidFunc;
-	/** @var \Closure */
+	/**
+	 * @var \Closure
+	 * @phpstan-var \Closure(\ReflectionClass<Event>) : ?\ReflectionClass<Event>
+	 */
 	private $resolveParentFunc;
 
 	public function setUp() : void{
@@ -80,7 +86,9 @@ class HandlerListManagerTest extends TestCase{
 		if($expect === null){
 			self::assertNull(($this->resolveParentFunc)($class));
 		}else{
-			self::assertSame(($this->resolveParentFunc)($class)->getName(), $expect->getName());
+			$actualParent = ($this->resolveParentFunc)($class);
+			self::assertNotNull($actualParent);
+			self::assertSame($actualParent->getName(), $expect->getName());
 		}
 	}
 }

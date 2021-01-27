@@ -1,11 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Instanceof between pocketmine\\\\block\\\\utils\\\\BannerPattern and pocketmine\\\\block\\\\utils\\\\BannerPattern will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/block/BaseBanner.php
-
-		-
 			message: "#^Instanceof between pocketmine\\\\event\\\\RegisteredListener and pocketmine\\\\event\\\\RegisteredListener will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/event/HandlerList.php
