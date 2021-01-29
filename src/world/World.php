@@ -495,10 +495,12 @@ class World implements ChunkManager{
 		$this->closed = true;
 	}
 
+	/** @phpstan-param \Closure() : void $callback */
 	public function addOnUnloadCallback(\Closure $callback) : void{
 		$this->unloadCallbacks[spl_object_id($callback)] = $callback;
 	}
 
+	/** @phpstan-param \Closure() : void $callback */
 	public function removeOnUnloadCallback(\Closure $callback) : void{
 		unset($this->unloadCallbacks[spl_object_id($callback)]);
 	}

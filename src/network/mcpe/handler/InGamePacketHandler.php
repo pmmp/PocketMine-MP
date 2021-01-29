@@ -124,8 +124,8 @@ class InGamePacketHandler extends PacketHandler{
 
 	/** @var float */
 	protected $lastRightClickTime = 0.0;
-	/** @var Vector3|null */
-	protected $lastRightClickPos = null;
+	/** @var UseItemTransactionData|null */
+	protected $lastRightClickData = null;
 
 	/** @var bool */
 	public $forceMoveSync = false;
@@ -339,12 +339,14 @@ class InGamePacketHandler extends PacketHandler{
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
 				//TODO: start hack for client spam bug
 				$clickPos = $data->getClickPos();
-				$spamBug = ($this->lastRightClickPos !== null and
+				$spamBug = ($this->lastRightClickData !== null and
 					microtime(true) - $this->lastRightClickTime < 0.1 and //100ms
-					$this->lastRightClickPos->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
+					$this->lastRightClickData->getPlayerPos()->distanceSquared($data->getPlayerPos()) < 0.00001 and
+					$this->lastRightClickData->getBlockPos()->equals($data->getBlockPos()) and
+					$this->lastRightClickData->getClickPos()->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
 				);
 				//get rid of continued spam if the player clicks and holds right-click
-				$this->lastRightClickPos = clone $clickPos;
+				$this->lastRightClickData = $data;
 				$this->lastRightClickTime = microtime(true);
 				if($spamBug){
 					return true;

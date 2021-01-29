@@ -69,7 +69,7 @@ class ProcessLoginTask extends AsyncTask{
 
 	/**
 	 * @param string[] $chainJwts
-	 * @phpstan-var \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPublicKey) : void $onCompletion
+	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPublicKey) : void $onCompletion
 	 */
 	public function __construct(array $chainJwts, string $clientDataJwt, bool $authRequired, \Closure $onCompletion){
 		$this->storeLocal(self::TLS_KEY_ON_COMPLETION, $onCompletion);

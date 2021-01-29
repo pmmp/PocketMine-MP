@@ -256,16 +256,6 @@ parameters:
 			path: ../../../src/plugin/PluginManager.php
 
 		-
-			message: "#^Parameter \\#1 \\$closure of static method pocketmine\\\\utils\\\\Utils\\:\\:getNiceClosureName\\(\\) expects Closure, Closure\\|null given\\.$#"
-			count: 2
-			path: ../../../src/plugin/PluginManager.php
-
-		-
-			message: "#^Parameter \\#2 \\$handler of method pocketmine\\\\plugin\\\\PluginManager\\:\\:registerEvent\\(\\) expects Closure\\(pocketmine\\\\event\\\\Event\\)\\: void, Closure\\|null given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginManager.php
-
-		-
 			message: "#^Cannot call method handleException\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
 			count: 1
 			path: ../../../src/scheduler/AsyncTask.php
@@ -381,11 +371,6 @@ parameters:
 			path: ../../../src/world/generator/PopulationTask.php
 
 		-
-			message: "#^Cannot call method getAsyncWorkerId\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/generator/PopulationTask.php
-
-		-
 			message: "#^Method pocketmine\\\\world\\\\generator\\\\biome\\\\BiomeSelector\\:\\:pickBiome\\(\\) should return pocketmine\\\\world\\\\biome\\\\Biome but returns pocketmine\\\\world\\\\biome\\\\Biome\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/generator/biome/BiomeSelector.php
@@ -457,11 +442,6 @@ parameters:
 
 		-
 			message: "#^Cannot call method getSubChunks\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/light/BlockLightUpdate.php
-
-		-
-			message: "#^Parameter \\#4 \\$newLevel of method pocketmine\\\\world\\\\light\\\\LightUpdate\\:\\:setAndUpdateLight\\(\\) expects int, int\\<1, max\\>\\|null given\\.$#"
 			count: 1
 			path: ../../../src/world/light/BlockLightUpdate.php
 
@@ -541,12 +521,12 @@ parameters:
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-
-			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$isValidFunc \\(Closure\\) does not accept Closure\\|null\\.$#"
+			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$isValidFunc \\(Closure\\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\)\\: bool\\) does not accept Closure\\|null\\.$#"
 			count: 1
 			path: ../../phpunit/event/HandlerListManagerTest.php
 
 		-
-			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$resolveParentFunc \\(Closure\\) does not accept Closure\\|null\\.$#"
+			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$resolveParentFunc \\(Closure\\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\)\\: ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\|null\\) does not accept Closure\\|null\\.$#"
 			count: 1
 			path: ../../phpunit/event/HandlerListManagerTest.php
 
