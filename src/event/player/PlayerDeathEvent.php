@@ -41,8 +41,8 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	private $deathMessage;
 	/** @var bool */
 	private $keepInventory = false;
-	/** @var bool */
-	private $keepXp = false;
+	
+	private bool $keepXp = false;
 
 	/**
 	 * @param Item[]                           $drops
