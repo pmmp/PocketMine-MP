@@ -30,6 +30,7 @@ use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
 use pocketmine\Player;
 use function array_keys;
+use function array_values;
 use function assert;
 use function count;
 use function get_class;
@@ -168,6 +169,8 @@ class InventoryTransaction{
 				}
 			}
 		}
+		$needItems = array_values($needItems);
+		$haveItems = array_values($haveItems);
 	}
 
 	/**
