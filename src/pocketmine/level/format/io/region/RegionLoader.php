@@ -32,6 +32,7 @@ use pocketmine\utils\BinaryStream;
 use function assert;
 use function ceil;
 use function chr;
+use function clearstatcache;
 use function fclose;
 use function feof;
 use function file_exists;
@@ -100,6 +101,7 @@ class RegionLoader{
 	 * @throws CorruptedRegionException
 	 */
 	public function open(){
+		clearstatcache(false, $this->filePath);
 		$exists = file_exists($this->filePath);
 		if(!$exists){
 			touch($this->filePath);
@@ -409,6 +411,7 @@ class RegionLoader{
 		fwrite($this->filePointer, Binary::writeInt($entry !== null ? ($entry->getFirstSector() << 8) | $entry->getSectorCount() : 0), 4);
 		fseek($this->filePointer, 4096 + ($index << 2));
 		fwrite($this->filePointer, Binary::writeInt($entry !== null ? $entry->getTimestamp() : 0), 4);
+		clearstatcache(false, $this->filePath);
 	}
 
 	/**
