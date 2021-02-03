@@ -8,10 +8,11 @@ on:
 jobs:
   build-php:
     name: Prepare PHP
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.image }}
 
     strategy:
       matrix:
+        image: [ubuntu-20.04]
         php: [7.3.25, 7.4.13]
 
     steps:
@@ -21,7 +22,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "./bin"
-          key: "php-build-generic-${{ matrix.php }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
 
       - name: Compile PHP
         if: steps.php-build-cache.outputs.cache-hit != 'true'
@@ -30,11 +31,12 @@ jobs:
   phpstan:
     name: PHPStan analysis
     needs: build-php
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.image }}
 
     strategy:
       fail-fast: false
       matrix:
+        image: [ubuntu-20.04]
         php: [7.3.25, 7.4.13]
 
     steps:
@@ -45,7 +47,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "./bin"
-          key: "php-build-generic-${{ matrix.php }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
 
       - name: Kill build on PHP build cache miss (should never happen)
         if: steps.php-build-cache.outputs.cache-hit != 'true'
@@ -76,10 +78,11 @@ jobs:
   phpunit:
     name: PHPUnit tests
     needs: build-php
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.image }}
     strategy:
       fail-fast: false
       matrix:
+        image: [ubuntu-20.04]
         php: [7.3.25, 7.4.13]
 
     steps:
@@ -90,7 +93,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "./bin"
-          key: "php-build-generic-${{ matrix.php }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
 
       - name: Kill build on PHP build cache miss (should never happen)
         if: steps.php-build-cache.outputs.cache-hit != 'true'
@@ -121,10 +124,11 @@ jobs:
   integration:
     name: Integration tests
     needs: build-php
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.image }}
     strategy:
       fail-fast: false
       matrix:
+        image: [ubuntu-20.04]
         php: [7.3.25, 7.4.13]
 
     steps:
@@ -137,7 +141,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "./bin"
-          key: "php-build-generic-${{ matrix.php }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
 
       - name: Kill build on PHP build cache miss (should never happen)
         if: steps.php-build-cache.outputs.cache-hit != 'true'
