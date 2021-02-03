@@ -54,6 +54,12 @@ final class ItemStackRequest{
 	/** @return ItemStackRequestAction[] */
 	public function getActions() : array{ return $this->actions; }
 
+	/**
+	 * @return string[]
+	 * @phpstan-return list<string>
+	 */
+	public function getFilterStrings() : array{ return $this->filterStrings; }
+
 	private static function readAction(NetworkBinaryStream $in, int $typeId) : ItemStackRequestAction{
 		switch($typeId){
 			case TakeStackRequestAction::getTypeId(): return TakeStackRequestAction::read($in);
