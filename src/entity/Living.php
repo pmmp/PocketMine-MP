@@ -570,7 +570,6 @@ abstract class Living extends Entity{
 
 			if($this->isInsideOfSolid()){
 				$hasUpdate = true;
-
 				$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_SUFFOCATION, 1);
 				$this->attack($ev);
 			}

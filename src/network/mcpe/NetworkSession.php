@@ -209,17 +209,17 @@ class NetworkSession{
 		$this->connectTime = time();
 
 		$this->setHandler(new LoginPacketHandler(
-							  $this->server,
-							  $this,
-							  function(PlayerInfo $info) : void{
-								  $this->info = $info;
-								  $this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
-								  $this->logger->setPrefix($this->getLogPrefix());
-							  },
-							  function(bool $isAuthenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPubKey) : void{
-								  $this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
-							  }
-						  ));
+			$this->server,
+			$this,
+			function(PlayerInfo $info) : void{
+				$this->info = $info;
+				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
+				$this->logger->setPrefix($this->getLogPrefix());
+			},
+			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPubKey) : void{
+				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
+			}
+		));
 
 		$this->manager->add($this);
 		$this->logger->info("Session opened");
@@ -350,8 +350,9 @@ class NetworkSession{
 			Timings::$playerNetworkReceiveDecompress->stopTiming();
 		}
 
+		$max = 500;
 		try{
-			foreach($stream->getPackets($this->getProtocolId(), $this->packetPool, 500) as $packet){
+			foreach($stream->getPackets($this->getProtocolId(), $this->packetPool, $max) as $packet){
 				try{
 					$this->handleDataPacket($packet);
 				}catch(BadPacketException $e){
@@ -360,7 +361,9 @@ class NetworkSession{
 				}
 			}
 		}catch(PacketDecodeException $e){
-			$this->logger->logException($e);
+			if(strpos($e->getMessage(), "Reached limit of $max packets in a single batch") === false){
+				$this->logger->logException($e);
+			}
 			throw BadPacketException::wrap($e, "Packet batch decode error");
 		}
 	}
