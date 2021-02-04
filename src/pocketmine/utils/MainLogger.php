@@ -278,8 +278,10 @@ class MainLogger extends \AttachableThreadedLogger{
 	 * @return void
 	 */
 	public function shutdown(){
-		$this->shutdown = true;
-		$this->notify();
+		$this->synchronized(function() : void{
+			$this->shutdown = true;
+			$this->notify();
+		});
 	}
 
 	/**
@@ -368,7 +370,9 @@ class MainLogger extends \AttachableThreadedLogger{
 		while(!$this->shutdown){
 			$this->writeLogStream($logResource);
 			$this->synchronized(function() : void{
-				$this->wait();
+				if(!$this->shutdown){
+					$this->wait();
+				}
 			});
 		}
 
