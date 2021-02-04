@@ -347,10 +347,12 @@ class MainLogger extends \AttachableThreadedLogger{
 			fwrite($logResource, $chunk);
 		}
 
-		if($this->syncFlush){
-			$this->syncFlush = false;
-			$this->notify(); //if this was due to a sync flush, tell the caller to stop waiting
-		}
+		$this->synchronized(function() : void{
+			if($this->syncFlush){
+				$this->syncFlush = false;
+				$this->notify(); //if this was due to a sync flush, tell the caller to stop waiting
+			}
+		});
 	}
 
 	/**
