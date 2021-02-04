@@ -44,6 +44,8 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	/** @var bool */
 	private $useFormattingCodes = false;
 
+	private string $mainThreadName;
+
 	/** @var string */
 	private $timezone;
 
@@ -53,11 +55,12 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	/**
 	 * @throws \RuntimeException
 	 */
-	public function __construct(string $logFile, bool $useFormattingCodes, bool $logDebug = false){
+	public function __construct(string $logFile, bool $useFormattingCodes, string $mainThreadName, bool $logDebug = false){
 		parent::__construct();
 		$this->logDebug = $logDebug;
 
 		$this->useFormattingCodes = $useFormattingCodes;
+		$this->mainThreadName = $mainThreadName;
 		$this->timezone = Timezone::get();
 
 		$this->logWriterThread = new MainLoggerThread($logFile);
@@ -223,7 +226,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 
 		$thread = \Thread::getCurrentThread();
 		if($thread === null){
-			$threadName = "Server thread";
+			$threadName = $this->mainThreadName . " thread";
 		}elseif($thread instanceof Thread or $thread instanceof Worker){
 			$threadName = $thread->getThreadName() . " thread";
 		}else{
