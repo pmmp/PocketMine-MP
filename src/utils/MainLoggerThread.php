@@ -27,6 +27,7 @@ use function fclose;
 use function fopen;
 use function fwrite;
 use function is_resource;
+use function touch;
 
 final class MainLoggerThread extends \Thread{
 
@@ -37,6 +38,7 @@ final class MainLoggerThread extends \Thread{
 
 	public function __construct(string $logFile){
 		$this->buffer = new \Threaded();
+		touch($logFile);
 		$this->logFile = $logFile;
 	}
 

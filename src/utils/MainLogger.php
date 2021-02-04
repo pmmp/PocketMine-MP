@@ -30,15 +30,11 @@ use pocketmine\thread\Worker;
 use function get_class;
 use function preg_replace;
 use function sprintf;
-use function touch;
 use function trim;
 use const PHP_EOL;
 use const PTHREADS_INHERIT_NONE;
 
 class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
-
-	/** @var string */
-	protected $logFile;
 	/** @var bool */
 	protected $logDebug;
 
@@ -59,15 +55,13 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	 */
 	public function __construct(string $logFile, bool $logDebug = false){
 		parent::__construct();
-		touch($logFile);
-		$this->logFile = $logFile;
 		$this->logDebug = $logDebug;
 
 		//Child threads may not inherit command line arguments, so if there's an override it needs to be recorded here
 		$this->mainThreadHasFormattingCodes = Terminal::hasFormattingCodes();
 		$this->timezone = Timezone::get();
 
-		$this->logWriterThread = new MainLoggerThread($this->logFile);
+		$this->logWriterThread = new MainLoggerThread($logFile);
 		$this->logWriterThread->start(PTHREADS_INHERIT_NONE);
 	}
 
