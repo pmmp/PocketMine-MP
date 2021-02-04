@@ -237,7 +237,7 @@ namespace pocketmine {
 			Terminal::init();
 		}
 
-		$logger = new MainLogger($dataPath . "server.log");
+		$logger = new MainLogger($dataPath . "server.log", Terminal::hasFormattingCodes());
 		\GlobalLogger::set($logger);
 
 		emit_performance_warnings($logger);

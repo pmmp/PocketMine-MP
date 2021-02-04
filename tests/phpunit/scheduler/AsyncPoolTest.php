@@ -42,9 +42,8 @@ class AsyncPoolTest extends TestCase{
 	private $mainLogger;
 
 	public function setUp() : void{
-		Terminal::init();
 		@define('pocketmine\\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__, 3) . '/vendor/autoload.php');
-		$this->mainLogger = new MainLogger(tempnam(sys_get_temp_dir(), "pmlog"));
+		$this->mainLogger = new MainLogger(tempnam(sys_get_temp_dir(), "pmlog"), false);
 		$this->pool = new AsyncPool(2, 1024, new \BaseClassLoader(), $this->mainLogger, new SleeperHandler());
 	}
 

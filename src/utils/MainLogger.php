@@ -42,7 +42,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	private $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
 
 	/** @var bool */
-	private $mainThreadHasFormattingCodes = false;
+	private $useFormattingCodes = false;
 
 	/** @var string */
 	private $timezone;
@@ -53,12 +53,11 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	/**
 	 * @throws \RuntimeException
 	 */
-	public function __construct(string $logFile, bool $logDebug = false){
+	public function __construct(string $logFile, bool $useFormattingCodes, bool $logDebug = false){
 		parent::__construct();
 		$this->logDebug = $logDebug;
 
-		//Child threads may not inherit command line arguments, so if there's an override it needs to be recorded here
-		$this->mainThreadHasFormattingCodes = Terminal::hasFormattingCodes();
+		$this->useFormattingCodes = $useFormattingCodes;
 		$this->timezone = Timezone::get();
 
 		$this->logWriterThread = new MainLoggerThread($logFile);
@@ -234,7 +233,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		$message = sprintf($this->format, $time->format("H:i:s.v"), $color, $threadName, $prefix, TextFormat::clean($message, false));
 
 		if(!Terminal::isInit()){
-			Terminal::init($this->mainThreadHasFormattingCodes); //lazy-init colour codes because we don't know if they've been registered on this thread
+			Terminal::init($this->useFormattingCodes); //lazy-init colour codes because we don't know if they've been registered on this thread
 		}
 
 		$this->synchronized(function() use ($message, $level, $time) : void{
