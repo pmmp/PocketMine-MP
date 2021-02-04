@@ -255,6 +255,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 			}
 
 			$this->logStream[] = $time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL;
+			$this->notify();
 		});
 	}
 
@@ -278,10 +279,12 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 			fwrite($logResource, $chunk);
 		}
 
-		if($this->syncFlush){
-			$this->syncFlush = false;
-			$this->notify(); //if this was due to a sync flush, tell the caller to stop waiting
-		}
+		$this->synchronized(function() : void{
+			if($this->syncFlush){
+				$this->syncFlush = false;
+				$this->notify(); //if this was due to a sync flush, tell the caller to stop waiting
+			}
+		});
 	}
 
 	public function run() : void{
@@ -293,7 +296,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		while(!$this->shutdown){
 			$this->writeLogStream($logResource);
 			$this->synchronized(function() : void{
-				$this->wait(25000);
+				$this->wait();
 			});
 		}
 
