@@ -50,8 +50,7 @@ class AsyncPoolTest extends TestCase{
 
 	public function tearDown() : void{
 		$this->pool->shutdown();
-		$this->mainLogger->shutdown();
-		$this->mainLogger->join();
+		$this->mainLogger->shutdownLogWriterThread();
 	}
 
 	public function testTaskLeak() : void{

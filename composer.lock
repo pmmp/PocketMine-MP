@@ -513,17 +513,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/LogPthreads.git",
-                "reference": "273e4ba9715c7eb916c6e50e0b92ac43b7ac389e"
+                "reference": "634af620e1cb3b4f3c7ed356cc31d778b00fd717"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/273e4ba9715c7eb916c6e50e0b92ac43b7ac389e",
-                "reference": "273e4ba9715c7eb916c6e50e0b92ac43b7ac389e",
+                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/634af620e1cb3b4f3c7ed356cc31d778b00fd717",
+                "reference": "634af620e1cb3b4f3c7ed356cc31d778b00fd717",
                 "shasum": ""
             },
             "require": {
                 "ext-pthreads": "~3.2.0",
-                "php": ">=7.2",
+                "php": "^7.2 || ^8.0",
                 "pocketmine/log": "^0.2.0 || dev-master"
             },
             "conflict": {
@@ -531,7 +531,7 @@
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.63",
+                "phpstan/phpstan": "0.12.71",
                 "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
@@ -549,7 +549,7 @@
                 "issues": "https://github.com/pmmp/LogPthreads/issues",
                 "source": "https://github.com/pmmp/LogPthreads/tree/master"
             },
-            "time": "2021-01-06T21:23:23+00:00"
+            "time": "2021-02-04T15:41:29+00:00"
         },
         {
             "name": "pocketmine/math",

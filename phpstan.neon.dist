@@ -18,6 +18,7 @@ includes:
 
 rules:
 	- pocketmine\phpstan\rules\DisallowEnumComparisonRule
+#	- pocketmine\phpstan\rules\ThreadedSupportedTypesRule
 
 parameters:
 	level: 8

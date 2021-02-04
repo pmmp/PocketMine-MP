@@ -27,11 +27,7 @@ use LogLevel;
 use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\thread\Thread;
 use pocketmine\thread\Worker;
-use function fclose;
-use function fopen;
-use function fwrite;
 use function get_class;
-use function is_resource;
 use function preg_replace;
 use function sprintf;
 use function touch;
@@ -43,14 +39,8 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 
 	/** @var string */
 	protected $logFile;
-	/** @var \Threaded */
-	protected $logStream;
-	/** @var bool */
-	protected $shutdown = false;
 	/** @var bool */
 	protected $logDebug;
-	/** @var bool */
-	private $syncFlush = false;
 
 	/** @var string */
 	private $format = TextFormat::AQUA . "[%s] " . TextFormat::RESET . "%s[%s/%s]: %s" . TextFormat::RESET;
@@ -61,6 +51,9 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	/** @var string */
 	private $timezone;
 
+	/** @var MainLoggerThread */
+	private $logWriterThread;
+
 	/**
 	 * @throws \RuntimeException
 	 */
@@ -69,13 +62,13 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		touch($logFile);
 		$this->logFile = $logFile;
 		$this->logDebug = $logDebug;
-		$this->logStream = new \Threaded;
 
 		//Child threads may not inherit command line arguments, so if there's an override it needs to be recorded here
 		$this->mainThreadHasFormattingCodes = Terminal::hasFormattingCodes();
 		$this->timezone = Timezone::get();
 
-		$this->start(PTHREADS_INHERIT_NONE);
+		$this->logWriterThread = new MainLoggerThread($this->logFile);
+		$this->logWriterThread->start(PTHREADS_INHERIT_NONE);
 	}
 
 	/**
@@ -218,9 +211,12 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		$this->synchronized($c);
 	}
 
-	public function shutdown() : void{
-		$this->shutdown = true;
-		$this->notify();
+	public function shutdownLogWriterThread() : void{
+		if(\Thread::getCurrentThreadId() === $this->logWriterThread->getCreatorId()){
+			$this->logWriterThread->shutdown();
+		}else{
+			throw new \LogicException("Only the creator thread can shutdown the logger thread");
+		}
 	}
 
 	/**
@@ -254,54 +250,17 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 				$attachment->call($level, $message);
 			}
 
-			$this->logStream[] = $time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL;
-			$this->notify();
+			$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
 		});
 	}
 
 	public function syncFlushBuffer() : void{
-		$this->syncFlush = true;
-		$this->synchronized(function() : void{
-			$this->notify(); //write immediately
-
-			while($this->syncFlush){
-				$this->wait(); //block until it's all been written to disk
-			}
-		});
+		$this->logWriterThread->syncFlushBuffer();
 	}
 
-	/**
-	 * @param resource $logResource
-	 */
-	private function writeLogStream($logResource) : void{
-		while($this->logStream->count() > 0){
-			$chunk = $this->logStream->shift();
-			fwrite($logResource, $chunk);
+	public function __destruct(){
+		if(!$this->logWriterThread->isJoined() && \Thread::getCurrentThreadId() === $this->logWriterThread->getCreatorId()){
+			$this->shutdownLogWriterThread();
 		}
-
-		$this->synchronized(function() : void{
-			if($this->syncFlush){
-				$this->syncFlush = false;
-				$this->notify(); //if this was due to a sync flush, tell the caller to stop waiting
-			}
-		});
-	}
-
-	public function run() : void{
-		$logResource = fopen($this->logFile, "ab");
-		if(!is_resource($logResource)){
-			throw new \RuntimeException("Couldn't open log file");
-		}
-
-		while(!$this->shutdown){
-			$this->writeLogStream($logResource);
-			$this->synchronized(function() : void{
-				$this->wait();
-			});
-		}
-
-		$this->writeLogStream($logResource);
-
-		fclose($logResource);
 	}
 }

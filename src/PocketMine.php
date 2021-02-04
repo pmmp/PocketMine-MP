@@ -272,8 +272,7 @@ namespace pocketmine {
 			}
 		}while(false);
 
-		$logger->shutdown();
-		$logger->join();
+		$logger->shutdownLogWriterThread();
 
 		echo Terminal::$FORMAT_RESET . PHP_EOL;
 
