@@ -59,8 +59,10 @@ final class MainLoggerThread extends \Thread{
 	}
 
 	public function shutdown() : void{
-		$this->shutdown = true;
-		$this->notify();
+		$this->synchronized(function() : void{
+			$this->shutdown = true;
+			$this->notify();
+		});
 		$this->join();
 	}
 
@@ -90,7 +92,9 @@ final class MainLoggerThread extends \Thread{
 		while(!$this->shutdown){
 			$this->writeLogStream($logResource);
 			$this->synchronized(function() : void{
-				$this->wait();
+				if(!$this->shutdown){
+					$this->wait();
+				}
 			});
 		}
 
