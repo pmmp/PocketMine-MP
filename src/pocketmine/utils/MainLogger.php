@@ -321,6 +321,7 @@ class MainLogger extends \AttachableThreadedLogger{
 			}
 
 			$this->logStream[] = $time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL;
+			$this->notify();
 		});
 	}
 
@@ -367,7 +368,7 @@ class MainLogger extends \AttachableThreadedLogger{
 		while(!$this->shutdown){
 			$this->writeLogStream($logResource);
 			$this->synchronized(function() : void{
-				$this->wait(25000);
+				$this->wait();
 			});
 		}
 
