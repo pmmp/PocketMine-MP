@@ -55,13 +55,13 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	/**
 	 * @throws \RuntimeException
 	 */
-	public function __construct(string $logFile, bool $useFormattingCodes, string $mainThreadName, bool $logDebug = false){
+	public function __construct(string $logFile, bool $useFormattingCodes, string $mainThreadName, \DateTimeZone $timezone, bool $logDebug = false){
 		parent::__construct();
 		$this->logDebug = $logDebug;
 
 		$this->useFormattingCodes = $useFormattingCodes;
 		$this->mainThreadName = $mainThreadName;
-		$this->timezone = Timezone::get();
+		$this->timezone = $timezone->getName();
 
 		$this->logWriterThread = new MainLoggerThread($logFile);
 		$this->logWriterThread->start(PTHREADS_INHERIT_NONE);
