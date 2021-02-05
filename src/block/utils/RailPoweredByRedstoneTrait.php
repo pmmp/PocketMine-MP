@@ -21,12 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-abstract class RedstoneRail extends BaseRail{
+use pocketmine\block\BlockLegacyMetadata;
 
-	/** @var bool */
-	protected $powered = false;
+trait RailPoweredByRedstoneTrait{
+	use PoweredByRedstoneTrait;
 
 	protected function writeStateToMeta() : int{
 		return parent::writeStateToMeta() | ($this->powered ? BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED : 0);

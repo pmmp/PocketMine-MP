@@ -21,10 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\RailPoweredByRedstoneTrait;
+trait PoweredByRedstoneTrait{
+	protected bool $powered = false;
 
-class PoweredRail extends BaseRail{
-	use RailPoweredByRedstoneTrait;
+	public function isPowered() : bool{ return $this->powered; }
+
+	/** @return $this */
+	public function setPowered(bool $powered) : self{
+		$this->powered = $powered;
+		return $this;
+	}
 }
