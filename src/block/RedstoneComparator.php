@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Comparator;
+use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
@@ -36,6 +37,7 @@ use function assert;
 
 class RedstoneComparator extends Flowable{
 	use HorizontalFacingTrait;
+	use AnalogRedstoneSignalEmitterTrait;
 
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
@@ -44,8 +46,6 @@ class RedstoneComparator extends Flowable{
 	protected $isSubtractMode = false;
 	/** @var bool */
 	protected $powered = false;
-	/** @var int */
-	protected $signalStrength = 0;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
@@ -103,16 +103,6 @@ class RedstoneComparator extends Flowable{
 	/** @return $this */
 	public function setPowered(bool $powered) : self{
 		$this->powered = $powered;
-		return $this;
-	}
-
-	public function getSignalStrength() : int{
-		return $this->signalStrength;
-	}
-
-	/** @return $this */
-	public function setSignalStrength(int $signalStrength) : self{
-		$this->signalStrength = $signalStrength;
 		return $this;
 	}
 

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -35,11 +36,10 @@ use function round;
 use const M_PI;
 
 class DaylightSensor extends Transparent{
+	use AnalogRedstoneSignalEmitterTrait;
+
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
-
-	/** @var int */
-	protected $signalStrength = 0;
 
 	/** @var bool */
 	protected $inverted = false;

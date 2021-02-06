@@ -21,23 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
-use pocketmine\block\utils\BlockDataSerializer;
+trait AnalogRedstoneSignalEmitterTrait{
+	protected int $signalStrength = 0;
 
-abstract class WeightedPressurePlate extends PressurePlate{
-	use AnalogRedstoneSignalEmitterTrait;
+	public function getOutputSignalStrength() : int{ return $this->signalStrength; }
 
-	protected function writeStateToMeta() : int{
-		return $this->signalStrength;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->signalStrength = BlockDataSerializer::readBoundedInt("signalStrength", $stateMeta, 0, 15);
-	}
-
-	public function getStateBitmask() : int{
-		return 0b1111;
+	/** @return $this */
+	public function setOutputSignalStrength(int $signalStrength) : self{
+		if($signalStrength < 0 || $signalStrength > 15){
+			throw new \InvalidArgumentException("Signal strength must be in range 0-15");
+		}
+		$this->signalStrength = $signalStrength;
+		return $this;
 	}
 }
