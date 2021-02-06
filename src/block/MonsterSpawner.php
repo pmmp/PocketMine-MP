@@ -25,12 +25,13 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
+use pocketmine\world\sound\NoteInstrument;
 use function mt_rand;
 
 class MonsterSpawner extends Transparent{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()), $noteblockInstrument ?? NoteInstrument::BASS_DRUM());
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

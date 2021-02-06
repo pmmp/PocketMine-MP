@@ -27,13 +27,14 @@ use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use pocketmine\world\sound\NoteInstrument;
 use function mt_rand;
 
 class Gravel extends Opaque implements Fallable{
 	use FallableTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::SHOVEL));
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::SHOVEL), $noteblockInstrument ?? NoteInstrument::SNARE());
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

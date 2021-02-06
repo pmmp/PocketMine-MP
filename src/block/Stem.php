@@ -26,13 +26,14 @@ namespace pocketmine\block;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
+use pocketmine\world\sound\NoteInstrument;
 use function array_rand;
 use function mt_rand;
 
 abstract class Stem extends Crops{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant(), $noteblockInstrument);
 	}
 
 	abstract protected function getPlant() : Block;

@@ -24,6 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Note as TileNote;
+use pocketmine\item\Item;
+use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\BlockEventPacket;
+use pocketmine\player\Player;
+use pocketmine\world\sound\NoteInstrument;
+use pocketmine\world\sound\NoteSound;
 use function assert;
 
 class Note extends Opaque{
@@ -33,8 +40,11 @@ class Note extends Opaque{
 	/** @var int */
 	private $pitch = self::MIN_PITCH;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.8, BlockToolType::AXE));
+	/** @var NoteInstrument */
+	private $instrument;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.8, BlockToolType::AXE), $noteblockInstrument ?? NoteInstrument::DOUBLE_BASS());
 	}
 
 	public function readStateFromWorld() : void{
@@ -45,6 +55,7 @@ class Note extends Opaque{
 		}else{
 			$this->pitch = self::MIN_PITCH;
 		}
+		$this->instrument = $this->getSide(Facing::DOWN)->getNoteblockInstrument();
 	}
 
 	public function writeStateToWorld() : void{
@@ -71,5 +82,40 @@ class Note extends Opaque{
 		return $this;
 	}
 
-	//TODO
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($this->getSide(Facing::UP)->getId() !== BlockLegacyIds::AIR){
+			return false;
+		}
+		$this->pitch = ++$this->pitch % (self::MAX_PITCH + 1);
+		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->triggerNote();
+		return true;
+	}
+
+	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
+		if($this->getSide(Facing::UP)->getId() !== BlockLegacyIds::AIR){
+			return false;
+		}
+		$this->triggerNote();
+		return true;
+	}
+
+	public function onNearbyBlockChange() : void{
+		$this->instrument = $this->getSide(Facing::DOWN)->getNoteblockInstrument();
+	}
+
+	/**
+	 * Get the instrument that the noteblock will play when it is triggered
+	 *
+	 * @return NoteInstrument
+	 */
+	public function getInstrument() : NoteInstrument{
+		return $this->instrument;
+	}
+
+	public function triggerNote() : void{
+		$instrument = $this->getInstrument();
+		$this->pos->getWorld()->addSound($this->pos, new NoteSound($instrument, $this->pitch));
+		$this->pos->getWorld()->broadcastPacketToViewers($this->pos, BlockEventPacket::create($instrument->getMagicNumber(), $this->pitch, $this->pos));
+	}
 }

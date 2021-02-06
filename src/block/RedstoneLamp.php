@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\world\sound\NoteInstrument;
+
 class RedstoneLamp extends Opaque{
 
 	/** @var BlockIdentifierFlattened */
@@ -31,8 +33,8 @@ class RedstoneLamp extends Opaque{
 	/** @var bool */
 	protected $lit = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.3));
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.3), $noteblockInstrument);
 	}
 
 	public function getId() : int{

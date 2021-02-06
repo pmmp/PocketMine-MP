@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\world\sound\NoteInstrument;
+
 class Element extends Opaque{
 
 	/** @var int */
@@ -32,8 +34,8 @@ class Element extends Opaque{
 	/** @var string */
 	private $symbol;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, string $symbol, int $atomicWeight, int $group){
-		parent::__construct($idInfo, $name, $breakInfo);
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, string $symbol, int $atomicWeight, int $group, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo, $noteblockInstrument);
 		$this->atomicWeight = $atomicWeight;
 		$this->group = $group;
 		$this->symbol = $symbol;

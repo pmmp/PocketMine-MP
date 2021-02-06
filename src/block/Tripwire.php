@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\world\sound\NoteInstrument;
+
 class Tripwire extends Flowable{
 
 	/** @var bool */
@@ -34,8 +36,8 @@ class Tripwire extends Flowable{
 	/** @var bool */
 	protected $disarmed = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant(), $noteblockInstrument);
 	}
 
 	protected function writeStateToMeta() : int{

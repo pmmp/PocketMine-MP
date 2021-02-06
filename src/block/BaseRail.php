@@ -29,6 +29,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\NoteInstrument;
 use function array_map;
 use function array_reverse;
 use function array_search;
@@ -74,8 +75,8 @@ abstract class BaseRail extends Flowable{
 	/** @var int[] */
 	protected $connections = [];
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.7));
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.7), $noteblockInstrument);
 	}
 
 	protected function writeStateToMeta() : int{

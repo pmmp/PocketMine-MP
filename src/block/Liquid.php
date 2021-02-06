@@ -31,6 +31,7 @@ use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\world\sound\FizzSound;
+use pocketmine\world\sound\NoteInstrument;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use function array_fill;
@@ -62,8 +63,8 @@ abstract class Liquid extends Transparent{
 	/** @var bool */
 	protected $still = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible(500.0));
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible(500.0), $noteblockInstrument);
 	}
 
 	public function getId() : int{

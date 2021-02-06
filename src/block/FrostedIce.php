@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\world\sound\NoteInstrument;
 use function max;
 use function mt_rand;
 
@@ -32,8 +33,8 @@ class FrostedIce extends Ice{
 	/** @var int */
 	protected $age = 0;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::PICKAXE));
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::PICKAXE), $noteblockInstrument);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{

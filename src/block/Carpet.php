@@ -31,13 +31,14 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\NoteInstrument;
 
 class Carpet extends Flowable{
 	use ColorInMetadataTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
 		$this->color = DyeColor::WHITE();
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.1));
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.1), $noteblockInstrument);
 	}
 
 	public function isSolid() : bool{

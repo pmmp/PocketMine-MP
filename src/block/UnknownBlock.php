@@ -24,11 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
+use pocketmine\world\sound\NoteInstrument;
 
 class UnknownBlock extends Transparent{
 
-	public function __construct(BlockIdentifier $idInfo, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, "Unknown", $breakInfo ?? BlockBreakInfo::instant());
+	public function __construct(BlockIdentifier $idInfo, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, "Unknown", $breakInfo ?? BlockBreakInfo::instant(), $noteblockInstrument);
 	}
 
 	public function canBePlaced() : bool{

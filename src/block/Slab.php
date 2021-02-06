@@ -30,6 +30,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\NoteInstrument;
 
 class Slab extends Transparent{
 	/** @var BlockIdentifierFlattened */
@@ -38,8 +39,8 @@ class Slab extends Transparent{
 	/** @var SlabType */
 	protected $slabType;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
-		parent::__construct($idInfo, $name . " Slab", $breakInfo);
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name . " Slab", $breakInfo, $noteblockInstrument);
 		$this->slabType = SlabType::BOTTOM();
 	}
 

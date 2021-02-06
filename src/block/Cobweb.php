@@ -26,11 +26,12 @@ namespace pocketmine\block;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use pocketmine\world\sound\NoteInstrument;
 
 class Cobweb extends Flowable{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(4.0, BlockToolType::SWORD | BlockToolType::SHEARS, 1));
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(4.0, BlockToolType::SWORD | BlockToolType::SHEARS, 1), $noteblockInstrument);
 	}
 
 	public function hasEntityCollision() : bool{

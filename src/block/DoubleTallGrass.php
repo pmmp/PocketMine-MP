@@ -25,12 +25,13 @@ namespace pocketmine\block;
 
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
+use pocketmine\world\sound\NoteInstrument;
 use function mt_rand;
 
 class DoubleTallGrass extends DoublePlant{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant(BlockToolType::SHEARS, 1));
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant(BlockToolType::SHEARS, 1), $noteblockInstrument);
 	}
 
 	public function canBeReplaced() : bool{

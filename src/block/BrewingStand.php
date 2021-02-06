@@ -29,6 +29,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\NoteInstrument;
 use function array_key_exists;
 
 class BrewingStand extends Transparent{
@@ -39,8 +40,8 @@ class BrewingStand extends Transparent{
 	 */
 	protected $slots = [];
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()), $noteblockInstrument);
 	}
 
 	protected function writeStateToMeta() : int{

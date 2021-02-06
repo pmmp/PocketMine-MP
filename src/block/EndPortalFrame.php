@@ -31,6 +31,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\NoteInstrument;
 
 class EndPortalFrame extends Opaque{
 	use HorizontalFacingTrait;
@@ -38,8 +39,8 @@ class EndPortalFrame extends Opaque{
 	/** @var bool */
 	protected $eye = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible());
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible(), $noteblockInstrument ?? NoteInstrument::BASS_DRUM());
 	}
 
 	protected function writeStateToMeta() : int{

@@ -35,6 +35,17 @@ use pocketmine\utils\EnumTrait;
  * @method static self SNARE()
  * @method static self CLICKS_AND_STICKS()
  * @method static self DOUBLE_BASS()
+ * @method static self BELL()
+ * @method static self FLUTE()
+ * @method static self CHIMES()
+ * @method static self GUITAR()
+ * @method static self XYLOPHONE()
+ * @method static self IRON_XYLOPHONE()
+ * @method static self COW_BELL()
+ * @method static self DIDGERIDOO()
+ * @method static self BIT()
+ * @method static self BANJO()
+ * @method static self PLING()
  */
 final class NoteInstrument{
 	use EnumTrait {
@@ -47,7 +58,18 @@ final class NoteInstrument{
 			new self("bass_drum", 1),
 			new self("snare", 2),
 			new self("clicks_and_sticks", 3),
-			new self("double_bass", 4)
+			new self("double_bass", 4),
+			new self("bell", 5),
+			new self("flute", 6),
+			new self("chimes", 7),
+			new self("guitar", 8),
+			new self("xylophone", 9),
+			new self("iron_xylophone", 10),
+			new self("cow_bell", 11),
+			new self("didgeridoo", 12),
+			new self("bit", 13),
+			new self("banjo", 14),
+			new self("pling", 15)
 		);
 	}
 

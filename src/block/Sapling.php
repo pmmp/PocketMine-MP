@@ -32,6 +32,7 @@ use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\generator\object\Tree;
+use pocketmine\world\sound\NoteInstrument;
 use function mt_rand;
 
 class Sapling extends Flowable{
@@ -41,8 +42,8 @@ class Sapling extends Flowable{
 	/** @var TreeType */
 	private $treeType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant(), $noteblockInstrument);
 		$this->treeType = $treeType;
 	}
 

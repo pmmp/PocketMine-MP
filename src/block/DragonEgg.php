@@ -31,6 +31,7 @@ use pocketmine\item\ToolTier;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\particle\DragonEggTeleportParticle;
+use pocketmine\world\sound\NoteInstrument;
 use pocketmine\world\World;
 use function max;
 use function min;
@@ -39,8 +40,8 @@ use function mt_rand;
 class DragonEgg extends Transparent implements Fallable{
 	use FallableTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()), $noteblockInstrument);
 	}
 
 	public function getLightLevel() : int{

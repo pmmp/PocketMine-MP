@@ -41,6 +41,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\Position;
+use pocketmine\world\sound\NoteInstrument;
 use pocketmine\world\World;
 use function assert;
 use function count;
@@ -55,6 +56,9 @@ class Block{
 	/** @var string */
 	protected $fallbackName;
 
+	/** @var NoteInstrument */
+	protected $noteblockInstrument;
+
 	/** @var BlockBreakInfo */
 	protected $breakInfo;
 
@@ -65,9 +69,9 @@ class Block{
 	protected $collisionBoxes = null;
 
 	/**
-	 * @param string          $name English name of the block type (TODO: implement translations)
+	 * @param string $name English name of the block type (TODO: implement translations)
 	 */
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, ?NoteInstrument $noteblockInstrument = null){
 		if(($idInfo->getVariant() & $this->getStateBitmask()) !== 0){
 			throw new \InvalidArgumentException("Variant 0x" . dechex($idInfo->getVariant()) . " collides with state bitmask 0x" . dechex($this->getStateBitmask()));
 		}
@@ -75,6 +79,7 @@ class Block{
 		$this->fallbackName = $name;
 		$this->breakInfo = $breakInfo;
 		$this->pos = new Position(0, 0, 0, null);
+		$this->noteblockInstrument = $noteblockInstrument ?? NoteInstrument::PIANO();
 	}
 
 	public function __clone(){
@@ -408,6 +413,15 @@ class Block{
 	 */
 	public function isAffectedBySilkTouch() : bool{
 		return false;
+	}
+
+	/**
+	 * Return the instrument that a noteblock on top of this block will play
+	 *
+	 * @return NoteInstrument
+	 */
+	public function getNoteblockInstrument() : NoteInstrument{
+		return $this->noteblockInstrument;
 	}
 
 	/**

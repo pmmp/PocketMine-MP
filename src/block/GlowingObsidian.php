@@ -24,11 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\ToolTier;
+use pocketmine\world\sound\NoteInstrument;
 
 class GlowingObsidian extends Opaque{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(10.0, BlockToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 50.0));
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(10.0, BlockToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 50.0), $noteblockInstrument ?? NoteInstrument::BASS_DRUM());
 	}
 
 	public function getLightLevel() : int{

@@ -27,13 +27,14 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\world\sound\NoteInstrument;
 
 class NetherPortal extends Transparent{
 	/** @var int */
 	protected $axis = Axis::X;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible(0.0));
+	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null, ?NoteInstrument $noteblockInstrument = null){
+		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible(0.0), $noteblockInstrument);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
