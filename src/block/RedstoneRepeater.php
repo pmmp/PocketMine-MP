@@ -65,6 +65,17 @@ class RedstoneRepeater extends Flowable{
 		return 0b1111;
 	}
 
+	public function getDelay() : int{ return $this->delay; }
+
+	/** @return $this */
+	public function setDelay(int $delay) : self{
+		if($delay < 1 || $delay > 4){
+			throw new \InvalidArgumentException("Delay must be in range 1-4");
+		}
+		$this->delay = $delay;
+		return $this;
+	}
+
 	/**
 	 * @return AxisAlignedBB[]
 	 */
