@@ -64,6 +64,14 @@ class TNT extends Opaque{
 
 	public function getNonPersistentStateBitmask() : int{ return 0b1; }
 
+	public function isUnstable() : bool{ return $this->unstable; }
+
+	/** @return $this */
+	public function setUnstable(bool $unstable) : self{
+		$this->unstable = $unstable;
+		return $this;
+	}
+
 	public function worksUnderwater() : bool{ return $this->worksUnderwater; }
 
 	/** @return $this */
