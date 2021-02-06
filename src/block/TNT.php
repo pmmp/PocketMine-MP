@@ -43,6 +43,7 @@ class TNT extends Opaque{
 
 	/** @var bool */
 	protected $unstable = false; //TODO: Usage unclear, seems to be a weird hack in vanilla
+	protected bool $worksUnderwater = false;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
@@ -50,14 +51,25 @@ class TNT extends Opaque{
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->unstable = ($stateMeta & BlockLegacyMetadata::TNT_FLAG_UNSTABLE) !== 0;
+		$this->worksUnderwater = ($stateMeta & BlockLegacyMetadata::TNT_FLAG_UNDERWATER) !== 0;
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->unstable ? BlockLegacyMetadata::TNT_FLAG_UNSTABLE : 0;
+		return ($this->unstable ? BlockLegacyMetadata::TNT_FLAG_UNSTABLE : 0) | ($this->worksUnderwater ? BlockLegacyMetadata::TNT_FLAG_UNDERWATER : 0);
 	}
 
 	public function getStateBitmask() : int{
-		return 0b1;
+		return 0b11;
+	}
+
+	public function getNonPersistentStateBitmask() : int{ return 0b1; }
+
+	public function worksUnderwater() : bool{ return $this->worksUnderwater; }
+
+	/** @return $this */
+	public function setWorksUnderwater(bool $worksUnderwater) : self{
+		$this->worksUnderwater = $worksUnderwater;
+		return $this;
 	}
 
 	public function onBreak(Item $item, ?Player $player = null) : bool{
@@ -99,6 +111,7 @@ class TNT extends Opaque{
 
 		$tnt = new PrimedTNT(Location::fromObject($this->pos->add(0.5, 0, 0.5), $this->pos->getWorld()));
 		$tnt->setFuse($fuse);
+		$tnt->setWorksUnderwater($this->worksUnderwater);
 		$tnt->setMotion(new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));
 
 		$tnt->spawnToAll();
