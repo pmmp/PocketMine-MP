@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -35,6 +36,7 @@ use pocketmine\world\sound\DoorSound;
 
 class Door extends Transparent{
 	use HorizontalFacingTrait;
+	use PoweredByRedstoneTrait;
 
 	/** @var bool */
 	protected $top = false;
@@ -43,8 +45,6 @@ class Door extends Transparent{
 
 	/** @var bool */
 	protected $open = false;
-	/** @var bool */
-	protected $powered = false;
 
 	protected function writeStateToMeta() : int{
 		if($this->top){
