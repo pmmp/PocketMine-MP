@@ -52,6 +52,17 @@ class Torch extends Flowable{
 		return 0b111;
 	}
 
+	public function getFacing() : int{ return $this->facing; }
+
+	/** @return $this */
+	public function setFacing(int $facing) : self{
+		if($facing === Facing::DOWN){
+			throw new \InvalidArgumentException("Torch may not face DOWN");
+		}
+		$this->facing = $facing;
+		return $this;
+	}
+
 	public function getLightLevel() : int{
 		return 14;
 	}
