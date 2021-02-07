@@ -32,5 +32,5 @@ final class JwtChain{
 	 * @var string[]
 	 * @required
 	 */
-	public $chain;
+	public array $chain;
 }
