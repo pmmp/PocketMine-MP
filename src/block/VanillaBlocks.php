@@ -48,6 +48,7 @@ use function assert;
  * @method static Wood ACACIA_WOOD()
  * @method static ActivatorRail ACTIVATOR_RAIL()
  * @method static Air AIR()
+ * @method static MushroomStem ALL_SIDED_MUSHROOM_STEM()
  * @method static Flower ALLIUM()
  * @method static Opaque ANDESITE()
  * @method static Slab ANDESITE_SLAB()
@@ -443,6 +444,7 @@ use function assert;
  * @method static Stair MOSSY_STONE_BRICK_STAIRS()
  * @method static Wall MOSSY_STONE_BRICK_WALL()
  * @method static Opaque MOSSY_STONE_BRICKS()
+ * @method static MushroomStem MUSHROOM_STEM()
  * @method static Mycelium MYCELIUM()
  * @method static Fence NETHER_BRICK_FENCE()
  * @method static Slab NETHER_BRICK_SLAB()
@@ -665,6 +667,7 @@ final class VanillaBlocks{
 		self::register("acacia_wood", $factory->get(467, 4));
 		self::register("activator_rail", $factory->get(126, 0));
 		self::register("air", $factory->get(0, 0));
+		self::register("all_sided_mushroom_stem", $factory->get(99, 15));
 		self::register("allium", $factory->get(38, 2));
 		self::register("andesite", $factory->get(1, 5));
 		self::register("andesite_slab", $factory->get(417, 3));
@@ -1060,6 +1063,7 @@ final class VanillaBlocks{
 		self::register("mossy_stone_brick_stairs", $factory->get(430, 0));
 		self::register("mossy_stone_brick_wall", $factory->get(139, 8));
 		self::register("mossy_stone_bricks", $factory->get(98, 1));
+		self::register("mushroom_stem", $factory->get(99, 10));
 		self::register("mycelium", $factory->get(110, 0));
 		self::register("nether_brick_fence", $factory->get(113, 0));
 		self::register("nether_brick_slab", $factory->get(44, 7));

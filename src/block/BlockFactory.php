@@ -123,7 +123,6 @@ class BlockFactory{
 		$this->register(new Opaque(new BID(Ids::BRICK_BLOCK), "Bricks", $bricksBreakInfo));
 
 		$this->register(new BrownMushroom(new BID(Ids::BROWN_MUSHROOM), "Brown Mushroom"));
-		$this->register(new BrownMushroomBlock(new BID(Ids::BROWN_MUSHROOM_BLOCK), "Brown Mushroom Block"));
 		$this->register(new Cactus(new BID(Ids::CACTUS), "Cactus"));
 		$this->register(new Cake(new BID(Ids::CAKE_BLOCK, 0, ItemIds::CAKE), "Cake"));
 		$this->register(new Carrot(new BID(Ids::CARROTS), "Carrot Block"));
@@ -279,7 +278,6 @@ class BlockFactory{
 
 		$this->register(new Rail(new BID(Ids::RAIL), "Rail"));
 		$this->register(new RedMushroom(new BID(Ids::RED_MUSHROOM), "Red Mushroom"));
-		$this->register(new RedMushroomBlock(new BID(Ids::RED_MUSHROOM_BLOCK), "Red Mushroom Block"));
 		$this->register(new Redstone(new BID(Ids::REDSTONE_BLOCK), "Redstone Block"));
 		$this->register(new RedstoneComparator(new BIDFlattened(Ids::UNPOWERED_COMPARATOR, Ids::POWERED_COMPARATOR, 0, ItemIds::COMPARATOR, TileComparator::class), "Redstone Comparator"));
 		$this->register(new RedstoneLamp(new BIDFlattened(Ids::REDSTONE_LAMP, Ids::LIT_REDSTONE_LAMP), "Redstone Lamp"));
@@ -478,6 +476,9 @@ class BlockFactory{
 		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_MATERIAL_REDUCER), "Material Reducer", $chemistryTableBreakInfo));
 
 		$this->register(new ChemicalHeat(new BID(Ids::CHEMICAL_HEAT), "Heat Block", $chemistryTableBreakInfo));
+
+		$this->registerMushroomBlocks();
+
 		//region --- auto-generated TODOs for bedrock-1.11.0 ---
 		//TODO: minecraft:bell
 		//TODO: minecraft:blast_furnace
@@ -636,6 +637,53 @@ class BlockFactory{
 		//TODO: minecraft:warped_wart_block
 		//TODO: minecraft:weeping_vines
 		//endregion
+	}
+
+	private function registerMushroomBlocks() : void{
+		//shrooms have to be handled one by one because some metas are variants and others aren't, and they can't be
+		//separated by a bitmask
+
+		$mushroomBlockBreakInfo = new BlockBreakInfo(0.2, BlockToolType::AXE);
+
+		$mushroomBlocks = [
+			new BrownMushroomBlock(new BID(Ids::BROWN_MUSHROOM_BLOCK), "Brown Mushroom Block", $mushroomBlockBreakInfo),
+			new RedMushroomBlock(new BID(Ids::RED_MUSHROOM_BLOCK), "Red Mushroom Block", $mushroomBlockBreakInfo)
+		];
+
+		//caps
+		foreach([
+			Meta::MUSHROOM_BLOCK_ALL_PORES,
+			Meta::MUSHROOM_BLOCK_CAP_NORTHWEST_CORNER,
+			Meta::MUSHROOM_BLOCK_CAP_NORTH_SIDE,
+			Meta::MUSHROOM_BLOCK_CAP_NORTHEAST_CORNER,
+			Meta::MUSHROOM_BLOCK_CAP_WEST_SIDE,
+			Meta::MUSHROOM_BLOCK_CAP_TOP_ONLY,
+			Meta::MUSHROOM_BLOCK_CAP_EAST_SIDE,
+			Meta::MUSHROOM_BLOCK_CAP_SOUTHWEST_CORNER,
+			Meta::MUSHROOM_BLOCK_CAP_SOUTH_SIDE,
+			Meta::MUSHROOM_BLOCK_CAP_SOUTHEAST_CORNER,
+			Meta::MUSHROOM_BLOCK_ALL_CAP,
+		] as $meta){
+			foreach($mushroomBlocks as $block){
+				$block->readStateFromData($block->getId(), $meta);
+				$this->remap($block->getId(), $meta, clone $block);
+			}
+		}
+
+		//and the invalid states
+		for($meta = 11; $meta <= 13; ++$meta){
+			foreach($mushroomBlocks as $block){
+				$this->remap($block->getId(), $meta, clone $block);
+			}
+		}
+
+		//finally, the stems
+		$mushroomStem = new MushroomStem(new BID(Ids::BROWN_MUSHROOM_BLOCK, Meta::MUSHROOM_BLOCK_STEM), "Mushroom Stem", $mushroomBlockBreakInfo);
+		$this->remap(Ids::BROWN_MUSHROOM_BLOCK, Meta::MUSHROOM_BLOCK_STEM, $mushroomStem);
+		$this->remap(Ids::RED_MUSHROOM_BLOCK, Meta::MUSHROOM_BLOCK_STEM, $mushroomStem);
+		$allSidedMushroomStem = new MushroomStem(new BID(Ids::BROWN_MUSHROOM_BLOCK, Meta::MUSHROOM_BLOCK_ALL_STEM), "All Sided Mushroom Stem", $mushroomBlockBreakInfo);
+		$this->remap(Ids::BROWN_MUSHROOM_BLOCK, Meta::MUSHROOM_BLOCK_ALL_STEM, $allSidedMushroomStem);
+		$this->remap(Ids::RED_MUSHROOM_BLOCK, Meta::MUSHROOM_BLOCK_ALL_STEM, $allSidedMushroomStem);
 	}
 
 	private function registerElements() : void{
