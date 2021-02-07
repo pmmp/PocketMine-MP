@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4ef66ad9f915fd8a82409bbf2a46c9cf",
+    "content-hash": "890a26c254ade9c1f4e45228ac71ac28",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -131,25 +131,25 @@
         },
         {
             "name": "mdanter/ecc",
-            "version": "v0.5.2",
+            "version": "v1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpecc/phpecc.git",
-                "reference": "b95f25cc1bacc83a9f0ccd375900b7cfd343029e"
+                "reference": "34e2eec096bf3dcda814e8f66dd91ae87a2db7cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpecc/phpecc/zipball/b95f25cc1bacc83a9f0ccd375900b7cfd343029e",
-                "reference": "b95f25cc1bacc83a9f0ccd375900b7cfd343029e",
+                "url": "https://api.github.com/repos/phpecc/phpecc/zipball/34e2eec096bf3dcda814e8f66dd91ae87a2db7cd",
+                "reference": "34e2eec096bf3dcda814e8f66dd91ae87a2db7cd",
                 "shasum": ""
             },
             "require": {
                 "ext-gmp": "*",
                 "fgrosse/phpasn1": "^2.0",
-                "php": "^7.0"
+                "php": "^7.0||^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.0",
+                "phpunit/phpunit": "^6.0||^8.0||^9.0",
                 "squizlabs/php_codesniffer": "^2.0",
                 "symfony/yaml": "^2.6|^3.0"
             },
@@ -201,9 +201,9 @@
             ],
             "support": {
                 "issues": "https://github.com/phpecc/phpecc/issues",
-                "source": "https://github.com/phpecc/phpecc/tree/master"
+                "source": "https://github.com/phpecc/phpecc/tree/v1.0.0"
             },
-            "time": "2018-12-03T18:17:01+00:00"
+            "time": "2021-01-16T19:42:14+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
@@ -392,23 +392,23 @@
         },
         {
             "name": "pocketmine/color",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Color.git",
-                "reference": "10f3453d0eb3eccbccad5cf58a00e42cdaef1772"
+                "reference": "09be6ea6d76f2e33d6813c39d29c22c46c17e1d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Color/zipball/10f3453d0eb3eccbccad5cf58a00e42cdaef1772",
-                "reference": "10f3453d0eb3eccbccad5cf58a00e42cdaef1772",
+                "url": "https://api.github.com/repos/pmmp/Color/zipball/09be6ea6d76f2e33d6813c39d29c22c46c17e1d2",
+                "reference": "09be6ea6d76f2e33d6813c39d29c22c46c17e1d2",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2"
+                "php": "^7.2 || ^8.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.12.25",
+                "phpstan/phpstan": "0.12.59",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
@@ -424,29 +424,29 @@
             "description": "Color handling library used by PocketMine-MP and related projects",
             "support": {
                 "issues": "https://github.com/pmmp/Color/issues",
-                "source": "https://github.com/pmmp/Color/tree/0.1.0"
+                "source": "https://github.com/pmmp/Color/tree/0.2.0"
             },
-            "time": "2020-05-14T19:15:33+00:00"
+            "time": "2020-12-11T01:24:32+00:00"
         },
         {
             "name": "pocketmine/errorhandler",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ErrorHandler.git",
-                "reference": "0503a1929a3934e754114814509ff9152f4908eb"
+                "reference": "567fa056335efc295c4592c8aad72de66a2fcf34"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ErrorHandler/zipball/0503a1929a3934e754114814509ff9152f4908eb",
-                "reference": "0503a1929a3934e754114814509ff9152f4908eb",
+                "url": "https://api.github.com/repos/pmmp/ErrorHandler/zipball/567fa056335efc295c4592c8aad72de66a2fcf34",
+                "reference": "567fa056335efc295c4592c8aad72de66a2fcf34",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2"
+                "php": "^7.2 || ^8.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "^0.12.23",
+                "phpstan/phpstan": "0.12.59",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
@@ -462,9 +462,9 @@
             "description": "Utilities to handle nasty PHP E_* errors in a usable way",
             "support": {
                 "issues": "https://github.com/pmmp/ErrorHandler/issues",
-                "source": "https://github.com/pmmp/ErrorHandler/tree/0.1.0"
+                "source": "https://github.com/pmmp/ErrorHandler/tree/0.2.0"
             },
-            "time": "2020-05-10T11:45:02+00:00"
+            "time": "2020-12-11T01:06:33+00:00"
         },
         {
             "name": "pocketmine/log",
@@ -3314,14 +3314,14 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "pocketmine/raklib": 20,
-        "pocketmine/spl": 20,
         "pocketmine/binaryutils": 20,
-        "pocketmine/log": 20,
-        "pocketmine/nbt": 20,
-        "pocketmine/math": 20,
         "pocketmine/classloader": 20,
-        "pocketmine/log-pthreads": 20
+        "pocketmine/log": 20,
+        "pocketmine/log-pthreads": 20,
+        "pocketmine/math": 20,
+        "pocketmine/nbt": 20,
+        "pocketmine/raklib": 20,
+        "pocketmine/spl": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
@@ -3329,9 +3329,9 @@
         "php": ">=7.4.0",
         "php-64bit": "*",
         "ext-chunkutils2": "^0.1.0",
-        "ext-curl": "*",
         "ext-crypto": "^0.3.1",
         "ext-ctype": "*",
+        "ext-curl": "*",
         "ext-date": "*",
         "ext-ds": "^1.2.7",
         "ext-gmp": "*",
