@@ -576,20 +576,16 @@ class Server{
 		}
 	}
 
-	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated) : Player{
+	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : Player{
 		$ev = new PlayerCreationEvent($session);
 		$ev->call();
 		$class = $ev->getPlayerClass();
-
-		//TODO: make this async
-		//TODO: what about allowing this to be provided by PlayerCreationEvent?
-		$namedtag = $this->getOfflinePlayerData($playerInfo->getUsername());
 
 		/**
 		 * @see Player::__construct()
 		 * @var Player $player
 		 */
-		$player = new $class($this, $session, $playerInfo, $authenticated, $namedtag);
+		$player = new $class($this, $session, $playerInfo, $authenticated, $offlinePlayerData);
 		return $player;
 	}
 

@@ -229,7 +229,11 @@ class NetworkSession{
 	}
 
 	protected function createPlayer() : void{
-		$this->player = $this->server->createPlayer($this, $this->info, $this->authenticated);
+		//TODO: make this async
+		//TODO: what about allowing this to be provided by PlayerCreationEvent?
+		$offlinePlayerData = $this->server->getOfflinePlayerData($this->info->getUsername());
+
+		$this->player = $this->server->createPlayer($this, $this->info, $this->authenticated, $offlinePlayerData);
 
 		$this->invManager = new InventoryManager($this->player, $this);
 
