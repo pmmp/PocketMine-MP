@@ -610,7 +610,7 @@ class NetworkSession{
 		//TODO: make player data loading async
 		//TODO: we shouldn't be loading player data here at all, but right now we don't have any choice :(
 		$this->cachedOfflinePlayerData = $this->server->getOfflinePlayerData($this->info->getUsername());
-		if((bool) $this->server->getConfigGroup()->getProperty("player.verify-xuid")){
+		if((bool) $this->server->getConfigGroup()->getProperty("player.verify-xuid", true)){
 			$recordedXUID = $this->cachedOfflinePlayerData !== null ? $this->cachedOfflinePlayerData->getTag("LastKnownXUID") : null;
 			if(!($recordedXUID instanceof StringTag)){
 				$this->logger->debug("No previous XUID recorded, no choice but to trust this player");
