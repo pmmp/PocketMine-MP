@@ -2082,7 +2082,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	protected function processLogin(){
 		$this->namedtag = $this->server->getOfflinePlayerData($this->username);
-		if((bool) $this->server->getProperty("player.verify-xuid")){
+		if((bool) $this->server->getProperty("player.verify-xuid", true)){
 			$recordedXUID = $this->namedtag->getTag("LastKnownXUID");
 			if(!($recordedXUID instanceof StringTag)){
 				$this->server->getLogger()->debug("No previous XUID recorded for " . $this->getName() . ", no choice but to trust this player");
