@@ -103,6 +103,9 @@ debug:
 player:
   #Choose whether to enable player data saving.
   save-player-data: true
+  #If true, checks that joining players' Xbox user ID (XUID) match what was previously recorded.
+  #This also prevents non-XBL players using XBL players' usernames to steal their data on servers with xbox-auth=off.
+  verify-xuid: true
 
 level-settings:
   #The default format that levels will use when created

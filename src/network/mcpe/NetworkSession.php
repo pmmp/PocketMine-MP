@@ -35,6 +35,8 @@ use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
@@ -150,6 +152,8 @@ class NetworkSession{
 	private $authenticated = false;
 	/** @var int */
 	private $connectTime;
+	/** @var CompoundTag|null */
+	private $cachedOfflinePlayerData = null;
 
 	/** @var EncryptionContext */
 	private $cipher;
@@ -229,11 +233,7 @@ class NetworkSession{
 	}
 
 	protected function createPlayer() : void{
-		//TODO: make this async
-		//TODO: what about allowing this to be provided by PlayerCreationEvent?
-		$offlinePlayerData = $this->server->getOfflinePlayerData($this->info->getUsername());
-
-		$this->player = $this->server->createPlayer($this, $this->info, $this->authenticated, $offlinePlayerData);
+		$this->player = $this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData);
 
 		$this->invManager = new InventoryManager($this->player, $this);
 
@@ -606,6 +606,25 @@ class NetworkSession{
 			}
 		}
 		$this->logger->debug("Xbox Live authenticated: " . ($this->authenticated ? "YES" : "NO"));
+
+		//TODO: make player data loading async
+		//TODO: we shouldn't be loading player data here at all, but right now we don't have any choice :(
+		$this->cachedOfflinePlayerData = $this->server->getOfflinePlayerData($this->info->getUsername());
+		if((bool) $this->server->getConfigGroup()->getProperty("player.verify-xuid")){
+			$recordedXUID = $this->cachedOfflinePlayerData !== null ? $this->cachedOfflinePlayerData->getTag("LastKnownXUID") : null;
+			if(!($recordedXUID instanceof StringTag)){
+				$this->logger->debug("No previous XUID recorded, no choice but to trust this player");
+			}elseif(($this->info instanceof XboxLivePlayerInfo ? $this->info->getXuid() : "") !== $recordedXUID->getValue()){
+				//TODO: Longer term, we should be identifying playerdata using something more reliable, like XUID or UUID.
+				//However, that would be a very disruptive change, so this will serve as a stopgap for now.
+				//Side note: this will also prevent offline players hijacking XBL playerdata on online servers, since their
+				//XUID will always be empty.
+				$this->disconnect("XUID does not match (possible impersonation attempt)");
+				return;
+			}else{
+				$this->logger->debug("XUID match");
+			}
+		}
 
 		if($this->manager->kickDuplicates($this)){
 			if(EncryptionContext::$ENABLED){
