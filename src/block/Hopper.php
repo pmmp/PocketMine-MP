@@ -57,6 +57,17 @@ class Hopper extends Transparent{
 		return 0b1111;
 	}
 
+	public function getFacing() : int{ return $this->facing; }
+
+	/** @return $this */
+	public function setFacing(int $facing) : self{
+		if($facing === Facing::UP){
+			throw new \InvalidArgumentException("Hopper may not face upward");
+		}
+		$this->facing = $facing;
+		return $this;
+	}
+
 	protected function recalculateCollisionBoxes() : array{
 		$result = [
 			AxisAlignedBB::one()->trim(Facing::UP, 6 / 16) //the empty area around the bottom is currently considered solid
