@@ -38,7 +38,7 @@ class Hopper extends Transparent{
 	use PoweredByRedstoneTrait;
 
 	/** @var int */
-	protected $facing = Facing::DOWN;
+	private $facing = Facing::DOWN;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$facing = BlockDataSerializer::readFacing($stateMeta & 0x07);
