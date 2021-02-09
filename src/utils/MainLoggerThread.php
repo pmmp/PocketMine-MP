@@ -150,7 +150,7 @@ final class MainLoggerThread extends \Thread{
 		while(!$this->shutdown){
 			while(!$this->writeLogStream($logResource, $size)){
 				fclose($logResource);
-				//$this->compressLogFile();
+				$this->compressLogFile();
 				$logResource = $this->openLogFile($this->logFile, $size);
 			}
 			$this->synchronized(function() : void{
