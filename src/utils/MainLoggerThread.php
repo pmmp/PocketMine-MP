@@ -91,6 +91,7 @@ final class MainLoggerThread extends \Thread{
 	 */
 	private function writeLogStream($logResource, int &$offset) : bool{
 		while($this->buffer->count() > 0){
+			/** @var string $chunk */
 			$chunk = $this->buffer->shift();
 			fwrite($logResource, $chunk);
 			$offset += strlen($chunk);
