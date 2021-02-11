@@ -199,11 +199,11 @@ class WorldManager{
 		}
 		$providerClass = array_shift($providers);
 
-		/**
-		 * @var WorldProvider $provider
-		 * @see WorldProvider::__construct()
-		 */
 		try{
+			/**
+			 * @var WorldProvider $provider
+			 * @see WorldProvider::__construct()
+			 */
 			$provider = new $providerClass($path);
 		}catch(CorruptedWorldException $e){
 			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Corruption detected: " . $e->getMessage()]));
