@@ -56,7 +56,6 @@ leveldb=@2e3f740b55af1eb6dfc648dd451bcb7d6151c26c \
 chunkutils2=@5a4dcd6ed74e0db2ca9a54948d4f3a065e386db5 \
 morton=@0.1.2 \
 igbinary=3.1.4 \
-ds=1.3.0 \
 " PHP_BUILD_ZTS_ENABLE=on PHP_BUILD_CONFIGURE_OPTS='--with-gmp' ./bin/php-build "$VERSION" "$INSTALL_DIR"
 
 rm -rf crypto
