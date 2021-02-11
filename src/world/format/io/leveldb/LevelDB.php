@@ -498,7 +498,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	public function close() : void{
-		$this->db->close();
+		unset($this->db);
 	}
 
 	public function getAllChunks(bool $skipCorrupted = false, ?\Logger $logger = null) : \Generator{
