@@ -52,7 +52,7 @@ echo '"morton",,"https://github.com/pmmp/ext-morton.git",,,"extension",' >> shar
 PHP_BUILD_INSTALL_EXTENSION="\
 pthreads=@acc6e52b2144c61c434b62a3cb680d537e06828e \
 yaml=2.2.1 \
-leveldb=@e153cf26de8dc68aed6185ab494892e4b6ce249d \
+leveldb=@60763a09bf5c7a10376d16e25b078b99a35c5c37 \
 chunkutils2=@7aec31a9dfc83ddead8870dc0a29159596939680 \
 morton=@0.1.2 \
 igbinary=3.2.1 \
