@@ -37,14 +37,18 @@ final class ObjectSet implements \IteratorAggregate{
 	 */
 	private array $objects = [];
 
-	/** @phpstan-param T $object */
-	public function add(object $object) : void{
-		$this->objects[spl_object_id($object)] = $object;
+	/** @phpstan-param T ...$objects */
+	public function add(object ...$objects) : void{
+		foreach($objects as $object){
+			$this->objects[spl_object_id($object)] = $object;
+		}
 	}
 
-	/** @phpstan-param T $object */
-	public function remove(object $object) : void{
-		unset($this->objects[spl_object_id($object)]);
+	/** @phpstan-param T ...$objects */
+	public function remove(object ...$objects) : void{
+		foreach($objects as $object){
+			unset($this->objects[spl_object_id($object)]);
+		}
 	}
 
 	public function clear() : void{
