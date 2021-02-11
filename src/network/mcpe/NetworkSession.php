@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use Ds\Set;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\Attribute;
@@ -103,6 +102,7 @@ use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\world\Position;
@@ -184,8 +184,8 @@ class NetworkSession{
 	private $broadcaster;
 
 	/**
-	 * @var \Closure[]|Set
-	 * @phpstan-var Set<\Closure() : void>
+	 * @var \Closure[]|ObjectSet
+	 * @phpstan-var ObjectSet<\Closure() : void>
 	 */
 	private $disposeHooks;
 
@@ -203,7 +203,7 @@ class NetworkSession{
 		$this->compressor = $compressor;
 		$this->packetPool = $packetPool;
 
-		$this->disposeHooks = new Set();
+		$this->disposeHooks = new ObjectSet();
 
 		$this->connectTime = time();
 

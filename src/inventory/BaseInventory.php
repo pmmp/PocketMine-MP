@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use Ds\Set;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\player\Player;
+use pocketmine\utils\ObjectSet;
 use function array_map;
 use function array_slice;
 use function count;
@@ -46,14 +46,14 @@ abstract class BaseInventory implements Inventory{
 	/** @var Player[] */
 	protected $viewers = [];
 	/**
-	 * @var InventoryListener[]|Set
-	 * @phpstan-var Set<InventoryListener>
+	 * @var InventoryListener[]|ObjectSet
+	 * @phpstan-var ObjectSet<InventoryListener>
 	 */
 	protected $listeners;
 
 	public function __construct(int $size){
 		$this->slots = new \SplFixedArray($size);
-		$this->listeners = new Set();
+		$this->listeners = new ObjectSet();
 	}
 
 	/**
@@ -380,7 +380,7 @@ abstract class BaseInventory implements Inventory{
 		return $slot >= 0 and $slot < $this->slots->getSize();
 	}
 
-	public function getListeners() : Set{
+	public function getListeners() : ObjectSet{
 		return $this->listeners;
 	}
 }

@@ -26,7 +26,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\item;
 
-use Ds\Set;
 use pocketmine\block\Block;
 use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
@@ -86,13 +85,13 @@ class Item implements \JsonSerializable{
 	protected $blockEntityTag = null;
 
 	/**
-	 * @var Set|string[]
-	 * @phpstan-var Set<string>
+	 * @var string[]
+	 * @phpstan-var array<string, string>
 	 */
-	protected $canPlaceOn;
+	protected $canPlaceOn = [];
 	/**
-	 * @var Set|string[]
-	 * @phpstan-var Set<string>
+	 * @var string[]
+	 * @phpstan-var array<string, string>
 	 */
 	protected $canDestroy;
 
@@ -107,8 +106,8 @@ class Item implements \JsonSerializable{
 		$this->identifier = $identifier;
 		$this->name = $name;
 
-		$this->canPlaceOn = new Set();
-		$this->canDestroy = new Set();
+		$this->canPlaceOn = [];
+		$this->canDestroy = [];
 		$this->nbt = new CompoundTag();
 	}
 
@@ -186,35 +185,39 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
-	 * @return Set|string[]
-	 * @phpstan-return Set<string>
+	 * @return string[]
+	 * @phpstan-return array<string, string>
 	 */
-	public function getCanPlaceOn() : Set{
+	public function getCanPlaceOn() : array{
 		return $this->canPlaceOn;
 	}
 
 	/**
-	 * @param Set|string[] $canPlaceOn
-	 * @phpstan-param Set<string> $canPlaceOn
+	 * @param string[] $canPlaceOn
 	 */
-	public function setCanPlaceOn(Set $canPlaceOn) : void{
-		$this->canPlaceOn = $canPlaceOn;
+	public function setCanPlaceOn(array $canPlaceOn) : void{
+		$this->canPlaceOn = [];
+		foreach($canPlaceOn as $value){
+			$this->canPlaceOn[$value] = $value;
+		}
 	}
 
 	/**
-	 * @return Set|string[]
-	 * @phpstan-return Set<string>
+	 * @return string[]
+	 * @phpstan-return array<string, string>
 	 */
-	public function getCanDestroy() : Set{
+	public function getCanDestroy() : array{
 		return $this->canDestroy;
 	}
 
 	/**
-	 * @param Set|string[] $canDestroy
-	 * @phpstan-param Set<string> $canDestroy
+	 * @param string[] $canDestroy
 	 */
-	public function setCanDestroy(Set $canDestroy) : void{
-		$this->canDestroy = $canDestroy;
+	public function setCanDestroy(array $canDestroy) : void{
+		$this->canDestroy = [];
+		foreach($canDestroy as $value){
+			$this->canDestroy[$value] = $value;
+		}
 	}
 
 	/**
@@ -294,20 +297,20 @@ class Item implements \JsonSerializable{
 
 		$this->blockEntityTag = $tag->getCompoundTag(self::TAG_BLOCK_ENTITY_TAG);
 
-		$this->canPlaceOn = new Set();
+		$this->canPlaceOn = [];
 		$canPlaceOn = $tag->getListTag("CanPlaceOn");
 		if($canPlaceOn !== null){
 			/** @var StringTag $entry */
 			foreach($canPlaceOn as $entry){
-				$this->canPlaceOn->add($entry->getValue());
+				$this->canPlaceOn[$entry->getValue()] = $entry->getValue();
 			}
 		}
-		$this->canDestroy = new Set();
+		$this->canDestroy = [];
 		$canDestroy = $tag->getListTag("CanDestroy");
 		if($canDestroy !== null){
 			/** @var StringTag $entry */
 			foreach($canDestroy as $entry){
-				$this->canDestroy->add($entry->getValue());
+				$this->canDestroy[$entry->getValue()] = $entry->getValue();
 			}
 		}
 	}
@@ -349,7 +352,7 @@ class Item implements \JsonSerializable{
 			$tag->setTag(self::TAG_BLOCK_ENTITY_TAG, clone $blockData) :
 			$tag->removeTag(self::TAG_BLOCK_ENTITY_TAG);
 
-		if(!$this->canPlaceOn->isEmpty()){
+		if(count($this->canPlaceOn) > 0){
 			$canPlaceOn = new ListTag();
 			foreach($this->canPlaceOn as $item){
 				$canPlaceOn->push(new StringTag($item));
@@ -358,7 +361,7 @@ class Item implements \JsonSerializable{
 		}else{
 			$tag->removeTag("CanPlaceOn");
 		}
-		if(!$this->canDestroy->isEmpty()){
+		if(count($this->canDestroy) > 0){
 			$canDestroy = new ListTag();
 			foreach($this->canDestroy as $item){
 				$canDestroy->push(new StringTag($item));
@@ -691,7 +694,5 @@ class Item implements \JsonSerializable{
 		if($this->blockEntityTag !== null){
 			$this->blockEntityTag = clone $this->blockEntityTag;
 		}
-		$this->canPlaceOn = $this->canPlaceOn->copy();
-		$this->canDestroy = $this->canDestroy->copy();
 	}
 }
