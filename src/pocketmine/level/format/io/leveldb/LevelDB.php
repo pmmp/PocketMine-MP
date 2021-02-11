@@ -555,6 +555,6 @@ class LevelDB extends BaseLevelProvider{
 	}
 
 	public function close(){
-		$this->db->close();
+		unset($this->db);
 	}
 }
