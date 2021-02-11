@@ -52,16 +52,16 @@ echo '"morton",,"https://github.com/pmmp/ext-morton.git",,,"extension",' >> shar
 PHP_BUILD_INSTALL_EXTENSION="\
 pthreads=@acc6e52b2144c61c434b62a3cb680d537e06828e \
 yaml=2.2.1 \
-leveldb=@2e3f740b55af1eb6dfc648dd451bcb7d6151c26c \
-chunkutils2=@5a4dcd6ed74e0db2ca9a54948d4f3a065e386db5 \
+leveldb=@e153cf26de8dc68aed6185ab494892e4b6ce249d \
+chunkutils2=@7aec31a9dfc83ddead8870dc0a29159596939680 \
 morton=@0.1.2 \
-igbinary=3.1.4 \
+igbinary=3.2.1 \
 " PHP_BUILD_ZTS_ENABLE=on PHP_BUILD_CONFIGURE_OPTS='--with-gmp' ./bin/php-build "$VERSION" "$INSTALL_DIR"
 
 rm -rf crypto
 git clone --recursive https://github.com/bukka/php-crypto.git crypto
 cd crypto
-git checkout -qf 5f26ac91b0ba96742cc6284cd00f8db69c3788b2
+git checkout -qf c8867aa944fa5227eaea9d11a6ce282e64c15af9
 git submodule update --init --recursive
 "$INSTALL_DIR/bin/phpize"
 ./configure --with-php-config="$INSTALL_DIR/bin/php-config"
