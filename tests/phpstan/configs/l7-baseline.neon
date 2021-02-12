@@ -71,36 +71,6 @@ parameters:
 			path: ../../../src/pocketmine/PocketMine.php
 
 		-
-			message: "#^Parameter \\#1 \\$fp of function flock expects resource, resource\\|false given\\.$#"
-			count: 4
-			path: ../../../src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Parameter \\#1 \\$source of function stream_get_contents expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Parameter \\#1 \\$fp of function ftruncate expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Parameter \\#1 \\$fp of function fwrite expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Parameter \\#1 \\$fp of function fflush expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/PocketMine.php
-
-		-
-			message: "#^Parameter \\#1 \\$fp of function fclose expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/PocketMine.php
-
-		-
 			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\NBTStream\\:\\:readCompressed\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Server.php

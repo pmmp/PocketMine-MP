@@ -228,7 +228,12 @@ namespace pocketmine {
 			mkdir(\pocketmine\DATA, 0777, true);
 		}
 
-		define('pocketmine\LOCK_FILE', fopen(\pocketmine\DATA . 'server.lock', "a+b"));
+		$lockFile = fopen(\pocketmine\DATA . 'server.lock', "a+b");
+		if($lockFile === false){
+			critical_error("Unable to open server.lock file. Please check that the current user has read/write permissions to it.");
+			exit(1);
+		}
+		define('pocketmine\LOCK_FILE', $lockFile);
 		if(!flock(\pocketmine\LOCK_FILE, LOCK_EX | LOCK_NB)){
 			//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the
 			//other server wrote its PID and released exclusive lock before we get our lock
