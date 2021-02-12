@@ -73,6 +73,7 @@ final class MainLoggerThread extends \Thread{
 	 */
 	private function writeLogStream($logResource) : void{
 		while($this->buffer->count() > 0){
+			/** @var string $chunk */
 			$chunk = $this->buffer->shift();
 			fwrite($logResource, $chunk);
 		}

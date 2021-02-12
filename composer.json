@@ -49,7 +49,7 @@
       "respect/validation": "^2.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "0.12.74",
+      "phpstan/phpstan": "0.12.75",
       "phpstan/phpstan-phpunit": "^0.12.6",
       "phpstan/phpstan-strict-rules": "^0.12.2",
       "phpunit/phpunit": "^9.2"
