@@ -346,6 +346,7 @@ class MainLogger extends \AttachableThreadedLogger{
 	 */
 	private function writeLogStream($logResource) : void{
 		while($this->logStream->count() > 0){
+			/** @var string $chunk */
 			$chunk = $this->logStream->shift();
 			fwrite($logResource, $chunk);
 		}
