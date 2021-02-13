@@ -1,17 +1,9 @@
-<h1>Altay<img src="http://fs1.directupload.net/images/180401/urn5z9ic.png" height="100" width="100" align="left"></img></h1>
-<br />
-
-A feature-rich server software for Minecraft: BE. This is a SPOON of [PocketMine-MP](https://github.com/pmmp/PocketMine-MP)
-
-----------------------
-
-| Jenkins | TravisCI | Discord |
-| :---: | :---: | :---: |
-| [![Build Status](https://altay.minehub.de/job/Altay/badge/icon)](https://altay.minehub.de/job/Altay/) | [![Travis branch](https://img.shields.io/travis/TuranicTeam/Altay/master.svg?style=flat-square)](https://travis-ci.org/TuranicTeam/Altay) | [![Discord](https://img.shields.io/discord/427472879072968714.svg?style=flat-square&label=discord&colorB=7289da)](https://discord.gg/UsuhCFj) |
-
-## Do you need help about Altay?
-
-Join our Discord group and contact us!
-
-
-###### However may be good if you read rules channel when you joined first time :)
+<p align="center">
+	<img src="https://github.com/TuranicTeam/Altay/blob/stable/.github/logo.png"></img><br>
+	<b>A feature-rich server software for Minecraft: BE. This is a SPOON of </b><a href="https://github.com/pmmp/PocketMine-MP">PocketMine-MP</a>
+</p>
+<p align="center">
+	<img src="https://github.com/TuranicTeam/Altay/workflows/CI/badge.svg" alt="CI" />
+	<a href="https://altay.minehub.de/job/Altay/"><img src="https://altay.minehub.de/job/Altay/badge/icon" alt="Jenkins" /></a>
+	<a href="https://discord.gg/UsuhCFj"><img src="https://img.shields.io/discord/427472879072968714.svg?style=flat-square&label=discord&colorB=7289da" alt="Discord" /></a>
+</p>
