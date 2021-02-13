@@ -177,7 +177,7 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 					}
 				}
 			}
-		}elseif($tile instanceof Container){
+		}elseif($tile instanceof Chest or $tile instanceof Hopper){
 			$inv = $tile->getInventory();
 
 			for($i = 0, $size = $this->inventory->getSize(); $i < $size; $i++){
@@ -201,7 +201,7 @@ class Hopper extends Spawnable implements Container, Nameable, InventoryHolder{
 	public function pullItems() : bool{
 		$tile = $this->level->getTile($this->up());
 
-		if($tile instanceof InventoryHolder){
+		if($tile instanceof Container){
 			if($tile instanceof Hopper){
 				return false;
 			}
