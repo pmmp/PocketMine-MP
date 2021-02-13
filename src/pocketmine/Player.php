@@ -3427,7 +3427,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		if($packet->originData->type !== CommandOriginData::ORIGIN_PLAYER) return false;
 
 		$command = $packet->command;
-		if($command{0} != "/") return false;
+		if($command[0] != "/") return false;
 
 		$ev = new PlayerCommandPreprocessEvent($this, $command);
 		$ev->call();

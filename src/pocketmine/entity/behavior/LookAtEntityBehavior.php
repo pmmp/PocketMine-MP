@@ -65,7 +65,7 @@ class LookAtEntityBehavior extends Behavior{
 	}
 
 	public function canContinue() : bool{
-		return !$this->nearestEntity->isAlive() ? false : ($this->mob->distanceSquared($this->nearestEntity) > $this->lookDistance ** 2) ? false : $this->lookTime > 0;
+		return !($this->nearestEntity->isAlive() ? false : (($this->mob->distanceSquared($this->nearestEntity) > $this->lookDistance ** 2) ? false : ($this->lookTime > 0)));
 	}
 
 	public function onTick() : void{
