@@ -32,19 +32,33 @@ final class ItemStackRequest{
 	private $requestId;
 	/** @var ItemStackRequestAction[] */
 	private $actions;
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
+	private $filterStrings;
 
 	/**
 	 * @param ItemStackRequestAction[] $actions
+	 * @param string[]                 $filterStrings
+	 * @phpstan-param list<string> $filterStrings
 	 */
-	public function __construct(int $requestId, array $actions){
+	public function __construct(int $requestId, array $actions, array $filterStrings){
 		$this->requestId = $requestId;
 		$this->actions = $actions;
+		$this->filterStrings = $filterStrings;
 	}
 
 	public function getRequestId() : int{ return $this->requestId; }
 
 	/** @return ItemStackRequestAction[] */
 	public function getActions() : array{ return $this->actions; }
+
+	/**
+	 * @return string[]
+	 * @phpstan-return list<string>
+	 */
+	public function getFilterStrings() : array{ return $this->filterStrings; }
 
 	private static function readAction(NetworkBinaryStream $in, int $typeId) : ItemStackRequestAction{
 		switch($typeId){
@@ -60,6 +74,7 @@ final class ItemStackRequest{
 			case CraftRecipeStackRequestAction::getTypeId(): return CraftRecipeStackRequestAction::read($in);
 			case CraftRecipeAutoStackRequestAction::getTypeId(): return CraftRecipeAutoStackRequestAction::read($in);
 			case CreativeCreateStackRequestAction::getTypeId(): return CreativeCreateStackRequestAction::read($in);
+			case CraftRecipeOptionalStackRequestAction::getTypeId(): return CraftRecipeOptionalStackRequestAction::read($in);
 			case DeprecatedCraftingNonImplementedStackRequestAction::getTypeId(): return DeprecatedCraftingNonImplementedStackRequestAction::read($in);
 			case DeprecatedCraftingResultsStackRequestAction::getTypeId(): return DeprecatedCraftingResultsStackRequestAction::read($in);
 		}
@@ -73,7 +88,11 @@ final class ItemStackRequest{
 			$typeId = $in->getByte();
 			$actions[] = self::readAction($in, $typeId);
 		}
-		return new self($requestId, $actions);
+		$filterStrings = [];
+		for($i = 0, $len = $in->getUnsignedVarInt(); $i < $len; ++$i){
+			$filterStrings[] = $in->getString();
+		}
+		return new self($requestId, $actions, $filterStrings);
 	}
 
 	public function write(NetworkBinaryStream $out) : void{
@@ -82,6 +101,10 @@ final class ItemStackRequest{
 		foreach($this->actions as $action){
 			$out->putByte($action::getTypeId());
 			$action->write($out);
+		}
+		$out->putUnsignedVarInt(count($this->filterStrings));
+		foreach($this->filterStrings as $string){
+			$out->putString($string);
 		}
 	}
 }

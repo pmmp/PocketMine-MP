@@ -152,15 +152,7 @@ class Furnace extends Spawnable implements InventoryHolder, Container, Nameable{
 		}
 
 		if($this->burnTime > 0 and $ev->isBurning()){
-			$fuel->pop();
-
-			//LAVA BUCKET SHOULD RETURN BUCKET
-			if($fuel->getId() === Item::BUCKET && $fuel->getDamage() === 10){
-				$fuel = Item::get(Item::BUCKET);
-			}
-
-
-			$this->inventory->setFuel($fuel);
+			$this->inventory->setFuel($fuel->getFuelResidue());
 		}
 	}
 

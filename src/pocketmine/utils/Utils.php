@@ -106,6 +106,9 @@ class Utils{
 	public const OS_BSD = "bsd";
 	public const OS_UNKNOWN = "other";
 
+	public const CLEAN_PATH_SRC_PREFIX = "pmsrc";
+	public const CLEAN_PATH_PLUGINS_PREFIX = "plugins";
+
 	/** @var string|null */
 	public static $os;
 	/** @var UUID|null */
@@ -113,6 +116,8 @@ class Utils{
 
 	/**
 	 * Generates an unique identifier to a callable
+	 *
+	 * @phpstan-param anyCallable $variable
 	 *
 	 * @return string
 	 */
@@ -129,6 +134,7 @@ class Utils{
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
 	 *
+	 * @phpstan-param anyClosure $closure
 	 * @throws \ReflectionException
 	 */
 	public static function getNiceClosureName(\Closure $closure) : string{
@@ -189,7 +195,14 @@ class Utils{
 		}
 
 		$machine = php_uname("a");
-		$machine .= ($cpuinfo = @file("/proc/cpuinfo")) !== false ? implode(preg_grep("/(model name|Processor|Serial)/", $cpuinfo)) : "";
+		$cpuinfo = @file("/proc/cpuinfo");
+		if($cpuinfo !== false){
+			$cpuinfoLines = preg_grep("/(model name|Processor|Serial)/", $cpuinfo);
+			if($cpuinfoLines === false){
+				throw new AssumptionFailedError("Pattern is valid, so this shouldn't fail ...");
+			}
+			$machine .= implode("", $cpuinfoLines);
+		}
 		$machine .= sys_get_temp_dir();
 		$machine .= $extra;
 		$os = Utils::getOS();
@@ -604,8 +617,8 @@ class Utils{
 		//remove relative paths
 		//TODO: make these paths dynamic so they can be unit-tested against
 		static $cleanPaths = [
-			\pocketmine\PLUGIN_PATH => "plugins", //this has to come BEFORE \pocketmine\PATH because it's inside that by default on src installations
-			\pocketmine\PATH => ""
+			\pocketmine\PLUGIN_PATH => self::CLEAN_PATH_PLUGINS_PREFIX, //this has to come BEFORE \pocketmine\PATH because it's inside that by default on src installations
+			\pocketmine\PATH => self::CLEAN_PATH_SRC_PREFIX
 		];
 		foreach($cleanPaths as $cleanPath => $replacement){
 			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
@@ -675,6 +688,8 @@ class Utils{
 	 *
 	 * @param callable $signature Dummy callable with the required parameters and return type
 	 * @param callable $subject Callable to check the signature of
+	 * @phpstan-param anyCallable $signature
+	 * @phpstan-param anyCallable $subject
 	 *
 	 * @throws \DaveRandom\CallbackValidator\InvalidCallbackException
 	 * @throws \TypeError

@@ -746,6 +746,11 @@ parameters:
 			path: ../../../src/pocketmine/level/generator/normal/Normal.php
 
 		-
+			message: "#^Method pocketmine\\\\metadata\\\\MetadataStore\\:\\:getMetadataInternal\\(\\) should return array\\<pocketmine\\\\metadata\\\\MetadataValue\\> but returns SplObjectStorage\\<pocketmine\\\\plugin\\\\Plugin, pocketmine\\\\metadata\\\\MetadataValue\\>\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/metadata/MetadataStore.php
+
+		-
 			message: "#^Variable method call on pocketmine\\\\event\\\\Listener\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/plugin/MethodEventExecutor.php

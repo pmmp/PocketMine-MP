@@ -63,7 +63,6 @@ abstract class LevelProviderManager{
 			throw new \InvalidArgumentException("Class $class cannot be constructed");
 		}
 
-		/** @var LevelProvider $class */
 		self::$providers[strtolower($class::getProviderName())] = $class;
 	}
 

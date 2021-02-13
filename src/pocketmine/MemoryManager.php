@@ -423,8 +423,12 @@ class MemoryManager{
 						}
 
 						$name = $property->getName();
-						if($reflection !== $original and !$property->isPublic()){
-							$name = $reflection->getName() . ":" . $name;
+						if($reflection !== $original){
+							if($property->isPrivate()){
+								$name = $reflection->getName() . ":" . $name;
+							}else{
+								continue;
+							}
 						}
 						if(!$property->isPublic()){
 							$property->setAccessible(true);

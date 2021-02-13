@@ -17,6 +17,7 @@ includes:
 parameters:
 	level: 8
 	checkExplicitMixed: true
+	checkMissingCallableSignature: true
 	bootstrapFiles:
 		- tests/phpstan/bootstrap.php
 	scanDirectories:
@@ -41,3 +42,9 @@ parameters:
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	staticReflectionClassNamePatterns:
 		- "#^COM$#"
+	typeAliases:
+	    #variadics don't work for this - mixed probably shouldn't work either, but for now it does
+	    #what we actually need is something that accepts an infinite number of parameters, but in the absence of that,
+	    #we'll just fill it with 10 - it's very unlikely to encounter a callable with 10 parameters anyway.
+	    anyCallable: 'callable(mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed) : mixed'
+	    anyClosure: '\Closure(mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed) : mixed'

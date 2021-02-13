@@ -21,25 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\network\mcpe\protocol;
 
-class Sponge extends Solid{
+use PHPUnit\Framework\TestCase;
 
-	protected $id = self::SPONGE;
+final class ProtocolInfoTest extends TestCase{
 
-	public function __construct(int $meta = 0){
-		$this->meta = $meta;
-	}
-
-	public function getToolType() : int{
-		return BlockToolType::TYPE_HOE;
-	}
-
-	public function getHardness() : float{
-		return 0.6;
-	}
-
-	public function getName() : string{
-		return "Sponge";
+	public function testMinecraftVersionNetwork() : void{
+		self::assertMatchesRegularExpression(
+			'/^(?:\d+\.)?(?:\d+\.)?(?:\d+\.)?\d+$/',
+			ProtocolInfo::MINECRAFT_VERSION_NETWORK,
+			"Network version should only contain 0-9 and \".\", and no more than 4 groups of digits"
+		);
 	}
 }

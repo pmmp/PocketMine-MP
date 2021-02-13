@@ -50,6 +50,14 @@ class Bucket extends Item implements MaybeConsumable{
 		return 0;
 	}
 
+	public function getFuelResidue() : Item{
+		if($this->meta === Block::LAVA or $this->meta === Block::FLOWING_LAVA){
+			return ItemFactory::get(Item::BUCKET);
+		}
+
+		return parent::getFuelResidue();
+	}
+
 	public function onActivate(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : bool{
 		$resultBlock = BlockFactory::get($this->meta);
 

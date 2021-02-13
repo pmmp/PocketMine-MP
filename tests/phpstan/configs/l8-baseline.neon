@@ -1446,11 +1446,6 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
 
 		-
-			message: "#^Parameter \\#1 \\$that of method pocketmine\\\\nbt\\\\tag\\\\NamedTag\\:\\:equals\\(\\) expects pocketmine\\\\nbt\\\\tag\\\\NamedTag, pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
-
-		-
 			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\convert\\\\RuntimeBlockMapping\\:\\:getBedrockKnownStates\\(\\) should return array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\> but returns array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
@@ -1484,11 +1479,6 @@ parameters:
 			message: "#^Method pocketmine\\\\plugin\\\\PluginBase\\:\\:getConfig\\(\\) should return pocketmine\\\\utils\\\\Config but returns pocketmine\\\\utils\\\\Config\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/plugin/PluginBase.php
-
-		-
-			message: "#^Parameter \\#1 \\$closure of static method pocketmine\\\\utils\\\\Utils\\:\\:getNiceClosureName\\(\\) expects Closure, Closure\\|null given\\.$#"
-			count: 3
-			path: ../../../src/pocketmine/plugin/PluginManager.php
 
 		-
 			message: "#^Cannot call method handleException\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"

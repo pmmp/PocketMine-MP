@@ -701,9 +701,18 @@ class PluginManager{
 				}
 
 				$handlerClosure = $method->getClosure($listener);
+				if($handlerClosure === null) throw new AssumptionFailedError("This should never happen");
 
 				try{
-					$eventClass = $parameters[0]->getClass();
+					$paramType = $parameters[0]->getType();
+					//isBuiltin() returns false for builtin classes ..................
+					if($paramType instanceof \ReflectionNamedType && !$paramType->isBuiltin()){
+						/** @phpstan-var class-string $paramClass */
+						$paramClass = $paramType->getName();
+						$eventClass = new \ReflectionClass($paramClass);
+					}else{
+						$eventClass = null;
+					}
 				}catch(\ReflectionException $e){ //class doesn't exist
 					if(isset($tags["softDepend"]) && !isset($this->plugins[$tags["softDepend"]])){
 						$this->server->getLogger()->debug("Not registering @softDepend listener " . Utils::getNiceClosureName($handlerClosure) . "() because plugin \"" . $tags["softDepend"] . "\" not found");

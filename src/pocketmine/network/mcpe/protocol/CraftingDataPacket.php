@@ -84,7 +84,6 @@ class CraftingDataPacket extends DataPacket{
 				case self::ENTRY_SHAPELESS_CHEMISTRY:
 					$entry["recipe_id"] = $this->getString();
 					$ingredientCount = $this->getUnsignedVarInt();
-					/** @var Item */
 					$entry["input"] = [];
 					for($j = 0; $j < $ingredientCount; ++$j){
 						$entry["input"][] = $in = $this->getRecipeIngredient();
