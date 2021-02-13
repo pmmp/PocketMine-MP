@@ -24,7 +24,7 @@ dimensions:
 
 developer:
   # This setting allows the server to load plugins through the source directory over a .phar file
-  folder-plugin-loader: true
+  folder-plugin-loader: false
 
 additional-plugin-dirs:
   # Example:

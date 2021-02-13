@@ -15,7 +15,7 @@ includes:
 	- vendor/phpstan/phpstan-strict-rules/rules.neon
 
 parameters:
-	level: 2
+	level: 0
 	checkExplicitMixed: true
 	checkMissingCallableSignature: true
 	bootstrapFiles:
