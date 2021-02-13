@@ -15,7 +15,7 @@ DATA_DIR="$(pwd)/test_data"
 PLUGINS_DIR="$DATA_DIR/plugins"
 
 rm -rf "$DATA_DIR"
-rm PocketMine-MP.phar 2> /dev/null
+rm Altay.phar 2> /dev/null
 mkdir "$DATA_DIR"
 mkdir "$PLUGINS_DIR"
 
@@ -24,7 +24,7 @@ php -dphar.readonly=0 ./src/DevTools/ConsoleScript.php --make ./ --relative ./ -
 cd ../../..
 composer make-server
 
-if [ -f PocketMine-MP.phar ]; then
+if [ -f Altay.phar ]; then
 	echo Server phar created successfully.
 else
 	echo Server phar was not created!
@@ -32,7 +32,7 @@ else
 fi
 
 cp -r tests/plugins/TesterPlugin "$PLUGINS_DIR"
-echo -e "stop\n" | php PocketMine-MP.phar --no-wizard --disable-ansi --disable-readline --debug.level=2 --data="$DATA_DIR" --plugins="$PLUGINS_DIR" --anonymous-statistics.enabled=0 --settings.async-workers="$PM_WORKERS" --settings.enable-dev-builds=1
+echo -e "stop\n" | php Altay.phar --no-wizard --disable-ansi --disable-readline --debug.level=2 --data="$DATA_DIR" --plugins="$PLUGINS_DIR" --anonymous-statistics.enabled=0 --settings.async-workers="$PM_WORKERS" --settings.enable-dev-builds=1
 
 output=$(grep '\[TesterPlugin\]' "$DATA_DIR/server.log")
 if [ "$output" == "" ]; then
