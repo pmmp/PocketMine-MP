@@ -82,7 +82,7 @@ abstract class Command{
 	 * @param CommandParameter[][] $overloads
 	 */
 	public function __construct(string $name, string $description = "", string $usageMessage = null, array $aliases = [], ?array $overloads = null){
-		if(strlen($description) > 0 and $description{0} == '%'){
+		if(strlen($description) > 0 and $description[0] == '%'){
 			$description = Server::getInstance()->getLanguage()->translateString($description);
 		}
 
@@ -260,7 +260,7 @@ abstract class Command{
 	 * @param string $description
 	 */
 	public function setDescription(string $description){
-		if(strlen($description) > 0 and $description{0} == '%'){
+		if(strlen($description) > 0 and $description[0] == '%'){
 			$description = Server::getInstance()->getLanguage()->translateString($description);
 		}
 
