@@ -27,7 +27,6 @@ parameters:
 		- build/make-release.php
 		- build/server-phar.php
 	paths:
-		- src
 		- build/make-release.php
 		- build/server-phar.php
 		- tests/phpunit
