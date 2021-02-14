@@ -32,8 +32,8 @@ use pocketmine\world\format\io\exception\CorruptedChunkException;
 use function assert;
 use function ceil;
 use function chr;
+use function clearstatcache;
 use function fclose;
-use function feof;
 use function file_exists;
 use function filesize;
 use function fopen;
@@ -44,13 +44,11 @@ use function fwrite;
 use function is_resource;
 use function ksort;
 use function max;
-use function ord;
 use function str_pad;
 use function str_repeat;
 use function stream_set_read_buffer;
 use function stream_set_write_buffer;
 use function strlen;
-use function substr;
 use function time;
 use function touch;
 use function unpack;
@@ -91,6 +89,7 @@ class RegionLoader{
 	 * @throws CorruptedRegionException
 	 */
 	public function open() : void{
+		clearstatcache(false, $this->filePath);
 		$exists = file_exists($this->filePath);
 		if(!$exists){
 			touch($this->filePath);
@@ -370,6 +369,7 @@ class RegionLoader{
 		fwrite($this->filePointer, Binary::writeInt($entry !== null ? ($entry->getFirstSector() << 8) | $entry->getSectorCount() : 0), 4);
 		fseek($this->filePointer, 4096 + ($index << 2));
 		fwrite($this->filePointer, Binary::writeInt($entry !== null ? $entry->getTimestamp() : 0), 4);
+		clearstatcache(false, $this->filePath);
 	}
 
 	protected function createBlank() : void{
