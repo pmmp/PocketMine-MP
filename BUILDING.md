@@ -34,7 +34,7 @@ Run `composer make-server` using your preferred PHP binary. It'll drop a `Pocket
 
 You can also use the `--out` option to change the output filename.
 
-If you encounter such error:
+There is a bug in PHP that might cause such error:
 ```
 Fatal error: Uncaught BadMethodCallException: unable to create temporary file in PocketMine-MP/build/server-phar.php:119
 ```
