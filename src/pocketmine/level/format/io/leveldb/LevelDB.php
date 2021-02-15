@@ -183,8 +183,6 @@ class LevelDB extends BaseLevelProvider{
 		if(!$this->levelData->hasTag("generatorOptions", StringTag::class)){
 			$this->levelData->setString("generatorOptions", "");
 		}
-
-		$db->close();
 	}
 
 	public static function getProviderName() : string{
@@ -269,9 +267,6 @@ class LevelDB extends BaseLevelProvider{
 				$db->put(self::ENTRY_FLAT_WORLD_LAYERS, $out); //Add vanilla flatworld layers to allow terrain generation by MCPE to continue seamlessly
 			}
 		}
-
-		$db->close();
-
 	}
 
 	public function saveLevelData(){
