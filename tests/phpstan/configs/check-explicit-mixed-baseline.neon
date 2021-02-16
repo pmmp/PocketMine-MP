@@ -283,7 +283,7 @@ parameters:
 		-
 			message: "#^Parameter \\#2 \\$str of function fwrite expects string, mixed given\\.$#"
 			count: 1
-			path: ../../../src/utils/MainLogger.php
+			path: ../../../src/utils/MainLoggerThread.php
 
 		-
 			message: "#^Cannot access offset 'status' on mixed\\.$#"

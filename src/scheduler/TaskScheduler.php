@@ -27,7 +27,7 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use Ds\Set;
+use pocketmine\utils\ObjectSet;
 use pocketmine\utils\ReversePriorityQueue;
 
 class TaskScheduler{
@@ -44,8 +44,8 @@ class TaskScheduler{
 	protected $queue;
 
 	/**
-	 * @var Set|TaskHandler[]
-	 * @phpstan-var Set<TaskHandler>
+	 * @var ObjectSet|TaskHandler[]
+	 * @phpstan-var ObjectSet<TaskHandler>
 	 */
 	protected $tasks;
 
@@ -55,7 +55,7 @@ class TaskScheduler{
 	public function __construct(?string $owner = null){
 		$this->owner = $owner;
 		$this->queue = new ReversePriorityQueue();
-		$this->tasks = new Set();
+		$this->tasks = new ObjectSet();
 	}
 
 	public function scheduleTask(Task $task) : TaskHandler{

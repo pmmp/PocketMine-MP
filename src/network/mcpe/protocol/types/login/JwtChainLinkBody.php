@@ -28,6 +28,5 @@ namespace pocketmine\network\mcpe\protocol\types\login;
  * TODO: extend this with more complete models
  */
 final class JwtChainLinkBody extends JwtBodyRfc7519{
-	/** @var string */
-	public $identityPublicKey;
+	public string $identityPublicKey;
 }

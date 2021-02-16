@@ -253,10 +253,8 @@ final class BlockLegacyMetadata{
 	public const TALLGRASS_NORMAL = 1;
 	public const TALLGRASS_FERN = 2;
 
-	public const TNT_NORMAL = 0;
-	public const TNT_UNDERWATER = 2;
-
 	public const TNT_FLAG_UNSTABLE = 0x01;
+	public const TNT_FLAG_UNDERWATER = 0x02;
 
 	public const TRAPDOOR_FLAG_UPPER = 0x04;
 	public const TRAPDOOR_FLAG_OPEN = 0x08;

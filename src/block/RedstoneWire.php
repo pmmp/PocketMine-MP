@@ -23,23 +23,22 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\BlockDataSerializer;
 
 class RedstoneWire extends Flowable{
-
-	/** @var int */
-	protected $power = 0;
+	use AnalogRedstoneSignalEmitterTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->power = BlockDataSerializer::readBoundedInt("power", $stateMeta, 0, 15);
+		$this->signalStrength = BlockDataSerializer::readBoundedInt("signalStrength", $stateMeta, 0, 15);
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->power;
+		return $this->signalStrength;
 	}
 
 	public function getStateBitmask() : int{

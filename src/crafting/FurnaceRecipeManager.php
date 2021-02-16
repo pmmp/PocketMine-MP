@@ -23,27 +23,27 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
-use Ds\Set;
 use pocketmine\item\Item;
+use pocketmine\utils\ObjectSet;
 
 final class FurnaceRecipeManager{
 	/** @var FurnaceRecipe[] */
 	protected $furnaceRecipes = [];
 
 	/**
-	 * @var Set
-	 * @phpstan-var Set<\Closure(FurnaceRecipe) : void>
+	 * @var ObjectSet
+	 * @phpstan-var ObjectSet<\Closure(FurnaceRecipe) : void>
 	 */
 	private $recipeRegisteredCallbacks;
 
 	public function __construct(){
-		$this->recipeRegisteredCallbacks = new Set();
+		$this->recipeRegisteredCallbacks = new ObjectSet();
 	}
 
 	/**
-	 * @phpstan-return Set<\Closure(FurnaceRecipe) : void>
+	 * @phpstan-return ObjectSet<\Closure(FurnaceRecipe) : void>
 	 */
-	public function getRecipeRegisteredCallbacks() : Set{
+	public function getRecipeRegisteredCallbacks() : ObjectSet{
 		return $this->recipeRegisteredCallbacks;
 	}
 

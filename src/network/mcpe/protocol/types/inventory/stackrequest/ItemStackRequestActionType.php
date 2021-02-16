@@ -41,6 +41,7 @@ final class ItemStackRequestActionType{
 	public const CRAFTING_RECIPE = 9;
 	public const CRAFTING_RECIPE_AUTO = 10; //recipe book?
 	public const CREATIVE_CREATE = 11;
-	public const CRAFTING_NON_IMPLEMENTED_DEPRECATED_ASK_TY_LAING = 12; //anvils aren't fully implemented yet
-	public const CRAFTING_RESULTS_DEPRECATED_ASK_TY_LAING = 13; //no idea what this is for
+	public const CRAFTING_RECIPE_OPTIONAL = 12; //anvil/cartography table rename
+	public const CRAFTING_NON_IMPLEMENTED_DEPRECATED_ASK_TY_LAING = 13;
+	public const CRAFTING_RESULTS_DEPRECATED_ASK_TY_LAING = 14; //no idea what this is for
 }

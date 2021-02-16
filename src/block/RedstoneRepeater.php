@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -34,12 +35,11 @@ use pocketmine\world\BlockTransaction;
 
 class RedstoneRepeater extends Flowable{
 	use HorizontalFacingTrait;
+	use PoweredByRedstoneTrait;
 
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
 
-	/** @var bool */
-	protected $powered = false;
 	/** @var int */
 	protected $delay = 1;
 
@@ -65,23 +65,22 @@ class RedstoneRepeater extends Flowable{
 		return 0b1111;
 	}
 
+	public function getDelay() : int{ return $this->delay; }
+
+	/** @return $this */
+	public function setDelay(int $delay) : self{
+		if($delay < 1 || $delay > 4){
+			throw new \InvalidArgumentException("Delay must be in range 1-4");
+		}
+		$this->delay = $delay;
+		return $this;
+	}
+
 	/**
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 8)];
-	}
-
-	public function isPowered() : bool{
-		return $this->powered;
-	}
-
-	/**
-	 * @return $this
-	 */
-	public function setPowered(bool $powered = true) : self{
-		$this->powered = $powered;
-		return $this;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

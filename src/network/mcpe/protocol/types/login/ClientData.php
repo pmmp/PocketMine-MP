@@ -32,212 +32,115 @@ final class ClientData{
 	 * @var ClientDataAnimationFrame[]
 	 * @required
 	 */
-	public $AnimatedImageData;
+	public array $AnimatedImageData;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $ArmSize;
+	/** @required */
+	public string $ArmSize;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $CapeData;
+	/** @required */
+	public string $CapeData;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $CapeId;
+	/** @required */
+	public string $CapeId;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $CapeImageHeight;
+	/** @required */
+	public int $CapeImageHeight;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $CapeImageWidth;
+	/** @required */
+	public int $CapeImageWidth;
 
-	/**
-	 * @var bool
-	 * @required
-	 */
-	public $CapeOnClassicSkin;
+	/** @required */
+	public bool $CapeOnClassicSkin;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $ClientRandomId;
+	/** @required */
+	public int $ClientRandomId;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $CurrentInputMode;
+	/** @required */
+	public int $CurrentInputMode;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $DefaultInputMode;
+	/** @required */
+	public int $DefaultInputMode;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $DeviceId;
+	/** @required */
+	public string $DeviceId;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $DeviceModel;
+	/** @required */
+	public string $DeviceModel;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $DeviceOS;
+	/** @required */
+	public int $DeviceOS;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $GameVersion;
+	/** @required */
+	public string $GameVersion;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $GuiScale;
+	/** @required */
+	public int $GuiScale;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $LanguageCode;
+	/** @required */
+	public string $LanguageCode;
 
 	/**
 	 * @var ClientDataPersonaSkinPiece[]
 	 * @required
 	 */
-	public $PersonaPieces;
+	public array $PersonaPieces;
 
-	/**
-	 * @var bool
-	 * @required
-	 */
-	public $PersonaSkin;
+	/** @required */
+	public bool $PersonaSkin;
 
 	/**
 	 * @var ClientDataPersonaPieceTintColor[]
 	 * @required
 	 */
-	public $PieceTintColors;
+	public array $PieceTintColors;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $PlatformOfflineId;
+	/** @required */
+	public string $PlatformOfflineId;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $PlatformOnlineId;
+	/** @required */
+	public string $PlatformOnlineId;
 
-	/** @var string */
-	public $PlatformUserId = ""; //xbox-only, apparently
+	public string $PlatformUserId = ""; //xbox-only, apparently
 
-	/**
-	 * @var bool
-	 * @required
-	 */
-	public $PremiumSkin = false;
+	/** @required */
+	public bool $PremiumSkin = false;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $SelfSignedId;
+	/** @required */
+	public string $SelfSignedId;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $ServerAddress;
+	/** @required */
+	public string $ServerAddress;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $SkinAnimationData;
+	/** @required */
+	public string $SkinAnimationData;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $SkinColor;
+	/** @required */
+	public string $SkinColor;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $SkinData;
+	/** @required */
+	public string $SkinData;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $SkinGeometryData;
+	/** @required */
+	public string $SkinGeometryData;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $SkinId;
+	/** @required */
+	public string $SkinId;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $SkinImageHeight;
+	/** @required */
+	public int $SkinImageHeight;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $SkinImageWidth;
+	/** @required */
+	public int $SkinImageWidth;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $SkinResourcePatch;
+	/** @required */
+	public string $SkinResourcePatch;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $ThirdPartyName;
+	/** @required */
+	public string $ThirdPartyName;
 
-	/**
-	 * @var bool
-	 * @required
-	 */
-	public $ThirdPartyNameOnly;
+	/** @required */
+	public bool $ThirdPartyNameOnly;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $UIProfile;
+	/** @required */
+	public int $UIProfile;
 }

@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use function min;
+
 final class EntitySizeInfo{
 	/** @var float */
 	private $height;

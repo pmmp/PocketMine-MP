@@ -245,14 +245,12 @@ class AsyncPool{
 			throw new \InvalidArgumentException("No such worker $worker");
 		}
 		$queue = $this->taskQueues[$worker];
-		$doGC = false;
 		$more = false;
 		while(!$queue->isEmpty()){
 			/** @var AsyncTask $task */
 			$task = $queue->bottom();
 			$task->checkProgressUpdates();
 			if($task->isFinished()){ //make sure the task actually executed before trying to collect
-				$doGC = true;
 				$queue->dequeue();
 
 				if($task->isCrashed()){
@@ -276,9 +274,7 @@ class AsyncPool{
 				break; //current task is still running, skip to next worker
 			}
 		}
-		if($doGC){
-			$this->workers[$worker]->collect();
-		}
+		$this->workers[$worker]->collect();
 		return $more;
 	}
 

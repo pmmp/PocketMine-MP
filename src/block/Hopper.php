@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\InvalidBlockStateException;
+use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -34,11 +35,10 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Hopper extends Transparent{
+	use PoweredByRedstoneTrait;
 
 	/** @var int */
 	private $facing = Facing::DOWN;
-	/** @var bool */
-	private $powered = false;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$facing = BlockDataSerializer::readFacing($stateMeta & 0x07);
@@ -55,6 +55,17 @@ class Hopper extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
+	}
+
+	public function getFacing() : int{ return $this->facing; }
+
+	/** @return $this */
+	public function setFacing(int $facing) : self{
+		if($facing === Facing::UP){
+			throw new \InvalidArgumentException("Hopper may not face upward");
+		}
+		$this->facing = $facing;
+		return $this;
 	}
 
 	protected function recalculateCollisionBoxes() : array{

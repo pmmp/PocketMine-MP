@@ -30,6 +30,7 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
+use function count;
 
 class Banner extends ItemBlockWallOrFloor{
 	public const TAG_PATTERNS = TileBanner::TAG_PATTERNS;

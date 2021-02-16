@@ -123,7 +123,6 @@ class BlockFactory{
 		$this->register(new Opaque(new BID(Ids::BRICK_BLOCK), "Bricks", $bricksBreakInfo));
 
 		$this->register(new BrownMushroom(new BID(Ids::BROWN_MUSHROOM), "Brown Mushroom"));
-		$this->register(new BrownMushroomBlock(new BID(Ids::BROWN_MUSHROOM_BLOCK), "Brown Mushroom Block"));
 		$this->register(new Cactus(new BID(Ids::CACTUS), "Cactus"));
 		$this->register(new Cake(new BID(Ids::CAKE_BLOCK, 0, ItemIds::CAKE), "Cake"));
 		$this->register(new Carrot(new BID(Ids::CARROTS), "Carrot Block"));
@@ -134,7 +133,8 @@ class BlockFactory{
 		$this->register(new CoarseDirt(new BID(Ids::DIRT, Meta::DIRT_COARSE), "Coarse Dirt"));
 
 		$cobblestoneBreakInfo = new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
-		$this->register(new Opaque(new BID(Ids::COBBLESTONE), "Cobblestone", $cobblestoneBreakInfo));
+		$this->register($cobblestone = new Opaque(new BID(Ids::COBBLESTONE), "Cobblestone", $cobblestoneBreakInfo));
+		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_COBBLESTONE), "Infested Cobblestone", $cobblestone));
 		$this->register(new Opaque(new BID(Ids::MOSSY_COBBLESTONE), "Mossy Cobblestone", $cobblestoneBreakInfo));
 		$this->register(new Stair(new BID(Ids::COBBLESTONE_STAIRS), "Cobblestone Stairs", $cobblestoneBreakInfo));
 		$this->register(new Stair(new BID(Ids::MOSSY_COBBLESTONE_STAIRS), "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
@@ -202,36 +202,6 @@ class BlockFactory{
 		$this->register(new HayBale(new BID(Ids::HAY_BALE), "Hay Bale"));
 		$this->register(new Hopper(new BID(Ids::HOPPER_BLOCK, 0, ItemIds::HOPPER, TileHopper::class), "Hopper", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 15.0)));
 		$this->register(new Ice(new BID(Ids::ICE), "Ice"));
-		$this->register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE), "Infested Stone") extends InfestedStone{
-			public function getSilkTouchDrops(Item $item) : array{
-				return [VanillaBlocks::STONE()->asItem()];
-			}
-		});
-		$this->register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_COBBLESTONE), "Infested Cobblestone") extends InfestedStone{
-			public function getSilkTouchDrops(Item $item) : array{
-				return [VanillaBlocks::COBBLESTONE()->asItem()];
-			}
-		});
-		$this->register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK), "Infested Stone Brick") extends InfestedStone{
-			public function getSilkTouchDrops(Item $item) : array{
-				return [VanillaBlocks::STONE_BRICKS()->asItem()];
-			}
-		});
-		$this->register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_MOSSY), "Infested Mossy Stone Brick") extends InfestedStone{
-			public function getSilkTouchDrops(Item $item) : array{
-				return [VanillaBlocks::MOSSY_STONE_BRICKS()->asItem()];
-			}
-		});
-		$this->register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_CRACKED), "Infested Cracked Stone Brick") extends InfestedStone{
-			public function getSilkTouchDrops(Item $item) : array{
-				return [VanillaBlocks::CRACKED_STONE_BRICKS()->asItem()];
-			}
-		});
-		$this->register(new class(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_CHISELED), "Infested Chiseled Stone Brick") extends InfestedStone{
-			public function getSilkTouchDrops(Item $item) : array{
-				return [VanillaBlocks::CHISELED_STONE_BRICKS()->asItem()];
-			}
-		});
 
 		$updateBlockBreakInfo = new BlockBreakInfo(1.0);
 		$this->register(new Opaque(new BID(Ids::INFO_UPDATE), "update!", $updateBlockBreakInfo));
@@ -295,26 +265,19 @@ class BlockFactory{
 
 		$purpurBreakInfo = new BlockBreakInfo(1.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
 		$this->register(new Opaque(new BID(Ids::PURPUR_BLOCK, Meta::PURPUR_NORMAL), "Purpur Block", $purpurBreakInfo));
-		$this->register(new class(new BID(Ids::PURPUR_BLOCK, Meta::PURPUR_PILLAR), "Purpur Pillar", $purpurBreakInfo) extends Opaque{
-			use PillarRotationInMetadataTrait;
-		});
+		$this->register(new SimplePillar(new BID(Ids::PURPUR_BLOCK, Meta::PURPUR_PILLAR), "Purpur Pillar", $purpurBreakInfo));
 		$this->register(new Stair(new BID(Ids::PURPUR_STAIRS), "Purpur Stairs", $purpurBreakInfo));
 
 		$quartzBreakInfo = new BlockBreakInfo(0.8, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
 		$this->register(new Opaque(new BID(Ids::QUARTZ_BLOCK, Meta::QUARTZ_NORMAL), "Quartz Block", $quartzBreakInfo));
 		$this->register(new Stair(new BID(Ids::QUARTZ_STAIRS), "Quartz Stairs", $quartzBreakInfo));
-		$this->register(new class(new BID(Ids::QUARTZ_BLOCK, Meta::QUARTZ_CHISELED), "Chiseled Quartz Block", $quartzBreakInfo) extends Opaque{
-			use PillarRotationInMetadataTrait;
-		});
-		$this->register(new class(new BID(Ids::QUARTZ_BLOCK, Meta::QUARTZ_PILLAR), "Quartz Pillar", $quartzBreakInfo) extends Opaque{
-			use PillarRotationInMetadataTrait;
-		});
+		$this->register(new SimplePillar(new BID(Ids::QUARTZ_BLOCK, Meta::QUARTZ_CHISELED), "Chiseled Quartz Block", $quartzBreakInfo));
+		$this->register(new SimplePillar(new BID(Ids::QUARTZ_BLOCK, Meta::QUARTZ_PILLAR), "Quartz Pillar", $quartzBreakInfo));
 		$this->register(new Opaque(new BID(Ids::QUARTZ_BLOCK, Meta::QUARTZ_SMOOTH), "Smooth Quartz Block", $quartzBreakInfo)); //TODO: this has axis rotation in 1.9, unsure if a bug (https://bugs.mojang.com/browse/MCPE-39074)
 		$this->register(new Stair(new BID(Ids::SMOOTH_QUARTZ_STAIRS), "Smooth Quartz Stairs", $quartzBreakInfo));
 
 		$this->register(new Rail(new BID(Ids::RAIL), "Rail"));
 		$this->register(new RedMushroom(new BID(Ids::RED_MUSHROOM), "Red Mushroom"));
-		$this->register(new RedMushroomBlock(new BID(Ids::RED_MUSHROOM_BLOCK), "Red Mushroom Block"));
 		$this->register(new Redstone(new BID(Ids::REDSTONE_BLOCK), "Redstone Block"));
 		$this->register(new RedstoneComparator(new BIDFlattened(Ids::UNPOWERED_COMPARATOR, Ids::POWERED_COMPARATOR, 0, ItemIds::COMPARATOR, TileComparator::class), "Redstone Comparator"));
 		$this->register(new RedstoneLamp(new BIDFlattened(Ids::REDSTONE_LAMP, Ids::LIT_REDSTONE_LAMP), "Redstone Lamp"));
@@ -335,7 +298,7 @@ class BlockFactory{
 		$this->register(new Sponge(new BID(Ids::SPONGE), "Sponge"));
 
 		$stoneBreakInfo = new BlockBreakInfo(1.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
-		$this->register(new class(new BID(Ids::STONE, Meta::STONE_NORMAL), "Stone", $stoneBreakInfo) extends Opaque{
+		$this->register($stone = new class(new BID(Ids::STONE, Meta::STONE_NORMAL), "Stone", $stoneBreakInfo) extends Opaque{
 			public function getDropsForCompatibleTool(Item $item) : array{
 				return [VanillaBlocks::COBBLESTONE()->asItem()];
 			}
@@ -344,6 +307,7 @@ class BlockFactory{
 				return true;
 			}
 		});
+		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE), "Infested Stone", $stone));
 		$this->register(new Stair(new BID(Ids::NORMAL_STONE_STAIRS), "Stone Stairs", $stoneBreakInfo));
 		$this->register(new Opaque(new BID(Ids::SMOOTH_STONE), "Smooth Stone", $stoneBreakInfo));
 		$this->register(new Opaque(new BID(Ids::STONE, Meta::STONE_ANDESITE), "Andesite", $stoneBreakInfo));
@@ -359,11 +323,15 @@ class BlockFactory{
 		$this->register(new Opaque(new BID(Ids::STONE, Meta::STONE_POLISHED_GRANITE), "Polished Granite", $stoneBreakInfo));
 		$this->register(new Stair(new BID(Ids::POLISHED_GRANITE_STAIRS), "Polished Granite Stairs", $stoneBreakInfo));
 		$this->register(new Stair(new BID(Ids::STONE_BRICK_STAIRS), "Stone Brick Stairs", $stoneBreakInfo));
-		$this->register(new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_CHISELED), "Chiseled Stone Bricks", $stoneBreakInfo));
-		$this->register(new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_CRACKED), "Cracked Stone Bricks", $stoneBreakInfo));
-		$this->register(new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_MOSSY), "Mossy Stone Bricks", $stoneBreakInfo));
+		$this->register($chiseledStoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_CHISELED), "Chiseled Stone Bricks", $stoneBreakInfo));
+		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_CHISELED), "Infested Chiseled Stone Brick", $chiseledStoneBrick));
+		$this->register($crackedStoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_CRACKED), "Cracked Stone Bricks", $stoneBreakInfo));
+		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_CRACKED), "Infested Cracked Stone Brick", $crackedStoneBrick));
+		$this->register($mossyStoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_MOSSY), "Mossy Stone Bricks", $stoneBreakInfo));
+		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_MOSSY), "Infested Mossy Stone Brick", $mossyStoneBrick));
 		$this->register(new Stair(new BID(Ids::MOSSY_STONE_BRICK_STAIRS), "Mossy Stone Brick Stairs", $stoneBreakInfo));
-		$this->register(new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_NORMAL), "Stone Bricks", $stoneBreakInfo));
+		$this->register($stoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_NORMAL), "Stone Bricks", $stoneBreakInfo));
+		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK), "Infested Stone Brick", $stoneBrick));
 		$this->register(new StoneButton(new BID(Ids::STONE_BUTTON), "Stone Button"));
 		$this->register(new StonePressurePlate(new BID(Ids::STONE_PRESSURE_PLATE), "Stone Pressure Plate"));
 
@@ -508,6 +476,9 @@ class BlockFactory{
 		$this->register(new ChemistryTable(new BID(Ids::CHEMISTRY_TABLE, Meta::CHEMISTRY_MATERIAL_REDUCER), "Material Reducer", $chemistryTableBreakInfo));
 
 		$this->register(new ChemicalHeat(new BID(Ids::CHEMICAL_HEAT), "Heat Block", $chemistryTableBreakInfo));
+
+		$this->registerMushroomBlocks();
+
 		//region --- auto-generated TODOs for bedrock-1.11.0 ---
 		//TODO: minecraft:bell
 		//TODO: minecraft:blast_furnace
@@ -666,6 +637,53 @@ class BlockFactory{
 		//TODO: minecraft:warped_wart_block
 		//TODO: minecraft:weeping_vines
 		//endregion
+	}
+
+	private function registerMushroomBlocks() : void{
+		//shrooms have to be handled one by one because some metas are variants and others aren't, and they can't be
+		//separated by a bitmask
+
+		$mushroomBlockBreakInfo = new BlockBreakInfo(0.2, BlockToolType::AXE);
+
+		$mushroomBlocks = [
+			new BrownMushroomBlock(new BID(Ids::BROWN_MUSHROOM_BLOCK), "Brown Mushroom Block", $mushroomBlockBreakInfo),
+			new RedMushroomBlock(new BID(Ids::RED_MUSHROOM_BLOCK), "Red Mushroom Block", $mushroomBlockBreakInfo)
+		];
+
+		//caps
+		foreach([
+			Meta::MUSHROOM_BLOCK_ALL_PORES,
+			Meta::MUSHROOM_BLOCK_CAP_NORTHWEST_CORNER,
+			Meta::MUSHROOM_BLOCK_CAP_NORTH_SIDE,
+			Meta::MUSHROOM_BLOCK_CAP_NORTHEAST_CORNER,
+			Meta::MUSHROOM_BLOCK_CAP_WEST_SIDE,
+			Meta::MUSHROOM_BLOCK_CAP_TOP_ONLY,
+			Meta::MUSHROOM_BLOCK_CAP_EAST_SIDE,
+			Meta::MUSHROOM_BLOCK_CAP_SOUTHWEST_CORNER,
+			Meta::MUSHROOM_BLOCK_CAP_SOUTH_SIDE,
+			Meta::MUSHROOM_BLOCK_CAP_SOUTHEAST_CORNER,
+			Meta::MUSHROOM_BLOCK_ALL_CAP,
+		] as $meta){
+			foreach($mushroomBlocks as $block){
+				$block->readStateFromData($block->getId(), $meta);
+				$this->remap($block->getId(), $meta, clone $block);
+			}
+		}
+
+		//and the invalid states
+		for($meta = 11; $meta <= 13; ++$meta){
+			foreach($mushroomBlocks as $block){
+				$this->remap($block->getId(), $meta, clone $block);
+			}
+		}
+
+		//finally, the stems
+		$mushroomStem = new MushroomStem(new BID(Ids::BROWN_MUSHROOM_BLOCK, Meta::MUSHROOM_BLOCK_STEM), "Mushroom Stem", $mushroomBlockBreakInfo);
+		$this->remap(Ids::BROWN_MUSHROOM_BLOCK, Meta::MUSHROOM_BLOCK_STEM, $mushroomStem);
+		$this->remap(Ids::RED_MUSHROOM_BLOCK, Meta::MUSHROOM_BLOCK_STEM, $mushroomStem);
+		$allSidedMushroomStem = new MushroomStem(new BID(Ids::BROWN_MUSHROOM_BLOCK, Meta::MUSHROOM_BLOCK_ALL_STEM), "All Sided Mushroom Stem", $mushroomBlockBreakInfo);
+		$this->remap(Ids::BROWN_MUSHROOM_BLOCK, Meta::MUSHROOM_BLOCK_ALL_STEM, $allSidedMushroomStem);
+		$this->remap(Ids::RED_MUSHROOM_BLOCK, Meta::MUSHROOM_BLOCK_ALL_STEM, $allSidedMushroomStem);
 	}
 
 	private function registerElements() : void{

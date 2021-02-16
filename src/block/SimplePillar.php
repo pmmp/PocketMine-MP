@@ -23,32 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\Item;
+use pocketmine\block\utils\PillarRotationInMetadataTrait;
 
-final class InfestedStone extends Opaque{
-
-	private int $imitated;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, Block $imitated, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.75));
-		$this->imitated = $imitated->getFullId();
-	}
-
-	public function getImitatedBlock() : Block{
-		return BlockFactory::getInstance()->fromFullBlock($this->imitated);
-	}
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [];
-	}
-
-	public function getSilkTouchDrops(Item $item) : array{
-		return [$this->getImitatedBlock()->asItem()];
-	}
-
-	public function isAffectedBySilkTouch() : bool{
-		return true;
-	}
-
-	//TODO
+/**
+ * @internal This class provides a general base for pillar-like blocks. It **should not** be used for contract binding
+ * in APIs, because not all pillar-like blocks extend this class.
+ */
+class SimplePillar extends Opaque{
+	use PillarRotationInMetadataTrait;
 }

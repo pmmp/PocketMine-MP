@@ -27,33 +27,18 @@ namespace pocketmine\network\mcpe\protocol\types\login;
  * Model class for LoginPacket JSON data for JsonMapper
  */
 final class ClientDataPersonaSkinPiece{
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $PieceId;
+	/** @required */
+	public string $PieceId;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $PieceType;
+	/** @required */
+	public string $PieceType;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $PackId;
+	/** @required */
+	public string $PackId;
 
-	/**
-	 * @var bool
-	 * @required
-	 */
-	public $IsDefault;
+	/** @required */
+	public bool $IsDefault;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $ProductId;
+	/** @required */
+	public string $ProductId;
 }

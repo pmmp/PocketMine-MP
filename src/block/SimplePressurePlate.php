@@ -26,17 +26,25 @@ namespace pocketmine\block;
 abstract class SimplePressurePlate extends PressurePlate{
 
 	/** @var bool */
-	protected $powered = false;
+	protected $pressed = false;
 
 	protected function writeStateToMeta() : int{
-		return $this->powered ? BlockLegacyMetadata::PRESSURE_PLATE_FLAG_POWERED : 0;
+		return $this->pressed ? BlockLegacyMetadata::PRESSURE_PLATE_FLAG_POWERED : 0;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->powered = ($stateMeta & BlockLegacyMetadata::PRESSURE_PLATE_FLAG_POWERED) !== 0;
+		$this->pressed = ($stateMeta & BlockLegacyMetadata::PRESSURE_PLATE_FLAG_POWERED) !== 0;
 	}
 
 	public function getStateBitmask() : int{
 		return 0b1;
+	}
+
+	public function isPressed() : bool{ return $this->pressed; }
+
+	/** @return $this */
+	public function setPressed(bool $pressed) : self{
+		$this->pressed = $pressed;
+		return $this;
 	}
 }

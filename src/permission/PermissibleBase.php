@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-use Ds\Set;
 use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
 use pocketmine\timings\Timings;
+use pocketmine\utils\ObjectSet;
 use function count;
 use function spl_object_id;
 
@@ -44,8 +44,8 @@ class PermissibleBase implements Permissible{
 	private $permissions = [];
 
 	/**
-	 * @var Set|\Closure[]
-	 * @phpstan-var Set<\Closure(array<string, bool> $changedPermissionsOldValues) : void>
+	 * @var ObjectSet|\Closure[]
+	 * @phpstan-var ObjectSet<\Closure(array<string, bool> $changedPermissionsOldValues) : void>
 	 */
 	private $permissionRecalculationCallbacks;
 
@@ -54,7 +54,7 @@ class PermissibleBase implements Permissible{
 	 * @phpstan-param array<string, bool> $basePermissions
 	 */
 	public function __construct(array $basePermissions){
-		$this->permissionRecalculationCallbacks = new Set();
+		$this->permissionRecalculationCallbacks = new ObjectSet();
 
 		//TODO: we can't setBasePermission here directly due to bad architecture that causes recalculatePermissions to explode
 		//so, this hack has to be done here to prevent permission recalculations until it's fixed...
@@ -198,10 +198,10 @@ class PermissibleBase implements Permissible{
 	}
 
 	/**
-	 * @return \Closure[]|Set
-	 * @phpstan-return Set<\Closure(array<string, bool> $changedPermissionsOldValues) : void>
+	 * @return \Closure[]|ObjectSet
+	 * @phpstan-return ObjectSet<\Closure(array<string, bool> $changedPermissionsOldValues) : void>
 	 */
-	public function getPermissionRecalculationCallbacks() : Set{ return $this->permissionRecalculationCallbacks; }
+	public function getPermissionRecalculationCallbacks() : ObjectSet{ return $this->permissionRecalculationCallbacks; }
 
 	/**
 	 * @return PermissionAttachmentInfo[]

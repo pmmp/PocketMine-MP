@@ -26,9 +26,9 @@ declare(strict_types=1);
  */
 namespace pocketmine\inventory;
 
-use Ds\Set;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\utils\ObjectSet;
 
 interface Inventory{
 	public const MAX_STACK = 64;
@@ -156,8 +156,8 @@ interface Inventory{
 	public function slotExists(int $slot) : bool;
 
 	/**
-	 * @return InventoryListener[]|Set
-	 * @phpstan-return Set<InventoryListener>
+	 * @return InventoryListener[]|ObjectSet
+	 * @phpstan-return ObjectSet<InventoryListener>
 	 */
-	public function getListeners() : Set;
+	public function getListeners() : ObjectSet;
 }

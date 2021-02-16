@@ -21,29 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\PoweredByRedstoneTrait;
+trait PoweredByRedstoneTrait{
+	protected bool $powered = false;
 
-class RedstoneLamp extends Opaque{
-	use PoweredByRedstoneTrait;
+	public function isPowered() : bool{ return $this->powered; }
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
-
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.3));
-	}
-
-	public function getId() : int{
-		return $this->powered ? $this->idInfo->getSecondId() : parent::getId();
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->powered = $id === $this->idInfo->getSecondId();
-	}
-
-	public function getLightLevel() : int{
-		return $this->powered ? 15 : 0;
+	/** @return $this */
+	public function setPowered(bool $powered) : self{
+		$this->powered = $powered;
+		return $this;
 	}
 }

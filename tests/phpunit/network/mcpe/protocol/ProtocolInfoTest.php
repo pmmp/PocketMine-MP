@@ -21,29 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\network\mcpe\protocol;
 
-use pocketmine\block\utils\PoweredByRedstoneTrait;
+use PHPUnit\Framework\TestCase;
 
-class RedstoneLamp extends Opaque{
-	use PoweredByRedstoneTrait;
+final class ProtocolInfoTest extends TestCase{
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
-
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.3));
-	}
-
-	public function getId() : int{
-		return $this->powered ? $this->idInfo->getSecondId() : parent::getId();
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->powered = $id === $this->idInfo->getSecondId();
-	}
-
-	public function getLightLevel() : int{
-		return $this->powered ? 15 : 0;
+	public function testMinecraftVersionNetwork() : void{
+		self::assertMatchesRegularExpression(
+			'/^(?:\d+\.)?(?:\d+\.)?(?:\d+\.)?\d+$/',
+			ProtocolInfo::MINECRAFT_VERSION_NETWORK,
+			"Network version should only contain 0-9 and \".\", and no more than 4 groups of digits"
+		);
 	}
 }

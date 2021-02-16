@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\inventory;
 
-use Ds\Set;
 use pocketmine\entity\Human;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use pocketmine\utils\ObjectSet;
 
 class PlayerInventory extends BaseInventory{
 
@@ -37,14 +37,14 @@ class PlayerInventory extends BaseInventory{
 	protected $itemInHandIndex = 0;
 
 	/**
-	 * @var \Closure[]|Set
-	 * @phpstan-var Set<\Closure(int $oldIndex) : void>
+	 * @var \Closure[]|ObjectSet
+	 * @phpstan-var ObjectSet<\Closure(int $oldIndex) : void>
 	 */
 	protected $heldItemIndexChangeListeners;
 
 	public function __construct(Human $player){
 		$this->holder = $player;
-		$this->heldItemIndexChangeListeners = new Set();
+		$this->heldItemIndexChangeListeners = new ObjectSet();
 		parent::__construct(36);
 	}
 
@@ -97,10 +97,10 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	/**
-	 * @return \Closure[]|Set
-	 * @phpstan-return Set<\Closure(int $oldIndex) : void>
+	 * @return \Closure[]|ObjectSet
+	 * @phpstan-return ObjectSet<\Closure(int $oldIndex) : void>
 	 */
-	public function getHeldItemIndexChangeListeners() : Set{ return $this->heldItemIndexChangeListeners; }
+	public function getHeldItemIndexChangeListeners() : ObjectSet{ return $this->heldItemIndexChangeListeners; }
 
 	/**
 	 * Returns the currently-held item.

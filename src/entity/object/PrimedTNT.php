@@ -47,6 +47,8 @@ class PrimedTNT extends Entity implements Explosive{
 	/** @var int */
 	protected $fuse;
 
+	protected bool $worksUnderwater = false;
+
 	public $canCollide = false;
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.98, 0.98); }
@@ -61,6 +63,10 @@ class PrimedTNT extends Entity implements Explosive{
 		}
 		$this->fuse = $fuse;
 	}
+
+	public function worksUnderwater() : bool{ return $this->worksUnderwater; }
+
+	public function setWorksUnderwater(bool $worksUnderwater) : void{ $this->worksUnderwater = $worksUnderwater; }
 
 	public function attack(EntityDamageEvent $source) : void{
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
@@ -108,6 +114,7 @@ class PrimedTNT extends Entity implements Explosive{
 		$ev = new ExplosionPrimeEvent($this, 4);
 		$ev->call();
 		if(!$ev->isCancelled()){
+			//TODO: deal with underwater TNT (underwater TNT treats water as if it has a blast resistance of 0)
 			$explosion = new Explosion(Position::fromObject($this->location->add(0, $this->size->getHeight() / 2, 0), $this->getWorld()), $ev->getForce(), $this);
 			if($ev->isBlockBreaking()){
 				$explosion->explodeA();
@@ -120,6 +127,7 @@ class PrimedTNT extends Entity implements Explosive{
 		parent::syncNetworkData($properties);
 
 		$properties->setGenericFlag(EntityMetadataFlags::IGNITED, true);
+		$properties->setInt(EntityMetadataProperties::VARIANT, $this->worksUnderwater ? 1 : 0);
 		$properties->setInt(EntityMetadataProperties::FUSE_LENGTH, $this->fuse);
 	}
 

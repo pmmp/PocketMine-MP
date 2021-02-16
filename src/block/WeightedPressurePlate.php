@@ -23,19 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\BlockDataSerializer;
 
 abstract class WeightedPressurePlate extends PressurePlate{
-
-	/** @var int */
-	protected $power = 0;
+	use AnalogRedstoneSignalEmitterTrait;
 
 	protected function writeStateToMeta() : int{
-		return $this->power;
+		return $this->signalStrength;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->power = BlockDataSerializer::readBoundedInt("power", $stateMeta, 0, 15);
+		$this->signalStrength = BlockDataSerializer::readBoundedInt("signalStrength", $stateMeta, 0, 15);
 	}
 
 	public function getStateBitmask() : int{

@@ -27,15 +27,12 @@ namespace pocketmine\network\mcpe\protocol\types\login;
  * Model class for LoginPacket JSON data for JsonMapper
  */
 final class ClientDataPersonaPieceTintColor{
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $PieceType;
+	/** @required */
+	public string $PieceType;
 
 	/**
 	 * @var string[]
 	 * @required
 	 */
-	public $Colors;
+	public array $Colors;
 }

@@ -79,7 +79,6 @@ namespace pocketmine {
 			"crypto" => "php-crypto",
 			"ctype" => "ctype",
 			"date" => "Date",
-			"ds" => "Data Structures",
 			"gmp" => "GMP",
 			"hash" => "Hash",
 			"igbinary" => "igbinary",
@@ -237,7 +236,7 @@ namespace pocketmine {
 			Terminal::init();
 		}
 
-		$logger = new MainLogger($dataPath . "server.log");
+		$logger = new MainLogger($dataPath . "server.log", Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()));
 		\GlobalLogger::set($logger);
 
 		emit_performance_warnings($logger);
@@ -272,8 +271,7 @@ namespace pocketmine {
 			}
 		}while(false);
 
-		$logger->shutdown();
-		$logger->join();
+		$logger->shutdownLogWriterThread();
 
 		echo Terminal::$FORMAT_RESET . PHP_EOL;
 
