@@ -358,16 +358,16 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.12.10",
+            "version": "0.12.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "48e70551cca6f2409115d3468bed94c2edd08f31"
+                "reference": "9cce458b8bfde3e4dfdbf70c659fc7b7fe26b5c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/48e70551cca6f2409115d3468bed94c2edd08f31",
-                "reference": "48e70551cca6f2409115d3468bed94c2edd08f31",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/9cce458b8bfde3e4dfdbf70c659fc7b7fe26b5c4",
+                "reference": "9cce458b8bfde3e4dfdbf70c659fc7b7fe26b5c4",
                 "shasum": ""
             },
             "require": {
@@ -382,7 +382,7 @@
                 "pocketmine/snooze": "^0.1.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.67",
+                "phpstan/phpstan": "0.12.76",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
@@ -398,9 +398,9 @@
             "description": "A RakNet server implementation written in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/0.12.10"
+                "source": "https://github.com/pmmp/RakLib/tree/0.12.11"
             },
-            "time": "2021-01-15T16:19:15+00:00"
+            "time": "2021-02-15T11:21:05+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -2553,7 +2553,7 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.22.0",
+            "version": "v1.22.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
@@ -2612,7 +2612,7 @@
                 "portable"
             ],
             "support": {
-                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.22.0"
+                "source": "https://github.com/symfony/polyfill-ctype/tree/v1.22.1"
             },
             "funding": [
                 {
