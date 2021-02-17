@@ -302,11 +302,16 @@ abstract class Projectile extends Entity{
 
 			$entityHit->attack($ev);
 
-			if(!$ev->isCancelled() and $this->isOnFire()){
-				$ev = new EntityCombustByEntityEvent($this, $entityHit, 5);
-				$ev->call();
-				if(!$ev->isCancelled()){
-					$entityHit->setOnFire($ev->getDuration());
+			if($this->isOnFire()){
+				$ev2 = new EntityCombustByEntityEvent($this, $entityHit, 5);
+				
+				if($ev->isCancelled()) {
+					$ev2->setCancelled();
+				}
+				
+				$ev2->call();
+				if(!$ev2->isCancelled()){
+					$entityHit->setOnFire($ev2->getDuration());
 				}
 			}
 		}
