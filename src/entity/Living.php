@@ -237,15 +237,14 @@ abstract class Living extends Entity{
 		if($value !== $this->isSwimming()) {
 			$this->swimming = $value;
 			if($this->swimming){
-				$this->originalWidth = $this->width;
-				$this->originalHeight = $this->height;
-				$this->originalEyeHeight = $this->eyeHeight;
-				$this->height = $this->eyeHeight = $this->width;
+				$width = $this->size->getWidth();
+				$this->originalWidth = $width;
+				$this->originalHeight = $this->size->getHeight();
+				$this->originalEyeHeight = $this->size->getEyeHeight();
+				$this->size = new EntitySizeInfo($width, $width, $width);
 				$this->recalculateBoundingBox();
 			}else{
-				$this->width = $this->originalWidth;
-				$this->height = $this->originalHeight;
-				$this->eyeHeight = $this->originalEyeHeight;
+				$this->size = new EntitySizeInfo($this->originalHeight, $this->originalWidth, $this->originalEyeHeight);
 				$this->recalculateBoundingBox();
 			}
 		}
