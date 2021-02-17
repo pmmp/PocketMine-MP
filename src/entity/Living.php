@@ -120,12 +120,8 @@ abstract class Living extends Entity{
 	/** @var bool */
 	protected $swimming = false;
 
-	/** @var float */
-	protected $originalWidth;
-	/** @var float */
-	protected $originalHeight;
-	/** @var float */
-	protected $originalEyeHeight;
+	/** @var EntitySizeInfo */
+	protected $originalSize;
 
 	abstract public function getName() : string;
 
@@ -238,15 +234,13 @@ abstract class Living extends Entity{
 			$this->swimming = $value;
 			if($this->swimming){
 				$width = $this->size->getWidth();
-				$this->originalWidth = $width;
-				$this->originalHeight = $this->size->getHeight();
-				$this->originalEyeHeight = $this->size->getEyeHeight();
+				$this->originalSize = $this->size;
 				$this->size = new EntitySizeInfo($width, $width, $width);
-				$this->recalculateBoundingBox();
 			}else{
-				$this->size = new EntitySizeInfo($this->originalHeight, $this->originalWidth, $this->originalEyeHeight);
-				$this->recalculateBoundingBox();
+				$this->size = $this->originalSize;
 			}
+
+			$this->recalculateBoundingBox();
 		}
 	}
 
