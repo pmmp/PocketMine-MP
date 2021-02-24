@@ -2244,6 +2244,7 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * @internal Tiles are now bound with blocks, and their creation is automatic. They should not be directly added.
 	 * @throws \InvalidArgumentException
 	 */
 	public function addTile(Tile $tile) : void{
@@ -2269,6 +2270,7 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * @internal Tiles are now bound with blocks, and their removal is automatic. They should not be directly removed.
 	 * @throws \InvalidArgumentException
 	 */
 	public function removeTile(Tile $tile) : void{
