@@ -55,6 +55,9 @@ class Lava extends Liquid{
 	}
 
 	protected function checkForHarden() : bool{
+		if($this->falling){
+			return false;
+		}
 		$colliding = null;
 		foreach(Facing::ALL as $side){
 			if($side === Facing::DOWN){
