@@ -1,16 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Comparison operation \"\\>\\=\" between 0 and 2 is always false\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Liquid.php
-
-		-
-			message: "#^If condition is always false\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/Liquid.php
-
-		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
 			count: 3
 			path: ../../../src/pocketmine/command/CommandReader.php
