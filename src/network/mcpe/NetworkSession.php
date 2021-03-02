@@ -766,7 +766,7 @@ class NetworkSession{
 	public function syncAdventureSettings(Player $for) : void{
 		$pk = new AdventureSettingsPacket();
 
-		$pk->setFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $for->isAdventure());
+		$pk->setFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $for->isSpectator());
 		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->isSpectator());
 		$pk->setFlag(AdventureSettingsPacket::AUTO_JUMP, $for->hasAutoJump());
 		$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $for->getAllowFlight());

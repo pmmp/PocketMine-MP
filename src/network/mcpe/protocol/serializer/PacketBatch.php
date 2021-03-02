@@ -64,7 +64,7 @@ class PacketBatch{
      *
      * @return PacketBatch
      */
-	public static function fromPackets(?int $protocolId, Packet ...$packets) : self{
+	public static function fromPackets(int $protocolId, Packet ...$packets) : self{
 		$serializer = new PacketSerializer();
 		$serializer->setProtocolId($protocolId);
 		foreach($packets as $packet){
