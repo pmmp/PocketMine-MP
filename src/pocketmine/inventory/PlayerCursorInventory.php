@@ -53,4 +53,13 @@ class PlayerCursorInventory extends BaseInventory{
 	public function getHolder(){
 		return $this->holder;
 	}
+
+	public function sendContents($target) : void{
+		//TODO: HACK!
+		//Since 1.13, this is now part of a larger "UI inventory", and sending contents for this larger inventory does
+		//not work the way it's intended to. Even if it did, it would be necessary to send all 51 slots just to update
+		//this one, which is just not worth it.
+		//This workaround isn't great, but it's at least simple.
+		$this->sendSlot(0, $target);
+	}
 }
