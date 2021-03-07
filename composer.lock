@@ -598,12 +598,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "3d4fd4ba5d0f4beb5623c5387dc9858242c02edd"
+                "reference": "dbc9d0c0fd09238c3c2b1ef1c154634c2c6b3add"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/3d4fd4ba5d0f4beb5623c5387dc9858242c02edd",
-                "reference": "3d4fd4ba5d0f4beb5623c5387dc9858242c02edd",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/dbc9d0c0fd09238c3c2b1ef1c154634c2c6b3add",
+                "reference": "dbc9d0c0fd09238c3c2b1ef1c154634c2c6b3add",
                 "shasum": ""
             },
             "require": {
@@ -614,7 +614,7 @@
             "require-dev": {
                 "irstea/phpunit-shim": "^7.5 || ^8.0",
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.67",
+                "phpstan/phpstan": "0.12.80",
                 "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
@@ -632,7 +632,7 @@
                 "issues": "https://github.com/pmmp/NBT/issues",
                 "source": "https://github.com/pmmp/NBT/tree/master"
             },
-            "time": "2021-01-15T15:29:32+00:00"
+            "time": "2021-03-07T20:54:19+00:00"
         },
         {
             "name": "pocketmine/raklib",
