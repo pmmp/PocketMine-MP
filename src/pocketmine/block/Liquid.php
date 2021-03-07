@@ -418,6 +418,9 @@ abstract class Liquid extends Transparent{
 		return $isOptimalFlowDirection;
 	}
 
+	/**
+	 * @phpstan-impure This function modifies the adjacent sources count (premature optimisation)
+	 */
 	private function getSmallestFlowDecay(Block $block, int $decay) : int{
 		$blockDecay = $this->getFlowDecay($block);
 

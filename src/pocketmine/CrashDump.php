@@ -28,6 +28,7 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
 use function base64_encode;
@@ -46,6 +47,7 @@ use function is_resource;
 use function json_encode;
 use function json_last_error_msg;
 use function max;
+use function microtime;
 use function mkdir;
 use function ob_end_clean;
 use function ob_get_contents;
@@ -58,7 +60,6 @@ use function sprintf;
 use function str_split;
 use function strpos;
 use function substr;
-use function time;
 use function zend_version;
 use function zlib_encode;
 use const E_COMPILE_ERROR;
@@ -89,7 +90,7 @@ class CrashDump{
 	 * having their content changed, version format changing, etc.
 	 * It is not necessary to increase this when adding new fields.
 	 */
-	private const FORMAT_VERSION = 3;
+	private const FORMAT_VERSION = 4;
 
 	private const PLUGIN_INVOLVEMENT_NONE = "none";
 	private const PLUGIN_INVOLVEMENT_DIRECT = "direct";
@@ -99,7 +100,7 @@ class CrashDump{
 	private $server;
 	/** @var resource */
 	private $fp;
-	/** @var int */
+	/** @var float */
 	private $time;
 	/**
 	 * @var mixed[]
@@ -112,12 +113,12 @@ class CrashDump{
 	private $path;
 
 	public function __construct(Server $server){
-		$this->time = time();
+		$this->time = microtime(true);
 		$this->server = $server;
 		if(!is_dir($this->server->getDataPath() . "crashdumps")){
 			mkdir($this->server->getDataPath() . "crashdumps");
 		}
-		$this->path = $this->server->getDataPath() . "crashdumps/" . date("D_M_j-H.i.s-T_Y", $this->time) . ".log";
+		$this->path = $this->server->getDataPath() . "crashdumps/" . date("D_M_j-H.i.s-T_Y", (int) $this->time) . ".log";
 		$fp = @fopen($this->path, "wb");
 		if(!is_resource($fp)){
 			throw new \RuntimeException("Could not create Crash Dump");
@@ -125,7 +126,8 @@ class CrashDump{
 		$this->fp = $fp;
 		$this->data["format_version"] = self::FORMAT_VERSION;
 		$this->data["time"] = $this->time;
-		$this->addLine($this->server->getName() . " Crash Dump " . date("D M j H:i:s T Y", $this->time));
+		$this->data["uptime"] = $this->time - \pocketmine\START_TIME;
+		$this->addLine($this->server->getName() . " Crash Dump " . date("D M j H:i:s T Y", (int) $this->time));
 		$this->addLine();
 		$this->baseCrash();
 		$this->generalData();
@@ -166,7 +168,9 @@ class CrashDump{
 		if($json === false){
 			throw new \RuntimeException("Failed to encode crashdump JSON: " . json_last_error_msg());
 		}
-		$this->encodedData = zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9);
+		$zlibEncoded = zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9);
+		if($zlibEncoded === false) throw new AssumptionFailedError("ZLIB compression failed");
+		$this->encodedData = $zlibEncoded;
 		foreach(str_split(base64_encode($this->encodedData), 76) as $line){
 			$this->addLine($line);
 		}
@@ -202,9 +206,16 @@ class CrashDump{
 
 		if($this->server->getProperty("auto-report.send-settings", true) !== false){
 			$this->data["parameters"] = (array) $argv;
-			$this->data["server.properties"] = @file_get_contents($this->server->getDataPath() . "server.properties");
-			$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $this->data["server.properties"]);
-			$this->data["pocketmine.yml"] = @file_get_contents($this->server->getDataPath() . "pocketmine.yml");
+			if(($serverDotProperties = @file_get_contents($this->server->getDataPath() . "server.properties")) !== false){
+				$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $serverDotProperties);
+			}else{
+				$this->data["server.properties"] = $serverDotProperties;
+			}
+			if(($pocketmineDotYml = @file_get_contents($this->server->getDataPath() . "pocketmine.yml")) !== false){
+				$this->data["pocketmine.yml"] = $pocketmineDotYml;
+			}else{
+				$this->data["pocketmine.yml"] = "";
+			}
 		}else{
 			$this->data["pocketmine.yml"] = "";
 			$this->data["server.properties"] = "";

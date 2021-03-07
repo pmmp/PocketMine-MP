@@ -1,4 +1,5 @@
-VERSION=7.4.13
+VERSION="$1"
+
 sudo apt update && sudo apt install -y \
 	re2c \
 	libtool \
@@ -11,44 +12,15 @@ sudo apt update && sudo apt install -y \
 	libzip-dev \
 	libssl-dev
 
-curl -sSL https://www.php.net/distributions/php-$VERSION.tar.gz | tar -xz
-
 INSTALL_DIR="$(pwd)/bin/php7"
-cd php-$VERSION
-cd ext/
-curl -sSL https://github.com/pmmp/pthreads/archive/2bcd8b8c10395d58b8a9bc013e3a5328080c867f.tar.gz | tar -xz
-curl -sSL https://github.com/php/pecl-file_formats-yaml/archive/2.2.0.tar.gz | tar -xz
-cd ..
 
-CFLAGS="$CFLAGS -march=x86-64"
-CXXFLAGS="$CXXFLAGS -march=x86-64"
+export CFLAGS="$CFLAGS -march=x86-64"
+export CXXFLAGS="$CXXFLAGS -march=x86-64"
 
-./buildconf --force
-./configure \
-	--prefix="$INSTALL_DIR" \
-	--exec-prefix="$INSTALL_DIR" \
-	--enable-maintainer-zts \
-	--enable-cli \
-	--disable-cgi \
-	--disable-phpdbg \
-	--disable-session \
-	--without-pear \
-	--without-sqlite3 \
-	--disable-pdo \
-	--enable-pthreads \
-	--with-yaml \
-	--with-libxml \
-	--enable-xml \
-	--enable-simplexml \
-	--enable-xmlreader \
-	--enable-xmlwriter \
-	--enable-mbstring \
-	--disable-mbregex \
-	--enable-sockets \
-	--with-curl \
-	--with-zlib \
-	--with-zip \
-	--with-gmp \
-	--with-openssl
-
-make -j8 install
+git clone https://github.com/php-build/php-build.git
+cd php-build
+./install-dependencies.sh
+echo '"pthreads",,"https://github.com/pmmp/pthreads.git",,,"extension",' >> share/php-build/extension/definition
+PHP_BUILD_INSTALL_EXTENSION='pthreads=@acc6e52b2144c61c434b62a3cb680d537e06828e yaml=2.2.1' PHP_BUILD_ZTS_ENABLE=on ./bin/php-build "$VERSION" "$INSTALL_DIR" || exit 1
+rm "$INSTALL_DIR/etc/conf.d/xdebug.ini" || true
+cp install-dependencies.sh "$INSTALL_DIR"

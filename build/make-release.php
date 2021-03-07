@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\build\make_release;
 
 use pocketmine\utils\VersionString;
-use function defined;
 use function dirname;
 use function fgets;
 use function file_get_contents;
@@ -86,6 +85,4 @@ function main(array $argv) : void{
 	system('git push origin HEAD ' . $currentVer->getBaseVersion());
 }
 
-if(!defined('pocketmine\_PHPSTAN_ANALYSIS')){
-	main($argv);
-}
+main($argv);

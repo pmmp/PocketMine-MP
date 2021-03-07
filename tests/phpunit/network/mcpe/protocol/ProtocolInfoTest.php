@@ -21,18 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\network\mcpe\protocol;
 
-use function defined;
+use PHPUnit\Framework\TestCase;
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-// TODO: drop this file and use a final class with constants
-if(defined('pocketmine\_VERSION_INFO_INCLUDED')){
-	return;
+final class ProtocolInfoTest extends TestCase{
+
+	public function testMinecraftVersionNetwork() : void{
+		self::assertMatchesRegularExpression(
+			'/^(?:\d+\.)?(?:\d+\.)?(?:\d+\.)?\d+$/',
+			ProtocolInfo::MINECRAFT_VERSION_NETWORK,
+			"Network version should only contain 0-9 and \".\", and no more than 4 groups of digits"
+		);
+	}
 }
-const _VERSION_INFO_INCLUDED = true;
-
-const NAME = "PocketMine-MP";
-const BASE_VERSION = "3.17.6";
-const IS_DEVELOPMENT_BUILD = true;
-const BUILD_NUMBER = 0;

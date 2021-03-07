@@ -46,6 +46,31 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
+			message: "#^Parameter \\#1 \\$str of function base64_decode expects string, mixed given\\.$#"
+			count: 5
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#1 \\$height of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinImage constructor expects int, mixed given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#2 \\$width of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinImage constructor expects int, mixed given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#8 \\$premium of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#9 \\$persona of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
 			message: "#^Parameter \\#10 \\$personaCapeOnClassic of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
@@ -63,31 +88,6 @@ parameters:
 		-
 			message: "#^Parameter \\#14 \\$skinColor of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, mixed given\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/Player.php
-
-		-
-			message: "#^Parameter \\#8 \\$premium of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Player.php
-
-		-
-			message: "#^Parameter \\#9 \\$persona of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Player.php
-
-		-
-			message: "#^Parameter \\#1 \\$str of function base64_decode expects string, mixed given\\.$#"
-			count: 5
-			path: ../../../src/pocketmine/Player.php
-
-		-
-			message: "#^Parameter \\#1 \\$height of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinImage constructor expects int, mixed given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/Player.php
-
-		-
-			message: "#^Parameter \\#2 \\$width of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinImage constructor expects int, mixed given\\.$#"
-			count: 2
 			path: ../../../src/pocketmine/Player.php
 
 		-
@@ -276,11 +276,6 @@ parameters:
 			path: ../../../src/pocketmine/level/generator/noise/Noise.php
 
 		-
-			message: "#^Cannot call method invalidate\\(\\) on mixed\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/metadata/MetadataStore.php
-
-		-
 			message: "#^Parameter \\#1 \\$buffer of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket constructor expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/CompressBatchedTask.php
@@ -449,11 +444,6 @@ parameters:
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\SetActorDataPacket\\:\\:\\$metadata \\(array\\<int, array\\(int, mixed\\)\\>\\) does not accept array\\<int, mixed\\>\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/SetActorDataPacket.php
-
-		-
-			message: "#^Parameter \\#1 \\$table of static method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\StartGamePacket\\:\\:serializeItemTable\\(\\) expects array\\<string, int\\>, mixed given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/mcpe/protocol/StartGamePacket.php
 
 		-
 			message: "#^Parameter \\#1 \\$value of static method pocketmine\\\\permission\\\\Permission\\:\\:getByName\\(\\) expects bool\\|string, mixed given\\.$#"

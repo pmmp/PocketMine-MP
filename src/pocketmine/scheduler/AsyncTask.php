@@ -51,6 +51,7 @@ use function unserialize;
 abstract class AsyncTask extends Collectable{
 	/**
 	 * @var \SplObjectStorage|null
+	 * @phpstan-var \SplObjectStorage<AsyncTask, mixed>
 	 * Used to store objects on the main thread which should not be serialized.
 	 */
 	private static $threadLocalStorage;
@@ -258,7 +259,9 @@ abstract class AsyncTask extends Collectable{
 		}
 
 		if(self::$threadLocalStorage === null){
-			self::$threadLocalStorage = new \SplObjectStorage(); //lazy init
+			/** @phpstan-var \SplObjectStorage<AsyncTask, mixed> $storage */
+			$storage = new \SplObjectStorage();
+			self::$threadLocalStorage = $storage; //lazy init
 		}
 
 		if(isset(self::$threadLocalStorage[$this])){

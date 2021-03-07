@@ -117,6 +117,8 @@ class Utils{
 	/**
 	 * Generates an unique identifier to a callable
 	 *
+	 * @phpstan-param anyCallable $variable
+	 *
 	 * @return string
 	 */
 	public static function getCallableIdentifier(callable $variable){
@@ -132,6 +134,7 @@ class Utils{
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
 	 *
+	 * @phpstan-param anyClosure $closure
 	 * @throws \ReflectionException
 	 */
 	public static function getNiceClosureName(\Closure $closure) : string{
@@ -192,7 +195,14 @@ class Utils{
 		}
 
 		$machine = php_uname("a");
-		$machine .= ($cpuinfo = @file("/proc/cpuinfo")) !== false ? implode(preg_grep("/(model name|Processor|Serial)/", $cpuinfo)) : "";
+		$cpuinfo = @file("/proc/cpuinfo");
+		if($cpuinfo !== false){
+			$cpuinfoLines = preg_grep("/(model name|Processor|Serial)/", $cpuinfo);
+			if($cpuinfoLines === false){
+				throw new AssumptionFailedError("Pattern is valid, so this shouldn't fail ...");
+			}
+			$machine .= implode("", $cpuinfoLines);
+		}
 		$machine .= sys_get_temp_dir();
 		$machine .= $extra;
 		$os = Utils::getOS();
@@ -678,6 +688,8 @@ class Utils{
 	 *
 	 * @param callable $signature Dummy callable with the required parameters and return type
 	 * @param callable $subject Callable to check the signature of
+	 * @phpstan-param anyCallable $signature
+	 * @phpstan-param anyCallable $subject
 	 *
 	 * @throws \DaveRandom\CallbackValidator\InvalidCallbackException
 	 * @throws \TypeError
