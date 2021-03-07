@@ -1180,8 +1180,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$deltaAngle = abs($this->lastLocation->yaw - $to->yaw) + abs($this->lastLocation->pitch - $to->pitch);
 
 		if($delta > 0.0001 or $deltaAngle > 1.0){
-			$this->lastLocation = clone $to; //avoid PlayerMoveEvent modifying this
-
 			$ev = new PlayerMoveEvent($this, $from, $to);
 
 			$ev->call();
@@ -1196,6 +1194,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				return;
 			}
 
+			$this->lastLocation = $to;
 			$this->broadcastMovement();
 
 			$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
@@ -1218,8 +1217,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	protected function revertMovement(Location $from) : void{
-		$this->lastLocation = $from;
-
 		$this->setPosition($from);
 		$this->sendPosition($from, $from->yaw, $from->pitch, MovePlayerPacket::MODE_RESET);
 	}

@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network;
 
-use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\network\mcpe\NetworkSession;
 use function count;
 use function spl_object_id;
@@ -60,38 +59,14 @@ class NetworkSessionManager{
 	}
 
 	/**
-	 * Checks whether this network session is a duplicate of an already-connected session (same player connecting from
-	 * 2 locations).
-	 *
-	 * @return bool if the network session is still connected.
-	 */
-	public function kickDuplicates(NetworkSession $connectingSession) : bool{
-		foreach($this->sessions as $existingSession){
-			if($existingSession === $connectingSession){
-				continue;
-			}
-			$info = $existingSession->getPlayerInfo();
-			if($info !== null and ($info->getUsername() === $connectingSession->getPlayerInfo()->getUsername() or $info->getUuid()->equals($connectingSession->getPlayerInfo()->getUuid()))){
-				$ev = new PlayerDuplicateLoginEvent($connectingSession, $existingSession);
-				$ev->call();
-				if($ev->isCancelled()){
-					$connectingSession->disconnect($ev->getDisconnectMessage());
-					return false;
-				}
-
-				$existingSession->disconnect($ev->getDisconnectMessage());
-			}
-		}
-
-		return true;
-	}
-
-	/**
 	 * Returns the number of known connected sessions.
 	 */
 	public function getSessionCount() : int{
 		return count($this->sessions);
 	}
+
+	/** @return NetworkSession[] */
+	public function getSessions() : array{ return $this->sessions; }
 
 	/**
 	 * Updates all sessions which need it.

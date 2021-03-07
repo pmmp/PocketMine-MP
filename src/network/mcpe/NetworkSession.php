@@ -30,6 +30,7 @@ use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
+use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
@@ -607,43 +608,68 @@ class NetworkSession{
 		}
 		$this->logger->debug("Xbox Live authenticated: " . ($this->authenticated ? "YES" : "NO"));
 
-		//TODO: make player data loading async
-		//TODO: we shouldn't be loading player data here at all, but right now we don't have any choice :(
-		$this->cachedOfflinePlayerData = $this->server->getOfflinePlayerData($this->info->getUsername());
-		if((bool) $this->server->getConfigGroup()->getProperty("player.verify-xuid", true)){
-			$recordedXUID = $this->cachedOfflinePlayerData !== null ? $this->cachedOfflinePlayerData->getTag("LastKnownXUID") : null;
-			if(!($recordedXUID instanceof StringTag)){
-				$this->logger->debug("No previous XUID recorded, no choice but to trust this player");
-			}elseif(($this->info instanceof XboxLivePlayerInfo ? $this->info->getXuid() : "") !== $recordedXUID->getValue()){
+		$checkXUID = (bool) $this->server->getConfigGroup()->getProperty("player.verify-xuid", true);
+		$myXUID = $this->info instanceof XboxLivePlayerInfo ? $this->info->getXuid() : "";
+		$kickForXUIDMismatch = function(string $xuid) use ($checkXUID, $myXUID) : bool{
+			if($checkXUID && $myXUID !== $xuid){
 				//TODO: Longer term, we should be identifying playerdata using something more reliable, like XUID or UUID.
 				//However, that would be a very disruptive change, so this will serve as a stopgap for now.
 				//Side note: this will also prevent offline players hijacking XBL playerdata on online servers, since their
 				//XUID will always be empty.
 				$this->disconnect("XUID does not match (possible impersonation attempt)");
-				return;
-			}else{
+				return true;
+			}
+			return false;
+		};
+
+		foreach($this->manager->getSessions() as $existingSession){
+			if($existingSession === $this){
+				continue;
+			}
+			$info = $existingSession->getPlayerInfo();
+			if($info !== null and ($info->getUsername() === $this->info->getUsername() or $info->getUuid()->equals($this->info->getUuid()))){
+				if($kickForXUIDMismatch($info instanceof XboxLivePlayerInfo ? $info->getXuid() : "")){
+					return;
+				}
+				$ev = new PlayerDuplicateLoginEvent($this, $existingSession);
+				$ev->call();
+				if($ev->isCancelled()){
+					$this->disconnect($ev->getDisconnectMessage());
+					return;
+				}
+
+				$existingSession->disconnect($ev->getDisconnectMessage());
+			}
+		}
+
+		//TODO: make player data loading async
+		//TODO: we shouldn't be loading player data here at all, but right now we don't have any choice :(
+		$this->cachedOfflinePlayerData = $this->server->getOfflinePlayerData($this->info->getUsername());
+		if($checkXUID){
+			$recordedXUID = $this->cachedOfflinePlayerData !== null ? $this->cachedOfflinePlayerData->getTag("LastKnownXUID") : null;
+			if(!($recordedXUID instanceof StringTag)){
+				$this->logger->debug("No previous XUID recorded, no choice but to trust this player");
+			}elseif(!$kickForXUIDMismatch($recordedXUID->getValue())){
 				$this->logger->debug("XUID match");
 			}
 		}
 
-		if($this->manager->kickDuplicates($this)){
-			if(EncryptionContext::$ENABLED){
-				$this->server->getAsyncPool()->submitTask(new PrepareEncryptionTask($clientPubKey, function(string $encryptionKey, string $handshakeJwt) : void{
-					if(!$this->connected){
-						return;
-					}
-					$this->sendDataPacket(ServerToClientHandshakePacket::create($handshakeJwt), true); //make sure this gets sent before encryption is enabled
+		if(EncryptionContext::$ENABLED){
+			$this->server->getAsyncPool()->submitTask(new PrepareEncryptionTask($clientPubKey, function(string $encryptionKey, string $handshakeJwt) : void{
+				if(!$this->connected){
+					return;
+				}
+				$this->sendDataPacket(ServerToClientHandshakePacket::create($handshakeJwt), true); //make sure this gets sent before encryption is enabled
 
-					$this->cipher = new EncryptionContext($encryptionKey);
+				$this->cipher = new EncryptionContext($encryptionKey);
 
-					$this->setHandler(new HandshakePacketHandler(function() : void{
-						$this->onServerLoginSuccess();
-					}));
-					$this->logger->debug("Enabled encryption");
+				$this->setHandler(new HandshakePacketHandler(function() : void{
+					$this->onServerLoginSuccess();
 				}));
-			}else{
-				$this->onServerLoginSuccess();
-			}
+				$this->logger->debug("Enabled encryption");
+			}));
+		}else{
+			$this->onServerLoginSuccess();
 		}
 	}
 
