@@ -2073,32 +2073,40 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return void
 	 */
 	protected function processLogin(){
-		$this->namedtag = $this->server->getOfflinePlayerData($this->username);
-		if((bool) $this->server->getProperty("player.verify-xuid", true)){
-			$recordedXUID = $this->namedtag->getTag("LastKnownXUID");
-			if(!($recordedXUID instanceof StringTag)){
-				$this->server->getLogger()->debug("No previous XUID recorded for " . $this->getName() . ", no choice but to trust this player");
-			}elseif($this->xuid !== $recordedXUID->getValue()){
+		$checkXUID = (bool) $this->server->getProperty("player.verify-xuid", true);
+		$kickForXUIDMismatch = function(string $xuid) use ($checkXUID) : bool{
+			if($checkXUID && $this->xuid !== $xuid){
 				if($this->kick("XUID does not match (possible impersonation attempt)", false)){
 					//TODO: Longer term, we should be identifying playerdata using something more reliable, like XUID or UUID.
 					//However, that would be a very disruptive change, so this will serve as a stopgap for now.
 					//Side note: this will also prevent offline players hijacking XBL playerdata on online servers, since their
 					//XUID will always be empty.
-					return;
+					return true;
 				}
 				$this->server->getLogger()->debug("XUID mismatch for " . $this->getName() . ", but plugin cancelled event allowing them to join anyway");
-			}else{
-				$this->server->getLogger()->debug("XUID match for " . $this->getName());
 			}
-		}
+			return false;
+		};
 
 		foreach($this->server->getLoggedInPlayers() as $p){
 			if($p !== $this and ($p->iusername === $this->iusername or $this->getUniqueId()->equals($p->getUniqueId()))){
-				if(!$p->kick("logged in from another location")){
-					$this->close($this->getLeaveMessage(), "Logged in from another location");
-
+				if($kickForXUIDMismatch($p->getXuid())){
 					return;
 				}
+				if(!$p->kick("logged in from another location")){
+					$this->close($this->getLeaveMessage(), "Logged in from another location");
+					return;
+				}
+			}
+		}
+
+		$this->namedtag = $this->server->getOfflinePlayerData($this->username);
+		if($checkXUID){
+			$recordedXUID = $this->namedtag->getTag("LastKnownXUID");
+			if(!($recordedXUID instanceof StringTag)){
+				$this->server->getLogger()->debug("No previous XUID recorded for " . $this->getName() . ", no choice but to trust this player");
+			}elseif(!$kickForXUIDMismatch($recordedXUID->getValue())){
+				$this->server->getLogger()->debug("XUID match for " . $this->getName());
 			}
 		}
 
