@@ -55,6 +55,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\network\upnp;
 
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Internet;
 use SimpleXMLElement;
 use function socket_create;
