@@ -162,6 +162,10 @@ abstract class UPnP{
 			'/upnp:serviceList/upnp:service[upnp:serviceType="urn:schemas-upnp-org:service:WANIPConnection:1"]' .
 			'/upnp:controlURL'
 		);
+		if($xpathResult === false){
+			//this should be an array of 0 if there is no matching elements; false indicates a problem with the query itself
+			throw new AssumptionFailedError("xpath query should not error here");
+		}
 		if(count($xpathResult) === 0){
 			throw new \RuntimeException("Your router does not support portforwarding");
 		}
