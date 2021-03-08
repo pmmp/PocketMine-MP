@@ -154,15 +154,15 @@ abstract class UPnP{
 			throw new \RuntimeException("Broken XML.");
 		}
 		libxml_use_internal_errors($defaultInternalError);
-		
+		$root->registerXPathNamespace("upnp", "urn:schemas-upnp-org:device-1-0");
 		$xpathResult = $root->xpath(
-			'//device[deviceType="urn:schemas-upnp-org:device:InternetGatewayDevice:1"]' .
-			'/deviceList/device[deviceType="urn:schemas-upnp-org:device:WANDevice:1"]' .
-			'/deviceList/device[deviceType="urn:schemas-upnp-org:device:WANConnectionDevice:1"]' .
-			'/serviceList/service[serviceType="urn:schemas-upnp-org:service:WANIPConnection:1"]' .
-			'/controlURL'
+			'//upnp:device[upnp:deviceType="urn:schemas-upnp-org:device:InternetGatewayDevice:1"]' .
+			'/upnp:deviceList/upnp:device[upnp:deviceType="urn:schemas-upnp-org:device:WANDevice:1"]' .
+			'/upnp:deviceList/upnp:device[upnp:deviceType="urn:schemas-upnp-org:device:WANConnectionDevice:1"]' .
+			'/upnp:serviceList/upnp:service[upnp:serviceType="urn:schemas-upnp-org:service:WANIPConnection:1"]' .
+			'/upnp:controlURL'
 		);
-		if($xpathResult === false || count($xpathResult) === 0){
+		if(count($xpathResult) === 0){
 			throw new \RuntimeException("Your router does not support portforwarding");
 		}
 		$controlURL = (string) $xpathResult[0];
