@@ -48,6 +48,7 @@ use pocketmine\network\mcpe\protocol\CameraPacket;
 use pocketmine\network\mcpe\protocol\CameraShakePacket;
 use pocketmine\network\mcpe\protocol\ChangeDimensionPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
+use pocketmine\network\mcpe\protocol\ClientboundDebugRendererPacket;
 use pocketmine\network\mcpe\protocol\ClientboundMapItemDataPacket;
 use pocketmine\network\mcpe\protocol\ClientCacheBlobStatusPacket;
 use pocketmine\network\mcpe\protocol\ClientCacheMissResponsePacket;
@@ -819,6 +820,10 @@ abstract class NetworkSession{
 	}
 
 	public function handleFilterText(FilterTextPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleClientboundDebugRenderer(ClientboundDebugRendererPacket $packet) : bool{
 		return false;
 	}
 }

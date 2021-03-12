@@ -54,13 +54,15 @@ class AdventureSettingsPacket extends DataPacket{
 	public const FLYING = 0x200;
 	public const MUTED = 0x400;
 
-	public const BUILD_AND_MINE = 0x01 | self::BITFLAG_SECOND_SET;
+	public const MINE = 0x01 | self::BITFLAG_SECOND_SET;
 	public const DOORS_AND_SWITCHES = 0x02 | self::BITFLAG_SECOND_SET;
 	public const OPEN_CONTAINERS = 0x04 | self::BITFLAG_SECOND_SET;
 	public const ATTACK_PLAYERS = 0x08 | self::BITFLAG_SECOND_SET;
 	public const ATTACK_MOBS = 0x10 | self::BITFLAG_SECOND_SET;
 	public const OPERATOR = 0x20 | self::BITFLAG_SECOND_SET;
 	public const TELEPORT = 0x80 | self::BITFLAG_SECOND_SET;
+	public const BUILD = 0x100 | self::BITFLAG_SECOND_SET;
+	public const DEFAULT = 0x200 | self::BITFLAG_SECOND_SET;
 
 	/** @var int */
 	public $flags = 0;

@@ -71,6 +71,7 @@ final class ItemStackRequest{
 			case CraftingMarkSecondaryResultStackRequestAction::getTypeId(): return CraftingMarkSecondaryResultStackRequestAction::read($in);
 			case LabTableCombineStackRequestAction::getTypeId(): return LabTableCombineStackRequestAction::read($in);
 			case BeaconPaymentStackRequestAction::getTypeId(): return BeaconPaymentStackRequestAction::read($in);
+			case MineBlockStackRequestAction::getTypeId(): return MineBlockStackRequestAction::read($in);
 			case CraftRecipeStackRequestAction::getTypeId(): return CraftRecipeStackRequestAction::read($in);
 			case CraftRecipeAutoStackRequestAction::getTypeId(): return CraftRecipeAutoStackRequestAction::read($in);
 			case CreativeCreateStackRequestAction::getTypeId(): return CreativeCreateStackRequestAction::read($in);
