@@ -46,6 +46,11 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
+			message: "#^Parameter \\#2 \\$playFabId of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
 			message: "#^Parameter \\#1 \\$str of function base64_decode expects string, mixed given\\.$#"
 			count: 5
 			path: ../../../src/pocketmine/Player.php
@@ -61,32 +66,32 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Parameter \\#8 \\$premium of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
+			message: "#^Parameter \\#9 \\$premium of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Parameter \\#9 \\$persona of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
+			message: "#^Parameter \\#10 \\$persona of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Parameter \\#10 \\$personaCapeOnClassic of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
+			message: "#^Parameter \\#11 \\$personaCapeOnClassic of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Parameter \\#11 \\$capeId of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, mixed given\\.$#"
+			message: "#^Parameter \\#12 \\$capeId of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Parameter \\#13 \\$armSize of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, mixed given\\.$#"
+			message: "#^Parameter \\#14 \\$armSize of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Parameter \\#14 \\$skinColor of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, mixed given\\.$#"
+			message: "#^Parameter \\#15 \\$skinColor of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
