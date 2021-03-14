@@ -342,4 +342,6 @@ interface PacketHandlerInterface{
 	public function handleItemComponent(ItemComponentPacket $packet) : bool;
 
 	public function handleFilterText(FilterTextPacket $packet) : bool;
+
+	public function handleClientboundDebugRenderer(ClientboundDebugRendererPacket $packet) : bool;
 }

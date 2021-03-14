@@ -36,7 +36,7 @@ use pocketmine\network\mcpe\protocol\types\GameRule;
 use pocketmine\network\mcpe\protocol\types\GeneratorType;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\network\mcpe\protocol\types\MultiplayerGameVisibility;
-use pocketmine\network\mcpe\protocol\types\PlayerMovementType;
+use pocketmine\network\mcpe\protocol\types\PlayerMovementSettings;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\types\SpawnSettings;
 use function count;
@@ -153,8 +153,8 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public $premiumWorldTemplateId = "";
 	/** @var bool */
 	public $isTrial = false;
-	/** @var int */
-	public $playerMovementType = PlayerMovementType::LEGACY;
+	/** @var PlayerMovementSettings */
+	public $playerMovementSettings;
 	/** @var int */
 	public $currentTick = 0; //only used if isTrial is true
 	/** @var int */
@@ -233,7 +233,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$this->worldName = $in->getString();
 		$this->premiumWorldTemplateId = $in->getString();
 		$this->isTrial = $in->getBool();
-		$this->playerMovementType = $in->getVarInt();
+		$this->playerMovementSettings = PlayerMovementSettings::read($in);
 		$this->currentTick = $in->getLLong();
 
 		$this->enchantmentSeed = $in->getVarInt();
@@ -315,7 +315,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 		$out->putString($this->worldName);
 		$out->putString($this->premiumWorldTemplateId);
 		$out->putBool($this->isTrial);
-		$out->putVarInt($this->playerMovementType);
+		$this->playerMovementSettings->write($out);
 		$out->putLLong($this->currentTick);
 
 		$out->putVarInt($this->enchantmentSeed);
