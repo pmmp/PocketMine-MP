@@ -57,25 +57,26 @@ namespace pocketmine\network\upnp;
 
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Internet;
-use SimpleXMLElement;
+use function count;
+use function libxml_use_internal_errors;
+use function parse_url;
+use function preg_last_error;
+use function preg_match;
+use function socket_close;
 use function socket_create;
-use function socket_set_option;
+use function socket_last_error;
 use function socket_recvfrom;
 use function socket_sendto;
-use function trim;
-use function strlen;
-use function preg_match;
-use function parse_url;
+use function socket_set_option;
+use function socket_strerror;
 use function sprintf;
+use function strlen;
+use function trim;
 use const AF_INET;
-use const SOCK_DGRAM;
-use const SOL_UDP;
-use const IPPROTO_IP;
-use const IP_MULTICAST_IF;
-use const IP_MULTICAST_LOOP;
-use const IP_MULTICAST_TTL;
-use const SOL_SOCKET;
 use const SO_RCVTIMEO;
+use const SOCK_DGRAM;
+use const SOL_SOCKET;
+use const SOL_UDP;
 
 abstract class UPnP{
 	/** @var string|null */
