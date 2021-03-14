@@ -75,10 +75,13 @@ use function trim;
 use const AF_INET;
 use const SO_RCVTIMEO;
 use const SOCK_DGRAM;
+use const SOCKET_ETIMEDOUT;
 use const SOL_SOCKET;
 use const SOL_UDP;
 
 abstract class UPnP{
+	private const MAX_DISCOVERY_ATTEMPTS = 3;
+
 	/** @var string|null */
 	private static $serviceURL = null;
 
@@ -109,26 +112,37 @@ abstract class UPnP{
 			"HOST: 239.255.255.250:1900\r\n" .
 			"MAN: \"ssdp:discover\"\r\n" .
 			"ST: upnp:rootdevice\r\n\r\n";
-		$sendbyte = @socket_sendto($socket, $contents, strlen($contents), 0, "239.255.255.250", 1900);
-		if($sendbyte === false){
-			throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
-		}
-		if($sendbyte !== strlen($contents)){
-			throw new \RuntimeException("Socket error: Unable to send the entire contents.");
-		}
-		if(@socket_recvfrom($socket, $buffer, 1024, 0, $responseHost, $responsePort) === false){
-			throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
+		$location = null;
+		for($i = 0; $i < self::MAX_DISCOVERY_ATTEMPTS; ++$i){
+			$sendbyte = @socket_sendto($socket, $contents, strlen($contents), 0, "239.255.255.250", 1900);
+			if($sendbyte === false){
+				throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
+			}
+			if($sendbyte !== strlen($contents)){
+				throw new \RuntimeException("Socket error: Unable to send the entire contents.");
+			}
+			while(true){
+				if(@socket_recvfrom($socket, $buffer, 1024, 0, $responseHost, $responsePort) === false){
+					if(socket_last_error($socket) === SOCKET_ETIMEDOUT){
+						continue 2;
+					}
+					throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
+				}
+				$pregResult = preg_match('/location\s*:\s*(.+)\n/i', $buffer, $matches);
+				if($pregResult === false){
+					//TODO: replace with preg_last_error_msg() in PHP 8.
+					throw self::makePcreError();
+				}
+				if($pregResult !== 0){ //this might be garbage from somewhere other than the router
+					$location = trim($matches[1]);
+					break 2;
+				}
+			}
 		}
 		socket_close($socket);
-		$pregResult = preg_match('/location\s*:\s*(.+)\n/i', $buffer, $matches);
-		if($pregResult === false){
-			//TODO: replace with preg_last_error_msg() in PHP 8.
-			throw self::makePcreError();
-		}
-		if($pregResult === 0){
+		if($location === null){
 			throw new \RuntimeException("Unable to find the router. Ensure that network discovery is enabled in Control Panel.");
 		}
-		$location = trim($matches[1]);
 		$url = parse_url($location);
 		if($url === false){
 			throw new \RuntimeException("Failed to parse the router's url: {$location}");
