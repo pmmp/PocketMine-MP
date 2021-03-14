@@ -38,10 +38,11 @@ final class ItemStackRequestActionType{
 	public const CRAFTING_MARK_SECONDARY_RESULT_SLOT = 6;
 	public const LAB_TABLE_COMBINE = 7;
 	public const BEACON_PAYMENT = 8;
-	public const CRAFTING_RECIPE = 9;
-	public const CRAFTING_RECIPE_AUTO = 10; //recipe book?
-	public const CREATIVE_CREATE = 11;
-	public const CRAFTING_RECIPE_OPTIONAL = 12; //anvil/cartography table rename
-	public const CRAFTING_NON_IMPLEMENTED_DEPRECATED_ASK_TY_LAING = 13;
-	public const CRAFTING_RESULTS_DEPRECATED_ASK_TY_LAING = 14; //no idea what this is for
+	public const MINE_BLOCK = 9;
+	public const CRAFTING_RECIPE = 10;
+	public const CRAFTING_RECIPE_AUTO = 11; //recipe book?
+	public const CREATIVE_CREATE = 12;
+	public const CRAFTING_RECIPE_OPTIONAL = 13; //anvil/cartography table rename
+	public const CRAFTING_NON_IMPLEMENTED_DEPRECATED_ASK_TY_LAING = 14;
+	public const CRAFTING_RESULTS_DEPRECATED_ASK_TY_LAING = 15; //no idea what this is for
 }

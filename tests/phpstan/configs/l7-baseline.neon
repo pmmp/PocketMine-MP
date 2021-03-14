@@ -31,17 +31,17 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Parameter \\#2 \\$resourcePatch of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
+			message: "#^Parameter \\#3 \\$resourcePatch of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Parameter \\#6 \\$geometryData of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
+			message: "#^Parameter \\#7 \\$geometryData of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Parameter \\#7 \\$animationData of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
+			message: "#^Parameter \\#8 \\$animationData of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
@@ -691,7 +691,7 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/protocol/StartGamePacket.php
 
 		-
-			message: "#^Parameter \\#2 \\$resourcePatch of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
+			message: "#^Parameter \\#3 \\$resourcePatch of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/types/LegacySkinAdapter.php
 

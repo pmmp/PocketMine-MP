@@ -194,6 +194,7 @@ class PacketPool{
 		static::registerPacket(new CorrectPlayerMovePredictionPacket());
 		static::registerPacket(new ItemComponentPacket());
 		static::registerPacket(new FilterTextPacket());
+		static::registerPacket(new ClientboundDebugRendererPacket());
 	}
 
 	/**
