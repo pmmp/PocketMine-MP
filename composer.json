@@ -24,6 +24,7 @@
       "ext-phar": "*",
       "ext-pthreads": "~3.2.0",
       "ext-reflection": "*",
+      "ext-simplexml": "*",
       "ext-sockets": "*",
       "ext-spl": "*",
       "ext-yaml": ">=2.0.0",

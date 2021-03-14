@@ -19,28 +19,182 @@
  *
 */
 
+// This code is based on a Go implementation and its license is below:
+// Copyright (c) 2010 Jack Palevich. All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are
+// met:
+//
+//    * Redistributions of source code must retain the above copyright
+// notice, this list of conditions and the following disclaimer.
+//    * Redistributions in binary form must reproduce the above
+// copyright notice, this list of conditions and the following disclaimer
+// in the documentation and/or other materials provided with the
+// distribution.
+//    * Neither the name of Google Inc. nor the names of its
+// contributors may be used to endorse or promote products derived from
+// this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 declare(strict_types=1);
 
 /**
- * UPnP port forwarding support. Only for Windows
+ * UPnP port forwarding support.
  */
 namespace pocketmine\network\upnp;
 
 use pocketmine\network\NetworkInterface;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Internet;
-use pocketmine\utils\Utils;
-use function class_exists;
-use function is_object;
+use function count;
+use function libxml_use_internal_errors;
+use function parse_url;
+use function preg_last_error;
+use function preg_match;
+use function socket_close;
+use function socket_create;
+use function socket_last_error;
+use function socket_recvfrom;
+use function socket_sendto;
+use function socket_set_option;
+use function socket_strerror;
+use function sprintf;
+use function strlen;
+use function trim;
+use const AF_INET;
+use const SO_RCVTIMEO;
+use const SOCK_DGRAM;
+use const SOCKET_ETIMEDOUT;
+use const SOL_SOCKET;
+use const SOL_UDP;
 
 class UPnP implements NetworkInterface{
+	private const MAX_DISCOVERY_ATTEMPTS = 3;
+
+	private static function makePcreError() : \RuntimeException{
+		$errorCode = preg_last_error();
+		$message = [
+			PREG_INTERNAL_ERROR => "Internal error",
+			PREG_BACKTRACK_LIMIT_ERROR => "Backtrack limit reached",
+			PREG_RECURSION_LIMIT_ERROR => "Recursion limit reached",
+			PREG_BAD_UTF8_ERROR => "Malformed UTF-8",
+			PREG_BAD_UTF8_OFFSET_ERROR => "Bad UTF-8 offset",
+			PREG_JIT_STACKLIMIT_ERROR => "PCRE JIT stack limit reached"
+		][$errorCode] ?? "Unknown (code $errorCode)";
+		throw new \RuntimeException("PCRE error: $message");
+	}
+
+	public static function getServiceUrl() : string{
+		$socket = @socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+		if($socket === false){
+			throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error())));
+		}
+		if(!@socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, ["sec" => 3, "usec" => 0])){
+			throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
+		}
+		$contents =
+			"M-SEARCH * HTTP/1.1\r\n" .
+			"MX: 2\r\n" .
+			"HOST: 239.255.255.250:1900\r\n" .
+			"MAN: \"ssdp:discover\"\r\n" .
+			"ST: upnp:rootdevice\r\n\r\n";
+		$location = null;
+		for($i = 0; $i < self::MAX_DISCOVERY_ATTEMPTS; ++$i){
+			$sendbyte = @socket_sendto($socket, $contents, strlen($contents), 0, "239.255.255.250", 1900);
+			if($sendbyte === false){
+				throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
+			}
+			if($sendbyte !== strlen($contents)){
+				throw new \RuntimeException("Socket error: Unable to send the entire contents.");
+			}
+			while(true){
+				if(@socket_recvfrom($socket, $buffer, 1024, 0, $responseHost, $responsePort) === false){
+					if(socket_last_error($socket) === SOCKET_ETIMEDOUT){
+						continue 2;
+					}
+					throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
+				}
+				$pregResult = preg_match('/location\s*:\s*(.+)\n/i', $buffer, $matches);
+				if($pregResult === false){
+					//TODO: replace with preg_last_error_msg() in PHP 8.
+					throw self::makePcreError();
+				}
+				if($pregResult !== 0){ //this might be garbage from somewhere other than the router
+					$location = trim($matches[1]);
+					break 2;
+				}
+			}
+		}
+		socket_close($socket);
+		if($location === null){
+			throw new \RuntimeException("Unable to find the router. Ensure that network discovery is enabled in Control Panel.");
+		}
+		$url = parse_url($location);
+		if($url === false){
+			throw new \RuntimeException("Failed to parse the router's url: {$location}");
+		}
+		if(!isset($url['host'])){
+			throw new \RuntimeException("Failed to recognize the host name from the router's url: {$location}");
+		}
+		$urlHost = $url['host'];
+		if(!isset($url['port'])){
+			throw new \RuntimeException("Failed to recognize the port number from the router's url: {$location}");
+		}
+		$urlPort = $url['port'];
+		$response = Internet::getURL($location, 3, [], $err);
+		if($response === null){
+			throw new \RuntimeException("Unable to access XML: {$err}");
+		}
+		if($response->getCode() !== 200){
+			throw new \RuntimeException("Unable to access XML: {$response->getBody()}");
+		}
+
+		$defaultInternalError = libxml_use_internal_errors(true);
+		try{
+			$root = new \SimpleXMLElement($response->getBody());
+		}catch(\Exception $e){
+			throw new \RuntimeException("Broken XML.");
+		}
+		libxml_use_internal_errors($defaultInternalError);
+		$root->registerXPathNamespace("upnp", "urn:schemas-upnp-org:device-1-0");
+		$xpathResult = $root->xpath(
+			'//upnp:device[upnp:deviceType="urn:schemas-upnp-org:device:InternetGatewayDevice:1"]' .
+			'/upnp:deviceList/upnp:device[upnp:deviceType="urn:schemas-upnp-org:device:WANDevice:1"]' .
+			'/upnp:deviceList/upnp:device[upnp:deviceType="urn:schemas-upnp-org:device:WANConnectionDevice:1"]' .
+			'/upnp:serviceList/upnp:service[upnp:serviceType="urn:schemas-upnp-org:service:WANIPConnection:1"]' .
+			'/upnp:controlURL'
+		);
+		if($xpathResult === false){
+			//this should be an array of 0 if there is no matching elements; false indicates a problem with the query itself
+			throw new AssumptionFailedError("xpath query should not error here");
+		}
+		if(count($xpathResult) === 0){
+			throw new \RuntimeException("Your router does not support portforwarding");
+		}
+		$controlURL = (string) $xpathResult[0];
+		$serviceURL = sprintf("%s:%d/%s", $urlHost, $urlPort, $controlURL);
+		return $serviceURL;
+	}
 
 	/** @var string */
 	private $ip;
 	/** @var int */
 	private $port;
 
-	/** @var object|null */
-	private $staticPortMappingCollection = null;
+	/** @var string|null */
+	private $serviceURL = null;
 	/** @var \Logger */
 	private $logger;
 
@@ -48,32 +202,41 @@ class UPnP implements NetworkInterface{
 		if(!Internet::$online){
 			throw new \RuntimeException("Server is offline");
 		}
-		if(Utils::getOS() !== Utils::OS_WINDOWS){
-			throw new \RuntimeException("UPnP is only supported on Windows");
-		}
-		if(!class_exists("COM")){
-			throw new \RuntimeException("UPnP requires the com_dotnet extension");
-		}
+
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->logger = new \PrefixedLogger($logger, "UPnP Port Forwarder");
 	}
 
 	public function start() : void{
-		/** @noinspection PhpUndefinedClassInspection */
-		$com = new \COM("HNetCfg.NATUPnP");
-		/** @noinspection PhpUndefinedFieldInspection */
-		if(!is_object($com->StaticPortMappingCollection)){
-			throw new \RuntimeException("UPnP unsupported or network discovery is not enabled");
-		}
-		/** @noinspection PhpUndefinedFieldInspection */
-		$this->staticPortMappingCollection = $com->StaticPortMappingCollection;
+		$this->serviceURL = self::getServiceUrl();
 
-		try{
-			$this->staticPortMappingCollection->Add($this->port, "UDP", $this->port, $this->ip, true, "PocketMine-MP");
-		}catch(\com_exception $e){
-			throw new \RuntimeException($e->getMessage(), 0, $e);
+		$body =
+			'<u:AddPortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">' .
+				'<NewRemoteHost></NewRemoteHost>' .
+				'<NewExternalPort>' . $this->port . '</NewExternalPort>' .
+				'<NewProtocol>UDP</NewProtocol>' .
+				'<NewInternalPort>' . $this->port . '</NewInternalPort>' .
+				'<NewInternalClient>' . Internet::getInternalIP() . '</NewInternalClient>' .
+				'<NewEnabled>1</NewEnabled>' .
+				'<NewPortMappingDescription>PocketMine-MP</NewPortMappingDescription>' .
+				'<NewLeaseDuration>0</NewLeaseDuration>' .
+			'</u:AddPortMapping>';
+
+		$contents =
+			'<?xml version="1.0"?>' .
+			'<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">' .
+			'<s:Body>' . $body . '</s:Body></s:Envelope>';
+
+		$headers = [
+			'Content-Type: text/xml',
+			'SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"'
+		];
+
+		if(Internet::postURL($this->serviceURL, $contents, 3, $headers, $err) === null){
+			throw new \RuntimeException("Failed to portforward using UPnP: " . $err);
 		}
+
 		$this->logger->info("Forwarded $this->ip:$this->port to external port $this->port");
 	}
 
@@ -86,13 +249,26 @@ class UPnP implements NetworkInterface{
 	}
 
 	public function shutdown() : void{
-		if($this->staticPortMappingCollection !== null){
-			try{
-				/** @noinspection PhpUndefinedFieldInspection */
-				$this->staticPortMappingCollection->Remove($this->port, "UDP");
-			}catch(\com_exception $e){
-				//TODO: should this really be silenced?
-			}
+		if($this->serviceURL === null){
+			return;
 		}
+		$body =
+			'<u:DeletePortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">' .
+				'<NewRemoteHost></NewRemoteHost>' .
+				'<NewExternalPort>' . $this->port . '</NewExternalPort>' .
+				'<NewProtocol>UDP</NewProtocol>' .
+			'</u:DeletePortMapping>';
+
+		$contents =
+			'<?xml version="1.0"?>' .
+			'<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">' .
+			'<s:Body>' . $body . '</s:Body></s:Envelope>';
+		
+		$headers = [
+			'Content-Type: text/xml',
+			'SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#DeletePortMapping"'
+		];
+
+		Internet::postURL($this->serviceURL, $contents, 3, $headers);
 	}
 }
