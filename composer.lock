@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5aa48d296aa8e42c1d52fdce2cde29a7",
+    "content-hash": "351cfe2c61a6ac577ca48813f6fe920d",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -598,12 +598,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "dbc9d0c0fd09238c3c2b1ef1c154634c2c6b3add"
+                "reference": "c548a3eb97bd2c14fbea69326e87957e5dfac3e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/dbc9d0c0fd09238c3c2b1ef1c154634c2c6b3add",
-                "reference": "dbc9d0c0fd09238c3c2b1ef1c154634c2c6b3add",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/c548a3eb97bd2c14fbea69326e87957e5dfac3e1",
+                "reference": "c548a3eb97bd2c14fbea69326e87957e5dfac3e1",
                 "shasum": ""
             },
             "require": {
@@ -632,7 +632,7 @@
                 "issues": "https://github.com/pmmp/NBT/issues",
                 "source": "https://github.com/pmmp/NBT/tree/master"
             },
-            "time": "2021-03-07T20:54:19+00:00"
+            "time": "2021-03-14T19:19:46+00:00"
         },
         {
             "name": "pocketmine/raklib",
@@ -1579,16 +1579,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.80",
+            "version": "0.12.81",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "c6a1b17f22ecf708d434d6bee05092647ec7e686"
+                "reference": "0dd5b0ebeff568f7000022ea5f04aa86ad3124b8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/c6a1b17f22ecf708d434d6bee05092647ec7e686",
-                "reference": "c6a1b17f22ecf708d434d6bee05092647ec7e686",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/0dd5b0ebeff568f7000022ea5f04aa86ad3124b8",
+                "reference": "0dd5b0ebeff568f7000022ea5f04aa86ad3124b8",
                 "shasum": ""
             },
             "require": {
@@ -1619,7 +1619,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/0.12.80"
+                "source": "https://github.com/phpstan/phpstan/tree/0.12.81"
             },
             "funding": [
                 {
@@ -1635,7 +1635,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-02-28T20:22:43+00:00"
+            "time": "2021-03-08T22:03:02+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",

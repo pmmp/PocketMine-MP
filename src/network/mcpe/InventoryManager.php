@@ -193,9 +193,22 @@ class InventoryManager{
 		if($windowId !== null){
 			unset($this->initiatedSlotChanges[$windowId]);
 			$typeConverter = TypeConverter::getInstance();
-			$this->session->sendDataPacket(InventoryContentPacket::create($windowId, array_map(function(Item $itemStack) use ($typeConverter) : ItemStackWrapper{
-				return ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($itemStack));
-			}, $inventory->getContents(true))));
+			if($windowId === ContainerIds::UI){
+				//TODO: HACK!
+				//Since 1.13, cursor is now part of a larger "UI inventory", and sending contents for this larger inventory does
+				//not work the way it's intended to. Even if it did, it would be necessary to send all 51 slots just to update
+				//this one, which is just not worth it.
+				//This workaround isn't great, but it's at least simple.
+				$this->session->sendDataPacket(InventorySlotPacket::create(
+					$windowId,
+					0,
+					ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($inventory->getItem(0)))
+				));
+			}else{
+				$this->session->sendDataPacket(InventoryContentPacket::create($windowId, array_map(function(Item $itemStack) use ($typeConverter) : ItemStackWrapper{
+					return ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($itemStack));
+				}, $inventory->getContents(true))));
+			}
 		}
 	}
 
