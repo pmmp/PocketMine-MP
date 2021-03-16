@@ -31,13 +31,13 @@ use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\UuidInterface;
 use function count;
 
 class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_PLAYER_PACKET;
 
-	/** @var UUID */
+	/** @var UuidInterface */
 	public $uuid;
 	/** @var string */
 	public $username;

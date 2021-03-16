@@ -35,10 +35,9 @@ use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe as ProtocolSha
 use pocketmine\timings\Timings;
 use pocketmine\utils\Binary;
 use pocketmine\utils\SingletonTrait;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\Uuid;
 use function array_map;
 use function spl_object_id;
-use function str_repeat;
 
 final class CraftingDataCache{
 	use SingletonTrait;
@@ -72,7 +71,7 @@ final class CraftingDataCache{
 		$pk->cleanRecipes = true;
 
 		$counter = 0;
-		$nullUUID = UUID::fromData(str_repeat("\x00", 16));
+		$nullUUID = Uuid::fromString(Uuid::NIL);
 		$converter = TypeConverter::getInstance();
 		foreach($manager->getShapelessRecipes() as $list){
 			foreach($list as $recipe){

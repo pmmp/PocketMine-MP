@@ -27,7 +27,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\UuidInterface;
 use function count;
 
 class CraftingEventPacket extends DataPacket implements ServerboundPacket{
@@ -37,7 +37,7 @@ class CraftingEventPacket extends DataPacket implements ServerboundPacket{
 	public $windowId;
 	/** @var int */
 	public $type;
-	/** @var UUID */
+	/** @var UuidInterface */
 	public $id;
 	/** @var ItemStack[] */
 	public $input = [];

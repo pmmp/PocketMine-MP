@@ -92,7 +92,6 @@ use pocketmine\utils\Process;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
-use pocketmine\uuid\UUID;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\Generator;
@@ -100,6 +99,7 @@ use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\normal\Normal;
 use pocketmine\world\World;
 use pocketmine\world\WorldManager;
+use Ramsey\Uuid\UuidInterface;
 use function array_shift;
 use function array_sum;
 use function base64_encode;
@@ -254,7 +254,7 @@ class Server{
 	/** @var bool */
 	private $forceLanguage = false;
 
-	/** @var UUID */
+	/** @var UuidInterface */
 	private $serverID;
 
 	/** @var \DynamicClassLoader */
@@ -361,7 +361,7 @@ class Server{
 	}
 
 	/**
-	 * @return UUID
+	 * @return UuidInterface
 	 */
 	public function getServerUniqueId(){
 		return $this->serverID;
@@ -637,10 +637,10 @@ class Server{
 	}
 
 	/**
-	 * Returns the player online with a UUID equivalent to the specified UUID object, or null if not found
+	 * Returns the player online with a UUID equivalent to the specified UuidInterface object, or null if not found
 	 */
-	public function getPlayerByUUID(UUID $uuid) : ?Player{
-		return $this->getPlayerByRawUUID($uuid->toBinary());
+	public function getPlayerByUUID(UuidInterface $uuid) : ?Player{
+		return $this->getPlayerByRawUUID($uuid->getBytes());
 	}
 
 	public function getConfigGroup() : ServerConfigGroup{
@@ -1540,7 +1540,7 @@ class Server{
 		foreach($this->playerList as $p){
 			$p->getNetworkSession()->onPlayerAdded($player);
 		}
-		$rawUUID = $player->getUniqueId()->toBinary();
+		$rawUUID = $player->getUniqueId()->getBytes();
 		$this->playerList[$rawUUID] = $player;
 
 		if($this->sendUsageTicker > 0){
@@ -1549,7 +1549,7 @@ class Server{
 	}
 
 	public function removeOnlinePlayer(Player $player) : void{
-		if(isset($this->playerList[$rawUUID = $player->getUniqueId()->toBinary()])){
+		if(isset($this->playerList[$rawUUID = $player->getUniqueId()->getBytes()])){
 			unset($this->playerList[$rawUUID]);
 			foreach($this->playerList as $p){
 				$p->getNetworkSession()->onPlayerRemoved($player);

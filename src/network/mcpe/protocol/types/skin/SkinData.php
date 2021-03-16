@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\skin;
 
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\Uuid;
 
 class SkinData{
 
@@ -86,7 +86,7 @@ class SkinData{
 		$this->personaCapeOnClassic = $personaCapeOnClassic;
 		$this->capeId = $capeId;
 		//this has to be unique or the client will do stupid things
-		$this->fullSkinId = $fullSkinId ?? UUID::fromRandom()->toString();
+		$this->fullSkinId = $fullSkinId ?? Uuid::uuid4()->toString();
 		$this->armSize = $armSize;
 		$this->skinColor = $skinColor;
 		$this->personaPieces = $personaPieces;

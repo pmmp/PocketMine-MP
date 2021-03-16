@@ -46,7 +46,7 @@
       "pocketmine/raklib": "dev-master",
       "pocketmine/snooze": "^0.1.0",
       "pocketmine/spl": "dev-master",
-      "pocketmine/uuid": "^0.1.0",
+      "ramsey/uuid": "^4.1",
       "respect/validation": "^2.0"
    },
    "require-dev": {

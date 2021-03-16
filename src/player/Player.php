@@ -101,7 +101,6 @@ use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
-use pocketmine\uuid\UUID;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\format\Chunk;
@@ -110,6 +109,7 @@ use pocketmine\world\sound\EntityAttackNoDamageSound;
 use pocketmine\world\sound\EntityAttackSound;
 use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\World;
+use Ramsey\Uuid\UuidInterface;
 use function abs;
 use function assert;
 use function count;
@@ -397,7 +397,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * as SimpleAuth for authentication. This is NOT SAFE anymore as this UUID is now what was given by the client, NOT
 	 * a server-computed UUID.)
 	 */
-	public function getUniqueId() : UUID{
+	public function getUniqueId() : UuidInterface{
 		return parent::getUniqueId();
 	}
 
@@ -471,14 +471,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function canSee(Player $player) : bool{
-		return !isset($this->hiddenPlayers[$player->getUniqueId()->toBinary()]);
+		return !isset($this->hiddenPlayers[$player->getUniqueId()->getBytes()]);
 	}
 
 	public function hidePlayer(Player $player) : void{
 		if($player === $this){
 			return;
 		}
-		$this->hiddenPlayers[$player->getUniqueId()->toBinary()] = true;
+		$this->hiddenPlayers[$player->getUniqueId()->getBytes()] = true;
 		$player->despawnFrom($this);
 	}
 
@@ -486,7 +486,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($player === $this){
 			return;
 		}
-		unset($this->hiddenPlayers[$player->getUniqueId()->toBinary()]);
+		unset($this->hiddenPlayers[$player->getUniqueId()->getBytes()]);
 		if($player->isOnline()){
 			$player->spawnTo($this);
 		}

@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\command;
 
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\UuidInterface;
 
 class CommandOriginData{
 	public const ORIGIN_PLAYER = 0;
@@ -41,7 +41,7 @@ class CommandOriginData{
 
 	/** @var int */
 	public $type;
-	/** @var UUID */
+	/** @var UuidInterface */
 	public $uuid;
 
 	/** @var string */

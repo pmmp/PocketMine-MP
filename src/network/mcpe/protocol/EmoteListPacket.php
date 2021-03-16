@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\UuidInterface;
 use function count;
 
 class EmoteListPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
@@ -34,11 +34,11 @@ class EmoteListPacket extends DataPacket implements ClientboundPacket, Serverbou
 
 	/** @var int */
 	private $playerEntityRuntimeId;
-	/** @var UUID[] */
+	/** @var UuidInterface[] */
 	private $emoteIds;
 
 	/**
-	 * @param UUID[] $emoteIds
+	 * @param UuidInterface[] $emoteIds
 	 */
 	public static function create(int $playerEntityRuntimeId, array $emoteIds) : self{
 		$result = new self;
@@ -49,7 +49,7 @@ class EmoteListPacket extends DataPacket implements ClientboundPacket, Serverbou
 
 	public function getPlayerEntityRuntimeId() : int{ return $this->playerEntityRuntimeId; }
 
-	/** @return UUID[] */
+	/** @return UuidInterface[] */
 	public function getEmoteIds() : array{ return $this->emoteIds; }
 
 	protected function decodePayload(PacketSerializer $in) : void{

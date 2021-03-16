@@ -24,11 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types;
 
 use pocketmine\network\mcpe\protocol\types\skin\SkinData;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\UuidInterface;
 
 class PlayerListEntry{
 
-	/** @var UUID */
+	/** @var UuidInterface */
 	public $uuid;
 	/** @var int */
 	public $entityUniqueId;
@@ -47,14 +47,14 @@ class PlayerListEntry{
 	/** @var bool */
 	public $isHost = false;
 
-	public static function createRemovalEntry(UUID $uuid) : PlayerListEntry{
+	public static function createRemovalEntry(UuidInterface $uuid) : PlayerListEntry{
 		$entry = new PlayerListEntry();
 		$entry->uuid = $uuid;
 
 		return $entry;
 	}
 
-	public static function createAdditionEntry(UUID $uuid, int $entityUniqueId, string $username, SkinData $skinData, string $xboxUserId = "", string $platformChatId = "", int $buildPlatform = -1, bool $isTeacher = false, bool $isHost = false) : PlayerListEntry{
+	public static function createAdditionEntry(UuidInterface $uuid, int $entityUniqueId, string $username, SkinData $skinData, string $xboxUserId = "", string $platformChatId = "", int $buildPlatform = -1, bool $isTeacher = false, bool $isHost = false) : PlayerListEntry{
 		$entry = new PlayerListEntry();
 		$entry->uuid = $uuid;
 		$entry->entityUniqueId = $entityUniqueId;

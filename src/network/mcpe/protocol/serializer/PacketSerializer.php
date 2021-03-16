@@ -60,9 +60,11 @@ use pocketmine\network\mcpe\protocol\types\StructureEditorData;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\UuidInterface;
 use function count;
 use function strlen;
+use function strrev;
+use function substr;
 
 class PacketSerializer extends BinaryStream{
 
@@ -81,21 +83,17 @@ class PacketSerializer extends BinaryStream{
 	/**
 	 * @throws BinaryDataException
 	 */
-	public function getUUID() : UUID{
-		//This is actually two little-endian longs: UUID Most followed by UUID Least
-		$part1 = $this->getLInt();
-		$part0 = $this->getLInt();
-		$part3 = $this->getLInt();
-		$part2 = $this->getLInt();
-
-		return new UUID($part0, $part1, $part2, $part3);
+	public function getUUID() : UuidInterface{
+		//This is two little-endian longs: bytes 7-0 followed by bytes 15-8
+		$p1 = strrev($this->get(8));
+		$p2 = strrev($this->get(8));
+		return \Ramsey\Uuid\Uuid::fromBytes($p1 . $p2);
 	}
 
-	public function putUUID(UUID $uuid) : void{
-		$this->putLInt($uuid->getPart(1));
-		$this->putLInt($uuid->getPart(0));
-		$this->putLInt($uuid->getPart(3));
-		$this->putLInt($uuid->getPart(2));
+	public function putUUID(UuidInterface $uuid) : void{
+		$bytes = $uuid->getBytes();
+		$this->put(strrev(substr($bytes, 0, 8)));
+		$this->put(strrev(substr($bytes, 8, 8)));
 	}
 
 	public function getSkin() : SkinData{

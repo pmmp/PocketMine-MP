@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\protocol\types\recipe;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\UuidInterface;
 use function count;
 
 final class ShapelessRecipe extends RecipeWithTypeId{
@@ -36,7 +36,7 @@ final class ShapelessRecipe extends RecipeWithTypeId{
 	private $inputs;
 	/** @var ItemStack[] */
 	private $outputs;
-	/** @var UUID */
+	/** @var UuidInterface */
 	private $uuid;
 	/** @var string */
 	private $blockName;
@@ -49,7 +49,7 @@ final class ShapelessRecipe extends RecipeWithTypeId{
 	 * @param RecipeIngredient[] $inputs
 	 * @param ItemStack[]        $outputs
 	 */
-	public function __construct(int $typeId, string $recipeId, array $inputs, array $outputs, UUID $uuid, string $blockName, int $priority, int $recipeNetId){
+	public function __construct(int $typeId, string $recipeId, array $inputs, array $outputs, UuidInterface $uuid, string $blockName, int $priority, int $recipeNetId){
 		parent::__construct($typeId);
 		$this->recipeId = $recipeId;
 		$this->inputs = $inputs;
@@ -78,7 +78,7 @@ final class ShapelessRecipe extends RecipeWithTypeId{
 		return $this->outputs;
 	}
 
-	public function getUuid() : UUID{
+	public function getUuid() : UuidInterface{
 		return $this->uuid;
 	}
 
