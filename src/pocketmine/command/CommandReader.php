@@ -116,36 +116,27 @@ class CommandReader extends Thread{
 	 * @return bool if the main execution should continue reading lines
 	 */
 	private function readLine() : bool{
-		$line = "";
-
 		if(!is_resource(self::$stdin)){
 			$this->initStdin();
 		}
 
-		switch($this->type){
-			/** @noinspection PhpMissingBreakStatementInspection */
-			case self::TYPE_STREAM:
-				//stream_select doesn't work on piped streams for some reason
-				$r = [self::$stdin];
-				$w = $e = null;
-				if(($count = stream_select($r, $w, $e, 0, 200000)) === 0){ //nothing changed in 200000 microseconds
-					return true;
-				}elseif($count === false){ //stream error
-					$this->initStdin();
-				}
-
-			case self::TYPE_PIPED:
-				if(($raw = fgets(self::$stdin)) === false){ //broken pipe or EOF
-					$this->initStdin();
-					$this->synchronized(function() : void{
-						$this->wait(200000);
-					}); //prevent CPU waste if it's end of pipe
-					return true; //loop back round
-				}
-
-				$line = trim($raw);
-				break;
+		$r = [self::$stdin];
+		$w = $e = null;
+		if(($count = stream_select($r, $w, $e, 0, 200000)) === 0){ //nothing changed in 200000 microseconds
+			return true;
+		}elseif($count === false){ //stream error
+			$this->initStdin();
 		}
+
+		if(($raw = fgets(self::$stdin)) === false){ //broken pipe or EOF
+			$this->initStdin();
+			$this->synchronized(function() : void{
+				$this->wait(200000);
+			}); //prevent CPU waste if it's end of pipe
+			return true; //loop back round
+		}
+
+		$line = trim($raw);
 
 		if($line !== ""){
 			$this->buffer[] = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", $line);
