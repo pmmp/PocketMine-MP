@@ -29,7 +29,7 @@ class Snowball extends ProjectileItem{
 	}
 
 	public function getMaxStackSize() : int{
-		return 16;
+		return 64;
 	}
 
 	public function getProjectileEntityType() : string{
