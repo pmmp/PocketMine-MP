@@ -96,12 +96,7 @@ parameters:
 			path: ../../../src/command/CommandReader.php
 
 		-
-			message: "#^Parameter \\#2 \\$host of class class@anonymous/src/command/defaults/TimingsCommand\\.php\\:131 constructor expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/TimingsCommand.php
-
-		-
-			message: "#^Cannot access offset 0 on mixed\\.$#"
+			message: "#^Part \\$host \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/TimingsCommand.php
 

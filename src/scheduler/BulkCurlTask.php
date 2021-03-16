@@ -25,6 +25,7 @@ namespace pocketmine\scheduler;
 
 use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
+use pocketmine\utils\InternetRequestResult;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 
@@ -34,6 +35,8 @@ use function igbinary_unserialize;
  * The result of this AsyncTask is an array of arrays (returned from {@link Internet::simpleCurl}) or InternetException objects.
  */
 class BulkCurlTask extends AsyncTask{
+	private const TLS_KEY_COMPLETION_CALLBACK = "completionCallback";
+
 	/** @var string */
 	private $operations;
 
@@ -44,11 +47,12 @@ class BulkCurlTask extends AsyncTask{
 	 * "timeout", "extraHeaders" and "extraOpts". Documentation of these options are same as those in
 	 * {@link Internet::simpleCurl}.
 	 *
-	 * @param BulkCurlTaskOperation[]  $operations
-	 * @phpstan-param list<BulkCurlTaskOperation> $operations
+	 * @param BulkCurlTaskOperation[] $operations
+	 * @phpstan-param \Closure(list<InternetRequestResult|InternetException> $results) : void $onCompletion
 	 */
-	public function __construct(array $operations){
+	public function __construct(array $operations, \Closure $onCompletion){
 		$this->operations = igbinary_serialize($operations);
+		$this->storeLocal(self::TLS_KEY_COMPLETION_CALLBACK, $onCompletion);
 	}
 
 	public function onRun() : void{
@@ -66,5 +70,16 @@ class BulkCurlTask extends AsyncTask{
 			}
 		}
 		$this->setResult($results);
+	}
+
+	public function onCompletion() : void{
+		/**
+		 * @var \Closure
+		 * @phpstan-var \Closure(list<InternetRequestResult|InternetException>) : void
+		 */
+		$callback = $this->fetchLocal(self::TLS_KEY_COMPLETION_CALLBACK);
+		/** @var InternetRequestResult[]|InternetException[] $results */
+		$results = $this->getResult();
+		$callback($results);
 	}
 }
