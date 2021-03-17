@@ -2944,9 +2944,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				}
 				if($target instanceof ItemFrameBlock){
 					$pk = new ItemFrameDropItemPacket();
-					$pk->x = $target->x;
-					$pk->y = $target->y;
-					$pk->z = $target->z;
+					$pk->x = (int) $target->x;
+					$pk->y = (int) $target->y;
+					$pk->z = (int) $target->z;
 					$this->handleItemFrameDropItem($pk);
 				}
 
