@@ -176,6 +176,7 @@ use pocketmine\permission\PermissionManager;
 use pocketmine\plugin\Plugin;
 use pocketmine\resourcepacks\ResourcePack;
 use pocketmine\tile\ItemFrame;
+use pocketmine\block\ItemFrame as ItemFrameBlock;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
@@ -2940,6 +2941,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					if($breakTime > 0){
 						$this->level->broadcastLevelEvent($pos, LevelEventPacket::EVENT_BLOCK_START_BREAK, (int) (65535 / $breakTime));
 					}
+				}
+				if($target instanceof ItemFrameBlock){
+					$pk = new ItemFrameDropItemPacket();
+					$pk->x = $target->x;
+					$pk->y = $target->y;
+					$pk->z = $target->z;
+					$this->handleItemFrameDropItem($pk);
 				}
 
 				break;
