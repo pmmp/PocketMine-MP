@@ -209,6 +209,7 @@ class UPnP implements NetworkInterface{
 	}
 
 	public function start() : void{
+		$this->logger->info("Attempting to portforward...");
 		$this->serviceURL = self::getServiceUrl();
 
 		$body =
