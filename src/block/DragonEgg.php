@@ -65,7 +65,7 @@ class DragonEgg extends Transparent implements Fallable{
 		for($tries = 0; $tries < 16; ++$tries){
 			$block = $this->pos->getWorld()->getBlockAt(
 				$this->pos->x + mt_rand(-16, 16),
-				max(0, min(World::Y_MAX - 1, $this->pos->y + mt_rand(-8, 8))),
+				max(World::Y_MIN, min(World::Y_MAX - 1, $this->pos->y + mt_rand(-8, 8))),
 				$this->pos->z + mt_rand(-16, 16)
 			);
 			if($block instanceof Air){

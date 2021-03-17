@@ -124,9 +124,8 @@ class World implements ChunkManager{
 	private static $worldIdCounter = 1;
 
 	public const Y_MASK = 0xFF;
-	public const Y_MAX = 0x100; //256
-
-	public const HALF_Y_MAX = self::Y_MAX / 2;
+	public const Y_MAX = 320;
+	public const Y_MIN = -64;
 
 	public const TIME_DAY = 1000;
 	public const TIME_NOON = 6000;
@@ -296,6 +295,8 @@ class World implements ChunkManager{
 
 	private const MORTON3D_BIT_SIZE = 21;
 	private const BLOCKHASH_Y_BITS = 9;
+	private const BLOCKHASH_Y_PADDING = 128; //size (in blocks) of padding after both boundaries of the Y axis
+	private const BLOCKHASH_Y_OFFSET = self::BLOCKHASH_Y_PADDING - self::Y_MIN;
 	private const BLOCKHASH_Y_MASK = (1 << self::BLOCKHASH_Y_BITS) - 1;
 	private const BLOCKHASH_XZ_MASK = (1 << self::MORTON3D_BIT_SIZE) - 1;
 	private const BLOCKHASH_XZ_EXTRA_BITS = 6;
@@ -305,7 +306,7 @@ class World implements ChunkManager{
 	private const BLOCKHASH_Z_SHIFT = self::BLOCKHASH_X_SHIFT + self::BLOCKHASH_XZ_EXTRA_BITS;
 
 	public static function blockHash(int $x, int $y, int $z) : int{
-		$shiftedY = $y + self::HALF_Y_MAX;
+		$shiftedY = $y + self::BLOCKHASH_Y_OFFSET;
 		if(($shiftedY & (~0 << self::BLOCKHASH_Y_BITS)) !== 0){
 			throw new \InvalidArgumentException("Y coordinate $y is out of range!");
 		}
@@ -335,7 +336,7 @@ class World implements ChunkManager{
 		$extraZ = ((($baseY >> self::BLOCKHASH_Z_SHIFT) & self::BLOCKHASH_XZ_EXTRA_MASK) << self::MORTON3D_BIT_SIZE);
 
 		$x = (($baseX & self::BLOCKHASH_XZ_MASK) | $extraX) << self::BLOCKHASH_XZ_SIGN_SHIFT >> self::BLOCKHASH_XZ_SIGN_SHIFT;
-		$y = ($baseY & self::BLOCKHASH_Y_MASK) - self::HALF_Y_MAX;
+		$y = ($baseY & self::BLOCKHASH_Y_MASK) - self::BLOCKHASH_Y_OFFSET;
 		$z = (($baseZ & self::BLOCKHASH_XZ_MASK) | $extraZ) << self::BLOCKHASH_XZ_SIGN_SHIFT >> self::BLOCKHASH_XZ_SIGN_SHIFT;
 	}
 
