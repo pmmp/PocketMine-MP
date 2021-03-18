@@ -131,17 +131,17 @@ class Chunk{
 	 * @param int $x 0-15
 	 * @param int $z 0-15
 	 *
-	 * @return int 0-255, or -1 if there are no blocks in the column
+	 * @return int|null 0-255, or null if there are no blocks in the column
 	 */
-	public function getHighestBlockAt(int $x, int $z) : int{
+	public function getHighestBlockAt(int $x, int $z) : ?int{
 		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
-			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z) | ($y << 4);
-			if($height !== -1){
-				return $height;
+			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z);
+			if($height !== null){
+				return $height | ($y << 4);
 			}
 		}
 
-		return -1;
+		return null;
 	}
 
 	/**

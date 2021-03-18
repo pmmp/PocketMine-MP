@@ -174,7 +174,9 @@ class World implements ChunkManager{
 	private $providerGarbageCollectionTicker = 0;
 
 	/** @var int */
-	private $worldHeight;
+	private $minY;
+	/** @var int */
+	private $maxY;
 
 	/** @var ChunkLoader[] */
 	private $loaders = [];
@@ -383,7 +385,8 @@ class World implements ChunkManager{
 		$this->displayName = $this->provider->getWorldData()->getName();
 		$this->logger = new \PrefixedLogger($server->getLogger(), "World: $this->displayName");
 
-		$this->worldHeight = $this->provider->getWorldHeight();
+		$this->minY = $this->provider->getWorldMinY();
+		$this->maxY = $this->provider->getWorldMaxY();
 
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.preparing", [$this->displayName]));
 		$this->generator = GeneratorManager::getInstance()->getGenerator($this->provider->getWorldData()->getGenerator(), true);
@@ -1335,7 +1338,7 @@ class World implements ChunkManager{
 	public function isInWorld(int $x, int $y, int $z) : bool{
 		return (
 			$x <= Limits::INT32_MAX and $x >= Limits::INT32_MIN and
-			$y < $this->worldHeight and $y >= 0 and
+			$y < $this->maxY and $y >= $this->minY and
 			$z <= Limits::INT32_MAX and $z >= Limits::INT32_MIN
 		);
 	}
@@ -2089,10 +2092,10 @@ class World implements ChunkManager{
 	/**
 	 * Gets the highest block Y value at a specific $x and $z
 	 *
-	 * @return int 0-255, or -1 if the column is empty
+	 * @return int|null 0-255, or null if the column is empty
 	 * @throws WorldException if the terrain is not generated
 	 */
-	public function getHighestBlockAt(int $x, int $z) : int{
+	public function getHighestBlockAt(int $x, int $z) : ?int{
 		if(($chunk = $this->loadChunk($x >> 4, $z >> 4)) !== null){
 			return $chunk->getHighestBlockAt($x & 0x0f, $z & 0x0f);
 		}
@@ -2481,7 +2484,7 @@ class World implements ChunkManager{
 			$spawn = $this->getSpawnLocation();
 		}
 
-		$max = $this->worldHeight;
+		$max = $this->maxY;
 		$v = $spawn->floor();
 		$chunk = $this->getOrLoadChunkAtPosition($v);
 		if($chunk === null){
@@ -2491,7 +2494,7 @@ class World implements ChunkManager{
 		$z = (int) $v->z;
 		$y = (int) min($max - 2, $v->y);
 		$wasAir = $this->getBlockAt($x, $y - 1, $z)->getId() === BlockLegacyIds::AIR; //TODO: bad hack, clean up
-		for(; $y > 0; --$y){
+		for(; $y > $this->minY; --$y){
 			if($this->getBlockAt($x, $y, $z)->isFullCube()){
 				if($wasAir){
 					$y++;
@@ -2502,7 +2505,7 @@ class World implements ChunkManager{
 			}
 		}
 
-		for(; $y >= 0 and $y < $max; ++$y){
+		for(; $y >= $this->minY and $y < $max; ++$y){
 			if(!$this->getBlockAt($x, $y + 1, $z)->isFullCube()){
 				if(!$this->getBlockAt($x, $y, $z)->isFullCube()){
 					return new Position($spawn->x, $y === (int) $spawn->y ? $spawn->y : $y, $spawn->z, $this);
@@ -2575,8 +2578,12 @@ class World implements ChunkManager{
 		return $this->provider->getWorldData()->getSeed();
 	}
 
-	public function getWorldHeight() : int{
-		return $this->worldHeight;
+	public function getMinY() : int{
+		return $this->minY;
+	}
+
+	public function getMaxY() : int{
+		return $this->maxY;
 	}
 
 	public function getDifficulty() : int{

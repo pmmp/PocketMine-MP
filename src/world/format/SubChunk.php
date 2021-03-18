@@ -96,9 +96,9 @@ class SubChunk{
 		return $this->blockLayers;
 	}
 
-	public function getHighestBlockAt(int $x, int $z) : int{
+	public function getHighestBlockAt(int $x, int $z) : ?int{
 		if(count($this->blockLayers) === 0){
-			return -1;
+			return null;
 		}
 		for($y = 15; $y >= 0; --$y){
 			if($this->blockLayers[0]->get($x, $y, $z) !== $this->emptyBlockId){
@@ -106,7 +106,7 @@ class SubChunk{
 			}
 		}
 
-		return -1; //highest block not in this subchunk
+		return null; //highest block not in this subchunk
 	}
 
 	public function getBlockSkyLightArray() : LightArray{

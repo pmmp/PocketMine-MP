@@ -42,7 +42,9 @@ class GeneratorRegisterTask extends AsyncTask{
 	/** @var int */
 	public $worldId;
 	/** @var int */
-	public $worldHeight = World::Y_MAX;
+	public $worldMinY;
+	/** @var int */
+	public $worldMaxY;
 
 	/**
 	 * @param mixed[] $generatorSettings
@@ -54,7 +56,8 @@ class GeneratorRegisterTask extends AsyncTask{
 		$this->settings = igbinary_serialize($generatorSettings);
 		$this->seed = $world->getSeed();
 		$this->worldId = $world->getId();
-		$this->worldHeight = $world->getWorldHeight();
+		$this->worldMinY = $world->getMinY();
+		$this->worldMaxY = $world->getMaxY();
 	}
 
 	public function onRun() : void{
@@ -63,6 +66,6 @@ class GeneratorRegisterTask extends AsyncTask{
 		 * @see Generator::__construct()
 		 */
 		$generator = new $this->generatorClass($this->seed, igbinary_unserialize($this->settings));
-		ThreadLocalGeneratorContext::register(new ThreadLocalGeneratorContext($generator, $this->worldHeight), $this->worldId);
+		ThreadLocalGeneratorContext::register(new ThreadLocalGeneratorContext($generator, $this->worldMinY, $this->worldMaxY), $this->worldId);
 	}
 }

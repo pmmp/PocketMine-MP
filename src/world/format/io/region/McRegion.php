@@ -106,7 +106,11 @@ class McRegion extends RegionWorldProvider{
 		return 19132;
 	}
 
-	public function getWorldHeight() : int{
+	public function getWorldMinY() : int{
+		return 0;
+	}
+
+	public function getWorldMaxY() : int{
 		//TODO: add world height options
 		return 128;
 	}
