@@ -951,6 +951,10 @@ class World implements ChunkManager{
 		$randRange = (int) ($randRange > $this->chunkTickRadius ? $this->chunkTickRadius : $randRange);
 
 		foreach($this->loaders as $loader){
+			if(!($loader instanceof TickingChunkLoader)){
+				//TODO: maybe we should just not track non-ticking chunk loaders here?
+				continue;
+			}
 			$chunkX = (int) floor($loader->getX()) >> 4;
 			$chunkZ = (int) floor($loader->getZ()) >> 4;
 

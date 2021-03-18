@@ -211,7 +211,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected $chunksPerTick;
 	/** @var ChunkSelector */
 	protected $chunkSelector;
-	/** @var TickingChunkLoader */
+	/** @var PlayerChunkLoader */
 	protected $chunkLoader;
 
 	/** @var bool[] map: raw UUID (string) => bool */
@@ -295,7 +295,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$onGround = true;
 		}
 
-		$this->chunkLoader = new TickingChunkLoader($spawn);
+		$this->chunkLoader = new PlayerChunkLoader($spawn);
 
 		//load the spawn chunk so we can see the terrain
 		$world->registerChunkLoader($this->chunkLoader, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, true);

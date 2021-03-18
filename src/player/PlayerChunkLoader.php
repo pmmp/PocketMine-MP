@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\player;
 
 use pocketmine\math\Vector3;
-use pocketmine\world\ChunkLoader;
+use pocketmine\world\TickingChunkLoader;
 
-final class TickingChunkLoader implements ChunkLoader{
+final class PlayerChunkLoader implements TickingChunkLoader{
 
 	/** @var Vector3 */
 	private $currentLocation;
