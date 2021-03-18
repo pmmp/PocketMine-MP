@@ -2005,6 +2005,9 @@ class World implements ChunkManager{
 	public function generateChunkCallback(int $x, int $z, ?Chunk $chunk) : void{
 		Timings::$generationCallback->startTiming();
 		if(isset($this->activeChunkPopulationTasks[$index = World::chunkHash($x, $z)])){
+			if($chunk === null){
+				throw new AssumptionFailedError("Primary chunk should never be NULL");
+			}
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
 					$this->unlockChunk($x + $xx, $z + $zz);
@@ -2012,15 +2015,13 @@ class World implements ChunkManager{
 			}
 			unset($this->activeChunkPopulationTasks[$index]);
 
-			if($chunk !== null){
-				$oldChunk = $this->loadChunk($x, $z);
-				$this->setChunk($x, $z, $chunk, false);
-				if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
-					(new ChunkPopulateEvent($this, $x, $z, $chunk))->call();
+			$oldChunk = $this->loadChunk($x, $z);
+			$this->setChunk($x, $z, $chunk, false);
+			if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
+				(new ChunkPopulateEvent($this, $x, $z, $chunk))->call();
 
-					foreach($this->getChunkListeners($x, $z) as $listener){
-						$listener->onChunkPopulated($x, $z, $chunk);
-					}
+				foreach($this->getChunkListeners($x, $z) as $listener){
+					$listener->onChunkPopulated($x, $z, $chunk);
 				}
 			}
 		}elseif($this->isChunkLocked($x, $z)){
