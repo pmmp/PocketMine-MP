@@ -234,11 +234,11 @@ class World implements ChunkManager{
 	private $neighbourBlockUpdateQueueIndex = [];
 
 	/** @var bool[] */
-	private $chunkPopulationQueue = [];
+	private $activeChunkPopulationTasks = [];
 	/** @var bool[] */
 	private $chunkLock = [];
 	/** @var int */
-	private $chunkPopulationQueueSize = 2;
+	private $maxConcurrentChunkPopulationTasks = 2;
 	/** @var bool[] */
 	private $generatorRegisteredWorkers = [];
 
@@ -405,7 +405,7 @@ class World implements ChunkManager{
 		$this->chunkTickRadius = min($this->server->getViewDistance(), max(1, (int) $cfg->getProperty("chunk-ticking.tick-radius", 4)));
 		$this->chunksPerTick = (int) $cfg->getProperty("chunk-ticking.per-tick", 40);
 		$this->tickedBlocksPerSubchunkPerTick = (int) $cfg->getProperty("chunk-ticking.blocks-per-subchunk-per-tick", self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK);
-		$this->chunkPopulationQueueSize = (int) $cfg->getProperty("chunk-generation.population-queue-size", 2);
+		$this->maxConcurrentChunkPopulationTasks = (int) $cfg->getProperty("chunk-generation.population-queue-size", 2);
 
 		$dontTickBlocks = array_fill_keys($cfg->getProperty("chunk-ticking.disable-block-ticking", []), true);
 
@@ -2004,13 +2004,13 @@ class World implements ChunkManager{
 
 	public function generateChunkCallback(int $x, int $z, ?Chunk $chunk) : void{
 		Timings::$generationCallback->startTiming();
-		if(isset($this->chunkPopulationQueue[$index = World::chunkHash($x, $z)])){
+		if(isset($this->activeChunkPopulationTasks[$index = World::chunkHash($x, $z)])){
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
 					$this->unlockChunk($x + $xx, $z + $zz);
 				}
 			}
-			unset($this->chunkPopulationQueue[$index]);
+			unset($this->activeChunkPopulationTasks[$index]);
 
 			if($chunk !== null){
 				$oldChunk = $this->loadChunk($x, $z);
@@ -2614,7 +2614,7 @@ class World implements ChunkManager{
 	 * TODO: the return values don't make a lot of sense, but currently stuff depends on them :<
 	 */
 	public function requestChunkPopulation(int $chunkX, int $chunkZ) : bool{
-		if(count($this->chunkPopulationQueue) >= $this->chunkPopulationQueueSize){
+		if(count($this->activeChunkPopulationTasks) >= $this->maxConcurrentChunkPopulationTasks){
 			return false;
 		}
 		return $this->orderChunkPopulation($chunkX, $chunkZ);
@@ -2631,7 +2631,7 @@ class World implements ChunkManager{
 	 * TODO: the return values don't make sense, but currently stuff depends on them :<
 	 */
 	public function orderChunkPopulation(int $x, int $z) : bool{
-		if(isset($this->chunkPopulationQueue[$index = World::chunkHash($x, $z)])){
+		if(isset($this->activeChunkPopulationTasks[$index = World::chunkHash($x, $z)])){
 			return false;
 		}
 		for($xx = -1; $xx <= 1; ++$xx){
@@ -2646,7 +2646,7 @@ class World implements ChunkManager{
 		if($chunk === null || !$chunk->isPopulated()){
 			Timings::$population->startTiming();
 
-			$this->chunkPopulationQueue[$index] = true;
+			$this->activeChunkPopulationTasks[$index] = true;
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
 					$this->lockChunk($x + $xx, $z + $zz);
