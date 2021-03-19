@@ -36,6 +36,9 @@ class SetTitlePacket extends DataPacket{
 	public const TYPE_SET_SUBTITLE = 3;
 	public const TYPE_SET_ACTIONBAR_MESSAGE = 4;
 	public const TYPE_SET_ANIMATION_TIMES = 5;
+	public const TYPE_SET_TITLE_JSON = 6;
+	public const TYPE_SET_SUBTITLE_JSON = 7;
+	public const TYPE_SET_ACTIONBAR_MESSAGE_JSON = 8;
 
 	/** @var int */
 	public $type;
