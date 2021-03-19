@@ -25,7 +25,7 @@ namespace pocketmine\player;
 
 use pocketmine\entity\Skin;
 use pocketmine\utils\TextFormat;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * Encapsulates data needed to create a player.
@@ -34,7 +34,7 @@ class PlayerInfo{
 
 	/** @var string */
 	private $username;
-	/** @var UUID */
+	/** @var UuidInterface */
 	private $uuid;
 	/** @var Skin */
 	private $skin;
@@ -50,7 +50,7 @@ class PlayerInfo{
 	 * @param mixed[] $extraData
 	 * @phpstan-param array<string, mixed> $extraData
 	 */
-	public function __construct(string $username, UUID $uuid, Skin $skin, string $locale, array $extraData = []){
+	public function __construct(string $username, UuidInterface $uuid, Skin $skin, string $locale, array $extraData = []){
 		$this->username = TextFormat::clean($username);
 		$this->uuid = $uuid;
 		$this->skin = $skin;
@@ -62,7 +62,7 @@ class PlayerInfo{
 		return $this->username;
 	}
 
-	public function getUuid() : UUID{
+	public function getUuid() : UuidInterface{
 		return $this->uuid;
 	}
 

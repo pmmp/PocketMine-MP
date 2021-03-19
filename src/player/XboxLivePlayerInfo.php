@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\player;
 
 use pocketmine\entity\Skin;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * Encapsulates player info specific to players who are authenticated with XBOX Live.
@@ -34,7 +34,7 @@ final class XboxLivePlayerInfo extends PlayerInfo{
 	/** @var string */
 	private $xuid;
 
-	public function __construct(string $xuid, string $username, UUID $uuid, Skin $skin, string $locale, array $extraData = []){
+	public function __construct(string $xuid, string $username, UuidInterface $uuid, Skin $skin, string $locale, array $extraData = []){
 		parent::__construct($username, $uuid, $skin, $locale, $extraData);
 		$this->xuid = $xuid;
 	}

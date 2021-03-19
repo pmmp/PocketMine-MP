@@ -32,6 +32,7 @@ use pocketmine\scheduler\BulkCurlTask;
 use pocketmine\scheduler\BulkCurlTaskOperation;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\InternetException;
+use pocketmine\utils\InternetRequestResult;
 use function count;
 use function fclose;
 use function file_exists;
@@ -128,45 +129,28 @@ class TimingsCommand extends VanillaCommand{
 
 				$host = $sender->getServer()->getConfigGroup()->getProperty("timings.host", "timings.pmmp.io");
 
-				$sender->getServer()->getAsyncPool()->submitTask(new class($sender, $host, $agent, $data) extends BulkCurlTask{
-					private const TLS_KEY_SENDER = "sender";
-
-					/** @var string */
-					private $host;
-
-					/**
-					 * @param string[] $data
-					 * @phpstan-param array<string, string> $data
-					 */
-					public function __construct(CommandSender $sender, string $host, string $agent, array $data){
-						parent::__construct([
-							new BulkCurlTaskOperation(
-								"https://$host?upload=true",
-								10,
-								[],
-								[
-									CURLOPT_HTTPHEADER => [
-										"User-Agent: $agent",
-										"Content-Type: application/x-www-form-urlencoded"
-									],
-									CURLOPT_POST => true,
-									CURLOPT_POSTFIELDS => http_build_query($data),
-									CURLOPT_AUTOREFERER => false,
-									CURLOPT_FOLLOWLOCATION => false
-								]
-							)
-						]);
-						$this->host = $host;
-						$this->storeLocal(self::TLS_KEY_SENDER, $sender);
-					}
-
-					public function onCompletion() : void{
-						/** @var CommandSender $sender */
-						$sender = $this->fetchLocal(self::TLS_KEY_SENDER);
+				$sender->getServer()->getAsyncPool()->submitTask(new BulkCurlTask(
+					[new BulkCurlTaskOperation(
+						"https://$host?upload=true",
+						10,
+						[],
+						[
+							CURLOPT_HTTPHEADER => [
+								"User-Agent: $agent",
+								"Content-Type: application/x-www-form-urlencoded"
+							],
+							CURLOPT_POST => true,
+							CURLOPT_POSTFIELDS => http_build_query($data),
+							CURLOPT_AUTOREFERER => false,
+							CURLOPT_FOLLOWLOCATION => false
+						]
+					)],
+					function(array $results) use ($sender, $host) : void{
+						/** @phpstan-var array<InternetRequestResult|InternetException> $results */
 						if($sender instanceof Player and !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
 							return;
 						}
-						$result = $this->getResult()[0];
+						$result = $results[0];
 						if($result instanceof InternetException){
 							$sender->getServer()->getLogger()->logException($result);
 							return;
@@ -174,12 +158,12 @@ class TimingsCommand extends VanillaCommand{
 						$response = json_decode($result->getBody(), true);
 						if(is_array($response) && isset($response["id"])){
 							Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.timingsRead",
-								["https://" . $this->host . "/?id=" . $response["id"]]));
+								["https://" . $host . "/?id=" . $response["id"]]));
 						}else{
 							Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.pasteError"));
 						}
 					}
-				});
+				));
 			}else{
 				fclose($fileTimings);
 				Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.timingsWrite", [$timings]));

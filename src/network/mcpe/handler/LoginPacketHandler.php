@@ -43,8 +43,7 @@ use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
-use pocketmine\uuid\UUID;
-use function in_array;
+use Ramsey\Uuid\Uuid;
 use function is_array;
 
 /**
@@ -115,11 +114,10 @@ class LoginPacketHandler extends PacketHandler{
 			return true;
 		}
 
-		try{
-			$uuid = UUID::fromString($extraData->identity);
-		}catch(\InvalidArgumentException $e){
-			throw BadPacketException::wrap($e, "Failed to parse login UUID");
+		if(!Uuid::isValid($extraData->identity)){
+			throw new BadPacketException("Invalid login UUID");
 		}
+		$uuid = Uuid::fromString($extraData->identity);
 		if($extraData->XUID !== ""){
 			$playerInfo = new XboxLivePlayerInfo(
 				$extraData->XUID,

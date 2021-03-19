@@ -201,6 +201,7 @@ class PacketPool{
 		$this->registerPacket(new CorrectPlayerMovePredictionPacket());
 		$this->registerPacket(new ItemComponentPacket());
 		$this->registerPacket(new FilterTextPacket());
+		$this->registerPacket(new ClientboundDebugRendererPacket());
 	}
 
 	public function registerPacket(Packet $packet) : void{

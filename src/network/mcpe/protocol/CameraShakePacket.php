@@ -33,18 +33,24 @@ class CameraShakePacket extends DataPacket implements ClientboundPacket{
 	public const TYPE_POSITIONAL = 0;
 	public const TYPE_ROTATIONAL = 1;
 
+	public const ACTION_ADD = 0;
+	public const ACTION_STOP = 1;
+
 	/** @var float */
 	private $intensity;
 	/** @var float */
 	private $duration;
 	/** @var int */
 	private $shakeType;
+	/** @var int */
+	private $shakeAction;
 
-	public static function create(float $intensity, float $duration, int $shakeType) : self{
+	public static function create(float $intensity, float $duration, int $shakeType, int $shakeAction) : self{
 		$result = new self;
 		$result->intensity = $intensity;
 		$result->duration = $duration;
 		$result->shakeType = $shakeType;
+		$result->shakeAction = $shakeAction;
 		return $result;
 	}
 
@@ -54,16 +60,20 @@ class CameraShakePacket extends DataPacket implements ClientboundPacket{
 
 	public function getShakeType() : int{ return $this->shakeType; }
 
+	public function getShakeAction() : int{ return $this->shakeAction; }
+
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->intensity = $in->getLFloat();
 		$this->duration = $in->getLFloat();
 		$this->shakeType = $in->getByte();
+		$this->shakeAction = $in->getByte();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putLFloat($this->intensity);
 		$out->putLFloat($this->duration);
 		$out->putByte($this->shakeType);
+		$out->putByte($this->shakeAction);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

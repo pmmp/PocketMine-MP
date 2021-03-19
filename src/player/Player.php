@@ -101,7 +101,6 @@ use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\TextFormat;
-use pocketmine\uuid\UUID;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\format\Chunk;
@@ -110,6 +109,7 @@ use pocketmine\world\sound\EntityAttackNoDamageSound;
 use pocketmine\world\sound\EntityAttackSound;
 use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\World;
+use Ramsey\Uuid\UuidInterface;
 use function abs;
 use function assert;
 use function count;
@@ -211,7 +211,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected $chunksPerTick;
 	/** @var ChunkSelector */
 	protected $chunkSelector;
-	/** @var TickingChunkLoader */
+	/** @var PlayerChunkLoader */
 	protected $chunkLoader;
 
 	/** @var bool[] map: raw UUID (string) => bool */
@@ -295,7 +295,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$onGround = true;
 		}
 
-		$this->chunkLoader = new TickingChunkLoader($spawn);
+		$this->chunkLoader = new PlayerChunkLoader($spawn);
 
 		//load the spawn chunk so we can see the terrain
 		$world->registerChunkLoader($this->chunkLoader, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, true);
@@ -397,7 +397,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * as SimpleAuth for authentication. This is NOT SAFE anymore as this UUID is now what was given by the client, NOT
 	 * a server-computed UUID.)
 	 */
-	public function getUniqueId() : UUID{
+	public function getUniqueId() : UuidInterface{
 		return parent::getUniqueId();
 	}
 
@@ -471,14 +471,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function canSee(Player $player) : bool{
-		return !isset($this->hiddenPlayers[$player->getUniqueId()->toBinary()]);
+		return !isset($this->hiddenPlayers[$player->getUniqueId()->getBytes()]);
 	}
 
 	public function hidePlayer(Player $player) : void{
 		if($player === $this){
 			return;
 		}
-		$this->hiddenPlayers[$player->getUniqueId()->toBinary()] = true;
+		$this->hiddenPlayers[$player->getUniqueId()->getBytes()] = true;
 		$player->despawnFrom($this);
 	}
 
@@ -486,7 +486,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($player === $this){
 			return;
 		}
-		unset($this->hiddenPlayers[$player->getUniqueId()->toBinary()]);
+		unset($this->hiddenPlayers[$player->getUniqueId()->getBytes()]);
 		if($player->isOnline()){
 			$player->spawnTo($this);
 		}
@@ -1180,8 +1180,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$deltaAngle = abs($this->lastLocation->yaw - $to->yaw) + abs($this->lastLocation->pitch - $to->pitch);
 
 		if($delta > 0.0001 or $deltaAngle > 1.0){
-			$this->lastLocation = clone $to; //avoid PlayerMoveEvent modifying this
-
 			$ev = new PlayerMoveEvent($this, $from, $to);
 
 			$ev->call();
@@ -1196,6 +1194,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				return;
 			}
 
+			$this->lastLocation = $to;
 			$this->broadcastMovement();
 
 			$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
@@ -1218,8 +1217,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	protected function revertMovement(Location $from) : void{
-		$this->lastLocation = $from;
-
 		$this->setPosition($from);
 		$this->sendPosition($from, $from->yaw, $from->pitch, MovePlayerPacket::MODE_RESET);
 	}

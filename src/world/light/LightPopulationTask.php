@@ -62,7 +62,7 @@ class LightPopulationTask extends AsyncTask{
 	public function onRun() : void{
 		$chunk = FastChunkSerializer::deserialize($this->chunk);
 
-		$manager = new SimpleChunkManager();
+		$manager = new SimpleChunkManager(World::Y_MIN, World::Y_MAX);
 		$manager->setChunk($this->chunkX, $this->chunkZ, $chunk);
 
 		$blockFactory = BlockFactory::getInstance();

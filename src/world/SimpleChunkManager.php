@@ -35,13 +35,13 @@ class SimpleChunkManager implements ChunkManager{
 	protected $chunks = [];
 
 	/** @var int */
-	protected $worldHeight;
+	private $minY;
+	/** @var int */
+	private $maxY;
 
-	/**
-	 * SimpleChunkManager constructor.
-	 */
-	public function __construct(int $worldHeight = World::Y_MAX){
-		$this->worldHeight = $worldHeight;
+	public function __construct(int $minY, int $maxY){
+		$this->minY = $minY;
+		$this->maxY = $maxY;
 	}
 
 	public function getBlockAt(int $x, int $y, int $z) : Block{
@@ -71,14 +71,18 @@ class SimpleChunkManager implements ChunkManager{
 		$this->chunks = [];
 	}
 
-	public function getWorldHeight() : int{
-		return $this->worldHeight;
+	public function getMinY() : int{
+		return $this->minY;
+	}
+
+	public function getMaxY() : int{
+		return $this->maxY;
 	}
 
 	public function isInWorld(int $x, int $y, int $z) : bool{
 		return (
 			$x <= Limits::INT32_MAX and $x >= Limits::INT32_MIN and
-			$y < $this->worldHeight and $y >= 0 and
+			$y < $this->maxY and $y >= $this->minY and
 			$z <= Limits::INT32_MAX and $z >= Limits::INT32_MIN
 		);
 	}

@@ -73,7 +73,7 @@ class SpawnpointCommand extends VanillaCommand{
 			$world = $target->getWorld();
 			$pos = $sender instanceof Player ? $sender->getPosition() : $world->getSpawnLocation();
 			$x = $this->getRelativeDouble($pos->x, $sender, $args[1]);
-			$y = $this->getRelativeDouble($pos->y, $sender, $args[2], 0, World::Y_MAX);
+			$y = $this->getRelativeDouble($pos->y, $sender, $args[2], World::Y_MIN, World::Y_MAX);
 			$z = $this->getRelativeDouble($pos->z, $sender, $args[3]);
 			$target->setSpawn(new Position($x, $y, $z, $world));
 

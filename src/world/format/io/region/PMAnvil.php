@@ -50,7 +50,11 @@ class PMAnvil extends RegionWorldProvider{
 		return -1; //Not a PC format, only PocketMine-MP
 	}
 
-	public function getWorldHeight() : int{
+	public function getWorldMinY() : int{
+		return 0;
+	}
+
+	public function getWorldMaxY() : int{
 		return 256;
 	}
 }

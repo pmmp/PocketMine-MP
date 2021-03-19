@@ -55,8 +55,9 @@ use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\player\Player;
 use pocketmine\utils\Limits;
-use pocketmine\uuid\UUID;
 use pocketmine\world\sound\TotemUseSound;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use function array_filter;
 use function array_key_exists;
 use function array_merge;
@@ -74,7 +75,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	/** @var EnderChestInventory */
 	protected $enderChestInventory;
 
-	/** @var UUID */
+	/** @var UuidInterface */
 	protected $uuid;
 
 	/** @var Skin */
@@ -113,7 +114,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		);
 	}
 
-	public function getUniqueId() : UUID{
+	public function getUniqueId() : UuidInterface{
 		return $this->uuid;
 	}
 
@@ -203,7 +204,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$this->setNameTag($nameTagTag->getValue());
 		}
 
-		$this->uuid = UUID::fromData((string) $this->getId(), $this->skin->getSkinData(), $this->getNameTag());
+		//TODO: use of NIL UUID for namespace is a hack; we should provide a proper UUID for the namespace
+		$this->uuid = Uuid::uuid3(Uuid::NIL, ((string) $this->getId()) . $this->skin->getSkinData() . $this->getNameTag());
 	}
 
 	protected function initEntity(CompoundTag $nbt) : void{

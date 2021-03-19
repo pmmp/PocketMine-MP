@@ -132,7 +132,11 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		return new BedrockWorldData($this->getPath() . DIRECTORY_SEPARATOR . "level.dat");
 	}
 
-	public function getWorldHeight() : int{
+	public function getWorldMinY() : int{
+		return 0;
+	}
+
+	public function getWorldMaxY() : int{
 		return 256;
 	}
 

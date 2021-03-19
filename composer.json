@@ -24,6 +24,7 @@
       "ext-phar": "*",
       "ext-pthreads": "~3.2.0",
       "ext-reflection": "*",
+      "ext-simplexml": "*",
       "ext-sockets": "*",
       "ext-spl": "*",
       "ext-yaml": ">=2.0.0",
@@ -45,11 +46,11 @@
       "pocketmine/raklib": "dev-master",
       "pocketmine/snooze": "^0.1.0",
       "pocketmine/spl": "dev-master",
-      "pocketmine/uuid": "^0.1.0",
+      "ramsey/uuid": "^4.1",
       "respect/validation": "^2.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "0.12.76",
+      "phpstan/phpstan": "0.12.81",
       "phpstan/phpstan-phpunit": "^0.12.6",
       "phpstan/phpstan-strict-rules": "^0.12.2",
       "phpunit/phpunit": "^9.2"

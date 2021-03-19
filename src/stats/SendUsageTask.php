@@ -31,8 +31,8 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Internet;
 use pocketmine\utils\Process;
 use pocketmine\utils\Utils;
-use pocketmine\uuid\UUID;
 use pocketmine\VersionInfo;
+use Ramsey\Uuid\Uuid;
 use function array_map;
 use function array_values;
 use function count;
@@ -65,7 +65,7 @@ class SendUsageTask extends AsyncTask{
 		$data = [];
 		$data["uniqueServerId"] = $server->getServerUniqueId()->toString();
 		$data["uniqueMachineId"] = Utils::getMachineUniqueId()->toString();
-		$data["uniqueRequestId"] = UUID::fromData($server->getServerUniqueId()->toString(), microtime(false))->toString();
+		$data["uniqueRequestId"] = Uuid::uuid3($server->getServerUniqueId()->toString(), microtime(false))->toString();
 
 		switch($type){
 			case self::TYPE_OPEN:
@@ -127,7 +127,7 @@ class SendUsageTask extends AsyncTask{
 					$playerList[$k] = md5($v);
 				}
 
-				$players = array_map(function(Player $p) : string{ return md5($p->getUniqueId()->toBinary()); }, $server->getOnlinePlayers());
+				$players = array_map(function(Player $p) : string{ return md5($p->getUniqueId()->getBytes()); }, $server->getOnlinePlayers());
 
 				$data["players"] = [
 					"count" => count($players),

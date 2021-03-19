@@ -47,15 +47,21 @@ final class ThreadLocalGeneratorContext{
 
 	/** @var Generator */
 	private $generator;
-	/** @var int */
-	private $worldHeight;
 
-	public function __construct(Generator $generator, int $worldHeight){
+	/** @var int */
+	private $worldMinY;
+	/** @var int */
+	private $worldMaxY;
+
+	public function __construct(Generator $generator, int $worldMinY, int $worldMaxY){
 		$this->generator = $generator;
-		$this->worldHeight = $worldHeight;
+		$this->worldMinY = $worldMinY;
+		$this->worldMaxY = $worldMaxY;
 	}
 
 	public function getGenerator() : Generator{ return $this->generator; }
 
-	public function getWorldHeight() : int{ return $this->worldHeight; }
+	public function getWorldMinY() : int{ return $this->worldMinY; }
+
+	public function getWorldMaxY() : int{ return $this->worldMaxY; }
 }

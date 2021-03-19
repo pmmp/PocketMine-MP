@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\raklib;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\PacketPool;
@@ -237,7 +238,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$info->getMaxPlayerCount(),
 				$this->rakServerId,
 				$this->server->getName(),
-				$this->server->getGamemode()->getEnglishName()
+				TypeConverter::getInstance()->protocolGameModeName($this->server->getGamemode())
 			]) . ";"
 		);
 	}
