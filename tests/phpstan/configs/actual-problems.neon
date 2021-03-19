@@ -11,11 +11,6 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Cannot instantiate interface pocketmine\\\\level\\\\format\\\\io\\\\LevelProvider\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Server.php
-
-		-
 			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Server.php

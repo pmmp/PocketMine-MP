@@ -6,22 +6,12 @@ parameters:
 			path: ../../../src/pocketmine/CrashDump.php
 
 		-
-			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/CrashDump.php
-
-		-
 			message: "#^Cannot access offset float\\|int on mixed\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/CrashDump.php
 
 		-
 			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Utils\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'name' on mixed\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/CrashDump.php
 
@@ -264,21 +254,6 @@ parameters:
 			message: "#^Property pocketmine\\\\level\\\\generator\\\\Flat\\:\\:\\$preset \\(string\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/generator/Flat.php
-
-		-
-			message: "#^Parameter \\#4 \\$q0 of static method pocketmine\\\\level\\\\generator\\\\noise\\\\Noise\\:\\:linearLerp\\(\\) expects float, mixed given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/generator/noise/Noise.php
-
-		-
-			message: "#^Parameter \\#5 \\$q1 of static method pocketmine\\\\level\\\\generator\\\\noise\\\\Noise\\:\\:linearLerp\\(\\) expects float, mixed given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/generator/noise/Noise.php
-
-		-
-			message: "#^Cannot access offset int on mixed\\.$#"
-			count: 6
-			path: ../../../src/pocketmine/level/generator/noise/Noise.php
 
 		-
 			message: "#^Parameter \\#1 \\$buffer of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket constructor expects string, mixed given\\.$#"
@@ -584,11 +559,6 @@ parameters:
 			message: "#^Parameter \\#2 \\$start of function substr expects int, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/utils/Internet.php
-
-		-
-			message: "#^Parameter \\#2 \\$str of function fwrite expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/utils/MainLogger.php
 
 		-
 			message: "#^Cannot access offset 'status' on mixed\\.$#"
