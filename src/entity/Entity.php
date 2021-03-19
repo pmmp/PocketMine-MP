@@ -177,6 +177,7 @@ abstract class Entity{
 
 	/** @var bool */
 	protected $closed = false;
+	private bool $closeInFlight = false;
 	/** @var bool */
 	private $needsDespawn = false;
 
@@ -1518,12 +1519,18 @@ abstract class Entity{
 	 * WARNING: Entities are unusable after this has been executed!
 	 */
 	final public function close() : void{
+		if($this->closeInFlight){
+			return;
+		}
+
 		if(!$this->closed){
-			$this->closed = true;
+			$this->closeInFlight = true;
 			(new EntityDespawnEvent($this))->call();
 
 			$this->onDispose();
+			$this->closed = true;
 			$this->destroyCycles();
+			$this->closeInFlight = false;
 		}
 	}
 
