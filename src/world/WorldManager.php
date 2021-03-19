@@ -292,12 +292,12 @@ class WorldManager{
 			foreach($chunks as $index){
 				World::getXZ($index, $chunkX, $chunkZ);
 				$world->orderChunkPopulation($chunkX, $chunkZ, null)->onCompletion(
-					function() use ($world, &$done, $total, $step) : void{
+					static function() use ($world, &$done, $total, $step) : void{
 						if(intdiv($done, $step) !== intdiv(++$done, $step) || $done === $total){
 							$world->getLogger()->info("Generating spawn terrain chunks: $done / $total (" . round(($done / $total) * 100, 1) . "%)");
 						}
 					},
-					function() : void{}
+					static function() : void{}
 				);
 			}
 		}
