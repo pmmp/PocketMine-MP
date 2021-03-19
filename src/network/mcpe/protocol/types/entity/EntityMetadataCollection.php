@@ -25,7 +25,10 @@ namespace pocketmine\network\mcpe\protocol\types\entity;
 
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\player\Player;
 use function get_class;
+use function krsort;
 
 class EntityMetadataCollection{
 
@@ -129,8 +132,50 @@ class EntityMetadataCollection{
 	 * @return MetadataProperty[]
 	 * @phpstan-return array<int, MetadataProperty>
 	 */
-	public function getAll() : array{
-		return $this->properties;
+	public function getAll(int $protocolId) : array{
+		return $this->convertProperties($this->properties, $protocolId);
+	}
+
+	public static function getMetadataProtocol(int $protocolId) : int{
+		return $protocolId <= ProtocolInfo::PROTOCOL_1_16_200 ? ProtocolInfo::PROTOCOL_1_16_200 : ProtocolInfo::CURRENT_PROTOCOL;
+	}
+
+	/**
+	 * @param Player[] $players
+	 *
+	 * @return Player[][]
+	 */
+	public static function sortByProtocol(array $players) : array{
+		$sortPlayers = [];
+
+		foreach($players as $player){
+			$protocolId = self::getMetadataProtocol($player->getNetworkSession()->getProtocolId());
+
+			if(isset($sortPlayers[$protocolId])){
+				$sortPlayers[$protocolId][] = $player;
+			}else{
+				$sortPlayers[$protocolId] = [$player];
+			}
+		}
+
+		return $sortPlayers;
+	}
+
+	private function convertProperties(array $properties, int $protocolId): array
+	{
+		if ($protocolId <= ProtocolInfo::PROTOCOL_1_16_200) {
+			$newProperties = [];
+
+			krsort($properties);
+
+			foreach ($newProperties as $key => $property){
+				$newProperties[$key >= EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS ? $key - 1 : $key] = $property;
+			}
+
+			return $newProperties;
+		}
+
+		return $properties;
 	}
 
 	/**
@@ -139,8 +184,8 @@ class EntityMetadataCollection{
 	 * @return MetadataProperty[]
 	 * @phpstan-return array<int, MetadataProperty>
 	 */
-	public function getDirty() : array{
-		return $this->dirtyProperties;
+	public function getDirty(int $protocolId) : array{
+		return $this->convertProperties($this->dirtyProperties, $protocolId);
 	}
 
 	/**

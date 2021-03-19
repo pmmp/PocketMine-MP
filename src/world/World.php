@@ -61,6 +61,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\player\Player;
 use pocketmine\scheduler\AsyncPool;
@@ -82,8 +83,10 @@ use pocketmine\world\light\BlockLightUpdate;
 use pocketmine\world\light\LightPopulationTask;
 use pocketmine\world\light\SkyLightUpdate;
 use pocketmine\world\particle\DestroyBlockParticle;
+use pocketmine\world\particle\MappingParticle;
 use pocketmine\world\particle\Particle;
 use pocketmine\world\sound\BlockPlaceSound;
+use pocketmine\world\sound\MappingSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\utils\SubChunkExplorer;
 use function abs;
@@ -513,14 +516,34 @@ class World implements ChunkManager{
 	 * @param Player[]|null $players
 	 */
 	public function addSound(Vector3 $pos, Sound $sound, ?array $players = null) : void{
-		$pk = $sound->encode($pos);
-		if(count($pk) > 0){
+		if($sound instanceof MappingSound){
 			if($players === null){
-				foreach($pk as $e){
-					$this->broadcastPacketToViewers($pos, $e);
+				$chunkX = $pos->getFloorX() >> 4;
+				$chunkZ = $pos->getFloorZ() >> 4;
+
+				$players = $this->getChunkPlayers($chunkX, $chunkZ);
+			}
+
+			foreach(RuntimeBlockMapping::sortByProtocol($players) as $protocolId => $pl){
+				$sound->setProtocolId($protocolId);
+
+				$pk = $sound->encode($pos);
+
+				if(count($pk) > 0){
+					$this->server->broadcastPackets($pl, $pk);
 				}
-			}else{
-				$this->server->broadcastPackets($players, $pk);
+			}
+		}else{
+			$pk = $sound->encode($pos);
+
+			if(count($pk) > 0){
+				if($players === null){
+					foreach($pk as $e){
+						$this->broadcastPacketToViewers($pos, $e);
+					}
+				}else{
+					$this->server->broadcastPackets($players, $pk);
+				}
 			}
 		}
 	}
@@ -529,14 +552,34 @@ class World implements ChunkManager{
 	 * @param Player[]|null $players
 	 */
 	public function addParticle(Vector3 $pos, Particle $particle, ?array $players = null) : void{
-		$pk = $particle->encode($pos);
-		if(count($pk) > 0){
+		if($particle instanceof MappingParticle){
 			if($players === null){
-				foreach($pk as $e){
-					$this->broadcastPacketToViewers($pos, $e);
+				$chunkX = $pos->getFloorX() >> 4;
+				$chunkZ = $pos->getFloorZ() >> 4;
+
+				$players = $this->getChunkPlayers($chunkX, $chunkZ);
+			}
+
+			foreach(RuntimeBlockMapping::sortByProtocol($players) as $protocolId => $pl){
+				$particle->setProtocolId($protocolId);
+
+				$pk = $particle->encode($pos);
+
+				if(count($pk) > 0){
+					$this->server->broadcastPackets($pl, $pk);
 				}
-			}else{
-				$this->server->broadcastPackets($players, $pk);
+			}
+		}else{
+			$pk = $particle->encode($pos);
+
+			if(count($pk) > 0){
+				if($players === null){
+					foreach($pk as $e){
+						$this->broadcastPacketToViewers($pos, $e);
+					}
+				}else{
+					$this->server->broadcastPackets($players, $pk);
+				}
 			}
 		}
 	}
@@ -824,8 +867,8 @@ class World implements ChunkManager{
 							$p->onChunkChanged($chunkX, $chunkZ, $chunk);
 						}
 					}else{
-						foreach($this->createBlockUpdatePackets($blocks) as $packet){
-							$this->broadcastPacketToPlayersUsingChunk($chunkX, $chunkZ, $packet);
+						foreach(RuntimeBlockMapping::sortByProtocol($this->getChunkPlayers($chunkX, $chunkZ)) as $protocolId => $players){
+							$this->server->broadcastPackets($players, $this->createBlockUpdatePackets($protocolId, $blocks));
 						}
 					}
 				}
@@ -881,12 +924,14 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * @param int       $protocolId
 	 * @param Vector3[] $blocks
 	 *
 	 * @return ClientboundPacket[]
 	 */
-	public function createBlockUpdatePackets(array $blocks) : array{
+	public function createBlockUpdatePackets(int $protocolId, array $blocks) : array{
 		$packets = [];
+		$protocolId = RuntimeBlockMapping::getMappingProtocol($protocolId);
 
 		foreach($blocks as $b){
 			if(!($b instanceof Vector3)){
@@ -894,7 +939,7 @@ class World implements ChunkManager{
 			}
 
 			$fullBlock = $this->getBlockAt($b->x, $b->y, $b->z);
-			$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, RuntimeBlockMapping::getInstance()->toRuntimeId($fullBlock->getFullId()));
+			$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, RuntimeBlockMapping::getInstance()->toRuntimeId($fullBlock->getFullId(), $protocolId));
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable){

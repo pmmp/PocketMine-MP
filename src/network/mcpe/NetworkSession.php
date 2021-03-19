@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
-use NetherGames\NGEssentials\player\NGPlayer;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\EffectInstance;
@@ -98,6 +97,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
+use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\NetworkSessionManager;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
@@ -230,15 +230,7 @@ class NetworkSession{
 		$this->logger->info("Session opened");
 	}
 
-	public function setProtocolId(int $protocolId) : void{
-		$this->protocolId = $protocolId;
-	}
-
-	public function getProtocolId() : int{
-		return $this->protocolId ?? ProtocolInfo::CURRENT_PROTOCOL;
-	}
-
-	private function getLogPrefix() : string{
+	protected function getLogPrefix() : string{
 		return "NetworkSession: " . $this->getDisplayName();
 	}
 
@@ -323,6 +315,16 @@ class NetworkSession{
 				$this->handler->setUp();
 			}
 		}
+	}
+
+	public function setProtocolId(int $protocolId) : void{
+		$this->protocolId = $protocolId;
+
+		$this->broadcaster = RakLibInterface::getBroadcaster($this->server, $protocolId);
+	}
+
+	public function getProtocolId() : int{
+		return $this->protocolId ?? ProtocolInfo::CURRENT_PROTOCOL;
 	}
 
 	/**
@@ -921,7 +923,7 @@ class NetworkSession{
 		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ) : void{}, $onCompletion);
 
 		$world = $this->player->getLocation()->getWorld();
-		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ)->onResolve(
+		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ, $this->getProtocolId())->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
 			function(CompressBatchPromise $promise) use ($world, $chunkX, $chunkZ, $onCompletion) : void{

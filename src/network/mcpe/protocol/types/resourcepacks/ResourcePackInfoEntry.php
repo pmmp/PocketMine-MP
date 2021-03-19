@@ -110,6 +110,6 @@ class ResourcePackInfoEntry{
 		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_200){
 			$rtxCapable = $in->getBool();
 		}
-		return new self($uuid, $version, $sizeBytes, $encryptionKey, $subPackName, $contentId, $hasScripts, $rtxCapable);
+		return new self($uuid, $version, $sizeBytes, $encryptionKey, $subPackName, $contentId, $hasScripts, $rtxCapable ?? false);
 	}
 }

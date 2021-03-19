@@ -70,7 +70,7 @@ use function substr;
 class PacketSerializer extends BinaryStream{
 
 	/** @var int|null */
-	private $protocolId = null;
+	private ?int $protocolId = null;
 
 	public function setProtocolId(?int $protocolId) : void{
 		$this->protocolId = $protocolId;
@@ -110,7 +110,9 @@ class PacketSerializer extends BinaryStream{
 
 	public function getSkin() : SkinData{
 		$skinId = $this->getString();
-		$skinPlayFabId = $this->getString();
+		if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_210_57){
+			$skinPlayFabId = $this->getString();
+		}
 		$skinResourcePatch = $this->getString();
 		$skinData = $this->getSkinImage();
 		$animationCount = $this->getLInt();
@@ -157,12 +159,14 @@ class PacketSerializer extends BinaryStream{
 			);
 		}
 
-		return new SkinData($skinId, $skinPlayFabId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId, $armSize, $skinColor, $personaPieces, $pieceTintColors);
+		return new SkinData($skinId, $skinPlayFabId ?? '', $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId, $armSize, $skinColor, $personaPieces, $pieceTintColors);
 	}
 
 	public function putSkin(SkinData $skin) : void{
 		$this->putString($skin->getSkinId());
-		$this->putString($skin->getPlayFabId());
+		if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_210_57){
+			$this->putString($skin->getPlayFabId());
+		}
 		$this->putString($skin->getResourcePatch());
 		$this->putSkinImage($skin->getSkinImage());
 		$this->putLInt(count($skin->getAnimations()));

@@ -31,7 +31,7 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 /**
  * Played when a player attacks a block in survival, attempting to break it.
  */
-class BlockPunchSound implements Sound{
+class BlockPunchSound extends MappingSound{
 
 	/** @var Block */
 	private $block;
@@ -44,7 +44,7 @@ class BlockPunchSound implements Sound{
 		return [LevelSoundEventPacket::create(
 			LevelSoundEventPacket::SOUND_HIT,
 			$pos,
-			RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId())
+			RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->protocolId)
 		)];
 	}
 }

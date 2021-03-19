@@ -27,10 +27,13 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\ChunkRequestTask;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
+use function count;
 use function spl_object_id;
 use function strlen;
 
@@ -74,7 +77,7 @@ class ChunkCache implements ChunkListener{
 	/** @var Compressor */
 	private $compressor;
 
-	/** @var CompressBatchPromise[] */
+	/** @var CompressBatchPromise[][] */
 	private $caches = [];
 
 	/** @var int */
@@ -92,7 +95,7 @@ class ChunkCache implements ChunkListener{
 	 *
 	 * @return CompressBatchPromise a promise of resolution which will contain a compressed chunk packet.
 	 */
-	public function request(int $chunkX, int $chunkZ) : CompressBatchPromise{
+	public function request(int $chunkX, int $chunkZ, int $protocolId = ProtocolInfo::CURRENT_PROTOCOL) : CompressBatchPromise{
 		$this->world->registerChunkListener($this, $chunkX, $chunkZ);
 		$chunk = $this->world->getChunk($chunkX, $chunkZ);
 		if($chunk === null){
@@ -100,44 +103,59 @@ class ChunkCache implements ChunkListener{
 		}
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 
-		if(isset($this->caches[$chunkHash])){
+		$protocolId = RuntimeBlockMapping::getMappingProtocol($protocolId);
+
+		if(isset($this->caches[$chunkHash][$protocolId])){
 			++$this->hits;
-			return $this->caches[$chunkHash];
+			return $this->caches[$chunkHash][$protocolId];
 		}
 
 		++$this->misses;
 
 		$this->world->timings->syncChunkSendPrepare->startTiming();
 		try{
-			$this->caches[$chunkHash] = new CompressBatchPromise();
+			$this->caches[$chunkHash][$protocolId] = new CompressBatchPromise();
 
 			$this->world->getServer()->getAsyncPool()->submitTask(
 				new ChunkRequestTask(
 					$chunkX,
 					$chunkZ,
 					$chunk,
-					$this->caches[$chunkHash],
+					$protocolId,
+					$this->caches[$chunkHash][$protocolId],
 					$this->compressor,
-					function() use ($chunkX, $chunkZ) : void{
+					function() use ($chunkX, $chunkZ, $protocolId) : void{
 						$this->world->getLogger()->error("Failed preparing chunk $chunkX $chunkZ, retrying");
 
-						$this->restartPendingRequest($chunkX, $chunkZ);
+						$this->restartPendingRequest($chunkX, $chunkZ, $protocolId);
 					}
 				)
 			);
 
-			return $this->caches[$chunkHash];
+			return $this->caches[$chunkHash][$protocolId];
 		}finally{
 			$this->world->timings->syncChunkSendPrepare->stopTiming();
 		}
 	}
 
-	private function destroy(int $chunkX, int $chunkZ) : bool{
-		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$existing = $this->caches[$chunkHash] ?? null;
-		unset($this->caches[$chunkHash]);
+	private function destroy(int $chunkX, int $chunkZ, int $protocolId = null) : bool{
+        $chunkHash = World::chunkHash($chunkX, $chunkZ);
 
-		return $existing !== null;
+	    if($protocolId === null){
+	        $existing = false;
+
+	        if(isset($this->caches[$chunkHash])){
+	            $existing = count($this->caches[$chunkHash]) > 0;
+                unset($this->caches[$chunkHash]);
+            }
+
+	        return $existing;
+        }
+
+        $existing = $this->caches[$chunkHash][$protocolId] ?? null;
+        unset($this->caches[$chunkHash][$protocolId]);
+
+        return $existing !== null;
 	}
 
 	/**
@@ -145,32 +163,36 @@ class ChunkCache implements ChunkListener{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	private function restartPendingRequest(int $chunkX, int $chunkZ) : void{
+	private function restartPendingRequest(int $chunkX, int $chunkZ, int $protocolId) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$existing = $this->caches[$chunkHash] ?? null;
-		if($existing === null or $existing->hasResult()){
-			throw new \InvalidArgumentException("Restart can only be applied to unresolved promises");
-		}
-		$existing->cancel();
-		unset($this->caches[$chunkHash]);
 
-		$this->request($chunkX, $chunkZ)->onResolve(...$existing->getResolveCallbacks());
+        $existing = $this->caches[$chunkHash][$protocolId] ?? null;
+        if($existing === null or $existing->hasResult()){
+            throw new \InvalidArgumentException("Restart can only be applied to unresolved promises");
+        }
+        $existing->cancel();
+        unset($this->caches[$chunkHash][$protocolId]);
+
+        $this->request($chunkX, $chunkZ, $protocolId)->onResolve(...$existing->getResolveCallbacks());
 	}
 
 	/**
 	 * @throws \InvalidArgumentException
 	 */
 	private function destroyOrRestart(int $chunkX, int $chunkZ) : void{
-		$cache = $this->caches[World::chunkHash($chunkX, $chunkZ)] ?? null;
-		if($cache !== null){
-			if(!$cache->hasResult()){
-				//some requesters are waiting for this chunk, so their request needs to be fulfilled
-				$this->restartPendingRequest($chunkX, $chunkZ);
-			}else{
-				//dump the cache, it'll be regenerated the next time it's requested
-				$this->destroy($chunkX, $chunkZ);
-			}
-		}
+	    $chunkHash = World::chunkHash($chunkX, $chunkZ);
+
+	    if(isset($this->caches[$chunkHash])){
+	        foreach ($this->caches[$chunkHash] as $protocolId => $cache){
+                if(!$cache->hasResult()){
+                    //some requesters are waiting for this chunk, so their request needs to be fulfilled
+                    $this->restartPendingRequest($chunkX, $chunkZ, $protocolId);
+                }else{
+                    //dump the cache, it'll be regenerated the next time it's requested
+                    $this->destroy($chunkX, $chunkZ, $protocolId);
+                }
+            }
+        }
 	}
 
 	use ChunkListenerNoOpTrait {
@@ -211,10 +233,12 @@ class ChunkCache implements ChunkListener{
 	 */
 	public function calculateCacheSize() : int{
 		$result = 0;
-		foreach($this->caches as $cache){
-			if($cache->hasResult()){
-				$result += strlen($cache->getResult());
-			}
+		foreach($this->caches as $caches){
+		    foreach ($caches as $cache) {
+                if($cache->hasResult()){
+                    $result += strlen($cache->getResult());
+                }
+            }
 		}
 		return $result;
 	}

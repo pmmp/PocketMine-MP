@@ -84,8 +84,8 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	/** @var SleeperNotifier */
 	private $sleeper;
 
-	/** @var PacketBroadcaster */
-	private $broadcaster;
+	/** @var PacketBroadcaster[] */
+	private static $broadcasters = [];
 
 	public function __construct(Server $server){
 		$this->server = $server;
@@ -112,9 +112,18 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		$this->interface = new UserToRakLibThreadMessageSender(
 			new PthreadsChannelWriter($mainToThreadBuffer)
 		);
-
-		$this->broadcaster = new StandardPacketBroadcaster($this->server);
 	}
+
+	public static function getBroadcaster(Server $server, int $protocolId) : PacketBroadcaster{
+        if(isset(self::$broadcasters[$protocolId])){
+            return self::$broadcasters[$protocolId];
+        }
+
+        $broadcaster = new StandardPacketBroadcaster($server, $protocolId);
+        self::$broadcasters[$protocolId] = $broadcaster;
+
+        return $broadcaster;
+    }
 
 	public function start() : void{
 		$this->server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
@@ -165,7 +174,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$this->network->getSessionManager(),
 			PacketPool::getInstance(),
 			new RakLibPacketSender($sessionId, $this),
-			$this->broadcaster,
+			self::getBroadcaster($this->server, ProtocolInfo::CURRENT_PROTOCOL),
 			ZlibCompressor::getInstance(), //TODO: this shouldn't be hardcoded, but we might need the RakNet protocol version to select it
 			$address,
 			$port

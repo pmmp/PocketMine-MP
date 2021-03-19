@@ -41,8 +41,10 @@ use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
@@ -54,6 +56,7 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\world\Position;
+use pocketmine\world\sound\MappingSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use function abs;
@@ -590,9 +593,11 @@ abstract class Entity{
 			}
 		}
 
-		$changedProperties = $this->getDirtyNetworkData();
+		$changedProperties = $this->getDirtyNetworkData(ProtocolInfo::CURRENT_PROTOCOL);
 		if(count($changedProperties) > 0){
-			$this->sendData(null, $changedProperties);
+			foreach(EntityMetadataCollection::sortByProtocol($this->hasSpawned) as $protocolId => $players){
+				$this->sendData($players, $protocolId === ProtocolInfo::CURRENT_PROTOCOL ? $changedProperties : $this->getDirtyNetworkData($protocolId));
+			}
 			$this->networkProperties->clearDirtyProperties();
 		}
 
@@ -1437,7 +1442,7 @@ abstract class Entity{
 		$pk->attributes = array_map(function(Attribute $attr) : NetworkAttribute{
 			return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
 		}, $this->attributeMap->getAll());
-		$pk->metadata = $this->getAllNetworkData();
+		$pk->metadata = $this->getAllNetworkData($player->getNetworkSession()->getProtocolId());
 
 		$player->getNetworkSession()->sendDataPacket($pk);
 	}
@@ -1564,11 +1569,22 @@ abstract class Entity{
 	 */
 	public function sendData(?array $targets, ?array $data = null) : void{
 		$targets = $targets ?? $this->hasSpawned;
-		$data = $data ?? $this->getAllNetworkData();
 
-		foreach($targets as $p){
-			if($p->isConnected()){
-				$p->getNetworkSession()->syncActorData($this, $data);
+		if($data === null){
+			foreach(EntityMetadataCollection::sortByProtocol($targets) as $protocolId => $players){
+				$data = $this->getAllNetworkData($protocolId);
+
+				foreach($players as $p){
+					if($p->isConnected()){
+						$p->getNetworkSession()->syncActorData($this, $data);
+					}
+				}
+			}
+		}else{
+			foreach($targets as $p){
+				if($p->isConnected()){
+					$p->getNetworkSession()->syncActorData($this, $data);
+				}
 			}
 		}
 	}
@@ -1581,18 +1597,18 @@ abstract class Entity{
 	 * @return MetadataProperty[]
 	 * @phpstan-return array<int, MetadataProperty>
 	 */
-	final protected function getDirtyNetworkData() : array{
+	final protected function getDirtyNetworkData(int $protocolId) : array{
 		$this->syncNetworkData($this->networkProperties);
-		return $this->networkProperties->getDirty();
+		return $this->networkProperties->getDirty($protocolId);
 	}
 
 	/**
 	 * @return MetadataProperty[]
 	 * @phpstan-return array<int, MetadataProperty>
 	 */
-	final protected function getAllNetworkData() : array{
+	final protected function getAllNetworkData(int $protocolId) : array{
 		$this->syncNetworkData($this->networkProperties);
-		return $this->networkProperties->getAll();
+		return $this->networkProperties->getAll($protocolId);
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
@@ -1630,7 +1646,17 @@ abstract class Entity{
 	 */
 	public function broadcastSound(Sound $sound, ?array $targets = null) : void{
 		if(!$this->silent){
-			$this->server->broadcastPackets($targets ?? $this->getViewers(), $sound->encode($this->location));
+			$targets = $targets ?? $this->getViewers();
+
+			if($sound instanceof MappingSound){
+				foreach(RuntimeBlockMapping::sortByProtocol($targets) as $protocolId => $players){
+					$sound->setProtocolId($protocolId);
+
+					$this->server->broadcastPackets($players, $sound->encode($this->location));
+				}
+			}else{
+				$this->server->broadcastPackets($targets, $sound->encode($this->location));
+			}
 		}
 	}
 

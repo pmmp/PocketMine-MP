@@ -33,13 +33,16 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 
 	/** @var Server */
 	private $server;
+	/** @var int */
+	private $protocolId;
 
-	public function __construct(Server $server){
+	public function __construct(Server $server, int $protocolId){
 		$this->server = $server;
+		$this->protocolId = $protocolId;
 	}
 
 	public function broadcastPackets(array $recipients, array $packets) : void{
-		$stream = PacketBatch::fromPackets(ProtocolInfo::CURRENT_PROTOCOL, ...$packets);
+		$stream = PacketBatch::fromPackets($this->protocolId, ...$packets);
 
 		/** @var Compressor[] $compressors */
 		$compressors = [];

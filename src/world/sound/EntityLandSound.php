@@ -32,7 +32,7 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 /**
  * Played when an entity hits the ground after falling a distance that doesn't cause damage, e.g. due to jumping.
  */
-class EntityLandSound implements Sound{
+class EntityLandSound extends MappingSound{
 
 	/** @var Entity */
 	private $entity;
@@ -48,7 +48,7 @@ class EntityLandSound implements Sound{
 		return [LevelSoundEventPacket::create(
 			LevelSoundEventPacket::SOUND_LAND,
 			$pos,
-			RuntimeBlockMapping::getInstance()->toRuntimeId($this->blockLandedOn->getFullId()),
+			RuntimeBlockMapping::getInstance()->toRuntimeId($this->blockLandedOn->getFullId(), $this->protocolId),
 			$this->entity::getNetworkTypeId()
 			//TODO: does isBaby have any relevance here?
 		)];
