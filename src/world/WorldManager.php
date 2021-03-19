@@ -46,6 +46,8 @@ use function array_shift;
 use function assert;
 use function count;
 use function implode;
+use function intdiv;
+use function iterator_to_array;
 use function microtime;
 use function random_int;
 use function round;
@@ -283,9 +285,20 @@ class WorldManager{
 			$centerX = $spawnLocation->getFloorX() >> 4;
 			$centerZ = $spawnLocation->getFloorZ() >> 4;
 
-			foreach((new ChunkSelector())->selectChunks(3, $centerX, $centerZ) as $index){
+			$chunks = iterator_to_array((new ChunkSelector())->selectChunks(32, $centerX, $centerZ));
+			$total = count($chunks);
+			$done = 0;
+			$step = intdiv($total, 10);
+			foreach($chunks as $index){
 				World::getXZ($index, $chunkX, $chunkZ);
-				$world->orderChunkPopulation($chunkX, $chunkZ);
+				$world->orderChunkPopulation($chunkX, $chunkZ, null)->onCompletion(
+					function() use ($world, &$done, $total, $step) : void{
+						if(intdiv($done, $step) !== intdiv(++$done, $step) || $done === $total){
+							$world->getLogger()->info("Generating spawn terrain chunks: $done / $total (" . round(($done / $total) * 100, 1) . "%)");
+						}
+					},
+					function() : void{}
+				);
 			}
 		}
 
