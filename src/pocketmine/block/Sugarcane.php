@@ -111,7 +111,7 @@ class Sugarcane extends Flowable{
 			$this->getLevelNonNull()->setBlock($blockReplace, BlockFactory::get(Block::SUGARCANE_BLOCK), true);
 
 			return true;
-		}elseif($down->getId() === self::GRASS or $down->getId() === self::DIRT or $down->getId() === self::SAND){
+		}elseif($down->getId() === self::GRASS or $down->getId() === self::DIRT or $down->getId() === self::SAND or $down->getId() === self::PODZOL){
 			$block0 = $down->getSide(Vector3::SIDE_NORTH);
 			$block1 = $down->getSide(Vector3::SIDE_SOUTH);
 			$block2 = $down->getSide(Vector3::SIDE_WEST);
