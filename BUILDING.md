@@ -8,7 +8,7 @@
 ## Custom PHP binaries
 Because PocketMine-MP requires several non-standard PHP extensions and configuration, PMMP provides scripts to build custom binaries for running PocketMine-MP, as well as prebuilt binaries.
 
-- [Prebuilt binaries](https://jenkins.pmmp.io/job/PHP-7.3-Aggregate)
+- [Prebuilt binaries](https://jenkins.pmmp.io/job/PHP-7.4-Aggregate)
 - [Compile scripts](https://github.com/pmmp/php-build-scripts) are provided as a submodule in the path `build/php`
 
 If you use a custom binary, you'll need to replace `composer` usages in this guide with `path/to/your/php path/to/your/composer.phar`.
