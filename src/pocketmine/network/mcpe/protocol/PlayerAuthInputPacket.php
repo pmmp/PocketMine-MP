@@ -28,6 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\InputMode;
+use pocketmine\network\mcpe\protocol\types\PlayerAuthInputFlags;
 use pocketmine\network\mcpe\protocol\types\PlayMode;
 use function assert;
 
@@ -60,6 +61,7 @@ class PlayerAuthInputPacket extends DataPacket/* implements ServerboundPacket*/{
 	private $delta;
 
 	/**
+	 * @param int          $inputFlags @see InputFlags
 	 * @param int          $inputMode @see InputMode
 	 * @param int          $playMode @see PlayMode
 	 * @param Vector3|null $vrGazeDirection only used when PlayMode::VR
@@ -111,6 +113,9 @@ class PlayerAuthInputPacket extends DataPacket/* implements ServerboundPacket*/{
 		return $this->moveVecZ;
 	}
 
+	/**
+	 * @see PlayerAuthInputFlags
+	 */
 	public function getInputFlags() : int{
 		return $this->inputFlags;
 	}
