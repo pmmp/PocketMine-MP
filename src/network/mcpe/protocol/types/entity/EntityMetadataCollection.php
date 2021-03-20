@@ -166,9 +166,7 @@ class EntityMetadataCollection{
 		if ($protocolId <= ProtocolInfo::PROTOCOL_1_16_200) {
 			$newProperties = [];
 
-			krsort($properties);
-
-			foreach ($newProperties as $key => $property){
+			foreach ($properties as $key => $property){
 				$newProperties[$key >= EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS ? $key - 1 : $key] = $property;
 			}
 
