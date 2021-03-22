@@ -562,16 +562,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Gets the name that is shown on the player list.
-	 * 
-	 * @return string
 	 */
 	public function getPlayerListName() : string{
 		return $this->playerListName;
 	}
 
-	/**
-	 * @param string $name
-	 */
 	public function setPlayerListName(string $name) : void{
 		$this->playerListName = $name;
 
