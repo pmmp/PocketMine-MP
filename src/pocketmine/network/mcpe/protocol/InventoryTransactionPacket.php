@@ -25,15 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\network\mcpe\NetworkSession as PacketHandlerInterface;
+use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\inventory\InventoryTransactionChangedSlotsHack;
-use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
-use pocketmine\network\mcpe\protocol\types\inventory\NormalTransactionData;
-use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
-use pocketmine\network\mcpe\protocol\types\inventory\TransactionData;
-use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
-use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
-use UnexpectedValueException as PacketDecodeException;
+use pocketmine\network\mcpe\protocol\types\NetworkInventoryAction;
 use function count;
 
 class InventoryTransactionPacket extends DataPacket{
@@ -45,70 +39,137 @@ class InventoryTransactionPacket extends DataPacket{
 	public const TYPE_USE_ITEM_ON_ENTITY = 3;
 	public const TYPE_RELEASE_ITEM = 4;
 
+	public const USE_ITEM_ACTION_CLICK_BLOCK = 0;
+	public const USE_ITEM_ACTION_CLICK_AIR = 1;
+	public const USE_ITEM_ACTION_BREAK_BLOCK = 2;
+
+	public const RELEASE_ITEM_ACTION_RELEASE = 0; //bow shoot
+	public const RELEASE_ITEM_ACTION_CONSUME = 1; //eat food, drink potion
+
+	public const USE_ITEM_ON_ENTITY_ACTION_INTERACT = 0;
+	public const USE_ITEM_ON_ENTITY_ACTION_ATTACK = 1;
+
 	/** @var int */
 	public $requestId;
 	/** @var InventoryTransactionChangedSlotsHack[] */
 	public $requestChangedSlots;
+
+	/** @var int */
+	public $transactionType;
 	/** @var bool */
 	public $hasItemStackIds;
-	/** @var TransactionData */
+
+	/** @var NetworkInventoryAction[] */
+	public $actions = [];
+
+	/** @var \stdClass */
 	public $trData;
 
-	protected function decodePayload() : void{
-		$in = $this;
-		$this->requestId = $in->readGenericTypeNetworkId();
+	protected function decodePayload(){
+		$this->requestId = $this->readGenericTypeNetworkId();
 		$this->requestChangedSlots = [];
 		if($this->requestId !== 0){
-			for($i = 0, $len = $in->getUnsignedVarInt(); $i < $len; ++$i){
-				$this->requestChangedSlots[] = InventoryTransactionChangedSlotsHack::read($in);
+			for($i = 0, $len = $this->getUnsignedVarInt(); $i < $len; ++$i){
+				$this->requestChangedSlots[] = InventoryTransactionChangedSlotsHack::read($this);
 			}
 		}
 
-		$transactionType = $in->getUnsignedVarInt();
+		$this->transactionType = $this->getUnsignedVarInt();
 
-		$this->hasItemStackIds = $in->getBool();
+		$this->hasItemStackIds = $this->getBool();
 
-		switch($transactionType){
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$this->actions[] = $action = (new NetworkInventoryAction())->read($this, $this->hasItemStackIds);
+		}
+
+		$this->trData = new \stdClass();
+
+		switch($this->transactionType){
 			case self::TYPE_NORMAL:
-				$this->trData = new NormalTransactionData();
-				break;
 			case self::TYPE_MISMATCH:
-				$this->trData = new MismatchTransactionData();
+				//Regular ComplexInventoryTransaction doesn't read any extra data
 				break;
 			case self::TYPE_USE_ITEM:
-				$this->trData = new UseItemTransactionData();
+				$this->trData->actionType = $this->getUnsignedVarInt();
+				$this->getBlockPosition($this->trData->x, $this->trData->y, $this->trData->z);
+				$this->trData->face = $this->getVarInt();
+				$this->trData->hotbarSlot = $this->getVarInt();
+				$this->trData->itemInHand = $this->getSlot();
+				$this->trData->playerPos = $this->getVector3();
+				$this->trData->clickPos = $this->getVector3();
+				$this->trData->blockRuntimeId = $this->getUnsignedVarInt();
 				break;
 			case self::TYPE_USE_ITEM_ON_ENTITY:
-				$this->trData = new UseItemOnEntityTransactionData();
+				$this->trData->entityRuntimeId = $this->getEntityRuntimeId();
+				$this->trData->actionType = $this->getUnsignedVarInt();
+				$this->trData->hotbarSlot = $this->getVarInt();
+				$this->trData->itemInHand = $this->getSlot();
+				$this->trData->playerPos = $this->getVector3();
+				$this->trData->clickPos = $this->getVector3();
 				break;
 			case self::TYPE_RELEASE_ITEM:
-				$this->trData = new ReleaseItemTransactionData();
+				$this->trData->actionType = $this->getUnsignedVarInt();
+				$this->trData->hotbarSlot = $this->getVarInt();
+				$this->trData->itemInHand = $this->getSlot();
+				$this->trData->headPos = $this->getVector3();
 				break;
 			default:
-				throw new PacketDecodeException("Unknown transaction type $transactionType");
+				throw new \UnexpectedValueException("Unknown transaction type $this->transactionType");
 		}
-
-		$this->trData->decode($in, $this->hasItemStackIds);
 	}
 
-	protected function encodePayload() : void{
-		$out = $this;
-		$out->writeGenericTypeNetworkId($this->requestId);
+	protected function encodePayload(){
+		$this->writeGenericTypeNetworkId($this->requestId);
 		if($this->requestId !== 0){
-			$out->putUnsignedVarInt(count($this->requestChangedSlots));
+			$this->putUnsignedVarInt(count($this->requestChangedSlots));
 			foreach($this->requestChangedSlots as $changedSlots){
-				$changedSlots->write($out);
+				$changedSlots->write($this);
 			}
 		}
 
-		$out->putUnsignedVarInt($this->trData->getTypeId());
+		$this->putUnsignedVarInt($this->transactionType);
 
-		$out->putBool($this->hasItemStackIds);
+		$this->putBool($this->hasItemStackIds);
 
-		$this->trData->encode($out, $this->hasItemStackIds);
+		$this->putUnsignedVarInt(count($this->actions));
+		foreach($this->actions as $action){
+			$action->write($this, $this->hasItemStackIds);
+		}
+
+		switch($this->transactionType){
+			case self::TYPE_NORMAL:
+			case self::TYPE_MISMATCH:
+				break;
+			case self::TYPE_USE_ITEM:
+				$this->putUnsignedVarInt($this->trData->actionType);
+				$this->putBlockPosition($this->trData->x, $this->trData->y, $this->trData->z);
+				$this->putVarInt($this->trData->face);
+				$this->putVarInt($this->trData->hotbarSlot);
+				$this->putSlot($this->trData->itemInHand);
+				$this->putVector3($this->trData->playerPos);
+				$this->putVector3($this->trData->clickPos);
+				$this->putUnsignedVarInt($this->trData->blockRuntimeId);
+				break;
+			case self::TYPE_USE_ITEM_ON_ENTITY:
+				$this->putEntityRuntimeId($this->trData->entityRuntimeId);
+				$this->putUnsignedVarInt($this->trData->actionType);
+				$this->putVarInt($this->trData->hotbarSlot);
+				$this->putSlot($this->trData->itemInHand);
+				$this->putVector3($this->trData->playerPos);
+				$this->putVector3($this->trData->clickPos);
+				break;
+			case self::TYPE_RELEASE_ITEM:
+				$this->putUnsignedVarInt($this->trData->actionType);
+				$this->putVarInt($this->trData->hotbarSlot);
+				$this->putSlot($this->trData->itemInHand);
+				$this->putVector3($this->trData->headPos);
+				break;
+			default:
+				throw new \InvalidArgumentException("Unknown transaction type $this->transactionType");
+		}
 	}
 
-	public function handle(PacketHandlerInterface $handler) : bool{
-		return $handler->handleInventoryTransaction($this);
+	public function handle(NetworkSession $session) : bool{
+		return $session->handleInventoryTransaction($this);
 	}
 }
