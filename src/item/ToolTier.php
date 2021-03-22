@@ -30,11 +30,11 @@ use pocketmine\utils\EnumTrait;
  * This must be regenerated whenever registry members are added, removed or changed.
  * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
- * @method static ToolTier WOOD()
- * @method static ToolTier GOLD()
- * @method static ToolTier STONE()
- * @method static ToolTier IRON()
  * @method static ToolTier DIAMOND()
+ * @method static ToolTier GOLD()
+ * @method static ToolTier IRON()
+ * @method static ToolTier STONE()
+ * @method static ToolTier WOOD()
  */
 final class ToolTier{
 	use EnumTrait {

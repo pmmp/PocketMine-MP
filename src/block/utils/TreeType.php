@@ -30,12 +30,12 @@ use pocketmine\utils\EnumTrait;
  * This must be regenerated whenever registry members are added, removed or changed.
  * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
+ * @method static TreeType ACACIA()
+ * @method static TreeType BIRCH()
+ * @method static TreeType DARK_OAK()
+ * @method static TreeType JUNGLE()
  * @method static TreeType OAK()
  * @method static TreeType SPRUCE()
- * @method static TreeType BIRCH()
- * @method static TreeType JUNGLE()
- * @method static TreeType ACACIA()
- * @method static TreeType DARK_OAK()
  */
 final class TreeType{
 	use EnumTrait {

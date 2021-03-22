@@ -31,8 +31,8 @@ use pocketmine\utils\EnumTrait;
  * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
  * @method static SlabType BOTTOM()
- * @method static SlabType TOP()
  * @method static SlabType DOUBLE()
+ * @method static SlabType TOP()
  */
 final class SlabType{
 	use EnumTrait;

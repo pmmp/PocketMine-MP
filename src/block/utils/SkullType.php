@@ -30,12 +30,12 @@ use pocketmine\utils\EnumTrait;
  * This must be regenerated whenever registry members are added, removed or changed.
  * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
+ * @method static SkullType CREEPER()
+ * @method static SkullType DRAGON()
+ * @method static SkullType PLAYER()
  * @method static SkullType SKELETON()
  * @method static SkullType WITHER_SKELETON()
  * @method static SkullType ZOMBIE()
- * @method static SkullType PLAYER()
- * @method static SkullType CREEPER()
- * @method static SkullType DRAGON()
  */
 final class SkullType{
 	use EnumTrait {

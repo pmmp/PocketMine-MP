@@ -30,10 +30,10 @@ use pocketmine\utils\EnumTrait;
  * This must be regenerated whenever registry members are added, removed or changed.
  * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
- * @method static GameMode SURVIVAL()
- * @method static GameMode CREATIVE()
  * @method static GameMode ADVENTURE()
+ * @method static GameMode CREATIVE()
  * @method static GameMode SPECTATOR()
+ * @method static GameMode SURVIVAL()
  */
 final class GameMode{
 	use EnumTrait {

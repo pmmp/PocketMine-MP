@@ -27,6 +27,7 @@ use function get_class;
 use function implode;
 use function mb_strtoupper;
 use function sprintf;
+use const SORT_STRING;
 
 final class RegistryUtils{
 
@@ -63,6 +64,7 @@ public static function %1$s() : %2$s{
 		$lines[] = " *";
 
 		static $lineTmpl = " * @method static %2\$s %s()";
+		$memberLines = [];
 		foreach($members as $name => $member){
 			$reflect = new \ReflectionClass($member);
 			while($reflect !== false and $reflect->isAnonymous()){
@@ -75,7 +77,13 @@ public static function %1$s() : %2$s{
 			}else{
 				$typehint = '\\' . $reflect->getName();
 			}
-			$lines[] = sprintf($lineTmpl, mb_strtoupper($name), $typehint);
+			$accessor = mb_strtoupper($name);
+			$memberLines[$accessor] = sprintf($lineTmpl, $accessor, $typehint);
+		}
+		ksort($memberLines, SORT_STRING);
+
+		foreach($memberLines as $line){
+			$lines[] = $line;
 		}
 		$lines[] = " */";
 		return implode("\n", $lines);
