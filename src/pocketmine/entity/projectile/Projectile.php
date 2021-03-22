@@ -80,33 +80,31 @@ abstract class Projectile extends Entity{
 		$this->setHealth(1);
 		$this->damage = $this->namedtag->getDouble("damage", $this->damage);
 
-		do{
-			$blockHit = null;
-			$blockId = null;
-			$blockData = null;
-
-			if($this->namedtag->hasTag("tileX", IntTag::class) and $this->namedtag->hasTag("tileY", IntTag::class) and $this->namedtag->hasTag("tileZ", IntTag::class)){
-				$blockHit = new Vector3($this->namedtag->getInt("tileX"), $this->namedtag->getInt("tileY"), $this->namedtag->getInt("tileZ"));
-			}else{
-				break;
-			}
-
-			if($this->namedtag->hasTag("blockId", IntTag::class)){
-				$blockId = $this->namedtag->getInt("blockId");
-			}else{
-				break;
-			}
-
-			if($this->namedtag->hasTag("blockData", ByteTag::class)){
-				$blockData = $this->namedtag->getByte("blockData");
-			}else{
-				break;
-			}
-
-			$this->blockHit = $blockHit;
-			$this->blockHitId = $blockId;
-			$this->blockHitData = $blockData;
-		}while(false);
+		$blockHit = null;
+		$blockId = null;
+		$blockData = null;
+		
+		if($this->namedtag->hasTag("tileX", IntTag::class) and $this->namedtag->hasTag("tileY", IntTag::class) and $this->namedtag->hasTag("tileZ", IntTag::class)){
+			$blockHit = new Vector3($this->namedtag->getInt("tileX"), $this->namedtag->getInt("tileY"), $this->namedtag->getInt("tileZ"));
+		}else{
+			break;
+		}
+		
+		if($this->namedtag->hasTag("blockId", IntTag::class)){
+			$blockId = $this->namedtag->getInt("blockId");
+		}else{
+			break;
+		}
+		
+		if($this->namedtag->hasTag("blockData", ByteTag::class)){
+			$blockData = $this->namedtag->getByte("blockData");
+		}else{
+			break;
+		}
+		
+		$this->blockHit = $blockHit;
+		$this->blockHitId = $blockId;
+		$this->blockHitData = $blockData;
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
