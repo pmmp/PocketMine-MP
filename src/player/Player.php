@@ -571,6 +571,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->playerListName = $name;
 
 		foreach($this->server->getOnlinePlayers() as $player){
+			$player->getNetworkSession()->onPlayerRemoved($this);
 			$player->getNetworkSession()->onPlayerAdded($this);
 		}
 	}
