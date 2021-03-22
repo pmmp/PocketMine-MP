@@ -27,14 +27,14 @@ use pocketmine\utils\EnumTrait;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever enum members are added, removed or changed.
- * @see EnumTrait::_generateMethodAnnotations()
+ * This must be regenerated whenever registry members are added, removed or changed.
+ * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
- * @method static self STRAIGHT()
- * @method static self INNER_LEFT()
- * @method static self INNER_RIGHT()
- * @method static self OUTER_LEFT()
- * @method static self OUTER_RIGHT()
+ * @method static StairShape STRAIGHT()
+ * @method static StairShape INNER_LEFT()
+ * @method static StairShape INNER_RIGHT()
+ * @method static StairShape OUTER_LEFT()
+ * @method static StairShape OUTER_RIGHT()
  */
 final class StairShape{
 	use EnumTrait;

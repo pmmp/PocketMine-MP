@@ -28,13 +28,13 @@ use pocketmine\utils\EnumTrait;
 /**
  * This doc-block is generated automatically, do not modify it manually.
  * This must be regenerated whenever registry members are added, removed or changed.
- * @see RegistryTrait::_generateMethodAnnotations()
+ * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
- * @method static self WOOD()
- * @method static self GOLD()
- * @method static self STONE()
- * @method static self IRON()
- * @method static self DIAMOND()
+ * @method static ToolTier WOOD()
+ * @method static ToolTier GOLD()
+ * @method static ToolTier STONE()
+ * @method static ToolTier IRON()
+ * @method static ToolTier DIAMOND()
  */
 final class ToolTier{
 	use EnumTrait {

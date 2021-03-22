@@ -29,20 +29,20 @@ use pocketmine\utils\EnumTrait;
 /**
  * This doc-block is generated automatically, do not modify it manually.
  * This must be regenerated whenever registry members are added, removed or changed.
- * @see RegistryTrait::_generateMethodAnnotations()
+ * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
- * @method static self DISK_13()
- * @method static self DISK_CAT()
- * @method static self DISK_BLOCKS()
- * @method static self DISK_CHIRP()
- * @method static self DISK_FAR()
- * @method static self DISK_MALL()
- * @method static self DISK_MELLOHI()
- * @method static self DISK_STAL()
- * @method static self DISK_STRAD()
- * @method static self DISK_WARD()
- * @method static self DISK_11()
- * @method static self DISK_WAIT()
+ * @method static RecordType DISK_13()
+ * @method static RecordType DISK_CAT()
+ * @method static RecordType DISK_BLOCKS()
+ * @method static RecordType DISK_CHIRP()
+ * @method static RecordType DISK_FAR()
+ * @method static RecordType DISK_MALL()
+ * @method static RecordType DISK_MELLOHI()
+ * @method static RecordType DISK_STAL()
+ * @method static RecordType DISK_STRAD()
+ * @method static RecordType DISK_WARD()
+ * @method static RecordType DISK_11()
+ * @method static RecordType DISK_WAIT()
  */
 final class RecordType{
 	use EnumTrait {

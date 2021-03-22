@@ -28,25 +28,25 @@ use pocketmine\utils\EnumTrait;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever enum members are added, removed or changed.
- * @see EnumTrait::_generateMethodAnnotations()
+ * This must be regenerated whenever registry members are added, removed or changed.
+ * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
- * @method static self WHITE()
- * @method static self ORANGE()
- * @method static self MAGENTA()
- * @method static self LIGHT_BLUE()
- * @method static self YELLOW()
- * @method static self LIME()
- * @method static self PINK()
- * @method static self GRAY()
- * @method static self LIGHT_GRAY()
- * @method static self CYAN()
- * @method static self PURPLE()
- * @method static self BLUE()
- * @method static self BROWN()
- * @method static self GREEN()
- * @method static self RED()
- * @method static self BLACK()
+ * @method static DyeColor WHITE()
+ * @method static DyeColor ORANGE()
+ * @method static DyeColor MAGENTA()
+ * @method static DyeColor LIGHT_BLUE()
+ * @method static DyeColor YELLOW()
+ * @method static DyeColor LIME()
+ * @method static DyeColor PINK()
+ * @method static DyeColor GRAY()
+ * @method static DyeColor LIGHT_GRAY()
+ * @method static DyeColor CYAN()
+ * @method static DyeColor PURPLE()
+ * @method static DyeColor BLUE()
+ * @method static DyeColor BROWN()
+ * @method static DyeColor GREEN()
+ * @method static DyeColor RED()
+ * @method static DyeColor BLACK()
  */
 final class DyeColor{
 	use EnumTrait {

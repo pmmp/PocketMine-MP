@@ -27,13 +27,13 @@ use pocketmine\utils\EnumTrait;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever enum members are added, removed or changed.
- * @see EnumTrait::_generateMethodAnnotations()
+ * This must be regenerated whenever registry members are added, removed or changed.
+ * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
- * @method static self SURVIVAL()
- * @method static self CREATIVE()
- * @method static self ADVENTURE()
- * @method static self SPECTATOR()
+ * @method static GameMode SURVIVAL()
+ * @method static GameMode CREATIVE()
+ * @method static GameMode ADVENTURE()
+ * @method static GameMode SPECTATOR()
  */
 final class GameMode{
 	use EnumTrait {

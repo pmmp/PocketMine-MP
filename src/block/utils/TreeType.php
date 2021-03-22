@@ -27,15 +27,15 @@ use pocketmine\utils\EnumTrait;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever enum members are added, removed or changed.
- * @see EnumTrait::_generateMethodAnnotations()
+ * This must be regenerated whenever registry members are added, removed or changed.
+ * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
- * @method static self OAK()
- * @method static self SPRUCE()
- * @method static self BIRCH()
- * @method static self JUNGLE()
- * @method static self ACACIA()
- * @method static self DARK_OAK()
+ * @method static TreeType OAK()
+ * @method static TreeType SPRUCE()
+ * @method static TreeType BIRCH()
+ * @method static TreeType JUNGLE()
+ * @method static TreeType ACACIA()
+ * @method static TreeType DARK_OAK()
  */
 final class TreeType{
 	use EnumTrait {

@@ -27,14 +27,14 @@ use pocketmine\utils\EnumTrait;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever enum members are added, removed or changed.
- * @see EnumTrait::_generateMethodAnnotations()
+ * This must be regenerated whenever registry members are added, removed or changed.
+ * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
- * @method static self PIANO()
- * @method static self BASS_DRUM()
- * @method static self SNARE()
- * @method static self CLICKS_AND_STICKS()
- * @method static self DOUBLE_BASS()
+ * @method static NoteInstrument PIANO()
+ * @method static NoteInstrument BASS_DRUM()
+ * @method static NoteInstrument SNARE()
+ * @method static NoteInstrument CLICKS_AND_STICKS()
+ * @method static NoteInstrument DOUBLE_BASS()
  */
 final class NoteInstrument{
 	use EnumTrait {
