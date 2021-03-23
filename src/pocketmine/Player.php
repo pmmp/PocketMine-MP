@@ -196,7 +196,9 @@ use function get_class;
 use function gettype;
 use function implode;
 use function in_array;
+use function is_infinite;
 use function is_int;
+use function is_nan;
 use function is_object;
 use function is_string;
 use function json_encode;
@@ -2357,8 +2359,15 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
-		$newPos = $packet->position->round(4)->subtract(0, $this->baseOffset, 0);
+		$rawPos = $packet->position;
+		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $packet->yaw, $packet->headYaw, $packet->pitch] as $float){
+			if(is_infinite($float) || is_nan($float)){
+				$this->server->getLogger()->debug("Invalid movement from " . $this->getName() . ", contains NAN/INF components");
+				return false;
+			}
+		}
 
+		$newPos = $rawPos->round(4)->subtract(0, $this->baseOffset, 0);
 		if($this->forceMoveSync !== null and $newPos->distanceSquared($this->forceMoveSync) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
 			$this->server->getLogger()->debug("Got outdated pre-teleport movement from " . $this->getName() . ", received " . $newPos . ", expected " . $this->asVector3());
 			//Still getting movements from before teleport, ignore them
