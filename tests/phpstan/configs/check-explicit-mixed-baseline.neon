@@ -296,22 +296,22 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setString\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/data/BedrockWorldData.php
-
-		-
 			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: ../../../src/world/format/io/data/BedrockWorldData.php
 
 		-
 			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setString\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/world/format/io/data/BedrockWorldData.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: ../../../src/world/format/io/data/JavaWorldData.php
 
 		-
-			message: "#^Cannot cast mixed to string\\.$#"
+			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setString\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/world/format/io/data/JavaWorldData.php
 
