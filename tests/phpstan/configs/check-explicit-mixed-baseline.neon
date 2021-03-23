@@ -6,22 +6,12 @@ parameters:
 			path: ../../../src/CrashDump.php
 
 		-
-			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
 			message: "#^Cannot access offset float\\|int on mixed\\.$#"
 			count: 1
 			path: ../../../src/CrashDump.php
 
 		-
 			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'name' on mixed\\.$#"
 			count: 1
 			path: ../../../src/CrashDump.php
 
@@ -276,11 +266,6 @@ parameters:
 			path: ../../../src/utils/MainLogger.php
 
 		-
-			message: "#^Parameter \\#2 \\$str of function fwrite expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/MainLoggerThread.php
-
-		-
 			message: "#^Cannot access offset 'status' on mixed\\.$#"
 			count: 1
 			path: ../../../src/utils/Timezone.php
@@ -344,21 +329,6 @@ parameters:
 			message: "#^Property pocketmine\\\\world\\\\generator\\\\Flat\\:\\:\\$preset \\(string\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/world/generator/Flat.php
-
-		-
-			message: "#^Parameter \\#4 \\$q0 of static method pocketmine\\\\world\\\\generator\\\\noise\\\\Noise\\:\\:linearLerp\\(\\) expects float, mixed given\\.$#"
-			count: 1
-			path: ../../../src/world/generator/noise/Noise.php
-
-		-
-			message: "#^Parameter \\#5 \\$q1 of static method pocketmine\\\\world\\\\generator\\\\noise\\\\Noise\\:\\:linearLerp\\(\\) expects float, mixed given\\.$#"
-			count: 1
-			path: ../../../src/world/generator/noise/Noise.php
-
-		-
-			message: "#^Cannot access offset int on mixed\\.$#"
-			count: 6
-			path: ../../../src/world/generator/noise/Noise.php
 
 		-
 			message: "#^Parameter \\#2 \\$array of static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertArrayHasKey\\(\\) expects array\\|ArrayAccess, mixed given\\.$#"

@@ -661,16 +661,6 @@ parameters:
 			path: ../../../src/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
 
 		-
-			message: "#^Call to an undefined method object\\:\\:Add\\(\\)\\.$#"
-			count: 1
-			path: ../../../src/network/upnp/UPnP.php
-
-		-
-			message: "#^Call to an undefined method object\\:\\:Remove\\(\\)\\.$#"
-			count: 1
-			path: ../../../src/network/upnp/UPnP.php
-
-		-
 			message: "#^Array \\(array\\<int, pocketmine\\\\player\\\\UsedChunkStatus\\>\\) does not accept key \\(int\\|string\\)\\.$#"
 			count: 3
 			path: ../../../src/player/Player.php
