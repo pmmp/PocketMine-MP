@@ -518,8 +518,8 @@ abstract class Living extends Entity{
 			$motionY += $base;
 			$motionZ += $z * $f * $base;
 
-			if($motionY > $base){
-				$motionY = $base;
+			if($motionY > 0.4){
+				$motionY = 0.4;
 			}
 
 			$this->setMotion(new Vector3($motionX, $motionY, $motionZ));
