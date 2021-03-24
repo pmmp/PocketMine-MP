@@ -467,7 +467,7 @@ abstract class Living extends Entity{
 			//TODO: knockback should not just apply for entity damage sources
 			//this doesn't matter for TNT right now because the PrimedTNT entity is considered the source, not the block.
 			$base = $source->getKnockBack();
-			$source->setKnockBack($base - min($base, $base * $this->getHighestArmorEnchantmentLevel(VanillaEnchantments::BLAST_PROTECTION()) * 0.15), true);
+			$source->setKnockBack($base - min($base, $base * $this->getHighestArmorEnchantmentLevel(VanillaEnchantments::BLAST_PROTECTION()) * 0.15));
 		}
 
 		parent::attack($source);
