@@ -467,7 +467,7 @@ abstract class Living extends Entity{
 			//TODO: knockback should not just apply for entity damage sources
 			//this doesn't matter for TNT right now because the PrimedTNT entity is considered the source, not the block.
 			$base = $source->getKnockBack();
-			$source->setKnockBack($base - min($base, $base * $this->getHighestArmorEnchantmentLevel(VanillaEnchantments::BLAST_PROTECTION()) * 0.15));
+			$source->setKnockBack($base - min($base, $base * $this->getHighestArmorEnchantmentLevel(VanillaEnchantments::BLAST_PROTECTION()) * 0.15), true);
 		}
 
 		parent::attack($source);
@@ -482,14 +482,14 @@ abstract class Living extends Entity{
 			$e = $source->getChild();
 			if($e !== null){
 				$motion = $e->getMotion();
-				$this->knockBack($motion->x, $motion->z, $source->getKnockBack());
+				$this->knockBack($motion->x, $motion->z, $source->getKnockBack(), true);
 			}
 		}elseif($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
 			if($e !== null){
 				$deltaX = $this->location->x - $e->location->x;
 				$deltaZ = $this->location->z - $e->location->z;
-				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack());
+				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), true);
 			}
 		}
 
@@ -503,7 +503,7 @@ abstract class Living extends Entity{
 		$this->broadcastAnimation(new HurtAnimation($this));
 	}
 
-	public function knockBack(float $x, float $z, float $base = 0.4) : void{
+	public function knockBack(float $x, float $z, float $base = 0.4, bool $vanilla = false) : void{
 		$f = sqrt($x * $x + $z * $z);
 		if($f <= 0){
 			return;
@@ -518,8 +518,14 @@ abstract class Living extends Entity{
 			$motionY += $base;
 			$motionZ += $z * $f * $base;
 
-			if($motionY > 0.4){
-				$motionY = 0.4;
+			if(!$vanilla){
+				if($motionY > $base){
+					$motionY = $base;
+				}
+			}else{
+				if($motionY > 0.4){
+					$motionY = 0.4;
+				}
 			}
 
 			$this->setMotion(new Vector3($motionX, $motionY, $motionZ));
