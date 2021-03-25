@@ -51,9 +51,11 @@ class SubChunkExplorer{
 	 * @phpstan-return SubChunkExplorerStatus::*
 	 */
 	public function moveTo(int $x, int $y, int $z) : int{
-		if($this->currentChunk === null or $this->currentX !== ($x >> 4) or $this->currentZ !== ($z >> 4)){
-			$this->currentX = $x >> 4;
-			$this->currentZ = $z >> 4;
+		$newChunkX = $x >> 4;
+		$newChunkZ = $z >> 4;
+		if($this->currentChunk === null or $this->currentX !== $newChunkX or $this->currentZ !== $newChunkZ){
+			$this->currentX = $newChunkX;
+			$this->currentZ = $newChunkZ;
 			$this->currentSubChunk = null;
 
 			$this->currentChunk = $this->world->getChunk($this->currentX, $this->currentZ);
@@ -62,15 +64,16 @@ class SubChunkExplorer{
 			}
 		}
 
-		if($this->currentSubChunk === null or $this->currentY !== ($y >> 4)){
-			$this->currentY = $y >> 4;
+		$newChunkY = $y >> 4;
+		if($this->currentSubChunk === null or $this->currentY !== $newChunkY){
+			$this->currentY = $newChunkY;
 
 			if($this->currentY < 0 or $this->currentY >= $this->currentChunk->getHeight()){
 				$this->currentSubChunk = null;
 				return SubChunkExplorerStatus::INVALID;
 			}
 
-			$this->currentSubChunk = $this->currentChunk->getSubChunk($y >> 4);
+			$this->currentSubChunk = $this->currentChunk->getSubChunk($newChunkY);
 			return SubChunkExplorerStatus::MOVED;
 		}
 
