@@ -189,7 +189,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [7.3.27, 7.4.16]
+        php: [7.4.16]
 
     steps:
       - uses: actions/checkout@v2
