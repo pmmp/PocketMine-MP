@@ -30,9 +30,9 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\MapDecoration;
 use pocketmine\network\mcpe\protocol\types\MapTrackedObject;
-use pocketmine\utils\Binary;
-#ifndef COMPILE
 use function count;
+#ifndef COMPILE
+use pocketmine\utils\Binary;
 #endif
 
 class ClientboundMapItemDataPacket extends DataPacket implements ClientboundPacket{
