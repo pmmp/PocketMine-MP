@@ -130,8 +130,9 @@ class Explosion{
 
 							$state = $this->subChunkExplorer->currentSubChunk->getFullBlock($vBlockX & 0x0f, $vBlockY & 0x0f, $vBlockZ & 0x0f);
 
-							if($state !== 0){
-								$blastForce -= ($blockFactory->blastResistance[$state] / 5 + 0.3) * $this->stepLen;
+							$blastResistance = $blockFactory->blastResistance[$state];
+							if($blastResistance >= 0){
+								$blastForce -= ($blastResistance / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){
 									if(!isset($this->affectedBlocks[World::blockHash($vBlockX, $vBlockY, $vBlockZ)])){
 										$_block = $blockFactory->fromFullBlock($state);
