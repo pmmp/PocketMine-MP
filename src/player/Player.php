@@ -727,14 +727,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					unset($this->loadQueue[$index]);
 					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED();
 
-					$this->getNetworkSession()->startUsingChunk($X, $Z, function(int $chunkX, int $chunkZ) use ($index, $world) : void{
+					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index, $world) : void{
 						if(!isset($this->usedChunks[$index]) || $world !== $this->getWorld()){
-							$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
+							$this->logger->debug("Tried to send no-longer-active chunk $X $Z in world " . $world->getFolderName());
 							return;
 						}
 						$this->usedChunks[$index] = UsedChunkStatus::SENT();
 						if($this->spawnChunkLoadCount === -1){
-							$this->spawnEntitiesOnChunk($chunkX, $chunkZ);
+							$this->spawnEntitiesOnChunk($X, $Z);
 						}elseif($this->spawnChunkLoadCount++ === $this->spawnThreshold){
 							$this->spawnChunkLoadCount = -1;
 

@@ -903,23 +903,23 @@ class NetworkSession{
 	/**
 	 * Instructs the networksession to start using the chunk at the given coordinates. This may occur asynchronously.
 	 * @param \Closure $onCompletion To be called when chunk sending has completed.
-	 * @phpstan-param \Closure(int $chunkX, int $chunkZ) : void $onCompletion
+	 * @phpstan-param \Closure() : void $onCompletion
 	 */
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
-		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ) : void{}, $onCompletion);
+		Utils::validateCallableSignature(function() : void{}, $onCompletion);
 
 		$world = $this->player->getLocation()->getWorld();
 		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
-			function(CompressBatchPromise $promise) use ($chunkX, $chunkZ, $onCompletion) : void{
+			function(CompressBatchPromise $promise) use ($onCompletion) : void{
 				if(!$this->isConnected()){
 					return;
 				}
 				$currentWorld->timings->syncChunkSend->startTiming();
 				try{
 					$this->queueCompressed($promise);
-					$onCompletion($chunkX, $chunkZ);
+					$onCompletion();
 				}finally{
 					$currentWorld->timings->syncChunkSend->stopTiming();
 				}
