@@ -608,7 +608,7 @@ class Server{
 				 * @var Player $player
 				 */
 				$player = new $class($this, $session, $playerInfo, $authenticated, $spawn, $offlinePlayerData);
-				$player->onGround = $onGround;
+				$player->onGround = $onGround;  //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
 				$playerPromise->resolve($player);
 			},
 			static function() use ($playerPromise, $session) : void{
