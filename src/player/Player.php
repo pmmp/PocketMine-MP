@@ -682,6 +682,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		unset($this->loadQueue[$index]);
 	}
 
+	protected function spawnEntitiesOnAllChunks() : void{
+		foreach($this->usedChunks as $chunkHash => $status){
+			if($status->equals(UsedChunkStatus::SENT())){
+				World::getXZ($chunkHash, $chunkX, $chunkZ);
+				$this->spawnEntitiesOnChunk($chunkX, $chunkZ);
+			}
+		}
+	}
+
 	protected function spawnEntitiesOnChunk(int $chunkX, int $chunkZ) : void{
 		foreach($this->getWorld()->getChunk($chunkX, $chunkZ)->getEntities() as $entity){
 			if($entity !== $this and !$entity->isFlaggedForDespawn()){
@@ -738,12 +747,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 						}elseif($this->spawnChunkLoadCount++ === $this->spawnThreshold){
 							$this->spawnChunkLoadCount = -1;
 
-							foreach($this->usedChunks as $chunkHash => $status){
-								if($status->equals(UsedChunkStatus::SENT())){
-									World::getXZ($chunkHash, $_x, $_z);
-									$this->spawnEntitiesOnChunk($_x, $_z);
-								}
-							}
+							$this->spawnEntitiesOnAllChunks();
 
 							$this->getNetworkSession()->notifyTerrainReady();
 						}
