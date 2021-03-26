@@ -912,7 +912,7 @@ class NetworkSession{
 		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
-			function(CompressBatchPromise $promise) use ($world, $chunkX, $chunkZ, $onCompletion) : void{
+			function(CompressBatchPromise $promise) use ($chunkX, $chunkZ, $onCompletion) : void{
 				if(!$this->isConnected()){
 					return;
 				}
