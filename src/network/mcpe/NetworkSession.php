@@ -916,12 +916,12 @@ class NetworkSession{
 				if(!$this->isConnected()){
 					return;
 				}
-				$currentWorld->timings->syncChunkSend->startTiming();
+				$world->timings->syncChunkSend->startTiming();
 				try{
 					$this->queueCompressed($promise);
 					$onCompletion();
 				}finally{
-					$currentWorld->timings->syncChunkSend->stopTiming();
+					$world->timings->syncChunkSend->stopTiming();
 				}
 			}
 		);
