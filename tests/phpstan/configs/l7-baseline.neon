@@ -496,11 +496,6 @@ parameters:
 			path: ../../../src/command/defaults/TimingsCommand.php
 
 		-
-			message: "#^Parameter \\#4 \\$data of class class@anonymous/src/command/defaults/TimingsCommand\\.php\\:131 constructor expects array\\<string, string\\>, array\\<string, string\\|false\\> given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/TimingsCommand.php
-
-		-
 			message: "#^Method pocketmine\\\\crafting\\\\CraftingManager\\:\\:hashOutputs\\(\\) should return string but returns string\\|false\\.$#"
 			count: 1
 			path: ../../../src/crafting/CraftingManager.php
@@ -659,16 +654,6 @@ parameters:
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
-
-		-
-			message: "#^Call to an undefined method object\\:\\:Add\\(\\)\\.$#"
-			count: 1
-			path: ../../../src/network/upnp/UPnP.php
-
-		-
-			message: "#^Call to an undefined method object\\:\\:Remove\\(\\)\\.$#"
-			count: 1
-			path: ../../../src/network/upnp/UPnP.php
 
 		-
 			message: "#^Array \\(array\\<int, pocketmine\\\\player\\\\UsedChunkStatus\\>\\) does not accept key \\(int\\|string\\)\\.$#"

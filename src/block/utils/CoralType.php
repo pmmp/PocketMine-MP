@@ -30,11 +30,11 @@ use pocketmine\utils\EnumTrait;
  * This must be regenerated whenever registry members are added, removed or changed.
  * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
- * @method static CoralType TUBE()
  * @method static CoralType BRAIN()
  * @method static CoralType BUBBLE()
  * @method static CoralType FIRE()
  * @method static CoralType HORN()
+ * @method static CoralType TUBE()
  */
 final class CoralType{
 	use EnumTrait {

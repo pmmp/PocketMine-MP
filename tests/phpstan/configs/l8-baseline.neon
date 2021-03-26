@@ -86,16 +86,6 @@ parameters:
 			path: ../../../src/inventory/transaction/CraftingTransaction.php
 
 		-
-			message: "#^Cannot call method getUsername\\(\\) on pocketmine\\\\player\\\\PlayerInfo\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/NetworkSessionManager.php
-
-		-
-			message: "#^Cannot call method getUuid\\(\\) on pocketmine\\\\player\\\\PlayerInfo\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/NetworkSessionManager.php
-
-		-
 			message: "#^Parameter \\#1 \\$entity of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:onEntityEffectAdded\\(\\) expects pocketmine\\\\entity\\\\Living, pocketmine\\\\player\\\\Player\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php

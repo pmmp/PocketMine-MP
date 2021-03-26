@@ -98,6 +98,8 @@ use function base64_encode;
 use function count;
 use function fmod;
 use function implode;
+use function is_infinite;
+use function is_nan;
 use function json_decode;
 use function json_encode;
 use function json_last_error_msg;
@@ -153,6 +155,14 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
+		$rawPos = $packet->position;
+		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $packet->yaw, $packet->headYaw, $packet->pitch] as $float){
+			if(is_infinite($float) || is_nan($float)){
+				$this->session->getLogger()->debug("Invalid movement received, contains NAN/INF components");
+				return false;
+			}
+		}
+
 		$yaw = fmod($packet->yaw, 360);
 		$pitch = fmod($packet->pitch, 360);
 		if($yaw < 0){

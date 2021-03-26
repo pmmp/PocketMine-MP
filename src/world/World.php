@@ -123,9 +123,8 @@ class World implements ChunkManager{
 	/** @var int */
 	private static $worldIdCounter = 1;
 
-	public const Y_MASK = 0xFF;
-	public const Y_MAX = 320;
-	public const Y_MIN = -64;
+	public const Y_MAX = 256;
+	public const Y_MIN = 0;
 
 	public const TIME_DAY = 1000;
 	public const TIME_NOON = 6000;

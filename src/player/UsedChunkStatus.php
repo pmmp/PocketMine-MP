@@ -28,11 +28,11 @@ use pocketmine\utils\EnumTrait;
 /**
  * This doc-block is generated automatically, do not modify it manually.
  * This must be regenerated whenever registry members are added, removed or changed.
- * @see RegistryTrait::_generateMethodAnnotations()
+ * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
  *
- * @method static self NEEDED()
- * @method static self REQUESTED()
- * @method static self SENT()
+ * @method static UsedChunkStatus NEEDED()
+ * @method static UsedChunkStatus REQUESTED()
+ * @method static UsedChunkStatus SENT()
  */
 final class UsedChunkStatus{
 	use EnumTrait;
