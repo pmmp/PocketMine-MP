@@ -702,6 +702,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		Timings::$playerChunkSend->startTiming();
 
 		$count = 0;
+		$world = $this->getWorld();
 		foreach($this->loadQueue as $index => $distance){
 			if($count >= $this->chunksPerTick){
 				break;
@@ -719,8 +720,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->getWorld()->registerChunkListener($this, $X, $Z);
 
 			$this->getWorld()->requestChunkPopulation($X, $Z, $this->chunkLoader)->onCompletion(
-				function() use ($X, $Z, $index) : void{
-					if(!$this->isConnected() || !isset($this->usedChunks[$index])){
+				function() use ($X, $Z, $index, $world) : void{
+					if(!$this->isConnected() || !isset($this->usedChunks[$index]) || $world !== $this->getWorld()){
 						return;
 					}
 					unset($this->loadQueue[$index]);
