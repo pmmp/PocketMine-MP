@@ -916,11 +916,6 @@ class NetworkSession{
 				if(!$this->isConnected()){
 					return;
 				}
-				$currentWorld = $this->player->getLocation()->getWorld();
-				if($world !== $currentWorld or !$this->player->isUsingChunk($chunkX, $chunkZ)){
-					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
-					return;
-				}
 				$currentWorld->timings->syncChunkSend->startTiming();
 				try{
 					$this->queueCompressed($promise);
