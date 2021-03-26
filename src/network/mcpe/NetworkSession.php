@@ -234,8 +234,18 @@ class NetworkSession{
 	}
 
 	protected function createPlayer() : void{
-		$this->player = $this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData);
+		$this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData)->onCompletion(
+			\Closure::fromCallable([$this, 'onPlayerCreated']),
+			fn() => $this->disconnect("Player creation failed") //TODO: this should never actually occur... right?
+		);
+	}
 
+	private function onPlayerCreated(Player $player) : void{
+		if(!$this->isConnected()){
+			//the remote player might have disconnected before spawn terrain generation was finished
+			return;
+		}
+		$this->player = $player;
 		$this->invManager = new InventoryManager($this->player, $this);
 
 		$effectManager = $this->player->getEffects();
@@ -259,6 +269,7 @@ class NetworkSession{
 		$this->disposeHooks->add(static function() use ($permissionHooks, $permHook) : void{
 			$permissionHooks->remove($permHook);
 		});
+		$this->beginSpawnSequence();
 	}
 
 	public function getPlayer() : ?Player{
@@ -680,13 +691,11 @@ class NetworkSession{
 
 		$this->logger->debug("Initiating resource packs phase");
 		$this->setHandler(new ResourcePacksPacketHandler($this, $this->server->getResourcePackManager(), function() : void{
-			$this->beginSpawnSequence();
+			$this->createPlayer();
 		}));
 	}
 
 	private function beginSpawnSequence() : void{
-		$this->createPlayer();
-
 		$this->setHandler(new PreSpawnPacketHandler($this->server, $this->player, $this));
 		$this->player->setImmobile(); //TODO: HACK: fix client-side falling pre-spawn
 

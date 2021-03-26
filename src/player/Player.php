@@ -34,7 +34,6 @@ use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\CriticalHitAnimation;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
@@ -261,7 +260,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/** @var SurvivalBlockBreakHandler|null */
 	protected $blockBreakHandler = null;
 
-	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $namedtag){
+	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, Location $spawnLocation, ?CompoundTag $namedtag){
 		$username = TextFormat::clean($playerInfo->getUsername());
 		$this->logger = new \PrefixedLogger($server->getLogger(), "Player: $username");
 
@@ -286,24 +285,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
 		$this->chunkSelector = new ChunkSelector();
 
-		if($namedtag !== null and ($world = $this->server->getWorldManager()->getWorldByName($namedtag->getString("Level", ""))) !== null){
-			$spawn = EntityDataHelper::parseLocation($namedtag, $world);
-			$onGround = $namedtag->getByte("OnGround", 1) === 1;
-		}else{
-			$world = $this->server->getWorldManager()->getDefaultWorld();
-			$spawn = Location::fromObject($world->getSafeSpawn(), $world);
-			$onGround = true;
-		}
+		$this->chunkLoader = new PlayerChunkLoader($spawnLocation);
 
-		$this->chunkLoader = new PlayerChunkLoader($spawn);
-
+		$world = $spawnLocation->getWorld();
 		//load the spawn chunk so we can see the terrain
-		$world->registerChunkLoader($this->chunkLoader, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, true);
-		$world->registerChunkListener($this, $spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4);
-		$this->usedChunks[World::chunkHash($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4)] = UsedChunkStatus::NEEDED();
+		$world->registerChunkLoader($this->chunkLoader, $spawnLocation->getFloorX() >> 4, $spawnLocation->getFloorZ() >> 4, true);
+		$world->registerChunkListener($this, $spawnLocation->getFloorX() >> 4, $spawnLocation->getFloorZ() >> 4);
+		$this->usedChunks[World::chunkHash($spawnLocation->getFloorX() >> 4, $spawnLocation->getFloorZ() >> 4)] = UsedChunkStatus::NEEDED();
 
-		parent::__construct($spawn, $this->playerInfo->getSkin(), $namedtag);
-		$this->onGround = $onGround; //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
+		parent::__construct($spawnLocation, $this->playerInfo->getSkin(), $namedtag);
 
 		$ev = new PlayerLoginEvent($this, "Plugin reason");
 		$ev->call();
@@ -712,6 +702,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		Timings::$playerChunkSend->startTiming();
 
 		$count = 0;
+		$world = $this->getWorld();
 		foreach($this->loadQueue as $index => $distance){
 			if($count >= $this->chunksPerTick){
 				break;
@@ -728,30 +719,36 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->getWorld()->registerChunkLoader($this->chunkLoader, $X, $Z, true);
 			$this->getWorld()->registerChunkListener($this, $X, $Z);
 
-			if(!$this->getWorld()->requestChunkPopulation($X, $Z)){
-				continue;
-			}
-
-			unset($this->loadQueue[$index]);
-			$this->usedChunks[$index] = UsedChunkStatus::REQUESTED();
-
-			$this->getNetworkSession()->startUsingChunk($X, $Z, function(int $chunkX, int $chunkZ) use ($index) : void{
-				$this->usedChunks[$index] = UsedChunkStatus::SENT();
-				if($this->spawnChunkLoadCount === -1){
-					$this->spawnEntitiesOnChunk($chunkX, $chunkZ);
-				}elseif($this->spawnChunkLoadCount++ === $this->spawnThreshold){
-					$this->spawnChunkLoadCount = -1;
-
-					foreach($this->usedChunks as $chunkHash => $status){
-						if($status->equals(UsedChunkStatus::SENT())){
-							World::getXZ($chunkHash, $_x, $_z);
-							$this->spawnEntitiesOnChunk($_x, $_z);
-						}
+			$this->getWorld()->requestChunkPopulation($X, $Z, $this->chunkLoader)->onCompletion(
+				function() use ($X, $Z, $index, $world) : void{
+					if(!$this->isConnected() || !isset($this->usedChunks[$index]) || $world !== $this->getWorld()){
+						return;
 					}
+					unset($this->loadQueue[$index]);
+					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED();
 
-					$this->getNetworkSession()->notifyTerrainReady();
+					$this->getNetworkSession()->startUsingChunk($X, $Z, function(int $chunkX, int $chunkZ) use ($index) : void{
+						$this->usedChunks[$index] = UsedChunkStatus::SENT();
+						if($this->spawnChunkLoadCount === -1){
+							$this->spawnEntitiesOnChunk($chunkX, $chunkZ);
+						}elseif($this->spawnChunkLoadCount++ === $this->spawnThreshold){
+							$this->spawnChunkLoadCount = -1;
+
+							foreach($this->usedChunks as $chunkHash => $status){
+								if($status->equals(UsedChunkStatus::SENT())){
+									World::getXZ($chunkHash, $_x, $_z);
+									$this->spawnEntitiesOnChunk($_x, $_z);
+								}
+							}
+
+							$this->getNetworkSession()->notifyTerrainReady();
+						}
+					});
+				},
+				static function() : void{
+					//NOOP: we'll re-request this if it fails anyway
 				}
-			});
+			);
 		}
 
 		Timings::$playerChunkSend->stopTiming();

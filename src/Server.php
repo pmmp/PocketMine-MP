@@ -34,6 +34,8 @@ use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
+use pocketmine\entity\EntityDataHelper;
+use pocketmine\entity\Location;
 use pocketmine\event\HandlerListManager;
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
@@ -68,6 +70,7 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\OfflinePlayer;
 use pocketmine\player\Player;
+use pocketmine\player\PlayerCreationPromise;
 use pocketmine\player\PlayerInfo;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
@@ -84,6 +87,7 @@ use pocketmine\stats\SendUsageTask;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\AutoUpdater;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Internet;
@@ -576,17 +580,45 @@ class Server{
 		}
 	}
 
-	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : Player{
+	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : PlayerCreationPromise{
 		$ev = new PlayerCreationEvent($session);
 		$ev->call();
 		$class = $ev->getPlayerClass();
 
-		/**
-		 * @see Player::__construct()
-		 * @var Player $player
-		 */
-		$player = new $class($this, $session, $playerInfo, $authenticated, $offlinePlayerData);
-		return $player;
+		if($offlinePlayerData !== null and ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString("Level", ""))) !== null){
+			$spawn = EntityDataHelper::parseLocation($offlinePlayerData, $world);
+			$onGround = $offlinePlayerData->getByte("OnGround", 1) === 1;
+		}else{
+			$world = $this->worldManager->getDefaultWorld();
+			if($world === null){
+				throw new AssumptionFailedError("Default world should always be loaded");
+			}
+			$spawn = Location::fromObject($world->getSafeSpawn(), $world);
+			$onGround = true;
+		}
+		$playerPromise = new PlayerCreationPromise();
+		$world->requestChunkPopulation($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, null)->onCompletion(
+			function() use ($playerPromise, $class, $session, $playerInfo, $authenticated, $spawn, $offlinePlayerData, $onGround) : void{
+				if(!$session->isConnected()){
+					$playerPromise->reject();
+					return;
+				}
+				/**
+				 * @see Player::__construct()
+				 * @var Player $player
+				 */
+				$player = new $class($this, $session, $playerInfo, $authenticated, $spawn, $offlinePlayerData);
+				$player->onGround = $onGround;  //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
+				$playerPromise->resolve($player);
+			},
+			static function() use ($playerPromise, $session) : void{
+				if($session->isConnected()){
+					$session->disconnect("Spawn terrain generation failed");
+				}
+				$playerPromise->reject();
+			}
+		);
+		return $playerPromise;
 	}
 
 	/**
