@@ -26,6 +26,7 @@ namespace pocketmine\build\update_registry_annotations;
 use pocketmine\utils\RegistryUtils;
 use function basename;
 use function class_exists;
+use function count;
 use function dirname;
 use function file_get_contents;
 use function file_put_contents;
