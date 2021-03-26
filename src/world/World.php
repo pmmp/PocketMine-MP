@@ -401,6 +401,19 @@ class World implements ChunkManager{
 		$this->generator = GeneratorManager::getInstance()->getGenerator($this->provider->getWorldData()->getGenerator(), true);
 		//TODO: validate generator options
 		$this->chunkPopulationRequestQueue = new \SplQueue();
+		$this->addOnUnloadCallback(function() : void{
+			$this->logger->debug("Cancelling unfulfilled generation requests");
+
+			foreach($this->chunkPopulationRequestMap as $chunkHash => $promise){
+				$promise->reject();
+				unset($this->chunkPopulationRequestMap[$chunkHash]);
+			}
+			if(count($this->chunkPopulationRequestMap) !== 0){
+				//TODO: this might actually get hit because generation rejection callbacks might try to schedule new
+				//requests, and we can't prevent that right now because there's no way to detect "unloading" state
+				throw new AssumptionFailedError("New generation requests scheduled during unload");
+			}
+		});
 
 		$this->folderName = $name;
 
