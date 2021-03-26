@@ -30,13 +30,7 @@ namespace pocketmine\world;
  */
 interface TickingChunkLoader extends ChunkLoader{
 
-	/**
-	 * @return float
-	 */
-	public function getX();
+	public function getX() : float;
 
-	/**
-	 * @return float
-	 */
-	public function getZ();
+	public function getZ() : float;
 }
