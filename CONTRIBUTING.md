@@ -114,13 +114,11 @@ class ExampleClass{
 ```
 
 <!-- TODO: RFC and voting on the forums instead -->
-### RFC and Voting
-* These are big Pull Requests or contributions that change important behavior.
-* RFCs will be tagged with the *Type: Request For Comments* label
-* A vote will be held once the RFC is ready. All users can vote commenting on the Pull Request
-* Comments MUST use "Yes" or "No" on the FIRST sentence to signify the vote, except when they don't want it to be counted.
+### Major API changes
+* Major API changes, no matter API-breaking or not, SHOULD be proposed by creating a topic in [Discussions](https://github.com/pmmp/PocketMine-MP/discussions).
+* The change proposal enters the "Voting Period" of 7 days after the team determines that sufficient discussion has been made.
+* During the Voting Period, comments on the proposal with "YES" or "NO" in the *first* sentence indicate the user's vote.
 * If your comment is a voting comment, specify the reason of your vote or it won't be counted.
-* After voting has been closed, no further votes will be counted.
-* An RFC will be rejected if less than 50% + 1 (simple majority) has voted Yes.
-* If the RFC is approved, Team Members have the final word on its implementation or rejection.
+* The team will *consider* the voting results after the Voting Period and decide whether the discussion can be implemented.
+* Contributors may implement the proposed change *after* the Voting Period.
 * RFCs with complex voting options will specify the vote percentage or other details.
