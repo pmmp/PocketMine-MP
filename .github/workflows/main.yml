@@ -261,3 +261,21 @@ jobs:
         with:
           name: preprocessor_diffs_${{ matrix.php }}_${{ matrix.image }}
           path: ${{ github.workspace }}/preprocessor_diff*.patch
+
+  codestyle:
+    name: Code Style checks
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup PHP and tools
+        uses: shivammathur/setup-php@2.9.0
+        with:
+          php-version: 7.4
+          tools: php-cs-fixer
+
+      - name: Run PHP-CS-Fixer
+        run: php-cs-fixer fix --dry-run --diff --diff-format=udiff
