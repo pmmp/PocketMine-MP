@@ -71,7 +71,7 @@ function main(array $argv) : void{
 
 	$versionInfoPath = dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
 	replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false);
-	
+
 	echo "please add appropriate notes to the changelog and press enter...";
 	fgets(STDIN);
 	system('git add "' . dirname(__DIR__) . '/changelogs"');

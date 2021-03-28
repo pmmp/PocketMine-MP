@@ -2936,7 +2936,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$this->inventory->sendHeldItem($this);
 					break;
 				}
-				
+
 				$tile = $this->level->getTile($pos);
 				if($tile instanceof ItemFrame and $tile->hasItem()){
 					if (lcg_value() <= $tile->getItemDropChance()){
