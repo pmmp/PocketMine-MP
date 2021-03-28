@@ -779,3 +779,4 @@ parameters:
 			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/pocketmine/tile/Tile.php
+
