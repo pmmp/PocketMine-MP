@@ -667,8 +667,8 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
-		$converter = TypeConverter::getInstance();
-		if(!$converter->protocolGameModeToCore($packet->gamemode)->equals($this->player->getGamemode())){
+		$gameMode = TypeConverter::getInstance()->protocolGameModeToCore($packet->gamemode);
+		if($gameMode === null || !$gameMode->equals($this->player->getGamemode())){
 			//Set this back to default. TODO: handle this properly
 			$this->session->syncGameMode($this->player->getGamemode(), true);
 		}

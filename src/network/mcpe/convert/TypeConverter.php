@@ -91,7 +91,7 @@ class TypeConverter{
 		}
 	}
 
-	public function protocolGameModeToCore(int $gameMode) : GameMode{
+	public function protocolGameModeToCore(int $gameMode) : ?GameMode{
 		switch($gameMode){
 			case ProtocolGameMode::SURVIVAL:
 				return GameMode::SURVIVAL();
@@ -103,7 +103,7 @@ class TypeConverter{
 			case ProtocolGameMode::SURVIVAL_VIEWER:
 				return GameMode::SPECTATOR();
 			default:
-				throw new \UnexpectedValueException("Unmapped protocol game mode $gameMode");
+				return null;
 		}
 	}
 
