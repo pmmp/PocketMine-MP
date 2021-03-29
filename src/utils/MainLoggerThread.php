@@ -50,10 +50,11 @@ final class MainLoggerThread extends \Thread{
 	}
 
 	public function syncFlushBuffer() : void{
-		$this->syncFlush = true;
 		$this->synchronized(function() : void{
+			$this->syncFlush = true;
 			$this->notify(); //write immediately
-
+		});
+		$this->synchronized(function() : void{
 			while($this->syncFlush){
 				$this->wait(); //block until it's all been written to disk
 			}
@@ -95,7 +96,7 @@ final class MainLoggerThread extends \Thread{
 		while(!$this->shutdown){
 			$this->writeLogStream($logResource);
 			$this->synchronized(function() : void{
-				if(!$this->shutdown){
+				if(!$this->shutdown && !$this->syncFlush){
 					$this->wait();
 				}
 			});

@@ -125,7 +125,7 @@ class Sugarcane extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->isSameType($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($down->getId() === BlockLegacyIds::GRASS or $down->getId() === BlockLegacyIds::DIRT or $down->getId() === BlockLegacyIds::SAND){
+		}elseif($down->getId() === BlockLegacyIds::GRASS or $down->getId() === BlockLegacyIds::DIRT or $down->getId() === BlockLegacyIds::SAND or $down->getId() === BlockLegacyIds::PODZOL){
 			foreach(Facing::HORIZONTAL as $side){
 				if($down->getSide($side) instanceof Water){
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);

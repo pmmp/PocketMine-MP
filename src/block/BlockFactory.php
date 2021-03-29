@@ -47,7 +47,6 @@ use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
-use pocketmine\block\utils\PillarRotationInMetadataTrait;
 use pocketmine\block\utils\TreeType;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Item;

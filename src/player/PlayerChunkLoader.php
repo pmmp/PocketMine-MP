@@ -39,11 +39,11 @@ final class PlayerChunkLoader implements TickingChunkLoader{
 		$this->currentLocation = $currentLocation;
 	}
 
-	public function getX(){
+	public function getX() : float{
 		return $this->currentLocation->getFloorX();
 	}
 
-	public function getZ(){
+	public function getZ() : float{
 		return $this->currentLocation->getFloorZ();
 	}
 }

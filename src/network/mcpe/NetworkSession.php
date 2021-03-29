@@ -239,8 +239,18 @@ class NetworkSession{
 	}
 
 	protected function createPlayer() : void{
-		$this->player = $this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData);
+		$this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData)->onCompletion(
+			\Closure::fromCallable([$this, 'onPlayerCreated']),
+			fn() => $this->disconnect("Player creation failed") //TODO: this should never actually occur... right?
+		);
+	}
 
+	private function onPlayerCreated(Player $player) : void{
+		if(!$this->isConnected()){
+			//the remote player might have disconnected before spawn terrain generation was finished
+			return;
+		}
+		$this->player = $player;
 		$this->invManager = new InventoryManager($this->player, $this);
 
 		$effectManager = $this->player->getEffects();
@@ -264,6 +274,7 @@ class NetworkSession{
 		$this->disposeHooks->add(static function() use ($permissionHooks, $permHook) : void{
 			$permissionHooks->remove($permHook);
 		});
+		$this->beginSpawnSequence();
 	}
 
 	public function getPlayer() : ?Player{
@@ -701,13 +712,11 @@ class NetworkSession{
 
 		$this->logger->debug("Initiating resource packs phase");
 		$this->setHandler(new ResourcePacksPacketHandler($this, $this->server->getResourcePackManager(), function() : void{
-			$this->beginSpawnSequence();
+			$this->createPlayer();
 		}));
 	}
 
 	private function beginSpawnSequence() : void{
-		$this->createPlayer();
-
 		$this->setHandler(new PreSpawnPacketHandler($this->server, $this->player, $this));
 		$this->player->setImmobile(); //TODO: HACK: fix client-side falling pre-spawn
 
@@ -917,30 +926,25 @@ class NetworkSession{
 	/**
 	 * Instructs the networksession to start using the chunk at the given coordinates. This may occur asynchronously.
 	 * @param \Closure $onCompletion To be called when chunk sending has completed.
-	 * @phpstan-param \Closure(int $chunkX, int $chunkZ) : void $onCompletion
+	 * @phpstan-param \Closure() : void $onCompletion
 	 */
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
-		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ) : void{}, $onCompletion);
+		Utils::validateCallableSignature(function() : void{}, $onCompletion);
 
 		$world = $this->player->getLocation()->getWorld();
 		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ, $this->getProtocolId())->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
-			function(CompressBatchPromise $promise) use ($world, $chunkX, $chunkZ, $onCompletion) : void{
+			function(CompressBatchPromise $promise) use ($world, $onCompletion) : void{
 				if(!$this->isConnected()){
 					return;
 				}
-				$currentWorld = $this->player->getLocation()->getWorld();
-				if($world !== $currentWorld or !$this->player->isUsingChunk($chunkX, $chunkZ)){
-					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
-					return;
-				}
-				$currentWorld->timings->syncChunkSend->startTiming();
+				$world->timings->syncChunkSend->startTiming();
 				try{
 					$this->queueCompressed($promise);
-					$onCompletion($chunkX, $chunkZ);
+					$onCompletion();
 				}finally{
-					$currentWorld->timings->syncChunkSend->stopTiming();
+					$world->timings->syncChunkSend->stopTiming();
 				}
 			}
 		);

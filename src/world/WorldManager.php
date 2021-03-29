@@ -285,7 +285,7 @@ class WorldManager{
 
 			foreach((new ChunkSelector())->selectChunks(3, $centerX, $centerZ) as $index){
 				World::getXZ($index, $chunkX, $chunkZ);
-				$world->orderChunkPopulation($chunkX, $chunkZ);
+				$world->orderChunkPopulation($chunkX, $chunkZ, null);
 			}
 		}
 
