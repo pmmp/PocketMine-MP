@@ -187,3 +187,8 @@ plugins:
   #False will place plugin data under plugin_data under --data.
   #This option exists for backwards compatibility with existing installations.
   legacy-data-dir: false
+
+watchdog:
+  #When main thread freeze the server will be killed within a certain time
+  #Choose time in seconds
+  timeout: 180
