@@ -37,21 +37,21 @@ class Watchdog extends Thread{
 	/** @var int */
 	public $timeout = 180;
 
-	public function __construct(\AttachableThreadedLogger $logger)
-	{
+	public function __construct(\AttachableThreadedLogger $logger){
 		$this->logger = $logger;
 		$this->start();
 	}
 
-	public function run()
-	{
+	public function run(){
 		$this->lastRespond = time();
+		
 		while(!$this->isKilled){
-			if($this->lastRespond + $this->timeout <= time()) {
+			if($this->lastRespond + $this->timeout <= time()){
 				$this->logger->info("Server killed due to freeze for " . $this->timeout . " seconds.");
 				Process::kill(Process::pid());
 				return;
 			}
+			
 			sleep(1);
 		}
 	}
