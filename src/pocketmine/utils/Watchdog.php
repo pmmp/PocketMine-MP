@@ -48,6 +48,7 @@ class Watchdog extends Thread
         while(true){
             if($this->lastRespond + $this->timeout <= time()) {
                 $this->logger->info("Server killed due to freeze for ".$this->timeout." seconds.");
+				sleep(3);
                 Process::kill(Process::pid());
                 return;
             }
