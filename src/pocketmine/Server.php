@@ -2419,6 +2419,7 @@ class Server{
 
 			$this->network->updateName();
 			$this->network->resetStatistics();
+			$this->watchdog->lastRespond = time();
 		}
 
 		if($this->autoSave and ++$this->autoSaveTicker >= $this->autoSaveTicks){
