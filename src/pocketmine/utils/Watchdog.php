@@ -27,8 +27,7 @@ use pocketmine\Thread;
 use function sleep;
 use function time;
 
-class Watchdog extends Thread
-{
+class Watchdog extends Thread{
 	/** @var int */
 	public $lastRespond;
 
