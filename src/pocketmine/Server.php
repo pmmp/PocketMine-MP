@@ -252,7 +252,7 @@ class Server{
 	/** @var \AttachableThreadedLogger */
 	private $logger;
 
-    /** @var Watchdog */
+        /** @var Watchdog */
 	private $watchdog;
 
 	/** @var MemoryManager */
@@ -1587,7 +1587,7 @@ class Server{
 			}
 
 			if($this->getProperty("watchdog.timeout", 180) > 0){
-                $this->watchdog->timeout = (int) $this->getProperty("watchdog.timeout", 180);
+                		$this->watchdog->timeout = (int) $this->getProperty("watchdog.timeout", 180);
 			}
 
 			$this->enablePlugins(PluginLoadOrder::POSTWORLD);
