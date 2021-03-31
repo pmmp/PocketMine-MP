@@ -72,7 +72,7 @@ class PacketSerializer extends BinaryStream{
 
 	public function __construct(string $buffer = "", int $offset = 0){
 		parent::__construct($buffer, $offset);
-		$this->shieldItemRuntimeId = ItemTypeDictionary::getInstance()->toRuntimeId("minecraft:shield");
+		$this->shieldItemRuntimeId = ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield");
 	}
 
 	/**
