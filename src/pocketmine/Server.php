@@ -107,6 +107,7 @@ use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\utils\UUID;
+use pocketmine\utils\Watchdog;
 use function array_filter;
 use function array_key_exists;
 use function array_shift;
@@ -250,6 +251,9 @@ class Server{
 
 	/** @var \AttachableThreadedLogger */
 	private $logger;
+
+    /** @var Watchdog */
+	private $watchdog;
 
 	/** @var MemoryManager */
 	private $memoryManager;
@@ -1303,6 +1307,7 @@ class Server{
 		$this->tickSleeper = new SleeperHandler();
 		$this->autoloader = $autoloader;
 		$this->logger = $logger;
+		$this->watchdog = new Watchdog($logger);
 
 		try{
 			if(!file_exists($dataPath . "worlds/")){
@@ -1580,6 +1585,12 @@ class Server{
 			if($this->getProperty("ticks-per.autosave", 6000) > 0){
 				$this->autoSaveTicks = (int) $this->getProperty("ticks-per.autosave", 6000);
 			}
+
+			$timeout = $this->getProperty("watchdog.timeout");
+            $this->watchdog->timeout = $timeout ?? 180;
+			if($timeout === null) {
+			    $this->config->setNested("watchdog.timeout", 180);
+            }
 
 			$this->enablePlugins(PluginLoadOrder::POSTWORLD);
 
