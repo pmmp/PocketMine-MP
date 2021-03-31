@@ -187,3 +187,6 @@ plugins:
   #False will place plugin data under plugin_data under --data.
   #This option exists for backwards compatibility with existing installations.
   legacy-data-dir: false
+
+watchdog:
+  timeout: 180
