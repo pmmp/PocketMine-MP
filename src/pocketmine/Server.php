@@ -1587,7 +1587,7 @@ class Server{
 			}
 
 			$timeout = $this->getProperty("watchdog.timeout");
-            $this->watchdog->timeout = $timeout ?? 180;
+            $this->watchdog->timeout = inval($timeout ?? 180);
 			if($timeout === null) {
 			    $this->config->setNested("watchdog.timeout", 180);
             }
