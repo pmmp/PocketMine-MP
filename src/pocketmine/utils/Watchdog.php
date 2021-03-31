@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use pocketmine\Thread;
+use function sleep;
+use function time;
 
 class Watchdog extends Thread
 {
