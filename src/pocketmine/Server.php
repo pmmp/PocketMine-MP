@@ -1586,8 +1586,8 @@ class Server{
 				$this->autoSaveTicks = (int) $this->getProperty("ticks-per.autosave", 6000);
 			}
 
-			if($this->getProperty("watchdog.timeout", 180) > 0){
-                		$this->watchdog->timeout = (int) $this->getProperty("watchdog.timeout", 180);
+			if($this->getProperty("watchdog.timeout", 300) > 0){
+                		$this->watchdog->timeout = (int) $this->getProperty("watchdog.timeout", 300);
 			}
 
 			$this->enablePlugins(PluginLoadOrder::POSTWORLD);
