@@ -3139,7 +3139,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			if($isFlying and !$this->allowFlight){
 				$ev->setCancelled();
 			}
-			
 			$ev->call();
 			if($ev->isCancelled()){
 				$this->sendSettings();
