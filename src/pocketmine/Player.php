@@ -3134,10 +3134,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$handled = false;
 
 		$isFlying = $packet->getFlag(AdventureSettingsPacket::FLYING);
-		if($isFlying and !$this->allowFlight){
+		if($isFlying and !$this->allowFlight and !$this->allowMovementCheats){
 			$this->kick($this->server->getLanguage()->translateString("kick.reason.cheat", ["%ability.flight"]));
 			return true;
-		}elseif($isFlying !== $this->isFlying()){
+		}
+		if($isFlying !== $this->isFlying()){
 			$ev = new PlayerToggleFlightEvent($this, $isFlying);
 			$ev->call();
 			if($ev->isCancelled()){
