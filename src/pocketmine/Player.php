@@ -2843,7 +2843,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		$target = $this->level->getEntity($packet->target);
-		if($packet->action !== InteractPacket::ACTION_OPEN_INVENTORY or $target !== $this){
+		if($packet->action !== InteractPacket::ACTION_OPEN_INVENTORY){
 			$this->doCloseInventory();
 		}
 
