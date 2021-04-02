@@ -3116,7 +3116,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 		if(isset($this->windowIndex[$packet->windowId])){
 			$this->closingWindowId = $packet->windowId;
-			(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this))->call();
 			$this->removeWindow($this->windowIndex[$packet->windowId]);
 			$this->closingWindowId = null;
 			//removeWindow handles sending the appropriate
@@ -4134,6 +4133,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	public function removeWindow(Inventory $inventory, bool $force = false){
 		$id = $this->windows[$hash = spl_object_hash($inventory)] ?? null;
+
+		(new InventoryCloseEvent($inventory, $this))->call();
 
 		if($id !== null and !$force and isset($this->permanentWindows[$id])){
 			throw new \InvalidArgumentException("Cannot remove fixed window $id (" . get_class($inventory) . ") from " . $this->getName());
