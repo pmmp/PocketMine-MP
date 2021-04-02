@@ -2844,8 +2844,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$target = $this->level->getEntity($packet->target);
 		if(($inventoryClosed = !array_key_exists($windowId = self::HARDCODED_INVENTORY_WINDOW_ID,$this->openHardcodedWindows)) or $packet->action !== InteractPacket::ACTION_MOUSEOVER){
-            $this->doCloseInventory();
-        }
+			$this->doCloseInventory();
+		}
 
 		if($target === null){
 			return false;
