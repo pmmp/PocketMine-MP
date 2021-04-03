@@ -4134,7 +4134,9 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function removeWindow(Inventory $inventory, bool $force = false){
 		$id = $this->windows[$hash = spl_object_hash($inventory)] ?? null;
 
-		(new InventoryCloseEvent($inventory, $this))->call();
+		if(id !== null){
+			(new InventoryCloseEvent($inventory, $this))->call();
+		}
 
 		if($id !== null and !$force and isset($this->permanentWindows[$id])){
 			throw new \InvalidArgumentException("Cannot remove fixed window $id (" . get_class($inventory) . ") from " . $this->getName());
