@@ -11,22 +11,22 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Server.php
-
-		-
-			message: "#^Instanceof between pocketmine\\\\scheduler\\\\AsyncPool and pocketmine\\\\scheduler\\\\AsyncPool will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Server.php
-
-		-
 			message: "#^Instanceof between pocketmine\\\\command\\\\CommandReader and pocketmine\\\\command\\\\CommandReader will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Server.php
 
 		-
 			message: "#^Instanceof between pocketmine\\\\network\\\\Network and pocketmine\\\\network\\\\Network will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\scheduler\\\\AsyncPool and pocketmine\\\\scheduler\\\\AsyncPool will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Server.php
 

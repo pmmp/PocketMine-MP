@@ -26,6 +26,16 @@ parameters:
 			path: ../../../src/pocketmine/item/Item.php
 
 		-
+			message: "#^Call to function is_object\\(\\) with \\*NEVER\\* will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/ItemFactory.php
+
+		-
+			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/ItemFactory.php
+
+		-
 			message: "#^If condition is always false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/item/ItemFactory.php
@@ -37,26 +47,16 @@ parameters:
 
 		-
 			message: "#^Call to function is_object\\(\\) with \\*NEVER\\* will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/ItemFactory.php
+			count: 2
+			path: ../../../src/pocketmine/level/Level.php
 
 		-
 			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/item/ItemFactory.php
+			count: 2
+			path: ../../../src/pocketmine/level/Level.php
 
 		-
 			message: "#^Instanceof between pocketmine\\\\math\\\\Vector3 and pocketmine\\\\math\\\\Vector3 will always evaluate to true\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Call to function is_object\\(\\) with \\*NEVER\\* will always evaluate to true\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/level/Level.php
 

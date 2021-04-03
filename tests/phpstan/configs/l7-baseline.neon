@@ -6,22 +6,22 @@ parameters:
 			path: ../../../build/make-release.php
 
 		-
-			message: "#^Parameter \\#1 \\$strings of function pocketmine\\\\build\\\\server_phar\\\\preg_quote_array expects array\\<string\\>, array\\<int, string\\|false\\> given\\.$#"
-			count: 1
-			path: ../../../build/server-phar.php
-
-		-
 			message: "#^Parameter \\#1 \\$pharPath of function pocketmine\\\\build\\\\server_phar\\\\buildPhar expects string, array\\<int, mixed\\>\\|string\\|false given\\.$#"
 			count: 1
 			path: ../../../build/server-phar.php
 
 		-
-			message: "#^Parameter \\#1 \\$fp of function fwrite expects resource, resource\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$strings of function pocketmine\\\\build\\\\server_phar\\\\preg_quote_array expects array\\<string\\>, array\\<int, string\\|false\\> given\\.$#"
+			count: 1
+			path: ../../../build/server-phar.php
+
+		-
+			message: "#^Parameter \\#1 \\$fp of function fclose expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/MemoryManager.php
 
 		-
-			message: "#^Parameter \\#1 \\$fp of function fclose expects resource, resource\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$fp of function fwrite expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/MemoryManager.php
 
@@ -46,13 +46,13 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Parameter \\#1 \\$haystack of function substr_count expects string, string\\|false given\\.$#"
-			count: 1
+			message: "#^Binary operation \"\\.\" between array\\<int, mixed\\>\\|string\\|false and '/'\\|'\\\\\\\\' results in an error\\.$#"
+			count: 2
 			path: ../../../src/pocketmine/PocketMine.php
 
 		-
-			message: "#^Parameter \\#1 \\$version1 of function version_compare expects string, string\\|false given\\.$#"
-			count: 2
+			message: "#^Parameter \\#1 \\$haystack of function substr_count expects string, string\\|false given\\.$#"
+			count: 1
 			path: ../../../src/pocketmine/PocketMine.php
 
 		-
@@ -61,14 +61,29 @@ parameters:
 			path: ../../../src/pocketmine/PocketMine.php
 
 		-
-			message: "#^Binary operation \"\\.\" between array\\<int, mixed\\>\\|string\\|false and '/'\\|'\\\\\\\\' results in an error\\.$#"
+			message: "#^Parameter \\#1 \\$path of function realpath expects string, string\\|false given\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/PocketMine.php
 
 		-
-			message: "#^Parameter \\#1 \\$path of function realpath expects string, string\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$version1 of function version_compare expects string, string\\|false given\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to int\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to string\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Only numeric types are allowed in \\+, int\\|false given on the left side\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
 
 		-
 			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\NBTStream\\:\\:readCompressed\\(\\) expects string, string\\|false given\\.$#"
@@ -81,22 +96,7 @@ parameters:
 			path: ../../../src/pocketmine/Server.php
 
 		-
-			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to string\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Server.php
-
-		-
-			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to int\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Server.php
-
-		-
 			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Server.php
-
-		-
-			message: "#^Only numeric types are allowed in \\+, int\\|false given on the left side\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Server.php
 
@@ -126,23 +126,13 @@ parameters:
 			path: ../../../src/pocketmine/block/Grass.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
-			path: ../../../src/pocketmine/block/Liquid.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
-			path: ../../../src/pocketmine/block/Liquid.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
-			path: ../../../src/pocketmine/block/Liquid.php
-
-		-
 			message: "#^Parameter \\#1 \\$blockX of method pocketmine\\\\block\\\\Liquid\\:\\:calculateFlowCost\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
 			path: ../../../src/pocketmine/block/Liquid.php
 
 		-
@@ -151,8 +141,18 @@ parameters:
 			path: ../../../src/pocketmine/block/Liquid.php
 
 		-
+			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
 			message: "#^Parameter \\#3 \\$blockZ of method pocketmine\\\\block\\\\Liquid\\:\\:calculateFlowCost\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
 			path: ../../../src/pocketmine/block/Liquid.php
 
 		-
@@ -196,7 +196,7 @@ parameters:
 			path: ../../../src/pocketmine/block/Sugarcane.php
 
 		-
-			message: "#^Static property pocketmine\\\\command\\\\CommandReader\\:\\:\\$stdin \\(resource\\) does not accept resource\\|false\\.$#"
+			message: "#^Cannot access offset 'mode' on array\\(0 \\=\\> int, 1 \\=\\> int, 2 \\=\\> int, 3 \\=\\> int, 4 \\=\\> int, 5 \\=\\> int, 6 \\=\\> int, 7 \\=\\> int, \\.\\.\\.\\)\\|false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/command/CommandReader.php
 
@@ -206,7 +206,7 @@ parameters:
 			path: ../../../src/pocketmine/command/CommandReader.php
 
 		-
-			message: "#^Cannot access offset 'mode' on array\\(0 \\=\\> int, 1 \\=\\> int, 2 \\=\\> int, 3 \\=\\> int, 4 \\=\\> int, 5 \\=\\> int, 6 \\=\\> int, 7 \\=\\> int, \\.\\.\\.\\)\\|false\\.$#"
+			message: "#^Static property pocketmine\\\\command\\\\CommandReader\\:\\:\\$stdin \\(resource\\) does not accept resource\\|false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/command/CommandReader.php
 
@@ -221,8 +221,8 @@ parameters:
 			path: ../../../src/pocketmine/command/defaults/PardonIpCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$fp of static method pocketmine\\\\timings\\\\TimingsHandler\\:\\:printTimings\\(\\) expects resource, resource\\|false given\\.$#"
-			count: 1
+			message: "#^Parameter \\#1 \\$fp of function fclose expects resource, resource\\|false given\\.$#"
+			count: 2
 			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
 
 		-
@@ -231,13 +231,13 @@ parameters:
 			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$source of function stream_get_contents expects resource, resource\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$fp of static method pocketmine\\\\timings\\\\TimingsHandler\\:\\:printTimings\\(\\) expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$fp of function fclose expects resource, resource\\|false given\\.$#"
-			count: 2
+			message: "#^Parameter \\#1 \\$source of function stream_get_contents expects resource, resource\\|false given\\.$#"
+			count: 1
 			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
 
 		-
@@ -281,12 +281,12 @@ parameters:
 			path: ../../../src/pocketmine/event/HandlerList.php
 
 		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
+			message: "#^Method pocketmine\\\\inventory\\\\CraftingManager\\:\\:hashOutputs\\(\\) should return string but returns string\\|false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/inventory/CraftingManager.php
 
 		-
-			message: "#^Method pocketmine\\\\inventory\\\\CraftingManager\\:\\:hashOutputs\\(\\) should return string but returns string\\|false\\.$#"
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/inventory/CraftingManager.php
 
@@ -306,47 +306,7 @@ parameters:
 			path: ../../../src/pocketmine/lang/BaseLang.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:setBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:setBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:setBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:setBlockDataAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:setBlockDataAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:setBlockDataAt\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Explosion.php
 
@@ -356,17 +316,32 @@ parameters:
 			path: ../../../src/pocketmine/level/Explosion.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Explosion.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:setBlockDataAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:setBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Explosion.php
 
@@ -376,18 +351,18 @@ parameters:
 			path: ../../../src/pocketmine/level/Explosion.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:setBlockDataAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Explosion.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:setBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Explosion.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
+			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
 			path: ../../../src/pocketmine/level/Explosion.php
 
 		-
@@ -396,12 +371,62 @@ parameters:
 			path: ../../../src/pocketmine/level/Explosion.php
 
 		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:setBlockDataAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:setBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Cannot access offset 'data' on array\\('priority' \\=\\> int, 'data' \\=\\> pocketmine\\\\math\\\\Vector3\\)\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
 			message: "#^Cannot access offset 'priority' on array\\('priority' \\=\\> int, 'data' \\=\\> pocketmine\\\\math\\\\Vector3\\)\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Level.php
 
 		-
-			message: "#^Cannot access offset 'data' on array\\('priority' \\=\\> int, 'data' \\=\\> pocketmine\\\\math\\\\Vector3\\)\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getFullBlock\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:updateBlockLight\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:updateBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Level.php
 
@@ -411,13 +436,78 @@ parameters:
 			path: ../../../src/pocketmine/level/Level.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:chunkBlockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getFullBlock\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:updateBlockLight\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:updateBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
 			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/pocketmine/level/Level.php
 
 		-
+			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\level\\\\Level\\:\\:chunkBlockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getFullBlock\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:updateBlockLight\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:updateBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
 			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
 			count: 3
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\level\\\\Level\\:\\:chunkBlockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
 			path: ../../../src/pocketmine/level/Level.php
 
 		-
@@ -433,106 +523,6 @@ parameters:
 		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\UpdateBlockPacket\\:\\:\\$z \\(int\\) does not accept float\\|int\\.$#"
 			count: 2
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getFullBlock\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getFullBlock\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getFullBlock\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
-			count: 4
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
-			count: 4
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
-			count: 4
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:updateBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:updateBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:updateBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:updateBlockLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:updateBlockLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:updateBlockLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:chunkBlockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\level\\\\Level\\:\\:chunkBlockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\level\\\\Level\\:\\:chunkBlockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#6 \\$xpDrops of class pocketmine\\\\event\\\\block\\\\BlockBreakEvent constructor expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/Level.php
-
-		-
-			message: "#^Parameter \\#2 \\$amount of method pocketmine\\\\level\\\\Level\\:\\:dropExperience\\(\\) expects int, float\\|int\\<1, max\\> given\\.$#"
-			count: 1
 			path: ../../../src/pocketmine/level/Level.php
 
 		-
@@ -581,23 +571,23 @@ parameters:
 			path: ../../../src/pocketmine/level/generator/object/TallGrass.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\ChunkManager\\:\\:setBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/generator/object/TallGrass.php
-
-		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\ChunkManager\\:\\:setBlockDataAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/generator/object/TallGrass.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\ChunkManager\\:\\:setBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/object/TallGrass.php
 
 		-
 			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:getGameRules\\(\\) should return array\\<string, array\\(int, bool\\|float\\|int\\)\\> but returns array\\<string, array\\(int, bool\\|float\\|int\\|null\\)\\>\\.$#"
 			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
+			count: 2
 			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
 
 		-
@@ -606,12 +596,12 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
 
 		-
-			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putUnsignedVarInt\\(\\) expects int, bool\\|float\\|int given\\.$#"
+			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putLFloat\\(\\) expects float, bool\\|float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
 
 		-
-			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putLFloat\\(\\) expects float, bool\\|float\\|int given\\.$#"
+			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putUnsignedVarInt\\(\\) expects int, bool\\|float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
 
@@ -626,22 +616,22 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
 
 		-
-			message: "#^Parameter \\#1 \\$string of function strlen expects string, string\\|false given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
-
-		-
 			message: "#^Parameter \\#1 \\$str of function str_split expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
 
 		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$string of function strlen expects string, string\\|false given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$buffer of class pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream constructor expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
 
 		-
-			message: "#^Parameter \\#1 \\$buffer of class pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream constructor expects string, string\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
 
@@ -696,6 +686,21 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/protocol/types/LegacySkinAdapter.php
 
 		-
+			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackChunk\\(\\) should return string but returns string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
+
+		-
+			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackSize\\(\\) should return int but returns int\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
+
+		-
+			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getSha256\\(\\) should return string but returns string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
+
+		-
 			message: "#^Parameter \\#1 \\$string of function strlen expects string, string\\|false given\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
@@ -711,22 +716,7 @@ parameters:
 			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackSize\\(\\) should return int but returns int\\|false\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
-
-		-
 			message: "#^Property pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:\\$sha256 \\(string\\|null\\) does not accept string\\|false\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
-
-		-
-			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getSha256\\(\\) should return string but returns string\\|false\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
-
-		-
-			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackChunk\\(\\) should return string but returns string\\|false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
 
@@ -751,6 +741,11 @@ parameters:
 			path: ../../../src/pocketmine/tile/Chest.php
 
 		-
+			message: "#^Parameter \\#2 \\$value of class pocketmine\\\\nbt\\\\tag\\\\IntTag constructor expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/tile/Spawnable.php
+
+		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BlockActorDataPacket\\:\\:\\$x \\(int\\) does not accept float\\|int\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/tile/Spawnable.php
@@ -763,11 +758,6 @@ parameters:
 		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BlockActorDataPacket\\:\\:\\$z \\(int\\) does not accept float\\|int\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/tile/Spawnable.php
-
-		-
-			message: "#^Parameter \\#2 \\$value of class pocketmine\\\\nbt\\\\tag\\\\IntTag constructor expects int, float\\|int given\\.$#"
-			count: 3
 			path: ../../../src/pocketmine/tile/Spawnable.php
 
 		-
