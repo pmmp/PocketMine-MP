@@ -3112,7 +3112,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 		if(isset($this->windowIndex[$packet->windowId])){
 			$this->closingWindowId = $packet->windowId;
-			(new InventoryCloseEvent($this->windowIndex[$packet->windowId], $this))->call();
 			$this->removeWindow($this->windowIndex[$packet->windowId]);
 			$this->closingWindowId = null;
 			//removeWindow handles sending the appropriate
@@ -4136,6 +4135,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if($id !== null){
+			(new InventoryCloseEvent($inventory, $this))->call();
 			$inventory->close($this);
 			unset($this->windows[$hash], $this->windowIndex[$id], $this->permanentWindows[$id]);
 		}
