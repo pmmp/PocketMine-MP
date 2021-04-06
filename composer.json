@@ -25,7 +25,7 @@
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
       "composer-runtime-api": "^2.0",
-      "adhocore/json-comment": "^0.1.0",
+      "adhocore/json-comment": "^1.1",
       "pocketmine/binaryutils": "^0.1.9",
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/classloader": "^0.1.0",
