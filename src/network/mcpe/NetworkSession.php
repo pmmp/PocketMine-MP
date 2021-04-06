@@ -38,7 +38,6 @@ use pocketmine\form\Form;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
@@ -99,6 +98,7 @@ use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\NetworkSessionManager;
+use pocketmine\network\PacketHandlingException;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
@@ -339,7 +339,7 @@ class NetworkSession{
 	}
 
 	/**
-	 * @throws BadPacketException
+	 * @throws PacketHandlingException
 	 */
 	public function handleEncoded(string $payload) : void{
 		if(!$this->connected){
@@ -352,7 +352,7 @@ class NetworkSession{
 				$payload = $this->cipher->decrypt($payload);
 			}catch(DecryptionException $e){
 				$this->logger->debug("Encrypted packet: " . base64_encode($payload));
-				throw BadPacketException::wrap($e, "Packet decryption error");
+				throw PacketHandlingException::wrap($e, "Packet decryption error");
 			}finally{
 				Timings::$playerNetworkReceiveDecrypt->stopTiming();
 			}
@@ -363,7 +363,7 @@ class NetworkSession{
 			$stream = new PacketBatch($this->compressor->decompress($payload));
 		}catch(DecompressionException $e){
 			$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
-			throw BadPacketException::wrap($e, "Compressed packet batch decode error");
+			throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
 		}finally{
 			Timings::$playerNetworkReceiveDecompress->stopTiming();
 		}
@@ -373,21 +373,19 @@ class NetworkSession{
 			foreach($stream->getPackets($this->getProtocolId(), $this->packetPool, $max) as $packet){
 				try{
 					$this->handleDataPacket($packet);
-				}catch(BadPacketException $e){
+				}catch(PacketHandlingException $e){
 					$this->logger->debug($packet->getName() . ": " . base64_encode($packet->getSerializer()->getBuffer()));
-					throw BadPacketException::wrap($e, "Error processing " . $packet->getName());
+					throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
 				}
 			}
 		}catch(PacketDecodeException $e){
-			if(strpos($e->getMessage(), "Reached limit of $max packets in a single batch") === false){
-				$this->logger->logException($e);
-			}
-			throw BadPacketException::wrap($e, "Packet batch decode error");
+			$this->logger->logException($e);
+			throw PacketHandlingException::wrap($e, "Packet batch decode error");
 		}
 	}
 
 	/**
-	 * @throws BadPacketException
+	 * @throws PacketHandlingException
 	 */
 	public function handleDataPacket(Packet $packet) : void{
 		if(!($packet instanceof ServerboundPacket)){
@@ -395,7 +393,7 @@ class NetworkSession{
 				$this->logger->debug("Garbage serverbound " . $packet->getName() . ": " . base64_encode($packet->getSerializer()->getBuffer()));
 				return;
 			}
-			throw new BadPacketException("Unexpected non-serverbound packet");
+			throw new PacketHandlingException("Unexpected non-serverbound packet");
 		}
 
 		$timings = Timings::getReceiveDataPacketTimings($packet);
@@ -405,7 +403,7 @@ class NetworkSession{
 			try{
 				$packet->decode();
 			}catch(PacketDecodeException $e){
-				throw BadPacketException::wrap($e);
+				throw PacketHandlingException::wrap($e);
 			}
 			$stream = $packet->getSerializer();
 			if(!$stream->feof()){

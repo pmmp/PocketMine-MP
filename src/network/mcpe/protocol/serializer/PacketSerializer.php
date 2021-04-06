@@ -71,6 +71,13 @@ class PacketSerializer extends BinaryStream{
 
 	/** @var int|null */
 	private ?int $protocolId = null;
+	/** @var int */
+	private int $shieldItemRuntimeId;
+
+	public function __construct(string $buffer = "", int $offset = 0){
+		parent::__construct($buffer, $offset);
+		$this->shieldItemRuntimeId = ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield");
+	}
 
 	public function setProtocolId(?int $protocolId) : void{
 		$this->protocolId = $protocolId;
@@ -260,7 +267,7 @@ class PacketSerializer extends BinaryStream{
 		}
 
 		$shieldBlockingTick = null;
-		if($id === ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield")){
+		if($id === $this->shieldItemRuntimeId){
 			$shieldBlockingTick = $this->getVarLong();
 		}
 
@@ -297,7 +304,7 @@ class PacketSerializer extends BinaryStream{
 		}
 
 		$blockingTick = $item->getShieldBlockingTick();
-		if($item->getId() === ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield")){
+		if($item->getId() === $this->shieldItemRuntimeId){
 			$this->putVarLong($blockingTick ?? 0);
 		}
 	}

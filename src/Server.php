@@ -586,29 +586,40 @@ class Server{
 		$class = $ev->getPlayerClass();
 
 		if($offlinePlayerData !== null and ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString("Level", ""))) !== null){
-			$spawn = EntityDataHelper::parseLocation($offlinePlayerData, $world);
-			$onGround = $offlinePlayerData->getByte("OnGround", 1) === 1;
+			$playerPos = EntityDataHelper::parseLocation($offlinePlayerData, $world);
+			$spawn = $playerPos->asVector3();
 		}else{
 			$world = $this->worldManager->getDefaultWorld();
 			if($world === null){
 				throw new AssumptionFailedError("Default world should always be loaded");
 			}
-			$spawn = Location::fromObject($world->getSafeSpawn(), $world);
-			$onGround = true;
+			$playerPos = null;
+			$spawn = $world->getSpawnLocation();
 		}
 		$playerPromise = new PlayerCreationPromise();
 		$world->requestChunkPopulation($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, null)->onCompletion(
-			function() use ($playerPromise, $class, $session, $playerInfo, $authenticated, $spawn, $offlinePlayerData, $onGround) : void{
+			function() use ($playerPromise, $class, $session, $playerInfo, $authenticated, $world, $playerPos, $spawn, $offlinePlayerData) : void{
 				if(!$session->isConnected()){
 					$playerPromise->reject();
 					return;
 				}
+
+				/* Stick with the original spawn at the time of generation request, even if it changed since then.
+				 * This is because we know for sure that that chunk will be generated, but the one at the new location
+				 * might not be, and it would be much more complex to go back and redo the whole thing.
+				 *
+				 * TODO: this relies on the assumption that getSafeSpawn() will only alter the Y coordinate of the
+				 * provided position. If this assumption is broken, we'll start seeing crashes in here.
+				 */
+
 				/**
 				 * @see Player::__construct()
 				 * @var Player $player
 				 */
-				$player = new $class($this, $session, $playerInfo, $authenticated, $spawn, $offlinePlayerData);
-				$player->onGround = $onGround;  //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
+				$player = new $class($this, $session, $playerInfo, $authenticated, $playerPos ?? Location::fromObject($world->getSafeSpawn($spawn), $world), $offlinePlayerData);
+				if(!$player->hasPlayedBefore()){
+					$player->onGround = true;  //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
+				}
 				$playerPromise->resolve($player);
 			},
 			static function() use ($playerPromise, $session) : void{

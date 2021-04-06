@@ -91,6 +91,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true
 
       - name: Restore PHP build cache
         id: php-build-cache
