@@ -4,27 +4,28 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1dd8769f5ca60220fbb36577e04d3d83",
+    "content-hash": "c07802390fc058bf06b3a1741ef7c08e",
     "packages": [
         {
             "name": "adhocore/json-comment",
-            "version": "0.1.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/adhocore/php-json-comment.git",
-                "reference": "8448076039389f558f39ad0553aab87db3f81614"
+                "reference": "cf7998124d1050b83d7d985447fefd630e09c1a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/adhocore/php-json-comment/zipball/8448076039389f558f39ad0553aab87db3f81614",
-                "reference": "8448076039389f558f39ad0553aab87db3f81614",
+                "url": "https://api.github.com/repos/adhocore/php-json-comment/zipball/cf7998124d1050b83d7d985447fefd630e09c1a2",
+                "reference": "cf7998124d1050b83d7d985447fefd630e09c1a2",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4"
+                "ext-ctype": "*",
+                "php": ">=7.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.5 || ^7.5"
+                "phpunit/phpunit": "^6.5 || ^7.5 || ^8.5"
             },
             "type": "library",
             "autoload": {
@@ -50,9 +51,15 @@
             ],
             "support": {
                 "issues": "https://github.com/adhocore/php-json-comment/issues",
-                "source": "https://github.com/adhocore/php-json-comment/tree/0.1.0"
+                "source": "https://github.com/adhocore/php-json-comment/tree/1.1.0"
             },
-            "time": "2020-01-03T13:51:23+00:00"
+            "funding": [
+                {
+                    "url": "https://paypal.me/ji10",
+                    "type": "custom"
+                }
+            ],
+            "time": "2021-04-05T13:11:13+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
