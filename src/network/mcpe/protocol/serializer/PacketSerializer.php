@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol\serializer;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
