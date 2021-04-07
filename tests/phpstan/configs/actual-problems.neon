@@ -6,7 +6,7 @@ parameters:
 			path: ../../../src/CrashDump.php
 
 		-
-			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
+			message: "#^Instanceof between pocketmine\\\\command\\\\CommandReader and pocketmine\\\\command\\\\CommandReader will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/Server.php
 
@@ -16,7 +16,7 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
-			message: "#^Instanceof between pocketmine\\\\world\\\\WorldManager and pocketmine\\\\world\\\\WorldManager will always evaluate to true\\.$#"
+			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/Server.php
 
@@ -26,7 +26,7 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
-			message: "#^Instanceof between pocketmine\\\\command\\\\CommandReader and pocketmine\\\\command\\\\CommandReader will always evaluate to true\\.$#"
+			message: "#^Instanceof between pocketmine\\\\world\\\\WorldManager and pocketmine\\\\world\\\\WorldManager will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/Server.php
 
