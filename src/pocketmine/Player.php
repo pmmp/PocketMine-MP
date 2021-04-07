@@ -4206,7 +4206,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	public function onBlockChanged(Vector3 $block){
 
 	}
-
+	
+	public function canCollectXp(): bool {
+		return !$this->isSpectator();
+	}
+	
 	public function getLoaderId() : int{
 		return $this->loaderId;
 	}

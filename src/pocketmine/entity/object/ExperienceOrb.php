@@ -168,7 +168,7 @@ class ExperienceOrb extends Entity{
 			if($currentTarget === null){
 				$newTarget = $this->level->getNearestEntity($this, self::MAX_TARGET_DISTANCE, Human::class);
 
-				if($newTarget instanceof Human and !($newTarget instanceof Player and $newTarget->isSpectator())){
+				if($newTarget instanceof Human and $newTarget->canCollectXp()){
 					$currentTarget = $newTarget;
 				}
 			}

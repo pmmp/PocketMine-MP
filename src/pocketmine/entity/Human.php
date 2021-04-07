@@ -425,7 +425,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		return false;
 	}
-
+	
 	private function playLevelUpSound(int $newLevel) : void{
 		$volume = 0x10000000 * (min(30, $newLevel) / 5); //No idea why such odd numbers, but this works...
 		$this->level->broadcastLevelSoundEvent($this, LevelSoundEventPacket::SOUND_LEVELUP, (int) $volume);
@@ -481,7 +481,14 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 
 		$this->totalXp = $amount;
 	}
-
+	
+	/**
+	 * Returns whether the human should collect experience orbs or not
+	 */
+	public function canCollectXp(): bool {
+		return true;
+	}
+	
 	/**
 	 * Returns whether the human can pickup XP orbs (checks cooldown time)
 	 */
