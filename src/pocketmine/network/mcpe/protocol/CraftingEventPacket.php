@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\utils\UUID;
 use function count;
 
@@ -39,9 +39,9 @@ class CraftingEventPacket extends DataPacket{
 	public $type;
 	/** @var UUID */
 	public $id;
-	/** @var Item[] */
+	/** @var ItemStackWrapper[] */
 	public $input = [];
-	/** @var Item[] */
+	/** @var ItemStackWrapper[] */
 	public $output = [];
 
 	public function clean(){
@@ -57,12 +57,12 @@ class CraftingEventPacket extends DataPacket{
 
 		$size = $this->getUnsignedVarInt();
 		for($i = 0; $i < $size and $i < 128; ++$i){
-			$this->input[] = $this->getSlot();
+			$this->input[] = ItemStackWrapper::read($this);
 		}
 
 		$size = $this->getUnsignedVarInt();
 		for($i = 0; $i < $size and $i < 128; ++$i){
-			$this->output[] = $this->getSlot();
+			$this->output[] = ItemStackWrapper::read($this);
 		}
 	}
 
@@ -73,12 +73,12 @@ class CraftingEventPacket extends DataPacket{
 
 		$this->putUnsignedVarInt(count($this->input));
 		foreach($this->input as $item){
-			$this->putSlot($item);
+			$item->write($this);
 		}
 
 		$this->putUnsignedVarInt(count($this->output));
 		foreach($this->output as $item){
-			$this->putSlot($item);
+			$item->write($this);
 		}
 	}
 

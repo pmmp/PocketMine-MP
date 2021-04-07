@@ -2447,7 +2447,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
 				) or (
 					$this->craftingTransaction !== null &&
-					!$networkInventoryAction->oldItem->equalsExact($networkInventoryAction->newItem) &&
+					!$networkInventoryAction->oldItem->getItemStack()->equalsExact($networkInventoryAction->newItem->getItemStack()) &&
 					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER &&
 					$networkInventoryAction->windowId === ContainerIds::UI &&
 					$networkInventoryAction->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT
@@ -2552,7 +2552,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 						if($this->level->useItemOn($blockVector, $item, $face, $packet->trData->getClickPos(), $this, true)){
 							return true;
 						}
-					}elseif(!$this->inventory->getItemInHand()->equals($packet->trData->getItemInHand())){
+					}elseif(!$this->inventory->getItemInHand()->equals($packet->trData->getItemInHand()->getItemStack())){
 						$this->inventory->sendHeldItem($this);
 					}else{
 						$item = $this->inventory->getItemInHand();
@@ -2644,7 +2644,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 					if($this->isCreative()){
 						$item = $this->inventory->getItemInHand();
-					}elseif(!$this->inventory->getItemInHand()->equals($packet->trData->getItemInHand())){
+					}elseif(!$this->inventory->getItemInHand()->equals($packet->trData->getItemInHand()->getItemStack())){
 						$this->inventory->sendHeldItem($this);
 						return true;
 					}else{
@@ -2814,8 +2814,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$item = $this->inventory->getItem($packet->hotbarSlot);
 
-		if(!$item->equals($packet->item)){
-			$this->server->getLogger()->debug("Tried to equip " . $packet->item . " but have " . $item . " in target slot");
+		if(!$item->equals($packet->item->getItemStack())){
+			$this->server->getLogger()->debug("Tried to equip " . $packet->item->getItemStack() . " but have " . $item . " in target slot");
 			$this->inventory->sendContents($this);
 			return false;
 		}

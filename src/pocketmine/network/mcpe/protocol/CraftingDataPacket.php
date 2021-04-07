@@ -91,7 +91,7 @@ class CraftingDataPacket extends DataPacket{
 					$resultCount = $this->getUnsignedVarInt();
 					$entry["output"] = [];
 					for($k = 0; $k < $resultCount; ++$k){
-						$entry["output"][] = $this->getSlot();
+						$entry["output"][] = $this->getItemStackWithoutStackId();
 					}
 					$entry["uuid"] = $this->getUUID()->toString();
 					$entry["block"] = $this->getString();
@@ -113,7 +113,7 @@ class CraftingDataPacket extends DataPacket{
 					$resultCount = $this->getUnsignedVarInt();
 					$entry["output"] = [];
 					for($k = 0; $k < $resultCount; ++$k){
-						$entry["output"][] = $this->getSlot();
+						$entry["output"][] = $this->getItemStackWithoutStackId();
 					}
 					$entry["uuid"] = $this->getUUID()->toString();
 					$entry["block"] = $this->getString();
@@ -131,7 +131,7 @@ class CraftingDataPacket extends DataPacket{
 						[$inputId, $inputData] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($inputIdNet, $inputMetaNet);
 					}
 					$entry["input"] = ItemFactory::get($inputId, $inputData);
-					$entry["output"] = $out = $this->getSlot();
+					$entry["output"] = $out = $this->getItemStackWithoutStackId();
 					if($out->getDamage() === 0x7fff){
 						$out->setDamage(0); //TODO HACK: some 1.12 furnace recipe outputs have wildcard damage values
 					}
@@ -198,7 +198,7 @@ class CraftingDataPacket extends DataPacket{
 		$results = $recipe->getResults();
 		$stream->putUnsignedVarInt(count($results));
 		foreach($results as $item){
-			$stream->putSlot($item);
+			$stream->putItemStackWithoutStackId($item);
 		}
 
 		$stream->put(str_repeat("\x00", 16)); //Null UUID
@@ -223,7 +223,7 @@ class CraftingDataPacket extends DataPacket{
 		$results = $recipe->getResults();
 		$stream->putUnsignedVarInt(count($results));
 		foreach($results as $item){
-			$stream->putSlot($item);
+			$stream->putItemStackWithoutStackId($item);
 		}
 
 		$stream->put(str_repeat("\x00", 16)); //Null UUID
@@ -244,7 +244,7 @@ class CraftingDataPacket extends DataPacket{
 		}
 		$stream->putVarInt($netId);
 		$stream->putVarInt($netData);
-		$stream->putSlot($recipe->getResult());
+		$stream->putItemStackWithoutStackId($recipe->getResult());
 		$stream->putString("furnace"); //TODO: blocktype (no prefix) (this might require internal API breaks)
 		return CraftingDataPacket::ENTRY_FURNACE_DATA;
 	}

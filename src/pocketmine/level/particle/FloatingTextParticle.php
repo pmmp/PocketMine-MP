@@ -31,6 +31,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\utils\UUID;
@@ -104,7 +105,7 @@ class FloatingTextParticle extends Particle{
 			$pk->username = $name;
 			$pk->entityRuntimeId = $this->entityId;
 			$pk->position = $this->asVector3(); //TODO: check offset
-			$pk->item = ItemFactory::get(Item::AIR, 0, 0);
+			$pk->item = ItemStackWrapper::legacy(ItemFactory::get(Item::AIR, 0, 0));
 
 			$flags = (
 				1 << Entity::DATA_FLAG_IMMOBILE

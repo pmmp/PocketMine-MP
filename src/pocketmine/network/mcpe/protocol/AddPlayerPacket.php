@@ -25,11 +25,11 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\EntityLink;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\utils\UUID;
 use function count;
 
@@ -56,7 +56,7 @@ class AddPlayerPacket extends DataPacket{
 	public $yaw = 0.0;
 	/** @var float|null */
 	public $headYaw = null; //TODO
-	/** @var Item */
+	/** @var ItemStackWrapper */
 	public $item;
 	/**
 	 * @var mixed[][]
@@ -98,7 +98,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->pitch = $this->getLFloat();
 		$this->yaw = $this->getLFloat();
 		$this->headYaw = $this->getLFloat();
-		$this->item = $this->getSlot();
+		$this->item = ItemStackWrapper::read($this);
 		$this->metadata = $this->getEntityMetadata();
 
 		$this->uvarint1 = $this->getUnsignedVarInt();
@@ -129,7 +129,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->putLFloat($this->pitch);
 		$this->putLFloat($this->yaw);
 		$this->putLFloat($this->headYaw ?? $this->yaw);
-		$this->putSlot($this->item);
+		$this->item->write($this);
 		$this->putEntityMetadata($this->metadata);
 
 		$this->putUnsignedVarInt($this->uvarint1);

@@ -30,6 +30,7 @@ use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\Player;
 use function get_class;
 
@@ -173,7 +174,7 @@ class ItemEntity extends Entity{
 		$pk->entityRuntimeId = $this->getId();
 		$pk->position = $this->asVector3();
 		$pk->motion = $this->getMotion();
-		$pk->item = $this->getItem();
+		$pk->item = ItemStackWrapper::legacy($this->getItem());
 		$pk->metadata = $this->propertyManager->getAll();
 
 		$player->dataPacket($pk);

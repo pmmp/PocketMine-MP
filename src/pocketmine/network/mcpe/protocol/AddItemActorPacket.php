@@ -25,9 +25,9 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 
 class AddItemActorPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_ITEM_ACTOR_PACKET;
@@ -36,7 +36,7 @@ class AddItemActorPacket extends DataPacket{
 	public $entityUniqueId = null; //TODO
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var Item */
+	/** @var ItemStackWrapper */
 	public $item;
 	/** @var Vector3 */
 	public $position;
@@ -53,7 +53,7 @@ class AddItemActorPacket extends DataPacket{
 	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->item = $this->getSlot();
+		$this->item = ItemStackWrapper::read($this);
 		$this->position = $this->getVector3();
 		$this->motion = $this->getVector3();
 		$this->metadata = $this->getEntityMetadata();
@@ -63,7 +63,7 @@ class AddItemActorPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putSlot($this->item);
+		$this->item->write($this);
 		$this->putVector3($this->position);
 		$this->putVector3Nullable($this->motion);
 		$this->putEntityMetadata($this->metadata);

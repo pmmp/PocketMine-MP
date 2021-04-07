@@ -54,6 +54,7 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\Player;
@@ -813,7 +814,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 		$pk->motion = $this->getMotion();
 		$pk->yaw = $this->yaw;
 		$pk->pitch = $this->pitch;
-		$pk->item = $this->getInventory()->getItemInHand();
+		$pk->item = ItemStackWrapper::legacy($this->getInventory()->getItemInHand());
 		$pk->metadata = $this->propertyManager->getAll();
 		$player->dataPacket($pk);
 
