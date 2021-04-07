@@ -68,7 +68,7 @@ final class FurnaceRecipe extends RecipeWithTypeId{
 		if($typeId === CraftingDataPacket::ENTRY_FURNACE_DATA){
 			$inputData = $in->getVarInt();
 		}
-		$output = $in->getSlot();
+		$output = $in->getItemStackWithoutStackId();
 		$block = $in->getString();
 
 		return new self($typeId, $inputId, $inputData, $output, $block);
@@ -79,7 +79,7 @@ final class FurnaceRecipe extends RecipeWithTypeId{
 		if($this->getTypeId() === CraftingDataPacket::ENTRY_FURNACE_DATA){
 			$out->putVarInt($this->inputMeta);
 		}
-		$out->putSlot($this->result);
+		$out->putItemStackWithoutStackId($this->result);
 		$out->putString($this->blockName);
 	}
 }

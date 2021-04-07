@@ -25,7 +25,9 @@ namespace pocketmine\network\mcpe\protocol\serializer;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
@@ -216,49 +218,83 @@ class PacketSerializer extends BinaryStream{
 	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
-	public function getSlot() : ItemStack{
+	public function getItemStackWithoutStackId() : ItemStack{
+		return $this->getItemStack(function() : void{
+			//NOOP
+		});
+	}
+
+	public function putItemStackWithoutStackId(ItemStack $item) : void{
+		$this->putItemStack($item, function() : void{
+			//NOOP
+		});
+	}
+
+	/**
+	 * @phpstan-param \Closure(PacketSerializer) : void $readExtraCrapInTheMiddle
+	 *
+	 * @throws PacketDecodeException
+	 * @throws BinaryDataException
+	 */
+	public function getItemStack(\Closure $readExtraCrapInTheMiddle) : ItemStack{
 		$id = $this->getVarInt();
 		if($id === 0){
 			return ItemStack::null();
 		}
 
-		$auxValue = $this->getVarInt();
-		$meta = $auxValue >> 8;
-		$count = $auxValue & 0xff;
+		$count = $this->getLShort();
+		$meta = $this->getUnsignedVarInt();
 
-		$nbtLen = $this->getLShort();
+		$readExtraCrapInTheMiddle($this);
 
-		/** @var CompoundTag|null $compound */
-		$compound = null;
-		if($nbtLen === 0xffff){
-			$nbtDataVersion = $this->getByte();
-			if($nbtDataVersion !== 1){
-				throw new PacketDecodeException("Unexpected NBT data version $nbtDataVersion");
+		$blockRuntimeId = $this->getVarInt();
+		$extraData = new PacketSerializer($this->getString());
+		$shieldItemRuntimeId = $this->shieldItemRuntimeId;
+		return (static function() use ($extraData, $id, $meta, $count, $blockRuntimeId, $shieldItemRuntimeId) : ItemStack{
+			$nbtLen = $extraData->getLShort();
+
+			/** @var CompoundTag|null $compound */
+			$compound = null;
+			if($nbtLen === 0xffff){
+				$nbtDataVersion = $extraData->getByte();
+				if($nbtDataVersion !== 1){
+					throw new PacketDecodeException("Unexpected NBT data version $nbtDataVersion");
+				}
+				$offset = $extraData->getOffset();
+				try{
+					$compound = (new LittleEndianNbtSerializer())->read($extraData->getBuffer(), $offset, 512)->mustGetCompoundTag();
+				}catch(NbtDataException $e){
+					throw PacketDecodeException::wrap($e, "Failed decoding NBT root");
+				}finally{
+					$extraData->setOffset($offset);
+				}
+			}elseif($nbtLen !== 0){
+				throw new PacketDecodeException("Unexpected fake NBT length $nbtLen");
 			}
-			$compound = $this->getNbtCompoundRoot();
-		}elseif($nbtLen !== 0){
-			throw new PacketDecodeException("Unexpected fake NBT length $nbtLen");
-		}
 
-		$canPlaceOn = [];
-		for($i = 0, $canPlaceOnCount = $this->getVarInt(); $i < $canPlaceOnCount; ++$i){
-			$canPlaceOn[] = $this->getString();
-		}
+			$canPlaceOn = [];
+			for($i = 0, $canPlaceOnCount = $extraData->getLInt(); $i < $canPlaceOnCount; ++$i){
+				$canPlaceOn[] = $extraData->get($extraData->getLShort());
+			}
 
-		$canDestroy = [];
-		for($i = 0, $canDestroyCount = $this->getVarInt(); $i < $canDestroyCount; ++$i){
-			$canDestroy[] = $this->getString();
-		}
+			$canDestroy = [];
+			for($i = 0, $canDestroyCount = $extraData->getLInt(); $i < $canDestroyCount; ++$i){
+				$canDestroy[] = $extraData->get($extraData->getLShort());
+			}
 
-		$shieldBlockingTick = null;
-		if($id === $this->shieldItemRuntimeId){
-			$shieldBlockingTick = $this->getVarLong();
-		}
+			$shieldBlockingTick = null;
+			if($id === $shieldItemRuntimeId){
+				$shieldBlockingTick = $extraData->getLLong();
+			}
 
-		return new ItemStack($id, $meta, $count, $compound, $canPlaceOn, $canDestroy, $shieldBlockingTick);
+			return new ItemStack($id, $meta, $count, $blockRuntimeId, $compound, $canPlaceOn, $canDestroy, $shieldBlockingTick);
+		})();
 	}
 
-	public function putSlot(ItemStack $item) : void{
+	/**
+	 * @phpstan-param \Closure(PacketSerializer) : void $writeExtraCrapInTheMiddle
+	 */
+	public function putItemStack(ItemStack $item, \Closure $writeExtraCrapInTheMiddle) : void{
 		if($item->getId() === 0){
 			$this->putVarInt(0);
 
@@ -266,31 +302,42 @@ class PacketSerializer extends BinaryStream{
 		}
 
 		$this->putVarInt($item->getId());
-		$auxValue = (($item->getMeta() & 0x7fff) << 8) | $item->getCount();
-		$this->putVarInt($auxValue);
+		$this->putLShort($item->getCount());
+		$this->putUnsignedVarInt($item->getMeta());
 
-		$nbt = $item->getNbt();
-		if($nbt !== null){
-			$this->putLShort(0xffff);
-			$this->putByte(1); //TODO: NBT data version (?)
-			$this->put((new NetworkNbtSerializer())->write(new TreeRoot($nbt)));
-		}else{
-			$this->putLShort(0);
-		}
+		$writeExtraCrapInTheMiddle($this);
 
-		$this->putVarInt(count($item->getCanPlaceOn()));
-		foreach($item->getCanPlaceOn() as $entry){
-			$this->putString($entry);
-		}
-		$this->putVarInt(count($item->getCanDestroy()));
-		foreach($item->getCanDestroy() as $entry){
-			$this->putString($entry);
-		}
+		$this->putVarInt($item->getBlockRuntimeId());
+		$shieldItemRuntimeId = $this->shieldItemRuntimeId;
+		$this->putString((static function() use ($item, $shieldItemRuntimeId) : string{
+			$extraData = new PacketSerializer();
 
-		$blockingTick = $item->getShieldBlockingTick();
-		if($item->getId() === $this->shieldItemRuntimeId){
-			$this->putVarLong($blockingTick ?? 0);
-		}
+			$nbt = $item->getNbt();
+			if($nbt !== null){
+				$extraData->putLShort(0xffff);
+				$extraData->putByte(1); //TODO: NBT data version (?)
+				$extraData->put((new LittleEndianNbtSerializer())->write(new TreeRoot($nbt)));
+			}else{
+				$extraData->putLShort(0);
+			}
+
+			$extraData->putLInt(count($item->getCanPlaceOn()));
+			foreach($item->getCanPlaceOn() as $entry){
+				$extraData->putLShort(strlen($entry));
+				$extraData->put($entry);
+			}
+			$extraData->putLInt(count($item->getCanDestroy()));
+			foreach($item->getCanDestroy() as $entry){
+				$extraData->putLShort(strlen($entry));
+				$extraData->put($entry);
+			}
+
+			$blockingTick = $item->getShieldBlockingTick();
+			if($item->getId() === $shieldItemRuntimeId){
+				$extraData->putLLong($blockingTick ?? 0);
+			}
+			return $extraData->getBuffer();
+		})());
 	}
 
 	public function getRecipeIngredient() : RecipeIngredient{

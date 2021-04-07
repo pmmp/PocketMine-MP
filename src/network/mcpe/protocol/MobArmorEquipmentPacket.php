@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 
 class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MOB_ARMOR_EQUIPMENT_PACKET;
@@ -36,16 +36,16 @@ class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, S
 
 	//this intentionally doesn't use an array because we don't want any implicit dependencies on internal order
 
-	/** @var ItemStack */
+	/** @var ItemStackWrapper */
 	public $head;
-	/** @var ItemStack */
+	/** @var ItemStackWrapper */
 	public $chest;
-	/** @var ItemStack */
+	/** @var ItemStackWrapper */
 	public $legs;
-	/** @var ItemStack */
+	/** @var ItemStackWrapper */
 	public $feet;
 
-	public static function create(int $entityRuntimeId, ItemStack $head, ItemStack $chest, ItemStack $legs, ItemStack $feet) : self{
+	public static function create(int $entityRuntimeId, ItemStackWrapper $head, ItemStackWrapper $chest, ItemStackWrapper $legs, ItemStackWrapper $feet) : self{
 		$result = new self;
 		$result->entityRuntimeId = $entityRuntimeId;
 		$result->head = $head;
@@ -58,18 +58,18 @@ class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, S
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
-		$this->head = $in->getSlot();
-		$this->chest = $in->getSlot();
-		$this->legs = $in->getSlot();
-		$this->feet = $in->getSlot();
+		$this->head = ItemStackWrapper::read($in);
+		$this->chest = ItemStackWrapper::read($in);
+		$this->legs = ItemStackWrapper::read($in);
+		$this->feet = ItemStackWrapper::read($in);
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityRuntimeId($this->entityRuntimeId);
-		$out->putSlot($this->head);
-		$out->putSlot($this->chest);
-		$out->putSlot($this->legs);
-		$out->putSlot($this->feet);
+		$this->head->write($out);
+		$this->chest->write($out);
+		$this->legs->write($out);
+		$this->feet->write($out);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

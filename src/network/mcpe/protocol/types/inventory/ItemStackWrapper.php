@@ -46,13 +46,22 @@ final class ItemStackWrapper{
 	public function getItemStack() : ItemStack{ return $this->itemStack; }
 
 	public static function read(PacketSerializer $in) : self{
-		$stackId = $in->readGenericTypeNetworkId();
-		$stack = $in->getSlot();
+		$stackId = 0;
+		$stack = $in->getItemStack(function(PacketSerializer $in) use (&$stackId) : void{
+			$hasNetId = $in->getBool();
+			if($hasNetId){
+				$stackId = $in->readGenericTypeNetworkId();
+			}
+		});
 		return new self($stackId, $stack);
 	}
 
 	public function write(PacketSerializer $out) : void{
-		$out->writeGenericTypeNetworkId($this->stackId);
-		$out->putSlot($this->itemStack);
+		$out->putItemStack($this->itemStack, function(PacketSerializer $out) : void{
+			$out->putBool($this->stackId !== 0);
+			if($this->stackId !== 0){
+				$out->writeGenericTypeNetworkId($this->stackId);
+			}
+		});
 	}
 }

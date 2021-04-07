@@ -35,6 +35,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\player\Player;
 use function max;
 
@@ -209,7 +210,7 @@ class ItemEntity extends Entity{
 		$pk->entityRuntimeId = $this->getId();
 		$pk->position = $this->location->asVector3();
 		$pk->motion = $this->getMotion();
-		$pk->item = TypeConverter::getInstance()->coreItemStackToNet($this->getItem());
+		$pk->item = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getItem()));
 		$pk->metadata = $this->getAllNetworkData();
 
 		$player->getNetworkSession()->sendDataPacket($pk);

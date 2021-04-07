@@ -91,6 +91,7 @@ use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
@@ -958,7 +959,7 @@ class NetworkSession{
 	public function onMobEquipmentChange(Human $mob) : void{
 		//TODO: we could send zero for slot here because remote players don't need to know which slot was selected
 		$inv = $mob->getInventory();
-		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), TypeConverter::getInstance()->coreItemStackToNet($inv->getItemInHand()), $inv->getHeldItemIndex(), ContainerIds::INVENTORY));
+		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItemInHand())), $inv->getHeldItemIndex(), ContainerIds::INVENTORY));
 	}
 
 	public function onMobArmorChange(Living $mob) : void{
@@ -966,10 +967,10 @@ class NetworkSession{
 		$converter = TypeConverter::getInstance();
 		$this->sendDataPacket(MobArmorEquipmentPacket::create(
 			$mob->getId(),
-			$converter->coreItemStackToNet($inv->getHelmet()),
-			$converter->coreItemStackToNet($inv->getChestplate()),
-			$converter->coreItemStackToNet($inv->getLeggings()),
-			$converter->coreItemStackToNet($inv->getBoots())
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getHelmet())),
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getChestplate())),
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getLeggings())),
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getBoots()))
 		));
 	}
 

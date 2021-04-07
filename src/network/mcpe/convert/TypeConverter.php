@@ -22,6 +22,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\crafting\CraftingGrid;
@@ -54,6 +55,7 @@ class TypeConverter{
 
 	private const DAMAGE_TAG = "Damage"; //TAG_Int
 	private const DAMAGE_TAG_CONFLICT_RESOLUTION = "___Damage_ProtocolCollisionResolution___";
+	private const PM_META_TAG = "___Meta___";
 
 	/** @var int */
 	private $shieldRuntimeId;
@@ -136,6 +138,8 @@ class TypeConverter{
 		if($itemStack->hasNamedTag()){
 			$nbt = clone $itemStack->getNamedTag();
 		}
+
+		$block = $itemStack->getBlock();
 		if($itemStack instanceof Durable and $itemStack->getDamage() > 0){
 			if($nbt !== null){
 				if(($existing = $nbt->getTag(self::DAMAGE_TAG)) !== null){
@@ -146,13 +150,24 @@ class TypeConverter{
 				$nbt = new CompoundTag();
 			}
 			$nbt->setInt(self::DAMAGE_TAG, $itemStack->getDamage());
+		}elseif($block->getId() !== BlockLegacyIds::AIR && $itemStack->getMeta() !== 0){
+			//TODO HACK: This foul-smelling code ensures that we can correctly deserialize an item when the
+			//client sends it back to us, because as of 1.16.220, blockitems quietly discard their metadata
+			//client-side. Aside from being very annoying, this also breaks various server-side behaviours.
+			if($nbt === null){
+				$nbt = new CompoundTag();
+			}
+			$nbt->setInt(self::PM_META_TAG, $itemStack->getMeta());
 		}
 		[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), $itemStack->getMeta());
+
+		$blockRuntimeId = $block->getId() === BlockLegacyIds::AIR ? 0 : RuntimeBlockMapping::getInstance()->toRuntimeId($block->getFullId());
 
 		return new ItemStack(
 			$id,
 			$meta,
 			$itemStack->getCount(),
+			$blockRuntimeId,
 			$nbt,
 			[],
 			[],
@@ -177,6 +192,15 @@ class TypeConverter{
 					$compound->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
 					$compound->setTag(self::DAMAGE_TAG, $conflicted);
 				}elseif($compound->count() === 0){
+					$compound = null;
+				}
+			}elseif(($metaTag = $compound->getTag(self::PM_META_TAG)) instanceof IntTag){
+				//TODO HACK: This foul-smelling code ensures that we can correctly deserialize an item when the
+				//client sends it back to us, because as of 1.16.220, blockitems quietly discard their metadata
+				//client-side. Aside from being very annoying, this also breaks various server-side behaviours.
+				$meta = $metaTag->getValue();
+				$compound->removeTag(self::PM_META_TAG);
+				if($compound->count() === 0){
 					$compound = null;
 				}
 			}
@@ -210,12 +234,12 @@ class TypeConverter{
 	 * @throws \UnexpectedValueException
 	 */
 	public function createInventoryAction(NetworkInventoryAction $action, Player $player) : ?InventoryAction{
-		if($action->oldItem->equals($action->newItem)){
+		if($action->oldItem->getItemStack()->equals($action->newItem->getItemStack())){
 			//filter out useless noise in 1.13
 			return null;
 		}
-		$old = $this->netItemStackToCore($action->oldItem);
-		$new = $this->netItemStackToCore($action->newItem);
+		$old = $this->netItemStackToCore($action->oldItem->getItemStack());
+		$new = $this->netItemStackToCore($action->newItem->getItemStack());
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
 				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){

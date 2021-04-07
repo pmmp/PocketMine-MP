@@ -127,7 +127,7 @@ final class ShapedRecipe extends RecipeWithTypeId{
 
 		$output = [];
 		for($k = 0, $resultCount = $in->getUnsignedVarInt(); $k < $resultCount; ++$k){
-			$output[] = $in->getSlot();
+			$output[] = $in->getItemStackWithoutStackId();
 		}
 		$uuid = $in->getUUID();
 		$block = $in->getString();
@@ -149,7 +149,7 @@ final class ShapedRecipe extends RecipeWithTypeId{
 
 		$out->putUnsignedVarInt(count($this->output));
 		foreach($this->output as $item){
-			$out->putSlot($item);
+			$out->putItemStackWithoutStackId($item);
 		}
 
 		$out->putUUID($this->uuid);
