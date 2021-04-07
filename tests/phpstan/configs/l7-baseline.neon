@@ -686,6 +686,21 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/protocol/types/LegacySkinAdapter.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
+
+		-
 			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackChunk\\(\\) should return string but returns string\\|false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
