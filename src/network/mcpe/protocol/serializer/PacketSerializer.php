@@ -230,8 +230,6 @@ class PacketSerializer extends BinaryStream{
 	}
 
 	/**
-	 * @phpstan-param \Closure(PacketSerializer $in) : void $extraCrapInTheMiddle
-	 *
 	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
@@ -303,7 +301,6 @@ class PacketSerializer extends BinaryStream{
 		$blockRuntimeId = $this->getVarInt();
 		$extraData = new PacketSerializer($this->getString());
 		$shieldItemRuntimeId = $this->shieldItemRuntimeId;
-
 		return (static function() use ($extraData, $id, $meta, $count, $blockRuntimeId, $shieldItemRuntimeId) : ItemStack{
 			$nbtLen = $extraData->getLShort();
 
