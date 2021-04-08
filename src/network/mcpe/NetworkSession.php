@@ -46,6 +46,7 @@ use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\encryption\DecryptionException;
 use pocketmine\network\mcpe\encryption\EncryptionContext;
+use pocketmine\network\mcpe\encryption\oldEncryptionContext;
 use pocketmine\network\mcpe\encryption\PrepareEncryptionTask;
 use pocketmine\network\mcpe\handler\DeathPacketHandler;
 use pocketmine\network\mcpe\handler\HandshakePacketHandler;
@@ -140,7 +141,7 @@ class NetworkSession{
 	/** @var int */
 	private $port;
 	/** @var PlayerInfo */
-	private $info;
+	protected $info;
 	/** @var int|null */
 	private $ping = null;
 
@@ -152,7 +153,7 @@ class NetworkSession{
 	/** @var bool */
 	private $disconnectGuard = false;
 	/** @var bool */
-	private $loggedIn = false;
+	protected $loggedIn = false;
 	/** @var bool */
 	private $authenticated = false;
 	/** @var int */
@@ -380,7 +381,9 @@ class NetworkSession{
 				}
 			}
 		}catch(PacketDecodeException $e){
-			$this->logger->logException($e);
+			if(strpos($e->getMessage(), "Reached limit of $max packets in a single batch") === false){
+				$this->logger->logException($e);
+			}
 			throw PacketHandlingException::wrap($e, "Packet batch decode error");
 		}
 	}
@@ -692,7 +695,11 @@ class NetworkSession{
 				}
 				$this->sendDataPacket(ServerToClientHandshakePacket::create($handshakeJwt), true); //make sure this gets sent before encryption is enabled
 
-				$this->cipher = new EncryptionContext($encryptionKey);
+				if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
+					$this->cipher = new EncryptionContext($encryptionKey);
+				}else{
+					$this->cipher = new oldEncryptionContext($encryptionKey);
+				}
 
 				$this->setHandler(new HandshakePacketHandler(function() : void{
 					$this->onServerLoginSuccess();

@@ -58,18 +58,32 @@ class MobArmorEquipmentPacket extends DataPacket implements ClientboundPacket, S
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
-		$this->head = ItemStackWrapper::read($in);
-		$this->chest = ItemStackWrapper::read($in);
-		$this->legs = ItemStackWrapper::read($in);
-		$this->feet = ItemStackWrapper::read($in);
+		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
+			$this->head = ItemStackWrapper::read($in);
+			$this->chest = ItemStackWrapper::read($in);
+			$this->legs = ItemStackWrapper::read($in);
+			$this->feet = ItemStackWrapper::read($in);
+		}else{
+			$this->head = ItemStackWrapper::legacy($in->getItemStackWithoutStackId());
+			$this->chest = ItemStackWrapper::legacy($in->getItemStackWithoutStackId());
+			$this->legs = ItemStackWrapper::legacy($in->getItemStackWithoutStackId());
+			$this->feet = ItemStackWrapper::legacy($in->getItemStackWithoutStackId());
+		}
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityRuntimeId($this->entityRuntimeId);
-		$this->head->write($out);
-		$this->chest->write($out);
-		$this->legs->write($out);
-		$this->feet->write($out);
+		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
+			$this->head->write($out);
+			$this->chest->write($out);
+			$this->legs->write($out);
+			$this->feet->write($out);
+		}else{
+			$out->putItemStackWithoutStackId($this->head->getItemStack());
+			$out->putItemStackWithoutStackId($this->chest->getItemStack());
+			$out->putItemStackWithoutStackId($this->legs->getItemStack());
+			$out->putItemStackWithoutStackId($this->feet->getItemStack());
+		}
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

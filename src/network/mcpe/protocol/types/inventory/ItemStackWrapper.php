@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 final class ItemStackWrapper{
@@ -46,22 +47,32 @@ final class ItemStackWrapper{
 	public function getItemStack() : ItemStack{ return $this->itemStack; }
 
 	public static function read(PacketSerializer $in) : self{
-		$stackId = 0;
-		$stack = $in->getItemStack(function(PacketSerializer $in) use (&$stackId) : void{
-			$hasNetId = $in->getBool();
-			if($hasNetId){
-				$stackId = $in->readGenericTypeNetworkId();
-			}
-		});
+		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
+			$stackId = 0;
+			$stack = $in->getItemStack(function(PacketSerializer $in) use (&$stackId) : void{
+				$hasNetId = $in->getBool();
+				if($hasNetId){
+					$stackId = $in->readGenericTypeNetworkId();
+				}
+			});
+		}else{
+			$stackId = $in->readGenericTypeNetworkId();
+			$stack = $in->getItemStackWithoutStackId();
+		}
 		return new self($stackId, $stack);
 	}
 
 	public function write(PacketSerializer $out) : void{
-		$out->putItemStack($this->itemStack, function(PacketSerializer $out) : void{
-			$out->putBool($this->stackId !== 0);
-			if($this->stackId !== 0){
-				$out->writeGenericTypeNetworkId($this->stackId);
-			}
-		});
+		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
+			$out->putItemStack($this->itemStack, function(PacketSerializer $out) : void{
+				$out->putBool($this->stackId !== 0);
+				if($this->stackId !== 0){
+					$out->writeGenericTypeNetworkId($this->stackId);
+				}
+			});
+		}else{
+			$out->writeGenericTypeNetworkId($this->stackId);
+			$out->putItemStackWithoutStackId($this->itemStack);
+		}
 	}
 }

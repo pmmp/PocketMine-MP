@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types\inventory;
 
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\utils\BinaryDataException;
 
@@ -76,6 +77,8 @@ class NetworkInventoryAction{
 	public $oldItem;
 	/** @var ItemStackWrapper */
 	public $newItem;
+	/** @var int|null */
+	public $newItemStackId = null;
 
 	/**
 	 * @return $this
@@ -83,7 +86,7 @@ class NetworkInventoryAction{
 	 * @throws BinaryDataException
 	 * @throws PacketDecodeException
 	 */
-	public function read(PacketSerializer $packet) : NetworkInventoryAction{
+	public function read(PacketSerializer $packet, bool $hasItemStackIds) : NetworkInventoryAction{
 		$this->sourceType = $packet->getUnsignedVarInt();
 
 		switch($this->sourceType){
@@ -103,8 +106,16 @@ class NetworkInventoryAction{
 		}
 
 		$this->inventorySlot = $packet->getUnsignedVarInt();
-		$this->oldItem = ItemStackWrapper::read($packet);
-		$this->newItem = ItemStackWrapper::read($packet);
+		if($packet->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
+			$this->oldItem = ItemStackWrapper::read($packet);
+			$this->newItem = ItemStackWrapper::read($packet);
+		}else{
+			$this->oldItem = ItemStackWrapper::legacy($packet->getItemStackWithoutStackId());
+			$this->newItem = ItemStackWrapper::legacy($packet->getItemStackWithoutStackId());
+			if($hasItemStackIds){
+				$this->newItemStackId = $packet->readGenericTypeNetworkId();
+			}
+		}
 
 		return $this;
 	}
@@ -112,7 +123,7 @@ class NetworkInventoryAction{
 	/**
 	 * @throws \InvalidArgumentException
 	 */
-	public function write(PacketSerializer $packet) : void{
+	public function write(PacketSerializer $packet, bool $hasItemStackIds) : void{
 		$packet->putUnsignedVarInt($this->sourceType);
 
 		switch($this->sourceType){
@@ -132,7 +143,18 @@ class NetworkInventoryAction{
 		}
 
 		$packet->putUnsignedVarInt($this->inventorySlot);
-		$this->oldItem->write($packet);
-		$this->newItem->write($packet);
+		if($packet->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
+			$this->oldItem->write($packet);
+			$this->newItem->write($packet);
+		}else{
+			$packet->putItemStackWithoutStackId($this->oldItem->getItemStack());
+			$packet->putItemStackWithoutStackId($this->newItem->getItemStack());
+			if($hasItemStackIds){
+				if($this->newItemStackId === null){
+					throw new \InvalidStateException("Item stack ID for newItem must be provided");
+				}
+				$packet->writeGenericTypeNetworkId($this->newItemStackId);
+			}
+		}
 	}
 }

@@ -44,6 +44,7 @@ use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use Ramsey\Uuid\Uuid;
+use function in_array;
 use function is_array;
 
 /**
@@ -237,6 +238,6 @@ class LoginPacketHandler extends PacketHandler{
 	}
 
 	protected function isCompatibleProtocol(int $protocolVersion) : bool{
-		return in_array($protocolVersion, ProtocolInfo::ACCEPTED_PROTOCOL);
+		return in_array($protocolVersion, ProtocolInfo::ACCEPTED_PROTOCOL, true);
 	}
 }

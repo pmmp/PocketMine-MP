@@ -99,7 +99,11 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 		$this->pitch = $in->getLFloat();
 		$this->yaw = $in->getLFloat();
 		$this->headYaw = $in->getLFloat();
-		$this->item = ItemStackWrapper::read($in);
+		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
+			$this->item = ItemStackWrapper::read($in);
+		}else{
+			$this->item = ItemStackWrapper::legacy($in->getItemStackWithoutStackId());
+		}
 		$this->metadata = $in->getEntityMetadata();
 
 		$this->uvarint1 = $in->getUnsignedVarInt();
@@ -130,7 +134,11 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 		$out->putLFloat($this->pitch);
 		$out->putLFloat($this->yaw);
 		$out->putLFloat($this->headYaw ?? $this->yaw);
-		$this->item->write($out);
+		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
+			$this->item->write($out);
+		}else{
+			$out->putItemStackWithoutStackId($this->item->getItemStack());
+		}
 		$out->putEntityMetadata($this->metadata);
 
 		$out->putUnsignedVarInt($this->uvarint1);
