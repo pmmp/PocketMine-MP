@@ -253,7 +253,7 @@ class InGamePacketHandler extends PacketHandler{
 					)
 				) or (
 					$this->craftingTransaction !== null &&
-					!$networkInventoryAction->oldItem->equals($networkInventoryAction->newItem) &&
+					!$networkInventoryAction->oldItem->getItemStack()->equals($networkInventoryAction->newItem->getItemStack()) &&
 					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER &&
 					$networkInventoryAction->windowId === ContainerIds::UI &&
 					$networkInventoryAction->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT

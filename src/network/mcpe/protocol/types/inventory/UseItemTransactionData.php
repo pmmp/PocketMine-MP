@@ -40,7 +40,7 @@ class UseItemTransactionData extends TransactionData{
 	private $face;
 	/** @var int */
 	private $hotbarSlot;
-	/** @var ItemStack */
+	/** @var ItemStackWrapper */
 	private $itemInHand;
 	/** @var Vector3 */
 	private $playerPos;
@@ -65,7 +65,7 @@ class UseItemTransactionData extends TransactionData{
 		return $this->hotbarSlot;
 	}
 
-	public function getItemInHand() : ItemStack{
+	public function getItemInHand() : ItemStackWrapper{
 		return $this->itemInHand;
 	}
 
@@ -92,7 +92,7 @@ class UseItemTransactionData extends TransactionData{
 		$this->blockPos = new Vector3($x, $y, $z);
 		$this->face = $stream->getVarInt();
 		$this->hotbarSlot = $stream->getVarInt();
-		$this->itemInHand = $stream->getSlot();
+		$this->itemInHand = ItemStackWrapper::read($stream);
 		$this->playerPos = $stream->getVector3();
 		$this->clickPos = $stream->getVector3();
 		$this->blockRuntimeId = $stream->getUnsignedVarInt();
@@ -103,7 +103,7 @@ class UseItemTransactionData extends TransactionData{
 		$stream->putBlockPosition($this->blockPos->x, $this->blockPos->y, $this->blockPos->z);
 		$stream->putVarInt($this->face);
 		$stream->putVarInt($this->hotbarSlot);
-		$stream->putSlot($this->itemInHand);
+		$this->itemInHand->write($stream);
 		$stream->putVector3($this->playerPos);
 		$stream->putVector3($this->clickPos);
 		$stream->putUnsignedVarInt($this->blockRuntimeId);
@@ -112,7 +112,7 @@ class UseItemTransactionData extends TransactionData{
 	/**
 	 * @param NetworkInventoryAction[] $actions
 	 */
-	public static function new(array $actions, int $actionType, Vector3 $blockPos, int $face, int $hotbarSlot, ItemStack $itemInHand, Vector3 $playerPos, Vector3 $clickPos, int $blockRuntimeId) : self{
+	public static function new(array $actions, int $actionType, Vector3 $blockPos, int $face, int $hotbarSlot, ItemStackWrapper $itemInHand, Vector3 $playerPos, Vector3 $clickPos, int $blockRuntimeId) : self{
 		$result = new self;
 		$result->actions = $actions;
 		$result->actionType = $actionType;

@@ -139,6 +139,9 @@ final class ItemTranslator{
 	 * @phpstan-return array{int, int}
 	 */
 	public function toNetworkId(int $internalId, int $internalMeta) : array{
+		if($internalMeta === -1){
+			$internalMeta = 0x7fff;
+		}
 		if(isset($this->complexCoreToNetMapping[$internalId][$internalMeta])){
 			return [$this->complexCoreToNetMapping[$internalId][$internalMeta], 0];
 		}

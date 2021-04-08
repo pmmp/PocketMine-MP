@@ -37,7 +37,7 @@ class UseItemOnEntityTransactionData extends TransactionData{
 	private $actionType;
 	/** @var int */
 	private $hotbarSlot;
-	/** @var ItemStack */
+	/** @var ItemStackWrapper */
 	private $itemInHand;
 	/** @var Vector3 */
 	private $playerPos;
@@ -56,7 +56,7 @@ class UseItemOnEntityTransactionData extends TransactionData{
 		return $this->hotbarSlot;
 	}
 
-	public function getItemInHand() : ItemStack{
+	public function getItemInHand() : ItemStackWrapper{
 		return $this->itemInHand;
 	}
 
@@ -76,7 +76,7 @@ class UseItemOnEntityTransactionData extends TransactionData{
 		$this->entityRuntimeId = $stream->getEntityRuntimeId();
 		$this->actionType = $stream->getUnsignedVarInt();
 		$this->hotbarSlot = $stream->getVarInt();
-		$this->itemInHand = $stream->getSlot();
+		$this->itemInHand = ItemStackWrapper::read($stream);
 		$this->playerPos = $stream->getVector3();
 		$this->clickPos = $stream->getVector3();
 	}
@@ -85,7 +85,7 @@ class UseItemOnEntityTransactionData extends TransactionData{
 		$stream->putEntityRuntimeId($this->entityRuntimeId);
 		$stream->putUnsignedVarInt($this->actionType);
 		$stream->putVarInt($this->hotbarSlot);
-		$stream->putSlot($this->itemInHand);
+		$this->itemInHand->write($stream);
 		$stream->putVector3($this->playerPos);
 		$stream->putVector3($this->clickPos);
 	}
@@ -93,7 +93,7 @@ class UseItemOnEntityTransactionData extends TransactionData{
 	/**
 	 * @param NetworkInventoryAction[] $actions
 	 */
-	public static function new(array $actions, int $entityRuntimeId, int $actionType, int $hotbarSlot, ItemStack $itemInHand, Vector3 $playerPos, Vector3 $clickPos) : self{
+	public static function new(array $actions, int $entityRuntimeId, int $actionType, int $hotbarSlot, ItemStackWrapper $itemInHand, Vector3 $playerPos, Vector3 $clickPos) : self{
 		$result = new self;
 		$result->actions = $actions;
 		$result->entityRuntimeId = $entityRuntimeId;

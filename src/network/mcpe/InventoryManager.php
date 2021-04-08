@@ -234,7 +234,7 @@ class InventoryManager{
 		if($selected !== $this->clientSelectedHotbarSlot){
 			$this->session->sendDataPacket(MobEquipmentPacket::create(
 				$this->player->getId(),
-				TypeConverter::getInstance()->coreItemStackToNet($this->player->getInventory()->getItemInHand()),
+				ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->player->getInventory()->getItemInHand())),
 				$selected,
 				ContainerIds::INVENTORY
 			));

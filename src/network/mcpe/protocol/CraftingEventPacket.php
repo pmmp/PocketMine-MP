@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use Ramsey\Uuid\UuidInterface;
 use function count;
 
@@ -39,9 +39,9 @@ class CraftingEventPacket extends DataPacket implements ServerboundPacket{
 	public $type;
 	/** @var UuidInterface */
 	public $id;
-	/** @var ItemStack[] */
+	/** @var ItemStackWrapper[] */
 	public $input = [];
-	/** @var ItemStack[] */
+	/** @var ItemStackWrapper[] */
 	public $output = [];
 
 	protected function decodePayload(PacketSerializer $in) : void{
@@ -51,12 +51,12 @@ class CraftingEventPacket extends DataPacket implements ServerboundPacket{
 
 		$size = $in->getUnsignedVarInt();
 		for($i = 0; $i < $size and $i < 128; ++$i){
-			$this->input[] = $in->getSlot();
+			$this->input[] = ItemStackWrapper::read($in);
 		}
 
 		$size = $in->getUnsignedVarInt();
 		for($i = 0; $i < $size and $i < 128; ++$i){
-			$this->output[] = $in->getSlot();
+			$this->output[] = ItemStackWrapper::read($in);
 		}
 	}
 
@@ -67,12 +67,12 @@ class CraftingEventPacket extends DataPacket implements ServerboundPacket{
 
 		$out->putUnsignedVarInt(count($this->input));
 		foreach($this->input as $item){
-			$out->putSlot($item);
+			$item->write($out);
 		}
 
 		$out->putUnsignedVarInt(count($this->output));
 		foreach($this->output as $item){
-			$out->putSlot($item);
+			$item->write($out);
 		}
 	}
 
