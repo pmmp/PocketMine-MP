@@ -44,21 +44,6 @@ abstract class DataPacket implements Packet{
 	/** @var int */
 	public $recipientSubId = 0;
 
-	/** @var PacketSerializer */
-	private $buf;
-
-	public function __construct(){
-		$this->buf = new PacketSerializer();
-	}
-
-	public function getSerializer() : PacketSerializer{
-		return $this->buf;
-	}
-
-	public function setSerializer(PacketSerializer $serializer) : void{
-		$this->buf = $serializer;
-	}
-
 	public function pid() : int{
 		return $this::NETWORK_ID;
 	}
@@ -74,11 +59,10 @@ abstract class DataPacket implements Packet{
 	/**
 	 * @throws PacketDecodeException
 	 */
-	final public function decode() : void{
-		$this->buf->rewind();
+	final public function decode(PacketSerializer $in) : void{
 		try{
-			$this->decodeHeader($this->buf);
-			$this->decodePayload($this->buf);
+			$this->decodeHeader($in);
+			$this->decodePayload($in);
 		}catch(BinaryDataException | PacketDecodeException $e){
 			throw PacketDecodeException::wrap($e, $this->getName());
 		}
@@ -108,10 +92,9 @@ abstract class DataPacket implements Packet{
 	 */
 	abstract protected function decodePayload(PacketSerializer $in) : void;
 
-	final public function encode() : void{
-		$this->buf = new PacketSerializer();
-		$this->encodeHeader($this->buf);
-		$this->encodePayload($this->buf);
+	final public function encode(PacketSerializer $out) : void{
+		$this->encodeHeader($out);
+		$this->encodePayload($out);
 	}
 
 	protected function encodeHeader(PacketSerializer $out) : void{
