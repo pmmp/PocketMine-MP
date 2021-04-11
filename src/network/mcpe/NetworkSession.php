@@ -374,14 +374,14 @@ class NetworkSession{
 		try{
 			foreach($stream->getPackets($this->packetPool, 500) as [$packet, $buffer]){
 				try{
-					$this->handleDataPacket($packet, $this->protocolId, $buffer);
+					$this->handleDataPacket($packet, $this->getProtocolId(), $buffer);
 				}catch(PacketHandlingException $e){
 					$this->logger->debug($packet->getName() . ": " . base64_encode($buffer));
 					throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
 				}
 			}
 		}catch(PacketDecodeException $e){
-			if(strpos($e->getMessage(), "Reached limit of $max packets in a single batch") === false){
+			if(strpos($e->getMessage(), "Reached limit of 500 packets in a single batch") === false){
 				$this->logger->logException($e);
 			}
 			throw PacketHandlingException::wrap($e, "Packet batch decode error");
