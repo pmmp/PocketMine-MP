@@ -260,6 +260,11 @@ class NetworkBinaryStream extends BinaryStream{
 			if($netId === ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield")){
 				$extraData->getLLong(); //"blocking tick" (ffs mojang)
 			}
+
+			if(!$extraData->feof()){
+				throw new \UnexpectedValueException("Unexpected trailing extradata for network item $netId");
+			}
+
 			if($nbt !== null){
 				if($nbt->hasTag(self::DAMAGE_TAG, IntTag::class)){
 					$meta = $nbt->getInt(self::DAMAGE_TAG);
