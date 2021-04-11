@@ -32,7 +32,6 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function mt_rand;
-	
 
 class SweetBerryBush extends Crops {
 
