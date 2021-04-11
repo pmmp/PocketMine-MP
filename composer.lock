@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "adhocore/json-comment",
-            "version": "1.1.0",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/adhocore/php-json-comment.git",
-                "reference": "cf7998124d1050b83d7d985447fefd630e09c1a2"
+                "reference": "fc2f76979f0a44a5f5bc2a2b600d0762fe0e78e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/adhocore/php-json-comment/zipball/cf7998124d1050b83d7d985447fefd630e09c1a2",
-                "reference": "cf7998124d1050b83d7d985447fefd630e09c1a2",
+                "url": "https://api.github.com/repos/adhocore/php-json-comment/zipball/fc2f76979f0a44a5f5bc2a2b600d0762fe0e78e7",
+                "reference": "fc2f76979f0a44a5f5bc2a2b600d0762fe0e78e7",
                 "shasum": ""
             },
             "require": {
@@ -51,7 +51,7 @@
             ],
             "support": {
                 "issues": "https://github.com/adhocore/php-json-comment/issues",
-                "source": "https://github.com/adhocore/php-json-comment/tree/1.1.0"
+                "source": "https://github.com/adhocore/php-json-comment/tree/1.1.2"
             },
             "funding": [
                 {
@@ -59,7 +59,7 @@
                     "type": "custom"
                 }
             ],
-            "time": "2021-04-05T13:11:13+00:00"
+            "time": "2021-04-09T03:06:06+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
