@@ -76,6 +76,7 @@ use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetActorDataPacket;
@@ -370,13 +371,12 @@ class NetworkSession{
 			Timings::$playerNetworkReceiveDecompress->stopTiming();
 		}
 
-		$max = 500;
 		try{
-			foreach($stream->getPackets($this->getProtocolId(), $this->packetPool, $max) as $packet){
+			foreach($stream->getPackets($this->packetPool, 500) as [$packet, $buffer]){
 				try{
-					$this->handleDataPacket($packet);
+					$this->handleDataPacket($packet, $this->protocolId, $buffer);
 				}catch(PacketHandlingException $e){
-					$this->logger->debug($packet->getName() . ": " . base64_encode($packet->getSerializer()->getBuffer()));
+					$this->logger->debug($packet->getName() . ": " . base64_encode($buffer));
 					throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
 				}
 			}
@@ -391,10 +391,10 @@ class NetworkSession{
 	/**
 	 * @throws PacketHandlingException
 	 */
-	public function handleDataPacket(Packet $packet) : void{
+	public function handleDataPacket(Packet $packet, int $protocolId, string $buffer) : void{
 		if(!($packet instanceof ServerboundPacket)){
 			if($packet instanceof GarbageServerboundPacket){
-				$this->logger->debug("Garbage serverbound " . $packet->getName() . ": " . base64_encode($packet->getSerializer()->getBuffer()));
+				$this->logger->debug("Garbage serverbound " . $packet->getName() . ": " . base64_encode($buffer));
 				return;
 			}
 			throw new PacketHandlingException("Unexpected non-serverbound packet");
@@ -404,12 +404,13 @@ class NetworkSession{
 		$timings->startTiming();
 
 		try{
+			$stream = new PacketSerializer($buffer);
+			$stream->setProtocolId($protocolId);
 			try{
-				$packet->decode();
+				$packet->decode($stream);
 			}catch(PacketDecodeException $e){
 				throw PacketHandlingException::wrap($e);
 			}
-			$stream = $packet->getSerializer();
 			if(!$stream->feof()){
 				$remains = substr($stream->getBuffer(), $stream->getOffset());
 				$this->logger->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));

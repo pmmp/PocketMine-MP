@@ -39,14 +39,15 @@ class PacketBatch{
 
 	/**
 	 * @return \Generator|Packet[]
-	 * @phpstan-return \Generator<int, Packet, void, void>
+	 * @phpstan-return \Generator<int, array{Packet, string}, void, void>
 	 * @throws PacketDecodeException
 	 */
-	public function getPackets(int $protocolId, PacketPool $packetPool, int $max) : \Generator{
+	public function getPackets(PacketPool $packetPool, int $max) : \Generator{
 		$serializer = new PacketSerializer($this->buffer);
 		for($c = 0; $c < $max and !$serializer->feof(); ++$c){
 			try{
-				yield $c => $packetPool->getPacket($protocolId, $serializer->getString());
+				$buffer = $serializer->getString();
+				yield $c => [$packetPool->getPacket($buffer), $buffer];
 			}catch(BinaryDataException $e){
 				throw new PacketDecodeException("Error decoding packet $c of batch: " . $e->getMessage(), 0, $e);
 			}
@@ -68,8 +69,10 @@ class PacketBatch{
 		$serializer = new PacketSerializer();
 		$serializer->setProtocolId($protocolId);
 		foreach($packets as $packet){
-			$packet->encode($protocolId);
-			$serializer->putString($packet->getSerializer()->getBuffer());
+			$subSerializer = new PacketSerializer();
+			$subSerializer->setProtocolId($protocolId);
+			$packet->encode($subSerializer);
+			$serializer->putString($subSerializer->getBuffer());
 		}
 		return new self($serializer->getBuffer());
 	}

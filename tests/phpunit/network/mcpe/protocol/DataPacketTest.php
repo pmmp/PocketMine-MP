@@ -32,11 +32,11 @@ class DataPacketTest extends TestCase{
 		$pk = new TestPacket();
 		$pk->senderSubId = 3;
 		$pk->recipientSubId = 2;
-		$pk->encode();
+		$serializer = new PacketSerializer();
+		$pk->encode($serializer);
 
 		$pk2 = new TestPacket();
-		$pk2->setSerializer(new PacketSerializer($pk->getSerializer()->getBuffer()));
-		$pk2->decode();
+		$pk2->decode(new PacketSerializer($serializer->getBuffer()));
 		self::assertSame($pk2->senderSubId, 3);
 		self::assertSame($pk2->recipientSubId, 2);
 	}

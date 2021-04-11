@@ -43,6 +43,6 @@ class LoginPacketTest extends TestCase{
 		$pk = PacketPool::getInstance()->getPacket($stream->getBuffer());
 
 		$this->expectException(PacketDecodeException::class);
-		$pk->decode(); //bang
+		$pk->decode(new PacketSerializer($stream->getBuffer())); //bang
 	}
 }
