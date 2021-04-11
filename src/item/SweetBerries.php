@@ -32,7 +32,6 @@ class SweetBerries extends Food {
 		return 2;
 	}
 
-
 	public function getSaturationRestore(): float{
 		return 1.2;
 	}
