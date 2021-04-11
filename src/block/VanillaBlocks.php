@@ -1239,5 +1239,6 @@ final class VanillaBlocks{
 		self::register("yellow_stained_clay", $factory->get(159, 4));
 		self::register("yellow_stained_glass", $factory->get(241, 4));
 		self::register("yellow_stained_glass_pane", $factory->get(160, 4));
+		self::register("sweet_berry_bush", $factory->get(462, 0));
 	}
 }
