@@ -569,5 +569,6 @@ final class VanillaItems{
 		self::register("yellow_bed", $factory->get(355, 4));
 		self::register("yellow_dye", $factory->get(351, 11));
 		self::register("zombie_head", $factory->get(397, 2));
+		self::register("sweet_berries", $factory->get(477, 0));
 	}
 }
