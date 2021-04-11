@@ -287,7 +287,7 @@ class PacketSerializer extends BinaryStream{
 			}
 
 			if(!$extraData->feof()){
-				throw new PacketDecodeException("Unexpected trailing extradata for network item $netId");
+				throw new PacketDecodeException("Unexpected trailing extradata for network item $id");
 			}
 
 			return new ItemStack($id, $meta, $count, $blockRuntimeId, $compound, $canPlaceOn, $canDestroy, $shieldBlockingTick);
