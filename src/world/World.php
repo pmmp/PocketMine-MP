@@ -2040,7 +2040,6 @@ class World implements ChunkManager{
 			World::getXZ($nextChunkHash, $nextChunkX, $nextChunkZ);
 			if(isset($this->chunkPopulationRequestMap[$nextChunkHash])){
 				assert(!isset($this->activeChunkPopulationTasks[$nextChunkHash]), "Population for chunk $nextChunkX $nextChunkZ already running");
-				$this->logger->debug("Fulfilling population request for chunk $nextChunkX $nextChunkZ");
 				$this->orderChunkPopulation($nextChunkX, $nextChunkZ, null);
 				if(!isset($this->activeChunkPopulationTasks[$nextChunkHash])){
 					$failed[] = $nextChunkHash;
