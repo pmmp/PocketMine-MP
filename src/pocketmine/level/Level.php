@@ -1047,6 +1047,15 @@ class Level implements ChunkManager, Metadatable{
 	/**
 	 * @return void
 	 */
+	public function clearBlockCache(int $chunkX, int $chunkZ){
+		if(isset($this->blockCache[$hash = Level::chunkHash($chunkX, $chunkZ)])) {
+			unset($this->blockCache[$hash]);
+		}
+	}
+
+	/**
+	 * @return void
+	 */
 	public function clearChunkCache(int $chunkX, int $chunkZ){
 		unset($this->chunkCache[Level::chunkHash($chunkX, $chunkZ)]);
 	}
