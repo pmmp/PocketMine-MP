@@ -32,13 +32,13 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Limits;
-use pocketmine\utils\Utils;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\generator\Flat;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
+use pocketmine\world\WorldCreationOptions;
 use function file_get_contents;
 use function file_put_contents;
 use function strlen;
@@ -53,14 +53,9 @@ class BedrockWorldData extends BaseNbtWorldData{
 	public const GENERATOR_INFINITE = 1;
 	public const GENERATOR_FLAT = 2;
 
-	/**
-	 * @param mixed[] $options
-	 * @phpstan-param class-string<Generator> $generator
-	 * @phpstan-param array<string, mixed>    $options
-	 */
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
-		Utils::testValidInstance($generator, Generator::class);
-		switch($generator){
+	public static function generate(string $path, string $name, ?WorldCreationOptions $options = null) : void{
+		$options ??= WorldCreationOptions::create();
+		switch($options->getGeneratorClass()){
 			case Flat::class:
 				$generatorType = self::GENERATOR_FLAT;
 				break;
@@ -72,7 +67,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 		$worldData = CompoundTag::create()
 			//Vanilla fields
 			->setInt("DayCycleStopTime", -1)
-			->setInt("Difficulty", World::getDifficultyFromString((string) ($options["difficulty"] ?? "normal")))
+			->setInt("Difficulty", $options->getDifficulty())
 			->setByte("ForceGameType", 0)
 			->setInt("GameType", 0)
 			->setInt("Generator", $generatorType)
@@ -80,10 +75,10 @@ class BedrockWorldData extends BaseNbtWorldData{
 			->setString("LevelName", $name)
 			->setInt("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL)
 			//->setInt("Platform", 2) //TODO: find out what the possible values are for
-			->setLong("RandomSeed", $seed)
-			->setInt("SpawnX", 0)
-			->setInt("SpawnY", 32767)
-			->setInt("SpawnZ", 0)
+			->setLong("RandomSeed", $options->getSeed())
+			->setInt("SpawnX", $options->getSpawnPosition()->getFloorX())
+			->setInt("SpawnY", $options->getSpawnPosition()->getFloorY())
+			->setInt("SpawnZ", $options->getSpawnPosition()->getFloorZ())
 			->setInt("StorageVersion", self::CURRENT_STORAGE_VERSION)
 			->setLong("Time", 0)
 			->setByte("eduLevel", 0)
@@ -101,9 +96,9 @@ class BedrockWorldData extends BaseNbtWorldData{
 
 			//Additional PocketMine-MP fields
 			->setTag("GameRules", new CompoundTag())
-			->setByte("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0)
-			->setString("generatorName", GeneratorManager::getInstance()->getGeneratorName($generator))
-			->setString("generatorOptions", $options["preset"] ?? "");
+			->setByte("hardcore", 0)
+			->setString("generatorName", GeneratorManager::getInstance()->getGeneratorName($options->getGeneratorClass()))
+			->setString("generatorOptions", $options->getGeneratorOptions());
 
 		$nbt = new LittleEndianNbtSerializer();
 		$buffer = $nbt->write(new TreeRoot($worldData));

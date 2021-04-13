@@ -29,11 +29,10 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\utils\Utils;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
-use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
+use pocketmine\world\WorldCreationOptions;
 use function ceil;
 use function file_get_contents;
 use function file_put_contents;
@@ -44,31 +43,27 @@ use const ZLIB_ENCODING_GZIP;
 
 class JavaWorldData extends BaseNbtWorldData{
 
-	/**
-	 * @param mixed[] $options
-	 * @phpstan-param class-string<Generator> $generator
-	 * @phpstan-param array<string, mixed>    $options
-	 */
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = [], int $version = 19133) : void{
-		Utils::testValidInstance($generator, Generator::class);
+	public static function generate(string $path, string $name, ?WorldCreationOptions $options = null, int $version = 19133) : void{
 		//TODO, add extra details
+
+		$options ??= WorldCreationOptions::create();
 		$worldData = CompoundTag::create()
-			->setByte("hardcore", ($options["hardcore"] ?? false) === true ? 1 : 0)
-			->setByte("Difficulty", World::getDifficultyFromString((string) ($options["difficulty"] ?? "normal")))
+			->setByte("hardcore", 0)
+			->setByte("Difficulty", $options->getDifficulty())
 			->setByte("initialized", 1)
 			->setInt("GameType", 0)
 			->setInt("generatorVersion", 1) //2 in MCPE
-			->setInt("SpawnX", 256)
-			->setInt("SpawnY", 70)
-			->setInt("SpawnZ", 256)
+			->setInt("SpawnX", $options->getSpawnPosition()->getFloorX())
+			->setInt("SpawnY", $options->getSpawnPosition()->getFloorY())
+			->setInt("SpawnZ", $options->getSpawnPosition()->getFloorZ())
 			->setInt("version", $version)
 			->setInt("DayTime", 0)
 			->setLong("LastPlayed", (int) (microtime(true) * 1000))
-			->setLong("RandomSeed", $seed)
+			->setLong("RandomSeed", $options->getSeed())
 			->setLong("SizeOnDisk", 0)
 			->setLong("Time", 0)
-			->setString("generatorName", GeneratorManager::getInstance()->getGeneratorName($generator))
-			->setString("generatorOptions", $options["preset"] ?? "")
+			->setString("generatorName", GeneratorManager::getInstance()->getGeneratorName($options->getGeneratorClass()))
+			->setString("generatorOptions", $options->getGeneratorOptions())
 			->setString("LevelName", $name)
 			->setTag("GameRules", new CompoundTag());
 

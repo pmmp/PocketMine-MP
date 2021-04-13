@@ -90,7 +90,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 			mkdir($path . "/region", 0777);
 		}
 
-		JavaWorldData::generate($path, $name, $seed, $generator, $options, static::getPcWorldFormatVersion());
+		JavaWorldData::generate($path, $name, null, static::getPcWorldFormatVersion());
 	}
 
 	/** @var RegionLoader[] */
