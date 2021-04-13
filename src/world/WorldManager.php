@@ -41,7 +41,10 @@ use function array_keys;
 use function array_shift;
 use function assert;
 use function count;
+use function floor;
 use function implode;
+use function intdiv;
+use function iterator_to_array;
 use function microtime;
 use function round;
 use function sprintf;
@@ -269,9 +272,22 @@ class WorldManager{
 			$centerX = $spawnLocation->getFloorX() >> 4;
 			$centerZ = $spawnLocation->getFloorZ() >> 4;
 
-			foreach((new ChunkSelector())->selectChunks(3, $centerX, $centerZ) as $index){
+			$selected = iterator_to_array((new ChunkSelector())->selectChunks(3, $centerX, $centerZ));
+			$done = 0;
+			$total = count($selected);
+			foreach($selected as $index){
 				World::getXZ($index, $chunkX, $chunkZ);
-				$world->orderChunkPopulation($chunkX, $chunkZ, null);
+				$world->orderChunkPopulation($chunkX, $chunkZ, null)->onCompletion(
+					static function() use ($world, &$done, $total) : void{
+						$oldProgress = (int) floor(($done / $total) * 100);
+						$newProgress = (int) floor((++$done / $total) * 100);
+						if(intdiv($oldProgress, 10) !== intdiv($newProgress, 10) || $done === $total){
+							$world->getLogger()->info("Generating spawn terrain chunks: $done / $total ($newProgress%)");
+						}
+					},
+					static function() : void{
+						//NOOP: we don't care if the world was unloaded
+					});
 			}
 		}
 
