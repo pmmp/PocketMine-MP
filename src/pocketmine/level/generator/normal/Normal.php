@@ -144,9 +144,6 @@ class Normal extends Generator{
 						return Biome::BIRCH_FOREST;
 					}
 				}else{
-					//According to the wiki, mountains have a temperature of 0.2-0.3,
-					//so substituting rainfall for temperature was actually pretty accurate
-					//These are all the best estimates for mountain temperature
 					if($temperature < 0.20){
 						return Biome::MOUNTAINS;
 					}elseif($temperature < 0.40){
