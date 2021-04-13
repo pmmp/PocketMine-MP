@@ -27,13 +27,13 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
 use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WorldData;
 use pocketmine\world\generator\Generator;
+use pocketmine\world\WorldCreationOptions;
 use function assert;
 use function file_exists;
 use function is_dir;
@@ -75,13 +75,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		return false;
 	}
 
-	/**
-	 * @param mixed[] $options
-	 * @phpstan-param class-string<Generator> $generator
-	 * @phpstan-param array<string, mixed>    $options
-	 */
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
-		Utils::testValidInstance($generator, Generator::class);
+	public static function generate(string $path, string $name, ?WorldCreationOptions $options = null) : void{
 		if(!file_exists($path)){
 			mkdir($path, 0777, true);
 		}
@@ -90,7 +84,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 			mkdir($path . "/region", 0777);
 		}
 
-		JavaWorldData::generate($path, $name, null, static::getPcWorldFormatVersion());
+		JavaWorldData::generate($path, $name, $options, static::getPcWorldFormatVersion());
 	}
 
 	/** @var RegionLoader[] */
