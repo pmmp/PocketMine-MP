@@ -272,7 +272,7 @@ class WorldManager{
 			$centerX = $spawnLocation->getFloorX() >> 4;
 			$centerZ = $spawnLocation->getFloorZ() >> 4;
 
-			$selected = iterator_to_array((new ChunkSelector())->selectChunks(3, $centerX, $centerZ));
+			$selected = iterator_to_array((new ChunkSelector())->selectChunks(8, $centerX, $centerZ));
 			$done = 0;
 			$total = count($selected);
 			foreach($selected as $index){
