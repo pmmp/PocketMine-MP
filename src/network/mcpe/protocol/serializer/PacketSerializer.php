@@ -338,6 +338,10 @@ class PacketSerializer extends BinaryStream{
 				$shieldBlockingTick = $extraData->getLLong();
 			}
 
+			if(!$extraData->feof()){
+				throw new PacketDecodeException("Unexpected trailing extradata for network item $id");
+			}
+
 			return new ItemStack($id, $meta, $count, $blockRuntimeId, $compound, $canPlaceOn, $canDestroy, $shieldBlockingTick);
 		})();
 	}

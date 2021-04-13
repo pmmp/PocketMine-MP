@@ -87,4 +87,9 @@ class ConsoleCommandSender implements CommandSender{
 		}
 		$this->lineHeight = $height;
 	}
+
+	public function __destruct(){
+		//permission subscriptions need to be cleaned up explicitly
+		$this->perm->destroyCycles();
+	}
 }

@@ -105,11 +105,13 @@ class PermissibleBase implements Permissible{
 			throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}
 
-		$result = new PermissionAttachment($plugin, $this);
+		$result = new PermissionAttachment($plugin);
 		$this->attachments[spl_object_id($result)] = $result;
 		if($name !== null and $value !== null){
 			$result->setPermission($name, $value);
 		}
+
+		$result->subscribePermissible($this);
 
 		$this->recalculatePermissions();
 
@@ -119,8 +121,9 @@ class PermissibleBase implements Permissible{
 	public function removeAttachment(PermissionAttachment $attachment) : void{
 		if(isset($this->attachments[spl_object_id($attachment)])){
 			unset($this->attachments[spl_object_id($attachment)]);
+			$attachment->unsubscribePermissible($this);
 			if(($ex = $attachment->getRemovalCallback()) !== null){
-				$ex->attachmentRemoved($attachment);
+				$ex->attachmentRemoved($this, $attachment);
 			}
 
 			$this->recalculatePermissions();
@@ -213,7 +216,10 @@ class PermissibleBase implements Permissible{
 	public function destroyCycles() : void{
 		PermissionManager::getInstance()->unsubscribeFromAllPermissions($this);
 		$this->permissions = []; //PermissionAttachmentInfo doesn't reference Permissible anymore, but it references PermissionAttachment which does
-		$this->attachments = []; //this might still be a problem if the attachments are still referenced, but we can't do anything about that
+		foreach($this->attachments as $attachment){
+			$attachment->unsubscribePermissible($this);
+		}
+		$this->attachments = [];
 		$this->permissionRecalculationCallbacks->clear();
 	}
 }
