@@ -32,7 +32,6 @@ use pocketmine\world\format\io\BaseWorldProvider;
 use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WorldData;
-use pocketmine\world\generator\Generator;
 use pocketmine\world\WorldCreationOptions;
 use function assert;
 use function file_exists;
