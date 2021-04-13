@@ -58,13 +58,10 @@ class Normal extends Generator{
 	private $gaussian;
 
 	/**
-	 * @param mixed[] $options
-	 * @phpstan-param array<string, mixed> $options
-	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
-	public function __construct(int $seed, array $options = []){
-		parent::__construct($seed, $options);
+	public function __construct(int $seed, string $preset){
+		parent::__construct($seed, $preset);
 
 		$this->gaussian = new Gaussian(2);
 

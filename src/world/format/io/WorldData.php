@@ -39,11 +39,7 @@ interface WorldData{
 	 */
 	public function getGenerator() : string;
 
-	/**
-	 * @return mixed[]
-	 * @phpstan-return array<string, mixed>
-	 */
-	public function getGeneratorOptions() : array;
+	public function getGeneratorOptions() : string;
 
 	public function getSeed() : int;
 
