@@ -947,6 +947,10 @@ class World implements ChunkManager{
 		}
 	}
 
+	public function clearBlockCache(int $chunkX, int $chunkZ) : void{
+		unset($this->blockCache[World::chunkHash($chunkX, $chunkZ)]);
+	}
+
 	/**
 	 * @return bool[] fullID => bool
 	 */
