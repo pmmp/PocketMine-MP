@@ -1321,6 +1321,7 @@ abstract class Entity{
 		$this->blocksAround = null;
 
 		if($oldWorld !== $newWorld){
+			$this->networkProperties->clearDirtyProperties();
 			$newWorld->addEntity($this);
 		}else{
 			$newWorld->onEntityMoved($this);
