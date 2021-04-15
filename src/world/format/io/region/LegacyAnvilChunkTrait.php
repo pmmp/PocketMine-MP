@@ -46,11 +46,6 @@ use function zlib_decode;
  * @internal
  */
 trait LegacyAnvilChunkTrait{
-
-	protected function serializeChunk(Chunk $chunk) : string{
-		throw new \RuntimeException("Unsupported");
-	}
-
 	/**
 	 * @throws CorruptedChunkException
 	 */
