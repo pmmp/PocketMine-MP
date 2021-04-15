@@ -244,7 +244,7 @@ class WorldManager{
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function generateWorld(string $name, ?WorldCreationOptions $options = null, bool $backgroundGeneration = true) : bool{
+	public function generateWorld(string $name, WorldCreationOptions $options, bool $backgroundGeneration = true) : bool{
 		if(trim($name) === "" or $this->isWorldGenerated($name)){
 			return false;
 		}

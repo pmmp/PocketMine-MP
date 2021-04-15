@@ -143,7 +143,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		return file_exists($path . "/level.dat") and is_dir($path . "/db/");
 	}
 
-	public static function generate(string $path, string $name, ?WorldCreationOptions $options = null) : void{
+	public static function generate(string $path, string $name, WorldCreationOptions $options) : void{
 		self::checkForLevelDBExtension();
 
 		if(!file_exists($path . "/db")){

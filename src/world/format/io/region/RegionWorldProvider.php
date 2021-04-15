@@ -74,7 +74,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		return false;
 	}
 
-	public static function generate(string $path, string $name, ?WorldCreationOptions $options = null) : void{
+	public static function generate(string $path, string $name, WorldCreationOptions $options) : void{
 		if(!file_exists($path)){
 			mkdir($path, 0777, true);
 		}

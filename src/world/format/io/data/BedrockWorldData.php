@@ -53,8 +53,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 	public const GENERATOR_INFINITE = 1;
 	public const GENERATOR_FLAT = 2;
 
-	public static function generate(string $path, string $name, ?WorldCreationOptions $options = null) : void{
-		$options ??= WorldCreationOptions::create();
+	public static function generate(string $path, string $name, WorldCreationOptions $options) : void{
 		switch($options->getGeneratorClass()){
 			case Flat::class:
 				$generatorType = self::GENERATOR_FLAT;

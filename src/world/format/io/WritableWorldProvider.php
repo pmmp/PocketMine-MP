@@ -30,7 +30,7 @@ interface WritableWorldProvider extends WorldProvider{
 	/**
 	 * Generate the needed files in the path given
 	 */
-	public static function generate(string $path, string $name, ?WorldCreationOptions $options = null) : void;
+	public static function generate(string $path, string $name, WorldCreationOptions $options) : void;
 
 	/**
 	 * Saves a chunk (usually to disk).

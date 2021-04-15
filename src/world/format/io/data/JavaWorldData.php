@@ -43,10 +43,9 @@ use const ZLIB_ENCODING_GZIP;
 
 class JavaWorldData extends BaseNbtWorldData{
 
-	public static function generate(string $path, string $name, ?WorldCreationOptions $options = null, int $version = 19133) : void{
+	public static function generate(string $path, string $name, WorldCreationOptions $options, int $version = 19133) : void{
 		//TODO, add extra details
 
-		$options ??= WorldCreationOptions::create();
 		$worldData = CompoundTag::create()
 			->setByte("hardcore", 0)
 			->setByte("Difficulty", $options->getDifficulty())
