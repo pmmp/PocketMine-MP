@@ -100,8 +100,8 @@ use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
-use pocketmine\world\generator\normal\Normal;
 use pocketmine\world\World;
+use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
 use Ramsey\Uuid\UuidInterface;
 use function array_shift;
@@ -1031,17 +1031,30 @@ class Server{
 					continue;
 				}
 				if(!$this->worldManager->loadWorld($name, true)){
+					$creationOptions = WorldCreationOptions::create();
+					//TODO: error checking
+
 					if(isset($options["generator"])){
 						$generatorOptions = explode(":", $options["generator"]);
-						$generator = GeneratorManager::getInstance()->getGenerator(array_shift($generatorOptions));
+						$creationOptions->setGeneratorClass(GeneratorManager::getInstance()->getGenerator(array_shift($generatorOptions)));
 						if(count($generatorOptions) > 0){
-							$options["preset"] = implode(":", $generatorOptions);
+							$creationOptions->setGeneratorOptions(implode(":", $generatorOptions));
 						}
-					}else{
-						$generator = Normal::class;
+					}
+					if(isset($options["difficulty"]) && is_string($options["difficulty"])){
+						$creationOptions->setDifficulty(World::getDifficultyFromString($options["difficulty"]));
+					}
+					if(isset($options["preset"]) && is_string($options["preset"])){
+						$creationOptions->setGeneratorOptions($options["preset"]);
+					}
+					if(isset($options["seed"])){
+						$convertedSeed = Generator::convertSeed((string) ($options["seed"] ?? ""));
+						if($convertedSeed !== null){
+							$creationOptions->setSeed($convertedSeed);
+						}
 					}
 
-					$this->worldManager->generateWorld($name, Generator::convertSeed((string) ($options["seed"] ?? "")), $generator, $options);
+					$this->worldManager->generateWorld($name, $creationOptions);
 				}
 			}
 
@@ -1053,12 +1066,14 @@ class Server{
 					$this->configGroup->setConfigString("level-name", "world");
 				}
 				if(!$this->worldManager->loadWorld($default, true)){
-					$this->worldManager->generateWorld(
-						$default,
-						Generator::convertSeed($this->configGroup->getConfigString("level-seed")),
-						GeneratorManager::getInstance()->getGenerator($this->configGroup->getConfigString("level-type")),
-						["preset" => $this->configGroup->getConfigString("generator-settings")]
-					);
+					$creationOptions = WorldCreationOptions::create()
+						->setGeneratorClass(GeneratorManager::getInstance()->getGenerator($this->configGroup->getConfigString("level-type")))
+						->setGeneratorOptions($this->configGroup->getConfigString("generator-settings"));
+					$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
+					if($convertedSeed !== null){
+						$creationOptions->setSeed($convertedSeed);
+					}
+					$this->worldManager->generateWorld($default, $creationOptions);
 				}
 
 				$world = $this->worldManager->getWorldByName($default);

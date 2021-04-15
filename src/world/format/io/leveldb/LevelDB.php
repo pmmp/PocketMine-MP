@@ -32,7 +32,6 @@ use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
-use pocketmine\utils\Utils;
 use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
@@ -46,7 +45,7 @@ use pocketmine\world\format\io\WorldData;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
-use pocketmine\world\generator\Generator;
+use pocketmine\world\WorldCreationOptions;
 use function array_map;
 use function array_values;
 use function chr;
@@ -144,15 +143,14 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		return file_exists($path . "/level.dat") and is_dir($path . "/db/");
 	}
 
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
-		Utils::testValidInstance($generator, Generator::class);
+	public static function generate(string $path, string $name, WorldCreationOptions $options) : void{
 		self::checkForLevelDBExtension();
 
 		if(!file_exists($path . "/db")){
 			mkdir($path . "/db", 0777, true);
 		}
 
-		BedrockWorldData::generate($path, $name, $seed, $generator, $options);
+		BedrockWorldData::generate($path, $name, $options);
 	}
 
 	protected function deserializePaletted(BinaryStream $stream) : PalettedBlockArray{
@@ -232,7 +230,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
+	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
 		$chunkVersionRaw = $this->db->get($index . self::TAG_VERSION);
@@ -420,7 +418,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		return $chunk;
 	}
 
-	protected function writeChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
+	public function saveChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		$idMap = LegacyBlockIdToStringIdMap::getInstance();
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 

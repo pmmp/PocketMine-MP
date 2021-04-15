@@ -50,22 +50,15 @@ abstract class Generator{
 
 	/** @var int */
 	protected $seed;
-	/**
-	 * @var mixed[]
-	 * @phpstan-var array<string, mixed>
-	 */
-	protected $options;
+
+	protected string $preset;
 
 	/** @var Random */
 	protected $random;
 
-	/**
-	 * @param mixed[] $options
-	 * @phpstan-param array<string, mixed> $options
-	 */
-	public function __construct(int $seed, array $options = []){
+	public function __construct(int $seed, string $preset){
 		$this->seed = $seed;
-		$this->options = $options;
+		$this->preset = $preset;
 		$this->random = new Random($seed);
 	}
 

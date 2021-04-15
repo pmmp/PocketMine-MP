@@ -27,18 +27,15 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
 use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WorldData;
-use pocketmine\world\generator\Generator;
 use function assert;
 use function file_exists;
 use function is_dir;
 use function is_int;
-use function mkdir;
 use function morton2d_encode;
 use function rename;
 use function scandir;
@@ -73,24 +70,6 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		}
 
 		return false;
-	}
-
-	/**
-	 * @param mixed[] $options
-	 * @phpstan-param class-string<Generator> $generator
-	 * @phpstan-param array<string, mixed>    $options
-	 */
-	public static function generate(string $path, string $name, int $seed, string $generator, array $options = []) : void{
-		Utils::testValidInstance($generator, Generator::class);
-		if(!file_exists($path)){
-			mkdir($path, 0777, true);
-		}
-
-		if(!file_exists($path . "/region")){
-			mkdir($path . "/region", 0777);
-		}
-
-		JavaWorldData::generate($path, $name, $seed, $generator, $options, static::getPcWorldFormatVersion());
 	}
 
 	/** @var RegionLoader[] */
@@ -134,24 +113,18 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		if(!isset($this->regions[$index = morton2d_encode($regionX, $regionZ)])){
 			$path = $this->pathToRegion($regionX, $regionZ);
 
-			$region = new RegionLoader($path);
 			try{
-				$region->open();
+				$this->regions[$index] = new RegionLoader($path);
 			}catch(CorruptedRegionException $e){
 				$logger = \GlobalLogger::get();
 				$logger->error("Corrupted region file detected: " . $e->getMessage());
-
-				$region->close(); //Do not write anything to the file
 
 				$backupPath = $path . ".bak." . time();
 				rename($path, $backupPath);
 				$logger->error("Corrupted region file has been backed up to " . $backupPath);
 
-				$region = new RegionLoader($path);
-				$region->open(); //this will create a new empty region to replace the corrupted one
+				$this->regions[$index] = new RegionLoader($path); //this will create a new empty region to replace the corrupted one
 			}
-
-			$this->regions[$index] = $region;
 		}
 		return $this->regions[$index];
 	}
@@ -169,8 +142,6 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 			unset($this->regions[$index]);
 		}
 	}
-
-	abstract protected function serializeChunk(Chunk $chunk) : string;
 
 	/**
 	 * @throws CorruptedChunkException
@@ -214,7 +185,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
+	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		assert(is_int($regionX) and is_int($regionZ));
@@ -229,11 +200,6 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		}
 
 		return null;
-	}
-
-	protected function writeChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
-		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		$this->loadRegion($regionX, $regionZ)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->serializeChunk($chunk));
 	}
 
 	private function createRegionIterator() : \RegexIterator{

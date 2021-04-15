@@ -25,8 +25,6 @@ namespace pocketmine\world\generator;
 
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\World;
-use function igbinary_serialize;
-use function igbinary_unserialize;
 
 class GeneratorRegisterTask extends AsyncTask{
 
@@ -47,13 +45,11 @@ class GeneratorRegisterTask extends AsyncTask{
 	public $worldMaxY;
 
 	/**
-	 * @param mixed[] $generatorSettings
 	 * @phpstan-param class-string<Generator> $generatorClass
-	 * @phpstan-param array<string, mixed> $generatorSettings
 	 */
-	public function __construct(World $world, string $generatorClass, array $generatorSettings = []){
+	public function __construct(World $world, string $generatorClass, string $generatorSettings){
 		$this->generatorClass = $generatorClass;
-		$this->settings = igbinary_serialize($generatorSettings);
+		$this->settings = $generatorSettings;
 		$this->seed = $world->getSeed();
 		$this->worldId = $world->getId();
 		$this->worldMinY = $world->getMinY();
@@ -65,7 +61,7 @@ class GeneratorRegisterTask extends AsyncTask{
 		 * @var Generator $generator
 		 * @see Generator::__construct()
 		 */
-		$generator = new $this->generatorClass($this->seed, igbinary_unserialize($this->settings));
+		$generator = new $this->generatorClass($this->seed, $this->settings);
 		ThreadLocalGeneratorContext::register(new ThreadLocalGeneratorContext($generator, $this->worldMinY, $this->worldMaxY), $this->worldId);
 	}
 }
