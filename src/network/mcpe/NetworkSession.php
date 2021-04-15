@@ -701,7 +701,7 @@ class NetworkSession{
 		$this->setHandler(new PreSpawnPacketHandler($this->server, $this->player, $this));
 		$this->player->setImmobile(); //TODO: HACK: fix client-side falling pre-spawn
 
-		$this->logger->debug("Waiting for spawn chunks");
+		$this->logger->debug("Waiting for chunk radius request");
 	}
 
 	public function notifyTerrainReady() : void{
