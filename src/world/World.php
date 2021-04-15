@@ -1293,9 +1293,9 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Returns the highest block light level available in the positions adjacent to the specified block coordinates.
+	 * @phpstan-param \Closure(int $x, int $y, int $z) : int $lightGetter
 	 */
-	public function getHighestAdjacentPotentialBlockSkyLight(int $x, int $y, int $z) : int{
+	private function getHighestAdjacentLight(int $x, int $y, int $z, \Closure $lightGetter) : int{
 		$max = 0;
 		foreach([
 			[$x + 1, $y, $z],
@@ -1312,9 +1312,16 @@ class World implements ChunkManager{
 			){
 				continue;
 			}
-			$max = max($max, $this->getPotentialBlockSkyLightAt($x1, $y1, $z1));
+			$max = max($max, $lightGetter($x1, $y1, $z1));
 		}
 		return $max;
+	}
+
+	/**
+	 * Returns the highest block light level available in the positions adjacent to the specified block coordinates.
+	 */
+	public function getHighestAdjacentPotentialBlockSkyLight(int $x, int $y, int $z) : int{
+		return $this->getHighestAdjacentLight($x, $y, $z, \Closure::fromCallable([$this, 'getPotentialBlockSkyLightAt']));
 	}
 
 	/**
@@ -1329,25 +1336,7 @@ class World implements ChunkManager{
 	 * Returns the highest block light level available in the positions adjacent to the specified block coordinates.
 	 */
 	public function getHighestAdjacentBlockLight(int $x, int $y, int $z) : int{
-		$max = 0;
-		foreach([
-			[$x + 1, $y, $z],
-			[$x - 1, $y, $z],
-			[$x, $y + 1, $z],
-			[$x, $y - 1, $z],
-			[$x, $y, $z + 1],
-			[$x, $y, $z - 1]
-		] as [$x1, $y1, $z1]){
-			if(
-				!$this->isInWorld($x1, $y1, $z1) ||
-				($chunk = $this->getChunk($x1 >> 4, $z1 >> 4)) === null ||
-				$chunk->isLightPopulated() !== true
-			){
-				continue;
-			}
-			$max = max($max, $this->getBlockLightAt($x1, $y1, $z1));
-		}
-		return $max;
+		return $this->getHighestAdjacentLight($x, $y, $z, \Closure::fromCallable([$this, 'getBlockLightAt']));
 	}
 
 	private function executeQueuedLightUpdates() : void{
