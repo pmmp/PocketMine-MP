@@ -33,9 +33,9 @@ class SubChunk{
 	/** @var PalettedBlockArray[] */
 	private $blockLayers;
 
-	/** @var LightArray */
+	/** @var LightArray|null */
 	private $blockLight;
-	/** @var LightArray */
+	/** @var LightArray|null */
 	private $skyLight;
 
 	/**
@@ -47,8 +47,8 @@ class SubChunk{
 		$this->emptyBlockId = $emptyBlockId;
 		$this->blockLayers = $blocks;
 
-		$this->skyLight = $skyLight ?? LightArray::fill(15);
-		$this->blockLight = $blockLight ?? LightArray::fill(0);
+		$this->skyLight = $skyLight;
+		$this->blockLight = $blockLight;
 	}
 
 	/**
@@ -110,7 +110,7 @@ class SubChunk{
 	}
 
 	public function getBlockSkyLightArray() : LightArray{
-		return $this->skyLight;
+		return $this->skyLight ??= LightArray::fill(15);
 	}
 
 	public function setBlockSkyLightArray(LightArray $data) : void{
@@ -118,7 +118,7 @@ class SubChunk{
 	}
 
 	public function getBlockLightArray() : LightArray{
-		return $this->blockLight;
+		return $this->blockLight ??= LightArray::fill(0);
 	}
 
 	public function setBlockLightArray(LightArray $data) : void{
@@ -145,8 +145,12 @@ class SubChunk{
 		}
 		$this->blockLayers = array_values($this->blockLayers);
 
-		$this->skyLight->collectGarbage();
-		$this->blockLight->collectGarbage();
+		if($this->skyLight !== null){
+			$this->skyLight->collectGarbage();
+		}
+		if($this->blockLight !== null){
+			$this->blockLight->collectGarbage();
+		}
 	}
 
 	public function __clone(){
@@ -154,7 +158,11 @@ class SubChunk{
 			return clone $array;
 		}, $this->blockLayers);
 
-		$this->skyLight = clone $this->skyLight;
-		$this->blockLight = clone $this->blockLight;
+		if($this->skyLight !== null){
+			$this->skyLight = clone $this->skyLight;
+		}
+		if($this->blockLight !== null){
+			$this->blockLight = clone $this->blockLight;
+		}
 	}
 }
