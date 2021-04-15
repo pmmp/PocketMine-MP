@@ -1921,7 +1921,7 @@ class World implements ChunkManager{
 		if(!$this->isInWorld($x, $y, $z)){
 			return $y >= self::Y_MAX ? 15 : 0;
 		}
-		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null && $chunk->isLightPopulated() === true){
 			return $chunk->getSubChunk($y >> 4)->getBlockSkyLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
 		}
 		return 0; //TODO: this should probably throw instead (light not calculated yet)
@@ -1936,7 +1936,7 @@ class World implements ChunkManager{
 		if(!$this->isInWorld($x, $y, $z)){
 			return 0;
 		}
-		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null){
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null && $chunk->isLightPopulated() === true){
 			return $chunk->getSubChunk($y >> 4)->getBlockLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
 		}
 		return 0; //TODO: this should probably throw instead (light not calculated yet)
