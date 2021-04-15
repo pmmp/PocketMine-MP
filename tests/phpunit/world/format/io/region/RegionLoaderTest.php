@@ -44,7 +44,6 @@ class RegionLoaderTest extends TestCase{
 			unlink($this->regionPath);
 		}
 		$this->region = new RegionLoader($this->regionPath);
-		$this->region->open();
 	}
 
 	public function tearDown() : void{
@@ -65,7 +64,6 @@ class RegionLoaderTest extends TestCase{
 		$this->region->close();
 
 		$r = new RegionLoader($this->regionPath);
-		$r->open();
 		self::assertSame($data, $r->readChunk(0, 0));
 	}
 
@@ -122,12 +120,10 @@ class RegionLoaderTest extends TestCase{
 	public function testRegionHeaderCachedFilesizeRegression() : void{
 		$this->region->close();
 		$region = new RegionLoader($this->regionPath); //now we have a region, so the header will be verified, triggering two filesize() calls
-		$region->open();
 		$data = str_repeat("hello", 2000);
 		$region->writeChunk(0, 0, $data); //add some data to the end of the file, to make the cached filesize invalid
 		$region->close();
 		$region = new RegionLoader($this->regionPath);
-		$region->open();
 		self::assertSame($data, $region->readChunk(0, 0));
 	}
 }

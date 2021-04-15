@@ -115,24 +115,18 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		if(!isset($this->regions[$index = morton2d_encode($regionX, $regionZ)])){
 			$path = $this->pathToRegion($regionX, $regionZ);
 
-			$region = new RegionLoader($path);
 			try{
-				$region->open();
+				$this->regions[$index] = new RegionLoader($path);
 			}catch(CorruptedRegionException $e){
 				$logger = \GlobalLogger::get();
 				$logger->error("Corrupted region file detected: " . $e->getMessage());
-
-				$region->close(); //Do not write anything to the file
 
 				$backupPath = $path . ".bak." . time();
 				rename($path, $backupPath);
 				$logger->error("Corrupted region file has been backed up to " . $backupPath);
 
-				$region = new RegionLoader($path);
-				$region->open(); //this will create a new empty region to replace the corrupted one
+				$this->regions[$index] = new RegionLoader($path); //this will create a new empty region to replace the corrupted one
 			}
-
-			$this->regions[$index] = $region;
 		}
 		return $this->regions[$index];
 	}

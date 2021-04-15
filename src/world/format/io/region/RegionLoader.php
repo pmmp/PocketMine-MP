@@ -80,15 +80,13 @@ class RegionLoader{
 	/** @var int */
 	public $lastUsed = 0;
 
-	public function __construct(string $filePath){
-		$this->filePath = $filePath;
-		$this->garbageTable = new RegionGarbageMap([]);
-	}
-
 	/**
 	 * @throws CorruptedRegionException
 	 */
-	public function open() : void{
+	public function __construct(string $filePath){
+		$this->filePath = $filePath;
+		$this->garbageTable = new RegionGarbageMap([]);
+
 		clearstatcache(false, $this->filePath);
 		$exists = file_exists($this->filePath);
 		if(!$exists){
