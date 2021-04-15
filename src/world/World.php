@@ -948,7 +948,13 @@ class World implements ChunkManager{
 	}
 
 	public function clearBlockCache(int $chunkX, int $chunkZ) : void{
+		$chunk = $this->getChunk($chunkX, $chunkZ);
 		unset($this->blockCache[World::chunkHash($chunkX, $chunkZ)]);
+		if($chunk !== null){
+			foreach($this->getChunkPlayers($chunkX, $chunkZ) as $p){
+				$p->onChunkChanged($chunkX, $chunkZ, $chunk);
+			}
+		}
 	}
 
 	/**
