@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
-use pocketmine\world\format\Chunk;
-use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\WorldException;
@@ -58,22 +56,4 @@ abstract class BaseWorldProvider implements WorldProvider{
 	public function getWorldData() : WorldData{
 		return $this->worldData;
 	}
-
-	/**
-	 * @throws CorruptedChunkException
-	 */
-	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
-		return $this->readChunk($chunkX, $chunkZ);
-	}
-
-	public function saveChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
-		$this->writeChunk($chunkX, $chunkZ, $chunk);
-	}
-
-	/**
-	 * @throws CorruptedChunkException
-	 */
-	abstract protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk;
-
-	abstract protected function writeChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void;
 }

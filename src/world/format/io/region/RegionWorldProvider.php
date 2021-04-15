@@ -207,7 +207,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
+	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		assert(is_int($regionX) and is_int($regionZ));
@@ -224,7 +224,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 		return null;
 	}
 
-	protected function writeChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
+	public function saveChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
 		$this->loadRegion($regionX, $regionZ)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->serializeChunk($chunk));
 	}

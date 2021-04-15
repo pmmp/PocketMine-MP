@@ -230,7 +230,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function readChunk(int $chunkX, int $chunkZ) : ?Chunk{
+	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
 		$chunkVersionRaw = $this->db->get($index . self::TAG_VERSION);
@@ -418,7 +418,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		return $chunk;
 	}
 
-	protected function writeChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
+	public function saveChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		$idMap = LegacyBlockIdToStringIdMap::getInstance();
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
