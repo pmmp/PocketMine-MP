@@ -281,7 +281,7 @@ class WorldManager{
 					static function() use ($world, &$done, $total) : void{
 						$oldProgress = (int) floor(($done / $total) * 100);
 						$newProgress = (int) floor((++$done / $total) * 100);
-						if(intdiv($oldProgress, 10) !== intdiv($newProgress, 10) || $done === $total){
+						if(intdiv($oldProgress, 10) !== intdiv($newProgress, 10) || $done === $total || $done === 1){
 							$world->getLogger()->info("Generating spawn terrain chunks: $done / $total ($newProgress%)");
 						}
 					},
