@@ -110,7 +110,7 @@ class SubChunk{
 	}
 
 	public function getBlockSkyLightArray() : LightArray{
-		return $this->skyLight ??= LightArray::fill(15);
+		return $this->skyLight ??= LightArray::fill(0);
 	}
 
 	public function setBlockSkyLightArray(LightArray $data) : void{
