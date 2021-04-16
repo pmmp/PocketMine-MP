@@ -97,12 +97,15 @@ abstract class Particle extends Vector3{
 	public const TYPE_TALL_CAMPFIRE_SMOKE = 67;
 	public const TYPE_DRAGON_BREATH_FIRE = 68;
 	public const TYPE_DRAGON_BREATH_TRAIL = 69;
-
+	public const TYPE_BLUE_FLAME = 70;
 	public const TYPE_SOUL = 71;
 	public const TYPE_OBSIDIAN_TEAR = 72;
 	public const TYPE_PORTAL_REVERSE = 73;
 	public const TYPE_SNOWFLAKE = 74;
-
+	public const TYPE_VIBRATION_SIGNAL = 75;
+	public const TYPE_SCULK_SENSOR_REDSTONE = 76;
+	public const TYPE_SPORE_BLOSSOM_SHOWER = 77;
+	public const TYPE_SPORE_BLOSSOM_AMBIENT = 78;
 	public const TYPE_WAX = 79;
 	public const TYPE_ELECTRIC_SPARK = 80;
 
