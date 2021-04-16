@@ -48,4 +48,9 @@ class ItemFactoryTest extends TestCase{
 		/** @var Sword $i2 */
 		self::assertSame(1, $i2->getDamage());
 	}
+
+	public function testGetDurableItemWithTooLargeDurability() : void{
+		self::assertInstanceOf(Sword::class, ItemFactory::getInstance()->get(ItemIds::WOODEN_SWORD, ToolTier::WOOD()->getMaxDurability()));
+		self::assertInstanceOf(Item::class, ItemFactory::getInstance()->get(ItemIds::WOODEN_SWORD, ToolTier::WOOD()->getMaxDurability() + 1));
+	}
 }
