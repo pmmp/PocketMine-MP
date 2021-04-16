@@ -74,6 +74,7 @@ use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WritableWorldProvider;
+use pocketmine\world\format\LightArray;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\GeneratorRegisterTask;
 use pocketmine\world\generator\GeneratorUnregisterTask;
@@ -1001,7 +1002,31 @@ class World implements ChunkManager{
 					if($lightPopulatedState !== true){
 						if($lightPopulatedState === false){
 							$this->chunks[$hash]->setLightPopulated(null);
-							$this->workerPool->submitTask(new LightPopulationTask($this, $dx + $chunkX, $dz + $chunkZ, $this->chunks[$hash]));
+
+							$this->workerPool->submitTask(new LightPopulationTask(
+								$this->chunks[$hash],
+								function(array $blockLight, array $skyLight, array $heightMap) use ($dx, $chunkX, $dz, $chunkZ) : void{
+									/**
+									 * TODO: phpstan can't infer these types yet :(
+									 * @phpstan-var array<int, LightArray> $blockLight
+									 * @phpstan-var array<int, LightArray> $skyLight
+									 * @phpstan-var array<int, int>        $heightMap
+									 */
+									if($this->closed || ($chunk = $this->getChunk($dx + $chunkX, $dz + $chunkZ)) === null || $chunk->isLightPopulated() === true){
+										return;
+									}
+									//TODO: calculated light information might not be valid if the terrain changed during light calculation
+
+									$chunk->setHeightMapArray($heightMap);
+									foreach($blockLight as $y => $lightArray){
+										$chunk->getSubChunk($y)->setBlockLightArray($lightArray);
+									}
+									foreach($skyLight as $y => $lightArray){
+										$chunk->getSubChunk($y)->setBlockSkyLightArray($lightArray);
+									}
+									$chunk->setLightPopulated(true);
+								}
+							));
 						}
 						continue;
 					}
