@@ -880,7 +880,11 @@ class BlockFactory{
 	}
 
 	/**
-	 * Returns a new Block instance with the specified ID, meta and position.
+	 * @deprecated This method should ONLY be used for deserializing data, e.g. from a config or database. For all other
+	 * purposes, use VanillaBlocks.
+	 * @see VanillaBlocks
+	 *
+	 * Deserializes a block from the provided legacy ID and legacy meta.
 	 */
 	public function get(int $id, int $meta) : Block{
 		if($meta < 0 or $meta > 0xf){

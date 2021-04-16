@@ -424,7 +424,11 @@ class ItemFactory{
 	}
 
 	/**
-	 * Returns an instance of the Item with the specified id, meta, count and NBT.
+	 * @deprecated This method should ONLY be used for deserializing data, e.g. from a config or database. For all other
+	 * purposes, use VanillaItems.
+	 * @see VanillaItems
+	 *
+	 * Deserializes an item from the provided legacy ID, legacy meta, count and NBT.
 	 *
 	 * @throws \InvalidArgumentException
 	 */
