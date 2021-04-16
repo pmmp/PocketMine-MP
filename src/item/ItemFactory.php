@@ -44,7 +44,8 @@ use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
 
 /**
- * Manages Item instance creation and registration
+ * Manages deserializing item types from their legacy ID/metadata.
+ * This is primarily needed for loading inventories saved in the world (or playerdata storage).
  */
 class ItemFactory{
 	use SingletonTrait;

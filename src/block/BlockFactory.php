@@ -59,7 +59,8 @@ use function get_class;
 use function min;
 
 /**
- * Manages block registration and instance creation
+ * Manages deserializing block types from their legacy blockIDs and metadata.
+ * This is primarily needed for loading chunks from disk.
  */
 class BlockFactory{
 	use SingletonTrait;
