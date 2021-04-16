@@ -485,7 +485,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	/**
 	 * Returns whether the human should collect experience orbs or not
 	 */
-	public function canCollectXp(): bool {
+	public function canCollectXp() : bool{
 		return true;
 	}
 	
