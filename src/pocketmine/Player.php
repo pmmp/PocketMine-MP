@@ -4207,7 +4207,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	}
 	
-	public function canCollectXp(): bool {
+	public function canCollectXp() : bool{
 		return !$this->isSpectator();
 	}
 	
