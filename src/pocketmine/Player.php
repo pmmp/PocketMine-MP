@@ -3679,7 +3679,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @param TextContainer|string $message Message to be broadcasted
 	 * @param string               $reason Reason showed in console
 	 */
-	final public function close($message = "", string $reason = "generic reason", bool $notify = true) : void{
+	final public function close($message = "", string $reason = "generic reason", bool $notify = true, bool $consoleNotify = true) : void{
 		if($this->isConnected() and !$this->closed){
 			if($notify and strlen($reason) > 0){
 				$pk = new DisconnectPacket();
@@ -3745,12 +3745,14 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 			$this->server->removePlayer($this);
 
+			if ($consoleNotify) {
 			$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logOut", [
 				TextFormat::AQUA . $this->getName() . TextFormat::WHITE,
 				$this->ip,
 				$this->port,
 				$this->getServer()->getLanguage()->translateString($reason)
 			]));
+			}
 
 			$this->spawnPosition = null;
 
