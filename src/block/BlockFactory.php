@@ -810,8 +810,8 @@ class BlockFactory{
 	}
 
 	/**
-	 * Registers a block type into the index. Plugins may use this method to register new block types or override
-	 * existing ones.
+	 * Maps a block type to its corresponding ID. This is necessary to ensure that the block is correctly loaded when
+	 * reading from disk storage.
 	 *
 	 * NOTE: If you are registering a new block type, you will need to add it to the creative inventory yourself - it
 	 * will not automatically appear there.

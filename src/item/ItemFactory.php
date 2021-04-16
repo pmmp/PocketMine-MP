@@ -395,8 +395,8 @@ class ItemFactory{
 	}
 
 	/**
-	 * Registers an item type into the index. Plugins may use this method to register new item types or override existing
-	 * ones.
+	 * Maps an item type to its corresponding ID. This is necessary to ensure that the item is correctly loaded when
+	 * reading data from disk storage.
 	 *
 	 * NOTE: If you are registering a new item type, you will need to add it to the creative inventory yourself - it
 	 * will not automatically appear there.
