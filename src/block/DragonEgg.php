@@ -60,8 +60,9 @@ class DragonEgg extends Transparent implements Fallable{
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
 		if($player !== null && !$player->getGamemode()->equals(GameMode::CREATIVE())){
 			$this->teleport();
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	public function teleport() : void{
