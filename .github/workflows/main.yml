@@ -26,7 +26,7 @@ jobs:
 
       - name: Compile PHP
         if: steps.php-build-cache.outputs.cache-hit != 'true'
-        run: ./tests/gh-actions/build.sh "${{ matrix.php }}"
+        run: chmod +x ./tests/gh-actions/build.sh && ./tests/gh-actions/build.sh "${{ matrix.php }}"
 
   phpstan:
     name: PHPStan analysis
