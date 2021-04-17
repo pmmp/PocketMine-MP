@@ -93,6 +93,9 @@ use function assert;
  * @method static Torch BLUE_TORCH()
  * @method static BoneBlock BONE_BLOCK()
  * @method static Bookshelf BOOKSHELF()
+ * @method static Coral BRAIN_CORAL()
+ * @method static FloorCoralFan BRAIN_CORAL_FAN()
+ * @method static WallCoralFan BRAIN_WALL_CORAL_FAN()
  * @method static BrewingStand BREWING_STAND()
  * @method static Opaque BRICKS()
  * @method static Slab BRICK_SLAB()
@@ -104,6 +107,9 @@ use function assert;
  * @method static HardenedClay BROWN_STAINED_CLAY()
  * @method static Glass BROWN_STAINED_GLASS()
  * @method static GlassPane BROWN_STAINED_GLASS_PANE()
+ * @method static Coral BUBBLE_CORAL()
+ * @method static FloorCoralFan BUBBLE_CORAL_FAN()
+ * @method static WallCoralFan BUBBLE_WALL_CORAL_FAN()
  * @method static Cactus CACTUS()
  * @method static Cake CAKE()
  * @method static Carpet CARPET()
@@ -307,6 +313,9 @@ use function assert;
  * @method static Farmland FARMLAND()
  * @method static TallGrass FERN()
  * @method static Fire FIRE()
+ * @method static Coral FIRE_CORAL()
+ * @method static FloorCoralFan FIRE_CORAL_FAN()
+ * @method static WallCoralFan FIRE_WALL_CORAL_FAN()
  * @method static FlowerPot FLOWER_POT()
  * @method static FrostedIce FROSTED_ICE()
  * @method static Furnace FURNACE()
@@ -369,6 +378,9 @@ use function assert;
  * @method static HardenedGlassPane HARDENED_YELLOW_STAINED_GLASS_PANE()
  * @method static HayBale HAY_BALE()
  * @method static Hopper HOPPER()
+ * @method static Coral HORN_CORAL()
+ * @method static FloorCoralFan HORN_CORAL_FAN()
+ * @method static WallCoralFan HORN_WALL_CORAL_FAN()
  * @method static Ice ICE()
  * @method static InfestedStone INFESTED_CHISELED_STONE_BRICK()
  * @method static InfestedStone INFESTED_COBBLESTONE()
@@ -603,6 +615,9 @@ use function assert;
  * @method static TrappedChest TRAPPED_CHEST()
  * @method static Tripwire TRIPWIRE()
  * @method static TripwireHook TRIPWIRE_HOOK()
+ * @method static Coral TUBE_CORAL()
+ * @method static FloorCoralFan TUBE_CORAL_FAN()
+ * @method static WallCoralFan TUBE_WALL_CORAL_FAN()
  * @method static UnderwaterTorch UNDERWATER_TORCH()
  * @method static Vine VINES()
  * @method static WallBanner WALL_BANNER()
@@ -712,6 +727,9 @@ final class VanillaBlocks{
 		self::register("blue_torch", $factory->get(204, 5));
 		self::register("bone_block", $factory->get(216, 0));
 		self::register("bookshelf", $factory->get(47, 0));
+		self::register("brain_coral", $factory->get(386, 1));
+		self::register("brain_coral_fan", $factory->get(388, 1));
+		self::register("brain_wall_coral_fan", $factory->get(390, 1));
 		self::register("brewing_stand", $factory->get(117, 0));
 		self::register("brick_slab", $factory->get(44, 4));
 		self::register("brick_stairs", $factory->get(108, 0));
@@ -723,6 +741,9 @@ final class VanillaBlocks{
 		self::register("brown_stained_clay", $factory->get(159, 12));
 		self::register("brown_stained_glass", $factory->get(241, 12));
 		self::register("brown_stained_glass_pane", $factory->get(160, 12));
+		self::register("bubble_coral", $factory->get(386, 2));
+		self::register("bubble_coral_fan", $factory->get(388, 2));
+		self::register("bubble_wall_coral_fan", $factory->get(391, 0));
 		self::register("cactus", $factory->get(81, 0));
 		self::register("cake", $factory->get(92, 0));
 		self::register("carpet", $factory->get(171, 0));
@@ -926,6 +947,9 @@ final class VanillaBlocks{
 		self::register("farmland", $factory->get(60, 0));
 		self::register("fern", $factory->get(31, 2));
 		self::register("fire", $factory->get(51, 0));
+		self::register("fire_coral", $factory->get(386, 3));
+		self::register("fire_coral_fan", $factory->get(388, 3));
+		self::register("fire_wall_coral_fan", $factory->get(391, 1));
 		self::register("flower_pot", $factory->get(140, 0));
 		self::register("frosted_ice", $factory->get(207, 0));
 		self::register("furnace", $factory->get(61, 2));
@@ -988,6 +1012,9 @@ final class VanillaBlocks{
 		self::register("hardened_yellow_stained_glass_pane", $factory->get(191, 4));
 		self::register("hay_bale", $factory->get(170, 0));
 		self::register("hopper", $factory->get(154, 0));
+		self::register("horn_coral", $factory->get(386, 4));
+		self::register("horn_coral_fan", $factory->get(388, 4));
+		self::register("horn_wall_coral_fan", $factory->get(392, 0));
 		self::register("ice", $factory->get(79, 0));
 		self::register("infested_chiseled_stone_brick", $factory->get(97, 5));
 		self::register("infested_cobblestone", $factory->get(97, 1));
@@ -1222,6 +1249,9 @@ final class VanillaBlocks{
 		self::register("trapped_chest", $factory->get(146, 2));
 		self::register("tripwire", $factory->get(132, 0));
 		self::register("tripwire_hook", $factory->get(131, 0));
+		self::register("tube_coral", $factory->get(386, 0));
+		self::register("tube_coral_fan", $factory->get(388, 0));
+		self::register("tube_wall_coral_fan", $factory->get(390, 0));
 		self::register("underwater_torch", $factory->get(239, 5));
 		self::register("vines", $factory->get(106, 0));
 		self::register("wall_banner", $factory->get(177, 2));

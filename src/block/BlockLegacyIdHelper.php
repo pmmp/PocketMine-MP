@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\BlockIdentifier as BID;
 use pocketmine\block\BlockLegacyIds as Ids;
 use pocketmine\block\tile\Sign as TileSign;
+use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\TreeType;
 use pocketmine\item\ItemIds;
@@ -226,5 +227,16 @@ final class BlockLegacyIdHelper{
 			throw new \InvalidArgumentException("Stone slab type should be 1, 2, 3 or 4");
 		}
 		return new BlockIdentifierFlattened($id[0], $id[1], $meta);
+	}
+
+	public static function getWallCoralFanIdentifier(CoralType $type) : BlockIdentifier{
+		switch($type->id()){
+			case CoralType::TUBE()->id(): return new BID(Ids::CORAL_FAN_HANG, 0, ItemIds::CORAL_FAN);
+			case CoralType::BRAIN()->id(): return new BID(Ids::CORAL_FAN_HANG, 1, ItemIds::CORAL_FAN);
+			case CoralType::BUBBLE()->id(): return new BID(Ids::CORAL_FAN_HANG2, 0, ItemIds::CORAL_FAN);
+			case CoralType::FIRE()->id(): return new BID(Ids::CORAL_FAN_HANG2, 1, ItemIds::CORAL_FAN);
+			case CoralType::HORN()->id(): return new BID(Ids::CORAL_FAN_HANG3, 0, ItemIds::CORAL_FAN);
+		}
+		throw new AssumptionFailedError("Switch should cover all coral types");
 	}
 }

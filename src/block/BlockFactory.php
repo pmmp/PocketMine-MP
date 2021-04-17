@@ -45,9 +45,11 @@ use pocketmine\block\tile\Jukebox as TileJukebox;
 use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\Skull as TileSkull;
+use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\TreeType;
+use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
@@ -479,6 +481,29 @@ class BlockFactory{
 
 		$this->registerMushroomBlocks();
 
+		foreach(CoralType::getAll() as $coralType){
+			$coralTypeId = CoralTypeIdMap::getInstance()->toId($coralType);
+			$coralTypeName = $coralType->getDisplayName();
+			$this->register(new Coral(
+				new BID(Ids::CORAL, $coralTypeId),
+				"$coralTypeName Coral",
+				BlockBreakInfo::instant(),
+				$coralType
+			));
+			$this->register(new FloorCoralFan(
+				new BlockIdentifierFlattened(Ids::CORAL_FAN, Ids::CORAL_FAN_DEAD, $coralTypeId, ItemIds::CORAL_FAN),
+				"$coralTypeName Coral Fan",
+				BlockBreakInfo::instant(),
+				$coralType
+			));
+			$this->register(new WallCoralFan(
+				BlockLegacyIdHelper::getWallCoralFanIdentifier($coralType),
+				"$coralTypeName Wall Coral Fan",
+				BlockBreakInfo::instant(),
+				$coralType
+			));
+		}
+
 		//region --- auto-generated TODOs for bedrock-1.11.0 ---
 		//TODO: minecraft:bell
 		//TODO: minecraft:blast_furnace
@@ -492,12 +517,6 @@ class BlockFactory{
 		//TODO: minecraft:command_block
 		//TODO: minecraft:composter
 		//TODO: minecraft:conduit
-		//TODO: minecraft:coral
-		//TODO: minecraft:coral_fan
-		//TODO: minecraft:coral_fan_dead
-		//TODO: minecraft:coral_fan_hang
-		//TODO: minecraft:coral_fan_hang2
-		//TODO: minecraft:coral_fan_hang3
 		//TODO: minecraft:dispenser
 		//TODO: minecraft:dropper
 		//TODO: minecraft:end_gateway
