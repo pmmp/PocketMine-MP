@@ -26,6 +26,7 @@ namespace pocketmine\world\format\io;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\world\generator\GeneratorManager;
+use pocketmine\world\WorldCreationOptions;
 use function basename;
 use function crc32;
 use function file_exists;
@@ -54,6 +55,10 @@ class FormatConverter{
 	/** @var int */
 	private $chunksPerProgressUpdate;
 
+	/**
+	 * @phpstan-template TNewProvider of WritableWorldProvider
+	 * @phpstan-param class-string<TNewProvider> $newProvider
+	 */
 	public function __construct(WorldProvider $oldProvider, string $newProvider, string $backupPath, \Logger $logger, int $chunksPerProgressUpdate = 256){
 		$this->oldProvider = $oldProvider;
 		Utils::testValidInstance($newProvider, WritableWorldProvider::class);
@@ -105,7 +110,13 @@ class FormatConverter{
 			$this->logger->info("Found previous conversion attempt, deleting...");
 			Filesystem::recursiveUnlink($convertedOutput);
 		}
-		$this->newProvider::generate($convertedOutput, $data->getName(), $data->getSeed(), GeneratorManager::getInstance()->getGenerator($data->getGenerator()), $data->getGeneratorOptions());
+		$this->newProvider::generate($convertedOutput, $data->getName(), WorldCreationOptions::create()
+			->setGeneratorClass(GeneratorManager::getInstance()->getGenerator($data->getGenerator()))
+			->setGeneratorOptions($data->getGeneratorOptions())
+			->setSeed($data->getSeed())
+			->setSpawnPosition($data->getSpawn())
+			->setDifficulty($data->getDifficulty())
+		);
 
 		/**
 		 * @see WritableWorldProvider::__construct()

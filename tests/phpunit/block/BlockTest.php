@@ -40,7 +40,7 @@ class BlockTest extends TestCase{
 	 * Test registering a block which would overwrite another block, without forcing it
 	 */
 	public function testAccidentalOverrideBlock() : void{
-		$block = new MyCustomBlock(new BlockIdentifier(BlockLegacyIds::COBBLESTONE), "Cobblestone", BlockBreakInfo::instant());
+		$block = new MyCustomBlock(new BlockIdentifier(BlockLegacyIds::COBBLESTONE, 0), "Cobblestone", BlockBreakInfo::instant());
 		$this->expectException(\InvalidArgumentException::class);
 		$this->blockFactory->register($block);
 	}
@@ -49,7 +49,7 @@ class BlockTest extends TestCase{
 	 * Test registering a block deliberately overwriting another block works as expected
 	 */
 	public function testDeliberateOverrideBlock() : void{
-		$block = new MyCustomBlock(new BlockIdentifier(BlockLegacyIds::COBBLESTONE), "Cobblestone", BlockBreakInfo::instant());
+		$block = new MyCustomBlock(new BlockIdentifier(BlockLegacyIds::COBBLESTONE, 0), "Cobblestone", BlockBreakInfo::instant());
 		$this->blockFactory->register($block, true);
 		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->get($block->getId(), 0));
 	}
@@ -60,7 +60,7 @@ class BlockTest extends TestCase{
 	public function testRegisterNewBlock() : void{
 		for($i = 0; $i < 256; ++$i){
 			if(!$this->blockFactory->isRegistered($i)){
-				$b = new StrangeNewBlock(new BlockIdentifier($i), "Strange New Block", BlockBreakInfo::instant());
+				$b = new StrangeNewBlock(new BlockIdentifier($i, 0), "Strange New Block", BlockBreakInfo::instant());
 				$this->blockFactory->register($b);
 				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->get($b->getId(), 0));
 				return;
@@ -75,7 +75,7 @@ class BlockTest extends TestCase{
 	 */
 	public function testRegisterIdTooLarge() : void{
 		self::expectException(\RuntimeException::class);
-		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(25555), "Out Of Bounds Block", BlockBreakInfo::instant()));
+		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(25555, 0), "Out Of Bounds Block", BlockBreakInfo::instant()));
 	}
 
 	/**
@@ -83,7 +83,7 @@ class BlockTest extends TestCase{
 	 */
 	public function testRegisterIdTooSmall() : void{
 		self::expectException(\RuntimeException::class);
-		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(-1), "Out Of Bounds Block", BlockBreakInfo::instant()));
+		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(-1, 0), "Out Of Bounds Block", BlockBreakInfo::instant()));
 	}
 
 	/**

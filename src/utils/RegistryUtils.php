@@ -25,6 +25,7 @@ namespace pocketmine\utils;
 
 use function get_class;
 use function implode;
+use function ksort;
 use function mb_strtoupper;
 use function sprintf;
 use const SORT_STRING;

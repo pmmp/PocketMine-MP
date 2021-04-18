@@ -27,10 +27,6 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
 interface Packet{
 
-	public function getSerializer() : PacketSerializer;
-
-	public function setSerializer(PacketSerializer $serializer) : void;
-
 	public function pid() : int;
 
 	public function getName() : string;
@@ -40,9 +36,9 @@ interface Packet{
 	/**
 	 * @throws PacketDecodeException
 	 */
-	public function decode() : void;
+	public function decode(PacketSerializer $in) : void;
 
-	public function encode() : void;
+	public function encode(PacketSerializer $out) : void;
 
 	/**
 	 * Performs handling for this packet. Usually you'll want an appropriately named method in the session handler for

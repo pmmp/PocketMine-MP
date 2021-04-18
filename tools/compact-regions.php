@@ -107,9 +107,8 @@ function main(array $argv) : int{
 	$doneCount = 0;
 	$totalCount = count($files);
 	foreach($files as $file => $size){
-		$oldRegion = new RegionLoader($file);
 		try{
-			$oldRegion->open();
+			$oldRegion = RegionLoader::loadExisting($file);
 		}catch(CorruptedRegionException $e){
 			$logger->error("Damaged region in file $file (" . $e->getMessage() . "), skipping");
 			$corruptedFiles[] = $file;
@@ -118,8 +117,7 @@ function main(array $argv) : int{
 		}
 
 		$newFile = $file . ".compacted";
-		$newRegion = new RegionLoader($newFile);
-		$newRegion->open();
+		$newRegion = RegionLoader::createNew($newFile);
 
 		$emptyRegion = true;
 		$corruption = false;

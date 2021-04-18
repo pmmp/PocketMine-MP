@@ -31,10 +31,6 @@ use pocketmine\world\format\SubChunk;
 class Anvil extends RegionWorldProvider{
 	use LegacyAnvilChunkTrait;
 
-	protected function serializeSubChunk(SubChunk $subChunk) : CompoundTag{
-		throw new \RuntimeException("Unsupported");
-	}
-
 	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
 		return new SubChunk(BlockLegacyIds::AIR << 4, [SubChunkConverter::convertSubChunkYZX(
 			self::readFixedSizeByteArray($subChunk, "Blocks", 4096),

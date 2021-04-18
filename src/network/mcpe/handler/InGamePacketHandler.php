@@ -41,7 +41,6 @@ use pocketmine\item\WrittenBook;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\InventoryManager;
@@ -90,6 +89,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
+use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use function array_key_exists;
@@ -253,7 +253,7 @@ class InGamePacketHandler extends PacketHandler{
 					)
 				) or (
 					$this->craftingTransaction !== null &&
-					!$networkInventoryAction->oldItem->equals($networkInventoryAction->newItem) &&
+					!$networkInventoryAction->oldItem->getItemStack()->equals($networkInventoryAction->newItem->getItemStack()) &&
 					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER &&
 					$networkInventoryAction->windowId === ContainerIds::UI &&
 					$networkInventoryAction->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT
@@ -640,7 +640,7 @@ class InGamePacketHandler extends PacketHandler{
 				try{
 					$text = SignText::fromBlob($textBlobTag->getValue());
 				}catch(\InvalidArgumentException $e){
-					throw BadPacketException::wrap($e, "Invalid sign text update");
+					throw PacketHandlingException::wrap($e, "Invalid sign text update");
 				}
 
 				try{
@@ -650,7 +650,7 @@ class InGamePacketHandler extends PacketHandler{
 						}
 					}
 				}catch(\UnexpectedValueException $e){
-					throw BadPacketException::wrap($e);
+					throw PacketHandlingException::wrap($e);
 				}
 
 				return true;
@@ -667,8 +667,8 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
-		$converter = TypeConverter::getInstance();
-		if(!$converter->protocolGameModeToCore($packet->gamemode)->equals($this->player->getGamemode())){
+		$gameMode = TypeConverter::getInstance()->protocolGameModeToCore($packet->gamemode);
+		if($gameMode === null || !$gameMode->equals($this->player->getGamemode())){
 			//Set this back to default. TODO: handle this properly
 			$this->session->syncGameMode($this->player->getGamemode(), true);
 		}
@@ -721,7 +721,7 @@ class InGamePacketHandler extends PacketHandler{
 		try{
 			$skin = SkinAdapterSingleton::get()->fromSkinData($packet->skin);
 		}catch(InvalidSkinException $e){
-			throw BadPacketException::wrap($e, "Invalid skin in PlayerSkinPacket");
+			throw PacketHandlingException::wrap($e, "Invalid skin in PlayerSkinPacket");
 		}
 		return $this->player->changeSkin($skin, $packet->newSkinName, $packet->oldSkinName);
 	}
@@ -800,7 +800,7 @@ class InGamePacketHandler extends PacketHandler{
 	 * Hack to work around a stupid bug in Minecraft W10 which causes empty strings to be sent unquoted in form responses.
 	 *
 	 * @return mixed
-	 * @throws BadPacketException
+	 * @throws PacketHandlingException
 	 */
 	private static function stupid_json_decode(string $json, bool $assoc = false){
 		if(preg_match('/^\[(.+)\]$/s', $json, $matches) > 0){

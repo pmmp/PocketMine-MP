@@ -26,7 +26,6 @@ namespace pocketmine\scheduler;
 use PHPUnit\Framework\TestCase;
 use pocketmine\snooze\SleeperHandler;
 use pocketmine\utils\MainLogger;
-use pocketmine\utils\Terminal;
 use function define;
 use function dirname;
 use function microtime;

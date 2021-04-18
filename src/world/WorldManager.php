@@ -30,24 +30,22 @@ use pocketmine\event\world\WorldUnloadEvent;
 use pocketmine\player\ChunkSelector;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
-use pocketmine\utils\Limits;
-use pocketmine\utils\Utils;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\io\FormatConverter;
 use pocketmine\world\format\io\WorldProvider;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
-use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
-use pocketmine\world\generator\normal\Normal;
 use function array_keys;
 use function array_shift;
 use function assert;
 use function count;
+use function floor;
 use function implode;
+use function intdiv;
+use function iterator_to_array;
 use function microtime;
-use function random_int;
 use function round;
 use function sprintf;
 use function trim;
@@ -244,27 +242,18 @@ class WorldManager{
 	/**
 	 * Generates a new world if it does not exist
 	 *
-	 * @param string   $generator Class name that extends pocketmine\world\generator\Generator
-	 * @param mixed[]  $options
-	 * @phpstan-param class-string<Generator> $generator
-	 * @phpstan-param array<string, mixed>    $options
-	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function generateWorld(string $name, ?int $seed = null, string $generator = Normal::class, array $options = [], bool $backgroundGeneration = true) : bool{
+	public function generateWorld(string $name, WorldCreationOptions $options, bool $backgroundGeneration = true) : bool{
 		if(trim($name) === "" or $this->isWorldGenerated($name)){
 			return false;
 		}
-
-		$seed = $seed ?? random_int(Limits::INT32_MIN, Limits::INT32_MAX);
-
-		Utils::testValidInstance($generator, Generator::class);
 
 		$providerClass = $this->providerManager->getDefault();
 
 		$path = $this->getWorldPath($name);
 		/** @var WritableWorldProvider $providerClass */
-		$providerClass::generate($path, $name, $seed, $generator, $options);
+		$providerClass::generate($path, $name, $options);
 
 		/** @see WritableWorldProvider::__construct() */
 		$world = new World($this->server, $name, new $providerClass($path), $this->server->getAsyncPool());
@@ -283,9 +272,22 @@ class WorldManager{
 			$centerX = $spawnLocation->getFloorX() >> 4;
 			$centerZ = $spawnLocation->getFloorZ() >> 4;
 
-			foreach((new ChunkSelector())->selectChunks(3, $centerX, $centerZ) as $index){
+			$selected = iterator_to_array((new ChunkSelector())->selectChunks(8, $centerX, $centerZ));
+			$done = 0;
+			$total = count($selected);
+			foreach($selected as $index){
 				World::getXZ($index, $chunkX, $chunkZ);
-				$world->orderChunkPopulation($chunkX, $chunkZ);
+				$world->orderChunkPopulation($chunkX, $chunkZ, null)->onCompletion(
+					static function() use ($world, &$done, $total) : void{
+						$oldProgress = (int) floor(($done / $total) * 100);
+						$newProgress = (int) floor((++$done / $total) * 100);
+						if(intdiv($oldProgress, 10) !== intdiv($newProgress, 10) || $done === $total || $done === 1){
+							$world->getLogger()->info("Generating spawn terrain chunks: $done / $total ($newProgress%)");
+						}
+					},
+					static function() : void{
+						//NOOP: we don't care if the world was unloaded
+					});
 			}
 		}
 

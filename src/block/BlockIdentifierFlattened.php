@@ -28,7 +28,7 @@ class BlockIdentifierFlattened extends BlockIdentifier{
 	/** @var int */
 	private $secondId;
 
-	public function __construct(int $blockId, int $secondId, int $variant = 0, ?int $itemId = null, ?string $tileClass = null){
+	public function __construct(int $blockId, int $secondId, int $variant, ?int $itemId = null, ?string $tileClass = null){
 		parent::__construct($blockId, $variant, $itemId, $tileClass);
 		$this->secondId = $secondId;
 	}

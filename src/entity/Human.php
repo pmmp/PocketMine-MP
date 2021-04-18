@@ -52,6 +52,7 @@ use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\player\Player;
 use pocketmine\utils\Limits;
@@ -428,7 +429,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$pk->motion = $this->getMotion();
 		$pk->yaw = $this->location->yaw;
 		$pk->pitch = $this->location->pitch;
-		$pk->item = TypeConverter::getInstance()->coreItemStackToNet($this->getInventory()->getItemInHand());
+		$pk->item = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getInventory()->getItemInHand()));
 		$pk->metadata = $this->getAllNetworkData();
 		$player->getNetworkSession()->sendDataPacket($pk);
 

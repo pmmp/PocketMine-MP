@@ -37,6 +37,8 @@ final class ItemStack implements \JsonSerializable{
 	private $meta;
 	/** @var int */
 	private $count;
+	/** @var int */
+	private $blockRuntimeId;
 	/** @var string[] */
 	private $canPlaceOn;
 	/** @var string[] */
@@ -50,10 +52,11 @@ final class ItemStack implements \JsonSerializable{
 	 * @param string[] $canPlaceOn
 	 * @param string[] $canDestroy
 	 */
-	public function __construct(int $id, int $meta, int $count, ?CompoundTag $nbt, array $canPlaceOn, array $canDestroy, ?int $shieldBlockingTick = null){
+	public function __construct(int $id, int $meta, int $count, int $blockRuntimeId, ?CompoundTag $nbt, array $canPlaceOn, array $canDestroy, ?int $shieldBlockingTick = null){
 		$this->id = $id;
 		$this->meta = $meta;
 		$this->count = $count;
+		$this->blockRuntimeId = $blockRuntimeId;
 		$this->canPlaceOn = $canPlaceOn;
 		$this->canDestroy = $canDestroy;
 		$this->nbt = $nbt;
@@ -61,7 +64,7 @@ final class ItemStack implements \JsonSerializable{
 	}
 
 	public static function null() : self{
-		return new self(0, 0, 0, null, [], [], null);
+		return new self(0, 0, 0, 0, null, [], [], null);
 	}
 
 	public function getId() : int{
@@ -75,6 +78,8 @@ final class ItemStack implements \JsonSerializable{
 	public function getCount() : int{
 		return $this->count;
 	}
+
+	public function getBlockRuntimeId() : int{ return $this->blockRuntimeId; }
 
 	/**
 	 * @return string[]
@@ -103,6 +108,7 @@ final class ItemStack implements \JsonSerializable{
 			$this->id === $itemStack->id &&
 			$this->meta === $itemStack->meta &&
 			$this->count === $itemStack->count &&
+			$this->blockRuntimeId === $itemStack->blockRuntimeId &&
 			$this->canPlaceOn === $itemStack->canPlaceOn &&
 			$this->canDestroy === $itemStack->canDestroy &&
 			$this->shieldBlockingTick === $itemStack->shieldBlockingTick && (
@@ -117,6 +123,7 @@ final class ItemStack implements \JsonSerializable{
 			"id" => $this->id,
 			"meta" => $this->meta,
 			"count" => $this->count,
+			"blockRuntimeId" => $this->blockRuntimeId,
 		];
 		if(count($this->canPlaceOn) > 0){
 			$result["canPlaceOn"] = $this->canPlaceOn;

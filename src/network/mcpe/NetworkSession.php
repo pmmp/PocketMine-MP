@@ -37,7 +37,6 @@ use pocketmine\form\Form;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
@@ -74,6 +73,7 @@ use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetActorDataPacket;
@@ -92,10 +92,12 @@ use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\entity\Attribute as NetworkAttribute;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\network\mcpe\protocol\UpdateAttributesPacket;
 use pocketmine\network\NetworkSessionManager;
+use pocketmine\network\PacketHandlingException;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
@@ -234,8 +236,18 @@ class NetworkSession{
 	}
 
 	protected function createPlayer() : void{
-		$this->player = $this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData);
+		$this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData)->onCompletion(
+			\Closure::fromCallable([$this, 'onPlayerCreated']),
+			fn() => $this->disconnect("Player creation failed") //TODO: this should never actually occur... right?
+		);
+	}
 
+	private function onPlayerCreated(Player $player) : void{
+		if(!$this->isConnected()){
+			//the remote player might have disconnected before spawn terrain generation was finished
+			return;
+		}
+		$this->player = $player;
 		$this->invManager = new InventoryManager($this->player, $this);
 
 		$effectManager = $this->player->getEffects();
@@ -259,6 +271,7 @@ class NetworkSession{
 		$this->disposeHooks->add(static function() use ($permissionHooks, $permHook) : void{
 			$permissionHooks->remove($permHook);
 		});
+		$this->beginSpawnSequence();
 	}
 
 	public function getPlayer() : ?Player{
@@ -313,7 +326,7 @@ class NetworkSession{
 	}
 
 	/**
-	 * @throws BadPacketException
+	 * @throws PacketHandlingException
 	 */
 	public function handleEncoded(string $payload) : void{
 		if(!$this->connected){
@@ -326,7 +339,7 @@ class NetworkSession{
 				$payload = $this->cipher->decrypt($payload);
 			}catch(DecryptionException $e){
 				$this->logger->debug("Encrypted packet: " . base64_encode($payload));
-				throw BadPacketException::wrap($e, "Packet decryption error");
+				throw PacketHandlingException::wrap($e, "Packet decryption error");
 			}finally{
 				Timings::$playerNetworkReceiveDecrypt->stopTiming();
 			}
@@ -337,48 +350,48 @@ class NetworkSession{
 			$stream = new PacketBatch($this->compressor->decompress($payload));
 		}catch(DecompressionException $e){
 			$this->logger->debug("Failed to decompress packet: " . base64_encode($payload));
-			throw BadPacketException::wrap($e, "Compressed packet batch decode error");
+			throw PacketHandlingException::wrap($e, "Compressed packet batch decode error");
 		}finally{
 			Timings::$playerNetworkReceiveDecompress->stopTiming();
 		}
 
 		try{
-			foreach($stream->getPackets($this->packetPool, 500) as $packet){
+			foreach($stream->getPackets($this->packetPool, 500) as [$packet, $buffer]){
 				try{
-					$this->handleDataPacket($packet);
-				}catch(BadPacketException $e){
-					$this->logger->debug($packet->getName() . ": " . base64_encode($packet->getSerializer()->getBuffer()));
-					throw BadPacketException::wrap($e, "Error processing " . $packet->getName());
+					$this->handleDataPacket($packet, $buffer);
+				}catch(PacketHandlingException $e){
+					$this->logger->debug($packet->getName() . ": " . base64_encode($buffer));
+					throw PacketHandlingException::wrap($e, "Error processing " . $packet->getName());
 				}
 			}
 		}catch(PacketDecodeException $e){
 			$this->logger->logException($e);
-			throw BadPacketException::wrap($e, "Packet batch decode error");
+			throw PacketHandlingException::wrap($e, "Packet batch decode error");
 		}
 	}
 
 	/**
-	 * @throws BadPacketException
+	 * @throws PacketHandlingException
 	 */
-	public function handleDataPacket(Packet $packet) : void{
+	public function handleDataPacket(Packet $packet, string $buffer) : void{
 		if(!($packet instanceof ServerboundPacket)){
 			if($packet instanceof GarbageServerboundPacket){
-				$this->logger->debug("Garbage serverbound " . $packet->getName() . ": " . base64_encode($packet->getSerializer()->getBuffer()));
+				$this->logger->debug("Garbage serverbound " . $packet->getName() . ": " . base64_encode($buffer));
 				return;
 			}
-			throw new BadPacketException("Unexpected non-serverbound packet");
+			throw new PacketHandlingException("Unexpected non-serverbound packet");
 		}
 
 		$timings = Timings::getReceiveDataPacketTimings($packet);
 		$timings->startTiming();
 
 		try{
+			$stream = new PacketSerializer($buffer);
 			try{
-				$packet->decode();
+				$packet->decode($stream);
 			}catch(PacketDecodeException $e){
-				throw BadPacketException::wrap($e);
+				throw PacketHandlingException::wrap($e);
 			}
-			$stream = $packet->getSerializer();
 			if(!$stream->feof()){
 				$remains = substr($stream->getBuffer(), $stream->getOffset());
 				$this->logger->debug("Still " . strlen($remains) . " bytes unread in " . $packet->getName() . ": " . bin2hex($remains));
@@ -680,17 +693,15 @@ class NetworkSession{
 
 		$this->logger->debug("Initiating resource packs phase");
 		$this->setHandler(new ResourcePacksPacketHandler($this, $this->server->getResourcePackManager(), function() : void{
-			$this->beginSpawnSequence();
+			$this->createPlayer();
 		}));
 	}
 
 	private function beginSpawnSequence() : void{
-		$this->createPlayer();
-
 		$this->setHandler(new PreSpawnPacketHandler($this->server, $this->player, $this));
 		$this->player->setImmobile(); //TODO: HACK: fix client-side falling pre-spawn
 
-		$this->logger->debug("Waiting for spawn chunks");
+		$this->logger->debug("Waiting for chunk radius request");
 	}
 
 	public function notifyTerrainReady() : void{
@@ -894,30 +905,25 @@ class NetworkSession{
 	/**
 	 * Instructs the networksession to start using the chunk at the given coordinates. This may occur asynchronously.
 	 * @param \Closure $onCompletion To be called when chunk sending has completed.
-	 * @phpstan-param \Closure(int $chunkX, int $chunkZ) : void $onCompletion
+	 * @phpstan-param \Closure() : void $onCompletion
 	 */
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
-		Utils::validateCallableSignature(function(int $chunkX, int $chunkZ) : void{}, $onCompletion);
+		Utils::validateCallableSignature(function() : void{}, $onCompletion);
 
 		$world = $this->player->getLocation()->getWorld();
 		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
-			function(CompressBatchPromise $promise) use ($world, $chunkX, $chunkZ, $onCompletion) : void{
+			function(CompressBatchPromise $promise) use ($world, $onCompletion) : void{
 				if(!$this->isConnected()){
 					return;
 				}
-				$currentWorld = $this->player->getLocation()->getWorld();
-				if($world !== $currentWorld or !$this->player->isUsingChunk($chunkX, $chunkZ)){
-					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
-					return;
-				}
-				$currentWorld->timings->syncChunkSend->startTiming();
+				$world->timings->syncChunkSend->startTiming();
 				try{
 					$this->queueCompressed($promise);
-					$onCompletion($chunkX, $chunkZ);
+					$onCompletion();
 				}finally{
-					$currentWorld->timings->syncChunkSend->stopTiming();
+					$world->timings->syncChunkSend->stopTiming();
 				}
 			}
 		);
@@ -954,7 +960,7 @@ class NetworkSession{
 	public function onMobEquipmentChange(Human $mob) : void{
 		//TODO: we could send zero for slot here because remote players don't need to know which slot was selected
 		$inv = $mob->getInventory();
-		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), TypeConverter::getInstance()->coreItemStackToNet($inv->getItemInHand()), $inv->getHeldItemIndex(), ContainerIds::INVENTORY));
+		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItemInHand())), $inv->getHeldItemIndex(), ContainerIds::INVENTORY));
 	}
 
 	public function onMobArmorChange(Living $mob) : void{
@@ -962,10 +968,10 @@ class NetworkSession{
 		$converter = TypeConverter::getInstance();
 		$this->sendDataPacket(MobArmorEquipmentPacket::create(
 			$mob->getId(),
-			$converter->coreItemStackToNet($inv->getHelmet()),
-			$converter->coreItemStackToNet($inv->getChestplate()),
-			$converter->coreItemStackToNet($inv->getLeggings()),
-			$converter->coreItemStackToNet($inv->getBoots())
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getHelmet())),
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getChestplate())),
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getLeggings())),
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getBoots()))
 		));
 	}
 

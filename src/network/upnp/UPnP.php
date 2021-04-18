@@ -264,7 +264,7 @@ class UPnP implements NetworkInterface{
 			'<?xml version="1.0"?>' .
 			'<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">' .
 			'<s:Body>' . $body . '</s:Body></s:Envelope>';
-		
+
 		$headers = [
 			'Content-Type: text/xml',
 			'SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#DeletePortMapping"'

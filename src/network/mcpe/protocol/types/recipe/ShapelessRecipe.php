@@ -102,7 +102,7 @@ final class ShapelessRecipe extends RecipeWithTypeId{
 		}
 		$output = [];
 		for($k = 0, $resultCount = $in->getUnsignedVarInt(); $k < $resultCount; ++$k){
-			$output[] = $in->getSlot();
+			$output[] = $in->getItemStackWithoutStackId();
 		}
 		$uuid = $in->getUUID();
 		$block = $in->getString();
@@ -121,7 +121,7 @@ final class ShapelessRecipe extends RecipeWithTypeId{
 
 		$out->putUnsignedVarInt(count($this->outputs));
 		foreach($this->outputs as $item){
-			$out->putSlot($item);
+			$out->putItemStackWithoutStackId($item);
 		}
 
 		$out->putUUID($this->uuid);
