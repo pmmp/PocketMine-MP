@@ -1272,10 +1272,18 @@ class World implements ChunkManager{
 		return $this->skyLightReduction;
 	}
 
+	/**
+	 * Returns the highest available level of any type of light at the given coordinates, adjusted for the current
+	 * weather and time of day.
+	 */
 	public function getFullLight(Vector3 $pos) : int{
 		return $this->getFullLightAt($pos->x, $pos->y, $pos->z);
 	}
 
+	/**
+	 * Returns the highest available level of any type of light at the given coordinates, adjusted for the current
+	 * weather and time of day.
+	 */
 	public function getFullLightAt(int $x, int $y, int $z) : int{
 		$skyLight = $this->getRealBlockSkyLightAt($x, $y, $z);
 		if($skyLight < 15){
