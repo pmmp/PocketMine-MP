@@ -58,8 +58,7 @@ class DeathPacketHandler extends PacketHandler{
 		return false;
 	}
 
-	public function handleContainerClose(ContainerClosePacket $packet): bool
-	{
+	public function handleContainerClose(ContainerClosePacket $packet) : bool{
 		return $this->session->sendDataPacket(ContainerClosePacket::create($packet->windowId, false));
 	}
 
