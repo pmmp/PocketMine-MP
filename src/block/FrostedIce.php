@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
-use function max;
 use function mt_rand;
 
 class FrostedIce extends Ice{
