@@ -72,7 +72,7 @@ class ItemTest extends TestCase{
 		$item = ItemFactory::get(Item::DIAMOND_SWORD);
 		$item->addEnchantment(new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::SHARPNESS)));
 		$item->removeEnchantment(Enchantment::SHARPNESS);
-		self::assertFalse($item->getNamedTag()->hasTag(Item::TAG_ENCH, ListTag::class));
+		self::assertNull($item->getNamedTag()->getTag(Item::TAG_ENCH));
 	}
 
 	/**
