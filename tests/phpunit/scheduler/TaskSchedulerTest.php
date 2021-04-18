@@ -40,12 +40,7 @@ class TaskSchedulerTest extends TestCase{
 
 	public function testCancel() : void{
 		$task = $this->scheduler->scheduleTask(new CancelTask());
-		$cancelled = false;
-		try{
-			$task->run();
-		}catch(CancelTaskException $e){
-			$cancelled = true;
-		}
-		self::assertTrue($cancelled, "Task was not cancelled");
+		$this->scheduler->mainThreadHeartbeat();
+		self::assertTrue($task->isCancelled(), "Task was not cancelled");
 	}
 }
