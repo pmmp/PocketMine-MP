@@ -597,6 +597,7 @@ use function assert;
  * @method static Stair STONE_STAIRS()
  * @method static Sugarcane SUGARCANE()
  * @method static DoublePlant SUNFLOWER()
+ * @method static SweetBerryBush SWEET_BERRY_BUSH()
  * @method static TallGrass TALL_GRASS()
  * @method static TNT TNT()
  * @method static Torch TORCH()
@@ -1216,6 +1217,7 @@ final class VanillaBlocks{
 		self::register("stone_stairs", $factory->get(435, 0));
 		self::register("sugarcane", $factory->get(83, 0));
 		self::register("sunflower", $factory->get(175, 0));
+		self::register("sweet_berry_bush", $factory->get(462, 0));
 		self::register("tall_grass", $factory->get(31, 1));
 		self::register("tnt", $factory->get(46, 0));
 		self::register("torch", $factory->get(50, 5));
@@ -1239,6 +1241,5 @@ final class VanillaBlocks{
 		self::register("yellow_stained_clay", $factory->get(159, 4));
 		self::register("yellow_stained_glass", $factory->get(241, 4));
 		self::register("yellow_stained_glass_pane", $factory->get(160, 4));
-		self::register("sweet_berry_bush", $factory->get(462, 0));
 	}
 }
