@@ -1215,19 +1215,6 @@ class World implements ChunkManager{
 		return $collides;
 	}
 
-	public function getFullLight(Vector3 $pos) : int{
-		return $this->getFullLightAt($pos->x, $pos->y, $pos->z);
-	}
-
-	public function getFullLightAt(int $x, int $y, int $z) : int{
-		$skyLight = $this->getRealBlockSkyLightAt($x, $y, $z);
-		if($skyLight < 15){
-			return max($skyLight, $this->getBlockLightAt($x, $y, $z));
-		}else{
-			return $skyLight;
-		}
-	}
-
 	/**
 	 * Computes the percentage of a circle away from noon the sun is currently at. This can be multiplied by 2 * M_PI to
 	 * get an angle in radians, or by 360 to get an angle in degrees.
@@ -1285,6 +1272,34 @@ class World implements ChunkManager{
 		return $this->skyLightReduction;
 	}
 
+	public function getFullLight(Vector3 $pos) : int{
+		return $this->getFullLightAt($pos->x, $pos->y, $pos->z);
+	}
+
+	public function getFullLightAt(int $x, int $y, int $z) : int{
+		$skyLight = $this->getRealBlockSkyLightAt($x, $y, $z);
+		if($skyLight < 15){
+			return max($skyLight, $this->getBlockLightAt($x, $y, $z));
+		}else{
+			return $skyLight;
+		}
+	}
+
+	/**
+	 * Gets the raw block skylight level
+	 *
+	 * @return int 0-15
+	 */
+	public function getPotentialBlockSkyLightAt(int $x, int $y, int $z) : int{
+		if(!$this->isInWorld($x, $y, $z)){
+			return $y >= self::Y_MAX ? 15 : 0;
+		}
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null && $chunk->isLightPopulated() === true){
+			return $chunk->getSubChunk($y >> 4)->getBlockSkyLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
+		}
+		return 0; //TODO: this should probably throw instead (light not calculated yet)
+	}
+
 	/**
 	 * Returns the sky light level at the specified coordinates, offset by the current time and weather.
 	 *
@@ -1293,6 +1308,21 @@ class World implements ChunkManager{
 	public function getRealBlockSkyLightAt(int $x, int $y, int $z) : int{
 		$light = $this->getPotentialBlockSkyLightAt($x, $y, $z) - $this->skyLightReduction;
 		return $light < 0 ? 0 : $light;
+	}
+
+	/**
+	 * Gets the raw block light level
+	 *
+	 * @return int 0-15
+	 */
+	public function getBlockLightAt(int $x, int $y, int $z) : int{
+		if(!$this->isInWorld($x, $y, $z)){
+			return 0;
+		}
+		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null && $chunk->isLightPopulated() === true){
+			return $chunk->getSubChunk($y >> 4)->getBlockLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
+		}
+		return 0; //TODO: this should probably throw instead (light not calculated yet)
 	}
 
 	public function updateAllLight(int $x, int $y, int $z) : void{
@@ -1935,36 +1965,6 @@ class World implements ChunkManager{
 	 */
 	public function getTileAt(int $x, int $y, int $z) : ?Tile{
 		return ($chunk = $this->loadChunk($x >> 4, $z >> 4)) !== null ? $chunk->getTile($x & 0x0f, $y, $z & 0x0f) : null;
-	}
-
-	/**
-	 * Gets the raw block skylight level
-	 *
-	 * @return int 0-15
-	 */
-	public function getPotentialBlockSkyLightAt(int $x, int $y, int $z) : int{
-		if(!$this->isInWorld($x, $y, $z)){
-			return $y >= self::Y_MAX ? 15 : 0;
-		}
-		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null && $chunk->isLightPopulated() === true){
-			return $chunk->getSubChunk($y >> 4)->getBlockSkyLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
-		}
-		return 0; //TODO: this should probably throw instead (light not calculated yet)
-	}
-
-	/**
-	 * Gets the raw block light level
-	 *
-	 * @return int 0-15
-	 */
-	public function getBlockLightAt(int $x, int $y, int $z) : int{
-		if(!$this->isInWorld($x, $y, $z)){
-			return 0;
-		}
-		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null && $chunk->isLightPopulated() === true){
-			return $chunk->getSubChunk($y >> 4)->getBlockLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
-		}
-		return 0; //TODO: this should probably throw instead (light not calculated yet)
 	}
 
 	public function getBiomeId(int $x, int $z) : int{
