@@ -1606,6 +1606,11 @@ parameters:
 			path: ../../../src/pocketmine/utils/Utils.php
 
 		-
+			message: "#^Parameter \\#1 \\$enchantment of class pocketmine\\\\item\\\\enchantment\\\\EnchantmentInstance constructor expects pocketmine\\\\item\\\\enchantment\\\\Enchantment, pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null given\\.$#"
+			count: 1
+			path: ../../phpunit/item/ItemTest.php
+
+		-
 			message: "#^Cannot call method cancel\\(\\) on pocketmine\\\\scheduler\\\\TaskHandler\\|null\\.$#"
 			count: 1
 			path: ../../plugins/TesterPlugin/src/pmmp/TesterPlugin/CheckTestCompletionTask.php

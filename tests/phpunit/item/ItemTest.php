@@ -25,12 +25,15 @@ namespace pocketmine\item;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\block\BlockFactory;
+use pocketmine\item\enchantment\Enchantment;
+use pocketmine\item\enchantment\EnchantmentInstance;
 
 class ItemTest extends TestCase{
 
 	public function setUp() : void{
 		BlockFactory::init();
 		ItemFactory::init();
+		Enchantment::init();
 	}
 
 	/**
@@ -59,6 +62,16 @@ class ItemTest extends TestCase{
 		for($id = 0; $id < 256; ++$id){
 			self::assertEquals(BlockFactory::isRegistered($id), ItemFactory::isRegistered($id));
 		}
+	}
+
+	/**
+	 * Tests that when all enchantments are removed from an item, the "ench" tag is removed as well
+	 */
+	public function testEnchantmentRemoval() : void{
+		$item = ItemFactory::get(Item::DIAMOND_SWORD);
+		$item->addEnchantment(new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::SHARPNESS)));
+		$item->removeEnchantment(Enchantment::SHARPNESS);
+		self::assertNull($item->getNamedTag()->getTag(Item::TAG_ENCH));
 	}
 
 	/**
