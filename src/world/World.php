@@ -2077,8 +2077,6 @@ class World implements ChunkManager{
 				if(!isset($this->activeChunkPopulationTasks[$nextChunkHash])){
 					$failed[] = $nextChunkHash;
 				}
-			}else{
-				$this->logger->debug("Population request for chunk $nextChunkX $nextChunkZ was discarded before it could be fulfilled");
 			}
 		}
 
