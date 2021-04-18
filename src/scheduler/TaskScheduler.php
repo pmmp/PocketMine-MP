@@ -141,7 +141,13 @@ class TaskScheduler{
 				$this->tasks->remove($task);
 				continue;
 			}
-			$task->run();
+			try{
+				$task->run();
+			}catch(CancelTaskException $e){
+				$task->cancel();
+				$this->tasks->remove($task);
+				continue;
+			}
 			if($task->isRepeating()){
 				$task->setNextRun($this->currentTick + $task->getPeriod());
 				$this->queue->insert($task, $this->currentTick + $task->getPeriod());
