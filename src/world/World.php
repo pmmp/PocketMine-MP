@@ -1294,6 +1294,14 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * Returns the highest available level of any type of light at, or adjacent to, the given coordinates, adjusted for
+	 * the current weather and time of day.
+	 */
+	public function getHighestAdjacentFullLightAt(int $x, int $y, int $z) : int{
+		return $this->getHighestAdjacentLight($x, $y, $z, \Closure::fromCallable([$this, 'getFullLightAt']));
+	}
+
+	/**
 	 * Gets the raw block skylight level
 	 *
 	 * @return int 0-15
