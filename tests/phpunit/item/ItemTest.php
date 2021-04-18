@@ -27,7 +27,6 @@ use PHPUnit\Framework\TestCase;
 use pocketmine\block\BlockFactory;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
-use pocketmine\nbt\tag\ListTag;
 
 class ItemTest extends TestCase{
 
