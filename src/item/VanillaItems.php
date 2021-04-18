@@ -268,6 +268,7 @@ use function assert;
  * @method static StringItem STRING()
  * @method static Item SUGAR()
  * @method static ItemBlock SUGARCANE()
+ * @method static SweetBerries SWEET_BERRIES()
  * @method static Totem TOTEM()
  * @method static LiquidBucket WATER_BUCKET()
  * @method static Item WHEAT()
@@ -552,6 +553,7 @@ final class VanillaItems{
 		self::register("string", $factory->get(287));
 		self::register("sugar", $factory->get(353));
 		self::register("sugarcane", $factory->get(338));
+		self::register("sweet_berries", $factory->get(477, 0));
 		self::register("totem", $factory->get(450));
 		self::register("water_bucket", $factory->get(325, 8));
 		self::register("wheat", $factory->get(296));
@@ -569,6 +571,5 @@ final class VanillaItems{
 		self::register("yellow_bed", $factory->get(355, 4));
 		self::register("yellow_dye", $factory->get(351, 11));
 		self::register("zombie_head", $factory->get(397, 2));
-		self::register("sweet_berries", $factory->get(477, 0));
 	}
 }
