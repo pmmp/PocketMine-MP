@@ -1302,7 +1302,10 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Gets the raw block skylight level
+	 * Returns the highest potential level of sky light at the target coordinates, regardless of the time of day or
+	 * weather conditions.
+	 * You usually don't want to use this for vanilla gameplay logic; prefer the real sky light instead.
+	 * @see World::getRealBlockSkyLightAt()
 	 *
 	 * @return int 0-15
 	 */
