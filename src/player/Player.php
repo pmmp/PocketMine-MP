@@ -744,13 +744,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED();
 
 					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index) : void{
-						if(!$this->usedChunks[$index]->equals(UsedChunkStatus::REQUESTED())){
-							//TODO: make this an error
-							//this could be triggered due to the shitty way that chunk resends are handled
-							//right now - not because of the spammy re-requesting, but because the chunk status reverts
-							//to NEEDED if they want to be resent.
-							return;
-						}
 						$this->usedChunks[$index] = UsedChunkStatus::SENT();
 						if($this->spawnChunkLoadCount === -1){
 							$this->spawnEntitiesOnChunk($X, $Z);
@@ -874,6 +867,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function getUsedChunks() : array{
 		return $this->usedChunks;
+	}
+
+	/**
+	 * Returns a usage status of the given chunk, or null if the player is not using the given chunk.
+	 */
+	public function getUsedChunkStatus(int $chunkX, int $chunkZ) : ?UsedChunkStatus{
+		return $this->usedChunks[World::chunkHash($chunkX, $chunkZ)] ?? null;
 	}
 
 	/**

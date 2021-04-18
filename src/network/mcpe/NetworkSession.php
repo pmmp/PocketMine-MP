@@ -102,6 +102,7 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
+use pocketmine\player\UsedChunkStatus;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -919,8 +920,15 @@ class NetworkSession{
 					return;
 				}
 				$currentWorld = $this->player->getLocation()->getWorld();
-				if($world !== $currentWorld or !$this->player->isUsingChunk($chunkX, $chunkZ)){
+				if($world !== $currentWorld or ($status = $this->player->getUsedChunkStatus($chunkX, $chunkZ)) === null){
 					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
+					return;
+				}
+				if(!$status->equals(UsedChunkStatus::REQUESTED())){
+					//TODO: make this an error
+					//this could be triggered due to the shitty way that chunk resends are handled
+					//right now - not because of the spammy re-requesting, but because the chunk status reverts
+					//to NEEDED if they want to be resent.
 					return;
 				}
 				$world->timings->syncChunkSend->startTiming();
