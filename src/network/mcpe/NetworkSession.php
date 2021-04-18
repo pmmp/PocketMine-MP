@@ -914,8 +914,13 @@ class NetworkSession{
 		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
-			function(CompressBatchPromise $promise) use ($world, $onCompletion) : void{
+			function(CompressBatchPromise $promise) use ($world, $onCompletion, $chunkX, $chunkZ) : void{
 				if(!$this->isConnected()){
+					return;
+				}
+				$currentWorld = $this->player->getLocation()->getWorld();
+				if($world !== $currentWorld or !$this->player->isUsingChunk($chunkX, $chunkZ)){
+					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
 					return;
 				}
 				$world->timings->syncChunkSend->startTiming();

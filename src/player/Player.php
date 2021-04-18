@@ -743,11 +743,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					unset($this->loadQueue[$index]);
 					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED();
 
-					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index, $world) : void{
-						if(!isset($this->usedChunks[$index]) || $world !== $this->getWorld()){
-							$this->logger->debug("Tried to send no-longer-active chunk $X $Z in world " . $world->getFolderName());
-							return;
-						}
+					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index) : void{
 						if(!$this->usedChunks[$index]->equals(UsedChunkStatus::REQUESTED())){
 							//TODO: make this an error
 							//this could be triggered due to the shitty way that chunk resends are handled
