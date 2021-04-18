@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\player\Player;
@@ -55,6 +56,11 @@ class DeathPacketHandler extends PacketHandler{
 		}
 
 		return false;
+	}
+
+	public function handleContainerClose(ContainerClosePacket $packet): bool
+	{
+		return $this->session->sendDataPacket(ContainerClosePacket::create($packet->windowId, false));
 	}
 
 	public function handleRespawn(RespawnPacket $packet) : bool{
