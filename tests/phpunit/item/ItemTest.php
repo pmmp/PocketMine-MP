@@ -71,10 +71,7 @@ class ItemTest extends TestCase{
 	public function testEnchantmentRemoval() : void{
 		$item = ItemFactory::get(Item::DIAMOND_SWORD);
 		$item->addEnchantment(new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::SHARPNESS)));
-		$item->addEnchantment(new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::UNBREAKING)));
 		$item->removeEnchantment(Enchantment::SHARPNESS);
-		self::assertTrue($item->getNamedTag()->hasTag(Item::TAG_ENCH, ListTag::class));
-		$item->removeEnchantment(Enchantment::UNBREAKING);
 		self::assertFalse($item->getNamedTag()->hasTag(Item::TAG_ENCH, ListTag::class));
 	}
 
