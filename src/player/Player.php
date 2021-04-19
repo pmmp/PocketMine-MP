@@ -733,14 +733,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					if(!$this->isConnected() || !isset($this->usedChunks[$index]) || $world !== $this->getWorld()){
 						return;
 					}
+					if(!$this->usedChunks[$index]->equals(UsedChunkStatus::NEEDED())){
+						//TODO: make this an error
+						//we may have added multiple completion handlers, since the Player keeps re-requesting chunks
+						//it doesn't have yet (a relic from the old system, but also currently relied on for chunk resends).
+						//in this event, make sure we don't try to send the chunk multiple times.
+						return;
+					}
 					unset($this->loadQueue[$index]);
 					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED();
 
-					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index, $world) : void{
-						if(!isset($this->usedChunks[$index]) || $world !== $this->getWorld()){
-							$this->logger->debug("Tried to send no-longer-active chunk $X $Z in world " . $world->getFolderName());
-							return;
-						}
+					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index) : void{
 						$this->usedChunks[$index] = UsedChunkStatus::SENT();
 						if($this->spawnChunkLoadCount === -1){
 							$this->spawnEntitiesOnChunk($X, $Z);
@@ -864,6 +867,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function getUsedChunks() : array{
 		return $this->usedChunks;
+	}
+
+	/**
+	 * Returns a usage status of the given chunk, or null if the player is not using the given chunk.
+	 */
+	public function getUsedChunkStatus(int $chunkX, int $chunkZ) : ?UsedChunkStatus{
+		return $this->usedChunks[World::chunkHash($chunkX, $chunkZ)] ?? null;
 	}
 
 	/**
@@ -2351,7 +2361,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function onChunkChanged(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		$status = $this->usedChunks[$hash = World::chunkHash($chunkX, $chunkZ)] ?? null;
-		if($status !== null && !$status->equals(UsedChunkStatus::NEEDED())){
+		if($status !== null && $status->equals(UsedChunkStatus::SENT())){
 			$this->usedChunks[$hash] = UsedChunkStatus::NEEDED();
 			$this->nextChunkOrderRun = 0;
 		}

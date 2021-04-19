@@ -83,30 +83,45 @@ class RegionLoader{
 	/**
 	 * @throws CorruptedRegionException
 	 */
-	public function __construct(string $filePath){
+	private function __construct(string $filePath){
 		$this->filePath = $filePath;
 		$this->garbageTable = new RegionGarbageMap([]);
-
-		clearstatcache(false, $this->filePath);
-		$exists = file_exists($this->filePath);
-		if(!$exists){
-			touch($this->filePath);
-		}elseif(filesize($this->filePath) % 4096 !== 0){
-			throw new CorruptedRegionException("Region file should be padded to a multiple of 4KiB");
-		}
+		$this->lastUsed = time();
 
 		$filePointer = fopen($this->filePath, "r+b");
 		if($filePointer === false) throw new AssumptionFailedError("fopen() should not fail here");
 		$this->filePointer = $filePointer;
 		stream_set_read_buffer($this->filePointer, 1024 * 16); //16KB
 		stream_set_write_buffer($this->filePointer, 1024 * 16); //16KB
-		if(!$exists){
-			$this->createBlank();
-		}else{
-			$this->loadLocationTable();
+	}
+
+	/**
+	 * @throws CorruptedRegionException
+	 */
+	public static function loadExisting(string $filePath) : self{
+		clearstatcache(false, $filePath);
+		if(!file_exists($filePath)){
+			throw new \RuntimeException("File $filePath does not exist");
+		}
+		if(filesize($filePath) % 4096 !== 0){
+			throw new CorruptedRegionException("Region file should be padded to a multiple of 4KiB");
 		}
 
-		$this->lastUsed = time();
+		$result = new self($filePath);
+		$result->loadLocationTable();
+		return $result;
+	}
+
+	public static function createNew(string $filePath) : self{
+		clearstatcache(false, $filePath);
+		if(file_exists($filePath)){
+			throw new \RuntimeException("Region file $filePath already exists");
+		}
+		touch($filePath);
+
+		$result = new self($filePath);
+		$result->createBlank();
+		return $result;
 	}
 
 	public function __destruct(){

@@ -35,15 +35,10 @@ use function igbinary_serialize;
 use function igbinary_unserialize;
 
 class LightPopulationTask extends AsyncTask{
-	private const TLS_KEY_WORLD = "world";
+	private const TLS_KEY_COMPLETION_CALLBACK = "onCompletion";
 
 	/** @var string */
 	public $chunk;
-
-	/** @var int */
-	private $chunkX;
-	/** @var int */
-	private $chunkZ;
 
 	/** @var string */
 	private $resultHeightMap;
@@ -52,25 +47,26 @@ class LightPopulationTask extends AsyncTask{
 	/** @var string */
 	private $resultBlockLightArrays;
 
-	public function __construct(World $world, int $chunkX, int $chunkZ, Chunk $chunk){
-		$this->storeLocal(self::TLS_KEY_WORLD, $world);
-		[$this->chunkX, $this->chunkZ] = [$chunkX, $chunkZ];
-		$chunk->setLightPopulated(null);
+	/**
+	 * @phpstan-param \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, array<int, int> $heightMap) : void $onCompletion
+	 */
+	public function __construct(Chunk $chunk, \Closure $onCompletion){
 		$this->chunk = FastChunkSerializer::serialize($chunk);
+		$this->storeLocal(self::TLS_KEY_COMPLETION_CALLBACK, $onCompletion);
 	}
 
 	public function onRun() : void{
 		$chunk = FastChunkSerializer::deserialize($this->chunk);
 
 		$manager = new SimpleChunkManager(World::Y_MIN, World::Y_MAX);
-		$manager->setChunk($this->chunkX, $this->chunkZ, $chunk);
+		$manager->setChunk(0, 0, $chunk);
 
 		$blockFactory = BlockFactory::getInstance();
 		foreach([
 			"Block" => new BlockLightUpdate(new SubChunkExplorer($manager), $blockFactory->lightFilter, $blockFactory->light),
 			"Sky" => new SkyLightUpdate(new SubChunkExplorer($manager), $blockFactory->lightFilter, $blockFactory->blocksDirectSkyLight),
 		] as $name => $update){
-			$update->recalculateChunk($this->chunkX, $this->chunkZ);
+			$update->recalculateChunk(0, 0);
 			$update->execute();
 		}
 
@@ -88,27 +84,19 @@ class LightPopulationTask extends AsyncTask{
 	}
 
 	public function onCompletion() : void{
-		/** @var World $world */
-		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
-		if(!$world->isClosed() and ($chunk = $world->getChunk($this->chunkX, $this->chunkZ)) !== null){
-			//TODO: calculated light information might not be valid if the terrain changed during light calculation
+		/** @var int[] $heightMapArray */
+		$heightMapArray = igbinary_unserialize($this->resultHeightMap);
 
-			/** @var int[] $heightMapArray */
-			$heightMapArray = igbinary_unserialize($this->resultHeightMap);
-			$chunk->setHeightMapArray($heightMapArray);
+		/** @var LightArray[] $skyLightArrays */
+		$skyLightArrays = igbinary_unserialize($this->resultSkyLightArrays);
+		/** @var LightArray[] $blockLightArrays */
+		$blockLightArrays = igbinary_unserialize($this->resultBlockLightArrays);
 
-			/** @var LightArray[] $skyLightArrays */
-			$skyLightArrays = igbinary_unserialize($this->resultSkyLightArrays);
-			/** @var LightArray[] $blockLightArrays */
-			$blockLightArrays = igbinary_unserialize($this->resultBlockLightArrays);
-
-			foreach($skyLightArrays as $y => $array){
-				$chunk->getSubChunk($y)->setBlockSkyLightArray($array);
-			}
-			foreach($blockLightArrays as $y => $array){
-				$chunk->getSubChunk($y)->setBlockLightArray($array);
-			}
-			$chunk->setLightPopulated();
-		}
+		/**
+		 * @var \Closure
+		 * @phpstan-var \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, array<int, int> $heightMap>) : void
+		 */
+		$callback = $this->fetchLocal(self::TLS_KEY_COMPLETION_CALLBACK);
+		$callback($blockLightArrays, $skyLightArrays, $heightMapArray);
 	}
 }

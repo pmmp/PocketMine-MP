@@ -61,7 +61,6 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
-use pocketmine\network\mcpe\protocol\GarbageServerboundPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
@@ -106,6 +105,7 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
+use pocketmine\player\UsedChunkStatus;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -393,10 +393,6 @@ class NetworkSession{
 	 */
 	public function handleDataPacket(Packet $packet, int $protocolId, string $buffer) : void{
 		if(!($packet instanceof ServerboundPacket)){
-			if($packet instanceof GarbageServerboundPacket){
-				$this->logger->debug("Garbage serverbound " . $packet->getName() . ": " . base64_encode($buffer));
-				return;
-			}
 			throw new PacketHandlingException("Unexpected non-serverbound packet");
 		}
 
@@ -727,7 +723,7 @@ class NetworkSession{
 		$this->setHandler(new PreSpawnPacketHandler($this->server, $this->player, $this));
 		$this->player->setImmobile(); //TODO: HACK: fix client-side falling pre-spawn
 
-		$this->logger->debug("Waiting for spawn chunks");
+		$this->logger->debug("Waiting for chunk radius request");
 	}
 
 	public function notifyTerrainReady() : void{
@@ -942,8 +938,20 @@ class NetworkSession{
 		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ, $this->getProtocolId())->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
-			function(CompressBatchPromise $promise) use ($world, $onCompletion) : void{
+			function(CompressBatchPromise $promise) use ($world, $onCompletion, $chunkX, $chunkZ) : void{
 				if(!$this->isConnected()){
+					return;
+				}
+				$currentWorld = $this->player->getLocation()->getWorld();
+				if($world !== $currentWorld or ($status = $this->player->getUsedChunkStatus($chunkX, $chunkZ)) === null){
+					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
+					return;
+				}
+				if(!$status->equals(UsedChunkStatus::REQUESTED())){
+					//TODO: make this an error
+					//this could be triggered due to the shitty way that chunk resends are handled
+					//right now - not because of the spammy re-requesting, but because the chunk status reverts
+					//to NEEDED if they want to be resent.
 					return;
 				}
 				$world->timings->syncChunkSend->startTiming();

@@ -42,7 +42,7 @@ class BlockIdentifier{
 	/**
 	 * @phpstan-param class-string<Tile>|null $tileClass
 	 */
-	public function __construct(int $blockId, int $variant = 0, ?int $itemId = null, ?string $tileClass = null){
+	public function __construct(int $blockId, int $variant, ?int $itemId = null, ?string $tileClass = null){
 		$this->blockId = $blockId;
 		$this->variant = $variant;
 		$this->itemId = $itemId;

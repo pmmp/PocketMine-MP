@@ -139,7 +139,7 @@ class TypeConverter{
 			$nbt = clone $itemStack->getNamedTag();
 		}
 
-		$block = $itemStack->getBlock();
+		$isBlockItem = $itemStack->getId() < 256;
 		if($itemStack instanceof Durable and $itemStack->getDamage() > 0){
 			if($nbt !== null){
 				if(($existing = $nbt->getTag(self::DAMAGE_TAG)) !== null){
@@ -150,7 +150,7 @@ class TypeConverter{
 				$nbt = new CompoundTag();
 			}
 			$nbt->setInt(self::DAMAGE_TAG, $itemStack->getDamage());
-		}elseif($block->getId() !== BlockLegacyIds::AIR && $itemStack->getMeta() !== 0){
+		}elseif($isBlockItem && $itemStack->getMeta() !== 0){
 			//TODO HACK: This foul-smelling code ensures that we can correctly deserialize an item when the
 			//client sends it back to us, because as of 1.16.220, blockitems quietly discard their metadata
 			//client-side. Aside from being very annoying, this also breaks various server-side behaviours.
@@ -161,7 +161,13 @@ class TypeConverter{
 		}
 		[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), $itemStack->getMeta());
 
-		$blockRuntimeId = $block->getId() === BlockLegacyIds::AIR ? 0 : RuntimeBlockMapping::getInstance()->toRuntimeId($block->getFullId());
+		$blockRuntimeId = 0;
+		if($isBlockItem){
+			$block = $itemStack->getBlock();
+			if($block->getId() !== BlockLegacyIds::AIR){
+				$blockRuntimeId = RuntimeBlockMapping::getInstance()->toRuntimeId($block->getFullId());
+			}
+		}
 
 		return new ItemStack(
 			$id,

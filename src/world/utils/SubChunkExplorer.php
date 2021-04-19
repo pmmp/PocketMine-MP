@@ -29,7 +29,7 @@ use pocketmine\world\format\SubChunk;
 
 class SubChunkExplorer{
 	/** @var ChunkManager */
-	public $world;
+	protected $world;
 
 	/** @var Chunk|null */
 	public $currentChunk;

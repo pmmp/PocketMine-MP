@@ -23,21 +23,26 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class BlockIdentifierFlattened extends BlockIdentifier{
+use pocketmine\item\Item;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+use pocketmine\world\BlockTransaction;
 
-	/** @var int */
-	private $secondId;
+final class Coral extends BaseCoral{
 
-	public function __construct(int $blockId, int $secondId, int $variant, ?int $itemId = null, ?string $tileClass = null){
-		parent::__construct($blockId, $variant, $itemId, $tileClass);
-		$this->secondId = $secondId;
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if(!$tx->fetchBlock($blockReplace->getPos()->down())->isSolid()){
+			return false;
+		}
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function getSecondId() : int{
-		return $this->secondId;
-	}
-
-	public function getAllBlockIds() : array{
-		return [$this->getBlockId(), $this->getSecondId()];
+	public function onNearbyBlockChange() : void{
+		$world = $this->pos->getWorld();
+		if(!$world->getBlock($this->pos->down())->isSolid()){
+			$world->useBreakOn($this->pos);
+		}else{
+			parent::onNearbyBlockChange();
+		}
 	}
 }

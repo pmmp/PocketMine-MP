@@ -44,7 +44,8 @@ use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
 
 /**
- * Manages Item instance creation and registration
+ * Manages deserializing item types from their legacy ID/metadata.
+ * This is primarily needed for loading inventories saved in the world (or playerdata storage).
  */
 class ItemFactory{
 	use SingletonTrait;
@@ -76,6 +77,11 @@ class ItemFactory{
 		$this->register(new Clock(new ItemIdentifier(ItemIds::CLOCK, 0), "Clock"));
 		$this->register(new Clownfish(new ItemIdentifier(ItemIds::CLOWNFISH, 0), "Clownfish"));
 		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 0), "Coal"));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 0), VanillaBlocks::TUBE_CORAL_FAN(), VanillaBlocks::TUBE_WALL_CORAL_FAN()), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 1), VanillaBlocks::BRAIN_CORAL_FAN(), VanillaBlocks::BRAIN_WALL_CORAL_FAN()), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 2), VanillaBlocks::BUBBLE_CORAL_FAN(), VanillaBlocks::BUBBLE_WALL_CORAL_FAN()), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 3), VanillaBlocks::FIRE_CORAL_FAN(), VanillaBlocks::FIRE_WALL_CORAL_FAN()), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 4), VanillaBlocks::HORN_CORAL_FAN(), VanillaBlocks::HORN_WALL_CORAL_FAN()), true);
 		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 1), "Charcoal"));
 		$this->register(new CocoaBeans(new ItemIdentifier(ItemIds::DYE, 3), "Cocoa Beans"));
 		$this->register(new Compass(new ItemIdentifier(ItemIds::COMPASS, 0), "Compass"));
@@ -395,8 +401,8 @@ class ItemFactory{
 	}
 
 	/**
-	 * Registers an item type into the index. Plugins may use this method to register new item types or override existing
-	 * ones.
+	 * Maps an item type to its corresponding ID. This is necessary to ensure that the item is correctly loaded when
+	 * reading data from disk storage.
 	 *
 	 * NOTE: If you are registering a new item type, you will need to add it to the creative inventory yourself - it
 	 * will not automatically appear there.
@@ -424,7 +430,11 @@ class ItemFactory{
 	}
 
 	/**
-	 * Returns an instance of the Item with the specified id, meta, count and NBT.
+	 * @deprecated This method should ONLY be used for deserializing data, e.g. from a config or database. For all other
+	 * purposes, use VanillaItems.
+	 * @see VanillaItems
+	 *
+	 * Deserializes an item from the provided legacy ID, legacy meta, count and NBT.
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -435,11 +445,10 @@ class ItemFactory{
 			if(isset($this->list[$offset = self::getListOffset($id, $meta)])){
 				$item = clone $this->list[$offset];
 			}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) and $this->list[$zero] instanceof Durable){
-				/** @var Durable $item */
-				$item = clone $this->list[$zero];
-				try{
+				if($meta <= $this->list[$zero]->getMaxDurability()){
+					$item = clone $this->list[$zero];
 					$item->setDamage($meta);
-				}catch(\InvalidArgumentException $e){
+				}else{
 					$item = new Item(new ItemIdentifier($id, $meta));
 				}
 			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs

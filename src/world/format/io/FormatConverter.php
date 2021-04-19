@@ -55,6 +55,10 @@ class FormatConverter{
 	/** @var int */
 	private $chunksPerProgressUpdate;
 
+	/**
+	 * @phpstan-template TNewProvider of WritableWorldProvider
+	 * @phpstan-param class-string<TNewProvider> $newProvider
+	 */
 	public function __construct(WorldProvider $oldProvider, string $newProvider, string $backupPath, \Logger $logger, int $chunksPerProgressUpdate = 256){
 		$this->oldProvider = $oldProvider;
 		Utils::testValidInstance($newProvider, WritableWorldProvider::class);
