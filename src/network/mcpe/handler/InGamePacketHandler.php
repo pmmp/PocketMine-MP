@@ -62,6 +62,7 @@ use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
@@ -850,5 +851,15 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{
 		return true; //TODO: implement this properly - this is here to silence debug spam from MCPE dev builds
+	}
+
+	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
+		/*
+		 * We don't handle this - all sounds are handled by the server now.
+		 * However, some plugins find this useful to detect events like left-click-air, which doesn't have any other
+		 * action bound to it.
+		 * In addition, we use this handler to silence debug noise, since this packet is frequently sent by the client.
+		 */
+		return true;
 	}
 }
