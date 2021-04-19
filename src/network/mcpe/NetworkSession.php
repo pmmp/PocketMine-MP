@@ -59,7 +59,6 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
-use pocketmine\network\mcpe\protocol\GarbageServerboundPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
@@ -376,10 +375,6 @@ class NetworkSession{
 	 */
 	public function handleDataPacket(Packet $packet, string $buffer) : void{
 		if(!($packet instanceof ServerboundPacket)){
-			if($packet instanceof GarbageServerboundPacket){
-				$this->logger->debug("Garbage serverbound " . $packet->getName() . ": " . base64_encode($buffer));
-				return;
-			}
 			throw new PacketHandlingException("Unexpected non-serverbound packet");
 		}
 

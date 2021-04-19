@@ -76,6 +76,7 @@ use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
+use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
@@ -579,6 +580,10 @@ class InGamePacketHandler extends PacketHandler{
 		$this->player->setUsingItem(false);
 
 		return true;
+	}
+
+	public function handleSetActorMotion(SetActorMotionPacket $packet) : bool{
+		return true; //Not used: This packet is (erroneously) sent to the server when the client is riding a vehicle.
 	}
 
 	public function handleAnimate(AnimatePacket $packet) : bool{
