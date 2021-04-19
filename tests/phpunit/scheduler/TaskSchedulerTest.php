@@ -23,41 +23,26 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
-use pocketmine\utils\Utils;
+use PHPUnit\Framework\TestCase;
 
-abstract class Task{
+class TaskSchedulerTest extends TestCase{
 
-	/** @var TaskHandler|null */
-	private $taskHandler = null;
+	/** @var TaskScheduler */
+	private $scheduler;
 
-	/**
-	 * @return TaskHandler|null
-	 */
-	final public function getHandler(){
-		return $this->taskHandler;
+	public function setUp() : void{
+		$this->scheduler = new TaskScheduler();
 	}
 
-	public function getName() : string{
-		return Utils::getNiceClassName($this);
+	public function tearDown() : void{
+		$this->scheduler->shutdown();
 	}
 
-	final public function setHandler(?TaskHandler $taskHandler) : void{
-		if($this->taskHandler === null or $taskHandler === null){
-			$this->taskHandler = $taskHandler;
-		}
-	}
-
-	/**
-	 * Actions to execute when run
-	 *
-	 * @throws CancelTaskException
-	 */
-	abstract public function onRun() : void;
-
-	/**
-	 * Actions to execute if the Task is cancelled
-	 */
-	public function onCancel() : void{
-
+	public function testCancel() : void{
+		$task = $this->scheduler->scheduleTask(new ClosureTask(function() : void{
+			throw new CancelTaskException();
+		}));
+		$this->scheduler->mainThreadHeartbeat(0);
+		self::assertTrue($task->isCancelled(), "Task was not cancelled");
 	}
 }

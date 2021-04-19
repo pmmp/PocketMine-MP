@@ -115,6 +115,8 @@ class TaskHandler{
 		$this->timings->startTiming();
 		try{
 			$this->task->onRun();
+		}catch(CancelTaskException $e){
+			$this->cancel();
 		}finally{
 			$this->timings->stopTiming();
 		}
