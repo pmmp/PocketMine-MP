@@ -184,7 +184,6 @@ class ChunkCache implements ChunkListener{
 	 * @see ChunkListener::onChunkChanged()
 	 */
 	public function onChunkChanged(int $chunkX, int $chunkZ, Chunk $chunk) : void{
-		//FIXME: this gets fired for stuff that doesn't change terrain related things (like lighting updates)
 		$this->destroyOrRestart($chunkX, $chunkZ);
 	}
 
