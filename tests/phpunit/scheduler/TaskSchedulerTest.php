@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\Server;
 
 class TaskSchedulerTest extends TestCase{
 
@@ -40,7 +41,7 @@ class TaskSchedulerTest extends TestCase{
 
 	public function testCancel() : void{
 		$task = $this->scheduler->scheduleTask(new CancelTask());
-		$this->scheduler->mainThreadHeartbeat();
+		$this->scheduler->mainThreadHeartbeat(Server::getInstance()->getTick());
 		self::assertTrue($task->isCancelled(), "Task was not cancelled");
 	}
 }
