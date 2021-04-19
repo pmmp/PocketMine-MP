@@ -177,7 +177,7 @@ class TaskScheduler{
 				continue;
 			}
 			$task->run($this->currentTick);
-			if($task->isRepeating()){
+			if(!$task->isCancelled() && $task->isRepeating()){
 				$task->setNextRun($this->currentTick + $task->getPeriod());
 				$this->queue->insert($task, $this->currentTick + $task->getPeriod());
 			}else{
