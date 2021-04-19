@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\scheduler;
 
 /**
- * Thrown when a task gets cancelled - for example, a repeating task that needs to be cancelled in a certain interval.
+ * This exception can be thrown from Task::onRun() to cancel the execution of the task.
+ * @see Task::onRun()
  */
 final class CancelTaskException extends \Exception{
 

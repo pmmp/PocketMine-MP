@@ -111,13 +111,12 @@ class TaskHandler{
 		$this->task->setHandler(null);
 	}
 
-	/**
-	 * @throws CancelTaskException if the task is cancelled
-	 */
 	public function run() : void{
 		$this->timings->startTiming();
 		try{
 			$this->task->onRun();
+		}catch(CancelTaskException $e){
+			$this->cancel();
 		}finally{
 			$this->timings->stopTiming();
 		}

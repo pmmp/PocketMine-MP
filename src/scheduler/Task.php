@@ -50,7 +50,7 @@ abstract class Task{
 	/**
 	 * Actions to execute when run
 	 *
-	 * @throws CancelTaskException if the task is cancelled
+	 * @throws CancelTaskException
 	 */
 	abstract public function onRun() : void;
 
