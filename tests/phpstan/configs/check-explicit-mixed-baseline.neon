@@ -211,6 +211,11 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
+			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$srcNamespacePrefix \\(string\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
 			message: "#^Parameter \\#1 \\$plugins of class pocketmine\\\\plugin\\\\PluginGraylist constructor expects array\\<string\\>, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginGraylist.php
