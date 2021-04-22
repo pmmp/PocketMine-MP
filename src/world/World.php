@@ -44,6 +44,7 @@ use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\block\BlockBreakEvent;
 use pocketmine\event\block\BlockPlaceEvent;
 use pocketmine\event\block\BlockUpdateEvent;
+use pocketmine\event\entity\ItemEntityDropEvent;
 use pocketmine\event\player\PlayerInteractEvent;
 use pocketmine\event\world\ChunkLoadEvent;
 use pocketmine\event\world\ChunkPopulateEvent;
@@ -1625,6 +1626,11 @@ class World implements ChunkManager{
 
 		$itemEntity->setPickupDelay($delay);
 		$itemEntity->setMotion($motion ?? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1));
+
+		$ev = new ItemEntityDropEvent($itemEntity);
+		$ev->call();
+
+		$itemEntity = $ev->getEntity();
 		$itemEntity->spawnToAll();
 
 		return $itemEntity;
