@@ -21,30 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pmmp\TesterPlugin;
+namespace pocketmine\scheduler;
 
-use pocketmine\scheduler\Task;
+/**
+ * This exception can be thrown from Task::onRun() to cancel the execution of the task.
+ * @see Task::onRun()
+ */
+final class CancelTaskException extends \Exception{
 
-class CheckTestCompletionTask extends Task{
-
-	/** @var Main */
-	private $plugin;
-
-	public function __construct(Main $plugin){
-		$this->plugin = $plugin;
-	}
-
-	public function onRun() : void{
-		$test = $this->plugin->getCurrentTest();
-		if($test === null){
-			if(!$this->plugin->startNextTest()){
-				$this->getHandler()->cancel();
-				$this->plugin->onAllTestsCompleted();
-			}
-		}elseif($test->isFinished() or $test->isTimedOut()){
-			$this->plugin->onTestCompleted($test);
-		}else{
-			$test->tick();
-		}
-	}
 }

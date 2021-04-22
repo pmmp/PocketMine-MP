@@ -251,11 +251,6 @@ parameters:
 			path: ../../../src/scheduler/AsyncTask.php
 
 		-
-			message: "#^Cannot call method cancel\\(\\) on pocketmine\\\\scheduler\\\\TaskHandler\\|null\\.$#"
-			count: 1
-			path: ../../../src/scheduler/CancellableClosureTask.php
-
-		-
 			message: "#^Cannot call method getAsyncWorkerId\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
 			count: 1
 			path: ../../../src/scheduler/DumpWorkerMemoryTask.php
@@ -509,9 +504,4 @@ parameters:
 			message: "#^Property pocketmine\\\\event\\\\HandlerListManagerTest\\:\\:\\$resolveParentFunc \\(Closure\\(ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\)\\: ReflectionClass\\<pocketmine\\\\event\\\\Event\\>\\|null\\) does not accept Closure\\|null\\.$#"
 			count: 1
 			path: ../../phpunit/event/HandlerListManagerTest.php
-
-		-
-			message: "#^Cannot call method cancel\\(\\) on pocketmine\\\\scheduler\\\\TaskHandler\\|null\\.$#"
-			count: 1
-			path: ../../plugins/TesterPlugin/src/pmmp/TesterPlugin/CheckTestCompletionTask.php
 

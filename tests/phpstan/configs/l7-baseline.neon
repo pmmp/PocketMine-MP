@@ -941,11 +941,6 @@ parameters:
 			path: ../../../src/world/format/Chunk.php
 
 		-
-			message: "#^Parameter \\#1 \\$className of static method pocketmine\\\\utils\\\\Utils\\:\\:testValidInstance\\(\\) expects class\\-string, string given\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/FormatConverter.php
-
-		-
 			message: "#^Only numeric types are allowed in %%, int\\|false given on the left side\\.$#"
 			count: 1
 			path: ../../../src/world/format/io/region/RegionLoader.php
