@@ -1623,14 +1623,17 @@ class World implements ChunkManager{
 		}
 
 		$itemEntity = new ItemEntity(Location::fromObject($source, $this, lcg_value() * 360, 0), $item);
-
 		$itemEntity->setPickupDelay($delay);
 		$itemEntity->setMotion($motion ?? new Vector3(lcg_value() * 0.2 - 0.1, 0.2, lcg_value() * 0.2 - 0.1));
 
 		$ev = new ItemEntityDropEvent($itemEntity);
 		$ev->call();
 
-		$itemEntity = $ev->getEntity();
+		if($ev->isCancelled()){
+			$itemEntity->flagForDespawn();
+			return null;
+		}
+
 		$itemEntity->spawnToAll();
 
 		return $itemEntity;
