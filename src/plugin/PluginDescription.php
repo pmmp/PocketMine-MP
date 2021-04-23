@@ -48,6 +48,7 @@ class PluginDescription{
 	private $name;
 	/** @var string */
 	private $main;
+	private string $srcNamespacePrefix = "";
 	/** @var string[] */
 	private $api;
 	/** @var int[] */
@@ -113,6 +114,8 @@ class PluginDescription{
 		if(stripos($this->main, "pocketmine\\") === 0){
 			throw new PluginException("Invalid Plugin main, cannot start within the PocketMine namespace");
 		}
+
+		$this->srcNamespacePrefix = $plugin["src-namespace-prefix"] ?? "";
 
 		$this->api = array_map("\strval", (array) ($plugin["api"] ?? []));
 		$this->compatibleMcpeProtocols = array_map("\intval", (array) ($plugin["mcpe-protocol"] ?? []));
@@ -283,6 +286,8 @@ class PluginDescription{
 	public function getMain() : string{
 		return $this->main;
 	}
+
+	public function getSrcNamespacePrefix() : string{ return $this->srcNamespacePrefix; }
 
 	public function getName() : string{
 		return $this->name;

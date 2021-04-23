@@ -415,12 +415,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ClassLoader.git",
-                "reference": "c0133050639cd4a8baefc56a4f334f269c66a7e0"
+                "reference": "9fb3957cbfe5b37dae8952e072b35540fb4d9aa7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/c0133050639cd4a8baefc56a4f334f269c66a7e0",
-                "reference": "c0133050639cd4a8baefc56a4f334f269c66a7e0",
+                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/9fb3957cbfe5b37dae8952e072b35540fb4d9aa7",
+                "reference": "9fb3957cbfe5b37dae8952e072b35540fb4d9aa7",
                 "shasum": ""
             },
             "require": {
@@ -433,7 +433,7 @@
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.66",
+                "phpstan/phpstan": "0.12.80",
                 "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
@@ -451,7 +451,7 @@
                 "issues": "https://github.com/pmmp/ClassLoader/issues",
                 "source": "https://github.com/pmmp/ClassLoader/tree/master"
             },
-            "time": "2021-01-15T00:41:29+00:00"
+            "time": "2021-04-19T14:36:23+00:00"
         },
         {
             "name": "pocketmine/color",
