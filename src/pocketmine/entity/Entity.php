@@ -73,6 +73,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\AssumptionFailedError;
 use function abs;
 use function assert;
 use function cos;
@@ -611,7 +612,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->fallDistance = $this->namedtag->getFloat("FallDistance", 0.0);
 
 		if(!isset($this->width) or !isset($this->height)){
-			throw new \InvalidStateException(static::class . " has invalid width/height");
+			throw new AssumptionFailedError(static::class . " has invalid width/height");
 		}
 
 		$this->propertyManager = new DataPropertyManager();
