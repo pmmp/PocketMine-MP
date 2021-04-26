@@ -350,20 +350,21 @@ class InGamePacketHandler extends PacketHandler{
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
 				//TODO: start hack for client spam bug
-				$clickPos = $data->getClickPos();
-				$spamBug = ($this->lastRightClickData !== null and
-					microtime(true) - $this->lastRightClickTime < 0.1 and //100ms
-					$this->lastRightClickData->getPlayerPos()->distanceSquared($data->getPlayerPos()) < 0.00001 and
-					$this->lastRightClickData->getBlockPos()->equals($data->getBlockPos()) and
-					$this->lastRightClickData->getClickPos()->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
-				);
-				//get rid of continued spam if the player clicks and holds right-click
-				$this->lastRightClickData = $data;
-				$this->lastRightClickTime = microtime(true);
-				if($spamBug){
-					return true;
-				}
-				//TODO: end hack for client spam bug
+                $clickPos = $data->getClickPos();
+                $spamBug = ($this->lastRightClickTime !== null and
+                    // default 0.1
+                    microtime(true) - $this->lastRightClickTime < 0.01 and //100ms
+                    // default 0.00001
+                    $this->lastRightClickData->getPlayerPos()->distanceSquared($data->getPlayerPos()) < 0.0000001 //signature spam bug has 0 distance, but allow some error
+                );
+                //get rid of continued spam if the player clicks and holds right-click
+                $this->lastRightClickData = $data;
+                $this->lastRightClickTime = microtime(true);
+
+                if ($spamBug) {
+                    return true;
+                }
+                //TODO: end hack for client spam bug
 
 				$blockPos = $data->getBlockPos();
 				if(!$this->player->interactBlock($blockPos, $data->getFace(), $clickPos)){
