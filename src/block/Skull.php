@@ -45,6 +45,8 @@ class Skull extends Flowable{
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
+	protected bool $noDrops = false;
+
 	/** @var int */
 	protected $rotation = 0; //TODO: split this into floor skull and wall skull handling
 
@@ -54,15 +56,17 @@ class Skull extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->facing === Facing::UP ? 1 : BlockDataSerializer::writeHorizontalFacing($this->facing);
+		return ($this->facing === Facing::UP ? 1 : BlockDataSerializer::writeHorizontalFacing($this->facing)) |
+			($this->noDrops ? BlockLegacyMetadata::SKULL_FLAG_NO_DROPS : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = $stateMeta === 1 ? Facing::UP : BlockDataSerializer::readHorizontalFacing($stateMeta);
+		$this->noDrops = ($stateMeta & BlockLegacyMetadata::SKULL_FLAG_NO_DROPS) !== 0;
 	}
 
 	public function getStateBitmask() : int{
-		return 0b111;
+		return 0b1111;
 	}
 
 	public function readStateFromWorld() : void{
