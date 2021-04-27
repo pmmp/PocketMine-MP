@@ -75,6 +75,10 @@ class TimingsCommand extends VanillaCommand{
 		$mode = strtolower($args[0]);
 
 		if($mode === "on"){
+			if(TimingsHandler::isEnabled()){
+				$sender->sendMessage(new TranslationContainer("pocketmine.command.timings.alreadyEnabled"));
+				return true;
+			}
 			TimingsHandler::setEnabled();
 			Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.command.timings.enable"));
 
