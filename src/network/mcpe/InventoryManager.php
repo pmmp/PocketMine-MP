@@ -54,7 +54,7 @@ use function array_search;
 use function max;
 
 /**
- * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : list<ClientboundPacket>|null
+ * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
  */
 class InventoryManager{
 
