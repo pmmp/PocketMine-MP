@@ -91,6 +91,12 @@ class Skull extends Flowable{
 		return $this->skullType;
 	}
 
+	/** @return $this */
+	public function setSkullType(SkullType $skullType) : self{
+		$this->skullType = $skullType;
+		return $this;
+	}
+
 	public function getFacing() : int{ return $this->facing; }
 
 	/** @return $this */
@@ -99,6 +105,17 @@ class Skull extends Flowable{
 			throw new \InvalidArgumentException("Skull may not face DOWN");
 		}
 		$this->facing = $facing;
+		return $this;
+	}
+
+	public function getRotation() : int{ return $this->rotation; }
+
+	/** @return $this */
+	public function setRotation(int $rotation) : self{
+		if($rotation < 0 || $rotation > 15){
+			throw new \InvalidArgumentException("Rotation must be a value between 0 and 15");
+		}
+		$this->rotation = $rotation;
 		return $this;
 	}
 
