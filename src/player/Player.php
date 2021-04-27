@@ -2018,7 +2018,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->cursorInventory = null;
 		$this->craftingGrid = null;
 		$this->spawnPosition = null;
-		$this->perm = null;
 		$this->blockBreakHandler = null;
 		parent::destroyCycles();
 	}
