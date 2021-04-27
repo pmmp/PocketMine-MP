@@ -91,6 +91,25 @@ class Skull extends Flowable{
 		return $this->skullType;
 	}
 
+	public function getFacing() : int{ return $this->facing; }
+
+	/** @return $this */
+	public function setFacing(int $facing) : self{
+		if($facing === Facing::DOWN){
+			throw new \InvalidArgumentException("Skull may not face DOWN");
+		}
+		$this->facing = $facing;
+		return $this;
+	}
+
+	public function isNoDrops() : bool{ return $this->noDrops; }
+
+	/** @return $this */
+	public function setNoDrops(bool $noDrops) : self{
+		$this->noDrops = $noDrops;
+		return $this;
+	}
+
 	/**
 	 * @return AxisAlignedBB[]
 	 */
