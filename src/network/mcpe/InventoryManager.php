@@ -35,6 +35,7 @@ use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
@@ -47,10 +48,14 @@ use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\player\Player;
+use pocketmine\utils\ObjectSet;
 use function array_map;
 use function array_search;
 use function max;
 
+/**
+ * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : list<ClientboundPacket>|null
+ */
 class InventoryManager{
 
 	//TODO: HACK!
@@ -79,9 +84,15 @@ class InventoryManager{
 	/** @var int */
 	private $clientSelectedHotbarSlot = -1;
 
+	/** @phpstan-var ObjectSet<ContainerOpenClosure> */
+	private ObjectSet $containerOpenCallbacks;
+
 	public function __construct(Player $player, NetworkSession $session){
 		$this->player = $player;
 		$this->session = $session;
+
+		$this->containerOpenCallbacks = new ObjectSet();
+		$this->containerOpenCallbacks->add(\Closure::fromCallable([self::class, 'createContainerOpen']));
 
 		$this->add(ContainerIds::INVENTORY, $this->player->getInventory());
 		$this->add(ContainerIds::ARMOR, $this->player->getArmorInventory());
@@ -125,32 +136,44 @@ class InventoryManager{
 		$this->onCurrentWindowRemove();
 		$this->add($this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % self::RESERVED_WINDOW_ID_RANGE_START), $inventory);
 
-		$pk = $this->createContainerOpen($this->lastInventoryNetworkId, $inventory);
-		if($pk !== null){
-			$this->session->sendDataPacket($pk);
-			$this->syncContents($inventory);
-		}else{
-			throw new \UnsupportedOperationException("Unsupported inventory type");
+		foreach($this->containerOpenCallbacks as $callback){
+			$pks = $callback($this->lastInventoryNetworkId, $inventory);
+			if($pks !== null){
+				foreach($pks as $pk){
+					$this->session->sendDataPacket($pk);
+				}
+				$this->syncContents($inventory);
+			}
+			return;
 		}
+		throw new \UnsupportedOperationException("Unsupported inventory type");
 	}
 
-	protected function createContainerOpen(int $id, Inventory $inv) : ?ContainerOpenPacket{
-		//TODO: allow plugins to inject this
+	/** @phpstan-return ObjectSet<ContainerOpenClosure> */
+	public function getContainerOpenCallbacks() : ObjectSet{ return $this->containerOpenCallbacks; }
+
+	/**
+	 * @return ClientboundPacket[]|null
+	 * @phpstan-return list<ClientboundPacket>|null
+	 */
+	protected static function createContainerOpen(int $id, Inventory $inv) : ?array{
+		//TODO: we should be using some kind of tagging system to identify the types. Instanceof is flaky especially
+		//if the class isn't final, not to mention being inflexible.
 		if($inv instanceof BlockInventory){
 			switch(true){
 				case $inv instanceof FurnaceInventory:
 					//TODO: specialized furnace types
-					return ContainerOpenPacket::blockInvVec3($id, WindowTypes::FURNACE, $inv->getHolder());
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::FURNACE, $inv->getHolder())];
 				case $inv instanceof EnchantInventory:
-					return ContainerOpenPacket::blockInvVec3($id, WindowTypes::ENCHANTMENT, $inv->getHolder());
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::ENCHANTMENT, $inv->getHolder())];
 				case $inv instanceof BrewingStandInventory:
-					return ContainerOpenPacket::blockInvVec3($id, WindowTypes::BREWING_STAND, $inv->getHolder());
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::BREWING_STAND, $inv->getHolder())];
 				case $inv instanceof AnvilInventory:
-					return ContainerOpenPacket::blockInvVec3($id, WindowTypes::ANVIL, $inv->getHolder());
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::ANVIL, $inv->getHolder())];
 				case $inv instanceof HopperInventory:
-					return ContainerOpenPacket::blockInvVec3($id, WindowTypes::HOPPER, $inv->getHolder());
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::HOPPER, $inv->getHolder())];
 				default:
-					return ContainerOpenPacket::blockInvVec3($id, WindowTypes::CONTAINER, $inv->getHolder());
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::CONTAINER, $inv->getHolder())];
 			}
 		}
 		return null;
