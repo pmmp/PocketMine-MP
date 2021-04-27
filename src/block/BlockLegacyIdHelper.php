@@ -178,6 +178,24 @@ final class BlockLegacyIdHelper{
 		throw new AssumptionFailedError("Switch should cover all wood types");
 	}
 
+	public static function getStrippedLogIdentifier(TreeType $treeType) : BlockIdentifier{
+		switch($treeType->id()){
+			case TreeType::OAK()->id():
+				return new BlockIdentifier(Ids::STRIPPED_OAK_LOG, 0);
+			case TreeType::SPRUCE()->id():
+				return new BlockIdentifier(Ids::STRIPPED_SPRUCE_LOG, 0);
+			case TreeType::BIRCH()->id():
+				return new BlockIdentifier(Ids::STRIPPED_BIRCH_LOG, 0);
+			case TreeType::JUNGLE()->id():
+				return new BlockIdentifier(Ids::STRIPPED_JUNGLE_LOG, 0);
+			case TreeType::ACACIA()->id():
+				return new BlockIdentifier(Ids::STRIPPED_ACACIA_LOG, 0);
+			case TreeType::DARK_OAK()->id():
+				return new BlockIdentifier(Ids::STRIPPED_DARK_OAK_LOG, 0);
+		}
+		throw new AssumptionFailedError("Switch should cover all wood types");
+	}
+
 	public static function getGlazedTerracottaIdentifier(DyeColor $color) : BlockIdentifier{
 		switch($color->id()){
 			case DyeColor::WHITE()->id():

@@ -607,6 +607,12 @@ use function assert;
  * @method static StonePressurePlate STONE_PRESSURE_PLATE()
  * @method static Slab STONE_SLAB()
  * @method static Stair STONE_STAIRS()
+ * @method static Log STRIPPED_ACACIA_LOG()
+ * @method static Log STRIPPED_BIRCH_LOG()
+ * @method static Log STRIPPED_DARK_OAK_LOG()
+ * @method static Log STRIPPED_JUNGLE_LOG()
+ * @method static Log STRIPPED_OAK_LOG()
+ * @method static Log STRIPPED_SPRUCE_LOG()
  * @method static Sugarcane SUGARCANE()
  * @method static DoublePlant SUNFLOWER()
  * @method static TallGrass TALL_GRASS()
@@ -1241,6 +1247,12 @@ final class VanillaBlocks{
 		self::register("stone_pressure_plate", $factory->get(70, 0));
 		self::register("stone_slab", $factory->get(421, 2));
 		self::register("stone_stairs", $factory->get(435, 0));
+		self::register("stripped_acacia_log", $factory->get(263, 0));
+		self::register("stripped_birch_log", $factory->get(261, 0));
+		self::register("stripped_dark_oak_log", $factory->get(264, 0));
+		self::register("stripped_jungle_log", $factory->get(262, 0));
+		self::register("stripped_oak_log", $factory->get(265, 0));
+		self::register("stripped_spruce_log", $factory->get(260, 0));
 		self::register("sugarcane", $factory->get(83, 0));
 		self::register("sunflower", $factory->get(175, 0));
 		self::register("tall_grass", $factory->get(31, 1));
