@@ -24,8 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Furnace as TileFurnace;
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\Facing;
@@ -34,7 +33,9 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Furnace extends Opaque{
-	use HorizontalFacingTrait;
+	use NormalHorizontalFacingInMetadataTrait {
+		readStateFromData as readFacingStateFromData;
+	}
 
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
@@ -50,17 +51,9 @@ class Furnace extends Opaque{
 		return $this->lit ? $this->idInfo->getSecondId() : parent::getId();
 	}
 
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeHorizontalFacing($this->facing);
-	}
-
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
+		$this->readFacingStateFromData($id, $stateMeta);
 		$this->lit = $id === $this->idInfo->getSecondId();
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
 	}
 
 	public function getLightLevel() : int{
