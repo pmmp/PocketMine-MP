@@ -35,7 +35,7 @@ use function count;
 
 class Vine extends Flowable{
 
-	/** @var bool[] */
+	/** @var int[] */
 	protected $faces = [];
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
@@ -63,7 +63,7 @@ class Vine extends Flowable{
 
 	private function setFaceFromMeta(int $meta, int $flag, int $face) : void{
 		if(($meta & $flag) !== 0){
-			$this->faces[$face] = true;
+			$this->faces[$face] = $face;
 		}else{
 			unset($this->faces[$face]);
 		}
@@ -96,7 +96,7 @@ class Vine extends Flowable{
 		}
 
 		$this->faces = $blockReplace instanceof Vine ? $blockReplace->faces : [];
-		$this->faces[Facing::opposite($face)] = true;
+		$this->faces[Facing::opposite($face)] = Facing::opposite($face);
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -108,7 +108,7 @@ class Vine extends Flowable{
 		//check which faces have corresponding vines in the block above
 		$supportedFaces = $up instanceof Vine ? array_intersect_key($this->faces, $up->faces) : [];
 
-		foreach($this->faces as $face => $bool){
+		foreach($this->faces as $face){
 			if(!isset($supportedFaces[$face]) and !$this->getSide($face)->isSolid()){
 				unset($this->faces[$face]);
 				$changed = true;
