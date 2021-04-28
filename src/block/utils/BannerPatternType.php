@@ -70,59 +70,48 @@ use pocketmine\utils\EnumTrait;
  * @method static BannerPatternType TRIANGLE_TOP()
  */
 final class BannerPatternType{
-	use EnumTrait {
-		__construct as Enum___construct;
-	}
+	use EnumTrait;
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("border", "bo"),
-			new self("bricks", "bri"),
-			new self("circle", "mc"),
-			new self("creeper", "cre"),
-			new self("cross", "cr"),
-			new self("curly_border", "cbo"),
-			new self("diagonal_left", "lud"),
-			new self("diagonal_right", "rd"),
-			new self("diagonal_up_left", "ld"),
-			new self("diagonal_up_right", "rud"),
-			new self("flower", "flo"),
-			new self("gradient", "gra"),
-			new self("gradient_up", "gru"),
-			new self("half_horizontal", "hh"),
-			new self("half_horizontal_bottom", "hhb"),
-			new self("half_vertical", "vh"),
-			new self("half_vertical_right", "vhr"),
-			new self("mojang", "moj"),
-			new self("rhombus", "mr"),
-			new self("skull", "sku"),
-			new self("small_stripes", "ss"),
-			new self("square_bottom_left", "bl"),
-			new self("square_bottom_right", "br"),
-			new self("square_top_left", "tl"),
-			new self("square_top_right", "tr"),
-			new self("straight_cross", "sc"),
-			new self("stripe_bottom", "bs"),
-			new self("stripe_center", "cs"),
-			new self("stripe_downleft", "dls"),
-			new self("stripe_downright", "drs"),
-			new self("stripe_left", "ls"),
-			new self("stripe_middle", "ms"),
-			new self("stripe_right", "rs"),
-			new self("stripe_top", "ts"),
-			new self("triangle_bottom", "bt"),
-			new self("triangle_top", "tt"),
-			new self("triangles_bottom", "bts"),
-			new self("triangles_top", "tts")
+			new self("border"),
+			new self("bricks"),
+			new self("circle"),
+			new self("creeper"),
+			new self("cross"),
+			new self("curly_border"),
+			new self("diagonal_left"),
+			new self("diagonal_right"),
+			new self("diagonal_up_left"),
+			new self("diagonal_up_right"),
+			new self("flower"),
+			new self("gradient"),
+			new self("gradient_up"),
+			new self("half_horizontal"),
+			new self("half_horizontal_bottom"),
+			new self("half_vertical"),
+			new self("half_vertical_right"),
+			new self("mojang"),
+			new self("rhombus"),
+			new self("skull"),
+			new self("small_stripes"),
+			new self("square_bottom_left"),
+			new self("square_bottom_right"),
+			new self("square_top_left"),
+			new self("square_top_right"),
+			new self("straight_cross"),
+			new self("stripe_bottom"),
+			new self("stripe_center"),
+			new self("stripe_downleft"),
+			new self("stripe_downright"),
+			new self("stripe_left"),
+			new self("stripe_middle"),
+			new self("stripe_right"),
+			new self("stripe_top"),
+			new self("triangle_bottom"),
+			new self("triangle_top"),
+			new self("triangles_bottom"),
+			new self("triangles_top")
 		);
 	}
-
-	private string $patternId;
-
-	private function __construct(string $name, string $patternId){
-		$this->Enum___construct($name);
-		$this->patternId = $patternId;
-	}
-
-	public function getPatternId() : string{ return $this->patternId; }
 }

@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\block\utils\BannerPatternLayer;
-use pocketmine\block\utils\BannerPatternType;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\data\bedrock\BannerPatternTypeIdMap;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -69,23 +69,30 @@ class Banner extends Spawnable{
 			$this->baseColor = DyeColor::BLACK(); //TODO: this should be an error
 		}
 
+		$patternTypeIdMap = BannerPatternTypeIdMap::getInstance();
+
 		$patterns = $nbt->getListTag(self::TAG_PATTERNS);
 		if($patterns !== null){
 			/** @var CompoundTag $pattern */
 			foreach($patterns as $pattern){
 				$patternColor = $colorIdMap->fromInvertedId($pattern->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK(); //TODO: missing pattern colour should be an error
-				$this->patterns[] = new BannerPatternLayer(BannerPatternType::fromString($pattern->getString(self::TAG_PATTERN_NAME)), $patternColor);
+				$patternType = $patternTypeIdMap->fromId($pattern->getString(self::TAG_PATTERN_NAME));
+				if($patternType === null){
+					continue; //TODO: this should be an error, but right now we don't have the setup to deal with it
+				}
+				$this->patterns[] = new BannerPatternLayer($patternType, $patternColor);
 			}
 		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$colorIdMap = DyeColorIdMap::getInstance();
+		$patternIdMap = BannerPatternTypeIdMap::getInstance();
 		$nbt->setInt(self::TAG_BASE, $colorIdMap->toInvertedId($this->baseColor));
 		$patterns = new ListTag();
 		foreach($this->patterns as $pattern){
 			$patterns->push(CompoundTag::create()
-				->setString(self::TAG_PATTERN_NAME, $pattern->getType()->getPatternId())
+				->setString(self::TAG_PATTERN_NAME, $patternIdMap->toId($pattern->getType()))
 				->setInt(self::TAG_PATTERN_COLOR, $colorIdMap->toInvertedId($pattern->getColor()))
 			);
 		}
@@ -94,11 +101,12 @@ class Banner extends Spawnable{
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$colorIdMap = DyeColorIdMap::getInstance();
+		$patternIdMap = BannerPatternTypeIdMap::getInstance();
 		$nbt->setInt(self::TAG_BASE, $colorIdMap->toInvertedId($this->baseColor));
 		$patterns = new ListTag();
 		foreach($this->patterns as $pattern){
 			$patterns->push(CompoundTag::create()
-				->setString(self::TAG_PATTERN_NAME, $pattern->getType()->getPatternId())
+				->setString(self::TAG_PATTERN_NAME, $patternIdMap->toId($pattern->getType()))
 				->setInt(self::TAG_PATTERN_COLOR, $colorIdMap->toInvertedId($pattern->getColor()))
 			);
 		}
