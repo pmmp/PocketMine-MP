@@ -25,7 +25,8 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\tile\Banner as TileBanner;
-use pocketmine\block\utils\BannerPattern;
+use pocketmine\block\utils\BannerPatternLayer;
+use pocketmine\block\utils\BannerPatternType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\nbt\tag\CompoundTag;
@@ -41,8 +42,8 @@ class Banner extends ItemBlockWallOrFloor{
 	private $color;
 
 	/**
-	 * @var BannerPattern[]
-	 * @phpstan-var list<BannerPattern>
+	 * @var BannerPatternLayer[]
+	 * @phpstan-var list<BannerPatternLayer>
 	 */
 	private $patterns = [];
 
@@ -70,16 +71,17 @@ class Banner extends ItemBlockWallOrFloor{
 	}
 
 	/**
-	 * @return BannerPattern[]
-	 * @phpstan-return list<BannerPattern>
+	 * @return BannerPatternLayer[]
+	 * @phpstan-return list<BannerPatternLayer>
 	 */
 	public function getPatterns() : array{
 		return $this->patterns;
 	}
 
 	/**
-	 * @param BannerPattern[] $patterns
-	 * @phpstan-param list<BannerPattern> $patterns
+	 * @param BannerPatternLayer[]             $patterns
+	 *
+	 * @phpstan-param list<BannerPatternLayer> $patterns
 	 *
 	 * @return $this
 	 */
@@ -102,7 +104,7 @@ class Banner extends ItemBlockWallOrFloor{
 		if($patterns !== null){
 			/** @var CompoundTag $t */
 			foreach($patterns as $t){
-				$this->patterns[] = new BannerPattern($t->getString(self::TAG_PATTERN_NAME), $colorIdMap->fromInvertedId($t->getInt(self::TAG_PATTERN_COLOR)));
+				$this->patterns[] = new BannerPatternLayer(BannerPatternType::fromString($t->getString(self::TAG_PATTERN_NAME)), $colorIdMap->fromInvertedId($t->getInt(self::TAG_PATTERN_COLOR)));
 			}
 		}
 	}
@@ -115,7 +117,7 @@ class Banner extends ItemBlockWallOrFloor{
 			$colorIdMap = DyeColorIdMap::getInstance();
 			foreach($this->patterns as $pattern){
 				$patterns->push(CompoundTag::create()
-					->setString(self::TAG_PATTERN_NAME, $pattern->getId())
+					->setString(self::TAG_PATTERN_NAME, $pattern->getType()->getPatternId())
 					->setInt(self::TAG_PATTERN_COLOR, $colorIdMap->toInvertedId($pattern->getColor()))
 				);
 			}

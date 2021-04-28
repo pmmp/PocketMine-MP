@@ -23,7 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use pocketmine\block\utils\BannerPattern;
+use pocketmine\block\utils\BannerPatternLayer;
+use pocketmine\block\utils\BannerPatternType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\math\Vector3;
@@ -47,8 +48,8 @@ class Banner extends Spawnable{
 	private $baseColor;
 
 	/**
-	 * @var BannerPattern[]
-	 * @phpstan-var list<BannerPattern>
+	 * @var BannerPatternLayer[]
+	 * @phpstan-var list<BannerPatternLayer>
 	 */
 	private $patterns = [];
 
@@ -67,7 +68,7 @@ class Banner extends Spawnable{
 		if($patterns !== null){
 			/** @var CompoundTag $pattern */
 			foreach($patterns as $pattern){
-				$this->patterns[] = new BannerPattern($pattern->getString(self::TAG_PATTERN_NAME), $colorIdMap->fromInvertedId($pattern->getInt(self::TAG_PATTERN_COLOR)));
+				$this->patterns[] = new BannerPatternLayer(BannerPatternType::fromString($pattern->getString(self::TAG_PATTERN_NAME)), $colorIdMap->fromInvertedId($pattern->getInt(self::TAG_PATTERN_COLOR)));
 			}
 		}
 	}
@@ -78,7 +79,7 @@ class Banner extends Spawnable{
 		$patterns = new ListTag();
 		foreach($this->patterns as $pattern){
 			$patterns->push(CompoundTag::create()
-				->setString(self::TAG_PATTERN_NAME, $pattern->getId())
+				->setString(self::TAG_PATTERN_NAME, $pattern->getType()->getPatternId())
 				->setInt(self::TAG_PATTERN_COLOR, $colorIdMap->toInvertedId($pattern->getColor()))
 			);
 		}
@@ -91,7 +92,7 @@ class Banner extends Spawnable{
 		$patterns = new ListTag();
 		foreach($this->patterns as $pattern){
 			$patterns->push(CompoundTag::create()
-				->setString(self::TAG_PATTERN_NAME, $pattern->getId())
+				->setString(self::TAG_PATTERN_NAME, $pattern->getType()->getPatternId())
 				->setInt(self::TAG_PATTERN_COLOR, $colorIdMap->toInvertedId($pattern->getColor()))
 			);
 		}
@@ -113,16 +114,17 @@ class Banner extends Spawnable{
 	}
 
 	/**
-	 * @return BannerPattern[]
-	 * @phpstan-return list<BannerPattern>
+	 * @return BannerPatternLayer[]
+	 * @phpstan-return list<BannerPatternLayer>
 	 */
 	public function getPatterns() : array{
 		return $this->patterns;
 	}
 
 	/**
-	 * @param BannerPattern[] $patterns
-	 * @phpstan-param list<BannerPattern> $patterns
+	 * @param BannerPatternLayer[]             $patterns
+	 *
+	 * @phpstan-param list<BannerPatternLayer> $patterns
 	 */
 	public function setPatterns(array $patterns) : void{
 		$this->patterns = $patterns;
