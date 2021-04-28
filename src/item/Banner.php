@@ -104,7 +104,8 @@ class Banner extends ItemBlockWallOrFloor{
 		if($patterns !== null){
 			/** @var CompoundTag $t */
 			foreach($patterns as $t){
-				$this->patterns[] = new BannerPatternLayer(BannerPatternType::fromString($t->getString(self::TAG_PATTERN_NAME)), $colorIdMap->fromInvertedId($t->getInt(self::TAG_PATTERN_COLOR)));
+				$patternColor = $colorIdMap->fromInvertedId($t->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK(); //TODO: missing pattern colour should be an error
+				$this->patterns[] = new BannerPatternLayer(BannerPatternType::fromString($t->getString(self::TAG_PATTERN_NAME)), $patternColor);
 			}
 		}
 	}

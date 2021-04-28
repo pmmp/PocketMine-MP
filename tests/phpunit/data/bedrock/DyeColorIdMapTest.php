@@ -32,7 +32,7 @@ class DyeColorIdMapTest extends TestCase{
 		foreach(DyeColor::getAll() as $color){
 			$id = DyeColorIdMap::getInstance()->toId($color);
 			$color2 = DyeColorIdMap::getInstance()->fromId($id);
-			self::assertTrue($color->equals($color2));
+			self::assertTrue($color2 !== null && $color->equals($color2));
 		}
 	}
 }

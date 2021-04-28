@@ -60,15 +60,21 @@ class Banner extends Spawnable{
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		$colorIdMap = DyeColorIdMap::getInstance();
-		if(($baseColorTag = $nbt->getTag(self::TAG_BASE)) instanceof IntTag){
-			$this->baseColor = $colorIdMap->fromInvertedId($baseColorTag->getValue());
+		if(
+			($baseColorTag = $nbt->getTag(self::TAG_BASE)) instanceof IntTag &&
+			($baseColor = $colorIdMap->fromInvertedId($baseColorTag->getValue())) !== null
+		){
+			$this->baseColor = $baseColor;
+		}else{
+			$this->baseColor = DyeColor::BLACK(); //TODO: this should be an error
 		}
 
 		$patterns = $nbt->getListTag(self::TAG_PATTERNS);
 		if($patterns !== null){
 			/** @var CompoundTag $pattern */
 			foreach($patterns as $pattern){
-				$this->patterns[] = new BannerPatternLayer(BannerPatternType::fromString($pattern->getString(self::TAG_PATTERN_NAME)), $colorIdMap->fromInvertedId($pattern->getInt(self::TAG_PATTERN_COLOR)));
+				$patternColor = $colorIdMap->fromInvertedId($pattern->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK(); //TODO: missing pattern colour should be an error
+				$this->patterns[] = new BannerPatternLayer(BannerPatternType::fromString($pattern->getString(self::TAG_PATTERN_NAME)), $patternColor);
 			}
 		}
 	}
