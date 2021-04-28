@@ -1,0 +1,15 @@
+version: 2
+updates:
+- package-ecosystem: composer
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "10:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: adhocore/json-comment
+    versions:
+    - 1.1.0
+  - dependency-name: phpstan/phpstan
+    versions:
+    - 0.12.73
