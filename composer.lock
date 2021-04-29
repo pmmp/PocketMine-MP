@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "13e4c2cba14b415edf7c6ba4132211b6",
+    "content-hash": "a992f72444e9899590afccf17377ac70",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -699,21 +699,21 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "dev-master",
+            "version": "dev-per-session-channels",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "bd8b75396e4585116838435839f7ccd51862663d"
+                "reference": "9703c553662d8cbc65e857c6ad5c99aa48eca918"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/bd8b75396e4585116838435839f7ccd51862663d",
-                "reference": "bd8b75396e4585116838435839f7ccd51862663d",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/9703c553662d8cbc65e857c6ad5c99aa48eca918",
+                "reference": "9703c553662d8cbc65e857c6ad5c99aa48eca918",
                 "shasum": ""
             },
             "require": {
                 "ext-sockets": "*",
-                "php": "^7.2 || ^8.0",
+                "php": "^7.4 || ^8.0",
                 "php-64bit": "*",
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "dev-master",
@@ -736,9 +736,9 @@
             "description": "A RakNet server implementation written in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/master"
+                "source": "https://github.com/pmmp/RakLib/tree/per-session-channels"
             },
-            "time": "2021-04-08T14:24:31+00:00"
+            "time": "2021-04-29T00:22:20+00:00"
         },
         {
             "name": "pocketmine/snooze",

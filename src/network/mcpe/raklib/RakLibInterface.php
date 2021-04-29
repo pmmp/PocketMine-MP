@@ -32,24 +32,17 @@ use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\StandardPacketBroadcaster;
 use pocketmine\network\Network;
-use pocketmine\network\PacketHandlingException;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
-use pocketmine\utils\Filesystem;
-use pocketmine\utils\Utils;
-use raklib\protocol\EncapsulatedPacket;
-use raklib\protocol\PacketReliability;
 use raklib\server\ipc\RakLibToUserThreadMessageReceiver;
 use raklib\server\ipc\UserToRakLibThreadMessageSender;
 use raklib\server\ServerEventListener;
+use raklib\server\SessionEventListener;
 use raklib\utils\InternetAddress;
 use function addcslashes;
-use function bin2hex;
 use function implode;
 use function mt_rand;
-use function random_bytes;
 use function rtrim;
-use function substr;
 use const PTHREADS_INHERIT_CONSTANTS;
 
 class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
@@ -59,7 +52,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	 */
 	private const MCPE_RAKNET_PROTOCOL_VERSION = 10;
 
-	private const MCPE_RAKNET_PACKET_ID = "\xfe";
+	public const MCPE_RAKNET_PACKET_ID = "\xfe";
 
 	/** @var Server */
 	private $server;
@@ -72,9 +65,6 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	/** @var RakLibServer */
 	private $rakLib;
-
-	/** @var NetworkSession[] */
-	private $sessions = [];
 
 	/** @var RakLibToUserThreadMessageReceiver */
 	private $eventReceiver;
@@ -107,10 +97,12 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$this->sleeper
 		);
 		$this->eventReceiver = new RakLibToUserThreadMessageReceiver(
-			new PthreadsChannelReader($threadToMainBuffer)
+			new PthreadsChannelReader($threadToMainBuffer),
+			new PthreadsChannelReaderDeserializer()
 		);
 		$this->interface = new UserToRakLibThreadMessageSender(
-			new PthreadsChannelWriter($mainToThreadBuffer)
+			new PthreadsChannelWriter($mainToThreadBuffer),
+			new PthreadsChannelFactory($this->sleeper)
 		);
 
 		$this->broadcaster = new StandardPacketBroadcaster($this->server);
@@ -118,7 +110,9 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	public function start() : void{
 		$this->server->getTickSleeper()->addNotifier($this->sleeper, function() : void{
-			while($this->eventReceiver->handle($this));
+			foreach($this->eventReceiver->handle($this) as $unused){
+				//NOOP
+			}
 		});
 		$this->server->getLogger()->debug("Waiting for RakLib to start...");
 		$this->rakLib->startAndWait(PTHREADS_INHERIT_CONSTANTS); //HACK: MainLogger needs constants for exception logging
@@ -139,66 +133,24 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		}
 	}
 
-	public function onClientDisconnect(int $sessionId, string $reason) : void{
-		if(isset($this->sessions[$sessionId])){
-			$session = $this->sessions[$sessionId];
-			unset($this->sessions[$sessionId]);
-			$session->onClientDisconnect($reason);
-		}
-	}
-
-	public function close(int $sessionId) : void{
-		if(isset($this->sessions[$sessionId])){
-			unset($this->sessions[$sessionId]);
-			$this->interface->closeSession($sessionId);
-		}
-	}
-
 	public function shutdown() : void{
 		$this->server->getTickSleeper()->removeNotifier($this->sleeper);
 		$this->rakLib->quit();
 	}
 
-	public function onClientConnect(int $sessionId, string $address, int $port, int $clientID) : void{
+	public function onClientConnect(int $sessionId, string $address, int $port, int $clientID) : SessionEventListener{
+		$sessionInterface = $this->interface->openSessionChannel($sessionId);
 		$session = new NetworkSession(
 			$this->server,
 			$this->network->getSessionManager(),
 			PacketPool::getInstance(),
-			new RakLibPacketSender($sessionId, $this),
+			new RakLibPacketSender($sessionInterface),
 			$this->broadcaster,
 			ZlibCompressor::getInstance(), //TODO: this shouldn't be hardcoded, but we might need the RakNet protocol version to select it
 			$address,
 			$port
 		);
-		$this->sessions[$sessionId] = $session;
-	}
-
-	public function onPacketReceive(int $sessionId, string $packet) : void{
-		if(isset($this->sessions[$sessionId])){
-			if($packet === "" or $packet[0] !== self::MCPE_RAKNET_PACKET_ID){
-				return;
-			}
-			//get this now for blocking in case the player was closed before the exception was raised
-			$session = $this->sessions[$sessionId];
-			$address = $session->getIp();
-			$buf = substr($packet, 1);
-			try{
-				$session->handleEncoded($buf);
-			}catch(PacketHandlingException $e){
-				$errorId = bin2hex(random_bytes(6));
-
-				$logger = $session->getLogger();
-				$logger->error("Bad packet (error ID $errorId): " . $e->getMessage());
-
-				//intentionally doesn't use logException, we don't want spammy packet error traces to appear in release mode
-				$logger->debug("Origin: " . Filesystem::cleanPath($e->getFile()) . "(" . $e->getLine() . ")");
-				foreach(Utils::printableTrace($e->getTrace()) as $frame){
-					$logger->debug($frame);
-				}
-				$session->disconnect("Packet processing error (Error ID: $errorId)");
-				$this->interface->blockAddress($address, 5);
-			}
-		}
+		return new RakLibIpcSessionEventListener($session);
 	}
 
 	public function blockAddress(string $address, int $timeout = 300) : void{
@@ -219,10 +171,6 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	public function addRawPacketFilter(string $regex) : void{
 		$this->interface->addRawPacketFilter($regex);
-	}
-
-	public function onPacketAck(int $sessionId, int $identifierACK) : void{
-
 	}
 
 	public function setName(string $name) : void{
@@ -253,22 +201,5 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	public function onBandwidthStatsUpdate(int $bytesSentDiff, int $bytesReceivedDiff) : void{
 		$this->network->getBandwidthTracker()->add($bytesSentDiff, $bytesReceivedDiff);
-	}
-
-	public function putPacket(int $sessionId, string $payload, bool $immediate = true) : void{
-		if(isset($this->sessions[$sessionId])){
-			$pk = new EncapsulatedPacket();
-			$pk->buffer = self::MCPE_RAKNET_PACKET_ID . $payload;
-			$pk->reliability = PacketReliability::RELIABLE_ORDERED;
-			$pk->orderChannel = 0;
-
-			$this->interface->sendEncapsulated($sessionId, $pk, $immediate);
-		}
-	}
-
-	public function onPingMeasure(int $sessionId, int $pingMS) : void{
-		if(isset($this->sessions[$sessionId])){
-			$this->sessions[$sessionId]->updatePing($pingMS);
-		}
 	}
 }

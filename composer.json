@@ -43,7 +43,7 @@
       "pocketmine/log-pthreads": "dev-master",
       "pocketmine/math": "dev-master",
       "pocketmine/nbt": "dev-master",
-      "pocketmine/raklib": "dev-master",
+      "pocketmine/raklib": "dev-per-session-channels",
       "pocketmine/snooze": "^0.1.0",
       "pocketmine/spl": "dev-master",
       "ramsey/uuid": "^4.1",
