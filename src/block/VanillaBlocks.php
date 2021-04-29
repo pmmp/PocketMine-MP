@@ -438,6 +438,7 @@ use function assert;
  * @method static Glass LIME_STAINED_GLASS()
  * @method static GlassPane LIME_STAINED_GLASS_PANE()
  * @method static LitPumpkin LIT_PUMPKIN()
+ * @method static Loom LOOM()
  * @method static GlazedTerracotta MAGENTA_GLAZED_TERRACOTTA()
  * @method static HardenedClay MAGENTA_STAINED_CLAY()
  * @method static Glass MAGENTA_STAINED_GLASS()
@@ -1078,6 +1079,7 @@ final class VanillaBlocks{
 		self::register("lime_stained_glass", $factory->get(241, 5));
 		self::register("lime_stained_glass_pane", $factory->get(160, 5));
 		self::register("lit_pumpkin", $factory->get(91, 0));
+		self::register("loom", $factory->get(459, 0));
 		self::register("magenta_glazed_terracotta", $factory->get(222, 2));
 		self::register("magenta_stained_clay", $factory->get(159, 2));
 		self::register("magenta_stained_glass", $factory->get(241, 2));

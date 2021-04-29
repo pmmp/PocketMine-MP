@@ -222,6 +222,7 @@ class BlockFactory{
 		$this->register(new LapisOre(new BID(Ids::LAPIS_ORE, 0), "Lapis Lazuli Ore"));
 		$this->register(new Lava(new BIDFlattened(Ids::FLOWING_LAVA, Ids::STILL_LAVA, 0), "Lava"));
 		$this->register(new Lever(new BID(Ids::LEVER, 0), "Lever"));
+		$this->register(new Loom(new BID(Ids::LOOM, 0), "Loom", new BlockBreakInfo(2.5, BlockToolType::AXE)));
 		$this->register(new Magma(new BID(Ids::MAGMA, 0), "Magma Block"));
 		$this->register(new Melon(new BID(Ids::MELON_BLOCK, 0), "Melon Block"));
 		$this->register(new MelonStem(new BID(Ids::MELON_STEM, 0, ItemIds::MELON_SEEDS), "Melon Stem"));

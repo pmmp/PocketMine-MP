@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\convert;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\EnchantInventory;
+use pocketmine\block\inventory\LoomInventory;
 use pocketmine\crafting\CraftingGrid;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
@@ -266,7 +267,9 @@ class TypeConverter{
 							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ANVIL, $current,
 								function(Inventory $i) : bool{ return $i instanceof AnvilInventory; }) ??
 							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ENCHANTING_TABLE, $current,
-								function(Inventory $i) : bool{ return $i instanceof EnchantInventory; });
+								function(Inventory $i) : bool{ return $i instanceof EnchantInventory; }) ??
+							$this->mapUIInventory($pSlot, UIInventorySlotOffset::LOOM, $current,
+								fn(Inventory $i) => $i instanceof LoomInventory);
 					}
 					if($mapped === null){
 						throw new \UnexpectedValueException("Unmatched UI inventory slot offset $pSlot");

@@ -29,6 +29,7 @@ use pocketmine\block\inventory\BrewingStandInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
+use pocketmine\block\inventory\LoomInventory;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
@@ -161,6 +162,8 @@ class InventoryManager{
 		//if the class isn't final, not to mention being inflexible.
 		if($inv instanceof BlockInventory){
 			switch(true){
+				case $inv instanceof LoomInventory:
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::LOOM, $inv->getHolder())];
 				case $inv instanceof FurnaceInventory:
 					//TODO: specialized furnace types
 					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::FURNACE, $inv->getHolder())];
