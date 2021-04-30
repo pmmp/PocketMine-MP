@@ -23,15 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
+use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\world\Position;
 use pocketmine\world\sound\EnderChestCloseSound;
 use pocketmine\world\sound\EnderChestOpenSound;
 use pocketmine\world\sound\Sound;
 
-class EnderChestInventory extends ChestInventory{
+class EnderChestInventory extends AnimatedBlockInventory{
 
 	public function __construct(){
-		parent::__construct(new Position(0, 0, 0, null));
+		parent::__construct(new Position(0, 0, 0, null), 27);
 	}
 
 	public function setHolderPosition(Position $pos) : void{
@@ -44,5 +45,12 @@ class EnderChestInventory extends ChestInventory{
 
 	protected function getCloseSound() : Sound{
 		return new EnderChestCloseSound();
+	}
+
+	protected function animateBlock(bool $isOpen) : void{
+		$holder = $this->getHolder();
+
+		//event ID is always 1 for a chest
+		$holder->getWorld()->broadcastPacketToViewers($holder, BlockEventPacket::create(1, $isOpen ? 1 : 0, $holder->asVector3()));
 	}
 }
