@@ -22,6 +22,7 @@ parameters:
 	level: 8
 	checkExplicitMixed: true
 	checkMissingCallableSignature: true
+	treatPhpDocTypesAsCertain: false
 	bootstrapFiles:
 		- tests/phpstan/bootstrap.php
 	scanDirectories:
