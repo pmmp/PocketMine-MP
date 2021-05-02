@@ -68,7 +68,10 @@ class SignPost extends Transparent{
 				$this->getLevelNonNull()->setBlock($blockReplace, BlockFactory::get(Block::WALL_SIGN, $this->meta), true);
 			}
 
-			Tile::createTile(Tile::SIGN, $this->getLevelNonNull(), TileSign::createNBT($this, $face, $item, $player));
+			$sign = Tile::createTile(Tile::SIGN, $this->getLevelNonNull(), TileSign::createNBT($this, $face, $item, $player));
+			if($player !== null && $sign instanceof TileSign){
+				$sign->setEditorEntityRuntimeId($player->getId());
+			}
 
 			return true;
 		}
