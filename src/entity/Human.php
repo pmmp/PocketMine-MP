@@ -33,6 +33,7 @@ use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
+use pocketmine\inventory\PlayerEnderInventory;
 use pocketmine\inventory\PlayerInventory;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
@@ -73,8 +74,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	/** @var PlayerInventory */
 	protected $inventory;
 
-	/** @var EnderChestInventory */
-	protected $enderChestInventory;
+	/** @var PlayerEnderInventory */
+	protected $enderInventory;
 
 	/** @var UuidInterface */
 	protected $uuid;
@@ -193,8 +194,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $this->inventory;
 	}
 
-	public function getEnderChestInventory() : EnderChestInventory{
-		return $this->enderChestInventory;
+	public function getEnderInventory() : PlayerEnderInventory{
+		return $this->enderInventory;
 	}
 
 	/**
@@ -233,7 +234,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 				}
 			}
 		));
-		$this->enderChestInventory = new EnderChestInventory();
+		$this->enderInventory = new PlayerEnderInventory($this);
 		$this->initHumanData($nbt);
 
 		$inventoryTag = $nbt->getListTag("Inventory");
@@ -263,7 +264,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		if($enderChestInventoryTag !== null){
 			/** @var CompoundTag $item */
 			foreach($enderChestInventoryTag as $i => $item){
-				$this->enderChestInventory->setItem($item->getByte("Slot"), Item::nbtDeserialize($item));
+				$this->enderInventory->setItem($item->getByte("Slot"), Item::nbtDeserialize($item));
 			}
 		}
 
@@ -382,13 +383,13 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$nbt->setInt("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
 		}
 
-		if($this->enderChestInventory !== null){
+		if($this->enderInventory !== null){
 			/** @var CompoundTag[] $items */
 			$items = [];
 
-			$slotCount = $this->enderChestInventory->getSize();
+			$slotCount = $this->enderInventory->getSize();
 			for($slot = 0; $slot < $slotCount; ++$slot){
-				$item = $this->enderChestInventory->getItem($slot);
+				$item = $this->enderInventory->getItem($slot);
 				if(!$item->isNull()){
 					$items[] = $item->nbtSerialize($slot);
 				}
@@ -466,13 +467,13 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	protected function onDispose() : void{
 		$this->inventory->removeAllViewers();
 		$this->inventory->getHeldItemIndexChangeListeners()->clear();
-		$this->enderChestInventory->removeAllViewers();
+		$this->enderInventory->removeAllViewers();
 		parent::onDispose();
 	}
 
 	protected function destroyCycles() : void{
 		$this->inventory = null;
-		$this->enderChestInventory = null;
+		$this->enderInventory = null;
 		$this->hungerManager = null;
 		$this->xpManager = null;
 		parent::destroyCycles();

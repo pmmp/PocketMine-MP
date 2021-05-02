@@ -23,20 +23,57 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
+use pocketmine\inventory\CallbackInventoryListener;
+use pocketmine\inventory\Inventory;
+use pocketmine\inventory\InventoryListener;
+use pocketmine\inventory\PlayerEnderInventory;
+use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
+use pocketmine\player\Player;
 use pocketmine\world\Position;
 use pocketmine\world\sound\EnderChestCloseSound;
 use pocketmine\world\sound\EnderChestOpenSound;
 use pocketmine\world\sound\Sound;
 
+/**
+ * EnderChestInventory is not a real inventory; it's just a gateway to the player's ender inventory.
+ */
 class EnderChestInventory extends AnimatedBlockInventory{
 
-	public function __construct(){
-		parent::__construct(new Position(0, 0, 0, null), 27);
+	private PlayerEnderInventory $inventory;
+	private InventoryListener $inventoryListener;
+
+	public function __construct(Position $holder, PlayerEnderInventory $inventory){
+		parent::__construct($holder, $inventory->getSize());
+		$this->inventory = $inventory;
+		$this->inventory->getListeners()->add($this->inventoryListener = new CallbackInventoryListener(
+			function(Inventory $unused, int $slot, Item $oldItem) : void{
+				$this->onSlotChange($slot, $oldItem);
+			},
+			function(Inventory $unused, array $oldContents) : void{
+				$this->onContentChange($oldContents);
+			}
+		));
 	}
 
-	public function setHolderPosition(Position $pos) : void{
-		$this->holder = $pos->asPosition();
+	public function getEnderInventory() : PlayerEnderInventory{
+		return $this->inventory;
+	}
+
+	public function getItem(int $index) : Item{
+		return $this->inventory->getItem($index);
+	}
+
+	public function setItem(int $index, Item $item) : void{
+		$this->inventory->setItem($index, $item);
+	}
+
+	public function getContents(bool $includeEmpty = false) : array{
+		return $this->inventory->getContents($includeEmpty);
+	}
+
+	public function setContents(array $items) : void{
+		$this->inventory->setContents($items);
 	}
 
 	protected function getOpenSound() : Sound{
@@ -52,5 +89,13 @@ class EnderChestInventory extends AnimatedBlockInventory{
 
 		//event ID is always 1 for a chest
 		$holder->getWorld()->broadcastPacketToViewers($holder, BlockEventPacket::create(1, $isOpen ? 1 : 0, $holder->asVector3()));
+	}
+
+	public function onClose(Player $who) : void{
+		parent::onClose($who);
+		if($who === $this->inventory->getHolder()){
+			$this->inventory->getListeners()->remove($this->inventoryListener);
+			$this->inventoryListener = CallbackInventoryListener::onAnyChange(static function() : void{}); //break cyclic reference
+		}
 	}
 }

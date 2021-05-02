@@ -117,13 +117,7 @@ abstract class BaseInventory implements Inventory{
 			$this->viewers[$id] = $viewer;
 		}
 
-		foreach($this->listeners as $listener){
-			$listener->onContentChange($this, $oldContents);
-		}
-
-		foreach($this->getViewers() as $viewer){
-			$viewer->getNetworkSession()->getInvManager()->syncContents($this);
-		}
+		$this->onContentChange($oldContents);
 	}
 
 	public function setItem(int $index, Item $item) : void{
@@ -176,6 +170,20 @@ abstract class BaseInventory implements Inventory{
 		}
 		foreach($this->viewers as $viewer){
 			$viewer->getNetworkSession()->getInvManager()->syncSlot($this, $index);
+		}
+	}
+
+	/**
+	 * @param Item[] $itemsBefore
+	 * @phpstan-param array<int, Item> $itemsBefore
+	 */
+	protected function onContentChange(array $itemsBefore) : void{
+		foreach($this->listeners as $listener){
+			$listener->onContentChange($this, $itemsBefore);
+		}
+
+		foreach($this->getViewers() as $viewer){
+			$viewer->getNetworkSession()->getInvManager()->syncContents($this);
 		}
 	}
 

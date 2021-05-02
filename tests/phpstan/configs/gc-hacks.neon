@@ -36,7 +36,7 @@ parameters:
 			path: ../../../src/entity/Entity.php
 
 		-
-			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$enderChestInventory \\(pocketmine\\\\block\\\\inventory\\\\EnderChestInventory\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$enderInventory \\(pocketmine\\\\inventory\\\\PlayerEnderInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/entity/Human.php
 
