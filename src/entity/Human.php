@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\block\inventory\EnderChestInventory;
 use pocketmine\entity\animation\TotemUseAnimation;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
