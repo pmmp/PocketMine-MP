@@ -102,7 +102,7 @@ trait InventoryHelpersTrait{
 
 	public function firstEmpty() : int{
 		foreach($this->getContents(true) as $i => $slot){
-			if($slot === null or $slot->isNull()){
+			if($slot->isNull()){
 				return $i;
 			}
 		}
