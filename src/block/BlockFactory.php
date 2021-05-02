@@ -50,7 +50,6 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\TreeType;
 use pocketmine\data\bedrock\CoralTypeIdMap;
-use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\item\ToolTier;
