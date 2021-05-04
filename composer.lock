@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "13e4c2cba14b415edf7c6ba4132211b6",
+    "content-hash": "74d082e62d264fb0579bf4da87ab6eaf",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -119,16 +119,16 @@
         },
         {
             "name": "fgrosse/phpasn1",
-            "version": "v2.2.0",
+            "version": "v2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fgrosse/PHPASN1.git",
-                "reference": "d1978f7abd580f3fc33561e7f71d4c12c7531fad"
+                "reference": "20299033c35f4300eb656e7e8e88cf52d1d6694e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fgrosse/PHPASN1/zipball/d1978f7abd580f3fc33561e7f71d4c12c7531fad",
-                "reference": "d1978f7abd580f3fc33561e7f71d4c12c7531fad",
+                "url": "https://api.github.com/repos/fgrosse/PHPASN1/zipball/20299033c35f4300eb656e7e8e88cf52d1d6694e",
+                "reference": "20299033c35f4300eb656e7e8e88cf52d1d6694e",
                 "shasum": ""
             },
             "require": {
@@ -188,9 +188,9 @@
             ],
             "support": {
                 "issues": "https://github.com/fgrosse/PHPASN1/issues",
-                "source": "https://github.com/fgrosse/PHPASN1/tree/v2.2.0"
+                "source": "https://github.com/fgrosse/PHPASN1/tree/v2.3.0"
             },
-            "time": "2020-10-11T16:28:18+00:00"
+            "time": "2021-04-24T19:01:55+00:00"
         },
         {
             "name": "mdanter/ecc",
@@ -415,12 +415,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ClassLoader.git",
-                "reference": "9fb3957cbfe5b37dae8952e072b35540fb4d9aa7"
+                "reference": "ba70cbabc53d6a36c5d179776e99bc059f21b4a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/9fb3957cbfe5b37dae8952e072b35540fb4d9aa7",
-                "reference": "9fb3957cbfe5b37dae8952e072b35540fb4d9aa7",
+                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/ba70cbabc53d6a36c5d179776e99bc059f21b4a9",
+                "reference": "ba70cbabc53d6a36c5d179776e99bc059f21b4a9",
                 "shasum": ""
             },
             "require": {
@@ -434,7 +434,8 @@
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
                 "phpstan/phpstan": "0.12.80",
-                "phpstan/phpstan-strict-rules": "^0.12.4"
+                "phpstan/phpstan-strict-rules": "^0.12.4",
+                "phpunit/phpunit": "^8.5 || ^9.5"
             },
             "type": "library",
             "autoload": {
@@ -451,7 +452,7 @@
                 "issues": "https://github.com/pmmp/ClassLoader/issues",
                 "source": "https://github.com/pmmp/ClassLoader/tree/master"
             },
-            "time": "2021-04-19T14:36:23+00:00"
+            "time": "2021-04-21T22:05:17+00:00"
         },
         {
             "name": "pocketmine/color",
@@ -493,23 +494,23 @@
         },
         {
             "name": "pocketmine/errorhandler",
-            "version": "0.2.0",
+            "version": "0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ErrorHandler.git",
-                "reference": "567fa056335efc295c4592c8aad72de66a2fcf34"
+                "reference": "ec742b209e8056bbe855069c4eff94c9734ea19b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ErrorHandler/zipball/567fa056335efc295c4592c8aad72de66a2fcf34",
-                "reference": "567fa056335efc295c4592c8aad72de66a2fcf34",
+                "url": "https://api.github.com/repos/pmmp/ErrorHandler/zipball/ec742b209e8056bbe855069c4eff94c9734ea19b",
+                "reference": "ec742b209e8056bbe855069c4eff94c9734ea19b",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2 || ^8.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.59",
+                "phpstan/phpstan": "0.12.75",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
@@ -525,9 +526,9 @@
             "description": "Utilities to handle nasty PHP E_* errors in a usable way",
             "support": {
                 "issues": "https://github.com/pmmp/ErrorHandler/issues",
-                "source": "https://github.com/pmmp/ErrorHandler/tree/0.2.0"
+                "source": "https://github.com/pmmp/ErrorHandler/tree/0.3.0"
             },
-            "time": "2020-12-11T01:06:33+00:00"
+            "time": "2021-02-12T18:56:22+00:00"
         },
         {
             "name": "pocketmine/log",
@@ -703,12 +704,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "bd8b75396e4585116838435839f7ccd51862663d"
+                "reference": "d7f30d8c7fb972ec6314c94292252996eef13a16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/bd8b75396e4585116838435839f7ccd51862663d",
-                "reference": "bd8b75396e4585116838435839f7ccd51862663d",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/d7f30d8c7fb972ec6314c94292252996eef13a16",
+                "reference": "d7f30d8c7fb972ec6314c94292252996eef13a16",
                 "shasum": ""
             },
             "require": {
@@ -738,7 +739,7 @@
                 "issues": "https://github.com/pmmp/RakLib/issues",
                 "source": "https://github.com/pmmp/RakLib/tree/master"
             },
-            "time": "2021-04-08T14:24:31+00:00"
+            "time": "2021-04-29T00:20:58+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -1400,16 +1401,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.10.4",
+            "version": "v4.10.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "c6d052fc58cb876152f89f532b95a8d7907e7f0e"
+                "reference": "4432ba399e47c66624bc73c8c0f811e5c109576f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/c6d052fc58cb876152f89f532b95a8d7907e7f0e",
-                "reference": "c6d052fc58cb876152f89f532b95a8d7907e7f0e",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/4432ba399e47c66624bc73c8c0f811e5c109576f",
+                "reference": "4432ba399e47c66624bc73c8c0f811e5c109576f",
                 "shasum": ""
             },
             "require": {
@@ -1450,9 +1451,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.10.4"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.10.5"
             },
-            "time": "2020-12-20T10:01:03+00:00"
+            "time": "2021-05-03T19:11:20+00:00"
         },
         {
             "name": "phar-io/manifest",
