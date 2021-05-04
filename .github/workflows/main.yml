@@ -278,4 +278,4 @@ jobs:
           tools: php-cs-fixer
 
       - name: Run PHP-CS-Fixer
-        run: php-cs-fixer fix --dry-run --diff --diff-format=udiff
+        run: php-cs-fixer fix --dry-run --diff
