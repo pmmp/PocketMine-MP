@@ -1,6 +1,11 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Strict comparison using \\!\\=\\= between 5 and 5 will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/block/Vine.php
+
+		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
 			count: 3
 			path: ../../../src/command/CommandReader.php

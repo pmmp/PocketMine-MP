@@ -50,7 +50,6 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\TreeType;
 use pocketmine\data\bedrock\CoralTypeIdMap;
-use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\item\ToolTier;
@@ -222,6 +221,7 @@ class BlockFactory{
 		$this->register(new LapisOre(new BID(Ids::LAPIS_ORE, 0), "Lapis Lazuli Ore"));
 		$this->register(new Lava(new BIDFlattened(Ids::FLOWING_LAVA, Ids::STILL_LAVA, 0), "Lava"));
 		$this->register(new Lever(new BID(Ids::LEVER, 0), "Lever"));
+		$this->register(new Loom(new BID(Ids::LOOM, 0), "Loom", new BlockBreakInfo(2.5, BlockToolType::AXE)));
 		$this->register(new Magma(new BID(Ids::MAGMA, 0), "Magma Block"));
 		$this->register(new Melon(new BID(Ids::MELON_BLOCK, 0), "Melon Block"));
 		$this->register(new MelonStem(new BID(Ids::MELON_STEM, 0, ItemIds::MELON_SEEDS), "Melon Stem"));
@@ -403,12 +403,13 @@ class BlockFactory{
 
 			//TODO: find a better way to deal with this split
 			$this->register(new Leaves(new BID($magicNumber >= 4 ? Ids::LEAVES2 : Ids::LEAVES, $magicNumber & 0x03), $name . " Leaves", $treeType));
-			$this->register(new Log(new BID($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, $magicNumber & 0x03), $name . " Log", $treeType));
+			$this->register(new Log(new BID($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, $magicNumber & 0x03), $name . " Log", $treeType, false));
 
-			$wood = new Wood(new BID(Ids::WOOD, $magicNumber), $name . " Wood", $treeType);
+			$wood = new Wood(new BID(Ids::WOOD, $magicNumber), $name . " Wood", $treeType, false);
 			$this->register($wood);
 			$this->remap($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, ($magicNumber & 0x03) | 0b1100, $wood);
 
+			$this->register(new Log(BlockLegacyIdHelper::getStrippedLogIdentifier($treeType), "Stripped " . $treeType->getDisplayName() . " Log", $treeType, true));
 			$this->register(new FenceGate(BlockLegacyIdHelper::getWoodenFenceIdentifier($treeType), $treeType->getDisplayName() . " Fence Gate"));
 			$this->register(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($treeType), $treeType->getDisplayName() . " Stairs"));
 			$this->register(new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($treeType), $treeType->getDisplayName() . " Door"));
@@ -437,18 +438,17 @@ class BlockFactory{
 			$this->register(new Opaque(new BID(Ids::RED_SANDSTONE, $variant), $prefix . "Red Sandstone", $sandstoneBreakInfo));
 		}
 
-		$colorIdMap = DyeColorIdMap::getInstance();
 		foreach(DyeColor::getAll() as $color){
 			$coloredName = function(string $name) use($color) : string{
 				return $color->getDisplayName() . " " . $name;
 			};
-			$this->register(new Glass(new BID(Ids::STAINED_GLASS, $colorIdMap->toId($color)), $coloredName("Stained Glass")));
-			$this->register(new GlassPane(new BID(Ids::STAINED_GLASS_PANE, $colorIdMap->toId($color)), $coloredName("Stained Glass Pane")));
 			$this->register(new GlazedTerracotta(BlockLegacyIdHelper::getGlazedTerracottaIdentifier($color), $coloredName("Glazed Terracotta")));
-			$this->register(new HardenedClay(new BID(Ids::STAINED_CLAY, $colorIdMap->toId($color)), $coloredName("Stained Clay")));
-			$this->register(new HardenedGlass(new BID(Ids::HARD_STAINED_GLASS, $colorIdMap->toId($color)), "Hardened " . $coloredName("Stained Glass")));
-			$this->register(new HardenedGlassPane(new BID(Ids::HARD_STAINED_GLASS_PANE, $colorIdMap->toId($color)), "Hardened " . $coloredName("Stained Glass Pane")));
 		}
+		$this->register(new StainedGlass(new BID(Ids::STAINED_GLASS, 0), "Stained Glass"));
+		$this->register(new StainedGlassPane(new BID(Ids::STAINED_GLASS_PANE, 0), "Stained Glass Pane"));
+		$this->register(new StainedHardenedClay(new BID(Ids::STAINED_CLAY, 0), "Stained Clay"));
+		$this->register(new StainedHardenedGlass(new BID(Ids::HARD_STAINED_GLASS, 0), "Stained Hardened Glass"));
+		$this->register(new StainedHardenedGlassPane(new BID(Ids::HARD_STAINED_GLASS_PANE, 0), "Stained Hardened Glass Pane"));
 		$this->register(new Carpet(new BID(Ids::CARPET, 0), "Carpet"));
 		$this->register(new Concrete(new BID(Ids::CONCRETE, 0), "Concrete"));
 		$this->register(new ConcretePowder(new BID(Ids::CONCRETE_POWDER, 0), "Concrete Powder"));

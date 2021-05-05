@@ -23,12 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
-use pocketmine\inventory\BaseInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
-use pocketmine\world\Position;
+use pocketmine\world\sound\Sound;
 
-class DoubleChestInventory extends ChestInventory implements InventoryHolder{
+class DoubleChestInventory extends AnimatedBlockInventory implements InventoryHolder{
 	/** @var ChestInventory */
 	private $left;
 	/** @var ChestInventory */
@@ -37,18 +36,11 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 	public function __construct(ChestInventory $left, ChestInventory $right){
 		$this->left = $left;
 		$this->right = $right;
-		BaseInventory::__construct($this->left->getSize() + $this->right->getSize());
+		parent::__construct($this->left->getHolder(), $this->left->getSize() + $this->right->getSize());
 	}
 
 	public function getInventory(){
 		return $this;
-	}
-
-	/**
-	 * @return Position
-	 */
-	public function getHolder(){
-		return $this->left->getHolder();
 	}
 
 	public function getItem(int $index) : Item{
@@ -71,6 +63,10 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 
 		return $result;
 	}
+
+	protected function getOpenSound() : Sound{ return $this->left->getOpenSound(); }
+
+	protected function getCloseSound() : Sound{ return $this->left->getCloseSound(); }
 
 	protected function animateBlock(bool $isOpen) : void{
 		$this->left->animateBlock($isOpen);

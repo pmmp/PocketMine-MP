@@ -24,13 +24,19 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\TreeType;
+use pocketmine\item\Item;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
 class Wood extends Opaque{
 
 	/** @var TreeType */
 	private $treeType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, ?BlockBreakInfo $breakInfo = null){
+	private bool $stripped;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, bool $stripped, ?BlockBreakInfo $breakInfo = null){
+		$this->stripped = $stripped; //TODO: this should be dynamic, but right now legacy shit gets in the way
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::AXE));
 		$this->treeType = $treeType;
 	}
@@ -42,6 +48,8 @@ class Wood extends Opaque{
 		return $this->treeType;
 	}
 
+	public function isStripped() : bool{ return $this->stripped; }
+
 	public function getFuelTime() : int{
 		return 300;
 	}
@@ -52,5 +60,13 @@ class Wood extends Opaque{
 
 	public function getFlammability() : int{
 		return 5;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if(!$this->stripped && ($item->getBlockToolType() & BlockToolType::AXE) !== 0){
+			//TODO: strip logs; can't implement this yet because of legacy limitations :(
+			return true;
+		}
+		return false;
 	}
 }

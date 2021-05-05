@@ -21,17 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\inventory;
 
-use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
-use pocketmine\item\ToolTier;
+use pocketmine\entity\Human;
 
-class GlazedTerracotta extends Opaque{
-	use FacesOppositePlacingPlayerTrait;
-	use NormalHorizontalFacingInMetadataTrait;
+final class PlayerEnderInventory extends BaseInventory{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.4, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
+	private Human $holder;
+
+	public function __construct(Human $holder, int $size = 27){
+		$this->holder = $holder;
+		parent::__construct($size);
 	}
+
+	public function getHolder() : Human{ return $this->holder; }
 }

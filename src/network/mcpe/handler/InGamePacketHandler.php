@@ -277,6 +277,7 @@ class InGamePacketHandler extends PacketHandler{
 
 		if($isCraftingPart){
 			if($this->craftingTransaction === null){
+				//TODO: this might not be crafting if there is a special inventory open (anvil, enchanting, loom etc)
 				$this->craftingTransaction = new CraftingTransaction($this->player, $this->player->getServer()->getCraftingManager(), $actions);
 			}else{
 				foreach($actions as $action){

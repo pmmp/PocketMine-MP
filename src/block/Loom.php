@@ -23,26 +23,35 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\block\inventory\LoomInventory;
+use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
-use pocketmine\math\Axis;
-use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 
-final class WallBanner extends BaseBanner{
-	use NormalHorizontalFacingInMetadataTrait;
+final class Loom extends Opaque{
+	use FacesOppositePlacingPlayerTrait;
+	use HorizontalFacingTrait;
 
-	protected function getSupportingFace() : int{
-		return Facing::opposite($this->facing);
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x3);
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(Facing::axis($face) === Axis::Y){
-			return false;
+	protected function writeStateToMeta() : int{
+		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing);
+	}
+
+	public function getStateBitmask() : int{
+		return 0b11;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($player !== null){
+			$player->setCurrentWindow(new LoomInventory($this->pos));
+			return true;
 		}
-		$this->facing = $face;
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		return false;
 	}
 }

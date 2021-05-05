@@ -23,15 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
-use pocketmine\item\ToolTier;
+use pocketmine\block\utils\ColorInMetadataTrait;
 
-class GlazedTerracotta extends Opaque{
-	use FacesOppositePlacingPlayerTrait;
-	use NormalHorizontalFacingInMetadataTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.4, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
-	}
+final class StainedHardenedGlassPane extends HardenedGlassPane{
+	use ColorInMetadataTrait;
 }

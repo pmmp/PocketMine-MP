@@ -32,7 +32,7 @@ use function mt_rand;
 final class CoralBlock extends Opaque{
 
 	/** @var CoralType */
-	private $coralType; //TODO: make this dynamic via setter
+	private $coralType;
 
 	/** @var bool */
 	private $dead = false;
@@ -64,6 +64,12 @@ final class CoralBlock extends Opaque{
 	}
 
 	public function getCoralType() : CoralType{ return $this->coralType; }
+
+	/** @return $this */
+	public function setCoralType(CoralType $coralType) : self{
+		$this->coralType = $coralType;
+		return $this;
+	}
 
 	public function isDead() : bool{ return $this->dead; }
 

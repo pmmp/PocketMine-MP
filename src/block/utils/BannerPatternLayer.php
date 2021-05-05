@@ -21,17 +21,27 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
-use pocketmine\item\ToolTier;
+use pocketmine\block\BaseBanner;
 
-class GlazedTerracotta extends Opaque{
-	use FacesOppositePlacingPlayerTrait;
-	use NormalHorizontalFacingInMetadataTrait;
+/**
+ * Contains information about a pattern layer on a banner.
+ * @see BaseBanner
+ */
+class BannerPatternLayer{
+	private BannerPatternType $type;
+	/** @var DyeColor */
+	private $color;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.4, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
+	public function __construct(BannerPatternType $type, DyeColor $color){
+		$this->type = $type;
+		$this->color = $color;
+	}
+
+	public function getType() : BannerPatternType{ return $this->type; }
+
+	public function getColor() : DyeColor{
+		return $this->color;
 	}
 }

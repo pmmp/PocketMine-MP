@@ -21,17 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
-use pocketmine\item\ToolTier;
+trait NormalHorizontalFacingInMetadataTrait{
+	use HorizontalFacingTrait;
 
-class GlazedTerracotta extends Opaque{
-	use FacesOppositePlacingPlayerTrait;
-	use NormalHorizontalFacingInMetadataTrait;
+	protected function writeStateToMeta() : int{
+		return BlockDataSerializer::writeHorizontalFacing($this->facing);
+	}
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.4, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
+	}
+
+	public function getStateBitmask() : int{
+		return 0b111;
 	}
 }

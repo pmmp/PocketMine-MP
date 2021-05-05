@@ -201,6 +201,8 @@ final class BlockLegacyMetadata{
 
 	public const SEA_PICKLE_FLAG_NOT_UNDERWATER = 0x04;
 
+	public const SKULL_FLAG_NO_DROPS = 0x08;
+
 	public const SLAB_FLAG_UPPER = 0x08;
 
 	public const SPONGE_FLAG_WET = 0x01;
