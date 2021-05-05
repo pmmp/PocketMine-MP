@@ -463,11 +463,17 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
-		$this->session->getInvManager()->onClientSelectHotbarSlot($packet->hotbarSlot);
-		if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
-			$this->session->getInvManager()->syncSelectedHotbarSlot();
+		if($packet->windowId === ContainerIds::OFFHAND){
+			return true; //this happens when we put an item into the offhand
 		}
-		return true;
+		if($packet->windowId === ContainerIds::INVENTORY){
+			$this->session->getInvManager()->onClientSelectHotbarSlot($packet->hotbarSlot);
+			if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
+				$this->session->getInvManager()->syncSelectedHotbarSlot();
+			}
+			return true;
+		}
+		return false;
 	}
 
 	public function handleMobArmorEquipment(MobArmorEquipmentPacket $packet) : bool{

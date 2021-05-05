@@ -34,6 +34,7 @@ use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\inventory\PlayerEnderInventory;
 use pocketmine\inventory\PlayerInventory;
+use pocketmine\inventory\PlayerOffHandInventory;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\Totem;
@@ -72,6 +73,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	/** @var PlayerInventory */
 	protected $inventory;
+
+	/** @var PlayerOffHandInventory */
+	protected $offHandInventory;
 
 	/** @var PlayerEnderInventory */
 	protected $enderInventory;
@@ -193,6 +197,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $this->inventory;
 	}
 
+	public function getOffHandInventory() : PlayerOffHandInventory{ return $this->offHandInventory; }
+
 	public function getEnderInventory() : PlayerEnderInventory{
 		return $this->enderInventory;
 	}
@@ -218,7 +224,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->inventory = new PlayerInventory($this);
 		$syncHeldItem = function() : void{
 			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->onMobEquipmentChange($this);
+				$viewer->getNetworkSession()->onMobMainHandItemChange($this);
 			}
 		};
 		$this->inventory->getListeners()->add(new CallbackInventoryListener(
@@ -233,6 +239,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 				}
 			}
 		));
+		$this->offHandInventory = new PlayerOffHandInventory($this);
 		$this->enderInventory = new PlayerEnderInventory($this);
 		$this->initHumanData($nbt);
 
@@ -258,6 +265,15 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$this->armorInventory->getListeners()->add(...$armorListeners);
 			$this->inventory->getListeners()->add(...$inventoryListeners);
 		}
+		$offHand = $nbt->getCompoundTag("OffHandItem");
+		if($offHand !== null){
+			$this->offHandInventory->setItem(0, Item::nbtDeserialize($offHand));
+		}
+		$this->offHandInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(function() : void{
+			foreach($this->getViewers() as $viewer){
+				$viewer->getNetworkSession()->onMobOffHandItemChange($this);
+			}
+		}));
 
 		$enderChestInventoryTag = $nbt->getListTag("EnderChestInventory");
 		if($enderChestInventoryTag !== null){
@@ -270,7 +286,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->inventory->setHeldItemIndex($nbt->getInt("SelectedInventorySlot", 0));
 		$this->inventory->getHeldItemIndexChangeListeners()->add(function(int $oldIndex) : void{
 			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->onMobEquipmentChange($this);
+				$viewer->getNetworkSession()->onMobMainHandItemChange($this);
 			}
 		});
 
@@ -309,7 +325,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$type = $source->getCause();
 		if($type !== EntityDamageEvent::CAUSE_SUICIDE and $type !== EntityDamageEvent::CAUSE_VOID
-			and $this->inventory->getItemInHand() instanceof Totem){ //TODO: check offhand as well (when it's implemented)
+			and ($this->inventory->getItemInHand() instanceof Totem || $this->offHandInventory->getItem(0) instanceof Totem)){
 
 			$compensation = $this->getHealth() - $source->getFinalDamage() - 1;
 			if($compensation < 0){
@@ -335,6 +351,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			if($hand instanceof Totem){
 				$hand->pop(); //Plugins could alter max stack size
 				$this->inventory->setItemInHand($hand);
+			}elseif(($offHand = $this->offHandInventory->getItem(0)) instanceof Totem){
+				$offHand->pop();
+				$this->offHandInventory->setItem(0, $offHand);
 			}
 		}
 	}
@@ -342,7 +361,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	public function getDrops() : array{
 		return array_filter(array_merge(
 			$this->inventory !== null ? array_values($this->inventory->getContents()) : [],
-			$this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : []
+			$this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : [],
+			$this->offHandInventory !== null ? array_values($this->offHandInventory->getContents()) : [],
 		), function(Item $item) : bool{ return !$item->hasEnchantment(VanillaEnchantments::VANISHING()); });
 	}
 
@@ -380,6 +400,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			}
 
 			$nbt->setInt("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
+		}
+		$offHandItem = $this->offHandInventory->getItem(0);
+		if(!$offHandItem->isNull()){
+			$nbt->setTag("OffHandItem", $offHandItem->nbtSerialize());
 		}
 
 		if($this->enderInventory !== null){
@@ -437,6 +461,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->sendData([$player], [EntityMetadataProperties::NAMETAG => new StringMetadataProperty($this->getNameTag())]);
 
 		$player->getNetworkSession()->onMobArmorChange($this);
+		$player->getNetworkSession()->onMobOffHandItemChange($this);
 
 		if(!($this instanceof Player)){
 			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($this->uuid)]));
@@ -466,12 +491,14 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	protected function onDispose() : void{
 		$this->inventory->removeAllViewers();
 		$this->inventory->getHeldItemIndexChangeListeners()->clear();
+		$this->offHandInventory->removeAllViewers();
 		$this->enderInventory->removeAllViewers();
 		parent::onDispose();
 	}
 
 	protected function destroyCycles() : void{
 		$this->inventory = null;
+		$this->offHandInventory = null;
 		$this->enderInventory = null;
 		$this->hungerManager = null;
 		$this->xpManager = null;

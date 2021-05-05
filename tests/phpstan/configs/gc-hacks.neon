@@ -51,6 +51,11 @@ parameters:
 			path: ../../../src/entity/Human.php
 
 		-
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$offHandInventory \\(pocketmine\\\\inventory\\\\PlayerOffHandInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/entity/Human.php
+
+		-
 			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$xpManager \\(pocketmine\\\\entity\\\\ExperienceManager\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/entity/Human.php
