@@ -31,11 +31,6 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
-			message: "#^pocketmine\\\\block\\\\inventory\\\\DoubleChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\inventory\\\\ChestInventory\\.$#"
-			count: 1
-			path: ../../../src/block/inventory/DoubleChestInventory.php
-
-		-
 			message: "#^Property pocketmine\\\\event\\\\entity\\\\EntityShootBowEvent\\:\\:\\$projectile \\(pocketmine\\\\entity\\\\projectile\\\\Projectile\\) does not accept pocketmine\\\\entity\\\\Entity\\.$#"
 			count: 1
 			path: ../../../src/event/entity/EntityShootBowEvent.php

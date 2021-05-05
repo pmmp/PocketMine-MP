@@ -81,11 +81,6 @@ parameters:
 			path: ../../../src/player/Player.php
 
 		-
-			message: "#^Property pocketmine\\\\player\\\\Player\\:\\:\\$perm \\(pocketmine\\\\permission\\\\PermissibleBase\\) does not accept null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
 			message: "#^Property pocketmine\\\\world\\\\World\\:\\:\\$provider \\(pocketmine\\\\world\\\\format\\\\io\\\\WritableWorldProvider\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
