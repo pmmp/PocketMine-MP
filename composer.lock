@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6bd8f2ec899a5899fb8196fbd0fff82f",
+    "content-hash": "91de5b8e3d1e1f64970c03e059a27f8a",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -704,24 +704,24 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "d7f30d8c7fb972ec6314c94292252996eef13a16"
+                "reference": "9d6f564e2843535a0ec621f7396b8b0292506cf8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/d7f30d8c7fb972ec6314c94292252996eef13a16",
-                "reference": "d7f30d8c7fb972ec6314c94292252996eef13a16",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/9d6f564e2843535a0ec621f7396b8b0292506cf8",
+                "reference": "9d6f564e2843535a0ec621f7396b8b0292506cf8",
                 "shasum": ""
             },
             "require": {
                 "ext-sockets": "*",
-                "php": "^7.2 || ^8.0",
+                "php": "^7.4 || ^8.0",
                 "php-64bit": "*",
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "dev-master",
                 "pocketmine/log": "dev-master"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.81",
+                "phpstan/phpstan": "0.12.85",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
@@ -739,7 +739,49 @@
                 "issues": "https://github.com/pmmp/RakLib/issues",
                 "source": "https://github.com/pmmp/RakLib/tree/master"
             },
-            "time": "2021-04-29T00:20:58+00:00"
+            "time": "2021-05-05T19:32:05+00:00"
+        },
+        {
+            "name": "pocketmine/raklib-ipc",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/RakLibIpc.git",
+                "reference": "7fbf66e0f4e31469f42c4b4ff00c24bfbf2bac62"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/RakLibIpc/zipball/7fbf66e0f4e31469f42c4b4ff00c24bfbf2bac62",
+                "reference": "7fbf66e0f4e31469f42c4b4ff00c24bfbf2bac62",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 || ^8.0",
+                "php-64bit": "*",
+                "pocketmine/binaryutils": "dev-master",
+                "pocketmine/raklib": "dev-master"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "0.12.81",
+                "phpstan/phpstan-strict-rules": "^0.12.2"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "raklib\\server\\ipc\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "description": "Channel-based protocols for inter-thread/inter-process communication with RakLib",
+            "support": {
+                "issues": "https://github.com/pmmp/RakLibIpc/issues",
+                "source": "https://github.com/pmmp/RakLibIpc/tree/master"
+            },
+            "time": "2021-05-05T19:37:07+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -3461,6 +3503,7 @@
         "pocketmine/math": 20,
         "pocketmine/nbt": 20,
         "pocketmine/raklib": 20,
+        "pocketmine/raklib-ipc": 20,
         "pocketmine/spl": 20
     },
     "prefer-stable": false,
