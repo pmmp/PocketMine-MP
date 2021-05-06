@@ -28,7 +28,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class DestroyBlockParticle implements Particle{
+class BlockBreakParticle implements Particle{
 
 	/** @var Block */
 	private $block;
