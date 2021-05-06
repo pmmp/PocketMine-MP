@@ -447,8 +447,9 @@ class World implements ChunkManager{
 				unset($this->generatorRegisteredWorkers[$workerId]);
 			}
 		});
-		$this->addOnUnloadCallback(function() use ($workerStartHook) : void{
-			$this->workerPool->removeWorkerStartHook($workerStartHook);
+		$workerPool = $this->workerPool;
+		$this->addOnUnloadCallback(static function() use ($workerPool, $workerStartHook) : void{
+			$workerPool->removeWorkerStartHook($workerStartHook);
 		});
 	}
 
