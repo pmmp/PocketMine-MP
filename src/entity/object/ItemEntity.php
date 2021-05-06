@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\object;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
@@ -34,6 +35,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\player\Player;
 use function max;
 
@@ -54,9 +56,6 @@ class ItemEntity extends Entity{
 	/** @var Item */
 	protected $item;
 
-	public $width = 0.25;
-	public $height = 0.25;
-
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
 
@@ -72,6 +71,8 @@ class ItemEntity extends Entity{
 		$this->item = $item;
 		parent::__construct($location, $nbt);
 	}
+
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
@@ -209,8 +210,8 @@ class ItemEntity extends Entity{
 		$pk->entityRuntimeId = $this->getId();
 		$pk->position = $this->location->asVector3();
 		$pk->motion = $this->getMotion();
-		$pk->item = TypeConverter::getInstance()->coreItemStackToNet($this->getItem());
-		$pk->metadata = $this->getSyncedNetworkData(false);
+		$pk->item = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getItem()));
+		$pk->metadata = $this->getAllNetworkData();
 
 		$player->getNetworkSession()->sendDataPacket($pk);
 	}

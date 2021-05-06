@@ -6,7 +6,7 @@ parameters:
 			path: ../../../src/CrashDump.php
 
 		-
-			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
+			message: "#^Instanceof between pocketmine\\\\command\\\\CommandReader and pocketmine\\\\command\\\\CommandReader will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/Server.php
 
@@ -16,7 +16,7 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
-			message: "#^Instanceof between pocketmine\\\\world\\\\WorldManager and pocketmine\\\\world\\\\WorldManager will always evaluate to true\\.$#"
+			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/Server.php
 
@@ -26,29 +26,14 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
-			message: "#^Instanceof between pocketmine\\\\command\\\\CommandReader and pocketmine\\\\command\\\\CommandReader will always evaluate to true\\.$#"
+			message: "#^Instanceof between pocketmine\\\\world\\\\WorldManager and pocketmine\\\\world\\\\WorldManager will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/Server.php
-
-		-
-			message: "#^pocketmine\\\\block\\\\inventory\\\\DoubleChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\inventory\\\\ChestInventory\\.$#"
-			count: 1
-			path: ../../../src/block/inventory/DoubleChestInventory.php
 
 		-
 			message: "#^Property pocketmine\\\\event\\\\entity\\\\EntityShootBowEvent\\:\\:\\$projectile \\(pocketmine\\\\entity\\\\projectile\\\\Projectile\\) does not accept pocketmine\\\\entity\\\\Entity\\.$#"
 			count: 1
 			path: ../../../src/event/entity/EntityShootBowEvent.php
-
-		-
-			message: "#^Cannot instantiate interface pocketmine\\\\world\\\\format\\\\io\\\\WritableWorldProvider\\.$#"
-			count: 1
-			path: ../../../src/world/WorldManager.php
-
-		-
-			message: "#^Cannot instantiate interface pocketmine\\\\world\\\\format\\\\io\\\\WritableWorldProvider\\.$#"
-			count: 2
-			path: ../../../src/world/format/io/FormatConverter.php
 
 		-
 			message: "#^Variable property access on \\$this\\(pocketmine\\\\world\\\\generator\\\\PopulationTask\\)\\.$#"

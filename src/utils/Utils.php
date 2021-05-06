@@ -28,7 +28,8 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use DaveRandom\CallbackValidator\CallbackType;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 use function array_combine;
 use function array_map;
 use function array_reverse;
@@ -93,12 +94,13 @@ final class Utils{
 
 	/** @var string|null */
 	private static $os;
-	/** @var UUID|null */
+	/** @var UuidInterface|null */
 	private static $serverUniqueId = null;
 
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
 	 *
+	 * @phpstan-param anyClosure $closure
 	 * @throws \ReflectionException
 	 */
 	public static function getNiceClosureName(\Closure $closure) : string{
@@ -177,7 +179,7 @@ final class Utils{
 	 *
 	 * @param string $extra optional, additional data to identify the machine
 	 */
-	public static function getMachineUniqueId(string $extra = "") : UUID{
+	public static function getMachineUniqueId(string $extra = "") : UuidInterface{
 		if(self::$serverUniqueId !== null and $extra === ""){
 			return self::$serverUniqueId;
 		}
@@ -233,7 +235,8 @@ final class Utils{
 			$data .= $ext . ":" . phpversion($ext);
 		}
 
-		$uuid = UUID::fromData($machine, $data);
+		//TODO: use of NIL as namespace is a hack; it works for now, but we should have a proper namespace UUID
+		$uuid = Uuid::uuid3(Uuid::NIL, $data);
 
 		if($extra === ""){
 			self::$serverUniqueId = $uuid;
@@ -498,6 +501,8 @@ final class Utils{
 	 *
 	 * @param callable $signature Dummy callable with the required parameters and return type
 	 * @param callable $subject Callable to check the signature of
+	 * @phpstan-param anyCallable $signature
+	 * @phpstan-param anyCallable $subject
 	 *
 	 * @throws \DaveRandom\CallbackValidator\InvalidCallbackException
 	 * @throws \TypeError

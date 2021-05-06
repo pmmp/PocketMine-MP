@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-use Ds\Set;
 use pocketmine\plugin\Plugin;
+use pocketmine\utils\ObjectSet;
 
 interface Permissible{
 
@@ -73,10 +73,10 @@ interface Permissible{
 	public function recalculatePermissions() : array;
 
 	/**
-	 * @return Set|\Closure[]
-	 * @phpstan-return Set<\Closure(array<string, bool> $changedPermissionsOldValues) : void>
+	 * @return ObjectSet|\Closure[]
+	 * @phpstan-return ObjectSet<\Closure(array<string, bool> $changedPermissionsOldValues) : void>
 	 */
-	public function getPermissionRecalculationCallbacks() : Set;
+	public function getPermissionRecalculationCallbacks() : ObjectSet;
 
 	/**
 	 * @return PermissionAttachmentInfo[]

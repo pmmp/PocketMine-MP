@@ -178,7 +178,7 @@ class SkyLightUpdate extends LightUpdate{
 				break;
 			}
 		}
-		$result = HeightArray::fill(0);
+		$result = HeightArray::fill(World::Y_MIN);
 		if($maxSubChunkY === -1){ //whole column is definitely empty
 			return $result;
 		}
@@ -188,16 +188,16 @@ class SkyLightUpdate extends LightUpdate{
 				$y = null;
 				for($subChunkY = $maxSubChunkY; $subChunkY >= 0; $subChunkY--){
 					$subHighestBlockY = $chunk->getSubChunk($subChunkY)->getHighestBlockAt($x, $z);
-					if($subHighestBlockY !== -1){
+					if($subHighestBlockY !== null){
 						$y = ($subChunkY * 16) + $subHighestBlockY;
 						break;
 					}
 				}
 
 				if($y === null){ //no blocks in the column
-					$result->set($x, $z, 0);
+					$result->set($x, $z, World::Y_MIN);
 				}else{
-					for(; $y >= 0; --$y){
+					for(; $y >= World::Y_MIN; --$y){
 						if($directSkyLightBlockers[$chunk->getFullBlock($x, $y, $z)]){
 							$result->set($x, $z, $y + 1);
 							break;
@@ -221,7 +221,10 @@ class SkyLightUpdate extends LightUpdate{
 	 */
 	private static function recalculateHeightMapColumn(Chunk $chunk, int $x, int $z, \SplFixedArray $directSkyLightBlockers) : int{
 		$y = $chunk->getHighestBlockAt($x, $z);
-		for(; $y >= 0; --$y){
+		if($y === null){
+			return World::Y_MIN;
+		}
+		for(; $y >= World::Y_MIN; --$y){
 			if($directSkyLightBlockers[$chunk->getFullBlock($x, $y, $z)]){
 				break;
 			}

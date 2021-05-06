@@ -45,6 +45,8 @@ class Skull extends Flowable{
 	/** @var int */
 	protected $facing = Facing::NORTH;
 
+	protected bool $noDrops = false;
+
 	/** @var int */
 	protected $rotation = 0; //TODO: split this into floor skull and wall skull handling
 
@@ -54,15 +56,17 @@ class Skull extends Flowable{
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->facing === Facing::UP ? 1 : BlockDataSerializer::writeHorizontalFacing($this->facing);
+		return ($this->facing === Facing::UP ? 1 : BlockDataSerializer::writeHorizontalFacing($this->facing)) |
+			($this->noDrops ? BlockLegacyMetadata::SKULL_FLAG_NO_DROPS : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = $stateMeta === 1 ? Facing::UP : BlockDataSerializer::readHorizontalFacing($stateMeta);
+		$this->noDrops = ($stateMeta & BlockLegacyMetadata::SKULL_FLAG_NO_DROPS) !== 0;
 	}
 
 	public function getStateBitmask() : int{
-		return 0b111;
+		return 0b1111;
 	}
 
 	public function readStateFromWorld() : void{
@@ -85,6 +89,42 @@ class Skull extends Flowable{
 
 	public function getSkullType() : SkullType{
 		return $this->skullType;
+	}
+
+	/** @return $this */
+	public function setSkullType(SkullType $skullType) : self{
+		$this->skullType = $skullType;
+		return $this;
+	}
+
+	public function getFacing() : int{ return $this->facing; }
+
+	/** @return $this */
+	public function setFacing(int $facing) : self{
+		if($facing === Facing::DOWN){
+			throw new \InvalidArgumentException("Skull may not face DOWN");
+		}
+		$this->facing = $facing;
+		return $this;
+	}
+
+	public function getRotation() : int{ return $this->rotation; }
+
+	/** @return $this */
+	public function setRotation(int $rotation) : self{
+		if($rotation < 0 || $rotation > 15){
+			throw new \InvalidArgumentException("Rotation must be a value between 0 and 15");
+		}
+		$this->rotation = $rotation;
+		return $this;
+	}
+
+	public function isNoDrops() : bool{ return $this->noDrops; }
+
+	/** @return $this */
+	public function setNoDrops(bool $noDrops) : self{
+		$this->noDrops = $noDrops;
+		return $this;
 	}
 
 	/**

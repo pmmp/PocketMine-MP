@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol\serializer;
 #include <rules/DataPacket.h>
 
 use pocketmine\math\Vector3;
+use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
@@ -60,11 +61,20 @@ use pocketmine\network\mcpe\protocol\types\StructureEditorData;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\UuidInterface;
 use function count;
 use function strlen;
+use function strrev;
+use function substr;
 
 class PacketSerializer extends BinaryStream{
+
+	private int $shieldItemRuntimeId;
+
+	public function __construct(string $buffer = "", int $offset = 0){
+		parent::__construct($buffer, $offset);
+		$this->shieldItemRuntimeId = ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield");
+	}
 
 	/**
 	 * @throws BinaryDataException
@@ -81,25 +91,22 @@ class PacketSerializer extends BinaryStream{
 	/**
 	 * @throws BinaryDataException
 	 */
-	public function getUUID() : UUID{
-		//This is actually two little-endian longs: UUID Most followed by UUID Least
-		$part1 = $this->getLInt();
-		$part0 = $this->getLInt();
-		$part3 = $this->getLInt();
-		$part2 = $this->getLInt();
-
-		return new UUID($part0, $part1, $part2, $part3);
+	public function getUUID() : UuidInterface{
+		//This is two little-endian longs: bytes 7-0 followed by bytes 15-8
+		$p1 = strrev($this->get(8));
+		$p2 = strrev($this->get(8));
+		return \Ramsey\Uuid\Uuid::fromBytes($p1 . $p2);
 	}
 
-	public function putUUID(UUID $uuid) : void{
-		$this->putLInt($uuid->getPart(1));
-		$this->putLInt($uuid->getPart(0));
-		$this->putLInt($uuid->getPart(3));
-		$this->putLInt($uuid->getPart(2));
+	public function putUUID(UuidInterface $uuid) : void{
+		$bytes = $uuid->getBytes();
+		$this->put(strrev(substr($bytes, 0, 8)));
+		$this->put(strrev(substr($bytes, 8, 8)));
 	}
 
 	public function getSkin() : SkinData{
 		$skinId = $this->getString();
+		$skinPlayFabId = $this->getString();
 		$skinResourcePatch = $this->getString();
 		$skinData = $this->getSkinImage();
 		$animationCount = $this->getLInt();
@@ -146,11 +153,12 @@ class PacketSerializer extends BinaryStream{
 			);
 		}
 
-		return new SkinData($skinId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId, $armSize, $skinColor, $personaPieces, $pieceTintColors);
+		return new SkinData($skinId, $skinPlayFabId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId, $armSize, $skinColor, $personaPieces, $pieceTintColors);
 	}
 
 	public function putSkin(SkinData $skin) : void{
 		$this->putString($skin->getSkinId());
+		$this->putString($skin->getPlayFabId());
 		$this->putString($skin->getResourcePatch());
 		$this->putSkinImage($skin->getSkinImage());
 		$this->putLInt(count($skin->getAnimations()));
@@ -209,49 +217,87 @@ class PacketSerializer extends BinaryStream{
 	 * @throws PacketDecodeException
 	 * @throws BinaryDataException
 	 */
-	public function getSlot() : ItemStack{
+	public function getItemStackWithoutStackId() : ItemStack{
+		return $this->getItemStack(function() : void{
+			//NOOP
+		});
+	}
+
+	public function putItemStackWithoutStackId(ItemStack $item) : void{
+		$this->putItemStack($item, function() : void{
+			//NOOP
+		});
+	}
+
+	/**
+	 * @phpstan-param \Closure(PacketSerializer) : void $readExtraCrapInTheMiddle
+	 *
+	 * @throws PacketDecodeException
+	 * @throws BinaryDataException
+	 */
+	public function getItemStack(\Closure $readExtraCrapInTheMiddle) : ItemStack{
 		$id = $this->getVarInt();
 		if($id === 0){
 			return ItemStack::null();
 		}
 
-		$auxValue = $this->getVarInt();
-		$meta = $auxValue >> 8;
-		$count = $auxValue & 0xff;
+		$count = $this->getLShort();
+		$meta = $this->getUnsignedVarInt();
 
-		$nbtLen = $this->getLShort();
+		$readExtraCrapInTheMiddle($this);
 
-		/** @var CompoundTag|null $compound */
-		$compound = null;
-		if($nbtLen === 0xffff){
-			$nbtDataVersion = $this->getByte();
-			if($nbtDataVersion !== 1){
-				throw new PacketDecodeException("Unexpected NBT data version $nbtDataVersion");
+		$blockRuntimeId = $this->getVarInt();
+		$extraData = new PacketSerializer($this->getString());
+		$shieldItemRuntimeId = $this->shieldItemRuntimeId;
+		return (static function() use ($extraData, $id, $meta, $count, $blockRuntimeId, $shieldItemRuntimeId) : ItemStack{
+			$nbtLen = $extraData->getLShort();
+
+			/** @var CompoundTag|null $compound */
+			$compound = null;
+			if($nbtLen === 0xffff){
+				$nbtDataVersion = $extraData->getByte();
+				if($nbtDataVersion !== 1){
+					throw new PacketDecodeException("Unexpected NBT data version $nbtDataVersion");
+				}
+				$offset = $extraData->getOffset();
+				try{
+					$compound = (new LittleEndianNbtSerializer())->read($extraData->getBuffer(), $offset, 512)->mustGetCompoundTag();
+				}catch(NbtDataException $e){
+					throw PacketDecodeException::wrap($e, "Failed decoding NBT root");
+				}finally{
+					$extraData->setOffset($offset);
+				}
+			}elseif($nbtLen !== 0){
+				throw new PacketDecodeException("Unexpected fake NBT length $nbtLen");
 			}
-			$compound = $this->getNbtCompoundRoot();
-		}elseif($nbtLen !== 0){
-			throw new PacketDecodeException("Unexpected fake NBT length $nbtLen");
-		}
 
-		$canPlaceOn = [];
-		for($i = 0, $canPlaceOnCount = $this->getVarInt(); $i < $canPlaceOnCount; ++$i){
-			$canPlaceOn[] = $this->getString();
-		}
+			$canPlaceOn = [];
+			for($i = 0, $canPlaceOnCount = $extraData->getLInt(); $i < $canPlaceOnCount; ++$i){
+				$canPlaceOn[] = $extraData->get($extraData->getLShort());
+			}
 
-		$canDestroy = [];
-		for($i = 0, $canDestroyCount = $this->getVarInt(); $i < $canDestroyCount; ++$i){
-			$canDestroy[] = $this->getString();
-		}
+			$canDestroy = [];
+			for($i = 0, $canDestroyCount = $extraData->getLInt(); $i < $canDestroyCount; ++$i){
+				$canDestroy[] = $extraData->get($extraData->getLShort());
+			}
 
-		$shieldBlockingTick = null;
-		if($id === ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield")){
-			$shieldBlockingTick = $this->getVarLong();
-		}
+			$shieldBlockingTick = null;
+			if($id === $shieldItemRuntimeId){
+				$shieldBlockingTick = $extraData->getLLong();
+			}
 
-		return new ItemStack($id, $meta, $count, $compound, $canPlaceOn, $canDestroy, $shieldBlockingTick);
+			if(!$extraData->feof()){
+				throw new PacketDecodeException("Unexpected trailing extradata for network item $id");
+			}
+
+			return new ItemStack($id, $meta, $count, $blockRuntimeId, $compound, $canPlaceOn, $canDestroy, $shieldBlockingTick);
+		})();
 	}
 
-	public function putSlot(ItemStack $item) : void{
+	/**
+	 * @phpstan-param \Closure(PacketSerializer) : void $writeExtraCrapInTheMiddle
+	 */
+	public function putItemStack(ItemStack $item, \Closure $writeExtraCrapInTheMiddle) : void{
 		if($item->getId() === 0){
 			$this->putVarInt(0);
 
@@ -259,31 +305,42 @@ class PacketSerializer extends BinaryStream{
 		}
 
 		$this->putVarInt($item->getId());
-		$auxValue = (($item->getMeta() & 0x7fff) << 8) | $item->getCount();
-		$this->putVarInt($auxValue);
+		$this->putLShort($item->getCount());
+		$this->putUnsignedVarInt($item->getMeta());
 
-		$nbt = $item->getNbt();
-		if($nbt !== null){
-			$this->putLShort(0xffff);
-			$this->putByte(1); //TODO: NBT data version (?)
-			$this->put((new NetworkNbtSerializer())->write(new TreeRoot($nbt)));
-		}else{
-			$this->putLShort(0);
-		}
+		$writeExtraCrapInTheMiddle($this);
 
-		$this->putVarInt(count($item->getCanPlaceOn()));
-		foreach($item->getCanPlaceOn() as $entry){
-			$this->putString($entry);
-		}
-		$this->putVarInt(count($item->getCanDestroy()));
-		foreach($item->getCanDestroy() as $entry){
-			$this->putString($entry);
-		}
+		$this->putVarInt($item->getBlockRuntimeId());
+		$shieldItemRuntimeId = $this->shieldItemRuntimeId;
+		$this->putString((static function() use ($item, $shieldItemRuntimeId) : string{
+			$extraData = new PacketSerializer();
 
-		$blockingTick = $item->getShieldBlockingTick();
-		if($item->getId() === ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield")){
-			$this->putVarLong($blockingTick ?? 0);
-		}
+			$nbt = $item->getNbt();
+			if($nbt !== null){
+				$extraData->putLShort(0xffff);
+				$extraData->putByte(1); //TODO: NBT data version (?)
+				$extraData->put((new LittleEndianNbtSerializer())->write(new TreeRoot($nbt)));
+			}else{
+				$extraData->putLShort(0);
+			}
+
+			$extraData->putLInt(count($item->getCanPlaceOn()));
+			foreach($item->getCanPlaceOn() as $entry){
+				$extraData->putLShort(strlen($entry));
+				$extraData->put($entry);
+			}
+			$extraData->putLInt(count($item->getCanDestroy()));
+			foreach($item->getCanDestroy() as $entry){
+				$extraData->putLShort(strlen($entry));
+				$extraData->put($entry);
+			}
+
+			$blockingTick = $item->getShieldBlockingTick();
+			if($item->getId() === $shieldItemRuntimeId){
+				$extraData->putLLong($blockingTick ?? 0);
+			}
+			return $extraData->getBuffer();
+		})());
 	}
 
 	public function getRecipeIngredient() : RecipeIngredient{

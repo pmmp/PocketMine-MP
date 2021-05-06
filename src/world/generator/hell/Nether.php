@@ -54,13 +54,10 @@ class Nether extends Generator{
 	private $noiseBase;
 
 	/**
-	 * @param mixed[] $options
-	 * @phpstan-param array<string, mixed> $options
-	 *
 	 * @throws InvalidGeneratorOptionsException
 	 */
-	public function __construct(int $seed, array $options = []){
-		parent::__construct($seed, $options);
+	public function __construct(int $seed, string $preset){
+		parent::__construct($seed, $preset);
 
 		$this->noiseBase = new Simplex($this->random, 4, 1 / 4, 1 / 64);
 		$this->random->setSeed($this->seed);

@@ -27,6 +27,7 @@ use pocketmine\event\Event;
 use pocketmine\event\EventPriority;
 use pocketmine\event\HandlerListManager;
 use pocketmine\event\Listener;
+use pocketmine\event\ListenerMethodTags;
 use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\event\RegisteredListener;
@@ -507,7 +508,7 @@ class PluginManager{
 		foreach($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method){
 			if(!$method->isStatic() and $method->getDeclaringClass()->implementsInterface(Listener::class)){
 				$tags = Utils::parseDocComment((string) $method->getDocComment());
-				if(isset($tags["notHandler"])){
+				if(isset($tags[ListenerMethodTags::NOT_HANDLER])){
 					continue;
 				}
 
@@ -516,22 +517,31 @@ class PluginManager{
 					continue;
 				}
 
-				$eventClass = $parameters[0]->getClass();
-				if($eventClass === null or !$eventClass->isSubclassOf(Event::class)){
+				$paramType = $parameters[0]->getType();
+				//isBuiltin() returns false for builtin classes ..................
+				if($paramType instanceof \ReflectionNamedType && !$paramType->isBuiltin()){
+					/** @phpstan-var class-string $paramClass */
+					$paramClass = $paramType->getName();
+					$eventClass = new \ReflectionClass($paramClass);
+					if(!$eventClass->isSubclassOf(Event::class)){
+						continue;
+					}
+				}else{
 					continue;
 				}
 
 				$handlerClosure = $method->getClosure($listener);
+				if($handlerClosure === null) throw new AssumptionFailedError("This should never happen");
 
 				try{
-					$priority = isset($tags["priority"]) ? EventPriority::fromString($tags["priority"]) : EventPriority::NORMAL;
+					$priority = isset($tags[ListenerMethodTags::PRIORITY]) ? EventPriority::fromString($tags[ListenerMethodTags::PRIORITY]) : EventPriority::NORMAL;
 				}catch(\InvalidArgumentException $e){
-					throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid/unknown priority \"" . $tags["priority"] . "\"");
+					throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid/unknown priority \"" . $tags[ListenerMethodTags::PRIORITY] . "\"");
 				}
 
 				$handleCancelled = false;
-				if(isset($tags["handleCancelled"])){
-					switch(strtolower($tags["handleCancelled"])){
+				if(isset($tags[ListenerMethodTags::HANDLE_CANCELLED])){
+					switch(strtolower($tags[ListenerMethodTags::HANDLE_CANCELLED])){
 						case "true":
 						case "":
 							$handleCancelled = true;
@@ -539,7 +549,7 @@ class PluginManager{
 						case "false":
 							break;
 						default:
-							throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid @handleCancelled value \"" . $tags["handleCancelled"] . "\"");
+							throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid @" . ListenerMethodTags::HANDLE_CANCELLED . " value \"" . $tags[ListenerMethodTags::HANDLE_CANCELLED] . "\"");
 					}
 				}
 

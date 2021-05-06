@@ -33,6 +33,8 @@ use pocketmine\network\mcpe\protocol\StartGamePacket;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\Experiments;
+use pocketmine\network\mcpe\protocol\types\PlayerMovementSettings;
+use pocketmine\network\mcpe\protocol\types\PlayerMovementType;
 use pocketmine\network\mcpe\protocol\types\SpawnSettings;
 use pocketmine\player\Player;
 use pocketmine\Server;
@@ -86,6 +88,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
 		$pk->itemTable = ItemTypeDictionary::getInstance()->getEntries(); //TODO: check if this is actually needed
+		$pk->playerMovementSettings = new PlayerMovementSettings(PlayerMovementType::LEGACY, 0, false);
 		$this->session->sendDataPacket($pk);
 
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getAvailableActorIdentifiers());

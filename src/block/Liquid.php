@@ -472,6 +472,7 @@ abstract class Liquid extends Transparent{
 		return $isOptimalFlowDirection;
 	}
 
+	/** @phpstan-impure */
 	private function getSmallestFlowDecay(Block $block, int $decay) : int{
 		if(!($block instanceof Liquid) or !$block->isSameType($this)){
 			return $decay;

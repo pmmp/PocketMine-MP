@@ -28,18 +28,12 @@ namespace pocketmine\network\mcpe\protocol\types\login;
  * provided.
  */
 class JwtBodyRfc7519{
-	/** @var string */
-	public $iss;
-	/** @var string */
-	public $sub;
+	public string $iss;
+	public string $sub;
 	/** @var string|string[] */
 	public $aud;
-	/** @var int */
-	public $exp;
-	/** @var int */
-	public $nbf;
-	/** @var int */
-	public $iat;
-	/** @var string */
-	public $jti;
+	public int $exp;
+	public int $nbf;
+	public int $iat;
+	public string $jti;
 }

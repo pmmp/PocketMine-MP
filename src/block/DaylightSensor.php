@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -35,11 +36,10 @@ use function round;
 use const M_PI;
 
 class DaylightSensor extends Transparent{
+	use AnalogRedstoneSignalEmitterTrait;
+
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
-
-	/** @var int */
-	protected $power = 0;
 
 	/** @var bool */
 	protected $inverted = false;
@@ -53,11 +53,11 @@ class DaylightSensor extends Transparent{
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->power;
+		return $this->signalStrength;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->power = BlockDataSerializer::readBoundedInt("power", $stateMeta, 0, 15);
+		$this->signalStrength = BlockDataSerializer::readBoundedInt("signalStrength", $stateMeta, 0, 15);
 		$this->inverted = $id === $this->idInfo->getSecondId();
 	}
 
@@ -90,21 +90,21 @@ class DaylightSensor extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->inverted = !$this->inverted;
-		$this->power = $this->recalculatePower();
+		$this->signalStrength = $this->recalculateSignalStrength();
 		$this->pos->getWorld()->setBlock($this->pos, $this);
 		return true;
 	}
 
 	public function onScheduledUpdate() : void{
-		$newPower = $this->recalculatePower();
-		if($this->power !== $newPower){
-			$this->power = $newPower;
+		$signalStrength = $this->recalculateSignalStrength();
+		if($this->signalStrength !== $signalStrength){
+			$this->signalStrength = $signalStrength;
 			$this->pos->getWorld()->setBlock($this->pos, $this);
 		}
 		$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, 20);
 	}
 
-	private function recalculatePower() : int{
+	private function recalculateSignalStrength() : int{
 		$lightLevel = $this->pos->getWorld()->getRealBlockSkyLightAt($this->pos->x, $this->pos->y, $this->pos->z);
 		if($this->inverted){
 			return 15 - $lightLevel;

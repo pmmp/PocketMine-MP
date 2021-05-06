@@ -48,25 +48,18 @@ class Flat extends Generator{
 	private $structure;
 	/** @var int */
 	private $biome;
-	/** @var string */
-	private $preset;
 
 	/**
-	 * @param mixed[] $options
-	 * @phpstan-param array<string, mixed> $options
-	 *
+	 * @var mixed[]
+	 * @phpstan-var array<string, mixed>
+	 */
+	private array $options = [];
+
+	/**
 	 * @throws InvalidGeneratorOptionsException
 	 */
-	public function __construct(int $seed, array $options = []){
-		parent::__construct($seed, $options);
-
-		if(isset($this->options["preset"]) and $this->options["preset"] != ""){
-			$this->preset = $this->options["preset"];
-		}else{
-			$this->preset = "2;bedrock,2xdirt,grass;1;";
-			//$this->preset = "2;bedrock,59xstone,3xdirt,grass;1;spawn(radius=10 block=89),decoration(treecount=80 grasscount=45)";
-		}
-
+	public function __construct(int $seed, string $preset){
+		parent::__construct($seed, $preset !== "" ? $preset : "2;bedrock,2xdirt,grass;1;");
 		$this->parsePreset();
 
 		if(isset($this->options["decoration"])){

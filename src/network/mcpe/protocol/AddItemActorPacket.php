@@ -28,7 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 
 class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_ITEM_ACTOR_PACKET;
@@ -37,7 +37,7 @@ class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	public $entityUniqueId = null; //TODO
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var ItemStack */
+	/** @var ItemStackWrapper */
 	public $item;
 	/** @var Vector3 */
 	public $position;
@@ -54,7 +54,7 @@ class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityUniqueId = $in->getEntityUniqueId();
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
-		$this->item = $in->getSlot();
+		$this->item = ItemStackWrapper::read($in);
 		$this->position = $in->getVector3();
 		$this->motion = $in->getVector3();
 		$this->metadata = $in->getEntityMetadata();
@@ -64,7 +64,7 @@ class AddItemActorPacket extends DataPacket implements ClientboundPacket{
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$out->putEntityRuntimeId($this->entityRuntimeId);
-		$out->putSlot($this->item);
+		$this->item->write($out);
 		$out->putVector3($this->position);
 		$out->putVector3Nullable($this->motion);
 		$out->putEntityMetadata($this->metadata);

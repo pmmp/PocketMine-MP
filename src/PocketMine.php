@@ -33,10 +33,16 @@ namespace pocketmine {
 	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Timezone;
 	use pocketmine\wizard\SetupWizard;
+	use function extension_loaded;
+	use function phpversion;
+	use function preg_match;
+	use function preg_quote;
+	use function strpos;
+	use function version_compare;
 
 	require_once __DIR__ . '/VersionInfo.php';
 
-	const MIN_PHP_VERSION = "7.3.0";
+	const MIN_PHP_VERSION = "7.4.0";
 
 	/**
 	 * @param string $message
@@ -79,7 +85,6 @@ namespace pocketmine {
 			"crypto" => "php-crypto",
 			"ctype" => "ctype",
 			"date" => "Date",
-			"ds" => "Data Structures",
 			"gmp" => "GMP",
 			"hash" => "Hash",
 			"igbinary" => "igbinary",
@@ -120,6 +125,16 @@ namespace pocketmine {
 			if(version_compare($leveldb_version, "0.2.1") < 0){
 				$messages[] = "php-leveldb >= 0.2.1 is required, while you have $leveldb_version.";
 			}
+		}
+
+		$chunkutils2_version = phpversion("chunkutils2");
+		$wantedVersionLock = "0.2";
+		$wantedVersionMin = "$wantedVersionLock.0";
+		if($chunkutils2_version !== false && (
+			version_compare($chunkutils2_version, $wantedVersionMin) < 0 ||
+			preg_match("/^" . preg_quote($wantedVersionLock, "/") . "\.\d+$/", $chunkutils2_version) === 0 //lock in at ^0.2, optionally at a patch release
+		)){
+			$messages[] = "chunkutils2 ^$wantedVersionMin is required, while you have $chunkutils2_version.";
 		}
 
 		if(extension_loaded("pocketmine")){
@@ -237,7 +252,7 @@ namespace pocketmine {
 			Terminal::init();
 		}
 
-		$logger = new MainLogger($dataPath . "server.log");
+		$logger = new MainLogger($dataPath . "server.log", Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()));
 		\GlobalLogger::set($logger);
 
 		emit_performance_warnings($logger);
@@ -272,8 +287,7 @@ namespace pocketmine {
 			}
 		}while(false);
 
-		$logger->shutdown();
-		$logger->join();
+		$logger->shutdownLogWriterThread();
 
 		echo Terminal::$FORMAT_RESET . PHP_EOL;
 

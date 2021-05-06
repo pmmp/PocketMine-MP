@@ -24,14 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\raklib;
 
 use pocketmine\network\AdvancedNetworkInterface;
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\compression\ZlibCompressor;
+use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\PacketBroadcaster;
 use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\StandardPacketBroadcaster;
 use pocketmine\network\Network;
+use pocketmine\network\PacketHandlingException;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\utils\Filesystem;
@@ -183,7 +184,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$buf = substr($packet, 1);
 			try{
 				$session->handleEncoded($buf);
-			}catch(BadPacketException $e){
+			}catch(PacketHandlingException $e){
 				$errorId = bin2hex(random_bytes(6));
 
 				$logger = $session->getLogger();
@@ -237,7 +238,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$info->getMaxPlayerCount(),
 				$this->rakServerId,
 				$this->server->getName(),
-				$this->server->getGamemode()->getEnglishName()
+				TypeConverter::getInstance()->protocolGameModeName($this->server->getGamemode())
 			]) . ";"
 		);
 	}

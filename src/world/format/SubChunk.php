@@ -33,9 +33,9 @@ class SubChunk{
 	/** @var PalettedBlockArray[] */
 	private $blockLayers;
 
-	/** @var LightArray */
+	/** @var LightArray|null */
 	private $blockLight;
-	/** @var LightArray */
+	/** @var LightArray|null */
 	private $skyLight;
 
 	/**
@@ -47,8 +47,8 @@ class SubChunk{
 		$this->emptyBlockId = $emptyBlockId;
 		$this->blockLayers = $blocks;
 
-		$this->skyLight = $skyLight ?? LightArray::fill(15);
-		$this->blockLight = $blockLight ?? LightArray::fill(0);
+		$this->skyLight = $skyLight;
+		$this->blockLight = $blockLight;
 	}
 
 	/**
@@ -96,9 +96,9 @@ class SubChunk{
 		return $this->blockLayers;
 	}
 
-	public function getHighestBlockAt(int $x, int $z) : int{
+	public function getHighestBlockAt(int $x, int $z) : ?int{
 		if(count($this->blockLayers) === 0){
-			return -1;
+			return null;
 		}
 		for($y = 15; $y >= 0; --$y){
 			if($this->blockLayers[0]->get($x, $y, $z) !== $this->emptyBlockId){
@@ -106,11 +106,11 @@ class SubChunk{
 			}
 		}
 
-		return -1; //highest block not in this subchunk
+		return null; //highest block not in this subchunk
 	}
 
 	public function getBlockSkyLightArray() : LightArray{
-		return $this->skyLight;
+		return $this->skyLight ??= LightArray::fill(0);
 	}
 
 	public function setBlockSkyLightArray(LightArray $data) : void{
@@ -118,7 +118,7 @@ class SubChunk{
 	}
 
 	public function getBlockLightArray() : LightArray{
-		return $this->blockLight;
+		return $this->blockLight ??= LightArray::fill(0);
 	}
 
 	public function setBlockLightArray(LightArray $data) : void{
@@ -145,8 +145,12 @@ class SubChunk{
 		}
 		$this->blockLayers = array_values($this->blockLayers);
 
-		$this->skyLight->collectGarbage();
-		$this->blockLight->collectGarbage();
+		if($this->skyLight !== null){
+			$this->skyLight->collectGarbage();
+		}
+		if($this->blockLight !== null){
+			$this->blockLight->collectGarbage();
+		}
 	}
 
 	public function __clone(){
@@ -154,7 +158,11 @@ class SubChunk{
 			return clone $array;
 		}, $this->blockLayers);
 
-		$this->skyLight = clone $this->skyLight;
-		$this->blockLight = clone $this->blockLight;
+		if($this->skyLight !== null){
+			$this->skyLight = clone $this->skyLight;
+		}
+		if($this->blockLight !== null){
+			$this->blockLight = clone $this->blockLight;
+		}
 	}
 }

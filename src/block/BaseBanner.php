@@ -23,9 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use Ds\Deque;
 use pocketmine\block\tile\Banner as TileBanner;
-use pocketmine\block\utils\BannerPattern;
+use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Banner as ItemBanner;
@@ -36,28 +35,23 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function array_filter;
 use function assert;
+use function count;
 
 abstract class BaseBanner extends Transparent{
 	/** @var DyeColor */
 	protected $baseColor;
 
 	/**
-	 * @var Deque|BannerPattern[]
-	 * @phpstan-var Deque<BannerPattern>
+	 * @var BannerPatternLayer[]
+	 * @phpstan-var list<BannerPatternLayer>
 	 */
-	protected $patterns;
+	protected $patterns = [];
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::AXE));
 		$this->baseColor = DyeColor::BLACK();
-		$this->patterns = new Deque();
-	}
-
-	public function __clone(){
-		parent::__clone();
-		//pattern objects are considered immutable, so they don't need to be copied
-		$this->patterns = $this->patterns->copy();
 	}
 
 	public function readStateFromWorld() : void{
@@ -89,22 +83,23 @@ abstract class BaseBanner extends Transparent{
 	}
 
 	/**
-	 * @return Deque|BannerPattern[]
-	 * @phpstan-return Deque<BannerPattern>
+	 * @return BannerPatternLayer[]
+	 * @phpstan-return list<BannerPatternLayer>
 	 */
-	public function getPatterns() : Deque{
+	public function getPatterns() : array{
 		return $this->patterns;
 	}
 
 	/**
-	 * @param Deque|BannerPattern[] $patterns
-	 * @phpstan-param Deque<BannerPattern> $patterns
+	 * @param BannerPatternLayer[]             $patterns
+	 *
+	 * @phpstan-param list<BannerPatternLayer> $patterns
 	 * @return $this
 	 */
-	public function setPatterns(Deque $patterns) : self{
-		$checked = $patterns->filter(function($v) : bool{ return $v instanceof BannerPattern; });
-		if($checked->count() !== $patterns->count()){
-			throw new \TypeError("Deque must only contain " . BannerPattern::class . " objects");
+	public function setPatterns(array $patterns) : self{
+		$checked = array_filter($patterns, fn($v) => $v instanceof BannerPatternLayer);
+		if(count($checked) !== count($patterns)){
+			throw new \TypeError("Deque must only contain " . BannerPatternLayer::class . " objects");
 		}
 		$this->patterns = $checked;
 		return $this;
@@ -140,7 +135,7 @@ abstract class BaseBanner extends Transparent{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$drop = $this->asItem();
-		if($drop instanceof ItemBanner and !$this->patterns->isEmpty()){
+		if($drop instanceof ItemBanner and count($this->patterns) > 0){
 			$drop->setPatterns($this->patterns);
 		}
 
@@ -149,7 +144,7 @@ abstract class BaseBanner extends Transparent{
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		$result = $this->asItem();
-		if($addUserData and $result instanceof ItemBanner and !$this->patterns->isEmpty()){
+		if($addUserData and $result instanceof ItemBanner and count($this->patterns) > 0){
 			$result->setPatterns($this->patterns);
 		}
 		return $result;

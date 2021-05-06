@@ -34,6 +34,11 @@ use function count;
 class CommandOutputPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::COMMAND_OUTPUT_PACKET;
 
+	public const TYPE_LAST = 1;
+	public const TYPE_SILENT = 2;
+	public const TYPE_ALL = 3;
+	public const TYPE_DATA_SET = 4;
+
 	/** @var CommandOriginData */
 	public $originData;
 	/** @var int */
@@ -54,7 +59,7 @@ class CommandOutputPacket extends DataPacket implements ClientboundPacket{
 			$this->messages[] = $this->getCommandMessage($in);
 		}
 
-		if($this->outputType === 4){
+		if($this->outputType === self::TYPE_DATA_SET){
 			$this->unknownString = $in->getString();
 		}
 	}
@@ -85,7 +90,7 @@ class CommandOutputPacket extends DataPacket implements ClientboundPacket{
 			$this->putCommandMessage($message, $out);
 		}
 
-		if($this->outputType === 4){
+		if($this->outputType === self::TYPE_DATA_SET){
 			$out->putString($this->unknownString);
 		}
 	}

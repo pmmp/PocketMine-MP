@@ -116,8 +116,8 @@ abstract class BaseNbtWorldData implements WorldData{
 		return $this->compoundTag->getString("generatorName", "DEFAULT");
 	}
 
-	public function getGeneratorOptions() : array{
-		return ["preset" => $this->compoundTag->getString("generatorOptions", "")];
+	public function getGeneratorOptions() : string{
+		return $this->compoundTag->getString("generatorOptions", "");
 	}
 
 	public function getSeed() : int{

@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\handler;
 use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerPreLoginEvent;
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\auth\ProcessLoginTask;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\JwtException;
@@ -39,11 +38,12 @@ use pocketmine\network\mcpe\protocol\types\login\AuthenticationData;
 use pocketmine\network\mcpe\protocol\types\login\ClientData;
 use pocketmine\network\mcpe\protocol\types\login\ClientDataToSkinDataHelper;
 use pocketmine\network\mcpe\protocol\types\login\JwtChain;
+use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\Uuid;
 use function is_array;
 
 /**
@@ -112,11 +112,10 @@ class LoginPacketHandler extends PacketHandler{
 			return true;
 		}
 
-		try{
-			$uuid = UUID::fromString($extraData->identity);
-		}catch(\InvalidArgumentException $e){
-			throw BadPacketException::wrap($e, "Failed to parse login UUID");
+		if(!Uuid::isValid($extraData->identity)){
+			throw new PacketHandlingException("Invalid login UUID");
 		}
+		$uuid = Uuid::fromString($extraData->identity);
 		if($extraData->XUID !== ""){
 			$playerInfo = new XboxLivePlayerInfo(
 				$extraData->XUID,
@@ -165,7 +164,7 @@ class LoginPacketHandler extends PacketHandler{
 	}
 
 	/**
-	 * @throws BadPacketException
+	 * @throws PacketHandlingException
 	 */
 	protected function fetchAuthData(JwtChain $chain) : AuthenticationData{
 		/** @var AuthenticationData|null $extraData */
@@ -175,15 +174,15 @@ class LoginPacketHandler extends PacketHandler{
 			try{
 				[, $claims, ] = JwtUtils::parse($jwt);
 			}catch(JwtException $e){
-				throw BadPacketException::wrap($e);
+				throw PacketHandlingException::wrap($e);
 			}
 			if(isset($claims["extraData"])){
 				if($extraData !== null){
-					throw new BadPacketException("Found 'extraData' more than once in chainData");
+					throw new PacketHandlingException("Found 'extraData' more than once in chainData");
 				}
 
 				if(!is_array($claims["extraData"])){
-					throw new BadPacketException("'extraData' key should be an array");
+					throw new PacketHandlingException("'extraData' key should be an array");
 				}
 				$mapper = new \JsonMapper;
 				$mapper->bEnforceMapType = false; //TODO: we don't really need this as an array, but right now we don't have enough models
@@ -193,24 +192,24 @@ class LoginPacketHandler extends PacketHandler{
 					/** @var AuthenticationData $extraData */
 					$extraData = $mapper->map($claims["extraData"], new AuthenticationData);
 				}catch(\JsonMapper_Exception $e){
-					throw BadPacketException::wrap($e);
+					throw PacketHandlingException::wrap($e);
 				}
 			}
 		}
 		if($extraData === null){
-			throw new BadPacketException("'extraData' not found in chain data");
+			throw new PacketHandlingException("'extraData' not found in chain data");
 		}
 		return $extraData;
 	}
 
 	/**
-	 * @throws BadPacketException
+	 * @throws PacketHandlingException
 	 */
 	protected function parseClientData(string $clientDataJwt) : ClientData{
 		try{
 			[, $clientDataClaims, ] = JwtUtils::parse($clientDataJwt);
 		}catch(JwtException $e){
-			throw BadPacketException::wrap($e);
+			throw PacketHandlingException::wrap($e);
 		}
 
 		$mapper = new \JsonMapper;
@@ -220,7 +219,7 @@ class LoginPacketHandler extends PacketHandler{
 		try{
 			$clientData = $mapper->map($clientDataClaims, new ClientData);
 		}catch(\JsonMapper_Exception $e){
-			throw BadPacketException::wrap($e);
+			throw PacketHandlingException::wrap($e);
 		}
 		return $clientData;
 	}

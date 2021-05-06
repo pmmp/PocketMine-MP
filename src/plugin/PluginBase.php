@@ -100,29 +100,23 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 	/**
 	 * Called when the plugin is loaded, before calling onEnable()
-	 *
-	 * @return void
 	 */
-	protected function onLoad()/* : void /* TODO: uncomment this for next major version */{
+	protected function onLoad() : void{
 
 	}
 
 	/**
 	 * Called when the plugin is enabled
-	 *
-	 * @return void
 	 */
-	protected function onEnable()/* : void /* TODO: uncomment this for next major version */{
+	protected function onEnable() : void{
 
 	}
 
 	/**
 	 * Called when the plugin is disabled
 	 * Use this to free open things and finish actions
-	 *
-	 * @return void
 	 */
-	protected function onDisable()/* : void /* TODO: uncomment this for next major version */{
+	protected function onDisable() : void{
 
 	}
 

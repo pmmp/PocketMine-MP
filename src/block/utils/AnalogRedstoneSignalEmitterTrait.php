@@ -21,30 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pmmp\TesterPlugin;
+namespace pocketmine\block\utils;
 
-use pocketmine\scheduler\Task;
+trait AnalogRedstoneSignalEmitterTrait{
+	protected int $signalStrength = 0;
 
-class CheckTestCompletionTask extends Task{
+	public function getOutputSignalStrength() : int{ return $this->signalStrength; }
 
-	/** @var Main */
-	private $plugin;
-
-	public function __construct(Main $plugin){
-		$this->plugin = $plugin;
-	}
-
-	public function onRun() : void{
-		$test = $this->plugin->getCurrentTest();
-		if($test === null){
-			if(!$this->plugin->startNextTest()){
-				$this->getHandler()->cancel();
-				$this->plugin->onAllTestsCompleted();
-			}
-		}elseif($test->isFinished() or $test->isTimedOut()){
-			$this->plugin->onTestCompleted($test);
-		}else{
-			$test->tick();
+	/** @return $this */
+	public function setOutputSignalStrength(int $signalStrength) : self{
+		if($signalStrength < 0 || $signalStrength > 15){
+			throw new \InvalidArgumentException("Signal strength must be in range 0-15");
 		}
+		$this->signalStrength = $signalStrength;
+		return $this;
 	}
 }

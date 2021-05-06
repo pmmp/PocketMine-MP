@@ -43,12 +43,12 @@ final class CreativeContentEntry{
 
 	public static function read(PacketSerializer $in) : self{
 		$entryId = $in->readGenericTypeNetworkId();
-		$item = $in->getSlot();
+		$item = $in->getItemStackWithoutStackId();
 		return new self($entryId, $item);
 	}
 
 	public function write(PacketSerializer $out) : void{
 		$out->writeGenericTypeNetworkId($this->entryId);
-		$out->putSlot($this->item);
+		$out->putItemStackWithoutStackId($this->item);
 	}
 }

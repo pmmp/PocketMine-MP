@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types\recipe;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\UuidInterface;
 
 final class MultiRecipe extends RecipeWithTypeId{
 
@@ -41,18 +41,18 @@ final class MultiRecipe extends RecipeWithTypeId{
 	public const TYPE_FIREWORKS = "00000000-0000-0000-0000-000000000002";
 	public const TYPE_MAP_LOCKING_CARTOGRAPHY = "602234E4-CAC1-4353-8BB7-B1EBFF70024B";
 
-	/** @var UUID */
+	/** @var UuidInterface */
 	private $recipeId;
 	/** @var int */
 	private $recipeNetId;
 
-	public function __construct(int $typeId, UUID $recipeId, int $recipeNetId){
+	public function __construct(int $typeId, UuidInterface $recipeId, int $recipeNetId){
 		parent::__construct($typeId);
 		$this->recipeId = $recipeId;
 		$this->recipeNetId = $recipeNetId;
 	}
 
-	public function getRecipeId() : UUID{
+	public function getRecipeId() : UuidInterface{
 		return $this->recipeId;
 	}
 

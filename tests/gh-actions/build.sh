@@ -50,22 +50,24 @@ echo '"leveldb",,"https://github.com/pmmp/php-leveldb.git",,"--with-leveldb='$IN
 echo '"chunkutils2",,"https://github.com/pmmp/ext-chunkutils2.git",,,"extension",' >> share/php-build/extension/definition
 echo '"morton",,"https://github.com/pmmp/ext-morton.git",,,"extension",' >> share/php-build/extension/definition
 PHP_BUILD_INSTALL_EXTENSION="\
-pthreads=@2bcd8b8c10395d58b8a9bc013e3a5328080c867f \
-yaml=2.2.0 \
-leveldb=@2e3f740b55af1eb6dfc648dd451bcb7d6151c26c \
-chunkutils2=@5a4dcd6ed74e0db2ca9a54948d4f3a065e386db5 \
+pthreads=@acc6e52b2144c61c434b62a3cb680d537e06828e \
+yaml=2.2.1 \
+leveldb=@60763a09bf5c7a10376d16e25b078b99a35c5c37 \
+chunkutils2=@0.2.0 \
 morton=@0.1.2 \
-igbinary=3.1.4 \
-ds=1.3.0 \
-" PHP_BUILD_ZTS_ENABLE=on PHP_BUILD_CONFIGURE_OPTS='--with-gmp' ./bin/php-build "$VERSION" "$INSTALL_DIR"
+igbinary=3.2.1 \
+" PHP_BUILD_ZTS_ENABLE=on PHP_BUILD_CONFIGURE_OPTS='--with-gmp' ./bin/php-build "$VERSION" "$INSTALL_DIR" || exit 1
 
 rm -rf crypto
 git clone --recursive https://github.com/bukka/php-crypto.git crypto
 cd crypto
-git checkout -qf 5f26ac91b0ba96742cc6284cd00f8db69c3788b2
+git checkout -qf c8867aa944fa5227eaea9d11a6ce282e64c15af9
 git submodule update --init --recursive
 "$INSTALL_DIR/bin/phpize"
 ./configure --with-php-config="$INSTALL_DIR/bin/php-config"
 make -j8 install
 echo "extension=crypto.so" >> "$INSTALL_DIR/etc/conf.d/crypto.ini"
 cd ..
+
+rm "$INSTALL_DIR/etc/conf.d/xdebug.ini" || true
+cp install-dependencies.sh "$INSTALL_DIR"

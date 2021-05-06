@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
-use Ds\Set;
 use pocketmine\color\Color;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityEffectAddEvent;
 use pocketmine\event\entity\EntityEffectRemoveEvent;
+use pocketmine\utils\ObjectSet;
 use function abs;
 use function count;
 
@@ -45,21 +45,21 @@ class EffectManager{
 	protected $onlyAmbientEffects = false;
 
 	/**
-	 * @var \Closure[]|Set
-	 * @phpstan-var Set<\Closure(EffectInstance, bool $replacesOldEffect) : void>
+	 * @var \Closure[]|ObjectSet
+	 * @phpstan-var ObjectSet<\Closure(EffectInstance, bool $replacesOldEffect) : void>
 	 */
 	protected $effectAddHooks;
 	/**
-	 * @var \Closure[]|Set
-	 * @phpstan-var Set<\Closure(EffectInstance) : void>
+	 * @var \Closure[]|ObjectSet
+	 * @phpstan-var ObjectSet<\Closure(EffectInstance) : void>
 	 */
 	protected $effectRemoveHooks;
 
 	public function __construct(Living $entity){
 		$this->entity = $entity;
 		$this->bubbleColor = new Color(0, 0, 0, 0);
-		$this->effectAddHooks = new Set();
-		$this->effectRemoveHooks = new Set();
+		$this->effectAddHooks = new ObjectSet();
+		$this->effectRemoveHooks = new ObjectSet();
 	}
 
 	/**
@@ -225,18 +225,18 @@ class EffectManager{
 	}
 
 	/**
-	 * @return \Closure[]|Set
-	 * @phpstan-return Set<\Closure(EffectInstance, bool $replacesOldEffect) : void>
+	 * @return \Closure[]|ObjectSet
+	 * @phpstan-return ObjectSet<\Closure(EffectInstance, bool $replacesOldEffect) : void>
 	 */
-	public function getEffectAddHooks() : Set{
+	public function getEffectAddHooks() : ObjectSet{
 		return $this->effectAddHooks;
 	}
 
 	/**
-	 * @return \Closure[]|Set
-	 * @phpstan-return Set<\Closure(EffectInstance) : void>
+	 * @return \Closure[]|ObjectSet
+	 * @phpstan-return ObjectSet<\Closure(EffectInstance) : void>
 	 */
-	public function getEffectRemoveHooks() : Set{
+	public function getEffectRemoveHooks() : ObjectSet{
 		return $this->effectRemoveHooks;
 	}
 }

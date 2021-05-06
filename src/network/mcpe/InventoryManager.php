@@ -29,12 +29,14 @@ use pocketmine\block\inventory\BrewingStandInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
+use pocketmine\block\inventory\LoomInventory;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
@@ -47,10 +49,14 @@ use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\player\Player;
+use pocketmine\utils\ObjectSet;
 use function array_map;
 use function array_search;
 use function max;
 
+/**
+ * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
+ */
 class InventoryManager{
 
 	//TODO: HACK!
@@ -76,14 +82,27 @@ class InventoryManager{
 	 * @phpstan-var array<int, array<int, Item>>
 	 */
 	private $initiatedSlotChanges = [];
+	/** @var int */
+	private $clientSelectedHotbarSlot = -1;
+
+	/** @phpstan-var ObjectSet<ContainerOpenClosure> */
+	private ObjectSet $containerOpenCallbacks;
 
 	public function __construct(Player $player, NetworkSession $session){
 		$this->player = $player;
 		$this->session = $session;
 
+		$this->containerOpenCallbacks = new ObjectSet();
+		$this->containerOpenCallbacks->add(\Closure::fromCallable([self::class, 'createContainerOpen']));
+
 		$this->add(ContainerIds::INVENTORY, $this->player->getInventory());
+		$this->add(ContainerIds::OFFHAND, $this->player->getOffHandInventory());
 		$this->add(ContainerIds::ARMOR, $this->player->getArmorInventory());
 		$this->add(ContainerIds::UI, $this->player->getCursorInventory());
+
+		$this->player->getInventory()->getHeldItemIndexChangeListeners()->add(function() : void{
+			$this->syncSelectedHotbarSlot();
+		});
 	}
 
 	private function add(int $id, Inventory $inventory) : void{
@@ -119,32 +138,46 @@ class InventoryManager{
 		$this->onCurrentWindowRemove();
 		$this->add($this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % self::RESERVED_WINDOW_ID_RANGE_START), $inventory);
 
-		$pk = $this->createContainerOpen($this->lastInventoryNetworkId, $inventory);
-		if($pk !== null){
-			$this->session->sendDataPacket($pk);
-			$this->syncContents($inventory);
-		}else{
-			throw new \UnsupportedOperationException("Unsupported inventory type");
+		foreach($this->containerOpenCallbacks as $callback){
+			$pks = $callback($this->lastInventoryNetworkId, $inventory);
+			if($pks !== null){
+				foreach($pks as $pk){
+					$this->session->sendDataPacket($pk);
+				}
+				$this->syncContents($inventory);
+			}
+			return;
 		}
+		throw new \UnsupportedOperationException("Unsupported inventory type");
 	}
 
-	protected function createContainerOpen(int $id, Inventory $inv) : ?ContainerOpenPacket{
-		//TODO: allow plugins to inject this
+	/** @phpstan-return ObjectSet<ContainerOpenClosure> */
+	public function getContainerOpenCallbacks() : ObjectSet{ return $this->containerOpenCallbacks; }
+
+	/**
+	 * @return ClientboundPacket[]|null
+	 * @phpstan-return list<ClientboundPacket>|null
+	 */
+	protected static function createContainerOpen(int $id, Inventory $inv) : ?array{
+		//TODO: we should be using some kind of tagging system to identify the types. Instanceof is flaky especially
+		//if the class isn't final, not to mention being inflexible.
 		if($inv instanceof BlockInventory){
 			switch(true){
+				case $inv instanceof LoomInventory:
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::LOOM, $inv->getHolder())];
 				case $inv instanceof FurnaceInventory:
 					//TODO: specialized furnace types
-					return ContainerOpenPacket::blockInvVec3($id, WindowTypes::FURNACE, $inv->getHolder());
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::FURNACE, $inv->getHolder())];
 				case $inv instanceof EnchantInventory:
-					return ContainerOpenPacket::blockInvVec3($id, WindowTypes::ENCHANTMENT, $inv->getHolder());
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::ENCHANTMENT, $inv->getHolder())];
 				case $inv instanceof BrewingStandInventory:
-					return ContainerOpenPacket::blockInvVec3($id, WindowTypes::BREWING_STAND, $inv->getHolder());
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::BREWING_STAND, $inv->getHolder())];
 				case $inv instanceof AnvilInventory:
-					return ContainerOpenPacket::blockInvVec3($id, WindowTypes::ANVIL, $inv->getHolder());
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::ANVIL, $inv->getHolder())];
 				case $inv instanceof HopperInventory:
-					return ContainerOpenPacket::blockInvVec3($id, WindowTypes::HOPPER, $inv->getHolder());
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::HOPPER, $inv->getHolder())];
 				default:
-					return ContainerOpenPacket::blockInvVec3($id, WindowTypes::CONTAINER, $inv->getHolder());
+					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::CONTAINER, $inv->getHolder())];
 			}
 		}
 		return null;
@@ -187,9 +220,22 @@ class InventoryManager{
 		if($windowId !== null){
 			unset($this->initiatedSlotChanges[$windowId]);
 			$typeConverter = TypeConverter::getInstance();
-			$this->session->sendDataPacket(InventoryContentPacket::create($windowId, array_map(function(Item $itemStack) use ($typeConverter) : ItemStackWrapper{
-				return ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($itemStack));
-			}, $inventory->getContents(true))));
+			if($windowId === ContainerIds::UI){
+				//TODO: HACK!
+				//Since 1.13, cursor is now part of a larger "UI inventory", and sending contents for this larger inventory does
+				//not work the way it's intended to. Even if it did, it would be necessary to send all 51 slots just to update
+				//this one, which is just not worth it.
+				//This workaround isn't great, but it's at least simple.
+				$this->session->sendDataPacket(InventorySlotPacket::create(
+					$windowId,
+					0,
+					ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($inventory->getItem(0)))
+				));
+			}else{
+				$this->session->sendDataPacket(InventoryContentPacket::create($windowId, array_map(function(Item $itemStack) use ($typeConverter) : ItemStackWrapper{
+					return ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($itemStack));
+				}, $inventory->getContents(true))));
+			}
 		}
 	}
 
@@ -206,13 +252,21 @@ class InventoryManager{
 		}
 	}
 
+	public function onClientSelectHotbarSlot(int $slot) : void{
+		$this->clientSelectedHotbarSlot = $slot;
+	}
+
 	public function syncSelectedHotbarSlot() : void{
-		$this->session->sendDataPacket(MobEquipmentPacket::create(
-			$this->player->getId(),
-			TypeConverter::getInstance()->coreItemStackToNet($this->player->getInventory()->getItemInHand()),
-			$this->player->getInventory()->getHeldItemIndex(),
-			ContainerIds::INVENTORY
-		));
+		$selected = $this->player->getInventory()->getHeldItemIndex();
+		if($selected !== $this->clientSelectedHotbarSlot){
+			$this->session->sendDataPacket(MobEquipmentPacket::create(
+				$this->player->getId(),
+				ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->player->getInventory()->getItemInHand())),
+				$selected,
+				ContainerIds::INVENTORY
+			));
+			$this->clientSelectedHotbarSlot = $selected;
+		}
 	}
 
 	public function syncCreative() : void{

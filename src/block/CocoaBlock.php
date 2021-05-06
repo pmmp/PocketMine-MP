@@ -85,8 +85,12 @@ class CocoaBlock extends Transparent{
 		];
 	}
 
+	private function canAttachTo(Block $block) : bool{
+		return $block instanceof Wood && $block->getTreeType()->equals(TreeType::JUNGLE());
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(Facing::axis($face) !== Axis::Y and $blockClicked instanceof Wood and $blockClicked->getTreeType()->equals(TreeType::JUNGLE())){
+		if(Facing::axis($face) !== Axis::Y and $this->canAttachTo($blockClicked)){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
@@ -108,8 +112,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$side = $this->getSide(Facing::opposite($this->facing));
-		if(!($side instanceof Wood) or !$side->getTreeType()->equals(TreeType::JUNGLE())){
+		if(!$this->canAttachTo($this->getSide(Facing::opposite($this->facing)))){
 			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}

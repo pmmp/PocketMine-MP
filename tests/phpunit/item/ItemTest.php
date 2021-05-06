@@ -136,4 +136,13 @@ class ItemTest extends TestCase{
 		$this->item->removeEnchantment(VanillaEnchantments::FIRE_ASPECT(), 2);
 		self::assertFalse($this->item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT()));
 	}
+
+	/**
+	 * Tests that when all enchantments are removed from an item, the "ench" tag is removed as well
+	 */
+	public function testRemoveAllEnchantmentsNBT() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS(), 1));
+		$this->item->removeEnchantment(VanillaEnchantments::SHARPNESS());
+		self::assertNull($this->item->getNamedTag()->getTag(Item::TAG_ENCH));
+	}
 }

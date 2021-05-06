@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryDataException;
 
 class PacketPool{
@@ -201,6 +201,7 @@ class PacketPool{
 		$this->registerPacket(new CorrectPlayerMovePredictionPacket());
 		$this->registerPacket(new ItemComponentPacket());
 		$this->registerPacket(new FilterTextPacket());
+		$this->registerPacket(new ClientboundDebugRendererPacket());
 	}
 
 	public function registerPacket(Packet $packet) : void{
@@ -215,10 +216,7 @@ class PacketPool{
 	 * @throws BinaryDataException
 	 */
 	public function getPacket(string $buffer) : Packet{
-		$serializer = new PacketSerializer($buffer);
-		$pk = $this->getPacketById($serializer->getUnsignedVarInt() & DataPacket::PID_MASK);
-		$pk->setSerializer($serializer);
-
-		return $pk;
+		$offset = 0;
+		return $this->getPacketById(Binary::readUnsignedVarInt($buffer, $offset) & DataPacket::PID_MASK);
 	}
 }

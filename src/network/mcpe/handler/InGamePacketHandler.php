@@ -41,7 +41,6 @@ use pocketmine\item\WrittenBook;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
-use pocketmine\network\BadPacketException;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\InventoryManager;
@@ -63,6 +62,7 @@ use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
@@ -76,6 +76,7 @@ use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
+use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
@@ -90,6 +91,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
+use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use function array_key_exists;
@@ -98,6 +100,8 @@ use function base64_encode;
 use function count;
 use function fmod;
 use function implode;
+use function is_infinite;
+use function is_nan;
 use function json_decode;
 use function json_encode;
 use function json_last_error_msg;
@@ -124,8 +128,11 @@ class InGamePacketHandler extends PacketHandler{
 
 	/** @var float */
 	protected $lastRightClickTime = 0.0;
-	/** @var Vector3|null */
-	protected $lastRightClickPos = null;
+	/** @var UseItemTransactionData|null */
+	protected $lastRightClickData = null;
+
+	/** @var bool */
+	public $forceMoveSync = false;
 
 	/**
 	 * TODO: HACK! This tracks GUIs for inventories that the server considers "always open" so that the client can't
@@ -150,6 +157,14 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
+		$rawPos = $packet->position;
+		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $packet->yaw, $packet->headYaw, $packet->pitch] as $float){
+			if(is_infinite($float) || is_nan($float)){
+				$this->session->getLogger()->debug("Invalid movement received, contains NAN/INF components");
+				return false;
+			}
+		}
+
 		$yaw = fmod($packet->yaw, 360);
 		$pitch = fmod($packet->pitch, 360);
 		if($yaw < 0){
@@ -157,7 +172,21 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$this->player->setRotation($yaw, $pitch);
-		$this->player->updateNextPosition($packet->position->round(4)->subtract(0, 1.62, 0));
+
+		$curPos = $this->player->getLocation();
+		$newPos = $packet->position->subtract(0, 1.62, 0);
+
+		if($this->forceMoveSync and $newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+			$this->session->syncMovement($curPos, null, null, MovePlayerPacket::MODE_RESET);
+			$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
+			//Still getting movements from before teleport, ignore them
+			return false;
+		}
+
+		// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
+		$this->forceMoveSync = false;
+
+		$this->player->handleMovement($newPos);
 
 		return true;
 	}
@@ -226,7 +255,7 @@ class InGamePacketHandler extends PacketHandler{
 					)
 				) or (
 					$this->craftingTransaction !== null &&
-					!$networkInventoryAction->oldItem->equals($networkInventoryAction->newItem) &&
+					!$networkInventoryAction->oldItem->getItemStack()->equals($networkInventoryAction->newItem->getItemStack()) &&
 					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER &&
 					$networkInventoryAction->windowId === ContainerIds::UI &&
 					$networkInventoryAction->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT
@@ -248,6 +277,7 @@ class InGamePacketHandler extends PacketHandler{
 
 		if($isCraftingPart){
 			if($this->craftingTransaction === null){
+				//TODO: this might not be crafting if there is a special inventory open (anvil, enchanting, loom etc)
 				$this->craftingTransaction = new CraftingTransaction($this->player, $this->player->getServer()->getCraftingManager(), $actions);
 			}else{
 				foreach($actions as $action){
@@ -322,12 +352,14 @@ class InGamePacketHandler extends PacketHandler{
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
 				//TODO: start hack for client spam bug
 				$clickPos = $data->getClickPos();
-				$spamBug = ($this->lastRightClickPos !== null and
+				$spamBug = ($this->lastRightClickData !== null and
 					microtime(true) - $this->lastRightClickTime < 0.1 and //100ms
-					$this->lastRightClickPos->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
+					$this->lastRightClickData->getPlayerPos()->distanceSquared($data->getPlayerPos()) < 0.00001 and
+					$this->lastRightClickData->getBlockPos()->equals($data->getBlockPos()) and
+					$this->lastRightClickData->getClickPos()->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
 				);
 				//get rid of continued spam if the player clicks and holds right-click
-				$this->lastRightClickPos = clone $clickPos;
+				$this->lastRightClickData = $data;
 				$this->lastRightClickTime = microtime(true);
 				if($spamBug){
 					return true;
@@ -431,10 +463,17 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
-		if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
-			$this->session->getInvManager()->syncSelectedHotbarSlot();
+		if($packet->windowId === ContainerIds::OFFHAND){
+			return true; //this happens when we put an item into the offhand
 		}
-		return true;
+		if($packet->windowId === ContainerIds::INVENTORY){
+			$this->session->getInvManager()->onClientSelectHotbarSlot($packet->hotbarSlot);
+			if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
+				$this->session->getInvManager()->syncSelectedHotbarSlot();
+			}
+			return true;
+		}
+		return false;
 	}
 
 	public function handleMobArmorEquipment(MobArmorEquipmentPacket $packet) : bool{
@@ -527,7 +566,7 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerActionPacket::ACTION_START_GLIDE:
 			case PlayerActionPacket::ACTION_STOP_GLIDE:
 				break; //TODO
-			case PlayerActionPacket::ACTION_CONTINUE_BREAK:
+			case PlayerActionPacket::ACTION_CRACK_BREAK:
 				$this->player->continueBreakBlock($pos, $packet->face);
 				break;
 			case PlayerActionPacket::ACTION_START_SWIMMING:
@@ -548,6 +587,10 @@ class InGamePacketHandler extends PacketHandler{
 		$this->player->setUsingItem(false);
 
 		return true;
+	}
+
+	public function handleSetActorMotion(SetActorMotionPacket $packet) : bool{
+		return true; //Not used: This packet is (erroneously) sent to the server when the client is riding a vehicle.
 	}
 
 	public function handleAnimate(AnimatePacket $packet) : bool{
@@ -610,7 +653,7 @@ class InGamePacketHandler extends PacketHandler{
 				try{
 					$text = SignText::fromBlob($textBlobTag->getValue());
 				}catch(\InvalidArgumentException $e){
-					throw BadPacketException::wrap($e, "Invalid sign text update");
+					throw PacketHandlingException::wrap($e, "Invalid sign text update");
 				}
 
 				try{
@@ -620,7 +663,7 @@ class InGamePacketHandler extends PacketHandler{
 						}
 					}
 				}catch(\UnexpectedValueException $e){
-					throw BadPacketException::wrap($e);
+					throw PacketHandlingException::wrap($e);
 				}
 
 				return true;
@@ -637,8 +680,8 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleSetPlayerGameType(SetPlayerGameTypePacket $packet) : bool{
-		$converter = TypeConverter::getInstance();
-		if(!$converter->protocolGameModeToCore($packet->gamemode)->equals($this->player->getGamemode())){
+		$gameMode = TypeConverter::getInstance()->protocolGameModeToCore($packet->gamemode);
+		if($gameMode === null || !$gameMode->equals($this->player->getGamemode())){
 			//Set this back to default. TODO: handle this properly
 			$this->session->syncGameMode($this->player->getGamemode(), true);
 		}
@@ -691,7 +734,7 @@ class InGamePacketHandler extends PacketHandler{
 		try{
 			$skin = SkinAdapterSingleton::get()->fromSkinData($packet->skin);
 		}catch(InvalidSkinException $e){
-			throw BadPacketException::wrap($e, "Invalid skin in PlayerSkinPacket");
+			throw PacketHandlingException::wrap($e, "Invalid skin in PlayerSkinPacket");
 		}
 		return $this->player->changeSkin($skin, $packet->newSkinName, $packet->oldSkinName);
 	}
@@ -770,7 +813,7 @@ class InGamePacketHandler extends PacketHandler{
 	 * Hack to work around a stupid bug in Minecraft W10 which causes empty strings to be sent unquoted in form responses.
 	 *
 	 * @return mixed
-	 * @throws BadPacketException
+	 * @throws PacketHandlingException
 	 */
 	private static function stupid_json_decode(string $json, bool $assoc = false){
 		if(preg_match('/^\[(.+)\]$/s', $json, $matches) > 0){
@@ -820,5 +863,15 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{
 		return true; //TODO: implement this properly - this is here to silence debug spam from MCPE dev builds
+	}
+
+	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
+		/*
+		 * We don't handle this - all sounds are handled by the server now.
+		 * However, some plugins find this useful to detect events like left-click-air, which doesn't have any other
+		 * action bound to it.
+		 * In addition, we use this handler to silence debug noise, since this packet is frequently sent by the client.
+		 */
+		return true;
 	}
 }

@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\protocol\serializer;
 use pocketmine\network\mcpe\protocol\Packet;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\PacketPool;
+use pocketmine\utils\BinaryDataException;
 
 class PacketBatch{
 
@@ -38,13 +39,18 @@ class PacketBatch{
 
 	/**
 	 * @return \Generator|Packet[]
-	 * @phpstan-return \Generator<int, Packet, void, void>
+	 * @phpstan-return \Generator<int, array{Packet, string}, void, void>
 	 * @throws PacketDecodeException
 	 */
 	public function getPackets(PacketPool $packetPool, int $max) : \Generator{
 		$serializer = new PacketSerializer($this->buffer);
 		for($c = 0; $c < $max and !$serializer->feof(); ++$c){
-			yield $c => $packetPool->getPacket($serializer->getString());
+			try{
+				$buffer = $serializer->getString();
+				yield $c => [$packetPool->getPacket($buffer), $buffer];
+			}catch(BinaryDataException $e){
+				throw new PacketDecodeException("Error decoding packet $c of batch: " . $e->getMessage(), 0, $e);
+			}
 		}
 		if(!$serializer->feof()){
 			throw new PacketDecodeException("Reached limit of $max packets in a single batch");
@@ -61,8 +67,9 @@ class PacketBatch{
 	public static function fromPackets(Packet ...$packets) : self{
 		$serializer = new PacketSerializer();
 		foreach($packets as $packet){
-			$packet->encode();
-			$serializer->putString($packet->getSerializer()->getBuffer());
+			$subSerializer = new PacketSerializer();
+			$packet->encode($subSerializer);
+			$serializer->putString($subSerializer->getBuffer());
 		}
 		return new self($serializer->getBuffer());
 	}

@@ -715,7 +715,7 @@ abstract class Living extends Entity{
 		$blocks = [];
 		$nextIndex = 0;
 
-		foreach(VoxelRayTrace::inDirection($this->location->add(0, $this->eyeHeight, 0), $this->getDirectionVector(), $maxDistance) as $vector3){
+		foreach(VoxelRayTrace::inDirection($this->location->add(0, $this->size->getEyeHeight(), 0), $this->getDirectionVector(), $maxDistance) as $vector3){
 			$block = $this->getWorld()->getBlockAt($vector3->x, $vector3->y, $vector3->z);
 			$blocks[$nextIndex++] = $block;
 

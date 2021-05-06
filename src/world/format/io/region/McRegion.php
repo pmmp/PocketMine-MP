@@ -39,14 +39,6 @@ use pocketmine\world\format\SubChunk;
 use function zlib_decode;
 
 class McRegion extends RegionWorldProvider{
-
-	/**
-	 * @throws \RuntimeException
-	 */
-	protected function serializeChunk(Chunk $chunk) : string{
-		throw new \RuntimeException("Unsupported");
-	}
-
 	/**
 	 * @throws CorruptedChunkException
 	 */
@@ -106,7 +98,11 @@ class McRegion extends RegionWorldProvider{
 		return 19132;
 	}
 
-	public function getWorldHeight() : int{
+	public function getWorldMinY() : int{
+		return 0;
+	}
+
+	public function getWorldMaxY() : int{
 		//TODO: add world height options
 		return 128;
 	}

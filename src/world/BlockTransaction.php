@@ -42,7 +42,7 @@ class BlockTransaction{
 
 	public function __construct(ChunkManager $world){
 		$this->world = $world;
-		$this->addValidator(function(ChunkManager $world, int $x, int $y, int $z) : bool{
+		$this->addValidator(static function(ChunkManager $world, int $x, int $y, int $z) : bool{
 			return $world->isInWorld($x, $y, $z);
 		});
 	}
@@ -103,6 +103,7 @@ class BlockTransaction{
 
 	/**
 	 * @return \Generator|mixed[] [int $x, int $y, int $z, Block $block]
+	 * @phpstan-return \Generator<int, array{int, int, int, Block}, void, void>
 	 */
 	public function getBlocks() : \Generator{
 		foreach($this->blocks as $x => $yLine){

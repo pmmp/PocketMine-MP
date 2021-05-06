@@ -32,7 +32,7 @@ use function strlen;
 use function substr;
 
 class EncryptionContext{
-	private const ENCRYPTION_SCHEME = "AES-256-CFB8";
+	private const ENCRYPTION_SCHEME = "AES-256-GCM";
 	private const CHECKSUM_ALGO = "sha256";
 
 	/** @var bool */
@@ -52,17 +52,15 @@ class EncryptionContext{
 	private $encryptCounter = 0;
 
 	public function __construct(string $encryptionKey){
-		//TODO: ext/crypto doesn't offer us a way to disable padding. This doesn't matter at the moment because we're
-		//using CFB8, but this might change in the future. This is supposed to be CFB8 no-padding.
-
 		$this->key = $encryptionKey;
-		$iv = substr($this->key, 0, 16);
 
 		$this->decryptCipher = new Cipher(self::ENCRYPTION_SCHEME);
-		$this->decryptCipher->decryptInit($this->key, $iv);
+		$ivLength = $this->decryptCipher->getIVLength();
+		$this->decryptCipher->decryptInit($this->key, substr($this->key, 0, $ivLength));
 
 		$this->encryptCipher = new Cipher(self::ENCRYPTION_SCHEME);
-		$this->encryptCipher->encryptInit($this->key, $iv);
+		$ivLength = $this->encryptCipher->getIVLength();
+		$this->encryptCipher->encryptInit($this->key, substr($this->key, 0, $ivLength));
 	}
 
 	/**

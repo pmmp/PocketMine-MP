@@ -45,6 +45,6 @@ final class Manifest{
 	 */
 	public $modules;
 
-	/** @var ManifestMetadata */
-	public $metadata;
+	/** @var ManifestMetadata|null */
+	public $metadata = null;
 }

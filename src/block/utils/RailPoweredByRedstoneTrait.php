@@ -21,29 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\player;
+namespace pocketmine\block\utils;
 
-use pocketmine\math\Vector3;
-use pocketmine\world\ChunkLoader;
+use pocketmine\block\BlockLegacyMetadata;
 
-final class TickingChunkLoader implements ChunkLoader{
+trait RailPoweredByRedstoneTrait{
+	use PoweredByRedstoneTrait;
 
-	/** @var Vector3 */
-	private $currentLocation;
-
-	public function __construct(Vector3 $currentLocation){
-		$this->currentLocation = $currentLocation;
+	protected function writeStateToMeta() : int{
+		return parent::writeStateToMeta() | ($this->powered ? BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED : 0);
 	}
 
-	public function setCurrentLocation(Vector3 $currentLocation) : void{
-		$this->currentLocation = $currentLocation;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		parent::readStateFromData($id, $stateMeta);
+		$this->powered = ($stateMeta & BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED) !== 0;
 	}
 
-	public function getX(){
-		return $this->currentLocation->getFloorX();
-	}
-
-	public function getZ(){
-		return $this->currentLocation->getFloorZ();
+	protected function getConnectionsFromMeta(int $meta) : ?array{
+		return self::CONNECTIONS[$meta & ~BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED] ?? null;
 	}
 }

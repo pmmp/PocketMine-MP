@@ -27,12 +27,12 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\skin\SkinData;
-use pocketmine\uuid\UUID;
+use Ramsey\Uuid\UuidInterface;
 
 class PlayerSkinPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::PLAYER_SKIN_PACKET;
 
-	/** @var UUID */
+	/** @var UuidInterface */
 	public $uuid;
 	/** @var string */
 	public $oldSkinName = "";
@@ -41,7 +41,7 @@ class PlayerSkinPacket extends DataPacket implements ClientboundPacket, Serverbo
 	/** @var SkinData */
 	public $skin;
 
-	public static function create(UUID $uuid, SkinData $skinData) : self{
+	public static function create(UuidInterface $uuid, SkinData $skinData) : self{
 		$result = new self;
 		$result->uuid = $uuid;
 		$result->skin = $skinData;

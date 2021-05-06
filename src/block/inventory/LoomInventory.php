@@ -21,23 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\particle;
+namespace pocketmine\block\inventory;
 
-use pocketmine\block\Block;
-use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\player\Player;
+use pocketmine\world\Position;
 
-class DestroyBlockParticle implements Particle{
+final class LoomInventory extends BlockInventory{
+	public const SLOT_BANNER = 0;
+	public const SLOT_DYE = 1;
+	public const SLOT_PATTERN = 2;
 
-	/** @var Block */
-	private $block;
-
-	public function __construct(Block $b){
-		$this->block = $b;
+	public function __construct(Position $holder, int $size = 3){
+		parent::__construct($holder, $size);
 	}
 
-	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_DESTROY, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()), $pos)];
+	public function onClose(Player $who) : void{
+		parent::onClose($who);
+
+		foreach($this->getContents() as $item){
+			$who->dropItem($item);
+		}
+		$this->clearAll();
 	}
 }

@@ -97,7 +97,7 @@ class ParticleCommand extends VanillaCommand{
 			$world = $senderPos->getWorld();
 			$pos = new Vector3(
 				$this->getRelativeDouble($senderPos->getX(), $sender, $args[1]),
-				$this->getRelativeDouble($senderPos->getY(), $sender, $args[2], 0, World::Y_MAX),
+				$this->getRelativeDouble($senderPos->getY(), $sender, $args[2], World::Y_MIN, World::Y_MAX),
 				$this->getRelativeDouble($senderPos->getZ(), $sender, $args[3])
 			);
 		}else{

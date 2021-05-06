@@ -28,39 +28,21 @@ namespace pocketmine\network\mcpe\protocol\types\login;
  */
 final class ClientDataAnimationFrame{
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $ImageHeight;
+	/** @required */
+	public int $ImageHeight;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $ImageWidth;
+	/** @required */
+	public int $ImageWidth;
 
-	/**
-	 * @var float
-	 * @required
-	 */
-	public $Frames;
+	/** @required */
+	public float $Frames;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $Type;
+	/** @required */
+	public int $Type;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $Image;
+	/** @required */
+	public string $Image;
 
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $AnimationExpression;
+	/** @required */
+	public int $AnimationExpression;
 }

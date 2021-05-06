@@ -83,7 +83,7 @@ class PopulationTask extends AsyncTask{
 			throw new AssumptionFailedError("Generator context should have been initialized before any PopulationTask execution");
 		}
 		$generator = $context->getGenerator();
-		$manager = new SimpleChunkManager($context->getWorldHeight());
+		$manager = new SimpleChunkManager($context->getWorldMinY(), $context->getWorldMaxY());
 
 		/** @var Chunk[] $chunks */
 		$chunks = [];

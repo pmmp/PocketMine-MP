@@ -45,9 +45,14 @@ interface ChunkManager{
 	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void;
 
 	/**
-	 * Returns the height of the world
+	 * Returns the lowest buildable Y coordinate of the world
 	 */
-	public function getWorldHeight() : int;
+	public function getMinY() : int;
+
+	/**
+	 * Returns the highest buildable Y coordinate of the world
+	 */
+	public function getMaxY() : int;
 
 	/**
 	 * Returns whether the specified coordinates are within the valid world boundaries, taking world format limitations

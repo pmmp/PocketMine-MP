@@ -49,7 +49,7 @@ class ChorusFruit extends Food{
 
 		$origin = $consumer->getPosition();
 		$minX = $origin->getFloorX() - 8;
-		$minY = min($origin->getFloorY(), $consumer->getWorld()->getWorldHeight()) - 8;
+		$minY = min($origin->getFloorY(), $consumer->getWorld()->getMaxY()) - 8;
 		$minZ = $origin->getFloorZ() - 8;
 
 		$maxX = $minX + 16;

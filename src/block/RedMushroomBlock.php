@@ -37,10 +37,6 @@ class RedMushroomBlock extends Opaque{
 	 */
 	protected $rotationData = 0;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::AXE));
-	}
-
 	protected function writeStateToMeta() : int{
 		return $this->rotationData;
 	}

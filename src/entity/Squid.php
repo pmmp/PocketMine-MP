@@ -39,9 +39,6 @@ class Squid extends WaterAnimal{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::SQUID; }
 
-	public $width = 0.95;
-	public $height = 0.95;
-
 	/** @var Vector3|null */
 	public $swimDirection = null;
 	/** @var float */
@@ -49,6 +46,8 @@ class Squid extends WaterAnimal{
 
 	/** @var int */
 	private $switchDirectionTicker = 0;
+
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.95, 0.95); }
 
 	public function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(10);

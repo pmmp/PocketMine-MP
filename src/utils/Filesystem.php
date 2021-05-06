@@ -130,7 +130,7 @@ final class Filesystem{
 	public static function createLockFile(string $lockFilePath) : ?int{
 		$resource = fopen($lockFilePath, "a+b");
 		if($resource === false){
-			throw new \InvalidArgumentException("Invalid lock file path");
+			throw new \InvalidArgumentException("Invalid lock file path or read/write permissions denied");
 		}
 		if(!flock($resource, LOCK_EX | LOCK_NB)){
 			//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the

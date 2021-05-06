@@ -50,6 +50,7 @@ class LegacySkinAdapter implements SkinAdapter{
 		}
 		return new SkinData(
 			$skin->getSkinId(),
+			"", //TODO: playfab ID
 			$resourcePatch,
 			SkinImage::fromLegacy($skin->getSkinData()), [],
 			$capeImage,

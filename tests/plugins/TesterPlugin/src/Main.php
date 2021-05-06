@@ -26,6 +26,8 @@ namespace pmmp\TesterPlugin;
 use pocketmine\event\Listener;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\plugin\PluginBase;
+use pocketmine\scheduler\CancelTaskException;
+use pocketmine\scheduler\ClosureTask;
 use function array_shift;
 
 class Main extends PluginBase implements Listener{
@@ -41,7 +43,18 @@ class Main extends PluginBase implements Listener{
 
 	public function onEnable() : void{
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
-		$this->getScheduler()->scheduleRepeatingTask(new CheckTestCompletionTask($this), 10);
+		$this->getScheduler()->scheduleRepeatingTask(new ClosureTask(function() : void{
+			if($this->currentTest === null){
+				if(!$this->startNextTest()){
+					$this->onAllTestsCompleted();
+					throw new CancelTaskException();
+				}
+			}elseif($this->currentTest->isFinished() || $this->currentTest->isTimedOut()){
+				$this->onTestCompleted($this->currentTest);
+			}else{
+				$this->currentTest->tick();
+			}
+		}), 10);
 
 		$this->waitingTests = [];
 	}
@@ -56,11 +69,7 @@ class Main extends PluginBase implements Listener{
 		}
 	}
 
-	public function getCurrentTest() : ?Test{
-		return $this->currentTest;
-	}
-
-	public function startNextTest() : bool{
+	private function startNextTest() : bool{
 		$this->currentTest = array_shift($this->waitingTests);
 		if($this->currentTest !== null){
 			$this->getLogger()->notice("Running test #" . (++$this->currentTestNumber) . " (" . $this->currentTest->getName() . ")");
@@ -71,7 +80,7 @@ class Main extends PluginBase implements Listener{
 		return false;
 	}
 
-	public function onTestCompleted(Test $test) : void{
+	private function onTestCompleted(Test $test) : void{
 		$message = "Finished test #" . $this->currentTestNumber . " (" . $test->getName() . "): ";
 		switch($test->getResult()){
 			case Test::RESULT_OK:
@@ -97,7 +106,7 @@ class Main extends PluginBase implements Listener{
 		$this->currentTest = null;
 	}
 
-	public function onAllTestsCompleted() : void{
+	private function onAllTestsCompleted() : void{
 		$this->getLogger()->notice("All tests finished, stopping the server");
 		$this->getServer()->shutdown();
 	}

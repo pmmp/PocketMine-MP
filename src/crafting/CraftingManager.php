@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\crafting;
 
-use Ds\Set;
 use pocketmine\item\Item;
 use pocketmine\utils\DestructorCallbackTrait;
+use pocketmine\utils\ObjectSet;
 use function json_encode;
 use function usort;
 
@@ -41,23 +41,25 @@ class CraftingManager{
 	protected $furnaceRecipeManager;
 
 	/**
-	 * @var Set
-	 * @phpstan-var Set<\Closure() : void>
+	 * @var ObjectSet
+	 * @phpstan-var ObjectSet<\Closure() : void>
 	 */
 	private $recipeRegisteredCallbacks;
 
 	public function __construct(){
-		$this->recipeRegisteredCallbacks = new Set();
+		$this->recipeRegisteredCallbacks = new ObjectSet();
 		$this->furnaceRecipeManager = new FurnaceRecipeManager();
-		$this->furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(function(FurnaceRecipe $recipe) : void{
-			foreach($this->recipeRegisteredCallbacks as $callback){
+
+		$recipeRegisteredCallbacks = $this->recipeRegisteredCallbacks;
+		$this->furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(static function(FurnaceRecipe $recipe) use ($recipeRegisteredCallbacks) : void{
+			foreach($recipeRegisteredCallbacks as $callback){
 				$callback();
 			}
 		});
 	}
 
-	/** @phpstan-return Set<\Closure() : void> */
-	public function getRecipeRegisteredCallbacks() : Set{ return $this->recipeRegisteredCallbacks; }
+	/** @phpstan-return ObjectSet<\Closure() : void> */
+	public function getRecipeRegisteredCallbacks() : ObjectSet{ return $this->recipeRegisteredCallbacks; }
 
 	/**
 	 * Function used to arrange Shapeless Recipe ingredient lists into a consistent order.

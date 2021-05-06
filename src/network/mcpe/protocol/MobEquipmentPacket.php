@@ -26,14 +26,14 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 
 class MobEquipmentPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::MOB_EQUIPMENT_PACKET;
 
 	/** @var int */
 	public $entityRuntimeId;
-	/** @var ItemStack */
+	/** @var ItemStackWrapper */
 	public $item;
 	/** @var int */
 	public $inventorySlot;
@@ -42,7 +42,7 @@ class MobEquipmentPacket extends DataPacket implements ClientboundPacket, Server
 	/** @var int */
 	public $windowId = 0;
 
-	public static function create(int $entityRuntimeId, ItemStack $item, int $inventorySlot, int $windowId) : self{
+	public static function create(int $entityRuntimeId, ItemStackWrapper $item, int $inventorySlot, int $windowId) : self{
 		$result = new self;
 		$result->entityRuntimeId = $entityRuntimeId;
 		$result->item = $item;
@@ -54,7 +54,7 @@ class MobEquipmentPacket extends DataPacket implements ClientboundPacket, Server
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
-		$this->item = $in->getSlot();
+		$this->item = ItemStackWrapper::read($in);
 		$this->inventorySlot = $in->getByte();
 		$this->hotbarSlot = $in->getByte();
 		$this->windowId = $in->getByte();
@@ -62,7 +62,7 @@ class MobEquipmentPacket extends DataPacket implements ClientboundPacket, Server
 
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putEntityRuntimeId($this->entityRuntimeId);
-		$out->putSlot($this->item);
+		$this->item->write($out);
 		$out->putByte($this->inventorySlot);
 		$out->putByte($this->hotbarSlot);
 		$out->putByte($this->windowId);

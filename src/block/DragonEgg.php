@@ -29,6 +29,7 @@ use pocketmine\event\block\BlockTeleportEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ToolTier;
 use pocketmine\math\Vector3;
+use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\world\particle\DragonEggTeleportParticle;
 use pocketmine\world\World;
@@ -57,15 +58,18 @@ class DragonEgg extends Transparent implements Fallable{
 	}
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
-		$this->teleport();
-		return true;
+		if($player !== null && !$player->getGamemode()->equals(GameMode::CREATIVE())){
+			$this->teleport();
+			return true;
+		}
+		return false;
 	}
 
 	public function teleport() : void{
 		for($tries = 0; $tries < 16; ++$tries){
 			$block = $this->pos->getWorld()->getBlockAt(
 				$this->pos->x + mt_rand(-16, 16),
-				max(0, min(World::Y_MAX - 1, $this->pos->y + mt_rand(-8, 8))),
+				max(World::Y_MIN, min(World::Y_MAX - 1, $this->pos->y + mt_rand(-8, 8))),
 				$this->pos->z + mt_rand(-16, 16)
 			);
 			if($block instanceof Air){

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity\object;
 
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Human;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -78,9 +79,6 @@ class ExperienceOrb extends Entity{
 		return $result;
 	}
 
-	public $height = 0.25;
-	public $width = 0.25;
-
 	public $gravity = 0.04;
 	public $drag = 0.02;
 
@@ -101,6 +99,8 @@ class ExperienceOrb extends Entity{
 
 	/** @var int */
 	protected $xpValue = 1;
+
+	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);

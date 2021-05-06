@@ -26,9 +26,12 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\SignText;
 use pocketmine\event\block\SignChangeEvent;
+use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\BlockTransaction;
 use function array_map;
 use function assert;
 use function strlen;
@@ -38,6 +41,9 @@ abstract class BaseSign extends Transparent{
 
 	/** @var SignText */
 	protected $text;
+
+	/** @var int|null */
+	protected $editorEntityRuntimeId = null;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
 		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::AXE));
@@ -49,6 +55,7 @@ abstract class BaseSign extends Transparent{
 		$tile = $this->pos->getWorld()->getTile($this->pos);
 		if($tile instanceof TileSign){
 			$this->text = $tile->getText();
+			$this->editorEntityRuntimeId = $tile->getEditorEntityRuntimeId();
 		}
 	}
 
@@ -57,6 +64,7 @@ abstract class BaseSign extends Transparent{
 		$tile = $this->pos->getWorld()->getTile($this->pos);
 		assert($tile instanceof TileSign);
 		$tile->setText($this->text);
+		$tile->setEditorEntityRuntimeId($this->editorEntityRuntimeId);
 	}
 
 	public function isSolid() : bool{
@@ -76,6 +84,13 @@ abstract class BaseSign extends Transparent{
 		if($this->getSide($this->getSupportingFace())->getId() === BlockLegacyIds::AIR){
 			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
+	}
+
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($player !== null){
+			$this->editorEntityRuntimeId = $player->getId();
+		}
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	/**
@@ -108,6 +123,9 @@ abstract class BaseSign extends Transparent{
 		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) : string{
 			return TextFormat::clean($line, false);
 		}, $text->getLines())));
+		if($this->editorEntityRuntimeId === null || $this->editorEntityRuntimeId !== $author->getId()){
+			$ev->cancel();
+		}
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->setText($ev->getNewText());

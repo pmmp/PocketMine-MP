@@ -1,0 +1,27 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Parameter \\#1 \\$class of static method pocketmine\\\\event\\\\HandlerListManager\\:\\:isValidClass\\(\\) expects ReflectionClass\\<pocketmine\\\\event\\\\Event\\>, ReflectionClass\\<object\\> given\\.$#"
+			count: 1
+			path: ../../../src/event/HandlerListManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$class of static method pocketmine\\\\event\\\\HandlerListManager\\:\\:resolveNearestHandleableParent\\(\\) expects ReflectionClass\\<pocketmine\\\\event\\\\Event\\>, ReflectionClass\\<object\\> given\\.$#"
+			count: 1
+			path: ../../../src/event/HandlerListManager.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\RegisteredListener\\:\\:__construct\\(\\) has parameter \\$handler with no signature specified for Closure\\.$#"
+			count: 1
+			path: ../../../src/event/RegisteredListener.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\RegisteredListener\\:\\:getHandler\\(\\) return type has no signature specified for Closure\\.$#"
+			count: 1
+			path: ../../../src/event/RegisteredListener.php
+
+		-
+			message: "#^Property pocketmine\\\\event\\\\RegisteredListener\\:\\:\\$handler type has no signature specified for Closure\\.$#"
+			count: 1
+			path: ../../../src/event/RegisteredListener.php
+

@@ -37,9 +37,14 @@ interface WorldProvider{
 	public function __construct(string $path);
 
 	/**
+	 * Returns the lowest buildable Y coordinate of this world
+	 */
+	public function getWorldMinY() : int;
+
+	/**
 	 * Gets the build height limit of this world
 	 */
-	public function getWorldHeight() : int;
+	public function getWorldMaxY() : int;
 
 	public function getPath() : string;
 

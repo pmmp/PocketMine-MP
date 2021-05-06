@@ -23,7 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class ActivatorRail extends RedstoneRail{
+use pocketmine\block\utils\RailPoweredByRedstoneTrait;
+
+class ActivatorRail extends BaseRail{
+	use RailPoweredByRedstoneTrait;
 
 	//TODO
 }

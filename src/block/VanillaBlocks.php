@@ -49,6 +49,7 @@ use function assert;
  * @method static ActivatorRail ACTIVATOR_RAIL()
  * @method static Air AIR()
  * @method static Flower ALLIUM()
+ * @method static MushroomStem ALL_SIDED_MUSHROOM_STEM()
  * @method static Opaque ANDESITE()
  * @method static Slab ANDESITE_SLAB()
  * @method static Stair ANDESITE_STAIRS()
@@ -80,29 +81,26 @@ use function assert;
  * @method static WallSign BIRCH_WALL_SIGN()
  * @method static Wood BIRCH_WOOD()
  * @method static GlazedTerracotta BLACK_GLAZED_TERRACOTTA()
- * @method static HardenedClay BLACK_STAINED_CLAY()
- * @method static Glass BLACK_STAINED_GLASS()
- * @method static GlassPane BLACK_STAINED_GLASS_PANE()
  * @method static GlazedTerracotta BLUE_GLAZED_TERRACOTTA()
  * @method static BlueIce BLUE_ICE()
  * @method static Flower BLUE_ORCHID()
- * @method static HardenedClay BLUE_STAINED_CLAY()
- * @method static Glass BLUE_STAINED_GLASS()
- * @method static GlassPane BLUE_STAINED_GLASS_PANE()
  * @method static Torch BLUE_TORCH()
  * @method static BoneBlock BONE_BLOCK()
  * @method static Bookshelf BOOKSHELF()
+ * @method static Coral BRAIN_CORAL()
+ * @method static FloorCoralFan BRAIN_CORAL_FAN()
+ * @method static WallCoralFan BRAIN_WALL_CORAL_FAN()
  * @method static BrewingStand BREWING_STAND()
+ * @method static Opaque BRICKS()
  * @method static Slab BRICK_SLAB()
  * @method static Stair BRICK_STAIRS()
  * @method static Wall BRICK_WALL()
- * @method static Opaque BRICKS()
  * @method static GlazedTerracotta BROWN_GLAZED_TERRACOTTA()
  * @method static BrownMushroom BROWN_MUSHROOM()
  * @method static BrownMushroomBlock BROWN_MUSHROOM_BLOCK()
- * @method static HardenedClay BROWN_STAINED_CLAY()
- * @method static Glass BROWN_STAINED_GLASS()
- * @method static GlassPane BROWN_STAINED_GLASS_PANE()
+ * @method static Coral BUBBLE_CORAL()
+ * @method static FloorCoralFan BUBBLE_CORAL_FAN()
+ * @method static WallCoralFan BUBBLE_WALL_CORAL_FAN()
  * @method static Cactus CACTUS()
  * @method static Cake CAKE()
  * @method static Carpet CARPET()
@@ -110,7 +108,7 @@ use function assert;
  * @method static CarvedPumpkin CARVED_PUMPKIN()
  * @method static ChemicalHeat CHEMICAL_HEAT()
  * @method static Chest CHEST()
- * @method static Opaque CHISELED_QUARTZ()
+ * @method static SimplePillar CHISELED_QUARTZ()
  * @method static Opaque CHISELED_RED_SANDSTONE()
  * @method static Opaque CHISELED_SANDSTONE()
  * @method static Opaque CHISELED_STONE_BRICKS()
@@ -136,9 +134,6 @@ use function assert;
  * @method static Opaque CUT_SANDSTONE()
  * @method static Slab CUT_SANDSTONE_SLAB()
  * @method static GlazedTerracotta CYAN_GLAZED_TERRACOTTA()
- * @method static HardenedClay CYAN_STAINED_CLAY()
- * @method static Glass CYAN_STAINED_GLASS()
- * @method static GlassPane CYAN_STAINED_GLASS_PANE()
  * @method static Flower DANDELION()
  * @method static WoodenButton DARK_OAK_BUTTON()
  * @method static WoodenDoor DARK_OAK_DOOR()
@@ -294,18 +289,21 @@ use function assert;
  * @method static Opaque EMERALD()
  * @method static EmeraldOre EMERALD_ORE()
  * @method static EnchantingTable ENCHANTING_TABLE()
+ * @method static EnderChest ENDER_CHEST()
  * @method static EndPortalFrame END_PORTAL_FRAME()
  * @method static EndRod END_ROD()
  * @method static Opaque END_STONE()
+ * @method static Opaque END_STONE_BRICKS()
  * @method static Slab END_STONE_BRICK_SLAB()
  * @method static Stair END_STONE_BRICK_STAIRS()
  * @method static Wall END_STONE_BRICK_WALL()
- * @method static Opaque END_STONE_BRICKS()
- * @method static EnderChest ENDER_CHEST()
  * @method static Slab FAKE_WOODEN_SLAB()
  * @method static Farmland FARMLAND()
  * @method static TallGrass FERN()
  * @method static Fire FIRE()
+ * @method static Coral FIRE_CORAL()
+ * @method static FloorCoralFan FIRE_CORAL_FAN()
+ * @method static WallCoralFan FIRE_WALL_CORAL_FAN()
  * @method static FlowerPot FLOWER_POT()
  * @method static FrostedIce FROSTED_ICE()
  * @method static Furnace FURNACE()
@@ -323,51 +321,16 @@ use function assert;
  * @method static GrassPath GRASS_PATH()
  * @method static Gravel GRAVEL()
  * @method static GlazedTerracotta GRAY_GLAZED_TERRACOTTA()
- * @method static HardenedClay GRAY_STAINED_CLAY()
- * @method static Glass GRAY_STAINED_GLASS()
- * @method static GlassPane GRAY_STAINED_GLASS_PANE()
  * @method static GlazedTerracotta GREEN_GLAZED_TERRACOTTA()
- * @method static HardenedClay GREEN_STAINED_CLAY()
- * @method static Glass GREEN_STAINED_GLASS()
- * @method static GlassPane GREEN_STAINED_GLASS_PANE()
  * @method static Torch GREEN_TORCH()
- * @method static HardenedGlass HARDENED_BLACK_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_BLACK_STAINED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_BLUE_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_BLUE_STAINED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_BROWN_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_BROWN_STAINED_GLASS_PANE()
  * @method static HardenedClay HARDENED_CLAY()
- * @method static HardenedGlass HARDENED_CYAN_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_CYAN_STAINED_GLASS_PANE()
  * @method static HardenedGlass HARDENED_GLASS()
  * @method static HardenedGlassPane HARDENED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_GRAY_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_GRAY_STAINED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_GREEN_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_GREEN_STAINED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_LIGHT_BLUE_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_LIGHT_BLUE_STAINED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_LIGHT_GRAY_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_LIGHT_GRAY_STAINED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_LIME_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_LIME_STAINED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_MAGENTA_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_MAGENTA_STAINED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_ORANGE_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_ORANGE_STAINED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_PINK_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_PINK_STAINED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_PURPLE_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_PURPLE_STAINED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_RED_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_RED_STAINED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_WHITE_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_WHITE_STAINED_GLASS_PANE()
- * @method static HardenedGlass HARDENED_YELLOW_STAINED_GLASS()
- * @method static HardenedGlassPane HARDENED_YELLOW_STAINED_GLASS_PANE()
  * @method static HayBale HAY_BALE()
  * @method static Hopper HOPPER()
+ * @method static Coral HORN_CORAL()
+ * @method static FloorCoralFan HORN_CORAL_FAN()
+ * @method static WallCoralFan HORN_WALL_CORAL_FAN()
  * @method static Ice ICE()
  * @method static InfestedStone INFESTED_CHISELED_STONE_BRICK()
  * @method static InfestedStone INFESTED_COBBLESTONE()
@@ -410,25 +373,14 @@ use function assert;
  * @method static Opaque LEGACY_STONECUTTER()
  * @method static Lever LEVER()
  * @method static GlazedTerracotta LIGHT_BLUE_GLAZED_TERRACOTTA()
- * @method static HardenedClay LIGHT_BLUE_STAINED_CLAY()
- * @method static Glass LIGHT_BLUE_STAINED_GLASS()
- * @method static GlassPane LIGHT_BLUE_STAINED_GLASS_PANE()
  * @method static GlazedTerracotta LIGHT_GRAY_GLAZED_TERRACOTTA()
- * @method static HardenedClay LIGHT_GRAY_STAINED_CLAY()
- * @method static Glass LIGHT_GRAY_STAINED_GLASS()
- * @method static GlassPane LIGHT_GRAY_STAINED_GLASS_PANE()
  * @method static DoublePlant LILAC()
  * @method static Flower LILY_OF_THE_VALLEY()
  * @method static WaterLily LILY_PAD()
  * @method static GlazedTerracotta LIME_GLAZED_TERRACOTTA()
- * @method static HardenedClay LIME_STAINED_CLAY()
- * @method static Glass LIME_STAINED_GLASS()
- * @method static GlassPane LIME_STAINED_GLASS_PANE()
  * @method static LitPumpkin LIT_PUMPKIN()
+ * @method static Loom LOOM()
  * @method static GlazedTerracotta MAGENTA_GLAZED_TERRACOTTA()
- * @method static HardenedClay MAGENTA_STAINED_CLAY()
- * @method static Glass MAGENTA_STAINED_GLASS()
- * @method static GlassPane MAGENTA_STAINED_GLASS_PANE()
  * @method static Magma MAGMA()
  * @method static ChemistryTable MATERIAL_REDUCER()
  * @method static Melon MELON()
@@ -439,22 +391,23 @@ use function assert;
  * @method static Slab MOSSY_COBBLESTONE_SLAB()
  * @method static Stair MOSSY_COBBLESTONE_STAIRS()
  * @method static Wall MOSSY_COBBLESTONE_WALL()
+ * @method static Opaque MOSSY_STONE_BRICKS()
  * @method static Slab MOSSY_STONE_BRICK_SLAB()
  * @method static Stair MOSSY_STONE_BRICK_STAIRS()
  * @method static Wall MOSSY_STONE_BRICK_WALL()
- * @method static Opaque MOSSY_STONE_BRICKS()
+ * @method static MushroomStem MUSHROOM_STEM()
  * @method static Mycelium MYCELIUM()
+ * @method static Netherrack NETHERRACK()
+ * @method static Opaque NETHER_BRICKS()
  * @method static Fence NETHER_BRICK_FENCE()
  * @method static Slab NETHER_BRICK_SLAB()
  * @method static Stair NETHER_BRICK_STAIRS()
  * @method static Wall NETHER_BRICK_WALL()
- * @method static Opaque NETHER_BRICKS()
  * @method static NetherPortal NETHER_PORTAL()
  * @method static NetherQuartzOre NETHER_QUARTZ_ORE()
  * @method static NetherReactor NETHER_REACTOR_CORE()
  * @method static NetherWartPlant NETHER_WART()
  * @method static Opaque NETHER_WART_BLOCK()
- * @method static Netherrack NETHERRACK()
  * @method static Note NOTE_BLOCK()
  * @method static WoodenButton OAK_BUTTON()
  * @method static WoodenDoor OAK_DOOR()
@@ -473,17 +426,11 @@ use function assert;
  * @method static Wood OAK_WOOD()
  * @method static Opaque OBSIDIAN()
  * @method static GlazedTerracotta ORANGE_GLAZED_TERRACOTTA()
- * @method static HardenedClay ORANGE_STAINED_CLAY()
- * @method static Glass ORANGE_STAINED_GLASS()
- * @method static GlassPane ORANGE_STAINED_GLASS_PANE()
  * @method static Flower ORANGE_TULIP()
  * @method static Flower OXEYE_DAISY()
  * @method static PackedIce PACKED_ICE()
  * @method static DoublePlant PEONY()
  * @method static GlazedTerracotta PINK_GLAZED_TERRACOTTA()
- * @method static HardenedClay PINK_STAINED_CLAY()
- * @method static Glass PINK_STAINED_GLASS()
- * @method static GlassPane PINK_STAINED_GLASS_PANE()
  * @method static Flower PINK_TULIP()
  * @method static Podzol PODZOL()
  * @method static Opaque POLISHED_ANDESITE()
@@ -508,36 +455,16 @@ use function assert;
  * @method static Opaque PUMPKIN()
  * @method static PumpkinStem PUMPKIN_STEM()
  * @method static GlazedTerracotta PURPLE_GLAZED_TERRACOTTA()
- * @method static HardenedClay PURPLE_STAINED_CLAY()
- * @method static Glass PURPLE_STAINED_GLASS()
- * @method static GlassPane PURPLE_STAINED_GLASS_PANE()
  * @method static Torch PURPLE_TORCH()
  * @method static Opaque PURPUR()
- * @method static Opaque PURPUR_PILLAR()
+ * @method static SimplePillar PURPUR_PILLAR()
  * @method static Slab PURPUR_SLAB()
  * @method static Stair PURPUR_STAIRS()
  * @method static Opaque QUARTZ()
- * @method static Opaque QUARTZ_PILLAR()
+ * @method static SimplePillar QUARTZ_PILLAR()
  * @method static Slab QUARTZ_SLAB()
  * @method static Stair QUARTZ_STAIRS()
  * @method static Rail RAIL()
- * @method static GlazedTerracotta RED_GLAZED_TERRACOTTA()
- * @method static RedMushroom RED_MUSHROOM()
- * @method static RedMushroomBlock RED_MUSHROOM_BLOCK()
- * @method static Slab RED_NETHER_BRICK_SLAB()
- * @method static Stair RED_NETHER_BRICK_STAIRS()
- * @method static Wall RED_NETHER_BRICK_WALL()
- * @method static Opaque RED_NETHER_BRICKS()
- * @method static Sand RED_SAND()
- * @method static Opaque RED_SANDSTONE()
- * @method static Slab RED_SANDSTONE_SLAB()
- * @method static Stair RED_SANDSTONE_STAIRS()
- * @method static Wall RED_SANDSTONE_WALL()
- * @method static HardenedClay RED_STAINED_CLAY()
- * @method static Glass RED_STAINED_GLASS()
- * @method static GlassPane RED_STAINED_GLASS_PANE()
- * @method static Torch RED_TORCH()
- * @method static Flower RED_TULIP()
  * @method static Redstone REDSTONE()
  * @method static RedstoneComparator REDSTONE_COMPARATOR()
  * @method static RedstoneLamp REDSTONE_LAMP()
@@ -545,6 +472,20 @@ use function assert;
  * @method static RedstoneRepeater REDSTONE_REPEATER()
  * @method static RedstoneTorch REDSTONE_TORCH()
  * @method static RedstoneWire REDSTONE_WIRE()
+ * @method static GlazedTerracotta RED_GLAZED_TERRACOTTA()
+ * @method static RedMushroom RED_MUSHROOM()
+ * @method static RedMushroomBlock RED_MUSHROOM_BLOCK()
+ * @method static Opaque RED_NETHER_BRICKS()
+ * @method static Slab RED_NETHER_BRICK_SLAB()
+ * @method static Stair RED_NETHER_BRICK_STAIRS()
+ * @method static Wall RED_NETHER_BRICK_WALL()
+ * @method static Sand RED_SAND()
+ * @method static Opaque RED_SANDSTONE()
+ * @method static Slab RED_SANDSTONE_SLAB()
+ * @method static Stair RED_SANDSTONE_STAIRS()
+ * @method static Wall RED_SANDSTONE_WALL()
+ * @method static Torch RED_TORCH()
+ * @method static Flower RED_TULIP()
  * @method static Reserved6 RESERVED6()
  * @method static DoublePlant ROSE_BUSH()
  * @method static Sand SAND()
@@ -584,15 +525,26 @@ use function assert;
  * @method static WoodenTrapdoor SPRUCE_TRAPDOOR()
  * @method static WallSign SPRUCE_WALL_SIGN()
  * @method static Wood SPRUCE_WOOD()
+ * @method static StainedHardenedClay STAINED_CLAY()
+ * @method static StainedGlass STAINED_GLASS()
+ * @method static StainedGlassPane STAINED_GLASS_PANE()
+ * @method static StainedHardenedGlass STAINED_HARDENED_GLASS()
+ * @method static StainedHardenedGlassPane STAINED_HARDENED_GLASS_PANE()
  * @method static Opaque STONE()
+ * @method static Opaque STONE_BRICKS()
  * @method static Slab STONE_BRICK_SLAB()
  * @method static Stair STONE_BRICK_STAIRS()
  * @method static Wall STONE_BRICK_WALL()
- * @method static Opaque STONE_BRICKS()
  * @method static StoneButton STONE_BUTTON()
  * @method static StonePressurePlate STONE_PRESSURE_PLATE()
  * @method static Slab STONE_SLAB()
  * @method static Stair STONE_STAIRS()
+ * @method static Log STRIPPED_ACACIA_LOG()
+ * @method static Log STRIPPED_BIRCH_LOG()
+ * @method static Log STRIPPED_DARK_OAK_LOG()
+ * @method static Log STRIPPED_JUNGLE_LOG()
+ * @method static Log STRIPPED_OAK_LOG()
+ * @method static Log STRIPPED_SPRUCE_LOG()
  * @method static Sugarcane SUGARCANE()
  * @method static DoublePlant SUNFLOWER()
  * @method static TallGrass TALL_GRASS()
@@ -601,6 +553,9 @@ use function assert;
  * @method static TrappedChest TRAPPED_CHEST()
  * @method static Tripwire TRIPWIRE()
  * @method static TripwireHook TRIPWIRE_HOOK()
+ * @method static Coral TUBE_CORAL()
+ * @method static FloorCoralFan TUBE_CORAL_FAN()
+ * @method static WallCoralFan TUBE_WALL_CORAL_FAN()
  * @method static UnderwaterTorch UNDERWATER_TORCH()
  * @method static Vine VINES()
  * @method static WallBanner WALL_BANNER()
@@ -609,15 +564,9 @@ use function assert;
  * @method static WeightedPressurePlateLight WEIGHTED_PRESSURE_PLATE_LIGHT()
  * @method static Wheat WHEAT()
  * @method static GlazedTerracotta WHITE_GLAZED_TERRACOTTA()
- * @method static HardenedClay WHITE_STAINED_CLAY()
- * @method static Glass WHITE_STAINED_GLASS()
- * @method static GlassPane WHITE_STAINED_GLASS_PANE()
  * @method static Flower WHITE_TULIP()
  * @method static Wool WOOL()
  * @method static GlazedTerracotta YELLOW_GLAZED_TERRACOTTA()
- * @method static HardenedClay YELLOW_STAINED_CLAY()
- * @method static Glass YELLOW_STAINED_GLASS()
- * @method static GlassPane YELLOW_STAINED_GLASS_PANE()
  */
 final class VanillaBlocks{
 	use CloningRegistryTrait;
@@ -665,6 +614,7 @@ final class VanillaBlocks{
 		self::register("acacia_wood", $factory->get(467, 4));
 		self::register("activator_rail", $factory->get(126, 0));
 		self::register("air", $factory->get(0, 0));
+		self::register("all_sided_mushroom_stem", $factory->get(99, 15));
 		self::register("allium", $factory->get(38, 2));
 		self::register("andesite", $factory->get(1, 5));
 		self::register("andesite_slab", $factory->get(417, 3));
@@ -697,18 +647,15 @@ final class VanillaBlocks{
 		self::register("birch_wall_sign", $factory->get(442, 2));
 		self::register("birch_wood", $factory->get(467, 2));
 		self::register("black_glazed_terracotta", $factory->get(235, 2));
-		self::register("black_stained_clay", $factory->get(159, 15));
-		self::register("black_stained_glass", $factory->get(241, 15));
-		self::register("black_stained_glass_pane", $factory->get(160, 15));
 		self::register("blue_glazed_terracotta", $factory->get(231, 2));
 		self::register("blue_ice", $factory->get(266, 0));
 		self::register("blue_orchid", $factory->get(38, 1));
-		self::register("blue_stained_clay", $factory->get(159, 11));
-		self::register("blue_stained_glass", $factory->get(241, 11));
-		self::register("blue_stained_glass_pane", $factory->get(160, 11));
 		self::register("blue_torch", $factory->get(204, 5));
 		self::register("bone_block", $factory->get(216, 0));
 		self::register("bookshelf", $factory->get(47, 0));
+		self::register("brain_coral", $factory->get(386, 1));
+		self::register("brain_coral_fan", $factory->get(388, 1));
+		self::register("brain_wall_coral_fan", $factory->get(390, 1));
 		self::register("brewing_stand", $factory->get(117, 0));
 		self::register("brick_slab", $factory->get(44, 4));
 		self::register("brick_stairs", $factory->get(108, 0));
@@ -717,9 +664,9 @@ final class VanillaBlocks{
 		self::register("brown_glazed_terracotta", $factory->get(232, 2));
 		self::register("brown_mushroom", $factory->get(39, 0));
 		self::register("brown_mushroom_block", $factory->get(99, 0));
-		self::register("brown_stained_clay", $factory->get(159, 12));
-		self::register("brown_stained_glass", $factory->get(241, 12));
-		self::register("brown_stained_glass_pane", $factory->get(160, 12));
+		self::register("bubble_coral", $factory->get(386, 2));
+		self::register("bubble_coral_fan", $factory->get(388, 2));
+		self::register("bubble_wall_coral_fan", $factory->get(391, 0));
 		self::register("cactus", $factory->get(81, 0));
 		self::register("cake", $factory->get(92, 0));
 		self::register("carpet", $factory->get(171, 0));
@@ -753,9 +700,6 @@ final class VanillaBlocks{
 		self::register("cut_sandstone", $factory->get(24, 2));
 		self::register("cut_sandstone_slab", $factory->get(421, 3));
 		self::register("cyan_glazed_terracotta", $factory->get(229, 2));
-		self::register("cyan_stained_clay", $factory->get(159, 9));
-		self::register("cyan_stained_glass", $factory->get(241, 9));
-		self::register("cyan_stained_glass_pane", $factory->get(160, 9));
 		self::register("dandelion", $factory->get(37, 0));
 		self::register("dark_oak_button", $factory->get(397, 0));
 		self::register("dark_oak_door", $factory->get(197, 0));
@@ -923,6 +867,9 @@ final class VanillaBlocks{
 		self::register("farmland", $factory->get(60, 0));
 		self::register("fern", $factory->get(31, 2));
 		self::register("fire", $factory->get(51, 0));
+		self::register("fire_coral", $factory->get(386, 3));
+		self::register("fire_coral_fan", $factory->get(388, 3));
+		self::register("fire_wall_coral_fan", $factory->get(391, 1));
 		self::register("flower_pot", $factory->get(140, 0));
 		self::register("frosted_ice", $factory->get(207, 0));
 		self::register("furnace", $factory->get(61, 2));
@@ -940,51 +887,16 @@ final class VanillaBlocks{
 		self::register("grass_path", $factory->get(198, 0));
 		self::register("gravel", $factory->get(13, 0));
 		self::register("gray_glazed_terracotta", $factory->get(227, 2));
-		self::register("gray_stained_clay", $factory->get(159, 7));
-		self::register("gray_stained_glass", $factory->get(241, 7));
-		self::register("gray_stained_glass_pane", $factory->get(160, 7));
 		self::register("green_glazed_terracotta", $factory->get(233, 2));
-		self::register("green_stained_clay", $factory->get(159, 13));
-		self::register("green_stained_glass", $factory->get(241, 13));
-		self::register("green_stained_glass_pane", $factory->get(160, 13));
 		self::register("green_torch", $factory->get(202, 13));
-		self::register("hardened_black_stained_glass", $factory->get(254, 15));
-		self::register("hardened_black_stained_glass_pane", $factory->get(191, 15));
-		self::register("hardened_blue_stained_glass", $factory->get(254, 11));
-		self::register("hardened_blue_stained_glass_pane", $factory->get(191, 11));
-		self::register("hardened_brown_stained_glass", $factory->get(254, 12));
-		self::register("hardened_brown_stained_glass_pane", $factory->get(191, 12));
 		self::register("hardened_clay", $factory->get(172, 0));
-		self::register("hardened_cyan_stained_glass", $factory->get(254, 9));
-		self::register("hardened_cyan_stained_glass_pane", $factory->get(191, 9));
 		self::register("hardened_glass", $factory->get(253, 0));
 		self::register("hardened_glass_pane", $factory->get(190, 0));
-		self::register("hardened_gray_stained_glass", $factory->get(254, 7));
-		self::register("hardened_gray_stained_glass_pane", $factory->get(191, 7));
-		self::register("hardened_green_stained_glass", $factory->get(254, 13));
-		self::register("hardened_green_stained_glass_pane", $factory->get(191, 13));
-		self::register("hardened_light_blue_stained_glass", $factory->get(254, 3));
-		self::register("hardened_light_blue_stained_glass_pane", $factory->get(191, 3));
-		self::register("hardened_light_gray_stained_glass", $factory->get(254, 8));
-		self::register("hardened_light_gray_stained_glass_pane", $factory->get(191, 8));
-		self::register("hardened_lime_stained_glass", $factory->get(254, 5));
-		self::register("hardened_lime_stained_glass_pane", $factory->get(191, 5));
-		self::register("hardened_magenta_stained_glass", $factory->get(254, 2));
-		self::register("hardened_magenta_stained_glass_pane", $factory->get(191, 2));
-		self::register("hardened_orange_stained_glass", $factory->get(254, 1));
-		self::register("hardened_orange_stained_glass_pane", $factory->get(191, 1));
-		self::register("hardened_pink_stained_glass", $factory->get(254, 6));
-		self::register("hardened_pink_stained_glass_pane", $factory->get(191, 6));
-		self::register("hardened_purple_stained_glass", $factory->get(254, 10));
-		self::register("hardened_purple_stained_glass_pane", $factory->get(191, 10));
-		self::register("hardened_red_stained_glass", $factory->get(254, 14));
-		self::register("hardened_red_stained_glass_pane", $factory->get(191, 14));
-		self::register("hardened_white_stained_glass", $factory->get(254, 0));
-		self::register("hardened_white_stained_glass_pane", $factory->get(191, 0));
-		self::register("hardened_yellow_stained_glass", $factory->get(254, 4));
-		self::register("hardened_yellow_stained_glass_pane", $factory->get(191, 4));
 		self::register("hay_bale", $factory->get(170, 0));
 		self::register("hopper", $factory->get(154, 0));
+		self::register("horn_coral", $factory->get(386, 4));
+		self::register("horn_coral_fan", $factory->get(388, 4));
+		self::register("horn_wall_coral_fan", $factory->get(392, 0));
 		self::register("ice", $factory->get(79, 0));
 		self::register("infested_chiseled_stone_brick", $factory->get(97, 5));
 		self::register("infested_cobblestone", $factory->get(97, 1));
@@ -1027,25 +939,14 @@ final class VanillaBlocks{
 		self::register("legacy_stonecutter", $factory->get(245, 0));
 		self::register("lever", $factory->get(69, 0));
 		self::register("light_blue_glazed_terracotta", $factory->get(223, 2));
-		self::register("light_blue_stained_clay", $factory->get(159, 3));
-		self::register("light_blue_stained_glass", $factory->get(241, 3));
-		self::register("light_blue_stained_glass_pane", $factory->get(160, 3));
 		self::register("light_gray_glazed_terracotta", $factory->get(228, 2));
-		self::register("light_gray_stained_clay", $factory->get(159, 8));
-		self::register("light_gray_stained_glass", $factory->get(241, 8));
-		self::register("light_gray_stained_glass_pane", $factory->get(160, 8));
 		self::register("lilac", $factory->get(175, 1));
 		self::register("lily_of_the_valley", $factory->get(38, 10));
 		self::register("lily_pad", $factory->get(111, 0));
 		self::register("lime_glazed_terracotta", $factory->get(225, 2));
-		self::register("lime_stained_clay", $factory->get(159, 5));
-		self::register("lime_stained_glass", $factory->get(241, 5));
-		self::register("lime_stained_glass_pane", $factory->get(160, 5));
 		self::register("lit_pumpkin", $factory->get(91, 0));
+		self::register("loom", $factory->get(459, 0));
 		self::register("magenta_glazed_terracotta", $factory->get(222, 2));
-		self::register("magenta_stained_clay", $factory->get(159, 2));
-		self::register("magenta_stained_glass", $factory->get(241, 2));
-		self::register("magenta_stained_glass_pane", $factory->get(160, 2));
 		self::register("magma", $factory->get(213, 0));
 		self::register("material_reducer", $factory->get(238, 4));
 		self::register("melon", $factory->get(103, 0));
@@ -1060,6 +961,7 @@ final class VanillaBlocks{
 		self::register("mossy_stone_brick_stairs", $factory->get(430, 0));
 		self::register("mossy_stone_brick_wall", $factory->get(139, 8));
 		self::register("mossy_stone_bricks", $factory->get(98, 1));
+		self::register("mushroom_stem", $factory->get(99, 10));
 		self::register("mycelium", $factory->get(110, 0));
 		self::register("nether_brick_fence", $factory->get(113, 0));
 		self::register("nether_brick_slab", $factory->get(44, 7));
@@ -1090,17 +992,11 @@ final class VanillaBlocks{
 		self::register("oak_wood", $factory->get(467, 0));
 		self::register("obsidian", $factory->get(49, 0));
 		self::register("orange_glazed_terracotta", $factory->get(221, 2));
-		self::register("orange_stained_clay", $factory->get(159, 1));
-		self::register("orange_stained_glass", $factory->get(241, 1));
-		self::register("orange_stained_glass_pane", $factory->get(160, 1));
 		self::register("orange_tulip", $factory->get(38, 5));
 		self::register("oxeye_daisy", $factory->get(38, 8));
 		self::register("packed_ice", $factory->get(174, 0));
 		self::register("peony", $factory->get(175, 5));
 		self::register("pink_glazed_terracotta", $factory->get(226, 2));
-		self::register("pink_stained_clay", $factory->get(159, 6));
-		self::register("pink_stained_glass", $factory->get(241, 6));
-		self::register("pink_stained_glass_pane", $factory->get(160, 6));
 		self::register("pink_tulip", $factory->get(38, 7));
 		self::register("podzol", $factory->get(243, 0));
 		self::register("polished_andesite", $factory->get(1, 6));
@@ -1125,9 +1021,6 @@ final class VanillaBlocks{
 		self::register("pumpkin", $factory->get(86, 0));
 		self::register("pumpkin_stem", $factory->get(104, 0));
 		self::register("purple_glazed_terracotta", $factory->get(219, 2));
-		self::register("purple_stained_clay", $factory->get(159, 10));
-		self::register("purple_stained_glass", $factory->get(241, 10));
-		self::register("purple_stained_glass_pane", $factory->get(160, 10));
 		self::register("purple_torch", $factory->get(204, 13));
 		self::register("purpur", $factory->get(201, 0));
 		self::register("purpur_pillar", $factory->get(201, 2));
@@ -1150,9 +1043,6 @@ final class VanillaBlocks{
 		self::register("red_sandstone_slab", $factory->get(182, 0));
 		self::register("red_sandstone_stairs", $factory->get(180, 0));
 		self::register("red_sandstone_wall", $factory->get(139, 12));
-		self::register("red_stained_clay", $factory->get(159, 14));
-		self::register("red_stained_glass", $factory->get(241, 14));
-		self::register("red_stained_glass_pane", $factory->get(160, 14));
 		self::register("red_torch", $factory->get(202, 5));
 		self::register("red_tulip", $factory->get(38, 4));
 		self::register("redstone", $factory->get(152, 0));
@@ -1201,6 +1091,11 @@ final class VanillaBlocks{
 		self::register("spruce_trapdoor", $factory->get(404, 0));
 		self::register("spruce_wall_sign", $factory->get(437, 2));
 		self::register("spruce_wood", $factory->get(467, 1));
+		self::register("stained_clay", $factory->get(159, 0));
+		self::register("stained_glass", $factory->get(241, 0));
+		self::register("stained_glass_pane", $factory->get(160, 0));
+		self::register("stained_hardened_glass", $factory->get(254, 0));
+		self::register("stained_hardened_glass_pane", $factory->get(191, 0));
 		self::register("stone", $factory->get(1, 0));
 		self::register("stone_brick_slab", $factory->get(44, 5));
 		self::register("stone_brick_stairs", $factory->get(109, 0));
@@ -1210,6 +1105,12 @@ final class VanillaBlocks{
 		self::register("stone_pressure_plate", $factory->get(70, 0));
 		self::register("stone_slab", $factory->get(421, 2));
 		self::register("stone_stairs", $factory->get(435, 0));
+		self::register("stripped_acacia_log", $factory->get(263, 0));
+		self::register("stripped_birch_log", $factory->get(261, 0));
+		self::register("stripped_dark_oak_log", $factory->get(264, 0));
+		self::register("stripped_jungle_log", $factory->get(262, 0));
+		self::register("stripped_oak_log", $factory->get(265, 0));
+		self::register("stripped_spruce_log", $factory->get(260, 0));
 		self::register("sugarcane", $factory->get(83, 0));
 		self::register("sunflower", $factory->get(175, 0));
 		self::register("tall_grass", $factory->get(31, 1));
@@ -1218,6 +1119,9 @@ final class VanillaBlocks{
 		self::register("trapped_chest", $factory->get(146, 2));
 		self::register("tripwire", $factory->get(132, 0));
 		self::register("tripwire_hook", $factory->get(131, 0));
+		self::register("tube_coral", $factory->get(386, 0));
+		self::register("tube_coral_fan", $factory->get(388, 0));
+		self::register("tube_wall_coral_fan", $factory->get(390, 0));
 		self::register("underwater_torch", $factory->get(239, 5));
 		self::register("vines", $factory->get(106, 0));
 		self::register("wall_banner", $factory->get(177, 2));
@@ -1226,14 +1130,8 @@ final class VanillaBlocks{
 		self::register("weighted_pressure_plate_light", $factory->get(147, 0));
 		self::register("wheat", $factory->get(59, 0));
 		self::register("white_glazed_terracotta", $factory->get(220, 2));
-		self::register("white_stained_clay", $factory->get(159, 0));
-		self::register("white_stained_glass", $factory->get(241, 0));
-		self::register("white_stained_glass_pane", $factory->get(160, 0));
 		self::register("white_tulip", $factory->get(38, 6));
 		self::register("wool", $factory->get(35, 0));
 		self::register("yellow_glazed_terracotta", $factory->get(224, 2));
-		self::register("yellow_stained_clay", $factory->get(159, 4));
-		self::register("yellow_stained_glass", $factory->get(241, 4));
-		self::register("yellow_stained_glass_pane", $factory->get(160, 4));
 	}
 }

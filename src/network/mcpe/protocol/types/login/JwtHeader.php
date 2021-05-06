@@ -24,14 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol\types\login;
 
 final class JwtHeader{
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $alg;
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $x5u;
+	/** @required */
+	public string $alg;
+	/** @required */
+	public string $x5u;
 }

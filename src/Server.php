@@ -34,6 +34,8 @@ use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\SimpleCommandMap;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
+use pocketmine\entity\EntityDataHelper;
+use pocketmine\entity\Location;
 use pocketmine\event\HandlerListManager;
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
@@ -68,6 +70,7 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\OfflinePlayer;
 use pocketmine\player\Player;
+use pocketmine\player\PlayerCreationPromise;
 use pocketmine\player\PlayerInfo;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
@@ -84,6 +87,7 @@ use pocketmine\stats\SendUsageTask;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\updater\AutoUpdater;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Internet;
@@ -92,14 +96,14 @@ use pocketmine\utils\Process;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
-use pocketmine\uuid\UUID;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
-use pocketmine\world\generator\normal\Normal;
 use pocketmine\world\World;
+use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
+use Ramsey\Uuid\UuidInterface;
 use function array_shift;
 use function array_sum;
 use function base64_encode;
@@ -254,7 +258,7 @@ class Server{
 	/** @var bool */
 	private $forceLanguage = false;
 
-	/** @var UUID */
+	/** @var UuidInterface */
 	private $serverID;
 
 	/** @var \DynamicClassLoader */
@@ -361,7 +365,7 @@ class Server{
 	}
 
 	/**
-	 * @return UUID
+	 * @return UuidInterface
 	 */
 	public function getServerUniqueId(){
 		return $this->serverID;
@@ -576,21 +580,56 @@ class Server{
 		}
 	}
 
-	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated) : Player{
+	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : PlayerCreationPromise{
 		$ev = new PlayerCreationEvent($session);
 		$ev->call();
 		$class = $ev->getPlayerClass();
 
-		//TODO: make this async
-		//TODO: what about allowing this to be provided by PlayerCreationEvent?
-		$namedtag = $this->getOfflinePlayerData($playerInfo->getUsername());
+		if($offlinePlayerData !== null and ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString("Level", ""))) !== null){
+			$playerPos = EntityDataHelper::parseLocation($offlinePlayerData, $world);
+			$spawn = $playerPos->asVector3();
+		}else{
+			$world = $this->worldManager->getDefaultWorld();
+			if($world === null){
+				throw new AssumptionFailedError("Default world should always be loaded");
+			}
+			$playerPos = null;
+			$spawn = $world->getSpawnLocation();
+		}
+		$playerPromise = new PlayerCreationPromise();
+		$world->requestChunkPopulation($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, null)->onCompletion(
+			function() use ($playerPromise, $class, $session, $playerInfo, $authenticated, $world, $playerPos, $spawn, $offlinePlayerData) : void{
+				if(!$session->isConnected()){
+					$playerPromise->reject();
+					return;
+				}
 
-		/**
-		 * @see Player::__construct()
-		 * @var Player $player
-		 */
-		$player = new $class($this, $session, $playerInfo, $authenticated, $namedtag);
-		return $player;
+				/* Stick with the original spawn at the time of generation request, even if it changed since then.
+				 * This is because we know for sure that that chunk will be generated, but the one at the new location
+				 * might not be, and it would be much more complex to go back and redo the whole thing.
+				 *
+				 * TODO: this relies on the assumption that getSafeSpawn() will only alter the Y coordinate of the
+				 * provided position. If this assumption is broken, we'll start seeing crashes in here.
+				 */
+
+				/**
+				 * @see Player::__construct()
+				 * @var Player $player
+				 */
+				$player = new $class($this, $session, $playerInfo, $authenticated, $playerPos ?? Location::fromObject($world->getSafeSpawn($spawn), $world), $offlinePlayerData);
+				if(!$player->hasPlayedBefore()){
+					$player->onGround = true;  //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
+				}
+				$playerPromise->resolve($player);
+			},
+			static function() use ($playerPromise, $session) : void{
+				if($session->isConnected()){
+					$session->disconnect("Spawn terrain generation failed");
+				}
+				$playerPromise->reject();
+			}
+		);
+		return $playerPromise;
 	}
 
 	/**
@@ -641,10 +680,10 @@ class Server{
 	}
 
 	/**
-	 * Returns the player online with a UUID equivalent to the specified UUID object, or null if not found
+	 * Returns the player online with a UUID equivalent to the specified UuidInterface object, or null if not found
 	 */
-	public function getPlayerByUUID(UUID $uuid) : ?Player{
-		return $this->getPlayerByRawUUID($uuid->toBinary());
+	public function getPlayerByUUID(UuidInterface $uuid) : ?Player{
+		return $this->getPlayerByRawUUID($uuid->getBytes());
 	}
 
 	public function getConfigGroup() : ServerConfigGroup{
@@ -907,8 +946,7 @@ class Server{
 
 			$this->onlineMode = $this->configGroup->getConfigBool("xbox-auth", true);
 			if($this->onlineMode){
-				$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.auth.enabled"));
-				$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.authProperty.enabled"));
+				$this->logger->info($this->getLanguage()->translateString("pocketmine.server.auth.enabled"));
 			}else{
 				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.auth.disabled"));
 				$this->logger->warning($this->getLanguage()->translateString("pocketmine.server.authWarning"));
@@ -993,17 +1031,30 @@ class Server{
 					continue;
 				}
 				if(!$this->worldManager->loadWorld($name, true)){
+					$creationOptions = WorldCreationOptions::create();
+					//TODO: error checking
+
 					if(isset($options["generator"])){
 						$generatorOptions = explode(":", $options["generator"]);
-						$generator = GeneratorManager::getInstance()->getGenerator(array_shift($generatorOptions));
+						$creationOptions->setGeneratorClass(GeneratorManager::getInstance()->getGenerator(array_shift($generatorOptions)));
 						if(count($generatorOptions) > 0){
-							$options["preset"] = implode(":", $generatorOptions);
+							$creationOptions->setGeneratorOptions(implode(":", $generatorOptions));
 						}
-					}else{
-						$generator = Normal::class;
+					}
+					if(isset($options["difficulty"]) && is_string($options["difficulty"])){
+						$creationOptions->setDifficulty(World::getDifficultyFromString($options["difficulty"]));
+					}
+					if(isset($options["preset"]) && is_string($options["preset"])){
+						$creationOptions->setGeneratorOptions($options["preset"]);
+					}
+					if(isset($options["seed"])){
+						$convertedSeed = Generator::convertSeed((string) ($options["seed"] ?? ""));
+						if($convertedSeed !== null){
+							$creationOptions->setSeed($convertedSeed);
+						}
 					}
 
-					$this->worldManager->generateWorld($name, Generator::convertSeed((string) ($options["seed"] ?? "")), $generator, $options);
+					$this->worldManager->generateWorld($name, $creationOptions);
 				}
 			}
 
@@ -1015,12 +1066,14 @@ class Server{
 					$this->configGroup->setConfigString("level-name", "world");
 				}
 				if(!$this->worldManager->loadWorld($default, true)){
-					$this->worldManager->generateWorld(
-						$default,
-						Generator::convertSeed($this->configGroup->getConfigString("level-seed")),
-						GeneratorManager::getInstance()->getGenerator($this->configGroup->getConfigString("level-type")),
-						["preset" => $this->configGroup->getConfigString("generator-settings")]
-					);
+					$creationOptions = WorldCreationOptions::create()
+						->setGeneratorClass(GeneratorManager::getInstance()->getGenerator($this->configGroup->getConfigString("level-type")))
+						->setGeneratorOptions($this->configGroup->getConfigString("generator-settings"));
+					$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
+					if($convertedSeed !== null){
+						$creationOptions->setSeed($convertedSeed);
+					}
+					$this->worldManager->generateWorld($default, $creationOptions);
 				}
 
 				$world = $this->worldManager->getWorldByName($default);
@@ -1545,7 +1598,7 @@ class Server{
 		foreach($this->playerList as $p){
 			$p->getNetworkSession()->onPlayerAdded($player);
 		}
-		$rawUUID = $player->getUniqueId()->toBinary();
+		$rawUUID = $player->getUniqueId()->getBytes();
 		$this->playerList[$rawUUID] = $player;
 
 		if($this->sendUsageTicker > 0){
@@ -1554,7 +1607,7 @@ class Server{
 	}
 
 	public function removeOnlinePlayer(Player $player) : void{
-		if(isset($this->playerList[$rawUUID = $player->getUniqueId()->toBinary()])){
+		if(isset($this->playerList[$rawUUID = $player->getUniqueId()->getBytes()])){
 			unset($this->playerList[$rawUUID]);
 			foreach($this->playerList as $p){
 				$p->getNetworkSession()->onPlayerRemoved($player);

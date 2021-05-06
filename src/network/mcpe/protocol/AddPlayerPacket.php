@@ -30,14 +30,14 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\entity\EntityLink;
 use pocketmine\network\mcpe\protocol\types\entity\MetadataProperty;
-use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
-use pocketmine\uuid\UUID;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
+use Ramsey\Uuid\UuidInterface;
 use function count;
 
 class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::ADD_PLAYER_PACKET;
 
-	/** @var UUID */
+	/** @var UuidInterface */
 	public $uuid;
 	/** @var string */
 	public $username;
@@ -57,7 +57,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 	public $yaw = 0.0;
 	/** @var float|null */
 	public $headYaw = null; //TODO
-	/** @var ItemStack */
+	/** @var ItemStackWrapper */
 	public $item;
 	/**
 	 * @var MetadataProperty[]
@@ -99,7 +99,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 		$this->pitch = $in->getLFloat();
 		$this->yaw = $in->getLFloat();
 		$this->headYaw = $in->getLFloat();
-		$this->item = $in->getSlot();
+		$this->item = ItemStackWrapper::read($in);
 		$this->metadata = $in->getEntityMetadata();
 
 		$this->uvarint1 = $in->getUnsignedVarInt();
@@ -130,7 +130,7 @@ class AddPlayerPacket extends DataPacket implements ClientboundPacket{
 		$out->putLFloat($this->pitch);
 		$out->putLFloat($this->yaw);
 		$out->putLFloat($this->headYaw ?? $this->yaw);
-		$out->putSlot($this->item);
+		$this->item->write($out);
 		$out->putEntityMetadata($this->metadata);
 
 		$out->putUnsignedVarInt($this->uvarint1);

@@ -1,17 +1,12 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Cannot access offset string on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
 			message: "#^Cannot access offset float\\|int on mixed\\.$#"
+			count: 1
+			path: ../../../src/CrashDump.php
+
+		-
+			message: "#^Cannot access offset string on mixed\\.$#"
 			count: 1
 			path: ../../../src/CrashDump.php
 
@@ -21,22 +16,12 @@ parameters:
 			path: ../../../src/CrashDump.php
 
 		-
-			message: "#^Cannot access offset 'name' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
 			message: "#^Cannot cast mixed to int\\.$#"
 			count: 7
 			path: ../../../src/MemoryManager.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 6
-			path: ../../../src/Server.php
-
-		-
-			message: "#^Parameter \\#2 \\$defaultValue of method pocketmine\\\\ServerConfigGroup\\:\\:getConfigString\\(\\) expects string, mixed given\\.$#"
+			message: "#^Cannot access offset 'type' on mixed\\.$#"
 			count: 1
 			path: ../../../src/Server.php
 
@@ -46,8 +31,8 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of static method pocketmine\\\\plugin\\\\PluginGraylist\\:\\:fromArray\\(\\) expects array, mixed given\\.$#"
-			count: 1
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 6
 			path: ../../../src/Server.php
 
 		-
@@ -56,7 +41,7 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
-			message: "#^Parameter \\#2 \\$endpoint of class pocketmine\\\\updater\\\\AutoUpdater constructor expects string, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$array of static method pocketmine\\\\plugin\\\\PluginGraylist\\:\\:fromArray\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: ../../../src/Server.php
 
@@ -66,17 +51,22 @@ parameters:
 			path: ../../../src/Server.php
 
 		-
-			message: "#^Cannot access offset 'type' on mixed\\.$#"
+			message: "#^Parameter \\#2 \\$defaultValue of method pocketmine\\\\ServerConfigGroup\\:\\:getConfigString\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/Server.php
 
 		-
-			message: "#^Cannot cast mixed to string\\.$#"
+			message: "#^Parameter \\#2 \\$endpoint of class pocketmine\\\\updater\\\\AutoUpdater constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/Server.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
 			path: ../../../src/ServerConfigGroup.php
 
 		-
-			message: "#^Cannot cast mixed to int\\.$#"
+			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: ../../../src/ServerConfigGroup.php
 
@@ -96,22 +86,17 @@ parameters:
 			path: ../../../src/command/CommandReader.php
 
 		-
-			message: "#^Parameter \\#2 \\$host of class class@anonymous/src/command/defaults/TimingsCommand\\.php\\:131 constructor expects string, mixed given\\.$#"
+			message: "#^Part \\$host \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/TimingsCommand.php
 
 		-
-			message: "#^Cannot access offset 0 on mixed\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/TimingsCommand.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
+			message: "#^Cannot cast mixed to float\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/VanillaCommand.php
 
 		-
-			message: "#^Cannot cast mixed to float\\.$#"
+			message: "#^Cannot cast mixed to int\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/VanillaCommand.php
 
@@ -161,32 +146,22 @@ parameters:
 			path: ../../../src/plugin/PluginBase.php
 
 		-
-			message: "#^Parameter \\#1 \\$usage of method pocketmine\\\\command\\\\Command\\:\\:setUsage\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginBase.php
-
-		-
 			message: "#^Parameter \\#1 \\$permissionMessage of method pocketmine\\\\command\\\\Command\\:\\:setPermissionMessage\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginBase.php
 
 		-
-			message: "#^Parameter \\#1 \\$plugin of method pocketmine\\\\plugin\\\\PluginDescription\\:\\:loadMap\\(\\) expects array, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$usage of method pocketmine\\\\command\\\\Command\\:\\:setUsage\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginBase.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$name \\(string\\) does not accept mixed\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, mixed given\\.$#"
+			message: "#^Array \\(array\\<string\\>\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
@@ -196,7 +171,7 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$main \\(string\\) does not accept mixed\\.$#"
+			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\permission\\\\PermissionParser\\:\\:loadPermissions\\(\\) expects array\\<string, array\\<string, mixed\\>\\>, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
@@ -211,17 +186,32 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Array \\(array\\<string\\>\\) does not accept mixed\\.$#"
+			message: "#^Parameter \\#1 \\$plugin of method pocketmine\\\\plugin\\\\PluginDescription\\:\\:loadMap\\(\\) expects array, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\permission\\\\PermissionParser\\:\\:loadPermissions\\(\\) expects array\\<string, array\\<string, mixed\\>\\>, mixed given\\.$#"
+			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$main \\(string\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$name \\(string\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$srcNamespacePrefix \\(string\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
 
@@ -236,12 +226,12 @@ parameters:
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Property pocketmine\\\\scheduler\\\\AsyncTask\\:\\:\\$result \\(bool\\|float\\|int\\|string\\|null\\) does not accept mixed\\.$#"
+			message: "#^Parameter \\#1 \\$str of function igbinary_unserialize expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/scheduler/AsyncTask.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of function igbinary_unserialize expects string, mixed given\\.$#"
+			message: "#^Property pocketmine\\\\scheduler\\\\AsyncTask\\:\\:\\$result \\(bool\\|float\\|int\\|string\\|null\\) does not accept mixed\\.$#"
 			count: 1
 			path: ../../../src/scheduler/AsyncTask.php
 
@@ -261,12 +251,12 @@ parameters:
 			path: ../../../src/updater/AutoUpdater.php
 
 		-
-			message: "#^Parameter \\#3 \\$length of function substr expects int, mixed given\\.$#"
+			message: "#^Parameter \\#2 \\$start of function substr expects int, mixed given\\.$#"
 			count: 1
 			path: ../../../src/utils/Internet.php
 
 		-
-			message: "#^Parameter \\#2 \\$start of function substr expects int, mixed given\\.$#"
+			message: "#^Parameter \\#3 \\$length of function substr expects int, mixed given\\.$#"
 			count: 1
 			path: ../../../src/utils/Internet.php
 
@@ -281,11 +271,6 @@ parameters:
 			path: ../../../src/utils/MainLogger.php
 
 		-
-			message: "#^Parameter \\#2 \\$str of function fwrite expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/MainLogger.php
-
-		-
 			message: "#^Cannot access offset 'status' on mixed\\.$#"
 			count: 1
 			path: ../../../src/utils/Timezone.php
@@ -296,12 +281,12 @@ parameters:
 			path: ../../../src/utils/Timezone.php
 
 		-
-			message: "#^Parameter \\#2 \\$input1 of function array_map expects array, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
 
 		-
-			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
+			message: "#^Parameter \\#2 \\$input1 of function array_map expects array, mixed given\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
 
@@ -316,26 +301,6 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setString\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/data/BedrockWorldData.php
-
-		-
-			message: "#^Cannot cast mixed to string\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/data/BedrockWorldData.php
-
-		-
-			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setString\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/data/JavaWorldData.php
-
-		-
-			message: "#^Cannot cast mixed to string\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/data/JavaWorldData.php
-
-		-
 			message: "#^Cannot access offset 1 on mixed\\.$#"
 			count: 2
 			path: ../../../src/world/format/io/region/RegionWorldProvider.php
@@ -346,27 +311,7 @@ parameters:
 			path: ../../../src/world/format/io/region/RegionWorldProvider.php
 
 		-
-			message: "#^Property pocketmine\\\\world\\\\generator\\\\Flat\\:\\:\\$preset \\(string\\) does not accept mixed\\.$#"
-			count: 1
-			path: ../../../src/world/generator/Flat.php
-
-		-
-			message: "#^Parameter \\#4 \\$q0 of static method pocketmine\\\\world\\\\generator\\\\noise\\\\Noise\\:\\:linearLerp\\(\\) expects float, mixed given\\.$#"
-			count: 1
-			path: ../../../src/world/generator/noise/Noise.php
-
-		-
-			message: "#^Parameter \\#5 \\$q1 of static method pocketmine\\\\world\\\\generator\\\\noise\\\\Noise\\:\\:linearLerp\\(\\) expects float, mixed given\\.$#"
-			count: 1
-			path: ../../../src/world/generator/noise/Noise.php
-
-		-
-			message: "#^Cannot access offset int on mixed\\.$#"
-			count: 6
-			path: ../../../src/world/generator/noise/Noise.php
-
-		-
-			message: "#^Parameter \\#2 \\$array of static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertArrayHasKey\\(\\) expects array\\|ArrayAccess, mixed given\\.$#"
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
 			count: 1
 			path: ../../phpunit/block/BlockTest.php
 
@@ -376,7 +321,7 @@ parameters:
 			path: ../../phpunit/block/BlockTest.php
 
 		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			message: "#^Parameter \\#2 \\$array of static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertArrayHasKey\\(\\) expects array\\|ArrayAccess, mixed given\\.$#"
 			count: 1
 			path: ../../phpunit/block/BlockTest.php
 

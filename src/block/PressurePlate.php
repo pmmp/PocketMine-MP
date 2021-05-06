@@ -29,5 +29,9 @@ abstract class PressurePlate extends Transparent{
 		return false;
 	}
 
+	protected function recalculateCollisionBoxes() : array{
+		return [];
+	}
+
 	//TODO
 }

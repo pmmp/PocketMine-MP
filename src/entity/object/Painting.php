@@ -25,6 +25,7 @@ namespace pocketmine\entity\object;
 
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\item\VanillaItems;
@@ -35,7 +36,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\player\Player;
-use pocketmine\world\particle\DestroyBlockParticle;
+use pocketmine\world\particle\BlockBreakParticle;
 use pocketmine\world\World;
 use function ceil;
 
@@ -60,12 +61,6 @@ class Painting extends Entity{
 	/** @var float */
 	protected $drag = 1.0;
 
-	//these aren't accurate, but it doesn't matter since they aren't used (vanilla PC does something similar)
-	/** @var float */
-	public $height = 0.5;
-	/** @var float */
-	public $width = 0.5;
-
 	/** @var Vector3 */
 	protected $blockIn;
 	/** @var int */
@@ -78,6 +73,11 @@ class Painting extends Entity{
 		$this->blockIn = $blockIn->asVector3();
 		$this->facing = $facing;
 		parent::__construct($location, $nbt);
+	}
+
+	protected function getInitialSizeInfo() : EntitySizeInfo{
+		//these aren't accurate, but it doesn't matter since they aren't used (vanilla PC does something similar)
+		return new EntitySizeInfo(0.5, 0.5);
 	}
 
 	protected function initEntity(CompoundTag $nbt) : void{
@@ -116,7 +116,7 @@ class Painting extends Entity{
 			//non-living entities don't have a way to create drops generically yet
 			$this->getWorld()->dropItem($this->location, VanillaItems::PAINTING());
 		}
-		$this->getWorld()->addParticle($this->location->add(0.5, 0.5, 0.5), new DestroyBlockParticle(VanillaBlocks::OAK_PLANKS()));
+		$this->getWorld()->addParticle($this->location->add(0.5, 0.5, 0.5), new BlockBreakParticle(VanillaBlocks::OAK_PLANKS()));
 	}
 
 	protected function recalculateBoundingBox() : void{

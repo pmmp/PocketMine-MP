@@ -28,24 +28,14 @@ namespace pocketmine\network\mcpe\protocol\types\login;
  */
 final class AuthenticationData{
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $displayName;
+	/** @required */
+	public string $displayName;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $identity;
+	/** @required */
+	public string $identity;
 
-	/** @var string */
-	public $titleId = ""; //TODO: find out what this is for
+	public string $titleId = ""; //TODO: find out what this is for
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $XUID;
+	/** @required */
+	public string $XUID;
 }
