@@ -42,7 +42,7 @@ class BlockTransaction{
 
 	public function __construct(ChunkManager $world){
 		$this->world = $world;
-		$this->addValidator(function(ChunkManager $world, int $x, int $y, int $z) : bool{
+		$this->addValidator(static function(ChunkManager $world, int $x, int $y, int $z) : bool{
 			return $world->isInWorld($x, $y, $z);
 		});
 	}

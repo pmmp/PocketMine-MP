@@ -21,13 +21,18 @@
 
 declare(strict_types=1);
 
-if(!defined('LEVELDB_ZLIB_RAW_COMPRESSION')){
-	//leveldb might not be loaded
-	define('LEVELDB_ZLIB_RAW_COMPRESSION', 4);
-}
-if(!extension_loaded('libdeflate')){
-	function libdeflate_deflate_compress(string $data, int $level = 6) : string{}
-}
+namespace pocketmine\inventory;
 
-//TODO: these need to be defined properly or removed
-define('pocketmine\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__, 2) . '/vendor/autoload.php');
+use pocketmine\entity\Human;
+
+final class PlayerOffHandInventory extends BaseInventory{
+	/** @var Human */
+	private $holder;
+
+	public function __construct(Human $player){
+		$this->holder = $player;
+		parent::__construct(1);
+	}
+
+	public function getHolder() : Human{ return $this->holder; }
+}

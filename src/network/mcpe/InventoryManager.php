@@ -96,6 +96,7 @@ class InventoryManager{
 		$this->containerOpenCallbacks->add(\Closure::fromCallable([self::class, 'createContainerOpen']));
 
 		$this->add(ContainerIds::INVENTORY, $this->player->getInventory());
+		$this->add(ContainerIds::OFFHAND, $this->player->getOffHandInventory());
 		$this->add(ContainerIds::ARMOR, $this->player->getArmorInventory());
 		$this->add(ContainerIds::UI, $this->player->getCursorInventory());
 

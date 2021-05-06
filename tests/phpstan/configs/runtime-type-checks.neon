@@ -1,18 +1,8 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Instanceof between pocketmine\\\\event\\\\RegisteredListener and pocketmine\\\\event\\\\RegisteredListener will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/event/HandlerList.php
-
-		-
-			message: "#^Call to function is_string\\(\\) with string will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/item/Item.php
-
-		-
 			message: "#^Casting to int something that's already int\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/item/Item.php
 
 		-
@@ -24,34 +14,4 @@ parameters:
 			message: "#^Call to function is_array\\(\\) with array\\<string, mixed\\> will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginBase.php
-
-		-
-			message: "#^Call to function is_subclass_of\\(\\) with class\\-string\\<TEvent of pocketmine\\\\event\\\\Event\\> and 'pocketmine\\\\\\\\event\\\\\\\\Event' will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginManager.php
-
-		-
-			message: "#^If condition is always true\\.$#"
-			count: 2
-			path: ../../../src/thread/ThreadManager.php
-
-		-
-			message: "#^Instanceof between pocketmine\\\\thread\\\\Worker and pocketmine\\\\thread\\\\Worker will always evaluate to true\\.$#"
-			count: 2
-			path: ../../../src/thread/ThreadManager.php
-
-		-
-			message: "#^Call to function is_object\\(\\) with \\*NEVER\\* will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Else branch is unreachable because ternary operator condition is always true\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Instanceof between pocketmine\\\\math\\\\Vector3 and pocketmine\\\\math\\\\Vector3 will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
 

@@ -2109,6 +2109,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			if($this->armorInventory !== null){
 				$this->armorInventory->clearAll();
 			}
+			if($this->offHandInventory !== null){
+				$this->offHandInventory->clearAll();
+			}
 		}
 
 		$this->getWorld()->dropExperience($this->location, $ev->getXpDropAmount());
