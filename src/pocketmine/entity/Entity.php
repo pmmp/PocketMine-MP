@@ -612,7 +612,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->fallDistance = $this->namedtag->getFloat("FallDistance", 0.0);
 
 		if(!isset($this->width) or !isset($this->height)){
-			throw new AssumptionFailedError(static::class . " has invalid width/height");
+			throw new \RuntimeException("Entity " . static::class . " must declare the properties height and width and must be a float.");
 		}
 
 		$this->propertyManager = new DataPropertyManager();
