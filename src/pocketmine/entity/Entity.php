@@ -73,7 +73,6 @@ use pocketmine\plugin\Plugin;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
-use pocketmine\utils\AssumptionFailedError;
 use function abs;
 use function assert;
 use function cos;
