@@ -942,11 +942,13 @@ class NetworkSession{
 	}
 
 	public function onEnterWorld() : void{
-		$world = $this->player->getWorld();
-		$this->syncWorldTime($world->getTime());
-		$this->syncWorldDifficulty($world->getDifficulty());
-		//TODO: weather needs to be synced here (when implemented)
-		//TODO: world spawn needs to be synced here
+		if($this->player !== null){
+			$world = $this->player->getWorld();
+			$this->syncWorldTime($world->getTime());
+			$this->syncWorldDifficulty($world->getDifficulty());
+			//TODO: weather needs to be synced here (when implemented)
+			//TODO: world spawn needs to be synced here
+		}
 	}
 
 	public function syncWorldTime(int $worldTime) : void{
