@@ -78,7 +78,7 @@ class SweetBerryBush extends Flowable {
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if ($item instanceof Fertilizer) {
 			$block = clone $this;
-			$block->age += mt_rand(1, 3);
+			$block->age++;
 			if ($block->age > 7) {
 				$block->age = 7;
 
