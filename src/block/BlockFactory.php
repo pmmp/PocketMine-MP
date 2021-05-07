@@ -530,7 +530,7 @@ class BlockFactory{
 		//TODO: minecraft:stripped_oak_log
 		//TODO: minecraft:stripped_spruce_log
 		//TODO: minecraft:structure_block
-		$this->register(new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH, 0, ItemIds::SWEET_BERRIES), "Sweet Berry Bush"));
+		$this->register(new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH, 0, ItemIds::SWEET_BERRIES), "Sweet Berry Bush", new BlockBreakInfo(0)));
 		//TODO: minecraft:turtle_egg
 		//TODO: minecraft:undyed_shulker_box
 		//endregion
