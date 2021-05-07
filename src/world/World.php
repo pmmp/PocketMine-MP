@@ -2706,8 +2706,8 @@ class World implements ChunkManager{
 			$temporaryLoader = new class implements ChunkLoader{};
 			$this->registerChunkLoader($temporaryLoader, $chunkX, $chunkZ);
 			$promise->onCompletion(
-				static function() : void{},
-				fn() => $this->unregisterChunkLoader($temporaryLoader, $chunkX, $chunkZ)
+				fn() => $this->unregisterChunkLoader($temporaryLoader, $chunkX, $chunkZ),
+				static function() : void{}
 			);
 		}
 		return $promise;
