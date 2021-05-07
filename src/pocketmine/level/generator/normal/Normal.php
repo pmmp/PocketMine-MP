@@ -144,13 +144,9 @@ class Normal extends Generator{
 						return Biome::BIRCH_FOREST;
 					}
 				}else{
-					if($temperature < 0.20){
-						return Biome::MOUNTAINS;
-					}elseif($temperature < 0.40){
-						return Biome::SMALL_MOUNTAINS;
-					}else{
-						return Biome::RIVER;
-					}
+					//Previously here, we had a (broken) condition to generate mountains, but fixing it would have
+					//caused generation changes on a patch release, so we can't keep it here for now.
+					return Biome::RIVER;
 				}
 			}
 		};
