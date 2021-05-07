@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -33,12 +34,36 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
-class SweetBerryBush extends Crops {
+class SweetBerryBush extends Flowable {
+
+	protected $age;
+
+	protected function writeStateToMeta() : int{
+		return $this->age;
+	}
+
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 7);
+	}
+
+	public function getStateBitmask() : int{
+		return 0b111;
+	}
+
+	public function getAge() : int{ return $this->age; }
+
+	/** @return $this */
+	public function setAge(int $age) : self{
+		if($age < 0 || $age > 7){
+			throw new \InvalidArgumentException("Age must be in range 0-7");
+		}
+		$this->age = $age;
+		return $this;
+	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		switch ($blockReplace->getSide(Facing::DOWN)->getId()){
 
-			//TODO: coarse dirt
 			case BlockLegacyIds::GRASS:
 			case BlockLegacyIds::DIRT:
 			case BlockLegacyIds::PODZOL:
@@ -51,44 +76,68 @@ class SweetBerryBush extends Crops {
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if ($item instanceof Fertilizer){
+		if ($item instanceof Fertilizer) {
 			$block = clone $this;
+			$block->age += mt_rand(1, 3);
+			if ($block->age > 7) {
+				$block->age = 7;
 
-			if (++$block->age >= 4){
-				$block->age = 1; //set to young plant
-				$this->pos->getWorld()->dropItem($this->pos, VanillaItems::SWEET_BERRIES()->setCount(mt_rand(2, 3)));
 			}
 
 			$ev = new BlockGrowEvent($this, $block);
 			$ev->call();
-			if(!$ev->isCancelled()) {
+
+			if (!$ev->isCancelled()) {
+				if ($ev->getNewState()->getAge() >= 4) {
+					$ev->getNewState()->setAge(1);
+					$this->pos->getWorld()->dropItem($this->pos, VanillaItems::SWEET_BERRIES()->setCount(mt_rand(2, 3)));
+				}
+
 				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
 			}
 
 			$item->pop();
-
-		} else{
-			if($this->age >= 2){
-				$this->pos->getWorld()->dropItem($this->pos, VanillaItems::SWEET_BERRIES()->setCount($this->age == 3 ? mt_rand(2, 3) : mt_rand(1, 2)));
-			}
+		} elseif ($this->age >= 2) {
+			$this->age = 1;
+			$this->pos->getWorld()->setBlock($this->pos, $this);
+			$this->pos->getWorld()->dropItem($this->pos, VanillaItems::SWEET_BERRIES()->setCount($this->age === 3 ? mt_rand(2, 3) : mt_rand(1, 2)));
 		}
 
 		return true;
 	}
 
 	public function getDrops(Item $item): array{
+
 		if ($this->age >= 2){
 			return [
-				VanillaItems::SWEET_BERRIES()->setCount($this->age == 3 ? mt_rand(2, 3) : mt_rand(1, 2))
+				VanillaItems::SWEET_BERRIES()->setCount($this->age === 3 ? mt_rand(2, 3) : mt_rand(1, 2))
 			];
 		}
 
 		return [];
 	}
 
-	public function onNearbyBlockChange(): void{}
+	public function onNearbyBlockChange() : void{
+		$side = $this->getSide(Facing::DOWN);
+		$supportedIds = [BlockLegacyIds::GRASS, BlockLegacyIds::DIRT, BlockLegacyIds::PODZOL];
+		if(!in_array($side->getId(),$supportedIds)){
+			$this->pos->getWorld()->useBreakOn($this->pos);
+		}
+	}
 
-	public function getPickedItem(bool $addUserData = false): Item {
-		return VanillaItems::SWEET_BERRIES();
+	public function ticksRandomly() : bool{
+		return true;
+	}
+
+	public function onRandomTick() : void{
+		if($this->age < 7 and mt_rand(0, 2) === 1){
+			$block = clone $this;
+			++$block->age;
+			$ev = new BlockGrowEvent($this, $block);
+			$ev->call();
+			if(!$ev->isCancelled()){
+				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
+			}
+		}
 	}
 }
