@@ -150,7 +150,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$address,
 			$port
 		);
-		return new RakLibIpcSessionEventListener($session);
+		return new RakLibSessionEventListener($session);
 	}
 
 	public function blockAddress(string $address, int $timeout = 300) : void{

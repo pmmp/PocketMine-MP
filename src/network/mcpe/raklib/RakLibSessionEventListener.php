@@ -27,7 +27,11 @@ use pocketmine\network\mcpe\NetworkSession;
 use raklib\server\SessionEventListener;
 use function substr;
 
-final class RakLibIpcSessionEventListener implements SessionEventListener{
+/**
+ * This class is an adapter between RakLib and NetworkSession. It delivers events received from RakLib to the
+ * corresponding Minecraft network session.
+ */
+final class RakLibSessionEventListener implements SessionEventListener{
 
 	private NetworkSession $session;
 
