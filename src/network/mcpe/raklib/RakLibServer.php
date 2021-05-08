@@ -72,18 +72,15 @@ class RakLibServer extends Thread{
 	/** @var string|null */
 	public $crashInfo = null;
 
-	/**
-	 * @param int|null             $overrideProtocolVersion Optional custom protocol version to use, defaults to current RakLib's protocol
-	 */
 	public function __construct(
 		\ThreadedLogger $logger,
 		\Threaded $mainToThreadBuffer,
 		\Threaded $threadToMainBuffer,
 		InternetAddress $address,
 		int $serverId,
-		int $maxMtuSize = 1492,
-		?int $overrideProtocolVersion = null,
-		?SleeperNotifier $sleeper = null
+		int $maxMtuSize,
+		int $overrideProtocolVersion,
+		SleeperNotifier $sleeper
 	){
 		$this->address = $address;
 
