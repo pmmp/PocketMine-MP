@@ -704,12 +704,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "9d6f564e2843535a0ec621f7396b8b0292506cf8"
+                "reference": "6c83e0f50e71f654cf24a7d883ee0561e269483a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/9d6f564e2843535a0ec621f7396b8b0292506cf8",
-                "reference": "9d6f564e2843535a0ec621f7396b8b0292506cf8",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/6c83e0f50e71f654cf24a7d883ee0561e269483a",
+                "reference": "6c83e0f50e71f654cf24a7d883ee0561e269483a",
                 "shasum": ""
             },
             "require": {
@@ -739,7 +739,7 @@
                 "issues": "https://github.com/pmmp/RakLib/issues",
                 "source": "https://github.com/pmmp/RakLib/tree/master"
             },
-            "time": "2021-05-05T19:32:05+00:00"
+            "time": "2021-05-08T19:24:13+00:00"
         },
         {
             "name": "pocketmine/raklib-ipc",
