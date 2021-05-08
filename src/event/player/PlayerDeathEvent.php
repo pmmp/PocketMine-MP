@@ -42,6 +42,8 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	/** @var bool */
 	private $keepInventory = false;
 
+	private bool $keepXp = false;
+
 	/**
 	 * @param Item[]                           $drops
 	 * @param string|TranslationContainer|null $deathMessage Null will cause the default vanilla message to be used
@@ -82,6 +84,14 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 	public function setKeepInventory(bool $keepInventory) : void{
 		$this->keepInventory = $keepInventory;
+	}
+
+	public function getKeepXp() : bool{
+		return $this->keepXp;
+	}
+
+	public function setKeepXp(bool $keepXp) : void{
+		$this->keepXp = $keepXp;
 	}
 
 	/**
