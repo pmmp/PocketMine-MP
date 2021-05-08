@@ -21,13 +21,13 @@
 
 declare(strict_types=1);
 
-if(!\defined('LEVELDB_ZLIB_RAW_COMPRESSION')){
+if(!defined('LEVELDB_ZLIB_RAW_COMPRESSION')){
 	//leveldb might not be loaded
-	\define('LEVELDB_ZLIB_RAW_COMPRESSION', 4);
+	define('LEVELDB_ZLIB_RAW_COMPRESSION', 4);
 }
-if(!\extension_loaded('libdeflate')){
+if(!extension_loaded('libdeflate')){
 	function libdeflate_deflate_compress(string $data, int $level = 6) : string{}
 }
 
 //TODO: these need to be defined properly or removed
-\define('pocketmine\COMPOSER_AUTOLOADER_PATH', \dirname(__DIR__, 2) . '/vendor/autoload.php');
+define('pocketmine\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__, 2) . '/vendor/autoload.php');

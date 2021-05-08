@@ -106,11 +106,6 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method getWorld\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
 			message: "#^Cannot call method sendData\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php

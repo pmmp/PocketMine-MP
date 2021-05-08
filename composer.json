@@ -38,19 +38,20 @@
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/classloader": "dev-master",
       "pocketmine/color": "^0.2.0",
-      "pocketmine/errorhandler": "^0.2.0",
+      "pocketmine/errorhandler": "^0.3.0",
       "pocketmine/log": "dev-master",
       "pocketmine/log-pthreads": "dev-master",
       "pocketmine/math": "dev-master",
       "pocketmine/nbt": "dev-master",
       "pocketmine/raklib": "dev-per-session-channels",
+      "pocketmine/raklib-ipc": "dev-per-session-channels",
       "pocketmine/snooze": "^0.1.0",
       "pocketmine/spl": "dev-master",
       "ramsey/uuid": "^4.1",
       "respect/validation": "^2.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "0.12.84",
+      "phpstan/phpstan": "0.12.85",
       "phpstan/phpstan-phpunit": "^0.12.6",
       "phpstan/phpstan-strict-rules": "^0.12.2",
       "phpunit/phpunit": "^9.2"

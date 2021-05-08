@@ -68,6 +68,7 @@ use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
+use pocketmine\utils\Promise;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\biome\BiomeRegistry;
@@ -82,7 +83,7 @@ use pocketmine\world\generator\PopulationTask;
 use pocketmine\world\light\BlockLightUpdate;
 use pocketmine\world\light\LightPopulationTask;
 use pocketmine\world\light\SkyLightUpdate;
-use pocketmine\world\particle\DestroyBlockParticle;
+use pocketmine\world\particle\BlockBreakParticle;
 use pocketmine\world\particle\Particle;
 use pocketmine\world\sound\BlockPlaceSound;
 use pocketmine\world\sound\Sound;
@@ -240,8 +241,8 @@ class World implements ChunkManager{
 	/** @var int */
 	private $maxConcurrentChunkPopulationTasks = 2;
 	/**
-	 * @var ChunkPopulationPromise[] chunkHash => promise
-	 * @phpstan-var array<int, ChunkPopulationPromise>
+	 * @var Promise[] chunkHash => promise
+	 * @phpstan-var array<int, Promise<Chunk>>
 	 */
 	private array $chunkPopulationRequestMap = [];
 	/**
@@ -447,8 +448,9 @@ class World implements ChunkManager{
 				unset($this->generatorRegisteredWorkers[$workerId]);
 			}
 		});
-		$this->addOnUnloadCallback(function() use ($workerStartHook) : void{
-			$this->workerPool->removeWorkerStartHook($workerStartHook);
+		$workerPool = $this->workerPool;
+		$this->addOnUnloadCallback(static function() use ($workerPool, $workerStartHook) : void{
+			$workerPool->removeWorkerStartHook($workerStartHook);
 		});
 	}
 
@@ -1698,7 +1700,7 @@ class World implements ChunkManager{
 
 	private function destroyBlockInternal(Block $target, Item $item, ?Player $player = null, bool $createParticles = false) : void{
 		if($createParticles){
-			$this->addParticle($target->getPos()->add(0.5, 0.5, 0.5), new DestroyBlockParticle($target));
+			$this->addParticle($target->getPos()->add(0.5, 0.5, 0.5), new BlockBreakParticle($target));
 		}
 
 		$target->onBreak($item, $player);
@@ -2109,7 +2111,7 @@ class World implements ChunkManager{
 				}
 			}
 			unset($this->activeChunkPopulationTasks[$index]);
-			$this->chunkPopulationRequestMap[$index]->resolve();
+			$this->chunkPopulationRequestMap[$index]->resolve($chunk);
 			unset($this->chunkPopulationRequestMap[$index]);
 
 			$this->drainPopulationRequestQueue();
@@ -2697,16 +2699,19 @@ class World implements ChunkManager{
 		}
 	}
 
-	private function enqueuePopulationRequest(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : ChunkPopulationPromise{
+	/**
+	 * @phpstan-return Promise<Chunk>
+	 */
+	private function enqueuePopulationRequest(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$this->chunkPopulationRequestQueue->enqueue($chunkHash);
-		$promise = $this->chunkPopulationRequestMap[$chunkHash] = new ChunkPopulationPromise();
+		$promise = $this->chunkPopulationRequestMap[$chunkHash] = new Promise();
 		if($associatedChunkLoader === null){
 			$temporaryLoader = new class implements ChunkLoader{};
 			$this->registerChunkLoader($temporaryLoader, $chunkX, $chunkZ);
 			$promise->onCompletion(
-				static function() : void{},
-				fn() => $this->unregisterChunkLoader($temporaryLoader, $chunkX, $chunkZ)
+				fn() => $this->unregisterChunkLoader($temporaryLoader, $chunkX, $chunkZ),
+				static function() : void{}
 			);
 		}
 		return $promise;
@@ -2720,8 +2725,10 @@ class World implements ChunkManager{
 	 * A ChunkLoader can be associated with the generation request to ensure that the generation request is cancelled if
 	 * no loaders are attached to the target chunk. If no loader is provided, one will be assigned (and automatically
 	 * removed when the generation request completes).
+	 *
+	 * @phpstan-return Promise<Chunk>
 	 */
-	public function requestChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : ChunkPopulationPromise{
+	public function requestChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$promise = $this->chunkPopulationRequestMap[$chunkHash] ?? null;
 		if($promise !== null && isset($this->activeChunkPopulationTasks[$chunkHash])){
@@ -2742,8 +2749,10 @@ class World implements ChunkManager{
 	 *
 	 * If the chunk is currently locked (for example due to another chunk using it for async generation), the request
 	 * will be queued and executed at the earliest opportunity.
+	 *
+	 * @phpstan-return Promise<Chunk>
 	 */
-	public function orderChunkPopulation(int $x, int $z, ?ChunkLoader $associatedChunkLoader) : ChunkPopulationPromise{
+	public function orderChunkPopulation(int $x, int $z, ?ChunkLoader $associatedChunkLoader) : Promise{
 		$index = World::chunkHash($x, $z);
 		$promise = $this->chunkPopulationRequestMap[$index] ?? null;
 		if($promise !== null && isset($this->activeChunkPopulationTasks[$index])){
@@ -2765,7 +2774,7 @@ class World implements ChunkManager{
 
 			$this->activeChunkPopulationTasks[$index] = true;
 			if($promise === null){
-				$promise = new ChunkPopulationPromise();
+				$promise = new Promise();
 				$this->chunkPopulationRequestMap[$index] = $promise;
 			}
 
@@ -2787,8 +2796,8 @@ class World implements ChunkManager{
 		}
 
 		//chunk is already populated; return a pre-resolved promise that will directly fire callbacks assigned
-		$result = new ChunkPopulationPromise();
-		$result->resolve();
+		$result = new Promise();
+		$result->resolve($chunk);
 		return $result;
 	}
 

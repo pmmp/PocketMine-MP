@@ -62,11 +62,40 @@ class Vine extends Flowable{
 	}
 
 	private function setFaceFromMeta(int $meta, int $flag, int $face) : void{
-		if(($meta & $flag) !== 0){
+		$this->setFace($face, ($meta & $flag) !== 0);
+	}
+
+	/** @return int[] */
+	public function getFaces() : array{ return $this->faces; }
+
+	/**
+	 * @param int[] $faces
+	 * @phpstan-param list<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST> $faces
+	 * @return $this
+	 */
+	public function setFaces(array $faces) : self{
+		$uniqueFaces = [];
+		foreach($faces as $face){
+			if($face !== Facing::NORTH && $face !== Facing::SOUTH && $face !== Facing::WEST && $face !== Facing::EAST){
+				throw new \InvalidArgumentException("Facing can only be north, east, south or west");
+			}
+			$uniqueFaces[$face] = $face;
+		}
+		$this->faces = $uniqueFaces;
+		return $this;
+	}
+
+	/** @return $this */
+	public function setFace(int $face, bool $value) : self{
+		if($face !== Facing::NORTH && $face !== Facing::SOUTH && $face !== Facing::WEST && $face !== Facing::EAST){
+			throw new \InvalidArgumentException("Facing can only be north, east, south or west");
+		}
+		if($value){
 			$this->faces[$face] = $face;
 		}else{
 			unset($this->faces[$face]);
 		}
+		return $this;
 	}
 
 	public function hasEntityCollision() : bool{

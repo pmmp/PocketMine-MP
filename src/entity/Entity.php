@@ -1599,6 +1599,7 @@ abstract class Entity{
 		$properties->setLong(EntityMetadataProperties::TARGET_EID, $this->targetId ?? 0);
 		$properties->setString(EntityMetadataProperties::NAMETAG, $this->nameTag);
 		$properties->setString(EntityMetadataProperties::SCORE_TAG, $this->scoreTag);
+		$properties->setByte(EntityMetadataProperties::COLOR, 0);
 
 		$properties->setGenericFlag(EntityMetadataFlags::AFFECTED_BY_GRAVITY, true);
 		$properties->setGenericFlag(EntityMetadataFlags::CAN_CLIMB, $this->canClimb);

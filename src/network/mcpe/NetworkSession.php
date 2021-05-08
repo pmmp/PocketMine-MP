@@ -964,11 +964,13 @@ class NetworkSession{
 	}
 
 	public function onEnterWorld() : void{
-		$world = $this->player->getWorld();
-		$this->syncWorldTime($world->getTime());
-		$this->syncWorldDifficulty($world->getDifficulty());
-		//TODO: weather needs to be synced here (when implemented)
-		//TODO: world spawn needs to be synced here
+		if($this->player !== null){
+			$world = $this->player->getWorld();
+			$this->syncWorldTime($world->getTime());
+			$this->syncWorldDifficulty($world->getDifficulty());
+			//TODO: weather needs to be synced here (when implemented)
+			//TODO: world spawn needs to be synced here
+		}
 	}
 
 	public function syncWorldTime(int $worldTime) : void{
@@ -985,12 +987,16 @@ class NetworkSession{
 
 	/**
 	 * TODO: expand this to more than just humans
-	 * TODO: offhand
 	 */
-	public function onMobEquipmentChange(Human $mob) : void{
+	public function onMobMainHandItemChange(Human $mob) : void{
 		//TODO: we could send zero for slot here because remote players don't need to know which slot was selected
 		$inv = $mob->getInventory();
 		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItemInHand())), $inv->getHeldItemIndex(), ContainerIds::INVENTORY));
+	}
+
+	public function onMobOffHandItemChange(Human $mob) : void{
+		$inv = $mob->getOffHandInventory();
+		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItem(0))), 0, ContainerIds::OFFHAND));
 	}
 
 	public function onMobArmorChange(Living $mob) : void{

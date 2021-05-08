@@ -36,7 +36,7 @@ parameters:
 			path: ../../../src/entity/Entity.php
 
 		-
-			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$enderChestInventory \\(pocketmine\\\\block\\\\inventory\\\\EnderChestInventory\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$enderInventory \\(pocketmine\\\\inventory\\\\PlayerEnderInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/entity/Human.php
 
@@ -47,6 +47,11 @@ parameters:
 
 		-
 			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$inventory \\(pocketmine\\\\inventory\\\\PlayerInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/entity/Human.php
+
+		-
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$offHandInventory \\(pocketmine\\\\inventory\\\\PlayerOffHandInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/entity/Human.php
 
@@ -72,11 +77,6 @@ parameters:
 
 		-
 			message: "#^Property pocketmine\\\\player\\\\Player\\:\\:\\$cursorInventory \\(pocketmine\\\\inventory\\\\PlayerCursorInventory\\) does not accept null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
-			message: "#^Property pocketmine\\\\player\\\\Player\\:\\:\\$perm \\(pocketmine\\\\permission\\\\PermissibleBase\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/player/Player.php
 

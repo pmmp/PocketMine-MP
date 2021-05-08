@@ -21,23 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\particle;
+namespace pocketmine\block;
 
-use pocketmine\block\Block;
-use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\block\utils\ColorInMetadataTrait;
 
-class DestroyBlockParticle implements Particle{
-
-	/** @var Block */
-	private $block;
-
-	public function __construct(Block $b){
-		$this->block = $b;
-	}
-
-	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_DESTROY, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()), $pos)];
-	}
+final class StainedHardenedGlassPane extends HardenedGlassPane{
+	use ColorInMetadataTrait;
 }

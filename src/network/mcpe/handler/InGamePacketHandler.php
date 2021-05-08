@@ -277,6 +277,7 @@ class InGamePacketHandler extends PacketHandler{
 
 		if($isCraftingPart){
 			if($this->craftingTransaction === null){
+				//TODO: this might not be crafting if there is a special inventory open (anvil, enchanting, loom etc)
 				$this->craftingTransaction = new CraftingTransaction($this->player, $this->player->getServer()->getCraftingManager(), $actions);
 			}else{
 				foreach($actions as $action){
@@ -462,11 +463,17 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
-		$this->session->getInvManager()->onClientSelectHotbarSlot($packet->hotbarSlot);
-		if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
-			$this->session->getInvManager()->syncSelectedHotbarSlot();
+		if($packet->windowId === ContainerIds::OFFHAND){
+			return true; //this happens when we put an item into the offhand
 		}
-		return true;
+		if($packet->windowId === ContainerIds::INVENTORY){
+			$this->session->getInvManager()->onClientSelectHotbarSlot($packet->hotbarSlot);
+			if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
+				$this->session->getInvManager()->syncSelectedHotbarSlot();
+			}
+			return true;
+		}
+		return false;
 	}
 
 	public function handleMobArmorEquipment(MobArmorEquipmentPacket $packet) : bool{
