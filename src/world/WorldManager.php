@@ -150,9 +150,9 @@ class WorldManager{
 		}
 
 		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.unloading", [$world->getDisplayName()]));
-		$safeSpawn = $this->defaultWorld->getSafeSpawn();
+		$safeSpawn = $this->defaultWorld !== null ?  $this->defaultWorld->getSafeSpawn() : null;
 		foreach($world->getPlayers() as $player){
-			if($world === $this->defaultWorld or $this->defaultWorld === null){
+			if($world === $this->defaultWorld or $safeSpawn === null){
 				$player->disconnect("Forced default world unload");
 			}else{
 				$player->teleport($safeSpawn);
