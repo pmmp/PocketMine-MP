@@ -21,6 +21,16 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
+			message: "#^Parameter \\#1 \\$ of closure expects TValue, TValue given\\.$#"
+			count: 2
+			path: ../../../src/utils/Promise.php
+
+		-
+			message: "#^Property pocketmine\\\\utils\\\\Promise\\<TValue\\>\\:\\:\\$result \\(TValue\\|null\\) does not accept TValue\\.$#"
+			count: 1
+			path: ../../../src/utils/Promise.php
+
+		-
 			message: "#^Parameter \\#1 \\$ of closure expects TMemberType, TMemberType given\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
