@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\raklib;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\Thread;
 use raklib\generic\Socket;
-use raklib\RakLib;
 use raklib\server\ipc\RakLibToUserThreadMessageSender;
 use raklib\server\ipc\UserToRakLibThreadMessageReceiver;
 use raklib\server\Server;
@@ -79,7 +78,7 @@ class RakLibServer extends Thread{
 		InternetAddress $address,
 		int $serverId,
 		int $maxMtuSize,
-		int $overrideProtocolVersion,
+		int $protocolVersion,
 		SleeperNotifier $sleeper
 	){
 		$this->address = $address;
@@ -94,7 +93,7 @@ class RakLibServer extends Thread{
 
 		$this->mainPath = \pocketmine\PATH;
 
-		$this->protocolVersion = $overrideProtocolVersion ?? RakLib::DEFAULT_PROTOCOL_VERSION;
+		$this->protocolVersion = $protocolVersion;
 
 		$this->mainThreadNotifier = $sleeper;
 	}
