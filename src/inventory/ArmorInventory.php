@@ -26,7 +26,7 @@ namespace pocketmine\inventory;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
 
-class ArmorInventory extends BaseInventory{
+class ArmorInventory extends SimpleInventory{
 	public const SLOT_HEAD = 0;
 	public const SLOT_CHEST = 1;
 	public const SLOT_LEGS = 2;

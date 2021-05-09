@@ -30,7 +30,7 @@ use pocketmine\item\ItemIds;
 class BaseInventoryTest extends TestCase{
 
 	public function testAddItemDifferentUserData() : void{
-		$inv = new class(1) extends BaseInventory{
+		$inv = new class(1) extends SimpleInventory{
 
 		};
 		$item1 = ItemFactory::getInstance()->get(ItemIds::ARROW, 0, 1);

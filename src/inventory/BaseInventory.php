@@ -27,21 +27,18 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\player\Player;
 use pocketmine\utils\ObjectSet;
-use function array_map;
 use function array_slice;
 use function count;
 use function spl_object_id;
 
+/**
+ * This class provides everything needed to implement an inventory, minus the underlying storage system.
+ */
 abstract class BaseInventory implements Inventory{
 	use InventoryHelpersTrait;
 
 	/** @var int */
 	protected $maxStackSize = Inventory::MAX_STACK;
-	/**
-	 * @var \SplFixedArray|(Item|null)[]
-	 * @phpstan-var \SplFixedArray<Item|null>
-	 */
-	protected $slots;
 	/** @var Player[] */
 	protected $viewers = [];
 	/**
@@ -50,42 +47,18 @@ abstract class BaseInventory implements Inventory{
 	 */
 	protected $listeners;
 
-	public function __construct(int $size){
-		$this->slots = new \SplFixedArray($size);
+	public function __construct(){
 		$this->listeners = new ObjectSet();
-	}
-
-	/**
-	 * Returns the size of the inventory.
-	 */
-	public function getSize() : int{
-		return $this->slots->getSize();
 	}
 
 	public function getMaxStackSize() : int{
 		return $this->maxStackSize;
 	}
 
-	public function getItem(int $index) : Item{
-		return $this->slots[$index] !== null ? clone $this->slots[$index] : ItemFactory::air();
-	}
-
 	/**
-	 * @return Item[]
+	 * @param Item[] $items
 	 */
-	public function getContents(bool $includeEmpty = false) : array{
-		$contents = [];
-
-		foreach($this->slots as $i => $slot){
-			if($slot !== null){
-				$contents[$i] = clone $slot;
-			}elseif($includeEmpty){
-				$contents[$i] = ItemFactory::air();
-			}
-		}
-
-		return $contents;
-	}
+	abstract protected function internalSetContents(array $items) : void;
 
 	/**
 	 * @param Item[] $items
@@ -95,22 +68,14 @@ abstract class BaseInventory implements Inventory{
 			$items = array_slice($items, 0, $this->getSize(), true);
 		}
 
-		$oldContents = array_map(function(?Item $item) : Item{
-			return $item ?? ItemFactory::air();
-		}, $this->slots->toArray());
+		$oldContents = $this->getContents(true);
 
 		$listeners = $this->listeners->toArray();
 		$this->listeners->clear();
 		$viewers = $this->viewers;
 		$this->viewers = [];
 
-		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			if(!isset($items[$i])){
-				$this->clear($i);
-			}else{
-				$this->setItem($i, $items[$i]);
-			}
-		}
+		$this->internalSetContents($items);
 
 		$this->listeners->add(...$listeners); //don't directly write, in case listeners were added while operation was in progress
 		foreach($viewers as $id => $viewer){
@@ -119,6 +84,8 @@ abstract class BaseInventory implements Inventory{
 
 		$this->onContentChange($oldContents);
 	}
+
+	abstract protected function internalSetItem(int $index, Item $item) : void;
 
 	public function setItem(int $index, Item $item) : void{
 		if($item->isNull()){
@@ -129,7 +96,7 @@ abstract class BaseInventory implements Inventory{
 
 		$oldItem = $this->getItem($index);
 
-		$this->slots[$index] = $item->isNull() ? null : $item;
+		$this->internalSetItem($index, $item);
 		$this->onSlotChange($index, $oldItem);
 	}
 
@@ -188,7 +155,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function slotExists(int $slot) : bool{
-		return $slot >= 0 and $slot < $this->slots->getSize();
+		return $slot >= 0 and $slot < $this->getSize();
 	}
 
 	public function getListeners() : ObjectSet{
