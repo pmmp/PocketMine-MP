@@ -2252,7 +2252,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->cursorInventory = new PlayerCursorInventory($this);
 		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
 
-		$this->addPermanentInventories($this->inventory, $this->armorInventory, $this->cursorInventory);
+		$this->addPermanentInventories($this->inventory, $this->armorInventory, $this->cursorInventory, $this->offHandInventory);
 
 		//TODO: more windows
 	}
