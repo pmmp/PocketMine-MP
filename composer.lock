@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "91de5b8e3d1e1f64970c03e059a27f8a",
+    "content-hash": "f8574c08a78d0cff89a160f61baf7c30",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -700,16 +700,16 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "dev-master",
+            "version": "dev-per-session-channels",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "6c83e0f50e71f654cf24a7d883ee0561e269483a"
+                "reference": "e61850ed95a061e2ed4411fd558ac3095a00f468"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/6c83e0f50e71f654cf24a7d883ee0561e269483a",
-                "reference": "6c83e0f50e71f654cf24a7d883ee0561e269483a",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/e61850ed95a061e2ed4411fd558ac3095a00f468",
+                "reference": "e61850ed95a061e2ed4411fd558ac3095a00f468",
                 "shasum": ""
             },
             "require": {
@@ -737,35 +737,34 @@
             "description": "A RakNet server implementation written in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/master"
+                "source": "https://github.com/pmmp/RakLib/tree/per-session-channels"
             },
-            "time": "2021-05-08T19:24:13+00:00"
+            "time": "2021-05-08T19:27:28+00:00"
         },
         {
             "name": "pocketmine/raklib-ipc",
-            "version": "dev-master",
+            "version": "dev-per-session-channels",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLibIpc.git",
-                "reference": "cde9f0d0c0a742684ea44cbbc94e8aca97e693cc"
+                "reference": "c47f56c3c62bf37c7228dcf4cf7b187689849576"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLibIpc/zipball/cde9f0d0c0a742684ea44cbbc94e8aca97e693cc",
-                "reference": "cde9f0d0c0a742684ea44cbbc94e8aca97e693cc",
+                "url": "https://api.github.com/repos/pmmp/RakLibIpc/zipball/c47f56c3c62bf37c7228dcf4cf7b187689849576",
+                "reference": "c47f56c3c62bf37c7228dcf4cf7b187689849576",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4 || ^8.0",
                 "php-64bit": "*",
                 "pocketmine/binaryutils": "dev-master",
-                "pocketmine/raklib": "dev-master"
+                "pocketmine/raklib": "dev-per-session-channels"
             },
             "require-dev": {
                 "phpstan/phpstan": "0.12.81",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -779,9 +778,9 @@
             "description": "Channel-based protocols for inter-thread/inter-process communication with RakLib",
             "support": {
                 "issues": "https://github.com/pmmp/RakLibIpc/issues",
-                "source": "https://github.com/pmmp/RakLibIpc/tree/master"
+                "source": "https://github.com/pmmp/RakLibIpc/tree/per-session-channels"
             },
-            "time": "2021-05-05T20:36:08+00:00"
+            "time": "2021-05-08T20:11:10+00:00"
         },
         {
             "name": "pocketmine/snooze",

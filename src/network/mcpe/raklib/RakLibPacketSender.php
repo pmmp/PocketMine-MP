@@ -24,32 +24,34 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\raklib;
 
 use pocketmine\network\mcpe\PacketSender;
+use raklib\protocol\EncapsulatedPacket;
+use raklib\protocol\PacketReliability;
+use raklib\server\SessionInterface;
 
 class RakLibPacketSender implements PacketSender{
-
-	/** @var int */
-	private $sessionId;
-	/** @var RakLibInterface */
-	private $handler;
-
 	/** @var bool */
 	private $closed = false;
 
-	public function __construct(int $sessionId, RakLibInterface $handler){
-		$this->sessionId = $sessionId;
-		$this->handler = $handler;
+	private SessionInterface $rakLibSession;
+
+	public function __construct(SessionInterface $rakLibSession){
+		$this->rakLibSession = $rakLibSession;
 	}
 
 	public function send(string $payload, bool $immediate) : void{
 		if(!$this->closed){
-			$this->handler->putPacket($this->sessionId, $payload, $immediate);
+			$pk = new EncapsulatedPacket();
+			$pk->buffer = RakLibInterface::MCPE_RAKNET_PACKET_ID . $payload;
+			$pk->reliability = PacketReliability::RELIABLE_ORDERED;
+			$pk->orderChannel = 0;
+			$this->rakLibSession->sendEncapsulated($pk, $immediate);
 		}
 	}
 
 	public function close(string $reason = "unknown reason") : void{
 		if(!$this->closed){
 			$this->closed = true;
-			$this->handler->close($this->sessionId);
+			$this->rakLibSession->initiateDisconnect($reason);
 		}
 	}
 }

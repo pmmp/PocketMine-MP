@@ -105,6 +105,7 @@ use pocketmine\player\UsedChunkStatus;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
@@ -118,6 +119,7 @@ use function get_class;
 use function in_array;
 use function json_encode;
 use function json_last_error_msg;
+use function random_bytes;
 use function strlen;
 use function strtolower;
 use function substr;
@@ -325,10 +327,29 @@ class NetworkSession{
 		}
 	}
 
+	public function onPacketReceive(string $payload) : void{
+		try{
+			$this->handleEncoded($payload);
+		}catch(PacketHandlingException $e){
+			$errorId = bin2hex(random_bytes(6));
+
+			$this->logger->error("Bad packet (error ID $errorId): " . $e->getMessage());
+
+			//intentionally doesn't use logException, we don't want spammy packet error traces to appear in release mode
+			$this->logger->debug("Origin: " . Filesystem::cleanPath($e->getFile()) . "(" . $e->getLine() . ")");
+			foreach(Utils::printableTrace($e->getTrace()) as $frame){
+				$this->logger->debug($frame);
+			}
+			$this->disconnect("Packet processing error (Error ID: $errorId)");
+
+			$this->server->getNetwork()->blockAddress($this->ip, 5);
+		}
+	}
+
 	/**
 	 * @throws PacketHandlingException
 	 */
-	public function handleEncoded(string $payload) : void{
+	private function handleEncoded(string $payload) : void{
 		if(!$this->connected){
 			return;
 		}
@@ -582,6 +603,7 @@ class NetworkSession{
 			if($this->player !== null){
 				$this->player->onPostDisconnect($reason, null);
 			}
+			$this->sender->close("client disconnect");
 		}, $reason);
 	}
 
