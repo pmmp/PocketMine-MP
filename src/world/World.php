@@ -2111,8 +2111,9 @@ class World implements ChunkManager{
 				}
 			}
 			unset($this->activeChunkPopulationTasks[$index]);
-			$this->chunkPopulationRequestMap[$index]->resolve($chunk);
+			$promise = $this->chunkPopulationRequestMap[$index];
 			unset($this->chunkPopulationRequestMap[$index]);
+			$promise->resolve($chunk);
 
 			$this->drainPopulationRequestQueue();
 		}elseif($this->isChunkLocked($x, $z)){
