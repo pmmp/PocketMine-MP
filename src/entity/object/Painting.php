@@ -36,7 +36,7 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\player\Player;
-use pocketmine\world\particle\DestroyBlockParticle;
+use pocketmine\world\particle\BlockBreakParticle;
 use pocketmine\world\World;
 use function ceil;
 
@@ -116,7 +116,7 @@ class Painting extends Entity{
 			//non-living entities don't have a way to create drops generically yet
 			$this->getWorld()->dropItem($this->location, VanillaItems::PAINTING());
 		}
-		$this->getWorld()->addParticle($this->location->add(0.5, 0.5, 0.5), new DestroyBlockParticle(VanillaBlocks::OAK_PLANKS()));
+		$this->getWorld()->addParticle($this->location->add(0.5, 0.5, 0.5), new BlockBreakParticle(VanillaBlocks::OAK_PLANKS()));
 	}
 
 	protected function recalculateBoundingBox() : void{

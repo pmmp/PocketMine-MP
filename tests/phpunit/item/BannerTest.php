@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-use PHPStan\Testing\TestCase;
+use PHPUnit\Framework\TestCase;
 use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\BannerPatternType;
 use pocketmine\block\utils\DyeColor;

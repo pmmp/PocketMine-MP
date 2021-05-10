@@ -21,16 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\particle;
+namespace pocketmine\block\inventory;
 
-use pocketmine\block\Block;
-use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\world\Position;
 
-class DestroyBlockParticle extends MappingParticle{
+trait BlockInventoryTrait{
+	protected Position $holder;
 
-	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_DESTROY, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->protocolId), $pos)];
+	public function getHolder() : Position{
+		return $this->holder;
 	}
 }

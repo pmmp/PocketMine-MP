@@ -21,26 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\world\particle;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\player\Player;
-use pocketmine\world\Position;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\protocol\LevelEventPacket;
 
-class AnvilInventory extends SimpleInventory implements BlockInventory{
-	use BlockInventoryTrait;
+class BlockBreakParticle extends MappingParticle{
 
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(2);
-	}
-
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
-
-		foreach($this->getContents() as $item){
-			$who->dropItem($item);
-		}
-		$this->clearAll();
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_DESTROY, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->protocolId), $pos)];
 	}
 }
