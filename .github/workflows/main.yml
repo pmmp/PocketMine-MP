@@ -55,7 +55,7 @@ jobs:
 
       - name: Install cached PHP's dependencies
         if: steps.php-build-cache.outputs.cache-hit == 'true'
-        run: chmod +x ./bin/php7/install-dependencies.sh && ./bin/php7/install-dependencies.sh
+        run: ./tests/gh-actions/install-dependencies.sh
 
       - name: Prefix PHP to PATH
         run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
@@ -105,7 +105,7 @@ jobs:
 
       - name: Install cached PHP's dependencies
         if: steps.php-build-cache.outputs.cache-hit == 'true'
-        run: chmod +x ./bin/php7/install-dependencies.sh && ./bin/php7/install-dependencies.sh
+        run: ./tests/gh-actions/install-dependencies.sh
 
       - name: Prefix PHP to PATH
         run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
@@ -157,7 +157,7 @@ jobs:
 
       - name: Install cached PHP's dependencies
         if: steps.php-build-cache.outputs.cache-hit == 'true'
-        run: chmod +x ./bin/php7/install-dependencies.sh && ./bin/php7/install-dependencies.sh
+        run: ./tests/gh-actions/install-dependencies.sh
 
       - name: Prefix PHP to PATH
         run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
@@ -209,7 +209,7 @@ jobs:
 
       - name: Install cached PHP's dependencies
         if: steps.php-build-cache.outputs.cache-hit == 'true'
-        run: chmod +x ./bin/php7/install-dependencies.sh && ./bin/php7/install-dependencies.sh
+        run: ./tests/gh-actions/install-dependencies.sh
 
       - name: Prefix PHP to PATH
         run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
