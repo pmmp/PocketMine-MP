@@ -120,9 +120,6 @@ abstract class Living extends Entity{
 	/** @var bool */
 	protected $swimming = false;
 
-	/** @var EntitySizeInfo */
-	protected $originalSize;
-
 	abstract public function getName() : string;
 
 	protected function initEntity(CompoundTag $nbt) : void{
@@ -234,10 +231,9 @@ abstract class Living extends Entity{
 			$this->swimming = $value;
 			if($this->swimming){
 				$width = $this->size->getWidth();
-				$this->originalSize = $this->size;
 				$this->size = new EntitySizeInfo($width, $width, $width);
 			}else{
-				$this->size = $this->originalSize;
+				$this->size = $this->getInitialSizeInfo();
 			}
 
 			$this->recalculateBoundingBox();
