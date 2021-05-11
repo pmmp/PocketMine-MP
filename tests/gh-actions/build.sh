@@ -70,4 +70,3 @@ echo "extension=crypto.so" >> "$INSTALL_DIR/etc/conf.d/crypto.ini"
 cd ..
 
 rm "$INSTALL_DIR/etc/conf.d/xdebug.ini" || true
-cp install-dependencies.sh "$INSTALL_DIR"
