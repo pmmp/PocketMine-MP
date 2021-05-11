@@ -810,6 +810,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		if($this->getHealth() <= 0){
+			$this->logger->debug("Quit while dead, forcing respawn");
 			$this->respawn();
 		}
 	}
@@ -907,7 +908,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}else{
 			$world = $this->server->getWorldManager()->getDefaultWorld();
 
-			return $world->getSafeSpawn();
+			return $world->getSpawnLocation();
 		}
 	}
 
@@ -2059,16 +2060,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$nbt->setInt("SpawnZ", $spawn->getFloorZ());
 		}
 
-		if(!$this->isAlive()){
-			$spawn = $this->getSpawn();
-			//hack for respawn after quit
-			$nbt->setTag("Pos", new ListTag([
-				new DoubleTag($spawn->getFloorX()),
-				new DoubleTag($spawn->getFloorY()),
-				new DoubleTag($spawn->getFloorZ())
-			]));
-		}
-
 		$nbt->setInt("playerGameType", $this->gamemode->getMagicNumber());
 		$nbt->setLong("firstPlayed", $this->firstPlayed);
 		$nbt->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
@@ -2133,31 +2124,47 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		$ev = new PlayerRespawnEvent($this, $this->getSpawn());
-		$ev->call();
+		$this->logger->debug("Waiting for spawn terrain generation for respawn");
+		$spawn = $this->getSpawn();
+		$spawn->getWorld()->orderChunkPopulation($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, null)->onCompletion(
+			function() use ($spawn) : void{
+				if(!$this->isConnected()){
+					return;
+				}
+				$this->logger->debug("Spawn terrain generation done, completing respawn");
+				$spawn = $spawn->getWorld()->getSafeSpawn($spawn);
+				$ev = new PlayerRespawnEvent($this, $spawn);
+				$ev->call();
 
-		$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getWorld());
-		$this->teleport($realSpawn);
+				$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getWorld());
+				$this->teleport($realSpawn);
 
-		$this->setSprinting(false);
-		$this->setSneaking(false);
+				$this->setSprinting(false);
+				$this->setSneaking(false);
 
-		$this->extinguish();
-		$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
-		$this->deadTicks = 0;
-		$this->noDamageTicks = 60;
+				$this->extinguish();
+				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
+				$this->deadTicks = 0;
+				$this->noDamageTicks = 60;
 
-		$this->effectManager->clear();
-		$this->setHealth($this->getMaxHealth());
+				$this->effectManager->clear();
+				$this->setHealth($this->getMaxHealth());
 
-		foreach($this->attributeMap->getAll() as $attr){
-			$attr->resetToDefault();
-		}
+				foreach($this->attributeMap->getAll() as $attr){
+					$attr->resetToDefault();
+				}
 
-		$this->spawnToAll();
-		$this->scheduleUpdate();
+				$this->spawnToAll();
+				$this->scheduleUpdate();
 
-		$this->getNetworkSession()->onServerRespawn();
+				$this->getNetworkSession()->onServerRespawn();
+			},
+			function() : void{
+				if($this->isConnected()){
+					$this->disconnect("Unable to find a respawn position");
+				}
+			}
+		);
 	}
 
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
