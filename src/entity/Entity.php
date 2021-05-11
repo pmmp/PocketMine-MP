@@ -546,8 +546,12 @@ abstract class Entity{
 		}
 
 		if($amount <= 0){
-			if($this->isAlive() and !$this->justCreated){
-				$this->kill();
+			if($this->isAlive()){
+				if(!$this->justCreated){
+					$this->kill();
+				}else{
+					$this->health = 0;
+				}
 			}
 		}elseif($amount <= $this->getMaxHealth() or $amount < $this->health){
 			$this->health = $amount;
