@@ -56,6 +56,7 @@ use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
@@ -2450,24 +2451,26 @@ class World implements ChunkManager{
 		if($chunk->NBTentities !== null){
 			$this->timings->syncChunkLoadEntities->startTiming();
 			$entityFactory = EntityFactory::getInstance();
-			foreach($chunk->NBTentities as $nbt){
+			foreach($chunk->NBTentities as $k => $nbt){
 				try{
 					$entity = $entityFactory->createFromData($this, $nbt);
-					if(!($entity instanceof Entity)){
-						$saveIdTag = $nbt->getTag("id") ?? $nbt->getTag("identifier");
-						$saveId = "<unknown>";
-						if($saveIdTag instanceof StringTag){
-							$saveId = $saveIdTag->getValue();
-						}elseif($saveIdTag instanceof IntTag){ //legacy MCPE format
-							$saveId = "legacy(" . $saveIdTag->getValue() . ")";
-						}
-						$this->getLogger()->warning("Chunk $chunkX $chunkZ: Deleted unknown entity type $saveId");
-						continue;
-					}
-				}catch(\Exception $t){ //TODO: this shouldn't be here
-					$this->getLogger()->logException($t);
+				}catch(NbtDataException $e){
+					$this->getLogger()->error("Chunk $chunkX $chunkZ: Bad entity data at list position $k: " . $e->getMessage());
+					$this->getLogger()->logException($e);
 					continue;
 				}
+				if($entity === null){
+					$saveIdTag = $nbt->getTag("id") ?? $nbt->getTag("identifier");
+					$saveId = "<unknown>";
+					if($saveIdTag instanceof StringTag){
+						$saveId = $saveIdTag->getValue();
+					}elseif($saveIdTag instanceof IntTag){ //legacy MCPE format
+						$saveId = "legacy(" . $saveIdTag->getValue() . ")";
+					}
+					$this->getLogger()->warning("Chunk $chunkX $chunkZ: Deleted unknown entity type $saveId");
+				}
+				//TODO: we can't prevent entities getting added to unloaded chunks if they were saved in the wrong place
+				//here, because entities currently add themselves to the world
 			}
 
 			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_ENTITIES, true);
@@ -2477,12 +2480,20 @@ class World implements ChunkManager{
 		if($chunk->NBTtiles !== null){
 			$this->timings->syncChunkLoadTileEntities->startTiming();
 			$tileFactory = TileFactory::getInstance();
-			foreach($chunk->NBTtiles as $nbt){
-				if(($tile = $tileFactory->createFromData($this, $nbt)) !== null){
-					$this->addTile($tile);
-				}else{
-					$this->getLogger()->warning("Chunk $chunkX $chunkZ: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
+			foreach($chunk->NBTtiles as $k => $nbt){
+				try{
+					$tile = $tileFactory->createFromData($this, $nbt);
+				}catch(NbtDataException $e){
+					$this->getLogger()->error("Chunk $chunkX $chunkZ: Bad tile entity data at list position $k: " . $e->getMessage());
+					$this->getLogger()->logException($e);
 					continue;
+				}
+				if($tile === null){
+					$this->getLogger()->warning("Chunk $chunkX $chunkZ: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
+				}elseif(!$this->isChunkLoaded($tile->getPos()->getFloorX() >> 4, $tile->getPos()->getFloorZ() >> 4)){
+					$this->logger->error("Chunk $chunkX $chunkZ: Found tile saved on wrong chunk - unable to fix due to correct chunk not loaded");
+				}else{
+					$this->addTile($tile);
 				}
 			}
 

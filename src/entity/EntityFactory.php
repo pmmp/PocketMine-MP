@@ -43,6 +43,7 @@ use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -208,6 +209,7 @@ final class EntityFactory{
 	 * Creates an entity from data stored on a chunk.
 	 *
 	 * @throws \RuntimeException
+	 * @throws NbtDataException
 	 * @internal
 	 */
 	public function createFromData(World $world, CompoundTag $nbt) : ?Entity{
