@@ -229,6 +229,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/** @var Position|null */
 	private $spawnPosition = null;
 
+	private bool $respawnLocked = false;
+
 	//TODO: Abilities
 	/** @var bool */
 	protected $autoJump = true;
@@ -2115,6 +2117,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function respawn() : void{
+		if($this->respawnLocked){
+			return;
+		}
+		$this->respawnLocked = true;
 		if($this->server->isHardcore()){
 			if($this->kick("You have been banned because you died in hardcore mode")){ //this allows plugins to prevent the ban by cancelling PlayerKickEvent
 				$this->server->getNameBans()->addBan($this->getName(), "Died in hardcore mode");
@@ -2156,6 +2162,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->scheduleUpdate();
 
 				$this->getNetworkSession()->onServerRespawn();
+				$this->respawnLocked = false;
 			},
 			function() : void{
 				if($this->isConnected()){
