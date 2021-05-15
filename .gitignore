@@ -20,6 +20,9 @@ server.lock
 !.idea/codeStyles/
 !.idea/fileTemplates/
 nbproject/*
+.buildpath
+.project
+.settings/*
 
 # Windows image file caches
 Thumbs.db

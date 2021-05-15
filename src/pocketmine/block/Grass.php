@@ -108,11 +108,6 @@ class Grass extends Solid{
 			$this->getLevelNonNull()->setBlock($this, BlockFactory::get(Block::FARMLAND));
 
 			return true;
-		}elseif($item instanceof Shovel and $this->getSide(Vector3::SIDE_UP)->getId() === Block::AIR){
-			$item->applyDamage(1);
-			$this->getLevelNonNull()->setBlock($this, BlockFactory::get(Block::GRASS_PATH));
-
-			return true;
 		}
 
 		return false;

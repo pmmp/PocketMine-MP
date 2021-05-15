@@ -285,7 +285,6 @@ class BlockFactory{
 		self::registerBlock(new WoodenDoor(Block::JUNGLE_DOOR_BLOCK, 0, "Jungle Door", Item::JUNGLE_DOOR));
 		self::registerBlock(new WoodenDoor(Block::ACACIA_DOOR_BLOCK, 0, "Acacia Door", Item::ACACIA_DOOR));
 		self::registerBlock(new WoodenDoor(Block::DARK_OAK_DOOR_BLOCK, 0, "Dark Oak Door", Item::DARK_OAK_DOOR));
-		self::registerBlock(new GrassPath());
 		self::registerBlock(new ItemFrame());
 		//TODO: CHORUS_FLOWER
 		self::registerBlock(new Purpur());
