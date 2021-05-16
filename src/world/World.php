@@ -62,7 +62,6 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\player\Player;
 use pocketmine\scheduler\AsyncPool;
@@ -2415,7 +2414,17 @@ class World implements ChunkManager{
 		if(isset($this->chunks[$hash = World::chunkHash($chunkX, $chunkZ)])){
 			$this->chunks[$hash]->addTile($tile);
 		}else{
-			throw new \InvalidStateException("Attempted to create tile " . get_class($tile) . " in unloaded chunk $chunkX $chunkZ");
+			$this->orderChunkPopulation($chunkX, $chunkZ, null)->onCompletion(
+				function(Chunk $chunk) use ($tile): void{
+					$chunk->addTile($tile);
+					$this->scheduleDelayedBlockUpdate($tile->getPos()->asVector3(), 1);
+				},
+				function() use ($tile, $chunkX, $chunkZ): void{
+					$tile->close();
+					$this->getLogger()->error("Tile (" . get_class($tile) . " in unloaded chunk ($chunkX, $chunkZ) was removed at " . $tile->getPos()->__toString());
+				}
+			);
+			return;
 		}
 
 		//delegate tile ticking to the corresponding block
