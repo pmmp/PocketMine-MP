@@ -993,54 +993,7 @@ class World implements ChunkManager{
 				$dx = mt_rand(-$randRange, $randRange);
 				$dz = mt_rand(-$randRange, $randRange);
 				$hash = World::chunkHash($dx + $chunkX, $dz + $chunkZ);
-				if(!isset($chunkTickList[$hash]) and isset($this->chunks[$hash])){
-					if(
-						!$this->chunks[$hash]->isPopulated() ||
-						$this->isChunkLocked($dx + $chunkX, $dz + $chunkZ)
-					){
-						continue;
-					}
-					//TODO: this might need to be checked after adjacent chunks are loaded in future
-					$lightPopulatedState = $this->chunks[$hash]->isLightPopulated();
-					if($lightPopulatedState !== true){
-						if($lightPopulatedState === false){
-							$this->chunks[$hash]->setLightPopulated(null);
-
-							$this->workerPool->submitTask(new LightPopulationTask(
-								$this->chunks[$hash],
-								function(array $blockLight, array $skyLight, array $heightMap) use ($dx, $chunkX, $dz, $chunkZ) : void{
-									/**
-									 * TODO: phpstan can't infer these types yet :(
-									 * @phpstan-var array<int, LightArray> $blockLight
-									 * @phpstan-var array<int, LightArray> $skyLight
-									 * @phpstan-var array<int, int>        $heightMap
-									 */
-									if($this->closed || ($chunk = $this->getChunk($dx + $chunkX, $dz + $chunkZ)) === null || $chunk->isLightPopulated() === true){
-										return;
-									}
-									//TODO: calculated light information might not be valid if the terrain changed during light calculation
-
-									$chunk->setHeightMapArray($heightMap);
-									foreach($blockLight as $y => $lightArray){
-										$chunk->getSubChunk($y)->setBlockLightArray($lightArray);
-									}
-									foreach($skyLight as $y => $lightArray){
-										$chunk->getSubChunk($y)->setBlockSkyLightArray($lightArray);
-									}
-									$chunk->setLightPopulated(true);
-								}
-							));
-						}
-						continue;
-					}
-					//check adjacent chunks are loaded
-					for($cx = -1; $cx <= 1; ++$cx){
-						for($cz = -1; $cz <= 1; ++$cz){
-							if(!isset($this->chunks[World::chunkHash($chunkX + $dx + $cx, $chunkZ + $dz + $cz)])){
-								continue 3;
-							}
-						}
-					}
+				if(!isset($chunkTickList[$hash]) and isset($this->chunks[$hash]) and $this->isChunkTickable($dx + $chunkX, $dz + $chunkZ)){
 					$chunkTickList[$hash] = true;
 				}
 			}
@@ -1078,6 +1031,66 @@ class World implements ChunkManager{
 					}
 				}
 			}
+		}
+	}
+
+	private function isChunkTickable(int $chunkX, int $chunkZ) : bool{
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
+		if(
+			!$this->chunks[$chunkHash]->isPopulated() ||
+			$this->isChunkLocked($chunkX, $chunkZ)
+		){
+			return false;
+		}
+		//TODO: this might need to be checked after adjacent chunks are loaded in future
+		$lightPopulatedState = $this->chunks[$chunkHash]->isLightPopulated();
+		if($lightPopulatedState !== true){
+			$this->orderLightPopulation($chunkX, $chunkZ);
+			return false;
+		}
+		//check adjacent chunks are loaded
+		for($cx = -1; $cx <= 1; ++$cx){
+			for($cz = -1; $cz <= 1; ++$cz){
+				if(!isset($this->chunks[World::chunkHash($chunkX + $cx, $chunkZ + $cz)])){
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	private function orderLightPopulation(int $chunkX, int $chunkZ) : void{
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
+		//TODO: this might need to be checked after adjacent chunks are loaded in future
+		$lightPopulatedState = $this->chunks[$chunkHash]->isLightPopulated();
+		if($lightPopulatedState === false){
+			$this->chunks[$chunkHash]->setLightPopulated(null);
+
+			$this->workerPool->submitTask(new LightPopulationTask(
+				$this->chunks[$chunkHash],
+				function(array $blockLight, array $skyLight, array $heightMap) use ($chunkX, $chunkZ) : void{
+					/**
+					 * TODO: phpstan can't infer these types yet :(
+					 * @phpstan-var array<int, LightArray> $blockLight
+					 * @phpstan-var array<int, LightArray> $skyLight
+					 * @phpstan-var array<int, int>        $heightMap
+					 */
+					if($this->closed || ($chunk = $this->getChunk($chunkX, $chunkZ)) === null || $chunk->isLightPopulated() === true){
+						return;
+					}
+					//TODO: calculated light information might not be valid if the terrain changed during light calculation
+
+					$chunk->setHeightMapArray($heightMap);
+					foreach($blockLight as $y => $lightArray){
+						$chunk->getSubChunk($y)->setBlockLightArray($lightArray);
+					}
+					foreach($skyLight as $y => $lightArray){
+						$chunk->getSubChunk($y)->setBlockSkyLightArray($lightArray);
+					}
+					$chunk->setLightPopulated(true);
+				}
+			));
 		}
 	}
 
