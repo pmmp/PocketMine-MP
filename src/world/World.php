@@ -180,10 +180,10 @@ class World implements ChunkManager{
 	/** @var int */
 	private $maxY;
 
-	/** @var ChunkLoader[] */
-	private $loaders = [];
+	/** @var TickingChunkLoader[] */
+	private $tickingLoaders = [];
 	/** @var int[] */
-	private $loaderCounter = [];
+	private $tickingLoaderCounter = [];
 	/** @var ChunkLoader[][] */
 	private $chunkLoaders = [];
 
@@ -632,11 +632,13 @@ class World implements ChunkManager{
 
 		$this->chunkLoaders[$chunkHash][$loaderId] = $loader;
 
-		if(!isset($this->loaders[$loaderId])){
-			$this->loaderCounter[$loaderId] = 1;
-			$this->loaders[$loaderId] = $loader;
-		}else{
-			++$this->loaderCounter[$loaderId];
+		if($loader instanceof TickingChunkLoader){
+			if(!isset($this->tickingLoaders[$loaderId])){
+				$this->tickingLoaderCounter[$loaderId] = 1;
+				$this->tickingLoaders[$loaderId] = $loader;
+			}else{
+				++$this->tickingLoaderCounter[$loaderId];
+			}
 		}
 
 		$this->cancelUnloadChunkRequest($chunkX, $chunkZ);
@@ -660,9 +662,9 @@ class World implements ChunkManager{
 				}
 			}
 
-			if(--$this->loaderCounter[$loaderId] === 0){
-				unset($this->loaderCounter[$loaderId]);
-				unset($this->loaders[$loaderId]);
+			if(isset($this->tickingLoaderCounter[$loaderId]) && --$this->tickingLoaderCounter[$loaderId] === 0){
+				unset($this->tickingLoaderCounter[$loaderId]);
+				unset($this->tickingLoaders[$loaderId]);
 			}
 		}
 	}
@@ -970,22 +972,18 @@ class World implements ChunkManager{
 	}
 
 	private function tickChunks() : void{
-		if($this->chunksPerTick <= 0 or count($this->loaders) === 0){
+		if($this->chunksPerTick <= 0 or count($this->tickingLoaders) === 0){
 			return;
 		}
 
 		/** @var bool[] $chunkTickList chunkhash => dummy */
 		$chunkTickList = [];
 
-		$chunksPerLoader = min(200, max(1, (int) ((($this->chunksPerTick - count($this->loaders)) / count($this->loaders)) + 0.5)));
+		$chunksPerLoader = min(200, max(1, (int) ((($this->chunksPerTick - count($this->tickingLoaders)) / count($this->tickingLoaders)) + 0.5)));
 		$randRange = 3 + $chunksPerLoader / 30;
 		$randRange = (int) ($randRange > $this->chunkTickRadius ? $this->chunkTickRadius : $randRange);
 
-		foreach($this->loaders as $loader){
-			if(!($loader instanceof TickingChunkLoader)){
-				//TODO: maybe we should just not track non-ticking chunk loaders here?
-				continue;
-			}
+		foreach($this->tickingLoaders as $loader){
 			$chunkX = (int) floor($loader->getX()) >> 4;
 			$chunkZ = (int) floor($loader->getZ()) >> 4;
 
@@ -1978,13 +1976,6 @@ class World implements ChunkManager{
 	 */
 	public function getPlayers() : array{
 		return $this->players;
-	}
-
-	/**
-	 * @return ChunkLoader[]
-	 */
-	public function getLoaders() : array{
-		return $this->loaders;
 	}
 
 	/**
