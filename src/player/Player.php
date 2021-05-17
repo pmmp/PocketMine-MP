@@ -594,6 +594,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function setUsingItem(bool $value) : void{
 		$this->startAction = $value ? $this->server->getTick() : -1;
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -956,6 +957,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$this->sleeping = $pos;
+		$this->networkPropertiesDirty = true;
 
 		$this->setSpawn($pos);
 
@@ -974,6 +976,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			(new PlayerBedLeaveEvent($this, $b))->call();
 
 			$this->sleeping = null;
+			$this->networkPropertiesDirty = true;
 
 			$this->getWorld()->setSleepTicks(0);
 

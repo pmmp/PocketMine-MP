@@ -137,6 +137,7 @@ class ExperienceOrb extends Entity{
 			throw new \InvalidArgumentException("XP amount must be greater than 0, got $amount");
 		}
 		$this->xpValue = $amount;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function hasTargetPlayer() : bool{

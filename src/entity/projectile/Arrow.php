@@ -96,6 +96,7 @@ class Arrow extends Projectile{
 
 	public function setCritical(bool $value = true) : void{
 		$this->critical = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function getResultDamage() : int{

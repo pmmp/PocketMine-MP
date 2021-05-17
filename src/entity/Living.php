@@ -123,6 +123,8 @@ abstract class Living extends Entity{
 		parent::initEntity($nbt);
 
 		$this->effectManager = new EffectManager($this);
+		$this->effectManager->getEffectAddHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
+		$this->effectManager->getEffectRemoveHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
 
 		$this->armorInventory = new ArmorInventory($this);
 		//TODO: load/save armor inventory contents
@@ -208,6 +210,7 @@ abstract class Living extends Entity{
 
 	public function setSneaking(bool $value = true) : void{
 		$this->sneaking = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function isSprinting() : bool{
@@ -217,6 +220,7 @@ abstract class Living extends Entity{
 	public function setSprinting(bool $value = true) : void{
 		if($value !== $this->isSprinting()){
 			$this->sprinting = $value;
+			$this->networkPropertiesDirty = true;
 			$moveSpeed = $this->getMovementSpeed();
 			$this->setMovementSpeed($value ? ($moveSpeed * 1.3) : ($moveSpeed / 1.3));
 			$this->moveSpeedAttr->markSynchronized(false); //TODO: reevaluate this hack
@@ -643,6 +647,7 @@ abstract class Living extends Entity{
 	 */
 	public function setBreathing(bool $value = true) : void{
 		$this->breathing = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -658,6 +663,7 @@ abstract class Living extends Entity{
 	 */
 	public function setAirSupplyTicks(int $ticks) : void{
 		$this->breathTicks = $ticks;
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -672,6 +678,7 @@ abstract class Living extends Entity{
 	 */
 	public function setMaxAirSupplyTicks(int $ticks) : void{
 		$this->maxBreathTicks = $ticks;
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
