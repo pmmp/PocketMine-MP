@@ -28,42 +28,26 @@ use pocketmine\timings\TimingsHandler;
 
 class WorldTimings{
 
-	/** @var TimingsHandler */
-	public $setBlock;
-	/** @var TimingsHandler */
-	public $doBlockLightUpdates;
-	/** @var TimingsHandler */
-	public $doBlockSkyLightUpdates;
+	public TimingsHandler $setBlock;
+	public TimingsHandler $doBlockLightUpdates;
+	public TimingsHandler $doBlockSkyLightUpdates;
 
-	/** @var TimingsHandler */
-	public $doChunkUnload;
-	/** @var TimingsHandler */
-	public $scheduledBlockUpdates;
-	/** @var TimingsHandler */
-	public $randomChunkUpdates;
+	public TimingsHandler $doChunkUnload;
+	public TimingsHandler $scheduledBlockUpdates;
+	public TimingsHandler $randomChunkUpdates;
 	public TimingsHandler $randomChunkUpdatesChunkSelection;
-	/** @var TimingsHandler */
-	public $doChunkGC;
-	/** @var TimingsHandler */
-	public $entityTick;
-	/** @var TimingsHandler */
-	public $doTick;
+	public TimingsHandler $doChunkGC;
+	public TimingsHandler $entityTick;
+	public TimingsHandler $doTick;
 
-	/** @var TimingsHandler */
-	public $syncChunkSend;
-	/** @var TimingsHandler */
-	public $syncChunkSendPrepare;
+	public TimingsHandler $syncChunkSend;
+	public TimingsHandler $syncChunkSendPrepare;
 
-	/** @var TimingsHandler */
-	public $syncChunkLoad;
-	/** @var TimingsHandler */
-	public $syncChunkLoadData;
-	/** @var TimingsHandler */
-	public $syncChunkLoadEntities;
-	/** @var TimingsHandler */
-	public $syncChunkLoadTileEntities;
-	/** @var TimingsHandler */
-	public $syncChunkSave;
+	public TimingsHandler $syncChunkLoad;
+	public TimingsHandler $syncChunkLoadData;
+	public TimingsHandler $syncChunkLoadEntities;
+	public TimingsHandler $syncChunkLoadTileEntities;
+	public TimingsHandler $syncChunkSave;
 
 	public function __construct(World $world){
 		$name = $world->getFolderName() . " - ";
