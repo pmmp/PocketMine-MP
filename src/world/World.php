@@ -786,7 +786,7 @@ class World implements ChunkManager{
 		}
 
 		//Do block updates
-		$this->timings->doTickPending->startTiming();
+		$this->timings->scheduledBlockUpdates->startTiming();
 
 		//Delayed updates
 		while($this->scheduledBlockUpdateQueue->count() > 0 and $this->scheduledBlockUpdateQueue->current()["priority"] <= $currentTick){
@@ -822,7 +822,7 @@ class World implements ChunkManager{
 			unset($this->neighbourBlockUpdateQueueIndex[$index]);
 		}
 
-		$this->timings->doTickPending->stopTiming();
+		$this->timings->scheduledBlockUpdates->stopTiming();
 
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
@@ -838,9 +838,9 @@ class World implements ChunkManager{
 		Timings::$tickEntity->stopTiming();
 		$this->timings->entityTick->stopTiming();
 
-		$this->timings->doTickTiles->startTiming();
+		$this->timings->randomChunkUpdates->startTiming();
 		$this->tickChunks();
-		$this->timings->doTickTiles->stopTiming();
+		$this->timings->randomChunkUpdates->stopTiming();
 
 		$this->executeQueuedLightUpdates();
 
