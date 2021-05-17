@@ -976,6 +976,8 @@ class World implements ChunkManager{
 			return;
 		}
 
+		$this->timings->randomChunkUpdatesChunkSelection->startTiming();
+
 		/** @var bool[] $chunkTickList chunkhash => dummy */
 		$chunkTickList = [];
 
@@ -996,6 +998,8 @@ class World implements ChunkManager{
 				}
 			}
 		}
+
+		$this->timings->randomChunkUpdatesChunkSelection->stopTiming();
 
 		foreach($chunkTickList as $index => $_){
 			World::getXZ($index, $chunkX, $chunkZ);
