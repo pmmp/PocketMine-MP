@@ -1007,23 +1007,18 @@ class World implements ChunkManager{
 	}
 
 	private function isChunkTickable(int $chunkX, int $chunkZ) : bool{
-		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		if(
-			!$this->chunks[$chunkHash]->isPopulated() ||
-			$this->isChunkLocked($chunkX, $chunkZ)
-		){
-			return false;
-		}
-		//TODO: this might need to be checked after adjacent chunks are loaded in future
-		$lightPopulatedState = $this->chunks[$chunkHash]->isLightPopulated();
-		if($lightPopulatedState !== true){
-			$this->orderLightPopulation($chunkX, $chunkZ);
-			return false;
-		}
-		//check adjacent chunks are loaded
 		for($cx = -1; $cx <= 1; ++$cx){
 			for($cz = -1; $cz <= 1; ++$cz){
-				if(!isset($this->chunks[World::chunkHash($chunkX + $cx, $chunkZ + $cz)])){
+				if($this->isChunkLocked($chunkX + $cx, $chunkZ + $cz)){
+					return false;
+				}
+				$adjacentChunk = $this->getChunk($chunkX + $cx, $chunkZ + $cz);
+				if($adjacentChunk === null || !$adjacentChunk->isPopulated()){
+					return false;
+				}
+				$lightPopulatedState = $adjacentChunk->isLightPopulated();
+				if($lightPopulatedState !== true){
+					$this->orderLightPopulation($chunkX + $cx, $chunkZ + $cz);
 					return false;
 				}
 			}
