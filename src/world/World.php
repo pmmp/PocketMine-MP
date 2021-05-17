@@ -1002,35 +1002,7 @@ class World implements ChunkManager{
 		foreach($chunkTickList as $index => $_){
 			World::getXZ($index, $chunkX, $chunkZ);
 
-			$chunk = $this->chunks[$index];
-			foreach($chunk->getEntities() as $entity){
-				$entity->onRandomUpdate();
-			}
-
-			foreach($chunk->getSubChunks() as $Y => $subChunk){
-				if(!$subChunk->isEmptyFast()){
-					$k = 0;
-					for($i = 0; $i < $this->tickedBlocksPerSubchunkPerTick; ++$i){
-						if(($i % 5) === 0){
-							//60 bits will be used by 5 blocks (12 bits each)
-							$k = mt_rand(0, (1 << 60) - 1);
-						}
-						$x = $k & 0x0f;
-						$y = ($k >> 4) & 0x0f;
-						$z = ($k >> 8) & 0x0f;
-						$k >>= 12;
-
-						$state = $subChunk->getFullBlock($x, $y, $z);
-
-						if(isset($this->randomTickBlocks[$state])){
-							/** @var Block $block */
-							$block = BlockFactory::getInstance()->fromFullBlock($state);
-							$block->position($this, $chunkX * 16 + $x, ($Y << 4) + $y, $chunkZ * 16 + $z);
-							$block->onRandomTick();
-						}
-					}
-				}
-			}
+			$this->tickChunk($chunkX, $chunkZ);
 		}
 	}
 
@@ -1091,6 +1063,41 @@ class World implements ChunkManager{
 					$chunk->setLightPopulated(true);
 				}
 			));
+		}
+	}
+
+	private function tickChunk(int $chunkX, int $chunkZ) : void{
+		$chunk = $this->getChunk($chunkX, $chunkZ);
+		if($chunk === null){
+			throw new \InvalidArgumentException("Chunk is not loaded");
+		}
+		foreach($chunk->getEntities() as $entity){
+			$entity->onRandomUpdate();
+		}
+
+		foreach($chunk->getSubChunks() as $Y => $subChunk){
+			if(!$subChunk->isEmptyFast()){
+				$k = 0;
+				for($i = 0; $i < $this->tickedBlocksPerSubchunkPerTick; ++$i){
+					if(($i % 5) === 0){
+						//60 bits will be used by 5 blocks (12 bits each)
+						$k = mt_rand(0, (1 << 60) - 1);
+					}
+					$x = $k & 0x0f;
+					$y = ($k >> 4) & 0x0f;
+					$z = ($k >> 8) & 0x0f;
+					$k >>= 12;
+
+					$state = $subChunk->getFullBlock($x, $y, $z);
+
+					if(isset($this->randomTickBlocks[$state])){
+						/** @var Block $block */
+						$block = BlockFactory::getInstance()->fromFullBlock($state);
+						$block->position($this, $chunkX * 16 + $x, ($Y << 4) + $y, $chunkZ * 16 + $z);
+						$block->onRandomTick();
+					}
+				}
+			}
 		}
 	}
 
