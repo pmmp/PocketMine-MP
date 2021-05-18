@@ -187,6 +187,8 @@ abstract class Entity{
 	/** @var TimingsHandler */
 	protected $timings;
 
+	protected bool $networkPropertiesDirty = false;
+
 	/** @var string */
 	protected $nameTag = "";
 	/** @var bool */
@@ -272,6 +274,7 @@ abstract class Entity{
 
 	public function setNameTag(string $name) : void{
 		$this->nameTag = $name;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function setNameTagVisible(bool $value = true) : void{
@@ -280,6 +283,7 @@ abstract class Entity{
 
 	public function setNameTagAlwaysVisible(bool $value = true) : void{
 		$this->alwaysShowNameTag = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function getScoreTag() : ?string{
@@ -288,6 +292,7 @@ abstract class Entity{
 
 	public function setScoreTag(string $score) : void{
 		$this->scoreTag = $score;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function getScale() : float{
@@ -303,6 +308,7 @@ abstract class Entity{
 		$this->scale = $value;
 
 		$this->recalculateBoundingBox();
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function getBoundingBox() : AxisAlignedBB{
@@ -328,6 +334,7 @@ abstract class Entity{
 
 	public function setImmobile(bool $value = true) : void{
 		$this->immobile = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function isInvisible() : bool{
@@ -336,6 +343,7 @@ abstract class Entity{
 
 	public function setInvisible(bool $value = true) : void{
 		$this->invisible = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function isSilent() : bool{
@@ -344,6 +352,7 @@ abstract class Entity{
 
 	public function setSilent(bool $value = true) : void{
 		$this->silent = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -358,6 +367,7 @@ abstract class Entity{
 	 */
 	public function setCanClimb(bool $value = true) : void{
 		$this->canClimb = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -372,6 +382,7 @@ abstract class Entity{
 	 */
 	public function setCanClimbWalls(bool $value = true) : void{
 		$this->canClimbWalls = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -401,6 +412,7 @@ abstract class Entity{
 		}else{
 			$this->ownerId = $owner->getId();
 		}
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -431,6 +443,7 @@ abstract class Entity{
 		}else{
 			$this->targetId = $target->getId();
 		}
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -549,8 +562,12 @@ abstract class Entity{
 		}
 
 		if($amount <= 0){
-			if($this->isAlive() and !$this->justCreated){
-				$this->kill();
+			if($this->isAlive()){
+				if(!$this->justCreated){
+					$this->kill();
+				}else{
+					$this->health = 0;
+				}
 			}
 		}elseif($amount <= $this->getMaxHealth() or $amount < $this->health){
 			$this->health = $amount;
@@ -636,6 +653,7 @@ abstract class Entity{
 		if($ticks > $this->getFireTicks()){
 			$this->setFireTicks($ticks);
 		}
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function getFireTicks() : int{
@@ -1599,7 +1617,10 @@ abstract class Entity{
 	 * @phpstan-return array<int, MetadataProperty>
 	 */
 	final protected function getDirtyNetworkData(int $protocolId) : array{
-		$this->syncNetworkData($this->networkProperties);
+		if($this->networkPropertiesDirty){
+			$this->syncNetworkData($this->networkProperties);
+			$this->networkPropertiesDirty = false;
+		}
 		return $this->networkProperties->getDirty($protocolId);
 	}
 
@@ -1608,7 +1629,10 @@ abstract class Entity{
 	 * @phpstan-return array<int, MetadataProperty>
 	 */
 	final protected function getAllNetworkData(int $protocolId) : array{
-		$this->syncNetworkData($this->networkProperties);
+		if($this->networkPropertiesDirty){
+			$this->syncNetworkData($this->networkProperties);
+			$this->networkPropertiesDirty = false;
+		}
 		return $this->networkProperties->getAll($protocolId);
 	}
 

@@ -83,9 +83,7 @@ use pocketmine\lang\Language;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
@@ -230,6 +228,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected $sleeping = null;
 	/** @var Position|null */
 	private $spawnPosition = null;
+
+	private bool $respawnLocked = false;
 
 	//TODO: Abilities
 	/** @var bool */
@@ -594,6 +594,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function setUsingItem(bool $value) : void{
 		$this->startAction = $value ? $this->server->getTick() : -1;
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -810,6 +811,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		if($this->getHealth() <= 0){
+			$this->logger->debug("Quit while dead, forcing respawn");
 			$this->respawn();
 		}
 	}
@@ -907,7 +909,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}else{
 			$world = $this->server->getWorldManager()->getDefaultWorld();
 
-			return $world->getSafeSpawn();
+			return $world->getSpawnLocation();
 		}
 	}
 
@@ -955,6 +957,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$this->sleeping = $pos;
+		$this->networkPropertiesDirty = true;
 
 		$this->setSpawn($pos);
 
@@ -973,6 +976,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			(new PlayerBedLeaveEvent($this, $b))->call();
 
 			$this->sleeping = null;
+			$this->networkPropertiesDirty = true;
 
 			$this->getWorld()->setSleepTicks(0);
 
@@ -2065,16 +2069,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$nbt->setInt("SpawnZ", $spawn->getFloorZ());
 		}
 
-		if(!$this->isAlive()){
-			$spawn = $this->getSpawn();
-			//hack for respawn after quit
-			$nbt->setTag("Pos", new ListTag([
-				new DoubleTag($spawn->getFloorX()),
-				new DoubleTag($spawn->getFloorY()),
-				new DoubleTag($spawn->getFloorZ())
-			]));
-		}
-
 		$nbt->setInt("playerGameType", $this->gamemode->getMagicNumber());
 		$nbt->setLong("firstPlayed", $this->firstPlayed);
 		$nbt->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
@@ -2132,6 +2126,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function respawn() : void{
+		if($this->respawnLocked){
+			return;
+		}
+		$this->respawnLocked = true;
 		if($this->server->isHardcore()){
 			if($this->kick("You have been banned because you died in hardcore mode")){ //this allows plugins to prevent the ban by cancelling PlayerKickEvent
 				$this->server->getNameBans()->addBan($this->getName(), "Died in hardcore mode");
@@ -2139,31 +2137,48 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		$ev = new PlayerRespawnEvent($this, $this->getSpawn());
-		$ev->call();
+		$this->logger->debug("Waiting for spawn terrain generation for respawn");
+		$spawn = $this->getSpawn();
+		$spawn->getWorld()->orderChunkPopulation($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, null)->onCompletion(
+			function() use ($spawn) : void{
+				if(!$this->isConnected()){
+					return;
+				}
+				$this->logger->debug("Spawn terrain generation done, completing respawn");
+				$spawn = $spawn->getWorld()->getSafeSpawn($spawn);
+				$ev = new PlayerRespawnEvent($this, $spawn);
+				$ev->call();
 
-		$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getWorld());
-		$this->teleport($realSpawn);
+				$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getWorld());
+				$this->teleport($realSpawn);
 
-		$this->setSprinting(false);
-		$this->setSneaking(false);
+				$this->setSprinting(false);
+				$this->setSneaking(false);
 
-		$this->extinguish();
-		$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
-		$this->deadTicks = 0;
-		$this->noDamageTicks = 60;
+				$this->extinguish();
+				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
+				$this->deadTicks = 0;
+				$this->noDamageTicks = 60;
 
-		$this->effectManager->clear();
-		$this->setHealth($this->getMaxHealth());
+				$this->effectManager->clear();
+				$this->setHealth($this->getMaxHealth());
 
-		foreach($this->attributeMap->getAll() as $attr){
-			$attr->resetToDefault();
-		}
+				foreach($this->attributeMap->getAll() as $attr){
+					$attr->resetToDefault();
+				}
 
-		$this->spawnToAll();
-		$this->scheduleUpdate();
+				$this->spawnToAll();
+				$this->scheduleUpdate();
 
-		$this->getNetworkSession()->onServerRespawn();
+				$this->getNetworkSession()->onServerRespawn();
+				$this->respawnLocked = false;
+			},
+			function() : void{
+				if($this->isConnected()){
+					$this->disconnect("Unable to find a respawn position");
+				}
+			}
+		);
 	}
 
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{

@@ -62,11 +62,15 @@ class PrimedTNT extends Entity implements Explosive{
 			throw new \InvalidArgumentException("Fuse must be in the range 0-32767");
 		}
 		$this->fuse = $fuse;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function worksUnderwater() : bool{ return $this->worksUnderwater; }
 
-	public function setWorksUnderwater(bool $worksUnderwater) : void{ $this->worksUnderwater = $worksUnderwater; }
+	public function setWorksUnderwater(bool $worksUnderwater) : void{
+		$this->worksUnderwater = $worksUnderwater;
+		$this->networkPropertiesDirty = true;
+	}
 
 	public function attack(EntityDamageEvent $source) : void{
 		if($source->getCause() === EntityDamageEvent::CAUSE_VOID){
