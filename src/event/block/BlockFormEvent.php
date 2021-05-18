@@ -23,6 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\event\block;
 
-class BlockFormEvent extends BlockGrowEvent{
+class BlockFormEvent extends BaseBlockChangeEvent{
 
 }
