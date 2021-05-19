@@ -45,11 +45,9 @@ use pocketmine\block\tile\Jukebox as TileJukebox;
 use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\Skull as TileSkull;
-use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\TreeType;
-use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\item\ToolTier;
@@ -144,7 +142,7 @@ class BlockFactory{
 		$this->register(new CocoaBlock(new BID(Ids::COCOA, 0), "Cocoa Block"));
 		$this->register(new CoralBlock(new BID(Ids::CORAL_BLOCK, 0), "Coral Block", new BlockBreakInfo(7.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new CraftingTable(new BID(Ids::CRAFTING_TABLE, 0), "Crafting Table"));
-		$this->register(new DaylightSensor(new BIDFlattened(Ids::DAYLIGHT_DETECTOR, Ids::DAYLIGHT_DETECTOR_INVERTED, 0, null, TileDaylightSensor::class), "Daylight Sensor"));
+		$this->register(new DaylightSensor(new BIDFlattened(Ids::DAYLIGHT_DETECTOR, [Ids::DAYLIGHT_DETECTOR_INVERTED], 0, null, TileDaylightSensor::class), "Daylight Sensor"));
 		$this->register(new DeadBush(new BID(Ids::DEADBUSH, 0), "Dead Bush"));
 		$this->register(new DetectorRail(new BID(Ids::DETECTOR_RAIL, 0), "Detector Rail"));
 
@@ -187,7 +185,7 @@ class BlockFactory{
 		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_WHITE_TULIP), "White Tulip"));
 		$this->register(new FlowerPot(new BID(Ids::FLOWER_POT_BLOCK, 0, ItemIds::FLOWER_POT, TileFlowerPot::class), "Flower Pot"));
 		$this->register(new FrostedIce(new BID(Ids::FROSTED_ICE, 0), "Frosted Ice"));
-		$this->register(new Furnace(new BIDFlattened(Ids::FURNACE, Ids::LIT_FURNACE, 0, null, TileFurnace::class), "Furnace"));
+		$this->register(new Furnace(new BIDFlattened(Ids::FURNACE, [Ids::LIT_FURNACE], 0, null, TileFurnace::class), "Furnace"));
 		$this->register(new Glass(new BID(Ids::GLASS, 0), "Glass"));
 		$this->register(new GlassPane(new BID(Ids::GLASS_PANE, 0), "Glass Pane"));
 		$this->register(new GlowingObsidian(new BID(Ids::GLOWINGOBSIDIAN, 0), "Glowing Obsidian"));
@@ -219,7 +217,7 @@ class BlockFactory{
 		$this->register(new Lantern(new BID(Ids::LANTERN, 0), "Lantern", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new Opaque(new BID(Ids::LAPIS_BLOCK, 0), "Lapis Lazuli Block", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
 		$this->register(new LapisOre(new BID(Ids::LAPIS_ORE, 0), "Lapis Lazuli Ore"));
-		$this->register(new Lava(new BIDFlattened(Ids::FLOWING_LAVA, Ids::STILL_LAVA, 0), "Lava"));
+		$this->register(new Lava(new BIDFlattened(Ids::FLOWING_LAVA, [Ids::STILL_LAVA], 0), "Lava"));
 		$this->register(new Lever(new BID(Ids::LEVER, 0), "Lever"));
 		$this->register(new Loom(new BID(Ids::LOOM, 0), "Loom", new BlockBreakInfo(2.5, BlockToolType::AXE)));
 		$this->register(new Magma(new BID(Ids::MAGMA, 0), "Magma Block"));
@@ -281,11 +279,11 @@ class BlockFactory{
 		$this->register(new Rail(new BID(Ids::RAIL, 0), "Rail"));
 		$this->register(new RedMushroom(new BID(Ids::RED_MUSHROOM, 0), "Red Mushroom"));
 		$this->register(new Redstone(new BID(Ids::REDSTONE_BLOCK, 0), "Redstone Block"));
-		$this->register(new RedstoneComparator(new BIDFlattened(Ids::UNPOWERED_COMPARATOR, Ids::POWERED_COMPARATOR, 0, ItemIds::COMPARATOR, TileComparator::class), "Redstone Comparator"));
-		$this->register(new RedstoneLamp(new BIDFlattened(Ids::REDSTONE_LAMP, Ids::LIT_REDSTONE_LAMP, 0), "Redstone Lamp"));
-		$this->register(new RedstoneOre(new BIDFlattened(Ids::REDSTONE_ORE, Ids::LIT_REDSTONE_ORE, 0), "Redstone Ore"));
-		$this->register(new RedstoneRepeater(new BIDFlattened(Ids::UNPOWERED_REPEATER, Ids::POWERED_REPEATER, 0, ItemIds::REPEATER), "Redstone Repeater"));
-		$this->register(new RedstoneTorch(new BIDFlattened(Ids::REDSTONE_TORCH, Ids::UNLIT_REDSTONE_TORCH, 0), "Redstone Torch"));
+		$this->register(new RedstoneComparator(new BIDFlattened(Ids::UNPOWERED_COMPARATOR, [Ids::POWERED_COMPARATOR], 0, ItemIds::COMPARATOR, TileComparator::class), "Redstone Comparator"));
+		$this->register(new RedstoneLamp(new BIDFlattened(Ids::REDSTONE_LAMP, [Ids::LIT_REDSTONE_LAMP], 0), "Redstone Lamp"));
+		$this->register(new RedstoneOre(new BIDFlattened(Ids::REDSTONE_ORE, [Ids::LIT_REDSTONE_ORE], 0), "Redstone Ore"));
+		$this->register(new RedstoneRepeater(new BIDFlattened(Ids::UNPOWERED_REPEATER, [Ids::POWERED_REPEATER], 0, ItemIds::REPEATER), "Redstone Repeater"));
+		$this->register(new RedstoneTorch(new BIDFlattened(Ids::REDSTONE_TORCH, [Ids::UNLIT_REDSTONE_TORCH], 0), "Redstone Torch"));
 		$this->register(new RedstoneWire(new BID(Ids::REDSTONE_WIRE, 0, ItemIds::REDSTONE), "Redstone"));
 		$this->register(new Reserved6(new BID(Ids::RESERVED6, 0), "reserved6"));
 		$this->register(new Sand(new BID(Ids::SAND, 0), "Sand"));
@@ -387,7 +385,7 @@ class BlockFactory{
 		$this->register(new TripwireHook(new BID(Ids::TRIPWIRE_HOOK, 0), "Tripwire Hook"));
 		$this->register(new UnderwaterTorch(new BID(Ids::UNDERWATER_TORCH, 0), "Underwater Torch"));
 		$this->register(new Vine(new BID(Ids::VINE, 0), "Vines"));
-		$this->register(new Water(new BIDFlattened(Ids::FLOWING_WATER, Ids::STILL_WATER, 0), "Water"));
+		$this->register(new Water(new BIDFlattened(Ids::FLOWING_WATER, [Ids::STILL_WATER], 0), "Water"));
 		$this->register(new WaterLily(new BID(Ids::LILY_PAD, 0), "Lily Pad"));
 		$this->register(new WeightedPressurePlateHeavy(new BID(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, 0), "Weighted Pressure Plate Heavy"));
 		$this->register(new WeightedPressurePlateLight(new BID(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE, 0), "Weighted Pressure Plate Light"));
@@ -399,7 +397,7 @@ class BlockFactory{
 			$this->register(new Planks(new BID(Ids::PLANKS, $magicNumber), $name . " Planks"));
 			$this->register(new Sapling(new BID(Ids::SAPLING, $magicNumber), $name . " Sapling", $treeType));
 			$this->register(new WoodenFence(new BID(Ids::FENCE, $magicNumber), $name . " Fence"));
-			$this->register(new WoodenSlab(new BIDFlattened(Ids::WOODEN_SLAB, Ids::DOUBLE_WOODEN_SLAB, $treeType->getMagicNumber()), $treeType->getDisplayName()));
+			$this->register(new WoodenSlab(new BIDFlattened(Ids::WOODEN_SLAB, [Ids::DOUBLE_WOODEN_SLAB], $treeType->getMagicNumber()), $treeType->getDisplayName()));
 
 			//TODO: find a better way to deal with this split
 			$this->register(new Leaves(new BID($magicNumber >= 4 ? Ids::LEAVES2 : Ids::LEAVES, $magicNumber & 0x03), $name . " Leaves", $treeType));
@@ -481,28 +479,21 @@ class BlockFactory{
 
 		$this->registerMushroomBlocks();
 
-		foreach(CoralType::getAll() as $coralType){
-			$coralTypeId = CoralTypeIdMap::getInstance()->toId($coralType);
-			$coralTypeName = $coralType->getDisplayName();
-			$this->register(new Coral(
-				new BID(Ids::CORAL, $coralTypeId),
-				"$coralTypeName Coral",
-				BlockBreakInfo::instant(),
-				$coralType
-			));
-			$this->register(new FloorCoralFan(
-				new BlockIdentifierFlattened(Ids::CORAL_FAN, Ids::CORAL_FAN_DEAD, $coralTypeId, ItemIds::CORAL_FAN),
-				"$coralTypeName Coral Fan",
-				BlockBreakInfo::instant(),
-				$coralType
-			));
-			$this->register(new WallCoralFan(
-				BlockLegacyIdHelper::getWallCoralFanIdentifier($coralType),
-				"$coralTypeName Wall Coral Fan",
-				BlockBreakInfo::instant(),
-				$coralType
-			));
-		}
+		$this->register(new Coral(
+			new BID(Ids::CORAL, 0),
+			"Coral",
+			BlockBreakInfo::instant(),
+		));
+		$this->register(new FloorCoralFan(
+			new BlockIdentifierFlattened(Ids::CORAL_FAN, [Ids::CORAL_FAN_DEAD], 0, ItemIds::CORAL_FAN),
+			"Coral Fan",
+			BlockBreakInfo::instant(),
+		));
+		$this->register(new WallCoralFan(
+			new BlockIdentifierFlattened(Ids::CORAL_FAN_HANG, [Ids::CORAL_FAN_HANG2, Ids::CORAL_FAN_HANG3], 0, ItemIds::CORAL_FAN),
+			"Wall Coral Fan",
+			BlockBreakInfo::instant(),
+		));
 
 		//region --- auto-generated TODOs for bedrock-1.11.0 ---
 		//TODO: minecraft:bell
