@@ -43,10 +43,6 @@ class FlowerPot extends Flowable{
 	/** @var Block|null */
 	protected $plant = null;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
-
 	protected function writeStateToMeta() : int{
 		return $this->occupied ? BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED : 0;
 	}

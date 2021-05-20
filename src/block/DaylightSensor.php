@@ -44,8 +44,8 @@ class DaylightSensor extends Transparent{
 	/** @var bool */
 	protected $inverted = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::AXE));
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{

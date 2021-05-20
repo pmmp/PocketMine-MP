@@ -36,10 +36,6 @@ class Chest extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
 	use NormalHorizontalFacingInMetadataTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::AXE));
-	}
-
 	/**
 	 * @return AxisAlignedBB[]
 	 */

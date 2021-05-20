@@ -41,8 +41,8 @@ class Sapling extends Flowable{
 	/** @var TreeType */
 	private $treeType;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, TreeType $treeType){
+		parent::__construct($idInfo, $name, $breakInfo);
 		$this->treeType = $treeType;
 	}
 

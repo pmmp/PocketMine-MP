@@ -47,10 +47,6 @@ class ItemFrame extends Flowable{
 	/** @var float */
 	protected $itemDropChance = 1.0;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.25));
-	}
-
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::write5MinusHorizontalFacing($this->facing) | ($this->hasMap ? BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP : 0);
 	}

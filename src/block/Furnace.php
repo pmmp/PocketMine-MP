@@ -27,7 +27,6 @@ use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
@@ -43,8 +42,8 @@ class Furnace extends Opaque{
 	/** @var bool */
 	protected $lit = false; //this is set based on the blockID
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{

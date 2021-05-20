@@ -36,10 +36,6 @@ class EndPortalFrame extends Opaque{
 	/** @var bool */
 	protected $eye = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible());
-	}
-
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->eye ? BlockLegacyMetadata::END_PORTAL_FRAME_FLAG_EYE : 0);
 	}

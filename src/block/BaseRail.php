@@ -74,10 +74,6 @@ abstract class BaseRail extends Flowable{
 	/** @var int[] */
 	protected $connections = [];
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.7));
-	}
-
 	protected function writeStateToMeta() : int{
 		if(count($this->connections) === 0){
 			return BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;

@@ -31,8 +31,8 @@ class RedstoneLamp extends Opaque{
 	/** @var BlockIdentifierFlattened */
 	protected $idInfo;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.3));
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{

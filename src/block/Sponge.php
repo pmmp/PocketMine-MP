@@ -28,10 +28,6 @@ class Sponge extends Opaque{
 	/** @var bool */
 	protected $wet = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::HOE));
-	}
-
 	protected function writeStateToMeta() : int{
 		return $this->wet ? BlockLegacyMetadata::SPONGE_FLAG_WET : 0;
 	}

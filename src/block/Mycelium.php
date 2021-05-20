@@ -30,10 +30,6 @@ use function mt_rand;
 
 class Mycelium extends Opaque{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::SHOVEL));
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			VanillaBlocks::DIRT()->asItem()

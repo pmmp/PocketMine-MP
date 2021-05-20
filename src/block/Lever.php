@@ -45,10 +45,6 @@ class Lever extends Flowable{
 	/** @var bool */
 	protected $powered = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5));
-	}
-
 	protected function writeStateToMeta() : int{
 		if($this->leverPos === self::BOTTOM){
 			$rotationMeta = Facing::axis($this->facing) === Axis::Z ? 7 : 0;

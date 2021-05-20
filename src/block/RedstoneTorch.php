@@ -31,8 +31,8 @@ class RedstoneTorch extends Torch{
 	/** @var bool */
 	protected $lit = true;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
-		parent::__construct($idInfo, $name);
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{

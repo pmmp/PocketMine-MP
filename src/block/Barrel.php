@@ -39,10 +39,6 @@ class Barrel extends Opaque{
 	/** @var bool */
 	protected $open = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::AXE));
-	}
-
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::writeFacing($this->facing) | ($this->open ? BlockLegacyMetadata::BARREL_FLAG_OPEN : 0);
 	}

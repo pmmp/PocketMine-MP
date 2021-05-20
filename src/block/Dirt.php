@@ -31,10 +31,6 @@ use pocketmine\player\Player;
 
 class Dirt extends Opaque{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::SHOVEL));
-	}
-
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face === Facing::UP and $item instanceof Hoe){
 			$item->applyDamage(1);

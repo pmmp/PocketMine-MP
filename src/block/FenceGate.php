@@ -41,10 +41,6 @@ class FenceGate extends Transparent{
 	/** @var bool */
 	protected $inWall = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::AXE));
-	}
-
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |
 			($this->open ? BlockLegacyMetadata::FENCE_GATE_FLAG_OPEN : 0) |
