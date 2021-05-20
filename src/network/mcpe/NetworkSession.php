@@ -810,8 +810,6 @@ class NetworkSession{
 		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->isSpectator());
 		$pk->setFlag(AdventureSettingsPacket::AUTO_JUMP, $for->hasAutoJump());
 		$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $for->getAllowFlight());
-
-		/** @var NGPlayer $for */
 		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, $for->canNoClip());
 		$pk->setFlag(AdventureSettingsPacket::FLYING, $for->isFlying());
 
