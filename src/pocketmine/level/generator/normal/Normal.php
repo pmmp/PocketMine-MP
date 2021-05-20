@@ -119,35 +119,35 @@ class Normal extends Generator{
 		$this->random->setSeed($this->level->getSeed());
 		$this->selector = new class($this->random) extends BiomeSelector{
 			protected function lookup(float $temperature, float $rainfall) : int{
-				if($rainfall < 0.25){
-					if($temperature < 0.7){
-						return Biome::OCEAN;
-					}elseif($temperature < 0.85){
-						return Biome::RIVER;
-					}else{
-						return Biome::SWAMP;
-					}
-				}elseif($rainfall < 0.60){
-					if($temperature < 0.25){
-						return Biome::ICE_PLAINS;
-					}elseif($temperature < 0.75){
-						return Biome::PLAINS;
-					}else{
-						return Biome::DESERT;
-					}
-				}elseif($rainfall < 0.80){
-					if($temperature < 0.25){
-						return Biome::TAIGA;
-					}elseif($temperature < 0.75){
-						return Biome::FOREST;
-					}else{
-						return Biome::BIRCH_FOREST;
-					}
-				}else{
-					//Previously here, we had a (broken) condition to generate mountains, but fixing it would have
-					//caused generation changes on a patch release, so we can't keep it here for now.
-					return Biome::RIVER;
-				}
+			    if($temperature < 0.4) { 
+			        if($rainfall < 0.3) {
+			            return Biome::MOUNTAINS;
+			        } else if($rainfall < 0.5) {
+			            return Biome::SMALL_MOUNTAINS;
+			        } else if($rainfall < 0.8) {
+			            return Biome::ICE_PLAINS;
+			        } else {
+			            return Biome::TAIGA;
+			        }
+			    } else if($temperature < 0.8) {
+			        if($rainfall < 0.4) {
+			            return Biome::PLAINS;
+			        } else if($rainfall < 0.5) {
+			            if($temperature < 0.5) {
+			                return Biome::OCEAN;
+			            } else {
+			                return Biome::BIRCH_FOREST;
+			            }
+			        } else if($rainfall < 0.7) {
+			            return Biome::RIVER;
+			        } else if($rainfall < 0.8) {
+			            return Biome::FOREST;
+			        } else {
+			            return Biome::SWAMP;
+			        }
+			    } else {
+			        return Biome::DESERT;
+			    }
 			}
 		};
 
