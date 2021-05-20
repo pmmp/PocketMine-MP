@@ -223,11 +223,14 @@ class BlockFactory{
 		$this->register(new Opaque(new BID(Ids::INFO_UPDATE, 0), "update!", $updateBlockBreakInfo));
 		$this->register(new Opaque(new BID(Ids::INFO_UPDATE2, 0), "ate!upd", $updateBlockBreakInfo));
 		$this->register(new Transparent(new BID(Ids::INVISIBLEBEDROCK, 0), "Invisible Bedrock", BlockBreakInfo::indestructible()));
-		$this->register(new Opaque(new BID(Ids::IRON_BLOCK, 0), "Iron Block", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 30.0)));
-		$this->register(new Thin(new BID(Ids::IRON_BARS, 0), "Iron Bars", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
-		$this->register(new Door(new BID(Ids::IRON_DOOR_BLOCK, 0, ItemIds::IRON_DOOR), "Iron Door", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 25.0)));
+
+		$ironBreakInfo = new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 30.0);
+		$this->register(new Opaque(new BID(Ids::IRON_BLOCK, 0), "Iron Block", $ironBreakInfo));
+		$this->register(new Thin(new BID(Ids::IRON_BARS, 0), "Iron Bars", $ironBreakInfo));
+		$ironDoorBreakInfo = new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 25.0);
+		$this->register(new Door(new BID(Ids::IRON_DOOR_BLOCK, 0, ItemIds::IRON_DOOR), "Iron Door", $ironDoorBreakInfo));
+		$this->register(new Trapdoor(new BID(Ids::IRON_TRAPDOOR, 0), "Iron Trapdoor", $ironDoorBreakInfo));
 		$this->register(new Opaque(new BID(Ids::IRON_ORE, 0), "Iron Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
-		$this->register(new Trapdoor(new BID(Ids::IRON_TRAPDOOR, 0), "Iron Trapdoor", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 25.0)));
 		$this->register(new ItemFrame(new BID(Ids::FRAME_BLOCK, 0, ItemIds::FRAME, TileItemFrame::class), "Item Frame", new BlockBreakInfo(0.25)));
 		$this->register(new Jukebox(new BID(Ids::JUKEBOX, 0, ItemIds::JUKEBOX, TileJukebox::class), "Jukebox", new BlockBreakInfo(0.8, BlockToolType::AXE))); //TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
 		$this->register(new Ladder(new BID(Ids::LADDER, 0), "Ladder", new BlockBreakInfo(0.4, BlockToolType::AXE)));
@@ -412,25 +415,20 @@ class BlockFactory{
 		$this->register(new WeightedPressurePlateLight(new BID(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE, 0), "Weighted Pressure Plate Light", $weightedPressurePlateBreakInfo));
 		$this->register(new Wheat(new BID(Ids::WHEAT_BLOCK, 0), "Wheat Block", BlockBreakInfo::instant()));
 
-		$fenceGateBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE);
-		$leavesBreakInfo = new BlockBreakInfo(0.2, BlockToolType::SHEARS);
 		$planksBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE, 0, 15.0);
+		$leavesBreakInfo = new BlockBreakInfo(0.2, BlockToolType::SHEARS);
 		$signBreakInfo = new BlockBreakInfo(1.0, BlockToolType::AXE);
 		$logBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE);
-		$woodenDoorBreakInfo = new BlockBreakInfo(3.0, BlockToolType::AXE);
+		$woodenDoorBreakInfo = new BlockBreakInfo(3.0, BlockToolType::AXE, 0, 15.0);
 		$woodenButtonBreakInfo = new BlockBreakInfo(0.5, BlockToolType::AXE);
-		$woodenFenceBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE, 0, 15.0);
 		$woodenPressurePlateBreakInfo = new BlockBreakInfo(0.5, BlockToolType::AXE);
-		$woodenSlabBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE, 0, 15.0);
-		$woodenStairsBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE, 0, 15.0);
-		$woodenTrapdoorBreakInfo = new BlockBreakInfo(3.0, BlockToolType::AXE, 0, 15.0);
 		foreach(TreeType::getAll() as $treeType){
 			$magicNumber = $treeType->getMagicNumber();
 			$name = $treeType->getDisplayName();
 			$this->register(new Planks(new BID(Ids::PLANKS, $magicNumber), $name . " Planks", $planksBreakInfo));
 			$this->register(new Sapling(new BID(Ids::SAPLING, $magicNumber), $name . " Sapling", BlockBreakInfo::instant(), $treeType));
-			$this->register(new WoodenFence(new BID(Ids::FENCE, $magicNumber), $name . " Fence", $woodenFenceBreakInfo));
-			$this->register(new WoodenSlab(new BIDFlattened(Ids::WOODEN_SLAB, [Ids::DOUBLE_WOODEN_SLAB], $treeType->getMagicNumber()), $treeType->getDisplayName(), $woodenSlabBreakInfo));
+			$this->register(new WoodenFence(new BID(Ids::FENCE, $magicNumber), $name . " Fence", $planksBreakInfo));
+			$this->register(new WoodenSlab(new BIDFlattened(Ids::WOODEN_SLAB, [Ids::DOUBLE_WOODEN_SLAB], $treeType->getMagicNumber()), $treeType->getDisplayName(), $planksBreakInfo));
 
 			//TODO: find a better way to deal with this split
 			$this->register(new Leaves(new BID($magicNumber >= 4 ? Ids::LEAVES2 : Ids::LEAVES, $magicNumber & 0x03), $name . " Leaves", $leavesBreakInfo, $treeType));
@@ -441,13 +439,13 @@ class BlockFactory{
 			$this->remap($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, ($magicNumber & 0x03) | 0b1100, $wood);
 
 			$this->register(new Log(BlockLegacyIdHelper::getStrippedLogIdentifier($treeType), "Stripped " . $treeType->getDisplayName() . " Log", $logBreakInfo, $treeType, true));
-			$this->register(new FenceGate(BlockLegacyIdHelper::getWoodenFenceIdentifier($treeType), $treeType->getDisplayName() . " Fence Gate", $fenceGateBreakInfo));
-			$this->register(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($treeType), $treeType->getDisplayName() . " Stairs", $woodenStairsBreakInfo));
+			$this->register(new FenceGate(BlockLegacyIdHelper::getWoodenFenceIdentifier($treeType), $treeType->getDisplayName() . " Fence Gate", $planksBreakInfo));
+			$this->register(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($treeType), $treeType->getDisplayName() . " Stairs", $planksBreakInfo));
 			$this->register(new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($treeType), $treeType->getDisplayName() . " Door", $woodenDoorBreakInfo));
 
 			$this->register(new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($treeType), $treeType->getDisplayName() . " Button", $woodenButtonBreakInfo));
 			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($treeType), $treeType->getDisplayName() . " Pressure Plate", $woodenPressurePlateBreakInfo));
-			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($treeType), $treeType->getDisplayName() . " Trapdoor", $woodenTrapdoorBreakInfo));
+			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($treeType), $treeType->getDisplayName() . " Trapdoor", $woodenDoorBreakInfo));
 
 			$this->register(new FloorSign(BlockLegacyIdHelper::getWoodenFloorSignIdentifier($treeType), $treeType->getDisplayName() . " Sign", $signBreakInfo));
 			$this->register(new WallSign(BlockLegacyIdHelper::getWoodenWallSignIdentifier($treeType), $treeType->getDisplayName() . " Wall Sign", $signBreakInfo));
