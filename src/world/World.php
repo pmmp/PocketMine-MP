@@ -1020,7 +1020,9 @@ class World implements ChunkManager{
 				}
 				$lightPopulatedState = $adjacentChunk->isLightPopulated();
 				if($lightPopulatedState !== true){
-					$this->orderLightPopulation($chunkX + $cx, $chunkZ + $cz);
+					if($lightPopulatedState === false){
+						$this->orderLightPopulation($chunkX + $cx, $chunkZ + $cz);
+					}
 					return false;
 				}
 			}
