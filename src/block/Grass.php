@@ -70,7 +70,7 @@ class Grass extends Opaque{
 				$b = $this->pos->getWorld()->getBlockAt($x, $y, $z);
 				if(
 					!($b instanceof Dirt) or
-					$b instanceof CoarseDirt or
+					$b->isCoarse() or
 					$this->pos->getWorld()->getFullLightAt($x, $y + 1, $z) < 4 or
 					$this->pos->getWorld()->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
 				){

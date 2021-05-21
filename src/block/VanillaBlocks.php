@@ -109,7 +109,6 @@ use function assert;
  * @method static Clay CLAY()
  * @method static Coal COAL()
  * @method static CoalOre COAL_ORE()
- * @method static CoarseDirt COARSE_DIRT()
  * @method static Opaque COBBLESTONE()
  * @method static Slab COBBLESTONE_SLAB()
  * @method static Stair COBBLESTONE_STAIRS()
@@ -663,7 +662,6 @@ final class VanillaBlocks{
 		self::register("clay", $factory->get(82, 0));
 		self::register("coal", $factory->get(173, 0));
 		self::register("coal_ore", $factory->get(16, 0));
-		self::register("coarse_dirt", $factory->get(3, 1));
 		self::register("cobblestone", $factory->get(4, 0));
 		self::register("cobblestone_slab", $factory->get(44, 3));
 		self::register("cobblestone_stairs", $factory->get(67, 0));
