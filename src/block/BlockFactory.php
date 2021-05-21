@@ -902,25 +902,29 @@ class BlockFactory{
 				$v = clone $block;
 				try{
 					$v->readStateFromData($id, $m);
-					if($v->getMeta() !== $m){
-						throw new InvalidBlockStateException("Corrupted meta"); //don't register anything that isn't the same when we read it back again
+					if($v->getFullId() !== $index){
+						//if the fullID comes back different, this is a broken state that we can't rely on; map it to default
+						throw new InvalidBlockStateException("Corrupted state");
 					}
-				}catch(InvalidBlockStateException $e){ //invalid property combination
+				}catch(InvalidBlockStateException $e){ //invalid property combination, fill the default state
+					$this->fillStaticArrays($index, $block);
 					continue;
 				}
 
 				$this->fillStaticArrays($index, $v);
 			}
-
-			if(!$this->isRegistered($id, $variant)){
-				$this->fillStaticArrays(($id << 4) | $variant, $block); //register default state mapped to variant, for blocks which don't use 0 as valid state
-			}
 		}
 	}
 
 	public function remap(int $id, int $meta, Block $block) : void{
+		$index = ($id << 4) | $meta;
 		if($this->isRegistered($id, $meta)){
-			throw new \InvalidArgumentException("$id:$meta is already mapped");
+			$existing = $this->fullList[$index];
+			if($existing->getFullId() === $index){
+				throw new \InvalidArgumentException("$id:$meta is already mapped");
+			}else{
+				//if it's not a match, this was already remapped for some reason; remapping overwrites are OK
+			}
 		}
 		$this->fillStaticArrays(($id << 4) | $meta, $block);
 	}
