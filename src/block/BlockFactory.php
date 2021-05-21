@@ -917,7 +917,7 @@ class BlockFactory{
 		$index = ($id << 4) | $meta;
 		if($this->isRegistered($id, $meta)){
 			$existing = $this->fullList[$index];
-			if($existing->getFullId() === $index){
+			if($existing !== null && $existing->getFullId() === $index){
 				throw new \InvalidArgumentException("$id:$meta is already mapped");
 			}else{
 				//if it's not a match, this was already remapped for some reason; remapping overwrites are OK
