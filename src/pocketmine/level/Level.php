@@ -435,7 +435,15 @@ class Level implements ChunkManager, Metadatable{
 
 	public function registerGeneratorToWorker(int $worker) : void{
 		$this->generatorRegisteredWorkers[$worker] = true;
-		$this->server->getAsyncPool()->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getGeneratorOptions()), $worker);
+		$populatorList = [];
+		    for($i = 0; $i < Biome::MAX_BIOMES; $i++) {
+		        try {
+		            $populatorList[$i] = Biome::getBiome($i)->getPopulators();
+		        } catch(\RuntimeException $e) {
+		            //A biome doesn't exist for this id
+		        }
+		    }
+		$this->server->getAsyncPool()->submitTaskToWorker(new GeneratorRegisterTask($this, $this->generator, $this->provider->getGeneratorOptions(), $populatorList), $worker);
 	}
 
 	/**

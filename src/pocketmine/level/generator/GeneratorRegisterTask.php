@@ -48,15 +48,17 @@ class GeneratorRegisterTask extends AsyncTask{
 	public $levelId;
 	/** @var int */
 	public $worldHeight = Level::Y_MAX;
+	private $biomePopulators;
 
 	/**
 	 * @param mixed[] $generatorSettings
 	 * @phpstan-param class-string<Generator> $generatorClass
 	 * @phpstan-param array<string, mixed> $generatorSettings
 	 */
-	public function __construct(Level $level, string $generatorClass, array $generatorSettings = []){
+	public function __construct(Level $level, string $generatorClass, array $generatorSettings = [], array $biomePopulators){
 		$this->generatorClass = $generatorClass;
 		$this->settings = serialize($generatorSettings);
+		$this->biomePopulators = $biomePopulators;
 		$this->seed = $level->getSeed();
 		$this->levelId = $level->getId();
 		$this->worldHeight = $level->getWorldHeight();
@@ -66,6 +68,14 @@ class GeneratorRegisterTask extends AsyncTask{
 		BlockFactory::init();
 		ItemFactory::init();
 		Biome::init();
+		if(!is_null($this->biomePopulators) && !empty($this->biomePopulators)) {
+		    foreach($this->biomePopulators as $id => $populators) {
+		        Biome::getBiome($id)->clearPopulators();
+		        foreach($populators as $populator) {
+		            Biome::getBiome($id)->addPopulator($populator);
+		        }
+		    }
+		}
 		$manager = new SimpleChunkManager($this->seed, $this->worldHeight);
 		$this->saveToThreadStore("generation.level{$this->levelId}.manager", $manager);
 
