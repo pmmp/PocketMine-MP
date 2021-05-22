@@ -40,10 +40,6 @@ class TripwireHook extends Flowable{
 	/** @var bool */
 	protected $powered = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
-
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |
 			($this->connected ? BlockLegacyMetadata::TRIPWIRE_HOOK_FLAG_CONNECTED : 0) |

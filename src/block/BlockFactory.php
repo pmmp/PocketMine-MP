@@ -45,11 +45,9 @@ use pocketmine\block\tile\Jukebox as TileJukebox;
 use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\Skull as TileSkull;
-use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\TreeType;
-use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\item\ToolTier;
@@ -101,132 +99,149 @@ class BlockFactory{
 		$this->blocksDirectSkyLight = \SplFixedArray::fromArray(array_fill(0, 16384, false));
 		$this->blastResistance = \SplFixedArray::fromArray(array_fill(0, 16384, 0.0));
 
-		$this->register(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL, 0), "Activator Rail"));
-		$this->register(new Air(new BID(Ids::AIR, 0), "Air"));
-		$this->register(new Anvil(new BID(Ids::ANVIL, 0), "Anvil"));
+		$railBreakInfo = new BlockBreakInfo(0.7);
+		$this->register(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL, 0), "Activator Rail", $railBreakInfo));
+		$this->register(new Air(new BID(Ids::AIR, 0), "Air", BlockBreakInfo::indestructible(-1.0)));
+		$this->register(new Anvil(new BID(Ids::ANVIL, 0), "Anvil", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0)));
 		$this->register(new Bamboo(new BID(Ids::BAMBOO, 0), "Bamboo", new BlockBreakInfo(2.0 /* 1.0 in PC */, BlockToolType::AXE)));
 		$this->register(new BambooSapling(new BID(Ids::BAMBOO_SAPLING, 0), "Bamboo Sapling", BlockBreakInfo::instant()));
-		$this->register(new FloorBanner(new BID(Ids::STANDING_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Banner"));
-		$this->register(new WallBanner(new BID(Ids::WALL_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Wall Banner"));
-		$this->register(new Barrel(new BID(Ids::BARREL, 0, null, TileBarrel::class), "Barrel"));
+
+		$bannerBreakInfo = new BlockBreakInfo(1.0, BlockToolType::AXE);
+		$this->register(new FloorBanner(new BID(Ids::STANDING_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Banner", $bannerBreakInfo));
+		$this->register(new WallBanner(new BID(Ids::WALL_BANNER, 0, ItemIds::BANNER, TileBanner::class), "Wall Banner", $bannerBreakInfo));
+		$this->register(new Barrel(new BID(Ids::BARREL, 0, null, TileBarrel::class), "Barrel", new BlockBreakInfo(2.5, BlockToolType::AXE)));
 		$this->register(new Transparent(new BID(Ids::BARRIER, 0), "Barrier", BlockBreakInfo::indestructible()));
 		$this->register(new Beacon(new BID(Ids::BEACON, 0, null, TileBeacon::class), "Beacon", new BlockBreakInfo(3.0)));
-		$this->register(new Bed(new BID(Ids::BED_BLOCK, 0, ItemIds::BED, TileBed::class), "Bed Block"));
-		$this->register(new Bedrock(new BID(Ids::BEDROCK, 0), "Bedrock"));
-		$this->register(new Beetroot(new BID(Ids::BEETROOT_BLOCK, 0), "Beetroot Block"));
-		$this->register(new BlueIce(new BID(Ids::BLUE_ICE, 0), "Blue Ice"));
-		$this->register(new BoneBlock(new BID(Ids::BONE_BLOCK, 0), "Bone Block"));
-		$this->register(new Bookshelf(new BID(Ids::BOOKSHELF, 0), "Bookshelf"));
-		$this->register(new BrewingStand(new BID(Ids::BREWING_STAND_BLOCK, 0, ItemIds::BREWING_STAND, TileBrewingStand::class), "Brewing Stand"));
+		$this->register(new Bed(new BID(Ids::BED_BLOCK, 0, ItemIds::BED, TileBed::class), "Bed Block", new BlockBreakInfo(0.2)));
+		$this->register(new Bedrock(new BID(Ids::BEDROCK, 0), "Bedrock", BlockBreakInfo::indestructible()));
+
+		$this->register(new Beetroot(new BID(Ids::BEETROOT_BLOCK, 0), "Beetroot Block", BlockBreakInfo::instant()));
+		$this->register(new BlueIce(new BID(Ids::BLUE_ICE, 0), "Blue Ice", new BlockBreakInfo(2.8, BlockToolType::PICKAXE)));
+		$this->register(new BoneBlock(new BID(Ids::BONE_BLOCK, 0), "Bone Block", new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new Bookshelf(new BID(Ids::BOOKSHELF, 0), "Bookshelf", new BlockBreakInfo(1.5, BlockToolType::AXE)));
+		$this->register(new BrewingStand(new BID(Ids::BREWING_STAND_BLOCK, 0, ItemIds::BREWING_STAND, TileBrewingStand::class), "Brewing Stand", new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 
 		$bricksBreakInfo = new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
 		$this->register(new Stair(new BID(Ids::BRICK_STAIRS, 0), "Brick Stairs", $bricksBreakInfo));
 		$this->register(new Opaque(new BID(Ids::BRICK_BLOCK, 0), "Bricks", $bricksBreakInfo));
 
-		$this->register(new BrownMushroom(new BID(Ids::BROWN_MUSHROOM, 0), "Brown Mushroom"));
-		$this->register(new Cactus(new BID(Ids::CACTUS, 0), "Cactus"));
-		$this->register(new Cake(new BID(Ids::CAKE_BLOCK, 0, ItemIds::CAKE), "Cake"));
-		$this->register(new Carrot(new BID(Ids::CARROTS, 0), "Carrot Block"));
-		$this->register(new Chest(new BID(Ids::CHEST, 0, null, TileChest::class), "Chest"));
-		$this->register(new Clay(new BID(Ids::CLAY_BLOCK, 0), "Clay Block"));
-		$this->register(new Coal(new BID(Ids::COAL_BLOCK, 0), "Coal Block"));
-		$this->register(new CoalOre(new BID(Ids::COAL_ORE, 0), "Coal Ore"));
-		$this->register(new CoarseDirt(new BID(Ids::DIRT, Meta::DIRT_COARSE), "Coarse Dirt"));
+		$this->register(new BrownMushroom(new BID(Ids::BROWN_MUSHROOM, 0), "Brown Mushroom", BlockBreakInfo::instant()));
+		$this->register(new Cactus(new BID(Ids::CACTUS, 0), "Cactus", new BlockBreakInfo(0.4)));
+		$this->register(new Cake(new BID(Ids::CAKE_BLOCK, 0, ItemIds::CAKE), "Cake", new BlockBreakInfo(0.5)));
+		$this->register(new Carrot(new BID(Ids::CARROTS, 0), "Carrot Block", BlockBreakInfo::instant()));
+
+		$chestBreakInfo = new BlockBreakInfo(2.5, BlockToolType::AXE);
+		$this->register(new Chest(new BID(Ids::CHEST, 0, null, TileChest::class), "Chest", $chestBreakInfo));
+		$this->register(new Clay(new BID(Ids::CLAY_BLOCK, 0), "Clay Block", new BlockBreakInfo(0.6, BlockToolType::SHOVEL)));
+		$this->register(new Coal(new BID(Ids::COAL_BLOCK, 0), "Coal Block", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
+		$this->register(new CoalOre(new BID(Ids::COAL_ORE, 0), "Coal Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 
 		$cobblestoneBreakInfo = new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
 		$this->register($cobblestone = new Opaque(new BID(Ids::COBBLESTONE, 0), "Cobblestone", $cobblestoneBreakInfo));
-		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_COBBLESTONE), "Infested Cobblestone", $cobblestone));
+		$infestedStoneBreakInfo = new BlockBreakInfo(0.75);
+		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_COBBLESTONE), "Infested Cobblestone", $infestedStoneBreakInfo, $cobblestone));
 		$this->register(new Opaque(new BID(Ids::MOSSY_COBBLESTONE, 0), "Mossy Cobblestone", $cobblestoneBreakInfo));
 		$this->register(new Stair(new BID(Ids::COBBLESTONE_STAIRS, 0), "Cobblestone Stairs", $cobblestoneBreakInfo));
 		$this->register(new Stair(new BID(Ids::MOSSY_COBBLESTONE_STAIRS, 0), "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
 
-		$this->register(new Cobweb(new BID(Ids::COBWEB, 0), "Cobweb"));
-		$this->register(new CocoaBlock(new BID(Ids::COCOA, 0), "Cocoa Block"));
+		$this->register(new Cobweb(new BID(Ids::COBWEB, 0), "Cobweb", new BlockBreakInfo(4.0, BlockToolType::SWORD | BlockToolType::SHEARS, 1)));
+		$this->register(new CocoaBlock(new BID(Ids::COCOA, 0), "Cocoa Block", new BlockBreakInfo(0.2, BlockToolType::AXE, 0, 15.0)));
 		$this->register(new CoralBlock(new BID(Ids::CORAL_BLOCK, 0), "Coral Block", new BlockBreakInfo(7.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
-		$this->register(new CraftingTable(new BID(Ids::CRAFTING_TABLE, 0), "Crafting Table"));
-		$this->register(new DaylightSensor(new BIDFlattened(Ids::DAYLIGHT_DETECTOR, Ids::DAYLIGHT_DETECTOR_INVERTED, 0, null, TileDaylightSensor::class), "Daylight Sensor"));
-		$this->register(new DeadBush(new BID(Ids::DEADBUSH, 0), "Dead Bush"));
-		$this->register(new DetectorRail(new BID(Ids::DETECTOR_RAIL, 0), "Detector Rail"));
+		$this->register(new CraftingTable(new BID(Ids::CRAFTING_TABLE, 0), "Crafting Table", new BlockBreakInfo(2.5, BlockToolType::AXE)));
+		$this->register(new DaylightSensor(new BIDFlattened(Ids::DAYLIGHT_DETECTOR, [Ids::DAYLIGHT_DETECTOR_INVERTED], 0, null, TileDaylightSensor::class), "Daylight Sensor", new BlockBreakInfo(0.2, BlockToolType::AXE)));
+		$this->register(new DeadBush(new BID(Ids::DEADBUSH, 0), "Dead Bush", BlockBreakInfo::instant(BlockToolType::SHEARS, 1)));
+		$this->register(new DetectorRail(new BID(Ids::DETECTOR_RAIL, 0), "Detector Rail", $railBreakInfo));
 
 		$this->register(new Opaque(new BID(Ids::DIAMOND_BLOCK, 0), "Diamond Block", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
-		$this->register(new DiamondOre(new BID(Ids::DIAMOND_ORE, 0), "Diamond Ore"));
-		$this->register(new Dirt(new BID(Ids::DIRT, Meta::DIRT_NORMAL), "Dirt"));
-		$this->register(new DoublePlant(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_SUNFLOWER), "Sunflower"));
-		$this->register(new DoublePlant(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_LILAC), "Lilac"));
-		$this->register(new DoublePlant(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_ROSE_BUSH), "Rose Bush"));
-		$this->register(new DoublePlant(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_PEONY), "Peony"));
-		$this->register(new DoubleTallGrass(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_TALLGRASS), "Double Tallgrass"));
-		$this->register(new DoubleTallGrass(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_LARGE_FERN), "Large Fern"));
-		$this->register(new DragonEgg(new BID(Ids::DRAGON_EGG, 0), "Dragon Egg"));
+		$this->register(new DiamondOre(new BID(Ids::DIAMOND_ORE, 0), "Diamond Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
+		$this->register(new Dirt(new BID(Ids::DIRT, 0), "Dirt", new BlockBreakInfo(0.5, BlockToolType::SHOVEL)));
+		$this->register(new DoublePlant(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_SUNFLOWER), "Sunflower", BlockBreakInfo::instant()));
+		$this->register(new DoublePlant(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_LILAC), "Lilac", BlockBreakInfo::instant()));
+		$this->register(new DoublePlant(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_ROSE_BUSH), "Rose Bush", BlockBreakInfo::instant()));
+		$this->register(new DoublePlant(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_PEONY), "Peony", BlockBreakInfo::instant()));
+		$this->register(new DoubleTallGrass(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_TALLGRASS), "Double Tallgrass", BlockBreakInfo::instant(BlockToolType::SHEARS, 1)));
+		$this->register(new DoubleTallGrass(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_LARGE_FERN), "Large Fern", BlockBreakInfo::instant(BlockToolType::SHEARS, 1)));
+		$this->register(new DragonEgg(new BID(Ids::DRAGON_EGG, 0), "Dragon Egg", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new DriedKelp(new BID(Ids::DRIED_KELP_BLOCK, 0), "Dried Kelp Block", new BlockBreakInfo(0.5, BlockToolType::NONE, 0, 12.5)));
 		$this->register(new Opaque(new BID(Ids::EMERALD_BLOCK, 0), "Emerald Block", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
-		$this->register(new EmeraldOre(new BID(Ids::EMERALD_ORE, 0), "Emerald Ore"));
-		$this->register(new EnchantingTable(new BID(Ids::ENCHANTING_TABLE, 0, null, TileEnchantingTable::class), "Enchanting Table"));
-		$this->register(new EndPortalFrame(new BID(Ids::END_PORTAL_FRAME, 0), "End Portal Frame"));
-		$this->register(new EndRod(new BID(Ids::END_ROD, 0), "End Rod"));
+		$this->register(new EmeraldOre(new BID(Ids::EMERALD_ORE, 0), "Emerald Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
+		$this->register(new EnchantingTable(new BID(Ids::ENCHANTING_TABLE, 0, null, TileEnchantingTable::class), "Enchanting Table", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0)));
+		$this->register(new EndPortalFrame(new BID(Ids::END_PORTAL_FRAME, 0), "End Portal Frame", BlockBreakInfo::indestructible()));
+		$this->register(new EndRod(new BID(Ids::END_ROD, 0), "End Rod", BlockBreakInfo::instant()));
 		$this->register(new Opaque(new BID(Ids::END_STONE, 0), "End Stone", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 45.0)));
 
 		$endBrickBreakInfo = new BlockBreakInfo(0.8, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 4.0);
 		$this->register(new Opaque(new BID(Ids::END_BRICKS, 0), "End Stone Bricks", $endBrickBreakInfo));
 		$this->register(new Stair(new BID(Ids::END_BRICK_STAIRS, 0), "End Stone Brick Stairs", $endBrickBreakInfo));
 
-		$this->register(new EnderChest(new BID(Ids::ENDER_CHEST, 0, null, TileEnderChest::class), "Ender Chest"));
-		$this->register(new Farmland(new BID(Ids::FARMLAND, 0), "Farmland"));
-		$this->register(new Fire(new BID(Ids::FIRE, 0), "Fire Block"));
-		$this->register(new Flower(new BID(Ids::DANDELION, 0), "Dandelion"));
-		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_ALLIUM), "Allium"));
-		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_AZURE_BLUET), "Azure Bluet"));
-		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_BLUE_ORCHID), "Blue Orchid"));
-		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_CORNFLOWER), "Cornflower"));
-		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_LILY_OF_THE_VALLEY), "Lily of the Valley"));
-		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_ORANGE_TULIP), "Orange Tulip"));
-		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_OXEYE_DAISY), "Oxeye Daisy"));
-		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_PINK_TULIP), "Pink Tulip"));
-		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_POPPY), "Poppy"));
-		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_RED_TULIP), "Red Tulip"));
-		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_WHITE_TULIP), "White Tulip"));
-		$this->register(new FlowerPot(new BID(Ids::FLOWER_POT_BLOCK, 0, ItemIds::FLOWER_POT, TileFlowerPot::class), "Flower Pot"));
-		$this->register(new FrostedIce(new BID(Ids::FROSTED_ICE, 0), "Frosted Ice"));
-		$this->register(new Furnace(new BIDFlattened(Ids::FURNACE, Ids::LIT_FURNACE, 0, null, TileFurnace::class), "Furnace"));
-		$this->register(new Glass(new BID(Ids::GLASS, 0), "Glass"));
-		$this->register(new GlassPane(new BID(Ids::GLASS_PANE, 0), "Glass Pane"));
-		$this->register(new GlowingObsidian(new BID(Ids::GLOWINGOBSIDIAN, 0), "Glowing Obsidian"));
-		$this->register(new Glowstone(new BID(Ids::GLOWSTONE, 0), "Glowstone"));
+		$this->register(new EnderChest(new BID(Ids::ENDER_CHEST, 0, null, TileEnderChest::class), "Ender Chest", new BlockBreakInfo(22.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 3000.0)));
+		$this->register(new Farmland(new BID(Ids::FARMLAND, 0), "Farmland", new BlockBreakInfo(0.6, BlockToolType::SHOVEL)));
+		$this->register(new Fire(new BID(Ids::FIRE, 0), "Fire Block", BlockBreakInfo::instant()));
+		$this->register(new Flower(new BID(Ids::DANDELION, 0), "Dandelion", BlockBreakInfo::instant()));
+		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_ALLIUM), "Allium", BlockBreakInfo::instant()));
+		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_AZURE_BLUET), "Azure Bluet", BlockBreakInfo::instant()));
+		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_BLUE_ORCHID), "Blue Orchid", BlockBreakInfo::instant()));
+		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_CORNFLOWER), "Cornflower", BlockBreakInfo::instant()));
+		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_LILY_OF_THE_VALLEY), "Lily of the Valley", BlockBreakInfo::instant()));
+		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_ORANGE_TULIP), "Orange Tulip", BlockBreakInfo::instant()));
+		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_OXEYE_DAISY), "Oxeye Daisy", BlockBreakInfo::instant()));
+		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_PINK_TULIP), "Pink Tulip", BlockBreakInfo::instant()));
+		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_POPPY), "Poppy", BlockBreakInfo::instant()));
+		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_RED_TULIP), "Red Tulip", BlockBreakInfo::instant()));
+		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_WHITE_TULIP), "White Tulip", BlockBreakInfo::instant()));
+		$this->register(new FlowerPot(new BID(Ids::FLOWER_POT_BLOCK, 0, ItemIds::FLOWER_POT, TileFlowerPot::class), "Flower Pot", BlockBreakInfo::instant()));
+		$this->register(new FrostedIce(new BID(Ids::FROSTED_ICE, 0), "Frosted Ice", new BlockBreakInfo(2.5, BlockToolType::PICKAXE)));
+		$this->register(new Furnace(new BIDFlattened(Ids::FURNACE, [Ids::LIT_FURNACE], 0, null, TileFurnace::class), "Furnace", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+
+		$glassBreakInfo = new BlockBreakInfo(0.3);
+		$this->register(new Glass(new BID(Ids::GLASS, 0), "Glass", $glassBreakInfo));
+		$this->register(new GlassPane(new BID(Ids::GLASS_PANE, 0), "Glass Pane", $glassBreakInfo));
+		$this->register(new GlowingObsidian(new BID(Ids::GLOWINGOBSIDIAN, 0), "Glowing Obsidian", new BlockBreakInfo(10.0, BlockToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 50.0)));
+		$this->register(new Glowstone(new BID(Ids::GLOWSTONE, 0), "Glowstone", new BlockBreakInfo(0.3, BlockToolType::PICKAXE)));
 		$this->register(new Opaque(new BID(Ids::GOLD_BLOCK, 0), "Gold Block", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
 		$this->register(new Opaque(new BID(Ids::GOLD_ORE, 0), "Gold Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
-		$this->register(new Grass(new BID(Ids::GRASS, 0), "Grass"));
-		$this->register(new GrassPath(new BID(Ids::GRASS_PATH, 0), "Grass Path"));
-		$this->register(new Gravel(new BID(Ids::GRAVEL, 0), "Gravel"));
-		$this->register(new HardenedClay(new BID(Ids::HARDENED_CLAY, 0), "Hardened Clay"));
-		$this->register(new HardenedGlass(new BID(Ids::HARD_GLASS, 0), "Hardened Glass"));
-		$this->register(new HardenedGlassPane(new BID(Ids::HARD_GLASS_PANE, 0), "Hardened Glass Pane"));
-		$this->register(new HayBale(new BID(Ids::HAY_BALE, 0), "Hay Bale"));
+
+		$grassBreakInfo = new BlockBreakInfo(0.6, BlockToolType::SHOVEL);
+		$this->register(new Grass(new BID(Ids::GRASS, 0), "Grass", $grassBreakInfo));
+		$this->register(new GrassPath(new BID(Ids::GRASS_PATH, 0), "Grass Path", $grassBreakInfo));
+		$this->register(new Gravel(new BID(Ids::GRAVEL, 0), "Gravel", new BlockBreakInfo(0.6, BlockToolType::SHOVEL)));
+
+		$hardenedClayBreakInfo = new BlockBreakInfo(1.25, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 21.0);
+		$this->register(new HardenedClay(new BID(Ids::HARDENED_CLAY, 0), "Hardened Clay", $hardenedClayBreakInfo));
+
+		$hardenedGlassBreakInfo = new BlockBreakInfo(10.0);
+		$this->register(new HardenedGlass(new BID(Ids::HARD_GLASS, 0), "Hardened Glass", $hardenedGlassBreakInfo));
+		$this->register(new HardenedGlassPane(new BID(Ids::HARD_GLASS_PANE, 0), "Hardened Glass Pane", $hardenedGlassBreakInfo));
+		$this->register(new HayBale(new BID(Ids::HAY_BALE, 0), "Hay Bale", new BlockBreakInfo(0.5)));
 		$this->register(new Hopper(new BID(Ids::HOPPER_BLOCK, 0, ItemIds::HOPPER, TileHopper::class), "Hopper", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 15.0)));
-		$this->register(new Ice(new BID(Ids::ICE, 0), "Ice"));
+		$this->register(new Ice(new BID(Ids::ICE, 0), "Ice", new BlockBreakInfo(0.5, BlockToolType::PICKAXE)));
 
 		$updateBlockBreakInfo = new BlockBreakInfo(1.0);
 		$this->register(new Opaque(new BID(Ids::INFO_UPDATE, 0), "update!", $updateBlockBreakInfo));
 		$this->register(new Opaque(new BID(Ids::INFO_UPDATE2, 0), "ate!upd", $updateBlockBreakInfo));
 		$this->register(new Transparent(new BID(Ids::INVISIBLEBEDROCK, 0), "Invisible Bedrock", BlockBreakInfo::indestructible()));
-		$this->register(new Opaque(new BID(Ids::IRON_BLOCK, 0), "Iron Block", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 30.0)));
-		$this->register(new Thin(new BID(Ids::IRON_BARS, 0), "Iron Bars", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
-		$this->register(new Door(new BID(Ids::IRON_DOOR_BLOCK, 0, ItemIds::IRON_DOOR), "Iron Door", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 25.0)));
+
+		$ironBreakInfo = new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 30.0);
+		$this->register(new Opaque(new BID(Ids::IRON_BLOCK, 0), "Iron Block", $ironBreakInfo));
+		$this->register(new Thin(new BID(Ids::IRON_BARS, 0), "Iron Bars", $ironBreakInfo));
+		$ironDoorBreakInfo = new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 25.0);
+		$this->register(new Door(new BID(Ids::IRON_DOOR_BLOCK, 0, ItemIds::IRON_DOOR), "Iron Door", $ironDoorBreakInfo));
+		$this->register(new Trapdoor(new BID(Ids::IRON_TRAPDOOR, 0), "Iron Trapdoor", $ironDoorBreakInfo));
 		$this->register(new Opaque(new BID(Ids::IRON_ORE, 0), "Iron Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
-		$this->register(new Trapdoor(new BID(Ids::IRON_TRAPDOOR, 0), "Iron Trapdoor", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 25.0)));
-		$this->register(new ItemFrame(new BID(Ids::FRAME_BLOCK, 0, ItemIds::FRAME, TileItemFrame::class), "Item Frame"));
-		$this->register(new Jukebox(new BID(Ids::JUKEBOX, 0, ItemIds::JUKEBOX, TileJukebox::class), "Jukebox"));
-		$this->register(new Ladder(new BID(Ids::LADDER, 0), "Ladder"));
+		$this->register(new ItemFrame(new BID(Ids::FRAME_BLOCK, 0, ItemIds::FRAME, TileItemFrame::class), "Item Frame", new BlockBreakInfo(0.25)));
+		$this->register(new Jukebox(new BID(Ids::JUKEBOX, 0, ItemIds::JUKEBOX, TileJukebox::class), "Jukebox", new BlockBreakInfo(0.8, BlockToolType::AXE))); //TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
+		$this->register(new Ladder(new BID(Ids::LADDER, 0), "Ladder", new BlockBreakInfo(0.4, BlockToolType::AXE)));
 		$this->register(new Lantern(new BID(Ids::LANTERN, 0), "Lantern", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new Opaque(new BID(Ids::LAPIS_BLOCK, 0), "Lapis Lazuli Block", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
-		$this->register(new LapisOre(new BID(Ids::LAPIS_ORE, 0), "Lapis Lazuli Ore"));
-		$this->register(new Lava(new BIDFlattened(Ids::FLOWING_LAVA, Ids::STILL_LAVA, 0), "Lava"));
-		$this->register(new Lever(new BID(Ids::LEVER, 0), "Lever"));
+		$this->register(new LapisOre(new BID(Ids::LAPIS_ORE, 0), "Lapis Lazuli Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
+		$this->register(new Lava(new BIDFlattened(Ids::FLOWING_LAVA, [Ids::STILL_LAVA], 0), "Lava", BlockBreakInfo::indestructible(500.0)));
+		$this->register(new Lever(new BID(Ids::LEVER, 0), "Lever", new BlockBreakInfo(0.5)));
 		$this->register(new Loom(new BID(Ids::LOOM, 0), "Loom", new BlockBreakInfo(2.5, BlockToolType::AXE)));
-		$this->register(new Magma(new BID(Ids::MAGMA, 0), "Magma Block"));
-		$this->register(new Melon(new BID(Ids::MELON_BLOCK, 0), "Melon Block"));
-		$this->register(new MelonStem(new BID(Ids::MELON_STEM, 0, ItemIds::MELON_SEEDS), "Melon Stem"));
-		$this->register(new MonsterSpawner(new BID(Ids::MOB_SPAWNER, 0, null, TileMonsterSpawner::class), "Monster Spawner"));
-		$this->register(new Mycelium(new BID(Ids::MYCELIUM, 0), "Mycelium"));
+		$this->register(new Magma(new BID(Ids::MAGMA, 0), "Magma Block", new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new Melon(new BID(Ids::MELON_BLOCK, 0), "Melon Block", new BlockBreakInfo(1.0, BlockToolType::AXE)));
+		$this->register(new MelonStem(new BID(Ids::MELON_STEM, 0, ItemIds::MELON_SEEDS), "Melon Stem", BlockBreakInfo::instant()));
+		$this->register(new MonsterSpawner(new BID(Ids::MOB_SPAWNER, 0, null, TileMonsterSpawner::class), "Monster Spawner", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new Mycelium(new BID(Ids::MYCELIUM, 0), "Mycelium", new BlockBreakInfo(0.6, BlockToolType::SHOVEL)));
 
 		$netherBrickBreakInfo = new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
 		$this->register(new Opaque(new BID(Ids::NETHER_BRICK_BLOCK, 0), "Nether Bricks", $netherBrickBreakInfo));
@@ -234,18 +249,18 @@ class BlockFactory{
 		$this->register(new Fence(new BID(Ids::NETHER_BRICK_FENCE, 0), "Nether Brick Fence", $netherBrickBreakInfo));
 		$this->register(new Stair(new BID(Ids::NETHER_BRICK_STAIRS, 0), "Nether Brick Stairs", $netherBrickBreakInfo));
 		$this->register(new Stair(new BID(Ids::RED_NETHER_BRICK_STAIRS, 0), "Red Nether Brick Stairs", $netherBrickBreakInfo));
-		$this->register(new NetherPortal(new BID(Ids::PORTAL, 0), "Nether Portal"));
-		$this->register(new NetherQuartzOre(new BID(Ids::NETHER_QUARTZ_ORE, 0), "Nether Quartz Ore"));
-		$this->register(new NetherReactor(new BID(Ids::NETHERREACTOR, 0), "Nether Reactor Core"));
+		$this->register(new NetherPortal(new BID(Ids::PORTAL, 0), "Nether Portal", BlockBreakInfo::indestructible(0.0)));
+		$this->register(new NetherQuartzOre(new BID(Ids::NETHER_QUARTZ_ORE, 0), "Nether Quartz Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new NetherReactor(new BID(Ids::NETHERREACTOR, 0), "Nether Reactor Core", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new Opaque(new BID(Ids::NETHER_WART_BLOCK, 0), "Nether Wart Block", new BlockBreakInfo(1.0)));
-		$this->register(new NetherWartPlant(new BID(Ids::NETHER_WART_PLANT, 0, ItemIds::NETHER_WART), "Nether Wart"));
-		$this->register(new Netherrack(new BID(Ids::NETHERRACK, 0), "Netherrack"));
-		$this->register(new Note(new BID(Ids::NOTEBLOCK, 0, null, TileNote::class), "Note Block"));
+		$this->register(new NetherWartPlant(new BID(Ids::NETHER_WART_PLANT, 0, ItemIds::NETHER_WART), "Nether Wart", BlockBreakInfo::instant()));
+		$this->register(new Netherrack(new BID(Ids::NETHERRACK, 0), "Netherrack", new BlockBreakInfo(0.4, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new Note(new BID(Ids::NOTEBLOCK, 0, null, TileNote::class), "Note Block", new BlockBreakInfo(0.8, BlockToolType::AXE)));
 		$this->register(new Opaque(new BID(Ids::OBSIDIAN, 0), "Obsidian", new BlockBreakInfo(35.0 /* 50 in PC */, BlockToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 6000.0)));
-		$this->register(new PackedIce(new BID(Ids::PACKED_ICE, 0), "Packed Ice"));
-		$this->register(new Podzol(new BID(Ids::PODZOL, 0), "Podzol"));
-		$this->register(new Potato(new BID(Ids::POTATOES, 0), "Potato Block"));
-		$this->register(new PoweredRail(new BID(Ids::GOLDEN_RAIL, Meta::RAIL_STRAIGHT_NORTH_SOUTH), "Powered Rail"));
+		$this->register(new PackedIce(new BID(Ids::PACKED_ICE, 0), "Packed Ice", new BlockBreakInfo(0.5, BlockToolType::PICKAXE)));
+		$this->register(new Podzol(new BID(Ids::PODZOL, 0), "Podzol", new BlockBreakInfo(0.5, BlockToolType::SHOVEL)));
+		$this->register(new Potato(new BID(Ids::POTATOES, 0), "Potato Block", BlockBreakInfo::instant()));
+		$this->register(new PoweredRail(new BID(Ids::GOLDEN_RAIL, Meta::RAIL_STRAIGHT_NORTH_SOUTH), "Powered Rail", $railBreakInfo));
 
 		$prismarineBreakInfo = new BlockBreakInfo(1.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
 		$this->register(new Opaque(new BID(Ids::PRISMARINE, Meta::PRISMARINE_BRICKS), "Prismarine Bricks", $prismarineBreakInfo));
@@ -263,7 +278,7 @@ class BlockFactory{
 		$this->register(new CarvedPumpkin(new BID(Ids::CARVED_PUMPKIN, 0), "Carved Pumpkin", $pumpkinBreakInfo));
 		$this->register(new LitPumpkin(new BID(Ids::JACK_O_LANTERN, 0), "Jack o'Lantern", $pumpkinBreakInfo));
 
-		$this->register(new PumpkinStem(new BID(Ids::PUMPKIN_STEM, 0, ItemIds::PUMPKIN_SEEDS), "Pumpkin Stem"));
+		$this->register(new PumpkinStem(new BID(Ids::PUMPKIN_STEM, 0, ItemIds::PUMPKIN_SEEDS), "Pumpkin Stem", BlockBreakInfo::instant()));
 
 		$purpurBreakInfo = new BlockBreakInfo(1.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
 		$this->register(new Opaque(new BID(Ids::PURPUR_BLOCK, Meta::PURPUR_NORMAL), "Purpur Block", $purpurBreakInfo));
@@ -278,26 +293,28 @@ class BlockFactory{
 		$this->register(new Opaque(new BID(Ids::QUARTZ_BLOCK, Meta::QUARTZ_SMOOTH), "Smooth Quartz Block", $quartzBreakInfo)); //TODO: this has axis rotation in 1.9, unsure if a bug (https://bugs.mojang.com/browse/MCPE-39074)
 		$this->register(new Stair(new BID(Ids::SMOOTH_QUARTZ_STAIRS, 0), "Smooth Quartz Stairs", $quartzBreakInfo));
 
-		$this->register(new Rail(new BID(Ids::RAIL, 0), "Rail"));
-		$this->register(new RedMushroom(new BID(Ids::RED_MUSHROOM, 0), "Red Mushroom"));
-		$this->register(new Redstone(new BID(Ids::REDSTONE_BLOCK, 0), "Redstone Block"));
-		$this->register(new RedstoneComparator(new BIDFlattened(Ids::UNPOWERED_COMPARATOR, Ids::POWERED_COMPARATOR, 0, ItemIds::COMPARATOR, TileComparator::class), "Redstone Comparator"));
-		$this->register(new RedstoneLamp(new BIDFlattened(Ids::REDSTONE_LAMP, Ids::LIT_REDSTONE_LAMP, 0), "Redstone Lamp"));
-		$this->register(new RedstoneOre(new BIDFlattened(Ids::REDSTONE_ORE, Ids::LIT_REDSTONE_ORE, 0), "Redstone Ore"));
-		$this->register(new RedstoneRepeater(new BIDFlattened(Ids::UNPOWERED_REPEATER, Ids::POWERED_REPEATER, 0, ItemIds::REPEATER), "Redstone Repeater"));
-		$this->register(new RedstoneTorch(new BIDFlattened(Ids::REDSTONE_TORCH, Ids::UNLIT_REDSTONE_TORCH, 0), "Redstone Torch"));
-		$this->register(new RedstoneWire(new BID(Ids::REDSTONE_WIRE, 0, ItemIds::REDSTONE), "Redstone"));
-		$this->register(new Reserved6(new BID(Ids::RESERVED6, 0), "reserved6"));
-		$this->register(new Sand(new BID(Ids::SAND, 0), "Sand"));
-		$this->register(new Sand(new BID(Ids::SAND, 1), "Red Sand"));
-		$this->register(new SeaLantern(new BID(Ids::SEALANTERN, 0), "Sea Lantern"));
-		$this->register(new SeaPickle(new BID(Ids::SEA_PICKLE, 0), "Sea Pickle"));
-		$this->register(new Skull(new BID(Ids::MOB_HEAD_BLOCK, 0, null, TileSkull::class), "Mob Head"));
+		$this->register(new Rail(new BID(Ids::RAIL, 0), "Rail", $railBreakInfo));
+		$this->register(new RedMushroom(new BID(Ids::RED_MUSHROOM, 0), "Red Mushroom", BlockBreakInfo::instant()));
+		$this->register(new Redstone(new BID(Ids::REDSTONE_BLOCK, 0), "Redstone Block", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
+		$this->register(new RedstoneComparator(new BIDFlattened(Ids::UNPOWERED_COMPARATOR, [Ids::POWERED_COMPARATOR], 0, ItemIds::COMPARATOR, TileComparator::class), "Redstone Comparator", BlockBreakInfo::instant()));
+		$this->register(new RedstoneLamp(new BIDFlattened(Ids::REDSTONE_LAMP, [Ids::LIT_REDSTONE_LAMP], 0), "Redstone Lamp", new BlockBreakInfo(0.3)));
+		$this->register(new RedstoneOre(new BIDFlattened(Ids::REDSTONE_ORE, [Ids::LIT_REDSTONE_ORE], 0), "Redstone Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
+		$this->register(new RedstoneRepeater(new BIDFlattened(Ids::UNPOWERED_REPEATER, [Ids::POWERED_REPEATER], 0, ItemIds::REPEATER), "Redstone Repeater", BlockBreakInfo::instant()));
+		$this->register(new RedstoneTorch(new BIDFlattened(Ids::REDSTONE_TORCH, [Ids::UNLIT_REDSTONE_TORCH], 0), "Redstone Torch", BlockBreakInfo::instant()));
+		$this->register(new RedstoneWire(new BID(Ids::REDSTONE_WIRE, 0, ItemIds::REDSTONE), "Redstone", BlockBreakInfo::instant()));
+		$this->register(new Reserved6(new BID(Ids::RESERVED6, 0), "reserved6", BlockBreakInfo::instant()));
 
-		$this->register(new Snow(new BID(Ids::SNOW, 0), "Snow Block"));
-		$this->register(new SnowLayer(new BID(Ids::SNOW_LAYER, 0), "Snow Layer"));
-		$this->register(new SoulSand(new BID(Ids::SOUL_SAND, 0), "Soul Sand"));
-		$this->register(new Sponge(new BID(Ids::SPONGE, 0), "Sponge"));
+		$sandBreakInfo = new BlockBreakInfo(0.5, BlockToolType::SHOVEL);
+		$this->register(new Sand(new BID(Ids::SAND, 0), "Sand", $sandBreakInfo));
+		$this->register(new Sand(new BID(Ids::SAND, 1), "Red Sand", $sandBreakInfo));
+		$this->register(new SeaLantern(new BID(Ids::SEALANTERN, 0), "Sea Lantern", new BlockBreakInfo(0.3)));
+		$this->register(new SeaPickle(new BID(Ids::SEA_PICKLE, 0), "Sea Pickle", BlockBreakInfo::instant()));
+		$this->register(new Skull(new BID(Ids::MOB_HEAD_BLOCK, 0, null, TileSkull::class), "Mob Head", new BlockBreakInfo(1.0)));
+
+		$this->register(new Snow(new BID(Ids::SNOW, 0), "Snow Block", new BlockBreakInfo(0.2, BlockToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new SnowLayer(new BID(Ids::SNOW_LAYER, 0), "Snow Layer", new BlockBreakInfo(0.1, BlockToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new SoulSand(new BID(Ids::SOUL_SAND, 0), "Soul Sand", new BlockBreakInfo(0.5, BlockToolType::SHOVEL)));
+		$this->register(new Sponge(new BID(Ids::SPONGE, 0), "Sponge", new BlockBreakInfo(0.6, BlockToolType::HOE)));
 
 		$stoneBreakInfo = new BlockBreakInfo(1.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
 		$this->register($stone = new class(new BID(Ids::STONE, Meta::STONE_NORMAL), "Stone", $stoneBreakInfo) extends Opaque{
@@ -309,7 +326,7 @@ class BlockFactory{
 				return true;
 			}
 		});
-		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE), "Infested Stone", $stone));
+		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE), "Infested Stone", $infestedStoneBreakInfo, $stone));
 		$this->register(new Stair(new BID(Ids::NORMAL_STONE_STAIRS, 0), "Stone Stairs", $stoneBreakInfo));
 		$this->register(new Opaque(new BID(Ids::SMOOTH_STONE, 0), "Smooth Stone", $stoneBreakInfo));
 		$this->register(new Opaque(new BID(Ids::STONE, Meta::STONE_ANDESITE), "Andesite", $stoneBreakInfo));
@@ -326,16 +343,16 @@ class BlockFactory{
 		$this->register(new Stair(new BID(Ids::POLISHED_GRANITE_STAIRS, 0), "Polished Granite Stairs", $stoneBreakInfo));
 		$this->register(new Stair(new BID(Ids::STONE_BRICK_STAIRS, 0), "Stone Brick Stairs", $stoneBreakInfo));
 		$this->register($chiseledStoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_CHISELED), "Chiseled Stone Bricks", $stoneBreakInfo));
-		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_CHISELED), "Infested Chiseled Stone Brick", $chiseledStoneBrick));
+		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_CHISELED), "Infested Chiseled Stone Brick", $infestedStoneBreakInfo, $chiseledStoneBrick));
 		$this->register($crackedStoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_CRACKED), "Cracked Stone Bricks", $stoneBreakInfo));
-		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_CRACKED), "Infested Cracked Stone Brick", $crackedStoneBrick));
+		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_CRACKED), "Infested Cracked Stone Brick", $infestedStoneBreakInfo, $crackedStoneBrick));
 		$this->register($mossyStoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_MOSSY), "Mossy Stone Bricks", $stoneBreakInfo));
-		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_MOSSY), "Infested Mossy Stone Brick", $mossyStoneBrick));
+		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK_MOSSY), "Infested Mossy Stone Brick", $infestedStoneBreakInfo, $mossyStoneBrick));
 		$this->register(new Stair(new BID(Ids::MOSSY_STONE_BRICK_STAIRS, 0), "Mossy Stone Brick Stairs", $stoneBreakInfo));
 		$this->register($stoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_NORMAL), "Stone Bricks", $stoneBreakInfo));
-		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK), "Infested Stone Brick", $stoneBrick));
-		$this->register(new StoneButton(new BID(Ids::STONE_BUTTON, 0), "Stone Button"));
-		$this->register(new StonePressurePlate(new BID(Ids::STONE_PRESSURE_PLATE, 0), "Stone Pressure Plate"));
+		$this->register(new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK), "Infested Stone Brick", $infestedStoneBreakInfo, $stoneBrick));
+		$this->register(new StoneButton(new BID(Ids::STONE_BUTTON, 0), "Stone Button", new BlockBreakInfo(0.5, BlockToolType::PICKAXE)));
+		$this->register(new StonePressurePlate(new BID(Ids::STONE_PRESSURE_PLATE, 0), "Stone Pressure Plate", new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 
 		//TODO: in the future this won't be the same for all the types
 		$stoneSlabBreakInfo = new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
@@ -369,57 +386,67 @@ class BlockFactory{
 		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_SMOOTH_QUARTZ), "Smooth Quartz", $stoneSlabBreakInfo));
 		$this->register(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_STONE), "Stone", $stoneSlabBreakInfo));
 		$this->register(new Opaque(new BID(Ids::STONECUTTER, 0), "Stonecutter", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
-		$this->register(new Sugarcane(new BID(Ids::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane"));
-		$this->register(new TNT(new BID(Ids::TNT, 0), "TNT"));
+		$this->register(new Sugarcane(new BID(Ids::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane", BlockBreakInfo::instant()));
+		$this->register(new TNT(new BID(Ids::TNT, 0), "TNT", BlockBreakInfo::instant()));
 
-		$fern = new TallGrass(new BID(Ids::TALLGRASS, Meta::TALLGRASS_FERN), "Fern");
+		$fern = new TallGrass(new BID(Ids::TALLGRASS, Meta::TALLGRASS_FERN), "Fern", BlockBreakInfo::instant(BlockToolType::SHEARS, 1));
 		$this->register($fern);
 		$this->remap(Ids::TALLGRASS, 0, $fern);
 		$this->remap(Ids::TALLGRASS, 3, $fern);
-		$this->register(new TallGrass(new BID(Ids::TALLGRASS, Meta::TALLGRASS_NORMAL), "Tall Grass"));
-		$this->register(new Torch(new BID(Ids::COLORED_TORCH_BP, 0), "Blue Torch"));
-		$this->register(new Torch(new BID(Ids::COLORED_TORCH_BP, 8), "Purple Torch"));
-		$this->register(new Torch(new BID(Ids::COLORED_TORCH_RG, 0), "Red Torch"));
-		$this->register(new Torch(new BID(Ids::COLORED_TORCH_RG, 8), "Green Torch"));
-		$this->register(new Torch(new BID(Ids::TORCH, 0), "Torch"));
-		$this->register(new TrappedChest(new BID(Ids::TRAPPED_CHEST, 0, null, TileChest::class), "Trapped Chest"));
-		$this->register(new Tripwire(new BID(Ids::TRIPWIRE, 0, ItemIds::STRING), "Tripwire"));
-		$this->register(new TripwireHook(new BID(Ids::TRIPWIRE_HOOK, 0), "Tripwire Hook"));
-		$this->register(new UnderwaterTorch(new BID(Ids::UNDERWATER_TORCH, 0), "Underwater Torch"));
-		$this->register(new Vine(new BID(Ids::VINE, 0), "Vines"));
-		$this->register(new Water(new BIDFlattened(Ids::FLOWING_WATER, Ids::STILL_WATER, 0), "Water"));
-		$this->register(new WaterLily(new BID(Ids::LILY_PAD, 0), "Lily Pad"));
-		$this->register(new WeightedPressurePlateHeavy(new BID(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, 0), "Weighted Pressure Plate Heavy"));
-		$this->register(new WeightedPressurePlateLight(new BID(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE, 0), "Weighted Pressure Plate Light"));
-		$this->register(new Wheat(new BID(Ids::WHEAT_BLOCK, 0), "Wheat Block"));
+		$this->register(new TallGrass(new BID(Ids::TALLGRASS, Meta::TALLGRASS_NORMAL), "Tall Grass", BlockBreakInfo::instant(BlockToolType::SHEARS, 1)));
+		$this->register(new Torch(new BID(Ids::COLORED_TORCH_BP, 0), "Blue Torch", BlockBreakInfo::instant()));
+		$this->register(new Torch(new BID(Ids::COLORED_TORCH_BP, 8), "Purple Torch", BlockBreakInfo::instant()));
+		$this->register(new Torch(new BID(Ids::COLORED_TORCH_RG, 0), "Red Torch", BlockBreakInfo::instant()));
+		$this->register(new Torch(new BID(Ids::COLORED_TORCH_RG, 8), "Green Torch", BlockBreakInfo::instant()));
+		$this->register(new Torch(new BID(Ids::TORCH, 0), "Torch", BlockBreakInfo::instant()));
+		$this->register(new TrappedChest(new BID(Ids::TRAPPED_CHEST, 0, null, TileChest::class), "Trapped Chest", $chestBreakInfo));
+		$this->register(new Tripwire(new BID(Ids::TRIPWIRE, 0, ItemIds::STRING), "Tripwire", BlockBreakInfo::instant()));
+		$this->register(new TripwireHook(new BID(Ids::TRIPWIRE_HOOK, 0), "Tripwire Hook", BlockBreakInfo::instant()));
+		$this->register(new UnderwaterTorch(new BID(Ids::UNDERWATER_TORCH, 0), "Underwater Torch", BlockBreakInfo::instant()));
+		$this->register(new Vine(new BID(Ids::VINE, 0), "Vines", new BlockBreakInfo(0.2, BlockToolType::AXE)));
+		$this->register(new Water(new BIDFlattened(Ids::FLOWING_WATER, [Ids::STILL_WATER], 0), "Water", BlockBreakInfo::indestructible(500.0)));
+		$this->register(new WaterLily(new BID(Ids::LILY_PAD, 0), "Lily Pad", new BlockBreakInfo(0.6)));
 
+		$weightedPressurePlateBreakInfo = new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
+		$this->register(new WeightedPressurePlateHeavy(new BID(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, 0), "Weighted Pressure Plate Heavy", $weightedPressurePlateBreakInfo));
+		$this->register(new WeightedPressurePlateLight(new BID(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE, 0), "Weighted Pressure Plate Light", $weightedPressurePlateBreakInfo));
+		$this->register(new Wheat(new BID(Ids::WHEAT_BLOCK, 0), "Wheat Block", BlockBreakInfo::instant()));
+
+		$planksBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE, 0, 15.0);
+		$leavesBreakInfo = new BlockBreakInfo(0.2, BlockToolType::SHEARS);
+		$signBreakInfo = new BlockBreakInfo(1.0, BlockToolType::AXE);
+		$logBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE);
+		$woodenDoorBreakInfo = new BlockBreakInfo(3.0, BlockToolType::AXE, 0, 15.0);
+		$woodenButtonBreakInfo = new BlockBreakInfo(0.5, BlockToolType::AXE);
+		$woodenPressurePlateBreakInfo = new BlockBreakInfo(0.5, BlockToolType::AXE);
 		foreach(TreeType::getAll() as $treeType){
 			$magicNumber = $treeType->getMagicNumber();
 			$name = $treeType->getDisplayName();
-			$this->register(new Planks(new BID(Ids::PLANKS, $magicNumber), $name . " Planks"));
-			$this->register(new Sapling(new BID(Ids::SAPLING, $magicNumber), $name . " Sapling", $treeType));
-			$this->register(new WoodenFence(new BID(Ids::FENCE, $magicNumber), $name . " Fence"));
-			$this->register(new WoodenSlab(new BIDFlattened(Ids::WOODEN_SLAB, Ids::DOUBLE_WOODEN_SLAB, $treeType->getMagicNumber()), $treeType->getDisplayName()));
+			$this->register(new Planks(new BID(Ids::PLANKS, $magicNumber), $name . " Planks", $planksBreakInfo));
+			$this->register(new Sapling(new BID(Ids::SAPLING, $magicNumber), $name . " Sapling", BlockBreakInfo::instant(), $treeType));
+			$this->register(new WoodenFence(new BID(Ids::FENCE, $magicNumber), $name . " Fence", $planksBreakInfo));
+			$this->register(new WoodenSlab(new BIDFlattened(Ids::WOODEN_SLAB, [Ids::DOUBLE_WOODEN_SLAB], $magicNumber), $name, $planksBreakInfo));
 
 			//TODO: find a better way to deal with this split
-			$this->register(new Leaves(new BID($magicNumber >= 4 ? Ids::LEAVES2 : Ids::LEAVES, $magicNumber & 0x03), $name . " Leaves", $treeType));
-			$this->register(new Log(new BID($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, $magicNumber & 0x03), $name . " Log", $treeType, false));
+			$this->register(new Leaves(new BID($magicNumber >= 4 ? Ids::LEAVES2 : Ids::LEAVES, $magicNumber & 0x03), $name . " Leaves", $leavesBreakInfo, $treeType));
+			$this->register(new Log(new BID($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, $magicNumber & 0x03), $name . " Log", $logBreakInfo, $treeType, false));
 
-			$wood = new Wood(new BID(Ids::WOOD, $magicNumber), $name . " Wood", $treeType, false);
+			$wood = new Wood(new BID(Ids::WOOD, $magicNumber), $name . " Wood", $logBreakInfo, $treeType, false);
 			$this->register($wood);
 			$this->remap($magicNumber >= 4 ? Ids::LOG2 : Ids::LOG, ($magicNumber & 0x03) | 0b1100, $wood);
+			$this->register(new Wood(new BID(Ids::WOOD, $magicNumber | BlockLegacyMetadata::WOOD_FLAG_STRIPPED), "Stripped $name Wood", $logBreakInfo, $treeType, true));
 
-			$this->register(new Log(BlockLegacyIdHelper::getStrippedLogIdentifier($treeType), "Stripped " . $treeType->getDisplayName() . " Log", $treeType, true));
-			$this->register(new FenceGate(BlockLegacyIdHelper::getWoodenFenceIdentifier($treeType), $treeType->getDisplayName() . " Fence Gate"));
-			$this->register(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($treeType), $treeType->getDisplayName() . " Stairs"));
-			$this->register(new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($treeType), $treeType->getDisplayName() . " Door"));
+			$this->register(new Log(BlockLegacyIdHelper::getStrippedLogIdentifier($treeType), "Stripped " . $name . " Log", $logBreakInfo, $treeType, true));
+			$this->register(new FenceGate(BlockLegacyIdHelper::getWoodenFenceIdentifier($treeType), $name . " Fence Gate", $planksBreakInfo));
+			$this->register(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($treeType), $name . " Stairs", $planksBreakInfo));
+			$this->register(new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($treeType), $name . " Door", $woodenDoorBreakInfo));
 
-			$this->register(new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($treeType), $treeType->getDisplayName() . " Button"));
-			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($treeType), $treeType->getDisplayName() . " Pressure Plate"));
-			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($treeType), $treeType->getDisplayName() . " Trapdoor"));
+			$this->register(new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($treeType), $name . " Button", $woodenButtonBreakInfo));
+			$this->register(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($treeType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo));
+			$this->register(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($treeType), $name . " Trapdoor", $woodenDoorBreakInfo));
 
-			$this->register(new FloorSign(BlockLegacyIdHelper::getWoodenFloorSignIdentifier($treeType), $treeType->getDisplayName() . " Sign"));
-			$this->register(new WallSign(BlockLegacyIdHelper::getWoodenWallSignIdentifier($treeType), $treeType->getDisplayName() . " Wall Sign"));
+			$this->register(new FloorSign(BlockLegacyIdHelper::getWoodenFloorSignIdentifier($treeType), $name . " Sign", $signBreakInfo));
+			$this->register(new WallSign(BlockLegacyIdHelper::getWoodenWallSignIdentifier($treeType), $name . " Wall Sign", $signBreakInfo));
 		}
 
 		static $sandstoneTypes = [
@@ -438,36 +465,48 @@ class BlockFactory{
 			$this->register(new Opaque(new BID(Ids::RED_SANDSTONE, $variant), $prefix . "Red Sandstone", $sandstoneBreakInfo));
 		}
 
+		$glazedTerracottaBreakInfo = new BlockBreakInfo(1.4, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
 		foreach(DyeColor::getAll() as $color){
 			$coloredName = function(string $name) use($color) : string{
 				return $color->getDisplayName() . " " . $name;
 			};
-			$this->register(new GlazedTerracotta(BlockLegacyIdHelper::getGlazedTerracottaIdentifier($color), $coloredName("Glazed Terracotta")));
+			$this->register(new GlazedTerracotta(BlockLegacyIdHelper::getGlazedTerracottaIdentifier($color), $coloredName("Glazed Terracotta"), $glazedTerracottaBreakInfo));
 		}
-		$this->register(new StainedGlass(new BID(Ids::STAINED_GLASS, 0), "Stained Glass"));
-		$this->register(new StainedGlassPane(new BID(Ids::STAINED_GLASS_PANE, 0), "Stained Glass Pane"));
-		$this->register(new StainedHardenedClay(new BID(Ids::STAINED_CLAY, 0), "Stained Clay"));
-		$this->register(new StainedHardenedGlass(new BID(Ids::HARD_STAINED_GLASS, 0), "Stained Hardened Glass"));
-		$this->register(new StainedHardenedGlassPane(new BID(Ids::HARD_STAINED_GLASS_PANE, 0), "Stained Hardened Glass Pane"));
-		$this->register(new Carpet(new BID(Ids::CARPET, 0), "Carpet"));
-		$this->register(new Concrete(new BID(Ids::CONCRETE, 0), "Concrete"));
-		$this->register(new ConcretePowder(new BID(Ids::CONCRETE_POWDER, 0), "Concrete Powder"));
-		$this->register(new Wool(new BID(Ids::WOOL, 0), "Wool"));
+		$this->register(new StainedGlass(new BID(Ids::STAINED_GLASS, 0), "Stained Glass", $glassBreakInfo));
+		$this->register(new StainedGlassPane(new BID(Ids::STAINED_GLASS_PANE, 0), "Stained Glass Pane", $glassBreakInfo));
+		$this->register(new StainedHardenedClay(new BID(Ids::STAINED_CLAY, 0), "Stained Clay", $hardenedClayBreakInfo));
+		$this->register(new StainedHardenedGlass(new BID(Ids::HARD_STAINED_GLASS, 0), "Stained Hardened Glass", $hardenedGlassBreakInfo));
+		$this->register(new StainedHardenedGlassPane(new BID(Ids::HARD_STAINED_GLASS_PANE, 0), "Stained Hardened Glass Pane", $hardenedGlassBreakInfo));
+		$this->register(new Carpet(new BID(Ids::CARPET, 0), "Carpet", new BlockBreakInfo(0.1)));
+		$this->register(new Concrete(new BID(Ids::CONCRETE, 0), "Concrete", new BlockBreakInfo(1.8, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new ConcretePowder(new BID(Ids::CONCRETE_POWDER, 0), "Concrete Powder", new BlockBreakInfo(0.5, BlockToolType::SHOVEL)));
+		$this->register(new Wool(new BID(Ids::WOOL, 0), "Wool", new class(0.8, BlockToolType::SHEARS) extends BlockBreakInfo{
+			public function getBreakTime(Item $item) : float{
+				$time = parent::getBreakTime($item);
+				if($item->getBlockToolType() === BlockToolType::SHEARS){
+					$time *= 3; //shears break compatible blocks 15x faster, but wool 5x
+				}
 
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_ANDESITE), "Andesite Wall"));
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_BRICK), "Brick Wall"));
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_DIORITE), "Diorite Wall"));
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_END_STONE_BRICK), "End Stone Brick Wall"));
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_GRANITE), "Granite Wall"));
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_MOSSY_STONE_BRICK), "Mossy Stone Brick Wall"));
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_MOSSY_COBBLESTONE), "Mossy Cobblestone Wall"));
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_NETHER_BRICK), "Nether Brick Wall"));
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_COBBLESTONE), "Cobblestone Wall"));
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_PRISMARINE), "Prismarine Wall"));
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_RED_NETHER_BRICK), "Red Nether Brick Wall"));
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_RED_SANDSTONE), "Red Sandstone Wall"));
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_SANDSTONE), "Sandstone Wall"));
-		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_STONE_BRICK), "Stone Brick Wall"));
+				return $time;
+			}
+		}));
+
+		//TODO: in the future these won't all have the same hardness; they only do now because of the old metadata crap
+		$wallBreakInfo = new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_ANDESITE), "Andesite Wall", $wallBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_BRICK), "Brick Wall", $wallBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_DIORITE), "Diorite Wall", $wallBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_END_STONE_BRICK), "End Stone Brick Wall", $wallBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_GRANITE), "Granite Wall", $wallBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_MOSSY_STONE_BRICK), "Mossy Stone Brick Wall", $wallBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_MOSSY_COBBLESTONE), "Mossy Cobblestone Wall", $wallBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_NETHER_BRICK), "Nether Brick Wall", $wallBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_COBBLESTONE), "Cobblestone Wall", $wallBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_PRISMARINE), "Prismarine Wall", $wallBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_RED_NETHER_BRICK), "Red Nether Brick Wall", $wallBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_RED_SANDSTONE), "Red Sandstone Wall", $wallBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_SANDSTONE), "Sandstone Wall", $wallBreakInfo));
+		$this->register(new Wall(new BID(Ids::COBBLESTONE_WALL, Meta::WALL_STONE_BRICK), "Stone Brick Wall", $wallBreakInfo));
 
 		$this->registerElements();
 
@@ -481,28 +520,21 @@ class BlockFactory{
 
 		$this->registerMushroomBlocks();
 
-		foreach(CoralType::getAll() as $coralType){
-			$coralTypeId = CoralTypeIdMap::getInstance()->toId($coralType);
-			$coralTypeName = $coralType->getDisplayName();
-			$this->register(new Coral(
-				new BID(Ids::CORAL, $coralTypeId),
-				"$coralTypeName Coral",
-				BlockBreakInfo::instant(),
-				$coralType
-			));
-			$this->register(new FloorCoralFan(
-				new BlockIdentifierFlattened(Ids::CORAL_FAN, Ids::CORAL_FAN_DEAD, $coralTypeId, ItemIds::CORAL_FAN),
-				"$coralTypeName Coral Fan",
-				BlockBreakInfo::instant(),
-				$coralType
-			));
-			$this->register(new WallCoralFan(
-				BlockLegacyIdHelper::getWallCoralFanIdentifier($coralType),
-				"$coralTypeName Wall Coral Fan",
-				BlockBreakInfo::instant(),
-				$coralType
-			));
-		}
+		$this->register(new Coral(
+			new BID(Ids::CORAL, 0),
+			"Coral",
+			BlockBreakInfo::instant(),
+		));
+		$this->register(new FloorCoralFan(
+			new BlockIdentifierFlattened(Ids::CORAL_FAN, [Ids::CORAL_FAN_DEAD], 0, ItemIds::CORAL_FAN),
+			"Coral Fan",
+			BlockBreakInfo::instant(),
+		));
+		$this->register(new WallCoralFan(
+			new BlockIdentifierFlattened(Ids::CORAL_FAN_HANG, [Ids::CORAL_FAN_HANG2, Ids::CORAL_FAN_HANG3], 0, ItemIds::CORAL_FAN),
+			"Wall Coral Fan",
+			BlockBreakInfo::instant(),
+		));
 
 		//region --- auto-generated TODOs for bedrock-1.11.0 ---
 		//TODO: minecraft:bell
@@ -868,25 +900,29 @@ class BlockFactory{
 				$v = clone $block;
 				try{
 					$v->readStateFromData($id, $m);
-					if($v->getMeta() !== $m){
-						throw new InvalidBlockStateException("Corrupted meta"); //don't register anything that isn't the same when we read it back again
+					if($v->getFullId() !== $index){
+						//if the fullID comes back different, this is a broken state that we can't rely on; map it to default
+						throw new InvalidBlockStateException("Corrupted state");
 					}
-				}catch(InvalidBlockStateException $e){ //invalid property combination
+				}catch(InvalidBlockStateException $e){ //invalid property combination, fill the default state
+					$this->fillStaticArrays($index, $block);
 					continue;
 				}
 
 				$this->fillStaticArrays($index, $v);
 			}
-
-			if(!$this->isRegistered($id, $variant)){
-				$this->fillStaticArrays(($id << 4) | $variant, $block); //register default state mapped to variant, for blocks which don't use 0 as valid state
-			}
 		}
 	}
 
 	public function remap(int $id, int $meta, Block $block) : void{
+		$index = ($id << 4) | $meta;
 		if($this->isRegistered($id, $meta)){
-			throw new \InvalidArgumentException("$id:$meta is already mapped");
+			$existing = $this->fullList[$index];
+			if($existing !== null && $existing->getFullId() === $index){
+				throw new \InvalidArgumentException("$id:$meta is already mapped");
+			}else{
+				//if it's not a match, this was already remapped for some reason; remapping overwrites are OK
+			}
 		}
 		$this->fillStaticArrays(($id << 4) | $meta, $block);
 	}
@@ -923,7 +959,7 @@ class BlockFactory{
 		}
 
 		if($block === null){
-			$block = new UnknownBlock(new BID($id, $meta));
+			$block = new UnknownBlock(new BID($id, $meta), BlockBreakInfo::instant());
 		}
 
 		return $block;

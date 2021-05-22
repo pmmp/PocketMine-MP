@@ -1065,7 +1065,9 @@ class World implements ChunkManager{
 				}
 				$lightPopulatedState = $adjacentChunk->isLightPopulated();
 				if($lightPopulatedState !== true){
-					$this->orderLightPopulation($chunkX + $cx, $chunkZ + $cz);
+					if($lightPopulatedState === false){
+						$this->orderLightPopulation($chunkX + $cx, $chunkZ + $cz);
+					}
 					return false;
 				}
 			}
@@ -1076,7 +1078,6 @@ class World implements ChunkManager{
 
 	private function orderLightPopulation(int $chunkX, int $chunkZ) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		//TODO: this might need to be checked after adjacent chunks are loaded in future
 		$lightPopulatedState = $this->chunks[$chunkHash]->isLightPopulated();
 		if($lightPopulatedState === false){
 			$this->chunks[$chunkHash]->setLightPopulated(null);

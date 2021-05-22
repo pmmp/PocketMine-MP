@@ -34,10 +34,6 @@ class DoublePlant extends Flowable{
 	/** @var bool */
 	protected $top = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
-
 	protected function writeStateToMeta() : int{
 		return ($this->top ? BlockLegacyMetadata::DOUBLE_PLANT_FLAG_TOP : 0);
 	}

@@ -45,10 +45,6 @@ class TNT extends Opaque{
 	protected $unstable = false; //TODO: Usage unclear, seems to be a weird hack in vanilla
 	protected bool $worksUnderwater = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
-
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->unstable = ($stateMeta & BlockLegacyMetadata::TNT_FLAG_UNSTABLE) !== 0;
 		$this->worksUnderwater = ($stateMeta & BlockLegacyMetadata::TNT_FLAG_UNDERWATER) !== 0;

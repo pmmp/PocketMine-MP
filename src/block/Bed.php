@@ -50,8 +50,8 @@ class Bed extends Transparent{
 	/** @var DyeColor */
 	protected $color;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2));
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+		parent::__construct($idInfo, $name, $breakInfo);
 		$this->color = DyeColor::RED();
 	}
 

@@ -21,23 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\event\block;
 
-use pocketmine\item\Hoe;
-use pocketmine\item\Item;
-use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
-use pocketmine\player\Player;
+use pocketmine\block\Block;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 
-class CoarseDirt extends Dirt{
+/**
+ * @internal
+ */
+abstract class BaseBlockChangeEvent extends BlockEvent implements Cancellable{
+	use CancellableTrait;
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::UP and $item instanceof Hoe){
-			$item->applyDamage(1);
-			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::DIRT());
-			return true;
-		}
+	private Block $newState;
 
-		return false;
+	public function __construct(Block $block, Block $newState){
+		parent::__construct($block);
+		$this->newState = $newState;
+	}
+
+	public function getNewState() : Block{
+		return $this->newState;
 	}
 }

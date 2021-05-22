@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\RecordType;
 use pocketmine\block\utils\SkullType;
@@ -77,11 +78,11 @@ class ItemFactory{
 		$this->register(new Clock(new ItemIdentifier(ItemIds::CLOCK, 0), "Clock"));
 		$this->register(new Clownfish(new ItemIdentifier(ItemIds::CLOWNFISH, 0), "Clownfish"));
 		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 0), "Coal"));
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 0), VanillaBlocks::TUBE_CORAL_FAN(), VanillaBlocks::TUBE_WALL_CORAL_FAN()), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 1), VanillaBlocks::BRAIN_CORAL_FAN(), VanillaBlocks::BRAIN_WALL_CORAL_FAN()), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 2), VanillaBlocks::BUBBLE_CORAL_FAN(), VanillaBlocks::BUBBLE_WALL_CORAL_FAN()), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 3), VanillaBlocks::FIRE_CORAL_FAN(), VanillaBlocks::FIRE_WALL_CORAL_FAN()), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 4), VanillaBlocks::HORN_CORAL_FAN(), VanillaBlocks::HORN_WALL_CORAL_FAN()), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 0), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::TUBE()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::TUBE())), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 1), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::BRAIN()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::BRAIN())), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 2), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::BUBBLE()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::BUBBLE())), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 3), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::FIRE()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::FIRE())), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 4), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::HORN()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::HORN())), true);
 		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 1), "Charcoal"));
 		$this->register(new CocoaBeans(new ItemIdentifier(ItemIds::DYE, 3), "Cocoa Beans"));
 		$this->register(new Compass(new ItemIdentifier(ItemIds::COMPASS, 0), "Compass"));

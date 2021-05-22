@@ -29,10 +29,6 @@ use pocketmine\item\VanillaItems;
 
 class Cobweb extends Flowable{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(4.0, BlockToolType::SWORD | BlockToolType::SHEARS, 1));
-	}
-
 	public function hasEntityCollision() : bool{
 		return true;
 	}

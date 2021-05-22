@@ -35,9 +35,9 @@ class Wood extends Opaque{
 
 	private bool $stripped;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, bool $stripped, ?BlockBreakInfo $breakInfo = null){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, TreeType $treeType, bool $stripped){
 		$this->stripped = $stripped; //TODO: this should be dynamic, but right now legacy shit gets in the way
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::AXE));
+		parent::__construct($idInfo, $name, $breakInfo);
 		$this->treeType = $treeType;
 	}
 

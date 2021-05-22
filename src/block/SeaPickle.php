@@ -35,10 +35,6 @@ class SeaPickle extends Transparent{
 	/** @var bool */
 	protected $underwater = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
-
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->count = ($stateMeta & 0x03) + 1;
 		$this->underwater = ($stateMeta & BlockLegacyMetadata::SEA_PICKLE_FLAG_NOT_UNDERWATER) === 0;

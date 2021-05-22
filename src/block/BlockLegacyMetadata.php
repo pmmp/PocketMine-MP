@@ -69,6 +69,7 @@ final class BlockLegacyMetadata{
 
 	public const CORAL_FAN_EAST_WEST = 0;
 	public const CORAL_FAN_NORTH_SOUTH = 1;
+	public const CORAL_FAN_TYPE_MASK = 0x7;
 
 	public const CORAL_FAN_HANG_FLAG_DEAD = 0x2;
 
@@ -77,6 +78,7 @@ final class BlockLegacyMetadata{
 	public const CORAL_FAN_HANG2_BUBBLE = 0;
 	public const CORAL_FAN_HANG2_FIRE = 1;
 	public const CORAL_FAN_HANG3_HORN = 0;
+	public const CORAL_FAN_HANG_TYPE_MASK = 0x1;
 
 	public const CORAL_VARIANT_TUBE = 0;
 	public const CORAL_VARIANT_BRAIN = 1;
@@ -84,8 +86,7 @@ final class BlockLegacyMetadata{
 	public const CORAL_VARIANT_FIRE = 3;
 	public const CORAL_VARIANT_HORN = 4;
 
-	public const DIRT_NORMAL = 0;
-	public const DIRT_COARSE = 1;
+	public const DIRT_FLAG_COARSE = 0x1;
 
 	public const DOOR_FLAG_TOP = 0x08;
 	public const DOOR_BOTTOM_FLAG_OPEN = 0x04;
@@ -288,4 +289,6 @@ final class BlockLegacyMetadata{
 	public const WALL_PRISMARINE = 11;
 	public const WALL_RED_SANDSTONE = 12;
 	public const WALL_RED_NETHER_BRICK = 13;
+
+	public const WOOD_FLAG_STRIPPED = 0x8;
 }

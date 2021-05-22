@@ -25,7 +25,4 @@ namespace pocketmine\block;
 
 class WoodenDoor extends Door{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::AXE));
-	}
 }

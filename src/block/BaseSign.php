@@ -45,8 +45,8 @@ abstract class BaseSign extends Transparent{
 	/** @var int|null */
 	protected $editorEntityRuntimeId = null;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::AXE));
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+		parent::__construct($idInfo, $name, $breakInfo);
 		$this->text = new SignText();
 	}
 

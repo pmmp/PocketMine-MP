@@ -29,10 +29,6 @@ use pocketmine\block\utils\BlockDataSerializer;
 class RedstoneWire extends Flowable{
 	use AnalogRedstoneSignalEmitterTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
-
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->signalStrength = BlockDataSerializer::readBoundedInt("signalStrength", $stateMeta, 0, 15);
 	}

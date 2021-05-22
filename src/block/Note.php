@@ -33,10 +33,6 @@ class Note extends Opaque{
 	/** @var int */
 	private $pitch = self::MIN_PITCH;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.8, BlockToolType::AXE));
-	}
-
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		$tile = $this->pos->getWorld()->getTile($this->pos);

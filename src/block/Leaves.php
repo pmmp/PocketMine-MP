@@ -45,8 +45,8 @@ class Leaves extends Transparent{
 	/** @var bool */
 	protected $checkDecay = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::SHEARS));
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, TreeType $treeType){
+		parent::__construct($idInfo, $name, $breakInfo);
 		$this->treeType = $treeType;
 	}
 

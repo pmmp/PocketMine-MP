@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "04e955ce26ffda03098344659abcf0e0",
+    "content-hash": "7e519325ae271d7d2c56a481a64b8d44",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -321,25 +321,25 @@
         },
         {
             "name": "pocketmine/binaryutils",
-            "version": "dev-master",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "5959ad1259341fceeed080704a0c5a91ed5a8049"
+                "reference": "595c4ca4b8056777729c8cc5db9614c731eaf63b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/5959ad1259341fceeed080704a0c5a91ed5a8049",
-                "reference": "5959ad1259341fceeed080704a0c5a91ed5a8049",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/595c4ca4b8056777729c8cc5db9614c731eaf63b",
+                "reference": "595c4ca4b8056777729c8cc5db9614c731eaf63b",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2 || ^8.0",
+                "php": "^7.4 || ^8.0",
                 "php-64bit": "*"
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.67",
+                "phpstan/phpstan": "0.12.85",
                 "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
@@ -355,9 +355,9 @@
             "description": "Classes and methods for conveniently handling binary data",
             "support": {
                 "issues": "https://github.com/pmmp/BinaryUtils/issues",
-                "source": "https://github.com/pmmp/BinaryUtils/tree/master"
+                "source": "https://github.com/pmmp/BinaryUtils/tree/0.2.0"
             },
-            "time": "2021-01-15T14:19:25+00:00"
+            "time": "2021-05-18T15:23:45+00:00"
         },
         {
             "name": "pocketmine/callback-validator",
@@ -532,26 +532,26 @@
         },
         {
             "name": "pocketmine/log",
-            "version": "dev-master",
+            "version": "0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Log.git",
-                "reference": "2b514ca0a3143e1d5dbfa30bdf9f7497611bbbda"
+                "reference": "03ab1316da0b1978a7a1c8dd73e1c2a973cb62ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Log/zipball/2b514ca0a3143e1d5dbfa30bdf9f7497611bbbda",
-                "reference": "2b514ca0a3143e1d5dbfa30bdf9f7497611bbbda",
+                "url": "https://api.github.com/repos/pmmp/Log/zipball/03ab1316da0b1978a7a1c8dd73e1c2a973cb62ec",
+                "reference": "03ab1316da0b1978a7a1c8dd73e1c2a973cb62ec",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2 || ^8.0"
+                "php": "^7.4 || ^8.0"
             },
             "conflict": {
                 "pocketmine/spl": "<0.4"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.67",
+                "phpstan/phpstan": "0.12.80",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
@@ -567,35 +567,35 @@
             "description": "Logging components used by PocketMine-MP and related projects",
             "support": {
                 "issues": "https://github.com/pmmp/Log/issues",
-                "source": "https://github.com/pmmp/Log/tree/master"
+                "source": "https://github.com/pmmp/Log/tree/0.3.0"
             },
-            "time": "2021-01-15T14:33:25+00:00"
+            "time": "2021-05-18T21:00:49+00:00"
         },
         {
             "name": "pocketmine/log-pthreads",
-            "version": "dev-master",
+            "version": "0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/LogPthreads.git",
-                "reference": "271ff55ee7cba80b9368d924f3a4c6093a2577fb"
+                "reference": "6be3445c48c62eba3922f987f000bb20c81d161f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/271ff55ee7cba80b9368d924f3a4c6093a2577fb",
-                "reference": "271ff55ee7cba80b9368d924f3a4c6093a2577fb",
+                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/6be3445c48c62eba3922f987f000bb20c81d161f",
+                "reference": "6be3445c48c62eba3922f987f000bb20c81d161f",
                 "shasum": ""
             },
             "require": {
                 "ext-pthreads": "~3.2.0",
-                "php": "^7.2 || ^8.0",
-                "pocketmine/log": "^0.2.0 || dev-master"
+                "php": "^7.4 || ^8.0",
+                "pocketmine/log": "^0.2.0 || ^0.3.0"
             },
             "conflict": {
                 "pocketmine/spl": "<0.4"
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.71",
+                "phpstan/phpstan": "0.12.88",
                 "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
@@ -611,9 +611,9 @@
             "description": "Logging components specialized for pthreads used by PocketMine-MP and related projects",
             "support": {
                 "issues": "https://github.com/pmmp/LogPthreads/issues",
-                "source": "https://github.com/pmmp/LogPthreads/tree/master"
+                "source": "https://github.com/pmmp/LogPthreads/tree/0.2.0"
             },
-            "time": "2021-02-04T16:22:31+00:00"
+            "time": "2021-05-18T22:15:28+00:00"
         },
         {
             "name": "pocketmine/math",
@@ -658,25 +658,25 @@
         },
         {
             "name": "pocketmine/nbt",
-            "version": "dev-master",
+            "version": "0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "34bc0cb2f0cc9553ca1a34c5d9d008f914959dd8"
+                "reference": "98c4a04b55a915e18f83d3b0c9beb24a71abcd31"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/34bc0cb2f0cc9553ca1a34c5d9d008f914959dd8",
-                "reference": "34bc0cb2f0cc9553ca1a34c5d9d008f914959dd8",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/98c4a04b55a915e18f83d3b0c9beb24a71abcd31",
+                "reference": "98c4a04b55a915e18f83d3b0c9beb24a71abcd31",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2 || ^8.0",
+                "php": "^7.4 || ^8.0",
                 "php-64bit": "*",
-                "pocketmine/binaryutils": "dev-master"
+                "pocketmine/binaryutils": "^0.2.0"
             },
             "require-dev": {
-                "irstea/phpunit-shim": "^7.5 || ^8.0",
+                "irstea/phpunit-shim": "^9.5",
                 "phpstan/extension-installer": "^1.0",
                 "phpstan/phpstan": "0.12.85",
                 "phpstan/phpstan-strict-rules": "^0.12.4"
@@ -694,22 +694,22 @@
             "description": "PHP library for working with Named Binary Tags",
             "support": {
                 "issues": "https://github.com/pmmp/NBT/issues",
-                "source": "https://github.com/pmmp/NBT/tree/master"
+                "source": "https://github.com/pmmp/NBT/tree/0.3.0"
             },
-            "time": "2021-05-05T18:39:10+00:00"
+            "time": "2021-05-18T15:46:33+00:00"
         },
         {
             "name": "pocketmine/raklib",
-            "version": "dev-master",
+            "version": "0.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "6c83e0f50e71f654cf24a7d883ee0561e269483a"
+                "reference": "0b2b84f894adebe6a746237f9cc36d80cc4227ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/6c83e0f50e71f654cf24a7d883ee0561e269483a",
-                "reference": "6c83e0f50e71f654cf24a7d883ee0561e269483a",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/0b2b84f894adebe6a746237f9cc36d80cc4227ab",
+                "reference": "0b2b84f894adebe6a746237f9cc36d80cc4227ab",
                 "shasum": ""
             },
             "require": {
@@ -717,11 +717,11 @@
                 "php": "^7.4 || ^8.0",
                 "php-64bit": "*",
                 "php-ipv6": "*",
-                "pocketmine/binaryutils": "dev-master",
-                "pocketmine/log": "dev-master"
+                "pocketmine/binaryutils": "^0.2.0",
+                "pocketmine/log": "^0.3.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.85",
+                "phpstan/phpstan": "0.12.88",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
@@ -737,35 +737,34 @@
             "description": "A RakNet server implementation written in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/master"
+                "source": "https://github.com/pmmp/RakLib/tree/0.13.1"
             },
-            "time": "2021-05-08T19:24:13+00:00"
+            "time": "2021-05-18T21:14:20+00:00"
         },
         {
             "name": "pocketmine/raklib-ipc",
-            "version": "dev-master",
+            "version": "0.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLibIpc.git",
-                "reference": "cde9f0d0c0a742684ea44cbbc94e8aca97e693cc"
+                "reference": "85f1a4834e34abd6d77f622f14731e8ef06dc7cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLibIpc/zipball/cde9f0d0c0a742684ea44cbbc94e8aca97e693cc",
-                "reference": "cde9f0d0c0a742684ea44cbbc94e8aca97e693cc",
+                "url": "https://api.github.com/repos/pmmp/RakLibIpc/zipball/85f1a4834e34abd6d77f622f14731e8ef06dc7cf",
+                "reference": "85f1a4834e34abd6d77f622f14731e8ef06dc7cf",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4 || ^8.0",
                 "php-64bit": "*",
-                "pocketmine/binaryutils": "dev-master",
-                "pocketmine/raklib": "dev-master"
+                "pocketmine/binaryutils": "^0.2.0",
+                "pocketmine/raklib": "^0.13.1"
             },
             "require-dev": {
                 "phpstan/phpstan": "0.12.81",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -779,9 +778,9 @@
             "description": "Channel-based protocols for inter-thread/inter-process communication with RakLib",
             "support": {
                 "issues": "https://github.com/pmmp/RakLibIpc/issues",
-                "source": "https://github.com/pmmp/RakLibIpc/tree/master"
+                "source": "https://github.com/pmmp/RakLibIpc/tree/0.1.0"
             },
-            "time": "2021-05-05T20:36:08+00:00"
+            "time": "2021-05-18T21:19:03+00:00"
         },
         {
             "name": "pocketmine/snooze",
@@ -1835,16 +1834,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.86",
+            "version": "0.12.88",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "a84fdc53ecca7643dbc89ef8880d8b393a6c155a"
+                "reference": "464d1a81af49409c41074aa6640ed0c4cbd9bb68"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/a84fdc53ecca7643dbc89ef8880d8b393a6c155a",
-                "reference": "a84fdc53ecca7643dbc89ef8880d8b393a6c155a",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/464d1a81af49409c41074aa6640ed0c4cbd9bb68",
+                "reference": "464d1a81af49409c41074aa6640ed0c4cbd9bb68",
                 "shasum": ""
             },
             "require": {
@@ -1875,7 +1874,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/0.12.86"
+                "source": "https://github.com/phpstan/phpstan/tree/0.12.88"
             },
             "funding": [
                 {
@@ -1891,7 +1890,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-05-08T11:29:01+00:00"
+            "time": "2021-05-17T12:24:49+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -3496,14 +3495,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "pocketmine/binaryutils": 20,
         "pocketmine/classloader": 20,
-        "pocketmine/log": 20,
-        "pocketmine/log-pthreads": 20,
         "pocketmine/math": 20,
-        "pocketmine/nbt": 20,
-        "pocketmine/raklib": 20,
-        "pocketmine/raklib-ipc": 20,
         "pocketmine/spl": 20
     },
     "prefer-stable": false,

@@ -37,10 +37,6 @@ use pocketmine\world\BlockTransaction;
 class Ladder extends Transparent{
 	use NormalHorizontalFacingInMetadataTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.4, BlockToolType::AXE));
-	}
-
 	public function hasEntityCollision() : bool{
 		return true;
 	}
