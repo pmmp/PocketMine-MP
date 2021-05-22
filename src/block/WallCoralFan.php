@@ -42,9 +42,10 @@ final class WallCoralFan extends BaseCoral{
 	use HorizontalFacingTrait;
 
 	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	protected $idInfoFlattened;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
@@ -54,13 +55,13 @@ final class WallCoralFan extends BaseCoral{
 
 		$coralTypeFlag = $stateMeta & BlockLegacyMetadata::CORAL_FAN_HANG_TYPE_MASK;
 		switch($id){
-			case $this->idInfo->getBlockId():
+			case $this->idInfoFlattened->getBlockId():
 				$this->coralType = $coralTypeFlag === BlockLegacyMetadata::CORAL_FAN_HANG_TUBE ? CoralType::TUBE() : CoralType::BRAIN();
 				break;
-			case $this->idInfo->getAdditionalId(0):
+			case $this->idInfoFlattened->getAdditionalId(0):
 				$this->coralType = $coralTypeFlag === BlockLegacyMetadata::CORAL_FAN_HANG2_BUBBLE ? CoralType::BUBBLE() : CoralType::FIRE();
 				break;
-			case $this->idInfo->getAdditionalId(1):
+			case $this->idInfoFlattened->getAdditionalId(1):
 				if($coralTypeFlag !== BlockLegacyMetadata::CORAL_FAN_HANG3_HORN){
 					throw new InvalidBlockStateException("Invalid CORAL_FAN_HANG3 type");
 				}
@@ -73,11 +74,11 @@ final class WallCoralFan extends BaseCoral{
 
 	public function getId() : int{
 		if($this->coralType->equals(CoralType::TUBE()) || $this->coralType->equals(CoralType::BRAIN())){
-			return $this->idInfo->getBlockId();
+			return $this->idInfoFlattened->getBlockId();
 		}elseif($this->coralType->equals(CoralType::BUBBLE()) || $this->coralType->equals(CoralType::FIRE())){
-			return $this->idInfo->getAdditionalId(0);
+			return $this->idInfoFlattened->getAdditionalId(0);
 		}elseif($this->coralType->equals(CoralType::HORN())){
-			return $this->idInfo->getAdditionalId(1);
+			return $this->idInfoFlattened->getAdditionalId(1);
 		}
 		throw new AssumptionFailedError("All types of coral should be covered");
 	}

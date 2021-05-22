@@ -40,7 +40,7 @@ use function min;
 
 abstract class Liquid extends Transparent{
 	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	protected $idInfoFlattened;
 
 	/** @var int */
 	public $adjacentSources = 0;
@@ -63,11 +63,12 @@ abstract class Liquid extends Transparent{
 	protected $still = false;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->still ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->still ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	protected function writeStateToMeta() : int{
@@ -77,7 +78,7 @@ abstract class Liquid extends Transparent{
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->decay = BlockDataSerializer::readBoundedInt("decay", $stateMeta & 0x07, 0, 7);
 		$this->falling = ($stateMeta & BlockLegacyMetadata::LIQUID_FLAG_FALLING) !== 0;
-		$this->still = $id === $this->idInfo->getSecondId();
+		$this->still = $id === $this->idInfoFlattened->getSecondId();
 	}
 
 	public function getStateBitmask() : int{

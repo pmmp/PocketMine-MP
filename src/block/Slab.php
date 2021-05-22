@@ -33,18 +33,19 @@ use pocketmine\world\BlockTransaction;
 
 class Slab extends Transparent{
 	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	protected $idInfoFlattened;
 
 	/** @var SlabType */
 	protected $slabType;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
 		parent::__construct($idInfo, $name . " Slab", $breakInfo);
 		$this->slabType = SlabType::BOTTOM();
 	}
 
 	public function getId() : int{
-		return $this->slabType->equals(SlabType::DOUBLE()) ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->slabType->equals(SlabType::DOUBLE()) ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	protected function writeStateToMeta() : int{
@@ -55,7 +56,7 @@ class Slab extends Transparent{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		if($id === $this->idInfo->getSecondId()){
+		if($id === $this->idInfoFlattened->getSecondId()){
 			$this->slabType = SlabType::DOUBLE();
 		}else{
 			$this->slabType = ($stateMeta & BlockLegacyMetadata::SLAB_FLAG_UPPER) !== 0 ? SlabType::TOP() : SlabType::BOTTOM();

@@ -37,22 +37,23 @@ class Furnace extends Opaque{
 	}
 
 	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	protected $idInfoFlattened;
 
 	/** @var bool */
 	protected $lit = false; //this is set based on the blockID
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->lit ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->lit ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->readFacingStateFromData($id, $stateMeta);
-		$this->lit = $id === $this->idInfo->getSecondId();
+		$this->lit = $id === $this->idInfoFlattened->getSecondId();
 	}
 
 	public function getLightLevel() : int{
