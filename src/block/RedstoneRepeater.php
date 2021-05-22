@@ -37,11 +37,9 @@ class RedstoneRepeater extends Flowable{
 	use HorizontalFacingTrait;
 	use PoweredByRedstoneTrait;
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfoFlattened;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	/** @var int */
-	protected $delay = 1;
+	protected int $delay = 1;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->idInfoFlattened = $idInfo;

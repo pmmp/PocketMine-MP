@@ -36,8 +36,7 @@ use pocketmine\world\BlockTransaction;
 
 class Cake extends Transparent implements FoodSource{
 
-	/** @var int */
-	protected $bites = 0;
+	protected int $bites = 0;
 
 	protected function writeStateToMeta() : int{
 		return $this->bites;

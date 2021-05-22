@@ -25,11 +25,9 @@ namespace pocketmine\block;
 
 class RedstoneTorch extends Torch{
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfoFlattened;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	/** @var bool */
-	protected $lit = true;
+	protected bool $lit = true;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->idInfoFlattened = $idInfo;

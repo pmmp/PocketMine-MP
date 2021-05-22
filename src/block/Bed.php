@@ -43,12 +43,9 @@ use pocketmine\world\World;
 class Bed extends Transparent{
 	use HorizontalFacingTrait;
 
-	/** @var bool */
-	protected $occupied = false;
-	/** @var bool */
-	protected $head = false;
-	/** @var DyeColor */
-	protected $color;
+	protected bool $occupied = false;
+	protected bool $head = false;
+	protected DyeColor $color;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		parent::__construct($idInfo, $name, $breakInfo);

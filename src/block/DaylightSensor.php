@@ -38,11 +38,9 @@ use const M_PI;
 class DaylightSensor extends Transparent{
 	use AnalogRedstoneSignalEmitterTrait;
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfoFlattened;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	/** @var bool */
-	protected $inverted = false;
+	protected bool $inverted = false;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->idInfoFlattened = $idInfo;

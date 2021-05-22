@@ -41,8 +41,7 @@ use const M_PI;
 
 class TNT extends Opaque{
 
-	/** @var bool */
-	protected $unstable = false; //TODO: Usage unclear, seems to be a weird hack in vanilla
+	protected bool $unstable = false; //TODO: Usage unclear, seems to be a weird hack in vanilla
 	protected bool $worksUnderwater = false;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{

@@ -36,7 +36,7 @@ class BrewingStand extends Transparent{
 	 * @var BrewingStandSlot[]
 	 * @phpstan-var array<int, BrewingStandSlot>
 	 */
-	protected $slots = [];
+	protected array $slots = [];
 
 	protected function writeStateToMeta() : int{
 		$flags = 0;

@@ -25,8 +25,7 @@ namespace pocketmine\block;
 
 class Sponge extends Opaque{
 
-	/** @var bool */
-	protected $wet = false;
+	protected bool $wet = false;
 
 	protected function writeStateToMeta() : int{
 		return $this->wet ? BlockLegacyMetadata::SPONGE_FLAG_WET : 0;

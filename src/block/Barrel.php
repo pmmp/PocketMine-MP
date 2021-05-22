@@ -36,8 +36,7 @@ use function abs;
 class Barrel extends Opaque{
 	use AnyFacingTrait;
 
-	/** @var bool */
-	protected $open = false;
+	protected bool $open = false;
 
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::writeFacing($this->facing) | ($this->open ? BlockLegacyMetadata::BARREL_FLAG_OPEN : 0);

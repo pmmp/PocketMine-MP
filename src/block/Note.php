@@ -30,8 +30,7 @@ class Note extends Opaque{
 	public const MIN_PITCH = 0;
 	public const MAX_PITCH = 24;
 
-	/** @var int */
-	private $pitch = self::MIN_PITCH;
+	private int $pitch = self::MIN_PITCH;
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();

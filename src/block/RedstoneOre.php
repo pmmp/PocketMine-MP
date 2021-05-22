@@ -30,11 +30,10 @@ use pocketmine\player\Player;
 use function mt_rand;
 
 class RedstoneOre extends Opaque{
-	/** @var BlockIdentifierFlattened */
-	protected $idInfoFlattened;
 
-	/** @var bool */
-	protected $lit = false;
+	protected BlockIdentifierFlattened $idInfoFlattened;
+
+	protected bool $lit = false;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->idInfoFlattened = $idInfo;

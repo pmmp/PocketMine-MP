@@ -36,8 +36,8 @@ use function atan2;
 use function rad2deg;
 
 final class FloorCoralFan extends BaseCoral{
-	/** @var BlockIdentifierFlattened */
-	protected $idInfoFlattened;
+
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
 	private int $axis = Axis::X;
 

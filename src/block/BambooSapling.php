@@ -32,8 +32,7 @@ use pocketmine\world\BlockTransaction;
 
 final class BambooSapling extends Flowable{
 
-	/** @var bool */
-	private $ready = false;
+	private bool $ready = false;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->ready = ($stateMeta & BlockLegacyMetadata::SAPLING_FLAG_READY) !== 0;

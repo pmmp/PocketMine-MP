@@ -41,8 +41,7 @@ use pocketmine\world\BlockTransaction;
 final class WallCoralFan extends BaseCoral{
 	use HorizontalFacingTrait;
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfoFlattened;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->idInfoFlattened = $idInfo;

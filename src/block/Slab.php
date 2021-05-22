@@ -32,11 +32,10 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Slab extends Transparent{
-	/** @var BlockIdentifierFlattened */
-	protected $idInfoFlattened;
 
-	/** @var SlabType */
-	protected $slabType;
+	protected BlockIdentifierFlattened $idInfoFlattened;
+
+	protected SlabType $slabType;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->idInfoFlattened = $idInfo;

@@ -41,11 +41,9 @@ class RedstoneComparator extends Flowable{
 	use AnalogRedstoneSignalEmitterTrait;
 	use PoweredByRedstoneTrait;
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfoFlattened;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	/** @var bool */
-	protected $isSubtractMode = false;
+	protected bool $isSubtractMode = false;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->idInfoFlattened = $idInfo;

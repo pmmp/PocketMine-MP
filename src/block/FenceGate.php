@@ -36,10 +36,8 @@ use pocketmine\world\sound\DoorSound;
 class FenceGate extends Transparent{
 	use HorizontalFacingTrait;
 
-	/** @var bool */
-	protected $open = false;
-	/** @var bool */
-	protected $inWall = false;
+	protected bool $open = false;
+	protected bool $inWall = false;
 
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |
