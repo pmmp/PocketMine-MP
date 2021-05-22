@@ -529,11 +529,17 @@ use function assert;
  * @method static Slab STONE_SLAB()
  * @method static Stair STONE_STAIRS()
  * @method static Log STRIPPED_ACACIA_LOG()
+ * @method static Wood STRIPPED_ACACIA_WOOD()
  * @method static Log STRIPPED_BIRCH_LOG()
+ * @method static Wood STRIPPED_BIRCH_WOOD()
  * @method static Log STRIPPED_DARK_OAK_LOG()
+ * @method static Wood STRIPPED_DARK_OAK_WOOD()
  * @method static Log STRIPPED_JUNGLE_LOG()
+ * @method static Wood STRIPPED_JUNGLE_WOOD()
  * @method static Log STRIPPED_OAK_LOG()
+ * @method static Wood STRIPPED_OAK_WOOD()
  * @method static Log STRIPPED_SPRUCE_LOG()
+ * @method static Wood STRIPPED_SPRUCE_WOOD()
  * @method static Sugarcane SUGARCANE()
  * @method static DoublePlant SUNFLOWER()
  * @method static TallGrass TALL_GRASS()
@@ -1082,11 +1088,17 @@ final class VanillaBlocks{
 		self::register("stone_slab", $factory->get(421, 2));
 		self::register("stone_stairs", $factory->get(435, 0));
 		self::register("stripped_acacia_log", $factory->get(263, 0));
+		self::register("stripped_acacia_wood", $factory->get(467, 12));
 		self::register("stripped_birch_log", $factory->get(261, 0));
+		self::register("stripped_birch_wood", $factory->get(467, 10));
 		self::register("stripped_dark_oak_log", $factory->get(264, 0));
+		self::register("stripped_dark_oak_wood", $factory->get(467, 13));
 		self::register("stripped_jungle_log", $factory->get(262, 0));
+		self::register("stripped_jungle_wood", $factory->get(467, 11));
 		self::register("stripped_oak_log", $factory->get(265, 0));
+		self::register("stripped_oak_wood", $factory->get(467, 8));
 		self::register("stripped_spruce_log", $factory->get(260, 0));
+		self::register("stripped_spruce_wood", $factory->get(467, 9));
 		self::register("sugarcane", $factory->get(83, 0));
 		self::register("sunflower", $factory->get(175, 0));
 		self::register("tall_grass", $factory->get(31, 1));

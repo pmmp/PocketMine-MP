@@ -289,4 +289,6 @@ final class BlockLegacyMetadata{
 	public const WALL_PRISMARINE = 11;
 	public const WALL_RED_SANDSTONE = 12;
 	public const WALL_RED_NETHER_BRICK = 13;
+
+	public const WOOD_FLAG_STRIPPED = 0x8;
 }
