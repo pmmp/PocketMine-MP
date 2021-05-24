@@ -29,6 +29,9 @@ use pocketmine\network\mcpe\NetworkSession;
 
 class SetDisplayObjectivePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_DISPLAY_OBJECTIVE_PACKET;
+	
+	public const SORT_ORDER_ASCENDING = 0;
+	public const SORT_ORDER_DESCENDING = 1;
 
 	/** @var string */
 	public $displaySlot;
