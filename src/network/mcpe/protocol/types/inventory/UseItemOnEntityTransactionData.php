@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class UseItemOnEntityTransactionData extends TransactionData{
 	public const ACTION_INTERACT = 0;
 	public const ACTION_ATTACK = 1;
+	public const ACTION_ITEM_INTERACT = 2;
 
 	/** @var int */
 	private $entityRuntimeId;

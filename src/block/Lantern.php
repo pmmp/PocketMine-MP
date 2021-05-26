@@ -33,8 +33,7 @@ use pocketmine\world\BlockTransaction;
 
 class Lantern extends Transparent{
 
-	/** @var bool */
-	protected $hanging = false;
+	protected bool $hanging = false;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->hanging = ($stateMeta & BlockLegacyMetadata::LANTERN_FLAG_HANGING) !== 0;

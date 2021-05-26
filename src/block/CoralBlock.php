@@ -31,11 +31,8 @@ use function mt_rand;
 
 final class CoralBlock extends Opaque{
 
-	/** @var CoralType */
-	private $coralType; //TODO: make this dynamic via setter
-
-	/** @var bool */
-	private $dead = false;
+	private CoralType $coralType;
+	private bool $dead = false;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->coralType = CoralType::TUBE();
@@ -64,6 +61,12 @@ final class CoralBlock extends Opaque{
 	}
 
 	public function getCoralType() : CoralType{ return $this->coralType; }
+
+	/** @return $this */
+	public function setCoralType(CoralType $coralType) : self{
+		$this->coralType = $coralType;
+		return $this;
+	}
 
 	public function isDead() : bool{ return $this->dead; }
 

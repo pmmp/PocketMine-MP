@@ -25,23 +25,22 @@ namespace pocketmine\block;
 
 class RedstoneTorch extends Torch{
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	/** @var bool */
-	protected $lit = true;
+	protected bool $lit = true;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name){
-		parent::__construct($idInfo, $name);
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->lit ? parent::getId() : $this->idInfo->getSecondId();
+		return $this->lit ? parent::getId() : $this->idInfoFlattened->getSecondId();
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		parent::readStateFromData($id, $stateMeta);
-		$this->lit = $id !== $this->idInfo->getSecondId();
+		$this->lit = $id !== $this->idInfoFlattened->getSecondId();
 	}
 
 	public function isLit() : bool{

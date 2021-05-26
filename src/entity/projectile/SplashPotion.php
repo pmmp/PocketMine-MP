@@ -150,6 +150,7 @@ class SplashPotion extends Throwable{
 
 	public function setPotionId(int $id) : void{
 		$this->potionId = $id; //TODO: validation
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -164,6 +165,7 @@ class SplashPotion extends Throwable{
 	 */
 	public function setLinger(bool $value = true) : void{
 		$this->linger = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**

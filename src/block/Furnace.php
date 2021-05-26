@@ -24,43 +24,34 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Furnace as TileFurnace;
-use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
+use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
-use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 
 class Furnace extends Opaque{
-	use HorizontalFacingTrait;
+	use FacesOppositePlacingPlayerTrait;
+	use NormalHorizontalFacingInMetadataTrait {
+		readStateFromData as readFacingStateFromData;
+	}
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	/** @var bool */
-	protected $lit = false; //this is set based on the blockID
+	protected bool $lit = false; //this is set based on the blockID
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->lit ? $this->idInfo->getSecondId() : parent::getId();
-	}
-
-	protected function writeStateToMeta() : int{
-		return BlockDataSerializer::writeHorizontalFacing($this->facing);
+		return $this->lit ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
-		$this->lit = $id === $this->idInfo->getSecondId();
-	}
-
-	public function getStateBitmask() : int{
-		return 0b111;
+		$this->readFacingStateFromData($id, $stateMeta);
+		$this->lit = $id === $this->idInfoFlattened->getSecondId();
 	}
 
 	public function getLightLevel() : int{
@@ -77,14 +68,6 @@ class Furnace extends Opaque{
 	public function setLit(bool $lit = true) : self{
 		$this->lit = $lit;
 		return $this;
-	}
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($player !== null){
-			$this->facing = Facing::opposite($player->getHorizontalFacing());
-		}
-
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

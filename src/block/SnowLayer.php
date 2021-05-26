@@ -27,7 +27,6 @@ use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -40,12 +39,7 @@ use function max;
 class SnowLayer extends Flowable implements Fallable{
 	use FallableTrait;
 
-	/** @var int */
-	protected $layers = 1;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.1, BlockToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel()));
-	}
+	protected int $layers = 1;
 
 	protected function writeStateToMeta() : int{
 		return $this->layers - 1;

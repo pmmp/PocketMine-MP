@@ -21,23 +21,30 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\inventory;
 
-use pocketmine\item\Hoe;
-use pocketmine\item\Item;
-use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\player\Player;
+use pocketmine\world\Position;
 
-class CoarseDirt extends Dirt{
+final class LoomInventory extends SimpleInventory implements BlockInventory{
+	use BlockInventoryTrait;
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::UP and $item instanceof Hoe){
-			$item->applyDamage(1);
-			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::DIRT());
-			return true;
+	public const SLOT_BANNER = 0;
+	public const SLOT_DYE = 1;
+	public const SLOT_PATTERN = 2;
+
+	public function __construct(Position $holder, int $size = 3){
+		$this->holder = $holder;
+		parent::__construct($size);
+	}
+
+	public function onClose(Player $who) : void{
+		parent::onClose($who);
+
+		foreach($this->getContents() as $item){
+			$who->dropItem($item);
 		}
-
-		return false;
+		$this->clearAll();
 	}
 }

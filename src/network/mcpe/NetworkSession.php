@@ -59,7 +59,6 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
-use pocketmine\network\mcpe\protocol\GarbageServerboundPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
@@ -102,6 +101,7 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
+use pocketmine\player\UsedChunkStatus;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -375,10 +375,6 @@ class NetworkSession{
 	 */
 	public function handleDataPacket(Packet $packet, string $buffer) : void{
 		if(!($packet instanceof ServerboundPacket)){
-			if($packet instanceof GarbageServerboundPacket){
-				$this->logger->debug("Garbage serverbound " . $packet->getName() . ": " . base64_encode($buffer));
-				return;
-			}
 			throw new PacketHandlingException("Unexpected non-serverbound packet");
 		}
 
@@ -914,8 +910,20 @@ class NetworkSession{
 		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ)->onResolve(
 
 			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
-			function(CompressBatchPromise $promise) use ($world, $onCompletion) : void{
+			function(CompressBatchPromise $promise) use ($world, $onCompletion, $chunkX, $chunkZ) : void{
 				if(!$this->isConnected()){
+					return;
+				}
+				$currentWorld = $this->player->getLocation()->getWorld();
+				if($world !== $currentWorld or ($status = $this->player->getUsedChunkStatus($chunkX, $chunkZ)) === null){
+					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
+					return;
+				}
+				if(!$status->equals(UsedChunkStatus::REQUESTED())){
+					//TODO: make this an error
+					//this could be triggered due to the shitty way that chunk resends are handled
+					//right now - not because of the spammy re-requesting, but because the chunk status reverts
+					//to NEEDED if they want to be resent.
 					return;
 				}
 				$world->timings->syncChunkSend->startTiming();
@@ -934,11 +942,13 @@ class NetworkSession{
 	}
 
 	public function onEnterWorld() : void{
-		$world = $this->player->getWorld();
-		$this->syncWorldTime($world->getTime());
-		$this->syncWorldDifficulty($world->getDifficulty());
-		//TODO: weather needs to be synced here (when implemented)
-		//TODO: world spawn needs to be synced here
+		if($this->player !== null){
+			$world = $this->player->getWorld();
+			$this->syncWorldTime($world->getTime());
+			$this->syncWorldDifficulty($world->getDifficulty());
+			//TODO: weather needs to be synced here (when implemented)
+			//TODO: world spawn needs to be synced here
+		}
 	}
 
 	public function syncWorldTime(int $worldTime) : void{
@@ -955,12 +965,16 @@ class NetworkSession{
 
 	/**
 	 * TODO: expand this to more than just humans
-	 * TODO: offhand
 	 */
-	public function onMobEquipmentChange(Human $mob) : void{
+	public function onMobMainHandItemChange(Human $mob) : void{
 		//TODO: we could send zero for slot here because remote players don't need to know which slot was selected
 		$inv = $mob->getInventory();
 		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItemInHand())), $inv->getHeldItemIndex(), ContainerIds::INVENTORY));
+	}
+
+	public function onMobOffHandItemChange(Human $mob) : void{
+		$inv = $mob->getOffHandInventory();
+		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItem(0))), 0, ContainerIds::OFFHAND));
 	}
 
 	public function onMobArmorChange(Living $mob) : void{

@@ -23,20 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\item\ToolTier;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
 class Wall extends Transparent{
 
 	/** @var int[] facing => facing */
-	protected $connections = [];
-	/** @var bool */
-	protected $up = false;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0));
-	}
+	protected array $connections = [];
+	protected bool $up = false;
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();

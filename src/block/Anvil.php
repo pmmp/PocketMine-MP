@@ -29,7 +29,6 @@ use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -40,12 +39,7 @@ class Anvil extends Transparent implements Fallable{
 	use FallableTrait;
 	use HorizontalFacingTrait;
 
-	/** @var int */
-	private $damage = 0;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0));
-	}
+	private int $damage = 0;
 
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->damage << 2);

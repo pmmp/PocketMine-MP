@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function array_key_exists;
@@ -37,11 +36,7 @@ class BrewingStand extends Transparent{
 	 * @var BrewingStandSlot[]
 	 * @phpstan-var array<int, BrewingStandSlot>
 	 */
-	protected $slots = [];
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
-	}
+	protected array $slots = [];
 
 	protected function writeStateToMeta() : int{
 		$flags = 0;

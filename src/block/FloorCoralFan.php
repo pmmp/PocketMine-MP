@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\CoralType;
+use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -36,22 +36,28 @@ use function atan2;
 use function rad2deg;
 
 final class FloorCoralFan extends BaseCoral{
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
 	private int $axis = Axis::X;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo, CoralType $coralType){
-		parent::__construct($idInfo, $name, $breakInfo, $coralType);
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->dead = $id === $this->idInfo->getSecondId();
+		$this->dead = $id === $this->idInfoFlattened->getSecondId();
 		$this->axis = ($stateMeta >> 3) === BlockLegacyMetadata::CORAL_FAN_EAST_WEST ? Axis::X : Axis::Z;
+		$coralType = CoralTypeIdMap::getInstance()->fromId($stateMeta & BlockLegacyMetadata::CORAL_FAN_TYPE_MASK);
+		if($coralType === null){
+			throw new InvalidBlockStateException("No such coral type");
+		}
+		$this->coralType = $coralType;
 	}
 
 	public function getId() : int{
-		return $this->dead ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->dead ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	public function asItem() : Item{
@@ -63,10 +69,15 @@ final class FloorCoralFan extends BaseCoral{
 	}
 
 	protected function writeStateToMeta() : int{
-		return ($this->axis === Axis::X ? BlockLegacyMetadata::CORAL_FAN_EAST_WEST : BlockLegacyMetadata::CORAL_FAN_NORTH_SOUTH) << 3;
+		return (($this->axis === Axis::X ? BlockLegacyMetadata::CORAL_FAN_EAST_WEST : BlockLegacyMetadata::CORAL_FAN_NORTH_SOUTH) << 3) |
+			CoralTypeIdMap::getInstance()->toId($this->coralType);
 	}
 
 	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
+	public function getNonPersistentStateBitmask() : int{
 		return 0b1000;
 	}
 

@@ -30,12 +30,7 @@ use pocketmine\math\Facing;
 
 class Farmland extends Transparent{
 
-	/** @var int */
-	protected $wetness = 0; //"moisture" blockstate property in PC
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::SHOVEL));
-	}
+	protected int $wetness = 0; //"moisture" blockstate property in PC
 
 	protected function writeStateToMeta() : int{
 		return $this->wetness;

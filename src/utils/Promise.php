@@ -21,14 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\player;
+namespace pocketmine\utils;
 
 use function spl_object_id;
 
-final class PlayerCreationPromise{
+/**
+ * @phpstan-template TValue
+ */
+final class Promise{
 	/**
 	 * @var \Closure[]
-	 * @phpstan-var array<int, \Closure(Player) : void>
+	 * @phpstan-var array<int, \Closure(TValue) : void>
 	 */
 	private array $onSuccess = [];
 
@@ -39,10 +42,15 @@ final class PlayerCreationPromise{
 	private array $onFailure = [];
 
 	private bool $resolved = false;
-	private ?Player $result = null;
 
 	/**
-	 * @phpstan-param \Closure(Player) : void $onSuccess
+	 * @var mixed
+	 * @phpstan-var TValue|null
+	 */
+	private $result = null;
+
+	/**
+	 * @phpstan-param \Closure(TValue) : void $onSuccess
 	 * @phpstan-param \Closure() : void $onFailure
 	 */
 	public function onCompletion(\Closure $onSuccess, \Closure $onFailure) : void{
@@ -54,17 +62,27 @@ final class PlayerCreationPromise{
 		}
 	}
 
-	public function resolve(Player $player) : void{
+	/**
+	 * @param mixed $value
+	 * @phpstan-param TValue $value
+	 */
+	public function resolve($value) : void{
+		if($this->resolved){
+			throw new \InvalidStateException("Promise has already been resolved/rejected");
+		}
 		$this->resolved = true;
-		$this->result = $player;
+		$this->result = $value;
 		foreach($this->onSuccess as $c){
-			$c($player);
+			$c($value);
 		}
 		$this->onSuccess = [];
 		$this->onFailure = [];
 	}
 
 	public function reject() : void{
+		if($this->resolved){
+			throw new \InvalidStateException("Promise has already been resolved/rejected");
+		}
 		$this->resolved = true;
 		foreach($this->onFailure as $c){
 			$c();

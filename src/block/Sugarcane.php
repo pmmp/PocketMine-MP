@@ -34,12 +34,7 @@ use pocketmine\world\BlockTransaction;
 
 class Sugarcane extends Flowable{
 
-	/** @var int */
-	protected $age = 0;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
+	protected int $age = 0;
 
 	protected function writeStateToMeta() : int{
 		return $this->age;

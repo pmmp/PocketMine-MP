@@ -27,8 +27,8 @@ use pocketmine\item\Item;
 
 class UnknownBlock extends Transparent{
 
-	public function __construct(BlockIdentifier $idInfo, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, "Unknown", $breakInfo ?? BlockBreakInfo::instant());
+	public function __construct(BlockIdentifier $idInfo, BlockBreakInfo $breakInfo){
+		parent::__construct($idInfo, "Unknown", $breakInfo);
 	}
 
 	public function canBePlaced() : bool{

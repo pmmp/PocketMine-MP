@@ -24,17 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
-use function max;
 use function mt_rand;
 
 class FrostedIce extends Ice{
 
-	/** @var int */
-	protected $age = 0;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::PICKAXE));
-	}
+	protected int $age = 0;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 3);
@@ -69,10 +63,7 @@ class FrostedIce extends Ice{
 
 	public function onRandomTick() : void{
 		if((!$this->checkAdjacentBlocks(4) or mt_rand(0, 2) === 0) and
-			max( //TODO: move this to World
-				$this->pos->getWorld()->getHighestAdjacentBlockLight($this->pos->x, $this->pos->y, $this->pos->z),
-				$this->pos->getWorld()->getHighestAdjacentRealBlockSkyLight($this->pos->x, $this->pos->y, $this->pos->z)
-			) >= 12 - $this->age){
+			$this->pos->getWorld()->getHighestAdjacentFullLightAt($this->pos->x, $this->pos->y, $this->pos->z) >= 12 - $this->age){
 			if($this->tryMelt()){
 				foreach($this->getAllSides() as $block){
 					if($block instanceof FrostedIce){

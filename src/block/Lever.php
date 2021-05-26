@@ -38,16 +38,9 @@ class Lever extends Flowable{
 	protected const SIDE = 1;
 	protected const TOP = 2;
 
-	/** @var int */
-	protected $leverPos = self::BOTTOM;
-	/** @var int */
-	protected $facing = Facing::NORTH;
-	/** @var bool */
-	protected $powered = false;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5));
-	}
+	protected int $leverPos = self::BOTTOM;
+	protected int $facing = Facing::NORTH;
+	protected bool $powered = false;
 
 	protected function writeStateToMeta() : int{
 		if($this->leverPos === self::BOTTOM){

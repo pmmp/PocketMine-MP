@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         image: [ubuntu-20.04]
-        php: [7.4.16]
+        php: [7.4.19]
 
     steps:
       - uses: actions/checkout@v2 #needed for build.sh
@@ -37,7 +37,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [7.4.16]
+        php: [7.4.19]
 
     steps:
       - uses: actions/checkout@v2
@@ -55,7 +55,7 @@ jobs:
 
       - name: Install cached PHP's dependencies
         if: steps.php-build-cache.outputs.cache-hit == 'true'
-        run: chmod +x ./bin/php7/install-dependencies.sh && ./bin/php7/install-dependencies.sh
+        run: ./tests/gh-actions/install-dependencies.sh
 
       - name: Prefix PHP to PATH
         run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
@@ -87,7 +87,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [7.4.16]
+        php: [7.4.19]
 
     steps:
       - uses: actions/checkout@v2
@@ -107,7 +107,7 @@ jobs:
 
       - name: Install cached PHP's dependencies
         if: steps.php-build-cache.outputs.cache-hit == 'true'
-        run: chmod +x ./bin/php7/install-dependencies.sh && ./bin/php7/install-dependencies.sh
+        run: ./tests/gh-actions/install-dependencies.sh
 
       - name: Prefix PHP to PATH
         run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
@@ -139,7 +139,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [7.4.16]
+        php: [7.4.19]
 
     steps:
       - uses: actions/checkout@v2
@@ -159,7 +159,7 @@ jobs:
 
       - name: Install cached PHP's dependencies
         if: steps.php-build-cache.outputs.cache-hit == 'true'
-        run: chmod +x ./bin/php7/install-dependencies.sh && ./bin/php7/install-dependencies.sh
+        run: ./tests/gh-actions/install-dependencies.sh
 
       - name: Prefix PHP to PATH
         run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
@@ -191,7 +191,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [7.4.16]
+        php: [7.4.19]
 
     steps:
       - uses: actions/checkout@v2
@@ -211,7 +211,7 @@ jobs:
 
       - name: Install cached PHP's dependencies
         if: steps.php-build-cache.outputs.cache-hit == 'true'
-        run: chmod +x ./bin/php7/install-dependencies.sh && ./bin/php7/install-dependencies.sh
+        run: ./tests/gh-actions/install-dependencies.sh
 
       - name: Prefix PHP to PATH
         run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
@@ -280,4 +280,4 @@ jobs:
           tools: php-cs-fixer
 
       - name: Run PHP-CS-Fixer
-        run: php-cs-fixer fix --dry-run --diff --diff-format=udiff
+        run: php-cs-fixer fix --dry-run --diff

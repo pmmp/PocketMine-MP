@@ -30,6 +30,7 @@ namespace pocketmine\block\tile;
 use pocketmine\block\Block;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
@@ -58,6 +59,7 @@ abstract class Tile{
 
 	/**
 	 * @internal
+	 * @throws NbtDataException
 	 * Reads additional data from the CompoundTag on tile creation.
 	 */
 	abstract public function readSaveData(CompoundTag $nbt) : void;

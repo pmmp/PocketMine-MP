@@ -28,41 +28,26 @@ use pocketmine\timings\TimingsHandler;
 
 class WorldTimings{
 
-	/** @var TimingsHandler */
-	public $setBlock;
-	/** @var TimingsHandler */
-	public $doBlockLightUpdates;
-	/** @var TimingsHandler */
-	public $doBlockSkyLightUpdates;
+	public TimingsHandler $setBlock;
+	public TimingsHandler $doBlockLightUpdates;
+	public TimingsHandler $doBlockSkyLightUpdates;
 
-	/** @var TimingsHandler */
-	public $doChunkUnload;
-	/** @var TimingsHandler */
-	public $doTickPending;
-	/** @var TimingsHandler */
-	public $doTickTiles;
-	/** @var TimingsHandler */
-	public $doChunkGC;
-	/** @var TimingsHandler */
-	public $entityTick;
-	/** @var TimingsHandler */
-	public $doTick;
+	public TimingsHandler $doChunkUnload;
+	public TimingsHandler $scheduledBlockUpdates;
+	public TimingsHandler $randomChunkUpdates;
+	public TimingsHandler $randomChunkUpdatesChunkSelection;
+	public TimingsHandler $doChunkGC;
+	public TimingsHandler $entityTick;
+	public TimingsHandler $doTick;
 
-	/** @var TimingsHandler */
-	public $syncChunkSend;
-	/** @var TimingsHandler */
-	public $syncChunkSendPrepare;
+	public TimingsHandler $syncChunkSend;
+	public TimingsHandler $syncChunkSendPrepare;
 
-	/** @var TimingsHandler */
-	public $syncChunkLoad;
-	/** @var TimingsHandler */
-	public $syncChunkLoadData;
-	/** @var TimingsHandler */
-	public $syncChunkLoadEntities;
-	/** @var TimingsHandler */
-	public $syncChunkLoadTileEntities;
-	/** @var TimingsHandler */
-	public $syncChunkSave;
+	public TimingsHandler $syncChunkLoad;
+	public TimingsHandler $syncChunkLoadData;
+	public TimingsHandler $syncChunkLoadEntities;
+	public TimingsHandler $syncChunkLoadTileEntities;
+	public TimingsHandler $syncChunkSave;
 
 	public function __construct(World $world){
 		$name = $world->getFolderName() . " - ";
@@ -72,8 +57,9 @@ class WorldTimings{
 		$this->doBlockSkyLightUpdates = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Sky Light Updates");
 
 		$this->doChunkUnload = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Unload Chunks");
-		$this->doTickPending = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Scheduled Block Updates");
-		$this->doTickTiles = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Random Chunk Updates");
+		$this->scheduledBlockUpdates = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Scheduled Block Updates");
+		$this->randomChunkUpdates = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Random Chunk Updates");
+		$this->randomChunkUpdatesChunkSelection = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Random Chunk Updates - Chunk Selection");
 		$this->doChunkGC = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Garbage Collection");
 		$this->entityTick = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Tick Entities");
 

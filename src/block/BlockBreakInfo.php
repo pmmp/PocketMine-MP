@@ -28,14 +28,10 @@ use function get_class;
 
 class BlockBreakInfo{
 
-	/** @var float */
-	private $hardness;
-	/** @var float */
-	private $blastResistance;
-	/** @var int */
-	private $toolType;
-	/** @var int */
-	private $toolHarvestLevel;
+	private float $hardness;
+	private float $blastResistance;
+	private int $toolType;
+	private int $toolHarvestLevel;
 
 	/**
 	 * @param float|null $blastResistance default 5x hardness

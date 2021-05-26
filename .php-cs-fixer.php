@@ -9,7 +9,7 @@ $finder = PhpCsFixer\Finder::create()
 	->notContains('#ifndef COMPILE') //preprocessor will break if these are changed
 	->notName('PocketMine.php');
 
-return PhpCsFixer\Config::create()
+return (new PhpCsFixer\Config)
 	->setRiskyAllowed(true)
 	->setRules([
 		'align_multiline_comment' => [

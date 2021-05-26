@@ -25,10 +25,6 @@ namespace pocketmine\block;
 
 class WoodenSlab extends Slab{
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.0, BlockToolType::AXE, 0, 15.0));
-	}
-
 	public function getFuelTime() : int{
 		return 300;
 	}

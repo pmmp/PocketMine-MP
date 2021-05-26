@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Banner as TileBanner;
-use pocketmine\block\utils\BannerPattern;
+use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Banner as ItemBanner;
@@ -40,17 +40,17 @@ use function assert;
 use function count;
 
 abstract class BaseBanner extends Transparent{
-	/** @var DyeColor */
-	protected $baseColor;
+
+	protected DyeColor $baseColor;
 
 	/**
-	 * @var BannerPattern[]
-	 * @phpstan-var list<BannerPattern>
+	 * @var BannerPatternLayer[]
+	 * @phpstan-var list<BannerPatternLayer>
 	 */
-	protected $patterns = [];
+	protected array $patterns = [];
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::AXE));
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+		parent::__construct($idInfo, $name, $breakInfo);
 		$this->baseColor = DyeColor::BLACK();
 	}
 
@@ -83,22 +83,23 @@ abstract class BaseBanner extends Transparent{
 	}
 
 	/**
-	 * @return BannerPattern[]
-	 * @phpstan-return list<BannerPattern>
+	 * @return BannerPatternLayer[]
+	 * @phpstan-return list<BannerPatternLayer>
 	 */
 	public function getPatterns() : array{
 		return $this->patterns;
 	}
 
 	/**
-	 * @param BannerPattern[] $patterns
-	 * @phpstan-param list<BannerPattern> $patterns
+	 * @param BannerPatternLayer[]             $patterns
+	 *
+	 * @phpstan-param list<BannerPatternLayer> $patterns
 	 * @return $this
 	 */
 	public function setPatterns(array $patterns) : self{
-		$checked = array_filter($patterns, fn($v) => $v instanceof BannerPattern);
+		$checked = array_filter($patterns, fn($v) => $v instanceof BannerPatternLayer);
 		if(count($checked) !== count($patterns)){
-			throw new \TypeError("Deque must only contain " . BannerPattern::class . " objects");
+			throw new \TypeError("Deque must only contain " . BannerPatternLayer::class . " objects");
 		}
 		$this->patterns = $checked;
 		return $this;

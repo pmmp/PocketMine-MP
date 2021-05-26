@@ -30,12 +30,7 @@ class Note extends Opaque{
 	public const MIN_PITCH = 0;
 	public const MAX_PITCH = 24;
 
-	/** @var int */
-	private $pitch = self::MIN_PITCH;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.8, BlockToolType::AXE));
-	}
+	private int $pitch = self::MIN_PITCH;
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();

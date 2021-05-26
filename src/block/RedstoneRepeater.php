@@ -37,24 +37,23 @@ class RedstoneRepeater extends Flowable{
 	use HorizontalFacingTrait;
 	use PoweredByRedstoneTrait;
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	/** @var int */
-	protected $delay = 1;
+	protected int $delay = 1;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->powered ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->powered ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
 		$this->delay = BlockDataSerializer::readBoundedInt("delay", ($stateMeta >> 2) + 1, 1, 4);
-		$this->powered = $id === $this->idInfo->getSecondId();
+		$this->powered = $id === $this->idInfoFlattened->getSecondId();
 	}
 
 	public function writeStateToMeta() : int{

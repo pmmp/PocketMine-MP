@@ -31,10 +31,6 @@ use pocketmine\world\BlockTransaction;
 
 class RedMushroom extends Flowable{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
-
 	public function ticksRandomly() : bool{
 		return true;
 	}

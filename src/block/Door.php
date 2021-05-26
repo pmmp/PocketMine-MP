@@ -38,13 +38,9 @@ class Door extends Transparent{
 	use HorizontalFacingTrait;
 	use PoweredByRedstoneTrait;
 
-	/** @var bool */
-	protected $top = false;
-	/** @var bool */
-	protected $hingeRight = false;
-
-	/** @var bool */
-	protected $open = false;
+	protected bool $top = false;
+	protected bool $hingeRight = false;
+	protected bool $open = false;
 
 	protected function writeStateToMeta() : int{
 		if($this->top){

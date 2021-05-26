@@ -49,8 +49,10 @@ class CraftingManager{
 	public function __construct(){
 		$this->recipeRegisteredCallbacks = new ObjectSet();
 		$this->furnaceRecipeManager = new FurnaceRecipeManager();
-		$this->furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(function(FurnaceRecipe $recipe) : void{
-			foreach($this->recipeRegisteredCallbacks as $callback){
+
+		$recipeRegisteredCallbacks = $this->recipeRegisteredCallbacks;
+		$this->furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(static function(FurnaceRecipe $recipe) use ($recipeRegisteredCallbacks) : void{
+			foreach($recipeRegisteredCallbacks as $callback){
 				$callback();
 			}
 		});

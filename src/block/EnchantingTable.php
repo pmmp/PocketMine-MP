@@ -25,17 +25,12 @@ namespace pocketmine\block;
 
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 class EnchantingTable extends Transparent{
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0));
-	}
 
 	/**
 	 * @return AxisAlignedBB[]

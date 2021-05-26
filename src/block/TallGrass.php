@@ -33,10 +33,6 @@ use function mt_rand;
 
 class TallGrass extends Flowable{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant(BlockToolType::SHEARS, 1));
-	}
-
 	public function canBeReplaced() : bool{
 		return true;
 	}

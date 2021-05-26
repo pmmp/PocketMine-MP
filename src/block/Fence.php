@@ -30,7 +30,7 @@ use function count;
 
 class Fence extends Transparent{
 	/** @var bool[] facing => dummy */
-	protected $connections = [];
+	protected array $connections = [];
 
 	public function getThickness() : float{
 		return 0.25;

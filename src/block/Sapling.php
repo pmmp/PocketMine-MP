@@ -36,13 +36,12 @@ use function mt_rand;
 
 class Sapling extends Flowable{
 
-	/** @var bool */
-	protected $ready = false;
-	/** @var TreeType */
-	private $treeType;
+	protected bool $ready = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	private TreeType $treeType;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, TreeType $treeType){
+		parent::__construct($idInfo, $name, $breakInfo);
 		$this->treeType = $treeType;
 	}
 

@@ -29,8 +29,8 @@ final class InfestedStone extends Opaque{
 
 	private int $imitated;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, Block $imitated, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.75));
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, Block $imitated){
+		parent::__construct($idInfo, $name, $breakInfo);
 		$this->imitated = $imitated->getFullId();
 	}
 

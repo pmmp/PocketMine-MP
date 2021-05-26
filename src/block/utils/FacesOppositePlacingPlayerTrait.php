@@ -21,30 +21,25 @@
 
 declare(strict_types=1);
 
-namespace pmmp\TesterPlugin;
+namespace pocketmine\block\utils;
 
-use pocketmine\scheduler\Task;
+use pocketmine\block\Block;
+use pocketmine\item\Item;
+use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+use pocketmine\world\BlockTransaction;
 
-class CheckTestCompletionTask extends Task{
+trait FacesOppositePlacingPlayerTrait{
+	use HorizontalFacingTrait;
 
-	/** @var Main */
-	private $plugin;
-
-	public function __construct(Main $plugin){
-		$this->plugin = $plugin;
-	}
-
-	public function onRun() : void{
-		$test = $this->plugin->getCurrentTest();
-		if($test === null){
-			if(!$this->plugin->startNextTest()){
-				$this->getHandler()->cancel();
-				$this->plugin->onAllTestsCompleted();
-			}
-		}elseif($test->isFinished() or $test->isTimedOut()){
-			$this->plugin->onTestCompleted($test);
-		}else{
-			$test->tick();
+	/**
+	 * @see Block::place()
+	 */
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($player !== null){
+			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 }
