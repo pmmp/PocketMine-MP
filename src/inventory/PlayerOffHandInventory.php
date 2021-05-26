@@ -21,23 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\particle;
+namespace pocketmine\inventory;
 
-use pocketmine\block\Block;
-use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
-use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\entity\Human;
 
-class DestroyBlockParticle implements Particle{
+final class PlayerOffHandInventory extends SimpleInventory{
+	/** @var Human */
+	private $holder;
 
-	/** @var Block */
-	private $block;
-
-	public function __construct(Block $b){
-		$this->block = $b;
+	public function __construct(Human $player){
+		$this->holder = $player;
+		parent::__construct(1);
 	}
 
-	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_DESTROY, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId()), $pos)];
-	}
+	public function getHolder() : Human{ return $this->holder; }
 }

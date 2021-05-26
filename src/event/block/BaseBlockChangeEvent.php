@@ -21,21 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\entity;
+namespace pocketmine\event\block;
 
-use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
-use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
+use pocketmine\block\Block;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 
-abstract class Animal extends Living implements Ageable{
-	/** @var bool */
-	protected $baby = false;
+/**
+ * @internal
+ */
+abstract class BaseBlockChangeEvent extends BlockEvent implements Cancellable{
+	use CancellableTrait;
 
-	public function isBaby() : bool{
-		return $this->baby;
+	private Block $newState;
+
+	public function __construct(Block $block, Block $newState){
+		parent::__construct($block);
+		$this->newState = $newState;
 	}
 
-	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
-		parent::syncNetworkData($properties);
-		$properties->setGenericFlag(EntityMetadataFlags::BABY, $this->baby);
+	public function getNewState() : Block{
+		return $this->newState;
 	}
 }

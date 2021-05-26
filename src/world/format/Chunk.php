@@ -229,7 +229,7 @@ class Chunk{
 
 		$pos = $tile->getPos();
 		if(isset($this->tiles[$index = Chunk::blockHash($pos->x, $pos->y, $pos->z)]) and $this->tiles[$index] !== $tile){
-			$this->tiles[$index]->close();
+			throw new \InvalidArgumentException("Another tile is already at this location");
 		}
 		$this->tiles[$index] = $tile;
 		$this->dirtyFlags |= self::DIRTY_FLAG_TILES;

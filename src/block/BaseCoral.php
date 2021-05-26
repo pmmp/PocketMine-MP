@@ -31,12 +31,18 @@ abstract class BaseCoral extends Transparent{
 	protected CoralType $coralType;
 	protected bool $dead = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, CoralType $coralType){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		parent::__construct($idInfo, $name, $breakInfo);
-		$this->coralType = $coralType;
+		$this->coralType = CoralType::TUBE();
 	}
 
 	public function getCoralType() : CoralType{ return $this->coralType; }
+
+	/** @return $this */
+	public function setCoralType(CoralType $coralType) : self{
+		$this->coralType = $coralType;
+		return $this;
+	}
 
 	public function isDead() : bool{ return $this->dead; }
 

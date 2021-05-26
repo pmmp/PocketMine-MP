@@ -39,35 +39,31 @@ use function lcg_value;
 use function min;
 
 abstract class Liquid extends Transparent{
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
 
-	/** @var int */
-	public $adjacentSources = 0;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	/** @var Vector3|null */
-	protected $flowVector = null;
+	public int $adjacentSources = 0;
+
+	protected ?Vector3 $flowVector = null;
 
 	/** @var int[] */
-	private $flowCostVisited = [];
+	private array $flowCostVisited = [];
 
 	private const CAN_FLOW_DOWN = 1;
 	private const CAN_FLOW = 0;
 	private const BLOCKED = -1;
 
-	/** @var bool */
-	protected $falling = false;
-	/** @var int */
-	protected $decay = 0; //PC "level" property
-	/** @var bool */
-	protected $still = false;
+	protected bool $falling = false;
+	protected int $decay = 0; //PC "level" property
+	protected bool $still = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::indestructible(500.0));
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->still ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->still ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	protected function writeStateToMeta() : int{
@@ -77,7 +73,7 @@ abstract class Liquid extends Transparent{
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->decay = BlockDataSerializer::readBoundedInt("decay", $stateMeta & 0x07, 0, 7);
 		$this->falling = ($stateMeta & BlockLegacyMetadata::LIQUID_FLAG_FALLING) !== 0;
-		$this->still = $id === $this->idInfo->getSecondId();
+		$this->still = $id === $this->idInfoFlattened->getSecondId();
 	}
 
 	public function getStateBitmask() : int{

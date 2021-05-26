@@ -23,13 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
 use pocketmine\world\Position;
 
-class FurnaceInventory extends BlockInventory{
+class FurnaceInventory extends SimpleInventory implements BlockInventory{
+	use BlockInventoryTrait;
 
 	public function __construct(Position $holder){
-		parent::__construct($holder, 3);
+		$this->holder = $holder;
+		parent::__construct(3);
 	}
 
 	public function getResult() : Item{

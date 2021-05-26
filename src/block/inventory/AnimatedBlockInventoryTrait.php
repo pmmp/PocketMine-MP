@@ -27,7 +27,14 @@ use pocketmine\player\Player;
 use pocketmine\world\sound\Sound;
 use function count;
 
-abstract class AnimatedBlockInventory extends BlockInventory{
+trait AnimatedBlockInventoryTrait{
+	use BlockInventoryTrait;
+
+	/**
+	 * @return Player[]
+	 * @phpstan-return array<int, Player>
+	 */
+	abstract public function getViewers() : array;
 
 	abstract protected function getOpenSound() : Sound;
 

@@ -48,12 +48,9 @@ class Bamboo extends Transparent{
 	public const SMALL_LEAVES = 1;
 	public const LARGE_LEAVES = 2;
 
-	/** @var bool */
-	protected $thick = false; //age in PC, but this is 0/1
-	/** @var bool */
-	protected $ready = false;
-	/** @var int */
-	protected $leafSize = self::NO_LEAVES;
+	protected bool $thick = false; //age in PC, but this is 0/1
+	protected bool $ready = false;
+	protected int $leafSize = self::NO_LEAVES;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->thick = ($stateMeta & BlockLegacyMetadata::BAMBOO_FLAG_THICK) !== 0;

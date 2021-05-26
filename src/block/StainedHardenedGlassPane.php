@@ -21,12 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol;
+namespace pocketmine\block;
 
-/**
- * This interface can be implemented by packets which are erroneously sent to the server by a buggy client to filter
- * them out.
- */
-interface GarbageServerboundPacket extends Packet{
+use pocketmine\block\utils\ColorInMetadataTrait;
 
+final class StainedHardenedGlassPane extends HardenedGlassPane{
+	use ColorInMetadataTrait;
 }

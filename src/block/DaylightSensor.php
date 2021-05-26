@@ -38,18 +38,17 @@ use const M_PI;
 class DaylightSensor extends Transparent{
 	use AnalogRedstoneSignalEmitterTrait;
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	/** @var bool */
-	protected $inverted = false;
+	protected bool $inverted = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::AXE));
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->inverted ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->inverted ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	protected function writeStateToMeta() : int{
@@ -58,7 +57,7 @@ class DaylightSensor extends Transparent{
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->signalStrength = BlockDataSerializer::readBoundedInt("signalStrength", $stateMeta, 0, 15);
-		$this->inverted = $id === $this->idInfo->getSecondId();
+		$this->inverted = $id === $this->idInfoFlattened->getSecondId();
 	}
 
 	public function getStateBitmask() : int{

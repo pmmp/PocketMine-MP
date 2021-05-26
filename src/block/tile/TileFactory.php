@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
@@ -111,6 +112,7 @@ final class TileFactory{
 
 	/**
 	 * @internal
+	 * @throws NbtDataException
 	 */
 	public function createFromData(World $world, CompoundTag $nbt) : ?Tile{
 		$type = $nbt->getString(Tile::TAG_ID, "");

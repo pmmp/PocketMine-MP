@@ -28,10 +28,6 @@ use pocketmine\item\VanillaItems;
 
 class Bookshelf extends Opaque{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.5, BlockToolType::AXE));
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			VanillaItems::BOOK()->setCount(3)

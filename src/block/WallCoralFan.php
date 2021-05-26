@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
@@ -33,21 +35,72 @@ use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\BlockTransaction;
 
 final class WallCoralFan extends BaseCoral{
 	use HorizontalFacingTrait;
 
+	protected BlockIdentifierFlattened $idInfoFlattened;
+
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
+		parent::__construct($idInfo, $name, $breakInfo);
+	}
+
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataSerializer::readCoralFacing($stateMeta >> 2);
 		$this->dead = ($stateMeta & BlockLegacyMetadata::CORAL_FAN_HANG_FLAG_DEAD) !== 0;
+
+		$coralTypeFlag = $stateMeta & BlockLegacyMetadata::CORAL_FAN_HANG_TYPE_MASK;
+		switch($id){
+			case $this->idInfoFlattened->getBlockId():
+				$this->coralType = $coralTypeFlag === BlockLegacyMetadata::CORAL_FAN_HANG_TUBE ? CoralType::TUBE() : CoralType::BRAIN();
+				break;
+			case $this->idInfoFlattened->getAdditionalId(0):
+				$this->coralType = $coralTypeFlag === BlockLegacyMetadata::CORAL_FAN_HANG2_BUBBLE ? CoralType::BUBBLE() : CoralType::FIRE();
+				break;
+			case $this->idInfoFlattened->getAdditionalId(1):
+				if($coralTypeFlag !== BlockLegacyMetadata::CORAL_FAN_HANG3_HORN){
+					throw new InvalidBlockStateException("Invalid CORAL_FAN_HANG3 type");
+				}
+				$this->coralType = CoralType::HORN();
+				break;
+			default:
+				throw new \LogicException("ID/meta doesn't match any CORAL_FAN_HANG type");
+		}
+	}
+
+	public function getId() : int{
+		if($this->coralType->equals(CoralType::TUBE()) || $this->coralType->equals(CoralType::BRAIN())){
+			return $this->idInfoFlattened->getBlockId();
+		}elseif($this->coralType->equals(CoralType::BUBBLE()) || $this->coralType->equals(CoralType::FIRE())){
+			return $this->idInfoFlattened->getAdditionalId(0);
+		}elseif($this->coralType->equals(CoralType::HORN())){
+			return $this->idInfoFlattened->getAdditionalId(1);
+		}
+		throw new AssumptionFailedError("All types of coral should be covered");
 	}
 
 	public function writeStateToMeta() : int{
-		return (BlockDataSerializer::writeCoralFacing($this->facing) << 2) | ($this->dead ? BlockLegacyMetadata::CORAL_FAN_HANG_FLAG_DEAD : 0);
+		$coralTypeFlag = (function() : int{
+			switch($this->coralType->id()){
+				case CoralType::TUBE()->id(): return BlockLegacyMetadata::CORAL_FAN_HANG_TUBE;
+				case CoralType::BRAIN()->id(): return BlockLegacyMetadata::CORAL_FAN_HANG_BRAIN;
+				case CoralType::BUBBLE()->id(): return BlockLegacyMetadata::CORAL_FAN_HANG2_BUBBLE;
+				case CoralType::FIRE()->id(): return BlockLegacyMetadata::CORAL_FAN_HANG2_FIRE;
+				case CoralType::HORN()->id(): return BlockLegacyMetadata::CORAL_FAN_HANG3_HORN;
+				default: throw new AssumptionFailedError("All types of coral should be covered");
+			}
+		})();
+		return (BlockDataSerializer::writeCoralFacing($this->facing) << 2) | ($this->dead ? BlockLegacyMetadata::CORAL_FAN_HANG_FLAG_DEAD : 0) | $coralTypeFlag;
 	}
 
 	public function getStateBitmask() : int{
+		return 0b1111;
+	}
+
+	public function getNonPersistentStateBitmask() : int{
 		return 0b1110;
 	}
 

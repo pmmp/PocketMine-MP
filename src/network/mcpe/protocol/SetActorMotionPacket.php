@@ -28,10 +28,7 @@ namespace pocketmine\network\mcpe\protocol;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
-/**
- * TODO: This packet is (erroneously) sent to the server when the client is riding a vehicle.
- */
-class SetActorMotionPacket extends DataPacket implements ClientboundPacket, GarbageServerboundPacket{
+class SetActorMotionPacket extends DataPacket implements ClientboundPacket, ServerboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_ACTOR_MOTION_PACKET;
 
 	/** @var int */

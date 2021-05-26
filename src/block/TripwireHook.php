@@ -35,14 +35,8 @@ use pocketmine\world\BlockTransaction;
 class TripwireHook extends Flowable{
 	use HorizontalFacingTrait;
 
-	/** @var bool */
-	protected $connected = false;
-	/** @var bool */
-	protected $powered = false;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
+	protected bool $connected = false;
+	protected bool $powered = false;
 
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) |

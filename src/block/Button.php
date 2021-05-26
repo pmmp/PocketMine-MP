@@ -36,8 +36,7 @@ use pocketmine\world\sound\RedstonePowerOnSound;
 abstract class Button extends Flowable{
 	use AnyFacingTrait;
 
-	/** @var bool */
-	protected $pressed = false;
+	protected bool $pressed = false;
 
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::writeFacing($this->facing) | ($this->pressed ? BlockLegacyMetadata::BUTTON_FLAG_POWERED : 0);

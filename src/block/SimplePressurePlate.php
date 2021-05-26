@@ -25,8 +25,7 @@ namespace pocketmine\block;
 
 abstract class SimplePressurePlate extends PressurePlate{
 
-	/** @var bool */
-	protected $pressed = false;
+	protected bool $pressed = false;
 
 	protected function writeStateToMeta() : int{
 		return $this->pressed ? BlockLegacyMetadata::PRESSURE_PLATE_FLAG_POWERED : 0;

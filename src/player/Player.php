@@ -83,9 +83,7 @@ use pocketmine\lang\Language;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
@@ -230,6 +228,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected $sleeping = null;
 	/** @var Position|null */
 	private $spawnPosition = null;
+
+	private bool $respawnLocked = false;
 
 	//TODO: Abilities
 	/** @var bool */
@@ -594,6 +594,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function setUsingItem(bool $value) : void{
 		$this->startAction = $value ? $this->server->getTick() : -1;
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -733,14 +734,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					if(!$this->isConnected() || !isset($this->usedChunks[$index]) || $world !== $this->getWorld()){
 						return;
 					}
+					if(!$this->usedChunks[$index]->equals(UsedChunkStatus::NEEDED())){
+						//TODO: make this an error
+						//we may have added multiple completion handlers, since the Player keeps re-requesting chunks
+						//it doesn't have yet (a relic from the old system, but also currently relied on for chunk resends).
+						//in this event, make sure we don't try to send the chunk multiple times.
+						return;
+					}
 					unset($this->loadQueue[$index]);
 					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED();
 
-					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index, $world) : void{
-						if(!isset($this->usedChunks[$index]) || $world !== $this->getWorld()){
-							$this->logger->debug("Tried to send no-longer-active chunk $X $Z in world " . $world->getFolderName());
-							return;
-						}
+					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index) : void{
 						$this->usedChunks[$index] = UsedChunkStatus::SENT();
 						if($this->spawnChunkLoadCount === -1){
 							$this->spawnEntitiesOnChunk($X, $Z);
@@ -807,6 +811,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		if($this->getHealth() <= 0){
+			$this->logger->debug("Quit while dead, forcing respawn");
 			$this->respawn();
 		}
 	}
@@ -867,6 +872,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
+	 * Returns a usage status of the given chunk, or null if the player is not using the given chunk.
+	 */
+	public function getUsedChunkStatus(int $chunkX, int $chunkZ) : ?UsedChunkStatus{
+		return $this->usedChunks[World::chunkHash($chunkX, $chunkZ)] ?? null;
+	}
+
+	/**
 	 * Returns whether the target chunk has been sent to this player.
 	 */
 	public function hasReceivedChunk(int $chunkX, int $chunkZ) : bool{
@@ -897,7 +909,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}else{
 			$world = $this->server->getWorldManager()->getDefaultWorld();
 
-			return $world->getSafeSpawn();
+			return $world->getSpawnLocation();
 		}
 	}
 
@@ -945,6 +957,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$this->sleeping = $pos;
+		$this->networkPropertiesDirty = true;
 
 		$this->setSpawn($pos);
 
@@ -963,6 +976,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			(new PlayerBedLeaveEvent($this, $b))->call();
 
 			$this->sleeping = null;
+			$this->networkPropertiesDirty = true;
 
 			$this->getWorld()->setSleepTicks(0);
 
@@ -2008,7 +2022,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->cursorInventory = null;
 		$this->craftingGrid = null;
 		$this->spawnPosition = null;
-		$this->perm = null;
 		$this->blockBreakHandler = null;
 		parent::destroyCycles();
 	}
@@ -2050,16 +2063,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$nbt->setInt("SpawnZ", $spawn->getFloorZ());
 		}
 
-		if(!$this->isAlive()){
-			$spawn = $this->getSpawn();
-			//hack for respawn after quit
-			$nbt->setTag("Pos", new ListTag([
-				new DoubleTag($spawn->getFloorX()),
-				new DoubleTag($spawn->getFloorY()),
-				new DoubleTag($spawn->getFloorZ())
-			]));
-		}
-
 		$nbt->setInt("playerGameType", $this->gamemode->getMagicNumber());
 		$nbt->setLong("firstPlayed", $this->firstPlayed);
 		$nbt->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
@@ -2094,6 +2097,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			if($this->armorInventory !== null){
 				$this->armorInventory->clearAll();
 			}
+			if($this->offHandInventory !== null){
+				$this->offHandInventory->clearAll();
+			}
 		}
 
 		$this->getWorld()->dropExperience($this->location, $ev->getXpDropAmount());
@@ -2114,6 +2120,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function respawn() : void{
+		if($this->respawnLocked){
+			return;
+		}
+		$this->respawnLocked = true;
 		if($this->server->isHardcore()){
 			if($this->kick("You have been banned because you died in hardcore mode")){ //this allows plugins to prevent the ban by cancelling PlayerKickEvent
 				$this->server->getNameBans()->addBan($this->getName(), "Died in hardcore mode");
@@ -2121,31 +2131,48 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		$ev = new PlayerRespawnEvent($this, $this->getSpawn());
-		$ev->call();
+		$this->logger->debug("Waiting for spawn terrain generation for respawn");
+		$spawn = $this->getSpawn();
+		$spawn->getWorld()->orderChunkPopulation($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, null)->onCompletion(
+			function() use ($spawn) : void{
+				if(!$this->isConnected()){
+					return;
+				}
+				$this->logger->debug("Spawn terrain generation done, completing respawn");
+				$spawn = $spawn->getWorld()->getSafeSpawn($spawn);
+				$ev = new PlayerRespawnEvent($this, $spawn);
+				$ev->call();
 
-		$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getWorld());
-		$this->teleport($realSpawn);
+				$realSpawn = Position::fromObject($ev->getRespawnPosition()->add(0.5, 0, 0.5), $ev->getRespawnPosition()->getWorld());
+				$this->teleport($realSpawn);
 
-		$this->setSprinting(false);
-		$this->setSneaking(false);
+				$this->setSprinting(false);
+				$this->setSneaking(false);
 
-		$this->extinguish();
-		$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
-		$this->deadTicks = 0;
-		$this->noDamageTicks = 60;
+				$this->extinguish();
+				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
+				$this->deadTicks = 0;
+				$this->noDamageTicks = 60;
 
-		$this->effectManager->clear();
-		$this->setHealth($this->getMaxHealth());
+				$this->effectManager->clear();
+				$this->setHealth($this->getMaxHealth());
 
-		foreach($this->attributeMap->getAll() as $attr){
-			$attr->resetToDefault();
-		}
+				foreach($this->attributeMap->getAll() as $attr){
+					$attr->resetToDefault();
+				}
 
-		$this->spawnToAll();
-		$this->scheduleUpdate();
+				$this->spawnToAll();
+				$this->scheduleUpdate();
 
-		$this->getNetworkSession()->onServerRespawn();
+				$this->getNetworkSession()->onServerRespawn();
+				$this->respawnLocked = false;
+			},
+			function() : void{
+				if($this->isConnected()){
+					$this->disconnect("Unable to find a respawn position");
+				}
+			}
+		);
 	}
 
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
@@ -2240,7 +2267,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->cursorInventory = new PlayerCursorInventory($this);
 		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
 
-		$this->addPermanentInventories($this->inventory, $this->armorInventory, $this->cursorInventory);
+		$this->addPermanentInventories($this->inventory, $this->armorInventory, $this->cursorInventory, $this->offHandInventory);
 
 		//TODO: more windows
 	}
@@ -2345,7 +2372,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function onChunkChanged(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		$status = $this->usedChunks[$hash = World::chunkHash($chunkX, $chunkZ)] ?? null;
-		if($status !== null && !$status->equals(UsedChunkStatus::NEEDED())){
+		if($status !== null && $status->equals(UsedChunkStatus::SENT())){
 			$this->usedChunks[$hash] = UsedChunkStatus::NEEDED();
 			$this->nextChunkOrderRun = 0;
 		}

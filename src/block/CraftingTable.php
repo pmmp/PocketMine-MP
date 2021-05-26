@@ -30,10 +30,6 @@ use pocketmine\player\Player;
 
 class CraftingTable extends Opaque{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::AXE));
-	}
-
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
 			$player->setCraftingGrid(new CraftingGrid($player, CraftingGrid::SIZE_BIG));

@@ -37,8 +37,7 @@ use pocketmine\world\BlockTransaction;
 class Hopper extends Transparent{
 	use PoweredByRedstoneTrait;
 
-	/** @var int */
-	private $facing = Facing::DOWN;
+	private int $facing = Facing::DOWN;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$facing = BlockDataSerializer::readFacing($stateMeta & 0x07);

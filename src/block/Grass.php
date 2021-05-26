@@ -37,10 +37,6 @@ use function mt_rand;
 
 class Grass extends Opaque{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::SHOVEL));
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
 			VanillaBlocks::DIRT()->asItem()
@@ -74,7 +70,7 @@ class Grass extends Opaque{
 				$b = $this->pos->getWorld()->getBlockAt($x, $y, $z);
 				if(
 					!($b instanceof Dirt) or
-					$b instanceof CoarseDirt or
+					$b->isCoarse() or
 					$this->pos->getWorld()->getFullLightAt($x, $y + 1, $z) < 4 or
 					$this->pos->getWorld()->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
 				){

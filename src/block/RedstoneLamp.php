@@ -28,19 +28,19 @@ use pocketmine\block\utils\PoweredByRedstoneTrait;
 class RedstoneLamp extends Opaque{
 	use PoweredByRedstoneTrait;
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.3));
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->powered ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->powered ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->powered = $id === $this->idInfo->getSecondId();
+		$this->powered = $id === $this->idInfoFlattened->getSecondId();
 	}
 
 	public function getLightLevel() : int{

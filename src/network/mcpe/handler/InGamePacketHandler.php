@@ -62,6 +62,7 @@ use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
@@ -75,6 +76,7 @@ use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
+use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
@@ -275,6 +277,7 @@ class InGamePacketHandler extends PacketHandler{
 
 		if($isCraftingPart){
 			if($this->craftingTransaction === null){
+				//TODO: this might not be crafting if there is a special inventory open (anvil, enchanting, loom etc)
 				$this->craftingTransaction = new CraftingTransaction($this->player, $this->player->getServer()->getCraftingManager(), $actions);
 			}else{
 				foreach($actions as $action){
@@ -460,11 +463,17 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleMobEquipment(MobEquipmentPacket $packet) : bool{
-		$this->session->getInvManager()->onClientSelectHotbarSlot($packet->hotbarSlot);
-		if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
-			$this->session->getInvManager()->syncSelectedHotbarSlot();
+		if($packet->windowId === ContainerIds::OFFHAND){
+			return true; //this happens when we put an item into the offhand
 		}
-		return true;
+		if($packet->windowId === ContainerIds::INVENTORY){
+			$this->session->getInvManager()->onClientSelectHotbarSlot($packet->hotbarSlot);
+			if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
+				$this->session->getInvManager()->syncSelectedHotbarSlot();
+			}
+			return true;
+		}
+		return false;
 	}
 
 	public function handleMobArmorEquipment(MobArmorEquipmentPacket $packet) : bool{
@@ -578,6 +587,10 @@ class InGamePacketHandler extends PacketHandler{
 		$this->player->setUsingItem(false);
 
 		return true;
+	}
+
+	public function handleSetActorMotion(SetActorMotionPacket $packet) : bool{
+		return true; //Not used: This packet is (erroneously) sent to the server when the client is riding a vehicle.
 	}
 
 	public function handleAnimate(AnimatePacket $packet) : bool{
@@ -850,5 +863,15 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{
 		return true; //TODO: implement this properly - this is here to silence debug spam from MCPE dev builds
+	}
+
+	public function handleLevelSoundEvent(LevelSoundEventPacket $packet) : bool{
+		/*
+		 * We don't handle this - all sounds are handled by the server now.
+		 * However, some plugins find this useful to detect events like left-click-air, which doesn't have any other
+		 * action bound to it.
+		 * In addition, we use this handler to silence debug noise, since this packet is frequently sent by the client.
+		 */
+		return true;
 	}
 }

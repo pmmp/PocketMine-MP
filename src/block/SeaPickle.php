@@ -30,14 +30,9 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class SeaPickle extends Transparent{
-	/** @var int */
-	protected $count = 1;
-	/** @var bool */
-	protected $underwater = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
+	protected int $count = 1;
+	protected bool $underwater = false;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->count = ($stateMeta & 0x03) + 1;

@@ -41,24 +41,23 @@ class RedstoneComparator extends Flowable{
 	use AnalogRedstoneSignalEmitterTrait;
 	use PoweredByRedstoneTrait;
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	/** @var bool */
-	protected $isSubtractMode = false;
+	protected bool $isSubtractMode = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->powered ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->powered ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
 		$this->isSubtractMode = ($stateMeta & BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_SUBTRACT) !== 0;
-		$this->powered = ($id === $this->idInfo->getSecondId() or ($stateMeta & BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_POWERED) !== 0);
+		$this->powered = ($id === $this->idInfoFlattened->getSecondId() or ($stateMeta & BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_POWERED) !== 0);
 	}
 
 	public function writeStateToMeta() : int{

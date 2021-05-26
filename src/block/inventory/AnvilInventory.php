@@ -23,13 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
+use pocketmine\inventory\SimpleInventory;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 
-class AnvilInventory extends BlockInventory{
+class AnvilInventory extends SimpleInventory implements BlockInventory{
+	use BlockInventoryTrait;
 
 	public function __construct(Position $holder){
-		parent::__construct($holder, 2);
+		$this->holder = $holder;
+		parent::__construct(2);
 	}
 
 	public function onClose(Player $who) : void{

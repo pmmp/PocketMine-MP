@@ -38,18 +38,11 @@ class ItemFrame extends Flowable{
 
 	public const ROTATIONS = 8;
 
-	/** @var bool */
-	protected $hasMap = false; //makes frame appear large if set
-	/** @var Item|null */
-	protected $framedItem = null;
-	/** @var int */
-	protected $itemRotation = 0;
-	/** @var float */
-	protected $itemDropChance = 1.0;
+	protected bool $hasMap = false; //makes frame appear large if set
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.25));
-	}
+	protected ?Item $framedItem = null;
+	protected int $itemRotation = 0;
+	protected float $itemDropChance = 1.0;
 
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::write5MinusHorizontalFacing($this->facing) | ($this->hasMap ? BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP : 0);

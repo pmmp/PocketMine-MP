@@ -33,7 +33,11 @@ trait ColorInMetadataTrait{
 	 * @see Block::readStateFromData()
 	 */
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->color = DyeColorIdMap::getInstance()->fromId($stateMeta);
+		$color = DyeColorIdMap::getInstance()->fromId($stateMeta);
+		if($color === null){
+			throw new InvalidBlockStateException("No dye colour corresponds to ID $stateMeta");
+		}
+		$this->color = $color;
 	}
 
 	/**

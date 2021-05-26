@@ -171,12 +171,7 @@ parameters:
 			path: ../../../src/block/FrostedIce.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentBlockLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/FrostedIce.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentRealBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentFullLightAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/FrostedIce.php
 
@@ -186,12 +181,7 @@ parameters:
 			path: ../../../src/block/FrostedIce.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentBlockLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/FrostedIce.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentRealBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentFullLightAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/FrostedIce.php
 
@@ -201,12 +191,7 @@ parameters:
 			path: ../../../src/block/FrostedIce.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentBlockLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/FrostedIce.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentRealBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getHighestAdjacentFullLightAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/FrostedIce.php
 
@@ -954,11 +939,6 @@ parameters:
 			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
 			count: 2
 			path: ../../../src/world/format/Chunk.php
-
-		-
-			message: "#^Parameter \\#1 \\$className of static method pocketmine\\\\utils\\\\Utils\\:\\:testValidInstance\\(\\) expects class\\-string, string given\\.$#"
-			count: 1
-			path: ../../../src/world/format/io/FormatConverter.php
 
 		-
 			message: "#^Only numeric types are allowed in %%, int\\|false given on the left side\\.$#"

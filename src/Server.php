@@ -70,7 +70,6 @@ use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
 use pocketmine\player\OfflinePlayer;
 use pocketmine\player\Player;
-use pocketmine\player\PlayerCreationPromise;
 use pocketmine\player\PlayerInfo;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
@@ -93,6 +92,7 @@ use pocketmine\utils\Filesystem;
 use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
 use pocketmine\utils\Process;
+use pocketmine\utils\Promise;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
@@ -580,7 +580,10 @@ class Server{
 		}
 	}
 
-	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : PlayerCreationPromise{
+	/**
+	 * @phpstan-return Promise<Player>
+	 */
+	public function createPlayer(NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, ?CompoundTag $offlinePlayerData) : Promise{
 		$ev = new PlayerCreationEvent($session);
 		$ev->call();
 		$class = $ev->getPlayerClass();
@@ -596,7 +599,7 @@ class Server{
 			$playerPos = null;
 			$spawn = $world->getSpawnLocation();
 		}
-		$playerPromise = new PlayerCreationPromise();
+		$playerPromise = new Promise();
 		$world->requestChunkPopulation($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, null)->onCompletion(
 			function() use ($playerPromise, $class, $session, $playerInfo, $authenticated, $world, $playerPos, $spawn, $offlinePlayerData) : void{
 				if(!$session->isConnected()){
