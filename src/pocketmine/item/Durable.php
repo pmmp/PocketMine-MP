@@ -52,7 +52,7 @@ abstract class Durable extends Item{
 	 * @return bool if any damage was applied to the item
 	 */
 	public function applyDamage(int $amount) : bool{
-		if($this->isUnbreakable() or $this->isBroken()){
+		if($this->isUnbreakable()){
 			return false;
 		}
 
