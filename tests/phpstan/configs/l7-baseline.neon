@@ -436,17 +436,7 @@ parameters:
 			path: ../../../src/block/tile/TileFactory.php
 
 		-
-			message: "#^Cannot access offset 'mode' on array\\(0 \\=\\> int, 1 \\=\\> int, 2 \\=\\> int, 3 \\=\\> int, 4 \\=\\> int, 5 \\=\\> int, 6 \\=\\> int, 7 \\=\\> int, \\.\\.\\.\\)\\|false\\.$#"
-			count: 1
-			path: ../../../src/command/CommandReader.php
-
-		-
-			message: "#^Parameter \\#1 \\$stream of method pocketmine\\\\command\\\\CommandReader\\:\\:isPipe\\(\\) expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: ../../../src/command/CommandReader.php
-
-		-
-			message: "#^Static property pocketmine\\\\command\\\\CommandReader\\:\\:\\$stdin \\(resource\\) does not accept resource\\|false\\.$#"
+			message: "#^Property pocketmine\\\\command\\\\CommandReader\\:\\:\\$stdin \\(resource\\) does not accept resource\\|false\\.$#"
 			count: 1
 			path: ../../../src/command/CommandReader.php
 
