@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use function array_key_exists;
@@ -108,7 +109,7 @@ final class ItemTranslator{
 			}
 		}
 
-		return new self(ItemTypeDictionary::getInstance(), $simpleMappings, $complexMappings);
+		return new self(GlobalItemTypeDictionary::getInstance()->getDictionary(), $simpleMappings, $complexMappings);
 	}
 
 	/**

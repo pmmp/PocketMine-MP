@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
-use function array_key_exists;
 use function file_get_contents;
 use function is_array;
 use function is_bool;
@@ -34,24 +34,8 @@ use function is_int;
 use function is_string;
 use function json_decode;
 
-final class ItemTypeDictionary{
+final class GlobalItemTypeDictionary{
 	use SingletonTrait;
-
-	/**
-	 * @var ItemTypeEntry[]
-	 * @phpstan-var list<ItemTypeEntry>
-	 */
-	private $itemTypes;
-	/**
-	 * @var string[]
-	 * @phpstan-var array<int, string>
-	 */
-	private $intToStringIdMap = [];
-	/**
-	 * @var int[]
-	 * @phpstan-var array<string, int>
-	 */
-	private $stringToIntMap = [];
 
 	private static function make() : self{
 		$data = file_get_contents(\pocketmine\RESOURCE_PATH . '/vanilla/required_item_list.json');
@@ -68,39 +52,14 @@ final class ItemTypeDictionary{
 			}
 			$params[] = new ItemTypeEntry($name, $entry["runtime_id"], $entry["component_based"]);
 		}
-		return new self($params);
+		return new self(new ItemTypeDictionary($params));
 	}
 
-	/**
-	 * @param ItemTypeEntry[] $itemTypes
-	 */
-	public function __construct(array $itemTypes){
-		$this->itemTypes = $itemTypes;
-		foreach($this->itemTypes as $type){
-			$this->stringToIntMap[$type->getStringId()] = $type->getNumericId();
-			$this->intToStringIdMap[$type->getNumericId()] = $type->getStringId();
-		}
+	private ItemTypeDictionary $dictionary;
+
+	public function __construct(ItemTypeDictionary $dictionary){
+		$this->dictionary = $dictionary;
 	}
 
-	/**
-	 * @return ItemTypeEntry[]
-	 * @phpstan-return list<ItemTypeEntry>
-	 */
-	public function getEntries() : array{
-		return $this->itemTypes;
-	}
-
-	public function fromStringId(string $stringId) : int{
-		if(!array_key_exists($stringId, $this->stringToIntMap)){
-			throw new \InvalidArgumentException("Unmapped string ID \"$stringId\"");
-		}
-		return $this->stringToIntMap[$stringId];
-	}
-
-	public function fromIntId(int $intId) : string{
-		if(!array_key_exists($intId, $this->intToStringIdMap)){
-			throw new \InvalidArgumentException("Unmapped int ID $intId");
-		}
-		return $this->intToStringIdMap[$intId];
-	}
+	public function getDictionary() : ItemTypeDictionary{ return $this->dictionary; }
 }

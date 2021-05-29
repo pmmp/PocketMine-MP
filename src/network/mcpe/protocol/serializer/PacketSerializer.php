@@ -30,7 +30,7 @@ use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\convert\ItemTypeDictionary;
+use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
@@ -73,7 +73,7 @@ class PacketSerializer extends BinaryStream{
 
 	public function __construct(string $buffer = "", int $offset = 0){
 		parent::__construct($buffer, $offset);
-		$this->shieldItemRuntimeId = ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield");
+		$this->shieldItemRuntimeId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId("minecraft:shield");
 	}
 
 	/**

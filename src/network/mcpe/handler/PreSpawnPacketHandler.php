@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\network\mcpe\cache\CraftingDataCache;
 use pocketmine\network\mcpe\cache\StaticPacketCache;
-use pocketmine\network\mcpe\convert\ItemTypeDictionary;
+use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
@@ -87,7 +87,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk->experiments = new Experiments([], false);
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
-		$pk->itemTable = ItemTypeDictionary::getInstance()->getEntries(); //TODO: check if this is actually needed
+		$pk->itemTable = GlobalItemTypeDictionary::getInstance()->getDictionary()->getEntries(); //TODO: check if this is actually needed
 		$pk->playerMovementSettings = new PlayerMovementSettings(PlayerMovementType::LEGACY, 0, false);
 		$this->session->sendDataPacket($pk);
 
