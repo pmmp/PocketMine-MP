@@ -171,4 +171,7 @@ class RakLibServer extends Thread{
 		}
 	}
 
+	public function getThreadName() : string{
+		return "RakLib";
+	}
 }
