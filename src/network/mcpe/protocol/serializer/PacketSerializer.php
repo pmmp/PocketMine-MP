@@ -61,6 +61,7 @@ use pocketmine\network\mcpe\protocol\types\StructureEditorData;
 use pocketmine\network\mcpe\protocol\types\StructureSettings;
 use pocketmine\utils\BinaryDataException;
 use pocketmine\utils\BinaryStream;
+use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function count;
 use function strlen;
@@ -95,7 +96,7 @@ class PacketSerializer extends BinaryStream{
 		//This is two little-endian longs: bytes 7-0 followed by bytes 15-8
 		$p1 = strrev($this->get(8));
 		$p2 = strrev($this->get(8));
-		return \Ramsey\Uuid\Uuid::fromBytes($p1 . $p2);
+		return Uuid::fromBytes($p1 . $p2);
 	}
 
 	public function putUUID(UuidInterface $uuid) : void{
