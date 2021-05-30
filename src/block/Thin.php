@@ -30,7 +30,7 @@ use function count;
 
 class Thin extends Transparent{
 	/** @var bool[] facing => dummy */
-	protected $connections = [];
+	protected array $connections = [];
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();

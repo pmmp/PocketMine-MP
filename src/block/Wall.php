@@ -29,9 +29,8 @@ use pocketmine\math\Facing;
 class Wall extends Transparent{
 
 	/** @var int[] facing => facing */
-	protected $connections = [];
-	/** @var bool */
-	protected $up = false;
+	protected array $connections = [];
+	protected bool $up = false;
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();

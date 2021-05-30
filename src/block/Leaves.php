@@ -37,13 +37,10 @@ use pocketmine\world\World;
 use function mt_rand;
 
 class Leaves extends Transparent{
-	/** @var TreeType */
-	protected $treeType;
 
-	/** @var bool */
-	protected $noDecay = false;
-	/** @var bool */
-	protected $checkDecay = false;
+	protected TreeType $treeType;
+	protected bool $noDecay = false;
+	protected bool $checkDecay = false;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, TreeType $treeType){
 		parent::__construct($idInfo, $name, $breakInfo);

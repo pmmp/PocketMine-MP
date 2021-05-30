@@ -49,20 +49,13 @@ use const PHP_INT_MAX;
 
 class Block{
 
-	/** @var BlockIdentifier */
-	protected $idInfo;
-
-	/** @var string */
-	protected $fallbackName;
-
-	/** @var BlockBreakInfo */
-	protected $breakInfo;
-
-	/** @var Position */
-	protected $pos;
+	protected BlockIdentifier $idInfo;
+	protected string $fallbackName;
+	protected BlockBreakInfo $breakInfo;
+	protected Position $pos;
 
 	/** @var AxisAlignedBB[]|null */
-	protected $collisionBoxes = null;
+	protected ?array $collisionBoxes = null;
 
 	/**
 	 * @param string          $name English name of the block type (TODO: implement translations)

@@ -39,8 +39,7 @@ use function max;
 class SnowLayer extends Flowable implements Fallable{
 	use FallableTrait;
 
-	/** @var int */
-	protected $layers = 1;
+	protected int $layers = 1;
 
 	protected function writeStateToMeta() : int{
 		return $this->layers - 1;

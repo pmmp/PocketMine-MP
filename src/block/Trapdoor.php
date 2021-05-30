@@ -36,10 +36,8 @@ use pocketmine\world\sound\DoorSound;
 class Trapdoor extends Transparent{
 	use HorizontalFacingTrait;
 
-	/** @var bool */
-	protected $open = false;
-	/** @var bool */
-	protected $top = false;
+	protected bool $open = false;
+	protected bool $top = false;
 
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::write5MinusHorizontalFacing($this->facing) | ($this->top ? BlockLegacyMetadata::TRAPDOOR_FLAG_UPPER : 0) | ($this->open ? BlockLegacyMetadata::TRAPDOOR_FLAG_OPEN : 0);

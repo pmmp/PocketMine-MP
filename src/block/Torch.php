@@ -32,8 +32,7 @@ use pocketmine\world\BlockTransaction;
 
 class Torch extends Flowable{
 
-	/** @var int */
-	protected $facing = Facing::UP;
+	protected int $facing = Facing::UP;
 
 	protected function writeStateToMeta() : int{
 		return $this->facing === Facing::UP ? 5 : 6 - BlockDataSerializer::writeHorizontalFacing($this->facing);

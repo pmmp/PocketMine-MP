@@ -25,8 +25,7 @@ namespace pocketmine\block;
 
 class Bedrock extends Opaque{
 
-	/** @var bool */
-	private $burnsForever = false;
+	private bool $burnsForever = false;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->burnsForever = ($stateMeta & BlockLegacyMetadata::BEDROCK_FLAG_INFINIBURN) !== 0;

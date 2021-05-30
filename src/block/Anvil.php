@@ -39,8 +39,7 @@ class Anvil extends Transparent implements Fallable{
 	use FallableTrait;
 	use HorizontalFacingTrait;
 
-	/** @var int */
-	private $damage = 0;
+	private int $damage = 0;
 
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->damage << 2);

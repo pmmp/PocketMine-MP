@@ -28,7 +28,7 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use pocketmine\command\Command;
-use pocketmine\command\CommandReader;
+use pocketmine\command\CommandReaderThread;
 use pocketmine\command\CommandSender;
 use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\SimpleCommandMap;
@@ -227,7 +227,7 @@ class Server{
 	/** @var MemoryManager */
 	private $memoryManager;
 
-	/** @var CommandReader */
+	/** @var CommandReaderThread */
 	private $console;
 
 	/** @var SimpleCommandMap */
@@ -1133,11 +1133,12 @@ class Server{
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $consoleSender);
 
 			$consoleNotifier = new SleeperNotifier();
-			$this->console = new CommandReader($consoleNotifier);
-			$this->tickSleeper->addNotifier($consoleNotifier, function() use ($consoleSender) : void{
+			$commandBuffer = new \Threaded();
+			$this->console = new CommandReaderThread($commandBuffer, $consoleNotifier);
+			$this->tickSleeper->addNotifier($consoleNotifier, function() use ($commandBuffer, $consoleSender) : void{
 				Timings::$serverCommand->startTiming();
-				while(($line = $this->console->getLine()) !== null){
-					$this->dispatchCommand($consoleSender, $line);
+				while(($line = $commandBuffer->shift()) !== null){
+					$this->dispatchCommand($consoleSender, (string) $line);
 				}
 				Timings::$serverCommand->stopTiming();
 			});
@@ -1422,7 +1423,7 @@ class Server{
 				$this->configGroup->save();
 			}
 
-			if($this->console instanceof CommandReader){
+			if($this->console instanceof CommandReaderThread){
 				$this->getLogger()->debug("Closing console");
 				$this->console->shutdown();
 				$this->console->notify();

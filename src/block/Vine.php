@@ -36,7 +36,7 @@ use function count;
 class Vine extends Flowable{
 
 	/** @var int[] */
-	protected $faces = [];
+	protected array $faces = [];
 
 	protected function writeStateToMeta() : int{
 		return

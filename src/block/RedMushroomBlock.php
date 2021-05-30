@@ -35,7 +35,7 @@ class RedMushroomBlock extends Opaque{
 	 * the legacy crap for now.
 	 * TODO: change this once proper blockstates are implemented
 	 */
-	protected $rotationData = 0;
+	protected int $rotationData = 0;
 
 	protected function writeStateToMeta() : int{
 		return $this->rotationData;

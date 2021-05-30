@@ -34,8 +34,7 @@ use pocketmine\world\BlockTransaction;
 
 class Sugarcane extends Flowable{
 
-	/** @var int */
-	protected $age = 0;
+	protected int $age = 0;
 
 	protected function writeStateToMeta() : int{
 		return $this->age;

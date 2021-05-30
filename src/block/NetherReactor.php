@@ -29,8 +29,7 @@ use pocketmine\item\VanillaItems;
 
 class NetherReactor extends Opaque{
 
-	/** @var int */
-	protected $state = BlockLegacyMetadata::NETHER_REACTOR_INACTIVE;
+	protected int $state = BlockLegacyMetadata::NETHER_REACTOR_INACTIVE;
 
 	protected function writeStateToMeta() : int{
 		return $this->state;

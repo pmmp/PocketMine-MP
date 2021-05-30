@@ -39,11 +39,8 @@ use function strlen;
 abstract class BaseSign extends Transparent{
 	//TODO: conditionally useless properties, find a way to fix
 
-	/** @var SignText */
-	protected $text;
-
-	/** @var int|null */
-	protected $editorEntityRuntimeId = null;
+	protected SignText $text;
+	protected ?int $editorEntityRuntimeId = null;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		parent::__construct($idInfo, $name, $breakInfo);

@@ -63,7 +63,7 @@ class TypeConverter{
 
 	public function __construct(){
 		//TODO: inject stuff via constructor
-		$this->shieldRuntimeId = ItemTypeDictionary::getInstance()->fromStringId("minecraft:shield");
+		$this->shieldRuntimeId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId("minecraft:shield");
 	}
 
 	/**

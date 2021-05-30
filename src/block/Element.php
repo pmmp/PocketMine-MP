@@ -25,12 +25,9 @@ namespace pocketmine\block;
 
 class Element extends Opaque{
 
-	/** @var int */
-	private $atomicWeight;
-	/** @var int */
-	private $group;
-	/** @var string */
-	private $symbol;
+	private int $atomicWeight;
+	private int $group;
+	private string $symbol;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, string $symbol, int $atomicWeight, int $group){
 		parent::__construct($idInfo, $name, $breakInfo);

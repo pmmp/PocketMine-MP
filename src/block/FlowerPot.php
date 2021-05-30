@@ -36,12 +36,9 @@ class FlowerPot extends Flowable{
 
 	/**
 	 * TODO: get rid of this hack (it's currently needed to deal with blockfactory state handling)
-	 * @var bool
 	 */
-	protected $occupied = false;
-
-	/** @var Block|null */
-	protected $plant = null;
+	protected bool $occupied = false;
+	protected ?Block $plant = null;
 
 	protected function writeStateToMeta() : int{
 		return $this->occupied ? BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED : 0;

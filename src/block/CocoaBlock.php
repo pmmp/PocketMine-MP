@@ -40,8 +40,7 @@ use function mt_rand;
 class CocoaBlock extends Transparent{
 	use HorizontalFacingTrait;
 
-	/** @var int */
-	protected $age = 0;
+	protected int $age = 0;
 
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::writeLegacyHorizontalFacing(Facing::opposite($this->facing)) | ($this->age << 2);

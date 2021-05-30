@@ -29,8 +29,8 @@ use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 
 class NetherPortal extends Transparent{
-	/** @var int */
-	protected $axis = Axis::X;
+
+	protected int $axis = Axis::X;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->axis = $stateMeta === BlockLegacyMetadata::NETHER_PORTAL_AXIS_Z ? Axis::Z : Axis::X; //mojang u dumb

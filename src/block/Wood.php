@@ -30,8 +30,7 @@ use pocketmine\player\Player;
 
 class Wood extends Opaque{
 
-	/** @var TreeType */
-	private $treeType;
+	private TreeType $treeType;
 
 	private bool $stripped;
 

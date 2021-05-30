@@ -72,7 +72,7 @@ abstract class BaseRail extends Flowable{
 	];
 
 	/** @var int[] */
-	protected $connections = [];
+	protected array $connections = [];
 
 	protected function writeStateToMeta() : int{
 		if(count($this->connections) === 0){

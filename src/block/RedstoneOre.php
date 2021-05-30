@@ -30,22 +30,22 @@ use pocketmine\player\Player;
 use function mt_rand;
 
 class RedstoneOre extends Opaque{
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
 
-	/** @var bool */
-	protected $lit = false;
+	protected BlockIdentifierFlattened $idInfoFlattened;
+
+	protected bool $lit = false;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
 		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->lit ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->lit ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->lit = $id === $this->idInfo->getSecondId();
+		$this->lit = $id === $this->idInfoFlattened->getSecondId();
 	}
 
 	public function isLit() : bool{

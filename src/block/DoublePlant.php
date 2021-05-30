@@ -31,8 +31,7 @@ use pocketmine\world\BlockTransaction;
 
 class DoublePlant extends Flowable{
 
-	/** @var bool */
-	protected $top = false;
+	protected bool $top = false;
 
 	protected function writeStateToMeta() : int{
 		return ($this->top ? BlockLegacyMetadata::DOUBLE_PLANT_FLAG_TOP : 0);

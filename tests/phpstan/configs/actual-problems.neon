@@ -6,7 +6,7 @@ parameters:
 			path: ../../../src/CrashDump.php
 
 		-
-			message: "#^Instanceof between pocketmine\\\\command\\\\CommandReader and pocketmine\\\\command\\\\CommandReader will always evaluate to true\\.$#"
+			message: "#^Instanceof between pocketmine\\\\command\\\\CommandReaderThread and pocketmine\\\\command\\\\CommandReaderThread will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/Server.php
 

@@ -32,8 +32,8 @@ use pocketmine\world\sound\RecordSound;
 use pocketmine\world\sound\RecordStopSound;
 
 class Jukebox extends Opaque{
-	/** @var Record|null */
-	private $record = null;
+
+	private ?Record $record = null;
 
 	public function getFuelTime() : int{
 		return 300;
