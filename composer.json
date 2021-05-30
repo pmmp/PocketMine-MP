@@ -34,7 +34,7 @@
       "adhocore/json-comment": "^1.1",
       "mdanter/ecc": "^1.0",
       "netresearch/jsonmapper": "^4.0",
-      "pocketmine/binaryutils": "^0.2.0",
+      "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/classloader": "dev-master",
       "pocketmine/color": "^0.2.0",

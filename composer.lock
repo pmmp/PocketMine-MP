@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7e519325ae271d7d2c56a481a64b8d44",
+    "content-hash": "59dbdc116eef096a5499b4c2b7082fb1",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -321,16 +321,16 @@
         },
         {
             "name": "pocketmine/binaryutils",
-            "version": "0.2.0",
+            "version": "0.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "595c4ca4b8056777729c8cc5db9614c731eaf63b"
+                "reference": "8cd078e2426f8100331f2d73bef10f481dad6cde"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/595c4ca4b8056777729c8cc5db9614c731eaf63b",
-                "reference": "595c4ca4b8056777729c8cc5db9614c731eaf63b",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/8cd078e2426f8100331f2d73bef10f481dad6cde",
+                "reference": "8cd078e2426f8100331f2d73bef10f481dad6cde",
                 "shasum": ""
             },
             "require": {
@@ -355,9 +355,9 @@
             "description": "Classes and methods for conveniently handling binary data",
             "support": {
                 "issues": "https://github.com/pmmp/BinaryUtils/issues",
-                "source": "https://github.com/pmmp/BinaryUtils/tree/0.2.0"
+                "source": "https://github.com/pmmp/BinaryUtils/tree/0.2.1"
             },
-            "time": "2021-05-18T15:23:45+00:00"
+            "time": "2021-05-30T19:42:57+00:00"
         },
         {
             "name": "pocketmine/callback-validator",
