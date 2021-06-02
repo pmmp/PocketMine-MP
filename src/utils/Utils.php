@@ -51,6 +51,7 @@ use function getenv;
 use function gettype;
 use function implode;
 use function is_array;
+use function is_bool;
 use function is_object;
 use function is_string;
 use function mb_check_encoding;
@@ -420,6 +421,9 @@ final class Utils{
 					}
 					if(is_string($value)){
 						return "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength);
+					}
+					if(is_bool($value)){
+						return $value ? "true" : "false";
 					}
 					return gettype($value) . " " . Utils::printable((string) $value);
 				}, $args));
