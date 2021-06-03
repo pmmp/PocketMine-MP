@@ -144,6 +144,22 @@ trait InventoryHelpersTrait{
 			}
 		}
 
+		foreach($itemSlots as $key1 => $slot1){
+			foreach($itemSlots as $key2 => $slot2){
+				if($key1 !== $key2 and $slot1->equals($slot2) and $slot1->getCount() < $slot1->getMaxStackSize()){
+					$amount = min($slot1->getMaxStackSize() - $slot1->getCount(), $slot2->getCount(), $this->getMaxStackSize());
+					if($amount > 0){
+						$slot2->setCount($slot2->getCount() - $amount);
+						$slot1->setCount($slot1->getCount() + $amount);
+						$itemSlots[$key1] = $slot1;
+						if($slot2->getCount() <= 0){
+							unset($itemSlots[$key2]);
+						}
+					}
+				}
+			}
+		}
+
 		$emptySlots = [];
 
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
