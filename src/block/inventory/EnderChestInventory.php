@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
+use pocketmine\block\tile\EnderChest;
 use pocketmine\inventory\BaseInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
@@ -42,6 +43,7 @@ use pocketmine\world\sound\Sound;
 class EnderChestInventory extends BaseInventory implements BlockInventory{
 	use AnimatedBlockInventoryTrait {
 		onClose as animatedBlockInventoryTrait_onClose;
+		onOpen as animatedBlockInventoryTrait_onOpen;
 	}
 
 	private PlayerEnderInventory $inventory;
@@ -100,8 +102,27 @@ class EnderChestInventory extends BaseInventory implements BlockInventory{
 		$holder->getWorld()->broadcastPacketToViewers($holder, BlockEventPacket::create(1, $isOpen ? 1 : 0, $holder->asVector3()));
 	}
 
+	public function onOpen(Player $who) : void{
+		parent::onOpen($who);
+
+		/** @var EnderChest $enderChest */
+		$enderChest = $this->holder->getWorld()->getTile($this->holder);
+		if($enderChest->getViewerCount() < 1 and $this->getHolder()->isValid()){
+			$this->animateBlock(true);
+			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getOpenSound());
+		}
+	}
+
 	public function onClose(Player $who) : void{
-		$this->animatedBlockInventoryTrait_onClose($who);
+		/** @var EnderChest $enderChest */
+		$enderChest = $this->holder->getWorld()->getTile($this->holder);
+		$enderChest->setViewerCount($enderChest->getViewerCount() - 1);
+		//$this->animatedBlockInventoryTrait_onClose($who);
+		if($enderChest->getViewerCount() < 1 and $this->getHolder()->isValid()){
+			$this->animateBlock(false);
+			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getCloseSound());
+		}
+		parent::onClose($who);
 		if($who === $this->inventory->getHolder()){
 			$this->inventory->getListeners()->remove($this->inventoryListener);
 			$this->inventoryListener = CallbackInventoryListener::onAnyChange(static function() : void{}); //break cyclic reference

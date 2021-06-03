@@ -27,6 +27,19 @@ use pocketmine\nbt\tag\CompoundTag;
 
 class EnderChest extends Spawnable{
 
+	protected int $viewerCount = 0;
+
+	public function getViewerCount() : int{
+		return $this->viewerCount;
+	}
+
+	public function setViewerCount(int $viewerCount) : self{
+		if($viewerCount < 0)
+			throw new \UnexpectedValueException($viewerCount . ' is too small of a value');
+		$this->viewerCount = $viewerCount;
+		return $this;
+	}
+
 	public function readSaveData(CompoundTag $nbt) : void{
 
 	}
