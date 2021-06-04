@@ -77,7 +77,7 @@ final class CraftingDataCache{
 			foreach($list as $recipe){
 				$pk->entries[] = new ProtocolShapelessRecipe(
 					CraftingDataPacket::ENTRY_SHAPELESS,
-					Binary::writeInt($counter++),
+					Binary::writeInt(++$counter),
 					array_map(function(Item $item) use ($converter) : RecipeIngredient{
 						return $converter->coreItemStackToRecipeIngredient($item);
 					}, $recipe->getIngredientList()),
@@ -102,7 +102,7 @@ final class CraftingDataCache{
 				}
 				$pk->entries[] = $r = new ProtocolShapedRecipe(
 					CraftingDataPacket::ENTRY_SHAPED,
-					Binary::writeInt($counter++),
+					Binary::writeInt(++$counter),
 					$inputs,
 					array_map(function(Item $item) use ($converter) : ItemStack{
 						return $converter->coreItemStackToNet($item);

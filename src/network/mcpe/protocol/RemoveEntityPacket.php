@@ -31,24 +31,24 @@ class RemoveEntityPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::REMOVE_ENTITY_PACKET;
 
 	/** @var int */
-	private $uvarint1;
+	private $entityNetId;
 
-	public static function create(int $uvarint1) : self{
+	public static function create(int $entityNetId) : self{
 		$result = new self;
-		$result->uvarint1 = $uvarint1;
+		$result->entityNetId = $entityNetId;
 		return $result;
 	}
 
-	public function getUvarint1() : int{
-		return $this->uvarint1;
+	public function getEntityNetId() : int{
+		return $this->entityNetId;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
-		$this->uvarint1 = $in->getUnsignedVarInt();
+		$this->entityNetId = $in->getUnsignedVarInt();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
-		$out->putUnsignedVarInt($this->uvarint1);
+		$out->putUnsignedVarInt($this->entityNetId);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

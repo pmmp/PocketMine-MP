@@ -30,6 +30,13 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 class SetDisplayObjectivePacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::SET_DISPLAY_OBJECTIVE_PACKET;
 
+	public const DISPLAY_SLOT_LIST = "list";
+	public const DISPLAY_SLOT_SIDEBAR = "sidebar";
+	public const DISPLAY_SLOT_BELOW_NAME = "belowname";
+
+	public const SORT_ORDER_ASCENDING = 0;
+	public const SORT_ORDER_DESCENDING = 1;
+
 	/** @var string */
 	public $displaySlot;
 	/** @var string */
