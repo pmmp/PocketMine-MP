@@ -137,19 +137,22 @@ class Leaves extends Transparent{
 	}
 
 	public function getDrops(Item $item) : array{
-		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
-			return $this->getDropsForCompatibleTool($item);
-		}
+		$drops = parent::getDrops($item);
 
-		$drops = [];
-		if(mt_rand(1, 20) === 1){ //Saplings
-			$drops[] = ItemFactory::getInstance()->get(ItemIds::SAPLING, $this->treeType->getMagicNumber());
-		}
-		if(($this->treeType->equals(TreeType::OAK()) or $this->treeType->equals(TreeType::DARK_OAK())) and mt_rand(1, 200) === 1){ //Apples
-			$drops[] = VanillaItems::APPLE();
+		if(count($drops) < 1){
+			if(mt_rand(1, 20) === 1){ //Saplings
+				$drops[] = ItemFactory::getInstance()->get(ItemIds::SAPLING, $this->treeType->getMagicNumber());
+			}
+			if(($this->treeType->equals(TreeType::OAK()) or $this->treeType->equals(TreeType::DARK_OAK())) and mt_rand(1, 200) === 1){ //Apples
+				$drops[] = VanillaItems::APPLE();
+			}
 		}
 
 		return $drops;
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
 	}
 
 	public function getFlameEncouragement() : int{
