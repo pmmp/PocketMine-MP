@@ -500,6 +500,6 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function canFlowInto(Block $block) : bool{
-		return $this->pos->getWorld()->isInWorld($block->pos->x, $block->pos->y, $block->pos->z) and $block->canBeFlowedInto() and !($block instanceof Liquid and $block->isSource()); //TODO: I think this should only be liquids of the same type
+		return $this->pos->getWorld()->isInWorld($block->pos->x, $block->pos->y, $block->pos->z) and $block->canBeFlowedInto() and !($block instanceof Liquid and $block->isSource()) and !($block instanceof Air and $block->pos->getWorld()->getChunk($block->pos->x >> 4, $block->pos->z >> 4) !== null); //TODO: I think this should only be liquids of the same type
 	}
 }
