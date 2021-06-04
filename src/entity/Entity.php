@@ -1247,7 +1247,7 @@ abstract class Entity{
 			$inset = 0.001; //Offset against floating-point errors
 
 			$minX = (int) floor($this->boundingBox->minX + $inset);
-			$minY = (int) floor($this->boundingBox->minY + $inset);
+			$minY = (int) floor($this->boundingBox->minY + $inset - (($this->boundingBox->minY - ((int) $this->boundingBox->minY)) > 2 / 16 ? 0 : 1));
 			$minZ = (int) floor($this->boundingBox->minZ + $inset);
 			$maxX = (int) floor($this->boundingBox->maxX - $inset);
 			$maxY = (int) floor($this->boundingBox->maxY - $inset);
