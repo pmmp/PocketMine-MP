@@ -34,6 +34,7 @@ use pocketmine\nbt\tag\ListTag;
 use function count;
 
 class Banner extends ItemBlockWallOrFloor{
+	public const TAG_TYPE = TileBanner::TAG_TYPE; // IntTag
 	public const TAG_PATTERNS = TileBanner::TAG_PATTERNS;
 	public const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
 	public const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
@@ -46,6 +47,8 @@ class Banner extends ItemBlockWallOrFloor{
 	 * @phpstan-var list<BannerPatternLayer>
 	 */
 	private $patterns = [];
+
+	private bool $illagerPattern = false;
 
 	public function __construct(ItemIdentifier $identifier, Block $floorVariant, Block $wallVariant){
 		parent::__construct($identifier, $floorVariant, $wallVariant);
@@ -86,6 +89,15 @@ class Banner extends ItemBlockWallOrFloor{
 		return $this;
 	}
 
+	public function isIllagerPattern() : bool{
+		return $this->illagerPattern;
+	}
+
+	public function setIllagerPattern(bool $illagerPattern) : self{
+		$this->illagerPattern = $illagerPattern;
+		return $this;
+	}
+
 	public function getFuelTime() : int{
 		return 300;
 	}
@@ -109,6 +121,7 @@ class Banner extends ItemBlockWallOrFloor{
 				$this->patterns[] = new BannerPatternLayer($patternType, $patternColor);
 			}
 		}
+		$this->illagerPattern = (bool) $tag->getInt(self::TAG_TYPE, 0);
 	}
 
 	protected function serializeCompoundTag(CompoundTag $tag) : void{
@@ -129,5 +142,6 @@ class Banner extends ItemBlockWallOrFloor{
 		}else{
 			$tag->removeTag(self::TAG_PATTERNS);
 		}
+		$tag->setInt(self::TAG_TYPE, (int) $this->illagerPattern);
 	}
 }

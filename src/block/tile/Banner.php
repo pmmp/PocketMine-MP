@@ -40,6 +40,7 @@ use pocketmine\world\World;
 class Banner extends Spawnable{
 
 	public const TAG_BASE = "Base";
+	public const TAG_TYPE = "Type"; // IntTag
 	public const TAG_PATTERNS = "Patterns";
 	public const TAG_PATTERN_COLOR = "Color";
 	public const TAG_PATTERN_NAME = "Pattern";
@@ -52,6 +53,8 @@ class Banner extends Spawnable{
 	 * @phpstan-var list<BannerPatternLayer>
 	 */
 	private $patterns = [];
+
+	private bool $illagerPattern = false;
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->baseColor = DyeColor::BLACK();
@@ -83,6 +86,8 @@ class Banner extends Spawnable{
 				$this->patterns[] = new BannerPatternLayer($patternType, $patternColor);
 			}
 		}
+
+		$this->illagerPattern = (bool) $nbt->getInt(self::TAG_TYPE, 0);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
@@ -97,6 +102,7 @@ class Banner extends Spawnable{
 			);
 		}
 		$nbt->setTag(self::TAG_PATTERNS, $patterns);
+		$nbt->setInt(self::TAG_TYPE, (int) $this->illagerPattern);
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
@@ -111,6 +117,7 @@ class Banner extends Spawnable{
 			);
 		}
 		$nbt->setTag(self::TAG_PATTERNS, $patterns);
+		$nbt->setInt(self::TAG_TYPE, (int) $this->illagerPattern);
 	}
 
 	/**
@@ -142,6 +149,14 @@ class Banner extends Spawnable{
 	 */
 	public function setPatterns(array $patterns) : void{
 		$this->patterns = $patterns;
+	}
+
+	public function isIllagerPattern() : bool{
+		return $this->illagerPattern;
+	}
+
+	public function setIllagerPattern(bool $illagerPattern) : void{
+		$this->illagerPattern = $illagerPattern;
 	}
 
 	public function getDefaultName() : string{
