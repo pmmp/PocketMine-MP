@@ -178,7 +178,6 @@ trait InventoryHelpersTrait{
 
 		if(count($emptySlots) > 0){
 			foreach($emptySlots as $slotIndex){
-				//This loop only gets the first item, then goes to the next empty slot
 				$amount = min($slot->getMaxStackSize(), $slot->getCount(), $this->getMaxStackSize());
 				$slot->setCount($slot->getCount() - $amount);
 				$item = clone $slot;
