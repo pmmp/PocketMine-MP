@@ -87,7 +87,7 @@ class Banner extends Spawnable{
 			}
 		}
 
-		$this->illagerPattern = (bool) $nbt->getInt(self::TAG_TYPE, 0);
+		$this->illagerPattern = $nbt->getInt(self::TAG_TYPE, 0) !== 0;
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
@@ -102,7 +102,7 @@ class Banner extends Spawnable{
 			);
 		}
 		$nbt->setTag(self::TAG_PATTERNS, $patterns);
-		$nbt->setInt(self::TAG_TYPE, (int) $this->illagerPattern);
+		$nbt->setInt(self::TAG_TYPE, $this->illagerPattern ? 1 : 0);
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
@@ -117,7 +117,7 @@ class Banner extends Spawnable{
 			);
 		}
 		$nbt->setTag(self::TAG_PATTERNS, $patterns);
-		$nbt->setInt(self::TAG_TYPE, (int) $this->illagerPattern);
+		$nbt->setInt(self::TAG_TYPE, $this->illagerPattern ? 1 : 0);
 	}
 
 	/**
