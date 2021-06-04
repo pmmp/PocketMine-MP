@@ -34,6 +34,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
+use function count;
 use function mt_rand;
 
 class Leaves extends Transparent{
