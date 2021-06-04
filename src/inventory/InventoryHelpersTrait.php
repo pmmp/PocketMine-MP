@@ -144,22 +144,17 @@ trait InventoryHelpersTrait{
 			}
 		}
 
-		foreach($itemSlots as $key1 => $slot1){
-			foreach($itemSlots as $key2 => $slot2){
-				if($key1 !== $key2 and $slot1->equals($slot2) and $slot1->getCount() < $slot1->getMaxStackSize()){
-					$amount = min($slot1->getMaxStackSize() - $slot1->getCount(), $slot2->getCount(), $this->getMaxStackSize());
-					if($amount > 0){
-						$slot2->setCount($slot2->getCount() - $amount);
-						$slot1->setCount($slot1->getCount() + $amount);
-						$itemSlots[$key1] = $slot1;
-						if($slot2->getCount() <= 0){
-							unset($itemSlots[$key2]);
-						}
-					}
-				}
-			}
+		/** @var Item[] $returnSlots */
+		$returnSlots = [];
+
+		foreach($itemSlots as $item){
+			$returnSlots[] = $this->internalAddItem($item);
 		}
 
+		return $returnSlots;
+	}
+
+	private function internalAddItem(Item $slot) : Item{
 		$emptySlots = [];
 
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
@@ -168,43 +163,32 @@ trait InventoryHelpersTrait{
 				$emptySlots[] = $i;
 			}
 
-			foreach($itemSlots as $index => $slot){
-				if($slot->equals($item) and $item->getCount() < $item->getMaxStackSize()){
-					$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
-					if($amount > 0){
-						$slot->setCount($slot->getCount() - $amount);
-						$item->setCount($item->getCount() + $amount);
-						$this->setItem($i, $item);
-						if($slot->getCount() <= 0){
-							unset($itemSlots[$index]);
-						}
+			if($slot->equals($item) and $item->getCount() < $item->getMaxStackSize()){
+				$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
+				if($amount > 0){
+					$slot->setCount($slot->getCount() - $amount);
+					$item->setCount($item->getCount() + $amount);
+					$this->setItem($i, $item);
+					if($slot->getCount() <= 0){
+						break;
 					}
 				}
 			}
+		}
 
-			if(count($itemSlots) === 0){
+		if(count($emptySlots) > 0){
+			foreach($emptySlots as $slotIndex){
+				//This loop only gets the first item, then goes to the next empty slot
+				$amount = min($slot->getMaxStackSize(), $slot->getCount(), $this->getMaxStackSize());
+				$slot->setCount($slot->getCount() - $amount);
+				$item = clone $slot;
+				$item->setCount($amount);
+				$this->setItem($slotIndex, $item);
 				break;
 			}
 		}
 
-		if(count($itemSlots) > 0 and count($emptySlots) > 0){
-			foreach($emptySlots as $slotIndex){
-				//This loop only gets the first item, then goes to the next empty slot
-				foreach($itemSlots as $index => $slot){
-					$amount = min($slot->getMaxStackSize(), $slot->getCount(), $this->getMaxStackSize());
-					$slot->setCount($slot->getCount() - $amount);
-					$item = clone $slot;
-					$item->setCount($amount);
-					$this->setItem($slotIndex, $item);
-					if($slot->getCount() <= 0){
-						unset($itemSlots[$index]);
-					}
-					break;
-				}
-			}
-		}
-
-		return $itemSlots;
+		return $slot;
 	}
 
 	public function removeItem(Item ...$slots) : array{
