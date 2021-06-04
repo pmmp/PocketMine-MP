@@ -53,8 +53,8 @@ class EnderChest extends Transparent{
 		if($player instanceof Player){
 			$enderChest = $this->pos->getWorld()->getTile($this->pos);
 			if($enderChest instanceof TileEnderChest and $this->getSide(Facing::UP)->isTransparent()){
-				$player->setCurrentWindow(new EnderChestInventory($this->pos, $player->getEnderInventory()));
 				$enderChest->setViewerCount($enderChest->getViewerCount() + 1);
+				$player->setCurrentWindow(new EnderChestInventory($this->pos, $player->getEnderInventory()));
 			}
 		}
 
