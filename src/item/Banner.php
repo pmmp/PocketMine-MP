@@ -93,8 +93,10 @@ class Banner extends ItemBlockWallOrFloor{
 		return $this->illagerPattern;
 	}
 
-	public function setIllagerPattern(bool $illagerPattern) : void{
+	public function setIllagerPattern(bool $illagerPattern) : self{
 		$this->illagerPattern = $illagerPattern;
+		$this->color = DyeColor::WHITE(); // meta 15 matches vanilla
+		return $this;
 	}
 
 	public function getFuelTime() : int{
