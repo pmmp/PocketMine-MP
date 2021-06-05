@@ -51,6 +51,7 @@ use function getenv;
 use function gettype;
 use function implode;
 use function is_array;
+use function is_bool;
 use function is_object;
 use function is_string;
 use function mb_check_encoding;
@@ -64,6 +65,7 @@ use function preg_grep;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
+use function spl_object_id;
 use function str_pad;
 use function str_split;
 use function stripos;
@@ -412,13 +414,16 @@ final class Utils{
 
 				$params = implode(", ", array_map(function($value) use($maxStringLength) : string{
 					if(is_object($value)){
-						return "object " . self::getNiceClassName($value);
+						return "object " . self::getNiceClassName($value) . "#" . spl_object_id($value);
 					}
 					if(is_array($value)){
 						return "array[" . count($value) . "]";
 					}
 					if(is_string($value)){
 						return "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength);
+					}
+					if(is_bool($value)){
+						return $value ? "true" : "false";
 					}
 					return gettype($value) . " " . Utils::printable((string) $value);
 				}, $args));
