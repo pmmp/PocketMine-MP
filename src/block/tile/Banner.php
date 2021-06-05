@@ -27,6 +27,7 @@ use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\BannerPatternTypeIdMap;
 use pocketmine\data\bedrock\DyeColorIdMap;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -118,6 +119,12 @@ class Banner extends Spawnable{
 		}
 		$nbt->setTag(self::TAG_PATTERNS, $patterns);
 		$nbt->setInt(self::TAG_TYPE, $this->illagerPattern ? 1 : 0);
+	}
+
+	public function copyDataFromItem(Item $item) : void{
+		parent::copyDataFromItem($item);
+		/** @var \pocketmine\item\Banner $item */
+		$this->illagerPattern = $item->isIllagerPattern();
 	}
 
 	/**
