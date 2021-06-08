@@ -163,6 +163,8 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 	public $multiplayerCorrelationId = ""; //TODO: this should be filled with a UUID of some sort
 	/** @var bool */
 	public $enableNewInventorySystem = false; //TODO
+	/** @var string */
+	public $serverSoftwareVersion;
 
 	/**
 	 * @var BlockPaletteEntry[]
@@ -256,6 +258,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 
 		$this->multiplayerCorrelationId = $in->getString();
 		$this->enableNewInventorySystem = $in->getBool();
+		$this->serverSoftwareVersion = $in->getString();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
@@ -336,6 +339,7 @@ class StartGamePacket extends DataPacket implements ClientboundPacket{
 
 		$out->putString($this->multiplayerCorrelationId);
 		$out->putBool($this->enableNewInventorySystem);
+		$out->putString($this->serverSoftwareVersion);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

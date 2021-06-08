@@ -202,6 +202,9 @@ class PacketPool{
 		$this->registerPacket(new ItemComponentPacket());
 		$this->registerPacket(new FilterTextPacket());
 		$this->registerPacket(new ClientboundDebugRendererPacket());
+		$this->registerPacket(new SyncActorPropertyPacket());
+		$this->registerPacket(new AddVolumeEntityPacket());
+		$this->registerPacket(new RemoveVolumeEntityPacket());
 	}
 
 	public function registerPacket(Packet $packet) : void{
