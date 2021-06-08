@@ -25,26 +25,33 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\nbt\NetworkLittleEndianNBTStream;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\NetworkSession;
 
-class GameRulesChangedPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::GAME_RULES_CHANGED_PACKET;
+class SyncActorPropertyPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::SYNC_ACTOR_PROPERTY_PACKET;
 
-	/**
-	 * @var mixed[][]
-	 * @phpstan-var array<string, array{0: int, 1: bool|int|float, 2: bool}>
-	 */
-	public $gameRules = [];
+	/** @var CompoundTag */
+	private $data;
 
-	protected function decodePayload(){
-		$this->gameRules = $this->getGameRules();
+	public static function create(CompoundTag $data) : self{
+		$result = new self;
+		$result->data = $data;
+		return $result;
 	}
 
-	protected function encodePayload(){
-		$this->putGameRules($this->gameRules);
+	public function getData() : CompoundTag{ return $this->data; }
+
+	protected function decodePayload() : void{
+		$this->data = $this->getNbtCompoundRoot();
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleGameRulesChanged($this);
+	protected function encodePayload() : void{
+		$this->put((new NetworkLittleEndianNBTStream())->write($this->data));
+	}
+
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handleSyncActorProperty($this);
 	}
 }

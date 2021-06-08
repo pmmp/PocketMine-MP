@@ -31,6 +31,7 @@ use pocketmine\network\mcpe\protocol\AddEntityPacket;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\AddPaintingPacket;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\protocol\AddVolumeEntityPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AnimateEntityPacket;
 use pocketmine\network\mcpe\protocol\AnimatePacket;
@@ -130,6 +131,7 @@ use pocketmine\network\mcpe\protocol\PurchaseReceiptPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\RemoveEntityPacket;
 use pocketmine\network\mcpe\protocol\RemoveObjectivePacket;
+use pocketmine\network\mcpe\protocol\RemoveVolumeEntityPacket;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkDataPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackChunkRequestPacket;
@@ -172,6 +174,7 @@ use pocketmine\network\mcpe\protocol\StructureBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\StructureTemplateDataRequestPacket;
 use pocketmine\network\mcpe\protocol\StructureTemplateDataResponsePacket;
 use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
+use pocketmine\network\mcpe\protocol\SyncActorPropertyPacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TickSyncPacket;
@@ -824,6 +827,18 @@ abstract class NetworkSession{
 	}
 
 	public function handleClientboundDebugRenderer(ClientboundDebugRendererPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleSyncActorProperty(SyncActorPropertyPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleAddVolumeEntity(AddVolumeEntityPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleRemoveVolumeEntity(RemoveVolumeEntityPacket $packet) : bool{
 		return false;
 	}
 }

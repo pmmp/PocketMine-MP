@@ -215,6 +215,7 @@ use function min;
 use function preg_match;
 use function round;
 use function spl_object_hash;
+use function sprintf;
 use function sqrt;
 use function strlen;
 use function strpos;
@@ -2279,6 +2280,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->experiments = new Experiments([], false);
 		$pk->itemTable = ItemTypeDictionary::getInstance()->getEntries();
 		$pk->playerMovementSettings = new PlayerMovementSettings(PlayerMovementType::LEGACY, 0, false);
+		$pk->serverSoftwareVersion = sprintf("%s %s", \pocketmine\NAME, \pocketmine\VERSION);
 		$this->dataPacket($pk);
 
 		$this->sendDataPacket(new AvailableActorIdentifiersPacket());

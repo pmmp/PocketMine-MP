@@ -581,7 +581,7 @@ parameters:
 			path: ../../../src/pocketmine/level/generator/object/TallGrass.php
 
 		-
-			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:getGameRules\\(\\) should return array\\<string, array\\(int, bool\\|float\\|int\\)\\> but returns array\\<string, array\\(int, bool\\|float\\|int\\|null\\)\\>\\.$#"
+			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:getGameRules\\(\\) should return array\\<string, array\\(int, bool\\|float\\|int, bool\\)\\> but returns array\\<string, array\\(int, bool\\|float\\|int\\|null, bool\\)\\>\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
 
@@ -638,6 +638,11 @@ parameters:
 		-
 			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/AddVolumeEntityPacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/AvailableActorIdentifiersPacket.php
 
 		-
@@ -679,6 +684,11 @@ parameters:
 			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/StartGamePacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/SyncActorPropertyPacket.php
 
 		-
 			message: "#^Parameter \\#3 \\$resourcePatch of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"

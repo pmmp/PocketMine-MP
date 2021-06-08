@@ -27,24 +27,29 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class GameRulesChangedPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::GAME_RULES_CHANGED_PACKET;
+class RemoveVolumeEntityPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::REMOVE_VOLUME_ENTITY_PACKET;
 
-	/**
-	 * @var mixed[][]
-	 * @phpstan-var array<string, array{0: int, 1: bool|int|float, 2: bool}>
-	 */
-	public $gameRules = [];
+	/** @var int */
+	private $entityNetId;
 
-	protected function decodePayload(){
-		$this->gameRules = $this->getGameRules();
+	public static function create(int $entityNetId) : self{
+		$result = new self;
+		$result->entityNetId = $entityNetId;
+		return $result;
 	}
 
-	protected function encodePayload(){
-		$this->putGameRules($this->gameRules);
+	public function getEntityNetId() : int{ return $this->entityNetId; }
+
+	protected function decodePayload() : void{
+		$this->entityNetId = $this->getUnsignedVarInt();
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleGameRulesChanged($this);
+	protected function encodePayload() : void{
+		$this->putUnsignedVarInt($this->entityNetId);
+	}
+
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handleRemoveVolumeEntity($this);
 	}
 }

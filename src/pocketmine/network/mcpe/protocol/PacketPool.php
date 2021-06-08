@@ -195,6 +195,9 @@ class PacketPool{
 		static::registerPacket(new ItemComponentPacket());
 		static::registerPacket(new FilterTextPacket());
 		static::registerPacket(new ClientboundDebugRendererPacket());
+		static::registerPacket(new SyncActorPropertyPacket());
+		static::registerPacket(new AddVolumeEntityPacket());
+		static::registerPacket(new RemoveVolumeEntityPacket());
 	}
 
 	/**
