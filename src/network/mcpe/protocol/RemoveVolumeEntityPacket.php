@@ -21,33 +21,35 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\network\mcpe\protocol\types;
+namespace pocketmine\network\mcpe\protocol;
+
+#include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 
-final class IntGameRule extends GameRule{
+class RemoveVolumeEntityPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::REMOVE_VOLUME_ENTITY_PACKET;
 
 	/** @var int */
-	private $value;
+	private $entityNetId;
 
-	public function __construct(int $value, bool $isPlayerModifiable){
-		parent::__construct($isPlayerModifiable);
-		$this->value = $value;
+	public static function create(int $entityNetId) : self{
+		$result = new self;
+		$result->entityNetId = $entityNetId;
+		return $result;
 	}
 
-	public function getType() : int{
-		return GameRuleType::INT;
+	public function getEntityNetId() : int{ return $this->entityNetId; }
+
+	protected function decodePayload(PacketSerializer $in) : void{
+		$this->entityNetId = $in->getUnsignedVarInt();
 	}
 
-	public function getValue() : int{
-		return $this->value;
+	protected function encodePayload(PacketSerializer $out) : void{
+		$out->putUnsignedVarInt($this->entityNetId);
 	}
 
-	public function encode(PacketSerializer $out) : void{
-		$out->putUnsignedVarInt($this->value);
-	}
-
-	public static function decode(PacketSerializer $in, bool $isPlayerModifiable) : self{
-		return new self($in->getUnsignedVarInt(), $isPlayerModifiable);
+	public function handle(PacketHandlerInterface $handler) : bool{
+		return $handler->handleRemoveVolumeEntity($this);
 	}
 }

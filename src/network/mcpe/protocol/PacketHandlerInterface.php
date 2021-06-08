@@ -344,4 +344,10 @@ interface PacketHandlerInterface{
 	public function handleFilterText(FilterTextPacket $packet) : bool;
 
 	public function handleClientboundDebugRenderer(ClientboundDebugRendererPacket $packet) : bool;
+
+	public function handleSyncActorProperty(SyncActorPropertyPacket $packet) : bool;
+
+	public function handleAddVolumeEntity(AddVolumeEntityPacket $packet) : bool;
+
+	public function handleRemoveVolumeEntity(RemoveVolumeEntityPacket $packet) : bool;
 }

@@ -29,7 +29,8 @@ final class FloatGameRule extends GameRule{
 	/** @var float */
 	private $value;
 
-	public function __construct(float $value){
+	public function __construct(float $value, bool $isPlayerModifiable){
+		parent::__construct($isPlayerModifiable);
 		$this->value = $value;
 	}
 
@@ -45,7 +46,7 @@ final class FloatGameRule extends GameRule{
 		$out->putLFloat($this->value);
 	}
 
-	public static function decode(PacketSerializer $in) : self{
-		return new self($in->getLFloat());
+	public static function decode(PacketSerializer $in, bool $isPlayerModifiable) : self{
+		return new self($in->getLFloat(), $isPlayerModifiable);
 	}
 }

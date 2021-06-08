@@ -30,7 +30,8 @@ final class BoolGameRule extends GameRule{
 	/** @var bool */
 	private $value;
 
-	public function __construct(bool $value){
+	public function __construct(bool $value, bool $isPlayerModifiable){
+		parent::__construct($isPlayerModifiable);
 		$this->value = $value;
 	}
 
@@ -46,7 +47,7 @@ final class BoolGameRule extends GameRule{
 		$out->putBool($this->value);
 	}
 
-	public static function decode(PacketSerializer $in) : self{
-		return new self($in->getBool());
+	public static function decode(PacketSerializer $in, bool $isPlayerModifiable) : self{
+		return new self($in->getBool(), $isPlayerModifiable);
 	}
 }
