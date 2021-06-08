@@ -47,7 +47,7 @@ class ChunkRequestTask extends AsyncTask{
 	/** @var Compressor */
 	protected $compressor;
 	/** @var int */
-	protected $protocolId;
+	protected $mappingProtocol;
 
 	/** @var string */
 	private $tiles = "";
@@ -55,9 +55,9 @@ class ChunkRequestTask extends AsyncTask{
 	/**
 	 * @phpstan-param (\Closure() : void)|null $onError
 	 */
-	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, int $protocolId, CompressBatchPromise $promise, Compressor $compressor, ?\Closure $onError = null){
+	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, int $mappingProtocol, CompressBatchPromise $promise, Compressor $compressor, ?\Closure $onError = null){
 		$this->compressor = $compressor;
-		$this->protocolId = $protocolId;
+		$this->mappingProtocol = $mappingProtocol;
 
 		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
 		$this->chunkX = $chunkX;
@@ -71,8 +71,8 @@ class ChunkRequestTask extends AsyncTask{
 	public function onRun() : void{
 		$chunk = FastChunkSerializer::deserialize($this->chunk);
 		$subCount = ChunkSerializer::getSubChunkCount($chunk);
-		$payload = ChunkSerializer::serialize($chunk, RuntimeBlockMapping::getInstance(), $this->protocolId, $this->tiles);
-		$this->setResult($this->compressor->compress(PacketBatch::fromPackets($this->protocolId, LevelChunkPacket::withoutCache($this->chunkX, $this->chunkZ, $subCount, $payload))->getBuffer()));
+		$payload = ChunkSerializer::serialize($chunk, RuntimeBlockMapping::getInstance(), $this->mappingProtocol, $this->tiles);
+		$this->setResult($this->compressor->compress(PacketBatch::fromPackets($this->mappingProtocol, LevelChunkPacket::withoutCache($this->chunkX, $this->chunkZ, $subCount, $payload))->getBuffer()));
 	}
 
 	public function onError() : void{

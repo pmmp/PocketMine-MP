@@ -38,6 +38,6 @@ class BlockBreakSound extends MappingSound{
 	}
 
 	public function encode(?Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_BREAK, $pos, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->protocolId))];
+		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_BREAK, $pos, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->mappingProtocol))];
 	}
 }

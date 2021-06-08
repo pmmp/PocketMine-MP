@@ -210,7 +210,7 @@ class ItemEntity extends Entity{
 		$pk->entityRuntimeId = $this->getId();
 		$pk->position = $this->location->asVector3();
 		$pk->motion = $this->getMotion();
-		$pk->item = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getItem()));
+		$pk->item = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($player->getNetworkSession()->getProtocolId(), $this->getItem()));
 		$pk->metadata = $this->getAllNetworkData($player->getNetworkSession()->getProtocolId());
 
 		$player->getNetworkSession()->sendDataPacket($pk);

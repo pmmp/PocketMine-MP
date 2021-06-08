@@ -42,6 +42,6 @@ class BlockPunchParticle extends MappingParticle{
 	}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->protocolId) | ($this->face << 24), $pos)];
+		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_PUNCH_BLOCK, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->mappingProtocol) | ($this->face << 24), $pos)];
 	}
 }

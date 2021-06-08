@@ -701,7 +701,11 @@ class PacketSerializer extends BinaryStream{
 		$rules = [];
 		for($i = 0; $i < $count; ++$i){
 			$name = $this->getString();
-			$isPlayerModifiable = $this->getBool();
+			if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_0){
+				$isPlayerModifiable = $this->getBool();
+			}else{
+				$isPlayerModifiable = false;
+			}
 			$type = $this->getUnsignedVarInt();
 			$rules[$name] = $this->readGameRule($type, $isPlayerModifiable);
 		}
@@ -719,7 +723,9 @@ class PacketSerializer extends BinaryStream{
 		$this->putUnsignedVarInt(count($rules));
 		foreach($rules as $name => $rule){
 			$this->putString($name);
-			$this->putBool($rule->isPlayerModifiable());
+			if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_0){
+				$this->putBool($rule->isPlayerModifiable());
+			}
 			$this->putUnsignedVarInt($rule->getType());
 			$rule->encode($this);
 		}

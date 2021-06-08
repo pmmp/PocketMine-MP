@@ -50,10 +50,11 @@ final class RuntimeBlockMapping{
 	private function __construct(){
 	    $paths = [
 	        ProtocolInfo::CURRENT_PROTOCOL => "",
-            ProtocolInfo::PROTOCOL_1_16_200 => "-1.16.200"
+			ProtocolInfo::PROTOCOL_1_16_220 => "-1.16.220",
+			ProtocolInfo::PROTOCOL_1_16_200 => "-1.16.200"
         ];
 
-	    foreach ($paths as $protocolId => $path){
+	    foreach ($paths as $mappingProtocol => $path){
             $canonicalBlockStatesFile = file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/canonical_block_states" . $path . ".nbt");
             if($canonicalBlockStatesFile === false){
                 throw new AssumptionFailedError("Missing required resource file");
@@ -63,14 +64,22 @@ final class RuntimeBlockMapping{
             while(!$stream->feof()){
                 $list[] = $stream->getNbtCompoundRoot();
             }
-            $this->bedrockKnownStates[$protocolId] = $list;
+            $this->bedrockKnownStates[$mappingProtocol] = $list;
 
-            $this->setupLegacyMappings($protocolId, $path);
+            $this->setupLegacyMappings($mappingProtocol, $path);
         }
 	}
 
 	public static function getMappingProtocol(int $protocolId) : int{
-		return $protocolId <= ProtocolInfo::PROTOCOL_1_16_200 ? ProtocolInfo::PROTOCOL_1_16_200 : ProtocolInfo::CURRENT_PROTOCOL;
+		if($protocolId <= ProtocolInfo::PROTOCOL_1_16_200){
+			return ProtocolInfo::PROTOCOL_1_16_200;
+		}
+
+		if($protocolId <= ProtocolInfo::PROTOCOL_1_16_220){
+			return ProtocolInfo::PROTOCOL_1_16_220;
+		}
+
+		return ProtocolInfo::CURRENT_PROTOCOL;
 	}
 
 	/**
@@ -82,19 +91,19 @@ final class RuntimeBlockMapping{
 		$sortPlayers = [];
 
 		foreach($players as $player){
-			$protocolId = self::getMappingProtocol($player->getNetworkSession()->getProtocolId());
+			$mappingProtocol = self::getMappingProtocol($player->getNetworkSession()->getProtocolId());
 
-			if(isset($sortPlayers[$protocolId])){
-				$sortPlayers[$protocolId][] = $player;
+			if(isset($sortPlayers[$mappingProtocol])){
+				$sortPlayers[$mappingProtocol][] = $player;
 			}else{
-				$sortPlayers[$protocolId] = [$player];
+				$sortPlayers[$mappingProtocol] = [$player];
 			}
 		}
 
 		return $sortPlayers;
 	}
 
-	private function setupLegacyMappings(int $protocolId, string $path) : void{
+	private function setupLegacyMappings(int $mappingProtocol, string $path) : void{
 		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
@@ -114,7 +123,7 @@ final class RuntimeBlockMapping{
 		 * @var int[][] $idToStatesMap string id -> int[] list of candidate state indices
 		 */
 		$idToStatesMap = [];
-		foreach($this->bedrockKnownStates[$protocolId] as $k => $state){
+		foreach($this->bedrockKnownStates[$mappingProtocol] as $k => $state){
 			$idToStatesMap[$state->getString("name")][] = $k;
 		}
 		foreach($legacyStateMap as $pair){
@@ -133,9 +142,9 @@ final class RuntimeBlockMapping{
 				throw new \RuntimeException("Mapped new state does not appear in network table");
 			}
 			foreach($idToStatesMap[$mappedName] as $k){
-				$networkState = $this->bedrockKnownStates[$protocolId][$k];
+				$networkState = $this->bedrockKnownStates[$mappingProtocol][$k];
 				if($mappedState->equals($networkState)){
-					$this->registerMapping($protocolId, $k, $id, $data);
+					$this->registerMapping($mappingProtocol, $k, $id, $data);
 					continue 2;
 				}
 			}
@@ -143,23 +152,23 @@ final class RuntimeBlockMapping{
 		}
 	}
 
-	public function toRuntimeId(int $internalStateId, int $protocolId = ProtocolInfo::CURRENT_PROTOCOL) : int{
-		return $this->legacyToRuntimeMap[$internalStateId][$protocolId] ?? $this->legacyToRuntimeMap[BlockLegacyIds::INFO_UPDATE << 4][$protocolId];
+	public function toRuntimeId(int $internalStateId, int $mappingProtocol = ProtocolInfo::CURRENT_PROTOCOL) : int{
+		return $this->legacyToRuntimeMap[$internalStateId][$mappingProtocol] ?? $this->legacyToRuntimeMap[BlockLegacyIds::INFO_UPDATE << 4][$mappingProtocol];
 	}
 
-	public function fromRuntimeId(int $runtimeId, int $protocolId = ProtocolInfo::CURRENT_PROTOCOL) : int{
-		return $this->runtimeToLegacyMap[$runtimeId][$protocolId];
+	public function fromRuntimeId(int $runtimeId, int $mappingProtocol = ProtocolInfo::CURRENT_PROTOCOL) : int{
+		return $this->runtimeToLegacyMap[$runtimeId][$mappingProtocol];
 	}
 
-	private function registerMapping(int $protocolId, int $staticRuntimeId, int $legacyId, int $legacyMeta) : void{
-		$this->legacyToRuntimeMap[($legacyId << 4) | $legacyMeta][$protocolId] = $staticRuntimeId;
-		$this->runtimeToLegacyMap[$staticRuntimeId][$protocolId] = ($legacyId << 4) | $legacyMeta;
+	private function registerMapping(int $mappingProtocol, int $staticRuntimeId, int $legacyId, int $legacyMeta) : void{
+		$this->legacyToRuntimeMap[($legacyId << 4) | $legacyMeta][$mappingProtocol] = $staticRuntimeId;
+		$this->runtimeToLegacyMap[$staticRuntimeId][$mappingProtocol] = ($legacyId << 4) | $legacyMeta;
 	}
 
 	/**
 	 * @return CompoundTag[]
 	 */
-	public function getBedrockKnownStates(int $protocolId = ProtocolInfo::CURRENT_PROTOCOL) : array{
-		return $this->bedrockKnownStates[$protocolId];
+	public function getBedrockKnownStates(int $mappingProtocol = ProtocolInfo::CURRENT_PROTOCOL) : array{
+		return $this->bedrockKnownStates[$mappingProtocol];
 	}
 }

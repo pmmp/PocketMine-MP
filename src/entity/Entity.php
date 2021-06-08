@@ -1680,8 +1680,8 @@ abstract class Entity{
 			$targets = $targets ?? $this->getViewers();
 
 			if($sound instanceof MappingSound){
-				foreach(RuntimeBlockMapping::sortByProtocol($targets) as $protocolId => $players){
-					$sound->setProtocolId($protocolId);
+				foreach(RuntimeBlockMapping::sortByProtocol($targets) as $mappingProtocol => $players){
+					$sound->setMappingProtocol($mappingProtocol);
 
 					$this->server->broadcastPackets($players, $sound->encode($this->location));
 				}

@@ -31,9 +31,9 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 abstract class MappingSound implements Sound{
 
 	/** @var int */
-	protected $protocolId;
+	protected $mappingProtocol;
 
-	public function setProtocolId(int $protocolId) : void{
-		$this->protocolId = $protocolId;
+	public function setMappingProtocol(int $mappingProtocol) : void{
+		$this->mappingProtocol = $mappingProtocol;
 	}
 }

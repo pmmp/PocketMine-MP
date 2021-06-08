@@ -995,23 +995,24 @@ class NetworkSession{
 	public function onMobMainHandItemChange(Human $mob) : void{
 		//TODO: we could send zero for slot here because remote players don't need to know which slot was selected
 		$inv = $mob->getInventory();
-		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItemInHand())), $inv->getHeldItemIndex(), ContainerIds::INVENTORY));
+		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getProtocolId(), $inv->getItemInHand())), $inv->getHeldItemIndex(), ContainerIds::INVENTORY));
 	}
 
 	public function onMobOffHandItemChange(Human $mob) : void{
 		$inv = $mob->getOffHandInventory();
-		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItem(0))), 0, ContainerIds::OFFHAND));
+		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getProtocolId(), $inv->getItem(0))), 0, ContainerIds::OFFHAND));
 	}
 
 	public function onMobArmorChange(Living $mob) : void{
 		$inv = $mob->getArmorInventory();
 		$converter = TypeConverter::getInstance();
+		$protocolId = $this->getProtocolId();
 		$this->sendDataPacket(MobArmorEquipmentPacket::create(
 			$mob->getId(),
-			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getHelmet())),
-			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getChestplate())),
-			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getLeggings())),
-			ItemStackWrapper::legacy($converter->coreItemStackToNet($inv->getBoots()))
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($protocolId, $inv->getHelmet())),
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($protocolId, $inv->getChestplate())),
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($protocolId, $inv->getLeggings())),
+			ItemStackWrapper::legacy($converter->coreItemStackToNet($protocolId, $inv->getBoots()))
 		));
 	}
 

@@ -30,7 +30,7 @@ use pocketmine\network\mcpe\protocol\ClientboundPacket;
 abstract class MappingParticle implements Particle{
 
 	/** @var int */
-	protected $protocolId;
+	protected $mappingProtocol;
 	/** @var Block */
 	protected $block;
 
@@ -38,7 +38,7 @@ abstract class MappingParticle implements Particle{
 		$this->block = $b;
 	}
 
-	public function setProtocolId(int $protocolId) : void{
-		$this->protocolId = $protocolId;
+	public function setMappingProtocol(int $mappingProtocol) : void{
+		$this->mappingProtocol = $mappingProtocol;
 	}
 }

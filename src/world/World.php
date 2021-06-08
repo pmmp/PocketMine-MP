@@ -551,8 +551,8 @@ class World implements ChunkManager{
 				$players = $this->getChunkPlayers($chunkX, $chunkZ);
 			}
 
-			foreach(RuntimeBlockMapping::sortByProtocol($players) as $protocolId => $pl){
-				$sound->setProtocolId($protocolId);
+			foreach(RuntimeBlockMapping::sortByProtocol($players) as $mappingProtocol => $pl){
+				$sound->setMappingProtocol($mappingProtocol);
 
 				$pk = $sound->encode($pos);
 
@@ -587,8 +587,8 @@ class World implements ChunkManager{
 				$players = $this->getChunkPlayers($chunkX, $chunkZ);
 			}
 
-			foreach(RuntimeBlockMapping::sortByProtocol($players) as $protocolId => $pl){
-				$particle->setProtocolId($protocolId);
+			foreach(RuntimeBlockMapping::sortByProtocol($players) as $mappingProtocol => $pl){
+				$particle->setMappingProtocol($mappingProtocol);
 
 				$pk = $particle->encode($pos);
 
@@ -900,8 +900,8 @@ class World implements ChunkManager{
 							$p->onChunkChanged($chunkX, $chunkZ, $chunk);
 						}
 					}else{
-						foreach(RuntimeBlockMapping::sortByProtocol($this->getChunkPlayers($chunkX, $chunkZ)) as $protocolId => $players){
-							$this->server->broadcastPackets($players, $this->createBlockUpdatePackets($protocolId, $blocks));
+						foreach(RuntimeBlockMapping::sortByProtocol($this->getChunkPlayers($chunkX, $chunkZ)) as $mappingProtocol => $players){
+							$this->server->broadcastPackets($players, $this->createBlockUpdatePackets($mappingProtocol, $blocks));
 						}
 					}
 				}
@@ -964,7 +964,7 @@ class World implements ChunkManager{
 	 */
 	public function createBlockUpdatePackets(int $protocolId, array $blocks) : array{
 		$packets = [];
-		$protocolId = RuntimeBlockMapping::getMappingProtocol($protocolId);
+		$mappingProtocol = RuntimeBlockMapping::getMappingProtocol($protocolId);
 
 		foreach($blocks as $b){
 			if(!($b instanceof Vector3)){
@@ -972,7 +972,7 @@ class World implements ChunkManager{
 			}
 
 			$fullBlock = $this->getBlockAt($b->x, $b->y, $b->z);
-			$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, RuntimeBlockMapping::getInstance()->toRuntimeId($fullBlock->getFullId(), $protocolId));
+			$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, RuntimeBlockMapping::getInstance()->toRuntimeId($fullBlock->getFullId(), $mappingProtocol));
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable){

@@ -110,28 +110,28 @@ class TypeConverter{
 		}
 	}
 
-	public function coreItemStackToRecipeIngredient(Item $itemStack) : RecipeIngredient{
+	public function coreItemStackToRecipeIngredient(int $dictionaryProtocol, Item $itemStack) : RecipeIngredient{
 		if($itemStack->isNull()){
 			return new RecipeIngredient(0, 0, 0);
 		}
 		if($itemStack->hasAnyDamageValue()){
-			[$id, ] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), 0);
+			[$id, ] = ItemTranslator::getInstance()->toNetworkId($dictionaryProtocol, $itemStack->getId(), 0);
 			$meta = 0x7fff;
 		}else{
-			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), $itemStack->getMeta());
+			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($dictionaryProtocol, $itemStack->getId(), $itemStack->getMeta());
 		}
 		return new RecipeIngredient($id, $meta, $itemStack->getCount());
 	}
 
-	public function recipeIngredientToCoreItemStack(RecipeIngredient $ingredient) : Item{
+	public function recipeIngredientToCoreItemStack(int $dictionaryProtocol, RecipeIngredient $ingredient) : Item{
 		if($ingredient->getId() === 0){
 			return ItemFactory::getInstance()->get(ItemIds::AIR, 0, 0);
 		}
-		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($ingredient->getId(), $ingredient->getMeta());
+		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($dictionaryProtocol, $ingredient->getId(), $ingredient->getMeta());
 		return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
 	}
 
-	public function coreItemStackToNet(Item $itemStack) : ItemStack{
+	public function coreItemStackToNet(int $protocolId, Item $itemStack) : ItemStack{
 		if($itemStack->isNull()){
 			return ItemStack::null();
 		}
@@ -160,13 +160,13 @@ class TypeConverter{
 			}
 			$nbt->setInt(self::PM_META_TAG, $itemStack->getMeta());
 		}
-		[$id, $meta] = ItemTranslator::getInstance()->toNetworkId($itemStack->getId(), $itemStack->getMeta());
+		[$id, $meta] = ItemTranslator::getInstance()->toNetworkId(GlobalItemTypeDictionary::getDictionaryProtocol($protocolId), $itemStack->getId(), $itemStack->getMeta());
 
 		$blockRuntimeId = 0;
 		if($isBlockItem){
 			$block = $itemStack->getBlock();
 			if($block->getId() !== BlockLegacyIds::AIR){
-				$blockRuntimeId = RuntimeBlockMapping::getInstance()->toRuntimeId($block->getFullId());
+				$blockRuntimeId = RuntimeBlockMapping::getInstance()->toRuntimeId($block->getFullId(), RuntimeBlockMapping::getMappingProtocol($protocolId));
 			}
 		}
 
@@ -182,13 +182,13 @@ class TypeConverter{
 		);
 	}
 
-	public function netItemStackToCore(ItemStack $itemStack) : Item{
+	public function netItemStackToCore(int $protocolId, ItemStack $itemStack) : Item{
 		if($itemStack->getId() === 0){
 			return ItemFactory::getInstance()->get(ItemIds::AIR, 0, 0);
 		}
 		$compound = $itemStack->getNbt();
 
-		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkId($itemStack->getId(), $itemStack->getMeta());
+		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkId(GlobalItemTypeDictionary::getDictionaryProtocol($protocolId), $itemStack->getId(), $itemStack->getMeta());
 
 		if($compound !== null){
 			$compound = clone $compound;
@@ -240,13 +240,13 @@ class TypeConverter{
 	/**
 	 * @throws \UnexpectedValueException
 	 */
-	public function createInventoryAction(NetworkInventoryAction $action, Player $player) : ?InventoryAction{
+	public function createInventoryAction(int $protocolId, NetworkInventoryAction $action, Player $player) : ?InventoryAction{
 		if($action->oldItem->getItemStack()->equals($action->newItem->getItemStack())){
 			//filter out useless noise in 1.13
 			return null;
 		}
-		$old = $this->netItemStackToCore($action->oldItem->getItemStack());
-		$new = $this->netItemStackToCore($action->newItem->getItemStack());
+		$old = $this->netItemStackToCore($protocolId, $action->oldItem->getItemStack());
+		$new = $this->netItemStackToCore($protocolId, $action->newItem->getItemStack());
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
 				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){

@@ -48,7 +48,7 @@ class EntityLandSound extends MappingSound{
 		return [LevelSoundEventPacket::create(
 			LevelSoundEventPacket::SOUND_LAND,
 			$pos,
-			RuntimeBlockMapping::getInstance()->toRuntimeId($this->blockLandedOn->getFullId(), $this->protocolId),
+			RuntimeBlockMapping::getInstance()->toRuntimeId($this->blockLandedOn->getFullId(), $this->mappingProtocol),
 			$this->entity::getNetworkTypeId()
 			//TODO: does isBaby have any relevance here?
 		)];

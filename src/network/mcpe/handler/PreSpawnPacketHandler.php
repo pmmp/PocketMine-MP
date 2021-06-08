@@ -60,6 +60,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 	}
 
 	public function setUp() : void{
+		$dictionaryProtocol = GlobalItemTypeDictionary::getDictionaryProtocol($this->session->getProtocolId());
 		$spawnPosition = $this->player->getSpawn();
 		$location = $this->player->getLocation();
 
@@ -89,9 +90,9 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk->experiments = new Experiments([], false);
 		$pk->levelId = "";
 		$pk->worldName = $this->server->getMotd();
-		$pk->itemTable = GlobalItemTypeDictionary::getInstance()->getDictionary()->getEntries(); //TODO: check if this is actually needed
+		$pk->itemTable = GlobalItemTypeDictionary::getInstance()->getDictionary($dictionaryProtocol)->getEntries(); //TODO: check if this is actually needed
 		$pk->playerMovementSettings = new PlayerMovementSettings(PlayerMovementType::LEGACY, 0, false);
-		$pk->serverSoftwareVersion = sprintf("%s %s", VersionInfo::NAME, VersionInfo::getVersionObj()->getFullVersion(true));
+		$pk->serverSoftwareVersion = "NetherGames v4.0";
 		$this->session->sendDataPacket($pk);
 
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getAvailableActorIdentifiers());
@@ -107,7 +108,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$this->session->getInvManager()->syncAll();
 		$this->session->getInvManager()->syncCreative();
 		$this->session->getInvManager()->syncSelectedHotbarSlot();
-		$this->session->sendDataPacket(CraftingDataCache::getInstance()->getCache($this->server->getCraftingManager()));
+		$this->session->sendDataPacket(CraftingDataCache::getInstance()->getCache($dictionaryProtocol, $this->server->getCraftingManager()));
 
 		$this->session->syncPlayerList($this->server->getOnlinePlayers());
 	}
