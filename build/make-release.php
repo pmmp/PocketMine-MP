@@ -69,12 +69,16 @@ function main(array $argv) : void{
 		$currentVer->getPatch() + 1
 	));
 
-	$versionInfoPath = dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
-	replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false);
-
 	echo "please add appropriate notes to the changelog and press enter...";
 	fgets(STDIN);
 	system('git add "' . dirname(__DIR__) . '/changelogs"');
+	system('git diff --cached --quiet "' . dirname(__DIR__) . '/changelogs"', $result);
+	if($result === 0){
+		echo "error: no changelog changes detected; aborting\n";
+		exit(1);
+	}
+	$versionInfoPath = dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
+	replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false);
 	system('git commit -m "Release ' . $currentVer->getBaseVersion() . '" --include "' . $versionInfoPath . '"');
 	system('git tag ' . $currentVer->getBaseVersion());
 	replaceVersion($versionInfoPath, $nextVer->getBaseVersion(), true);
