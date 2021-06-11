@@ -233,11 +233,17 @@ class AsyncPool{
 	 * @return bool whether there are tasks left to be collected
 	 */
 	public function collectTasks() : bool{
-		$more = false;
 		foreach($this->taskQueues as $worker => $queue){
-			$more = $this->collectTasksFromWorker($worker) || $more;
+			$this->collectTasksFromWorker($worker);
 		}
-		return $more;
+
+		//we check this in a second loop, because task collection could have caused new tasks to be added to the queues
+		foreach($this->taskQueues as $queue){
+			if(!$queue->isEmpty()){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function collectTasksFromWorker(int $worker) : bool{
