@@ -313,20 +313,8 @@ class AsyncPool{
 	 * Cancels all pending tasks and shuts down all the workers in the pool.
 	 */
 	public function shutdown() : void{
-		$this->collectTasks();
-
-		foreach($this->workers as $worker){
-			/** @var AsyncTask $task */
-			while(($task = $worker->unstack()) !== null){
-				//NOOP: the below loop will deal with marking tasks as garbage
-			}
-		}
-		foreach($this->taskQueues as $queue){
-			while(!$queue->isEmpty()){
-				/** @var AsyncTask $task */
-				$task = $queue->dequeue();
-				$task->cancelRun();
-			}
+		while($this->collectTasks()){
+			//NOOP
 		}
 
 		foreach($this->workers as $worker){
