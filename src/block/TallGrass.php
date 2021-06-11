@@ -52,11 +52,7 @@ class TallGrass extends Flowable{
 		}
 	}
 
-	public function getDrops(Item $item) : array{
-		if($this->breakInfo->isToolCompatible($item)){
-			return parent::getDrops($item);
-		}
-
+	public function getDropsForIncompatibleTool(Item $item) : array{
 		if(mt_rand(0, 15) === 0){
 			return [
 				VanillaItems::WHEAT_SEEDS()

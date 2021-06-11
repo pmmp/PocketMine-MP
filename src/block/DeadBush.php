@@ -47,14 +47,10 @@ class DeadBush extends Flowable{
 		}
 	}
 
-	public function getDrops(Item $item) : array{
-		if(!$this->breakInfo->isToolCompatible($item)){
-			return [
-				VanillaItems::STICK()->setCount(mt_rand(0, 2))
-			];
-		}
-
-		return parent::getDrops($item);
+	public function getDropsForIncompatibleTool(Item $item) : array{
+		return [
+			VanillaItems::STICK()->setCount(mt_rand(0, 2))
+		];
 	}
 
 	public function isAffectedBySilkTouch() : bool{

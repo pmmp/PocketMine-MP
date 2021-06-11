@@ -370,6 +370,15 @@ class Block{
 	}
 
 	/**
+	 * Returns the items dropped by this block when broken with an incorrect tool type (or tool with a too-low tier).
+	 *
+	 * @return Item[]
+	 */
+	public function getDropsForIncompatibleTool(Item $item) : array{
+		return [];
+	}
+
+	/**
 	 * Returns an array of Items to be dropped when the block is broken using a compatible Silk Touch-enchanted tool.
 	 *
 	 * @return Item[]
