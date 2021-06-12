@@ -34,7 +34,6 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
-use function count;
 use function mt_rand;
 
 class Leaves extends Transparent{
@@ -137,16 +136,17 @@ class Leaves extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function getDrops(Item $item) : array{
-		$drops = parent::getDrops($item);
+	public function getDropsForCompatibleTool(Item $item) : array{
+		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
+			return parent::getDropsForCompatibleTool($item);
+		}
+		$drops = [];
 
-		if(count($drops) < 1){
-			if(mt_rand(1, 20) === 1){ //Saplings
-				$drops[] = ItemFactory::getInstance()->get(ItemIds::SAPLING, $this->treeType->getMagicNumber());
-			}
-			if(($this->treeType->equals(TreeType::OAK()) or $this->treeType->equals(TreeType::DARK_OAK())) and mt_rand(1, 200) === 1){ //Apples
-				$drops[] = VanillaItems::APPLE();
-			}
+		if(mt_rand(1, 20) === 1){ //Saplings
+			$drops[] = ItemFactory::getInstance()->get(ItemIds::SAPLING, $this->treeType->getMagicNumber());
+		}
+		if(($this->treeType->equals(TreeType::OAK()) or $this->treeType->equals(TreeType::DARK_OAK())) and mt_rand(1, 200) === 1){ //Apples
+			$drops[] = VanillaItems::APPLE();
 		}
 
 		return $drops;
