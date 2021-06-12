@@ -40,7 +40,7 @@ class PermissionManager{
 
 	/** @var Permission[] */
 	protected $permissions = [];
-	/** @var Permissible[][] */
+	/** @var PermissibleInternal[][] */
 	protected $permSubs = [];
 
 	public function getPermission(string $name) : ?Permission{
@@ -68,14 +68,14 @@ class PermissionManager{
 		}
 	}
 
-	public function subscribeToPermission(string $permission, Permissible $permissible) : void{
+	public function subscribeToPermission(string $permission, PermissibleInternal $permissible) : void{
 		if(!isset($this->permSubs[$permission])){
 			$this->permSubs[$permission] = [];
 		}
 		$this->permSubs[$permission][spl_object_id($permissible)] = $permissible;
 	}
 
-	public function unsubscribeFromPermission(string $permission, Permissible $permissible) : void{
+	public function unsubscribeFromPermission(string $permission, PermissibleInternal $permissible) : void{
 		if(isset($this->permSubs[$permission])){
 			unset($this->permSubs[$permission][spl_object_id($permissible)]);
 			if(count($this->permSubs[$permission]) === 0){
@@ -84,7 +84,7 @@ class PermissionManager{
 		}
 	}
 
-	public function unsubscribeFromAllPermissions(Permissible $permissible) : void{
+	public function unsubscribeFromAllPermissions(PermissibleInternal $permissible) : void{
 		foreach($this->permSubs as $permission => &$subs){
 			unset($subs[spl_object_id($permissible)]);
 			if(count($subs) === 0){
@@ -94,7 +94,7 @@ class PermissionManager{
 	}
 
 	/**
-	 * @return Permissible[]
+	 * @return PermissibleInternal[]
 	 */
 	public function getPermissionSubscriptions(string $permission) : array{
 		return $this->permSubs[$permission] ?? [];
