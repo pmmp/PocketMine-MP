@@ -35,7 +35,7 @@ class EnderChest extends Spawnable{
 
 	public function setViewerCount(int $viewerCount) : void{
 		if($viewerCount < 0){
-			throw new \InvalidArgumentException($viewerCount . ' is too small of a value');
+			throw new \InvalidArgumentException('Viewer count cannot be negative');
 		}
 		$this->viewerCount = $viewerCount;
 	}

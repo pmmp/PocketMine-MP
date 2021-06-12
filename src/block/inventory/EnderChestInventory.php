@@ -89,7 +89,7 @@ class EnderChestInventory extends BaseInventory implements BlockInventory{
 	public function getViewerCount() : int{
 		$enderChest = $this->getHolder()->getWorld()->getTile($this->getHolder());
 		if(!$enderChest instanceof EnderChest){
-			throw new \UnexpectedValueException('Tile is not an Enderchest');
+			return 0;
 		}
 		return $enderChest->getViewerCount();
 	}
