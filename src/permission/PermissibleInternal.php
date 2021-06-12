@@ -130,9 +130,6 @@ class PermissibleInternal implements Permissible{
 		if(isset($this->attachments[spl_object_id($attachment)])){
 			unset($this->attachments[spl_object_id($attachment)]);
 			$attachment->unsubscribePermissible($this);
-			if(($ex = $attachment->getRemovalCallback()) !== null){
-				$ex->attachmentRemoved($this, $attachment);
-			}
 
 			$this->recalculatePermissions();
 

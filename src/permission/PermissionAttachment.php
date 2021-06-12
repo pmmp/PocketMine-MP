@@ -28,9 +28,6 @@ use pocketmine\plugin\PluginException;
 use function spl_object_id;
 
 class PermissionAttachment{
-	/** @var PermissionRemovedExecutor|null */
-	private $removed = null;
-
 	/** @var bool[] */
 	private $permissions = [];
 
@@ -56,14 +53,6 @@ class PermissionAttachment{
 
 	public function getPlugin() : Plugin{
 		return $this->plugin;
-	}
-
-	public function setRemovalCallback(PermissionRemovedExecutor $ex) : void{
-		$this->removed = $ex;
-	}
-
-	public function getRemovalCallback() : ?PermissionRemovedExecutor{
-		return $this->removed;
 	}
 
 	/**
