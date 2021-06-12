@@ -357,7 +357,7 @@ class Block{
 			return $this->getDropsForCompatibleTool($item);
 		}
 
-		return [];
+		return $this->getDropsForIncompatibleTool($item);
 	}
 
 	/**
