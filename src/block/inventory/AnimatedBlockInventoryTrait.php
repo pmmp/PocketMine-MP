@@ -34,6 +34,12 @@ trait AnimatedBlockInventoryTrait{
 		return count($this->getViewers());
 	}
 
+	/**
+	 * @return Player[]
+	 * @phpstan-return array<int, Player>
+	 */
+	abstract public function getViewers() : array;
+
 	abstract protected function getOpenSound() : Sound;
 
 	abstract protected function getCloseSound() : Sound;
