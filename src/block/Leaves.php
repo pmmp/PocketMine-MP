@@ -140,6 +140,7 @@ class Leaves extends Transparent{
 		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
 			return parent::getDropsForCompatibleTool($item);
 		}
+
 		$drops = [];
 		if(mt_rand(1, 20) === 1){ //Saplings
 			$drops[] = ItemFactory::getInstance()->get(ItemIds::SAPLING, $this->treeType->getMagicNumber());
