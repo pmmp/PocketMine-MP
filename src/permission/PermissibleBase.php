@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-use pocketmine\plugin\Plugin;
-use pocketmine\utils\ObjectSet;
-
 final class PermissibleBase implements Permissible{
 	use PermissibleDelegateTrait;
 
