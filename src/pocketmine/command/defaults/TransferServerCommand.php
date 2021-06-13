@@ -50,9 +50,16 @@ class TransferServerCommand extends VanillaCommand{
 			$sender->sendMessage("This command must be executed as a player");
 
 			return false;
+		}elseif(count($args) == 3) {
+			$target = $sender->getServer()->getPlayer($args[2]);
+			if (!$target instanceof Player) {
+				throw new InvalidCommandSyntaxException();
+			}
+		}else{
+			$target = $sender;
 		}
 
-		$sender->transfer($args[0], (int) ($args[1] ?? 19132));
+		$target->transfer($args[0], (int) ($args[1] ?? 19132));
 
 		return true;
 	}
