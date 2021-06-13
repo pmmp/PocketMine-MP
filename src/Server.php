@@ -1108,11 +1108,7 @@ class Server{
 			}
 
 			if((bool) $this->configGroup->getProperty("network.upnp-forwarding", false)){
-				try{
-					$this->network->registerInterface(new UPnPNetworkInterface($this->logger, Internet::getInternalIP(), $this->getPort()));
-				}catch(\RuntimeException $e){
-					$this->logger->alert("UPnP portforward failed: " . $e->getMessage());
-				}
+				$this->network->registerInterface(new UPnPNetworkInterface($this->logger, Internet::getInternalIP(), $this->getPort()));
 			}
 
 			if((bool) $this->configGroup->getProperty("settings.send-usage", true)){

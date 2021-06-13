@@ -95,13 +95,16 @@ class UPnP{
 		throw new \RuntimeException("PCRE error: $message");
 	}
 
+	/**
+	 * @throws UPnPException
+	 */
 	public static function getServiceUrl() : string{
 		$socket = @socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
 		if($socket === false){
-			throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error())));
+			throw new AssumptionFailedError("Socket error: " . trim(socket_strerror(socket_last_error())));
 		}
 		if(!@socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, ["sec" => 3, "usec" => 0])){
-			throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
+			throw new AssumptionFailedError("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
 		}
 		$contents =
 			"M-SEARCH * HTTP/1.1\r\n" .
@@ -113,17 +116,17 @@ class UPnP{
 		for($i = 0; $i < self::MAX_DISCOVERY_ATTEMPTS; ++$i){
 			$sendbyte = @socket_sendto($socket, $contents, strlen($contents), 0, "239.255.255.250", 1900);
 			if($sendbyte === false){
-				throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
+				throw new UPnPException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
 			}
 			if($sendbyte !== strlen($contents)){
-				throw new \RuntimeException("Socket error: Unable to send the entire contents.");
+				throw new UPnPException("Socket error: Unable to send the entire contents.");
 			}
 			while(true){
 				if(@socket_recvfrom($socket, $buffer, 1024, 0, $responseHost, $responsePort) === false){
 					if(socket_last_error($socket) === SOCKET_ETIMEDOUT){
 						continue 2;
 					}
-					throw new \RuntimeException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
+					throw new UPnPException("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
 				}
 				$pregResult = preg_match('/location\s*:\s*(.+)\n/i', $buffer, $matches);
 				if($pregResult === false){
@@ -138,33 +141,33 @@ class UPnP{
 		}
 		socket_close($socket);
 		if($location === null){
-			throw new \RuntimeException("Unable to find the router. Ensure that network discovery is enabled in Control Panel.");
+			throw new UPnPException("Unable to find the router. Ensure that network discovery is enabled in Control Panel.");
 		}
 		$url = parse_url($location);
 		if($url === false){
-			throw new \RuntimeException("Failed to parse the router's url: {$location}");
+			throw new UPnPException("Failed to parse the router's url: {$location}");
 		}
 		if(!isset($url['host'])){
-			throw new \RuntimeException("Failed to recognize the host name from the router's url: {$location}");
+			throw new UPnPException("Failed to recognize the host name from the router's url: {$location}");
 		}
 		$urlHost = $url['host'];
 		if(!isset($url['port'])){
-			throw new \RuntimeException("Failed to recognize the port number from the router's url: {$location}");
+			throw new UPnPException("Failed to recognize the port number from the router's url: {$location}");
 		}
 		$urlPort = $url['port'];
 		$response = Internet::getURL($location, 3, [], $err);
 		if($response === null){
-			throw new \RuntimeException("Unable to access XML: {$err}");
+			throw new UPnPException("Unable to access XML: {$err}");
 		}
 		if($response->getCode() !== 200){
-			throw new \RuntimeException("Unable to access XML: {$response->getBody()}");
+			throw new UPnPException("Unable to access XML: {$response->getBody()}");
 		}
 
 		$defaultInternalError = libxml_use_internal_errors(true);
 		try{
 			$root = new \SimpleXMLElement($response->getBody());
 		}catch(\Exception $e){
-			throw new \RuntimeException("Broken XML.");
+			throw new UPnPException("Broken XML.");
 		}
 		libxml_use_internal_errors($defaultInternalError);
 		$root->registerXPathNamespace("upnp", "urn:schemas-upnp-org:device-1-0");
@@ -180,13 +183,16 @@ class UPnP{
 			throw new AssumptionFailedError("xpath query should not error here");
 		}
 		if(count($xpathResult) === 0){
-			throw new \RuntimeException("Your router does not support portforwarding");
+			throw new UPnPException("Your router does not support portforwarding");
 		}
 		$controlURL = (string) $xpathResult[0];
 		$serviceURL = sprintf("%s:%d/%s", $urlHost, $urlPort, $controlURL);
 		return $serviceURL;
 	}
 
+	/**
+	 * @throws UPnPException
+	 */
 	public static function portForward(string $serviceURL, string $internalIP, int $internalPort, int $externalPort) : void{
 		$body =
 			'<u:AddPortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">' .
@@ -211,7 +217,7 @@ class UPnP{
 		];
 
 		if(Internet::postURL($serviceURL, $contents, 3, $headers, $err) === null){
-			throw new \RuntimeException("Failed to portforward using UPnP: " . $err);
+			throw new UPnPException("Failed to portforward using UPnP: " . $err);
 		}
 	}
 
