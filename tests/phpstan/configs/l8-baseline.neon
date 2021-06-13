@@ -106,6 +106,16 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
+			message: "#^Cannot call method getUsername\\(\\) on pocketmine\\\\player\\\\PlayerInfo\\|null\\.$#"
+			count: 2
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Cannot call method getUuid\\(\\) on pocketmine\\\\player\\\\PlayerInfo\\|null\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
 			message: "#^Cannot call method sendData\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
@@ -167,6 +177,11 @@ parameters:
 
 		-
 			message: "#^Parameter \\#2 \\$player of class pocketmine\\\\network\\\\mcpe\\\\handler\\\\PreSpawnPacketHandler constructor expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Parameter \\#2 \\$playerInfo of method pocketmine\\\\Server\\:\\:createPlayer\\(\\) expects pocketmine\\\\player\\\\PlayerInfo, pocketmine\\\\player\\\\PlayerInfo\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 

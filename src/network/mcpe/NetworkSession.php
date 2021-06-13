@@ -137,8 +137,8 @@ class NetworkSession{
 	private $ip;
 	/** @var int */
 	private $port;
-	/** @var PlayerInfo */
-	private $info;
+	/** @var PlayerInfo|null */
+	private $info = null;
 	/** @var int|null */
 	private $ping = null;
 
@@ -158,8 +158,8 @@ class NetworkSession{
 	/** @var CompoundTag|null */
 	private $cachedOfflinePlayerData = null;
 
-	/** @var EncryptionContext */
-	private $cipher;
+	/** @var EncryptionContext|null */
+	private $cipher = null;
 
 	/** @var Packet[] */
 	private $sendBuffer = [];
