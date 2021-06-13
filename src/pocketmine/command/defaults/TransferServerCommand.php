@@ -26,6 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\Player;
+use pocketmine\utils\TextFormat;
+
 use function count;
 
 class TransferServerCommand extends VanillaCommand{
@@ -53,7 +55,7 @@ class TransferServerCommand extends VanillaCommand{
 		}elseif(count($args) == 3) {
 			$target = $sender->getServer()->getPlayer($args[2]);
 			if (!$target instanceof Player) {
-				throw new InvalidCommandSyntaxException();
+				$sender->sendMessage(TextFormat::RED . "Can't find player " . $args[2]);
 			}
 		}else{
 			$target = $sender;
