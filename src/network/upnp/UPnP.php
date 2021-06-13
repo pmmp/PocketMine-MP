@@ -187,14 +187,14 @@ class UPnP{
 		return $serviceURL;
 	}
 
-	public static function portForward(string $serviceURL, int $port) : void{
+	public static function portForward(string $serviceURL, string $internalIP, int $internalPort, int $externalPort) : void{
 		$body =
 			'<u:AddPortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">' .
 				'<NewRemoteHost></NewRemoteHost>' .
-				'<NewExternalPort>' . $port . '</NewExternalPort>' .
+				'<NewExternalPort>' . $externalPort . '</NewExternalPort>' .
 				'<NewProtocol>UDP</NewProtocol>' .
-				'<NewInternalPort>' . $port . '</NewInternalPort>' .
-				'<NewInternalClient>' . Internet::getInternalIP() . '</NewInternalClient>' .
+				'<NewInternalPort>' . $internalPort . '</NewInternalPort>' .
+				'<NewInternalClient>' . $internalIP . '</NewInternalClient>' .
 				'<NewEnabled>1</NewEnabled>' .
 				'<NewPortMappingDescription>PocketMine-MP</NewPortMappingDescription>' .
 				'<NewLeaseDuration>0</NewLeaseDuration>' .
@@ -215,11 +215,11 @@ class UPnP{
 		}
 	}
 
-	public static function removePortForward(string $serviceURL, int $port) : void{
+	public static function removePortForward(string $serviceURL, int $externalPort) : void{
 		$body =
 			'<u:DeletePortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">' .
 				'<NewRemoteHost></NewRemoteHost>' .
-				'<NewExternalPort>' . $port . '</NewExternalPort>' .
+				'<NewExternalPort>' . $externalPort . '</NewExternalPort>' .
 				'<NewProtocol>UDP</NewProtocol>' .
 			'</u:DeletePortMapping>';
 

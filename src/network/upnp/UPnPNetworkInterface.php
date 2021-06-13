@@ -52,7 +52,7 @@ final class UPnPNetworkInterface implements NetworkInterface{
 		$this->logger->info("Attempting to portforward...");
 		$this->serviceURL = UPnP::getServiceUrl();
 
-		UPnP::portForward($this->serviceURL, $this->port);
+		UPnP::portForward($this->serviceURL, Internet::getInternalIP(), $this->port, $this->port);
 
 		$this->logger->info("Forwarded $this->ip:$this->port to external port $this->port");
 	}
