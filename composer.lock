@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "59dbdc116eef096a5499b4c2b7082fb1",
+    "content-hash": "34888ad7b5a7e0f4976901788037b6c2",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -784,25 +784,25 @@
         },
         {
             "name": "pocketmine/snooze",
-            "version": "0.1.5",
+            "version": "0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Snooze.git",
-                "reference": "70b5e7937a06878dd321a3182ceb76d56298f2cd"
+                "reference": "fe5b1dbf0d6267da882d1f67924772bd93db833d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/70b5e7937a06878dd321a3182ceb76d56298f2cd",
-                "reference": "70b5e7937a06878dd321a3182ceb76d56298f2cd",
+                "url": "https://api.github.com/repos/pmmp/Snooze/zipball/fe5b1dbf0d6267da882d1f67924772bd93db833d",
+                "reference": "fe5b1dbf0d6267da882d1f67924772bd93db833d",
                 "shasum": ""
             },
             "require": {
                 "ext-pthreads": ">=3.1.7dev",
-                "php-64bit": "^7.2 || ^8.0"
+                "php-64bit": "^7.3 || ^8.0"
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.76",
+                "phpstan/phpstan": "0.12.88",
                 "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
@@ -818,9 +818,9 @@
             "description": "Thread notification management library for code using the pthreads extension",
             "support": {
                 "issues": "https://github.com/pmmp/Snooze/issues",
-                "source": "https://github.com/pmmp/Snooze/tree/0.1.5"
+                "source": "https://github.com/pmmp/Snooze/tree/0.3.0"
             },
-            "time": "2021-02-22T16:16:12+00:00"
+            "time": "2021-06-13T13:57:47+00:00"
         },
         {
             "name": "pocketmine/spl",
