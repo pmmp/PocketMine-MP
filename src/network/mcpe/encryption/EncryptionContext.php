@@ -32,7 +32,7 @@ use function strlen;
 use function substr;
 
 class EncryptionContext{
-	private const ENCRYPTION_SCHEME = "AES-256-GCM";
+	public const ENCRYPTION_SCHEME = "AES-256-GCM";
 	private const CHECKSUM_ALGO = "sha256";
 
 	/** @var bool */
@@ -43,22 +43,22 @@ class EncryptionContext{
 
 	/** @var Cipher */
 	private $decryptCipher;
+
 	/** @var int */
 	private $decryptCounter = 0;
-
 	/** @var Cipher */
 	private $encryptCipher;
 	/** @var int */
 	private $encryptCounter = 0;
 
-	public function __construct(string $encryptionKey){
+	public function __construct(string $encryptionKey, string $algorithm){
 		$this->key = $encryptionKey;
 
-		$this->decryptCipher = new Cipher(self::ENCRYPTION_SCHEME);
+		$this->decryptCipher = new Cipher($algorithm);
 		$ivLength = $this->decryptCipher->getIVLength();
 		$this->decryptCipher->decryptInit($this->key, substr($this->key, 0, $ivLength));
 
-		$this->encryptCipher = new Cipher(self::ENCRYPTION_SCHEME);
+		$this->encryptCipher = new Cipher($algorithm);
 		$ivLength = $this->encryptCipher->getIVLength();
 		$this->encryptCipher->encryptInit($this->key, substr($this->key, 0, $ivLength));
 	}
