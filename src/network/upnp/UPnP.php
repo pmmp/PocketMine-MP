@@ -55,7 +55,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\network\upnp;
 
-use pocketmine\network\NetworkInterface;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Internet;
 use function count;
@@ -80,7 +79,7 @@ use const SOCKET_ETIMEDOUT;
 use const SOL_SOCKET;
 use const SOL_UDP;
 
-class UPnP implements NetworkInterface{
+class UPnP{
 	private const MAX_DISCOVERY_ATTEMPTS = 3;
 
 	private static function makePcreError() : \RuntimeException{
@@ -188,36 +187,13 @@ class UPnP implements NetworkInterface{
 		return $serviceURL;
 	}
 
-	/** @var string */
-	private $ip;
-	/** @var int */
-	private $port;
-
-	/** @var string|null */
-	private $serviceURL = null;
-	/** @var \Logger */
-	private $logger;
-
-	public function __construct(\Logger $logger, string $ip, int $port){
-		if(!Internet::$online){
-			throw new \RuntimeException("Server is offline");
-		}
-
-		$this->ip = $ip;
-		$this->port = $port;
-		$this->logger = new \PrefixedLogger($logger, "UPnP Port Forwarder");
-	}
-
-	public function start() : void{
-		$this->logger->info("Attempting to portforward...");
-		$this->serviceURL = self::getServiceUrl();
-
+	public static function portForward(string $serviceURL, int $port) : void{
 		$body =
 			'<u:AddPortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">' .
 				'<NewRemoteHost></NewRemoteHost>' .
-				'<NewExternalPort>' . $this->port . '</NewExternalPort>' .
+				'<NewExternalPort>' . $port . '</NewExternalPort>' .
 				'<NewProtocol>UDP</NewProtocol>' .
-				'<NewInternalPort>' . $this->port . '</NewInternalPort>' .
+				'<NewInternalPort>' . $port . '</NewInternalPort>' .
 				'<NewInternalClient>' . Internet::getInternalIP() . '</NewInternalClient>' .
 				'<NewEnabled>1</NewEnabled>' .
 				'<NewPortMappingDescription>PocketMine-MP</NewPortMappingDescription>' .
@@ -234,29 +210,16 @@ class UPnP implements NetworkInterface{
 			'SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#AddPortMapping"'
 		];
 
-		if(Internet::postURL($this->serviceURL, $contents, 3, $headers, $err) === null){
+		if(Internet::postURL($serviceURL, $contents, 3, $headers, $err) === null){
 			throw new \RuntimeException("Failed to portforward using UPnP: " . $err);
 		}
-
-		$this->logger->info("Forwarded $this->ip:$this->port to external port $this->port");
 	}
 
-	public function setName(string $name) : void{
-
-	}
-
-	public function tick() : void{
-
-	}
-
-	public function shutdown() : void{
-		if($this->serviceURL === null){
-			return;
-		}
+	public static function removePortForward(string $serviceURL, int $port) : void{
 		$body =
 			'<u:DeletePortMapping xmlns:u="urn:schemas-upnp-org:service:WANIPConnection:1">' .
 				'<NewRemoteHost></NewRemoteHost>' .
-				'<NewExternalPort>' . $this->port . '</NewExternalPort>' .
+				'<NewExternalPort>' . $port . '</NewExternalPort>' .
 				'<NewProtocol>UDP</NewProtocol>' .
 			'</u:DeletePortMapping>';
 
@@ -270,6 +233,6 @@ class UPnP implements NetworkInterface{
 			'SOAPAction: "urn:schemas-upnp-org:service:WANIPConnection:1#DeletePortMapping"'
 		];
 
-		Internet::postURL($this->serviceURL, $contents, 3, $headers);
+		Internet::postURL($serviceURL, $contents, 3, $headers);
 	}
 }

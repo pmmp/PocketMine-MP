@@ -64,7 +64,7 @@ use pocketmine\network\Network;
 use pocketmine\network\query\DedicatedQueryNetworkInterface;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\query\QueryInfo;
-use pocketmine\network\upnp\UPnP;
+use pocketmine\network\upnp\UPnPNetworkInterface;
 use pocketmine\permission\BanList;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\player\GameMode;
@@ -1109,7 +1109,7 @@ class Server{
 
 			if((bool) $this->configGroup->getProperty("network.upnp-forwarding", false)){
 				try{
-					$this->network->registerInterface(new UPnP($this->logger, Internet::getInternalIP(), $this->getPort()));
+					$this->network->registerInterface(new UPnPNetworkInterface($this->logger, Internet::getInternalIP(), $this->getPort()));
 				}catch(\RuntimeException $e){
 					$this->logger->alert("UPnP portforward failed: " . $e->getMessage());
 				}
