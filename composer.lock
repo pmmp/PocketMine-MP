@@ -415,12 +415,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ClassLoader.git",
-                "reference": "ba70cbabc53d6a36c5d179776e99bc059f21b4a9"
+                "reference": "80226e0917be79ac3230606113e25134a31e6a85"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/ba70cbabc53d6a36c5d179776e99bc059f21b4a9",
-                "reference": "ba70cbabc53d6a36c5d179776e99bc059f21b4a9",
+                "url": "https://api.github.com/repos/pmmp/ClassLoader/zipball/80226e0917be79ac3230606113e25134a31e6a85",
+                "reference": "80226e0917be79ac3230606113e25134a31e6a85",
                 "shasum": ""
             },
             "require": {
@@ -452,7 +452,7 @@
                 "issues": "https://github.com/pmmp/ClassLoader/issues",
                 "source": "https://github.com/pmmp/ClassLoader/tree/master"
             },
-            "time": "2021-04-21T22:05:17+00:00"
+            "time": "2021-05-29T23:09:32+00:00"
         },
         {
             "name": "pocketmine/color",
@@ -3533,5 +3533,5 @@
     "platform-overrides": {
         "php": "7.4.0"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
