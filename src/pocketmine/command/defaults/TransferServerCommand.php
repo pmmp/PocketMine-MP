@@ -25,7 +25,6 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\Player;
 use pocketmine\utils\TextFormat;
 
@@ -57,7 +56,7 @@ class TransferServerCommand extends VanillaCommand{
 				return true;
 			}
 			$target = $sender->getServer()->getPlayer($args[2]);
-			if (!$target instanceof Player || !$target->isOnline()){
+			if (!$target instanceof Player){
 				$message = $sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.player.notFound");
 				$sender->sendMessage($message);
 
@@ -70,7 +69,7 @@ class TransferServerCommand extends VanillaCommand{
 		}else{
 			$target = $sender;
 		}
-		
+
 		$target->transfer($args[0], (int) ($args[1] ?? 19132));
 
 		return true;
