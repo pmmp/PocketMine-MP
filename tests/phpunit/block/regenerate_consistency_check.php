@@ -36,14 +36,14 @@ $new = array_map(
 );
 foreach($old as $k => $name){
 	if(!isset($new[$k])){
-		echo "Removed state for $name (" . ($k >> 4) . ":" . ($k & 0xf) . ")\n";
+		echo "Removed state for $name (" . ($k >> \pocketmine\block\Block::INTERNAL_METADATA_BITS) . ":" . ($k & \pocketmine\block\Block::INTERNAL_METADATA_MASK) . ")\n";
 	}
 }
 foreach($new as $k => $name){
 	if(!isset($old[$k])){
-		echo "Added state for $name (" . ($k >> 4) . ":" . ($k & 0xf) . ")\n";
+		echo "Added state for $name (" . ($k >> \pocketmine\block\Block::INTERNAL_METADATA_BITS) . ":" . ($k & \pocketmine\block\Block::INTERNAL_METADATA_MASK) . ")\n";
 	}elseif($old[$k] !== $name){
-		echo "Name changed (" . ($k >> 4) . ":" . ($k & 0xf) . "): " . $old[$k] . " -> " . $name . "\n";
+		echo "Name changed (" . ($k >> \pocketmine\block\Block::INTERNAL_METADATA_BITS) . ":" . ($k & \pocketmine\block\Block::INTERNAL_METADATA_MASK) . "): " . $old[$k] . " -> " . $name . "\n";
 	}
 }
 file_put_contents(__DIR__ . '/block_factory_consistency_check.json', json_encode(

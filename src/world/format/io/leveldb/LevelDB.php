@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\leveldb;
 
+use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\LittleEndianNbtSerializer;
@@ -176,7 +177,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				//we really need a proper state fixer, but this is a pressing issue.
 				$data = 0;
 			}
-			$palette[] = ($id << 4) | $data;
+			$palette[] = ($id << Block::INTERNAL_METADATA_BITS) | $data;
 		}
 
 		//TODO: exceptions
@@ -219,9 +220,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$blockId = $value & 0xff;
 			$blockData = ($value >> 8) & 0xf;
 			if(!isset($extraDataLayers[$ySub])){
-				$extraDataLayers[$ySub] = new PalettedBlockArray(BlockLegacyIds::AIR << 4);
+				$extraDataLayers[$ySub] = new PalettedBlockArray(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS);
 			}
-			$extraDataLayers[$ySub]->set($x, $y, $z, ($blockId << 4) | $blockData);
+			$extraDataLayers[$ySub]->set($x, $y, $z, ($blockId << Block::INTERNAL_METADATA_BITS) | $blockData);
 		}
 
 		return $extraDataLayers;
@@ -301,14 +302,14 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 								$storages[] = $convertedLegacyExtraData[$y];
 							}
 
-							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, $storages);
+							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
 							break;
 						case 1: //paletted v1, has a single blockstorage
 							$storages = [$this->deserializePaletted($binaryStream)];
 							if(isset($convertedLegacyExtraData[$y])){
 								$storages[] = $convertedLegacyExtraData[$y];
 							}
-							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, $storages);
+							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
 							break;
 						case 8:
 							//legacy extradata layers intentionally ignored because they aren't supposed to exist in v8
@@ -319,7 +320,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 								for($k = 0; $k < $storageCount; ++$k){
 									$storages[] = $this->deserializePaletted($binaryStream);
 								}
-								$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, $storages);
+								$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
 							}
 							break;
 						default:
@@ -362,7 +363,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					if(isset($convertedLegacyExtraData[$yy])){
 						$storages[] = $convertedLegacyExtraData[$yy];
 					}
-					$subChunks[$yy] = new SubChunk(BlockLegacyIds::AIR << 4, $storages);
+					$subChunks[$yy] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
 				}
 
 				try{
@@ -446,9 +447,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 						$tags = [];
 						foreach($palette as $p){
 							$tags[] = new TreeRoot(CompoundTag::create()
-								->setString("name", $idMap->legacyToString($p >> 4) ?? "minecraft:info_update")
-								->setInt("oldid", $p >> 4) //PM only (debugging), vanilla doesn't have this
-								->setShort("val", $p & 0xf));
+								->setString("name", $idMap->legacyToString($p >> Block::INTERNAL_METADATA_BITS) ?? "minecraft:info_update")
+								->setInt("oldid", $p >> Block::INTERNAL_METADATA_BITS) //PM only (debugging), vanilla doesn't have this
+								->setShort("val", $p & Block::INTERNAL_METADATA_MASK));
 						}
 
 						$subStream->put((new LittleEndianNbtSerializer())->writeMultiple($tags));

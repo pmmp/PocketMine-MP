@@ -895,7 +895,7 @@ class BlockFactory{
 					throw new \InvalidArgumentException("Block registration " . get_class($block) . " has states which conflict with other blocks");
 				}
 
-				$index = ($id << 4) | $m;
+				$index = ($id << Block::INTERNAL_METADATA_BITS) | $m;
 
 				$v = clone $block;
 				try{
@@ -915,7 +915,7 @@ class BlockFactory{
 	}
 
 	public function remap(int $id, int $meta, Block $block) : void{
-		$index = ($id << 4) | $meta;
+		$index = ($id << Block::INTERNAL_METADATA_BITS) | $meta;
 		if($this->isRegistered($id, $meta)){
 			$existing = $this->fullList[$index];
 			if($existing !== null && $existing->getFullId() === $index){
@@ -924,7 +924,7 @@ class BlockFactory{
 				//if it's not a match, this was already remapped for some reason; remapping overwrites are OK
 			}
 		}
-		$this->fillStaticArrays(($id << 4) | $meta, $block);
+		$this->fillStaticArrays(($id << Block::INTERNAL_METADATA_BITS) | $meta, $block);
 	}
 
 	private function fillStaticArrays(int $index, Block $block) : void{
@@ -943,14 +943,14 @@ class BlockFactory{
 	 * Deserializes a block from the provided legacy ID and legacy meta.
 	 */
 	public function get(int $id, int $meta) : Block{
-		if($meta < 0 or $meta > 0xf){
+		if($meta < 0 or $meta > (1 << Block::INTERNAL_METADATA_BITS)){
 			throw new \InvalidArgumentException("Block meta value $meta is out of bounds");
 		}
 
 		/** @var Block|null $block */
 		$block = null;
 		try{
-			$index = ($id << 4) | $meta;
+			$index = ($id << Block::INTERNAL_METADATA_BITS) | $meta;
 			if($this->fullList[$index] !== null){
 				$block = clone $this->fullList[$index];
 			}
@@ -966,14 +966,14 @@ class BlockFactory{
 	}
 
 	public function fromFullBlock(int $fullState) : Block{
-		return $this->get($fullState >> 4, $fullState & 0xf);
+		return $this->get($fullState >> Block::INTERNAL_METADATA_BITS, $fullState & Block::INTERNAL_METADATA_MASK);
 	}
 
 	/**
 	 * Returns whether a specified block state is already registered in the block factory.
 	 */
 	public function isRegistered(int $id, int $meta = 0) : bool{
-		$b = $this->fullList[($id << 4) | $meta];
+		$b = $this->fullList[($id << Block::INTERNAL_METADATA_BITS) | $meta];
 		return $b !== null and !($b instanceof UnknownBlock);
 	}
 
