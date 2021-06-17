@@ -23,8 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function copy;
+use function dirname;
 use function fclose;
 use function fflush;
+use function file_exists;
 use function flock;
 use function fopen;
 use function ftruncate;
@@ -33,6 +36,7 @@ use function getmypid;
 use function is_dir;
 use function is_file;
 use function ltrim;
+use function mkdir;
 use function preg_match;
 use function realpath;
 use function rmdir;
@@ -85,6 +89,53 @@ final class Filesystem{
 			rmdir($dir);
 		}elseif(is_file($dir)){
 			unlink($dir);
+		}
+	}
+
+	/**
+	 * Recursively copies a directory to a new location. The parent directories for the destination must exist.
+	 */
+	public static function recursiveCopy(string $origin, string $destination) : void{
+		if(!is_dir($origin)){
+			throw new \RuntimeException("$origin does not exist, or is not a directory");
+		}
+		if(!is_dir($destination)){
+			if(file_exists($destination)){
+				throw new \RuntimeException("$destination already exists, and is not a directory");
+			}
+			if(!is_dir(dirname($destination))){
+				//if the parent dir doesn't exist, the user most likely made a mistake
+				throw new \RuntimeException("The parent directory of $destination does not exist, or is not a directory");
+			}
+			if(!@mkdir($destination) && !is_dir($destination)){
+				throw new \RuntimeException("Failed to create output directory $destination (permission denied?)");
+			}
+		}
+		self::recursiveCopyInternal($origin, $destination);
+	}
+
+	private static function recursiveCopyInternal(string $origin, string $destination) : void{
+		if(is_dir($origin)){
+			if(!is_dir($destination)){
+				if(file_exists($destination)){
+					throw new \RuntimeException("Path $destination does not exist, or is not a directory");
+				}
+				mkdir($destination); //TODO: access permissions?
+			}
+			$objects = scandir($origin, SCANDIR_SORT_NONE);
+			if($objects === false) throw new AssumptionFailedError("scandir() shouldn't return false when is_dir() returns true");
+			foreach($objects as $object){
+				if($object === "." || $object === ".."){
+					continue;
+				}
+				self::recursiveCopyInternal($origin . "/" . $object, $destination . "/" . $object);
+			}
+		}else{
+			$dirName = dirname($destination);
+			if(!is_dir($dirName)){ //the destination folder should already exist
+				throw new AssumptionFailedError("The destination folder should have been created in the parent call");
+			}
+			copy($origin, $destination);
 		}
 	}
 
