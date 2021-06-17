@@ -24,8 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
+use pocketmine\item\VanillaItems;
 
 class BaseInventoryTest extends TestCase{
 
@@ -46,5 +48,41 @@ class BaseInventoryTest extends TestCase{
 		$inv->addItem(clone $item2);
 		self::assertFalse($inv->canAddItem($item1), "Item WITH userdata should not stack with item WITHOUT userdata");
 		self::assertNotEmpty($inv->addItem($item1));
+	}
+
+	/**
+	 * @return Item[]
+	 */
+	private function getTestItems() : array{
+		return [
+			VanillaItems::APPLE()->setCount(16),
+			VanillaItems::APPLE()->setCount(16),
+			VanillaItems::APPLE()->setCount(16),
+			VanillaItems::APPLE()->setCount(16)
+		];
+	}
+
+	public function testAddMultipleItemsInOneCall() : void{
+		$inventory = new class(1) extends SimpleInventory{
+
+		};
+		$leftover = $inventory->addItem(...$this->getTestItems());
+		self::assertCount(0, $leftover);
+		self::assertTrue($inventory->getItem(0)->equalsExact(VanillaItems::APPLE()->setCount(64)));
+	}
+
+	public function testAddMultipleItemsInOneCallWithLeftover() : void{
+		$inventory = new class(1) extends SimpleInventory{};
+		$inventory->setItem(0, VanillaItems::APPLE()->setCount(20));
+		$leftover = $inventory->addItem(...$this->getTestItems());
+		self::assertCount(2, $leftover); //the leftovers are not currently stacked - if they were given separately, they'll be returned separately
+		self::assertTrue($inventory->getItem(0)->equalsExact(VanillaItems::APPLE()->setCount(64)));
+
+		$leftoverCount = 0;
+		foreach($leftover as $item){
+			self::assertTrue($item->equals(VanillaItems::APPLE()));
+			$leftoverCount += $item->getCount();
+		}
+		self::assertSame(20, $leftoverCount);
 	}
 }
