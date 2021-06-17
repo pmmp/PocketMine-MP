@@ -148,7 +148,10 @@ trait InventoryHelpersTrait{
 		$returnSlots = [];
 
 		foreach($itemSlots as $item){
-			$returnSlots[] = $this->internalAddItem($item);
+			$leftover = $this->internalAddItem($item);
+			if(!$leftover->isNull()){
+				$returnSlots[] = $leftover;
+			}
 		}
 
 		return $returnSlots;
