@@ -31,6 +31,14 @@ use function max;
 
 //TODO: make light updates asynchronous
 abstract class LightUpdate{
+	private const ADJACENTS = [
+		[ 1,  0,  0],
+		[-1,  0,  0],
+		[ 0,  1,  0],
+		[ 0, -1,  0],
+		[ 0,  0,  1],
+		[ 0,  0, -1]
+	];
 
 	/**
 	 * @var \SplFixedArray|int[]
@@ -76,15 +84,8 @@ abstract class LightUpdate{
 
 	protected function getHighestAdjacentLight(int $x, int $y, int $z) : int{
 		$adjacent = 0;
-		foreach([
-			[$x + 1, $y, $z],
-			[$x - 1, $y, $z],
-			[$x, $y + 1, $z],
-			[$x, $y - 1, $z],
-			[$x, $y, $z + 1],
-			[$x, $y, $z - 1]
-		] as [$x1, $y1, $z1]){
-			if(($adjacent = max($adjacent, $this->getEffectiveLight($x1, $y1, $z1))) === 15){
+		foreach(self::ADJACENTS as [$ox, $oy, $oz]){
+			if(($adjacent = max($adjacent, $this->getEffectiveLight($x + $ox, $y + $oy, $z + $oz))) === 15){
 				break;
 			}
 		}
@@ -125,16 +126,11 @@ abstract class LightUpdate{
 			$touched++;
 			[$x, $y, $z, $oldAdjacentLight] = $context->removalQueue->dequeue();
 
-			$points = [
-				[$x + 1, $y, $z],
-				[$x - 1, $y, $z],
-				[$x, $y + 1, $z],
-				[$x, $y - 1, $z],
-				[$x, $y, $z + 1],
-				[$x, $y, $z - 1]
-			];
+			foreach(self::ADJACENTS as [$ox, $oy, $oz]){
+				$cx = $x + $ox;
+				$cy = $y + $oy;
+				$cz = $z + $oz;
 
-			foreach($points as [$cx, $cy, $cz]){
 				if($this->subChunkExplorer->moveTo($cx, $cy, $cz) !== SubChunkExplorerStatus::INVALID){
 					$this->computeRemoveLight($cx, $cy, $cz, $oldAdjacentLight, $context);
 				}elseif($this->getEffectiveLight($cx, $cy, $cz) > 0 and !isset($context->spreadVisited[$index = World::blockHash($cx, $cy, $cz)])){
@@ -155,16 +151,11 @@ abstract class LightUpdate{
 				continue;
 			}
 
-			$points = [
-				[$x + 1, $y, $z],
-				[$x - 1, $y, $z],
-				[$x, $y + 1, $z],
-				[$x, $y - 1, $z],
-				[$x, $y, $z + 1],
-				[$x, $y, $z - 1]
-			];
+			foreach(self::ADJACENTS as [$ox, $oy, $oz]){
+				$cx = $x + $ox;
+				$cy = $y + $oy;
+				$cz = $z + $oz;
 
-			foreach($points as [$cx, $cy, $cz]){
 				if($this->subChunkExplorer->moveTo($cx, $cy, $cz) !== SubChunkExplorerStatus::INVALID){
 					$this->computeSpreadLight($cx, $cy, $cz, $newAdjacentLight, $context);
 				}
