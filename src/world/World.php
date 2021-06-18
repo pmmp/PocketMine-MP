@@ -1795,9 +1795,17 @@ class World implements ChunkManager{
 			return false;
 		}
 
-		foreach($hand->getCollisionBoxes() as $collisionBox){
-			if(count($this->getCollidingEntities($collisionBox)) > 0){
-				return false;  //Entity in block
+		$tx = new BlockTransaction($this);
+		if(!$hand->place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player)){
+			return false;
+		}
+
+		foreach($tx->getBlocks() as [$x, $y, $z, $block]){
+			$block->position($this, $x, $y, $z);
+			foreach($block->getCollisionBoxes() as $collisionBox){
+				if(count($entities = $this->getCollidingEntities($collisionBox)) > 0){
+					return false;  //Entity in block
+				}
 			}
 		}
 
@@ -1829,8 +1837,7 @@ class World implements ChunkManager{
 			}
 		}
 
-		$tx = new BlockTransaction($this);
-		if(!$hand->place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player) or !$tx->apply()){
+		if(!$tx->apply()){
 			return false;
 		}
 		foreach($tx->getBlocks() as [$x, $y, $z, $_]){
