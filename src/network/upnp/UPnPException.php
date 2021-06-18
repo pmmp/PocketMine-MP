@@ -21,9 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\permission;
+namespace pocketmine\network\upnp;
 
-interface PermissionRemovedExecutor{
+final class UPnPException extends \RuntimeException{
 
-	public function attachmentRemoved(Permissible $permissible, PermissionAttachment $attachment) : void;
 }

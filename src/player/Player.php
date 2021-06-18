@@ -2022,8 +2022,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->removeCurrentWindow();
 		$this->removePermanentInventories();
 
-		$this->perm->destroyCycles();
-
 		$this->flagForDespawn();
 	}
 

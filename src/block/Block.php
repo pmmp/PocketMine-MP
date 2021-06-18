@@ -48,6 +48,8 @@ use function dechex;
 use const PHP_INT_MAX;
 
 class Block{
+	public const INTERNAL_METADATA_BITS = 4;
+	public const INTERNAL_METADATA_MASK = ~(~0 << self::INTERNAL_METADATA_BITS);
 
 	protected BlockIdentifier $idInfo;
 	protected string $fallbackName;
@@ -90,7 +92,7 @@ class Block{
 	 * @internal
 	 */
 	public function getFullId() : int{
-		return ($this->getId() << 4) | $this->getMeta();
+		return ($this->getId() << self::INTERNAL_METADATA_BITS) | $this->getMeta();
 	}
 
 	public function asItem() : Item{
@@ -357,7 +359,7 @@ class Block{
 			return $this->getDropsForCompatibleTool($item);
 		}
 
-		return [];
+		return $this->getDropsForIncompatibleTool($item);
 	}
 
 	/**
@@ -367,6 +369,15 @@ class Block{
 	 */
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [$this->asItem()];
+	}
+
+	/**
+	 * Returns the items dropped by this block when broken with an incorrect tool type (or tool with a too-low tier).
+	 *
+	 * @return Item[]
+	 */
+	public function getDropsForIncompatibleTool(Item $item) : array{
+		return [];
 	}
 
 	/**

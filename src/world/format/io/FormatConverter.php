@@ -91,8 +91,17 @@ class FormatConverter{
 		$new->close();
 
 		$this->logger->info("Backing up pre-conversion world to " . $this->backupPath);
-		rename($path, $this->backupPath);
-		rename($new->getPath(), $path);
+		if(!@rename($path, $this->backupPath)){
+			$this->logger->warning("Moving old world files for backup failed, attempting copy instead. This might take a long time.");
+			Filesystem::recursiveCopy($path, $this->backupPath);
+			Filesystem::recursiveUnlink($path);
+		}
+		if(!@rename($new->getPath(), $path)){
+			//we don't expect this to happen because worlds/ should most likely be all on the same FS, but just in case...
+			$this->logger->debug("Relocation of new world files to location failed, attempting copy and delete instead");
+			Filesystem::recursiveCopy($new->getPath(), $path);
+			Filesystem::recursiveUnlink($new->getPath());
+		}
 
 		$this->logger->info("Conversion completed");
 		/**

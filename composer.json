@@ -45,13 +45,13 @@
       "pocketmine/nbt": "^0.3.0",
       "pocketmine/raklib": "^0.13.1",
       "pocketmine/raklib-ipc": "^0.1.0",
-      "pocketmine/snooze": "^0.1.0",
+      "pocketmine/snooze": "^0.3.0",
       "pocketmine/spl": "dev-master",
       "ramsey/uuid": "^4.1",
       "respect/validation": "^2.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "0.12.88",
+      "phpstan/phpstan": "0.12.90",
       "phpstan/phpstan-phpunit": "^0.12.6",
       "phpstan/phpstan-strict-rules": "^0.12.2",
       "phpunit/phpunit": "^9.2"

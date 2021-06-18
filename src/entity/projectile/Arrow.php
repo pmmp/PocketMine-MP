@@ -50,6 +50,7 @@ class Arrow extends Projectile{
 	public const PICKUP_CREATIVE = 2;
 
 	private const TAG_PICKUP = "pickup"; //TAG_Byte
+	public const TAG_CRIT = "crit"; //TAG_Byte
 
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
@@ -80,12 +81,14 @@ class Arrow extends Projectile{
 		parent::initEntity($nbt);
 
 		$this->pickupMode = $nbt->getByte(self::TAG_PICKUP, self::PICKUP_ANY);
+		$this->critical = $nbt->getByte(self::TAG_CRIT, 0) === 1;
 		$this->collideTicks = $nbt->getShort("life", $this->collideTicks);
 	}
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 		$nbt->setByte(self::TAG_PICKUP, $this->pickupMode);
+		$nbt->setByte(self::TAG_CRIT, $this->critical ? 1 : 0);
 		$nbt->setShort("life", $this->collideTicks);
 		return $nbt;
 	}

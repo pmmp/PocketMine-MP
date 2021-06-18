@@ -30,6 +30,10 @@ use function count;
 trait AnimatedBlockInventoryTrait{
 	use BlockInventoryTrait;
 
+	public function getViewerCount() : int{
+		return count($this->getViewers());
+	}
+
 	/**
 	 * @return Player[]
 	 * @phpstan-return array<int, Player>
@@ -43,7 +47,7 @@ trait AnimatedBlockInventoryTrait{
 	public function onOpen(Player $who) : void{
 		parent::onOpen($who);
 
-		if(count($this->getViewers()) === 1 and $this->getHolder()->isValid()){
+		if($this->getHolder()->isValid() and $this->getViewerCount() === 1){
 			//TODO: this crap really shouldn't be managed by the inventory
 			$this->animateBlock(true);
 			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getOpenSound());
@@ -53,7 +57,7 @@ trait AnimatedBlockInventoryTrait{
 	abstract protected function animateBlock(bool $isOpen) : void;
 
 	public function onClose(Player $who) : void{
-		if(count($this->getViewers()) === 1 and $this->getHolder()->isValid()){
+		if($this->getHolder()->isValid() and $this->getViewerCount() === 1){
 			//TODO: this crap really shouldn't be managed by the inventory
 			$this->animateBlock(false);
 			$this->getHolder()->getWorld()->addSound($this->getHolder()->add(0.5, 0.5, 0.5), $this->getCloseSound());

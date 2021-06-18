@@ -77,7 +77,7 @@ final class EntityFactory{
 		//TODO: index them by version to allow proper multi-save compatibility
 
 		$this->register(Arrow::class, function(World $world, CompoundTag $nbt) : Arrow{
-			return new Arrow(EntityDataHelper::parseLocation($nbt, $world), null, false, $nbt); //TODO: missing critical flag
+			return new Arrow(EntityDataHelper::parseLocation($nbt, $world), null, $nbt->getByte(Arrow::TAG_CRIT, 0) === 1, $nbt);
 		}, ['Arrow', 'minecraft:arrow'], EntityLegacyIds::ARROW);
 
 		$this->register(Egg::class, function(World $world, CompoundTag $nbt) : Egg{

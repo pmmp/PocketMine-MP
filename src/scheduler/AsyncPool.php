@@ -233,11 +233,17 @@ class AsyncPool{
 	 * @return bool whether there are tasks left to be collected
 	 */
 	public function collectTasks() : bool{
-		$more = false;
 		foreach($this->taskQueues as $worker => $queue){
-			$more = $this->collectTasksFromWorker($worker) || $more;
+			$this->collectTasksFromWorker($worker);
 		}
-		return $more;
+
+		//we check this in a second loop, because task collection could have caused new tasks to be added to the queues
+		foreach($this->taskQueues as $queue){
+			if(!$queue->isEmpty()){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function collectTasksFromWorker(int $worker) : bool{
@@ -307,20 +313,8 @@ class AsyncPool{
 	 * Cancels all pending tasks and shuts down all the workers in the pool.
 	 */
 	public function shutdown() : void{
-		$this->collectTasks();
-
-		foreach($this->workers as $worker){
-			/** @var AsyncTask $task */
-			while(($task = $worker->unstack()) !== null){
-				//NOOP: the below loop will deal with marking tasks as garbage
-			}
-		}
-		foreach($this->taskQueues as $queue){
-			while(!$queue->isEmpty()){
-				/** @var AsyncTask $task */
-				$task = $queue->dequeue();
-				$task->cancelRun();
-			}
+		while($this->collectTasks()){
+			//NOOP
 		}
 
 		foreach($this->workers as $worker){
