@@ -1,7 +1,7 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Cannot access offset float\\|int on mixed\\.$#"
+			message: "#^Cannot access offset \\(float\\|int\\) on mixed\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/CrashDump.php
 
