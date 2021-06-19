@@ -191,7 +191,7 @@ class CrashDump{
 	private function extraData() : void{
 		global $argv;
 
-		if($this->server->getConfigGroup()->getProperty("auto-report.send-settings", true) !== false){
+		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-settings", true)){
 			$this->data["parameters"] = (array) $argv;
 			if(($serverDotProperties = @file_get_contents($this->server->getDataPath() . "server.properties")) !== false){
 				$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $serverDotProperties);
@@ -214,7 +214,7 @@ class CrashDump{
 		}
 		$this->data["extensions"] = $extensions;
 
-		if($this->server->getConfigGroup()->getProperty("auto-report.send-phpinfo", true) !== false){
+		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-phpinfo", true)){
 			ob_start();
 			phpinfo();
 			$this->data["phpinfo"] = ob_get_contents();
@@ -276,7 +276,7 @@ class CrashDump{
 		$this->addLine("Code:");
 		$this->data["code"] = [];
 
-		if($this->server->getConfigGroup()->getProperty("auto-report.send-code", true) !== false and file_exists($error["fullFile"])){
+		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-code", true) and file_exists($error["fullFile"])){
 			$file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
 			if($file !== false){
 				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 and isset($file[$l]); ++$l){

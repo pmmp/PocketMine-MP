@@ -123,7 +123,7 @@ class MemoryManager{
 	}
 
 	private function init(ServerConfigGroup $config) : void{
-		$this->memoryLimit = ((int) $config->getProperty("memory.main-limit", 0)) * 1024 * 1024;
+		$this->memoryLimit = $config->getPropertyInt("memory.main-limit", 0) * 1024 * 1024;
 
 		$defaultMemory = 1024;
 
@@ -149,7 +149,7 @@ class MemoryManager{
 			}
 		}
 
-		$hardLimit = ((int) $config->getProperty("memory.main-hard-limit", $defaultMemory));
+		$hardLimit = $config->getPropertyInt("memory.main-hard-limit", $defaultMemory);
 
 		if($hardLimit <= 0){
 			ini_set("memory_limit", '-1');
@@ -157,22 +157,22 @@ class MemoryManager{
 			ini_set("memory_limit", $hardLimit . "M");
 		}
 
-		$this->globalMemoryLimit = ((int) $config->getProperty("memory.global-limit", 0)) * 1024 * 1024;
-		$this->checkRate = (int) $config->getProperty("memory.check-rate", 20);
-		$this->continuousTrigger = (bool) $config->getProperty("memory.continuous-trigger", true);
-		$this->continuousTriggerRate = (int) $config->getProperty("memory.continuous-trigger-rate", 30);
+		$this->globalMemoryLimit = $config->getPropertyInt("memory.global-limit", 0) * 1024 * 1024;
+		$this->checkRate = $config->getPropertyInt("memory.check-rate", 20);
+		$this->continuousTrigger = $config->getPropertyBool("memory.continuous-trigger", true);
+		$this->continuousTriggerRate = $config->getPropertyInt("memory.continuous-trigger-rate", 30);
 
-		$this->garbageCollectionPeriod = (int) $config->getProperty("memory.garbage-collection.period", 36000);
-		$this->garbageCollectionTrigger = (bool) $config->getProperty("memory.garbage-collection.low-memory-trigger", true);
-		$this->garbageCollectionAsync = (bool) $config->getProperty("memory.garbage-collection.collect-async-worker", true);
+		$this->garbageCollectionPeriod = $config->getPropertyInt("memory.garbage-collection.period", 36000);
+		$this->garbageCollectionTrigger = $config->getPropertyBool("memory.garbage-collection.low-memory-trigger", true);
+		$this->garbageCollectionAsync = $config->getPropertyBool("memory.garbage-collection.collect-async-worker", true);
 
-		$this->lowMemChunkRadiusOverride = (int) $config->getProperty("memory.max-chunks.chunk-radius", 4);
-		$this->lowMemChunkGC = (bool) $config->getProperty("memory.max-chunks.trigger-chunk-collect", true);
+		$this->lowMemChunkRadiusOverride = $config->getPropertyInt("memory.max-chunks.chunk-radius", 4);
+		$this->lowMemChunkGC = $config->getPropertyBool("memory.max-chunks.trigger-chunk-collect", true);
 
-		$this->lowMemDisableChunkCache = (bool) $config->getProperty("memory.world-caches.disable-chunk-cache", true);
-		$this->lowMemClearWorldCache = (bool) $config->getProperty("memory.world-caches.low-memory-trigger", true);
+		$this->lowMemDisableChunkCache = $config->getPropertyBool("memory.world-caches.disable-chunk-cache", true);
+		$this->lowMemClearWorldCache = $config->getPropertyBool("memory.world-caches.low-memory-trigger", true);
 
-		$this->dumpWorkers = (bool) $config->getProperty("memory.memory-dump.dump-async-worker", true);
+		$this->dumpWorkers = $config->getPropertyBool("memory.memory-dump.dump-async-worker", true);
 		gc_enable();
 	}
 

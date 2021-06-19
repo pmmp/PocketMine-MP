@@ -595,7 +595,7 @@ class NetworkSession{
 		}
 		$this->logger->debug("Xbox Live authenticated: " . ($this->authenticated ? "YES" : "NO"));
 
-		$checkXUID = (bool) $this->server->getConfigGroup()->getProperty("player.verify-xuid", true);
+		$checkXUID = $this->server->getConfigGroup()->getPropertyBool("player.verify-xuid", true);
 		$myXUID = $this->info instanceof XboxLivePlayerInfo ? $this->info->getXuid() : "";
 		$kickForXUIDMismatch = function(string $xuid) use ($checkXUID, $myXUID) : bool{
 			if($checkXUID && $myXUID !== $xuid){

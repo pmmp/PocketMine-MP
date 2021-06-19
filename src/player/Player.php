@@ -281,8 +281,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$rootPermissions[DefaultPermissions::ROOT_OPERATOR] = true;
 		}
 		$this->perm = new PermissibleBase($rootPermissions);
-		$this->chunksPerTick = (int) $this->server->getConfigGroup()->getProperty("chunk-sending.per-tick", 4);
-		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getProperty("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
+		$this->chunksPerTick = $this->server->getConfigGroup()->getPropertyInt("chunk-sending.per-tick", 4);
+		$this->spawnThreshold = (int) (($this->server->getConfigGroup()->getPropertyInt("chunk-sending.spawn-radius", 4) ** 2) * M_PI);
 		$this->chunkSelector = new ChunkSelector();
 
 		$this->chunkLoader = new PlayerChunkLoader($spawnLocation);
@@ -502,7 +502,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function setViewDistance(int $distance) : void{
 		$this->viewDistance = $this->server->getAllowedViewDistance($distance);
 
-		$this->spawnThreshold = (int) (min($this->viewDistance, $this->server->getConfigGroup()->getProperty("chunk-sending.spawn-radius", 4)) ** 2 * M_PI);
+		$this->spawnThreshold = (int) (min($this->viewDistance, $this->server->getConfigGroup()->getPropertyInt("chunk-sending.spawn-radius", 4)) ** 2 * M_PI);
 
 		$this->nextChunkOrderRun = 0;
 
@@ -806,7 +806,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->spawnToAll();
 
-		if($this->server->getUpdater()->hasUpdate() and $this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE) and $this->server->getConfigGroup()->getProperty("auto-updater.on-update.warn-ops", true)){
+		if($this->server->getUpdater()->hasUpdate() and $this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE) and $this->server->getConfigGroup()->getPropertyBool("auto-updater.on-update.warn-ops", true)){
 			$this->server->getUpdater()->showPlayerUpdate($this);
 		}
 

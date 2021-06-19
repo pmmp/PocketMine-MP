@@ -496,7 +496,7 @@ class Server{
 	}
 
 	public function shouldSavePlayerData() : bool{
-		return (bool) $this->configGroup->getProperty("player.save-player-data", true);
+		return $this->configGroup->getPropertyBool("player.save-player-data", true);
 	}
 
 	/**
@@ -858,13 +858,13 @@ class Server{
 				])
 			);
 
-			$debugLogLevel = (int) $this->configGroup->getProperty("debug.level", 1);
+			$debugLogLevel = $this->configGroup->getPropertyInt("debug.level", 1);
 			if($this->logger instanceof MainLogger){
 				$this->logger->setLogDebug($debugLogLevel > 1);
 			}
 
-			$this->forceLanguage = (bool) $this->configGroup->getProperty("settings.force-language", false);
-			$selectedLang = $this->configGroup->getConfigString("language", $this->configGroup->getProperty("settings.language", Language::FALLBACK_LANGUAGE));
+			$this->forceLanguage = $this->configGroup->getPropertyBool("settings.force-language", false);
+			$selectedLang = $this->configGroup->getConfigString("language", $this->configGroup->getPropertyString("settings.language", Language::FALLBACK_LANGUAGE));
 			try{
 				$this->language = new Language($selectedLang);
 			}catch(LanguageNotFoundException $e){
@@ -880,7 +880,7 @@ class Server{
 			$this->logger->info($this->getLanguage()->translateString("language.selected", [$this->getLanguage()->getName(), $this->getLanguage()->getLang()]));
 
 			if(VersionInfo::IS_DEVELOPMENT_BUILD){
-				if(!((bool) $this->configGroup->getProperty("settings.enable-dev-builds", false))){
+				if(!$this->configGroup->getPropertyBool("settings.enable-dev-builds", false)){
 					$this->logger->emergency($this->language->translateString("pocketmine.server.devBuild.error1", [VersionInfo::NAME]));
 					$this->logger->emergency($this->language->translateString("pocketmine.server.devBuild.error2"));
 					$this->logger->emergency($this->language->translateString("pocketmine.server.devBuild.error3"));
@@ -902,7 +902,7 @@ class Server{
 
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.start", [TextFormat::AQUA . $this->getVersion() . TextFormat::RESET]));
 
-			if(($poolSize = $this->configGroup->getProperty("settings.async-workers", "auto")) === "auto"){
+			if(($poolSize = $this->configGroup->getPropertyString("settings.async-workers", "auto")) === "auto"){
 				$poolSize = 2;
 				$processors = Utils::getCoreCount() - 2;
 
@@ -913,25 +913,25 @@ class Server{
 				$poolSize = max(1, (int) $poolSize);
 			}
 
-			$this->asyncPool = new AsyncPool($poolSize, max(-1, (int) $this->configGroup->getProperty("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger, $this->tickSleeper);
+			$this->asyncPool = new AsyncPool($poolSize, max(-1, $this->configGroup->getPropertyInt("memory.async-worker-hard-limit", 256)), $this->autoloader, $this->logger, $this->tickSleeper);
 
 			$netCompressionThreshold = -1;
-			if($this->configGroup->getProperty("network.batch-threshold", 256) >= 0){
-				$netCompressionThreshold = (int) $this->configGroup->getProperty("network.batch-threshold", 256);
+			if($this->configGroup->getPropertyInt("network.batch-threshold", 256) >= 0){
+				$netCompressionThreshold = $this->configGroup->getPropertyInt("network.batch-threshold", 256);
 			}
 
-			$netCompressionLevel = (int) $this->configGroup->getProperty("network.compression-level", 6);
+			$netCompressionLevel = $this->configGroup->getPropertyInt("network.compression-level", 6);
 			if($netCompressionLevel < 1 or $netCompressionLevel > 9){
 				$this->logger->warning("Invalid network compression level $netCompressionLevel set, setting to default 6");
 				$netCompressionLevel = 6;
 			}
 			ZlibCompressor::setInstance(new ZlibCompressor($netCompressionLevel, $netCompressionThreshold, ZlibCompressor::DEFAULT_MAX_DECOMPRESSION_SIZE));
 
-			$this->networkCompressionAsync = (bool) $this->configGroup->getProperty("network.async-compression", true);
+			$this->networkCompressionAsync = $this->configGroup->getPropertyBool("network.async-compression", true);
 
-			EncryptionContext::$ENABLED = (bool) $this->configGroup->getProperty("network.enable-encryption", true);
+			EncryptionContext::$ENABLED = $this->configGroup->getPropertyBool("network.enable-encryption", true);
 
-			$this->doTitleTick = ((bool) $this->configGroup->getProperty("console.title-tick", true)) && Terminal::hasFormattingCodes();
+			$this->doTitleTick = $this->configGroup->getPropertyBool("console.title-tick", true) && Terminal::hasFormattingCodes();
 
 			$this->operators = new Config($this->dataPath . "ops.txt", Config::ENUM);
 			$this->whitelist = new Config($this->dataPath . "white-list.txt", Config::ENUM);
@@ -977,8 +977,8 @@ class Server{
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.license", [$this->getName()]));
 
 			Timings::init();
-			TimingsHandler::setEnabled((bool) $this->configGroup->getProperty("settings.enable-profiling", false));
-			$this->profilingTickRate = (float) $this->configGroup->getProperty("settings.profile-report-trigger", 20);
+			TimingsHandler::setEnabled($this->configGroup->getPropertyBool("settings.enable-profiling", false));
+			$this->profilingTickRate = $this->configGroup->getPropertyInt("settings.profile-report-trigger", 20);
 
 			DefaultPermissions::registerCorePermissions();
 
@@ -1000,13 +1000,13 @@ class Server{
 				$this->forceShutdown();
 				return;
 			}
-			$this->pluginManager = new PluginManager($this, ((bool) $this->configGroup->getProperty("plugins.legacy-data-dir", true)) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR, $pluginGraylist);
+			$this->pluginManager = new PluginManager($this, $this->configGroup->getPropertyBool("plugins.legacy-data-dir", true) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR, $pluginGraylist);
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
 			$providerManager = new WorldProviderManager();
 			if(
-				($format = $providerManager->getProviderByName($formatName = (string) $this->configGroup->getProperty("level-settings.default-format"))) !== null and
+				($format = $providerManager->getProviderByName($formatName = $this->configGroup->getPropertyString("level-settings.default-format", ""))) !== null and
 				is_a($format, WritableWorldProvider::class, true)
 			){
 				$providerManager->setDefault($format);
@@ -1016,9 +1016,9 @@ class Server{
 
 			$this->worldManager = new WorldManager($this, $this->dataPath . "/worlds", $providerManager);
 			$this->worldManager->setAutoSave($this->configGroup->getConfigBool("auto-save", $this->worldManager->getAutoSave()));
-			$this->worldManager->setAutoSaveInterval((int) $this->configGroup->getProperty("ticks-per.autosave", 6000));
+			$this->worldManager->setAutoSaveInterval($this->configGroup->getPropertyInt("ticks-per.autosave", 6000));
 
-			$this->updater = new AutoUpdater($this, $this->configGroup->getProperty("auto-updater.host", "update.pmmp.io"));
+			$this->updater = new AutoUpdater($this, $this->configGroup->getPropertyString("auto-updater.host", "update.pmmp.io"));
 
 			$this->queryInfo = new QueryInfo($this);
 
@@ -1107,11 +1107,11 @@ class Server{
 				$this->network->blockAddress($entry->getName(), -1);
 			}
 
-			if((bool) $this->configGroup->getProperty("network.upnp-forwarding", false)){
+			if($this->configGroup->getPropertyBool("network.upnp-forwarding", false)){
 				$this->network->registerInterface(new UPnPNetworkInterface($this->logger, Internet::getInternalIP(), $this->getPort()));
 			}
 
-			if((bool) $this->configGroup->getProperty("settings.send-usage", true)){
+			if($this->configGroup->getPropertyBool("settings.send-usage", true)){
 				$this->sendUsageTicker = 6000;
 				$this->sendUsage(SendUsageTask::TYPE_OPEN);
 			}
@@ -1396,7 +1396,7 @@ class Server{
 			}
 
 			if($this->network instanceof Network){
-				$this->network->getSessionManager()->close($this->configGroup->getProperty("settings.shutdown-message", "Server closed"));
+				$this->network->getSessionManager()->close($this->configGroup->getPropertyString("settings.shutdown-message", "Server closed"));
 			}
 
 			if($this->worldManager instanceof WorldManager){
@@ -1501,7 +1501,7 @@ class Server{
 
 			$this->logger->emergency($this->getLanguage()->translateString("pocketmine.crash.submit", [$dump->getPath()]));
 
-			if($this->configGroup->getProperty("auto-report.enabled", true) !== false){
+			if($this->configGroup->getPropertyBool("auto-report.enabled", true)){
 				$report = true;
 
 				$stamp = $this->getDataPath() . "crashdumps/.last_crash";
@@ -1530,7 +1530,7 @@ class Server{
 				}
 
 				if($report){
-					$url = ((bool) $this->configGroup->getProperty("auto-report.use-https", true) ? "https" : "http") . "://" . $this->configGroup->getProperty("auto-report.host", "crash.pmmp.io") . "/submit/api";
+					$url = ($this->configGroup->getPropertyBool("auto-report.use-https", true) ? "https" : "http") . "://" . $this->configGroup->getPropertyString("auto-report.host", "crash.pmmp.io") . "/submit/api";
 					$postUrlError = "Unknown error";
 					$reply = Internet::postURL($url, [
 						"report" => "yes",
@@ -1616,7 +1616,7 @@ class Server{
 	}
 
 	public function sendUsage(int $type = SendUsageTask::TYPE_STATUS) : void{
-		if((bool) $this->configGroup->getProperty("anonymous-statistics.enabled", true)){
+		if($this->configGroup->getPropertyBool("anonymous-statistics.enabled", true)){
 			$this->asyncPool->submitTask(new SendUsageTask($this, $type, $this->uniquePlayers));
 		}
 		$this->uniquePlayers = [];

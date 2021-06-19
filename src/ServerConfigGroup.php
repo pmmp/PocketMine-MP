@@ -65,6 +65,18 @@ final class ServerConfigGroup{
 		return $this->propertyCache[$variable] ?? $defaultValue;
 	}
 
+	public function getPropertyBool(string $variable, bool $defaultValue) : bool{
+		return (bool) $this->getProperty($variable, $defaultValue);
+	}
+
+	public function getPropertyInt(string $variable, int $defaultValue) : int{
+		return (int) $this->getProperty($variable, $defaultValue);
+	}
+
+	public function getPropertyString(string $variable, string $defaultValue) : string{
+		return (string) $this->getProperty($variable, $defaultValue);
+	}
+
 	public function getConfigString(string $variable, string $defaultValue = "") : string{
 		$v = getopt("", ["$variable::"]);
 		if(isset($v[$variable])){
