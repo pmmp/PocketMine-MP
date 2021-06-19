@@ -61,4 +61,9 @@ final class PotionTypeIds{
 	public const WEAKNESS = 34;
 	public const LONG_WEAKNESS = 35;
 	public const WITHER = 36;
+	public const TURTLE_MASTER = 37;
+	public const LONG_TURTLE_MASTER = 38;
+	public const STRONG_TURTLE_MASTER = 39;
+	public const SLOW_FALLING = 40;
+	public const LONG_SLOW_FALLING = 41;
 }

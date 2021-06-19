@@ -46,8 +46,10 @@ use pocketmine\utils\EnumTrait;
  * @method static PotionType LONG_POISON()
  * @method static PotionType LONG_REGENERATION()
  * @method static PotionType LONG_SLOWNESS()
+ * @method static PotionType LONG_SLOW_FALLING()
  * @method static PotionType LONG_STRENGTH()
  * @method static PotionType LONG_SWIFTNESS()
+ * @method static PotionType LONG_TURTLE_MASTER()
  * @method static PotionType LONG_WATER_BREATHING()
  * @method static PotionType LONG_WEAKNESS()
  * @method static PotionType MUNDANE()
@@ -55,6 +57,7 @@ use pocketmine\utils\EnumTrait;
  * @method static PotionType POISON()
  * @method static PotionType REGENERATION()
  * @method static PotionType SLOWNESS()
+ * @method static PotionType SLOW_FALLING()
  * @method static PotionType STRENGTH()
  * @method static PotionType STRONG_HARMING()
  * @method static PotionType STRONG_HEALING()
@@ -63,8 +66,10 @@ use pocketmine\utils\EnumTrait;
  * @method static PotionType STRONG_REGENERATION()
  * @method static PotionType STRONG_STRENGTH()
  * @method static PotionType STRONG_SWIFTNESS()
+ * @method static PotionType STRONG_TURTLE_MASTER()
  * @method static PotionType SWIFTNESS()
  * @method static PotionType THICK()
+ * @method static PotionType TURTLE_MASTER()
  * @method static PotionType WATER()
  * @method static PotionType WATER_BREATHING()
  * @method static PotionType WEAKNESS()
@@ -177,6 +182,21 @@ final class PotionType{
 			]),
 			new self("wither", fn() => [
 				new EffectInstance(VanillaEffects::WITHER(), 800, 1)
+			]),
+			new self("turtle_master", fn() => [
+				//TODO
+			]),
+			new self("long_turtle_master", fn() => [
+				//TODO
+			]),
+			new self("strong_turtle_master", fn() => [
+				//TODO
+			]),
+			new self("slow_falling", fn() => [
+				//TODO
+			]),
+			new self("long_slow_falling", fn() => [
+				//TODO
 			])
 		);
 	}

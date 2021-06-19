@@ -152,7 +152,7 @@ final class EntityFactory{
 		$this->register(SplashPotion::class, function(World $world, CompoundTag $nbt) : SplashPotion{
 			$potionType = PotionTypeIdMap::getInstance()->fromId($nbt->getShort("PotionId", PotionTypeIds::WATER));
 			if($potionType === null){
-				$potionType = PotionType::WATER(); //TODO: this should be an error, but we haven't registered all the types yet
+				throw new \UnexpectedValueException("No such potion type");
 			}
 			return new SplashPotion(EntityDataHelper::parseLocation($nbt, $world), null, $potionType, $nbt);
 		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
