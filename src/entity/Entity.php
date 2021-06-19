@@ -40,6 +40,9 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\nbt\tag\DoubleTag;
+use pocketmine\nbt\tag\FloatTag;
+use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
@@ -459,7 +462,21 @@ abstract class Entity{
 	}
 
 	public function saveNBT() : CompoundTag{
-		$nbt = EntityDataHelper::createBaseNBT($this->location, $this->motion, $this->location->yaw, $this->location->pitch);
+		$nbt = CompoundTag::create()
+			->setTag("Pos", new ListTag([
+				new DoubleTag($this->location->x),
+				new DoubleTag($this->location->y),
+				new DoubleTag($this->location->z)
+			]))
+			->setTag("Motion", new ListTag([
+				new DoubleTag($this->motion->x),
+				new DoubleTag($this->motion->y),
+				new DoubleTag($this->motion->z)
+			]))
+			->setTag("Rotation", new ListTag([
+				new FloatTag($this->location->yaw),
+				new FloatTag($this->location->pitch)
+			]));
 
 		if(!($this instanceof Player)){
 			EntityFactory::getInstance()->injectSaveId(get_class($this), $nbt);
