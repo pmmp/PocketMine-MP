@@ -47,6 +47,7 @@ use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
@@ -93,7 +94,14 @@ final class EntityFactory{
 		}, ['ThrownExpBottle', 'minecraft:xp_bottle'], EntityLegacyIds::XP_BOTTLE);
 
 		$this->register(ExperienceOrb::class, function(World $world, CompoundTag $nbt) : ExperienceOrb{
-			return new ExperienceOrb(EntityDataHelper::parseLocation($nbt, $world), $nbt);
+			$value = 1;
+			if(($valuePcTag = $nbt->getTag(ExperienceOrb::TAG_VALUE_PC)) instanceof ShortTag){ //PC
+				$value = $valuePcTag->getValue();
+			}elseif(($valuePeTag = $nbt->getTag(ExperienceOrb::TAG_VALUE_PE)) instanceof IntTag){ //PE save format
+				$value = $valuePeTag->getValue();
+			}
+
+			return new ExperienceOrb(EntityDataHelper::parseLocation($nbt, $world), $value, $nbt);
 		}, ['XPOrb', 'minecraft:xp_orb'], EntityLegacyIds::XP_ORB);
 
 		$this->register(FallingBlock::class, function(World $world, CompoundTag $nbt) : FallingBlock{

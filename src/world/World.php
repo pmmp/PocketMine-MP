@@ -1616,9 +1616,8 @@ class World implements ChunkManager{
 		$orbs = [];
 
 		foreach(ExperienceOrb::splitIntoOrbSizes($amount) as $split){
-			$orb = new ExperienceOrb(Location::fromObject($pos, $this, lcg_value() * 360, 0));
+			$orb = new ExperienceOrb(Location::fromObject($pos, $this, lcg_value() * 360, 0), $split);
 
-			$orb->setXpValue($split);
 			$orb->setMotion(new Vector3((lcg_value() * 0.2 - 0.1) * 2, lcg_value() * 0.4, (lcg_value() * 0.2 - 0.1) * 2));
 			$orb->spawnToAll();
 
