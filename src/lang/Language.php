@@ -23,109 +23,47 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
-use function array_filter;
-use function array_map;
-use function explode;
-use function file_exists;
-use function is_dir;
 use function ord;
-use function parse_ini_file;
-use function scandir;
 use function str_replace;
 use function strlen;
 use function strpos;
-use function strtolower;
 use function substr;
-use const INI_SCANNER_RAW;
-use const SCANDIR_SORT_NONE;
+use const pocketmine\RESOURCE_PATH;
 
 class Language{
 
-	public const FALLBACK_LANGUAGE = "eng";
-
-	/**
-	 * @return string[]
-	 * @phpstan-return array<string, string>
-	 *
-	 * @throws LanguageNotFoundException
-	 */
-	public static function getLanguageList(string $path = "") : array{
-		if($path === ""){
-			$path = \pocketmine\RESOURCE_PATH . "locale/";
-		}
-
-		if(is_dir($path)){
-			$allFiles = scandir($path, SCANDIR_SORT_NONE);
-
-			if($allFiles !== false){
-				$files = array_filter($allFiles, function(string $filename) : bool{
-					return substr($filename, -4) === ".ini";
-				});
-
-				$result = [];
-
-				foreach($files as $file){
-					$code = explode(".", $file)[0];
-					$strings = self::loadLang($path, $code);
-					if(isset($strings["language.name"])){
-						$result[$code] = $strings["language.name"];
-					}
-				}
-
-				return $result;
-			}
-		}
-
-		throw new LanguageNotFoundException("Language directory $path does not exist or is not a directory");
-	}
-
 	/** @var string */
-	protected $langName;
+	private $langCode;
+	/** @var string[] */
+	private $langValues;
+	/** @var Language|null */
+	private $fallbackLang;
 
-	/**
-	 * @var string[]
-	 * @phpstan-var array<string, string>
-	 */
-	protected $lang = [];
-	/**
-	 * @var string[]
-	 * @phpstan-var array<string, string>
-	 */
-	protected $fallbackLang = [];
-
-	/**
-	 * @throws LanguageNotFoundException
-	 */
-	public function __construct(string $lang, ?string $path = null, string $fallback = self::FALLBACK_LANGUAGE){
-		$this->langName = strtolower($lang);
-
+	public function __construct(string $lang, ?string $path = null, string $fallback = LanguageManager::FALLBACK_LANGUAGE){
+		$this->langCode = $lang;
 		if($path === null){
-			$path = \pocketmine\RESOURCE_PATH . "locale/";
+			$path = RESOURCE_PATH . "locale/";
 		}
-
-		$this->lang = self::loadLang($path, $this->langName);
-		$this->fallbackLang = self::loadLang($path, $fallback);
+		$this->langValues = LanguageManager::loadLang($path, $lang);
+		if($lang != $fallback){
+			$this->fallbackLang = LanguageManager::getFallbackLanguage();
+		}
 	}
 
 	public function getName() : string{
 		return $this->get("language.name");
 	}
 
-	public function getLang() : string{
-		return $this->langName;
+	public function getLangCode() : string{
+		return $this->langCode;
 	}
 
-	/**
-	 * @return string[]
-	 * @phpstan-return array<string, string>
-	 */
-	protected static function loadLang(string $path, string $languageCode) : array{
-		$file = $path . $languageCode . ".ini";
-		if(file_exists($file)){
-			return array_map('\stripcslashes', parse_ini_file($file, false, INI_SCANNER_RAW));
-		}
-
-		throw new LanguageNotFoundException("Language \"$languageCode\" not found");
+    /**
+     * Complements the language pack.
+     * @param string[] $langValues
+     */
+	public function supplement(array $langValues) : void{
+		$this->langValues = array_merge($this->langValues, $langValues);
 	}
 
 	/**
@@ -154,11 +92,15 @@ class Language{
 	}
 
 	protected function internalGet(string $id) : ?string{
-		return $this->lang[$id] ?? $this->fallbackLang[$id] ?? null;
+		return $this->langValues[$id] ?? null;
+	}
+
+	protected function fallbackInternalGet(string $id) : ?string{
+		return $this->fallbackLang !== null ? $this->fallbackLang->translateString($id) : null;
 	}
 
 	public function get(string $id) : string{
-		return $this->internalGet($id) ?? $id;
+		return $this->internalGet($id) ?? $this->fallbackInternalGet($id) ?? $id;
 	}
 
 	protected function parseTranslation(string $text, ?string $onlyPrefix = null) : string{

@@ -80,6 +80,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
 use pocketmine\lang\Language;
+use pocketmine\lang\LanguageManager;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -92,6 +93,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\PlayerMetadataFlags;
+use pocketmine\network\mcpe\protocol\types\LanguageCodeMapping;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
@@ -168,6 +170,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected $authenticated;
 	/** @var PlayerInfo */
 	protected $playerInfo;
+	/** @var Language */
+	protected $language;
 
 	/** @var Inventory|null */
 	protected $currentWindow = null;
@@ -275,6 +279,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->uuid = $this->playerInfo->getUuid();
 		$this->xuid = $this->playerInfo instanceof XboxLivePlayerInfo ? $this->playerInfo->getXuid() : "";
+
+        if(($languageCode = LanguageCodeMapping::get($playerInfo->getLocale())) !== null) {
+			if (($language = $server->getLanguageManager()->get($languageCode)) !== null) {
+				$this->language = $language;
+			}
+		} else $this->language = LanguageManager::getFallbackLanguage();
 
 		$rootPermissions = [DefaultPermissions::ROOT_USER => true];
 		if($this->server->isOp($this->username)){
@@ -555,7 +565,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function getLanguage() : Language{
-		return $this->server->getLanguage();
+		return $this->language;
 	}
 
 	/**
