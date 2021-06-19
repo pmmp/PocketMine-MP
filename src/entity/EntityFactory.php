@@ -41,6 +41,7 @@ use pocketmine\entity\projectile\ExperienceBottle;
 use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\item\Item;
+use pocketmine\item\Potion;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NbtDataException;
@@ -147,7 +148,8 @@ final class EntityFactory{
 		}, ['Snowball', 'minecraft:snowball'], EntityLegacyIds::SNOWBALL);
 
 		$this->register(SplashPotion::class, function(World $world, CompoundTag $nbt) : SplashPotion{
-			return new SplashPotion(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
+			$potionType = $nbt->getShort("PotionId", Potion::WATER);
+			return new SplashPotion(EntityDataHelper::parseLocation($nbt, $world), null, $potionType, $nbt);
 		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
 
 		$this->register(Squid::class, function(World $world, CompoundTag $nbt) : Squid{

@@ -28,7 +28,9 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\color\Color;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\InstantEffect;
+use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
+use pocketmine\entity\Location;
 use pocketmine\event\entity\ProjectileHitBlockEvent;
 use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
@@ -54,12 +56,11 @@ class SplashPotion extends Throwable{
 	/** @var bool */
 	protected $linger = false;
 	/** @var int */
-	protected $potionId = Potion::WATER;
+	protected $potionId;
 
-	protected function initEntity(CompoundTag $nbt) : void{
-		parent::initEntity($nbt);
-
-		$this->setPotionId($nbt->getShort("PotionId", Potion::WATER));
+	public function __construct(Location $location, ?Entity $shootingEntity, int $potionId, ?CompoundTag $nbt = null){
+		$this->potionId = $potionId;
+		parent::__construct($location, $shootingEntity, $nbt);
 	}
 
 	public function saveNBT() : CompoundTag{

@@ -43,9 +43,7 @@ class SplashPotion extends ProjectileItem{
 	}
 
 	protected function createEntity(Location $location, Player $thrower) : Throwable{
-		$projectile = new SplashPotionEntity($location, $thrower);
-		$projectile->setPotionId($this->potionId);
-		return $projectile;
+		return new SplashPotionEntity($location, $thrower, $this->potionId);
 	}
 
 	public function getThrowForce() : float{
