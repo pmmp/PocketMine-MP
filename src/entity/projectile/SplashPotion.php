@@ -26,6 +26,7 @@ namespace pocketmine\entity\projectile;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\color\Color;
+use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\InstantEffect;
 use pocketmine\entity\Entity;
@@ -35,6 +36,7 @@ use pocketmine\event\entity\ProjectileHitBlockEvent;
 use pocketmine\event\entity\ProjectileHitEntityEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\Potion;
+use pocketmine\item\PotionType;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
@@ -55,17 +57,16 @@ class SplashPotion extends Throwable{
 
 	/** @var bool */
 	protected $linger = false;
-	/** @var int */
-	protected $potionId;
+	protected PotionType $potionType;
 
-	public function __construct(Location $location, ?Entity $shootingEntity, int $potionId, ?CompoundTag $nbt = null){
-		$this->potionId = $potionId;
+	public function __construct(Location $location, ?Entity $shootingEntity, PotionType $potionType, ?CompoundTag $nbt = null){
+		$this->potionType = $potionType;
 		parent::__construct($location, $shootingEntity, $nbt);
 	}
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setShort("PotionId", $this->getPotionId());
+		$nbt->setShort("PotionId", PotionTypeIdMap::getInstance()->toId($this->getPotionType()));
 
 		return $nbt;
 	}
@@ -128,7 +129,7 @@ class SplashPotion extends Throwable{
 			}else{
 				//TODO: lingering potions
 			}
-		}elseif($event instanceof ProjectileHitBlockEvent and $this->getPotionId() === Potion::WATER){
+		}elseif($event instanceof ProjectileHitBlockEvent and $this->getPotionType()->equals(PotionType::WATER())){
 			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
 
 			if($blockIn->getId() === BlockLegacyIds::FIRE){
@@ -145,12 +146,12 @@ class SplashPotion extends Throwable{
 	/**
 	 * Returns the meta value of the potion item that this splash potion corresponds to. This decides what effects will be applied to the entity when it collides with its target.
 	 */
-	public function getPotionId() : int{
-		return $this->potionId;
+	public function getPotionType() : PotionType{
+		return $this->potionType;
 	}
 
-	public function setPotionId(int $id) : void{
-		$this->potionId = $id; //TODO: validation
+	public function setPotionType(PotionType $type) : void{
+		$this->potionType = $type;
 		$this->networkPropertiesDirty = true;
 	}
 
@@ -173,13 +174,13 @@ class SplashPotion extends Throwable{
 	 * @return EffectInstance[]
 	 */
 	public function getPotionEffects() : array{
-		return Potion::getPotionEffectsById($this->getPotionId());
+		return $this->potionType->getEffects();
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		parent::syncNetworkData($properties);
 
-		$properties->setShort(EntityMetadataProperties::POTION_AUX_VALUE, $this->potionId);
+		$properties->setShort(EntityMetadataProperties::POTION_AUX_VALUE, PotionTypeIdMap::getInstance()->toId($this->potionType));
 		$properties->setGenericFlag(EntityMetadataFlags::LINGER, $this->linger);
 	}
 }

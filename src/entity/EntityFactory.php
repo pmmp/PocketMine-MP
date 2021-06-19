@@ -28,6 +28,8 @@ use DaveRandom\CallbackValidator\ParameterType;
 use DaveRandom\CallbackValidator\ReturnType;
 use pocketmine\block\BlockFactory;
 use pocketmine\data\bedrock\EntityLegacyIds;
+use pocketmine\data\bedrock\PotionTypeIdMap;
+use pocketmine\data\bedrock\PotionTypeIds;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\entity\object\ItemEntity;
@@ -41,7 +43,7 @@ use pocketmine\entity\projectile\ExperienceBottle;
 use pocketmine\entity\projectile\Snowball;
 use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\item\Item;
-use pocketmine\item\Potion;
+use pocketmine\item\PotionType;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NbtDataException;
@@ -148,7 +150,10 @@ final class EntityFactory{
 		}, ['Snowball', 'minecraft:snowball'], EntityLegacyIds::SNOWBALL);
 
 		$this->register(SplashPotion::class, function(World $world, CompoundTag $nbt) : SplashPotion{
-			$potionType = $nbt->getShort("PotionId", Potion::WATER);
+			$potionType = PotionTypeIdMap::getInstance()->fromId($nbt->getShort("PotionId", PotionTypeIds::WATER));
+			if($potionType === null){
+				$potionType = PotionType::WATER(); //TODO: this should be an error, but we haven't registered all the types yet
+			}
 			return new SplashPotion(EntityDataHelper::parseLocation($nbt, $world), null, $potionType, $nbt);
 		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
 
