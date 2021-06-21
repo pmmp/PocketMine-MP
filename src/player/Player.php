@@ -2233,7 +2233,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * TODO: remove this
 	 */
-	public function sendPosition(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL) : void{
+	protected function sendPosition(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL) : void{
 		$this->getNetworkSession()->syncMovement($pos, $yaw, $pitch, $mode);
 
 		$this->ySize = 0;
