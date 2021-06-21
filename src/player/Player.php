@@ -105,6 +105,7 @@ use pocketmine\world\Position;
 use pocketmine\world\sound\EntityAttackNoDamageSound;
 use pocketmine\world\sound\EntityAttackSound;
 use pocketmine\world\sound\FireExtinguishSound;
+use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use Ramsey\Uuid\UuidInterface;
 use function abs;
@@ -2219,6 +2220,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$targets[] = $this;
 		}
 		parent::broadcastAnimation($animation, $targets);
+	}
+
+	public function broadcastSound(Sound $sound, ?array $targets = null) : void{
+		if($this->spawned && $targets === null){
+			$targets = $this->getViewers();
+			$targets[] = $this;
+		}
+		parent::broadcastSound($sound, $targets);
 	}
 
 	/**
