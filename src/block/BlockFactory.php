@@ -56,7 +56,6 @@ use function array_fill;
 use function array_filter;
 use function get_class;
 use function min;
-use function var_dump;
 
 /**
  * Manages deserializing block types from their legacy blockIDs and metadata.
