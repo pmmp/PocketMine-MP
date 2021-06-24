@@ -86,7 +86,7 @@ class BaseInventoryTest extends TestCase{
 		self::assertSame(20, $leftoverCount);
 	}
 
-	public function testAddItemWithLargeQuantity() : void{
+	public function testAddItemWithOversizedCount() : void{
 		$inventory = new class(10) extends SimpleInventory{
 
 		};
