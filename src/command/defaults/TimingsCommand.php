@@ -131,7 +131,7 @@ class TimingsCommand extends VanillaCommand{
 				];
 				fclose($fileTimings);
 
-				$host = $sender->getServer()->getConfigGroup()->getProperty("timings.host", "timings.pmmp.io");
+				$host = $sender->getServer()->getConfigGroup()->getPropertyString("timings.host", "timings.pmmp.io");
 
 				$sender->getServer()->getAsyncPool()->submitTask(new BulkCurlTask(
 					[new BulkCurlTaskOperation(

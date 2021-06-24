@@ -26,9 +26,8 @@ namespace pocketmine\entity\object;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Human;
+use pocketmine\entity\Location;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -98,7 +97,12 @@ class ExperienceOrb extends Entity{
 	protected $targetPlayerRuntimeId = null;
 
 	/** @var int */
-	protected $xpValue = 1;
+	protected $xpValue;
+
+	public function __construct(Location $location, int $xpValue, ?CompoundTag $nbt = null){
+		$this->xpValue = $xpValue;
+		parent::__construct($location, $nbt);
+	}
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
 
@@ -106,15 +110,6 @@ class ExperienceOrb extends Entity{
 		parent::initEntity($nbt);
 
 		$this->age = $nbt->getShort("Age", 0);
-
-		$value = 1;
-		if(($valuePcTag = $nbt->getTag(self::TAG_VALUE_PC)) instanceof ShortTag){ //PC
-			$value = $valuePcTag->getValue();
-		}elseif(($valuePeTag = $nbt->getTag(self::TAG_VALUE_PE)) instanceof IntTag){ //PE save format
-			$value = $valuePeTag->getValue();
-		}
-
-		$this->setXpValue($value);
 	}
 
 	public function saveNBT() : CompoundTag{
