@@ -186,7 +186,9 @@ trait InventoryHelpersTrait{
 				$item = clone $slot;
 				$item->setCount($amount);
 				$this->setItem($slotIndex, $item);
-				break;
+				if($slot->getCount() <= 0){
+					break;
+				}
 			}
 		}
 
