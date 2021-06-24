@@ -90,7 +90,8 @@ class BaseInventoryTest extends TestCase{
 		$inventory = new class(10) extends SimpleInventory{
 
 		};
-		$inventory->addItem(VanillaItems::APPLE()->setCount(100));
+		$leftover = $inventory->addItem(VanillaItems::APPLE()->setCount(100));
+		self::assertCount(0, $leftover);
 
 		$count = 0;
 		foreach($inventory->getContents() as $item){
