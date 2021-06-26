@@ -27,6 +27,7 @@ use pocketmine\network\mcpe\cache\CraftingDataCache;
 use pocketmine\network\mcpe\cache\StaticPacketCache;
 use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
@@ -53,10 +54,13 @@ class PreSpawnPacketHandler extends PacketHandler{
 	/** @var NetworkSession */
 	private $session;
 
-	public function __construct(Server $server, Player $player, NetworkSession $session){
+	private InventoryManager $inventoryManager;
+
+	public function __construct(Server $server, Player $player, NetworkSession $session, InventoryManager $inventoryManager){
 		$this->player = $player;
 		$this->server = $server;
 		$this->session = $session;
+		$this->inventoryManager = $inventoryManager;
 	}
 
 	public function setUp() : void{
@@ -104,9 +108,9 @@ class PreSpawnPacketHandler extends PacketHandler{
 		}
 		$this->player->sendData([$this->player]);
 
-		$this->session->getInvManager()->syncAll();
-		$this->session->getInvManager()->syncCreative();
-		$this->session->getInvManager()->syncSelectedHotbarSlot();
+		$this->inventoryManager->syncAll();
+		$this->inventoryManager->syncCreative();
+		$this->inventoryManager->syncSelectedHotbarSlot();
 		$this->session->sendDataPacket(CraftingDataCache::getInstance()->getCache($this->server->getCraftingManager()));
 
 		$this->session->syncPlayerList($this->server->getOnlinePlayers());

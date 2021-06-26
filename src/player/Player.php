@@ -2340,8 +2340,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		//TODO: client side race condition here makes the opening work incorrectly
 		$this->removeCurrentWindow();
 
+		if(($inventoryManager = $this->getNetworkSession()->getInvManager()) === null){
+			throw new \InvalidArgumentException("Player cannot open inventories in this state");
+		}
 		$this->logger->debug("Opening inventory " . get_class($inventory) . "#" . spl_object_id($inventory));
-		$this->getNetworkSession()->getInvManager()->onCurrentWindowChange($inventory);
+		$inventoryManager->onCurrentWindowChange($inventory);
 		$inventory->onOpen($this);
 		$this->currentWindow = $inventory;
 		return true;
@@ -2353,8 +2356,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 			$this->logger->debug("Closing inventory " . get_class($this->currentWindow) . "#" . spl_object_id($this->currentWindow));
 			$this->currentWindow->onClose($this);
-			if($this->isConnected()){
-				$this->getNetworkSession()->getInvManager()->onCurrentWindowRemove();
+			if(($inventoryManager = $this->getNetworkSession()->getInvManager()) !== null){
+				$inventoryManager->onCurrentWindowRemove();
 			}
 			$this->currentWindow = null;
 		}

@@ -136,7 +136,11 @@ abstract class BaseInventory implements Inventory{
 			$listener->onSlotChange($this, $index, $before);
 		}
 		foreach($this->viewers as $viewer){
-			$viewer->getNetworkSession()->getInvManager()->syncSlot($this, $index);
+			$invManager = $viewer->getNetworkSession()->getInvManager();
+			if($invManager === null){
+				continue;
+			}
+			$invManager->syncSlot($this, $index);
 		}
 	}
 
@@ -150,7 +154,11 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		foreach($this->getViewers() as $viewer){
-			$viewer->getNetworkSession()->getInvManager()->syncContents($this);
+			$invManager = $viewer->getNetworkSession()->getInvManager();
+			if($invManager === null){
+				continue;
+			}
+			$invManager->syncContents($this);
 		}
 	}
 
