@@ -2529,6 +2529,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$blockVector = $packet->trData->getBlockPos();
 			$face = $packet->trData->getFace();
 
+			if($this->inventory->getHeldItemIndex() !== $packet->trData->getHotbarSlot()){
+				$this->inventory->equipItem($packet->trData->getHotbarSlot());
+			}
+
 			switch($packet->trData->getActionType()){
 				case UseItemTransactionData::ACTION_CLICK_BLOCK:
 					//TODO: start hack for client spam bug
@@ -2687,6 +2691,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				return false;
 			}
 
+			if($this->inventory->getHeldItemIndex() !== $packet->trData->getHotbarSlot()){
+				$this->inventory->equipItem($packet->trData->getHotbarSlot());
+			}
+
 			switch($packet->trData->getActionType()){
 				case UseItemOnEntityTransactionData::ACTION_INTERACT:
 					break; //TODO
@@ -2778,6 +2786,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->inventory->sendContents($this);
 			return false;
 		}elseif($packet->trData instanceof ReleaseItemTransactionData){
+			if($this->inventory->getHeldItemIndex() !== $packet->trData->getHotbarSlot()){
+				$this->inventory->equipItem($packet->trData->getHotbarSlot());
+			}
+
 			try{
 				switch($packet->trData->getActionType()){
 					case ReleaseItemTransactionData::ACTION_RELEASE:
