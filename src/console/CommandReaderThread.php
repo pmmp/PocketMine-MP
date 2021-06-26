@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\command;
+namespace pocketmine\console;
 
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\Thread;

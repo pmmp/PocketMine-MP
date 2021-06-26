@@ -28,10 +28,10 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use pocketmine\command\Command;
-use pocketmine\command\CommandReaderThread;
 use pocketmine\command\CommandSender;
-use pocketmine\command\ConsoleCommandSender;
 use pocketmine\command\SimpleCommandMap;
+use pocketmine\console\CommandReaderThread;
+use pocketmine\console\ConsoleCommandSender;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\entity\EntityDataHelper;

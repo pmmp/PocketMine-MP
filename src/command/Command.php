@@ -27,6 +27,7 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 use pocketmine\command\utils\CommandException;
+use pocketmine\console\ConsoleCommandSender;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;

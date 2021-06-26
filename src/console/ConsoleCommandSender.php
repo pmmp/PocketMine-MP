@@ -21,8 +21,9 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\command;
+namespace pocketmine\console;
 
+use pocketmine\command\CommandSender;
 use pocketmine\lang\Language;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissions;
