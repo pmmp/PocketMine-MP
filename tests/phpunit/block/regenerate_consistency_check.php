@@ -36,6 +36,9 @@ foreach($factory->getAllKnownStates() as $index => $block){
 	}
 }
 $oldTable = json_decode(file_get_contents(__DIR__ . '/block_factory_consistency_check.json'), true);
+if(!is_array($oldTable)){
+	throw new \pocketmine\utils\AssumptionFailedError("Old table should be array{knownStates: array<string, string>, remaps: array<string, int>}");
+}
 $old = $oldTable["knownStates"];
 $oldRemaps = $oldTable["remaps"];
 

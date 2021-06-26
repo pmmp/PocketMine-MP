@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use PHPUnit\Framework\TestCase;
 use function file_get_contents;
+use function is_array;
 use function json_decode;
 
 class BlockTest extends TestCase{
@@ -145,6 +146,9 @@ class BlockTest extends TestCase{
 
 	public function testConsistency() : void{
 		$list = json_decode(file_get_contents(__DIR__ . '/block_factory_consistency_check.json'), true);
+		if(!is_array($list)){
+			throw new \pocketmine\utils\AssumptionFailedError("Old table should be array{knownStates: array<string, string>, remaps: array<string, int>}");
+		}
 		$knownStates = $list["knownStates"];
 		$remaps = $list["remaps"];
 
