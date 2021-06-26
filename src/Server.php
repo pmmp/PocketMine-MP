@@ -30,7 +30,7 @@ namespace pocketmine;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\SimpleCommandMap;
-use pocketmine\console\CommandReaderThread;
+use pocketmine\console\ConsoleReaderThread;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
@@ -227,7 +227,7 @@ class Server{
 	/** @var MemoryManager */
 	private $memoryManager;
 
-	/** @var CommandReaderThread */
+	/** @var ConsoleReaderThread */
 	private $console;
 
 	/** @var SimpleCommandMap */
@@ -1130,7 +1130,7 @@ class Server{
 
 			$consoleNotifier = new SleeperNotifier();
 			$commandBuffer = new \Threaded();
-			$this->console = new CommandReaderThread($commandBuffer, $consoleNotifier);
+			$this->console = new ConsoleReaderThread($commandBuffer, $consoleNotifier);
 			$this->tickSleeper->addNotifier($consoleNotifier, function() use ($commandBuffer, $consoleSender) : void{
 				Timings::$serverCommand->startTiming();
 				while(($line = $commandBuffer->shift()) !== null){
@@ -1419,7 +1419,7 @@ class Server{
 				$this->configGroup->save();
 			}
 
-			if($this->console instanceof CommandReaderThread){
+			if($this->console instanceof ConsoleReaderThread){
 				$this->getLogger()->debug("Closing console");
 				$this->console->shutdown();
 				$this->console->notify();

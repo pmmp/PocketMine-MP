@@ -31,7 +31,7 @@ use function stream_select;
 use function trim;
 use function usleep;
 
-final class CommandReader{
+final class ConsoleReader{
 	/** @var resource */
 	private $stdin;
 
