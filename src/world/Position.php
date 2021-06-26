@@ -39,7 +39,7 @@ class Position extends Vector3{
 	 */
 	public function __construct($x, $y, $z, ?World $world){
 		parent::__construct($x, $y, $z);
-		if($world !== null and $world->isClosed()){
+		if($world !== null and !$world->isLoaded()){
 			throw new \InvalidArgumentException("Specified world has been unloaded and cannot be used");
 		}
 
@@ -66,7 +66,7 @@ class Position extends Vector3{
 	 * @throws AssumptionFailedError
 	 */
 	public function getWorld() : World{
-		if($this->world === null || $this->world->isClosed()){
+		if($this->world === null || !$this->world->isLoaded()){
 			throw new AssumptionFailedError("Position world is null or has been unloaded");
 		}
 
@@ -77,7 +77,7 @@ class Position extends Vector3{
 	 * Checks if this object has a valid reference to a loaded world
 	 */
 	public function isValid() : bool{
-		if($this->world !== null and $this->world->isClosed()){
+		if($this->world !== null and !$this->world->isLoaded()){
 			$this->world = null;
 
 			return false;

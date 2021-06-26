@@ -136,7 +136,7 @@ class PopulationTask extends AsyncTask{
 	public function onCompletion() : void{
 		/** @var World $world */
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
-		if(!$world->isClosed()){
+		if($world->isLoaded()){
 			$chunk = $this->chunk !== null ? FastChunkSerializer::deserialize($this->chunk) : null;
 
 			for($i = 0; $i < 9; ++$i){
