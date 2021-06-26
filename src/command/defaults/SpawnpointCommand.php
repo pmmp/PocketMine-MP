@@ -27,6 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\Position;
@@ -42,7 +43,7 @@ class SpawnpointCommand extends VanillaCommand{
 			"%pocketmine.command.spawnpoint.description",
 			"%commands.spawnpoint.usage"
 		);
-		$this->setPermission("pocketmine.command.spawnpoint");
+		$this->setPermission(DefaultPermissionNames::COMMAND_SPAWNPOINT);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

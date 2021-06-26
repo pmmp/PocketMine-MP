@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\permission\DefaultPermissionNames;
 use function date;
 
 class DumpMemoryCommand extends VanillaCommand{
@@ -34,7 +35,7 @@ class DumpMemoryCommand extends VanillaCommand{
 			"Dumps the memory",
 			"/$name [path]"
 		);
-		$this->setPermission("pocketmine.command.dumpmemory");
+		$this->setPermission(DefaultPermissionNames::COMMAND_DUMPMEMORY);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

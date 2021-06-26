@@ -92,6 +92,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\PlayerMetadataFlags;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
@@ -768,8 +769,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	private function recheckBroadcastPermissions() : void{
-		foreach([Server::BROADCAST_CHANNEL_USERS, Server::BROADCAST_CHANNEL_ADMINISTRATIVE] as $channel){
-			if($this->hasPermission($channel)){
+		foreach([
+			DefaultPermissionNames::BROADCAST_ADMIN => Server::BROADCAST_CHANNEL_ADMINISTRATIVE,
+			DefaultPermissionNames::BROADCAST_USER => Server::BROADCAST_CHANNEL_USERS
+		] as $permission => $channel){
+			if($this->hasPermission($permission)){
 				$this->server->subscribeToBroadcastChannel($channel, $this);
 			}else{
 				$this->server->unsubscribeFromBroadcastChannel($channel, $this);
@@ -807,7 +811,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->spawnToAll();
 
-		if($this->server->getUpdater()->hasUpdate() and $this->hasPermission(Server::BROADCAST_CHANNEL_ADMINISTRATIVE) and $this->server->getConfigGroup()->getPropertyBool("auto-updater.on-update.warn-ops", true)){
+		if($this->server->getUpdater()->hasUpdate() and $this->hasPermission(DefaultPermissionNames::BROADCAST_ADMIN) and $this->server->getConfigGroup()->getPropertyBool("auto-updater.on-update.warn-ops", true)){
 			$this->server->getUpdater()->showPlayerUpdate($this);
 		}
 

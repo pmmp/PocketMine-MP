@@ -31,6 +31,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\VanillaItems;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use pocketmine\utils\TextFormat;
@@ -80,7 +81,7 @@ class ParticleCommand extends VanillaCommand{
 			"%pocketmine.command.particle.description",
 			"%pocketmine.command.particle.usage"
 		);
-		$this->setPermission("pocketmine.command.particle");
+		$this->setPermission(DefaultPermissionNames::COMMAND_PARTICLE);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

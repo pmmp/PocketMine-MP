@@ -28,6 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\Location;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
@@ -44,7 +45,7 @@ class TeleportCommand extends VanillaCommand{
 			"%commands.tp.usage",
 			["teleport"]
 		);
-		$this->setPermission("pocketmine.command.teleport");
+		$this->setPermission(DefaultPermissionNames::COMMAND_TELEPORT);
 	}
 
 	private function findPlayer(CommandSender $sender, string $playerName) : ?Player{

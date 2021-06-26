@@ -28,9 +28,11 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function count;
+use function implode;
 
 class KillCommand extends VanillaCommand{
 
@@ -41,7 +43,7 @@ class KillCommand extends VanillaCommand{
 			"%pocketmine.command.kill.usage",
 			["suicide"]
 		);
-		$this->setPermission("pocketmine.command.kill.self;pocketmine.command.kill.other");
+		$this->setPermission(implode(";", [DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER]));
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -54,7 +56,7 @@ class KillCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 1){
-			if(!$sender->hasPermission("pocketmine.command.kill.other")){
+			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_KILL_OTHER)){
 				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 
 				return true;
@@ -73,7 +75,7 @@ class KillCommand extends VanillaCommand{
 		}
 
 		if($sender instanceof Player){
-			if(!$sender->hasPermission("pocketmine.command.kill.self")){
+			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_KILL_SELF)){
 				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 
 				return true;

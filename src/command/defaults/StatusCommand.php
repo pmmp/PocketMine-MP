@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\Process;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -40,7 +41,7 @@ class StatusCommand extends VanillaCommand{
 			"%pocketmine.command.status.description",
 			"%pocketmine.command.status.usage"
 		);
-		$this->setPermission("pocketmine.command.status");
+		$this->setPermission(DefaultPermissionNames::COMMAND_STATUS);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

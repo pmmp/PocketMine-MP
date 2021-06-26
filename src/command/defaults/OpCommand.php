@@ -27,6 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function array_shift;
@@ -40,7 +41,7 @@ class OpCommand extends VanillaCommand{
 			"%pocketmine.command.op.description",
 			"%commands.op.usage"
 		);
-		$this->setPermission("pocketmine.command.op.give");
+		$this->setPermission(DefaultPermissionNames::COMMAND_OP_GIVE);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

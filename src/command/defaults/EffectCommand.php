@@ -28,6 +28,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -41,7 +42,7 @@ class EffectCommand extends VanillaCommand{
 			"%pocketmine.command.effect.description",
 			"%commands.effect.usage"
 		);
-		$this->setPermission("pocketmine.command.effect");
+		$this->setPermission(DefaultPermissionNames::COMMAND_EFFECT);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

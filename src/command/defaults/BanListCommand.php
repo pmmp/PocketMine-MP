@@ -27,6 +27,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\BanEntry;
+use pocketmine\permission\DefaultPermissionNames;
 use function array_map;
 use function count;
 use function implode;
@@ -42,7 +43,7 @@ class BanListCommand extends VanillaCommand{
 			"%pocketmine.command.banlist.description",
 			"%commands.banlist.usage"
 		);
-		$this->setPermission("pocketmine.command.ban.list");
+		$this->setPermission(DefaultPermissionNames::COMMAND_BAN_LIST);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

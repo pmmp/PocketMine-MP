@@ -27,7 +27,9 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
 use function count;
 use function implode;
@@ -43,7 +45,14 @@ class WhitelistCommand extends VanillaCommand{
 			"%pocketmine.command.whitelist.description",
 			"%commands.whitelist.usage"
 		);
-		$this->setPermission("pocketmine.command.whitelist.reload;pocketmine.command.whitelist.enable;pocketmine.command.whitelist.disable;pocketmine.command.whitelist.list;pocketmine.command.whitelist.add;pocketmine.command.whitelist.remove");
+		$this->setPermission(implode(";", [
+			DefaultPermissionNames::COMMAND_WHITELIST_RELOAD,
+			DefaultPermissionNames::COMMAND_WHITELIST_ENABLE,
+			DefaultPermissionNames::COMMAND_WHITELIST_DISABLE,
+			DefaultPermissionNames::COMMAND_WHITELIST_LIST,
+			DefaultPermissionNames::COMMAND_WHITELIST_ADD,
+			DefaultPermissionNames::COMMAND_WHITELIST_REMOVE
+		]));
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -115,11 +124,18 @@ class WhitelistCommand extends VanillaCommand{
 	}
 
 	private function badPerm(CommandSender $sender, string $subcommand) : bool{
-		static $map = [
-			"on" => "enable",
-			"off" => "disable"
-		];
-		if(!$sender->hasPermission("pocketmine.command.whitelist." . ($map[$subcommand] ?? $subcommand))){
+		$permission = [
+			"reload" => DefaultPermissionNames::COMMAND_WHITELIST_RELOAD,
+			"on" => DefaultPermissionNames::COMMAND_WHITELIST_ENABLE,
+			"off" => DefaultPermissionNames::COMMAND_WHITELIST_DISABLE,
+			"list" => DefaultPermissionNames::COMMAND_WHITELIST_LIST,
+			"add" => DefaultPermissionNames::COMMAND_WHITELIST_ADD,
+			"remove" => DefaultPermissionNames::COMMAND_WHITELIST_REMOVE
+		][$subcommand] ?? null;
+		if($permission === null){
+			throw new AssumptionFailedError("Unknown subcommand $subcommand");
+		}
+		if(!$sender->hasPermission($permission)){
 			$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 
 			return true;
