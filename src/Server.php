@@ -1124,7 +1124,6 @@ class Server{
 
 			//TODO: move console parts to a separate component
 			$consoleSender = new ConsoleCommandSender($this, $this->language);
-			$consoleSender->recalculatePermissions();
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
 			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $consoleSender);
 
