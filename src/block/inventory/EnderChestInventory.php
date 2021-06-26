@@ -24,12 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\block\inventory;
 
 use pocketmine\block\tile\EnderChest;
-use pocketmine\inventory\BaseInventory;
-use pocketmine\inventory\CallbackInventoryListener;
+use pocketmine\inventory\DelegateInventory;
 use pocketmine\inventory\Inventory;
-use pocketmine\inventory\InventoryListener;
 use pocketmine\inventory\PlayerEnderInventory;
-use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
@@ -40,50 +37,21 @@ use pocketmine\world\sound\Sound;
 /**
  * EnderChestInventory is not a real inventory; it's just a gateway to the player's ender inventory.
  */
-class EnderChestInventory extends BaseInventory implements BlockInventory{
+class EnderChestInventory extends DelegateInventory implements BlockInventory{
 	use AnimatedBlockInventoryTrait {
 		onClose as animatedBlockInventoryTrait_onClose;
 	}
 
 	private PlayerEnderInventory $inventory;
-	private InventoryListener $inventoryListener;
 
 	public function __construct(Position $holder, PlayerEnderInventory $inventory){
-		parent::__construct();
+		parent::__construct($inventory);
 		$this->holder = $holder;
 		$this->inventory = $inventory;
-		$this->inventory->getListeners()->add($this->inventoryListener = new CallbackInventoryListener(
-			function(Inventory $unused, int $slot, Item $oldItem) : void{
-				$this->onSlotChange($slot, $oldItem);
-			},
-			function(Inventory $unused, array $oldContents) : void{
-				$this->onContentChange($oldContents);
-			}
-		));
 	}
 
 	public function getEnderInventory() : PlayerEnderInventory{
 		return $this->inventory;
-	}
-
-	public function getSize() : int{
-		return $this->inventory->getSize();
-	}
-
-	public function getItem(int $index) : Item{
-		return $this->inventory->getItem($index);
-	}
-
-	protected function internalSetItem(int $index, Item $item) : void{
-		$this->inventory->setItem($index, $item);
-	}
-
-	public function getContents(bool $includeEmpty = false) : array{
-		return $this->inventory->getContents($includeEmpty);
-	}
-
-	protected function internalSetContents(array $items) : void{
-		$this->inventory->setContents($items);
 	}
 
 	public function getViewerCount() : int{
@@ -114,10 +82,6 @@ class EnderChestInventory extends BaseInventory implements BlockInventory{
 		$enderChest = $this->getHolder()->getWorld()->getTile($this->getHolder());
 		if($enderChest instanceof EnderChest){
 			$enderChest->setViewerCount($enderChest->getViewerCount() - 1);
-		}
-		if($who === $this->inventory->getHolder()){
-			$this->inventory->getListeners()->remove($this->inventoryListener);
-			$this->inventoryListener = CallbackInventoryListener::onAnyChange(static function() : void{}); //break cyclic reference
 		}
 	}
 }
