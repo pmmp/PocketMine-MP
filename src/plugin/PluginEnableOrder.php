@@ -60,13 +60,9 @@ final class PluginEnableOrder{
 		}
 	}
 
-	public static function fromString(string $name) : self{
+	public static function fromString(string $name) : ?self{
 		self::checkInit();
-		$result = self::$aliasMap[mb_strtolower($name)] ?? null;
-		if($result === null){
-			throw new \InvalidArgumentException("No such alias $name");
-		}
-		return $result;
+		return self::$aliasMap[mb_strtolower($name)] ?? null;
 	}
 
 	/**

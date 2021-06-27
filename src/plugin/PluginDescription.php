@@ -151,11 +151,11 @@ class PluginDescription{
 		$this->prefix = (string) ($plugin["prefix"] ?? $this->prefix);
 
 		if(isset($plugin["load"])){
-			try{
-				$this->order = PluginEnableOrder::fromString($plugin["load"]);
-			}catch(\InvalidArgumentException $e){
+			$order = PluginEnableOrder::fromString($plugin["load"]);
+			if($order === null){
 				throw new PluginException("Invalid Plugin \"load\"");
 			}
+			$this->order = $order;
 		}else{
 			$this->order = PluginEnableOrder::POSTWORLD();
 		}

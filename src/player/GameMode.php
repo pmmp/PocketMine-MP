@@ -61,13 +61,9 @@ final class GameMode{
 		}
 	}
 
-	public static function fromString(string $str) : self{
+	public static function fromString(string $str) : ?self{
 		self::checkInit();
-		$result = self::$aliasMap[mb_strtolower($str)] ?? null;
-		if($result === null){
-			throw new \InvalidArgumentException("Invalid gamemode alias $str");
-		}
-		return $result;
+		return self::$aliasMap[mb_strtolower($str)] ?? null;
 	}
 
 	/** @var int */
