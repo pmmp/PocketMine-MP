@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\permission\DefaultPermissionNames;
 
 class SaveOffCommand extends VanillaCommand{
 
@@ -35,7 +36,7 @@ class SaveOffCommand extends VanillaCommand{
 			"%pocketmine.command.saveoff.description",
 			"%commands.save-off.usage"
 		);
-		$this->setPermission("pocketmine.command.save.disable");
+		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_DISABLE);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

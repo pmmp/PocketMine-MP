@@ -27,6 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -40,7 +41,7 @@ class GamemodeCommand extends VanillaCommand{
 			"%pocketmine.command.gamemode.description",
 			"%commands.gamemode.usage"
 		);
-		$this->setPermission("pocketmine.command.gamemode");
+		$this->setPermission(DefaultPermissionNames::COMMAND_GAMEMODE);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

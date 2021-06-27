@@ -288,7 +288,7 @@ class World implements ChunkManager{
 	private $generator;
 
 	/** @var bool */
-	private $closed = false;
+	private $unloaded = false;
 	/**
 	 * @var \Closure[]
 	 * @phpstan-var array<int, \Closure() : void>
@@ -496,15 +496,15 @@ class World implements ChunkManager{
 		return $this->worldId;
 	}
 
-	public function isClosed() : bool{
-		return $this->closed;
+	public function isLoaded() : bool{
+		return !$this->unloaded;
 	}
 
 	/**
 	 * @internal
 	 */
-	public function close() : void{
-		if($this->closed){
+	public function onUnload() : void{
+		if($this->unloaded){
 			throw new \InvalidStateException("Tried to close a world which is already closed");
 		}
 
@@ -526,7 +526,7 @@ class World implements ChunkManager{
 		$this->provider = null;
 		$this->blockCache = [];
 
-		$this->closed = true;
+		$this->unloaded = true;
 	}
 
 	/** @phpstan-param \Closure() : void $callback */
@@ -790,7 +790,7 @@ class World implements ChunkManager{
 	 * @internal
 	 */
 	public function doTick(int $currentTick) : void{
-		if($this->closed){
+		if($this->unloaded){
 			throw new \InvalidStateException("Attempted to tick a world which has been closed");
 		}
 
@@ -1091,7 +1091,7 @@ class World implements ChunkManager{
 					 * @phpstan-var array<int, LightArray> $skyLight
 					 * @phpstan-var array<int, int>        $heightMap
 					 */
-					if($this->closed || ($chunk = $this->getChunk($chunkX, $chunkZ)) === null || $chunk->isLightPopulated() === true){
+					if($this->unloaded || ($chunk = $this->getChunk($chunkX, $chunkZ)) === null || $chunk->isLightPopulated() === true){
 						return;
 					}
 					//TODO: calculated light information might not be valid if the terrain changed during light calculation

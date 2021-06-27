@@ -64,10 +64,8 @@ class PermissibleInternal implements Permissible{
 	public function __construct(array $basePermissions){
 		$this->permissionRecalculationCallbacks = new ObjectSet();
 
-		//TODO: we can't setBasePermission here directly due to bad architecture that causes recalculatePermissions to explode
-		//so, this hack has to be done here to prevent permission recalculations until it's fixed...
 		$this->rootPermissions = $basePermissions;
-		//TODO: permissions need to be recalculated here, or inherited permissions won't work
+		$this->recalculatePermissions();
 	}
 
 	public function setBasePermission($name, bool $grant) : void{

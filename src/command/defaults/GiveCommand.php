@@ -30,6 +30,7 @@ use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\nbt\JsonNbtParser;
 use pocketmine\nbt\NbtDataException;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function array_slice;
 use function count;
@@ -43,7 +44,7 @@ class GiveCommand extends VanillaCommand{
 			"%pocketmine.command.give.description",
 			"%pocketmine.command.give.usage"
 		);
-		$this->setPermission("pocketmine.command.give");
+		$this->setPermission(DefaultPermissionNames::COMMAND_GIVE);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

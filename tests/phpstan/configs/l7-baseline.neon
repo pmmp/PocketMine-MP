@@ -436,9 +436,9 @@ parameters:
 			path: ../../../src/block/tile/TileFactory.php
 
 		-
-			message: "#^Property pocketmine\\\\command\\\\CommandReader\\:\\:\\$stdin \\(resource\\) does not accept resource\\|false\\.$#"
+			message: "#^Property pocketmine\\\\console\\\\ConsoleReader\\:\\:\\$stdin \\(resource\\) does not accept resource\\|false\\.$#"
 			count: 1
-			path: ../../../src/command/CommandReader.php
+			path: ../../../src/console/ConsoleReader.php
 
 		-
 			message: "#^Only booleans are allowed in an if condition, int\\|false given\\.$#"

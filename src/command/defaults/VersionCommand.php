@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -42,7 +43,7 @@ class VersionCommand extends VanillaCommand{
 			"%pocketmine.command.version.usage",
 			["ver", "about"]
 		);
-		$this->setPermission("pocketmine.command.version");
+		$this->setPermission(DefaultPermissionNames::COMMAND_VERSION);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

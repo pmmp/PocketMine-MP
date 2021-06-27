@@ -168,7 +168,7 @@ class WorldManager{
 		}
 		unset($this->worlds[$world->getId()]);
 
-		$world->close();
+		$world->onUnload();
 		return true;
 	}
 
@@ -321,7 +321,7 @@ class WorldManager{
 	 */
 	public function findEntity(int $entityId) : ?Entity{
 		foreach($this->worlds as $world){
-			assert(!$world->isClosed());
+			assert($world->isLoaded());
 			if(($entity = $world->getEntity($entityId)) instanceof Entity){
 				return $entity;
 			}

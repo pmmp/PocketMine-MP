@@ -85,4 +85,19 @@ class BaseInventoryTest extends TestCase{
 		}
 		self::assertSame(20, $leftoverCount);
 	}
+
+	public function testAddItemWithOversizedCount() : void{
+		$inventory = new class(10) extends SimpleInventory{
+
+		};
+		$leftover = $inventory->addItem(VanillaItems::APPLE()->setCount(100));
+		self::assertCount(0, $leftover);
+
+		$count = 0;
+		foreach($inventory->getContents() as $item){
+			self::assertTrue($item->equals(VanillaItems::APPLE()));
+			$count += $item->getCount();
+		}
+		self::assertSame(100, $count);
+	}
 }

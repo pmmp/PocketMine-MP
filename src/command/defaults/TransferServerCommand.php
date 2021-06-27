@@ -25,6 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function count;
 
@@ -36,7 +37,7 @@ class TransferServerCommand extends VanillaCommand{
 			"%pocketmine.command.transferserver.description",
 			"%pocketmine.command.transferserver.usage"
 		);
-		$this->setPermission("pocketmine.command.transferserver");
+		$this->setPermission(DefaultPermissionNames::COMMAND_TRANSFERSERVER);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

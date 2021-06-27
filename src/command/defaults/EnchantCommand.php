@@ -28,6 +28,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function count;
 
@@ -39,7 +40,7 @@ class EnchantCommand extends VanillaCommand{
 			"%pocketmine.command.enchant.description",
 			"%commands.enchant.usage"
 		);
-		$this->setPermission("pocketmine.command.enchant");
+		$this->setPermission(DefaultPermissionNames::COMMAND_ENCHANT);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

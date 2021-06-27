@@ -136,11 +136,6 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:getInvManager\\(\\) should return pocketmine\\\\network\\\\mcpe\\\\InventoryManager but returns pocketmine\\\\network\\\\mcpe\\\\InventoryManager\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
 			message: "#^Parameter \\#1 \\$clientPub of class pocketmine\\\\network\\\\mcpe\\\\encryption\\\\PrepareEncryptionTask constructor expects Mdanter\\\\Ecc\\\\Crypto\\\\Key\\\\PublicKeyInterface, Mdanter\\\\Ecc\\\\Crypto\\\\Key\\\\PublicKeyInterface\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
@@ -182,6 +177,16 @@ parameters:
 
 		-
 			message: "#^Parameter \\#2 \\$playerInfo of method pocketmine\\\\Server\\:\\:createPlayer\\(\\) expects pocketmine\\\\player\\\\PlayerInfo, pocketmine\\\\player\\\\PlayerInfo\\|null given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Parameter \\#3 \\$inventoryManager of class pocketmine\\\\network\\\\mcpe\\\\handler\\\\InGamePacketHandler constructor expects pocketmine\\\\network\\\\mcpe\\\\InventoryManager, pocketmine\\\\network\\\\mcpe\\\\InventoryManager\\|null given\\.$#"
+			count: 2
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Parameter \\#4 \\$inventoryManager of class pocketmine\\\\network\\\\mcpe\\\\handler\\\\PreSpawnPacketHandler constructor expects pocketmine\\\\network\\\\mcpe\\\\InventoryManager, pocketmine\\\\network\\\\mcpe\\\\InventoryManager\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 

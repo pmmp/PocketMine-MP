@@ -29,10 +29,12 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function array_merge;
 use function count;
+use function implode;
 
 class ClearCommand extends VanillaCommand{
 
@@ -42,7 +44,7 @@ class ClearCommand extends VanillaCommand{
 			"%pocketmine.command.clear.description",
 			"%pocketmine.command.clear.usage"
 		);
-		$this->setPermission("pocketmine.command.clear.self;pocketmine.command.clear.other");
+		$this->setPermission(implode(";", [DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER]));
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -61,12 +63,12 @@ class ClearCommand extends VanillaCommand{
 				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
 				return true;
 			}
-			if($target !== $sender && !$sender->hasPermission("pocketmine.command.clear.other")){
+			if($target !== $sender && !$sender->hasPermission(DefaultPermissionNames::COMMAND_CLEAR_OTHER)){
 				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 				return true;
 			}
 		}elseif($sender instanceof Player){
-			if(!$sender->hasPermission("pocketmine.command.clear.self")){
+			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_CLEAR_SELF)){
 				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
 				return true;
 			}

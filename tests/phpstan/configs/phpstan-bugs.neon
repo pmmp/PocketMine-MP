@@ -3,7 +3,7 @@ parameters:
 		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
 			count: 2
-			path: ../../../src/command/CommandReader.php
+			path: ../../../src/console/ConsoleReader.php
 
 		-
 			message: "#^Method pocketmine\\\\crafting\\\\CraftingManager\\:\\:getDestructorCallbacks\\(\\) should return pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\> but returns pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\>\\|pocketmine\\\\utils\\\\ObjectSet\\<object\\>\\.$#"

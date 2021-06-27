@@ -34,7 +34,9 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
+use pocketmine\player\Player;
 use pocketmine\world\World;
+use function array_map;
 use function max;
 
 class Furnace extends Spawnable implements Container, Nameable{
@@ -202,19 +204,19 @@ class Furnace extends Spawnable implements Container, Nameable{
 			$this->remainingFuelTime = $this->cookTime = $this->maxFuelTime = 0;
 		}
 
-		if($prevCookTime !== $this->cookTime){
-			foreach($this->inventory->getViewers() as $v){
-				$v->getNetworkSession()->getInvManager()->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_SMELT_PROGRESS, $this->cookTime);
+		$viewers = array_map(fn(Player $p) => $p->getNetworkSession()->getInvManager(), $this->inventory->getViewers());
+		foreach($viewers as $v){
+			if($v === null){
+				continue;
 			}
-		}
-		if($prevRemainingFuelTime !== $this->remainingFuelTime){
-			foreach($this->inventory->getViewers() as $v){
-				$v->getNetworkSession()->getInvManager()->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_REMAINING_FUEL_TIME, $this->remainingFuelTime);
+			if($prevCookTime !== $this->cookTime){
+				$v->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_SMELT_PROGRESS, $this->cookTime);
 			}
-		}
-		if($prevMaxFuelTime !== $this->maxFuelTime){
-			foreach($this->inventory->getViewers() as $v){
-				$v->getNetworkSession()->getInvManager()->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_MAX_FUEL_TIME, $this->maxFuelTime);
+			if($prevRemainingFuelTime !== $this->remainingFuelTime){
+				$v->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_REMAINING_FUEL_TIME, $this->remainingFuelTime);
+			}
+			if($prevMaxFuelTime !== $this->maxFuelTime){
+				$v->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_MAX_FUEL_TIME, $this->maxFuelTime);
 			}
 		}
 

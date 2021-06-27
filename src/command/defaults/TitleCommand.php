@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\TranslationContainer;
+use pocketmine\permission\DefaultPermissionNames;
 use function array_slice;
 use function count;
 use function implode;
@@ -38,7 +39,7 @@ class TitleCommand extends VanillaCommand{
 			"%pocketmine.command.title.description",
 			"%commands.title.usage"
 		);
-		$this->setPermission("pocketmine.command.title");
+		$this->setPermission(DefaultPermissionNames::COMMAND_TITLE);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
