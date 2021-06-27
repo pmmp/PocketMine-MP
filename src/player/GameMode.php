@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\player;
 
 use pocketmine\utils\EnumTrait;
+use function mb_strtolower;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -39,7 +40,6 @@ final class GameMode{
 	use EnumTrait {
 		__construct as Enum___construct;
 		register as Enum_register;
-		fromString as Enum_fromString;
 	}
 
 	/** @var self[] */
@@ -47,23 +47,27 @@ final class GameMode{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("survival", "Survival", "gameMode.survival", ["s", "0"]),
-			new self("creative", "Creative", "gameMode.creative", ["c", "1"]),
-			new self("adventure", "Adventure", "gameMode.adventure", ["a", "2"]),
-			new self("spectator", "Spectator", "gameMode.spectator", ["v", "view", "3"])
+			new self("survival", "Survival", "gameMode.survival", ["survival", "s", "0"]),
+			new self("creative", "Creative", "gameMode.creative", ["creative", "c", "1"]),
+			new self("adventure", "Adventure", "gameMode.adventure", ["adventure", "a", "2"]),
+			new self("spectator", "Spectator", "gameMode.spectator", ["spectator", "v", "view", "3"])
 		);
 	}
 
 	protected static function register(self $member) : void{
 		self::Enum_register($member);
 		foreach($member->getAliases() as $alias){
-			self::$aliasMap[$alias] = $member;
+			self::$aliasMap[mb_strtolower($alias)] = $member;
 		}
 	}
 
 	public static function fromString(string $str) : self{
 		self::checkInit();
-		return self::$aliasMap[$str] ?? self::Enum_fromString($str);
+		$result = self::$aliasMap[mb_strtolower($str)] ?? null;
+		if($result === null){
+			throw new \InvalidArgumentException("Invalid gamemode alias $str");
+		}
+		return $result;
 	}
 
 	/** @var int */
