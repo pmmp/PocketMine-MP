@@ -438,6 +438,47 @@ class PluginManager{
 	}
 
 	/**
+	 * Returns whether the given ReflectionMethod could be used as an event handler. Used to filter methods on Listeners
+	 * when registering.
+	 *
+	 * Note: This DOES NOT validate the listener annotations; if this method returns false, the method will be ignored
+	 * completely. Invalid annotations on candidate listener methods should result in an error, so those aren't checked
+	 * here.
+	 *
+	 * @phpstan-return class-string<Event>|null
+	 */
+	private function getEventsHandledBy(\ReflectionMethod $method) : ?string{
+		if($method->isStatic() or !$method->getDeclaringClass()->implementsInterface(Listener::class)){
+			return null;
+		}
+		$tags = Utils::parseDocComment((string) $method->getDocComment());
+		if(isset($tags[ListenerMethodTags::NOT_HANDLER])){
+			return null;
+		}
+
+		$parameters = $method->getParameters();
+		if(count($parameters) !== 1){
+			return null;
+		}
+
+		$paramType = $parameters[0]->getType();
+		//isBuiltin() returns false for builtin classes ..................
+		if(!$paramType instanceof \ReflectionNamedType || $paramType->isBuiltin()){
+			return null;
+		}
+
+		/** @phpstan-var class-string $paramClass */
+		$paramClass = $paramType->getName();
+		$eventClass = new \ReflectionClass($paramClass);
+		if(!$eventClass->isSubclassOf(Event::class)){
+			return null;
+		}
+
+		/** @var \ReflectionClass<Event> $eventClass */
+		return $eventClass->getName();
+	}
+
+	/**
 	 * Registers all the events in the given Listener class
 	 *
 	 * @throws PluginException
@@ -449,56 +490,34 @@ class PluginManager{
 
 		$reflection = new \ReflectionClass(get_class($listener));
 		foreach($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method){
-			if(!$method->isStatic() and $method->getDeclaringClass()->implementsInterface(Listener::class)){
-				$tags = Utils::parseDocComment((string) $method->getDocComment());
-				if(isset($tags[ListenerMethodTags::NOT_HANDLER])){
-					continue;
-				}
-
-				$parameters = $method->getParameters();
-				if(count($parameters) !== 1){
-					continue;
-				}
-
-				$paramType = $parameters[0]->getType();
-				//isBuiltin() returns false for builtin classes ..................
-				if($paramType instanceof \ReflectionNamedType && !$paramType->isBuiltin()){
-					/** @phpstan-var class-string $paramClass */
-					$paramClass = $paramType->getName();
-					$eventClass = new \ReflectionClass($paramClass);
-					if(!$eventClass->isSubclassOf(Event::class)){
-						continue;
-					}
-				}else{
-					continue;
-				}
-
-				$handlerClosure = $method->getClosure($listener);
-				if($handlerClosure === null) throw new AssumptionFailedError("This should never happen");
-
-				try{
-					$priority = isset($tags[ListenerMethodTags::PRIORITY]) ? EventPriority::fromString($tags[ListenerMethodTags::PRIORITY]) : EventPriority::NORMAL;
-				}catch(\InvalidArgumentException $e){
-					throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid/unknown priority \"" . $tags[ListenerMethodTags::PRIORITY] . "\"");
-				}
-
-				$handleCancelled = false;
-				if(isset($tags[ListenerMethodTags::HANDLE_CANCELLED])){
-					switch(strtolower($tags[ListenerMethodTags::HANDLE_CANCELLED])){
-						case "true":
-						case "":
-							$handleCancelled = true;
-							break;
-						case "false":
-							break;
-						default:
-							throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid @" . ListenerMethodTags::HANDLE_CANCELLED . " value \"" . $tags[ListenerMethodTags::HANDLE_CANCELLED] . "\"");
-					}
-				}
-
-				/** @phpstan-var \ReflectionClass<Event> $eventClass */
-				$this->registerEvent($eventClass->getName(), $handlerClosure, $priority, $plugin, $handleCancelled);
+			$tags = Utils::parseDocComment((string) $method->getDocComment());
+			if(isset($tags[ListenerMethodTags::NOT_HANDLER]) || ($eventClass = $this->getEventsHandledBy($method)) === null){
+				continue;
 			}
+			$handlerClosure = $method->getClosure($listener);
+			if($handlerClosure === null) throw new AssumptionFailedError("This should never happen");
+
+			try{
+				$priority = isset($tags[ListenerMethodTags::PRIORITY]) ? EventPriority::fromString($tags[ListenerMethodTags::PRIORITY]) : EventPriority::NORMAL;
+			}catch(\InvalidArgumentException $e){
+				throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid/unknown priority \"" . $tags[ListenerMethodTags::PRIORITY] . "\"");
+			}
+
+			$handleCancelled = false;
+			if(isset($tags[ListenerMethodTags::HANDLE_CANCELLED])){
+				switch(strtolower($tags[ListenerMethodTags::HANDLE_CANCELLED])){
+					case "true":
+					case "":
+						$handleCancelled = true;
+						break;
+					case "false":
+						break;
+					default:
+						throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid @" . ListenerMethodTags::HANDLE_CANCELLED . " value \"" . $tags[ListenerMethodTags::HANDLE_CANCELLED] . "\"");
+				}
+			}
+
+			$this->registerEvent($eventClass, $handlerClosure, $priority, $plugin, $handleCancelled);
 		}
 	}
 
