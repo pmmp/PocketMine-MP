@@ -27,6 +27,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\wizard;
 
+use pocketmine\data\java\GameModeIdMap;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\player\GameMode;
@@ -158,7 +159,7 @@ LICENSE;
 		$this->message($this->lang->get("gamemode_info"));
 
 		do{
-			$gamemode = (int) $this->getInput($this->lang->get("default_gamemode"), (string) GameMode::SURVIVAL()->getMagicNumber());
+			$gamemode = (int) $this->getInput($this->lang->get("default_gamemode"), (string) GameModeIdMap::getInstance()->toId(GameMode::SURVIVAL()));
 		}while($gamemode < 0 or $gamemode > 3);
 		$config->set("gamemode", $gamemode);
 

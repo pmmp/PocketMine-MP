@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\query;
 
+use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
@@ -81,7 +82,7 @@ final class QueryInfo{
 		$this->plugins = $server->getPluginManager()->getPlugins();
 		$this->players = $server->getOnlinePlayers();
 
-		$this->gametype = ($server->getGamemode()->getMagicNumber() & 0x01) === 0 ? "SMP" : "CMP";
+		$this->gametype = ($server->getGamemode()->equals(GameMode::SURVIVAL()) || $server->getGamemode()->equals(GameMode::ADVENTURE())) ? "SMP" : "CMP";
 		$this->version = $server->getVersion();
 		$this->server_engine = $server->getName() . " " . $server->getPocketMineVersion();
 		$world = $server->getWorldManager()->getDefaultWorld();

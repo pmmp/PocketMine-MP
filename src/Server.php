@@ -34,6 +34,7 @@ use pocketmine\console\ConsoleCommandSender;
 use pocketmine\console\ConsoleReaderThread;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
+use pocketmine\data\java\GameModeIdMap;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\Location;
 use pocketmine\event\HandlerListManager;
@@ -372,7 +373,7 @@ class Server{
 	}
 
 	public function getGamemode() : GameMode{
-		return GameMode::fromMagicNumber($this->configGroup->getConfigInt("gamemode", 0) & 0b11);
+		return GameModeIdMap::getInstance()->fromId($this->configGroup->getConfigInt("gamemode", 0)) ?? GameMode::SURVIVAL();
 	}
 
 	public function getForceGamemode() : bool{
