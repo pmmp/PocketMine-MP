@@ -98,6 +98,7 @@ use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
@@ -2002,7 +2003,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->unloadChunk($chunkX, $chunkZ);
 			}
 		}
-		$this->usedChunks = [];
+		if(count($this->usedChunks) !== 0){
+			throw new AssumptionFailedError("Previous loop should have cleared this array");
+		}
 		$this->loadQueue = [];
 
 		$this->removeCurrentWindow();
