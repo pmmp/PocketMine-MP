@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\convert;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use Webmozart\PathUtil\Path;
 use function array_key_exists;
 use function file_get_contents;
 use function is_array;
@@ -64,14 +65,14 @@ final class ItemTranslator{
 	private $complexNetToCoreMapping = [];
 
 	private static function make() : self{
-		$data = file_get_contents(\pocketmine\RESOURCE_PATH . '/vanilla/r16_to_current_item_map.json');
+		$data = file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'vanilla', 'r16_to_current_item_map.json'));
 		if($data === false) throw new AssumptionFailedError("Missing required resource file");
 		$json = json_decode($data, true);
 		if(!is_array($json) or !isset($json["simple"], $json["complex"]) || !is_array($json["simple"]) || !is_array($json["complex"])){
 			throw new AssumptionFailedError("Invalid item table format");
 		}
 
-		$legacyStringToIntMapRaw = file_get_contents(\pocketmine\RESOURCE_PATH . '/vanilla/item_id_map.json');
+		$legacyStringToIntMapRaw = file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'vanilla', 'item_id_map.json'));
 		if($legacyStringToIntMapRaw === false){
 			throw new AssumptionFailedError("Missing required resource file");
 		}

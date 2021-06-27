@@ -31,6 +31,7 @@ use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use Webmozart\PathUtil\Path;
 use function file_get_contents;
 
 /**
@@ -47,7 +48,7 @@ final class RuntimeBlockMapping{
 	private $bedrockKnownStates;
 
 	private function __construct(){
-		$canonicalBlockStatesFile = file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/canonical_block_states.nbt");
+		$canonicalBlockStatesFile = file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "vanilla", "canonical_block_states.nbt"));
 		if($canonicalBlockStatesFile === false){
 			throw new AssumptionFailedError("Missing required resource file");
 		}
@@ -65,7 +66,7 @@ final class RuntimeBlockMapping{
 		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
-		$legacyStateMapReader = new PacketSerializer(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/r12_to_current_block_map.bin"));
+		$legacyStateMapReader = new PacketSerializer(file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "vanilla", "r12_to_current_block_map.bin")));
 		$nbtReader = new NetworkNbtSerializer();
 		while(!$legacyStateMapReader->feof()){
 			$id = $legacyStateMapReader->getString();

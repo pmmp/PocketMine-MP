@@ -25,6 +25,7 @@ namespace pocketmine\world\format\io\region;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\world\format\ChunkException;
+use Webmozart\PathUtil\Path;
 use function bin2hex;
 use function clearstatcache;
 use function file_exists;
@@ -32,7 +33,6 @@ use function random_bytes;
 use function str_repeat;
 use function sys_get_temp_dir;
 use function unlink;
-use const DIRECTORY_SEPARATOR;
 
 class RegionLoaderTest extends TestCase{
 
@@ -42,7 +42,7 @@ class RegionLoaderTest extends TestCase{
 	private $region;
 
 	public function setUp() : void{
-		$this->regionPath = sys_get_temp_dir() . '/test.testregion';
+		$this->regionPath = Path::join(sys_get_temp_dir(), 'test.testregion');
 		if(file_exists($this->regionPath)){
 			unlink($this->regionPath);
 		}
@@ -140,7 +140,7 @@ class RegionLoaderTest extends TestCase{
 		clearstatcache();
 
 		do{
-			$randfile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . bin2hex(random_bytes(6)) . ".mca";
+			$randfile = Path::join(sys_get_temp_dir(), bin2hex(random_bytes(6)) . ".mca");
 		}while(file_exists($randfile));
 		$this->expectException(\RuntimeException::class);
 		RegionLoader::loadExisting($randfile);

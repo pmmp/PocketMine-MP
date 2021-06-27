@@ -39,6 +39,7 @@ use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
+use Webmozart\PathUtil\Path;
 use function array_intersect;
 use function array_merge;
 use function class_exists;
@@ -59,7 +60,6 @@ use function shuffle;
 use function stripos;
 use function strpos;
 use function strtolower;
-use const DIRECTORY_SEPARATOR;
 
 /**
  * Manages all the plugins
@@ -121,9 +121,9 @@ class PluginManager{
 
 	private function getDataDirectory(string $pluginPath, string $pluginName) : string{
 		if($this->pluginDataDirectory !== null){
-			return $this->pluginDataDirectory . $pluginName;
+			return Path::join($this->pluginDataDirectory, $pluginName);
 		}
-		return dirname($pluginPath) . DIRECTORY_SEPARATOR . $pluginName;
+		return Path::join(dirname($pluginPath), $pluginName);
 	}
 
 	/**

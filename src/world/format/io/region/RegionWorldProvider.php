@@ -32,6 +32,7 @@ use pocketmine\world\format\io\BaseWorldProvider;
 use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WorldData;
+use Webmozart\PathUtil\Path;
 use function assert;
 use function file_exists;
 use function is_dir;
@@ -43,7 +44,6 @@ use function strlen;
 use function strrpos;
 use function substr;
 use function time;
-use const DIRECTORY_SEPARATOR;
 use const SCANDIR_SORT_NONE;
 
 abstract class RegionWorldProvider extends BaseWorldProvider{
@@ -59,8 +59,8 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	abstract protected static function getPcWorldFormatVersion() : int;
 
 	public static function isValid(string $path) : bool{
-		if(file_exists($path . "/level.dat") and is_dir($path . "/region/")){
-			foreach(scandir($path . "/region/", SCANDIR_SORT_NONE) as $file){
+		if(file_exists(Path::join($path, "level.dat")) and is_dir($regionPath = Path::join($path, "region"))){
+			foreach(scandir($regionPath, SCANDIR_SORT_NONE) as $file){
 				$extPos = strrpos($file, ".");
 				if($extPos !== false && substr($file, $extPos + 1) === static::getRegionFileExtension()){
 					//we don't care if other region types exist, we only care if this format is possible
@@ -76,7 +76,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	protected $regions = [];
 
 	protected function loadLevelData() : WorldData{
-		return new JavaWorldData($this->getPath() . DIRECTORY_SEPARATOR . "level.dat");
+		return new JavaWorldData(Path::join($this->getPath(), "level.dat"));
 	}
 
 	public function doGarbageCollection() : void{
@@ -106,7 +106,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	 * Returns the path to a specific region file based on its X/Z coordinates
 	 */
 	protected function pathToRegion(int $regionX, int $regionZ) : string{
-		return $this->path . "/region/r.$regionX.$regionZ." . static::getRegionFileExtension();
+		return Path::join($this->path, "region", "r.$regionX.$regionZ." . static::getRegionFileExtension());
 	}
 
 	protected function loadRegion(int $regionX, int $regionZ) : RegionLoader{
@@ -205,7 +205,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	private function createRegionIterator() : \RegexIterator{
 		return new \RegexIterator(
 			new \FilesystemIterator(
-				$this->path . '/region/',
+				Path::join($this->path, 'region'),
 				\FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
 			),
 			'/\/r\.(-?\d+)\.(-?\d+)\.' . static::getRegionFileExtension() . '$/',

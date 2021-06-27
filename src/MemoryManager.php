@@ -30,6 +30,7 @@ use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Process;
 use pocketmine\utils\Utils;
+use Webmozart\PathUtil\Path;
 use function arsort;
 use function count;
 use function fclose;
@@ -316,7 +317,7 @@ class MemoryManager{
 			mkdir($outputFolder, 0777, true);
 		}
 
-		$obData = fopen($outputFolder . "/objects.js", "wb+");
+		$obData = fopen(Path::join($outputFolder, "objects.js"), "wb+");
 
 		$data = [];
 
@@ -367,7 +368,7 @@ class MemoryManager{
 			}
 		}
 
-		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, "staticProperties.js"), json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		$logger->info("Wrote $staticCount static properties");
 
 		if(isset($GLOBALS)){ //This might be null if we're on a different thread
@@ -395,7 +396,7 @@ class MemoryManager{
 				$globalVariables[$varName] = self::continueDump($value, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 			}
 
-			file_put_contents($outputFolder . "/globalVariables.js", json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+			file_put_contents(Path::join($outputFolder, "globalVariables.js"), json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 			$logger->info("Wrote $globalCount global variables");
 		}
 
@@ -411,7 +412,7 @@ class MemoryManager{
 				$functionStaticVarsCount += count($vars);
 			}
 		}
-		file_put_contents($outputFolder . '/functionStaticVars.js', json_encode($functionStaticVars, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, 'functionStaticVars.js'), json_encode($functionStaticVars, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		$logger->info("Wrote $functionStaticVarsCount function static variables");
 
 		$data = self::continueDump($startingObject, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
@@ -483,11 +484,11 @@ class MemoryManager{
 
 		fclose($obData);
 
-		file_put_contents($outputFolder . "/serverEntry.js", json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-		file_put_contents($outputFolder . "/referenceCounts.js", json_encode($refCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, "serverEntry.js"), json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, "referenceCounts.js"), json_encode($refCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
 		arsort($instanceCounts, SORT_NUMERIC);
-		file_put_contents($outputFolder . "/instanceCounts.js", json_encode($instanceCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, "instanceCounts.js"), json_encode($instanceCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 
 		$logger->info("Finished!");
 
