@@ -34,6 +34,8 @@ use function assert;
  * @method static Boat ACACIA_BOAT()
  * @method static Apple APPLE()
  * @method static Arrow ARROW()
+ * @method static Potion AWKWARD_POTION()
+ * @method static SplashPotion AWKWARD_SPLASH_POTION()
  * @method static BakedPotato BAKED_POTATO()
  * @method static Beetroot BEETROOT()
  * @method static BeetrootSeeds BEETROOT_SEEDS()
@@ -56,7 +58,6 @@ use function assert;
  * @method static Bed BROWN_BED()
  * @method static Dye BROWN_DYE()
  * @method static Bucket BUCKET()
- * @method static ItemBlock CAKE()
  * @method static Carrot CARROT()
  * @method static Armor CHAINMAIL_BOOTS()
  * @method static Armor CHAINMAIL_CHESTPLATE()
@@ -139,6 +140,8 @@ use function assert;
  * @method static ExperienceBottle EXPERIENCE_BOTTLE()
  * @method static Item FEATHER()
  * @method static Item FERMENTED_SPIDER_EYE()
+ * @method static Potion FIRE_RESISTANCE_POTION()
+ * @method static SplashPotion FIRE_RESISTANCE_SPLASH_POTION()
  * @method static FishingRod FISHING_ROD()
  * @method static Item FLINT()
  * @method static FlintSteel FLINT_AND_STEEL()
@@ -164,8 +167,14 @@ use function assert;
  * @method static Bed GREEN_BED()
  * @method static Dye GREEN_DYE()
  * @method static Item GUNPOWDER()
+ * @method static Potion HARMING_POTION()
+ * @method static SplashPotion HARMING_SPLASH_POTION()
+ * @method static Potion HEALING_POTION()
+ * @method static SplashPotion HEALING_SPLASH_POTION()
  * @method static Item HEART_OF_THE_SEA()
  * @method static Item INK_SAC()
+ * @method static Potion INVISIBILITY_POTION()
+ * @method static SplashPotion INVISIBILITY_SPLASH_POTION()
  * @method static Axe IRON_AXE()
  * @method static Armor IRON_BOOTS()
  * @method static Armor IRON_CHESTPLATE()
@@ -180,6 +189,8 @@ use function assert;
  * @method static Boat JUNGLE_BOAT()
  * @method static Item LAPIS_LAZULI()
  * @method static LiquidBucket LAVA_BUCKET()
+ * @method static Potion LEAPING_POTION()
+ * @method static SplashPotion LEAPING_SPLASH_POTION()
  * @method static Item LEATHER()
  * @method static Armor LEATHER_BOOTS()
  * @method static Armor LEATHER_CAP()
@@ -191,6 +202,34 @@ use function assert;
  * @method static Dye LIGHT_GRAY_DYE()
  * @method static Bed LIME_BED()
  * @method static Dye LIME_DYE()
+ * @method static Potion LONG_FIRE_RESISTANCE_POTION()
+ * @method static SplashPotion LONG_FIRE_RESISTANCE_SPLASH_POTION()
+ * @method static Potion LONG_INVISIBILITY_POTION()
+ * @method static SplashPotion LONG_INVISIBILITY_SPLASH_POTION()
+ * @method static Potion LONG_LEAPING_POTION()
+ * @method static SplashPotion LONG_LEAPING_SPLASH_POTION()
+ * @method static Potion LONG_MUNDANE_POTION()
+ * @method static SplashPotion LONG_MUNDANE_SPLASH_POTION()
+ * @method static Potion LONG_NIGHT_VISION_POTION()
+ * @method static SplashPotion LONG_NIGHT_VISION_SPLASH_POTION()
+ * @method static Potion LONG_POISON_POTION()
+ * @method static SplashPotion LONG_POISON_SPLASH_POTION()
+ * @method static Potion LONG_REGENERATION_POTION()
+ * @method static SplashPotion LONG_REGENERATION_SPLASH_POTION()
+ * @method static Potion LONG_SLOWNESS_POTION()
+ * @method static SplashPotion LONG_SLOWNESS_SPLASH_POTION()
+ * @method static Potion LONG_SLOW_FALLING_POTION()
+ * @method static SplashPotion LONG_SLOW_FALLING_SPLASH_POTION()
+ * @method static Potion LONG_STRENGTH_POTION()
+ * @method static SplashPotion LONG_STRENGTH_SPLASH_POTION()
+ * @method static Potion LONG_SWIFTNESS_POTION()
+ * @method static SplashPotion LONG_SWIFTNESS_SPLASH_POTION()
+ * @method static Potion LONG_TURTLE_MASTER_POTION()
+ * @method static SplashPotion LONG_TURTLE_MASTER_SPLASH_POTION()
+ * @method static Potion LONG_WATER_BREATHING_POTION()
+ * @method static SplashPotion LONG_WATER_BREATHING_SPLASH_POTION()
+ * @method static Potion LONG_WEAKNESS_POTION()
+ * @method static SplashPotion LONG_WEAKNESS_SPLASH_POTION()
  * @method static Bed MAGENTA_BED()
  * @method static Dye MAGENTA_DYE()
  * @method static Item MAGMA_CREAM()
@@ -198,12 +237,15 @@ use function assert;
  * @method static MelonSeeds MELON_SEEDS()
  * @method static MilkBucket MILK_BUCKET()
  * @method static Minecart MINECART()
+ * @method static Potion MUNDANE_POTION()
+ * @method static SplashPotion MUNDANE_SPLASH_POTION()
  * @method static MushroomStew MUSHROOM_STEW()
  * @method static Item NAUTILUS_SHELL()
  * @method static Item NETHER_BRICK()
  * @method static Item NETHER_QUARTZ()
  * @method static Item NETHER_STAR()
- * @method static ItemBlock NETHER_WART()
+ * @method static Potion NIGHT_VISION_POTION()
+ * @method static SplashPotion NIGHT_VISION_SPLASH_POTION()
  * @method static Boat OAK_BOAT()
  * @method static Bed ORANGE_BED()
  * @method static Dye ORANGE_DYE()
@@ -213,9 +255,10 @@ use function assert;
  * @method static Dye PINK_DYE()
  * @method static Skull PLAYER_HEAD()
  * @method static PoisonousPotato POISONOUS_POTATO()
+ * @method static Potion POISON_POTION()
+ * @method static SplashPotion POISON_SPLASH_POTION()
  * @method static Item POPPED_CHORUS_FRUIT()
  * @method static Potato POTATO()
- * @method static Potion POTION()
  * @method static Item PRISMARINE_CRYSTALS()
  * @method static Item PRISMARINE_SHARD()
  * @method static Pufferfish PUFFERFISH()
@@ -248,16 +291,22 @@ use function assert;
  * @method static Redstone REDSTONE_DUST()
  * @method static Bed RED_BED()
  * @method static Dye RED_DYE()
+ * @method static Potion REGENERATION_POTION()
+ * @method static SplashPotion REGENERATION_SPLASH_POTION()
  * @method static RottenFlesh ROTTEN_FLESH()
  * @method static Item SCUTE()
  * @method static Shears SHEARS()
  * @method static Item SHULKER_SHELL()
  * @method static Skull SKELETON_SKULL()
  * @method static Item SLIMEBALL()
+ * @method static Potion SLOWNESS_POTION()
+ * @method static SplashPotion SLOWNESS_SPLASH_POTION()
+ * @method static Potion SLOW_FALLING_POTION()
+ * @method static SplashPotion SLOW_FALLING_SPLASH_POTION()
  * @method static Snowball SNOWBALL()
  * @method static SpiderEye SPIDER_EYE()
- * @method static SplashPotion SPLASH_POTION()
  * @method static Boat SPRUCE_BOAT()
+ * @method static SpawnEgg SQUID_SPAWN_EGG()
  * @method static Steak STEAK()
  * @method static Stick STICK()
  * @method static Axe STONE_AXE()
@@ -265,16 +314,48 @@ use function assert;
  * @method static Pickaxe STONE_PICKAXE()
  * @method static Shovel STONE_SHOVEL()
  * @method static Sword STONE_SWORD()
+ * @method static Potion STRENGTH_POTION()
+ * @method static SplashPotion STRENGTH_SPLASH_POTION()
  * @method static StringItem STRING()
+ * @method static Potion STRONG_HARMING_POTION()
+ * @method static SplashPotion STRONG_HARMING_SPLASH_POTION()
+ * @method static Potion STRONG_HEALING_POTION()
+ * @method static SplashPotion STRONG_HEALING_SPLASH_POTION()
+ * @method static Potion STRONG_LEAPING_POTION()
+ * @method static SplashPotion STRONG_LEAPING_SPLASH_POTION()
+ * @method static Potion STRONG_POISON_POTION()
+ * @method static SplashPotion STRONG_POISON_SPLASH_POTION()
+ * @method static Potion STRONG_REGENERATION_POTION()
+ * @method static SplashPotion STRONG_REGENERATION_SPLASH_POTION()
+ * @method static Potion STRONG_STRENGTH_POTION()
+ * @method static SplashPotion STRONG_STRENGTH_SPLASH_POTION()
+ * @method static Potion STRONG_SWIFTNESS_POTION()
+ * @method static SplashPotion STRONG_SWIFTNESS_SPLASH_POTION()
+ * @method static Potion STRONG_TURTLE_MASTER_POTION()
+ * @method static SplashPotion STRONG_TURTLE_MASTER_SPLASH_POTION()
  * @method static Item SUGAR()
- * @method static ItemBlock SUGARCANE()
+ * @method static Potion SWIFTNESS_POTION()
+ * @method static SplashPotion SWIFTNESS_SPLASH_POTION()
+ * @method static Potion THICK_POTION()
+ * @method static SplashPotion THICK_SPLASH_POTION()
  * @method static Totem TOTEM()
+ * @method static Potion TURTLE_MASTER_POTION()
+ * @method static SplashPotion TURTLE_MASTER_SPLASH_POTION()
+ * @method static SpawnEgg VILLAGER_SPAWN_EGG()
+ * @method static Potion WATER_BREATHING_POTION()
+ * @method static SplashPotion WATER_BREATHING_SPLASH_POTION()
  * @method static LiquidBucket WATER_BUCKET()
+ * @method static Potion WATER_POTION()
+ * @method static SplashPotion WATER_SPLASH_POTION()
+ * @method static Potion WEAKNESS_POTION()
+ * @method static SplashPotion WEAKNESS_SPLASH_POTION()
  * @method static Item WHEAT()
  * @method static WheatSeeds WHEAT_SEEDS()
  * @method static Bed WHITE_BED()
  * @method static Dye WHITE_DYE()
+ * @method static Potion WITHER_POTION()
  * @method static Skull WITHER_SKELETON_SKULL()
+ * @method static SplashPotion WITHER_SPLASH_POTION()
  * @method static Axe WOODEN_AXE()
  * @method static Hoe WOODEN_HOE()
  * @method static Pickaxe WOODEN_PICKAXE()
@@ -285,6 +366,7 @@ use function assert;
  * @method static Bed YELLOW_BED()
  * @method static Dye YELLOW_DYE()
  * @method static Skull ZOMBIE_HEAD()
+ * @method static SpawnEgg ZOMBIE_SPAWN_EGG()
  */
 final class VanillaItems{
 	use CloningRegistryTrait;
@@ -318,6 +400,8 @@ final class VanillaItems{
 		self::register("acacia_boat", $factory->get(333, 4));
 		self::register("apple", $factory->get(260));
 		self::register("arrow", $factory->get(262));
+		self::register("awkward_potion", $factory->get(373, 4));
+		self::register("awkward_splash_potion", $factory->get(438, 4));
 		self::register("baked_potato", $factory->get(393));
 		self::register("beetroot", $factory->get(457));
 		self::register("beetroot_seeds", $factory->get(458));
@@ -340,7 +424,6 @@ final class VanillaItems{
 		self::register("brown_bed", $factory->get(355, 12));
 		self::register("brown_dye", $factory->get(351, 17));
 		self::register("bucket", $factory->get(325));
-		self::register("cake", $factory->get(354));
 		self::register("carrot", $factory->get(391));
 		self::register("chainmail_boots", $factory->get(305));
 		self::register("chainmail_chestplate", $factory->get(303));
@@ -423,6 +506,8 @@ final class VanillaItems{
 		self::register("experience_bottle", $factory->get(384));
 		self::register("feather", $factory->get(288));
 		self::register("fermented_spider_eye", $factory->get(376));
+		self::register("fire_resistance_potion", $factory->get(373, 12));
+		self::register("fire_resistance_splash_potion", $factory->get(438, 12));
 		self::register("fishing_rod", $factory->get(346));
 		self::register("flint", $factory->get(318));
 		self::register("flint_and_steel", $factory->get(259));
@@ -448,8 +533,14 @@ final class VanillaItems{
 		self::register("green_bed", $factory->get(355, 13));
 		self::register("green_dye", $factory->get(351, 2));
 		self::register("gunpowder", $factory->get(289));
+		self::register("harming_potion", $factory->get(373, 23));
+		self::register("harming_splash_potion", $factory->get(438, 23));
+		self::register("healing_potion", $factory->get(373, 21));
+		self::register("healing_splash_potion", $factory->get(438, 21));
 		self::register("heart_of_the_sea", $factory->get(467));
 		self::register("ink_sac", $factory->get(351));
+		self::register("invisibility_potion", $factory->get(373, 7));
+		self::register("invisibility_splash_potion", $factory->get(438, 7));
 		self::register("iron_axe", $factory->get(258));
 		self::register("iron_boots", $factory->get(309));
 		self::register("iron_chestplate", $factory->get(307));
@@ -464,6 +555,8 @@ final class VanillaItems{
 		self::register("jungle_boat", $factory->get(333, 3));
 		self::register("lapis_lazuli", $factory->get(351, 4));
 		self::register("lava_bucket", $factory->get(325, 10));
+		self::register("leaping_potion", $factory->get(373, 9));
+		self::register("leaping_splash_potion", $factory->get(438, 9));
 		self::register("leather", $factory->get(334));
 		self::register("leather_boots", $factory->get(301));
 		self::register("leather_cap", $factory->get(298));
@@ -475,6 +568,34 @@ final class VanillaItems{
 		self::register("light_gray_dye", $factory->get(351, 7));
 		self::register("lime_bed", $factory->get(355, 5));
 		self::register("lime_dye", $factory->get(351, 10));
+		self::register("long_fire_resistance_potion", $factory->get(373, 13));
+		self::register("long_fire_resistance_splash_potion", $factory->get(438, 13));
+		self::register("long_invisibility_potion", $factory->get(373, 8));
+		self::register("long_invisibility_splash_potion", $factory->get(438, 8));
+		self::register("long_leaping_potion", $factory->get(373, 10));
+		self::register("long_leaping_splash_potion", $factory->get(438, 10));
+		self::register("long_mundane_potion", $factory->get(373, 2));
+		self::register("long_mundane_splash_potion", $factory->get(438, 2));
+		self::register("long_night_vision_potion", $factory->get(373, 6));
+		self::register("long_night_vision_splash_potion", $factory->get(438, 6));
+		self::register("long_poison_potion", $factory->get(373, 26));
+		self::register("long_poison_splash_potion", $factory->get(438, 26));
+		self::register("long_regeneration_potion", $factory->get(373, 29));
+		self::register("long_regeneration_splash_potion", $factory->get(438, 29));
+		self::register("long_slow_falling_potion", $factory->get(373, 41));
+		self::register("long_slow_falling_splash_potion", $factory->get(438, 41));
+		self::register("long_slowness_potion", $factory->get(373, 18));
+		self::register("long_slowness_splash_potion", $factory->get(438, 18));
+		self::register("long_strength_potion", $factory->get(373, 32));
+		self::register("long_strength_splash_potion", $factory->get(438, 32));
+		self::register("long_swiftness_potion", $factory->get(373, 15));
+		self::register("long_swiftness_splash_potion", $factory->get(438, 15));
+		self::register("long_turtle_master_potion", $factory->get(373, 38));
+		self::register("long_turtle_master_splash_potion", $factory->get(438, 38));
+		self::register("long_water_breathing_potion", $factory->get(373, 20));
+		self::register("long_water_breathing_splash_potion", $factory->get(438, 20));
+		self::register("long_weakness_potion", $factory->get(373, 35));
+		self::register("long_weakness_splash_potion", $factory->get(438, 35));
 		self::register("magenta_bed", $factory->get(355, 2));
 		self::register("magenta_dye", $factory->get(351, 13));
 		self::register("magma_cream", $factory->get(378));
@@ -482,12 +603,15 @@ final class VanillaItems{
 		self::register("melon_seeds", $factory->get(362));
 		self::register("milk_bucket", $factory->get(325, 1));
 		self::register("minecart", $factory->get(328));
+		self::register("mundane_potion", $factory->get(373, 1));
+		self::register("mundane_splash_potion", $factory->get(438, 1));
 		self::register("mushroom_stew", $factory->get(282));
 		self::register("nautilus_shell", $factory->get(465));
 		self::register("nether_brick", $factory->get(405));
 		self::register("nether_quartz", $factory->get(406));
 		self::register("nether_star", $factory->get(399));
-		self::register("nether_wart", $factory->get(372));
+		self::register("night_vision_potion", $factory->get(373, 5));
+		self::register("night_vision_splash_potion", $factory->get(438, 5));
 		self::register("oak_boat", $factory->get(333));
 		self::register("orange_bed", $factory->get(355, 1));
 		self::register("orange_dye", $factory->get(351, 14));
@@ -496,10 +620,11 @@ final class VanillaItems{
 		self::register("pink_bed", $factory->get(355, 6));
 		self::register("pink_dye", $factory->get(351, 9));
 		self::register("player_head", $factory->get(397, 3));
+		self::register("poison_potion", $factory->get(373, 25));
+		self::register("poison_splash_potion", $factory->get(438, 25));
 		self::register("poisonous_potato", $factory->get(394));
 		self::register("popped_chorus_fruit", $factory->get(433));
 		self::register("potato", $factory->get(392));
-		self::register("potion", $factory->get(373));
 		self::register("prismarine_crystals", $factory->get(422));
 		self::register("prismarine_shard", $factory->get(409));
 		self::register("pufferfish", $factory->get(462));
@@ -532,16 +657,22 @@ final class VanillaItems{
 		self::register("red_bed", $factory->get(355, 14));
 		self::register("red_dye", $factory->get(351, 1));
 		self::register("redstone_dust", $factory->get(331));
+		self::register("regeneration_potion", $factory->get(373, 28));
+		self::register("regeneration_splash_potion", $factory->get(438, 28));
 		self::register("rotten_flesh", $factory->get(367));
 		self::register("scute", $factory->get(468));
 		self::register("shears", $factory->get(359));
 		self::register("shulker_shell", $factory->get(445));
 		self::register("skeleton_skull", $factory->get(397));
 		self::register("slimeball", $factory->get(341));
+		self::register("slow_falling_potion", $factory->get(373, 40));
+		self::register("slow_falling_splash_potion", $factory->get(438, 40));
+		self::register("slowness_potion", $factory->get(373, 17));
+		self::register("slowness_splash_potion", $factory->get(438, 17));
 		self::register("snowball", $factory->get(332));
 		self::register("spider_eye", $factory->get(375));
-		self::register("splash_potion", $factory->get(438));
 		self::register("spruce_boat", $factory->get(333, 1));
+		self::register("squid_spawn_egg", $factory->get(383, 17));
 		self::register("steak", $factory->get(364));
 		self::register("stick", $factory->get(280));
 		self::register("stone_axe", $factory->get(275));
@@ -549,16 +680,48 @@ final class VanillaItems{
 		self::register("stone_pickaxe", $factory->get(274));
 		self::register("stone_shovel", $factory->get(273));
 		self::register("stone_sword", $factory->get(272));
+		self::register("strength_potion", $factory->get(373, 31));
+		self::register("strength_splash_potion", $factory->get(438, 31));
 		self::register("string", $factory->get(287));
+		self::register("strong_harming_potion", $factory->get(373, 24));
+		self::register("strong_harming_splash_potion", $factory->get(438, 24));
+		self::register("strong_healing_potion", $factory->get(373, 22));
+		self::register("strong_healing_splash_potion", $factory->get(438, 22));
+		self::register("strong_leaping_potion", $factory->get(373, 11));
+		self::register("strong_leaping_splash_potion", $factory->get(438, 11));
+		self::register("strong_poison_potion", $factory->get(373, 27));
+		self::register("strong_poison_splash_potion", $factory->get(438, 27));
+		self::register("strong_regeneration_potion", $factory->get(373, 30));
+		self::register("strong_regeneration_splash_potion", $factory->get(438, 30));
+		self::register("strong_strength_potion", $factory->get(373, 33));
+		self::register("strong_strength_splash_potion", $factory->get(438, 33));
+		self::register("strong_swiftness_potion", $factory->get(373, 16));
+		self::register("strong_swiftness_splash_potion", $factory->get(438, 16));
+		self::register("strong_turtle_master_potion", $factory->get(373, 39));
+		self::register("strong_turtle_master_splash_potion", $factory->get(438, 39));
 		self::register("sugar", $factory->get(353));
-		self::register("sugarcane", $factory->get(338));
+		self::register("swiftness_potion", $factory->get(373, 14));
+		self::register("swiftness_splash_potion", $factory->get(438, 14));
+		self::register("thick_potion", $factory->get(373, 3));
+		self::register("thick_splash_potion", $factory->get(438, 3));
 		self::register("totem", $factory->get(450));
+		self::register("turtle_master_potion", $factory->get(373, 37));
+		self::register("turtle_master_splash_potion", $factory->get(438, 37));
+		self::register("villager_spawn_egg", $factory->get(383, 15));
+		self::register("water_breathing_potion", $factory->get(373, 19));
+		self::register("water_breathing_splash_potion", $factory->get(438, 19));
 		self::register("water_bucket", $factory->get(325, 8));
+		self::register("water_potion", $factory->get(373));
+		self::register("water_splash_potion", $factory->get(438));
+		self::register("weakness_potion", $factory->get(373, 34));
+		self::register("weakness_splash_potion", $factory->get(438, 34));
 		self::register("wheat", $factory->get(296));
 		self::register("wheat_seeds", $factory->get(295));
 		self::register("white_bed", $factory->get(355));
 		self::register("white_dye", $factory->get(351, 19));
+		self::register("wither_potion", $factory->get(373, 36));
 		self::register("wither_skeleton_skull", $factory->get(397, 1));
+		self::register("wither_splash_potion", $factory->get(438, 36));
 		self::register("wooden_axe", $factory->get(271));
 		self::register("wooden_hoe", $factory->get(290));
 		self::register("wooden_pickaxe", $factory->get(270));
@@ -569,5 +732,6 @@ final class VanillaItems{
 		self::register("yellow_bed", $factory->get(355, 4));
 		self::register("yellow_dye", $factory->get(351, 11));
 		self::register("zombie_head", $factory->get(397, 2));
+		self::register("zombie_spawn_egg", $factory->get(383, 32));
 	}
 }
