@@ -281,8 +281,8 @@ class ItemFactory{
 
 		foreach(PotionType::getAll() as $type){
 			$typeId = PotionTypeIdMap::getInstance()->toId($type);
-			$this->register(new Potion(new ItemIdentifier(ItemIds::POTION, $typeId), "Potion", $type));
-			$this->register(new SplashPotion(new ItemIdentifier(ItemIds::SPLASH_POTION, $typeId), "Splash Potion", $type));
+			$this->register(new Potion(new ItemIdentifier(ItemIds::POTION, $typeId), $type->getDisplayName() . " Potion", $type));
+			$this->register(new SplashPotion(new ItemIdentifier(ItemIds::SPLASH_POTION, $typeId), $type->getDisplayName() . " Splash Potion", $type));
 		}
 
 		foreach(TreeType::getAll() as $type){
