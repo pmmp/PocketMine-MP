@@ -105,6 +105,7 @@ use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
 use Ramsey\Uuid\UuidInterface;
+use Webmozart\PathUtil\Path;
 use function array_shift;
 use function array_sum;
 use function base64_encode;
@@ -515,7 +516,7 @@ class Server{
 	}
 
 	private function getPlayerDataPath(string $username) : string{
-		return $this->getDataPath() . '/players/' . strtolower($username) . '.dat';
+		return Path::join($this->getDataPath(), 'players', strtolower($username) . '.dat');
 	}
 
 	/**
@@ -811,33 +812,33 @@ class Server{
 		$this->logger = $logger;
 
 		try{
-			if(!file_exists($dataPath . "worlds/")){
-				mkdir($dataPath . "worlds/", 0777);
-			}
-
-			if(!file_exists($dataPath . "players/")){
-				mkdir($dataPath . "players/", 0777);
-			}
-
-			if(!file_exists($pluginPath)){
-				mkdir($pluginPath, 0777);
+			foreach([
+				$dataPath,
+				$pluginPath,
+				Path::join($dataPath, "worlds"),
+				Path::join($dataPath, "players")
+			] as $neededPath){
+				if(!file_exists($neededPath)){
+					mkdir($neededPath, 0777);
+				}
 			}
 
 			$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
 			$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
 
 			$this->logger->info("Loading server configuration");
-			if(!file_exists($this->dataPath . "pocketmine.yml")){
-				$content = file_get_contents(\pocketmine\RESOURCE_PATH . "pocketmine.yml");
+			$pocketmineYmlPath = Path::join($this->dataPath, "pocketmine.yml");
+			if(!file_exists($pocketmineYmlPath)){
+				$content = file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "pocketmine.yml"));
 				if(VersionInfo::IS_DEVELOPMENT_BUILD){
 					$content = str_replace("preferred-channel: stable", "preferred-channel: beta", $content);
 				}
-				@file_put_contents($this->dataPath . "pocketmine.yml", $content);
+				@file_put_contents($pocketmineYmlPath, $content);
 			}
 
 			$this->configGroup = new ServerConfigGroup(
-				new Config($this->dataPath . "pocketmine.yml", Config::YAML, []),
-				new Config($this->dataPath . "server.properties", Config::PROPERTIES, [
+				new Config($pocketmineYmlPath, Config::YAML, []),
+				new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES, [
 					"motd" => VersionInfo::NAME . " Server",
 					"server-port" => 19132,
 					"white-list" => false,
@@ -934,16 +935,20 @@ class Server{
 
 			$this->doTitleTick = $this->configGroup->getPropertyBool("console.title-tick", true) && Terminal::hasFormattingCodes();
 
-			$this->operators = new Config($this->dataPath . "ops.txt", Config::ENUM);
-			$this->whitelist = new Config($this->dataPath . "white-list.txt", Config::ENUM);
-			if(file_exists($this->dataPath . "banned.txt") and !file_exists($this->dataPath . "banned-players.txt")){
-				@rename($this->dataPath . "banned.txt", $this->dataPath . "banned-players.txt");
+			$this->operators = new Config(Path::join($this->dataPath, "ops.txt"), Config::ENUM);
+			$this->whitelist = new Config(Path::join($this->dataPath, "white-list.txt"), Config::ENUM);
+
+			$bannedTxt = Path::join($this->dataPath, "banned.txt");
+			$bannedPlayersTxt = Path::join($this->dataPath, "banned-players.txt");
+			if(file_exists($bannedTxt) and !file_exists($bannedPlayersTxt)){
+				@rename($bannedTxt, $bannedPlayersTxt);
 			}
-			@touch($this->dataPath . "banned-players.txt");
-			$this->banByName = new BanList($this->dataPath . "banned-players.txt");
+			@touch($bannedPlayersTxt);
+			$this->banByName = new BanList($bannedPlayersTxt);
 			$this->banByName->load();
-			@touch($this->dataPath . "banned-ips.txt");
-			$this->banByIP = new BanList($this->dataPath . "banned-ips.txt");
+			$bannedIpsTxt = Path::join($this->dataPath, "banned-ips.txt");
+			@touch($bannedIpsTxt);
+			$this->banByIP = new BanList($bannedIpsTxt);
 			$this->banByIP->load();
 
 			$this->maxPlayers = $this->configGroup->getConfigInt("max-players", 20);
@@ -985,14 +990,14 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			$this->craftingManager = CraftingManagerFromDataHelper::make(\pocketmine\RESOURCE_PATH . '/vanilla/recipes.json');
+			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\RESOURCE_PATH, "vanilla", "recipes.json"));
 
-			$this->resourceManager = new ResourcePackManager($this->getDataPath() . "resource_packs" . DIRECTORY_SEPARATOR, $this->logger);
+			$this->resourceManager = new ResourcePackManager(Path::join($this->getDataPath(), "resource_packs"), $this->logger);
 
 			$pluginGraylist = null;
-			$graylistFile = $this->dataPath . "plugin_list.yml";
+			$graylistFile = Path::join($this->dataPath, "plugin_list.yml");
 			if(!file_exists($graylistFile)){
-				copy(\pocketmine\RESOURCE_PATH . 'plugin_list.yml', $graylistFile);
+				copy(Path::join(\pocketmine\RESOURCE_PATH, 'plugin_list.yml'), $graylistFile);
 			}
 			try{
 				$pluginGraylist = PluginGraylist::fromArray(yaml_parse(file_get_contents($graylistFile)));
@@ -1001,7 +1006,7 @@ class Server{
 				$this->forceShutdown();
 				return;
 			}
-			$this->pluginManager = new PluginManager($this, $this->configGroup->getPropertyBool("plugins.legacy-data-dir", true) ? null : $this->getDataPath() . "plugin_data" . DIRECTORY_SEPARATOR, $pluginGraylist);
+			$this->pluginManager = new PluginManager($this, $this->configGroup->getPropertyBool("plugins.legacy-data-dir", true) ? null : Path::join($this->getDataPath(), "plugin_data"), $pluginGraylist);
 			$this->pluginManager->registerInterface(new PharPluginLoader($this->autoloader));
 			$this->pluginManager->registerInterface(new ScriptPluginLoader());
 
@@ -1015,7 +1020,7 @@ class Server{
 				$this->logger->warning($this->language->translateString("pocketmine.level.badDefaultFormat", [$formatName]));
 			}
 
-			$this->worldManager = new WorldManager($this, $this->dataPath . "/worlds", $providerManager);
+			$this->worldManager = new WorldManager($this, Path::join($this->dataPath, "worlds"), $providerManager);
 			$this->worldManager->setAutoSave($this->configGroup->getConfigBool("auto-save", $this->worldManager->getAutoSave()));
 			$this->worldManager->setAutoSaveInterval($this->configGroup->getPropertyInt("ticks-per.autosave", 6000));
 
@@ -1504,7 +1509,7 @@ class Server{
 			if($this->configGroup->getPropertyBool("auto-report.enabled", true)){
 				$report = true;
 
-				$stamp = $this->getDataPath() . "crashdumps/.last_crash";
+				$stamp = Path::join($this->getDataPath(), "crashdumps", ".last_crash");
 				$crashInterval = 120; //2 minutes
 				if(file_exists($stamp) and !($report = (filemtime($stamp) + $crashInterval < time()))){
 					$this->logger->debug("Not sending crashdump due to last crash less than $crashInterval seconds ago");

@@ -47,6 +47,7 @@ use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\WorldCreationOptions;
+use Webmozart\PathUtil\Path;
 use function array_map;
 use function array_values;
 use function chr;
@@ -62,7 +63,6 @@ use function strlen;
 use function substr;
 use function trim;
 use function unpack;
-use const DIRECTORY_SEPARATOR;
 use const LEVELDB_ZLIB_RAW_COMPRESSION;
 
 class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
@@ -110,7 +110,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	 * @throws \LevelDBException
 	 */
 	private static function createDB(string $path) : \LevelDB{
-		return new \LevelDB($path . "/db", [
+		return new \LevelDB(Path::join($path, "db"), [
 			"compression" => LEVELDB_ZLIB_RAW_COMPRESSION,
 			"block_size" => 64 * 1024 //64KB, big enough for most chunks
 		]);
@@ -129,7 +129,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	protected function loadLevelData() : WorldData{
-		return new BedrockWorldData($this->getPath() . DIRECTORY_SEPARATOR . "level.dat");
+		return new BedrockWorldData(Path::join($this->getPath(), "level.dat"));
 	}
 
 	public function getWorldMinY() : int{
@@ -141,14 +141,15 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	public static function isValid(string $path) : bool{
-		return file_exists($path . "/level.dat") and is_dir($path . "/db/");
+		return file_exists(Path::join($path, "level.dat")) and is_dir(Path::join($path, "db"));
 	}
 
 	public static function generate(string $path, string $name, WorldCreationOptions $options) : void{
 		self::checkForLevelDBExtension();
 
-		if(!file_exists($path . "/db")){
-			mkdir($path . "/db", 0777, true);
+		$dbPath = Path::join($path, "db");
+		if(!file_exists($dbPath)){
+			mkdir($dbPath, 0777, true);
 		}
 
 		BedrockWorldData::generate($path, $name, $options);

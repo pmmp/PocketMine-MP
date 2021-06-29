@@ -23,11 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use Webmozart\PathUtil\Path;
 use function array_change_key_case;
 use function array_keys;
-use function array_pop;
 use function array_shift;
-use function basename;
 use function count;
 use function date;
 use function explode;
@@ -152,8 +151,7 @@ class Config{
 
 		$this->type = $type;
 		if($this->type === Config::DETECT){
-			$extension = explode(".", basename($this->file));
-			$extension = strtolower(trim(array_pop($extension)));
+			$extension = strtolower(Path::getExtension($this->file));
 			if(isset(Config::$formats[$extension])){
 				$this->type = Config::$formats[$extension];
 			}else{

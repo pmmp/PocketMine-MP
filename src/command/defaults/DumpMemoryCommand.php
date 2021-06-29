@@ -25,6 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\permission\DefaultPermissionNames;
+use Webmozart\PathUtil\Path;
 use function date;
 
 class DumpMemoryCommand extends VanillaCommand{
@@ -43,7 +44,7 @@ class DumpMemoryCommand extends VanillaCommand{
 			return true;
 		}
 
-		$sender->getServer()->getMemoryManager()->dumpServerMemory($args[0] ?? ($sender->getServer()->getDataPath() . "/memory_dumps/" . date("D_M_j-H.i.s-T_Y")), 48, 80);
+		$sender->getServer()->getMemoryManager()->dumpServerMemory($args[0] ?? (Path::join($sender->getServer()->getDataPath(), "memory_dumps" . date("D_M_j-H.i.s-T_Y"))), 48, 80);
 		return true;
 	}
 }

@@ -37,6 +37,7 @@ use pocketmine\world\format\io\WorldProvider;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\GeneratorManager;
+use Webmozart\PathUtil\Path;
 use function array_keys;
 use function array_shift;
 use function assert;
@@ -49,7 +50,6 @@ use function microtime;
 use function round;
 use function sprintf;
 use function trim;
-use const DIRECTORY_SEPARATOR;
 
 class WorldManager{
 	/** @var string */
@@ -228,7 +228,7 @@ class WorldManager{
 			}
 			$this->server->getLogger()->notice("Upgrading world \"$name\" to new format. This may take a while.");
 
-			$converter = new FormatConverter($provider, $this->providerManager->getDefault(), $this->server->getDataPath() . "backups" . DIRECTORY_SEPARATOR . "worlds", $this->server->getLogger());
+			$converter = new FormatConverter($provider, $this->providerManager->getDefault(), Path::join($this->server->getDataPath(), "backups", "worlds"), $this->server->getLogger());
 			$provider = $converter->execute();
 
 			$this->server->getLogger()->notice("Upgraded world \"$name\" to new format successfully. Backed up pre-conversion world at " . $converter->getBackupPath());
@@ -300,7 +300,7 @@ class WorldManager{
 	}
 
 	private function getWorldPath(string $name) : string{
-		return $this->dataPath . "/" . $name . "/";
+		return Path::join($this->dataPath, $name) . "/"; //TODO: check if we still need the trailing dirsep (I'm a little scared to remove it)
 	}
 
 	public function isWorldGenerated(string $name) : bool{

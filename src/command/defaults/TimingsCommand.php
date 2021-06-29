@@ -34,6 +34,7 @@ use pocketmine\scheduler\BulkCurlTaskOperation;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\InternetException;
 use pocketmine\utils\InternetRequestResult;
+use Webmozart\PathUtil\Path;
 use function count;
 use function fclose;
 use function file_exists;
@@ -107,14 +108,14 @@ class TimingsCommand extends VanillaCommand{
 				$fileTimings = fopen("php://temp", "r+b");
 			}else{
 				$index = 0;
-				$timingFolder = $sender->getServer()->getDataPath() . "timings/";
+				$timingFolder = Path::join($sender->getServer()->getDataPath(), "timings");
 
 				if(!file_exists($timingFolder)){
 					mkdir($timingFolder, 0777);
 				}
-				$timings = $timingFolder . "timings.txt";
+				$timings = Path::join($timingFolder, "timings.txt");
 				while(file_exists($timings)){
-					$timings = $timingFolder . "timings" . (++$index) . ".txt";
+					$timings = Path::join($timingFolder, "timings" . (++$index) . ".txt");
 				}
 
 				$fileTimings = fopen($timings, "a+b");

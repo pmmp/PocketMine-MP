@@ -31,6 +31,7 @@ use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
+use Webmozart\PathUtil\Path;
 use function count;
 use function dirname;
 use function fclose;
@@ -86,7 +87,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$this->dataFolder = rtrim($dataFolder, "/" . DIRECTORY_SEPARATOR) . "/";
 		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
-		$this->configFile = $this->dataFolder . "config.yml";
+		$this->configFile = Path::join($this->dataFolder, "config.yml");
 
 		$prefix = $this->getDescription()->getPrefix();
 		$this->logger = new PluginLogger($server->getLogger(), $prefix !== "" ? $prefix : $this->getName());
@@ -261,7 +262,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			return false;
 		}
 
-		$out = $this->dataFolder . $filename;
+		$out = Path::join($this->dataFolder, $filename);
 		if(!file_exists(dirname($out))){
 			mkdir(dirname($out), 0755, true);
 		}
