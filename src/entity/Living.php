@@ -142,7 +142,7 @@ abstract class Living extends Entity{
 			$health = $healFTag->getValue();
 		}elseif(($healthTag = $nbt->getTag("Health")) instanceof ShortTag){
 			$health = $healthTag->getValue(); //Older versions of PocketMine-MP incorrectly saved this as a short instead of a float
-		}elseif(($healthTag = $nbt->getTag("Health")) instanceof FloatTag){
+		}elseif($healthTag instanceof FloatTag){
 			$health = $healthTag->getValue();
 		}
 
