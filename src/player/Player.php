@@ -803,7 +803,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			])
 		);
 		$ev->call();
-		if(strlen(trim((string) $ev->getJoinMessage())) > 0){
+		if($ev->getJoinMessage() !== ""){
 			$this->server->broadcastMessage($ev->getJoinMessage());
 		}
 
