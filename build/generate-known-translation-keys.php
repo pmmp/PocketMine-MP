@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\build\generate_known_translation_keys;
 
 use Webmozart\PathUtil\Path;
+use function dirname;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -65,7 +66,6 @@ namespace pocketmine\lang;
 final class KnownTranslationKeys{
 
 HEADER;
-
 
 $perms = [];
 
