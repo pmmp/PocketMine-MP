@@ -58,8 +58,4 @@ final class TranslationContainer{
 	public function getParameter(int $i) : ?string{
 		return $this->params[$i] ?? null;
 	}
-
-	public function __toString() : string{
-		return $this->getText();
-	}
 }
