@@ -567,6 +567,13 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Returns whether this item could stack with the given item (ignoring stack size and count).
+	 */
+	final public function canStackWith(Item $other) : bool{
+		return $this->equals($other, true, true);
+	}
+
+	/**
 	 * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
 	 */
 	final public function equalsExact(Item $other) : bool{

@@ -82,7 +82,7 @@ class CraftingManager{
 
 		foreach($items as $i => $item){
 			foreach($result as $otherItem){
-				if($item->equals($otherItem)){
+				if($item->canStackWith($otherItem)){
 					$otherItem->setCount($otherItem->getCount() + $item->getCount());
 					continue 2;
 				}
