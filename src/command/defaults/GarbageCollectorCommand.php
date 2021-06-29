@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -36,8 +37,8 @@ class GarbageCollectorCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.gc.description",
-			"%pocketmine.command.gc.usage"
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_GC_DESCRIPTION,
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_GC_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_GC);
 	}

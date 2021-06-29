@@ -27,6 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
@@ -39,8 +40,8 @@ class KillCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.kill.description",
-			"%pocketmine.command.kill.usage",
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_KILL_DESCRIPTION,
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_KILL_USAGE,
 			["suicide"]
 		);
 		$this->setPermission(implode(";", [DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER]));
@@ -57,7 +58,7 @@ class KillCommand extends VanillaCommand{
 
 		if(count($args) === 1){
 			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_KILL_OTHER)){
-				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
 
 				return true;
 			}
@@ -66,9 +67,9 @@ class KillCommand extends VanillaCommand{
 
 			if($player instanceof Player){
 				$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, 1000));
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.kill.successful", [$player->getName()]));
+				Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_KILL_SUCCESSFUL, [$player->getName()]));
 			}else{
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PLAYER_NOTFOUND));
 			}
 
 			return true;
@@ -76,13 +77,13 @@ class KillCommand extends VanillaCommand{
 
 		if($sender instanceof Player){
 			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_KILL_SELF)){
-				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
 
 				return true;
 			}
 
 			$sender->attack(new EntityDamageEvent($sender, EntityDamageEvent::CAUSE_SUICIDE, 1000));
-			$sender->sendMessage(new TranslationContainer("commands.kill.successful", [$sender->getName()]));
+			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_KILL_SUCCESSFUL, [$sender->getName()]));
 		}else{
 			throw new InvalidCommandSyntaxException();
 		}

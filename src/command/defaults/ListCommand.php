@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
@@ -39,8 +40,8 @@ class ListCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.list.description",
-			"%command.players.usage"
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_LIST_DESCRIPTION,
+			"%" . KnownTranslationKeys::COMMANDS_PLAYERS_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_LIST);
 	}
@@ -57,7 +58,7 @@ class ListCommand extends VanillaCommand{
 		}));
 		sort($playerNames, SORT_STRING);
 
-		$sender->sendMessage(new TranslationContainer("commands.players.list", [count($playerNames), $sender->getServer()->getMaxPlayers()]));
+		$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_PLAYERS_LIST, [count($playerNames), $sender->getServer()->getMaxPlayers()]));
 		$sender->sendMessage(implode(", ", $playerNames));
 
 		return true;

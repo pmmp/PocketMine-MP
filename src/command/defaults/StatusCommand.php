@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\Process;
 use pocketmine\utils\TextFormat;
@@ -38,8 +39,8 @@ class StatusCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.status.description",
-			"%pocketmine.command.status.usage"
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_DESCRIPTION,
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_STATUS);
 	}

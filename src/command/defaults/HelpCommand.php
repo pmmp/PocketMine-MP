@@ -25,6 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
@@ -45,8 +46,8 @@ class HelpCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.help.description",
-			"%commands.help.usage",
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_HELP_DESCRIPTION,
+			"%" . KnownTranslationKeys::COMMANDS_HELP_USAGE,
 			["?"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_HELP);
@@ -87,7 +88,7 @@ class HelpCommand extends VanillaCommand{
 			if($pageNumber < 1){
 				$pageNumber = 1;
 			}
-			$sender->sendMessage(new TranslationContainer("commands.help.header", [$pageNumber, count($commands)]));
+			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_HELP_HEADER, [$pageNumber, count($commands)]));
 			if(isset($commands[$pageNumber - 1])){
 				foreach($commands[$pageNumber - 1] as $command){
 					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getName() . ": " . TextFormat::WHITE . $command->getDescription());

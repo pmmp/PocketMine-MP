@@ -109,7 +109,7 @@ class Language{
 	}
 
 	public function getName() : string{
-		return $this->get("language.name");
+		return $this->get(KnownTranslationKeys::LANGUAGE_NAME);
 	}
 
 	public function getLang() : string{

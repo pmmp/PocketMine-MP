@@ -27,6 +27,7 @@ use pocketmine\entity\Entity;
 use pocketmine\event\world\WorldInitEvent;
 use pocketmine\event\world\WorldLoadEvent;
 use pocketmine\event\world\WorldUnloadEvent;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\player\ChunkSelector;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -149,7 +150,7 @@ class WorldManager{
 			return false;
 		}
 
-		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.unloading", [$world->getDisplayName()]));
+		$this->server->getLogger()->info($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_LEVEL_UNLOADING, [$world->getDisplayName()]));
 		try{
 			$safeSpawn = $this->defaultWorld !== null ? $this->defaultWorld->getSafeSpawn() : null;
 		}catch(WorldException $e){
@@ -193,11 +194,11 @@ class WorldManager{
 
 		$providers = $this->providerManager->getMatchingProviders($path);
 		if(count($providers) !== 1){
-			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [
+			$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_LEVEL_LOADERROR, [
 				$name,
 				count($providers) === 0 ?
-					$this->server->getLanguage()->translateString("pocketmine.level.unknownFormat") :
-					$this->server->getLanguage()->translateString("pocketmine.level.ambiguousFormat", [implode(", ", array_keys($providers))])
+					$this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_LEVEL_UNKNOWNFORMAT) :
+					$this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_LEVEL_AMBIGUOUSFORMAT, [implode(", ", array_keys($providers))])
 			]));
 			return false;
 		}
@@ -210,16 +211,16 @@ class WorldManager{
 			 */
 			$provider = new $providerClass($path);
 		}catch(CorruptedWorldException $e){
-			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Corruption detected: " . $e->getMessage()]));
+			$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_LEVEL_LOADERROR, [$name, "Corruption detected: " . $e->getMessage()]));
 			return false;
 		}catch(UnsupportedWorldFormatException $e){
-			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Unsupported format: " . $e->getMessage()]));
+			$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_LEVEL_LOADERROR, [$name, "Unsupported format: " . $e->getMessage()]));
 			return false;
 		}
 		try{
 			GeneratorManager::getInstance()->getGenerator($provider->getWorldData()->getGenerator(), true);
 		}catch(\InvalidArgumentException $e){
-			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Unknown generator \"" . $provider->getWorldData()->getGenerator() . "\""]));
+			$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_LEVEL_LOADERROR, [$name, "Unknown generator \"" . $provider->getWorldData()->getGenerator() . "\""]));
 			return false;
 		}
 		if(!($provider instanceof WritableWorldProvider)){
@@ -271,7 +272,7 @@ class WorldManager{
 		(new WorldLoadEvent($world))->call();
 
 		if($backgroundGeneration){
-			$this->server->getLogger()->notice($this->server->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
+			$this->server->getLogger()->notice($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_LEVEL_BACKGROUNDGENERATION, [$name]));
 
 			$spawnLocation = $world->getSpawnLocation();
 			$centerX = $spawnLocation->getFloorX() >> 4;

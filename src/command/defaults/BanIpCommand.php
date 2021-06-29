@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
@@ -39,8 +40,8 @@ class BanIpCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.ban.ip.description",
-			"%commands.banip.usage"
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_BAN_IP_DESCRIPTION,
+			"%" . KnownTranslationKeys::COMMANDS_BANIP_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_BAN_IP);
 	}
@@ -60,15 +61,15 @@ class BanIpCommand extends VanillaCommand{
 		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $value)){
 			$this->processIPBan($value, $sender, $reason);
 
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.banip.success", [$value]));
+			Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_BANIP_SUCCESS, [$value]));
 		}else{
 			if(($player = $sender->getServer()->getPlayerByPrefix($value)) instanceof Player){
 				$ip = $player->getNetworkSession()->getIp();
 				$this->processIPBan($ip, $sender, $reason);
 
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.banip.success.players", [$ip, $player->getName()]));
+				Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_BANIP_SUCCESS_PLAYERS, [$ip, $player->getName()]));
 			}else{
-				$sender->sendMessage(new TranslationContainer("commands.banip.invalid"));
+				$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_BANIP_INVALID));
 
 				return false;
 			}

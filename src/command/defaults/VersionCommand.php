@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\DefaultPermissionNames;
@@ -39,8 +40,8 @@ class VersionCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.version.description",
-			"%pocketmine.command.version.usage",
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_DESCRIPTION,
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_USAGE,
 			["ver", "about"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_VERSION);
@@ -52,7 +53,7 @@ class VersionCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 0){
-			$sender->sendMessage(new TranslationContainer("pocketmine.server.info.extended", [
+			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::POCKETMINE_SERVER_INFO_EXTENDED, [
 				$sender->getServer()->getName(),
 				$sender->getServer()->getPocketMineVersion(),
 				$sender->getServer()->getVersion(),
@@ -78,7 +79,7 @@ class VersionCommand extends VanillaCommand{
 			}
 
 			if(!$found){
-				$sender->sendMessage(new TranslationContainer("pocketmine.command.version.noSuchPlugin"));
+				$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_NOSUCHPLUGIN));
 			}
 		}
 

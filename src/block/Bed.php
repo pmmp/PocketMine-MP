@@ -31,6 +31,7 @@ use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Bed as ItemBed;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -135,7 +136,7 @@ class Bed extends Transparent{
 
 				return true;
 			}elseif($playerPos->distanceSquared($this->pos) > 4 and $playerPos->distanceSquared($other->pos) > 4){
-				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.tooFar"));
+				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%" . KnownTranslationKeys::TILE_BED_TOOFAR));
 				return true;
 			}
 
@@ -144,7 +145,7 @@ class Bed extends Transparent{
 			$isNight = ($time >= World::TIME_NIGHT and $time < World::TIME_SUNRISE);
 
 			if(!$isNight){
-				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.noSleep"));
+				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%" . KnownTranslationKeys::TILE_BED_NOSLEEP));
 
 				return true;
 			}
@@ -152,7 +153,7 @@ class Bed extends Transparent{
 			$b = ($this->isHeadPart() ? $this : $other);
 
 			if($b->isOccupied()){
-				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.occupied"));
+				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%" . KnownTranslationKeys::TILE_BED_OCCUPIED));
 
 				return true;
 			}

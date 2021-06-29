@@ -34,6 +34,7 @@ use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
@@ -576,7 +577,7 @@ class NetworkSession{
 		}
 
 		if($error !== null){
-			$this->disconnect($this->server->getLanguage()->translateString("pocketmine.disconnect.invalidSession", [$error]));
+			$this->disconnect($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION, [$error]));
 
 			return;
 		}

@@ -27,6 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\LegacyStringToItemParser;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\nbt\JsonNbtParser;
 use pocketmine\nbt\NbtDataException;
@@ -41,8 +42,8 @@ class GiveCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.give.description",
-			"%pocketmine.command.give.usage"
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_DESCRIPTION,
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_GIVE);
 	}

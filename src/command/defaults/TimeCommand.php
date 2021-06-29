@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
@@ -39,8 +40,8 @@ class TimeCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.time.description",
-			"%pocketmine.command.time.usage"
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_TIME_DESCRIPTION,
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_TIME_USAGE
 		);
 		$this->setPermission(implode(";", [
 			DefaultPermissionNames::COMMAND_TIME_ADD,
@@ -61,7 +62,7 @@ class TimeCommand extends VanillaCommand{
 
 		if($args[0] === "start"){
 			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_TIME_START)){
-				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
 
 				return true;
 			}
@@ -72,7 +73,7 @@ class TimeCommand extends VanillaCommand{
 			return true;
 		}elseif($args[0] === "stop"){
 			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_TIME_STOP)){
-				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
 
 				return true;
 			}
@@ -83,7 +84,7 @@ class TimeCommand extends VanillaCommand{
 			return true;
 		}elseif($args[0] === "query"){
 			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_TIME_QUERY)){
-				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
 
 				return true;
 			}
@@ -92,7 +93,7 @@ class TimeCommand extends VanillaCommand{
 			}else{
 				$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
 			}
-			$sender->sendMessage($sender->getLanguage()->translateString("commands.time.query", [$world->getTime()]));
+			$sender->sendMessage($sender->getLanguage()->translateString(KnownTranslationKeys::COMMANDS_TIME_QUERY, [$world->getTime()]));
 			return true;
 		}
 
@@ -102,7 +103,7 @@ class TimeCommand extends VanillaCommand{
 
 		if($args[0] === "set"){
 			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_TIME_SET)){
-				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
 
 				return true;
 			}
@@ -134,10 +135,10 @@ class TimeCommand extends VanillaCommand{
 			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
 				$world->setTime($value);
 			}
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.time.set", [$value]));
+			Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_TIME_SET, [$value]));
 		}elseif($args[0] === "add"){
 			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_TIME_ADD)){
-				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
 
 				return true;
 			}
@@ -146,7 +147,7 @@ class TimeCommand extends VanillaCommand{
 			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
 				$world->setTime($world->getTime() + $value);
 			}
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.time.added", [$value]));
+			Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_TIME_ADDED, [$value]));
 		}else{
 			throw new InvalidCommandSyntaxException();
 		}
