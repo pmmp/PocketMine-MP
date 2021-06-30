@@ -135,7 +135,7 @@ class NetworkSession{
 	private NetworkSessionManager $manager;
 	private string $ip;
 	private int $port;
-	private ?PlayerInfo $info = null;
+	protected ?PlayerInfo $info = null;
 	protected ?int $ping = null;
 
 	private ?PacketHandler $handler = null;
@@ -771,9 +771,12 @@ class NetworkSession{
 
 	public function syncGameMode(GameMode $mode, bool $isRollback = false) : void{
 		$this->sendDataPacket(SetPlayerGameTypePacket::create(TypeConverter::getInstance()->coreGameModeToProtocol($mode)));
-		$this->syncAdventureSettings($this->player);
-		if(!$isRollback){
-			$this->invManager->syncCreative();
+		if($this->player !== null){
+			$this->syncAdventureSettings($this->player);
+
+			if(!$isRollback){
+				$this->invManager->syncCreative();
+			}
 		}
 	}
 

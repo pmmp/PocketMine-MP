@@ -82,15 +82,7 @@ abstract class BaseInventory implements Inventory{
 			$this->viewers[$id] = $viewer;
 		}
 
-		foreach($this->listeners as $listener){
-			$listener->onContentChange($this, $oldContents);
-		}
-
-		foreach($this->getViewers() as $viewer){
-			if($viewer->isConnected()){
-				$viewer->getNetworkSession()->getInvManager()->syncContents($this);
-			}
-		}
+		$this->onContentChange($oldContents);
 	}
 
 	abstract protected function internalSetItem(int $index, Item $item) : void;

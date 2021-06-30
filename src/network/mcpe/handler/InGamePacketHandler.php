@@ -268,7 +268,7 @@ class InGamePacketHandler extends PacketHandler{
 			}
 
 			try{
-				$action = $converter->createInventoryAction($this->session->getProtocolId()$networkInventoryAction, $this->player, $this->inventoryManager);
+				$action = $converter->createInventoryAction($this->session->getProtocolId(), $networkInventoryAction, $this->player, $this->inventoryManager);
 				if($action !== null){
 					$actions[] = $action;
 				}
