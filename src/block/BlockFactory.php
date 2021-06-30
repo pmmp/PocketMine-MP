@@ -561,7 +561,6 @@ class BlockFactory{
 		//TODO: minecraft:lectern
 		//TODO: minecraft:lit_blast_furnace
 		//TODO: minecraft:lit_smoker
-		//TODO: minecraft:loom
 		//TODO: minecraft:movingBlock
 		//TODO: minecraft:observer
 		//TODO: minecraft:piston
@@ -575,12 +574,6 @@ class BlockFactory{
 		//TODO: minecraft:smoker
 		//TODO: minecraft:sticky_piston
 		//TODO: minecraft:stonecutter_block
-		//TODO: minecraft:stripped_acacia_log
-		//TODO: minecraft:stripped_birch_log
-		//TODO: minecraft:stripped_dark_oak_log
-		//TODO: minecraft:stripped_jungle_log
-		//TODO: minecraft:stripped_oak_log
-		//TODO: minecraft:stripped_spruce_log
 		//TODO: minecraft:structure_block
 		//TODO: minecraft:sweet_berry_bush
 		//TODO: minecraft:turtle_egg
