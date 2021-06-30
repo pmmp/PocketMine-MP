@@ -29,6 +29,7 @@ use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
 use pocketmine\crafting\CraftingGrid;
+use pocketmine\data\java\GameModeIdMap;
 use pocketmine\entity\animation\Animation;
 use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\CriticalHitAnimation;
@@ -79,6 +80,7 @@ use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
@@ -98,6 +100,7 @@ use pocketmine\permission\PermissibleBase;
 use pocketmine\permission\PermissibleDelegateTrait;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\ChunkListener;
 use pocketmine\world\ChunkListenerNoOpTrait;
@@ -307,7 +310,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString("pocketmine.player.logIn", [
+		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLAYER_LOGIN, [
 			TextFormat::AQUA . $this->username . TextFormat::WHITE,
 			$session->getIp(),
 			$session->getPort(),
@@ -333,7 +336,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->lastPlayed = $nbt->getLong("lastPlayed", $now);
 
 		if(!$this->server->getForceGamemode() and ($gameModeTag = $nbt->getTag("playerGameType")) instanceof IntTag){
-			$this->internalSetGameMode(GameMode::fromMagicNumber($gameModeTag->getValue() & 0x03)); //TODO: bad hack here to avoid crashes on corrupted data
+			$this->internalSetGameMode(GameModeIdMap::getInstance()->fromId($gameModeTag->getValue()) ?? GameMode::SURVIVAL()); //TODO: bad hack here to avoid crashes on corrupted data
 		}else{
 			$this->internalSetGameMode($this->server->getGamemode());
 		}
@@ -812,7 +815,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			])
 		);
 		$ev->call();
-		if(strlen(trim((string) $ev->getJoinMessage())) > 0){
+		if($ev->getJoinMessage() !== ""){
 			$this->server->broadcastMessage($ev->getJoinMessage());
 		}
 
@@ -2019,7 +2022,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->unloadChunk($chunkX, $chunkZ);
 			}
 		}
-		$this->usedChunks = [];
+		if(count($this->usedChunks) !== 0){
+			throw new AssumptionFailedError("Previous loop should have cleared this array");
+		}
 		$this->loadQueue = [];
 
 		$this->removeCurrentWindow();
@@ -2083,7 +2088,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$nbt->setInt("SpawnZ", $spawn->getFloorZ());
 		}
 
-		$nbt->setInt("playerGameType", $this->gamemode->getMagicNumber());
+		$nbt->setInt("playerGameType", GameModeIdMap::getInstance()->toId($this->gamemode));
 		$nbt->setLong("firstPlayed", $this->firstPlayed);
 		$nbt->setLong("lastPlayed", (int) floor(microtime(true) * 1000));
 

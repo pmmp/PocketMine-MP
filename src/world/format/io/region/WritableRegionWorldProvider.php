@@ -27,6 +27,7 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\WorldCreationOptions;
+use Webmozart\PathUtil\Path;
 use function file_exists;
 use function mkdir;
 
@@ -42,8 +43,9 @@ abstract class WritableRegionWorldProvider extends RegionWorldProvider implement
 			mkdir($path, 0777, true);
 		}
 
-		if(!file_exists($path . "/region")){
-			mkdir($path . "/region", 0777);
+		$regionPath = Path::join($path, "region");
+		if(!file_exists($regionPath)){
+			mkdir($regionPath, 0777);
 		}
 
 		JavaWorldData::generate($path, $name, $options, static::getPcWorldFormatVersion());

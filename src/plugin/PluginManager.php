@@ -31,6 +31,7 @@ use pocketmine\event\ListenerMethodTags;
 use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\event\RegisteredListener;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
@@ -39,6 +40,7 @@ use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
+use Webmozart\PathUtil\Path;
 use function array_intersect;
 use function array_merge;
 use function class_exists;
@@ -59,7 +61,6 @@ use function shuffle;
 use function stripos;
 use function strpos;
 use function strtolower;
-use const DIRECTORY_SEPARATOR;
 
 /**
  * Manages all the plugins
@@ -121,9 +122,9 @@ class PluginManager{
 
 	private function getDataDirectory(string $pluginPath, string $pluginName) : string{
 		if($this->pluginDataDirectory !== null){
-			return $this->pluginDataDirectory . $pluginName;
+			return Path::join($this->pluginDataDirectory, $pluginName);
 		}
-		return dirname($pluginPath) . DIRECTORY_SEPARATOR . $pluginName;
+		return Path::join(dirname($pluginPath), $pluginName);
 	}
 
 	/**
@@ -134,7 +135,7 @@ class PluginManager{
 			if($loader->canLoadPlugin($path)){
 				$description = $loader->getPluginDescription($path);
 				if($description instanceof PluginDescription){
-					$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.load", [$description->getFullName()]));
+					$this->server->getLogger()->info($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOAD, [$description->getFullName()]));
 					try{
 						$description->checkRequiredExtensions();
 					}catch(PluginException $ex){
@@ -245,7 +246,7 @@ class PluginManager{
 				try{
 					$description = $loader->getPluginDescription($file);
 				}catch(\RuntimeException $e){ //TODO: more specific exception handling
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.fileError", [$file, $directory, $e->getMessage()]));
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_FILEERROR, [$file, $directory, $e->getMessage()]));
 					$this->server->getLogger()->logException($e);
 					continue;
 				}
@@ -255,38 +256,38 @@ class PluginManager{
 
 				$name = $description->getName();
 				if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.restrictedName"]));
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [$name, "%" . KnownTranslationKeys::POCKETMINE_PLUGIN_RESTRICTEDNAME]));
 					continue;
 				}
 				if(strpos($name, " ") !== false){
-					$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.plugin.spacesDiscouraged", [$name]));
+					$this->server->getLogger()->warning($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_SPACESDISCOURAGED, [$name]));
 				}
 
 				if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.duplicateError", [$name]));
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_DUPLICATEERROR, [$name]));
 					continue;
 				}
 
 				if(!ApiVersion::isCompatible($this->server->getApiVersion(), $description->getCompatibleApis())){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [
 						$name,
-						$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleAPI", [implode(", ", $description->getCompatibleApis())])
+						$this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_INCOMPATIBLEAPI, [implode(", ", $description->getCompatibleApis())])
 					]));
 					continue;
 				}
 				$ambiguousVersions = ApiVersion::checkAmbiguousVersions($description->getCompatibleApis());
 				if(count($ambiguousVersions) > 0){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [
 						$name,
-						$this->server->getLanguage()->translateString("pocketmine.plugin.ambiguousMinAPI", [implode(", ", $ambiguousVersions)])
+						$this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_AMBIGUOUSMINAPI, [implode(", ", $ambiguousVersions)])
 					]));
 					continue;
 				}
 
 				if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+					$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [
 						$name,
-						$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleOS", [implode(", ", $description->getCompatibleOperatingSystems())])
+						$this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_INCOMPATIBLEOS, [implode(", ", $description->getCompatibleOperatingSystems())])
 					]));
 					continue;
 				}
@@ -294,16 +295,16 @@ class PluginManager{
 				if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
 					$serverMcpeProtocols = ProtocolInfo::ACCEPTED_PROTOCOL;
 					if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
-						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+						$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [
 							$name,
-							$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatibleProtocol", [implode(", ", $pluginMcpeProtocols)])
+							$this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_DISCONNECT_INCOMPATIBLEPROTOCOL, [implode(", ", $pluginMcpeProtocols)])
 						]));
 						continue;
 					}
 				}
 
 				if($this->graylist !== null and !$this->graylist->isAllowed($name)){
-					$this->server->getLogger()->notice($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+					$this->server->getLogger()->notice($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [
 						$name,
 						"Disallowed by graylist"
 					]));
@@ -332,9 +333,9 @@ class PluginManager{
 						if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
 							unset($dependencies[$name][$key]);
 						}elseif(!isset($plugins[$dependency])){
-							$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+							$this->server->getLogger()->critical($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [
 								$name,
-								$this->server->getLanguage()->translateString("%pocketmine.plugin.unknownDependency", [$dependency])
+								$this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_UNKNOWNDEPENDENCY, [$dependency])
 							]));
 							unset($plugins[$name]);
 							continue 2;
@@ -371,7 +372,7 @@ class PluginManager{
 					if(($plugin = $this->loadPlugin($file, $loaders)) instanceof Plugin){
 						$loadedPlugins[$name] = $plugin;
 					}else{
-						$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.genericLoadError", [$name]));
+						$this->server->getLogger()->critical($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_GENERICLOADERROR, [$name]));
 					}
 				}
 			}
@@ -379,7 +380,7 @@ class PluginManager{
 			if($loadedThisLoop === 0){
 				//No plugins loaded :(
 				foreach($plugins as $name => $file){
-					$this->server->getLogger()->critical($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [$name, "%pocketmine.plugin.circularDependency"]));
+					$this->server->getLogger()->critical($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [$name, "%" . KnownTranslationKeys::POCKETMINE_PLUGIN_CIRCULARDEPENDENCY]));
 				}
 				$plugins = [];
 			}
@@ -394,7 +395,7 @@ class PluginManager{
 
 	public function enablePlugin(Plugin $plugin) : void{
 		if(!$plugin->isEnabled()){
-			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.enable", [$plugin->getDescription()->getFullName()]));
+			$this->server->getLogger()->info($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_ENABLE, [$plugin->getDescription()->getFullName()]));
 
 			$plugin->getScheduler()->setEnabled(true);
 			$plugin->onEnableStateChange(true);
@@ -413,7 +414,7 @@ class PluginManager{
 
 	public function disablePlugin(Plugin $plugin) : void{
 		if($plugin->isEnabled()){
-			$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.plugin.disable", [$plugin->getDescription()->getFullName()]));
+			$this->server->getLogger()->info($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_DISABLE, [$plugin->getDescription()->getFullName()]));
 			(new PluginDisableEvent($plugin))->call();
 
 			unset($this->enabledPlugins[$plugin->getDescription()->getName()]);
@@ -438,6 +439,47 @@ class PluginManager{
 	}
 
 	/**
+	 * Returns whether the given ReflectionMethod could be used as an event handler. Used to filter methods on Listeners
+	 * when registering.
+	 *
+	 * Note: This DOES NOT validate the listener annotations; if this method returns false, the method will be ignored
+	 * completely. Invalid annotations on candidate listener methods should result in an error, so those aren't checked
+	 * here.
+	 *
+	 * @phpstan-return class-string<Event>|null
+	 */
+	private function getEventsHandledBy(\ReflectionMethod $method) : ?string{
+		if($method->isStatic() or !$method->getDeclaringClass()->implementsInterface(Listener::class)){
+			return null;
+		}
+		$tags = Utils::parseDocComment((string) $method->getDocComment());
+		if(isset($tags[ListenerMethodTags::NOT_HANDLER])){
+			return null;
+		}
+
+		$parameters = $method->getParameters();
+		if(count($parameters) !== 1){
+			return null;
+		}
+
+		$paramType = $parameters[0]->getType();
+		//isBuiltin() returns false for builtin classes ..................
+		if(!$paramType instanceof \ReflectionNamedType || $paramType->isBuiltin()){
+			return null;
+		}
+
+		/** @phpstan-var class-string $paramClass */
+		$paramClass = $paramType->getName();
+		$eventClass = new \ReflectionClass($paramClass);
+		if(!$eventClass->isSubclassOf(Event::class)){
+			return null;
+		}
+
+		/** @var \ReflectionClass<Event> $eventClass */
+		return $eventClass->getName();
+	}
+
+	/**
 	 * Registers all the events in the given Listener class
 	 *
 	 * @throws PluginException
@@ -449,56 +491,34 @@ class PluginManager{
 
 		$reflection = new \ReflectionClass(get_class($listener));
 		foreach($reflection->getMethods(\ReflectionMethod::IS_PUBLIC) as $method){
-			if(!$method->isStatic() and $method->getDeclaringClass()->implementsInterface(Listener::class)){
-				$tags = Utils::parseDocComment((string) $method->getDocComment());
-				if(isset($tags[ListenerMethodTags::NOT_HANDLER])){
-					continue;
-				}
-
-				$parameters = $method->getParameters();
-				if(count($parameters) !== 1){
-					continue;
-				}
-
-				$paramType = $parameters[0]->getType();
-				//isBuiltin() returns false for builtin classes ..................
-				if($paramType instanceof \ReflectionNamedType && !$paramType->isBuiltin()){
-					/** @phpstan-var class-string $paramClass */
-					$paramClass = $paramType->getName();
-					$eventClass = new \ReflectionClass($paramClass);
-					if(!$eventClass->isSubclassOf(Event::class)){
-						continue;
-					}
-				}else{
-					continue;
-				}
-
-				$handlerClosure = $method->getClosure($listener);
-				if($handlerClosure === null) throw new AssumptionFailedError("This should never happen");
-
-				try{
-					$priority = isset($tags[ListenerMethodTags::PRIORITY]) ? EventPriority::fromString($tags[ListenerMethodTags::PRIORITY]) : EventPriority::NORMAL;
-				}catch(\InvalidArgumentException $e){
-					throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid/unknown priority \"" . $tags[ListenerMethodTags::PRIORITY] . "\"");
-				}
-
-				$handleCancelled = false;
-				if(isset($tags[ListenerMethodTags::HANDLE_CANCELLED])){
-					switch(strtolower($tags[ListenerMethodTags::HANDLE_CANCELLED])){
-						case "true":
-						case "":
-							$handleCancelled = true;
-							break;
-						case "false":
-							break;
-						default:
-							throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid @" . ListenerMethodTags::HANDLE_CANCELLED . " value \"" . $tags[ListenerMethodTags::HANDLE_CANCELLED] . "\"");
-					}
-				}
-
-				/** @phpstan-var \ReflectionClass<Event> $eventClass */
-				$this->registerEvent($eventClass->getName(), $handlerClosure, $priority, $plugin, $handleCancelled);
+			$tags = Utils::parseDocComment((string) $method->getDocComment());
+			if(isset($tags[ListenerMethodTags::NOT_HANDLER]) || ($eventClass = $this->getEventsHandledBy($method)) === null){
+				continue;
 			}
+			$handlerClosure = $method->getClosure($listener);
+			if($handlerClosure === null) throw new AssumptionFailedError("This should never happen");
+
+			try{
+				$priority = isset($tags[ListenerMethodTags::PRIORITY]) ? EventPriority::fromString($tags[ListenerMethodTags::PRIORITY]) : EventPriority::NORMAL;
+			}catch(\InvalidArgumentException $e){
+				throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid/unknown priority \"" . $tags[ListenerMethodTags::PRIORITY] . "\"");
+			}
+
+			$handleCancelled = false;
+			if(isset($tags[ListenerMethodTags::HANDLE_CANCELLED])){
+				switch(strtolower($tags[ListenerMethodTags::HANDLE_CANCELLED])){
+					case "true":
+					case "":
+						$handleCancelled = true;
+						break;
+					case "false":
+						break;
+					default:
+						throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() declares invalid @" . ListenerMethodTags::HANDLE_CANCELLED . " value \"" . $tags[ListenerMethodTags::HANDLE_CANCELLED] . "\"");
+				}
+			}
+
+			$this->registerEvent($eventClass, $handlerClosure, $priority, $plugin, $handleCancelled);
 		}
 	}
 

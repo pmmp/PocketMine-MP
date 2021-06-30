@@ -25,6 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use function microtime;
@@ -35,8 +36,8 @@ class SaveCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.save.description",
-			"%commands.save.usage"
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_SAVE_DESCRIPTION,
+			"%" . KnownTranslationKeys::COMMANDS_SAVE_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_PERFORM);
 	}
@@ -46,7 +47,7 @@ class SaveCommand extends VanillaCommand{
 			return true;
 		}
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.save.start"));
+		Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::POCKETMINE_SAVE_START));
 		$start = microtime(true);
 
 		foreach($sender->getServer()->getOnlinePlayers() as $player){
@@ -57,7 +58,7 @@ class SaveCommand extends VanillaCommand{
 			$world->save(true);
 		}
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer("pocketmine.save.success", [round(microtime(true) - $start, 3)]));
+		Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::POCKETMINE_SAVE_SUCCESS, [round(microtime(true) - $start, 3)]));
 
 		return true;
 	}

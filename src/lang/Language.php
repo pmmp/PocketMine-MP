@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
+use Webmozart\PathUtil\Path;
 use function array_filter;
 use function array_map;
 use function explode;
@@ -51,7 +52,7 @@ class Language{
 	 */
 	public static function getLanguageList(string $path = "") : array{
 		if($path === ""){
-			$path = \pocketmine\RESOURCE_PATH . "locale/";
+			$path = Path::join(\pocketmine\RESOURCE_PATH, "locale");
 		}
 
 		if(is_dir($path)){
@@ -100,7 +101,7 @@ class Language{
 		$this->langName = strtolower($lang);
 
 		if($path === null){
-			$path = \pocketmine\RESOURCE_PATH . "locale/";
+			$path = Path::join(\pocketmine\RESOURCE_PATH, "locale");
 		}
 
 		$this->lang = self::loadLang($path, $this->langName);
@@ -108,7 +109,7 @@ class Language{
 	}
 
 	public function getName() : string{
-		return $this->get("language.name");
+		return $this->get(KnownTranslationKeys::LANGUAGE_NAME);
 	}
 
 	public function getLang() : string{
@@ -120,7 +121,7 @@ class Language{
 	 * @phpstan-return array<string, string>
 	 */
 	protected static function loadLang(string $path, string $languageCode) : array{
-		$file = $path . $languageCode . ".ini";
+		$file = Path::join($path, $languageCode . ".ini");
 		if(file_exists($file)){
 			return array_map('\stripcslashes', parse_ini_file($file, false, INI_SCANNER_RAW));
 		}

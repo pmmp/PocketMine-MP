@@ -84,7 +84,7 @@ class CraftingTransaction extends InventoryTransaction{
 			$recipeItem = array_pop($recipeItems);
 			$needCount = $recipeItem->getCount();
 			foreach($recipeItems as $i => $otherRecipeItem){
-				if($otherRecipeItem->equals($recipeItem)){ //make sure they have the same wildcards set
+				if($otherRecipeItem->canStackWith($recipeItem)){ //make sure they have the same wildcards set
 					$needCount += $otherRecipeItem->getCount();
 					unset($recipeItems[$i]);
 				}

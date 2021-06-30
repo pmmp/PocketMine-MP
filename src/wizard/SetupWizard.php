@@ -27,6 +27,8 @@ declare(strict_types=1);
  */
 namespace pocketmine\wizard;
 
+use pocketmine\data\java\GameModeIdMap;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\player\GameMode;
@@ -34,6 +36,7 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
 use pocketmine\VersionInfo;
+use Webmozart\PathUtil\Path;
 use function fgets;
 use function sleep;
 use function strtolower;
@@ -80,18 +83,18 @@ class SetupWizard{
 
 		$this->lang = new Language($lang);
 
-		$this->message($this->lang->get("language_has_been_selected"));
+		$this->message($this->lang->get(KnownTranslationKeys::LANGUAGE_HAS_BEEN_SELECTED));
 
 		if(!$this->showLicense()){
 			return false;
 		}
 
 		//this has to happen here to prevent user avoiding agreeing to license
-		$config = new Config($this->dataPath . "/server.properties", Config::PROPERTIES);
+		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
 		$config->set("language", $lang);
 		$config->save();
 
-		if(strtolower($this->getInput($this->lang->get("skip_installer"), "n", "y/N")) === "y"){
+		if(strtolower($this->getInput($this->lang->get(KnownTranslationKeys::SKIP_INSTALLER), "n", "y/N")) === "y"){
 			$this->printIpDetails();
 			return true;
 		}
@@ -110,7 +113,7 @@ class SetupWizard{
 	}
 
 	private function showLicense() : bool{
-		$this->message($this->lang->translateString("welcome_to_pocketmine", [VersionInfo::NAME]));
+		$this->message($this->lang->translateString(KnownTranslationKeys::WELCOME_TO_POCKETMINE, [VersionInfo::NAME]));
 		echo <<<LICENSE
 
   This program is free software: you can redistribute it and/or modify
@@ -120,8 +123,8 @@ class SetupWizard{
 
 LICENSE;
 		$this->writeLine();
-		if(strtolower($this->getInput($this->lang->get("accept_license"), "n", "y/N")) !== "y"){
-			$this->error($this->lang->translateString("you_have_to_accept_the_license", [VersionInfo::NAME]));
+		if(strtolower($this->getInput($this->lang->get(KnownTranslationKeys::ACCEPT_LICENSE), "n", "y/N")) !== "y"){
+			$this->error($this->lang->translateString(KnownTranslationKeys::YOU_HAVE_TO_ACCEPT_THE_LICENSE, [VersionInfo::NAME]));
 			sleep(5);
 
 			return false;
@@ -131,23 +134,23 @@ LICENSE;
 	}
 
 	private function welcome() : void{
-		$this->message($this->lang->get("setting_up_server_now"));
-		$this->message($this->lang->get("default_values_info"));
-		$this->message($this->lang->get("server_properties"));
+		$this->message($this->lang->get(KnownTranslationKeys::SETTING_UP_SERVER_NOW));
+		$this->message($this->lang->get(KnownTranslationKeys::DEFAULT_VALUES_INFO));
+		$this->message($this->lang->get(KnownTranslationKeys::SERVER_PROPERTIES));
 	}
 
 	private function generateBaseConfig() : void{
-		$config = new Config($this->dataPath . "/server.properties", Config::PROPERTIES);
+		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
 
-		$config->set("motd", ($name = $this->getInput($this->lang->get("name_your_server"), self::DEFAULT_NAME)));
+		$config->set("motd", ($name = $this->getInput($this->lang->get(KnownTranslationKeys::NAME_YOUR_SERVER), self::DEFAULT_NAME)));
 		$config->set("server-name", $name);
 
-		$this->message($this->lang->get("port_warning"));
+		$this->message($this->lang->get(KnownTranslationKeys::PORT_WARNING));
 
 		do{
-			$port = (int) $this->getInput($this->lang->get("server_port"), (string) self::DEFAULT_PORT);
+			$port = (int) $this->getInput($this->lang->get(KnownTranslationKeys::SERVER_PORT), (string) self::DEFAULT_PORT);
 			if($port <= 0 or $port > 65535){
-				$this->error($this->lang->get("invalid_port"));
+				$this->error($this->lang->get(KnownTranslationKeys::INVALID_PORT));
 				continue;
 			}
 
@@ -155,35 +158,35 @@ LICENSE;
 		}while(true);
 		$config->set("server-port", $port);
 
-		$this->message($this->lang->get("gamemode_info"));
+		$this->message($this->lang->get(KnownTranslationKeys::GAMEMODE_INFO));
 
 		do{
-			$gamemode = (int) $this->getInput($this->lang->get("default_gamemode"), (string) GameMode::SURVIVAL()->getMagicNumber());
+			$gamemode = (int) $this->getInput($this->lang->get(KnownTranslationKeys::DEFAULT_GAMEMODE), (string) GameModeIdMap::getInstance()->toId(GameMode::SURVIVAL()));
 		}while($gamemode < 0 or $gamemode > 3);
 		$config->set("gamemode", $gamemode);
 
-		$config->set("max-players", (int) $this->getInput($this->lang->get("max_players"), (string) self::DEFAULT_PLAYERS));
+		$config->set("max-players", (int) $this->getInput($this->lang->get(KnownTranslationKeys::MAX_PLAYERS), (string) self::DEFAULT_PLAYERS));
 
 		$config->save();
 	}
 
 	private function generateUserFiles() : void{
-		$this->message($this->lang->get("op_info"));
+		$this->message($this->lang->get(KnownTranslationKeys::OP_INFO));
 
-		$op = strtolower($this->getInput($this->lang->get("op_who"), ""));
+		$op = strtolower($this->getInput($this->lang->get(KnownTranslationKeys::OP_WHO), ""));
 		if($op === ""){
-			$this->error($this->lang->get("op_warning"));
+			$this->error($this->lang->get(KnownTranslationKeys::OP_WARNING));
 		}else{
-			$ops = new Config($this->dataPath . "/ops.txt", Config::ENUM);
+			$ops = new Config(Path::join($this->dataPath, "ops.txt"), Config::ENUM);
 			$ops->set($op, true);
 			$ops->save();
 		}
 
-		$this->message($this->lang->get("whitelist_info"));
+		$this->message($this->lang->get(KnownTranslationKeys::WHITELIST_INFO));
 
-		$config = new Config($this->dataPath . "/server.properties", Config::PROPERTIES);
-		if(strtolower($this->getInput($this->lang->get("whitelist_enable"), "n", "y/N")) === "y"){
-			$this->error($this->lang->get("whitelist_warning"));
+		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
+		if(strtolower($this->getInput($this->lang->get(KnownTranslationKeys::WHITELIST_ENABLE), "n", "y/N")) === "y"){
+			$this->error($this->lang->get(KnownTranslationKeys::WHITELIST_WARNING));
 			$config->set("white-list", true);
 		}else{
 			$config->set("white-list", false);
@@ -192,10 +195,10 @@ LICENSE;
 	}
 
 	private function networkFunctions() : void{
-		$config = new Config($this->dataPath . "/server.properties", Config::PROPERTIES);
-		$this->error($this->lang->get("query_warning1"));
-		$this->error($this->lang->get("query_warning2"));
-		if(strtolower($this->getInput($this->lang->get("query_disable"), "n", "y/N")) === "y"){
+		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
+		$this->error($this->lang->get(KnownTranslationKeys::QUERY_WARNING1));
+		$this->error($this->lang->get(KnownTranslationKeys::QUERY_WARNING2));
+		if(strtolower($this->getInput($this->lang->get(KnownTranslationKeys::QUERY_DISABLE), "n", "y/N")) === "y"){
 			$config->set("enable-query", false);
 		}else{
 			$config->set("enable-query", true);
@@ -205,7 +208,7 @@ LICENSE;
 	}
 
 	private function printIpDetails() : void{
-		$this->message($this->lang->get("ip_get"));
+		$this->message($this->lang->get(KnownTranslationKeys::IP_GET));
 
 		$externalIP = Internet::getIP();
 		if($externalIP === false){
@@ -217,15 +220,15 @@ LICENSE;
 			$internalIP = "unknown (" . $e->getMessage() . ")";
 		}
 
-		$this->error($this->lang->translateString("ip_warning", ["EXTERNAL_IP" => $externalIP, "INTERNAL_IP" => $internalIP]));
-		$this->error($this->lang->get("ip_confirm"));
+		$this->error($this->lang->translateString(KnownTranslationKeys::IP_WARNING, ["EXTERNAL_IP" => $externalIP, "INTERNAL_IP" => $internalIP]));
+		$this->error($this->lang->get(KnownTranslationKeys::IP_CONFIRM));
 		$this->readLine();
 	}
 
 	private function endWizard() : void{
-		$this->message($this->lang->get("you_have_finished"));
-		$this->message($this->lang->get("pocketmine_plugins"));
-		$this->message($this->lang->translateString("pocketmine_will_start", [VersionInfo::NAME]));
+		$this->message($this->lang->get(KnownTranslationKeys::YOU_HAVE_FINISHED));
+		$this->message($this->lang->get(KnownTranslationKeys::POCKETMINE_PLUGINS));
+		$this->message($this->lang->translateString(KnownTranslationKeys::POCKETMINE_WILL_START, [VersionInfo::NAME]));
 
 		$this->writeLine();
 		$this->writeLine();

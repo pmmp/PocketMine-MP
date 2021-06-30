@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use Webmozart\PathUtil\Path;
 use function explode;
 use function file_get_contents;
 use function is_array;
@@ -51,7 +52,7 @@ final class LegacyStringToItemParser{
 	private static function make() : self{
 		$result = new self(ItemFactory::getInstance());
 
-		$mappingsRaw = @file_get_contents(\pocketmine\RESOURCE_PATH . '/item_from_string_bc_map.json');
+		$mappingsRaw = @file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'item_from_string_bc_map.json'));
 		if($mappingsRaw === false) throw new AssumptionFailedError("Missing required resource file");
 
 		$mappings = json_decode($mappingsRaw, true);

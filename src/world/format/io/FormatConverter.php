@@ -27,6 +27,7 @@ use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\WorldCreationOptions;
+use Webmozart\PathUtil\Path;
 use function basename;
 use function crc32;
 use function file_exists;
@@ -71,7 +72,7 @@ class FormatConverter{
 		}
 		$nextSuffix = "";
 		do{
-			$this->backupPath = $backupPath . DIRECTORY_SEPARATOR . basename($this->oldProvider->getPath()) . $nextSuffix;
+			$this->backupPath = Path::join($backupPath, basename($this->oldProvider->getPath()) . $nextSuffix);
 			$nextSuffix = "_" . crc32(random_bytes(4));
 		}while(file_exists($this->backupPath));
 	}

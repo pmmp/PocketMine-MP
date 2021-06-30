@@ -25,6 +25,8 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\data\java\GameModeIdMap;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\GameMode;
@@ -35,8 +37,8 @@ class DefaultGamemodeCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.defaultgamemode.description",
-			"%commands.defaultgamemode.usage"
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_DEFAULTGAMEMODE_DESCRIPTION,
+			"%" . KnownTranslationKeys::COMMANDS_DEFAULTGAMEMODE_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_DEFAULTGAMEMODE);
 	}
@@ -50,15 +52,14 @@ class DefaultGamemodeCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		try{
-			$gameMode = GameMode::fromString($args[0]);
-		}catch(\InvalidArgumentException $e){
+		$gameMode = GameMode::fromString($args[0]);
+		if($gameMode === null){
 			$sender->sendMessage("Unknown game mode");
 			return true;
 		}
 
-		$sender->getServer()->getConfigGroup()->setConfigInt("gamemode", $gameMode->getMagicNumber());
-		$sender->sendMessage(new TranslationContainer("commands.defaultgamemode.success", [$gameMode->getTranslationKey()]));
+		$sender->getServer()->getConfigGroup()->setConfigInt("gamemode", GameModeIdMap::getInstance()->toId($gameMode));
+		$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_DEFAULTGAMEMODE_SUCCESS, [$gameMode->getTranslationKey()]));
 		return true;
 	}
 }

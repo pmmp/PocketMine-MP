@@ -31,6 +31,7 @@ use pocketmine\plugin\PluginManager;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use Webmozart\PathUtil\Path;
 use function base64_encode;
 use function date;
 use function error_get_last;
@@ -103,10 +104,12 @@ class CrashDump{
 	public function __construct(Server $server){
 		$this->time = microtime(true);
 		$this->server = $server;
-		if(!is_dir($this->server->getDataPath() . "crashdumps")){
-			mkdir($this->server->getDataPath() . "crashdumps");
+
+		$crashPath = Path::join($this->server->getDataPath(), "crashdumps");
+		if(!is_dir($crashPath)){
+			mkdir($crashPath);
 		}
-		$this->path = $this->server->getDataPath() . "crashdumps/" . date("D_M_j-H.i.s-T_Y", (int) $this->time) . ".log";
+		$this->path = Path::join($crashPath, date("D_M_j-H.i.s-T_Y", (int) $this->time) . ".log");
 		$fp = @fopen($this->path, "wb");
 		if(!is_resource($fp)){
 			throw new \RuntimeException("Could not create Crash Dump");
@@ -193,12 +196,12 @@ class CrashDump{
 
 		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-settings", true)){
 			$this->data["parameters"] = (array) $argv;
-			if(($serverDotProperties = @file_get_contents($this->server->getDataPath() . "server.properties")) !== false){
+			if(($serverDotProperties = @file_get_contents(Path::join($this->server->getDataPath(), "server.properties"))) !== false){
 				$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $serverDotProperties);
 			}else{
 				$this->data["server.properties"] = $serverDotProperties;
 			}
-			if(($pocketmineDotYml = @file_get_contents($this->server->getDataPath() . "pocketmine.yml")) !== false){
+			if(($pocketmineDotYml = @file_get_contents(Path::join($this->server->getDataPath(), "pocketmine.yml"))) !== false){
 				$this->data["pocketmine.yml"] = $pocketmineDotYml;
 			}else{
 				$this->data["pocketmine.yml"] = "";

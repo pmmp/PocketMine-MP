@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use Webmozart\PathUtil\Path;
 use function copy;
 use function dirname;
 use function fclose;
@@ -79,10 +80,11 @@ final class Filesystem{
 			if($objects === false) throw new AssumptionFailedError("scandir() shouldn't return false when is_dir() returns true");
 			foreach($objects as $object){
 				if($object !== "." and $object !== ".."){
-					if(is_dir($dir . "/" . $object)){
-						self::recursiveUnlink($dir . "/" . $object);
+					$fullObject = Path::join($dir, $object);
+					if(is_dir($fullObject)){
+						self::recursiveUnlink($fullObject);
 					}else{
-						unlink($dir . "/" . $object);
+						unlink($fullObject);
 					}
 				}
 			}
@@ -128,7 +130,7 @@ final class Filesystem{
 				if($object === "." || $object === ".."){
 					continue;
 				}
-				self::recursiveCopyInternal($origin . "/" . $object, $destination . "/" . $object);
+				self::recursiveCopyInternal(Path::join($origin, $object), Path::join($destination, $object));
 			}
 		}else{
 			$dirName = dirname($destination);

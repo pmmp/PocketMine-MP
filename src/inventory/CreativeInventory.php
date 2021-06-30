@@ -26,9 +26,9 @@ namespace pocketmine\inventory;
 use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\utils\SingletonTrait;
+use Webmozart\PathUtil\Path;
 use function file_get_contents;
 use function json_decode;
-use const DIRECTORY_SEPARATOR;
 
 final class CreativeInventory{
 	use SingletonTrait;
@@ -37,7 +37,7 @@ final class CreativeInventory{
 	private $creative = [];
 
 	private function __construct(){
-		$creativeItems = json_decode(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla" . DIRECTORY_SEPARATOR . "creativeitems.json"), true);
+		$creativeItems = json_decode(file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "vanilla", "creativeitems.json")), true);
 
 		foreach($creativeItems as $data){
 			$item = Item::jsonDeserialize($data);

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\utils\EnumTrait;
+use function mb_strtolower;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -34,12 +35,54 @@ use pocketmine\utils\EnumTrait;
  * @method static PluginEnableOrder STARTUP()
  */
 final class PluginEnableOrder{
-	use EnumTrait;
+	use EnumTrait {
+		__construct as Enum___construct;
+		register as Enum_register;
+	}
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("startup"),
-			new self("postworld")
+			new self("startup", ["startup"]),
+			new self("postworld", ["postworld"])
 		);
 	}
+
+	/**
+	 * @var self[]
+	 * @phpstan-var array<string, self>
+	 */
+	private static array $aliasMap = [];
+
+	protected static function register(self $member) : void{
+		self::Enum_register($member);
+		foreach($member->getAliases() as $alias){
+			self::$aliasMap[mb_strtolower($alias)] = $member;
+		}
+	}
+
+	public static function fromString(string $name) : ?self{
+		self::checkInit();
+		return self::$aliasMap[mb_strtolower($name)] ?? null;
+	}
+
+	/**
+	 * @var string[]
+	 * @phpstan-var list<string>
+	 */
+	private array $aliases;
+
+	/**
+	 * @param string[] $aliases
+	 * @phpstan-param list<string> $aliases
+	 */
+	private function __construct(string $enumName, array $aliases){
+		$this->Enum___construct($enumName);
+		$this->aliases = $aliases;
+	}
+
+	/**
+	 * @return string[]
+	 * @phpstan-return list<string>
+	 */
+	public function getAliases() : array{ return $this->aliases; }
 }

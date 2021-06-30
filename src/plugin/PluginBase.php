@@ -27,10 +27,12 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
+use Webmozart\PathUtil\Path;
 use function count;
 use function dirname;
 use function fclose;
@@ -86,7 +88,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$this->dataFolder = rtrim($dataFolder, "/" . DIRECTORY_SEPARATOR) . "/";
 		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
-		$this->configFile = $this->dataFolder . "config.yml";
+		$this->configFile = Path::join($this->dataFolder, "config.yml");
 
 		$prefix = $this->getDescription()->getPrefix();
 		$this->logger = new PluginLogger($server->getLogger(), $prefix !== "" ? $prefix : $this->getName());
@@ -166,7 +168,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 		foreach($this->getDescription()->getCommands() as $key => $data){
 			if(strpos($key, ":") !== false){
-				$this->logger->error($this->server->getLanguage()->translateString("pocketmine.plugin.commandError", [$key, $this->getDescription()->getFullName()]));
+				$this->logger->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_COMMANDERROR, [$key, $this->getDescription()->getFullName()]));
 				continue;
 			}
 			if(is_array($data)){ //TODO: error out if it isn't
@@ -183,7 +185,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 					$aliasList = [];
 					foreach($data["aliases"] as $alias){
 						if(strpos($alias, ":") !== false){
-							$this->logger->error($this->server->getLanguage()->translateString("pocketmine.plugin.aliasError", [$alias, $this->getDescription()->getFullName()]));
+							$this->logger->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_ALIASERROR, [$alias, $this->getDescription()->getFullName()]));
 							continue;
 						}
 						$aliasList[] = $alias;
@@ -261,7 +263,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			return false;
 		}
 
-		$out = $this->dataFolder . $filename;
+		$out = Path::join($this->dataFolder, $filename);
 		if(!file_exists(dirname($out))){
 			mkdir(dirname($out), 0755, true);
 		}

@@ -25,6 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use function array_slice;
@@ -36,8 +37,8 @@ class TitleCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.title.description",
-			"%commands.title.usage"
+			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_TITLE_DESCRIPTION,
+			"%" . KnownTranslationKeys::COMMANDS_TITLE_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TITLE);
 	}
@@ -53,7 +54,7 @@ class TitleCommand extends VanillaCommand{
 
 		$player = $sender->getServer()->getPlayerByPrefix($args[0]);
 		if($player === null){
-			$sender->sendMessage(new TranslationContainer("commands.generic.player.notFound"));
+			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_GENERIC_PLAYER_NOTFOUND));
 			return true;
 		}
 
@@ -96,7 +97,7 @@ class TitleCommand extends VanillaCommand{
 				throw new InvalidCommandSyntaxException();
 		}
 
-		$sender->sendMessage(new TranslationContainer("commands.title.success"));
+		$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_TITLE_SUCCESS));
 
 		return true;
 	}

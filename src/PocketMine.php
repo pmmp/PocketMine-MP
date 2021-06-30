@@ -33,6 +33,7 @@ namespace pocketmine {
 	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Timezone;
 	use pocketmine\wizard\SetupWizard;
+	use Webmozart\PathUtil\Path;
 	use function extension_loaded;
 	use function phpversion;
 	use function preg_match;
@@ -234,7 +235,7 @@ namespace pocketmine {
 			mkdir($dataPath, 0777, true);
 		}
 
-		$lockFilePath = $dataPath . '/server.lock';
+		$lockFilePath = Path::join($dataPath, 'server.lock');
 		if(($pid = Filesystem::createLockFile($lockFilePath)) !== null){
 			critical_error("Another " . VersionInfo::NAME . " instance (PID $pid) is already using this folder (" . realpath($dataPath) . ").");
 			critical_error("Please stop the other server first before running a new one.");
@@ -252,14 +253,14 @@ namespace pocketmine {
 			Terminal::init();
 		}
 
-		$logger = new MainLogger($dataPath . "server.log", Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()));
+		$logger = new MainLogger(Path::join($dataPath, "server.log"), Terminal::hasFormattingCodes(), "Server", new \DateTimeZone(Timezone::get()));
 		\GlobalLogger::set($logger);
 
 		emit_performance_warnings($logger);
 
 		$exitCode = 0;
 		do{
-			if(!file_exists($dataPath . "server.properties") and !isset($opts["no-wizard"])){
+			if(!file_exists(Path::join($dataPath, "server.properties")) and !isset($opts["no-wizard"])){
 				$installer = new SetupWizard($dataPath);
 				if(!$installer->run()){
 					$exitCode = -1;

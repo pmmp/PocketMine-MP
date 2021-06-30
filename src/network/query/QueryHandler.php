@@ -27,6 +27,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\network\query;
 
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\RawPacketHandler;
 use pocketmine\Server;
@@ -70,7 +71,7 @@ class QueryHandler implements RawPacketHandler{
 
 		$this->regenerateToken();
 		$this->lastToken = $this->token;
-		$this->logger->info($this->server->getLanguage()->translateString("pocketmine.server.query.running", [$addr, $port]));
+		$this->logger->info($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_SERVER_QUERY_RUNNING, [$addr, $port]));
 	}
 
 	public function getPattern() : string{
