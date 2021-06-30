@@ -59,14 +59,14 @@ class GiveCommand extends VanillaCommand{
 
 		$player = $sender->getServer()->getPlayerByPrefix($args[0]);
 		if($player === null){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PLAYER_NOTFOUND));
 			return true;
 		}
 
 		try{
 			$item = LegacyStringToItemParser::getInstance()->parse($args[1]);
 		}catch(\InvalidArgumentException $e){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.give.item.notFound", [$args[1]]));
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GIVE_ITEM_NOTFOUND, [$args[1]]));
 			return true;
 		}
 
@@ -81,7 +81,7 @@ class GiveCommand extends VanillaCommand{
 			try{
 				$tags = JsonNbtParser::parseJson($data);
 			}catch(NbtDataException $e){
-				$sender->sendMessage(new TranslationContainer("commands.give.tagError", [$e->getMessage()]));
+				$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_GIVE_TAGERROR, [$e->getMessage()]));
 				return true;
 			}
 
@@ -91,7 +91,7 @@ class GiveCommand extends VanillaCommand{
 		//TODO: overflow
 		$player->getInventory()->addItem(clone $item);
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer("%commands.give.success", [
+		Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_GIVE_SUCCESS, [
 			$item->getName() . " (" . $item->getId() . ":" . $item->getMeta() . ")",
 			(string) $item->getCount(),
 			$player->getName()

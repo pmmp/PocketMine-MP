@@ -30,6 +30,7 @@ use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\item\Item;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\player\Player;
 
@@ -88,7 +89,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	 * Returns the vanilla death message for the given death cause.
 	 */
 	public static function deriveMessage(string $name, ?EntityDamageEvent $deathCause) : TranslationContainer{
-		$message = "death.attack.generic";
+		$message = KnownTranslationKeys::DEATH_ATTACK_GENERIC;
 		$params = [$name];
 
 		switch($deathCause === null ? EntityDamageEvent::CAUSE_CUSTOM : $deathCause->getCause()){
@@ -96,11 +97,11 @@ class PlayerDeathEvent extends EntityDeathEvent{
 				if($deathCause instanceof EntityDamageByEntityEvent){
 					$e = $deathCause->getDamager();
 					if($e instanceof Player){
-						$message = "death.attack.player";
+						$message = KnownTranslationKeys::DEATH_ATTACK_PLAYER;
 						$params[] = $e->getDisplayName();
 						break;
 					}elseif($e instanceof Living){
-						$message = "death.attack.mob";
+						$message = KnownTranslationKeys::DEATH_ATTACK_MOB;
 						$params[] = $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName();
 						break;
 					}else{
@@ -112,10 +113,10 @@ class PlayerDeathEvent extends EntityDeathEvent{
 				if($deathCause instanceof EntityDamageByEntityEvent){
 					$e = $deathCause->getDamager();
 					if($e instanceof Player){
-						$message = "death.attack.arrow";
+						$message = KnownTranslationKeys::DEATH_ATTACK_ARROW;
 						$params[] = $e->getDisplayName();
 					}elseif($e instanceof Living){
-						$message = "death.attack.arrow";
+						$message = KnownTranslationKeys::DEATH_ATTACK_ARROW;
 						$params[] = $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName();
 						break;
 					}else{
@@ -124,45 +125,45 @@ class PlayerDeathEvent extends EntityDeathEvent{
 				}
 				break;
 			case EntityDamageEvent::CAUSE_SUICIDE:
-				$message = "death.attack.generic";
+				$message = KnownTranslationKeys::DEATH_ATTACK_GENERIC;
 				break;
 			case EntityDamageEvent::CAUSE_VOID:
-				$message = "death.attack.outOfWorld";
+				$message = KnownTranslationKeys::DEATH_ATTACK_OUTOFWORLD;
 				break;
 			case EntityDamageEvent::CAUSE_FALL:
 				if($deathCause instanceof EntityDamageEvent){
 					if($deathCause->getFinalDamage() > 2){
-						$message = "death.fell.accident.generic";
+						$message = KnownTranslationKeys::DEATH_FELL_ACCIDENT_GENERIC;
 						break;
 					}
 				}
-				$message = "death.attack.fall";
+				$message = KnownTranslationKeys::DEATH_ATTACK_FALL;
 				break;
 
 			case EntityDamageEvent::CAUSE_SUFFOCATION:
-				$message = "death.attack.inWall";
+				$message = KnownTranslationKeys::DEATH_ATTACK_INWALL;
 				break;
 
 			case EntityDamageEvent::CAUSE_LAVA:
-				$message = "death.attack.lava";
+				$message = KnownTranslationKeys::DEATH_ATTACK_LAVA;
 				break;
 
 			case EntityDamageEvent::CAUSE_FIRE:
-				$message = "death.attack.onFire";
+				$message = KnownTranslationKeys::DEATH_ATTACK_ONFIRE;
 				break;
 
 			case EntityDamageEvent::CAUSE_FIRE_TICK:
-				$message = "death.attack.inFire";
+				$message = KnownTranslationKeys::DEATH_ATTACK_INFIRE;
 				break;
 
 			case EntityDamageEvent::CAUSE_DROWNING:
-				$message = "death.attack.drown";
+				$message = KnownTranslationKeys::DEATH_ATTACK_DROWN;
 				break;
 
 			case EntityDamageEvent::CAUSE_CONTACT:
 				if($deathCause instanceof EntityDamageByBlockEvent){
 					if($deathCause->getDamager()->getId() === BlockLegacyIds::CACTUS){
-						$message = "death.attack.cactus";
+						$message = KnownTranslationKeys::DEATH_ATTACK_CACTUS;
 					}
 				}
 				break;
@@ -172,20 +173,20 @@ class PlayerDeathEvent extends EntityDeathEvent{
 				if($deathCause instanceof EntityDamageByEntityEvent){
 					$e = $deathCause->getDamager();
 					if($e instanceof Player){
-						$message = "death.attack.explosion.player";
+						$message = KnownTranslationKeys::DEATH_ATTACK_EXPLOSION_PLAYER;
 						$params[] = $e->getDisplayName();
 					}elseif($e instanceof Living){
-						$message = "death.attack.explosion.player";
+						$message = KnownTranslationKeys::DEATH_ATTACK_EXPLOSION_PLAYER;
 						$params[] = $e->getNameTag() !== "" ? $e->getNameTag() : $e->getName();
 						break;
 					}
 				}else{
-					$message = "death.attack.explosion";
+					$message = KnownTranslationKeys::DEATH_ATTACK_EXPLOSION;
 				}
 				break;
 
 			case EntityDamageEvent::CAUSE_MAGIC:
-				$message = "death.attack.magic";
+				$message = KnownTranslationKeys::DEATH_ATTACK_MAGIC;
 				break;
 
 			case EntityDamageEvent::CAUSE_CUSTOM:
