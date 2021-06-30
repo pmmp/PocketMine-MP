@@ -75,6 +75,10 @@ abstract class BaseBanner extends Transparent{
 		return false;
 	}
 
+	public function getMaxStackSize() : int{
+		return 16;
+	}
+
 	/**
 	 * @return BannerPatternLayer[]
 	 * @phpstan-return list<BannerPatternLayer>

@@ -68,6 +68,10 @@ abstract class BaseSign extends Transparent{
 		return false;
 	}
 
+	public function getMaxStackSize() : int{
+		return 16;
+	}
+
 	/**
 	 * @return AxisAlignedBB[]
 	 */
