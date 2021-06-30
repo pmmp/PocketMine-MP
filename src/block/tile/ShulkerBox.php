@@ -71,7 +71,6 @@ class ShulkerBox extends Spawnable implements Container, Nameable{
 	public function close() : void{
 		if(!$this->closed){
 			$this->inventory->removeAllViewers();
-			$this->inventory = null;
 			parent::close();
 		}
 	}

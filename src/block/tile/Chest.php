@@ -108,8 +108,6 @@ class Chest extends Spawnable implements Container, Nameable{
 				$this->doubleInventory = null;
 			}
 
-			$this->inventory = null;
-
 			parent::close();
 		}
 	}
