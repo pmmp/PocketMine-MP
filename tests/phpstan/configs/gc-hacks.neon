@@ -26,6 +26,11 @@ parameters:
 			path: ../../../src/block/tile/Hopper.php
 
 		-
+			message: "#^Property pocketmine\\\\block\\\\tile\\\\ShulkerBox\\:\\:\\$inventory \\(pocketmine\\\\block\\\\inventory\\\\ShulkerBoxInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/block/tile/ShulkerBox.php
+
+		-
 			message: "#^Property pocketmine\\\\block\\\\tile\\\\Tile\\:\\:\\$pos \\(pocketmine\\\\world\\\\Position\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/block/tile/Tile.php
