@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\bedrock\DyeColorIdMap;
@@ -42,15 +43,15 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
 
 class Bed extends Transparent{
+	use ColoredTrait;
 	use HorizontalFacingTrait;
 
 	protected bool $occupied = false;
 	protected bool $head = false;
-	protected DyeColor $color;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		parent::__construct($idInfo, $name, $breakInfo);
 		$this->color = DyeColor::RED();
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	protected function writeStateToMeta() : int{
