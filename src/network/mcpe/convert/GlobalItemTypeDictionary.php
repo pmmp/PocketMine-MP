@@ -93,12 +93,12 @@ final class GlobalItemTypeDictionary{
 		$sortPlayers = [];
 
 		foreach($players as $player){
-			$mappingProtocol = self::getDictionaryProtocol($player->getNetworkSession()->getProtocolId());
+			$dictionaryProtocol = self::getDictionaryProtocol($player->getNetworkSession()->getProtocolId());
 
-			if(isset($sortPlayers[$mappingProtocol])){
-				$sortPlayers[$mappingProtocol][] = $player;
+			if(isset($sortPlayers[$dictionaryProtocol])){
+				$sortPlayers[$dictionaryProtocol][] = $player;
 			}else{
-				$sortPlayers[$mappingProtocol] = [$player];
+				$sortPlayers[$dictionaryProtocol] = [$player];
 			}
 		}
 

@@ -958,14 +958,13 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * @param int       $protocolId
+	 * @param int       $mappingProtocol
 	 * @param Vector3[] $blocks
 	 *
 	 * @return ClientboundPacket[]
 	 */
-	public function createBlockUpdatePackets(int $protocolId, array $blocks) : array{
+	public function createBlockUpdatePackets(int $mappingProtocol, array $blocks) : array{
 		$packets = [];
-		$mappingProtocol = RuntimeBlockMapping::getMappingProtocol($protocolId);
 
 		foreach($blocks as $b){
 			if(!($b instanceof Vector3)){

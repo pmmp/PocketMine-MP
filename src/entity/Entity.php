@@ -29,6 +29,7 @@ namespace pocketmine\entity;
 use pocketmine\block\Block;
 use pocketmine\block\Water;
 use pocketmine\entity\animation\Animation;
+use pocketmine\entity\animation\DictionaryAnimation;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDespawnEvent;
 use pocketmine\event\entity\EntityMotionEvent;
@@ -44,6 +45,7 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\AddActorPacket;
 use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
@@ -1685,7 +1687,17 @@ abstract class Entity{
 	 * @param Player[]|null $targets
 	 */
 	public function broadcastAnimation(Animation $animation, ?array $targets = null) : void{
-		$this->server->broadcastPackets($targets ?? $this->getViewers(), $animation->encode());
+		$targets = $targets ?? $this->getViewers();
+
+		if($animation instanceof DictionaryAnimation){
+			foreach(GlobalItemTypeDictionary::sortByProtocol($targets) as $dictionaryProtocol => $players){
+				$animation->setDictionaryProtocol($dictionaryProtocol);
+
+				$this->server->broadcastPackets($players, $animation->encode());
+			}
+		}else{
+			$this->server->broadcastPackets($targets, $animation->encode());
+		}
 	}
 
 	/**
