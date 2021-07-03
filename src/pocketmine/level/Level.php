@@ -150,8 +150,6 @@ class Level implements ChunkManager, Metadatable{
 	/** @var Entity[] */
 	private $entities = [];
 
-	/** @var Entity[] */
-	public $updateEntities = [];
 	/** @var Tile[] */
 	public $updateTiles = [];
 	/** @var Block[][] */
@@ -851,11 +849,7 @@ class Level implements ChunkManager, Metadatable{
 		$this->timings->entityTick->startTiming();
 		//Update entities that need update
 		Timings::$tickEntityTimer->startTiming();
-		foreach($this->updateEntities as $id => $entity){
-			if($entity->isClosed()) {
-                unset($this->updateEntities[$id]);
-		        continue;
-            }
+		foreach($this->entities as $id => $entity){
 			$entity->onUpdate($currentTick);
 			if($entity->isFlaggedForDespawn())
 				$entity->close();
@@ -2583,7 +2577,6 @@ class Level implements ChunkManager, Metadatable{
 		}
 
 		unset($this->entities[$entity->getId()]);
-		unset($this->updateEntities[$entity->getId()]);
 	}
 
 	/**
