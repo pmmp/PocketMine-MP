@@ -1342,10 +1342,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function onUpdate(int $currentTick) : bool{
-		if($this->closed){
-			return false;
-		}
-
 		$tickDiff = $currentTick - $this->lastUpdate;
 		if($tickDiff <= 0){
 			if(!$this->justCreated){
@@ -1395,9 +1391,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$this->timings->stopTiming();
 
-		//if($this->isStatic())
 		return ($hasUpdate or $this->hasMovementUpdate());
-		//return !($this instanceof Player);
 	}
 
 	final public function scheduleUpdate() : void{
