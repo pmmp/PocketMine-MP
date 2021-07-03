@@ -643,9 +643,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 		$this->lastUpdate = $this->server->getTick();
 		(new EntitySpawnEvent($this))->call();
-
-		$this->scheduleUpdate();
-
 	}
 
 	public function getNameTag() : string{
@@ -950,7 +947,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 
 	public function kill() : void{
 		$this->health = 0;
-		$this->scheduleUpdate();
 	}
 
 	/**
@@ -1394,16 +1390,8 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		return ($hasUpdate or $this->hasMovementUpdate());
 	}
 
-	final public function scheduleUpdate() : void{
-		if($this->closed){
-			throw new \InvalidStateException("Cannot schedule update on garbage entity " . get_class($this));
-		}
-		$this->level->updateEntities[$this->id] = $this;
-	}
-
 	public function onNearbyBlockChange() : void{
 		$this->setForceMovementUpdate();
-		$this->scheduleUpdate();
 	}
 
 	/**
@@ -1781,7 +1769,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	public function setRotation(float $yaw, float $pitch) : void{
 		$this->yaw = $yaw;
 		$this->pitch = $pitch;
-		$this->scheduleUpdate();
 	}
 
 	public function setPositionAndRotation(Vector3 $pos, float $yaw, float $pitch) : bool{
@@ -2004,7 +1991,6 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	 */
 	public function flagForDespawn() : void{
 		$this->needsDespawn = true;
-		$this->scheduleUpdate();
 	}
 
 	public function isFlaggedForDespawn() : bool{
