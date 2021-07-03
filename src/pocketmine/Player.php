@@ -1568,8 +1568,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 */
 	protected function checkNearEntities(){
 		foreach($this->level->getNearbyEntities($this->boundingBox->expandedCopy(1, 0.5, 1), $this) as $entity){
-			$entity->scheduleUpdate();
-
 			if(!$entity->isAlive() or $entity->isFlaggedForDespawn()){
 				continue;
 			}
@@ -3919,7 +3917,6 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$this->sendAllInventories();
 
 		$this->spawnToAll();
-		$this->scheduleUpdate();
 	}
 
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
