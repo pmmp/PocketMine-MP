@@ -66,8 +66,6 @@ final class GameMode{
 		return self::$aliasMap[mb_strtolower($str)] ?? null;
 	}
 
-	/** @var int */
-	private $magicNumber;
 	/** @var string */
 	private $englishName;
 	/** @var string */
