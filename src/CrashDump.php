@@ -44,6 +44,7 @@ use function fwrite;
 use function get_loaded_extensions;
 use function implode;
 use function is_dir;
+use function is_int;
 use function is_resource;
 use function json_encode;
 use function json_last_error_msg;

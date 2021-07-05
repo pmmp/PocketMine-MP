@@ -206,11 +206,6 @@ parameters:
 			path: ../../../src/utils/Internet.php
 
 		-
-			message: "#^Parameter \\#1 \\$errorType of static method pocketmine\\\\errorhandler\\\\ErrorTypeToStringMap\\:\\:get\\(\\) expects int, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/MainLogger.php
-
-		-
 			message: "#^Part \\$errno \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
 			count: 1
 			path: ../../../src/utils/MainLogger.php
