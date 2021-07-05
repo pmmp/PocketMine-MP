@@ -38,7 +38,7 @@
       "pocketmine/spl": "^0.4.0"
    },
    "require-dev": {
-      "phpstan/phpstan": "0.12.90",
+      "phpstan/phpstan": "0.12.91",
       "phpstan/phpstan-phpunit": "^0.12.6",
       "phpstan/phpstan-strict-rules": "^0.12.2",
       "phpunit/phpunit": "^9.2"
