@@ -29,7 +29,6 @@ use pocketmine\block\utils\SkullType;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
-use pocketmine\item\Skull as ItemSkull;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -137,9 +136,6 @@ class Skull extends Flowable{
 		}
 
 		$this->facing = $face;
-		if($item instanceof ItemSkull){
-			$this->skullType = $item->getSkullType(); //TODO: the item should handle this, but this hack is currently needed because of tile mess
-		}
 		if($player !== null and $face === Facing::UP){
 			$this->rotation = ((int) floor(($player->getLocation()->getYaw() * 16 / 360) + 0.5)) & 0xf;
 		}

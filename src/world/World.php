@@ -524,7 +524,6 @@ class World implements ChunkManager{
 		$this->unregisterGenerator();
 
 		$this->provider->close();
-		$this->provider = null;
 		$this->blockCache = [];
 
 		$this->unloaded = true;

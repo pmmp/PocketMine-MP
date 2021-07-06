@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\utils\TextFormat;
 use function is_numeric;
@@ -82,11 +83,11 @@ abstract class VanillaCommand extends Command{
 
 		$v = (int) $input;
 		if($v > $max){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.num.tooBig", [$input, (string) $max]));
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_NUM_TOOBIG, [$input, (string) $max]));
 			return null;
 		}
 		if($v < $min){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.num.tooSmall", [$input, (string) $min]));
+			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_NUM_TOOSMALL, [$input, (string) $min]));
 			return null;
 		}
 

@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\utils\BannerPatternLayer;
+use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Banner as ItemBanner;
@@ -40,8 +41,7 @@ use function assert;
 use function count;
 
 abstract class BaseBanner extends Transparent{
-
-	protected DyeColor $baseColor;
+	use ColoredTrait;
 
 	/**
 	 * @var BannerPatternLayer[]
@@ -50,15 +50,15 @@ abstract class BaseBanner extends Transparent{
 	protected array $patterns = [];
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->color = DyeColor::BLACK();
 		parent::__construct($idInfo, $name, $breakInfo);
-		$this->baseColor = DyeColor::BLACK();
 	}
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		$tile = $this->pos->getWorld()->getTile($this->pos);
 		if($tile instanceof TileBanner){
-			$this->baseColor = $tile->getBaseColor();
+			$this->color = $tile->getBaseColor();
 			$this->setPatterns($tile->getPatterns());
 		}
 	}
@@ -67,7 +67,7 @@ abstract class BaseBanner extends Transparent{
 		parent::writeStateToWorld();
 		$tile = $this->pos->getWorld()->getTile($this->pos);
 		assert($tile instanceof TileBanner);
-		$tile->setBaseColor($this->baseColor);
+		$tile->setBaseColor($this->color);
 		$tile->setPatterns($this->patterns);
 	}
 
@@ -75,11 +75,8 @@ abstract class BaseBanner extends Transparent{
 		return false;
 	}
 
-	/**
-	 * TODO: interface method? this is only the BASE colour...
-	 */
-	public function getColor() : DyeColor{
-		return $this->baseColor;
+	public function getMaxStackSize() : int{
+		return 16;
 	}
 
 	/**
@@ -114,7 +111,7 @@ abstract class BaseBanner extends Transparent{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof ItemBanner){
-			$this->baseColor = $item->getColor();
+			$this->color = $item->getColor();
 			$this->setPatterns($item->getPatterns());
 		}
 
@@ -130,7 +127,7 @@ abstract class BaseBanner extends Transparent{
 	}
 
 	public function asItem() : Item{
-		return ItemFactory::getInstance()->get(ItemIds::BANNER, DyeColorIdMap::getInstance()->toInvertedId($this->baseColor));
+		return ItemFactory::getInstance()->get(ItemIds::BANNER, DyeColorIdMap::getInstance()->toInvertedId($this->color));
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

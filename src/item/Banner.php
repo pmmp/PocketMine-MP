@@ -66,10 +66,6 @@ class Banner extends ItemBlockWallOrFloor{
 		return DyeColorIdMap::getInstance()->toInvertedId($this->color);
 	}
 
-	public function getMaxStackSize() : int{
-		return 16;
-	}
-
 	/**
 	 * @return BannerPatternLayer[]
 	 * @phpstan-return list<BannerPatternLayer>

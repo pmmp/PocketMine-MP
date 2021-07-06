@@ -240,12 +240,12 @@ class ItemFactory{
 		$this->register(new Redstone(new ItemIdentifier(ItemIds::REDSTONE, 0), "Redstone"));
 		$this->register(new RottenFlesh(new ItemIdentifier(ItemIds::ROTTEN_FLESH, 0), "Rotten Flesh"));
 		$this->register(new Shears(new ItemIdentifier(ItemIds::SHEARS, 0), "Shears"));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::SIGN, 0), VanillaBlocks::OAK_SIGN(), VanillaBlocks::OAK_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::SPRUCE_SIGN, 0), VanillaBlocks::SPRUCE_SIGN(), VanillaBlocks::SPRUCE_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::BIRCH_SIGN, 0), VanillaBlocks::BIRCH_SIGN(), VanillaBlocks::BIRCH_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::JUNGLE_SIGN, 0), VanillaBlocks::JUNGLE_SIGN(), VanillaBlocks::JUNGLE_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::ACACIA_SIGN, 0), VanillaBlocks::ACACIA_SIGN(), VanillaBlocks::ACACIA_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::DARKOAK_SIGN, 0), VanillaBlocks::DARK_OAK_SIGN(), VanillaBlocks::DARK_OAK_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::SIGN, 0), VanillaBlocks::OAK_SIGN(), VanillaBlocks::OAK_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::SPRUCE_SIGN, 0), VanillaBlocks::SPRUCE_SIGN(), VanillaBlocks::SPRUCE_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::BIRCH_SIGN, 0), VanillaBlocks::BIRCH_SIGN(), VanillaBlocks::BIRCH_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::JUNGLE_SIGN, 0), VanillaBlocks::JUNGLE_SIGN(), VanillaBlocks::JUNGLE_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::ACACIA_SIGN, 0), VanillaBlocks::ACACIA_SIGN(), VanillaBlocks::ACACIA_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::DARKOAK_SIGN, 0), VanillaBlocks::DARK_OAK_SIGN(), VanillaBlocks::DARK_OAK_WALL_SIGN()));
 		$this->register(new Snowball(new ItemIdentifier(ItemIds::SNOWBALL, 0), "Snowball"));
 		$this->register(new SpiderEye(new ItemIdentifier(ItemIds::SPIDER_EYE, 0), "Spider Eye"));
 		$this->register(new Steak(new ItemIdentifier(ItemIds::STEAK, 0), "Steak"));

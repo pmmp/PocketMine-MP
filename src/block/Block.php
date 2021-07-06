@@ -440,6 +440,13 @@ class Block{
 	}
 
 	/**
+	 * Returns the maximum number of this block that can fit into a single item stack.
+	 */
+	public function getMaxStackSize() : int{
+		return 64;
+	}
+
+	/**
 	 * Returns the chance that the block will catch fire from nearby fire sources. Higher values lead to faster catching
 	 * fire.
 	 */

@@ -25,10 +25,10 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\bedrock\DyeColorIdMap;
-use pocketmine\item\Bed as ItemBed;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\lang\KnownTranslationKeys;
@@ -42,15 +42,15 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
 
 class Bed extends Transparent{
+	use ColoredTrait;
 	use HorizontalFacingTrait;
 
 	protected bool $occupied = false;
 	protected bool $head = false;
-	protected DyeColor $color;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
-		parent::__construct($idInfo, $name, $breakInfo);
 		$this->color = DyeColor::RED();
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	protected function writeStateToMeta() : int{
@@ -173,9 +173,6 @@ class Bed extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item instanceof ItemBed){ //TODO: the item should do this
-			$this->color = $item->getColor();
-		}
 		$down = $this->getSide(Facing::DOWN);
 		if(!$down->isTransparent()){
 			$this->facing = $player !== null ? $player->getHorizontalFacing() : Facing::NORTH;

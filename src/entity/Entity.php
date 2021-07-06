@@ -1600,7 +1600,6 @@ abstract class Entity{
 	 * It is expected that the object is unusable after this is called.
 	 */
 	protected function destroyCycles() : void{
-		$this->location = null;
 		$this->lastDamageCause = null;
 	}
 

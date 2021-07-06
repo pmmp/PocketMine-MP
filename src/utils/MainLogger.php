@@ -28,6 +28,7 @@ use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\thread\Thread;
 use pocketmine\thread\Worker;
 use function get_class;
+use function is_int;
 use function preg_replace;
 use function sprintf;
 use function trim;
@@ -159,10 +160,12 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		$errstr = preg_replace('/\s+/', ' ', trim($e->getMessage()));
 
 		$errno = $e->getCode();
-		try{
-			$errno = ErrorTypeToStringMap::get($errno);
-		}catch(\InvalidArgumentException $ex){
-			//pass
+		if(is_int($errno)){
+			try{
+				$errno = ErrorTypeToStringMap::get($errno);
+			}catch(\InvalidArgumentException $ex){
+				//pass
+			}
 		}
 
 		$errfile = Filesystem::cleanPath($e->getFile());
