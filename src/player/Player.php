@@ -245,8 +245,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected $flying = false;
 	/** @var bool */
 	protected bool $noClip = false;
-	/** @var bool */
-	protected bool $isWorldImmutable = false;
 
 	/** @var int|null */
 	protected $lineHeight = null;
@@ -1014,7 +1012,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->hungerManager->setEnabled($this->isSurvival());
 
 		if($this->isSpectator()){
-			$this->isWorldImmutable = true;
 			$this->setFlying(true);
 			$this->setSilent();
 			$this->onGround = false;
@@ -1023,7 +1020,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			//this is a yucky hack but we don't have any other options :(
 			$this->sendPosition($this->location, null, null, MovePlayerPacket::MODE_TELEPORT);
 		}else{
-			$this->isWorldImmutable = false;
 			if($this->isSurvival()){
 				$this->setFlying(false);
 			}
@@ -1090,21 +1086,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function isSpectator() : bool{
 		return $this->gamemode->equals(GameMode::SPECTATOR());
-	}
-
-	public function isWorldImmutable() : bool{
-		return $this->isWorldImmutable;
-	}
-
-	/**
-	 * This will ensure the player is not able to place any blocks in Survival Mode. This will be a great substitution
-	 * for {@see Player::setGamemode()} from Survival Game to Adventure Mode without taking a long time to execute.
-	 *
-	 * @param bool $worldImmutability
-	 */
-	public function setWorldImmutable(bool $worldImmutability) : void{
-		$this->isWorldImmutable = $worldImmutability;
-		$this->getNetworkSession()->syncAdventureSettings($this);
 	}
 
 	/**
@@ -1359,7 +1340,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Returns whether the player can interact with the specified position. This checks distance and direction.
 	 *
-	 * @param float $maxDiff defaults to half of the 3D diagonal width of a block
+	 * @param float   $maxDiff defaults to half of the 3D diagonal width of a block
 	 */
 	public function canInteract(Vector3 $pos, float $maxDistance, float $maxDiff = M_SQRT3 / 2) : bool{
 		$eyePos = $this->getEyePos();
@@ -1798,9 +1779,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Adds a title text to the user's screen, with an optional subtitle.
 	 *
-	 * @param int $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
-	 * @param int $stay Duration in ticks to stay on screen for
-	 * @param int $fadeOut Duration in ticks for fade-out.
+	 * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int    $stay Duration in ticks to stay on screen for
+	 * @param int    $fadeOut Duration in ticks for fade-out.
 	 */
 	public function sendTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1) : void{
 		$this->setTitleDuration($fadeIn, $stay, $fadeOut);
@@ -1999,12 +1980,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
-	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
-	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
-	 *
 	 * @internal
 	 * This method executes post-disconnect actions and cleanups.
 	 *
+	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
+	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
 	public function onPostDisconnect(string $reason, $quitMessage) : void{
 		if($this->isConnected()){
