@@ -245,6 +245,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected $flying = false;
 	/** @var bool */
 	protected bool $noClip = false;
+	/** @var bool */
+	protected bool $isWorldImmutable = false;
 
 	/** @var int|null */
 	protected $lineHeight = null;
@@ -1012,6 +1014,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->hungerManager->setEnabled($this->isSurvival());
 
 		if($this->isSpectator()){
+			$this->isWorldImmutable = true;
 			$this->setFlying(true);
 			$this->setSilent();
 			$this->onGround = false;
@@ -1020,6 +1023,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			//this is a yucky hack but we don't have any other options :(
 			$this->sendPosition($this->location, null, null, MovePlayerPacket::MODE_TELEPORT);
 		}else{
+			$this->isWorldImmutable = false;
 			if($this->isSurvival()){
 				$this->setFlying(false);
 			}
@@ -1086,6 +1090,21 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function isSpectator() : bool{
 		return $this->gamemode->equals(GameMode::SPECTATOR());
+	}
+
+	public function isWorldImmutable() : bool{
+		return $this->isWorldImmutable;
+	}
+
+	/**
+	 * This will ensure the player is not able to place any blocks in Survival Mode. This will be a great substitution
+	 * for {@see Player::setGamemode()} from Survival Game to Adventure Mode without taking a long time to execute.
+	 *
+	 * @param bool $worldImmutability
+	 */
+	public function setWorldImmutable(bool $worldImmutability) : void{
+		$this->isWorldImmutable = $worldImmutability;
+		$this->getNetworkSession()->syncAdventureSettings($this);
 	}
 
 	/**
