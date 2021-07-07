@@ -30,6 +30,7 @@ use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
+use pocketmine\event\player\AdventureSettingsChangeEvent;
 use pocketmine\event\player\SessionDisconnectEvent;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
@@ -786,7 +787,7 @@ class NetworkSession{
 	public function syncAdventureSettings(Player $for) : void{
 		$pk = new AdventureSettingsPacket();
 
-		$pk->setFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $for->isSpectator());
+		$pk->setFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $for->isWorldImmutable());
 		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->isSpectator());
 		$pk->setFlag(AdventureSettingsPacket::AUTO_JUMP, $for->hasAutoJump());
 		$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $for->getAllowFlight());
