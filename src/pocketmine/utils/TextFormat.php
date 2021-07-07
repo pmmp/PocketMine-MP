@@ -66,6 +66,7 @@ abstract class TextFormat{
 	public const LIGHT_PURPLE = TextFormat::ESCAPE . "d";
 	public const YELLOW = TextFormat::ESCAPE . "e";
 	public const WHITE = TextFormat::ESCAPE . "f";
+	public const MINECOIN_GOLD = TextFormat::ESCAPE . "g";
 
 	public const OBFUSCATED = TextFormat::ESCAPE . "k";
 	public const BOLD = TextFormat::ESCAPE . "l";
