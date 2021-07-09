@@ -36,6 +36,7 @@ class NpcRequestPacket extends DataPacket implements ServerboundPacket{
 	public const REQUEST_SET_NAME = 3;
 	public const REQUEST_SET_SKIN = 4;
 	public const REQUEST_SET_INTERACTION_TEXT = 5;
+	public const REQUEST_EXECUTE_OPENING_COMMANDS = 6;
 
 	/** @var int */
 	public $entityRuntimeId;
@@ -45,12 +46,14 @@ class NpcRequestPacket extends DataPacket implements ServerboundPacket{
 	public $commandString;
 	/** @var int */
 	public $actionType;
+	public string $sceneName;
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->entityRuntimeId = $in->getEntityRuntimeId();
 		$this->requestType = $in->getByte();
 		$this->commandString = $in->getString();
 		$this->actionType = $in->getByte();
+		$this->sceneName = $in->getString();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
@@ -58,6 +61,7 @@ class NpcRequestPacket extends DataPacket implements ServerboundPacket{
 		$out->putByte($this->requestType);
 		$out->putString($this->commandString);
 		$out->putByte($this->actionType);
+		$out->putString($this->sceneName);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{
