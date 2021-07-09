@@ -50,6 +50,8 @@ class SetTitlePacket extends DataPacket{
 	public $stayTime = 0;
 	/** @var int */
 	public $fadeOutTime = 0;
+	public string $xuid = "";
+	public string $platformOnlineId = "";
 
 	protected function decodePayload(){
 		$this->type = $this->getVarInt();
@@ -57,6 +59,8 @@ class SetTitlePacket extends DataPacket{
 		$this->fadeInTime = $this->getVarInt();
 		$this->stayTime = $this->getVarInt();
 		$this->fadeOutTime = $this->getVarInt();
+		$this->xuid = $this->getString();
+		$this->platformOnlineId = $this->getString();
 	}
 
 	protected function encodePayload(){
@@ -65,6 +69,8 @@ class SetTitlePacket extends DataPacket{
 		$this->putVarInt($this->fadeInTime);
 		$this->putVarInt($this->stayTime);
 		$this->putVarInt($this->fadeOutTime);
+		$this->putString($this->xuid);
+		$this->putString($this->platformOnlineId);
 	}
 
 	public function handle(NetworkSession $session) : bool{

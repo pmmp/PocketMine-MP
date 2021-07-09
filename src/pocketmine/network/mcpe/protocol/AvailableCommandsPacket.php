@@ -281,7 +281,7 @@ class AvailableCommandsPacket extends DataPacket{
 		$retval = new CommandData();
 		$retval->commandName = $this->getString();
 		$retval->commandDescription = $this->getString();
-		$retval->flags = $this->getByte();
+		$retval->flags = $this->getLShort();
 		$retval->permission = $this->getByte();
 		$retval->aliases = $enums[$this->getLInt()] ?? null;
 
@@ -324,7 +324,7 @@ class AvailableCommandsPacket extends DataPacket{
 	protected function putCommandData(CommandData $data, array $enumIndexes, array $postfixIndexes) : void{
 		$this->putString($data->commandName);
 		$this->putString($data->commandDescription);
-		$this->putByte($data->flags);
+		$this->putLShort($data->flags);
 		$this->putByte($data->permission);
 
 		if($data->aliases !== null){

@@ -198,6 +198,8 @@ class PacketPool{
 		static::registerPacket(new SyncActorPropertyPacket());
 		static::registerPacket(new AddVolumeEntityPacket());
 		static::registerPacket(new RemoveVolumeEntityPacket());
+		static::registerPacket(new SimulationTypePacket());
+		static::registerPacket(new NpcDialoguePacket());
 	}
 
 	/**
