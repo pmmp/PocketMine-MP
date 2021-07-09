@@ -351,6 +351,8 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
+		$this->player->selectHotbarSlot($data->getHotbarSlot());
+
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
 				//TODO: start hack for client spam bug
@@ -435,6 +437,8 @@ class InGamePacketHandler extends PacketHandler{
 			return false;
 		}
 
+		$this->player->selectHotbarSlot($data->getHotbarSlot());
+
 		//TODO: use transactiondata for rollbacks here
 		switch($data->getActionType()){
 			case UseItemOnEntityTransactionData::ACTION_INTERACT:
@@ -453,6 +457,8 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data) : bool{
+		$this->player->selectHotbarSlot($data->getHotbarSlot());
+
 		//TODO: use transactiondata for rollbacks here (resending entire inventory is very wasteful)
 		switch($data->getActionType()){
 			case ReleaseItemTransactionData::ACTION_RELEASE:
