@@ -680,7 +680,7 @@ class Item implements \JsonSerializable{
 		}elseif($idTag instanceof StringTag){ //PC item save format
 			try{
 				$item = LegacyStringToItemParser::getInstance()->parse($idTag->getValue() . ":$meta");
-			}catch(\InvalidArgumentException $e){
+			}catch(LegacyStringToItemParserException $e){
 				//TODO: improve error handling
 				return ItemFactory::air();
 			}
