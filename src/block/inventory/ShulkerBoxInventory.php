@@ -28,8 +28,8 @@ use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
 use pocketmine\world\Position;
-use pocketmine\world\sound\ShulkerCloseSound;
-use pocketmine\world\sound\ShulkerOpenSound;
+use pocketmine\world\sound\ShulkerBoxCloseSound;
+use pocketmine\world\sound\ShulkerBoxOpenSound;
 use pocketmine\world\sound\Sound;
 
 class ShulkerBoxInventory extends SimpleInventory implements BlockInventory{
@@ -41,11 +41,11 @@ class ShulkerBoxInventory extends SimpleInventory implements BlockInventory{
 	}
 
 	protected function getOpenSound() : Sound{
-		return new ShulkerOpenSound();
+		return new ShulkerBoxOpenSound();
 	}
 
 	protected function getCloseSound() : Sound{
-		return new ShulkerCloseSound();
+		return new ShulkerBoxCloseSound();
 	}
 
 	public function canAddItem(Item $item) : bool{

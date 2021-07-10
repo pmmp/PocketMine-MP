@@ -26,9 +26,9 @@ namespace pocketmine\world\sound;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
-class ShulkerOpenSound implements Sound{
+class ShulkerBoxCloseSound implements Sound{
 
 	public function encode(?Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_SHULKERBOX_OPEN, $pos)];
+		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_SHULKERBOX_CLOSED, $pos)];
 	}
 }
