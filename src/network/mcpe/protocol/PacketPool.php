@@ -205,6 +205,8 @@ class PacketPool{
 		$this->registerPacket(new SyncActorPropertyPacket());
 		$this->registerPacket(new AddVolumeEntityPacket());
 		$this->registerPacket(new RemoveVolumeEntityPacket());
+		$this->registerPacket(new SimulationTypePacket());
+		$this->registerPacket(new NpcDialoguePacket());
 	}
 
 	public function registerPacket(Packet $packet) : void{

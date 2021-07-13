@@ -109,6 +109,7 @@ use pocketmine\network\mcpe\protocol\MultiplayerSettingsPacket;
 use pocketmine\network\mcpe\protocol\NetworkChunkPublisherUpdatePacket;
 use pocketmine\network\mcpe\protocol\NetworkSettingsPacket;
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
+use pocketmine\network\mcpe\protocol\NpcDialoguePacket;
 use pocketmine\network\mcpe\protocol\NpcRequestPacket;
 use pocketmine\network\mcpe\protocol\OnScreenTextureAnimationPacket;
 use pocketmine\network\mcpe\protocol\PacketHandlerInterface;
@@ -166,6 +167,7 @@ use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\ShowProfilePacket;
 use pocketmine\network\mcpe\protocol\ShowStoreOfferPacket;
 use pocketmine\network\mcpe\protocol\SimpleEventPacket;
+use pocketmine\network\mcpe\protocol\SimulationTypePacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\SpawnParticleEffectPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
@@ -844,6 +846,14 @@ abstract class PacketHandler implements PacketHandlerInterface{
 	}
 
 	public function handleRemoveVolumeEntity(RemoveVolumeEntityPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleSimulationType(SimulationTypePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleNpcDialogue(NpcDialoguePacket $packet) : bool{
 		return false;
 	}
 }
