@@ -28,7 +28,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class EnchantParticle implements Particle{
+class EnchantParticle extends ProtocolParticle{
 
 	/** @var Color */
 	private $color;
@@ -38,6 +38,6 @@ class EnchantParticle implements Particle{
 	}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::standardParticle(ParticleIds::MOB_SPELL, $this->color->toARGB(), $pos)];
+		return [LevelEventPacket::standardParticle(ParticleIds::MOB_SPELL, $this->color->toARGB(), $pos, $this->particleProtocol)];
 	}
 }

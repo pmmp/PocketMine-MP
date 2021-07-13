@@ -288,7 +288,11 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	protected function getCommandData(array $enums, array $postfixes, PacketSerializer $in) : CommandData{
 		$name = $in->getString();
 		$description = $in->getString();
-		$flags = $in->getLShort();
+		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_10){
+			$flags = $in->getLShort();
+		}else{
+			$flags = $in->getByte();
+		}
 		$permission = $in->getByte();
 		$aliases = $enums[$in->getLInt()] ?? null;
 		$overloads = [];
@@ -332,7 +336,11 @@ class AvailableCommandsPacket extends DataPacket implements ClientboundPacket{
 	protected function putCommandData(CommandData $data, array $enumIndexes, array $postfixIndexes, PacketSerializer $out) : void{
 		$out->putString($data->name);
 		$out->putString($data->description);
-		$out->putLShort($data->flags);
+		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_17_10){
+			$out->putLShort($data->flags);
+		}else{
+			$out->putByte($data->flags);
+		}
 		$out->putByte($data->permission);
 
 		if($data->aliases !== null){

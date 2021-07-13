@@ -167,7 +167,11 @@ class EntityMetadataCollection{
 			$newProperties = [];
 
 			foreach ($properties as $key => $property){
-				$newProperties[$key >= EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS ? $key - 1 : $key] = $property;
+				if($key >= EntityMetadataProperties::AREA_EFFECT_CLOUD_RADIUS){
+					--$key;
+				}
+
+				$newProperties[$key] = $property;
 			}
 
 			return $newProperties;

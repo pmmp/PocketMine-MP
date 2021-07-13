@@ -27,7 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class InkParticle implements Particle{
+class InkParticle extends ProtocolParticle{
 	/** @var int */
 	private $scale;
 
@@ -36,6 +36,6 @@ class InkParticle implements Particle{
 	}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::standardParticle(ParticleIds::INK, $this->scale, $pos)];
+		return [LevelEventPacket::standardParticle(ParticleIds::INK, $this->scale, $pos, $this->particleProtocol)];
 	}
 }

@@ -28,7 +28,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class ItemBreakParticle implements Particle{
+class ItemBreakParticle extends ProtocolParticle{
 	/** @var Item */
 	private $item;
 
@@ -37,6 +37,6 @@ class ItemBreakParticle implements Particle{
 	}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::standardParticle(ParticleIds::ITEM_BREAK, ($this->item->getId() << 16) | $this->item->getMeta(), $pos)];
+		return [LevelEventPacket::standardParticle(ParticleIds::ITEM_BREAK, ($this->item->getId() << 16) | $this->item->getMeta(), $pos, $this->particleProtocol)];
 	}
 }

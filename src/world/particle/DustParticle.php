@@ -28,7 +28,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
-class DustParticle implements Particle{
+class DustParticle extends ProtocolParticle{
 	/** @var Color */
 	private $color;
 
@@ -37,6 +37,6 @@ class DustParticle implements Particle{
 	}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::standardParticle(ParticleIds::DUST, $this->color->toARGB(), $pos)];
+		return [LevelEventPacket::standardParticle(ParticleIds::DUST, $this->color->toARGB(), $pos, $this->particleProtocol)];
 	}
 }

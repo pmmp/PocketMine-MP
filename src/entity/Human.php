@@ -272,7 +272,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 		$this->offHandInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(function() : void{
 			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->onMobOffHandItemChange($this);
+				if($viewer->isConnected()){
+					$viewer->getNetworkSession()->onMobOffHandItemChange($this);
+				}
 			}
 		}));
 

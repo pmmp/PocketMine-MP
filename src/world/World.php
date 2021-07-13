@@ -89,6 +89,7 @@ use pocketmine\world\light\SkyLightUpdate;
 use pocketmine\world\particle\MappingParticle;
 use pocketmine\world\particle\BlockBreakParticle;
 use pocketmine\world\particle\Particle;
+use pocketmine\world\particle\ProtocolParticle;
 use pocketmine\world\sound\BlockPlaceSound;
 use pocketmine\world\sound\MappingSound;
 use pocketmine\world\sound\Sound;
@@ -589,6 +590,23 @@ class World implements ChunkManager{
 
 			foreach(RuntimeBlockMapping::sortByProtocol($players) as $mappingProtocol => $pl){
 				$particle->setMappingProtocol($mappingProtocol);
+
+				$pk = $particle->encode($pos);
+
+				if(count($pk) > 0){
+					$this->server->broadcastPackets($pl, $pk);
+				}
+			}
+		}elseif($particle instanceof ProtocolParticle){
+			if($players === null){
+				$chunkX = $pos->getFloorX() >> 4;
+				$chunkZ = $pos->getFloorZ() >> 4;
+
+				$players = $this->getChunkPlayers($chunkX, $chunkZ);
+			}
+
+			foreach(ProtocolParticle::sortByProtocol($players) as $particleProtocol => $pl){
+				$particle->setParticleProtocol($particleProtocol);
 
 				$pk = $particle->encode($pos);
 
