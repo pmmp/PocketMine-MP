@@ -23,6 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
-abstract class AbstractWorldProvider implements WorldProvider{
+/**
+ * @phpstan-type FromPath \Closure(string $path) : WorldProvider
+ */
+class ReadOnlyWorldProviderManagerEntry extends WorldProviderManagerEntry{
 
+	/** @phpstan-var FromPath */
+	private \Closure $fromPath;
+
+	/** @phpstan-param FromPath $fromPath */
+	public function __construct(\Closure $isValid, \Closure $fromPath){
+		parent::__construct($isValid);
+		$this->fromPath = $fromPath;
+	}
+
+	public function fromPath(string $path) : WorldProvider{ return ($this->fromPath)($path); }
 }

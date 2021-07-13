@@ -99,7 +99,7 @@ use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\world\format\io\WorldProviderManager;
-use pocketmine\world\format\io\WritableWorldProvider;
+use pocketmine\world\format\io\WritableWorldProviderManagerEntry;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
@@ -121,7 +121,6 @@ use function filemtime;
 use function get_class;
 use function implode;
 use function ini_set;
-use function is_a;
 use function is_array;
 use function is_string;
 use function json_decode;
@@ -1014,7 +1013,7 @@ class Server{
 			$providerManager = new WorldProviderManager();
 			if(
 				($format = $providerManager->getProviderByName($formatName = $this->configGroup->getPropertyString("level-settings.default-format", ""))) !== null and
-				is_a($format, WritableWorldProvider::class, true)
+				$format instanceof WritableWorldProviderManagerEntry
 			){
 				$providerManager->setDefault($format);
 			}elseif($formatName !== ""){
