@@ -45,7 +45,6 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	public $resourcePackEntries = [];
 
 	/**
-	 * @param bool                    $forceServerPacks
 	 * @param ResourcePackInfoEntry[] $resourcePacks
 	 * @param BehaviorPackInfoEntry[] $behaviorPacks
 	 *
