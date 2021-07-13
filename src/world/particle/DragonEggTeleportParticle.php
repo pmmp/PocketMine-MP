@@ -27,7 +27,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use function abs;
 
-class DragonEggTeleportParticle extends ProtocolParticle{
+class DragonEggTeleportParticle implements Particle{
 
 	/** @var int */
 	private $xDiff;

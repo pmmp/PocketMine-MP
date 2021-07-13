@@ -69,7 +69,7 @@ final class ItemStackResponseSlotInfo{
 		$itemStackId = $in->readGenericTypeNetworkId();
 		if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_200){
 			$customName = $in->getString();
-			if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_210_57){
+			if($in->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_210){
 				$durabilityCorrection = $in->getVarInt();
 			}
 		}
@@ -83,7 +83,7 @@ final class ItemStackResponseSlotInfo{
 		$out->writeGenericTypeNetworkId($this->itemStackId);
 		if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_200){
 			$out->putString($this->customName);
-			if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_210_57){
+			if($out->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_210){
 				$out->putVarInt($this->durabilityCorrection);
 			}
 		}
