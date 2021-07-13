@@ -34,7 +34,6 @@ use pocketmine\timings\Timings;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\io\FormatConverter;
-use pocketmine\world\format\io\WorldProvider;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\GeneratorManager;
@@ -205,11 +204,7 @@ class WorldManager{
 		$providerClass = array_shift($providers);
 
 		try{
-			/**
-			 * @var WorldProvider $provider
-			 * @see WorldProvider::__construct()
-			 */
-			$provider = new $providerClass($path);
+			$provider = $providerClass->fromPath($path);
 		}catch(CorruptedWorldException $e){
 			$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_LEVEL_LOADERROR, [$name, "Corruption detected: " . $e->getMessage()]));
 			return false;
@@ -255,14 +250,12 @@ class WorldManager{
 			return false;
 		}
 
-		$providerClass = $this->providerManager->getDefault();
+		$providerEntry = $this->providerManager->getDefault();
 
 		$path = $this->getWorldPath($name);
-		/** @var WritableWorldProvider $providerClass */
-		$providerClass::generate($path, $name, $options);
+		$providerEntry->generate($path, $name, $options);
 
-		/** @see WritableWorldProvider::__construct() */
-		$world = new World($this->server, $name, new $providerClass($path), $this->server->getAsyncPool());
+		$world = new World($this->server, $name, $providerEntry->fromPath($path), $this->server->getAsyncPool());
 		$this->worlds[$world->getId()] = $world;
 
 		$world->setAutoSave($this->autoSave);

@@ -21,8 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\format\io;
+namespace pocketmine\item;
 
-interface InterfaceWorldProvider extends WorldProvider{
+final class LegacyStringToItemParserException extends \UnexpectedValueException{
 
 }

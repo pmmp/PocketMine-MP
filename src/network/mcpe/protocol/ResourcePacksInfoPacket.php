@@ -34,9 +34,11 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACKS_INFO_PACKET;
 
 	/** @var bool */
-	public $mustAccept = false; //if true, forces client to use selected resource packs
+	public $mustAccept = false; //if true, forces client to choose between accepting packs or being disconnected
 	/** @var bool */
 	public $hasScripts = false; //if true, causes disconnect for any platform that doesn't support scripts yet
+
+	public bool $forceServerPacks = false;
 	/** @var BehaviorPackInfoEntry[] */
 	public $behaviorPackEntries = [];
 	/** @var ResourcePackInfoEntry[] */
@@ -48,18 +50,20 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	 *
 	 * @return ResourcePacksInfoPacket
 	 */
-	public static function create(array $resourcePacks, array $behaviorPacks, bool $mustAccept, bool $hasScripts = false) : self{
+	public static function create(array $resourcePacks, array $behaviorPacks, bool $mustAccept, bool $hasScripts, bool $forceServerPacks) : self{
 		$result = new self;
 		$result->mustAccept = $mustAccept;
 		$result->hasScripts = $hasScripts;
 		$result->resourcePackEntries = $resourcePacks;
 		$result->behaviorPackEntries = $behaviorPacks;
+		$result->forceServerPacks = $forceServerPacks;
 		return $result;
 	}
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->mustAccept = $in->getBool();
 		$this->hasScripts = $in->getBool();
+		$this->forceServerPacks = $in->getBool();
 		$behaviorPackCount = $in->getLShort();
 		while($behaviorPackCount-- > 0){
 			$this->behaviorPackEntries[] = BehaviorPackInfoEntry::read($in);
@@ -74,6 +78,7 @@ class ResourcePacksInfoPacket extends DataPacket implements ClientboundPacket{
 	protected function encodePayload(PacketSerializer $out) : void{
 		$out->putBool($this->mustAccept);
 		$out->putBool($this->hasScripts);
+		$out->putBool($this->forceServerPacks);
 		$out->putLShort(count($this->behaviorPackEntries));
 		foreach($this->behaviorPackEntries as $entry){
 			$entry->write($out);

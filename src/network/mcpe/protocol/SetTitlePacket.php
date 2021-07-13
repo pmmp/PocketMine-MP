@@ -50,6 +50,8 @@ class SetTitlePacket extends DataPacket implements ClientboundPacket{
 	public $stayTime = 0;
 	/** @var int */
 	public $fadeOutTime = 0;
+	public string $xuid = "";
+	public string $platformOnlineId = "";
 
 	protected function decodePayload(PacketSerializer $in) : void{
 		$this->type = $in->getVarInt();
@@ -57,6 +59,8 @@ class SetTitlePacket extends DataPacket implements ClientboundPacket{
 		$this->fadeInTime = $in->getVarInt();
 		$this->stayTime = $in->getVarInt();
 		$this->fadeOutTime = $in->getVarInt();
+		$this->xuid = $in->getString();
+		$this->platformOnlineId = $in->getString();
 	}
 
 	protected function encodePayload(PacketSerializer $out) : void{
@@ -65,6 +69,8 @@ class SetTitlePacket extends DataPacket implements ClientboundPacket{
 		$out->putVarInt($this->fadeInTime);
 		$out->putVarInt($this->stayTime);
 		$out->putVarInt($this->fadeOutTime);
+		$out->putString($this->xuid);
+		$out->putString($this->platformOnlineId);
 	}
 
 	public function handle(PacketHandlerInterface $handler) : bool{

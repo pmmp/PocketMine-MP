@@ -25,6 +25,7 @@ namespace pocketmine\world\generator;
 
 use pocketmine\block\VanillaBlocks;
 use pocketmine\item\LegacyStringToItemParser;
+use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\object\OreType;
@@ -101,7 +102,7 @@ class Flat extends Generator{
 			$cnt = $matches[1] !== "" ? (int) $matches[1] : 1;
 			try{
 				$b = $itemParser->parse($matches[2])->getBlock();
-			}catch(\InvalidArgumentException $e){
+			}catch(LegacyStringToItemParserException $e){
 				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\": " . $e->getMessage(), 0, $e);
 			}
 			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){

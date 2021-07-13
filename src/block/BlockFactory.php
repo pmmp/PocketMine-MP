@@ -44,6 +44,7 @@ use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\tile\Jukebox as TileJukebox;
 use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\Note as TileNote;
+use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
@@ -316,6 +317,8 @@ class BlockFactory{
 		$this->register(new SnowLayer(new BID(Ids::SNOW_LAYER, 0), "Snow Layer", new BlockBreakInfo(0.1, BlockToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new SoulSand(new BID(Ids::SOUL_SAND, 0), "Soul Sand", new BlockBreakInfo(0.5, BlockToolType::SHOVEL)));
 		$this->register(new Sponge(new BID(Ids::SPONGE, 0), "Sponge", new BlockBreakInfo(0.6, BlockToolType::HOE)));
+		$shulkerBoxBreakInfo = new BlockBreakInfo(2, BlockToolType::PICKAXE);
+		$this->register(new ShulkerBox(new BID(Ids::UNDYED_SHULKER_BOX, 0, null, TileShulkerBox::class), "Shulker Box", $shulkerBoxBreakInfo));
 
 		$stoneBreakInfo = new BlockBreakInfo(1.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
 		$this->register($stone = new class(new BID(Ids::STONE, Meta::STONE_NORMAL), "Stone", $stoneBreakInfo) extends Opaque{
@@ -473,6 +476,7 @@ class BlockFactory{
 			};
 			$this->register(new GlazedTerracotta(BlockLegacyIdHelper::getGlazedTerracottaIdentifier($color), $coloredName("Glazed Terracotta"), $glazedTerracottaBreakInfo));
 		}
+		$this->register(new DyedShulkerBox(new BID(Ids::SHULKER_BOX, 0, null, TileShulkerBox::class), "Dyed Shulker Box", $shulkerBoxBreakInfo));
 		$this->register(new StainedGlass(new BID(Ids::STAINED_GLASS, 0), "Stained Glass", $glassBreakInfo));
 		$this->register(new StainedGlassPane(new BID(Ids::STAINED_GLASS_PANE, 0), "Stained Glass Pane", $glassBreakInfo));
 		$this->register(new StainedHardenedClay(new BID(Ids::STAINED_CLAY, 0), "Stained Clay", $hardenedClayBreakInfo));
@@ -569,7 +573,6 @@ class BlockFactory{
 		//TODO: minecraft:repeating_command_block
 		//TODO: minecraft:scaffolding
 		//TODO: minecraft:seagrass
-		//TODO: minecraft:shulker_box
 		//TODO: minecraft:slime
 		//TODO: minecraft:smithing_table
 		//TODO: minecraft:smoker
@@ -578,7 +581,6 @@ class BlockFactory{
 		//TODO: minecraft:structure_block
 		//TODO: minecraft:sweet_berry_bush
 		//TODO: minecraft:turtle_egg
-		//TODO: minecraft:undyed_shulker_box
 		//endregion
 
 		//region --- auto-generated TODOs for bedrock-1.13.0 ---

@@ -87,7 +87,7 @@ final class LegacyStringToItemParser{
 	 * - `minecraft:string`
 	 * - `351:4 (lapis lazuli ID:meta)`
 	 *
-	 * @throws \InvalidArgumentException if the given string cannot be parsed as an item identifier
+	 * @throws LegacyStringToItemParserException if the given string cannot be parsed as an item identifier
 	 */
 	public function parse(string $input) : Item{
 		$key = $this->reprocess($input);
@@ -98,7 +98,7 @@ final class LegacyStringToItemParser{
 		}elseif(is_numeric($b[1])){
 			$meta = (int) $b[1];
 		}else{
-			throw new \InvalidArgumentException("Unable to parse \"" . $b[1] . "\" from \"" . $input . "\" as a valid meta value");
+			throw new LegacyStringToItemParserException("Unable to parse \"" . $b[1] . "\" from \"" . $input . "\" as a valid meta value");
 		}
 
 		if(is_numeric($b[0])){
@@ -106,7 +106,7 @@ final class LegacyStringToItemParser{
 		}elseif(isset($this->map[strtolower($b[0])])){
 			$item = $this->itemFactory->get($this->map[strtolower($b[0])], $meta);
 		}else{
-			throw new \InvalidArgumentException("Unable to resolve \"" . $input . "\" to a valid item");
+			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
 		}
 
 		return $item;

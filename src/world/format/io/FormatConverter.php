@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\world\format\io;
 
 use pocketmine\utils\Filesystem;
-use pocketmine\utils\Utils;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\WorldCreationOptions;
 use Webmozart\PathUtil\Path;
@@ -44,7 +43,7 @@ class FormatConverter{
 
 	/** @var WorldProvider */
 	private $oldProvider;
-	/** @var WritableWorldProvider|string */
+	/** @var WritableWorldProviderManagerEntry */
 	private $newProvider;
 
 	/** @var string */
@@ -56,13 +55,8 @@ class FormatConverter{
 	/** @var int */
 	private $chunksPerProgressUpdate;
 
-	/**
-	 * @phpstan-template TNewProvider of WritableWorldProvider
-	 * @phpstan-param class-string<TNewProvider> $newProvider
-	 */
-	public function __construct(WorldProvider $oldProvider, string $newProvider, string $backupPath, \Logger $logger, int $chunksPerProgressUpdate = 256){
+	public function __construct(WorldProvider $oldProvider, WritableWorldProviderManagerEntry $newProvider, string $backupPath, \Logger $logger, int $chunksPerProgressUpdate = 256){
 		$this->oldProvider = $oldProvider;
-		Utils::testValidInstance($newProvider, WritableWorldProvider::class);
 		$this->newProvider = $newProvider;
 		$this->logger = new \PrefixedLogger($logger, "World Converter: " . $this->oldProvider->getWorldData()->getName());
 		$this->chunksPerProgressUpdate = $chunksPerProgressUpdate;
@@ -105,10 +99,7 @@ class FormatConverter{
 		}
 
 		$this->logger->info("Conversion completed");
-		/**
-		 * @see WritableWorldProvider::__construct()
-		 */
-		return new $this->newProvider($path);
+		return $this->newProvider->fromPath($path);
 	}
 
 	private function generateNew() : WritableWorldProvider{
@@ -120,7 +111,7 @@ class FormatConverter{
 			$this->logger->info("Found previous conversion attempt, deleting...");
 			Filesystem::recursiveUnlink($convertedOutput);
 		}
-		$this->newProvider::generate($convertedOutput, $data->getName(), WorldCreationOptions::create()
+		$this->newProvider->generate($convertedOutput, $data->getName(), WorldCreationOptions::create()
 			->setGeneratorClass(GeneratorManager::getInstance()->getGenerator($data->getGenerator()))
 			->setGeneratorOptions($data->getGeneratorOptions())
 			->setSeed($data->getSeed())
@@ -128,10 +119,7 @@ class FormatConverter{
 			->setDifficulty($data->getDifficulty())
 		);
 
-		/**
-		 * @see WritableWorldProvider::__construct()
-		 */
-		return new $this->newProvider($convertedOutput);
+		return $this->newProvider->fromPath($convertedOutput);
 	}
 
 	private function populateLevelData(WorldData $data) : void{

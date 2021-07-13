@@ -27,6 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\LegacyStringToItemParser;
+use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\nbt\JsonNbtParser;
@@ -65,7 +66,7 @@ class GiveCommand extends VanillaCommand{
 
 		try{
 			$item = LegacyStringToItemParser::getInstance()->parse($args[1]);
-		}catch(\InvalidArgumentException $e){
+		}catch(LegacyStringToItemParserException $e){
 			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GIVE_ITEM_NOTFOUND, [$args[1]]));
 			return true;
 		}

@@ -23,11 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
-use InvalidArgumentException;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\LegacyStringToItemParser;
+use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
@@ -88,7 +88,7 @@ class ClearCommand extends VanillaCommand{
 				if(isset($args[2])){
 					$item->setCount($maxCount = $this->getInteger($sender, $args[2], 0));
 				}
-			}catch(InvalidArgumentException $e){
+			}catch(LegacyStringToItemParserException $e){
 				//vanilla checks this at argument parsing layer, can't come up with a better alternative
 				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GIVE_ITEM_NOTFOUND, [$args[1]]));
 				return true;

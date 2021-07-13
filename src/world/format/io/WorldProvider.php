@@ -25,17 +25,8 @@ namespace pocketmine\world\format\io;
 
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
-use pocketmine\world\format\io\exception\CorruptedWorldException;
-use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 
 interface WorldProvider{
-
-	/**
-	 * @throws CorruptedWorldException
-	 * @throws UnsupportedWorldFormatException
-	 */
-	public function __construct(string $path);
-
 	/**
 	 * Returns the lowest buildable Y coordinate of this world
 	 */
@@ -47,12 +38,6 @@ interface WorldProvider{
 	public function getWorldMaxY() : int;
 
 	public function getPath() : string;
-
-	/**
-	 * Tells if the path is a valid world.
-	 * This must tell if the current format supports opening the files in the directory
-	 */
-	public static function isValid(string $path) : bool;
 
 	/**
 	 * Loads a chunk (usually from disk storage) and returns it. If the chunk does not exist, null is returned.

@@ -56,8 +56,8 @@ final class PlayerAuthInputFlags{
 	public const WANT_DOWN_SLOW = 18;
 	public const WANT_UP_SLOW = 19;
 	public const SPRINTING = 20;
-	public const ASCEND_SCAFFOLDING = 21;
-	public const DESCEND_SCAFFOLDING = 22;
+	public const ASCEND_BLOCK = 21;
+	public const DESCEND_BLOCK = 22;
 	public const SNEAK_TOGGLE_DOWN = 23;
 	public const PERSIST_SNEAK = 24;
 	public const START_SPRINTING = 25;

@@ -23,11 +23,19 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
-use pocketmine\world\format\Chunk;
+/**
+ * @phpstan-type FromPath \Closure(string $path) : WorldProvider
+ */
+class ReadOnlyWorldProviderManagerEntry extends WorldProviderManagerEntry{
 
-interface WritableWorldProvider extends WorldProvider{
-	/**
-	 * Saves a chunk (usually to disk).
-	 */
-	public function saveChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void;
+	/** @phpstan-var FromPath */
+	private \Closure $fromPath;
+
+	/** @phpstan-param FromPath $fromPath */
+	public function __construct(\Closure $isValid, \Closure $fromPath){
+		parent::__construct($isValid);
+		$this->fromPath = $fromPath;
+	}
+
+	public function fromPath(string $path) : WorldProvider{ return ($this->fromPath)($path); }
 }

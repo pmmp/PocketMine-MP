@@ -21,13 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\format\io;
+namespace pocketmine\world\sound;
 
-use pocketmine\world\format\Chunk;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
-interface WritableWorldProvider extends WorldProvider{
-	/**
-	 * Saves a chunk (usually to disk).
-	 */
-	public function saveChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void;
+class ShulkerBoxOpenSound implements Sound{
+
+	public function encode(?Vector3 $pos) : array{
+		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_SHULKERBOX_OPEN, $pos)];
+	}
 }

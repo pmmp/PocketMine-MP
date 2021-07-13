@@ -44,9 +44,9 @@ final class ProtocolInfo{
 	public const CURRENT_PROTOCOL = self::PROTOCOL_1_17_0;
 	public const ACCEPTED_PROTOCOL = [self::CURRENT_PROTOCOL, self::PROTOCOL_1_16_100, self::PROTOCOL_1_16_200, self::PROTOCOL_1_16_210_57, self::PROTOCOL_1_16_210_60, self::PROTOCOL_1_16_220];
 	/** Current Minecraft PE version reported by the server. This is usually the earliest currently supported version. */
-	public const MINECRAFT_VERSION = 'v1.17.0';
+	public const MINECRAFT_VERSION = 'v1.17.10';
 	/** Version number sent to clients in ping responses. */
-	public const MINECRAFT_VERSION_NETWORK = '1.17.0';
+	public const MINECRAFT_VERSION_NETWORK = '1.17.10';
 
 	public const PROTOCOL_1_17_0 = 440;
 	public const PROTOCOL_1_16_220 = 431;
@@ -222,5 +222,7 @@ final class ProtocolInfo{
 	public const SYNC_ACTOR_PROPERTY_PACKET = 0xa5;
 	public const ADD_VOLUME_ENTITY_PACKET = 0xa6;
 	public const REMOVE_VOLUME_ENTITY_PACKET = 0xa7;
+	public const SIMULATION_TYPE_PACKET = 0xa8;
+	public const NPC_DIALOGUE_PACKET = 0xa9;
 
 }

@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
-use pocketmine\utils\Utils;
 use pocketmine\world\format\io\leveldb\LevelDB;
 use pocketmine\world\format\io\region\Anvil;
 use pocketmine\world\format\io\region\McRegion;
@@ -33,80 +32,62 @@ use function trim;
 
 final class WorldProviderManager{
 	/**
-	 * @var string[]
-	 * @phpstan-var array<string, class-string<WorldProvider>>
+	 * @var WorldProviderManagerEntry[]
+	 * @phpstan-var array<string, WorldProviderManagerEntry>
 	 */
 	protected $providers = [];
 
-	/**
-	 * @var string
-	 * @phpstan-var class-string<WritableWorldProvider>
-	 */
-	private $default = LevelDB::class;
+	private WritableWorldProviderManagerEntry $default;
 
 	public function __construct(){
-		$this->addProvider(Anvil::class, "anvil");
-		$this->addProvider(McRegion::class, "mcregion");
-		$this->addProvider(PMAnvil::class, "pmanvil");
-		$this->addProvider(LevelDB::class, "leveldb");
+		$leveldb = new WritableWorldProviderManagerEntry(\Closure::fromCallable([LevelDB::class, 'isValid']), fn(string $path) => new LevelDB($path), \Closure::fromCallable([LevelDB::class, 'generate']));
+		$this->default = $leveldb;
+		$this->addProvider($leveldb, "leveldb");
+
+		$this->addProvider(new ReadOnlyWorldProviderManagerEntry(\Closure::fromCallable([Anvil::class, 'isValid']), fn(string $path) => new Anvil($path)), "anvil");
+		$this->addProvider(new ReadOnlyWorldProviderManagerEntry(\Closure::fromCallable([McRegion::class, 'isValid']), fn(string $path) => new McRegion($path)), "mcregion");
+		$this->addProvider(new ReadOnlyWorldProviderManagerEntry(\Closure::fromCallable([PMAnvil::class, 'isValid']), fn(string $path) => new PMAnvil($path)), "pmanvil");
 	}
 
 	/**
 	 * Returns the default format used to generate new worlds.
-	 *
-	 * @phpstan-return class-string<WritableWorldProvider>
 	 */
-	public function getDefault() : string{
+	public function getDefault() : WritableWorldProviderManagerEntry{
 		return $this->default;
 	}
 
-	/**
-	 * Sets the default format.
-	 *
-	 * @param string $class Class implementing WritableWorldProvider
-	 * @phpstan-param class-string<WritableWorldProvider> $class
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public function setDefault(string $class) : void{
-		Utils::testValidInstance($class, WritableWorldProvider::class);
-
+	public function setDefault(WritableWorldProviderManagerEntry $class) : void{
 		$this->default = $class;
 	}
 
-	/**
-	 * @phpstan-param class-string<WorldProvider> $class
-	 */
-	public function addProvider(string $class, string $name, bool $overwrite = false) : void{
-		Utils::testValidInstance($class, WorldProvider::class);
-
+	public function addProvider(WorldProviderManagerEntry $providerEntry, string $name, bool $overwrite = false) : void{
 		$name = strtolower($name);
 		if(!$overwrite and isset($this->providers[$name])){
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
 
-		$this->providers[$name] = $class;
+		$this->providers[$name] = $providerEntry;
 	}
 
 	/**
 	 * Returns a WorldProvider class for this path, or null
 	 *
-	 * @return string[]
-	 * @phpstan-return array<string, class-string<WorldProvider>>
+	 * @return WorldProviderManagerEntry[]
+	 * @phpstan-return array<string, WorldProviderManagerEntry>
 	 */
 	public function getMatchingProviders(string $path) : array{
 		$result = [];
-		foreach($this->providers as $alias => $provider){
-			if($provider::isValid($path)){
-				$result[$alias] = $provider;
+		foreach($this->providers as $alias => $providerEntry){
+			if($providerEntry->isValid($path)){
+				$result[$alias] = $providerEntry;
 			}
 		}
 		return $result;
 	}
 
 	/**
-	 * @return string[]
-	 * @phpstan-return array<string, class-string<WorldProvider>>
+	 * @return WorldProviderManagerEntry[]
+	 * @phpstan-return array<string, WorldProviderManagerEntry>
 	 */
 	public function getAvailableProviders() : array{
 		return $this->providers;
@@ -114,10 +95,8 @@ final class WorldProviderManager{
 
 	/**
 	 * Returns a WorldProvider by name, or null if not found
-	 *
-	 * @phpstan-return class-string<WorldProvider>|null
 	 */
-	public function getProviderByName(string $name) : ?string{
+	public function getProviderByName(string $name) : ?WorldProviderManagerEntry{
 		return $this->providers[trim(strtolower($name))] ?? null;
 	}
 }

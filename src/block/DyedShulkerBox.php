@@ -21,8 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\format\io;
+namespace pocketmine\block;
 
-abstract class AbstractWorldProvider implements WorldProvider{
+use pocketmine\block\utils\ColorInMetadataTrait;
+use pocketmine\block\utils\DyeColor;
 
+final class DyedShulkerBox extends ShulkerBox{
+	use ColorInMetadataTrait;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->color = DyeColor::WHITE();
+		parent::__construct($idInfo, $name, $breakInfo);
+	}
 }
