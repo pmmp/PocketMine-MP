@@ -105,7 +105,7 @@ class LoginPacketHandler extends PacketHandler{
 
 		$clientData = $this->parseClientData($packet->clientDataJwt);
 		try{
-			$skin = SkinAdapterSingleton::get()->fromSkinData(ClientDataToSkinDataHelper::getInstance()->fromClientData($clientData));
+			$skin = SkinAdapterSingleton::get()->fromSkinData(ClientDataToSkinDataHelper::fromClientData($clientData));
 		}catch(\InvalidArgumentException | InvalidSkinException $e){
 			$this->session->getLogger()->debug("Invalid skin: " . $e->getMessage());
 			$this->session->disconnect("disconnectionScreen.invalidSkin");

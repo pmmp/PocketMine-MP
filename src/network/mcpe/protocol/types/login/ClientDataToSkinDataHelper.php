@@ -28,12 +28,10 @@ use pocketmine\network\mcpe\protocol\types\skin\PersonaSkinPiece;
 use pocketmine\network\mcpe\protocol\types\skin\SkinAnimation;
 use pocketmine\network\mcpe\protocol\types\skin\SkinData;
 use pocketmine\network\mcpe\protocol\types\skin\SkinImage;
-use pocketmine\utils\SingletonTrait;
 use function array_map;
 use function base64_decode;
 
 final class ClientDataToSkinDataHelper{
-	use SingletonTrait;
 
 	/**
 	 * @throws \InvalidArgumentException
@@ -49,7 +47,7 @@ final class ClientDataToSkinDataHelper{
 	/**
 	 * @throws \InvalidArgumentException
 	 */
-	public function fromClientData(ClientData $clientData) : SkinData{
+	public static function fromClientData(ClientData $clientData) : SkinData{
 		/** @var SkinAnimation[] $animations */
 		$animations = [];
 		foreach($clientData->AnimatedImageData as $k => $animation){
