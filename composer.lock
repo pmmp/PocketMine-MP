@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5456f8b834ba877a4c04d1cf5a933d63",
+    "content-hash": "4748ce46dd62b80f9a89791d7601b57f",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -318,6 +318,54 @@
                 "source": "https://github.com/cweiske/jsonmapper/tree/v4.0.0"
             },
             "time": "2020-12-01T19:48:11+00:00"
+        },
+        {
+            "name": "pocketmine/bedrock-protocol",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/BedrockProtocol.git",
+                "reference": "88ae308a03e8e61ccfdddd42623efabe9e772b42"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/88ae308a03e8e61ccfdddd42623efabe9e772b42",
+                "reference": "88ae308a03e8e61ccfdddd42623efabe9e772b42",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "netresearch/jsonmapper": "^4.0",
+                "php": "^7.4 || ^8.0",
+                "pocketmine/binaryutils": "^0.2.0",
+                "pocketmine/color": "^0.2.0",
+                "pocketmine/math": "^0.3.0",
+                "pocketmine/nbt": "^0.3.0",
+                "ramsey/uuid": "^4.1"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "0.12.92",
+                "phpstan/phpstan-phpunit": "^0.12.21",
+                "phpstan/phpstan-strict-rules": "^0.12.10",
+                "phpunit/phpunit": "^9.5"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "pocketmine\\network\\mcpe\\protocol\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
+            "support": {
+                "issues": "https://github.com/pmmp/BedrockProtocol/issues",
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/master"
+            },
+            "time": "2021-07-14T19:29:34+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -3547,6 +3595,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "pocketmine/bedrock-protocol": 20,
         "pocketmine/classloader": 20,
         "pocketmine/spl": 20
     },
