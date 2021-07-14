@@ -591,7 +591,7 @@ parameters:
 			path: ../../../src/network/mcpe/auth/ProcessLoginTask.php
 
 		-
-			message: "#^Parameter \\#1 \\$buffer of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer constructor expects string, string\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$buffer of static method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:decoder\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/convert/RuntimeBlockMapping.php
 
