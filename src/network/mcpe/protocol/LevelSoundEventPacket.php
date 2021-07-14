@@ -364,7 +364,7 @@ class LevelSoundEventPacket extends DataPacket implements ClientboundPacket, Ser
 		$result = new self;
 		$result->sound = $sound;
 		$result->extraData = $extraData;
-		$result->position = $pos;
+		$result->position = $pos ?? new Vector3(0, 0, 0);
 		$result->disableRelativeVolume = $pos === null;
 		$result->entityType = $entityType;
 		$result->isBabyMob = $isBabyMob;

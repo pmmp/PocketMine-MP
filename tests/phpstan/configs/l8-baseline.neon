@@ -191,11 +191,6 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\LevelSoundEventPacket\\:\\:\\$position \\(pocketmine\\\\math\\\\Vector3\\) does not accept pocketmine\\\\math\\\\Vector3\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/LevelSoundEventPacket.php
-
-		-
 			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/protocol/SetScorePacket.php
