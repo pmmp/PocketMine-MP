@@ -318,6 +318,7 @@ class NetworkSession{
 		$this->protocolId = $protocolId;
 
 		$this->broadcaster = RakLibInterface::getBroadcaster($this->server, $protocolId);
+		$this->packetSerializerContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($protocolId)));
 	}
 
 	public function getProtocolId() : int{

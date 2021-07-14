@@ -44,7 +44,7 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 
 	public function broadcastPackets(array $recipients, array $packets) : void{
 		//TODO: we should be using session-specific serializer contexts for this
-		$stream = PacketBatch::fromPackets($this->protocolId, new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary()), ...$packets);
+		$stream = PacketBatch::fromPackets($this->protocolId, new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($this->protocolId))), ...$packets);
 
 		/** @var Compressor[] $compressors */
 		$compressors = [];
