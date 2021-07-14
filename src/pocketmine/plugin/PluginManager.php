@@ -269,6 +269,18 @@ class PluginManager{
 						continue;
 					}
 
+					$pluginPhpVersions = $description->getCompatiblePhpVersions();
+					$pluginCompatiblePhpVersions = array_filter($pluginPhpVersions, function(string $requiredVersion) : bool{
+						return self::isCompatiblePhp($requiredVersion);
+					});
+					if(count($pluginPhpVersions) > 0 and count($pluginCompatiblePhpVersions) < 1){
+						$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.plugin.loadError", [
+							$name,
+							$this->server->getLanguage()->translateString("%pocketmine.plugin.incompatiblePhpVersion", [implode(", ", $pluginPhpVersions)])
+						]));
+						continue;
+					}
+
 					if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
 						$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
 						if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
@@ -361,6 +373,16 @@ class PluginManager{
 		}
 
 		return $loadedPlugins;
+	}
+
+	/**
+	 * Returns whether the plugin PHP version specified is compatible with the server's PHP version.
+	 */
+	public static function isCompatiblePhp(string $pluginVersion, string $serverVersion = PHP_VERSION) : bool{
+		$serverParts = explode(".", $serverVersion);
+		return version_compare($serverParts[0] . "." . $serverParts[1], $pluginVersion, "<=") and
+			version_compare($serverVersion, $pluginVersion, ">=") and
+			version_compare($serverParts[0] . "." . ((int)$serverParts[1] + 1), $pluginVersion, ">");
 	}
 
 	/**
