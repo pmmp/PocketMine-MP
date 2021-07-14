@@ -41,7 +41,7 @@
       "pocketmine/errorhandler": "^0.3.0",
       "pocketmine/log": "^0.3.0",
       "pocketmine/log-pthreads": "^0.2.0",
-      "pocketmine/math": "dev-master",
+      "pocketmine/math": "^0.3.0",
       "pocketmine/nbt": "^0.3.0",
       "pocketmine/raklib": "^0.13.1",
       "pocketmine/raklib-ipc": "^0.1.0",

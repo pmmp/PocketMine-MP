@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "28939b75a6c33177454a6d027bf4d7cb",
+    "content-hash": "5456f8b834ba877a4c04d1cf5a933d63",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -617,26 +617,26 @@
         },
         {
             "name": "pocketmine/math",
-            "version": "dev-master",
+            "version": "0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "4595b5ee90627e817317839519a7d482c809effb"
+                "reference": "83ec067b12c066fc61d9fb129daf7e61ef3b1d63"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/4595b5ee90627e817317839519a7d482c809effb",
-                "reference": "4595b5ee90627e817317839519a7d482c809effb",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/83ec067b12c066fc61d9fb129daf7e61ef3b1d63",
+                "reference": "83ec067b12c066fc61d9fb129daf7e61ef3b1d63",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2 || ^8.0",
+                "php": "^7.4 || ^8.0",
                 "php-64bit": "*"
             },
             "require-dev": {
                 "irstea/phpunit-shim": "^8.5 || ^9.5",
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.80",
+                "phpstan/phpstan": "0.12.90",
                 "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
@@ -652,9 +652,9 @@
             "description": "PHP library containing math related code used in PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Math/issues",
-                "source": "https://github.com/pmmp/Math/tree/master"
+                "source": "https://github.com/pmmp/Math/tree/0.3.0"
             },
-            "time": "2021-05-10T10:44:46+00:00"
+            "time": "2021-07-14T18:39:31+00:00"
         },
         {
             "name": "pocketmine/nbt",
@@ -3548,7 +3548,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "pocketmine/classloader": 20,
-        "pocketmine/math": 20,
         "pocketmine/spl": 20
     },
     "prefer-stable": false,
