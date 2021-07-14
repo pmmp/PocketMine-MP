@@ -42,6 +42,7 @@ use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\compression\DecompressionException;
+use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\encryption\DecryptionException;
@@ -74,6 +75,7 @@ use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\protocol\ServerboundPacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetActorDataPacket;
@@ -158,6 +160,7 @@ class NetworkSession{
 	private bool $forceAsyncCompression = true;
 
 	private PacketPool $packetPool;
+	private PacketSerializerContext $packetSerializerContext;
 
 	private ?InventoryManager $invManager = null;
 
@@ -184,6 +187,9 @@ class NetworkSession{
 		$this->compressedQueue = new \SplQueue();
 		$this->compressor = $compressor;
 		$this->packetPool = $packetPool;
+
+		//TODO: allow this to be injected
+		$this->packetSerializerContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
 
 		$this->disposeHooks = new ObjectSet();
 
@@ -335,7 +341,7 @@ class NetworkSession{
 		}
 
 		try{
-			foreach($stream->getPackets($this->packetPool, 500) as [$packet, $buffer]){
+			foreach($stream->getPackets($this->packetPool, $this->packetSerializerContext, 500) as [$packet, $buffer]){
 				try{
 					$this->handleDataPacket($packet, $buffer);
 				}catch(PacketHandlingException $e){
@@ -361,7 +367,7 @@ class NetworkSession{
 		$timings->startTiming();
 
 		try{
-			$stream = new PacketSerializer($buffer);
+			$stream = PacketSerializer::decoder($buffer, 0, $this->packetSerializerContext);
 			try{
 				$packet->decode($stream);
 			}catch(PacketDecodeException $e){
@@ -430,7 +436,7 @@ class NetworkSession{
 			}elseif($this->forceAsyncCompression){
 				$syncMode = false;
 			}
-			$promise = $this->server->prepareBatch(PacketBatch::fromPackets(...$this->sendBuffer), $this->compressor, $syncMode);
+			$promise = $this->server->prepareBatch(PacketBatch::fromPackets($this->packetSerializerContext, ...$this->sendBuffer), $this->compressor, $syncMode);
 			$this->sendBuffer = [];
 			$this->queueCompressedNoBufferFlush($promise, $immediate);
 		}

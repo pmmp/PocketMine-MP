@@ -30,7 +30,6 @@ use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\PacketDecodeException;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
 use pocketmine\network\mcpe\protocol\types\command\CommandOriginData;
@@ -71,10 +70,20 @@ use function substr;
 class PacketSerializer extends BinaryStream{
 
 	private int $shieldItemRuntimeId;
+	private PacketSerializerContext $context;
 
-	public function __construct(string $buffer = "", int $offset = 0){
+	protected function __construct(PacketSerializerContext $context, string $buffer = "", int $offset = 0){
 		parent::__construct($buffer, $offset);
-		$this->shieldItemRuntimeId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId("minecraft:shield");
+		$this->context = $context;
+		$this->shieldItemRuntimeId = $context->getItemDictionary()->fromStringId("minecraft:shield");
+	}
+
+	public static function encoder(PacketSerializerContext $context) : self{
+		return new self($context);
+	}
+
+	public static function decoder(string $buffer, int $offset, PacketSerializerContext $context) : self{
+		return new self($context, $buffer, $offset);
 	}
 
 	/**
@@ -248,9 +257,8 @@ class PacketSerializer extends BinaryStream{
 		$readExtraCrapInTheMiddle($this);
 
 		$blockRuntimeId = $this->getVarInt();
-		$extraData = new PacketSerializer($this->getString());
-		$shieldItemRuntimeId = $this->shieldItemRuntimeId;
-		return (static function() use ($extraData, $id, $meta, $count, $blockRuntimeId, $shieldItemRuntimeId) : ItemStack{
+		$extraData = self::decoder($this->getString(), 0, $this->context);
+		return (static function() use ($extraData, $id, $meta, $count, $blockRuntimeId) : ItemStack{
 			$nbtLen = $extraData->getLShort();
 
 			/** @var CompoundTag|null $compound */
@@ -283,7 +291,7 @@ class PacketSerializer extends BinaryStream{
 			}
 
 			$shieldBlockingTick = null;
-			if($id === $shieldItemRuntimeId){
+			if($id === $extraData->shieldItemRuntimeId){
 				$shieldBlockingTick = $extraData->getLLong();
 			}
 
@@ -312,9 +320,9 @@ class PacketSerializer extends BinaryStream{
 		$writeExtraCrapInTheMiddle($this);
 
 		$this->putVarInt($item->getBlockRuntimeId());
-		$shieldItemRuntimeId = $this->shieldItemRuntimeId;
-		$this->putString((static function() use ($item, $shieldItemRuntimeId) : string{
-			$extraData = new PacketSerializer();
+		$context = $this->context;
+		$this->putString((static function() use ($item, $context) : string{
+			$extraData = PacketSerializer::encoder($context);
 
 			$nbt = $item->getNbt();
 			if($nbt !== null){
@@ -337,7 +345,7 @@ class PacketSerializer extends BinaryStream{
 			}
 
 			$blockingTick = $item->getShieldBlockingTick();
-			if($item->getId() === $shieldItemRuntimeId){
+			if($item->getId() === $extraData->shieldItemRuntimeId){
 				$extraData->putLLong($blockingTick ?? 0);
 			}
 			return $extraData->getBuffer();

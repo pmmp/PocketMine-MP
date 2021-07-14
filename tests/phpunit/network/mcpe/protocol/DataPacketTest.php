@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 
 class DataPacketTest extends TestCase{
 
@@ -32,11 +34,13 @@ class DataPacketTest extends TestCase{
 		$pk = new TestPacket();
 		$pk->senderSubId = 3;
 		$pk->recipientSubId = 2;
-		$serializer = new PacketSerializer();
+
+		$context = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
+		$serializer = PacketSerializer::encoder($context);
 		$pk->encode($serializer);
 
 		$pk2 = new TestPacket();
-		$pk2->decode(new PacketSerializer($serializer->getBuffer()));
+		$pk2->decode(PacketSerializer::decoder($serializer->getBuffer(), 0, $context));
 		self::assertSame($pk2->senderSubId, 3);
 		self::assertSame($pk2->recipientSubId, 2);
 	}

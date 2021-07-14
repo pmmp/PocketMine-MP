@@ -24,18 +24,21 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\protocol;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use function strlen;
 
 class LoginPacketTest extends TestCase{
 
 	public function testInvalidChainDataJsonHandling() : void{
-		$stream = new PacketSerializer();
+		$context = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
+		$stream = PacketSerializer::encoder($context);
 		$stream->putUnsignedVarInt(ProtocolInfo::LOGIN_PACKET);
 		$payload = '{"chain":[]'; //intentionally malformed
 		$stream->putInt(ProtocolInfo::CURRENT_PROTOCOL);
 
-		$stream2 = new PacketSerializer();
+		$stream2 = PacketSerializer::encoder($context);
 		$stream2->putLInt(strlen($payload));
 		$stream2->put($payload);
 		$stream->putString($stream2->getBuffer());
@@ -43,6 +46,6 @@ class LoginPacketTest extends TestCase{
 		$pk = PacketPool::getInstance()->getPacket($stream->getBuffer());
 
 		$this->expectException(PacketDecodeException::class);
-		$pk->decode(new PacketSerializer($stream->getBuffer())); //bang
+		$pk->decode(PacketSerializer::decoder($stream->getBuffer(), 0, $context)); //bang
 	}
 }

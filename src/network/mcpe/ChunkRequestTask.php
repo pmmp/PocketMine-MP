@@ -25,9 +25,11 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
+use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\LevelChunkPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\serializer\ChunkSerializer;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\Chunk;
@@ -68,8 +70,9 @@ class ChunkRequestTask extends AsyncTask{
 	public function onRun() : void{
 		$chunk = FastChunkSerializer::deserialize($this->chunk);
 		$subCount = ChunkSerializer::getSubChunkCount($chunk);
-		$payload = ChunkSerializer::serialize($chunk, RuntimeBlockMapping::getInstance(), $this->tiles);
-		$this->setResult($this->compressor->compress(PacketBatch::fromPackets(LevelChunkPacket::withoutCache($this->chunkX, $this->chunkZ, $subCount, $payload))->getBuffer()));
+		$encoderContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
+		$payload = ChunkSerializer::serialize($chunk, RuntimeBlockMapping::getInstance(), $encoderContext, $this->tiles);
+		$this->setResult($this->compressor->compress(PacketBatch::fromPackets($encoderContext, LevelChunkPacket::withoutCache($this->chunkX, $this->chunkZ, $subCount, $payload))->getBuffer()));
 	}
 
 	public function onError() : void{
