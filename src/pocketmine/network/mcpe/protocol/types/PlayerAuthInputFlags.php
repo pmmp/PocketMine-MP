@@ -30,7 +30,7 @@ use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
  * The flags should be written as
  * `flags |= (1 << flag)`
  * and read as
- * `(flags & (1 & flag)) !== 0`
+ * `(flags & (1 << flag)) !== 0`
  *
  * @see PlayerAuthInputPacket
  */
