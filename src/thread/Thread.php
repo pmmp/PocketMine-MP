@@ -35,8 +35,8 @@ abstract class Thread extends \Thread{
 		//this is intentionally not traitified
 		ThreadManager::getInstance()->add($this);
 
-		if($this->getClassLoader() === null){
-			$this->setClassLoader();
+		if($this->getClassLoaders() === null){
+			$this->setClassLoaders();
 		}
 		return parent::start($options);
 	}
