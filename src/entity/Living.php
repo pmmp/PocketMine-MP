@@ -486,14 +486,14 @@ abstract class Living extends Entity{
 			$e = $source->getChild();
 			if($e !== null){
 				$motion = $e->getMotion();
-				$this->knockBack($motion->x, $motion->z, $source->getKnockBack());
+				$this->knockBack($motion->x, $motion->z, $source->getKnockBack(), 0.4);
 			}
 		}elseif($source instanceof EntityDamageByEntityEvent){
 			$e = $source->getDamager();
 			if($e !== null){
 				$deltaX = $this->location->x - $e->location->x;
 				$deltaZ = $this->location->z - $e->location->z;
-				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack());
+				$this->knockBack($deltaX, $deltaZ, $source->getKnockBack(), 0.4);
 			}
 		}
 
@@ -507,7 +507,7 @@ abstract class Living extends Entity{
 		$this->broadcastAnimation(new HurtAnimation($this));
 	}
 
-	public function knockBack(float $x, float $z, float $base = 0.4) : void{
+	public function knockBack(float $x, float $z, float $base = 0.4, float $verticalLimit = null) : void{
 		$f = sqrt($x * $x + $z * $z);
 		if($f <= 0){
 			return;
@@ -522,8 +522,9 @@ abstract class Living extends Entity{
 			$motionY += $base;
 			$motionZ += $z * $f * $base;
 
-			if($motionY > $base){
-				$motionY = $base;
+			$verticalLimit = $verticalLimit ?? $base;
+			if($motionY > $verticalLimit){
+				$motionY = $verticalLimit;
 			}
 
 			$this->setMotion(new Vector3($motionX, $motionY, $motionZ));
