@@ -139,6 +139,24 @@ namespace pocketmine {
 		if(\Phar::running(true) === ""){
 			$logger->warning("Non-packaged installation detected. This will degrade autoloading speed and make startup times longer.");
 		}
+		if(function_exists('opcache_get_status')){
+			$jitEnabled = opcache_get_status(false)["jit"]["on"] ?? false;
+			if($jitEnabled !== false){
+				$logger->warning(<<<'JIT_WARNING'
+
+
+	--------------------------------------- ! WARNING ! ---------------------------------------
+	You're using PHP 8.0 with JIT enabled. This provides significant performance improvements.
+	HOWEVER, it is EXPERIMENTAL, and has already been seen to cause weird and unexpected bugs.
+	Proceed with caution.
+	If you want to report any bugs, make sure to mention that you are using PHP 8.0 with JIT.
+	To turn off JIT, change `opcache.jit` to `0` in your php.ini file.
+	-------------------------------------------------------------------------------------------
+
+JIT_WARNING
+);
+			}
+		}
 	}
 
 	/**
