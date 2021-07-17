@@ -94,12 +94,12 @@ class BlockFactory{
 	public $blastResistance;
 
 	public function __construct(){
-		$this->fullList = new \SplFixedArray(16384);
+		$this->fullList = new \SplFixedArray(1024 << Block::INTERNAL_METADATA_BITS);
 
-		$this->light = \SplFixedArray::fromArray(array_fill(0, 16384, 0));
-		$this->lightFilter = \SplFixedArray::fromArray(array_fill(0, 16384, 1));
-		$this->blocksDirectSkyLight = \SplFixedArray::fromArray(array_fill(0, 16384, false));
-		$this->blastResistance = \SplFixedArray::fromArray(array_fill(0, 16384, 0.0));
+		$this->light = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 0));
+		$this->lightFilter = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 1));
+		$this->blocksDirectSkyLight = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, false));
+		$this->blastResistance = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 0.0));
 
 		$railBreakInfo = new BlockBreakInfo(0.7);
 		$this->register(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL, 0), "Activator Rail", $railBreakInfo));
