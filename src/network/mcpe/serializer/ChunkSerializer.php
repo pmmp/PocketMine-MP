@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\serializer;
 
 use pocketmine\block\tile\Spawnable;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\utils\Binary;
@@ -58,7 +60,7 @@ final class ChunkSerializer{
 		$stream = PacketSerializer::encoder($encoderContext);
 		$subChunkCount = self::getSubChunkCount($chunk);
 		for($y = 0; $y < $subChunkCount; ++$y){
-			self::serializeSubChunk($chunk->getSubChunk($y), $blockMapper, $stream);
+			self::serializeSubChunk($chunk->getSubChunk($y), $blockMapper, $stream, false);
 		}
 		$stream->put($chunk->getBiomeIdArray());
 		$stream->putByte(0); //border block array count
@@ -72,14 +74,14 @@ final class ChunkSerializer{
 		return $stream->getBuffer();
 	}
 
-	public static function serializeSubChunk(SubChunk $subChunk, RuntimeBlockMapping $blockMapper, PacketSerializer $stream) : void{
+	public static function serializeSubChunk(SubChunk $subChunk, RuntimeBlockMapping $blockMapper, PacketSerializer $stream, bool $persistentBlockStates) : void{
 		$layers = $subChunk->getBlockLayers();
 		$stream->putByte(8); //version
 
 		$stream->putByte(count($layers));
 
 		foreach($layers as $blocks){
-			$stream->putByte(($blocks->getBitsPerBlock() << 1) | 1); //last 1-bit means "network format", but seems pointless
+			$stream->putByte(($blocks->getBitsPerBlock() << 1) | ($persistentBlockStates ? 0 : 1));
 			$stream->put($blocks->getWordArray());
 			$palette = $blocks->getPalette();
 
@@ -87,8 +89,15 @@ final class ChunkSerializer{
 			//but since we know they are always unsigned, we can avoid the extra fcall overhead of
 			//zigzag and just shift directly.
 			$stream->putUnsignedVarInt(count($palette) << 1); //yes, this is intentionally zigzag
-			foreach($palette as $p){
-				$stream->put(Binary::writeUnsignedVarInt($blockMapper->toRuntimeId($p) << 1));
+			if($persistentBlockStates){
+				$nbtSerializer = new NetworkNbtSerializer();
+				foreach($palette as $p){
+					$stream->put($nbtSerializer->write(new TreeRoot($blockMapper->getBedrockKnownStates()[$blockMapper->toRuntimeId($p)])));
+				}
+			}else{
+				foreach($palette as $p){
+					$stream->put(Binary::writeUnsignedVarInt($blockMapper->toRuntimeId($p) << 1));
+				}
 			}
 		}
 	}
