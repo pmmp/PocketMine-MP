@@ -139,8 +139,8 @@ namespace pocketmine {
 		if(\Phar::running(true) === ""){
 			$logger->warning("Non-packaged installation detected. This will degrade autoloading speed and make startup times longer.");
 		}
-		if(function_exists('opcache_get_status')){
-			$jitEnabled = opcache_get_status(false)["jit"]["on"] ?? false;
+		if(function_exists('opcache_get_status') && ($opcacheStatus = opcache_get_status(false)) !== false){
+			$jitEnabled = $opcacheStatus["jit"]["on"] ?? false;
 			if($jitEnabled !== false){
 				$logger->warning(<<<'JIT_WARNING'
 
