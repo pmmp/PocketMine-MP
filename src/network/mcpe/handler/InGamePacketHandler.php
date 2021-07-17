@@ -180,7 +180,6 @@ class InGamePacketHandler extends PacketHandler{
 		$newPos = $packet->position->subtract(0, 1.62, 0);
 
 		if($this->forceMoveSync and $newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
-			$this->session->syncMovement($curPos, null, null, MovePlayerPacket::MODE_RESET);
 			$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
 			//Still getting movements from before teleport, ignore them
 			return false;
