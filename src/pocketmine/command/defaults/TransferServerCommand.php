@@ -26,6 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\Player;
+use pocketmine\utils\TextFormat;
+
 use function count;
 
 class TransferServerCommand extends VanillaCommand{
@@ -36,7 +38,7 @@ class TransferServerCommand extends VanillaCommand{
 			"%pocketmine.command.transferserver.description",
 			"%pocketmine.command.transferserver.usage"
 		);
-		$this->setPermission("pocketmine.command.transferserver");
+		$this->setPermission("pocketmine.command.transferserver;pocketmine.command.transferserver.other");
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -46,13 +48,29 @@ class TransferServerCommand extends VanillaCommand{
 
 		if(count($args) < 1){
 			throw new InvalidCommandSyntaxException();
-		}elseif(!($sender instanceof Player)){
+		}elseif(count($args) === 3){
+			if (!$sender->hasPermission("pocketmine.command.transferserver.other")){
+				$message = $sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission");
+				$sender->sendMessage($message);
+
+				return true;
+			}
+			$target = $sender->getServer()->getPlayer($args[2]);
+			if (!$target instanceof Player){
+				$message = $sender->getServer()->getLanguage()->translateString(TextFormat::RED . "%commands.generic.player.notFound");
+				$sender->sendMessage($message);
+
+				return true;
+			}
+		}elseif (!$sender instanceof Player){
 			$sender->sendMessage("This command must be executed as a player");
 
-			return false;
+			return true;
+		}else{
+			$target = $sender;
 		}
 
-		$sender->transfer($args[0], (int) ($args[1] ?? 19132));
+		$target->transfer($args[0], (int) ($args[1] ?? 19132));
 
 		return true;
 	}
