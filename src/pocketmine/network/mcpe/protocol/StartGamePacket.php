@@ -104,10 +104,10 @@ class StartGamePacket extends DataPacket{
 	public $isTexturePacksRequired = true;
 	/**
 	 * @var mixed[][]
-	 * @phpstan-var array<string, array{0: int, 1: bool|int|float}>
+	 * @phpstan-var array<string, array{0: int, 1: bool|int|float, 2: bool}>
 	 */
 	public $gameRules = [ //TODO: implement this
-		"naturalregeneration" => [GameRuleType::BOOL, false] //Hack for client side regeneration
+		"naturalregeneration" => [GameRuleType::BOOL, false, false] //Hack for client side regeneration
 	];
 	/** @var Experiments */
 	public $experiments;
@@ -176,6 +176,8 @@ class StartGamePacket extends DataPacket{
 	public $itemTable;
 	/** @var bool */
 	public $enableNewInventorySystem = false; //TODO
+	/** @var string */
+	public $serverSoftwareVersion;
 
 	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
@@ -258,6 +260,7 @@ class StartGamePacket extends DataPacket{
 
 		$this->multiplayerCorrelationId = $this->getString();
 		$this->enableNewInventorySystem = $this->getBool();
+		$this->serverSoftwareVersion = $this->getString();
 	}
 
 	protected function encodePayload(){
@@ -337,6 +340,7 @@ class StartGamePacket extends DataPacket{
 
 		$this->putString($this->multiplayerCorrelationId);
 		$this->putBool($this->enableNewInventorySystem);
+		$this->putString($this->serverSoftwareVersion);
 	}
 
 	public function handle(NetworkSession $session) : bool{

@@ -221,7 +221,7 @@ LICENSE;
 
 		$config->save();
 	}
-	
+
 	private function printIpDetails() : void{
 		$this->message($this->lang->get("ip_get"));
 

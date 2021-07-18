@@ -33,9 +33,11 @@ class ResourcePacksInfoPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::RESOURCE_PACKS_INFO_PACKET;
 
 	/** @var bool */
-	public $mustAccept = false; //if true, forces client to use selected resource packs
+	public $mustAccept = false; //if true, forces client to choose between accepting packs or being disconnected
 	/** @var bool */
 	public $hasScripts = false; //if true, causes disconnect for any platform that doesn't support scripts yet
+
+	public bool $forceServerPacks = false;
 	/** @var ResourcePack[] */
 	public $behaviorPackEntries = [];
 	/** @var ResourcePack[] */
@@ -44,6 +46,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 	protected function decodePayload(){
 		$this->mustAccept = $this->getBool();
 		$this->hasScripts = $this->getBool();
+		$this->forceServerPacks = $this->getBool();
 		$behaviorPackCount = $this->getLShort();
 		while($behaviorPackCount-- > 0){
 			$this->getString();
@@ -71,6 +74,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putBool($this->mustAccept);
 		$this->putBool($this->hasScripts);
+		$this->putBool($this->forceServerPacks);
 		$this->putLShort(count($this->behaviorPackEntries));
 		foreach($this->behaviorPackEntries as $entry){
 			$this->putString($entry->getPackId());

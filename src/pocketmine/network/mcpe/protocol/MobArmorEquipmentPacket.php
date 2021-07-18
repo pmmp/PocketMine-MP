@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 
 class MobArmorEquipmentPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::MOB_ARMOR_EQUIPMENT_PACKET;
@@ -36,29 +36,29 @@ class MobArmorEquipmentPacket extends DataPacket{
 
 	//this intentionally doesn't use an array because we don't want any implicit dependencies on internal order
 
-	/** @var Item */
+	/** @var ItemStackWrapper */
 	public $head;
-	/** @var Item */
+	/** @var ItemStackWrapper */
 	public $chest;
-	/** @var Item */
+	/** @var ItemStackWrapper */
 	public $legs;
-	/** @var Item */
+	/** @var ItemStackWrapper */
 	public $feet;
 
 	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
-		$this->head = $this->getSlot();
-		$this->chest = $this->getSlot();
-		$this->legs = $this->getSlot();
-		$this->feet = $this->getSlot();
+		$this->head = ItemStackWrapper::read($this);
+		$this->chest = ItemStackWrapper::read($this);
+		$this->legs = ItemStackWrapper::read($this);
+		$this->feet = ItemStackWrapper::read($this);
 	}
 
 	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		$this->putSlot($this->head);
-		$this->putSlot($this->chest);
-		$this->putSlot($this->legs);
-		$this->putSlot($this->feet);
+		$this->head->write($this);
+		$this->chest->write($this);
+		$this->legs->write($this);
+		$this->feet->write($this);
 	}
 
 	public function handle(NetworkSession $session) : bool{

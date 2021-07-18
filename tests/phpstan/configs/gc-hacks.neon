@@ -1,7 +1,7 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Property pocketmine\\\\Player\\:\\:\\$sessionAdapter \\(pocketmine\\\\network\\\\mcpe\\\\PlayerNetworkSessionAdapter\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\Player\\:\\:\\$craftingGrid \\(pocketmine\\\\inventory\\\\CraftingGrid\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
@@ -11,12 +11,12 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Property pocketmine\\\\Player\\:\\:\\$craftingGrid \\(pocketmine\\\\inventory\\\\CraftingGrid\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\Player\\:\\:\\$perm \\(pocketmine\\\\permission\\\\PermissibleBase\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Property pocketmine\\\\Player\\:\\:\\$perm \\(pocketmine\\\\permission\\\\PermissibleBase\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\Player\\:\\:\\$sessionAdapter \\(pocketmine\\\\network\\\\mcpe\\\\PlayerNetworkSessionAdapter\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
@@ -26,12 +26,12 @@ parameters:
 			path: ../../../src/pocketmine/entity/Entity.php
 
 		-
-			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$inventory \\(pocketmine\\\\inventory\\\\PlayerInventory\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$enderChestInventory \\(pocketmine\\\\inventory\\\\EnderChestInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/entity/Human.php
 
 		-
-			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$enderChestInventory \\(pocketmine\\\\inventory\\\\EnderChestInventory\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$inventory \\(pocketmine\\\\inventory\\\\PlayerInventory\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/entity/Human.php
 
@@ -51,12 +51,12 @@ parameters:
 			path: ../../../src/pocketmine/inventory/DoubleChestInventory.php
 
 		-
-			message: "#^Property pocketmine\\\\level\\\\Level\\:\\:\\$provider \\(pocketmine\\\\level\\\\format\\\\io\\\\LevelProvider\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\level\\\\Level\\:\\:\\$blockMetadata \\(pocketmine\\\\metadata\\\\BlockMetadataStore\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Level.php
 
 		-
-			message: "#^Property pocketmine\\\\level\\\\Level\\:\\:\\$blockMetadata \\(pocketmine\\\\metadata\\\\BlockMetadataStore\\) does not accept null\\.$#"
+			message: "#^Property pocketmine\\\\level\\\\Level\\:\\:\\$provider \\(pocketmine\\\\level\\\\format\\\\io\\\\LevelProvider\\) does not accept null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Level.php
 

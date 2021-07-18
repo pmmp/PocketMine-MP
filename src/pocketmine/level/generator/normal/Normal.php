@@ -144,16 +144,9 @@ class Normal extends Generator{
 						return Biome::BIRCH_FOREST;
 					}
 				}else{
-					//FIXME: This will always cause River to be used since the rainfall is always greater than 0.8 if we
-					//reached this branch. However I don't think that substituting temperature for rainfall is correct given
-					//that mountain biomes are supposed to be pretty cold.
-					if($rainfall < 0.25){
-						return Biome::MOUNTAINS;
-					}elseif($rainfall < 0.70){
-						return Biome::SMALL_MOUNTAINS;
-					}else{
-						return Biome::RIVER;
-					}
+					//Previously here, we had a (broken) condition to generate mountains, but fixing it would have
+					//caused generation changes on a patch release, so we can't keep it here for now.
+					return Biome::RIVER;
 				}
 			}
 		};

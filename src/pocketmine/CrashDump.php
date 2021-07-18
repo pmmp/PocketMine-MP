@@ -46,6 +46,7 @@ use function is_dir;
 use function is_resource;
 use function json_encode;
 use function json_last_error_msg;
+use function ksort;
 use function max;
 use function microtime;
 use function mkdir;
@@ -81,6 +82,7 @@ use const FILE_IGNORE_NEW_LINES;
 use const JSON_UNESCAPED_SLASHES;
 use const PHP_EOL;
 use const PHP_OS;
+use const SORT_STRING;
 
 class CrashDump{
 
@@ -182,7 +184,9 @@ class CrashDump{
 			$this->addLine();
 			$this->addLine("Loaded plugins:");
 			$this->data["plugins"] = [];
-			foreach($this->server->getPluginManager()->getPlugins() as $p){
+			$plugins = $this->server->getPluginManager()->getPlugins();
+			ksort($plugins, SORT_STRING);
+			foreach($plugins as $p){
 				$d = $p->getDescription();
 				$this->data["plugins"][$d->getName()] = [
 					"name" => $d->getName(),

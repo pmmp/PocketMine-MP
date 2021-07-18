@@ -30,6 +30,7 @@ use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\Player;
 use function array_map;
 use function in_array;
@@ -165,7 +166,7 @@ class PlayerInventory extends BaseInventory{
 
 		$pk = new MobEquipmentPacket();
 		$pk->entityRuntimeId = $this->getHolder()->getId();
-		$pk->item = $item;
+		$pk->item = ItemStackWrapper::legacy($item);
 		$pk->inventorySlot = $pk->hotbarSlot = $this->getHeldItemIndex();
 		$pk->windowId = ContainerIds::INVENTORY;
 

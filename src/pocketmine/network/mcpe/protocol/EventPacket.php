@@ -48,6 +48,13 @@ class EventPacket extends DataPacket{
 	public const TYPE_CAULDRON_BLOCK_USED = 15;
 	public const TYPE_COMPOSTER_BLOCK_USED = 16;
 	public const TYPE_BELL_BLOCK_USED = 17;
+	public const TYPE_ACTOR_DEFINITION = 18;
+	public const TYPE_RAID_UPDATE = 19;
+	public const TYPE_PLAYER_MOVEMENT_ANOMALY = 20; //anti cheat
+	public const TYPE_PLAYER_MOVEMENT_CORRECTED = 21;
+	public const TYPE_HONEY_HARVESTED = 22;
+	public const TYPE_TARGET_BLOCK_HIT = 23;
+	public const TYPE_PIGLIN_BARTER = 24;
 
 	/** @var int */
 	public $playerRuntimeId;

@@ -98,10 +98,10 @@ class ArmorInventory extends BaseInventory{
 
 		$pk = new MobArmorEquipmentPacket();
 		$pk->entityRuntimeId = $this->getHolder()->getId();
-		$pk->head = $this->getHelmet();
-		$pk->chest = $this->getChestplate();
-		$pk->legs = $this->getLeggings();
-		$pk->feet = $this->getBoots();
+		$pk->head = ItemStackWrapper::legacy($this->getHelmet());
+		$pk->chest = ItemStackWrapper::legacy($this->getChestplate());
+		$pk->legs = ItemStackWrapper::legacy($this->getLeggings());
+		$pk->feet = ItemStackWrapper::legacy($this->getBoots());
 		$pk->encode();
 
 		foreach($target as $player){
@@ -126,10 +126,10 @@ class ArmorInventory extends BaseInventory{
 
 		$pk = new MobArmorEquipmentPacket();
 		$pk->entityRuntimeId = $this->getHolder()->getId();
-		$pk->head = $this->getHelmet();
-		$pk->chest = $this->getChestplate();
-		$pk->legs = $this->getLeggings();
-		$pk->feet = $this->getBoots();
+		$pk->head = ItemStackWrapper::legacy($this->getHelmet());
+		$pk->chest = ItemStackWrapper::legacy($this->getChestplate());
+		$pk->legs = ItemStackWrapper::legacy($this->getLeggings());
+		$pk->feet = ItemStackWrapper::legacy($this->getBoots());
 		$pk->encode();
 
 		foreach($target as $player){

@@ -33,6 +33,11 @@ use function count;
 class CommandOutputPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::COMMAND_OUTPUT_PACKET;
 
+	public const TYPE_LAST = 1;
+	public const TYPE_SILENT = 2;
+	public const TYPE_ALL = 3;
+	public const TYPE_DATA_SET = 4;
+
 	/** @var CommandOriginData */
 	public $originData;
 	/** @var int */
@@ -53,7 +58,7 @@ class CommandOutputPacket extends DataPacket{
 			$this->messages[] = $this->getCommandMessage();
 		}
 
-		if($this->outputType === 4){
+		if($this->outputType === self::TYPE_DATA_SET){
 			$this->unknownString = $this->getString();
 		}
 	}
@@ -81,7 +86,7 @@ class CommandOutputPacket extends DataPacket{
 			$this->putCommandMessage($message);
 		}
 
-		if($this->outputType === 4){
+		if($this->outputType === self::TYPE_DATA_SET){
 			$this->putString($this->unknownString);
 		}
 	}

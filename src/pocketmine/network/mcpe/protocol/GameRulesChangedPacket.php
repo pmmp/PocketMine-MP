@@ -32,7 +32,7 @@ class GameRulesChangedPacket extends DataPacket{
 
 	/**
 	 * @var mixed[][]
-	 * @phpstan-var array<string, array{0: int, 1: bool|int|float}>
+	 * @phpstan-var array<string, array{0: int, 1: bool|int|float, 2: bool}>
 	 */
 	public $gameRules = [];
 
