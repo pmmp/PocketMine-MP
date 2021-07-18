@@ -115,7 +115,9 @@ class TeleportCommand extends VanillaCommand{
 				$y = $this->getRelativeDouble($base->y, $sender, $targetArgs[1], 0, 256);
 				$z = $this->getRelativeDouble($base->z, $sender, $targetArgs[2]);
 				$targetLocation = new Location($x, $y, $z, $yaw, $pitch, $base->getWorld());
-
+				
+				$base->getWorld()->loadChunk($x >> 4, $z >> 4);
+	
 				$subject->teleport($targetLocation);
 				Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_TP_SUCCESS_COORDINATES, [
 					$subject->getName(),
