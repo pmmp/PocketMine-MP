@@ -107,7 +107,7 @@ class SweetBerryBush extends Flowable{
 		return true;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		if(($dropAmount = $this->getBerryDropAmount()) > 0){
 			return [
 				VanillaItems::SWEET_BERRIES()->setCount($dropAmount)
