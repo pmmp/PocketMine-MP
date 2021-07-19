@@ -59,19 +59,30 @@ class ShulkerBox extends Opaque{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function asItem() : Item{
-		$item = parent::asItem();
-		$shulker = $this->pos->getWorld()->getTile($this->pos);
-		if($shulker instanceof TileShulkerBox){
-			$shulkerNBT = $shulker->getCleanedNBT();
-			if($shulkerNBT !== null){
-				$item->setNamedTag($shulkerNBT);
-			}
-			if($shulker->hasName()){
-				$item->setCustomName($shulker->getName());
-			}
+	private function addDataFromTile(TileShulkerBox $tile, Item $item) : void{
+		$shulkerNBT = $tile->getCleanedNBT();
+		if($shulkerNBT !== null){
+			$item->setNamedTag($shulkerNBT);
 		}
-		return $item;
+		if($tile->hasName()){
+			$item->setCustomName($tile->getName());
+		}
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		$drop = $this->asItem();
+		if(($tile = $this->pos->getWorld()->getTile($this->pos)) instanceof TileShulkerBox){
+			$this->addDataFromTile($tile, $drop);
+		}
+		return [$drop];
+	}
+
+	public function getPickedItem(bool $addUserData = false) : Item{
+		$result = parent::getPickedItem($addUserData);
+		if($addUserData && ($tile = $this->pos->getWorld()->getTile($this->pos)) instanceof TileShulkerBox){
+			$this->addDataFromTile($tile, $result);
+		}
+		return $result;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
