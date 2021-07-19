@@ -101,16 +101,20 @@ class SweetBerryBush extends Flowable{
 			$item->pop();
 		}elseif(($dropAmount = $this->getBerryDropAmount()) > 0){
 			$this->pos->getWorld()->setBlock($this->pos, $this->setAge(self::STAGE_BUSH_NO_BERRIES));
-			$this->pos->getWorld()->dropItem($this->pos, VanillaItems::SWEET_BERRIES()->setCount($dropAmount));
+			$this->pos->getWorld()->dropItem($this->pos, $this->asItem()->setCount($dropAmount));
 		}
 
 		return true;
 	}
 
+	public function asItem() : Item{
+		return VanillaItems::SWEET_BERRIES();
+	}
+
 	public function getDropsForCompatibleTool(Item $item) : array{
 		if(($dropAmount = $this->getBerryDropAmount()) > 0){
 			return [
-				VanillaItems::SWEET_BERRIES()->setCount($dropAmount)
+				$this->asItem()->setCount($dropAmount)
 			];
 		}
 
