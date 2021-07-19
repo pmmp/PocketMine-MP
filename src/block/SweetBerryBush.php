@@ -36,6 +36,10 @@ use function in_array;
 use function mt_rand;
 
 class SweetBerryBush extends Flowable{
+	public const STAGE_SAPLING = 0;
+	public const STAGE_BUSH_NO_BERRIES = 1;
+	public const STAGE_BUSH_SOME_BERRIES = 2;
+	public const STAGE_MATURE = 3;
 
 	protected int $age;
 
@@ -44,7 +48,7 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 7);
+		$this->age = BlockDataSerializer::readBoundedInt("stage", $stateMeta, self::STAGE_SAPLING, self::STAGE_MATURE);
 	}
 
 	public function getStateBitmask() : int{
@@ -55,11 +59,20 @@ class SweetBerryBush extends Flowable{
 
 	/** @return $this */
 	public function setAge(int $age) : self{
-		if($age < 0 || $age > 7){
-			throw new \InvalidArgumentException("Age must be in range 0-7");
+		if($age < self::STAGE_SAPLING || $age > self::STAGE_MATURE){
+			throw new \InvalidArgumentException("Age must be in range 0-3");
 		}
 		$this->age = $age;
 		return $this;
+	}
+
+	public function getBerryDropAmount() : int{
+		if($this->age === self::STAGE_MATURE){
+			return mt_rand(2, 3);
+		}elseif($this->age >= self::STAGE_BUSH_SOME_BERRIES){
+			return mt_rand(1, 2);
+		}
+		return 0;
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -68,7 +81,7 @@ class SweetBerryBush extends Flowable{
 			case BlockLegacyIds::GRASS:
 			case BlockLegacyIds::DIRT:
 			case BlockLegacyIds::PODZOL:
-				return Block::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+				return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 
 			default:
 				return false;
@@ -77,31 +90,21 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item instanceof Fertilizer){
+		if($this->age < self::STAGE_MATURE && $item instanceof Fertilizer){
 			$block = clone $this;
 			$block->age++;
-			if($block->age > 7){
-				$block->age = 7;
-
-			}
 
 			$ev = new BlockGrowEvent($this, $block);
 			$ev->call();
 
 			if(!$ev->isCancelled()){
-				if($ev->getNewState()->getAge() >= 4){
-					$ev->getNewState()->setAge(1);
-					$this->pos->getWorld()->dropItem($this->pos, VanillaItems::SWEET_BERRIES()->setCount(mt_rand(2, 3)));
-				}
-
 				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
 			}
 
 			$item->pop();
-		}elseif($this->age >= 2){
-			$this->age = 1;
-			$this->pos->getWorld()->setBlock($this->pos, $this);
-			$this->pos->getWorld()->dropItem($this->pos, VanillaItems::SWEET_BERRIES()->setCount($this->age === 3 ? mt_rand(2, 3) : mt_rand(1, 2)));
+		}elseif(($dropAmount = $this->getBerryDropAmount()) > 0){
+			$this->pos->getWorld()->setBlock($this->pos, $this->setAge(self::STAGE_BUSH_NO_BERRIES));
+			$this->pos->getWorld()->dropItem($this->pos, VanillaItems::SWEET_BERRIES()->setCount($dropAmount));
 		}
 
 		return true;
@@ -109,9 +112,9 @@ class SweetBerryBush extends Flowable{
 
 	public function getDrops(Item $item) : array{
 
-		if($this->age >= 2){
+		if(($dropAmount = $this->getBerryDropAmount()) > 0){
 			return [
-				VanillaItems::SWEET_BERRIES()->setCount($this->age === 3 ? mt_rand(2, 3) : mt_rand(1, 2))
+				VanillaItems::SWEET_BERRIES()->setCount($dropAmount)
 			];
 		}
 
@@ -131,7 +134,7 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < 7 and mt_rand(0, 2) === 1){
+		if($this->age < self::STAGE_MATURE and mt_rand(0, 2) === 1){
 			$block = clone $this;
 			++$block->age;
 			$ev = new BlockGrowEvent($this, $block);
