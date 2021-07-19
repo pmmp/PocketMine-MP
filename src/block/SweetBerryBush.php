@@ -32,7 +32,6 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use function in_array;
 use function mt_rand;
 
 class SweetBerryBush extends Flowable{
@@ -75,18 +74,16 @@ class SweetBerryBush extends Flowable{
 		return 0;
 	}
 
+	protected function canBeSupportedBy(Block $block) : bool{
+		$id = $block->getId();
+		return $id === BlockLegacyIds::GRASS || $id === BlockLegacyIds::DIRT || $id === BlockLegacyIds::PODZOL;
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		switch($blockReplace->getSide(Facing::DOWN)->getId()){
-
-			case BlockLegacyIds::GRASS:
-			case BlockLegacyIds::DIRT:
-			case BlockLegacyIds::PODZOL:
-				return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-
-			default:
-				return false;
-
+		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
+			return false;
 		}
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -122,9 +119,7 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$side = $this->getSide(Facing::DOWN);
-		$supportedIds = [BlockLegacyIds::GRASS, BlockLegacyIds::DIRT, BlockLegacyIds::PODZOL];
-		if(!in_array($side->getId(), $supportedIds, true)){
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
