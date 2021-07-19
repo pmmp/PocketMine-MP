@@ -34,22 +34,15 @@ use function assert;
 
 class FlowerPot extends Flowable{
 
-	/**
-	 * TODO: get rid of this hack (it's currently needed to deal with blockfactory state handling)
-	 */
-	protected bool $occupied = false;
 	protected ?Block $plant = null;
 
 	protected function writeStateToMeta() : int{
-		return $this->occupied ? BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED : 0;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->occupied = ($stateMeta & BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED) !== 0;
+		//TODO: HACK! this is just to make the client actually render the plant - we purposely don't read the flag back
+		return $this->plant !== null ? BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED : 0;
 	}
 
 	public function getStateBitmask() : int{
-		return 0b1111; //vanilla uses various values, we only care about 1 and 0 for PE
+		return 0b1;
 	}
 
 	public function readStateFromWorld() : void{
@@ -58,7 +51,7 @@ class FlowerPot extends Flowable{
 		if($tile instanceof TileFlowerPot){
 			$this->setPlant($tile->getPlant());
 		}else{
-			$this->occupied = false;
+			$this->setPlant(null);
 		}
 	}
 
@@ -81,7 +74,6 @@ class FlowerPot extends Flowable{
 		}else{
 			$this->plant = clone $plant;
 		}
-		$this->occupied = $this->plant !== null;
 		return $this;
 	}
 
