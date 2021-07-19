@@ -24,7 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\event\block\BlockGrowEvent;
+use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -141,5 +144,16 @@ class SweetBerryBush extends Flowable{
 				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
 			}
 		}
+	}
+
+	public function hasEntityCollision() : bool{
+		return true;
+	}
+
+	public function onEntityInside(Entity $entity) : bool{
+		if($this->age >= self::STAGE_BUSH_NO_BERRIES && $entity instanceof Living){
+			$entity->attack(new EntityDamageByBlockEvent($this, $entity, EntityDamageByBlockEvent::CAUSE_CONTACT, 1));
+		}
+		return true;
 	}
 }
