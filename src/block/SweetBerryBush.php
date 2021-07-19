@@ -32,9 +32,10 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function in_array;
 use function mt_rand;
 
-class SweetBerryBush extends Flowable {
+class SweetBerryBush extends Flowable{
 
 	protected $age;
 
@@ -62,7 +63,7 @@ class SweetBerryBush extends Flowable {
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		switch ($blockReplace->getSide(Facing::DOWN)->getId()){
+		switch($blockReplace->getSide(Facing::DOWN)->getId()){
 
 			case BlockLegacyIds::GRASS:
 			case BlockLegacyIds::DIRT:
@@ -76,10 +77,10 @@ class SweetBerryBush extends Flowable {
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if ($item instanceof Fertilizer) {
+		if($item instanceof Fertilizer){
 			$block = clone $this;
 			$block->age++;
-			if ($block->age > 7) {
+			if($block->age > 7){
 				$block->age = 7;
 
 			}
@@ -87,8 +88,8 @@ class SweetBerryBush extends Flowable {
 			$ev = new BlockGrowEvent($this, $block);
 			$ev->call();
 
-			if (!$ev->isCancelled()) {
-				if ($ev->getNewState()->getAge() >= 4) {
+			if(!$ev->isCancelled()){
+				if($ev->getNewState()->getAge() >= 4){
 					$ev->getNewState()->setAge(1);
 					$this->pos->getWorld()->dropItem($this->pos, VanillaItems::SWEET_BERRIES()->setCount(mt_rand(2, 3)));
 				}
@@ -97,7 +98,7 @@ class SweetBerryBush extends Flowable {
 			}
 
 			$item->pop();
-		} elseif ($this->age >= 2) {
+		}elseif($this->age >= 2){
 			$this->age = 1;
 			$this->pos->getWorld()->setBlock($this->pos, $this);
 			$this->pos->getWorld()->dropItem($this->pos, VanillaItems::SWEET_BERRIES()->setCount($this->age === 3 ? mt_rand(2, 3) : mt_rand(1, 2)));
@@ -106,9 +107,9 @@ class SweetBerryBush extends Flowable {
 		return true;
 	}
 
-	public function getDrops(Item $item): array{
+	public function getDrops(Item $item) : array{
 
-		if ($this->age >= 2){
+		if($this->age >= 2){
 			return [
 				VanillaItems::SWEET_BERRIES()->setCount($this->age === 3 ? mt_rand(2, 3) : mt_rand(1, 2))
 			];
@@ -120,7 +121,7 @@ class SweetBerryBush extends Flowable {
 	public function onNearbyBlockChange() : void{
 		$side = $this->getSide(Facing::DOWN);
 		$supportedIds = [BlockLegacyIds::GRASS, BlockLegacyIds::DIRT, BlockLegacyIds::PODZOL];
-		if(!in_array($side->getId(),$supportedIds)){
+		if(!in_array($side->getId(), $supportedIds, true)){
 			$this->pos->getWorld()->useBreakOn($this->pos);
 		}
 	}
