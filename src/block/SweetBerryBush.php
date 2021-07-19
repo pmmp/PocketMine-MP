@@ -37,7 +37,7 @@ use function mt_rand;
 
 class SweetBerryBush extends Flowable{
 
-	protected $age;
+	protected int $age;
 
 	protected function writeStateToMeta() : int{
 		return $this->age;
