@@ -585,7 +585,7 @@ class BlockFactory{
 		//TODO: minecraft:sticky_piston
 		//TODO: minecraft:stonecutter_block
 		//TODO: minecraft:structure_block
-		//TODO: minecraft:sweet_berry_bush
+		$this->register(new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH, 0, ItemIds::SWEET_BERRIES), "Sweet Berry Bush", BlockBreakInfo::instant()));
 		//TODO: minecraft:turtle_egg
 		//endregion
 

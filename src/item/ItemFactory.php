@@ -326,7 +326,7 @@ class ItemFactory{
 		//TODO: minecraft:shield
 		//TODO: minecraft:sparkler
 		//TODO: minecraft:spawn_egg
-		//TODO: minecraft:sweet_berries
+		$this->register(new SweetBerries(new ItemIdentifier(ItemIds::SWEET_BERRIES, 0), "Sweet Berries"));
 		//TODO: minecraft:tnt_minecart
 		//TODO: minecraft:trident
 		//TODO: minecraft:turtle_helmet
