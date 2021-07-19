@@ -65,6 +65,7 @@ use function assert;
  * @method static Bed BED()
  * @method static Bedrock BEDROCK()
  * @method static Beetroot BEETROOTS()
+ * @method static Bell BELL()
  * @method static WoodenButton BIRCH_BUTTON()
  * @method static WoodenDoor BIRCH_DOOR()
  * @method static WoodenFence BIRCH_FENCE()
@@ -626,6 +627,7 @@ final class VanillaBlocks{
 		self::register("bed", $factory->get(26, 0));
 		self::register("bedrock", $factory->get(7, 0));
 		self::register("beetroots", $factory->get(244, 0));
+		self::register("bell", $factory->get(461, 0));
 		self::register("birch_button", $factory->get(396, 0));
 		self::register("birch_door", $factory->get(194, 0));
 		self::register("birch_fence", $factory->get(85, 2));
