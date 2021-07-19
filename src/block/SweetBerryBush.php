@@ -40,7 +40,7 @@ class SweetBerryBush extends Flowable{
 	public const STAGE_BUSH_SOME_BERRIES = 2;
 	public const STAGE_MATURE = 3;
 
-	protected int $age;
+	protected int $age = self::STAGE_SAPLING;
 
 	protected function writeStateToMeta() : int{
 		return $this->age;
