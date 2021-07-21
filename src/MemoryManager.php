@@ -319,8 +319,6 @@ class MemoryManager{
 
 		$obData = fopen(Path::join($outputFolder, "objects.js"), "wb+");
 
-		$data = [];
-
 		$objects = [];
 
 		$refCounts = [];
