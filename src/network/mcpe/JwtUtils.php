@@ -124,14 +124,10 @@ final class JwtUtils{
 			OPENSSL_ALGO_SHA384
 		);
 		switch($v){
-			case 0:
-				return false;
-			case 1:
-				return true;
-			case -1:
-				throw new JwtException("Error verifying JWT signature: " . openssl_error_string());
-			default:
-				throw new AssumptionFailedError("openssl_verify() should only return -1, 0 or 1");
+			case 0: return false;
+			case 1: return true;
+			case -1: throw new JwtException("Error verifying JWT signature: " . openssl_error_string());
+			default: throw new AssumptionFailedError("openssl_verify() should only return -1, 0 or 1");
 		}
 	}
 
