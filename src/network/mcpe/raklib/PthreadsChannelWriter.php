@@ -23,18 +23,12 @@ use raklib\server\ipc\InterThreadChannelWriter;
 final class PthreadsChannelWriter implements InterThreadChannelWriter{
 	/** @var \Threaded */
 	private $buffer;
-	/** @var SleeperNotifier|null */
-	private $notifier;
 
-	public function __construct(\Threaded $buffer, ?SleeperNotifier $notifier = null){
+	public function __construct(\Threaded $buffer){
 		$this->buffer = $buffer;
-		$this->notifier = $notifier;
 	}
 
 	public function write(string $str) : void{
 		$this->buffer[] = $str;
-		if($this->notifier !== null){
-			$this->notifier->wakeupSleeper();
-		}
 	}
 }
