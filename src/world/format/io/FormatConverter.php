@@ -155,13 +155,8 @@ class FormatConverter{
 			if(($counter % $this->chunksPerProgressUpdate) === 0){
 				$time = microtime(true);
 				$diff = $time - $thisRound;
-				$averageChunksPerSec = $counter / ($time - $start);
-				$eta = ($count - $counter) / $averageChunksPerSec;
-				$now = new \DateTimeImmutable();
-				$period = $now->diff($now->add(new \DateInterval("PT{$eta}S")));
 				$thisRound = $time;
-				$percent = round(($counter / $count) * 100, 2);
-				$this->logger->info("Converted $counter / $count chunks ($percent%) - " . floor($this->chunksPerProgressUpdate / $diff) . " chunks/sec - avg $averageChunksPerSec chunks/sec - ETA " . $period->format("%ad %Hh %Mm %Ss"));
+				$this->logger->info("Converted $counter / $count chunks (" . floor($this->chunksPerProgressUpdate / $diff) . " chunks/sec)");
 			}
 		}
 		$total = microtime(true) - $start;
