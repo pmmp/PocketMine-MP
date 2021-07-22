@@ -71,23 +71,21 @@ abstract class BaseRail extends Flowable{
 		]
 	];
 
-	/** @var int[] */
-	protected array $connections = [];
+	protected int $railShape = BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;
 
 	protected function writeStateToMeta() : int{
-		if(count($this->connections) === 0){
-			return BlockLegacyMetadata::RAIL_STRAIGHT_NORTH_SOUTH;
-		}
-		return $this->getMetaForState($this->connections);
+		return $this->railShape;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$connections = $this->getConnectionsFromMeta($stateMeta);
-		if($connections === null){
+		$railShape = $this->readRailShapeFromMeta($stateMeta);
+		if($railShape === null){
 			throw new InvalidBlockStateException("Invalid rail type meta $stateMeta");
 		}
-		$this->connections = $connections;
+		$this->railShape = $railShape;
 	}
+
+	abstract protected function readRailShapeFromMeta(int $stateMeta) : ?int;
 
 	public function getStateBitmask() : int{
 		return 0b1111;
@@ -129,7 +127,7 @@ abstract class BaseRail extends Flowable{
 	 *
 	 * @throws \InvalidArgumentException if no state matches the given connections
 	 */
-	protected function getMetaForState(array $connections) : int{
+	protected function getShapeForConnections(array $connections) : int{
 		return self::searchState($connections, self::CONNECTIONS);
 	}
 
@@ -138,7 +136,7 @@ abstract class BaseRail extends Flowable{
 	 *
 	 * @return int[]
 	 */
-	abstract protected function getConnectionsFromMeta(int $meta) : ?array;
+	abstract protected function getCurrentShapeConnections() : array;
 
 	/**
 	 * Returns all the directions this rail is already connected in.
@@ -150,7 +148,7 @@ abstract class BaseRail extends Flowable{
 		$connections = [];
 
 		/** @var int $connection */
-		foreach($this->connections as $connection){
+		foreach($this->getCurrentShapeConnections() as $connection){
 			$other = $this->getSide($connection & ~self::FLAG_ASCEND);
 			$otherConnection = Facing::opposite($connection & ~self::FLAG_ASCEND);
 
@@ -164,7 +162,7 @@ abstract class BaseRail extends Flowable{
 
 			if(
 				$other instanceof BaseRail and
-				in_array($otherConnection, $other->connections, true)
+				in_array($otherConnection, $other->getCurrentShapeConnections(), true)
 			){
 				$connections[] = $connection;
 			}
@@ -278,14 +276,14 @@ abstract class BaseRail extends Flowable{
 			throw new \InvalidArgumentException("Expected exactly 2 connections, got " . count($connections));
 		}
 
-		$this->connections = $connections;
+		$this->railShape = $this->getShapeForConnections($connections);
 	}
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){
 			$this->pos->getWorld()->useBreakOn($this->pos);
 		}else{
-			foreach($this->connections as $connection){
+			foreach($this->getCurrentShapeConnections() as $connection){
 				if(($connection & self::FLAG_ASCEND) !== 0 and $this->getSide($connection & ~self::FLAG_ASCEND)->isTransparent()){
 					$this->pos->getWorld()->useBreakOn($this->pos);
 					break;

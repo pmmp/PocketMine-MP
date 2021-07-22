@@ -48,16 +48,20 @@ class Rail extends BaseRail{
 		]
 	];
 
-	protected function getMetaForState(array $connections) : int{
+	protected function readRailShapeFromMeta(int $stateMeta) : ?int{
+		return isset(self::CURVE_CONNECTIONS[$stateMeta]) || isset(self::CONNECTIONS[$stateMeta]) ? $stateMeta : null;
+	}
+
+	protected function getShapeForConnections(array $connections) : int{
 		try{
 			return self::searchState($connections, self::CURVE_CONNECTIONS);
 		}catch(\InvalidArgumentException $e){
-			return parent::getMetaForState($connections);
+			return parent::getShapeForConnections($connections);
 		}
 	}
 
-	protected function getConnectionsFromMeta(int $meta) : ?array{
-		return self::CURVE_CONNECTIONS[$meta] ?? self::CONNECTIONS[$meta] ?? null;
+	protected function getCurrentShapeConnections() : array{
+		return self::CURVE_CONNECTIONS[$this->railShape] ?? self::CONNECTIONS[$this->railShape];
 	}
 
 	protected function getPossibleConnectionDirectionsOneConstraint(int $constraint) : array{

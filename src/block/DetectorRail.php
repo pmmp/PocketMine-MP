@@ -34,6 +34,11 @@ class DetectorRail extends BaseRail{
 		return $this;
 	}
 
+	protected function readRailShapeFromMeta(int $stateMeta) : ?int{
+		$stateMeta &= ~BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED;
+		return isset(self::CONNECTIONS[$stateMeta]) ? $stateMeta : null;
+	}
+
 	protected function writeStateToMeta() : int{
 		return parent::writeStateToMeta() | ($this->activated ? BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED : 0);
 	}
@@ -43,8 +48,8 @@ class DetectorRail extends BaseRail{
 		$this->activated = ($stateMeta & BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED) !== 0;
 	}
 
-	protected function getConnectionsFromMeta(int $meta) : ?array{
-		return self::CONNECTIONS[$meta & ~BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED] ?? null;
+	protected function getCurrentShapeConnections() : array{
+		return self::CONNECTIONS[$this->railShape];
 	}
 
 	//TODO
