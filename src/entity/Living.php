@@ -507,7 +507,7 @@ abstract class Living extends Entity{
 		$this->broadcastAnimation(new HurtAnimation($this));
 	}
 
-	public function knockBack(float $x, float $z, float $base = 0.4, ?float $verticalLimit = 0.4) : void{
+	public function knockBack(float $x, float $z, float $force = 0.4, ?float $verticalLimit = 0.4) : void{
 		$f = sqrt($x * $x + $z * $z);
 		if($f <= 0){
 			return;
@@ -518,11 +518,11 @@ abstract class Living extends Entity{
 			$motionX = $this->motion->x / 2;
 			$motionY = $this->motion->y / 2;
 			$motionZ = $this->motion->z / 2;
-			$motionX += $x * $f * $base;
-			$motionY += $base;
-			$motionZ += $z * $f * $base;
+			$motionX += $x * $f * $force;
+			$motionY += $force;
+			$motionZ += $z * $f * $force;
 
-			$verticalLimit ??= $base;
+			$verticalLimit ??= $force;
 			if($motionY > $verticalLimit){
 				$motionY = $verticalLimit;
 			}
