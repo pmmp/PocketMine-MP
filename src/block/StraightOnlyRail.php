@@ -25,6 +25,8 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\RailConnectionInfo;
+use function array_keys;
+use function implode;
 
 /**
  * Simple non-curvable rail.
@@ -60,5 +62,17 @@ class StraightOnlyRail extends BaseRail{
 
 	protected function getCurrentShapeConnections() : array{
 		return RailConnectionInfo::CONNECTIONS[$this->railShape];
+	}
+
+	public function getShape() : int{ return $this->railShape; }
+
+	/** @return $this */
+	public function setShape(int $shape) : self{
+		if(!isset(RailConnectionInfo::CONNECTIONS[$shape])){
+			throw new \InvalidArgumentException("Invalid rail shape, must be one of " . implode(", ", array_keys(RailConnectionInfo::CONNECTIONS)));
+		}
+		$this->railShape = $shape;
+		return $this;
+
 	}
 }

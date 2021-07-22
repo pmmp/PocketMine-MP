@@ -26,6 +26,8 @@ namespace pocketmine\block;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\RailConnectionInfo;
 use pocketmine\math\Facing;
+use function array_keys;
+use function implode;
 
 class Rail extends BaseRail{
 
@@ -76,5 +78,16 @@ class Rail extends BaseRail{
 		}
 
 		return $possible;
+	}
+
+	public function getShape() : int{ return $this->railShape; }
+
+	/** @return $this */
+	public function setShape(int $shape) : self{
+		if(!isset(RailConnectionInfo::CONNECTIONS[$shape]) && !isset(RailConnectionInfo::CURVE_CONNECTIONS[$shape])){
+			throw new \InvalidArgumentException("Invalid shape, must be one of " . implode(", ", [...array_keys(RailConnectionInfo::CONNECTIONS), ...array_keys(RailConnectionInfo::CURVE_CONNECTIONS)]));
+		}
+		$this->railShape = $shape;
+		return $this;
 	}
 }
