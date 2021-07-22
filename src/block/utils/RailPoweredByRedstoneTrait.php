@@ -28,21 +28,17 @@ use pocketmine\block\BlockLegacyMetadata;
 trait RailPoweredByRedstoneTrait{
 	use PoweredByRedstoneTrait;
 
-	protected function readRailShapeFromMeta(int $stateMeta) : ?int{
-		$stateMeta &= ~BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED;
-		return isset(self::CONNECTIONS[$stateMeta]) ? $stateMeta : null;
-	}
-
-	protected function writeStateToMeta() : int{
-		return parent::writeStateToMeta() | ($this->powered ? BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED : 0);
-	}
-
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		parent::readStateFromData($id, $stateMeta);
+		parent::readStateFromData($id, $stateMeta & ~BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED);
 		$this->powered = ($stateMeta & BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED) !== 0;
 	}
 
-	protected function getCurrentShapeConnections() : array{
-		return self::CONNECTIONS[$this->railShape];
+	protected function writeStateToMeta() : int{
+		//TODO: railShape won't be plain metadata in the future
+		return parent::writeStateToMeta() | ($this->powered ? BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED : 0);
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 }

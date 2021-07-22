@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class DetectorRail extends BaseRail{
+class DetectorRail extends StraightOnlyRail{
 	protected bool $activated = false;
 
 	public function isActivated() : bool{ return $this->activated; }
@@ -34,22 +34,17 @@ class DetectorRail extends BaseRail{
 		return $this;
 	}
 
-	protected function readRailShapeFromMeta(int $stateMeta) : ?int{
-		$stateMeta &= ~BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED;
-		return isset(self::CONNECTIONS[$stateMeta]) ? $stateMeta : null;
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		parent::readStateFromData($id, $stateMeta & ~BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED);
+		$this->activated = ($stateMeta & BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED) !== 0;
 	}
 
 	protected function writeStateToMeta() : int{
 		return parent::writeStateToMeta() | ($this->activated ? BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED : 0);
 	}
 
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		parent::readStateFromData($id, $stateMeta);
-		$this->activated = ($stateMeta & BlockLegacyMetadata::REDSTONE_RAIL_FLAG_POWERED) !== 0;
-	}
-
-	protected function getCurrentShapeConnections() : array{
-		return self::CONNECTIONS[$this->railShape];
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 
 	//TODO
