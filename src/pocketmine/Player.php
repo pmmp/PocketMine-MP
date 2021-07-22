@@ -490,8 +490,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * non-XBL players can fake their UUIDs.
 	 *
 	 * WARNING: DO NOT trust this before PlayerLoginEvent. Before PlayerLoginEvent, the player hasn't yet been
-	 * authenticated, and any of their data might be faked. However, you can use it for things like checking bans at any
-	 * time (since it doesn't make sense to impersonate a banned player anyway).
+	 * authenticated, and any of their data might be faked.
 	 */
 	public function getUniqueId() : ?UUID{
 		return parent::getUniqueId();
