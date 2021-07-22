@@ -32,7 +32,7 @@
       "ext-zlib": ">=1.2.11",
       "composer-runtime-api": "^2.0",
       "adhocore/json-comment": "^1.1",
-      "mdanter/ecc": "^1.0",
+      "fgrosse/phpasn1": "^2.3",
       "netresearch/jsonmapper": "^4.0",
       "pocketmine/bedrock-protocol": "dev-master#88ae308a03e8e61ccfdddd42623efabe9e772b42",
       "pocketmine/binaryutils": "^0.2.1",

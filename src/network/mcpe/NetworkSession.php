@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\EffectInstance;
@@ -203,7 +202,7 @@ class NetworkSession{
 				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
 				$this->logger->setPrefix($this->getLogPrefix());
 			},
-			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPubKey) : void{
+			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
 				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
 			}
 		));
@@ -570,7 +569,7 @@ class NetworkSession{
 		}, $reason);
 	}
 
-	private function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPubKey) : void{
+	private function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
 		if(!$this->connected){
 			return;
 		}
