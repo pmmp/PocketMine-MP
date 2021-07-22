@@ -17,7 +17,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\raklib;
 
-use pocketmine\snooze\SleeperNotifier;
 use raklib\server\ipc\InterThreadChannelWriter;
 
 final class PthreadsChannelWriter implements InterThreadChannelWriter{
