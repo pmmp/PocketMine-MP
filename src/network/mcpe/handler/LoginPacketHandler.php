@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
-use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerPreLoginEvent;
 use pocketmine\lang\KnownTranslationKeys;
@@ -63,23 +62,19 @@ class LoginPacketHandler extends PacketHandler{
 	private $playerInfoConsumer;
 	/**
 	 * @var \Closure
-	 * @phpstan-var \Closure(bool, bool, ?string, ?PublicKeyInterface) : void
+	 * @phpstan-var \Closure(bool, bool, ?string, ?string) : void
 	 */
 	private $authCallback;
 
 	/**
 	 * @phpstan-param \Closure(PlayerInfo) : void $playerInfoConsumer
-	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPubKey) : void $authCallback
+	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void $authCallback
 	 */
 	public function __construct(Server $server, NetworkSession $session, \Closure $playerInfoConsumer, \Closure $authCallback){
 		$this->session = $session;
 		$this->server = $server;
 		$this->playerInfoConsumer = $playerInfoConsumer;
 		$this->authCallback = $authCallback;
-	}
-
-	private static function dummy() : void{
-		echo PublicKeyInterface::class; //this prevents the import getting removed by tools that don't understand phpstan
 	}
 
 	public function handleLogin(LoginPacket $packet) : bool{

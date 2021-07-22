@@ -23,36 +23,39 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
-use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
-use Mdanter\Ecc\Crypto\Signature\Signature;
-use Mdanter\Ecc\Serializer\PrivateKey\DerPrivateKeySerializer;
-use Mdanter\Ecc\Serializer\PrivateKey\PemPrivateKeySerializer;
-use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
-use Mdanter\Ecc\Serializer\PublicKey\PemPublicKeySerializer;
-use Mdanter\Ecc\Serializer\Signature\DerSignatureSerializer;
+use FG\ASN1\Exception\ParserException;
+use FG\ASN1\Universal\Integer;
+use FG\ASN1\Universal\Sequence;
 use pocketmine\utils\AssumptionFailedError;
 use function base64_decode;
 use function base64_encode;
-use function bin2hex;
 use function count;
 use function explode;
+use function gmp_export;
+use function gmp_import;
 use function gmp_init;
 use function gmp_strval;
-use function hex2bin;
 use function is_array;
 use function json_decode;
 use function json_encode;
 use function json_last_error_msg;
 use function openssl_error_string;
+use function openssl_pkey_get_details;
+use function openssl_pkey_get_public;
 use function openssl_sign;
 use function openssl_verify;
+use function preg_match;
 use function rtrim;
+use function sprintf;
 use function str_pad;
 use function str_repeat;
+use function str_replace;
 use function str_split;
 use function strlen;
 use function strtr;
+use const GMP_BIG_ENDIAN;
+use const GMP_MSW_FIRST;
+use const JSON_THROW_ON_ERROR;
 use const OPENSSL_ALGO_SHA384;
 use const STR_PAD_LEFT;
 
@@ -94,9 +97,11 @@ final class JwtUtils{
 	}
 
 	/**
+	 * @param resource $signingKey
+	 *
 	 * @throws JwtException
 	 */
-	public static function verify(string $jwt, PublicKeyInterface $signingKey) : bool{
+	public static function verify(string $jwt, $signingKey) : bool{
 		[$header, $body, $signature] = self::split($jwt);
 
 		$plainSignature = self::b64UrlDecode($signature);
@@ -105,12 +110,17 @@ final class JwtUtils{
 		}
 
 		[$rString, $sString] = str_split($plainSignature, 48);
-		$sig = new Signature(gmp_init(bin2hex($rString), 16), gmp_init(bin2hex($sString), 16));
+		$convert = fn(string $str) => gmp_strval(gmp_import($str, 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST), 10);
+
+		$sequence = new Sequence(
+			new Integer($convert($rString)),
+			new Integer($convert($sString))
+		);
 
 		$v = openssl_verify(
 			$header . '.' . $body,
-			(new DerSignatureSerializer())->serialize($sig),
-			(new PemPublicKeySerializer(new DerPublicKeySerializer()))->serialize($signingKey),
+			$sequence->getBinary(),
+			$signingKey,
 			OPENSSL_ALGO_SHA384
 		);
 		switch($v){
@@ -122,24 +132,43 @@ final class JwtUtils{
 	}
 
 	/**
+	 * @param resource                     $signingKey
+	 *
 	 * @phpstan-param array<string, mixed> $header
 	 * @phpstan-param array<string, mixed> $claims
 	 */
-	public static function create(array $header, array $claims, PrivateKeyInterface $signingKey) : string{
-		$jwtBody = JwtUtils::b64UrlEncode(json_encode($header)) . "." . JwtUtils::b64UrlEncode(json_encode($claims));
+	public static function create(array $header, array $claims, $signingKey) : string{
+		$jwtBody = JwtUtils::b64UrlEncode(json_encode($header, JSON_THROW_ON_ERROR)) . "." . JwtUtils::b64UrlEncode(json_encode($claims, JSON_THROW_ON_ERROR));
 
 		openssl_sign(
 			$jwtBody,
-			$sig,
-			(new PemPrivateKeySerializer(new DerPrivateKeySerializer()))->serialize($signingKey),
+			$rawDerSig,
+			$signingKey,
 			OPENSSL_ALGO_SHA384
 		);
 
-		$decodedSig = (new DerSignatureSerializer())->parse($sig);
-		$jwtSig = JwtUtils::b64UrlEncode(
-			hex2bin(str_pad(gmp_strval($decodedSig->getR(), 16), 96, "0", STR_PAD_LEFT)) .
-			hex2bin(str_pad(gmp_strval($decodedSig->getS(), 16), 96, "0", STR_PAD_LEFT))
+		try{
+			$asnObject = Sequence::fromBinary($rawDerSig);
+		}catch(ParserException $e){
+			throw new AssumptionFailedError("Failed to parse OpenSSL signature: " . $e->getMessage(), 0, $e);
+		}
+		if(count($asnObject) !== 2){
+			throw new AssumptionFailedError("OpenSSL produced invalid signature, expected exactly 2 parts");
+		}
+		[$r, $s] = [$asnObject[0], $asnObject[1]];
+		if(!($r instanceof Integer) || !($s instanceof Integer)){
+			throw new AssumptionFailedError("OpenSSL produced invalid signature, expected 2 INTEGER parts");
+		}
+		$rString = $r->getContent();
+		$sString = $s->getContent();
+
+		$toBinary = fn($str) => str_pad(
+			gmp_export(gmp_init($str, 10), 1, GMP_BIG_ENDIAN | GMP_MSW_FIRST),
+			48,
+			"\x00",
+			STR_PAD_LEFT
 		);
+		$jwtSig = JwtUtils::b64UrlEncode($toBinary($rString) . $toBinary($sString));
 
 		return "$jwtBody.$jwtSig";
 	}
@@ -157,5 +186,36 @@ final class JwtUtils{
 			throw new JwtException("Malformed base64url encoded payload could not be decoded");
 		}
 		return $decoded;
+	}
+
+	/**
+	 * @param resource $opensslKey
+	 */
+	public static function emitDerPublicKey($opensslKey) : string{
+		$details = openssl_pkey_get_details($opensslKey);
+		if($details === false){
+			throw new AssumptionFailedError("Failed to get details from OpenSSL key resource");
+		}
+
+		/** @var string $pemKey */
+		$pemKey = $details['key'];
+		if(preg_match("@^-----BEGIN[A-Z\d ]+PUBLIC KEY-----\n([A-Za-z\d+/\n]+)\n-----END[A-Z\d ]+PUBLIC KEY-----\n$@", $pemKey, $matches) === 1){
+			$derKey = base64_decode(str_replace("\n", "", $matches[1]), true);
+			if($derKey !== false){
+				return $derKey;
+			}
+		}
+		throw new AssumptionFailedError("OpenSSL resource contains invalid public key");
+	}
+
+	/**
+	 * @return resource
+	 */
+	public static function parseDerPublicKey(string $derKey){
+		$signingKeyOpenSSL = openssl_pkey_get_public(sprintf("-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----\n", base64_encode($derKey)));
+		if($signingKeyOpenSSL === false){
+			throw new JwtException("OpenSSL failed to parse key: " . openssl_error_string());
+		}
+		return $signingKeyOpenSSL;
 	}
 }
