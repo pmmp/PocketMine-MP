@@ -2087,6 +2087,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$checkXUID = (bool) $this->server->getProperty("player.verify-xuid", true);
 		$kickForXUIDMismatch = function(string $xuid) use ($checkXUID) : bool{
 			if($checkXUID && $this->xuid !== $xuid){
+				$this->server->getLogger()->debug($this->getName() . " XUID mismatch: expected '$xuid', but got '$this->xuid'");
 				if($this->kick("XUID does not match (possible impersonation attempt)", false)){
 					//TODO: Longer term, we should be identifying playerdata using something more reliable, like XUID or UUID.
 					//However, that would be a very disruptive change, so this will serve as a stopgap for now.
