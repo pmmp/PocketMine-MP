@@ -24,12 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\serializer;
 
 use pocketmine\block\tile\Spawnable;
+use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\SubChunk;
 use function count;
 
 final class ChunkSerializer{
@@ -53,28 +56,11 @@ final class ChunkSerializer{
 		return 0;
 	}
 
-	public static function serialize(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, int $mappingProtocol, ?string $tiles = null) : string{
+	public static function serializeFullChunk(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, int $mappingProtocol, ?string $tiles = null) : string{
 		$stream = PacketSerializer::encoder($encoderContext);
 		$subChunkCount = self::getSubChunkCount($chunk);
 		for($y = 0; $y < $subChunkCount; ++$y){
-			$layers = $chunk->getSubChunk($y)->getBlockLayers();
-			$stream->putByte(8); //version
-
-			$stream->putByte(count($layers));
-
-			foreach($layers as $blocks){
-				$stream->putByte(($blocks->getBitsPerBlock() << 1) | 1); //last 1-bit means "network format", but seems pointless
-				$stream->put($blocks->getWordArray());
-				$palette = $blocks->getPalette();
-
-				//these LSHIFT by 1 uvarints are optimizations: the client expects zigzag varints here
-				//but since we know they are always unsigned, we can avoid the extra fcall overhead of
-				//zigzag and just shift directly.
-				$stream->putUnsignedVarInt(count($palette) << 1); //yes, this is intentionally zigzag
-				foreach($palette as $p){
-					$stream->put(Binary::writeUnsignedVarInt($blockMapper->toRuntimeId($p, $mappingProtocol) << 1));
-				}
-			}
+			self::serializeSubChunk($chunk->getSubChunk($y), $blockMapper, $stream, $mappingProtocol, false);
 		}
 		$stream->put($chunk->getBiomeIdArray());
 		$stream->putByte(0); //border block array count
@@ -86,6 +72,34 @@ final class ChunkSerializer{
 			$stream->put(self::serializeTiles($chunk));
 		}
 		return $stream->getBuffer();
+	}
+
+	public static function serializeSubChunk(SubChunk $subChunk, RuntimeBlockMapping $blockMapper, PacketSerializer $stream, int $mappingProtocol, bool $persistentBlockStates) : void{
+		$layers = $subChunk->getBlockLayers();
+		$stream->putByte(8); //version
+
+		$stream->putByte(count($layers));
+
+		foreach($layers as $blocks){
+			$stream->putByte(($blocks->getBitsPerBlock() << 1) | ($persistentBlockStates ? 0 : 1));
+			$stream->put($blocks->getWordArray());
+			$palette = $blocks->getPalette();
+
+			//these LSHIFT by 1 uvarints are optimizations: the client expects zigzag varints here
+			//but since we know they are always unsigned, we can avoid the extra fcall overhead of
+			//zigzag and just shift directly.
+			$stream->putUnsignedVarInt(count($palette) << 1); //yes, this is intentionally zigzag
+			if($persistentBlockStates){
+				$nbtSerializer = new NetworkNbtSerializer();
+				foreach($palette as $p){
+					$stream->put($nbtSerializer->write(new TreeRoot($blockMapper->getBedrockKnownStates()[$blockMapper->toRuntimeId($p, $mappingProtocol)])));
+				}
+			}else{
+				foreach($palette as $p){
+					$stream->put(Binary::writeUnsignedVarInt($blockMapper->toRuntimeId($p, $mappingProtocol) << 1));
+				}
+			}
+		}
 	}
 
 	public static function serializeTiles(Chunk $chunk) : string{

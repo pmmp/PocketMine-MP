@@ -31,6 +31,7 @@ use pocketmine\block\tile\Banner as TileBanner;
 use pocketmine\block\tile\Barrel as TileBarrel;
 use pocketmine\block\tile\Beacon as TileBeacon;
 use pocketmine\block\tile\Bed as TileBed;
+use pocketmine\block\tile\Bell as TileBell;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\tile\Comparator as TileComparator;
@@ -94,12 +95,12 @@ class BlockFactory{
 	public $blastResistance;
 
 	public function __construct(){
-		$this->fullList = new \SplFixedArray(16384);
+		$this->fullList = new \SplFixedArray(1024 << Block::INTERNAL_METADATA_BITS);
 
-		$this->light = \SplFixedArray::fromArray(array_fill(0, 16384, 0));
-		$this->lightFilter = \SplFixedArray::fromArray(array_fill(0, 16384, 1));
-		$this->blocksDirectSkyLight = \SplFixedArray::fromArray(array_fill(0, 16384, false));
-		$this->blastResistance = \SplFixedArray::fromArray(array_fill(0, 16384, 0.0));
+		$this->light = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 0));
+		$this->lightFilter = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 1));
+		$this->blocksDirectSkyLight = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, false));
+		$this->blastResistance = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 0.0));
 
 		$railBreakInfo = new BlockBreakInfo(0.7);
 		$this->register(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL, 0), "Activator Rail", $railBreakInfo));
@@ -118,6 +119,7 @@ class BlockFactory{
 		$this->register(new Bedrock(new BID(Ids::BEDROCK, 0), "Bedrock", BlockBreakInfo::indestructible()));
 
 		$this->register(new Beetroot(new BID(Ids::BEETROOT_BLOCK, 0), "Beetroot Block", BlockBreakInfo::instant()));
+		$this->register(new Bell(new BID(Ids::BELL, 0, null, TileBell::class), "Bell", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new BlueIce(new BID(Ids::BLUE_ICE, 0), "Blue Ice", new BlockBreakInfo(2.8, BlockToolType::PICKAXE)));
 		$this->register(new BoneBlock(new BID(Ids::BONE_BLOCK, 0), "Bone Block", new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new Bookshelf(new BID(Ids::BOOKSHELF, 0), "Bookshelf", new BlockBreakInfo(1.5, BlockToolType::AXE)));
@@ -191,7 +193,12 @@ class BlockFactory{
 		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_POPPY), "Poppy", BlockBreakInfo::instant()));
 		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_RED_TULIP), "Red Tulip", BlockBreakInfo::instant()));
 		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_WHITE_TULIP), "White Tulip", BlockBreakInfo::instant()));
-		$this->register(new FlowerPot(new BID(Ids::FLOWER_POT_BLOCK, 0, ItemIds::FLOWER_POT, TileFlowerPot::class), "Flower Pot", BlockBreakInfo::instant()));
+
+		$flowerPot = new FlowerPot(new BID(Ids::FLOWER_POT_BLOCK, 0, ItemIds::FLOWER_POT, TileFlowerPot::class), "Flower Pot", BlockBreakInfo::instant());
+		$this->register($flowerPot);
+		for($meta = 1; $meta < 16; ++$meta){
+			$this->remap(Ids::FLOWER_POT_BLOCK, $meta, $flowerPot);
+		}
 		$this->register(new FrostedIce(new BID(Ids::FROSTED_ICE, 0), "Frosted Ice", new BlockBreakInfo(2.5, BlockToolType::PICKAXE)));
 		$this->register(new Furnace(new BIDFlattened(Ids::FURNACE, [Ids::LIT_FURNACE], 0, null, TileFurnace::class), "Furnace", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 
@@ -542,7 +549,6 @@ class BlockFactory{
 		));
 
 		//region --- auto-generated TODOs for bedrock-1.11.0 ---
-		//TODO: minecraft:bell
 		//TODO: minecraft:blast_furnace
 		//TODO: minecraft:bubble_column
 		//TODO: minecraft:campfire
@@ -579,7 +585,7 @@ class BlockFactory{
 		//TODO: minecraft:sticky_piston
 		//TODO: minecraft:stonecutter_block
 		//TODO: minecraft:structure_block
-		//TODO: minecraft:sweet_berry_bush
+		$this->register(new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH, 0, ItemIds::SWEET_BERRIES), "Sweet Berry Bush", BlockBreakInfo::instant()));
 		//TODO: minecraft:turtle_egg
 		//endregion
 

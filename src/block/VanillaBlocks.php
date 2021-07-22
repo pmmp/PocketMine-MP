@@ -65,6 +65,7 @@ use function assert;
  * @method static Bed BED()
  * @method static Bedrock BEDROCK()
  * @method static Beetroot BEETROOTS()
+ * @method static Bell BELL()
  * @method static WoodenButton BIRCH_BUTTON()
  * @method static WoodenDoor BIRCH_DOOR()
  * @method static WoodenFence BIRCH_FENCE()
@@ -544,6 +545,7 @@ use function assert;
  * @method static Wood STRIPPED_SPRUCE_WOOD()
  * @method static Sugarcane SUGARCANE()
  * @method static DoublePlant SUNFLOWER()
+ * @method static SweetBerryBush SWEET_BERRY_BUSH()
  * @method static TallGrass TALL_GRASS()
  * @method static TNT TNT()
  * @method static Torch TORCH()
@@ -626,6 +628,7 @@ final class VanillaBlocks{
 		self::register("bed", $factory->get(26, 0));
 		self::register("bedrock", $factory->get(7, 0));
 		self::register("beetroots", $factory->get(244, 0));
+		self::register("bell", $factory->get(461, 0));
 		self::register("birch_button", $factory->get(396, 0));
 		self::register("birch_door", $factory->get(194, 0));
 		self::register("birch_fence", $factory->get(85, 2));
@@ -1105,6 +1108,7 @@ final class VanillaBlocks{
 		self::register("stripped_spruce_wood", $factory->get(467, 9));
 		self::register("sugarcane", $factory->get(83, 0));
 		self::register("sunflower", $factory->get(175, 0));
+		self::register("sweet_berry_bush", $factory->get(462, 0));
 		self::register("tall_grass", $factory->get(31, 1));
 		self::register("tnt", $factory->get(46, 0));
 		self::register("torch", $factory->get(50, 5));

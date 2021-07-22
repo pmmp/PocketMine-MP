@@ -21,16 +21,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\item;
 
-use pocketmine\item\Item;
-use function mt_rand;
+use pocketmine\block\Block;
+use pocketmine\block\VanillaBlocks;
 
-class BrownMushroomBlock extends RedMushroomBlock{
+class SweetBerries extends Food{
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaBlocks::BROWN_MUSHROOM()->asItem()->setCount(mt_rand(0, 2))
-		];
+	public function getFoodRestore() : int{
+		return 2;
+	}
+
+	public function getSaturationRestore() : float{
+		return 1.2;
+	}
+
+	public function getBlock(?int $clickedFace = null) : Block{
+		return VanillaBlocks::SWEET_BERRY_BUSH();
 	}
 }

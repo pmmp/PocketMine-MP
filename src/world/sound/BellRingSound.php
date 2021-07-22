@@ -21,16 +21,14 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\world\sound;
 
-use pocketmine\item\Item;
-use function mt_rand;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
-class BrownMushroomBlock extends RedMushroomBlock{
+final class BellRingSound implements Sound{
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaBlocks::BROWN_MUSHROOM()->asItem()->setCount(mt_rand(0, 2))
-		];
+	public function encode(?Vector3 $pos) : array{
+		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_BLOCK_BELL_HIT, $pos)];
 	}
 }

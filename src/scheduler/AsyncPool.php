@@ -147,7 +147,7 @@ class AsyncPool{
 			$this->eventLoop->addNotifier($notifier, function() use ($worker) : void{
 				$this->collectTasksFromWorker($worker);
 			});
-			$this->workers[$worker]->setClassLoader($this->classLoader);
+			$this->workers[$worker]->setClassLoaders([$this->classLoader]);
 			$this->workers[$worker]->start(self::WORKER_START_OPTIONS);
 
 			$this->taskQueues[$worker] = new \SplQueue();

@@ -49,6 +49,11 @@ final class BlockLegacyMetadata{
 
 	public const BEDROCK_FLAG_INFINIBURN = 0x01;
 
+	public const BELL_ATTACHMENT_FLOOR = 0;
+	public const BELL_ATTACHMENT_CEILING = 1;
+	public const BELL_ATTACHMENT_ONE_WALL = 2;
+	public const BELL_ATTACHMENT_TWO_WALLS = 3;
+
 	public const BREWING_STAND_FLAG_EAST = 0x01;
 	public const BREWING_STAND_FLAG_SOUTHWEST = 0x02;
 	public const BREWING_STAND_FLAG_NORTHWEST = 0x04;

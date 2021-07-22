@@ -53,6 +53,7 @@ final class TileFactory{
 		$this->register(Banner::class, ["Banner", "minecraft:banner"]);
 		$this->register(Beacon::class, ["Beacon", "minecraft:beacon"]);
 		$this->register(Bed::class, ["Bed", "minecraft:bed"]);
+		$this->register(Bell::class, ["Bell", "minecraft:bell"]);
 		$this->register(BrewingStand::class, ["BrewingStand", "minecraft:brewing_stand"]);
 		$this->register(Chest::class, ["Chest", "minecraft:chest"]);
 		$this->register(Comparator::class, ["Comparator", "minecraft:comparator"]);
@@ -70,7 +71,6 @@ final class TileFactory{
 		$this->register(Sign::class, ["Sign", "minecraft:sign"]);
 		$this->register(Skull::class, ["Skull", "minecraft:skull"]);
 
-		//TODO: Bell
 		//TODO: BlastFurnace
 		//TODO: Campfire
 		//TODO: Cauldron

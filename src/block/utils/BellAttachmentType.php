@@ -21,16 +21,29 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\block\utils;
 
-use pocketmine\item\Item;
-use function mt_rand;
+use pocketmine\utils\EnumTrait;
 
-class BrownMushroomBlock extends RedMushroomBlock{
+/**
+ * This doc-block is generated automatically, do not modify it manually.
+ * This must be regenerated whenever registry members are added, removed or changed.
+ * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
+ *
+ * @method static BellAttachmentType CEILING()
+ * @method static BellAttachmentType FLOOR()
+ * @method static BellAttachmentType ONE_WALL()
+ * @method static BellAttachmentType TWO_WALLS()
+ */
+final class BellAttachmentType{
+	use EnumTrait;
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaBlocks::BROWN_MUSHROOM()->asItem()->setCount(mt_rand(0, 2))
-		];
+	protected static function setup() : void{
+		self::registerAll(
+			new self("ceiling"),
+			new self("floor"),
+			new self("one_wall"),
+			new self("two_walls")
+		);
 	}
 }
