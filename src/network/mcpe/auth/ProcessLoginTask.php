@@ -136,10 +136,11 @@ class ProcessLoginTask extends AsyncTask{
 			throw new VerifyLoginException("Invalid JWT public key: base64 decoding error decoding x5u");
 		}
 
-		if($currentPublicKey === null && !$first){
-			throw new VerifyLoginException("%" . KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_MISSINGKEY);
-		}
-		if($headerDerKey !== $currentPublicKey){
+		if($currentPublicKey === null){
+			if(!$first){
+				throw new VerifyLoginException("%" . KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_MISSINGKEY);
+			}
+		}elseif($headerDerKey !== $currentPublicKey){
 			//Fast path: if the header key doesn't match what we expected, the signature isn't going to validate anyway
 			throw new VerifyLoginException("%" . KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_BADSIGNATURE);
 		}
