@@ -158,7 +158,7 @@ class ProcessLoginTask extends AsyncTask{
 			throw new VerifyLoginException($e->getMessage(), 0, $e);
 		}
 
-		openssl_free_key($signingKeyOpenSSL);
+		@openssl_free_key($signingKeyOpenSSL);
 
 		if($headers->x5u === self::MOJANG_ROOT_PUBLIC_KEY){
 			$this->authenticated = true; //we're signed into xbox live

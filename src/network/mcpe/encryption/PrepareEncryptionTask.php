@@ -80,8 +80,8 @@ class PrepareEncryptionTask extends AsyncTask{
 		$this->aesKey = EncryptionUtils::generateKey($sharedSecret, $salt);
 		$this->handshakeJwt = EncryptionUtils::generateServerHandshakeJwt($serverPriv, $salt);
 
-		openssl_free_key($serverPriv);
-		openssl_free_key($clientPub);
+		@openssl_free_key($serverPriv);
+		@openssl_free_key($clientPub);
 	}
 
 	public function onCompletion() : void{
