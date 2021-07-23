@@ -76,7 +76,7 @@ class Normal extends Generator{
 					}elseif($temperature < 0.85){
 						return BiomeIds::RIVER;
 					}else{
-						return BiomeIds::SWAMP;
+						return BiomeIds::SWAMPLAND;
 					}
 				}elseif($rainfall < 0.60){
 					if($temperature < 0.25){
@@ -96,9 +96,9 @@ class Normal extends Generator{
 					}
 				}else{
 					if($temperature < 0.20){
-						return BiomeIds::MOUNTAINS;
+						return BiomeIds::EXTREME_HILLS;
 					}elseif($temperature < 0.40){
-						return BiomeIds::SMALL_MOUNTAINS;
+						return BiomeIds::EXTREME_HILLS_EDGE;
 					}else{
 						return BiomeIds::RIVER;
 					}
