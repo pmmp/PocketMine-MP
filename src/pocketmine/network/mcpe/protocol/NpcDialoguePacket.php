@@ -64,7 +64,7 @@ class NpcDialoguePacket extends DataPacket/* implements ClientboundPacket*/{
 	public function getActionJson() : string{ return $this->actionJson; }
 
 	protected function decodePayload() : void{
-		$this->npcActorUniqueId = $this->getEntityUniqueId();
+		$this->npcActorUniqueId = $this->getLLong(); //WHY NOT USING STANDARD METHODS, MOJANG
 		$this->actionType = $this->getVarInt();
 		$this->dialogue = $this->getString();
 		$this->sceneName = $this->getString();
@@ -73,7 +73,7 @@ class NpcDialoguePacket extends DataPacket/* implements ClientboundPacket*/{
 	}
 
 	protected function encodePayload() : void{
-		$this->putEntityUniqueId($this->npcActorUniqueId);
+		$this->putLLong($this->npcActorUniqueId);
 		$this->putVarInt($this->actionType);
 		$this->putString($this->dialogue);
 		$this->putString($this->sceneName);
