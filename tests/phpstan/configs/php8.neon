@@ -1,0 +1,297 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to method getName\\(\\) on an unknown class pocketmine\\\\player\\\\Player\\.$#"
+			count: 3
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/LiveXYZ.php
+
+		-
+			message: "#^Call to method sendMessage\\(\\) on an unknown class pocketmine\\\\player\\\\Player\\.$#"
+			count: 2
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/LiveXYZ.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 2
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/LiveXYZ.php
+
+		-
+			message: "#^Class pocketmine\\\\player\\\\Player not found\\.$#"
+			count: 1
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/LiveXYZ.php
+
+		-
+			message: "#^PHPDoc tag @var above assignment does not specify variable name\\.$#"
+			count: 1
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/LiveXYZ.php
+
+		-
+			message: "#^Property LiveXYZ\\\\LiveXYZ\\:\\:\\$mode \\(string\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/LiveXYZ.php
+
+		-
+			message: "#^Call to method getWorld\\(\\) on an unknown class pocketmine\\\\player\\\\Player\\.$#"
+			count: 1
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/ShowDisplayTask.php
+
+		-
+			message: "#^Call to method getX\\(\\) on an unknown class pocketmine\\\\player\\\\Player\\.$#"
+			count: 1
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/ShowDisplayTask.php
+
+		-
+			message: "#^Call to method getY\\(\\) on an unknown class pocketmine\\\\player\\\\Player\\.$#"
+			count: 1
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/ShowDisplayTask.php
+
+		-
+			message: "#^Call to method getYaw\\(\\) on an unknown class pocketmine\\\\player\\\\Player\\.$#"
+			count: 2
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/ShowDisplayTask.php
+
+		-
+			message: "#^Call to method getZ\\(\\) on an unknown class pocketmine\\\\player\\\\Player\\.$#"
+			count: 1
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/ShowDisplayTask.php
+
+		-
+			message: "#^Call to method isClosed\\(\\) on an unknown class pocketmine\\\\player\\\\Player\\.$#"
+			count: 1
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/ShowDisplayTask.php
+
+		-
+			message: "#^Call to method sendPopup\\(\\) on an unknown class pocketmine\\\\player\\\\Player\\.$#"
+			count: 1
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/ShowDisplayTask.php
+
+		-
+			message: "#^Call to method sendTip\\(\\) on an unknown class pocketmine\\\\player\\\\Player\\.$#"
+			count: 1
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/ShowDisplayTask.php
+
+		-
+			message: "#^Parameter \\$player of method LiveXYZ\\\\ShowDisplayTask\\:\\:__construct\\(\\) has invalid typehint type pocketmine\\\\player\\\\Player\\.$#"
+			count: 1
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/ShowDisplayTask.php
+
+		-
+			message: "#^Property LiveXYZ\\\\ShowDisplayTask\\:\\:\\$player has unknown class pocketmine\\\\player\\\\Player as its type\\.$#"
+			count: 1
+			path: ../../../plugins/LiveXYZ/src/LiveXYZ/ShowDisplayTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/MemoryManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fwrite expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/MemoryManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function base64_decode expects string, mixed given\\.$#"
+			count: 5
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of function array_filter expects array, array\\<int, string\\>\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strtolower expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#1 \\$num of function round expects float\\|int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/StatusCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fseek expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function stream_get_contents expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$objectOrClass of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/event/HandlerList.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of function array_map expects array, array\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/lang/BaseLang.php
+
+		-
+			message: "#^Parameter \\#2 \\$string of function explode expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of function array_filter expects array, array\\<int, string\\>\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function str_split expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of class pocketmine\\\\network\\\\rcon\\\\RCONInstance constructor expects resource, Socket given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCON.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_close expects Socket, resource given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/network/rcon/RCON.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_write expects Socket, resource given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCON.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\rcon\\\\RCON\\:\\:\\$socket \\(resource\\) does not accept Socket\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCON.php
+
+		-
+			message: "#^Parameter \\#1 \\$client of method pocketmine\\\\network\\\\rcon\\\\RCONInstance\\:\\:disconnectClient\\(\\) expects resource, resource\\|Socket given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$client of method pocketmine\\\\network\\\\rcon\\\\RCONInstance\\:\\:readPacket\\(\\) expects resource, resource\\|Socket given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$client of method pocketmine\\\\network\\\\rcon\\\\RCONInstance\\:\\:writePacket\\(\\) expects resource, resource\\|Socket given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$read of function socket_select expects array\\<resource\\>\\|null, array\\<resource\\|Socket\\> given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_accept expects Socket, resource given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_close expects Socket, resource given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_getpeername expects Socket, resource given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_getpeername expects Socket, resource\\|Socket given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_last_error expects Socket\\|null, resource given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_read expects Socket, resource given\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_set_block expects Socket, resource given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_set_option expects Socket, resource given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_shutdown expects Socket, resource given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_write expects Socket, resource given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function mb_strtoupper expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of function unserialize expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/scheduler/AsyncTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strtolower expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/updater/AutoUpdater.php
+
+		-
+			message: "#^Parameter \\#2 \\$timestamp of function date expects int\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/updater/AutoUpdater.php
+
+		-
+			message: "#^Parameter \\#1 \\$ of callable callable\\(resource\\)\\: void expects resource, CurlHandle given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Internet.php
+
+		-
+			message: "#^Parameter \\#2 \\$offset of function substr expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Internet.php
+
+		-
+			message: "#^Parameter \\#3 \\$length of function substr expects int\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Internet.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function trim expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Timezone.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between array\\<string, mixed\\> and false will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Timezone.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Utils.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between array and false will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Utils.php
+
