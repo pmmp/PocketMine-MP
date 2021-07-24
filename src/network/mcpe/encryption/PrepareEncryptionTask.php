@@ -23,50 +23,65 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\encryption;
 
-use Mdanter\Ecc\Crypto\Key\PrivateKeyInterface;
-use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
-use Mdanter\Ecc\EccFactory;
+use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\AssumptionFailedError;
+use function igbinary_serialize;
+use function igbinary_unserialize;
+use function openssl_error_string;
+use function openssl_free_key;
+use function openssl_pkey_get_details;
+use function openssl_pkey_new;
 use function random_bytes;
 
 class PrepareEncryptionTask extends AsyncTask{
 
 	private const TLS_KEY_ON_COMPLETION = "completion";
 
-	/** @var PrivateKeyInterface|null */
+	/** @var resource|null */
 	private static $SERVER_PRIVATE_KEY = null;
 
-	/** @var PrivateKeyInterface */
+	/** @var string */
 	private $serverPrivateKey;
 
 	/** @var string|null */
 	private $aesKey = null;
 	/** @var string|null */
 	private $handshakeJwt = null;
-	/** @var PublicKeyInterface */
+	/** @var string */
 	private $clientPub;
 
 	/**
 	 * @phpstan-param \Closure(string $encryptionKey, string $handshakeJwt) : void $onCompletion
 	 */
-	public function __construct(PublicKeyInterface $clientPub, \Closure $onCompletion){
+	public function __construct(string $clientPub, \Closure $onCompletion){
 		if(self::$SERVER_PRIVATE_KEY === null){
-			self::$SERVER_PRIVATE_KEY = EccFactory::getNistCurves()->generator384()->createPrivateKey();
+			$serverPrivateKey = openssl_pkey_new(["ec" => ["curve_name" => "secp384r1"]]);
+			if($serverPrivateKey === false){
+				throw new \RuntimeException("openssl_pkey_new() failed: " . openssl_error_string());
+			}
+			self::$SERVER_PRIVATE_KEY = $serverPrivateKey;
 		}
 
-		$this->serverPrivateKey = self::$SERVER_PRIVATE_KEY;
+		$this->serverPrivateKey = igbinary_serialize(openssl_pkey_get_details(self::$SERVER_PRIVATE_KEY));
 		$this->clientPub = $clientPub;
 		$this->storeLocal(self::TLS_KEY_ON_COMPLETION, $onCompletion);
 	}
 
 	public function onRun() : void{
-		$serverPriv = $this->serverPrivateKey;
-		$sharedSecret = EncryptionUtils::generateSharedSecret($serverPriv, $this->clientPub);
+		/** @var mixed[] $serverPrivDetails */
+		$serverPrivDetails = igbinary_unserialize($this->serverPrivateKey);
+		$serverPriv = openssl_pkey_new($serverPrivDetails);
+		if($serverPriv === false) throw new AssumptionFailedError("Failed to restore server signing key from details");
+		$clientPub = JwtUtils::parseDerPublicKey($this->clientPub);
+		$sharedSecret = EncryptionUtils::generateSharedSecret($serverPriv, $clientPub);
 
 		$salt = random_bytes(16);
 		$this->aesKey = EncryptionUtils::generateKey($sharedSecret, $salt);
 		$this->handshakeJwt = EncryptionUtils::generateServerHandshakeJwt($serverPriv, $salt);
+
+		@openssl_free_key($serverPriv);
+		@openssl_free_key($clientPub);
 	}
 
 	public function onCompletion() : void{

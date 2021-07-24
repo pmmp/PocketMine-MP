@@ -136,7 +136,7 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$clientPub of class pocketmine\\\\network\\\\mcpe\\\\encryption\\\\PrepareEncryptionTask constructor expects Mdanter\\\\Ecc\\\\Crypto\\\\Key\\\\PublicKeyInterface, Mdanter\\\\Ecc\\\\Crypto\\\\Key\\\\PublicKeyInterface\\|null given\\.$#"
+			message: "#^Parameter \\#1 \\$clientPub of class pocketmine\\\\network\\\\mcpe\\\\encryption\\\\PrepareEncryptionTask constructor expects string, string\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 

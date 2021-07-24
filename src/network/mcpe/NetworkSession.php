@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\EffectInstance;
@@ -207,7 +206,7 @@ class NetworkSession{
 				$this->logger->info("Player: " . TextFormat::AQUA . $info->getUsername() . TextFormat::RESET);
 				$this->logger->setPrefix($this->getLogPrefix());
 			},
-			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPubKey) : void{
+			function(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
 				$this->setAuthenticationStatus($isAuthenticated, $authRequired, $error, $clientPubKey);
 			}
 		));
@@ -591,7 +590,7 @@ class NetworkSession{
 		}, $reason);
 	}
 
-	private function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPubKey) : void{
+	private function setAuthenticationStatus(bool $authenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void{
 		if(!$this->connected){
 			return;
 		}
@@ -627,6 +626,7 @@ class NetworkSession{
 		$myXUID = $this->info instanceof XboxLivePlayerInfo ? $this->info->getXuid() : "";
 		$kickForXUIDMismatch = function(string $xuid) use ($checkXUID, $myXUID) : bool{
 			if($checkXUID && $myXUID !== $xuid){
+				$this->logger->debug("XUID mismatch: expected '$xuid', but got '$myXUID'");
 				//TODO: Longer term, we should be identifying playerdata using something more reliable, like XUID or UUID.
 				//However, that would be a very disruptive change, so this will serve as a stopgap for now.
 				//Side note: this will also prevent offline players hijacking XBL playerdata on online servers, since their

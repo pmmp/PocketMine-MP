@@ -1,0 +1,182 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/MemoryManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fwrite expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/MemoryManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strtolower expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/ServerConfigGroup.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: ../../../src/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fseek expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fwrite expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function stream_get_contents expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$objectOrClass of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
+			count: 1
+			path: ../../../src/event/HandlerListManager.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of function array_map expects array, array\\|false given\\.$#"
+			count: 1
+			path: ../../../src/lang/Language.php
+
+		-
+			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\JwtUtils\\:\\:parseDerPublicKey\\(\\) should return resource but returns OpenSSLAsymmetricKey\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/JwtUtils.php
+
+		-
+			message: "#^Parameter \\#1 \\$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, resource given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/JwtUtils.php
+
+		-
+			message: "#^Parameter \\#3 \\$private_key of function openssl_sign expects array\\|OpenSSLAsymmetricKey\\|OpenSSLCertificate\\|string, resource given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/JwtUtils.php
+
+		-
+			message: "#^Parameter \\#3 \\$public_key of function openssl_verify expects array\\|OpenSSLAsymmetricKey\\|OpenSSLCertificate\\|string, resource given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/JwtUtils.php
+
+		-
+			message: "#^Parameter \\#1 \\$key of function openssl_free_key expects OpenSSLAsymmetricKey, resource given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/auth/ProcessLoginTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$public_key of function openssl_pkey_derive expects array\\|OpenSSLAsymmetricKey\\|OpenSSLCertificate\\|string, resource given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/encryption/EncryptionUtils.php
+
+		-
+			message: "#^Parameter \\#2 \\$private_key of function openssl_pkey_derive expects array\\|OpenSSLAsymmetricKey\\|OpenSSLCertificate\\|string, resource given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/encryption/EncryptionUtils.php
+
+		-
+			message: "#^Parameter \\#1 \\$key of function openssl_free_key expects OpenSSLAsymmetricKey, resource given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/encryption/PrepareEncryptionTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$key of function openssl_pkey_get_details expects OpenSSLAsymmetricKey, OpenSSLAsymmetricKey\\|resource given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/encryption/PrepareEncryptionTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$localPriv of static method pocketmine\\\\network\\\\mcpe\\\\encryption\\\\EncryptionUtils\\:\\:generateSharedSecret\\(\\) expects resource, OpenSSLAsymmetricKey given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/encryption/PrepareEncryptionTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$serverPriv of static method pocketmine\\\\network\\\\mcpe\\\\encryption\\\\EncryptionUtils\\:\\:generateServerHandshakeJwt\\(\\) expects resource, OpenSSLAsymmetricKey given\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/encryption/PrepareEncryptionTask.php
+
+		-
+			message: "#^Static property pocketmine\\\\network\\\\mcpe\\\\encryption\\\\PrepareEncryptionTask\\:\\:\\$SERVER_PRIVATE_KEY \\(resource\\|null\\) does not accept OpenSSLAsymmetricKey\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/encryption/PrepareEncryptionTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_bind expects Socket, resource given\\.$#"
+			count: 1
+			path: ../../../src/network/query/DedicatedQueryNetworkInterface.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_close expects Socket, resource given\\.$#"
+			count: 1
+			path: ../../../src/network/query/DedicatedQueryNetworkInterface.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_last_error expects Socket\\|null, resource given\\.$#"
+			count: 3
+			path: ../../../src/network/query/DedicatedQueryNetworkInterface.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_recvfrom expects Socket, resource given\\.$#"
+			count: 1
+			path: ../../../src/network/query/DedicatedQueryNetworkInterface.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_sendto expects Socket, resource given\\.$#"
+			count: 1
+			path: ../../../src/network/query/DedicatedQueryNetworkInterface.php
+
+		-
+			message: "#^Parameter \\#1 \\$socket of function socket_set_nonblock expects Socket, resource given\\.$#"
+			count: 1
+			path: ../../../src/network/query/DedicatedQueryNetworkInterface.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\query\\\\DedicatedQueryNetworkInterface\\:\\:\\$socket \\(resource\\) does not accept Socket\\.$#"
+			count: 1
+			path: ../../../src/network/query/DedicatedQueryNetworkInterface.php
+
+		-
+			message: "#^Parameter \\#1 \\$ of closure expects resource, CurlHandle given\\.$#"
+			count: 1
+			path: ../../../src/utils/Internet.php
+
+		-
+			message: "#^Parameter \\#2 \\$offset of function substr expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/utils/Internet.php
+
+		-
+			message: "#^Parameter \\#3 \\$length of function substr expects int\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../../src/utils/Internet.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function trim expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/utils/Timezone.php
+
+		-
+			message: "#^Parameter \\#1 \\$timezoneId of function date_default_timezone_set expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/utils/Timezone.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between array\\<string, mixed\\> and false will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/utils/Timezone.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
+			count: 1
+			path: ../../../src/utils/Utils.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between array and false will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/utils/Utils.php
+

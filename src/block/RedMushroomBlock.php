@@ -23,30 +23,43 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\InvalidBlockStateException;
+use pocketmine\block\utils\MushroomBlockType;
+use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\item\Item;
 use function mt_rand;
 
 class RedMushroomBlock extends Opaque{
 
-	/**
-	 * @var int
-	 * In PC they have blockstate properties for each of the sides (pores/not pores). Unfortunately, we can't support
-	 * that because we can't serialize 2^6 combinations into a 4-bit metadata value, so this has to stick with storing
-	 * the legacy crap for now.
-	 * TODO: change this once proper blockstates are implemented
-	 */
-	protected int $rotationData = 0;
+	protected MushroomBlockType $mushroomBlockType;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->mushroomBlockType = MushroomBlockType::PORES();
+		parent::__construct($idInfo, $name, $breakInfo);
+	}
 
 	protected function writeStateToMeta() : int{
-		return $this->rotationData;
+		return MushroomBlockTypeIdMap::getInstance()->toId($this->mushroomBlockType);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->rotationData = $stateMeta;
+		$type = MushroomBlockTypeIdMap::getInstance()->fromId($stateMeta);
+		if($type === null){
+			throw new InvalidBlockStateException("No such mushroom variant $stateMeta");
+		}
+		$this->mushroomBlockType = $type;
 	}
 
 	public function getStateBitmask() : int{
 		return 0b1111;
+	}
+
+	public function getMushroomBlockType() : MushroomBlockType{ return $this->mushroomBlockType; }
+
+	/** @return $this */
+	public function setMushroomBlockType(MushroomBlockType $mushroomBlockType) : self{
+		$this->mushroomBlockType = $mushroomBlockType;
+		return $this;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

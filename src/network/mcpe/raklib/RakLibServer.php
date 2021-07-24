@@ -153,7 +153,7 @@ class RakLibServer extends Thread{
 				$this->maxMtuSize,
 				new SimpleProtocolAcceptor($this->protocolVersion),
 				new UserToRakLibThreadMessageReceiver(new PthreadsChannelReader($this->mainToThreadBuffer)),
-				new RakLibToUserThreadMessageSender(new PthreadsChannelWriter($this->threadToMainBuffer, $this->mainThreadNotifier)),
+				new RakLibToUserThreadMessageSender(new SnoozeAwarePthreadsChannelWriter($this->threadToMainBuffer, $this->mainThreadNotifier)),
 				new ExceptionTraceCleaner($this->mainPath)
 			);
 			$this->synchronized(function() : void{
