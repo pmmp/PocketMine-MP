@@ -79,6 +79,7 @@ final class ConsoleReaderThread extends Thread{
 			throw new \RuntimeException("Failed to open console reader socket server");
 		}
 		$address = stream_socket_get_name($server, false);
+		if($address === false) throw new AssumptionFailedError("stream_socket_get_name() shouldn't return false here");
 
 		$sub = proc_open(
 			[PHP_BINARY, Path::join(__DIR__, 'ConsoleReaderChildProcess.php'), $address],
