@@ -32,6 +32,7 @@ use function fopen;
 use function preg_replace;
 use function proc_open;
 use function proc_terminate;
+use function sprintf;
 use function stream_select;
 use function stream_socket_accept;
 use function stream_socket_get_name;
@@ -82,7 +83,7 @@ final class ConsoleReaderThread extends Thread{
 		if($address === false) throw new AssumptionFailedError("stream_socket_get_name() shouldn't return false here");
 
 		$sub = proc_open(
-			[PHP_BINARY, Path::join(__DIR__, 'ConsoleReaderChildProcess.php'), $address],
+			[PHP_BINARY, '-r', sprintf('require "%s";', Path::join(__DIR__, 'ConsoleReaderChildProcess.php')), $address],
 			[
 				2 => fopen("php://stderr", "w"),
 			],
