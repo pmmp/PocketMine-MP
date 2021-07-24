@@ -35,7 +35,7 @@ if(count($argv) !== 2){
 	die("Please provide a server to connect to");
 }
 
-cli_set_process_title('PocketMine-MP Console Reader');
+@cli_set_process_title('PocketMine-MP Console Reader');
 $socket = stream_socket_client($argv[1]);
 if($socket === false){
 	throw new \RuntimeException("Failed to connect to server process");
