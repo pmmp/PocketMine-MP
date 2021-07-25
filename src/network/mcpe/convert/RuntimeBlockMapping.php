@@ -30,8 +30,8 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\player\Player;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
+use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use Webmozart\PathUtil\Path;
@@ -51,31 +51,31 @@ final class RuntimeBlockMapping{
 	private $bedrockKnownStates = [];
 
 	private function __construct(){
-	    $paths = [
-	    	ProtocolInfo::CURRENT_PROTOCOL => "",
-	        ProtocolInfo::PROTOCOL_1_17_0 => "-1.17.0",
+		$paths = [
+			ProtocolInfo::CURRENT_PROTOCOL => "",
+			ProtocolInfo::PROTOCOL_1_17_0 => "-1.17.0",
 			ProtocolInfo::PROTOCOL_1_16_220 => "-1.16.220",
 			ProtocolInfo::PROTOCOL_1_16_200 => "-1.16.200"
-        ];
+		];
 
-	    foreach ($paths as $mappingProtocol => $path){
-	    	$canonicalBlockStatesFile = file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "vanilla", "canonical_block_states" . $path . ".nbt"));
-            if($canonicalBlockStatesFile === false){
-                throw new AssumptionFailedError("Missing required resource file");
-            }
-            $stream = PacketSerializer::decoder($canonicalBlockStatesFile, 0, new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol))));
-            $list = [];
-            while(!$stream->feof()){
-                $list[] = $stream->getNbtCompoundRoot();
-            }
-            $this->bedrockKnownStates[$mappingProtocol] = $list;
-
-            if($mappingProtocol === ProtocolInfo::PROTOCOL_1_17_0){
-            	$this->setupLegacyMappings($mappingProtocol, "");
-			}else{
-            	$this->setupLegacyMappings($mappingProtocol, $path);
+		foreach($paths as $mappingProtocol => $path){
+			$canonicalBlockStatesFile = file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "vanilla", "canonical_block_states" . $path . ".nbt"));
+			if($canonicalBlockStatesFile === false){
+				throw new AssumptionFailedError("Missing required resource file");
 			}
-        }
+			$stream = PacketSerializer::decoder($canonicalBlockStatesFile, 0, new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol))));
+			$list = [];
+			while(!$stream->feof()){
+				$list[] = $stream->getNbtCompoundRoot();
+			}
+			$this->bedrockKnownStates[$mappingProtocol] = $list;
+
+			if($mappingProtocol === ProtocolInfo::PROTOCOL_1_17_0){
+				$this->setupLegacyMappings($mappingProtocol, "");
+			}else{
+				$this->setupLegacyMappings($mappingProtocol, $path);
+			}
+		}
 	}
 
 	public static function getMappingProtocol(int $protocolId) : int{

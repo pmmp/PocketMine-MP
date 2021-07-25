@@ -39,8 +39,6 @@ use pocketmine\network\mcpe\protocol\types\PlayerMovementType;
 use pocketmine\network\mcpe\protocol\types\SpawnSettings;
 use pocketmine\player\Player;
 use pocketmine\Server;
-use pocketmine\VersionInfo;
-use function sprintf;
 
 /**
  * Handler used for the pre-spawn phase of the session.
@@ -108,7 +106,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 			$this->session->onEntityEffectAdded($this->player, $effect, false);
 		}
 		$this->player->sendData([$this->player]);
-		
+
 		$this->inventoryManager->syncAll();
 		$this->inventoryManager->syncCreative();
 		$this->inventoryManager->syncSelectedHotbarSlot();

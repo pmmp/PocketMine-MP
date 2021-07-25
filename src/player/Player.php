@@ -243,7 +243,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected $allowFlight = false;
 	/** @var bool */
 	protected $flying = false;
-	/** @var bool */
 	protected bool $noClip = false;
 
 	/** @var int|null */

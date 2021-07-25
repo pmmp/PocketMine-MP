@@ -2,9 +2,7 @@
 
 declare(strict_types=1);
 
-
 namespace pocketmine\entity\animation;
-
 
 abstract class DictionaryAnimation implements Animation{
 

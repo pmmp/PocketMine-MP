@@ -27,7 +27,6 @@ use pocketmine\entity\Human;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 
 final class ConsumingItemAnimation extends DictionaryAnimation{
 

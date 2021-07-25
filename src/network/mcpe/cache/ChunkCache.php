@@ -139,23 +139,23 @@ class ChunkCache implements ChunkListener{
 	}
 
 	private function destroy(int $chunkX, int $chunkZ, int $mappingProtocol = null) : bool{
-        $chunkHash = World::chunkHash($chunkX, $chunkZ);
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 
-	    if($mappingProtocol === null){
-	        $existing = false;
+		if($mappingProtocol === null){
+			$existing = false;
 
-	        if(isset($this->caches[$chunkHash])){
-	            $existing = count($this->caches[$chunkHash]) > 0;
-                unset($this->caches[$chunkHash]);
-            }
+			if(isset($this->caches[$chunkHash])){
+				$existing = count($this->caches[$chunkHash]) > 0;
+				unset($this->caches[$chunkHash]);
+			}
 
-	        return $existing;
-        }
+			return $existing;
+		}
 
-        $existing = $this->caches[$chunkHash][$mappingProtocol] ?? null;
-        unset($this->caches[$chunkHash][$mappingProtocol]);
+		$existing = $this->caches[$chunkHash][$mappingProtocol] ?? null;
+		unset($this->caches[$chunkHash][$mappingProtocol]);
 
-        return $existing !== null;
+		return $existing !== null;
 	}
 
 	/**
@@ -166,33 +166,33 @@ class ChunkCache implements ChunkListener{
 	private function restartPendingRequest(int $chunkX, int $chunkZ, int $mappingProtocol) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 
-        $existing = $this->caches[$chunkHash][$mappingProtocol] ?? null;
-        if($existing === null or $existing->hasResult()){
-            throw new \InvalidArgumentException("Restart can only be applied to unresolved promises");
-        }
-        $existing->cancel();
-        unset($this->caches[$chunkHash][$mappingProtocol]);
+		$existing = $this->caches[$chunkHash][$mappingProtocol] ?? null;
+		if($existing === null or $existing->hasResult()){
+			throw new \InvalidArgumentException("Restart can only be applied to unresolved promises");
+		}
+		$existing->cancel();
+		unset($this->caches[$chunkHash][$mappingProtocol]);
 
-        $this->request($chunkX, $chunkZ, $mappingProtocol)->onResolve(...$existing->getResolveCallbacks());
+		$this->request($chunkX, $chunkZ, $mappingProtocol)->onResolve(...$existing->getResolveCallbacks());
 	}
 
 	/**
 	 * @throws \InvalidArgumentException
 	 */
 	private function destroyOrRestart(int $chunkX, int $chunkZ) : void{
-	    $chunkHash = World::chunkHash($chunkX, $chunkZ);
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 
-	    if(isset($this->caches[$chunkHash])){
-	        foreach ($this->caches[$chunkHash] as $mappingProtocol => $cache){
-                if(!$cache->hasResult()){
-                    //some requesters are waiting for this chunk, so their request needs to be fulfilled
-                    $this->restartPendingRequest($chunkX, $chunkZ, $mappingProtocol);
-                }else{
-                    //dump the cache, it'll be regenerated the next time it's requested
-                    $this->destroy($chunkX, $chunkZ, $mappingProtocol);
-                }
-            }
-        }
+		if(isset($this->caches[$chunkHash])){
+			foreach($this->caches[$chunkHash] as $mappingProtocol => $cache){
+				if(!$cache->hasResult()){
+					//some requesters are waiting for this chunk, so their request needs to be fulfilled
+					$this->restartPendingRequest($chunkX, $chunkZ, $mappingProtocol);
+				}else{
+					//dump the cache, it'll be regenerated the next time it's requested
+					$this->destroy($chunkX, $chunkZ, $mappingProtocol);
+				}
+			}
+		}
 	}
 
 	use ChunkListenerNoOpTrait {
@@ -233,11 +233,11 @@ class ChunkCache implements ChunkListener{
 	public function calculateCacheSize() : int{
 		$result = 0;
 		foreach($this->caches as $caches){
-		    foreach ($caches as $cache) {
-                if($cache->hasResult()){
-                    $result += strlen($cache->getResult());
-                }
-            }
+			foreach($caches as $cache){
+				if($cache->hasResult()){
+					$result += strlen($cache->getResult());
+				}
+			}
 		}
 		return $result;
 	}

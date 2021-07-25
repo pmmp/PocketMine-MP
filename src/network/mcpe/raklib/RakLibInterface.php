@@ -116,15 +116,15 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	}
 
 	public static function getBroadcaster(Server $server, int $protocolId) : PacketBroadcaster{
-        if(isset(self::$broadcasters[$protocolId])){
-            return self::$broadcasters[$protocolId];
-        }
+		if(isset(self::$broadcasters[$protocolId])){
+			return self::$broadcasters[$protocolId];
+		}
 
-        $broadcaster = new StandardPacketBroadcaster($server, $protocolId);
-        self::$broadcasters[$protocolId] = $broadcaster;
+		$broadcaster = new StandardPacketBroadcaster($server, $protocolId);
+		self::$broadcasters[$protocolId] = $broadcaster;
 
-        return $broadcaster;
-    }
+		return $broadcaster;
+	}
 
 	public function start() : void{
 		$this->server->getTickSleeper()->addNotifier($this->sleeper, function() : void{

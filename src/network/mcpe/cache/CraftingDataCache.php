@@ -45,7 +45,7 @@ final class CraftingDataCache{
 
 	/**
 	 * @var CraftingDataPacket[]
-	 * @phpstan-var array<int, CraftingDataPacket>
+	 * @phpstan-var array<int, array<int, CraftingDataPacket>>
 	 */
 	private $caches = [];
 

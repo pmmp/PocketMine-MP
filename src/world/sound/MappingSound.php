@@ -23,11 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\world\sound;
 
-use pocketmine\block\Block;
-use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-
 abstract class MappingSound implements Sound{
 
 	/** @var int */
