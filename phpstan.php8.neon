@@ -1,4 +1,0 @@
-includes:
-	- phpstan.neon.dist
-	- tests/phpstan/configs/php8.neon
-

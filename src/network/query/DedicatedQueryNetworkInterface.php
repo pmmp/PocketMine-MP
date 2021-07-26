@@ -63,7 +63,10 @@ final class DedicatedQueryNetworkInterface implements AdvancedNetworkInterface{
 	private $port;
 	/** @var \Logger */
 	private $logger;
-	/** @var resource */
+	/**
+	 * @var \Socket|resource
+	 * @phpstan-var PhpSocket
+	 */
 	private $socket;
 	/** @var Network */
 	private $network;

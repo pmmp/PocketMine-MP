@@ -97,7 +97,8 @@ final class JwtUtils{
 	}
 
 	/**
-	 * @param resource $signingKey
+	 * @param \OpenSSLAsymmetricKey|resource $signingKey
+	 * @phpstan-param PhpOpenSSLAsymmetricKey $signingKey
 	 *
 	 * @throws JwtException
 	 */
@@ -132,7 +133,8 @@ final class JwtUtils{
 	}
 
 	/**
-	 * @param resource                     $signingKey
+	 * @param \OpenSSLAsymmetricKey|resource $signingKey
+	 * @phpstan-param PhpOpenSSLAsymmetricKey $signingKey
 	 *
 	 * @phpstan-param array<string, mixed> $header
 	 * @phpstan-param array<string, mixed> $claims
@@ -189,7 +191,8 @@ final class JwtUtils{
 	}
 
 	/**
-	 * @param resource $opensslKey
+	 * @param \OpenSSLAsymmetricKey|resource $opensslKey
+	 * @phpstan-param PhpOpenSSLAsymmetricKey $opensslKey
 	 */
 	public static function emitDerPublicKey($opensslKey) : string{
 		$details = openssl_pkey_get_details($opensslKey);
@@ -209,7 +212,8 @@ final class JwtUtils{
 	}
 
 	/**
-	 * @return resource
+	 * @return \OpenSSLAsymmetricKey|resource
+	 * @phpstan-return PhpOpenSSLAsymmetricKey
 	 */
 	public static function parseDerPublicKey(string $derKey){
 		$signingKeyOpenSSL = openssl_pkey_get_public(sprintf("-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----\n", base64_encode($derKey)));

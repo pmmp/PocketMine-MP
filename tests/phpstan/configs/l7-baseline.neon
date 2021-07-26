@@ -16,12 +16,12 @@ parameters:
 			path: ../../../build/server-phar.php
 
 		-
-			message: "#^Parameter \\#1 \\$fp of function fclose expects resource, resource\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/MemoryManager.php
 
 		-
-			message: "#^Parameter \\#1 \\$fp of function fwrite expects resource, resource\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$stream of function fwrite expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/MemoryManager.php
 
@@ -64,11 +64,6 @@ parameters:
 			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/Server.php
-
-		-
-			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to int\\.$#"
-			count: 1
-			path: ../../../src/ServerConfigGroup.php
 
 		-
 			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to string\\.$#"
@@ -451,22 +446,22 @@ parameters:
 			path: ../../../src/command/defaults/PardonIpCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$fp of function fclose expects resource, resource\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
 			count: 2
 			path: ../../../src/command/defaults/TimingsCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$fp of function fseek expects resource, resource\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$stream of function fseek expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/TimingsCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$fp of function fwrite expects resource, resource\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$stream of function fwrite expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/TimingsCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$source of function stream_get_contents expects resource, resource\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$stream of function stream_get_contents expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/TimingsCommand.php
 
@@ -561,7 +556,7 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Parameter \\#1 \\$argument of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
+			message: "#^Parameter \\#1 \\$objectOrClass of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
 			count: 1
 			path: ../../../src/event/HandlerListManager.php
 
@@ -576,7 +571,7 @@ parameters:
 			path: ../../../src/item/Item.php
 
 		-
-			message: "#^Parameter \\#2 \\$input1 of function array_map expects array, array\\|false given\\.$#"
+			message: "#^Parameter \\#2 \\$array of function array_map expects array, array\\|false given\\.$#"
 			count: 1
 			path: ../../../src/lang/Language.php
 
@@ -691,7 +686,12 @@ parameters:
 			path: ../../../src/utils/Timezone.php
 
 		-
-			message: "#^Parameter \\#1 \\$timezone_identifier of function date_default_timezone_set expects string, string\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$string of function trim expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/utils/Timezone.php
+
+		-
+			message: "#^Parameter \\#1 \\$timezoneId of function date_default_timezone_set expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/utils/Timezone.php
 

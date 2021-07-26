@@ -41,8 +41,10 @@ final class EncryptionUtils{
 	}
 
 	/**
-	 * @param resource $localPriv
-	 * @param resource $remotePub
+	 * @param \OpenSSLAsymmetricKey|resource $localPriv
+	 * @param \OpenSSLAsymmetricKey|resource $remotePub
+	 * @phpstan-param PhpOpenSSLAsymmetricKey $localPriv
+	 * @phpstan-param PhpOpenSSLAsymmetricKey $remotePub
 	 */
 	public static function generateSharedSecret($localPriv, $remotePub) : \GMP{
 		$hexSecret = openssl_pkey_derive($remotePub, $localPriv, 48);
@@ -57,7 +59,8 @@ final class EncryptionUtils{
 	}
 
 	/**
-	 * @param resource $serverPriv
+	 * @param \OpenSSLAsymmetricKey|resource $serverPriv
+	 * @phpstan-param PhpOpenSSLAsymmetricKey $serverPriv
 	 */
 	public static function generateServerHandshakeJwt($serverPriv, string $salt) : string{
 		$derPublicKey = JwtUtils::emitDerPublicKey($serverPriv);
