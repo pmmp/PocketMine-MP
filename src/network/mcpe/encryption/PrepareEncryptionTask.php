@@ -38,11 +38,7 @@ class PrepareEncryptionTask extends AsyncTask{
 
 	private const TLS_KEY_ON_COMPLETION = "completion";
 
-	/**
-	 * @var \OpenSSLAsymmetricKey|resource|null
-	 * @phpstan-var PhpOpenSSLAsymmetricKey|null
-	 */
-	private static $SERVER_PRIVATE_KEY = null;
+	private static ?\OpenSSLAsymmetricKey $SERVER_PRIVATE_KEY = null;
 
 	/** @var string */
 	private $serverPrivateKey;
