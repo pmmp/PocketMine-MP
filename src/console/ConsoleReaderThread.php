@@ -104,7 +104,7 @@ final class ConsoleReaderThread extends Thread{
 			if(stream_select($r, $w, $e, 0, 200000) === 1){
 				$command = fgets($client);
 				if($command === false){
-					throw new AssumptionFailedError("Something has gone horribly wrong");
+					throw new \RuntimeException("Broken connection to child process (probably killed)");
 				}
 
 				$buffer[] = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", $command);
