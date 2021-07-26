@@ -77,7 +77,7 @@ jobs:
         run: php composer.phar install --prefer-dist --no-interaction
 
       - name: Run PHPStan
-        run: ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G -c ${{ matrix.config }}
+        run: ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
 
   phpunit:
     name: PHPUnit tests
