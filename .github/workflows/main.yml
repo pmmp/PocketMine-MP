@@ -38,10 +38,10 @@ jobs:
       matrix:
         include:
           - php: 8.0.7
-            config: phpstan.php8.neon
+            config: phpstan.neon.dist
             image: ubuntu-20.04
           - php: 7.4.20
-            config: phpstan.neon.dist
+            config: phpstan.php7.neon
             image: ubuntu-20.04
 
     steps:

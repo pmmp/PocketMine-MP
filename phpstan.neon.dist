@@ -4,6 +4,7 @@ includes:
 	- tests/phpstan/configs/gc-hacks.neon
 	- tests/phpstan/configs/l7-baseline.neon
 	- tests/phpstan/configs/l8-baseline.neon
+	- tests/phpstan/configs/php74-compat.neon
 	- tests/phpstan/configs/php-bugs.neon
 	- tests/phpstan/configs/phpstan-bugs.neon
 	- tests/phpstan/configs/phpunit-wiring-tests.neon
@@ -47,3 +48,5 @@ parameters:
 	    #we'll just fill it with 10 - it's very unlikely to encounter a callable with 10 parameters anyway.
 	    anyCallable: 'callable(mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed) : mixed'
 	    anyClosure: '\Closure(mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed) : mixed'
+	    PhpSocket: '\Socket'
+	    PhpCurlHandle: '\CurlHandle'

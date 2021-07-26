@@ -41,7 +41,7 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of function base64_decode expects string, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$string of function base64_decode expects string, mixed given\\.$#"
 			count: 5
 			path: ../../../src/pocketmine/Player.php
 
@@ -121,7 +121,7 @@ parameters:
 			path: ../../../src/pocketmine/Server.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of function strtolower expects string, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$string of function strtolower expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Server.php
 
@@ -151,7 +151,7 @@ parameters:
 			path: ../../../src/pocketmine/command/CommandReader.php
 
 		-
-			message: "#^Parameter \\#1 \\$number of function round expects float, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$num of function round expects float\\|int, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/command/defaults/StatusCommand.php
 
@@ -231,7 +231,7 @@ parameters:
 			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
 
 		-
-			message: "#^Parameter \\#2 \\$str of function explode expects string, mixed given\\.$#"
+			message: "#^Parameter \\#2 \\$string of function explode expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
 
@@ -466,7 +466,7 @@ parameters:
 			path: ../../../src/pocketmine/plugin/PluginDescription.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of function mb_strtoupper expects string, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$string of function mb_strtoupper expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/plugin/PluginDescription.php
 
@@ -516,7 +516,7 @@ parameters:
 			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Parameter \\#1 \\$variable_representation of function unserialize expects string, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$data of function unserialize expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/scheduler/AsyncTask.php
 
@@ -531,7 +531,7 @@ parameters:
 			path: ../../../src/pocketmine/updater/AutoUpdater.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of function strtolower expects string, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$string of function strtolower expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/updater/AutoUpdater.php
 
@@ -541,7 +541,7 @@ parameters:
 			path: ../../../src/pocketmine/updater/AutoUpdater.php
 
 		-
-			message: "#^Parameter \\#2 \\$timestamp of function date expects int, mixed given\\.$#"
+			message: "#^Parameter \\#2 \\$timestamp of function date expects int\\|null, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/updater/AutoUpdater.php
 
@@ -551,12 +551,12 @@ parameters:
 			path: ../../../src/pocketmine/updater/AutoUpdater.php
 
 		-
-			message: "#^Parameter \\#2 \\$start of function substr expects int, mixed given\\.$#"
+			message: "#^Parameter \\#2 \\$offset of function substr expects int, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/utils/Internet.php
 
 		-
-			message: "#^Parameter \\#3 \\$length of function substr expects int, mixed given\\.$#"
+			message: "#^Parameter \\#3 \\$length of function substr expects int\\|null, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/utils/Internet.php
 
@@ -576,7 +576,7 @@ parameters:
 			path: ../../../src/pocketmine/utils/Utils.php
 
 		-
-			message: "#^Parameter \\#2 \\$input1 of function array_map expects array, mixed given\\.$#"
+			message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/utils/Utils.php
 

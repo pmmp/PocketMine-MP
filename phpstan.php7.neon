@@ -1,0 +1,9 @@
+includes:
+    - phpstan.neon.dist
+    - tests/phpstan/configs/php7.neon
+
+parameters:
+    phpVersion: 70400
+    typeAliases:
+        PhpSocket: resource
+        PhpCurlHandle: resource

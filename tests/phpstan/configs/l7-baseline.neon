@@ -16,12 +16,12 @@ parameters:
 			path: ../../../build/server-phar.php
 
 		-
-			message: "#^Parameter \\#1 \\$fp of function fclose expects resource, resource\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/MemoryManager.php
 
 		-
-			message: "#^Parameter \\#1 \\$fp of function fwrite expects resource, resource\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$stream of function fwrite expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/MemoryManager.php
 
@@ -86,12 +86,12 @@ parameters:
 			path: ../../../src/pocketmine/Server.php
 
 		-
-			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\NBTStream\\:\\:readCompressed\\(\\) expects string, string\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$array of function array_filter expects array, array\\<int, string\\>\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Server.php
 
 		-
-			message: "#^Parameter \\#1 \\$input of function array_filter expects array, array\\<int, string\\>\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\NBTStream\\:\\:readCompressed\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Server.php
 
@@ -221,22 +221,22 @@ parameters:
 			path: ../../../src/pocketmine/command/defaults/PardonIpCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$fp of function fclose expects resource, resource\\|false given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
-
-		-
-			message: "#^Parameter \\#1 \\$fp of function fseek expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
-
-		-
 			message: "#^Parameter \\#1 \\$fp of static method pocketmine\\\\timings\\\\TimingsHandler\\:\\:printTimings\\(\\) expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
 
 		-
-			message: "#^Parameter \\#1 \\$source of function stream_get_contents expects resource, resource\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fseek expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function stream_get_contents expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
 
@@ -276,7 +276,7 @@ parameters:
 			path: ../../../src/pocketmine/entity/projectile/Projectile.php
 
 		-
-			message: "#^Parameter \\#1 \\$argument of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
+			message: "#^Parameter \\#1 \\$objectOrClass of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/event/HandlerList.php
 
@@ -301,7 +301,7 @@ parameters:
 			path: ../../../src/pocketmine/item/Item.php
 
 		-
-			message: "#^Parameter \\#2 \\$input1 of function array_map expects array, array\\|false given\\.$#"
+			message: "#^Parameter \\#2 \\$array of function array_map expects array, array\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/lang/BaseLang.php
 
@@ -546,7 +546,7 @@ parameters:
 			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
 
 		-
-			message: "#^Parameter \\#1 \\$input of function array_filter expects array, array\\<int, string\\>\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$array of function array_filter expects array, array\\<int, string\\>\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
 
@@ -616,7 +616,7 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of function str_split expects string, string\\|false given\\.$#"
+			message: "#^Parameter \\#1 \\$string of function str_split expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
 
@@ -794,4 +794,9 @@ parameters:
 			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/pocketmine/tile/Tile.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function trim expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Timezone.php
 

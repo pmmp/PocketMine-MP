@@ -21,6 +21,11 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/protocol/DataPacket.php
 
 		-
+			message: "#^Parameter \\#1 \\$read of function socket_select expects array\\<resource\\>\\|null, array\\<int\\|string, Socket\\> given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
 			message: "#^Parameter \\#1 \\$ of closure expects TMemberType, TMemberType given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/utils/Utils.php

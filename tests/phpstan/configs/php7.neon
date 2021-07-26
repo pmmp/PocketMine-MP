@@ -1,0 +1,112 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Parameter \\#1 \\$fp of function fclose expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/MemoryManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$fp of function fwrite expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/MemoryManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of function base64_decode expects string, mixed given\\.$#"
+			count: 5
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#1 \\$input of function array_filter expects array, array\\<int, string\\>\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of function strtolower expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#1 \\$number of function round expects float, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/StatusCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$fp of function fclose expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$fp of function fseek expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$source of function stream_get_contents expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$argument of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/event/HandlerList.php
+
+		-
+			message: "#^Parameter \\#2 \\$input1 of function array_map expects array, array\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/lang/BaseLang.php
+
+		-
+			message: "#^Parameter \\#2 \\$str of function explode expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Parameter \\#1 \\$input of function array_filter expects array, array\\<int, string\\>\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of function str_split expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of function mb_strtoupper expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Parameter \\#1 \\$variable_representation of function unserialize expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/scheduler/AsyncTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of function strtolower expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/updater/AutoUpdater.php
+
+		-
+			message: "#^Parameter \\#2 \\$timestamp of function date expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/updater/AutoUpdater.php
+
+		-
+			message: "#^Parameter \\#2 \\$start of function substr expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Internet.php
+
+		-
+			message: "#^Parameter \\#3 \\$length of function substr expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Internet.php
+
+		-
+			message: "#^Parameter \\#2 \\$input1 of function array_map expects array, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Utils.php
+
+		-
+			message: "#^Method ReflectionMethod\\:\\:getClosure\\(\\) invoked with 0 parameters, 1 required\\.$#"
+			count: 1
+			path: ../../phpunit/network/mcpe/StupidJsonDecodeTest.php
+
