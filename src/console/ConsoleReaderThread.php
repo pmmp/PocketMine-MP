@@ -60,21 +60,26 @@ final class ConsoleReaderThread extends Thread{
 		$buffer = $this->buffer;
 		$notifier = $this->notifier;
 
-		/*
-		 * This pile of shit exists because PHP on Windows is broken, and can't handle stream_select() on stdin or pipes
-		 * properly - stdin native triggers stream_select() when a key is pressed, causing it to get stuck in fgets()
-		 * waiting for a line that might never come (and Windows doesn't support character-based reading either), and
-		 * pipes just constantly trigger stream_select() instead of only when data is returned, rendering it useless.
-		 *
-		 * This results in whichever process reads stdin getting stuck on shutdown, which previously forced us to kill
-		 * the entire server process to make it go away.
-		 *
-		 * To get around this problem, we delegate the responsibility of reading stdin to a subprocess, which we can
-		 * then brutally murder when the server shuts down, without killing the entire server process.
-		 * Thankfully, stream_select() actually works properly on sockets, so we can use them for inter-process
-		 * communication.
-		 */
+		while(!$this->shutdown){
+			$this->runSubprocess($buffer, $notifier);
+		}
+	}
 
+	/**
+	 * This pile of shit exists because PHP on Windows is broken, and can't handle stream_select() on stdin or pipes
+	 * properly - stdin native triggers stream_select() when a key is pressed, causing it to get stuck in fgets()
+	 * waiting for a line that might never come (and Windows doesn't support character-based reading either), and
+	 * pipes just constantly trigger stream_select() instead of only when data is returned, rendering it useless.
+	 *
+	 * This results in whichever process reads stdin getting stuck on shutdown, which previously forced us to kill
+	 * the entire server process to make it go away.
+	 *
+	 * To get around this problem, we delegate the responsibility of reading stdin to a subprocess, which we can
+	 * then brutally murder when the server shuts down, without killing the entire server process.
+	 * Thankfully, stream_select() actually works properly on sockets, so we can use them for inter-process
+	 * communication.
+	 */
+	private function runSubprocess(\Threaded $buffer, ?SleeperNotifier $notifier) : void{
 		$server = stream_socket_server("tcp://127.0.0.1:0");
 		if($server === false){
 			throw new \RuntimeException("Failed to open console reader socket server");
@@ -104,7 +109,11 @@ final class ConsoleReaderThread extends Thread{
 			if(stream_select($r, $w, $e, 0, 200000) === 1){
 				$command = fgets($client);
 				if($command === false){
-					throw new \RuntimeException("Broken connection to child process (probably killed)");
+					//subprocess died for some reason; this could be someone killed it manually from outside (e.g.
+					//mistyped PID) or it might be a ctrl+c signal to this process that the child is handling
+					//differently (different signal handlers).
+					//since we have no way to know the difference, we just kill the sub and start a new one.
+					break;
 				}
 
 				$buffer[] = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", $command);
