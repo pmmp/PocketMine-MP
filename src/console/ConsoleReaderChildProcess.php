@@ -41,7 +41,7 @@ if($socket === false){
 	throw new \RuntimeException("Failed to connect to server process");
 }
 $consoleReader = new ConsoleReader();
-while(true){
+while(!feof($socket)){
 	$line = $consoleReader->readLine();
 	if($line !== null){
 		fwrite($socket, $line . "\n");
