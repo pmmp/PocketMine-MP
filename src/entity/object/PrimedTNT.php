@@ -104,6 +104,7 @@ class PrimedTNT extends Entity implements Explosive{
 
 		if(!$this->isFlaggedForDespawn()){
 			$this->fuse -= $tickDiff;
+			$this->networkPropertiesDirty = true;
 
 			if($this->fuse <= 0){
 				$this->flagForDespawn();

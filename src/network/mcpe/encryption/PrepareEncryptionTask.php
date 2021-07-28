@@ -38,8 +38,7 @@ class PrepareEncryptionTask extends AsyncTask{
 
 	private const TLS_KEY_ON_COMPLETION = "completion";
 
-	/** @var resource|null */
-	private static $SERVER_PRIVATE_KEY = null;
+	private static ?\OpenSSLAsymmetricKey $SERVER_PRIVATE_KEY = null;
 
 	/** @var string */
 	private $serverPrivateKey;

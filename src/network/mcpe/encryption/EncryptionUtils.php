@@ -40,11 +40,7 @@ final class EncryptionUtils{
 		//NOOP
 	}
 
-	/**
-	 * @param resource $localPriv
-	 * @param resource $remotePub
-	 */
-	public static function generateSharedSecret($localPriv, $remotePub) : \GMP{
+	public static function generateSharedSecret(\OpenSSLAsymmetricKey $localPriv, \OpenSSLAsymmetricKey $remotePub) : \GMP{
 		$hexSecret = openssl_pkey_derive($remotePub, $localPriv, 48);
 		if($hexSecret === false){
 			throw new \InvalidArgumentException("Failed to derive shared secret: " . openssl_error_string());
@@ -56,10 +52,7 @@ final class EncryptionUtils{
 		return openssl_digest($salt . hex2bin(str_pad(gmp_strval($secret, 16), 96, "0", STR_PAD_LEFT)), 'sha256', true);
 	}
 
-	/**
-	 * @param resource $serverPriv
-	 */
-	public static function generateServerHandshakeJwt($serverPriv, string $salt) : string{
+	public static function generateServerHandshakeJwt(\OpenSSLAsymmetricKey $serverPriv, string $salt) : string{
 		$derPublicKey = JwtUtils::emitDerPublicKey($serverPriv);
 		return JwtUtils::create(
 			[

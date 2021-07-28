@@ -31,6 +31,11 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
+			message: "#^Parameter \\#1 \\$read of function socket_select expects array\\<resource\\>\\|null, array\\<int, Socket\\> given\\.$#"
+			count: 1
+			path: ../../../src/network/query/DedicatedQueryNetworkInterface.php
+
+		-
 			message: "#^Parameter \\#1 \\$ of closure expects TValue, TValue given\\.$#"
 			count: 2
 			path: ../../../src/utils/Promise.php

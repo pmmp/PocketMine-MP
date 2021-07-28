@@ -41,7 +41,7 @@ parameters:
 			path: ../../../src/ServerConfigGroup.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of function strtolower expects string, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$string of function strtolower expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/ServerConfigGroup.php
 
@@ -196,12 +196,12 @@ parameters:
 			path: ../../../src/timings/TimingsHandler.php
 
 		-
-			message: "#^Parameter \\#2 \\$start of function substr expects int, mixed given\\.$#"
+			message: "#^Parameter \\#2 \\$offset of function substr expects int, mixed given\\.$#"
 			count: 1
 			path: ../../../src/utils/Internet.php
 
 		-
-			message: "#^Parameter \\#3 \\$length of function substr expects int, mixed given\\.$#"
+			message: "#^Parameter \\#3 \\$length of function substr expects int\\|null, mixed given\\.$#"
 			count: 1
 			path: ../../../src/utils/Internet.php
 
@@ -226,7 +226,7 @@ parameters:
 			path: ../../../src/utils/Utils.php
 
 		-
-			message: "#^Parameter \\#2 \\$input1 of function array_map expects array, mixed given\\.$#"
+			message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
 
@@ -244,29 +244,4 @@ parameters:
 			message: "#^Cannot access offset 2 on mixed\\.$#"
 			count: 2
 			path: ../../../src/world/format/io/region/RegionWorldProvider.php
-
-		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../phpunit/block/BlockTest.php
-
-		-
-			message: "#^Cannot access offset \\(int\\|string\\) on mixed\\.$#"
-			count: 1
-			path: ../../phpunit/block/BlockTest.php
-
-		-
-			message: "#^Parameter \\#2 \\$array of static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertArrayHasKey\\(\\) expects array\\|ArrayAccess, mixed given\\.$#"
-			count: 1
-			path: ../../phpunit/block/BlockTest.php
-
-		-
-			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
-			count: 1
-			path: ../../phpunit/block/regenerate_consistency_check.php
-
-		-
-			message: "#^Cannot access offset \\(int\\|string\\) on mixed\\.$#"
-			count: 3
-			path: ../../phpunit/block/regenerate_consistency_check.php
 

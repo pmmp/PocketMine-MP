@@ -185,7 +185,7 @@ class Internet{
 	 * @param \Closure|null $onSuccess    function to be called if there is no error. Accepts a resource argument as the cURL handle.
 	 * @phpstan-param array<int, mixed>                $extraOpts
 	 * @phpstan-param list<string>                     $extraHeaders
-	 * @phpstan-param (\Closure(resource) : void)|null $onSuccess
+	 * @phpstan-param (\Closure(\CurlHandle) : void)|null $onSuccess
 	 *
 	 * @throws InternetException if a cURL error occurs
 	 */

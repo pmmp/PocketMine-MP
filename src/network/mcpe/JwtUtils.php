@@ -97,11 +97,9 @@ final class JwtUtils{
 	}
 
 	/**
-	 * @param resource $signingKey
-	 *
 	 * @throws JwtException
 	 */
-	public static function verify(string $jwt, $signingKey) : bool{
+	public static function verify(string $jwt, \OpenSSLAsymmetricKey $signingKey) : bool{
 		[$header, $body, $signature] = self::split($jwt);
 
 		$plainSignature = self::b64UrlDecode($signature);
@@ -132,12 +130,10 @@ final class JwtUtils{
 	}
 
 	/**
-	 * @param resource                     $signingKey
-	 *
 	 * @phpstan-param array<string, mixed> $header
 	 * @phpstan-param array<string, mixed> $claims
 	 */
-	public static function create(array $header, array $claims, $signingKey) : string{
+	public static function create(array $header, array $claims, \OpenSSLAsymmetricKey $signingKey) : string{
 		$jwtBody = JwtUtils::b64UrlEncode(json_encode($header, JSON_THROW_ON_ERROR)) . "." . JwtUtils::b64UrlEncode(json_encode($claims, JSON_THROW_ON_ERROR));
 
 		openssl_sign(
@@ -188,10 +184,7 @@ final class JwtUtils{
 		return $decoded;
 	}
 
-	/**
-	 * @param resource $opensslKey
-	 */
-	public static function emitDerPublicKey($opensslKey) : string{
+	public static function emitDerPublicKey(\OpenSSLAsymmetricKey $opensslKey) : string{
 		$details = openssl_pkey_get_details($opensslKey);
 		if($details === false){
 			throw new AssumptionFailedError("Failed to get details from OpenSSL key resource");
@@ -208,10 +201,7 @@ final class JwtUtils{
 		throw new AssumptionFailedError("OpenSSL resource contains invalid public key");
 	}
 
-	/**
-	 * @return resource
-	 */
-	public static function parseDerPublicKey(string $derKey){
+	public static function parseDerPublicKey(string $derKey) : \OpenSSLAsymmetricKey{
 		$signingKeyOpenSSL = openssl_pkey_get_public(sprintf("-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----\n", base64_encode($derKey)));
 		if($signingKeyOpenSSL === false){
 			throw new JwtException("OpenSSL failed to parse key: " . openssl_error_string());
