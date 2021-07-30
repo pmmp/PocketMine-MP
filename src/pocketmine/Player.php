@@ -3710,6 +3710,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				if($ev->getQuitMessage() != ""){
 					$this->server->broadcastMessage($ev->getQuitMessage());
 				}
+				$this->doCloseInventory();
 
 				$this->save();
 			}
