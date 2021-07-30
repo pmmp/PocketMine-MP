@@ -89,7 +89,8 @@ namespace pocketmine {
 			"spl" => "SPL",
 			"yaml" => "YAML",
 			"zip" => "Zip",
-			"zlib" => "Zlib"
+			"zlib" => "Zlib",
+			"leveldb"=>"LevelDB"
 		];
 
 		foreach($extensions as $ext => $name){
