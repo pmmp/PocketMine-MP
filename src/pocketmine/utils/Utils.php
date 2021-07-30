@@ -181,6 +181,14 @@ class Utils{
 		return $reflect->getName();
 	}
 
+	public static function getUnderWSL() : bool{
+		if(Utils::getOS()!==Utils::OS_LINUX){
+			return false;
+		}
+		$os_version=file_get_contents('/proc/version');
+		return strstr($os_version,'Microsoft')!==false;
+	}
+
 	/**
 	 * Gets this machine / server instance unique ID
 	 * Returns a hash, the first 32 characters (or 16 if raw)

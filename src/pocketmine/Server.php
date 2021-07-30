@@ -165,6 +165,8 @@ use function substr;
 use function time;
 use function touch;
 use function trim;
+use \LevelDB;
+use const LEVELDB_ZLIB_RAW_COMPRESSION;
 use const DIRECTORY_SEPARATOR;
 use const INT32_MAX;
 use const INT32_MIN;
@@ -348,6 +350,7 @@ class Server{
 
 	/** @var Level|null */
 	private $levelDefault = null;
+	private $playerData;
 
 	public function getName() : string{
 		return \pocketmine\NAME;
@@ -693,17 +696,26 @@ class Server{
 	}
 
 	private function getPlayerDataPath(string $username) : string{
-		return $this->getDataPath() . '/players/' . strtolower($username) . '.dat';
+		return $this->getDataPath() . 'players/' . strtolower($username) . '.dat';
+	}
+
+	private function getPlayerDataFile() : string{
+		return $this->getDataPath() . 'players';
 	}
 
 	/**
 	 * Returns whether the server has stored any saved data for this player.
 	 */
-	public function hasOfflinePlayerData(string $name) : bool{
+	public function hasOfflinePlayerDataLegacy(string $name) : bool{
 		return file_exists($this->getPlayerDataPath($name));
 	}
 
-	public function getOfflinePlayerData(string $name) : CompoundTag{
+	public function hasOfflinePlayerData(string $name) : bool{
+		if(!$this->playerData) return $this->hasOfflinePlayerDataLegacy($name);
+		return !empty($this->playerData->get($name));
+	}
+
+	public function getOfflinePlayerDataLegacy(string $name) : CompoundTag{
 		$name = strtolower($name);
 		$path = $this->getPlayerDataPath($name);
 		if($this->shouldSavePlayerData()){
@@ -766,10 +778,76 @@ class Server{
 
 	}
 
+	public function getOfflinePlayerData(string $name) : CompoundTag{
+		if(!$this->playerData) return $this->getOfflinePlayerData($name);
+		$name = strtolower($name);
+		if($this->shouldSavePlayerData()){
+			if($this->hasOfflinePlayerData($name)){
+				try{
+					$nbt = new BigEndianNBTStream();
+					$compound = $nbt->read($this->playerData->get($name));
+					if(!($compound instanceof CompoundTag)){
+						throw new \RuntimeException("Invalid data found in player.dat for player $name, expected " . CompoundTag::class . ", got " . (is_object($compound) ? get_class($compound) : gettype($compound)));
+					}
+
+					return $compound;
+				}catch(\Throwable $e){ //zlib decode error / corrupt data
+					\LevelDB::repair($this->getPlayerDataFile());
+					$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
+				}
+			}else{
+				$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerNotFound", [$name]));
+			}
+		}
+		$spawn = $this->getDefaultLevel()->getSafeSpawn();
+		$currentTimeMillis = (int) (microtime(true) * 1000);
+
+		$nbt = new CompoundTag("", [
+			new LongTag("firstPlayed", $currentTimeMillis),
+			new LongTag("lastPlayed", $currentTimeMillis),
+			new ListTag("Pos", [
+				new DoubleTag("", $spawn->x),
+				new DoubleTag("", $spawn->y),
+				new DoubleTag("", $spawn->z)
+			], NBT::TAG_Double),
+			new StringTag("Level", $this->getDefaultLevel()->getFolderName()),
+			//new StringTag("SpawnLevel", $this->getDefaultLevel()->getFolderName()),
+			//new IntTag("SpawnX", $spawn->getFloorX()),
+			//new IntTag("SpawnY", $spawn->getFloorY()),
+			//new IntTag("SpawnZ", $spawn->getFloorZ()),
+			//new ByteTag("SpawnForced", 1), //TODO
+			new ListTag("Inventory", [], NBT::TAG_Compound),
+			new ListTag("EnderChestInventory", [], NBT::TAG_Compound),
+			new CompoundTag("Achievements", []),
+			new IntTag("playerGameType", $this->getGamemode()),
+			new ListTag("Motion", [
+				new DoubleTag("", 0.0),
+				new DoubleTag("", 0.0),
+				new DoubleTag("", 0.0)
+			], NBT::TAG_Double),
+			new ListTag("Rotation", [
+				new FloatTag("", 0.0),
+				new FloatTag("", 0.0)
+			], NBT::TAG_Float),
+			new FloatTag("FallDistance", 0.0),
+			new ShortTag("Fire", 0),
+			new ShortTag("Air", 300),
+			new ByteTag("OnGround", 1),
+			new ByteTag("Invulnerable", 0),
+			new StringTag("NameTag", $name)
+		]);
+
+		unset($currentTimeMillis);
+		unset($players);
+
+		return $nbt;
+	}
+
 	/**
 	 * @return void
 	 */
-	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag){
+	public function saveOfflinePlayerDataLegacy(string $name, CompoundTag $nbtTag){
+		if(!$this->playerData) return $this->saveOfflinePlayerDataLegacy($name,$nbtTag);
 		$ev = new PlayerDataSaveEvent($nbtTag, $name);
 		$ev->setCancelled(!$this->shouldSavePlayerData());
 
@@ -779,6 +857,23 @@ class Server{
 			$nbt = new BigEndianNBTStream();
 			try{
 				file_put_contents($this->getPlayerDataPath($name), $nbt->writeCompressed($ev->getSaveData()));
+			}catch(\Throwable $e){
+				$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
+				$this->logger->logException($e);
+			}
+		}
+	}
+
+	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag){
+		$ev = new PlayerDataSaveEvent($nbtTag, $name);
+		$ev->setCancelled(!$this->shouldSavePlayerData());
+
+		$ev->call();
+
+		if(!$ev->isCancelled()){
+			$nbt = new BigEndianNBTStream();
+			try{
+				$this->playerData->set($name,$nbt->write($ev->getSaveData()));
 			}catch(\Throwable $e){
 				$this->logger->critical($this->getLanguage()->translateString("pocketmine.data.saveError", [$name, $e->getMessage()]));
 				$this->logger->logException($e);
@@ -1309,16 +1404,23 @@ class Server{
 				mkdir($dataPath . "worlds/", 0777);
 			}
 
-			if(!file_exists($dataPath . "players/")){
-				mkdir($dataPath . "players/", 0777);
-			}
-
 			if(!file_exists($pluginPath)){
 				mkdir($pluginPath, 0777);
 			}
 
 			$this->dataPath = realpath($dataPath) . DIRECTORY_SEPARATOR;
 			$this->pluginPath = realpath($pluginPath) . DIRECTORY_SEPARATOR;
+
+			if(Utils::getUnderWSL()){
+				$this->logger->error("You are running the server under WSL, therefore LevelDB storage has been disabled.");
+				$this->logger->error("LevelDB will not work properly under WSL, please consider running native Windows php");
+				if(!file_exists($dataPath . "players/")){
+					mkdir($dataPath . "players/", 0777);
+				}
+				$this->playerData = false;
+			}else{
+				$this->playerData = new LevelDB($this->getPlayerDataFile(),['compression' => LEVELDB_ZLIB_RAW_COMPRESSION]);
+			}
 
 			$this->logger->info("Loading pocketmine.yml...");
 			if(!file_exists($this->dataPath . "pocketmine.yml")){
