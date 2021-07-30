@@ -117,6 +117,7 @@ class ItemFactory{
 		self::registerItem(new GoldChestplate());
 		self::registerItem(new GoldLeggings());
 		self::registerItem(new GoldBoots());
+		self::registerItem(new Elytra());
 		self::registerItem(new Item(Item::FLINT, 0, "Flint"));
 		self::registerItem(new RawPorkchop());
 		self::registerItem(new CookedPorkchop());
