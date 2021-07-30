@@ -144,6 +144,7 @@ class ItemFactory{
 		//TODO: CHEST_MINECART
 
 		self::registerItem(new Egg());
+		self::registerItem(new Item(Item::FIREWORKS, 0, "Firworks"));
 		self::registerItem(new Compass());
 		self::registerItem(new FishingRod());
 		self::registerItem(new Clock());
