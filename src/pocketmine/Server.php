@@ -779,7 +779,7 @@ class Server{
 	}
 
 	public function getOfflinePlayerData(string $name) : CompoundTag{
-		if(!$this->playerData) return $this->getOfflinePlayerData($name);
+		if(!$this->playerData) return $this->getOfflinePlayerDatagetOfflinePlayerDataLegacy($name);
 		$name = strtolower($name);
 		if($this->shouldSavePlayerData()){
 			if($this->hasOfflinePlayerData($name)){
@@ -847,7 +847,6 @@ class Server{
 	 * @return void
 	 */
 	public function saveOfflinePlayerDataLegacy(string $name, CompoundTag $nbtTag){
-		if(!$this->playerData) return $this->saveOfflinePlayerDataLegacy($name,$nbtTag);
 		$ev = new PlayerDataSaveEvent($nbtTag, $name);
 		$ev->setCancelled(!$this->shouldSavePlayerData());
 
@@ -865,6 +864,7 @@ class Server{
 	}
 
 	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag){
+		if(!$this->playerData) return $this->saveOfflinePlayerDataLegacy($name,$nbtTag);
 		$ev = new PlayerDataSaveEvent($nbtTag, $name);
 		$ev->setCancelled(!$this->shouldSavePlayerData());
 
