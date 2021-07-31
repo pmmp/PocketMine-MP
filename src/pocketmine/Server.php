@@ -711,12 +711,12 @@ class Server{
 	}
 
 	public function hasOfflinePlayerData(string $name) : bool{
+		$name = strtolower($name);
 		if(!$this->playerData) return $this->hasOfflinePlayerDataLegacy($name);
-		return !empty($this->playerData->get($name));
+		return $this->playerData->get($name)!==false;
 	}
 
 	public function getOfflinePlayerDataLegacy(string $name) : CompoundTag{
-		$name = strtolower($name);
 		$path = $this->getPlayerDataPath($name);
 		if($this->shouldSavePlayerData()){
 			if(file_exists($path)){
@@ -779,8 +779,8 @@ class Server{
 	}
 
 	public function getOfflinePlayerData(string $name) : CompoundTag{
-		if(!$this->playerData) return $this->getOfflinePlayerDatagetOfflinePlayerDataLegacy($name);
 		$name = strtolower($name);
+		if(!$this->playerData) return $this->getOfflinePlayerDataLegacy($name);
 		if($this->shouldSavePlayerData()){
 			if($this->hasOfflinePlayerData($name)){
 				try{
@@ -792,7 +792,7 @@ class Server{
 
 					return $compound;
 				}catch(\Throwable $e){ //zlib decode error / corrupt data
-					\LevelDB::repair($this->getPlayerDataFile());
+					$this->playerData->repair();
 					$this->logger->notice($this->getLanguage()->translateString("pocketmine.data.playerCorrupted", [$name]));
 				}
 			}else{
@@ -837,9 +837,6 @@ class Server{
 			new StringTag("NameTag", $name)
 		]);
 
-		unset($currentTimeMillis);
-		unset($players);
-
 		return $nbt;
 	}
 
@@ -864,6 +861,7 @@ class Server{
 	}
 
 	public function saveOfflinePlayerData(string $name, CompoundTag $nbtTag){
+		$name = strtolower($name);
 		if(!$this->playerData) return $this->saveOfflinePlayerDataLegacy($name,$nbtTag);
 		$ev = new PlayerDataSaveEvent($nbtTag, $name);
 		$ev->setCancelled(!$this->shouldSavePlayerData());
