@@ -87,7 +87,7 @@ final class RuntimeBlockMapping{
 			$idToStatesMap[$state->getString("name")][] = $k;
 		}
 		foreach($legacyStateMap as $pair){
-			$id = $legacyIdMap->stringToLegacy($pair->getId()) ?? null;
+			$id = $legacyIdMap->stringToLegacy($pair->getId());
 			if($id === null){
 				throw new \RuntimeException("No legacy ID matches " . $pair->getId());
 			}
