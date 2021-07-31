@@ -16,7 +16,7 @@
       "ext-hash": "*",
       "ext-igbinary": "^3.0.1",
       "ext-json": "*",
-      "ext-leveldb": "^0.2.1",
+      "ext-leveldb": "^0.2.1 || ^0.3.0",
       "ext-mbstring": "*",
       "ext-morton": "^0.1.0",
       "ext-openssl": "*",
