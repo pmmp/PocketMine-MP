@@ -716,6 +716,16 @@ class Server{
 		return $this->playerData->get($name)!==false;
 	}
 
+	public function deleteOfflinePlayerDataLegacy(string $name):bool{
+		return @unlink($this->getPlayerDataPath($name));
+	}
+
+	public function deleteOfflinePlayerData(string $name):bool{
+		$name = strtolower($name);
+		if(!$this->playerData) return $this->deleteOfflinePlayerDataLegacy($name);
+		return $this->playerData->delete($name);
+	}
+
 	public function getOfflinePlayerDataLegacy(string $name) : CompoundTag{
 		$path = $this->getPlayerDataPath($name);
 		if($this->shouldSavePlayerData()){

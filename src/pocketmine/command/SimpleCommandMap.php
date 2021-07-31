@@ -27,6 +27,7 @@ use pocketmine\command\defaults\BanCommand;
 use pocketmine\command\defaults\BanIpCommand;
 use pocketmine\command\defaults\BanListCommand;
 use pocketmine\command\defaults\DefaultGamemodeCommand;
+use pocketmine\command\defaults\DeletePlayerCommand;
 use pocketmine\command\defaults\DeopCommand;
 use pocketmine\command\defaults\DifficultyCommand;
 use pocketmine\command\defaults\DumpMemoryCommand;
@@ -132,7 +133,8 @@ class SimpleCommandMap implements CommandMap{
 			new TitleCommand("title"),
 			new TransferServerCommand("transferserver"),
 			new VersionCommand("version"),
-			new WhitelistCommand("whitelist")
+			new WhitelistCommand("whitelist"),
+			new DeletePlayerCommand("deleteplayer")
 		]);
 	}
 
