@@ -35,7 +35,7 @@ class SlowFallingEffect extends Effect{
 
 	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{
 		if(!($entity instanceof Player)){ //TODO: ugly hack, player motion isn't updated properly by the server yet :(
-			$entity->addMotion(0, ($entity->getMotion()->y + $instance->getEffectLevel() / 20) / 5, 0);
+			$entity->addMotion(0, - ($instance->getEffectLevel() / 20 + $entity->getMotion()->y) / 5, 0);
 		}
 	}
 }
