@@ -58,6 +58,7 @@ use function assert;
  * @method static Effect WATER_BREATHING()
  * @method static Effect WEAKNESS()
  * @method static WitherEffect WITHER()
+ * @method static SlowFallingEffect Slow_Falling()
  */
 final class VanillaEffects{
 	use RegistryTrait;
@@ -84,7 +85,7 @@ final class VanillaEffects{
 		self::register("regeneration", new RegenerationEffect(10, "%potion.regeneration", new Color(0xcd, 0x5c, 0xab)));
 		self::register("resistance", new Effect(11, "%potion.resistance", new Color(0x99, 0x45, 0x3a)));
 		self::register("saturation", new SaturationEffect(23, "%potion.saturation", new Color(0xf8, 0x24, 0x23), false));
-		//TODO: slow_falling
+		self::register("slow_falling", new SlowFallingEffect(27, "%potion.slowFalling", new Color(0xce, 0xff, 0xff)));
 		self::register("slowness", new SlownessEffect(2, "%potion.moveSlowdown", new Color(0x5a, 0x6c, 0x81), true));
 		self::register("speed", new SpeedEffect(1, "%potion.moveSpeed", new Color(0x7c, 0xaf, 0xc6)));
 		self::register("strength", new Effect(5, "%potion.damageBoost", new Color(0x93, 0x24, 0x23)));

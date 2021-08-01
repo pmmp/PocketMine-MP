@@ -306,6 +306,9 @@ abstract class Living extends Entity{
 	}
 
 	public function fall(float $fallDistance) : void{
+		if($this->getEffects()->has(VanillaEffects::Slow_Falling())){
+			return;
+		}
 		$damage = ceil($fallDistance - 3 - (($jumpBoost = $this->effectManager->get(VanillaEffects::JUMP_BOOST())) !== null ? $jumpBoost->getEffectLevel() : 0));
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
