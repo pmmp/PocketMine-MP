@@ -38,12 +38,4 @@ class SlowFallingEffect extends Effect{
 			$entity->addMotion(0, ($entity->getMotion()->y + $instance->getEffectLevel() / 20) / 5, 0);
 		}
 	}
-
-	public function add(Living $entity, EffectInstance $instance) : void{
-		$entity->setHasGravity(false);
-	}
-
-	public function remove(Living $entity, EffectInstance $instance) : void{
-		$entity->setHasGravity();
-	}
 }
