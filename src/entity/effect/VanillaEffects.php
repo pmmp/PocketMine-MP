@@ -53,12 +53,12 @@ use function assert;
  * @method static Effect RESISTANCE()
  * @method static SaturationEffect SATURATION()
  * @method static SlownessEffect SLOWNESS()
+ * @method static SlowFallingEffect SLOW_FALLING()
  * @method static SpeedEffect SPEED()
  * @method static Effect STRENGTH()
  * @method static Effect WATER_BREATHING()
  * @method static Effect WEAKNESS()
  * @method static WitherEffect WITHER()
- * @method static SlowFallingEffect Slow_Falling()
  */
 final class VanillaEffects{
 	use RegistryTrait;
