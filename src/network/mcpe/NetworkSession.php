@@ -421,7 +421,6 @@ class NetworkSession{
 		$timings->startTiming();
 		try{
 			$this->sendBuffer[] = $packet;
-			$this->manager->scheduleUpdate($this); //schedule flush at end of tick
 		}finally{
 			$timings->stopTiming();
 		}
@@ -1021,14 +1020,13 @@ class NetworkSession{
 		$this->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
 	}
 
-	public function tick() : bool{
+	public function tick() : void{
 		if($this->info === null){
 			if(time() >= $this->connectTime + 10){
 				$this->disconnect("Login timeout");
-				return false;
 			}
 
-			return true; //keep ticking until timeout
+			return;
 		}
 
 		if($this->player !== null){
@@ -1044,7 +1042,5 @@ class NetworkSession{
 		}
 
 		$this->flushSendBuffer();
-
-		return true;
 	}
 }
