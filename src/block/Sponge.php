@@ -35,12 +35,12 @@ class Sponge extends Opaque{
 		$this->wet = ($stateMeta & BlockLegacyMetadata::SPONGE_FLAG_WET) !== 0;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1;
+	protected function writeStateToItemMeta() : int{
+		return $this->writeStateToMeta();
 	}
 
-	public function getNonPersistentStateBitmask() : int{
-		return 0;
+	public function getStateBitmask() : int{
+		return 0b1;
 	}
 
 	public function isWet() : bool{ return $this->wet; }

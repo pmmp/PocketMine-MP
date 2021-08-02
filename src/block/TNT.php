@@ -53,11 +53,13 @@ class TNT extends Opaque{
 		return ($this->unstable ? BlockLegacyMetadata::TNT_FLAG_UNSTABLE : 0) | ($this->worksUnderwater ? BlockLegacyMetadata::TNT_FLAG_UNDERWATER : 0);
 	}
 
+	protected function writeStateToItemMeta() : int{
+		return $this->worksUnderwater ? BlockLegacyMetadata::TNT_FLAG_UNDERWATER : 0;
+	}
+
 	public function getStateBitmask() : int{
 		return 0b11;
 	}
-
-	public function getNonPersistentStateBitmask() : int{ return 0b1; }
 
 	public function isUnstable() : bool{ return $this->unstable; }
 

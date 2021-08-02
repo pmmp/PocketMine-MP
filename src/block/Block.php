@@ -98,7 +98,7 @@ class Block{
 	public function asItem() : Item{
 		return ItemFactory::getInstance()->get(
 			$this->idInfo->getItemId(),
-			$this->idInfo->getVariant() | ($this->writeStateToMeta() & ~$this->getNonPersistentStateBitmask())
+			$this->idInfo->getVariant() | $this->writeStateToItemMeta()
 		);
 	}
 
@@ -108,15 +108,15 @@ class Block{
 		return $this->idInfo->getVariant() | $stateMeta;
 	}
 
+	protected function writeStateToItemMeta() : int{
+		return 0;
+	}
+
 	/**
 	 * Returns a bitmask used to extract state bits from block metadata.
 	 */
 	public function getStateBitmask() : int{
 		return 0;
-	}
-
-	public function getNonPersistentStateBitmask() : int{
-		return $this->getStateBitmask();
 	}
 
 	protected function writeStateToMeta() : int{

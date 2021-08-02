@@ -48,16 +48,16 @@ trait ColorInMetadataTrait{
 	}
 
 	/**
+	 * @see Block::writeStateToItemMeta()
+	 */
+	protected function writeStateToItemMeta() : int{
+		return DyeColorIdMap::getInstance()->toId($this->color);
+	}
+
+	/**
 	 * @see Block::getStateBitmask()
 	 */
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	/**
-	 * @see Block::getNonPersistentStateBitmask()
-	 */
-	public function getNonPersistentStateBitmask() : int{
-		return 0;
 	}
 }

@@ -64,7 +64,7 @@ final class FloorCoralFan extends BaseCoral{
 		//TODO: HACK! workaround dead flag being lost when broken / blockpicked (original impl only uses first ID)
 		return ItemFactory::getInstance()->get(
 			$this->dead ? ItemIds::CORAL_FAN_DEAD : ItemIds::CORAL_FAN,
-			CoralTypeIdMap::getInstance()->toId($this->coralType)
+			$this->writeStateToItemMeta()
 		);
 	}
 
@@ -73,12 +73,12 @@ final class FloorCoralFan extends BaseCoral{
 			CoralTypeIdMap::getInstance()->toId($this->coralType);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function writeStateToItemMeta() : int{
+		return CoralTypeIdMap::getInstance()->toId($this->coralType);
 	}
 
-	public function getNonPersistentStateBitmask() : int{
-		return 0b1000;
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 
 	public function getAxis() : int{ return $this->axis; }
