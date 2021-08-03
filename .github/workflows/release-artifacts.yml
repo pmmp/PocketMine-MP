@@ -128,7 +128,7 @@ jobs:
         uses: ncipollo/release-action@v1.8.6
         with:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*
-          commit: ${{ github.ref }}
+          commit: ${{ github.sha }}
           draft: true
           name: PocketMine-MP ${{ steps.get-pm-version.outputs.PM_VERSION }}
           tag: release-artifact-test-${{ steps.get-pm-version.outputs.PM_VERSION }}
