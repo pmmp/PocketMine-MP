@@ -29,7 +29,7 @@ jobs:
         run: ./tests/gh-actions/build.sh "${{ matrix.php }}"
 
   artifacts:
-    name: Preprocessor tests
+    name: Create release artifacts
     needs: build-php
     runs-on: ubuntu-20.04
     strategy:
