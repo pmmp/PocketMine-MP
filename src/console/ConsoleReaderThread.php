@@ -97,7 +97,7 @@ final class ConsoleReaderThread extends Thread{
 		if($sub === false){
 			throw new AssumptionFailedError("Something has gone horribly wrong");
 		}
-		$client = stream_socket_accept($server);
+		$client = stream_socket_accept($server, 15);
 		if($client === false){
 			throw new AssumptionFailedError("stream_socket_accept() returned false");
 		}
