@@ -114,7 +114,11 @@ jobs:
 
       - name: Get PocketMine-MP release version
         id: get-pm-version
-        run: echo ::set-output name=PM_VERSION::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\BASE_VERSION;')
+        run: |
+          echo ::set-output name=PM_VERSION::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\BASE_VERSION;')
+          echo ::set-output name=MCPE_VERSION::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\network\mcpe\protocol\ProtocolInfo::MINECRAFT_VERSION_NETWORK;')
+          echo ::set-output name=PM_VERSION_SHORT::$(php -r 'require "vendor/autoload.php"; $v = explode(".", \pocketmine\BASE_VERSION); array_pop($v); echo implode(".", $v);')
+          echo ::set-output name=PM_VERSION_MD::$(php -r 'require "vendor/autoload.php"; echo str_replace(".", "", \pocketmine\BASE_VERSION);')
 
       - name: Upload release artifacts
         uses: actions/upload-artifact@v2
@@ -133,7 +137,11 @@ jobs:
           name: PocketMine-MP ${{ steps.get-pm-version.outputs.PM_VERSION }}
           tag: release-artifact-test-${{ steps.get-pm-version.outputs.PM_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-            
+          body: |
+            **For Minecraft: Bedrock Edition ${{ steps.get-pm-version.outputs.MCPE_VERSION }}
+
+            Please see the [changelogs](/changelogs/${{ steps.get-pm-version.outputs.PM_VERSION_SHORT }}.md#${{ steps.get-pm-version.outputs.PM_VERSION_MD }}) for details.
+
       - name: Upload preprocessor diffs
         uses: actions/upload-artifact@v2
         if: always()
