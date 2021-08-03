@@ -157,113 +157,77 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
 	}
 
-	/** @var NetworkSession|null */
-	protected $networkSession;
+	protected ?NetworkSession $networkSession;
 
-	/** @var bool */
-	public $spawned = false;
+	public bool $spawned = false;
 
-	/** @var string */
-	protected $username;
-	/** @var string */
-	protected $displayName;
-	/** @var string */
-	protected $xuid = "";
-	/** @var bool */
-	protected $authenticated;
-	/** @var PlayerInfo */
-	protected $playerInfo;
+	protected string $username;
+	protected string $displayName;
+	protected string $xuid = "";
+	protected bool $authenticated;
+	protected PlayerInfo $playerInfo;
 
-	/** @var Inventory|null */
-	protected $currentWindow = null;
+	protected ?Inventory $currentWindow = null;
 	/** @var Inventory[] */
-	protected $permanentWindows = [];
-	/** @var PlayerCursorInventory */
-	protected $cursorInventory;
-	/** @var CraftingGrid */
-	protected $craftingGrid;
+	protected array $permanentWindows = [];
+	protected PlayerCursorInventory $cursorInventory;
+	protected CraftingGrid $craftingGrid;
 
-	/** @var int */
-	protected $messageCounter = 2;
+	protected int $messageCounter = 2;
 
-	/** @var int */
-	protected $firstPlayed;
-	/** @var int */
-	protected $lastPlayed;
-	/** @var GameMode */
-	protected $gamemode;
+	protected int $firstPlayed;
+	protected int $lastPlayed;
+	protected GameMode $gamemode;
 
 	/**
 	 * @var UsedChunkStatus[] chunkHash => status
 	 * @phpstan-var array<int, UsedChunkStatus>
 	 */
-	protected $usedChunks = [];
+	protected array $usedChunks = [];
 	/** @var bool[] chunkHash => dummy */
-	protected $loadQueue = [];
-	/** @var int */
-	protected $nextChunkOrderRun = 5;
+	protected array $loadQueue = [];
+	protected int $nextChunkOrderRun = 5;
 
-	/** @var int */
-	protected $viewDistance = -1;
-	/** @var int */
-	protected $spawnThreshold;
-	/** @var int */
-	protected $spawnChunkLoadCount = 0;
-	/** @var int */
-	protected $chunksPerTick;
-	/** @var ChunkSelector */
-	protected $chunkSelector;
-	/** @var PlayerChunkLoader */
-	protected $chunkLoader;
+	protected int $viewDistance = -1;
+	protected int $spawnThreshold;
+	protected int $spawnChunkLoadCount = 0;
+	protected int $chunksPerTick;
+	protected ChunkSelector $chunkSelector;
+	protected PlayerChunkLoader $chunkLoader;
 
 	/** @var bool[] map: raw UUID (string) => bool */
-	protected $hiddenPlayers = [];
+	protected array $hiddenPlayers = [];
 
-	/** @var float */
-	protected $moveRateLimit = 10 * self::MOVES_PER_TICK;
-	/** @var float|null */
-	protected $lastMovementProcess = null;
+	protected float $moveRateLimit = 10 * self::MOVES_PER_TICK;
+	protected ?float $lastMovementProcess = null;
 
-	/** @var int */
-	protected $inAirTicks = 0;
-	/** @var float */
-	protected $stepHeight = 0.6;
+	protected int $inAirTicks = 0;
+	protected float $stepHeight = 0.6;
 
-	/** @var Vector3|null */
-	protected $sleeping = null;
-	/** @var Position|null */
-	private $spawnPosition = null;
+	protected ?Vector3 $sleeping = null;
+	private ?Position $spawnPosition = null;
 
 	private bool $respawnLocked = false;
 
 	//TODO: Abilities
-	/** @var bool */
-	protected $autoJump = true;
-	/** @var bool */
-	protected $allowFlight = false;
-	/** @var bool */
-	protected $flying = false;
+	protected bool $autoJump = true;
+	protected bool $allowFlight = false;
+	protected bool $flying = false;
 
-	/** @var int|null */
-	protected $lineHeight = null;
-	/** @var string */
-	protected $locale = "en_US";
+	protected ?int $lineHeight = null;
+	protected string $locale = "en_US";
 
-	/** @var int */
-	protected $startAction = -1;
+	protected int $startAction = -1;
 	/** @var int[] ID => ticks map */
-	protected $usedItemsCooldown = [];
+	protected array $usedItemsCooldown = [];
 
-	/** @var int */
-	protected $formIdCounter = 0;
+	protected int $formIdCounter = 0;
 	/** @var Form[] */
-	protected $forms = [];
+	protected array $forms = [];
 
-	/** @var \Logger */
-	protected $logger;
+	protected \Logger $logger;
 
-	/** @var SurvivalBlockBreakHandler|null */
-	protected $blockBreakHandler = null;
+	protected ?SurvivalBlockBreakHandler $blockBreakHandler = null;
 
 	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, Location $spawnLocation, ?CompoundTag $namedtag){
 		$username = TextFormat::clean($playerInfo->getUsername());
@@ -2019,8 +1983,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	protected function destroyCycles() : void{
 		$this->networkSession = null;
-		$this->cursorInventory = null;
-		$this->craftingGrid = null;
+		unset($this->cursorInventory);
+		unset($this->craftingGrid);
 		$this->spawnPosition = null;
 		$this->blockBreakHandler = null;
 		parent::destroyCycles();
