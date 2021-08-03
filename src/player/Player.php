@@ -202,7 +202,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected ?float $lastMovementProcess = null;
 
 	protected int $inAirTicks = 0;
-	protected float $stepHeight = 0.6;
+	/** @var float */
+	protected $stepHeight = 0.6;
 
 	protected ?Vector3 $sleeping = null;
 	private ?Position $spawnPosition = null;
