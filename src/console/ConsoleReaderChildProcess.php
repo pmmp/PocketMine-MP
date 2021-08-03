@@ -36,9 +36,11 @@ if(count($argv) !== 2){
 }
 
 @cli_set_process_title('PocketMine-MP Console Reader');
-$socket = stream_socket_client($argv[1]);
+$errCode = null;
+$errMessage = null;
+$socket = stream_socket_client($argv[1], $errCode, $errMessage, 15.0);
 if($socket === false){
-	throw new \RuntimeException("Failed to connect to server process");
+	throw new \RuntimeException("Failed to connect to server process ($errCode): $errMessage");
 }
 $consoleReader = new ConsoleReader();
 while(!feof($socket)){
