@@ -184,7 +184,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @phpstan-var array<int, UsedChunkStatus>
 	 */
 	protected array $usedChunks = [];
-	/** @var bool[] chunkHash => dummy */
+	/**
+	 * @var true[] chunkHash => dummy
+	 * @phpstan-var array<int, true>
+	 */
 	protected array $loadQueue = [];
 	protected int $nextChunkOrderRun = 5;
 

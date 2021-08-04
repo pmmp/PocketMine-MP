@@ -626,11 +626,6 @@ parameters:
 			path: ../../../src/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
 
 		-
-			message: "#^Array \\(array\\<int, pocketmine\\\\player\\\\UsedChunkStatus\\>\\) does not accept key \\(int\\|string\\)\\.$#"
-			count: 3
-			path: ../../../src/player/Player.php
-
-		-
 			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackChunk\\(\\) should return string but returns string\\|false\\.$#"
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
