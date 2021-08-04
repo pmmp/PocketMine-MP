@@ -31,7 +31,6 @@ use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
-use pocketmine\utils\TextFormat;
 use function count;
 use function implode;
 use function sort;
@@ -136,12 +135,6 @@ class WhitelistCommand extends VanillaCommand{
 		if($permission === null){
 			throw new AssumptionFailedError("Unknown subcommand $subcommand");
 		}
-		if(!$sender->hasPermission($permission)){
-			$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
-
-			return true;
-		}
-
-		return false;
+		return !$this->testPermission($sender, $permission);
 	}
 }

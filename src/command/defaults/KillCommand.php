@@ -57,9 +57,7 @@ class KillCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 1){
-			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_KILL_OTHER)){
-				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
-
+			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_KILL_OTHER)){
 				return true;
 			}
 
@@ -76,9 +74,7 @@ class KillCommand extends VanillaCommand{
 		}
 
 		if($sender instanceof Player){
-			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_KILL_SELF)){
-				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
-
+			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_KILL_SELF)){
 				return true;
 			}
 

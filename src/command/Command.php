@@ -111,27 +111,28 @@ abstract class Command{
 		$this->permission = $permission;
 	}
 
-	public function testPermission(CommandSender $target) : bool{
-		if($this->testPermissionSilent($target)){
+	public function testPermission(CommandSender $target, ?string $permission = null) : bool{
+		if($this->testPermissionSilent($target, $permission)){
 			return true;
 		}
 
 		if($this->permissionMessage === null){
 			$target->sendMessage($target->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
 		}elseif($this->permissionMessage !== ""){
-			$target->sendMessage(str_replace("<permission>", $this->permission, $this->permissionMessage));
+			$target->sendMessage(str_replace("<permission>", $permission ?? $this->permission, $this->permissionMessage));
 		}
 
 		return false;
 	}
 
-	public function testPermissionSilent(CommandSender $target) : bool{
-		if($this->permission === null or $this->permission === ""){
+	public function testPermissionSilent(CommandSender $target, ?string $permission = null) : bool{
+		$permission ??= $this->permission;
+		if($permission === null or $permission === ""){
 			return true;
 		}
 
-		foreach(explode(";", $this->permission) as $permission){
-			if($target->hasPermission($permission)){
+		foreach(explode(";", $permission) as $p){
+			if($target->hasPermission($p)){
 				return true;
 			}
 		}

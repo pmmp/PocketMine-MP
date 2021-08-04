@@ -64,13 +64,11 @@ class ClearCommand extends VanillaCommand{
 				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PLAYER_NOTFOUND));
 				return true;
 			}
-			if($target !== $sender && !$sender->hasPermission(DefaultPermissionNames::COMMAND_CLEAR_OTHER)){
-				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
+			if($target !== $sender && !$this->testPermission($sender, DefaultPermissionNames::COMMAND_CLEAR_OTHER)){
 				return true;
 			}
 		}elseif($sender instanceof Player){
-			if(!$sender->hasPermission(DefaultPermissionNames::COMMAND_CLEAR_SELF)){
-				$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
+			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_CLEAR_SELF)){
 				return true;
 			}
 
