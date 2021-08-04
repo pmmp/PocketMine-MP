@@ -1,16 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Method ReflectionMethod\\:\\:getClosure\\(\\) invoked with 0 parameters, 1 required\\.$#"
-			count: 2
-			path: ../../phpunit/event/HandlerListManagerTest.php
-
-		-
-			message: "#^Method ReflectionMethod\\:\\:getClosure\\(\\) invoked with 0 parameters, 1 required\\.$#"
-			count: 1
-			path: ../../phpunit/network/mcpe/handler/StupidJsonDecodeTest.php
-
-		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\handler\\\\StupidJsonDecodeTest\\:\\:\\$stupidJsonDecodeFunc \\(Closure\\(string, bool\\)\\: mixed\\) does not accept Closure\\|null\\.$#"
 			count: 1
 			path: ../../phpunit/network/mcpe/handler/StupidJsonDecodeTest.php

@@ -35,13 +35,3 @@ parameters:
 			count: 1
 			path: ../../../src/entity/Living.php
 
-		-
-			message: "#^Property pocketmine\\\\player\\\\Player\\:\\:\\$craftingGrid \\(pocketmine\\\\crafting\\\\CraftingGrid\\) does not accept null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
-			message: "#^Property pocketmine\\\\player\\\\Player\\:\\:\\$cursorInventory \\(pocketmine\\\\inventory\\\\PlayerCursorInventory\\) does not accept null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-

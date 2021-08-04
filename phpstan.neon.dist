@@ -7,7 +7,6 @@ includes:
 	- tests/phpstan/configs/l8-baseline.neon
 	- tests/phpstan/configs/php-bugs.neon
 	- tests/phpstan/configs/phpstan-bugs.neon
-	- tests/phpstan/configs/phpunit-wiring-tests.neon
 	- tests/phpstan/configs/pthreads-bugs.neon
 	- tests/phpstan/configs/runtime-type-checks.neon
 	- vendor/phpstan/phpstan-phpunit/extension.neon
