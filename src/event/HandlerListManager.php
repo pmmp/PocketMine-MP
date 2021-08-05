@@ -84,6 +84,9 @@ class HandlerListManager{
 	 *
 	 * Calling this method also lazily initializes the $classMap inheritance tree of handler lists.
 	 *
+	 * @phpstan-template TEvent of Event
+	 * @phpstan-param class-string<TEvent> $event
+	 *
 	 * @throws \ReflectionException
 	 * @throws \InvalidArgumentException
 	 */
