@@ -118,7 +118,7 @@ class EffectInstance{
 	 * @return $this
 	 */
 	public function setAmplifier(int $amplifier) : EffectInstance{
-		if($amplifier < 0 or $amplifier > 255){
+		if($amplifier > 255){
 			throw new \InvalidArgumentException("Amplifier must be in range 0 - 255, got $amplifier");
 		}
 		$this->amplifier = $amplifier;
