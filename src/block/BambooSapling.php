@@ -100,7 +100,7 @@ final class BambooSapling extends Flowable{
 
 		$ev = new BlockSproutEvent($this, $bamboo, $tx);
 		$ev->call();
-		if ($ev->isCancelled()) {
+		if($ev->isCancelled()){
 			return false;
 		}
 

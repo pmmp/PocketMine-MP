@@ -214,7 +214,7 @@ class Bamboo extends Transparent{
 
 		$ev = new BlockSproutEvent($this, $this, $tx);
 		$ev->call();
-		if ($ev->isCancelled()) {
+		if($ev->isCancelled()){
 			return false;
 		}
 

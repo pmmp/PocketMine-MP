@@ -52,6 +52,7 @@ abstract class Tree{
 
 	/**
 	 * @param TreeType|null $type default oak
+	 * @param bool          $callEvent set this parameter to true to allow the calling of the BlockSproutEvent when the tree grows
 	 *
 	 * @throws \InvalidArgumentException
 	 */
@@ -106,12 +107,14 @@ abstract class Tree{
 		$this->placeTrunk($x, $y, $z, $random, $this->generateChunkHeight($random), $transaction);
 		$this->placeCanopy($x, $y, $z, $random, $transaction);
 
-		if ($callEvent) {
-			$sapling = $world->getBlockAt($x, $y, $z);
-			$saplingAfterTransaction = $transaction->fetchBlockAt($x, $y, $z);
-			$ev = new BlockSproutEvent($sapling, $saplingAfterTransaction, $transaction);
+		if($callEvent){
+			$ev = new BlockSproutEvent(
+				$world->getBlockAt($x, $y, $z), // returns the sapling (-> block which grows)
+				$transaction->fetchBlockAt($x, $y, $z), // returns the block which replaces the sapling (-> new state)
+				$transaction
+			);
 			$ev->call();
-			if ($ev->isCancelled()) {
+			if($ev->isCancelled()){
 				return;
 			}
 		}
