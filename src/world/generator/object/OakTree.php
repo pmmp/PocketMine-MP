@@ -33,8 +33,8 @@ class OakTree extends Tree{
 		parent::__construct(VanillaBlocks::OAK_LOG(), VanillaBlocks::OAK_LEAVES());
 	}
 
-	public function placeObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : void{
+	public function placeObject(ChunkManager $world, int $x, int $y, int $z, Random $random, bool $callEvent = false) : void{
 		$this->treeHeight = $random->nextBoundedInt(3) + 4;
-		parent::placeObject($world, $x, $y, $z, $random);
+		parent::placeObject($world, $x, $y, $z, $random, $callEvent);
 	}
 }
