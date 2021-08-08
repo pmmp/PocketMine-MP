@@ -27,12 +27,12 @@ use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\Thread;
 use pocketmine\utils\AssumptionFailedError;
 use Webmozart\PathUtil\Path;
+use function base64_encode;
 use function fgets;
 use function fopen;
 use function preg_replace;
 use function proc_open;
 use function proc_terminate;
-use function sprintf;
 use function stream_select;
 use function stream_socket_accept;
 use function stream_socket_get_name;
@@ -87,12 +87,18 @@ final class ConsoleReaderThread extends Thread{
 		$address = stream_socket_get_name($server, false);
 		if($address === false) throw new AssumptionFailedError("stream_socket_get_name() shouldn't return false here");
 
+		$subEnv = $_ENV;
+		//Windows sucks, and likes to corrupt UTF-8 file paths when they travel to the subprocess, so we base64 encode
+		//the path to avoid the problem. This is an abysmally shitty hack, but here we are :(
+		$subEnv["PMConsoleReaderChildProcessFile"] = base64_encode(Path::join(__DIR__, 'ConsoleReaderChildProcess.php'));
 		$sub = proc_open(
-			[PHP_BINARY, '-r', sprintf('require "%s";', Path::join(__DIR__, 'ConsoleReaderChildProcess.php')), $address],
+			[PHP_BINARY, '-r', 'require base64_decode($_ENV["PMConsoleReaderChildProcessFile"], true);', $address],
 			[
 				2 => fopen("php://stderr", "w"),
 			],
-			$pipes
+			$pipes,
+			null,
+			$subEnv
 		);
 		if($sub === false){
 			throw new AssumptionFailedError("Something has gone horribly wrong");
