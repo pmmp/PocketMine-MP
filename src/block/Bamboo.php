@@ -212,7 +212,7 @@ class Bamboo extends Transparent{
 			$tx->addBlock($this->pos->subtract(0, $idx - $growAmount, 0), $newBlock);
 		}
 
-		$ev = new BlockSproutEvent($this, $this, $tx);
+		$ev = new BlockSproutEvent($this, $tx);
 		$ev->call();
 		if($ev->isCancelled()){
 			return false;

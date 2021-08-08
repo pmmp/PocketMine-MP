@@ -110,7 +110,6 @@ abstract class Tree{
 		if($callEvent){
 			$ev = new BlockSproutEvent(
 				$world->getBlockAt($x, $y, $z), // returns the sapling (-> block which grows)
-				$transaction->fetchBlockAt($x, $y, $z), // returns the block which replaces the sapling (-> new state)
 				$transaction
 			);
 			$ev->call();

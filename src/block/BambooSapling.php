@@ -98,7 +98,7 @@ final class BambooSapling extends Flowable{
 		$tx->addBlock($this->pos, $bamboo)
 			->addBlock($this->pos->up(), (clone $bamboo)->setLeafSize(Bamboo::SMALL_LEAVES));
 
-		$ev = new BlockSproutEvent($this, $bamboo, $tx);
+		$ev = new BlockSproutEvent($this, $tx);
 		$ev->call();
 		if($ev->isCancelled()){
 			return false;
