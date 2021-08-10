@@ -120,7 +120,7 @@ function generate_known_translation_factory(array $languageDefinitions) : void{
 	echo SHARED_HEADER;
 	echo <<<'HEADER'
 /**
- * This class contains factory methods for all the translations known to PocketMine-MP as per the used version of 
+ * This class contains factory methods for all the translations known to PocketMine-MP as per the used version of
  * pmmp/Language.
  * This class is generated automatically, do NOT modify it by hand.
  */
@@ -166,7 +166,6 @@ HEADER;
 
 	echo "Done generating KnownTranslationFactory.\n";
 }
-
 
 $lang = parse_ini_file(Path::join(\pocketmine\RESOURCE_PATH, "locale", "eng.ini"), false, INI_SCANNER_RAW);
 if($lang === false){

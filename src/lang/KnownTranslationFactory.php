@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\lang;
 
 /**
- * This class contains factory methods for all the translations known to PocketMine-MP as per the used version of 
+ * This class contains factory methods for all the translations known to PocketMine-MP as per the used version of
  * pmmp/Language.
  * This class is generated automatically, do NOT modify it by hand.
  */
