@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
@@ -78,10 +79,10 @@ class GamemodeCommand extends VanillaCommand{
 			$sender->sendMessage("Game mode change for " . $target->getName() . " failed!");
 		}else{
 			if($target === $sender){
-				Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_GAMEMODE_SUCCESS_SELF, [$gameMode->getTranslationKey()]));
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_gamemode_success_self($gameMode->getTranslationKey()));
 			}else{
 				$target->sendMessage(new TranslationContainer(KnownTranslationKeys::GAMEMODE_CHANGED, [$gameMode->getTranslationKey()]));
-				Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_GAMEMODE_SUCCESS_OTHER, [$gameMode->getTranslationKey(), $target->getName()]));
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_gamemode_success_other($gameMode->getTranslationKey(), $target->getName()));
 			}
 		}
 

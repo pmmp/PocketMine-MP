@@ -80,6 +80,7 @@ use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
 use pocketmine\lang\TranslationContainer;
@@ -276,16 +277,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLAYER_LOGIN, [
+		$this->server->getLogger()->info($this->getServer()->getLanguage()->translate(KnownTranslationFactory::pocketmine_player_logIn(
 			TextFormat::AQUA . $this->username . TextFormat::WHITE,
 			$session->getIp(),
-			$session->getPort(),
-			$this->id,
+			(string) $session->getPort(),
+			(string) $this->id,
 			$this->getWorld()->getDisplayName(),
-			round($this->location->x, 4),
-			round($this->location->y, 4),
-			round($this->location->z, 4)
-		]));
+			(string) round($this->location->x, 4),
+			(string) round($this->location->y, 4),
+			(string) round($this->location->z, 4)
+		)));
 
 		$this->server->addOnlinePlayer($this);
 	}

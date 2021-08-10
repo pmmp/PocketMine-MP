@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\plugin\Plugin;
@@ -53,12 +53,12 @@ class VersionCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 0){
-			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::POCKETMINE_SERVER_INFO_EXTENDED, [
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_server_info_extended(
 				$sender->getServer()->getName(),
 				$sender->getServer()->getPocketMineVersion(),
 				$sender->getServer()->getVersion(),
-				ProtocolInfo::CURRENT_PROTOCOL
-			]));
+				(string) ProtocolInfo::CURRENT_PROTOCOL
+			));
 		}else{
 			$pluginName = implode(" ", $args);
 			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
@@ -79,7 +79,7 @@ class VersionCommand extends VanillaCommand{
 			}
 
 			if(!$found){
-				$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_NOSUCHPLUGIN));
+				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_noSuchPlugin());
 			}
 		}
 

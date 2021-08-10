@@ -27,6 +27,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
@@ -66,7 +67,7 @@ class EffectCommand extends VanillaCommand{
 		if(strtolower($args[1]) === "clear"){
 			$effectManager->clear();
 
-			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_EFFECT_SUCCESS_REMOVED_ALL, [$player->getDisplayName()]));
+			$sender->sendMessage(KnownTranslationFactory::commands_effect_success_removed_all($player->getDisplayName()));
 			return true;
 		}
 
@@ -106,19 +107,19 @@ class EffectCommand extends VanillaCommand{
 		if($duration === 0){
 			if(!$effectManager->has($effect)){
 				if(count($effectManager->all()) === 0){
-					$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_EFFECT_FAILURE_NOTACTIVE_ALL, [$player->getDisplayName()]));
+					$sender->sendMessage(KnownTranslationFactory::commands_effect_failure_notActive_all($player->getDisplayName()));
 				}else{
-					$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_EFFECT_FAILURE_NOTACTIVE, [$effect->getName(), $player->getDisplayName()]));
+					$sender->sendMessage(KnownTranslationFactory::commands_effect_failure_notActive($effect->getName(), $player->getDisplayName()));
 				}
 				return true;
 			}
 
 			$effectManager->remove($effect);
-			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_EFFECT_SUCCESS_REMOVED, [$effect->getName(), $player->getDisplayName()]));
+			$sender->sendMessage(KnownTranslationFactory::commands_effect_success_removed($effect->getName(), $player->getDisplayName()));
 		}else{
 			$instance = new EffectInstance($effect, $duration, $amplification, $visible);
 			$effectManager->add($instance);
-			self::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_EFFECT_SUCCESS, [$effect->getName(), $instance->getAmplifier(), $player->getDisplayName(), $instance->getDuration() / 20]));
+			self::broadcastCommandMessage($sender, KnownTranslationFactory::commands_effect_success($effect->getName(), (string) $instance->getAmplifier(), $player->getDisplayName(), (string) ($instance->getDuration() / 20)));
 		}
 
 		return true;

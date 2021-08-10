@@ -65,7 +65,7 @@ use pocketmine\command\defaults\VanillaCommand;
 use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WhitelistCommand;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\Server;
 use function array_shift;
 use function count;
@@ -246,7 +246,7 @@ class SimpleCommandMap implements CommandMap{
 		try{
 			$target->execute($sender, $sentCommandLabel, $args);
 		}catch(InvalidCommandSyntaxException $e){
-			$sender->sendMessage($sender->getLanguage()->translateString(KnownTranslationKeys::COMMANDS_GENERIC_USAGE, [$target->getUsage()]));
+			$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
 		}finally{
 			$target->timings->stopTiming();
 		}
@@ -278,7 +278,7 @@ class SimpleCommandMap implements CommandMap{
 
 		foreach($values as $alias => $commandStrings){
 			if(strpos($alias, ":") !== false){
-				$this->server->getLogger()->warning($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_COMMAND_ALIAS_ILLEGAL, [$alias]));
+				$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_alias_illegal($alias)));
 				continue;
 			}
 
@@ -301,12 +301,12 @@ class SimpleCommandMap implements CommandMap{
 			}
 
 			if(count($recursive) > 0){
-				$this->server->getLogger()->warning($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_COMMAND_ALIAS_RECURSIVE, [$alias, implode(", ", $recursive)]));
+				$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_alias_recursive($alias, implode(", ", $recursive))));
 				continue;
 			}
 
 			if(count($bad) > 0){
-				$this->server->getLogger()->warning($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_COMMAND_ALIAS_NOTFOUND, [$alias, implode(", ", $bad)]));
+				$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_alias_notFound($alias, implode(", ", $bad))));
 				continue;
 			}
 

@@ -31,6 +31,7 @@ use pocketmine\event\ListenerMethodTags;
 use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\event\RegisteredListener;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\DefaultPermissions;
@@ -135,7 +136,7 @@ class PluginManager{
 			if($loader->canLoadPlugin($path)){
 				$description = $loader->getPluginDescription($path);
 				if($description instanceof PluginDescription){
-					$this->server->getLogger()->info($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOAD, [$description->getFullName()]));
+					$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_load($description->getFullName())));
 					try{
 						$description->checkRequiredExtensions();
 					}catch(PluginException $ex){
@@ -246,7 +247,7 @@ class PluginManager{
 				try{
 					$description = $loader->getPluginDescription($file);
 				}catch(\RuntimeException $e){ //TODO: more specific exception handling
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_FILEERROR, [$file, $directory, $e->getMessage()]));
+					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_fileError($file, $directory, $e->getMessage())));
 					$this->server->getLogger()->logException($e);
 					continue;
 				}
@@ -256,58 +257,58 @@ class PluginManager{
 
 				$name = $description->getName();
 				if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [$name, "%" . KnownTranslationKeys::POCKETMINE_PLUGIN_RESTRICTEDNAME]));
+					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, "%" . KnownTranslationKeys::POCKETMINE_PLUGIN_RESTRICTEDNAME)));
 					continue;
 				}
 				if(strpos($name, " ") !== false){
-					$this->server->getLogger()->warning($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_SPACESDISCOURAGED, [$name]));
+					$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_spacesDiscouraged($name)));
 				}
 
 				if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_DUPLICATEERROR, [$name]));
+					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_duplicateError($name)));
 					continue;
 				}
 
 				if(!ApiVersion::isCompatible($this->server->getApiVersion(), $description->getCompatibleApis())){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [
+					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 						$name,
-						$this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_INCOMPATIBLEAPI, [implode(", ", $description->getCompatibleApis())])
-					]));
+						$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_incompatibleAPI(implode(", ", $description->getCompatibleApis())))
+					)));
 					continue;
 				}
 				$ambiguousVersions = ApiVersion::checkAmbiguousVersions($description->getCompatibleApis());
 				if(count($ambiguousVersions) > 0){
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [
+					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 						$name,
-						$this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_AMBIGUOUSMINAPI, [implode(", ", $ambiguousVersions)])
-					]));
+						$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_ambiguousMinAPI(implode(", ", $ambiguousVersions)))
+					)));
 					continue;
 				}
 
 				if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
-					$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [
+					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 						$name,
-						$this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_INCOMPATIBLEOS, [implode(", ", $description->getCompatibleOperatingSystems())])
-					]));
+						$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_incompatibleOS(implode(", ", $description->getCompatibleOperatingSystems())))
+					)));
 					continue;
 				}
 
 				if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
 					$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
 					if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
-						$this->server->getLogger()->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [
+						$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 							$name,
-							$this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_DISCONNECT_INCOMPATIBLEPROTOCOL, [implode(", ", $pluginMcpeProtocols)])
-						]));
+							$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_incompatibleProtocol(implode(", ", $pluginMcpeProtocols)))
+						)));
 						continue;
 					}
 				}
 
 				if($this->graylist !== null and !$this->graylist->isAllowed($name)){
-					$this->server->getLogger()->notice($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [
+					$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 						$name,
 						"Disallowed by graylist"
-					]));
+					)));
 					continue;
 				}
 				$plugins[$name] = $file;
@@ -333,10 +334,10 @@ class PluginManager{
 						if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
 							unset($dependencies[$name][$key]);
 						}elseif(!isset($plugins[$dependency])){
-							$this->server->getLogger()->critical($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [
+							$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 								$name,
-								$this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_UNKNOWNDEPENDENCY, [$dependency])
-							]));
+								$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_unknownDependency($dependency))
+							)));
 							unset($plugins[$name]);
 							continue 2;
 						}
@@ -372,7 +373,7 @@ class PluginManager{
 					if(($plugin = $this->loadPlugin($file, $loaders)) instanceof Plugin){
 						$loadedPlugins[$name] = $plugin;
 					}else{
-						$this->server->getLogger()->critical($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_GENERICLOADERROR, [$name]));
+						$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_genericLoadError($name)));
 					}
 				}
 			}
@@ -380,7 +381,7 @@ class PluginManager{
 			if($loadedThisLoop === 0){
 				//No plugins loaded :(
 				foreach($plugins as $name => $file){
-					$this->server->getLogger()->critical($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [$name, "%" . KnownTranslationKeys::POCKETMINE_PLUGIN_CIRCULARDEPENDENCY]));
+					$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, "%" . KnownTranslationKeys::POCKETMINE_PLUGIN_CIRCULARDEPENDENCY)));
 				}
 				$plugins = [];
 			}
@@ -395,7 +396,7 @@ class PluginManager{
 
 	public function enablePlugin(Plugin $plugin) : void{
 		if(!$plugin->isEnabled()){
-			$this->server->getLogger()->info($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_ENABLE, [$plugin->getDescription()->getFullName()]));
+			$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_enable($plugin->getDescription()->getFullName())));
 
 			$plugin->getScheduler()->setEnabled(true);
 			$plugin->onEnableStateChange(true);
@@ -414,7 +415,7 @@ class PluginManager{
 
 	public function disablePlugin(Plugin $plugin) : void{
 		if($plugin->isEnabled()){
-			$this->server->getLogger()->info($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_DISABLE, [$plugin->getDescription()->getFullName()]));
+			$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_disable($plugin->getDescription()->getFullName())));
 			(new PluginDisableEvent($plugin))->call();
 
 			unset($this->enabledPlugins[$plugin->getDescription()->getName()]);

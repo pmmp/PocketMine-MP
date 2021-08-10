@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
@@ -79,7 +80,7 @@ class SpawnpointCommand extends VanillaCommand{
 			$z = $this->getRelativeDouble($pos->z, $sender, $args[3]);
 			$target->setSpawn(new Position($x, $y, $z, $world));
 
-			Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_SPAWNPOINT_SUCCESS, [$target->getName(), round($x, 2), round($y, 2), round($z, 2)]));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_spawnpoint_success($target->getName(), (string) round($x, 2), (string) round($y, 2), (string) round($z, 2)));
 
 			return true;
 		}elseif(count($args) <= 1){
@@ -88,7 +89,7 @@ class SpawnpointCommand extends VanillaCommand{
 				$pos = Position::fromObject($cpos->floor(), $cpos->getWorld());
 				$target->setSpawn($pos);
 
-				Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_SPAWNPOINT_SUCCESS, [$target->getName(), round($pos->x, 2), round($pos->y, 2), round($pos->z, 2)]));
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_spawnpoint_success($target->getName(), (string) round($pos->x, 2), (string) round($pos->y, 2), (string) round($pos->z, 2)));
 				return true;
 			}else{
 				$sender->sendMessage(TextFormat::RED . "Please provide a player!");

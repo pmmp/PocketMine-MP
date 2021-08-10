@@ -26,8 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -63,7 +63,7 @@ class OpCommand extends VanillaCommand{
 		if(($player = $sender->getServer()->getPlayerExact($name)) !== null){
 			$player->sendMessage(TextFormat::GRAY . "You are now op!");
 		}
-		Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_OP_SUCCESS, [$name]));
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_op_success($name));
 		return true;
 	}
 }

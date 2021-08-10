@@ -28,6 +28,7 @@ namespace pocketmine\command;
 
 use pocketmine\command\utils\CommandException;
 use pocketmine\console\ConsoleCommandSender;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\PermissionManager;
@@ -241,7 +242,7 @@ abstract class Command{
 			$result = new TranslationContainer($formatted, $message->getParameters());
 			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . $formatted, $message->getParameters());
 		}else{
-			$result = new TranslationContainer(KnownTranslationKeys::CHAT_TYPE_ADMIN, [$source->getName(), $message]);
+			$result = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
 			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%" . KnownTranslationKeys::CHAT_TYPE_ADMIN, [$source->getName(), $message]);
 		}
 

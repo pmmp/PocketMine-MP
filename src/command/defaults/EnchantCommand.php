@@ -27,6 +27,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
@@ -63,14 +64,14 @@ class EnchantCommand extends VanillaCommand{
 		$item = $player->getInventory()->getItemInHand();
 
 		if($item->isNull()){
-			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_ENCHANT_NOITEM));
+			$sender->sendMessage(KnownTranslationFactory::commands_enchant_noItem());
 			return true;
 		}
 
 		try{
 			$enchantment = VanillaEnchantments::fromString($args[1]);
 		}catch(\InvalidArgumentException $e){
-			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_ENCHANT_NOTFOUND, [$args[1]]));
+			$sender->sendMessage(KnownTranslationFactory::commands_enchant_notFound($args[1]));
 			return true;
 		}
 

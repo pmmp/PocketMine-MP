@@ -27,7 +27,7 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
-use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
@@ -168,7 +168,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 		foreach($this->getDescription()->getCommands() as $key => $data){
 			if(strpos($key, ":") !== false){
-				$this->logger->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_COMMANDERROR, [$key, $this->getDescription()->getFullName()]));
+				$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_commandError($key, $this->getDescription()->getFullName())));
 				continue;
 			}
 			if(is_array($data)){ //TODO: error out if it isn't
@@ -185,7 +185,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 					$aliasList = [];
 					foreach($data["aliases"] as $alias){
 						if(strpos($alias, ":") !== false){
-							$this->logger->error($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLUGIN_ALIASERROR, [$alias, $this->getDescription()->getFullName()]));
+							$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_aliasError($alias, $this->getDescription()->getFullName())));
 							continue;
 						}
 						$aliasList[] = $alias;
