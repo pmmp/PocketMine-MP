@@ -1124,10 +1124,6 @@ final class KnownTranslationFactory{
 		return new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_DESCRIPTION, []);
 	}
 
-	public static function pocketmine_command_version_header() : TranslationContainer{
-		return new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_HEADER, []);
-	}
-
 	public static function pocketmine_command_version_minecraftVersion(string $color, string $minecraftVersion, string $minecraftProtocolVersion) : TranslationContainer{
 		return new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_MINECRAFTVERSION, [
 			"color" => $color,

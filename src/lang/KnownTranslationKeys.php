@@ -246,7 +246,6 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_UNBAN_IP_DESCRIPTION = "pocketmine.command.unban.ip.description";
 	public const POCKETMINE_COMMAND_UNBAN_PLAYER_DESCRIPTION = "pocketmine.command.unban.player.description";
 	public const POCKETMINE_COMMAND_VERSION_DESCRIPTION = "pocketmine.command.version.description";
-	public const POCKETMINE_COMMAND_VERSION_HEADER = "pocketmine.command.version.header";
 	public const POCKETMINE_COMMAND_VERSION_MINECRAFTVERSION = "pocketmine.command.version.minecraftVersion";
 	public const POCKETMINE_COMMAND_VERSION_NOSUCHPLUGIN = "pocketmine.command.version.noSuchPlugin";
 	public const POCKETMINE_COMMAND_VERSION_OPERATINGSYSTEM = "pocketmine.command.version.operatingSystem";
