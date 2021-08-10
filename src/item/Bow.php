@@ -52,7 +52,7 @@ class Bow extends Tool implements Releasable{
 			default => null
 		};
 
-		if($player->hasFiniteResources() and $inventory === null){// Receives a Mismatch Transaction when using offhand arrows. why???
+		if($player->hasFiniteResources() and $inventory === null){
 			return ItemUseResult::FAIL();
 		}
 
