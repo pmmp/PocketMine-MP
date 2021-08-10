@@ -109,7 +109,7 @@ abstract class Tree{
 
 		if($callEvent){
 			$ev = new BlockSproutEvent(
-				$world->getBlockAt($x, $y, $z), // returns the sapling (-> block which grows)
+				$world->getBlockAt($x, $y, $z),
 				$transaction
 			);
 			$ev->call();
