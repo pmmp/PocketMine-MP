@@ -31,15 +31,13 @@ class NetworkSessionManager{
 
 	/** @var NetworkSession[] */
 	private $sessions = [];
-	/** @var NetworkSession[] */
-	private $updateSessions = [];
 
 	/**
 	 * Adds a network session to the manager. This should only be called on session creation.
 	 */
 	public function add(NetworkSession $session) : void{
 		$idx = spl_object_id($session);
-		$this->sessions[$idx] = $this->updateSessions[$idx] = $session;
+		$this->sessions[$idx] = $session;
 	}
 
 	/**
@@ -48,14 +46,7 @@ class NetworkSessionManager{
 	 */
 	public function remove(NetworkSession $session) : void{
 		$idx = spl_object_id($session);
-		unset($this->sessions[$idx], $this->updateSessions[$idx]);
-	}
-
-	/**
-	 * Requests an update to be scheduled on the given network session at the next tick.
-	 */
-	public function scheduleUpdate(NetworkSession $session) : void{
-		$this->updateSessions[spl_object_id($session)] = $session;
+		unset($this->sessions[$idx]);
 	}
 
 	/**
@@ -72,9 +63,10 @@ class NetworkSessionManager{
 	 * Updates all sessions which need it.
 	 */
 	public function tick() : void{
-		foreach($this->updateSessions as $k => $session){
-			if(!$session->tick()){
-				unset($this->updateSessions[$k]);
+		foreach($this->sessions as $k => $session){
+			$session->tick();
+			if(!$session->isConnected()){
+				unset($this->sessions[$k]);
 			}
 		}
 	}
@@ -87,6 +79,5 @@ class NetworkSessionManager{
 			$session->disconnect($reason);
 		}
 		$this->sessions = [];
-		$this->updateSessions = [];
 	}
 }

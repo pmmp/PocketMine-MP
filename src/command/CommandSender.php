@@ -32,10 +32,7 @@ interface CommandSender extends Permissible{
 
 	public function getLanguage() : Language;
 
-	/**
-	 * @param TranslationContainer|string $message
-	 */
-	public function sendMessage($message) : void;
+	public function sendMessage(TranslationContainer|string $message) : void;
 
 	public function getServer() : Server;
 

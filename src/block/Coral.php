@@ -44,12 +44,12 @@ final class Coral extends BaseCoral{
 		return CoralTypeIdMap::getInstance()->toId($this->coralType);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b0111;
+	protected function writeStateToItemMeta() : int{
+		return $this->writeStateToMeta();
 	}
 
-	public function getNonPersistentStateBitmask() : int{
-		return 0b0000;
+	public function getStateBitmask() : int{
+		return 0b0111;
 	}
 
 	public function readStateFromWorld() : void{

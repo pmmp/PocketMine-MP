@@ -28,6 +28,7 @@ namespace pocketmine\command;
 
 use pocketmine\command\utils\CommandException;
 use pocketmine\console\ConsoleCommandSender;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\PermissionManager;
@@ -111,27 +112,28 @@ abstract class Command{
 		$this->permission = $permission;
 	}
 
-	public function testPermission(CommandSender $target) : bool{
-		if($this->testPermissionSilent($target)){
+	public function testPermission(CommandSender $target, ?string $permission = null) : bool{
+		if($this->testPermissionSilent($target, $permission)){
 			return true;
 		}
 
 		if($this->permissionMessage === null){
 			$target->sendMessage($target->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
 		}elseif($this->permissionMessage !== ""){
-			$target->sendMessage(str_replace("<permission>", $this->permission, $this->permissionMessage));
+			$target->sendMessage(str_replace("<permission>", $permission ?? $this->permission, $this->permissionMessage));
 		}
 
 		return false;
 	}
 
-	public function testPermissionSilent(CommandSender $target) : bool{
-		if($this->permission === null or $this->permission === ""){
+	public function testPermissionSilent(CommandSender $target, ?string $permission = null) : bool{
+		$permission ??= $this->permission;
+		if($permission === null or $permission === ""){
 			return true;
 		}
 
-		foreach(explode(";", $this->permission) as $permission){
-			if($target->hasPermission($permission)){
+		foreach(explode(";", $permission) as $p){
+			if($target->hasPermission($p)){
 				return true;
 			}
 		}
@@ -229,10 +231,7 @@ abstract class Command{
 		$this->usageMessage = $usage;
 	}
 
-	/**
-	 * @param TranslationContainer|string $message
-	 */
-	public static function broadcastCommandMessage(CommandSender $source, $message, bool $sendToSource = true) : void{
+	public static function broadcastCommandMessage(CommandSender $source, TranslationContainer|string $message, bool $sendToSource = true) : void{
 		$users = $source->getServer()->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
 		if($message instanceof TranslationContainer){
 			$formatted = "[" . $source->getName() . ": " . ($source->getLanguage()->get($message->getText()) !== $message->getText() ? "%" : "") . $message->getText() . "]";
@@ -240,7 +239,7 @@ abstract class Command{
 			$result = new TranslationContainer($formatted, $message->getParameters());
 			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . $formatted, $message->getParameters());
 		}else{
-			$result = new TranslationContainer(KnownTranslationKeys::CHAT_TYPE_ADMIN, [$source->getName(), $message]);
+			$result = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
 			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%" . KnownTranslationKeys::CHAT_TYPE_ADMIN, [$source->getName(), $message]);
 		}
 

@@ -26,6 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
@@ -68,9 +69,9 @@ class TellCommand extends VanillaCommand{
 			$sender->sendMessage(new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%" . KnownTranslationKeys::COMMANDS_MESSAGE_DISPLAY_OUTGOING, [$player->getDisplayName(), $message]));
 			$name = $sender instanceof Player ? $sender->getDisplayName() : $sender->getName();
 			$player->sendMessage(new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%" . KnownTranslationKeys::COMMANDS_MESSAGE_DISPLAY_INCOMING, [$name, $message]));
-			Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_MESSAGE_DISPLAY_OUTGOING, [$player->getDisplayName(), $message]), false);
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_message_display_outgoing($player->getDisplayName(), $message), false);
 		}else{
-			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_GENERIC_PLAYER_NOTFOUND));
+			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound());
 		}
 
 		return true;

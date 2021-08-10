@@ -26,8 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use function count;
 use function preg_match;
@@ -56,9 +56,9 @@ class PardonIpCommand extends VanillaCommand{
 		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $args[0])){
 			$sender->getServer()->getIPBans()->remove($args[0]);
 			$sender->getServer()->getNetwork()->unblockAddress($args[0]);
-			Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_UNBANIP_SUCCESS, [$args[0]]));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_unbanip_success($args[0]));
 		}else{
-			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_UNBANIP_INVALID));
+			$sender->sendMessage(KnownTranslationFactory::commands_unbanip_invalid());
 		}
 
 		return true;

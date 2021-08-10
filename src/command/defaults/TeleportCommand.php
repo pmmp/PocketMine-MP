@@ -27,8 +27,8 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\Location;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
@@ -97,7 +97,7 @@ class TeleportCommand extends VanillaCommand{
 				}
 
 				$subject->teleport($targetPlayer->getLocation());
-				Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_TP_SUCCESS, [$subject->getName(), $targetPlayer->getName()]));
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tp_success($subject->getName(), $targetPlayer->getName()));
 
 				return true;
 			case 3:
@@ -117,12 +117,12 @@ class TeleportCommand extends VanillaCommand{
 				$targetLocation = new Location($x, $y, $z, $yaw, $pitch, $base->getWorld());
 
 				$subject->teleport($targetLocation);
-				Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_TP_SUCCESS_COORDINATES, [
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tp_success_coordinates(
 					$subject->getName(),
-					round($targetLocation->x, 2),
-					round($targetLocation->y, 2),
-					round($targetLocation->z, 2)
-				]));
+					(string) round($targetLocation->x, 2),
+					(string) round($targetLocation->y, 2),
+					(string) round($targetLocation->z, 2)
+				));
 				return true;
 			default:
 				throw new AssumptionFailedError("This branch should be unreachable (for now)");

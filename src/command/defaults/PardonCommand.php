@@ -26,8 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use function count;
 
@@ -54,7 +54,7 @@ class PardonCommand extends VanillaCommand{
 
 		$sender->getServer()->getNameBans()->remove($args[0]);
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_UNBAN_SUCCESS, [$args[0]]));
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_unban_success($args[0]));
 
 		return true;
 	}

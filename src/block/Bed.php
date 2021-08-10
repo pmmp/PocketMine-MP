@@ -30,7 +30,6 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\AxisAlignedBB;
@@ -197,8 +196,8 @@ class Bed extends Transparent{
 		return [];
 	}
 
-	public function asItem() : Item{
-		return ItemFactory::getInstance()->get($this->idInfo->getItemId(), DyeColorIdMap::getInstance()->toId($this->color));
+	protected function writeStateToItemMeta() : int{
+		return DyeColorIdMap::getInstance()->toId($this->color);
 	}
 
 	public function getAffectedBlocks() : array{

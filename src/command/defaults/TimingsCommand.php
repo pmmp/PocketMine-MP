@@ -26,8 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\scheduler\BulkCurlTask;
@@ -79,21 +79,21 @@ class TimingsCommand extends VanillaCommand{
 
 		if($mode === "on"){
 			if(TimingsHandler::isEnabled()){
-				$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_ALREADYENABLED));
+				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_timings_alreadyEnabled());
 				return true;
 			}
 			TimingsHandler::setEnabled();
-			Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_ENABLE));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_enable());
 
 			return true;
 		}elseif($mode === "off"){
 			TimingsHandler::setEnabled(false);
-			Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_DISABLE));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_disable());
 			return true;
 		}
 
 		if(!TimingsHandler::isEnabled()){
-			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_TIMINGSDISABLED));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_timings_timingsDisabled());
 
 			return true;
 		}
@@ -102,7 +102,7 @@ class TimingsCommand extends VanillaCommand{
 
 		if($mode === "reset"){
 			TimingsHandler::reload();
-			Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_RESET));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_reset());
 		}elseif($mode === "merged" or $mode === "report" or $paste){
 			$timings = "";
 			if($paste){
@@ -164,16 +164,16 @@ class TimingsCommand extends VanillaCommand{
 						}
 						$response = json_decode($result->getBody(), true);
 						if(is_array($response) && isset($response["id"])){
-							Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_TIMINGSREAD,
-								["https://" . $host . "/?id=" . $response["id"]]));
+							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsRead(
+								"https://" . $host . "/?id=" . $response["id"]));
 						}else{
-							Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_PASTEERROR));
+							Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_pasteError());
 						}
 					}
 				));
 			}else{
 				fclose($fileTimings);
-				Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_TIMINGSWRITE, [$timings]));
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_timingsWrite($timings));
 			}
 		}else{
 			throw new InvalidCommandSyntaxException();

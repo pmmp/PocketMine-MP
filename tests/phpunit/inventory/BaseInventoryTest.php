@@ -32,9 +32,7 @@ use pocketmine\item\VanillaItems;
 class BaseInventoryTest extends TestCase{
 
 	public function testAddItemDifferentUserData() : void{
-		$inv = new class(1) extends SimpleInventory{
-
-		};
+		$inv = new SimpleInventory(1);
 		$item1 = ItemFactory::getInstance()->get(ItemIds::ARROW, 0, 1);
 		$item2 = ItemFactory::getInstance()->get(ItemIds::ARROW, 0, 1)->setCustomName("TEST");
 
@@ -63,16 +61,14 @@ class BaseInventoryTest extends TestCase{
 	}
 
 	public function testAddMultipleItemsInOneCall() : void{
-		$inventory = new class(1) extends SimpleInventory{
-
-		};
+		$inventory = new SimpleInventory(1);
 		$leftover = $inventory->addItem(...$this->getTestItems());
 		self::assertCount(0, $leftover);
 		self::assertTrue($inventory->getItem(0)->equalsExact(VanillaItems::APPLE()->setCount(64)));
 	}
 
 	public function testAddMultipleItemsInOneCallWithLeftover() : void{
-		$inventory = new class(1) extends SimpleInventory{};
+		$inventory = new SimpleInventory(1);
 		$inventory->setItem(0, VanillaItems::APPLE()->setCount(20));
 		$leftover = $inventory->addItem(...$this->getTestItems());
 		self::assertCount(2, $leftover); //the leftovers are not currently stacked - if they were given separately, they'll be returned separately
@@ -87,9 +83,7 @@ class BaseInventoryTest extends TestCase{
 	}
 
 	public function testAddItemWithOversizedCount() : void{
-		$inventory = new class(10) extends SimpleInventory{
-
-		};
+		$inventory = new SimpleInventory(10);
 		$leftover = $inventory->addItem(VanillaItems::APPLE()->setCount(100));
 		self::assertCount(0, $leftover);
 

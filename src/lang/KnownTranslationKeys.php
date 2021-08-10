@@ -246,7 +246,16 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_UNBAN_IP_DESCRIPTION = "pocketmine.command.unban.ip.description";
 	public const POCKETMINE_COMMAND_UNBAN_PLAYER_DESCRIPTION = "pocketmine.command.unban.player.description";
 	public const POCKETMINE_COMMAND_VERSION_DESCRIPTION = "pocketmine.command.version.description";
+	public const POCKETMINE_COMMAND_VERSION_MINECRAFTVERSION = "pocketmine.command.version.minecraftVersion";
 	public const POCKETMINE_COMMAND_VERSION_NOSUCHPLUGIN = "pocketmine.command.version.noSuchPlugin";
+	public const POCKETMINE_COMMAND_VERSION_OPERATINGSYSTEM = "pocketmine.command.version.operatingSystem";
+	public const POCKETMINE_COMMAND_VERSION_PHPJITDISABLED = "pocketmine.command.version.phpJitDisabled";
+	public const POCKETMINE_COMMAND_VERSION_PHPJITENABLED = "pocketmine.command.version.phpJitEnabled";
+	public const POCKETMINE_COMMAND_VERSION_PHPJITNOTSUPPORTED = "pocketmine.command.version.phpJitNotSupported";
+	public const POCKETMINE_COMMAND_VERSION_PHPJITSTATUS = "pocketmine.command.version.phpJitStatus";
+	public const POCKETMINE_COMMAND_VERSION_PHPVERSION = "pocketmine.command.version.phpVersion";
+	public const POCKETMINE_COMMAND_VERSION_SERVERSOFTWARENAME = "pocketmine.command.version.serverSoftwareName";
+	public const POCKETMINE_COMMAND_VERSION_SERVERSOFTWAREVERSION = "pocketmine.command.version.serverSoftwareVersion";
 	public const POCKETMINE_COMMAND_VERSION_USAGE = "pocketmine.command.version.usage";
 	public const POCKETMINE_COMMAND_WHITELIST_DESCRIPTION = "pocketmine.command.whitelist.description";
 	public const POCKETMINE_CRASH_ARCHIVE = "pocketmine.crash.archive";

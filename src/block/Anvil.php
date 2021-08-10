@@ -54,8 +54,8 @@ class Anvil extends Transparent implements Fallable{
 		return 0b1111;
 	}
 
-	public function getNonPersistentStateBitmask() : int{
-		return 0b11;
+	protected function writeStateToItemMeta() : int{
+		return $this->damage << 2;
 	}
 
 	public function getDamage() : int{ return $this->damage; }

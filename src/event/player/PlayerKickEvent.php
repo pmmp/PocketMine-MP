@@ -40,12 +40,7 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	/** @var string */
 	protected $reason;
 
-	/**
-	 * PlayerKickEvent constructor.
-	 *
-	 * @param TranslationContainer|string $quitMessage
-	 */
-	public function __construct(Player $player, string $reason, $quitMessage){
+	public function __construct(Player $player, string $reason, TranslationContainer|string $quitMessage){
 		$this->player = $player;
 		$this->quitMessage = $quitMessage;
 		$this->reason = $reason;
@@ -59,17 +54,11 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 		return $this->reason;
 	}
 
-	/**
-	 * @param TranslationContainer|string $quitMessage
-	 */
-	public function setQuitMessage($quitMessage) : void{
+	public function setQuitMessage(TranslationContainer|string $quitMessage) : void{
 		$this->quitMessage = $quitMessage;
 	}
 
-	/**
-	 * @return TranslationContainer|string
-	 */
-	public function getQuitMessage(){
+	public function getQuitMessage() : TranslationContainer|string{
 		return $this->quitMessage;
 	}
 }

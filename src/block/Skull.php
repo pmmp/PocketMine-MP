@@ -27,8 +27,6 @@ use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\SkullType;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -142,7 +140,7 @@ class Skull extends Flowable{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function asItem() : Item{
-		return ItemFactory::getInstance()->get(ItemIds::SKULL, $this->skullType->getMagicNumber());
+	protected function writeStateToItemMeta() : int{
+		return $this->skullType->getMagicNumber();
 	}
 }

@@ -96,18 +96,18 @@ final class WallCoralFan extends BaseCoral{
 		return (BlockDataSerializer::writeCoralFacing($this->facing) << 2) | ($this->dead ? BlockLegacyMetadata::CORAL_FAN_HANG_FLAG_DEAD : 0) | $coralTypeFlag;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function writeStateToItemMeta() : int{
+		return CoralTypeIdMap::getInstance()->toId($this->coralType);
 	}
 
-	public function getNonPersistentStateBitmask() : int{
-		return 0b1110;
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 
 	public function asItem() : Item{
 		return ItemFactory::getInstance()->get(
 			$this->dead ? ItemIds::CORAL_FAN_DEAD : ItemIds::CORAL_FAN,
-			CoralTypeIdMap::getInstance()->toId($this->coralType)
+			$this->writeStateToItemMeta()
 		);
 	}
 

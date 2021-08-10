@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function array_filter;
@@ -58,7 +58,7 @@ class ListCommand extends VanillaCommand{
 		}));
 		sort($playerNames, SORT_STRING);
 
-		$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_PLAYERS_LIST, [count($playerNames), $sender->getServer()->getMaxPlayers()]));
+		$sender->sendMessage(KnownTranslationFactory::commands_players_list((string) count($playerNames), (string) $sender->getServer()->getMaxPlayers()));
 		$sender->sendMessage(implode(", ", $playerNames));
 
 		return true;

@@ -412,7 +412,13 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		//TODO: tile ticks, biome states (?)
 
-		$chunk->setPopulated();
+		$finalisationChr = $this->db->get($index . self::TAG_STATE_FINALISATION);
+		if($finalisationChr !== false){
+			$finalisation = ord($finalisationChr);
+			$chunk->setPopulated($finalisation === self::FINALISATION_DONE);
+		}else{ //older versions didn't have this tag
+			$chunk->setPopulated();
+		}
 		if($hasBeenUpgraded){
 			$chunk->setDirty(); //trigger rewriting chunk to disk if it was converted from an older format
 		}
@@ -466,7 +472,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		}
 
 		//TODO: use this properly
-		$write->put($index . self::TAG_STATE_FINALISATION, chr(self::FINALISATION_DONE));
+		$write->put($index . self::TAG_STATE_FINALISATION, chr($chunk->isPopulated() ? self::FINALISATION_DONE : self::FINALISATION_NEEDS_POPULATION));
 
 		$this->writeTags($chunk->getNBTtiles(), $index . self::TAG_BLOCK_ENTITY, $write);
 		$this->writeTags($chunk->getNBTentities(), $index . self::TAG_ENTITY, $write);

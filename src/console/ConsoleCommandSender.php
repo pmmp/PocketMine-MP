@@ -58,10 +58,7 @@ class ConsoleCommandSender implements CommandSender{
 		return $this->language;
 	}
 
-	/**
-	 * @param TranslationContainer|string $message
-	 */
-	public function sendMessage($message) : void{
+	public function sendMessage(TranslationContainer|string $message) : void{
 		$server = $this->getServer();
 		if($message instanceof TranslationContainer){
 			$message = $this->getLanguage()->translate($message);

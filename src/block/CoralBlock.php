@@ -52,12 +52,12 @@ final class CoralBlock extends Opaque{
 		return ($this->dead ? BlockLegacyMetadata::CORAL_BLOCK_FLAG_DEAD : 0) | CoralTypeIdMap::getInstance()->toId($this->coralType);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function writeStateToItemMeta() : int{
+		return $this->writeStateToMeta();
 	}
 
-	public function getNonPersistentStateBitmask() : int{
-		return 0;
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 
 	public function getCoralType() : CoralType{ return $this->coralType; }

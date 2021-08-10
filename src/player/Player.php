@@ -80,6 +80,7 @@ use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
 use pocketmine\lang\TranslationContainer;
@@ -157,114 +158,82 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
 	}
 
-	/** @var NetworkSession|null */
-	protected $networkSession;
+	protected ?NetworkSession $networkSession;
 
-	/** @var bool */
-	public $spawned = false;
+	public bool $spawned = false;
 
-	/** @var string */
-	protected $username;
-	/** @var string */
-	protected $displayName;
-	/** @var string */
-	protected $xuid = "";
-	/** @var bool */
-	protected $authenticated;
-	/** @var PlayerInfo */
-	protected $playerInfo;
+	protected string $username;
+	protected string $displayName;
+	protected string $xuid = "";
+	protected bool $authenticated;
+	protected PlayerInfo $playerInfo;
 
-	/** @var Inventory|null */
-	protected $currentWindow = null;
+	protected ?Inventory $currentWindow = null;
 	/** @var Inventory[] */
-	protected $permanentWindows = [];
-	/** @var PlayerCursorInventory */
-	protected $cursorInventory;
-	/** @var CraftingGrid */
-	protected $craftingGrid;
+	protected array $permanentWindows = [];
+	protected PlayerCursorInventory $cursorInventory;
+	protected CraftingGrid $craftingGrid;
 
-	/** @var int */
-	protected $messageCounter = 2;
+	protected int $messageCounter = 2;
 
-	/** @var int */
-	protected $firstPlayed;
-	/** @var int */
-	protected $lastPlayed;
-	/** @var GameMode */
-	protected $gamemode;
+	protected int $firstPlayed;
+	protected int $lastPlayed;
+	protected GameMode $gamemode;
 
 	/**
 	 * @var UsedChunkStatus[] chunkHash => status
 	 * @phpstan-var array<int, UsedChunkStatus>
 	 */
-	protected $usedChunks = [];
-	/** @var bool[] chunkHash => dummy */
-	protected $loadQueue = [];
-	/** @var int */
-	protected $nextChunkOrderRun = 5;
+	protected array $usedChunks = [];
+	/**
+	 * @var true[] chunkHash => dummy
+	 * @phpstan-var array<int, true>
+	 */
+	protected array $loadQueue = [];
+	protected int $nextChunkOrderRun = 5;
 
-	/** @var int */
-	protected $viewDistance = -1;
-	/** @var int */
-	protected $spawnThreshold;
-	/** @var int */
-	protected $spawnChunkLoadCount = 0;
-	/** @var int */
-	protected $chunksPerTick;
-	/** @var ChunkSelector */
-	protected $chunkSelector;
-	/** @var PlayerChunkLoader */
-	protected $chunkLoader;
+	protected int $viewDistance = -1;
+	protected int $spawnThreshold;
+	protected int $spawnChunkLoadCount = 0;
+	protected int $chunksPerTick;
+	protected ChunkSelector $chunkSelector;
+	protected PlayerChunkLoader $chunkLoader;
 
 	/** @var bool[] map: raw UUID (string) => bool */
-	protected $hiddenPlayers = [];
+	protected array $hiddenPlayers = [];
 
-	/** @var float */
-	protected $moveRateLimit = 10 * self::MOVES_PER_TICK;
-	/** @var float|null */
-	protected $lastMovementProcess = null;
+	protected float $moveRateLimit = 10 * self::MOVES_PER_TICK;
+	protected ?float $lastMovementProcess = null;
 
-	/** @var int */
-	protected $inAirTicks = 0;
+	protected int $inAirTicks = 0;
 	/** @var float */
 	protected $stepHeight = 0.6;
 
-	/** @var Vector3|null */
-	protected $sleeping = null;
-	/** @var Position|null */
-	private $spawnPosition = null;
+	protected ?Vector3 $sleeping = null;
+	private ?Position $spawnPosition = null;
 
 	private bool $respawnLocked = false;
 
 	//TODO: Abilities
-	/** @var bool */
-	protected $autoJump = true;
-	/** @var bool */
-	protected $allowFlight = false;
-	/** @var bool */
-	protected $flying = false;
+	protected bool $autoJump = true;
+	protected bool $allowFlight = false;
+	protected bool $flying = false;
 	protected bool $noClip = false;
 
-	/** @var int|null */
-	protected $lineHeight = null;
-	/** @var string */
-	protected $locale = "en_US";
+	protected ?int $lineHeight = null;
+	protected string $locale = "en_US";
 
-	/** @var int */
-	protected $startAction = -1;
+	protected int $startAction = -1;
 	/** @var int[] ID => ticks map */
-	protected $usedItemsCooldown = [];
+	protected array $usedItemsCooldown = [];
 
-	/** @var int */
-	protected $formIdCounter = 0;
+	protected int $formIdCounter = 0;
 	/** @var Form[] */
-	protected $forms = [];
+	protected array $forms = [];
 
-	/** @var \Logger */
-	protected $logger;
+	protected \Logger $logger;
 
-	/** @var SurvivalBlockBreakHandler|null */
-	protected $blockBreakHandler = null;
+	protected ?SurvivalBlockBreakHandler $blockBreakHandler = null;
 
 	public function __construct(Server $server, NetworkSession $session, PlayerInfo $playerInfo, bool $authenticated, Location $spawnLocation, ?CompoundTag $namedtag){
 		$username = TextFormat::clean($playerInfo->getUsername());
@@ -309,16 +278,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLAYER_LOGIN, [
+		$this->server->getLogger()->info($this->getServer()->getLanguage()->translate(KnownTranslationFactory::pocketmine_player_logIn(
 			TextFormat::AQUA . $this->username . TextFormat::WHITE,
 			$session->getIp(),
-			$session->getPort(),
-			$this->id,
+			(string) $session->getPort(),
+			(string) $this->id,
 			$this->getWorld()->getDisplayName(),
-			round($this->location->x, 4),
-			round($this->location->y, 4),
-			round($this->location->z, 4)
-		]));
+			(string) round($this->location->x, 4),
+			(string) round($this->location->y, 4),
+			(string) round($this->location->z, 4)
+		)));
 
 		$this->server->addOnlinePlayer($this);
 	}
@@ -351,10 +320,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
-	/**
-	 * @return TranslationContainer|string
-	 */
-	public function getLeaveMessage(){
+	public function getLeaveMessage() : TranslationContainer|string{
 		if($this->spawned){
 			return new TranslationContainer(TextFormat::YELLOW . "%" . KnownTranslationKeys::MULTIPLAYER_PLAYER_LEFT, [
 				$this->getDisplayName()
@@ -1825,10 +1791,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Sends a direct chat message to a player
-	 *
-	 * @param TranslationContainer|string $message
 	 */
-	public function sendMessage($message) : void{
+	public function sendMessage(TranslationContainer|string $message) : void{
 		if(!$this->isConnected()){
 			return;
 		}
@@ -1930,10 +1894,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Kicks a player from the server
-	 *
-	 * @param TranslationContainer|string|null $quitMessage
 	 */
-	public function kick(string $reason = "", $quitMessage = null) : bool{
+	public function kick(string $reason = "", TranslationContainer|string|null $quitMessage = null) : bool{
 		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
 		$ev->call();
 		if(!$ev->isCancelled()){
@@ -1961,7 +1923,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
 	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function disconnect(string $reason, $quitMessage = null) : void{
+	public function disconnect(string $reason, TranslationContainer|string|null $quitMessage = null) : void{
 		if(!$this->isConnected()){
 			return;
 		}
@@ -1977,7 +1939,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
 	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function onPostDisconnect(string $reason, $quitMessage) : void{
+	public function onPostDisconnect(string $reason, TranslationContainer|string|null $quitMessage) : void{
 		if($this->isConnected()){
 			throw new \InvalidStateException("Player is still connected");
 		}
@@ -2035,8 +1997,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	protected function destroyCycles() : void{
 		$this->networkSession = null;
-		$this->cursorInventory = null;
-		$this->craftingGrid = null;
+		unset($this->cursorInventory);
+		unset($this->craftingGrid);
 		$this->spawnPosition = null;
 		$this->blockBreakHandler = null;
 		parent::destroyCycles();

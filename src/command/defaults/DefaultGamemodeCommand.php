@@ -26,8 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\data\java\GameModeIdMap;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\GameMode;
 use function count;
@@ -59,7 +59,7 @@ class DefaultGamemodeCommand extends VanillaCommand{
 		}
 
 		$sender->getServer()->getConfigGroup()->setConfigInt("gamemode", GameModeIdMap::getInstance()->toId($gameMode));
-		$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_DEFAULTGAMEMODE_SUCCESS, [$gameMode->getTranslationKey()]));
+		$sender->sendMessage(KnownTranslationFactory::commands_defaultgamemode_success($gameMode->getTranslationKey()));
 		return true;
 	}
 }

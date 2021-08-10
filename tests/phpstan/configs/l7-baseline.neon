@@ -431,11 +431,6 @@ parameters:
 			path: ../../../src/block/tile/TileFactory.php
 
 		-
-			message: "#^Property pocketmine\\\\console\\\\ConsoleReader\\:\\:\\$stdin \\(resource\\) does not accept resource\\|false\\.$#"
-			count: 1
-			path: ../../../src/console/ConsoleReader.php
-
-		-
 			message: "#^Only booleans are allowed in an if condition, int\\|false given\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/BanIpCommand.php
@@ -464,6 +459,11 @@ parameters:
 			message: "#^Parameter \\#1 \\$stream of function stream_get_contents expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Property pocketmine\\\\console\\\\ConsoleReader\\:\\:\\$stdin \\(resource\\) does not accept resource\\|false\\.$#"
+			count: 1
+			path: ../../../src/console/ConsoleReader.php
 
 		-
 			message: "#^Method pocketmine\\\\crafting\\\\CraftingManager\\:\\:hashOutputs\\(\\) should return string but returns string\\|false\\.$#"
@@ -576,16 +576,6 @@ parameters:
 			path: ../../../src/lang/Language.php
 
 		-
-			message: "#^Parameter \\#1 \\$str of static method pocketmine\\\\network\\\\mcpe\\\\JwtUtils\\:\\:b64UrlEncode\\(\\) expects string, string\\|false given\\.$#"
-			count: 2
-			path: ../../../src/network/mcpe/JwtUtils.php
-
-		-
-			message: "#^Parameter \\#1 \\$string of method Mdanter\\\\Ecc\\\\Serializer\\\\PublicKey\\\\DerPublicKeySerializer\\:\\:parse\\(\\) expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/auth/ProcessLoginTask.php
-
-		-
 			message: "#^Parameter \\#1 \\$buffer of static method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:decoder\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/convert/RuntimeBlockMapping.php
@@ -594,41 +584,6 @@ parameters:
 			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\encryption\\\\EncryptionUtils\\:\\:generateKey\\(\\) should return string but returns string\\|false\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/encryption/EncryptionUtils.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putSignedBlockPosition\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/types/entity/BlockPosMetadataProperty.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putSignedBlockPosition\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/types/entity/BlockPosMetadataProperty.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putSignedBlockPosition\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/types/entity/BlockPosMetadataProperty.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
-
-		-
-			message: "#^Array \\(array\\<int, pocketmine\\\\player\\\\UsedChunkStatus\\>\\) does not accept key \\(int\\|string\\)\\.$#"
-			count: 3
-			path: ../../../src/player/Player.php
 
 		-
 			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackChunk\\(\\) should return string but returns string\\|false\\.$#"

@@ -37,27 +37,16 @@ class PlayerJoinEvent extends PlayerEvent{
 	/** @var string|TranslationContainer */
 	protected $joinMessage;
 
-	/**
-	 * PlayerJoinEvent constructor.
-	 *
-	 * @param TranslationContainer|string $joinMessage
-	 */
-	public function __construct(Player $player, $joinMessage){
+	public function __construct(Player $player, TranslationContainer|string $joinMessage){
 		$this->player = $player;
 		$this->joinMessage = $joinMessage;
 	}
 
-	/**
-	 * @param string|TranslationContainer $joinMessage
-	 */
-	public function setJoinMessage($joinMessage) : void{
+	public function setJoinMessage(TranslationContainer|string $joinMessage) : void{
 		$this->joinMessage = $joinMessage;
 	}
 
-	/**
-	 * @return string|TranslationContainer
-	 */
-	public function getJoinMessage(){
+	public function getJoinMessage() : TranslationContainer|string{
 		return $this->joinMessage;
 	}
 }

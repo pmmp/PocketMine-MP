@@ -30,8 +30,6 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\item\Banner as ItemBanner;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -126,8 +124,8 @@ abstract class BaseBanner extends Transparent{
 		}
 	}
 
-	public function asItem() : Item{
-		return ItemFactory::getInstance()->get(ItemIds::BANNER, DyeColorIdMap::getInstance()->toInvertedId($this->color));
+	protected function writeStateToItemMeta() : int{
+		return DyeColorIdMap::getInstance()->toInvertedId($this->color);
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

@@ -34,7 +34,7 @@ use pocketmine\event\player\SessionDisconnectEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
-use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
@@ -439,7 +439,6 @@ class NetworkSession{
 		$timings->startTiming();
 		try{
 			$this->sendBuffer[] = $packet;
-			$this->manager->scheduleUpdate($this); //schedule flush at end of tick
 		}finally{
 			$timings->stopTiming();
 		}
@@ -603,7 +602,7 @@ class NetworkSession{
 		}
 
 		if($error !== null){
-			$this->disconnect($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION, [$error]));
+			$this->disconnect($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_invalidSession($error)));
 
 			return;
 		}
@@ -1050,14 +1049,13 @@ class NetworkSession{
 		$this->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
 	}
 
-	public function tick() : bool{
+	public function tick() : void{
 		if($this->info === null){
 			if(time() >= $this->connectTime + 10){
 				$this->disconnect("Login timeout");
-				return false;
 			}
 
-			return true; //keep ticking until timeout
+			return;
 		}
 
 		if($this->player !== null){
@@ -1073,7 +1071,5 @@ class NetworkSession{
 		}
 
 		$this->flushSendBuffer();
-
-		return true;
 	}
 }

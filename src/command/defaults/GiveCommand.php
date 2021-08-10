@@ -28,6 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\LegacyStringToItemParserException;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\nbt\JsonNbtParser;
@@ -82,7 +83,7 @@ class GiveCommand extends VanillaCommand{
 			try{
 				$tags = JsonNbtParser::parseJson($data);
 			}catch(NbtDataException $e){
-				$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_GIVE_TAGERROR, [$e->getMessage()]));
+				$sender->sendMessage(KnownTranslationFactory::commands_give_tagError($e->getMessage()));
 				return true;
 			}
 
@@ -92,11 +93,11 @@ class GiveCommand extends VanillaCommand{
 		//TODO: overflow
 		$player->getInventory()->addItem($item);
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_GIVE_SUCCESS, [
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_give_success(
 			$item->getName() . " (" . $item->getId() . ":" . $item->getMeta() . ")",
 			(string) $item->getCount(),
 			$player->getName()
-		]));
+		));
 		return true;
 	}
 }

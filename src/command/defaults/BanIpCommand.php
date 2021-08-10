@@ -26,8 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function array_shift;
@@ -61,15 +61,15 @@ class BanIpCommand extends VanillaCommand{
 		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $value)){
 			$this->processIPBan($value, $sender, $reason);
 
-			Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_BANIP_SUCCESS, [$value]));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_banip_success($value));
 		}else{
 			if(($player = $sender->getServer()->getPlayerByPrefix($value)) instanceof Player){
 				$ip = $player->getNetworkSession()->getIp();
 				$this->processIPBan($ip, $sender, $reason);
 
-				Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_BANIP_SUCCESS_PLAYERS, [$ip, $player->getName()]));
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_banip_success_players($ip, $player->getName()));
 			}else{
-				$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_BANIP_INVALID));
+				$sender->sendMessage(KnownTranslationFactory::commands_banip_invalid());
 
 				return false;
 			}

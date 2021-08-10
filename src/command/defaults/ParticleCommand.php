@@ -29,6 +29,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\VanillaItems;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
@@ -124,7 +125,7 @@ class ParticleCommand extends VanillaCommand{
 			return true;
 		}
 
-		$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_PARTICLE_SUCCESS, [$name, $count]));
+		$sender->sendMessage(KnownTranslationFactory::commands_particle_success($name, (string) $count));
 
 		$random = new Random((int) (microtime(true) * 1000) + mt_rand());
 

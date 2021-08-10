@@ -191,31 +191,6 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/SetScorePacket.php
-
-		-
-			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putString\\(\\) expects string, string\\|null given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/SetScorePacket.php
-
-		-
-			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/SetScoreboardIdentityPacket.php
-
-		-
-			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putVarInt\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/types/recipe/FurnaceRecipe.php
-
-		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\raklib\\\\RakLibServer\\:\\:\\$mainThreadNotifier \\(pocketmine\\\\snooze\\\\SleeperNotifier\\) does not accept pocketmine\\\\snooze\\\\SleeperNotifier\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/raklib/RakLibServer.php
-
-		-
 			message: "#^Method pocketmine\\\\permission\\\\DefaultPermissions\\:\\:registerPermission\\(\\) should return pocketmine\\\\permission\\\\Permission but returns pocketmine\\\\permission\\\\Permission\\|null\\.$#"
 			count: 1
 			path: ../../../src/permission/DefaultPermissions.php
