@@ -30,10 +30,16 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\Utils;
+use pocketmine\VersionInfo;
 use function count;
+use function function_exists;
 use function implode;
+use function opcache_get_status;
+use function sprintf;
 use function stripos;
 use function strtolower;
+use const PHP_VERSION;
 
 class VersionCommand extends VanillaCommand{
 
@@ -53,12 +59,42 @@ class VersionCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 0){
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_server_info_extended(
-				$sender->getServer()->getName(),
-				$sender->getServer()->getPocketMineVersion(),
-				$sender->getServer()->getVersion(),
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareName(
+				TextFormat::GREEN,
+				VersionInfo::NAME
+			));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareVersion(
+				TextFormat::GREEN,
+				VersionInfo::getVersionObj()->getFullVersion(),
+				VersionInfo::getGitHash()
+			));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_minecraftVersion(
+				TextFormat::GREEN,
+				ProtocolInfo::MINECRAFT_VERSION_NETWORK,
 				(string) ProtocolInfo::CURRENT_PROTOCOL
 			));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpVersion(TextFormat::GREEN, PHP_VERSION));
+
+			$jitColor = TextFormat::GREEN;
+			if(
+				function_exists('opcache_get_status') &&
+				($opcacheStatus = opcache_get_status(false)) !== false &&
+				isset($opcacheStatus["jit"]["on"])
+			){
+				$jit = $opcacheStatus["jit"];
+				if($jit["on"] === true){
+					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitEnabled(
+						sprintf("CRTO: %s%s%s%s", $jit["opt_flags"] >> 2, $jit["opt_flags"] & 0x03, $jit["kind"], $jit["opt_level"])
+					);
+					$jitColor = TextFormat::YELLOW;
+				}else{
+					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitDisabled();
+				}
+			}else{
+				$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitNotSupported();
+			}
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($jitColor, $sender->getLanguage()->translate($jitStatus)));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_operatingSystem(TextFormat::GREEN, Utils::getOS()));
 		}else{
 			$pluginName = implode(" ", $args);
 			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
