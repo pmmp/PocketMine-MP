@@ -46,9 +46,13 @@ class Bow extends Tool implements Releasable{
 
 	public function onReleaseUsing(Player $player) : ItemUseResult{
 		$arrow = VanillaItems::ARROW();
+		$inventory = match(true){
+			$player->getOffHandInventory()->contains($arrow) => $player->getOffHandInventory(),
+			$player->getInventory()->contains($arrow) => $player->getInventory(),
+			default => null
+		};
 
-		$inventory = $player->getOffHandInventory();
-		if($player->hasFiniteResources() and !($inventory->contains($arrow) or ($inventory = $player->getInventory())->contains($arrow))){// Receives a Mismatch Transaction when using offhand arrows. why???
+		if($player->hasFiniteResources() and $inventory === null){// Receives a Mismatch Transaction when using offhand arrows. why???
 			return ItemUseResult::FAIL();
 		}
 
