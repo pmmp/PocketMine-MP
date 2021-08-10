@@ -148,6 +148,13 @@ class Furnace extends Spawnable implements Container, Nameable{
 		}
 	}
 
+	/**
+	 * Returns the duration (in ticks) that this furnace takes to cook/smelt an item.
+	 */
+	protected function getCookDuration() : int{
+		return 200; //10 seconds
+	}
+
 	public function onUpdate() : bool{
 		//TODO: move this to Block
 		if($this->closed){
@@ -178,7 +185,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 			if($smelt instanceof FurnaceRecipe and $canSmelt){
 				++$this->cookTime;
 
-				if($this->cookTime >= 200){ //10 seconds
+				if($this->cookTime >= $this->getCookDuration()){
 					$product = $smelt->getResult()->setCount($product->getCount() + 1);
 
 					$ev = new FurnaceSmeltEvent($this, $raw, $product);
@@ -190,7 +197,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 						$this->inventory->setSmelting($raw);
 					}
 
-					$this->cookTime -= 200;
+					$this->cookTime -= $this->getCookDuration();
 				}
 			}elseif($this->remainingFuelTime <= 0){
 				$this->remainingFuelTime = $this->cookTime = $this->maxFuelTime = 0;
