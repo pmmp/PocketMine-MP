@@ -1194,10 +1194,9 @@ class Server{
 	}
 
 	/**
-	 * @param TranslationContainer|string $message
 	 * @param CommandSender[]|null        $recipients
 	 */
-	public function broadcastMessage($message, ?array $recipients = null) : int{
+	public function broadcastMessage(TranslationContainer|string $message, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->getBroadcastChannelSubscribers(self::BROADCAST_CHANNEL_USERS);
 
 		foreach($recipients as $recipient){

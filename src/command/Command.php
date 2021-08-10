@@ -231,10 +231,7 @@ abstract class Command{
 		$this->usageMessage = $usage;
 	}
 
-	/**
-	 * @param TranslationContainer|string $message
-	 */
-	public static function broadcastCommandMessage(CommandSender $source, $message, bool $sendToSource = true) : void{
+	public static function broadcastCommandMessage(CommandSender $source, TranslationContainer|string $message, bool $sendToSource = true) : void{
 		$users = $source->getServer()->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
 		if($message instanceof TranslationContainer){
 			$formatted = "[" . $source->getName() . ": " . ($source->getLanguage()->get($message->getText()) !== $message->getText() ? "%" : "") . $message->getText() . "]";

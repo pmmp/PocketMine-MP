@@ -319,10 +319,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
-	/**
-	 * @return TranslationContainer|string
-	 */
-	public function getLeaveMessage(){
+	public function getLeaveMessage() : TranslationContainer|string{
 		if($this->spawned){
 			return new TranslationContainer(TextFormat::YELLOW . "%" . KnownTranslationKeys::MULTIPLAYER_PLAYER_LEFT, [
 				$this->getDisplayName()
@@ -1782,10 +1779,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Sends a direct chat message to a player
-	 *
-	 * @param TranslationContainer|string $message
 	 */
-	public function sendMessage($message) : void{
+	public function sendMessage(TranslationContainer|string $message) : void{
 		if($message instanceof TranslationContainer){
 			$this->sendTranslation($message->getText(), $message->getParameters());
 			return;
@@ -1883,10 +1878,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Kicks a player from the server
-	 *
-	 * @param TranslationContainer|string|null $quitMessage
 	 */
-	public function kick(string $reason = "", $quitMessage = null) : bool{
+	public function kick(string $reason = "", TranslationContainer|string|null $quitMessage = null) : bool{
 		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
 		$ev->call();
 		if(!$ev->isCancelled()){
@@ -1914,7 +1907,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
 	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function disconnect(string $reason, $quitMessage = null) : void{
+	public function disconnect(string $reason, TranslationContainer|string|null $quitMessage = null) : void{
 		if(!$this->isConnected()){
 			return;
 		}
@@ -1930,7 +1923,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
 	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function onPostDisconnect(string $reason, $quitMessage) : void{
+	public function onPostDisconnect(string $reason, TranslationContainer|string|null $quitMessage) : void{
 		if($this->isConnected()){
 			throw new \InvalidStateException("Player is still connected");
 		}
