@@ -108,10 +108,7 @@ abstract class Tree{
 		$this->placeCanopy($x, $y, $z, $random, $transaction);
 
 		if($callEvent){
-			$ev = new BlockSproutEvent(
-				$world->getBlockAt($x, $y, $z),
-				$transaction
-			);
+			$ev = new BlockSproutEvent($world->getBlockAt($x, $y, $z), $transaction);
 			$ev->call();
 			if($ev->isCancelled()){
 				return;
