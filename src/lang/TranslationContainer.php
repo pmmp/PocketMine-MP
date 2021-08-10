@@ -36,11 +36,8 @@ final class TranslationContainer{
 	public function __construct(string $text, array $params = []){
 		$this->text = $text;
 
-		$i = 0;
-		foreach($params as $str){
-			$this->params[$i] = (string) $str;
-
-			++$i;
+		foreach($params as $k => $str){
+			$this->params[$k] = (string) $str;
 		}
 	}
 
@@ -55,7 +52,7 @@ final class TranslationContainer{
 		return $this->params;
 	}
 
-	public function getParameter(int $i) : ?string{
+	public function getParameter(int|string $i) : ?string{
 		return $this->params[$i] ?? null;
 	}
 }
