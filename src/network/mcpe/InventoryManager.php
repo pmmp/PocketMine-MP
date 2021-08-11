@@ -211,6 +211,11 @@ class InventoryManager{
 			if($clientSideItem === null or !$clientSideItem->equalsExact($currentItem)){
 				$itemStackWrapper = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($currentItem));
 				if($windowId === ContainerIds::OFFHAND){
+					//TODO: HACK!
+					//The client may sometimes ignore the InventorySlotPacket for the offhand slot.
+					//This can cause a lot of problems (totems, arrows, and more...).
+					//The workaround is to send an InventoryContentPacket instead
+					//BDS (Bedrock Dedicated Server) also seems to work this way.
 					$this->session->sendDataPacket(InventoryContentPacket::create($windowId, [$itemStackWrapper]));
 				}else{
 					$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $slot, $itemStackWrapper));
