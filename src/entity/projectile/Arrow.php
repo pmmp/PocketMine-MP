@@ -175,8 +175,12 @@ class Arrow extends Projectile{
 
 		$item = VanillaItems::ARROW();
 
-		$playerInventory = $player->getInventory();
-		if($player->hasFiniteResources() and !$playerInventory->canAddItem($item)){
+		$playerInventory = match(true){
+			$player->getOffHandInventory()->canAddItem($item) and !$player->getOffHandInventory()->isSlotEmpty(0) => $player->getOffHandInventory(),
+			$player->getInventory()->canAddItem($item) => $player->getInventory(),
+			default => null
+		};
+		if($player->hasFiniteResources() and $playerInventory === null){
 			return;
 		}
 
