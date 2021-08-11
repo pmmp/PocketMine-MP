@@ -30,7 +30,6 @@ use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
-use pocketmine\inventory\Inventory;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
