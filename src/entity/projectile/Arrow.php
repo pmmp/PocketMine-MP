@@ -30,6 +30,7 @@ use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\event\inventory\InventoryPickupArrowEvent;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
@@ -183,6 +184,8 @@ class Arrow extends Projectile{
 		if($player->hasFiniteResources() and $playerInventory === null){
 			return;
 		}
+
+		$playerInventory ??= $player->getInventory();
 
 		$ev = new InventoryPickupArrowEvent($playerInventory, $this);
 		if($this->pickupMode === self::PICKUP_NONE or ($this->pickupMode === self::PICKUP_CREATIVE and !$player->isCreative())){

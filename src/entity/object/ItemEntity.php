@@ -29,6 +29,7 @@ use pocketmine\entity\Location;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\event\inventory\InventoryPickupItemEvent;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -235,6 +236,8 @@ class ItemEntity extends Entity{
 		if($player->hasFiniteResources() and $playerInventory === null){
 			return;
 		}
+
+		$playerInventory ??= $player->getInventory();
 
 		$ev = new InventoryPickupItemEvent($playerInventory, $this);
 		$ev->call();
