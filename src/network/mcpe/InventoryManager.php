@@ -209,11 +209,11 @@ class InventoryManager{
 			$currentItem = $inventory->getItem($slot);
 			$clientSideItem = $this->initiatedSlotChanges[$windowId][$slot] ?? null;
 			if($clientSideItem === null or !$clientSideItem->equalsExact($currentItem)){
-				$typeConverter = TypeConverter::getInstance();
+				$itemStackWrapper = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($currentItem));
 				if($windowId === ContainerIds::OFFHAND){
-					$this->session->sendDataPacket(InventoryContentPacket::create($windowId, [ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($currentItem))]));
+					$this->session->sendDataPacket(InventoryContentPacket::create($windowId, [$itemStackWrapper]));
 				}else{
-					$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $slot, ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($currentItem))));
+					$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $slot, $itemStackWrapper));
 				}
 			}
 			unset($this->initiatedSlotChanges[$windowId][$slot]);
