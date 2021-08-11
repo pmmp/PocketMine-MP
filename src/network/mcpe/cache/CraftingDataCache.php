@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\cache;
 
 use pocketmine\crafting\CraftingManager;
+use pocketmine\crafting\FurnaceType;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
@@ -33,6 +34,7 @@ use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapedRecipe as ProtocolShapedRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe as ProtocolShapelessRecipe;
 use pocketmine\timings\Timings;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
 use pocketmine\utils\SingletonTrait;
 use Ramsey\Uuid\Uuid;
@@ -115,15 +117,23 @@ final class CraftingDataCache{
 			}
 		}
 
-		foreach($manager->getFurnaceRecipeManager()->getAll() as $recipe){
-			$input = $converter->coreItemStackToNet($recipe->getInput());
-			$pk->entries[] = new ProtocolFurnaceRecipe(
-				CraftingDataPacket::ENTRY_FURNACE_DATA,
-				$input->getId(),
-				$input->getMeta(),
-				$converter->coreItemStackToNet($recipe->getResult()),
-				"furnace"
-			);
+		foreach(FurnaceType::getAll() as $furnaceType){
+			$typeTag = match($furnaceType->id()){
+				FurnaceType::FURNACE()->id() => "furnace",
+				FurnaceType::BLAST_FURNACE()->id() => "blast_furnace",
+				FurnaceType::SMOKER()->id() => "smoker",
+				default => throw new AssumptionFailedError("Unreachable"),
+			};
+			foreach($manager->getFurnaceRecipeManager($furnaceType)->getAll() as $recipe){
+				$input = $converter->coreItemStackToNet($recipe->getInput());
+				$pk->entries[] = new ProtocolFurnaceRecipe(
+					CraftingDataPacket::ENTRY_FURNACE_DATA,
+					$input->getId(),
+					$input->getMeta(),
+					$converter->coreItemStackToNet($recipe->getResult()),
+					$typeTag
+				);
+			}
 		}
 
 		Timings::$craftingDataCacheRebuild->stopTiming();

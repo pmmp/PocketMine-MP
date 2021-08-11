@@ -54,6 +54,7 @@ final class TileFactory{
 		$this->register(Beacon::class, ["Beacon", "minecraft:beacon"]);
 		$this->register(Bed::class, ["Bed", "minecraft:bed"]);
 		$this->register(Bell::class, ["Bell", "minecraft:bell"]);
+		$this->register(BlastFurnace::class, ["BlastFurnace", "minecraft:blast_furnace"]);
 		$this->register(BrewingStand::class, ["BrewingStand", "minecraft:brewing_stand"]);
 		$this->register(Chest::class, ["Chest", "minecraft:chest"]);
 		$this->register(Comparator::class, ["Comparator", "minecraft:comparator"]);
@@ -61,7 +62,7 @@ final class TileFactory{
 		$this->register(EnchantTable::class, ["EnchantTable", "minecraft:enchanting_table"]);
 		$this->register(EnderChest::class, ["EnderChest", "minecraft:ender_chest"]);
 		$this->register(FlowerPot::class, ["FlowerPot", "minecraft:flower_pot"]);
-		$this->register(Furnace::class, ["Furnace", "minecraft:furnace"]);
+		$this->register(NormalFurnace::class, ["Furnace", "minecraft:furnace"]);
 		$this->register(Hopper::class, ["Hopper", "minecraft:hopper"]);
 		$this->register(ItemFrame::class, ["ItemFrame"]); //this is an entity in PC
 		$this->register(Jukebox::class, ["Jukebox", "RecordPlayer", "minecraft:jukebox"]);
@@ -69,9 +70,9 @@ final class TileFactory{
 		$this->register(Note::class, ["Music", "minecraft:noteblock"]);
 		$this->register(ShulkerBox::class, ["ShulkerBox", "minecraft:shulker_box"]);
 		$this->register(Sign::class, ["Sign", "minecraft:sign"]);
+		$this->register(Smoker::class, ["Smoker", "minecraft:smoker"]);
 		$this->register(Skull::class, ["Skull", "minecraft:skull"]);
 
-		//TODO: BlastFurnace
 		//TODO: Campfire
 		//TODO: Cauldron
 		//TODO: ChalkboardBlock
@@ -87,7 +88,6 @@ final class TileFactory{
 		//TODO: MovingBlock
 		//TODO: NetherReactor
 		//TODO: PistonArm
-		//TODO: Smoker
 		//TODO: StructureBlock
 	}
 
