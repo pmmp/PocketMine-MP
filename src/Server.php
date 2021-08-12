@@ -164,134 +164,93 @@ class Server{
 	public const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
 	public const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
-	/** @var Server|null */
-	private static $instance = null;
+	private static ?Server $instance = null;
 
-	/** @var SleeperHandler */
-	private $tickSleeper;
+	private SleeperHandler $tickSleeper;
 
-	/** @var BanList */
-	private $banByName;
+	private BanList $banByName;
 
-	/** @var BanList */
-	private $banByIP;
+	private BanList $banByIP;
 
-	/** @var Config */
-	private $operators;
+	private Config $operators;
 
-	/** @var Config */
-	private $whitelist;
+	private Config $whitelist;
 
-	/** @var bool */
-	private $isRunning = true;
+	private bool $isRunning = true;
 
-	/** @var bool */
-	private $hasStopped = false;
+	private bool $hasStopped = false;
 
-	/** @var PluginManager */
-	private $pluginManager;
+	private PluginManager $pluginManager;
 
-	/** @var float */
-	private $profilingTickRate = 20;
+	private float $profilingTickRate = 20;
 
-	/** @var AutoUpdater */
-	private $updater;
+	private AutoUpdater $updater;
 
-	/** @var AsyncPool */
-	private $asyncPool;
+	private AsyncPool $asyncPool;
 
-	/**
-	 * Counts the ticks since the server start
-	 *
-	 * @var int
-	 */
-	private $tickCounter = 0;
-	/** @var float */
-	private $nextTick = 0;
+	/** Counts the ticks since the server start */
+	private int $tickCounter = 0;
+	private float $nextTick = 0;
 	/** @var float[] */
-	private $tickAverage = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
+	private array $tickAverage = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
 	/** @var float[] */
-	private $useAverage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-	/** @var float */
-	private $currentTPS = 20;
-	/** @var float */
-	private $currentUse = 0;
-	/** @var float */
-	private $startTime;
+	private array $useAverage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	private float $currentTPS = 20;
+	private float $currentUse = 0;
+	private float $startTime;
 
-	/** @var bool */
-	private $doTitleTick = true;
+	private bool $doTitleTick = true;
 
-	/** @var int */
-	private $sendUsageTicker = 0;
+	private int $sendUsageTicker = 0;
 
-	/** @var \AttachableThreadedLogger */
-	private $logger;
+	private \AttachableThreadedLogger $logger;
 
-	/** @var MemoryManager */
-	private $memoryManager;
+	private MemoryManager $memoryManager;
 
-	/** @var ConsoleReaderThread */
-	private $console;
+	private ConsoleReaderThread $console;
 
-	/** @var SimpleCommandMap */
-	private $commandMap;
+	private SimpleCommandMap $commandMap;
 
-	/** @var CraftingManager */
-	private $craftingManager;
+	private CraftingManager $craftingManager;
 
-	/** @var ResourcePackManager */
-	private $resourceManager;
+	private ResourcePackManager $resourceManager;
 
-	/** @var WorldManager */
-	private $worldManager;
+	private WorldManager $worldManager;
 
-	/** @var int */
-	private $maxPlayers;
+	private int $maxPlayers;
 
-	/** @var bool */
-	private $onlineMode = true;
+	private bool $onlineMode = true;
 
-	/** @var Network */
-	private $network;
-	/** @var bool */
-	private $networkCompressionAsync = true;
+	private Network $network;
+	private bool $networkCompressionAsync = true;
 
-	/** @var Language */
-	private $language;
-	/** @var bool */
-	private $forceLanguage = false;
+	private Language $language;
+	private bool $forceLanguage = false;
 
-	/** @var UuidInterface */
-	private $serverID;
+	private UuidInterface $serverID;
 
-	/** @var \DynamicClassLoader */
-	private $autoloader;
-	/** @var string */
-	private $dataPath;
-	/** @var string */
-	private $pluginPath;
+	private \DynamicClassLoader $autoloader;
+	private string $dataPath;
+	private string $pluginPath;
 
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	private $uniquePlayers = [];
+	private array $uniquePlayers = [];
 
-	/** @var QueryInfo */
-	private $queryInfo;
+	private QueryInfo $queryInfo;
 
-	/** @var ServerConfigGroup */
-	private $configGroup;
+	private ServerConfigGroup $configGroup;
 
 	/** @var Player[] */
-	private $playerList = [];
+	private array $playerList = [];
 
 	/**
 	 * @var CommandSender[][]
 	 * @phpstan-var array<string, array<int, CommandSender>>
 	 */
-	private $broadcastSubscribers = [];
+	private array $broadcastSubscribers = [];
 
 	public function getName() : string{
 		return VersionInfo::NAME;
@@ -1396,16 +1355,16 @@ class Server{
 
 			$this->shutdown();
 
-			if($this->pluginManager instanceof PluginManager){
+			if(isset($this->pluginManager)){
 				$this->getLogger()->debug("Disabling all plugins");
 				$this->pluginManager->disablePlugins();
 			}
 
-			if($this->network instanceof Network){
+			if(isset($this->network)){
 				$this->network->getSessionManager()->close($this->configGroup->getPropertyString("settings.shutdown-message", "Server closed"));
 			}
 
-			if($this->worldManager instanceof WorldManager){
+			if(isset($this->worldManager)){
 				$this->getLogger()->debug("Unloading all worlds");
 				foreach($this->worldManager->getWorlds() as $world){
 					$this->worldManager->unloadWorld($world, true);
@@ -1415,23 +1374,23 @@ class Server{
 			$this->getLogger()->debug("Removing event handlers");
 			HandlerListManager::global()->unregisterAll();
 
-			if($this->asyncPool instanceof AsyncPool){
+			if(isset($this->asyncPool)){
 				$this->getLogger()->debug("Shutting down async task worker pool");
 				$this->asyncPool->shutdown();
 			}
 
-			if($this->configGroup !== null){
+			if(isset($this->configGroup)){
 				$this->getLogger()->debug("Saving properties");
 				$this->configGroup->save();
 			}
 
-			if($this->console instanceof ConsoleReaderThread){
+			if(isset($this->console)){
 				$this->getLogger()->debug("Closing console");
 				$this->console->shutdown();
 				$this->console->notify();
 			}
 
-			if($this->network instanceof Network){
+			if(isset($this->network)){
 				$this->getLogger()->debug("Stopping network interfaces");
 				foreach($this->network->getInterfaces() as $interface){
 					$this->getLogger()->debug("Stopping network interface " . get_class($interface));
