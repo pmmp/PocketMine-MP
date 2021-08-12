@@ -33,52 +33,30 @@ use function stream_isatty;
 use const PHP_EOL;
 
 abstract class Terminal{
-	/** @var string */
-	public static $FORMAT_BOLD = "";
-	/** @var string */
-	public static $FORMAT_OBFUSCATED = "";
-	/** @var string */
-	public static $FORMAT_ITALIC = "";
-	/** @var string */
-	public static $FORMAT_UNDERLINE = "";
-	/** @var string */
-	public static $FORMAT_STRIKETHROUGH = "";
+	public static string $FORMAT_BOLD = "";
+	public static string $FORMAT_OBFUSCATED = "";
+	public static string $FORMAT_ITALIC = "";
+	public static string $FORMAT_UNDERLINE = "";
+	public static string $FORMAT_STRIKETHROUGH = "";
 
-	/** @var string */
-	public static $FORMAT_RESET = "";
+	public static string $FORMAT_RESET = "";
 
-	/** @var string */
-	public static $COLOR_BLACK = "";
-	/** @var string */
-	public static $COLOR_DARK_BLUE = "";
-	/** @var string */
-	public static $COLOR_DARK_GREEN = "";
-	/** @var string */
-	public static $COLOR_DARK_AQUA = "";
-	/** @var string */
-	public static $COLOR_DARK_RED = "";
-	/** @var string */
-	public static $COLOR_PURPLE = "";
-	/** @var string */
-	public static $COLOR_GOLD = "";
-	/** @var string */
-	public static $COLOR_GRAY = "";
-	/** @var string */
-	public static $COLOR_DARK_GRAY = "";
-	/** @var string */
-	public static $COLOR_BLUE = "";
-	/** @var string */
-	public static $COLOR_GREEN = "";
-	/** @var string */
-	public static $COLOR_AQUA = "";
-	/** @var string */
-	public static $COLOR_RED = "";
-	/** @var string */
-	public static $COLOR_LIGHT_PURPLE = "";
-	/** @var string */
-	public static $COLOR_YELLOW = "";
-	/** @var string */
-	public static $COLOR_WHITE = "";
+	public static string $COLOR_BLACK = "";
+	public static string $COLOR_DARK_BLUE = "";
+	public static string $COLOR_DARK_GREEN = "";
+	public static string $COLOR_DARK_AQUA = "";
+	public static string $COLOR_DARK_RED = "";
+	public static string $COLOR_PURPLE = "";
+	public static string $COLOR_GOLD = "";
+	public static string $COLOR_GRAY = "";
+	public static string $COLOR_DARK_GRAY = "";
+	public static string $COLOR_BLUE = "";
+	public static string $COLOR_GREEN = "";
+	public static string $COLOR_AQUA = "";
+	public static string $COLOR_RED = "";
+	public static string $COLOR_LIGHT_PURPLE = "";
+	public static string $COLOR_YELLOW = "";
+	public static string $COLOR_WHITE = "";
 
 	/** @var bool|null */
 	private static $formattingCodes = null;
