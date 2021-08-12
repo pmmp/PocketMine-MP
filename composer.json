@@ -86,6 +86,9 @@
       ],
       "update-registry-annotations": [
          "@php build/generate-registry-annotations.php src"
+      ],
+      "update-translation-apis": [
+         "@php build/generate-known-translation-apis.php"
       ]
    }
 }
