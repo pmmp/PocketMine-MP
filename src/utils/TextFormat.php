@@ -67,11 +67,39 @@ abstract class TextFormat{
 	public const YELLOW = TextFormat::ESCAPE . "e";
 	public const WHITE = TextFormat::ESCAPE . "f";
 
+	public const COLORS = [
+		self::BLACK => self::BLACK,
+		self::DARK_BLUE => self::DARK_BLUE,
+		self::DARK_GREEN => self::DARK_GREEN,
+		self::DARK_AQUA => self::DARK_AQUA,
+		self::DARK_RED => self::DARK_RED,
+		self::DARK_PURPLE => self::DARK_PURPLE,
+		self::GOLD => self::GOLD,
+		self::GRAY => self::GRAY,
+		self::DARK_GRAY => self::DARK_GRAY,
+		self::BLUE => self::BLUE,
+		self::GREEN => self::GREEN,
+		self::AQUA => self::AQUA,
+		self::RED => self::RED,
+		self::LIGHT_PURPLE => self::LIGHT_PURPLE,
+		self::YELLOW => self::YELLOW,
+		self::WHITE => self::WHITE,
+	];
+
 	public const OBFUSCATED = TextFormat::ESCAPE . "k";
 	public const BOLD = TextFormat::ESCAPE . "l";
 	public const STRIKETHROUGH = TextFormat::ESCAPE . "m";
 	public const UNDERLINE = TextFormat::ESCAPE . "n";
 	public const ITALIC = TextFormat::ESCAPE . "o";
+
+	public const FORMATS = [
+		self::OBFUSCATED => self::OBFUSCATED,
+		self::BOLD => self::BOLD,
+		self::STRIKETHROUGH => self::STRIKETHROUGH,
+		self::UNDERLINE => self::UNDERLINE,
+		self::ITALIC => self::ITALIC,
+	];
+
 	public const RESET = TextFormat::ESCAPE . "r";
 
 	private static function makePcreError() : \InvalidArgumentException{
