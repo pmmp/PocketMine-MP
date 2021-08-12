@@ -159,16 +159,11 @@ abstract class TextFormat{
 
 	/**
 	 * Returns an HTML-formatted string with colors/markup
-	 *
-	 * @param string|string[] $string
 	 */
-	public static function toHTML($string) : string{
-		if(!is_array($string)){
-			$string = self::tokenize($string);
-		}
+	public static function toHTML(string $string) : string{
 		$newString = "";
 		$tokens = 0;
-		foreach($string as $token){
+		foreach(self::tokenize($string) as $token){
 			switch($token){
 				case TextFormat::BOLD:
 					$newString .= "<span style=font-weight:bold>";
