@@ -1733,21 +1733,21 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($subtitle !== ""){
 			$this->sendSubTitle($subtitle);
 		}
-		$this->getNetworkSession()->onTitle($title);
+		$this->getNetworkSession()->onTitle(TextFormat::toVanilla($title));
 	}
 
 	/**
 	 * Sets the subtitle message, without sending a title.
 	 */
 	public function sendSubTitle(string $subtitle) : void{
-		$this->getNetworkSession()->onSubTitle($subtitle);
+		$this->getNetworkSession()->onSubTitle(TextFormat::toVanilla($subtitle));
 	}
 
 	/**
 	 * Adds small text to the user's screen.
 	 */
 	public function sendActionBarMessage(string $message) : void{
-		$this->getNetworkSession()->onActionBar($message);
+		$this->getNetworkSession()->onActionBar(TextFormat::toVanilla($message));
 	}
 
 	/**
@@ -1786,7 +1786,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		$this->getNetworkSession()->onRawChatMessage($this->getLanguage()->translateString($message));
+		$this->getNetworkSession()->onRawChatMessage(TextFormat::toVanilla($this->getLanguage()->translateString($message)));
 	}
 
 	/**
@@ -1795,11 +1795,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function sendTranslation(string $message, array $parameters = []) : void{
 		if(!$this->server->isLanguageForced()){
 			foreach($parameters as $i => $p){
-				$parameters[$i] = $this->getLanguage()->translateString($p, [], "pocketmine.");
+				$parameters[$i] = TextFormat::toVanilla($this->getLanguage()->translateString($p, [], "pocketmine."));
 			}
-			$this->getNetworkSession()->onTranslatedChatMessage($this->getLanguage()->translateString($message, $parameters, "pocketmine."), $parameters);
+			$this->getNetworkSession()->onTranslatedChatMessage(TextFormat::toVanilla($this->getLanguage()->translateString($message, $parameters, "pocketmine.")), $parameters);
 		}else{
-			$this->sendMessage($this->getLanguage()->translateString($message, $parameters));
+			$this->sendMessage(TextFormat::toVanilla($this->getLanguage()->translateString($message, $parameters)));
 		}
 	}
 
@@ -1816,11 +1816,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * TODO: add translation type popups
 	 */
 	public function sendPopup(string $message) : void{
-		$this->getNetworkSession()->onPopup($message);
+		$this->getNetworkSession()->onPopup(TextFormat::toVanilla($message));
 	}
 
 	public function sendTip(string $message) : void{
-		$this->getNetworkSession()->onTip($message);
+		$this->getNetworkSession()->onTip(TextFormat::toVanilla($message));
 	}
 
 	/**

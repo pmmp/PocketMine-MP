@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use function assert;
 use function fclose;
 use function fopen;
 use function function_exists;
@@ -204,7 +205,7 @@ abstract class Terminal{
 	 */
 	public static function toANSI($string) : string{
 		if(!is_array($string)){
-			$string = TextFormat::tokenize($string);
+			$string = TextFormat::tokenize(TextFormat::toVanilla($string));
 		}
 
 		$newString = "";
@@ -277,6 +278,9 @@ abstract class Terminal{
 					break;
 				case TextFormat::WHITE:
 					$newString .= Terminal::$COLOR_WHITE;
+					break;
+				case TextFormat::POP:
+					assert(false);
 					break;
 				default:
 					$newString .= $token;
