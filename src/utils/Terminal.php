@@ -27,7 +27,6 @@ use function fclose;
 use function fopen;
 use function function_exists;
 use function getenv;
-use function is_array;
 use function sapi_windows_vt100_support;
 use function stream_isatty;
 use const PHP_EOL;
@@ -177,16 +176,10 @@ abstract class Terminal{
 	/**
 	 * Returns a string with colorized ANSI Escape codes for the current terminal
 	 * Note that this is platform-dependent and might produce different results depending on the terminal type and/or OS.
-	 *
-	 * @param string|string[] $string
 	 */
-	public static function toANSI($string) : string{
-		if(!is_array($string)){
-			$string = TextFormat::tokenize($string);
-		}
-
+	public static function toANSI(string $string) : string{
 		$newString = "";
-		foreach($string as $token){
+		foreach(TextFormat::tokenize($string) as $token){
 			$newString .= match($token){
 				TextFormat::BOLD => Terminal::$FORMAT_BOLD,
 				TextFormat::OBFUSCATED => Terminal::$FORMAT_OBFUSCATED,
