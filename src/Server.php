@@ -327,10 +327,7 @@ class Server{
 		return $str !== "" ? $str : "0.0.0.0";
 	}
 
-	/**
-	 * @return UuidInterface
-	 */
-	public function getServerUniqueId(){
+	public function getServerUniqueId() : UuidInterface{
 		return $this->serverID;
 	}
 
@@ -361,38 +358,23 @@ class Server{
 		return $this->configGroup->getConfigString("motd", VersionInfo::NAME . " Server");
 	}
 
-	/**
-	 * @return \DynamicClassLoader
-	 */
-	public function getLoader(){
+	public function getLoader() : \DynamicClassLoader{
 		return $this->autoloader;
 	}
 
-	/**
-	 * @return \AttachableThreadedLogger
-	 */
-	public function getLogger(){
+	public function getLogger() : \AttachableThreadedLogger{
 		return $this->logger;
 	}
 
-	/**
-	 * @return AutoUpdater
-	 */
-	public function getUpdater(){
+	public function getUpdater() : AutoUpdater{
 		return $this->updater;
 	}
 
-	/**
-	 * @return PluginManager
-	 */
-	public function getPluginManager(){
+	public function getPluginManager() : PluginManager{
 		return $this->pluginManager;
 	}
 
-	/**
-	 * @return CraftingManager
-	 */
-	public function getCraftingManager(){
+	public function getCraftingManager() : CraftingManager{
 		return $this->craftingManager;
 	}
 
@@ -444,10 +426,7 @@ class Server{
 		return $this->startTime;
 	}
 
-	/**
-	 * @return SimpleCommandMap
-	 */
-	public function getCommandMap(){
+	public function getCommandMap() : SimpleCommandMap{
 		return $this->commandMap;
 	}
 
@@ -668,17 +647,11 @@ class Server{
 		}
 	}
 
-	/**
-	 * @return BanList
-	 */
-	public function getNameBans(){
+	public function getNameBans() : BanList{
 		return $this->banByName;
 	}
 
-	/**
-	 * @return BanList
-	 */
-	public function getIPBans(){
+	public function getIPBans() : BanList{
 		return $this->banByIP;
 	}
 
@@ -718,17 +691,11 @@ class Server{
 		return $this->operators->exists($name, true);
 	}
 
-	/**
-	 * @return Config
-	 */
-	public function getWhitelisted(){
+	public function getWhitelisted() : Config{
 		return $this->whitelist;
 	}
 
-	/**
-	 * @return Config
-	 */
-	public function getOps(){
+	public function getOps() : Config{
 		return $this->operators;
 	}
 
@@ -1405,10 +1372,7 @@ class Server{
 
 	}
 
-	/**
-	 * @return QueryInfo
-	 */
-	public function getQueryInformation(){
+	public function getQueryInformation() : QueryInfo{
 		return $this->queryInfo;
 	}
 
@@ -1587,10 +1551,7 @@ class Server{
 		$this->uniquePlayers = [];
 	}
 
-	/**
-	 * @return Language
-	 */
-	public function getLanguage(){
+	public function getLanguage() : Language{
 		return $this->language;
 	}
 
@@ -1598,17 +1559,11 @@ class Server{
 		return $this->forceLanguage;
 	}
 
-	/**
-	 * @return Network
-	 */
-	public function getNetwork(){
+	public function getNetwork() : Network{
 		return $this->network;
 	}
 
-	/**
-	 * @return MemoryManager
-	 */
-	public function getMemoryManager(){
+	public function getMemoryManager() : MemoryManager{
 		return $this->memoryManager;
 	}
 
