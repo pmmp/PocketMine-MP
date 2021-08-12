@@ -82,6 +82,7 @@ use function assert;
  * @method static WallSign BIRCH_WALL_SIGN()
  * @method static Wood BIRCH_WOOD()
  * @method static GlazedTerracotta BLACK_GLAZED_TERRACOTTA()
+ * @method static Furnace BLAST_FURNACE()
  * @method static GlazedTerracotta BLUE_GLAZED_TERRACOTTA()
  * @method static BlueIce BLUE_ICE()
  * @method static Flower BLUE_ORCHID()
@@ -487,6 +488,7 @@ use function assert;
  * @method static SeaLantern SEA_LANTERN()
  * @method static SeaPickle SEA_PICKLE()
  * @method static ShulkerBox SHULKER_BOX()
+ * @method static Furnace SMOKER()
  * @method static Opaque SMOOTH_QUARTZ()
  * @method static Slab SMOOTH_QUARTZ_SLAB()
  * @method static Stair SMOOTH_QUARTZ_STAIRS()
@@ -645,6 +647,7 @@ final class VanillaBlocks{
 		self::register("birch_wall_sign", $factory->get(442, 2));
 		self::register("birch_wood", $factory->get(467, 2));
 		self::register("black_glazed_terracotta", $factory->get(235, 2));
+		self::register("blast_furnace", $factory->get(451, 2));
 		self::register("blue_glazed_terracotta", $factory->get(231, 2));
 		self::register("blue_ice", $factory->get(266, 0));
 		self::register("blue_orchid", $factory->get(38, 1));
@@ -1050,6 +1053,7 @@ final class VanillaBlocks{
 		self::register("sea_lantern", $factory->get(169, 0));
 		self::register("sea_pickle", $factory->get(411, 0));
 		self::register("shulker_box", $factory->get(205, 0));
+		self::register("smoker", $factory->get(453, 2));
 		self::register("smooth_quartz", $factory->get(155, 3));
 		self::register("smooth_quartz_slab", $factory->get(421, 1));
 		self::register("smooth_quartz_stairs", $factory->get(440, 0));
