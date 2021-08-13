@@ -108,42 +108,46 @@ abstract class Terminal{
 		self::$COLOR_WHITE = "\x1b[38;5;231m";
 	}
 
+	protected static function executeShell(string $command) : string{
+		return (string) shell_exec($command);	
+	}
+
 	protected static function getEscapeCodes() : void{
-		self::$FORMAT_BOLD = `tput bold`;
-		self::$FORMAT_OBFUSCATED = `tput smacs`;
-		self::$FORMAT_ITALIC = `tput sitm`;
-		self::$FORMAT_UNDERLINE = `tput smul`;
+		self::$FORMAT_BOLD = self::executeShell('tput bold');
+		self::$FORMAT_OBFUSCATED = self::executeShell('tput smacs');
+		self::$FORMAT_ITALIC = self::executeShell('tput sitm');
+		self::$FORMAT_UNDERLINE = self::executeShell('tput smul');
 		self::$FORMAT_STRIKETHROUGH = "\x1b[9m"; //`tput `;
 
-		self::$FORMAT_RESET = `tput sgr0`;
+		self::$FORMAT_RESET = self::executeShell('tput sgr0');
 
 		$colors = (int) `tput colors`;
 		if($colors > 8){
-			self::$COLOR_BLACK = $colors >= 256 ? `tput setaf 16` : `tput setaf 0`;
-			self::$COLOR_DARK_BLUE = $colors >= 256 ? `tput setaf 19` : `tput setaf 4`;
-			self::$COLOR_DARK_GREEN = $colors >= 256 ? `tput setaf 34` : `tput setaf 2`;
-			self::$COLOR_DARK_AQUA = $colors >= 256 ? `tput setaf 37` : `tput setaf 6`;
-			self::$COLOR_DARK_RED = $colors >= 256 ? `tput setaf 124` : `tput setaf 1`;
-			self::$COLOR_PURPLE = $colors >= 256 ? `tput setaf 127` : `tput setaf 5`;
-			self::$COLOR_GOLD = $colors >= 256 ? `tput setaf 214` : `tput setaf 3`;
-			self::$COLOR_GRAY = $colors >= 256 ? `tput setaf 145` : `tput setaf 7`;
-			self::$COLOR_DARK_GRAY = $colors >= 256 ? `tput setaf 59` : `tput setaf 8`;
-			self::$COLOR_BLUE = $colors >= 256 ? `tput setaf 63` : `tput setaf 12`;
-			self::$COLOR_GREEN = $colors >= 256 ? `tput setaf 83` : `tput setaf 10`;
-			self::$COLOR_AQUA = $colors >= 256 ? `tput setaf 87` : `tput setaf 14`;
-			self::$COLOR_RED = $colors >= 256 ? `tput setaf 203` : `tput setaf 9`;
-			self::$COLOR_LIGHT_PURPLE = $colors >= 256 ? `tput setaf 207` : `tput setaf 13`;
-			self::$COLOR_YELLOW = $colors >= 256 ? `tput setaf 227` : `tput setaf 11`;
-			self::$COLOR_WHITE = $colors >= 256 ? `tput setaf 231` : `tput setaf 15`;
+			self::$COLOR_BLACK = (string) ($colors >= 256 ? `tput setaf 16` : `tput setaf 0`);
+			self::$COLOR_DARK_BLUE = (string) ($colors >= 256 ? `tput setaf 19` : `tput setaf 4`);
+			self::$COLOR_DARK_GREEN = (string) ($colors >= 256 ? `tput setaf 34` : `tput setaf 2`);
+			self::$COLOR_DARK_AQUA = (string) ($colors >= 256 ? `tput setaf 37` : `tput setaf 6`);
+			self::$COLOR_DARK_RED = (string) ($colors >= 256 ? `tput setaf 124` : `tput setaf 1`);
+			self::$COLOR_PURPLE = (string) ($colors >= 256 ? `tput setaf 127` : `tput setaf 5`);
+			self::$COLOR_GOLD = (string) ($colors >= 256 ? `tput setaf 214` : `tput setaf 3`);
+			self::$COLOR_GRAY = (string) ($colors >= 256 ? `tput setaf 145` : `tput setaf 7`);
+			self::$COLOR_DARK_GRAY = (string) ($colors >= 256 ? `tput setaf 59` : `tput setaf 8`);
+			self::$COLOR_BLUE = (string) ($colors >= 256 ? `tput setaf 63` : `tput setaf 12`);
+			self::$COLOR_GREEN = (string) ($colors >= 256 ? `tput setaf 83` : `tput setaf 10`);
+			self::$COLOR_AQUA = (string) ($colors >= 256 ? `tput setaf 87` : `tput setaf 14`);
+			self::$COLOR_RED = (string) ($colors >= 256 ? `tput setaf 203` : `tput setaf 9`);
+			self::$COLOR_LIGHT_PURPLE = (string) ($colors >= 256 ? `tput setaf 207` : `tput setaf 13`);
+			self::$COLOR_YELLOW = (string) ($colors >= 256 ? `tput setaf 227` : `tput setaf 11`);
+			self::$COLOR_WHITE = (string) ($colors >= 256 ? `tput setaf 231` : `tput setaf 15`);
 		}else{
-			self::$COLOR_BLACK = self::$COLOR_DARK_GRAY = `tput setaf 0`;
-			self::$COLOR_RED = self::$COLOR_DARK_RED = `tput setaf 1`;
-			self::$COLOR_GREEN = self::$COLOR_DARK_GREEN = `tput setaf 2`;
-			self::$COLOR_YELLOW = self::$COLOR_GOLD = `tput setaf 3`;
-			self::$COLOR_BLUE = self::$COLOR_DARK_BLUE = `tput setaf 4`;
-			self::$COLOR_LIGHT_PURPLE = self::$COLOR_PURPLE = `tput setaf 5`;
-			self::$COLOR_AQUA = self::$COLOR_DARK_AQUA = `tput setaf 6`;
-			self::$COLOR_GRAY = self::$COLOR_WHITE = `tput setaf 7`;
+			self::$COLOR_BLACK = self::$COLOR_DARK_GRAY = (string) `tput setaf 0`;
+			self::$COLOR_RED = self::$COLOR_DARK_RED = (string) `tput setaf 1`;
+			self::$COLOR_GREEN = self::$COLOR_DARK_GREEN = (string) `tput setaf 2`;
+			self::$COLOR_YELLOW = self::$COLOR_GOLD = (string) `tput setaf 3`;
+			self::$COLOR_BLUE = self::$COLOR_DARK_BLUE = (string) `tput setaf 4`;
+			self::$COLOR_LIGHT_PURPLE = self::$COLOR_PURPLE = (string) `tput setaf 5`;
+			self::$COLOR_AQUA = self::$COLOR_DARK_AQUA = (string) `tput setaf 6`;
+			self::$COLOR_GRAY = self::$COLOR_WHITE = (string) `tput setaf 7`;
 		}
 	}
 
