@@ -6,31 +6,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-php:
-    name: Prepare PHP
-    runs-on: ubuntu-20.04
-
-    strategy:
-      matrix:
-        image: [ubuntu-20.04]
-        php: [8.0.8]
-
-    steps:
-      - uses: actions/checkout@v2 #needed for build.sh
-      - name: Check for PHP build cache
-        id: php-build-cache
-        uses: actions/cache@v2
-        with:
-          path: "./bin"
-          key: "php-build-generic-${{ matrix.php }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
-
-      - name: Compile PHP
-        if: steps.php-build-cache.outputs.cache-hit != 'true'
-        run: ./tests/gh-actions/build.sh "${{ matrix.php }}"
-
   artifacts:
     name: Create release artifacts
-    needs: build-php
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
@@ -43,26 +20,10 @@ jobs:
         with:
           submodules: true
 
-      - name: Restore PHP build cache
-        id: php-build-cache
-        uses: actions/cache@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@2.12.0
         with:
-          path: "./bin"
-          key: "php-build-generic-${{ matrix.php }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
-
-      - name: Kill build on PHP build cache miss (should never happen)
-        if: steps.php-build-cache.outputs.cache-hit != 'true'
-        run: exit 1
-
-      - name: Install cached PHP's dependencies
-        if: steps.php-build-cache.outputs.cache-hit == 'true'
-        run: ./tests/gh-actions/install-dependencies.sh
-
-      - name: Prefix PHP to PATH
-        run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
-
-      - name: Install Composer
-        run: curl -sS https://getcomposer.org/installer | php
+          php-version: ${{ matrix.php }}
 
       - name: Restore Composer package cache
         uses: actions/cache@v2
@@ -75,7 +36,7 @@ jobs:
             composer-v2-cache-
 
       - name: Install Composer dependencies
-        run: php composer.phar install --no-dev --prefer-dist --no-interaction
+        run: php composer.phar install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs
 
       - name: Patch VersionInfo
         run: |
