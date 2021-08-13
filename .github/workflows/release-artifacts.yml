@@ -36,7 +36,7 @@ jobs:
             composer-v2-cache-
 
       - name: Install Composer dependencies
-        run: php composer.phar install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs
+        run: composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs
 
       - name: Patch VersionInfo
         run: |
