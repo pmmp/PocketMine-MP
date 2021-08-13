@@ -40,7 +40,7 @@ jobs:
 
       - name: Patch VersionInfo
         run: |
-          BUILD_NUMBER=2000+$GITHUB_RUN_ID
+          BUILD_NUMBER=2000+$GITHUB_RUN_NUMBER #to stay above jenkins
           echo "Build number: $BUILD_NUMBER"
           sed -i "s/const BUILD_NUMBER = 0/const BUILD_NUMBER = ${BUILD_NUMBER}/" src/pocketmine/VersionInfo.php
 
