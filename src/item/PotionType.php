@@ -195,10 +195,10 @@ final class PotionType{
 				//TODO
 			]),
 			new self("slow_falling", "Slow Falling", fn() => [
-				//TODO
+				new EffectInstance(VanillaEffects::SLOW_FALLING(), 1800)
 			]),
 			new self("long_slow_falling", "Long Slow Falling", fn() => [
-				//TODO
+				new EffectInstance(VanillaEffects::SLOW_FALLING(), 4800)
 			])
 		);
 	}

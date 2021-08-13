@@ -188,6 +188,13 @@ abstract class Living extends Entity{
 		}
 	}
 
+	public function getGravity() : float{
+		if($this->effectManager->has(VanillaEffects::SLOW_FALLING())){
+			return $this->effectManager->get(VanillaEffects::SLOW_FALLING())->getType()->getGravity();
+		}
+		return $this->gravity;
+	}
+
 	public function getMaxHealth() : int{
 		return (int) $this->healthAttr->getMaxValue();
 	}
