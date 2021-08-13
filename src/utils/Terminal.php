@@ -92,22 +92,24 @@ abstract class Terminal{
 
 		self::$FORMAT_RESET = "\x1b[m";
 
-		self::$COLOR_BLACK = "\x1b[38;5;16m";
-		self::$COLOR_DARK_BLUE = "\x1b[38;5;19m";
-		self::$COLOR_DARK_GREEN = "\x1b[38;5;34m";
-		self::$COLOR_DARK_AQUA = "\x1b[38;5;37m";
-		self::$COLOR_DARK_RED = "\x1b[38;5;124m";
-		self::$COLOR_PURPLE = "\x1b[38;5;127m";
-		self::$COLOR_GOLD = "\x1b[38;5;214m";
-		self::$COLOR_GRAY = "\x1b[38;5;145m";
-		self::$COLOR_DARK_GRAY = "\x1b[38;5;59m";
-		self::$COLOR_BLUE = "\x1b[38;5;63m";
-		self::$COLOR_GREEN = "\x1b[38;5;83m";
-		self::$COLOR_AQUA = "\x1b[38;5;87m";
-		self::$COLOR_RED = "\x1b[38;5;203m";
-		self::$COLOR_LIGHT_PURPLE = "\x1b[38;5;207m";
-		self::$COLOR_YELLOW = "\x1b[38;5;227m";
-		self::$COLOR_WHITE = "\x1b[38;5;231m";
+		$color = fn(int $code) => "\x1b[38;5;${code}m";
+
+		self::$COLOR_BLACK = $color(16);
+		self::$COLOR_DARK_BLUE = $color(19);
+		self::$COLOR_DARK_GREEN = $color(34);
+		self::$COLOR_DARK_AQUA = $color(37);
+		self::$COLOR_DARK_RED = $color(124);
+		self::$COLOR_PURPLE = $color(127);
+		self::$COLOR_GOLD = $color(214);
+		self::$COLOR_GRAY = $color(145);
+		self::$COLOR_DARK_GRAY = $color(59);
+		self::$COLOR_BLUE = $color(63);
+		self::$COLOR_GREEN = $color(83);
+		self::$COLOR_AQUA = $color(87);
+		self::$COLOR_RED = $color(203);
+		self::$COLOR_LIGHT_PURPLE = $color(207);
+		self::$COLOR_YELLOW = $color(227);
+		self::$COLOR_WHITE = $color(231);
 	}
 
 	protected static function getEscapeCodes() : void{
