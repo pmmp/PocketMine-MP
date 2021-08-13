@@ -109,7 +109,7 @@ abstract class Terminal{
 	}
 
 	protected static function executeShell(string $command) : string{
-		return (string) shell_exec($command);	
+		return (string) shell_exec($command);
 	}
 
 	protected static function getEscapeCodes() : void{
