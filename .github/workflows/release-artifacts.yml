@@ -128,9 +128,9 @@ jobs:
         with:
           name: release_artifacts
           path: |
-          ${{ github.workspace }}/PocketMine-MP.phar
-          ${{ github.workspace }}/start.*
-          ${{ github.workspace }}/build_info.json
+            ${{ github.workspace }}/PocketMine-MP.phar
+            ${{ github.workspace }}/start.*
+            ${{ github.workspace }}/build_info.json
 
       - name: Create draft release
         uses: ncipollo/release-action@v1.8.6
