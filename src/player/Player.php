@@ -81,7 +81,6 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
@@ -321,9 +320,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function getLeaveMessage() : TranslationContainer|string{
 		if($this->spawned){
-			return new TranslationContainer(TextFormat::YELLOW . "%" . KnownTranslationKeys::MULTIPLAYER_PLAYER_LEFT, [
-				$this->getDisplayName()
-			]);
+			return KnownTranslationFactory::multiplayer_player_left($this->getDisplayName())->prefix(TextFormat::YELLOW);
 		}
 
 		return "";
@@ -757,9 +754,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		});
 
 		$ev = new PlayerJoinEvent($this,
-			new TranslationContainer(TextFormat::YELLOW . "%" . KnownTranslationKeys::MULTIPLAYER_PLAYER_JOINED, [
-				$this->getDisplayName()
-			])
+			KnownTranslationFactory::multiplayer_player_joined($this->getDisplayName())->prefix(TextFormat::YELLOW)
 		);
 		$ev->call();
 		if($ev->getJoinMessage() !== ""){

@@ -44,7 +44,6 @@ use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\TranslationContainer;
@@ -1292,7 +1291,7 @@ class Server{
 			return true;
 		}
 
-		$sender->sendMessage($sender->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_NOTFOUND));
+		$sender->sendMessage(KnownTranslationFactory::commands_generic_notFound()->prefix(TextFormat::RED));
 
 		return false;
 	}

@@ -29,7 +29,6 @@ namespace pocketmine\command;
 use pocketmine\command\utils\CommandException;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
@@ -118,7 +117,7 @@ abstract class Command{
 		}
 
 		if($this->permissionMessage === null){
-			$target->sendMessage($target->getLanguage()->translateString(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PERMISSION));
+			$target->sendMessage(KnownTranslationFactory::commands_generic_permission()->prefix(TextFormat::RED));
 		}elseif($this->permissionMessage !== ""){
 			$target->sendMessage(str_replace("<permission>", $permission ?? $this->permission, $this->permissionMessage));
 		}
@@ -234,14 +233,11 @@ abstract class Command{
 	public static function broadcastCommandMessage(CommandSender $source, TranslationContainer|string $message, bool $sendToSource = true) : void{
 		$users = $source->getServer()->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
 		if($message instanceof TranslationContainer){
-			$formatted = "[" . $source->getName() . ": %" . $message->getText() . "]";
-
-			$result = new TranslationContainer($formatted, $message->getParameters());
-			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . $formatted, $message->getParameters());
+			$result = $message->format("[" . $source->getName() . ": ", "]");
 		}else{
 			$result = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
-			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%" . KnownTranslationKeys::CHAT_TYPE_ADMIN, [$source->getName(), $message]);
 		}
+		$colored = $result->prefix(TextFormat::GRAY . TextFormat::ITALIC);
 
 		if($sendToSource and !($source instanceof ConsoleCommandSender)){
 			$source->sendMessage($message);

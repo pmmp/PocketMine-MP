@@ -55,4 +55,16 @@ final class TranslationContainer{
 	public function getParameter(int|string $i) : ?string{
 		return $this->params[$i] ?? null;
 	}
+
+	public function format(string $before, string $after) : self{
+		return new self("$before%$this->text$after", $this->params);
+	}
+
+	public function prefix(string $prefix) : self{
+		return new self("$prefix%$this->text", $this->params);
+	}
+
+	public function postfix(string $postfix) : self{
+		return new self("%$this->text" . $postfix);
+	}
 }
