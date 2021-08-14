@@ -730,6 +730,7 @@ final class ItemIds{
 	public const RECORD_WARD = 509;
 	public const RECORD_11 = 510;
 	public const RECORD_WAIT = 511;
+	public const RECORD_PIGSTEP = 759;
 
 	public const SHIELD = 513;
 

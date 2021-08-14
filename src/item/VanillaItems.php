@@ -284,6 +284,7 @@ use function assert;
  * @method static Record RECORD_FAR()
  * @method static Record RECORD_MALL()
  * @method static Record RECORD_MELLOHI()
+ * @method static Record RECORD_PIGSTEP()
  * @method static Record RECORD_STAL()
  * @method static Record RECORD_STRAD()
  * @method static Record RECORD_WAIT()
@@ -655,6 +656,7 @@ final class VanillaItems{
 		self::register("record_strad", $factory->get(508));
 		self::register("record_wait", $factory->get(511));
 		self::register("record_ward", $factory->get(509));
+		self::register("record_pigstep", $factory->get(759));
 		self::register("red_bed", $factory->get(355, 14));
 		self::register("red_dye", $factory->get(351, 1));
 		self::register("redstone_dust", $factory->get(331));
