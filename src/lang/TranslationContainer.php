@@ -27,17 +27,21 @@ final class TranslationContainer{
 
 	/** @var string $text */
 	protected $text;
-	/** @var string[] $params */
+	/** @var string[]|TranslationContainer[] $params */
 	protected $params = [];
 
 	/**
-	 * @param (float|int|string)[] $params
+	 * @param (float|int|string|TranslationContainer)[] $params
 	 */
 	public function __construct(string $text, array $params = []){
 		$this->text = $text;
 
-		foreach($params as $k => $str){
-			$this->params[$k] = (string) $str;
+		foreach($params as $k => $param){
+			if(!($param instanceof TranslationContainer)){
+				$this->params[$k] = (string) $param;
+			}else{
+				$this->params[$k] = $param;
+			}
 		}
 	}
 
@@ -46,13 +50,13 @@ final class TranslationContainer{
 	}
 
 	/**
-	 * @return string[]
+	 * @return string[]|TranslationContainer[]
 	 */
 	public function getParameters() : array{
 		return $this->params;
 	}
 
-	public function getParameter(int|string $i) : ?string{
+	public function getParameter(int|string $i) : TranslationContainer|string|null{
 		return $this->params[$i] ?? null;
 	}
 

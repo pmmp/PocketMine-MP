@@ -113,6 +113,7 @@ use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use Ramsey\Uuid\UuidInterface;
 use function abs;
+use function array_map;
 use function assert;
 use function count;
 use function explode;
@@ -1781,9 +1782,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
-	 * @param string[] $parameters
+	 * @param string[]|TranslationContainer[] $parameters
 	 */
 	public function sendTranslation(string $message, array $parameters = []) : void{
+		//we can't send nested translations to the client, so make sure they are always pre-translated by the server
+		$parameters = array_map(fn(string|TranslationContainer $p) => $p instanceof TranslationContainer ? $this->getLanguage()->translate($p) : $p, $parameters);
 		if(!$this->server->isLanguageForced()){
 			foreach($parameters as $i => $p){
 				$parameters[$i] = $this->getLanguage()->translateString($p, [], "pocketmine.");

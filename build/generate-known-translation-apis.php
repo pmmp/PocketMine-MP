@@ -143,7 +143,7 @@ HEADER;
 		}
 		echo "\tpublic static function " .
 			functionify($key) .
-			"(" . implode(", ", array_map(fn(string $paramName) => "string \$$paramName", $parameters)) . ") : TranslationContainer{\n";
+			"(" . implode(", ", array_map(fn(string $paramName) => "TranslationContainer|string \$$paramName", $parameters)) . ") : TranslationContainer{\n";
 		echo "\t\treturn new TranslationContainer(KnownTranslationKeys::" . constantify($key) . ", [";
 		foreach($parameters as $parameterKey => $parameterName){
 			echo "\n\t\t\t";

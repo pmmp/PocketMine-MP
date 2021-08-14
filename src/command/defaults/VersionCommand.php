@@ -88,7 +88,7 @@ class VersionCommand extends VanillaCommand{
 			}else{
 				$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitNotSupported();
 			}
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($sender->getLanguage()->translate($jitStatus)));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($jitStatus));
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_operatingSystem(Utils::getOS()));
 		}else{
 			$pluginName = implode(" ", $args);
