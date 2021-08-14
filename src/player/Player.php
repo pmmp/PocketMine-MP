@@ -770,10 +770,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->spawnToAll();
 
-		if($this->server->getUpdater()->hasUpdate() and $this->hasPermission(DefaultPermissionNames::BROADCAST_ADMIN) and $this->server->getConfigGroup()->getPropertyBool("auto-updater.on-update.warn-ops", true)){
-			$this->server->getUpdater()->showPlayerUpdate($this);
-		}
-
 		if($this->getHealth() <= 0){
 			$this->logger->debug("Quit while dead, forcing respawn");
 			$this->respawn();

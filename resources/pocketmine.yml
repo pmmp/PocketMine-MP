@@ -155,7 +155,6 @@ auto-updater:
   enabled: true
   on-update:
     warn-console: true
-    warn-ops: true
   #Can be development, alpha, beta or stable.
   preferred-channel: stable
   #If using a development version, it will suggest changing the channel
