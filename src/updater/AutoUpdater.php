@@ -24,9 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\updater;
 
 use pocketmine\event\server\UpdateNotifyEvent;
-use pocketmine\player\Player;
 use pocketmine\Server;
-use pocketmine\utils\TextFormat;
 use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
 use function date;
@@ -103,14 +101,6 @@ class AutoUpdater{
 		$messages[] = "Download: " . $this->updateInfo->download_url;
 
 		$this->printConsoleMessage($messages, \LogLevel::WARNING);
-	}
-
-	/**
-	 * Shows a warning to a player to tell them there is an update available
-	 */
-	public function showPlayerUpdate(Player $player) : void{
-		$player->sendMessage(TextFormat::DARK_PURPLE . "The version of " . $this->server->getName() . " that this server is running is out of date. Please consider updating to the latest version.");
-		$player->sendMessage(TextFormat::DARK_PURPLE . "Check the console for more details.");
 	}
 
 	protected function showChannelSuggestionStable() : void{

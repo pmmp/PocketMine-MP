@@ -64,7 +64,7 @@ class GamemodeCommand extends VanillaCommand{
 		if(isset($args[1])){
 			$target = $sender->getServer()->getPlayerByPrefix($args[1]);
 			if($target === null){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PLAYER_NOTFOUND));
+				$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 
 				return true;
 			}

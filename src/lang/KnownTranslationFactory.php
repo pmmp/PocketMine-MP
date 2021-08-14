@@ -1124,9 +1124,8 @@ final class KnownTranslationFactory{
 		return new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_DESCRIPTION, []);
 	}
 
-	public static function pocketmine_command_version_minecraftVersion(string $color, string $minecraftVersion, string $minecraftProtocolVersion) : TranslationContainer{
+	public static function pocketmine_command_version_minecraftVersion(string $minecraftVersion, string $minecraftProtocolVersion) : TranslationContainer{
 		return new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_MINECRAFTVERSION, [
-			"color" => $color,
 			"minecraftVersion" => $minecraftVersion,
 			"minecraftProtocolVersion" => $minecraftProtocolVersion,
 		]);
@@ -1136,9 +1135,8 @@ final class KnownTranslationFactory{
 		return new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_NOSUCHPLUGIN, []);
 	}
 
-	public static function pocketmine_command_version_operatingSystem(string $color, string $operatingSystemName) : TranslationContainer{
+	public static function pocketmine_command_version_operatingSystem(string $operatingSystemName) : TranslationContainer{
 		return new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_OPERATINGSYSTEM, [
-			"color" => $color,
 			"operatingSystemName" => $operatingSystemName,
 		]);
 	}
@@ -1157,30 +1155,26 @@ final class KnownTranslationFactory{
 		return new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_PHPJITNOTSUPPORTED, []);
 	}
 
-	public static function pocketmine_command_version_phpJitStatus(string $color, string $jitStatus) : TranslationContainer{
+	public static function pocketmine_command_version_phpJitStatus(string $jitStatus) : TranslationContainer{
 		return new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_PHPJITSTATUS, [
-			"color" => $color,
 			"jitStatus" => $jitStatus,
 		]);
 	}
 
-	public static function pocketmine_command_version_phpVersion(string $color, string $phpVersion) : TranslationContainer{
+	public static function pocketmine_command_version_phpVersion(string $phpVersion) : TranslationContainer{
 		return new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_PHPVERSION, [
-			"color" => $color,
 			"phpVersion" => $phpVersion,
 		]);
 	}
 
-	public static function pocketmine_command_version_serverSoftwareName(string $color, string $serverSoftwareName) : TranslationContainer{
+	public static function pocketmine_command_version_serverSoftwareName(string $serverSoftwareName) : TranslationContainer{
 		return new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_SERVERSOFTWARENAME, [
-			"color" => $color,
 			"serverSoftwareName" => $serverSoftwareName,
 		]);
 	}
 
-	public static function pocketmine_command_version_serverSoftwareVersion(string $color, string $serverSoftwareVersion, string $serverGitHash) : TranslationContainer{
+	public static function pocketmine_command_version_serverSoftwareVersion(string $serverSoftwareVersion, string $serverGitHash) : TranslationContainer{
 		return new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_SERVERSOFTWAREVERSION, [
-			"color" => $color,
 			"serverSoftwareVersion" => $serverSoftwareVersion,
 			"serverGitHash" => $serverGitHash,
 		]);

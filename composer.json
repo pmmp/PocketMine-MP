@@ -83,6 +83,12 @@
       "make-server": [
          "@composer install --no-dev --classmap-authoritative",
          "@php -dphar.readonly=0 build/server-phar.php"
+      ],
+      "update-registry-annotations": [
+         "@php build/generate-registry-annotations.php src"
+      ],
+      "update-translation-apis": [
+         "@php build/generate-known-translation-apis.php"
       ]
    }
 }

@@ -31,7 +31,6 @@ use pocketmine\item\ItemFactory;
 use pocketmine\item\VanillaItems;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
@@ -121,7 +120,7 @@ class ParticleCommand extends VanillaCommand{
 		$particle = $this->getParticle($name, $data);
 
 		if($particle === null){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_PARTICLE_NOTFOUND, [$name]));
+			$sender->sendMessage(KnownTranslationFactory::commands_particle_notFound($name)->prefix(TextFormat::RED));
 			return true;
 		}
 

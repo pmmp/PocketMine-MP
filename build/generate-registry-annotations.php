@@ -49,7 +49,7 @@ foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($argv[1],
 		throw new \RuntimeException("Failed to get contents of $file");
 	}
 
-	if(preg_match("/^namespace (.+);$/m", $contents, $matches) !== 1){
+	if(preg_match("/^namespace (.+);$/m", $contents, $matches) !== 1 || preg_match('/^((final|abstract)\s+)?class /m', $contents) !== 1){
 		continue;
 	}
 	$shortClassName = basename($file, ".php");
