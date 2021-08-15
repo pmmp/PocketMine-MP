@@ -35,10 +35,7 @@ abstract class VanillaCommand extends Command{
 	public const MAX_COORD = 30000000;
 	public const MIN_COORD = -30000000;
 
-	/**
-	 * @param mixed         $value
-	 */
-	protected function getInteger(CommandSender $sender, $value, int $min = self::MIN_COORD, int $max = self::MAX_COORD) : int{
+	protected function getInteger(CommandSender $sender, string $value, int $min = self::MIN_COORD, int $max = self::MAX_COORD) : int{
 		$i = (int) $value;
 
 		if($i < $min){
@@ -60,10 +57,7 @@ abstract class VanillaCommand extends Command{
 		return $this->getDouble($sender, $input, $min, $max);
 	}
 
-	/**
-	 * @param mixed         $value
-	 */
-	protected function getDouble(CommandSender $sender, $value, float $min = self::MIN_COORD, float $max = self::MAX_COORD) : float{
+	protected function getDouble(CommandSender $sender, string $value, float $min = self::MIN_COORD, float $max = self::MAX_COORD) : float{
 		$i = (double) $value;
 
 		if($i < $min){
