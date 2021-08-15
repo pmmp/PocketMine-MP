@@ -796,6 +796,58 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function item_record_11_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_11_DESC, []);
+	}
+
+	public static function item_record_13_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_13_DESC, []);
+	}
+
+	public static function item_record_blocks_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_BLOCKS_DESC, []);
+	}
+
+	public static function item_record_cat_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_CAT_DESC, []);
+	}
+
+	public static function item_record_chirp_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_CHIRP_DESC, []);
+	}
+
+	public static function item_record_far_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_FAR_DESC, []);
+	}
+
+	public static function item_record_mall_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_MALL_DESC, []);
+	}
+
+	public static function item_record_mellohi_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_MELLOHI_DESC, []);
+	}
+
+	public static function item_record_pigstep_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_PIGSTEP_DESC, []);
+	}
+
+	public static function item_record_stal_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_STAL_DESC, []);
+	}
+
+	public static function item_record_strad_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_STRAD_DESC, []);
+	}
+
+	public static function item_record_wait_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_WAIT_DESC, []);
+	}
+
+	public static function item_record_ward_desc() : Translatable{
+		return new Translatable(KnownTranslationKeys::ITEM_RECORD_WARD_DESC, []);
+	}
+
 	public static function kick_admin() : Translatable{
 		return new Translatable(KnownTranslationKeys::KICK_ADMIN, []);
 	}

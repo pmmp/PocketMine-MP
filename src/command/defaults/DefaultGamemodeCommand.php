@@ -59,7 +59,7 @@ class DefaultGamemodeCommand extends VanillaCommand{
 		}
 
 		$sender->getServer()->getConfigGroup()->setConfigInt("gamemode", GameModeIdMap::getInstance()->toId($gameMode));
-		$sender->sendMessage(KnownTranslationFactory::commands_defaultgamemode_success($gameMode->getTranslationKey()));
+		$sender->sendMessage(KnownTranslationFactory::commands_defaultgamemode_success($gameMode->getTranslatableName()));
 		return true;
 	}
 }
