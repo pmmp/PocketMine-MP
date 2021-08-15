@@ -232,11 +232,7 @@ abstract class Command{
 
 	public static function broadcastCommandMessage(CommandSender $source, TranslationContainer|string $message, bool $sendToSource = true) : void{
 		$users = $source->getServer()->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
-		if($message instanceof TranslationContainer){
-			$result = $message->format("[" . $source->getName() . ": ", "]");
-		}else{
-			$result = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
-		}
+		$result = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
 		$colored = $result->prefix(TextFormat::GRAY . TextFormat::ITALIC);
 
 		if($sendToSource and !($source instanceof ConsoleCommandSender)){
