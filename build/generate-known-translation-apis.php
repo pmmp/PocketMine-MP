@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\build\generate_known_translation_apis;
 
+use pocketmine\lang\TranslationContainer;
 use Webmozart\PathUtil\Path;
 use function array_map;
 use function count;
@@ -130,6 +131,8 @@ HEADER;
 	ksort($languageDefinitions, SORT_STRING);
 
 	$parameterRegex = '/{%(.+?)}/';
+
+	$translationContainerClass = (new \ReflectionClass(TranslationContainer::class))->getShortName();
 	foreach($languageDefinitions as $key => $value){
 		$parameters = [];
 		if(preg_match_all($parameterRegex, $value, $matches) > 0){
@@ -143,8 +146,8 @@ HEADER;
 		}
 		echo "\tpublic static function " .
 			functionify($key) .
-			"(" . implode(", ", array_map(fn(string $paramName) => "TranslationContainer|string \$$paramName", $parameters)) . ") : TranslationContainer{\n";
-		echo "\t\treturn new TranslationContainer(KnownTranslationKeys::" . constantify($key) . ", [";
+			"(" . implode(", ", array_map(fn(string $paramName) => "$translationContainerClass|string \$$paramName", $parameters)) . ") : $translationContainerClass{\n";
+		echo "\t\treturn new $translationContainerClass(KnownTranslationKeys::" . constantify($key) . ", [";
 		foreach($parameters as $parameterKey => $parameterName){
 			echo "\n\t\t\t";
 			if(!is_numeric($parameterKey)){
