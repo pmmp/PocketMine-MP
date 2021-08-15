@@ -17,14 +17,14 @@ jobs:
           ref: test # TODO: REMOVE ME
 
       - name: Copy new release info to update.pmmp.io
-        run: curl -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ github.ref }}/artifact/build_info.json -o channels/stable.json
+        run: curl -f -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ github.sha }}/artifact/build_info.json -o channels/stable.json
 
       - name: Commit changes
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
-          git diff-index --quiet HEAD || git commit -m "Update release info for PocketMine-MP ${{ github.ref }}"
+          git diff-index --quiet HEAD || git commit -m "Update release info for ${{ github.repository }}@${{ github.sha }}"
 
       - name: Push changes
         run: git push
