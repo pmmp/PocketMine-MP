@@ -228,8 +228,10 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function commands_enchant_success() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_ENCHANT_SUCCESS, []);
+	public static function commands_enchant_success(Translatable|string $param0) : Translatable{
+		return new Translatable(KnownTranslationKeys::COMMANDS_ENCHANT_SUCCESS, [
+			0 => $param0,
+		]);
 	}
 
 	public static function commands_enchant_usage() : Translatable{
@@ -753,8 +755,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::GAMEMODE_ADVENTURE, []);
 	}
 
-	public static function gameMode_changed() : Translatable{
-		return new Translatable(KnownTranslationKeys::GAMEMODE_CHANGED, []);
+	public static function gameMode_changed(Translatable|string $param0) : Translatable{
+		return new Translatable(KnownTranslationKeys::GAMEMODE_CHANGED, [
+			0 => $param0,
+		]);
 	}
 
 	public static function gameMode_creative() : Translatable{
