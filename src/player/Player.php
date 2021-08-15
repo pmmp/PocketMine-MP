@@ -1779,7 +1779,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		$this->getNetworkSession()->onRawChatMessage($this->getLanguage()->translateString($message));
+		$this->getNetworkSession()->onRawChatMessage($message);
 	}
 
 	/**

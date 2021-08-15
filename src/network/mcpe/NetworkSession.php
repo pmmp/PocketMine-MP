@@ -582,7 +582,7 @@ class NetworkSession{
 		}
 
 		if($error !== null){
-			$this->disconnect($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_invalidSession($error)));
+			$this->disconnect($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_invalidSession($this->server->getLanguage()->translateString($error))));
 
 			return;
 		}

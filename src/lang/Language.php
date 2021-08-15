@@ -137,7 +137,7 @@ class Language{
 		$baseText = $this->parseTranslation(($onlyPrefix === null or strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
 
 		foreach($params as $i => $p){
-			$replacement = $p instanceof Translatable ? $this->translate($p) : $this->internalGet((string) $p) ?? $this->parseTranslation((string) $p);
+			$replacement = $p instanceof Translatable ? $this->translate($p) : (string) $p;
 			$baseText = str_replace("{%$i}", $replacement, $baseText);
 		}
 
@@ -149,7 +149,7 @@ class Language{
 		$baseText = $this->parseTranslation($baseText ?? $c->getText());
 
 		foreach($c->getParameters() as $i => $p){
-			$replacement = $p instanceof Translatable ? $this->translate($p) : $this->internalGet($p) ?? $this->parseTranslation($p);
+			$replacement = $p instanceof Translatable ? $this->translate($p) : $p;
 			$baseText = str_replace("{%$i}", $replacement, $baseText);
 		}
 
