@@ -1,0 +1,30 @@
+name: Update update.pmmp.io API info
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: pmmp/update.pmmp.io
+          ssh-key: ${{ secrets.UPDATE_PMMP_IO_DEPLOY_KEY }}
+          ref: test # TODO: REMOVE ME
+
+      - name: Copy new release info to update.pmmp.io
+        run: curl -L https://github.com/pmmp/PocketMine-MP/release/${{ github.ref }}/artifact/build_info.json -O channels/stable.json
+
+      - name: Commit changes
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git diff-index --quiet HEAD || git commit -m "Update release info for PocketMine-MP ${{ github.ref }}"
+
+      - name: Push changes
+        run: git push
