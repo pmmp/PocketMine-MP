@@ -16,15 +16,19 @@ jobs:
           ssh-key: ${{ secrets.UPDATE_PMMP_IO_DEPLOY_KEY }}
           ref: test # TODO: REMOVE ME
 
+      - name: Get actual tag name
+        id: tag-name
+        run: echo ::set-output name=TAG_NAME::$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{')
+
       - name: Copy new release info to update.pmmp.io
-        run: curl -f -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ github.sha }}/artifact/build_info.json -o channels/stable.json
+        run: curl -f -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.tag-name.outputs.TAG_NAME }}/artifact/build_info.json -o channels/stable.json
 
       - name: Commit changes
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
-          git diff-index --quiet HEAD || git commit -m "Update release info for ${{ github.repository }}@${{ github.sha }}"
+          git diff-index --quiet HEAD || git commit -m "Update release info for ${{ github.repository }} ${{ steps.tag-name.outputs.TAG_NAME }}"
 
       - name: Push changes
         run: git push
