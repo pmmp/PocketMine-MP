@@ -17,7 +17,7 @@ jobs:
           ref: test # TODO: REMOVE ME
 
       - name: Copy new release info to update.pmmp.io
-        run: curl -L ${{ github.server_url }}/${{ github.repository }}/release/${{ github.ref }}/artifact/build_info.json -O channels/stable.json
+        run: curl -L ${{ github.server_url }}/${{ github.repository }}/release/${{ github.ref }}/artifact/build_info.json -o channels/stable.json
 
       - name: Commit changes
         run: |
