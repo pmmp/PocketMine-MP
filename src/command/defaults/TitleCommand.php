@@ -38,8 +38,8 @@ class TitleCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_TITLE_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_TITLE_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_TITLE_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_TITLE_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TITLE);
 	}

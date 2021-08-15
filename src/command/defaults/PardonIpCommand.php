@@ -37,8 +37,8 @@ class PardonIpCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_UNBAN_IP_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_UNBANIP_USAGE,
+			KnownTranslationKeys::POCKETMINE_COMMAND_UNBAN_IP_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_UNBANIP_USAGE,
 			["unban-ip"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_UNBAN_IP);

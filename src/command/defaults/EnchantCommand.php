@@ -38,8 +38,8 @@ class EnchantCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_ENCHANT_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_ENCHANT_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_ENCHANT_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_ENCHANT_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_ENCHANT);
 	}

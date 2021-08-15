@@ -40,8 +40,8 @@ class TellCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_TELL_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_MESSAGE_USAGE,
+			KnownTranslationKeys::POCKETMINE_COMMAND_TELL_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_MESSAGE_USAGE,
 			["w", "msg"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TELL);

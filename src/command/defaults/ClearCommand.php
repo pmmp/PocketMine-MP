@@ -42,8 +42,8 @@ class ClearCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_CLEAR_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_CLEAR_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_CLEAR_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_CLEAR_USAGE
 		);
 		$this->setPermission(implode(";", [DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER]));
 	}

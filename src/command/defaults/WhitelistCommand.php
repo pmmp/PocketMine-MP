@@ -41,8 +41,8 @@ class WhitelistCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_WHITELIST_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_WHITELIST_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_WHITELIST_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_WHITELIST_USAGE
 		);
 		$this->setPermission(implode(";", [
 			DefaultPermissionNames::COMMAND_WHITELIST_RELOAD,

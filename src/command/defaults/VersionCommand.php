@@ -46,8 +46,8 @@ class VersionCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_USAGE,
+			KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_USAGE,
 			["ver", "about"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_VERSION);

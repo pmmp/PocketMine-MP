@@ -39,8 +39,8 @@ class TimeCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_TIME_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_TIME_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_TIME_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_TIME_USAGE
 		);
 		$this->setPermission(implode(";", [
 			DefaultPermissionNames::COMMAND_TIME_ADD,

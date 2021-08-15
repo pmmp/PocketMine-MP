@@ -37,8 +37,8 @@ class DifficultyCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_DIFFICULTY_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_DIFFICULTY_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_DIFFICULTY_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_DIFFICULTY_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_DIFFICULTY);
 	}

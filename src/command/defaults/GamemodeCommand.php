@@ -39,8 +39,8 @@ class GamemodeCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_GAMEMODE_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_GAMEMODE_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_GAMEMODE_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_GAMEMODE_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_GAMEMODE);
 	}

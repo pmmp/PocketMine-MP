@@ -36,8 +36,8 @@ class SaveCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_SAVE_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_SAVE_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_SAVE_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_SAVE_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_PERFORM);
 	}

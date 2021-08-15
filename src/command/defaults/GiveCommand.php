@@ -43,8 +43,8 @@ class GiveCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_GIVE);
 	}

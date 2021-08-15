@@ -40,8 +40,8 @@ class PluginsCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_PLUGINS_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_PLUGINS_USAGE,
+			KnownTranslationKeys::POCKETMINE_COMMAND_PLUGINS_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_PLUGINS_USAGE,
 			["pl"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_PLUGINS);

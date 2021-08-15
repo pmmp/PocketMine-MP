@@ -46,8 +46,8 @@ class HelpCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_HELP_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_HELP_USAGE,
+			KnownTranslationKeys::POCKETMINE_COMMAND_HELP_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_HELP_USAGE,
 			["?"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_HELP);

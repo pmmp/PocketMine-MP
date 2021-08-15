@@ -39,8 +39,8 @@ class SayCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_SAY_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_SAY_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_SAY_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_SAY_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SAY);
 	}
