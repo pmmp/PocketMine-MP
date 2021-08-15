@@ -81,6 +81,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
 use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
@@ -1879,7 +1880,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if(!$ev->isCancelled()){
 			$reason = $ev->getReason();
 			if($reason === ""){
-				$reason = "disconnectionScreen.noReason";
+				$reason = KnownTranslationKeys::DISCONNECTIONSCREEN_NOREASON;
 			}
 			$this->disconnect($reason, $ev->getQuitMessage());
 
