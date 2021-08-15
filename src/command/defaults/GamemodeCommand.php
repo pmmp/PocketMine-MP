@@ -28,7 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
@@ -81,7 +81,7 @@ class GamemodeCommand extends VanillaCommand{
 			if($target === $sender){
 				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_gamemode_success_self($gameMode->getTranslationKey()));
 			}else{
-				$target->sendMessage(new TranslationContainer(KnownTranslationKeys::GAMEMODE_CHANGED, [$gameMode->getTranslationKey()]));
+				$target->sendMessage(new Translatable(KnownTranslationKeys::GAMEMODE_CHANGED, [$gameMode->getTranslationKey()]));
 				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_gamemode_success_other($gameMode->getTranslationKey(), $target->getName()));
 			}
 		}

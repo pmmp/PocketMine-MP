@@ -46,7 +46,7 @@ use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
@@ -1121,7 +1121,7 @@ class Server{
 	/**
 	 * @param CommandSender[]|null        $recipients
 	 */
-	public function broadcastMessage(TranslationContainer|string $message, ?array $recipients = null) : int{
+	public function broadcastMessage(Translatable|string $message, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->getBroadcastChannelSubscribers(self::BROADCAST_CHANNEL_USERS);
 
 		foreach($recipients as $recipient){

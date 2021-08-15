@@ -29,7 +29,7 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -86,7 +86,7 @@ class EnchantCommand extends VanillaCommand{
 		$item->addEnchantment(new EnchantmentInstance($enchantment, $level));
 		$player->getInventory()->setItemInHand($item);
 
-		self::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_ENCHANT_SUCCESS, [$player->getName()]));
+		self::broadcastCommandMessage($sender, new Translatable(KnownTranslationKeys::COMMANDS_ENCHANT_SUCCESS, [$player->getName()]));
 		return true;
 	}
 }

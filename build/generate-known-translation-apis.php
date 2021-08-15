@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\build\generate_known_translation_apis;
 
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use Webmozart\PathUtil\Path;
 use function array_map;
 use function count;
@@ -132,7 +132,7 @@ HEADER;
 
 	$parameterRegex = '/{%(.+?)}/';
 
-	$translationContainerClass = (new \ReflectionClass(TranslationContainer::class))->getShortName();
+	$translationContainerClass = (new \ReflectionClass(Translatable::class))->getShortName();
 	foreach($languageDefinitions as $key => $value){
 		$parameters = [];
 		if(preg_match_all($parameterRegex, $value, $matches) > 0){

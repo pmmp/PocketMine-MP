@@ -23,21 +23,21 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
-final class TranslationContainer{
+final class Translatable{
 
 	/** @var string $text */
 	protected $text;
-	/** @var string[]|TranslationContainer[] $params */
+	/** @var string[]|Translatable[] $params */
 	protected $params = [];
 
 	/**
-	 * @param (float|int|string|TranslationContainer)[] $params
+	 * @param (float|int|string|Translatable)[] $params
 	 */
 	public function __construct(string $text, array $params = []){
 		$this->text = $text;
 
 		foreach($params as $k => $param){
-			if(!($param instanceof TranslationContainer)){
+			if(!($param instanceof Translatable)){
 				$this->params[$k] = (string) $param;
 			}else{
 				$this->params[$k] = $param;
@@ -50,13 +50,13 @@ final class TranslationContainer{
 	}
 
 	/**
-	 * @return string[]|TranslationContainer[]
+	 * @return string[]|Translatable[]
 	 */
 	public function getParameters() : array{
 		return $this->params;
 	}
 
-	public function getParameter(int|string $i) : TranslationContainer|string|null{
+	public function getParameter(int|string $i) : Translatable|string|null{
 		return $this->params[$i] ?? null;
 	}
 

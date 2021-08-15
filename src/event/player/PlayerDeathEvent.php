@@ -31,23 +31,23 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDeathEvent;
 use pocketmine\item\Item;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use pocketmine\player\Player;
 
 class PlayerDeathEvent extends EntityDeathEvent{
 	/** @var Player */
 	protected $entity;
 
-	/** @var TranslationContainer|string */
+	/** @var Translatable|string */
 	private $deathMessage;
 	/** @var bool */
 	private $keepInventory = false;
 
 	/**
-	 * @param Item[]                           $drops
-	 * @param string|TranslationContainer|null $deathMessage Null will cause the default vanilla message to be used
+	 * @param Item[]                   $drops
+	 * @param string|Translatable|null $deathMessage Null will cause the default vanilla message to be used
 	 */
-	public function __construct(Player $entity, array $drops, int $xp, TranslationContainer|string|null $deathMessage){
+	public function __construct(Player $entity, array $drops, int $xp, Translatable|string|null $deathMessage){
 		parent::__construct($entity, $drops, $xp);
 		$this->deathMessage = $deathMessage ?? self::deriveMessage($entity->getDisplayName(), $entity->getLastDamageCause());
 	}
@@ -63,11 +63,11 @@ class PlayerDeathEvent extends EntityDeathEvent{
 		return $this->entity;
 	}
 
-	public function getDeathMessage() : TranslationContainer|string{
+	public function getDeathMessage() : Translatable|string{
 		return $this->deathMessage;
 	}
 
-	public function setDeathMessage(TranslationContainer|string $deathMessage) : void{
+	public function setDeathMessage(Translatable|string $deathMessage) : void{
 		$this->deathMessage = $deathMessage;
 	}
 
@@ -82,7 +82,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	/**
 	 * Returns the vanilla death message for the given death cause.
 	 */
-	public static function deriveMessage(string $name, ?EntityDamageEvent $deathCause) : TranslationContainer{
+	public static function deriveMessage(string $name, ?EntityDamageEvent $deathCause) : Translatable{
 		switch($deathCause === null ? EntityDamageEvent::CAUSE_CUSTOM : $deathCause->getCause()){
 			case EntityDamageEvent::CAUSE_ENTITY_ATTACK:
 				if($deathCause instanceof EntityDamageByEntityEvent){

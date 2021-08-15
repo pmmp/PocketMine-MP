@@ -82,7 +82,7 @@ use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -319,7 +319,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
-	public function getLeaveMessage() : TranslationContainer|string{
+	public function getLeaveMessage() : Translatable|string{
 		if($this->spawned){
 			return KnownTranslationFactory::multiplayer_player_left($this->getDisplayName())->prefix(TextFormat::YELLOW);
 		}
@@ -1772,8 +1772,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Sends a direct chat message to a player
 	 */
-	public function sendMessage(TranslationContainer|string $message) : void{
-		if($message instanceof TranslationContainer){
+	public function sendMessage(Translatable|string $message) : void{
+		if($message instanceof Translatable){
 			$this->sendTranslation($message->getText(), $message->getParameters());
 			return;
 		}
@@ -1782,11 +1782,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
-	 * @param string[]|TranslationContainer[] $parameters
+	 * @param string[]|Translatable[] $parameters
 	 */
 	public function sendTranslation(string $message, array $parameters = []) : void{
 		//we can't send nested translations to the client, so make sure they are always pre-translated by the server
-		$parameters = array_map(fn(string|TranslationContainer $p) => $p instanceof TranslationContainer ? $this->getLanguage()->translate($p) : $p, $parameters);
+		$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $this->getLanguage()->translate($p) : $p, $parameters);
 		if(!$this->server->isLanguageForced()){
 			foreach($parameters as $i => $p){
 				$parameters[$i] = $this->getLanguage()->translateString($p, [], "pocketmine.");
@@ -1873,7 +1873,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Kicks a player from the server
 	 */
-	public function kick(string $reason = "", TranslationContainer|string|null $quitMessage = null) : bool{
+	public function kick(string $reason = "", Translatable|string|null $quitMessage = null) : bool{
 		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
 		$ev->call();
 		if(!$ev->isCancelled()){
@@ -1898,10 +1898,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * Note for internals developers: Do not call this from network sessions. It will cause a feedback loop.
 	 *
-	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
-	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
+	 * @param string                   $reason Shown to the player, usually this will appear on their disconnect screen.
+	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function disconnect(string $reason, TranslationContainer|string|null $quitMessage = null) : void{
+	public function disconnect(string $reason, Translatable|string|null $quitMessage = null) : void{
 		if(!$this->isConnected()){
 			return;
 		}
@@ -1915,9 +1915,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * This method executes post-disconnect actions and cleanups.
 	 *
 	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
-	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
+	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function onPostDisconnect(string $reason, TranslationContainer|string|null $quitMessage) : void{
+	public function onPostDisconnect(string $reason, Translatable|string|null $quitMessage) : void{
 		if($this->isConnected()){
 			throw new \InvalidStateException("Player is still connected");
 		}
