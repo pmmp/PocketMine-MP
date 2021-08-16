@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         image: [ubuntu-20.04]
-        php: [7.4.20, 8.0.7]
+        php: [7.4.22, 8.0.9]
 
     steps:
       - uses: actions/checkout@v2 #needed for build.sh
@@ -37,10 +37,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - php: 8.0.7
+          - php: 8.0.9
             config: phpstan.neon.dist
             image: ubuntu-20.04
-          - php: 7.4.20
+          - php: 7.4.22
             config: phpstan.php7.neon
             image: ubuntu-20.04
 
@@ -92,7 +92,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [7.4.20, 8.0.7]
+        php: [7.4.22, 8.0.9]
 
     steps:
       - uses: actions/checkout@v2
@@ -142,7 +142,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [7.4.20, 8.0.7]
+        php: [7.4.22, 8.0.9]
 
     steps:
       - uses: actions/checkout@v2
@@ -194,7 +194,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [7.4.20, 8.0.7]
+        php: [7.4.22, 8.0.9]
 
     steps:
       - uses: actions/checkout@v2
