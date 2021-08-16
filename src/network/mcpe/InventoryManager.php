@@ -200,7 +200,7 @@ class InventoryManager{
 			if(is_int($slotOffset)){
 				$slotOffset = [0 => $slotOffset];
 			}
-			return array_flip($slotOffset) ?? throw new AssumptionFailedError("Got unexpected slot");
+			return array_flip($slotOffset);
 		})(match (true) {
 			$inventory instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
 			$inventory instanceof CraftingGrid and $inventory->getGridWidth() === CraftingGrid::SIZE_SMALL => UIInventorySlotOffset::CRAFTING2X2_INPUT,
