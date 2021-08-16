@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-if(count($argv) !== 3){
-	fwrite(STDERR, "required args: <git hash> <tag name>");
+if(count($argv) !== 4){
+	fwrite(STDERR, "required args: <git hash> <tag name> <github repo (owner/name)>");
 	exit(1);
 }
 
@@ -37,7 +37,7 @@ echo json_encode([
 	"git_commit" => $argv[1],
 	"mcpe_version" => \pocketmine\network\mcpe\protocol\ProtocolInfo::MINECRAFT_VERSION_NETWORK,
 	"date" => time(), //TODO: maybe we should embed this in VersionInfo?
-	"details_url" => "https://github.com/pmmp/PocketMine-MP/releases/tag/$argv[2]/",
-	"download_url" => "https://github.com/pmmp/PocketMine-MP/releases/download/$argv[2]/PocketMine-MP.phar",
-	"source_url" => "https://github.com/pmmp/PocketMine-MP/tree/$argv[2]",
+	"details_url" => "https://github.com/$argv[3]/releases/tag/$argv[2]/",
+	"download_url" => "https://github.com/$argv[3]/releases/download/$argv[2]/PocketMine-MP.phar",
+	"source_url" => "https://github.com/$argv[3]/tree/$argv[2]",
 ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . "\n";
