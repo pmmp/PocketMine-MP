@@ -24,10 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\block\inventory;
 
 use pocketmine\inventory\SimpleInventory;
+use pocketmine\inventory\UIInventory;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 
-class EnchantInventory extends SimpleInventory implements BlockInventory{
+class EnchantInventory extends SimpleInventory implements BlockInventory, UIInventory{
 	use BlockInventoryTrait;
 
 	public function __construct(Position $holder){

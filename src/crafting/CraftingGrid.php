@@ -24,13 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\crafting;
 
 use pocketmine\inventory\SimpleInventory;
+use pocketmine\inventory\UIInventory;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 use function max;
 use function min;
 use const PHP_INT_MAX;
 
-class CraftingGrid extends SimpleInventory{
+class CraftingGrid extends SimpleInventory implements UIInventory{
 	public const SIZE_SMALL = 2;
 	public const SIZE_BIG = 3;
 

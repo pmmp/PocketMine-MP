@@ -30,11 +30,14 @@ use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
 use pocketmine\block\inventory\LoomInventory;
+use pocketmine\crafting\CraftingGrid;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\inventory\UIInventory;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
@@ -48,13 +51,17 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
+use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
+use function array_flip;
 use function array_map;
 use function array_search;
+use function is_int;
 use function max;
+use function var_dump;
 
 /**
  * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
@@ -189,6 +196,23 @@ class InventoryManager{
 		return null;
 	}
 
+	protected static function getSlotOffset(UIInventory $inventory) : array {
+		return (function(array|int $slotOffset) : array {
+			if(is_int($slotOffset)){
+				$slotOffset = [0 => $slotOffset];
+			}
+			return array_flip($slotOffset) ?? throw new AssumptionFailedError("Got unexpected slot");
+		})(match (true) {
+			$inventory instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
+			$inventory instanceof CraftingGrid and $inventory->getGridWidth() === CraftingGrid::SIZE_SMALL => UIInventorySlotOffset::CRAFTING2X2_INPUT,
+			$inventory instanceof CraftingGrid and $inventory->getGridWidth() === CraftingGrid::SIZE_BIG => UIInventorySlotOffset::CRAFTING3X3_INPUT,
+			$inventory instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
+			$inventory instanceof LoomInventory => UIInventorySlotOffset::LOOM,
+			$inventory instanceof PlayerCursorInventory => UIInventorySlotOffset::CURSOR,
+			default => throw new AssumptionFailedError("Unreachable"),
+		});
+	}
+
 	public function onCurrentWindowRemove() : void{
 		if(isset($this->windowMap[$this->lastInventoryNetworkId])){
 			$this->remove($this->lastInventoryNetworkId);
@@ -210,12 +234,17 @@ class InventoryManager{
 	}
 
 	public function syncSlot(Inventory $inventory, int $slot) : void{
-		$windowId = $this->getWindowId($inventory);
-		if($windowId !== null){
-			$currentItem = $inventory->getItem($slot);
+		$currentItem = $inventory->getItem($slot);
+		$itemStackWrapper = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($currentItem));
+		if($inventory instanceof UIInventory){
+			$this->session->sendDataPacket(InventorySlotPacket::create(
+				ContainerIds::UI,
+				self::getSlotOffset($inventory)[$slot],
+				$itemStackWrapper
+			));
+		}elseif(($windowId = $this->getWindowId($inventory)) !== null){
 			$clientSideItem = $this->initiatedSlotChanges[$windowId][$slot] ?? null;
 			if($clientSideItem === null or !$clientSideItem->equalsExact($currentItem)){
-				$itemStackWrapper = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($currentItem));
 				if($windowId === ContainerIds::OFFHAND){
 					//TODO: HACK!
 					//The client may sometimes ignore the InventorySlotPacket for the offhand slot.
@@ -232,26 +261,24 @@ class InventoryManager{
 	}
 
 	public function syncContents(Inventory $inventory) : void{
-		$windowId = $this->getWindowId($inventory);
-		if($windowId !== null){
-			unset($this->initiatedSlotChanges[$windowId]);
-			$typeConverter = TypeConverter::getInstance();
-			if($windowId === ContainerIds::UI){
-				//TODO: HACK!
-				//Since 1.13, cursor is now part of a larger "UI inventory", and sending contents for this larger inventory does
-				//not work the way it's intended to. Even if it did, it would be necessary to send all 51 slots just to update
-				//this one, which is just not worth it.
-				//This workaround isn't great, but it's at least simple.
+		$typeConverter = TypeConverter::getInstance();
+		if($inventory instanceof UIInventory){
+			//TODO: HACK!
+			//"UI Inventory" (a ridiculous inventory with integrated crafting grid, anvil inventory, etc.)
+			// needs to send all 51 slots to update content, which means it needs to send useless empty slots.
+			// This workaround isn't great, but at least it's simple.
+			foreach(self::getSlotOffset($inventory) as $slot => $realSlot){
 				$this->session->sendDataPacket(InventorySlotPacket::create(
-					$windowId,
-					0,
-					ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($inventory->getItem(0)))
+					ContainerIds::UI,
+					$realSlot,
+					ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($inventory->getItem($slot)))
 				));
-			}else{
-				$this->session->sendDataPacket(InventoryContentPacket::create($windowId, array_map(function(Item $itemStack) use ($typeConverter) : ItemStackWrapper{
-					return ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($itemStack));
-				}, $inventory->getContents(true))));
 			}
+		}elseif(($windowId = $this->getWindowId($inventory)) !== null){
+			unset($this->initiatedSlotChanges[$windowId]);
+			$this->session->sendDataPacket(InventoryContentPacket::create($windowId, array_map(function(Item $itemStack) use ($typeConverter) : ItemStackWrapper{
+				return ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($itemStack));
+			}, $inventory->getContents(true))));
 		}
 	}
 
