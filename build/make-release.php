@@ -87,7 +87,7 @@ function main(array $argv) : void{
 	system('git diff --cached --quiet "' . dirname(__DIR__) . '/changelogs"', $result);
 	if($result === 0){
 		echo "error: no changelog changes detected; aborting\n";
-		//exit(1);
+		exit(1);
 	}
 	$versionInfoPath = dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
 	replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false, $argv[1]);
