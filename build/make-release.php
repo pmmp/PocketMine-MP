@@ -92,6 +92,7 @@ function main(array $argv) : void{
 	$versionInfoPath = dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
 	replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false, $argv[1]);
 	system('git commit -m "Release ' . $currentVer->getBaseVersion() . '" --include "' . $versionInfoPath . '"');
+	system('git tag ' . $currentVer->getBaseVersion());
 	replaceVersion($versionInfoPath, $nextVer->getBaseVersion(), true, "");
 	system('git add "' . $versionInfoPath . '"');
 	system('git commit -m "' . $nextVer->getBaseVersion() . ' is next" --include "' . $versionInfoPath . '"');

@@ -2,12 +2,12 @@ name: Create and upload release artifacts
 
 on:
   push:
+    tags: "*"
 
 jobs:
   artifacts:
     name: Create release artifacts
     runs-on: ubuntu-20.04
-    if: "startsWith(github.event.head_commit.message, 'Release ')"
     strategy:
       fail-fast: false
       matrix:
