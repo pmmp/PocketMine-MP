@@ -194,18 +194,22 @@ class InventoryManager{
 	}
 
 	/**
-	 * @return array<int, int>|null
+	 * @return array<int, int>|null RealSlot(UI Inventory) => PMSlot
 	 */
 	protected static function getSlotOffset(Inventory $inventory) : ?array{
-		return array_flip(match(true){
+		$slotOffset = match(true){
 			$inventory instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
 			$inventory instanceof CraftingGrid and $inventory->getGridWidth() === CraftingGrid::SIZE_SMALL => UIInventorySlotOffset::CRAFTING2X2_INPUT,
 			$inventory instanceof CraftingGrid and $inventory->getGridWidth() === CraftingGrid::SIZE_BIG => UIInventorySlotOffset::CRAFTING3X3_INPUT,
 			$inventory instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
 			$inventory instanceof LoomInventory => UIInventorySlotOffset::LOOM,
 			$inventory instanceof PlayerCursorInventory => [UIInventorySlotOffset::CURSOR],
-			default => [],
-		}) ?: null;
+			default => null,
+		};
+		if($slotOffset === null){
+			return null;
+		}
+		return array_flip($slotOffset);
 	}
 
 	public function onCurrentWindowRemove() : void{
