@@ -196,6 +196,8 @@ class InventoryManager{
 	}
 
 	/**
+	 * @param UIInventory $inventory
+	 *
 	 * @return array<int, int>
 	 */
 	protected static function getSlotOffset(UIInventory $inventory) : array {
