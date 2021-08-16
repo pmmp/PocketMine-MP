@@ -35,7 +35,6 @@ use pocketmine\event\entity\EntityMotionEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
 use pocketmine\event\entity\EntitySpawnEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
-use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector2;
@@ -1084,7 +1083,7 @@ abstract class Entity{
 	/**
 	 * Called when interacted or tapped by a Player
 	 */
-	public function onInteract(Player $player, Item $item, Vector3 $clickPos, int $slot) : bool{
+	public function onInteract(Player $player, Vector3 $clickPos) : bool{
 		return false;
 	}
 

@@ -1668,10 +1668,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * Interacts with the given entity using the currently-held item.
 	 */
 	public function interactEntity(Entity $entity, Vector3 $clickPos) : bool{
-		$item = $this->inventory->getItemInHand();
-		$slot = $this->inventory->getHeldItemIndex();
-
-		$ev = new PlayerEntityInteractEvent($this, $entity, $item, $clickPos, $slot);
+		$ev = new PlayerEntityInteractEvent($this, $entity, $clickPos);
 
 		if(!$this->canInteract($entity->getLocation(), 8)){
 			$ev->cancel();
@@ -1680,7 +1677,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$ev->call();
 
 		if(!$ev->isCancelled()){
-			return $entity->onInteract($this, $item, $clickPos, $slot);
+			return $entity->onInteract($this, $clickPos);
 		}
 		return false;
 	}

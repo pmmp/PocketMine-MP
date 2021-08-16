@@ -26,7 +26,6 @@ namespace pocketmine\event\player;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
@@ -36,39 +35,19 @@ use pocketmine\player\Player;
 class PlayerEntityInteractEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Entity */
-	protected $entity;
-
-	/** @var Item */
-	protected $item;
-
-	/** @var Vector3 */
-	protected $clickPos;
-
-	/** @var int */
-	protected $slot;
-
-	public function __construct(Player $player, Entity $entity, Item $item, Vector3 $clickPos, int $slot){
+	public function __construct(
+		Player $player,
+		private Entity $entity,
+		private Vector3 $clickPos
+	){
 		$this->player = $player;
-		$this->entity = $entity;
-		$this->item = $item;
-		$this->clickPos = $clickPos;
-		$this->slot = $slot;
 	}
 
 	public function getEntity() : Entity{
 		return $this->entity;
 	}
 
-	public function getItem() : Item{
-		return $this->item;
-	}
-
 	public function getClickPosition() : Vector3{
 		return $this->clickPos;
-	}
-
-	public function getSlot() : int{
-		return $this->slot;
 	}
 }
