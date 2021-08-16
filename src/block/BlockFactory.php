@@ -322,7 +322,7 @@ class BlockFactory{
 		$this->register(new Sand(new BID(Ids::SAND, 1), "Red Sand", $sandBreakInfo));
 		$this->register(new SeaLantern(new BID(Ids::SEALANTERN, 0), "Sea Lantern", new BlockBreakInfo(0.3)));
 		$this->register(new SeaPickle(new BID(Ids::SEA_PICKLE, 0), "Sea Pickle", BlockBreakInfo::instant()));
-		$this->register(new Skull(new BID(Ids::MOB_HEAD_BLOCK, 0, null, TileSkull::class), "Mob Head", new BlockBreakInfo(1.0)));
+		$this->register(new Skull(new BID(Ids::MOB_HEAD_BLOCK, 0, ItemIds::SKULL, TileSkull::class), "Mob Head", new BlockBreakInfo(1.0)));
 
 		$this->register(new Snow(new BID(Ids::SNOW, 0), "Snow Block", new BlockBreakInfo(0.2, BlockToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new SnowLayer(new BID(Ids::SNOW_LAYER, 0), "Snow Layer", new BlockBreakInfo(0.1, BlockToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel())));
