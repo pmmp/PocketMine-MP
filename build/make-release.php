@@ -60,7 +60,7 @@ function main(array $argv) : void{
 	if(isset($argv[1])){
 		$currentVer = new VersionString($argv[1]);
 	}else{
-		$currentVer = VersionInfo::getVersionObj();
+		$currentVer = VersionInfo::VERSION();
 	}
 	$nextVer = new VersionString(sprintf(
 		"%u.%u.%u",

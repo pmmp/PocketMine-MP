@@ -260,7 +260,7 @@ class Server{
 	}
 
 	public function getPocketMineVersion() : string{
-		return VersionInfo::getVersionObj()->getFullVersion(true);
+		return VersionInfo::VERSION()->getFullVersion(true);
 	}
 
 	public function getVersion() : string{
@@ -1452,7 +1452,7 @@ class Server{
 					$report = false;
 				}
 
-				if(strrpos(VersionInfo::getGitHash(), "-dirty") !== false or VersionInfo::getGitHash() === str_repeat("00", 20)){
+				if(strrpos(VersionInfo::GIT_HASH(), "-dirty") !== false or VersionInfo::GIT_HASH() === str_repeat("00", 20)){
 					$this->logger->debug("Not sending crashdump due to locally modified");
 					$report = false; //Don't send crashdumps for locally modified builds
 				}
