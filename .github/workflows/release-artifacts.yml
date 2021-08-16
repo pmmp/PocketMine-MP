@@ -99,7 +99,7 @@ jobs:
           commit: ${{ github.sha }}
           draft: true
           name: PocketMine-MP ${{ steps.get-pm-version.outputs.PM_VERSION }}
-          tag: release-artifact-test-${{ steps.get-pm-version.outputs.PM_VERSION }}
+          tag: ${{ steps.get-pm-version.outputs.PM_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             **For Minecraft: Bedrock Edition ${{ steps.get-pm-version.outputs.MCPE_VERSION }}**

@@ -28,7 +28,7 @@ jobs:
 
       - name: Detect channel
         id: channel
-        run: echo ::set-output CHANNEL::$(jq -r '.channel' new_build_info.json)
+        run: echo ::set-output name=CHANNEL::$(jq -r '.channel' new_build_info.json)
 
       - name: Copy release information
         run: |
