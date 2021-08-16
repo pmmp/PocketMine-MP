@@ -195,6 +195,9 @@ class InventoryManager{
 		return null;
 	}
 
+	/**
+	 * @return array<int, int>
+	 */
 	protected static function getSlotOffset(UIInventory $inventory) : array {
 		return (function(array|int $slotOffset) : array {
 			if(is_int($slotOffset)){
