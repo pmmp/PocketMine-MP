@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install jq
+        run: sudo apt update && sudo apt install jq -y
+
       - uses: actions/checkout@v2
         with:
           repository: pmmp/update.pmmp.io
@@ -20,15 +23,24 @@ jobs:
         id: tag-name
         run: echo ::set-output name=TAG_NAME::$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{')
 
-      - name: Copy new release info to update.pmmp.io
-        run: curl -f -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.tag-name.outputs.TAG_NAME }}/artifact/build_info.json -o channels/stable.json
+      - name: Download new release information
+        run: curl -f -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.tag-name.outputs.TAG_NAME }}/artifact/build_info.json -o new_build_info.json
+
+      - name: Detect channel
+        id: channel
+        run: echo ::set-output CHANNEL::$(jq -r '.channel' new_build_info.json)
+
+      - name: Copy release information
+        run: |
+          cp new_build_info.json channels/${{ steps.channel.outputs.CHANNEL }}.json
+          rm new_build_info.json
 
       - name: Commit changes
         run: |
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
-          git diff-index --quiet HEAD || git commit -m "Update release info for ${{ github.repository }} ${{ steps.tag-name.outputs.TAG_NAME }}"
+          git diff-index --quiet HEAD || git commit -m "New ${{ steps.channel.outputs.CHANNEL }} release: ${{ github.repository }} ${{ steps.tag-name.outputs.TAG_NAME }}"
 
       - name: Push changes
         run: git push

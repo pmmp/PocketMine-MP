@@ -33,6 +33,7 @@ echo json_encode([
 	"base_version" => \pocketmine\BASE_VERSION,
 	"build" => \pocketmine\BUILD_NUMBER,
 	"is_dev" => \pocketmine\IS_DEVELOPMENT_BUILD,
+	"channel" => \pocketmine\BUILD_CHANNEL,
 	"git_commit" => $argv[1],
 	"mcpe_version" => \pocketmine\network\mcpe\protocol\ProtocolInfo::MINECRAFT_VERSION_NETWORK,
 	"date" => time(), //TODO: maybe we should embed this in VersionInfo?
