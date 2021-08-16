@@ -25,7 +25,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\player\Player;
 
-class PlayerCursorInventory extends SimpleInventory implements UIInventory{
+class PlayerCursorInventory extends SimpleInventory{
 	/** @var Player */
 	protected $holder;
 

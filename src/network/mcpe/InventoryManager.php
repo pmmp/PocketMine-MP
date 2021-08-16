@@ -37,7 +37,6 @@ use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
-use pocketmine\inventory\UIInventory;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
@@ -196,11 +195,13 @@ class InventoryManager{
 	}
 
 	/**
-	 * @return array<int, int>
+	 * @return array<int, int>|null
 	 */
-	protected static function getSlotOffset(UIInventory $inventory) : array{
-		return (function(array|int $slotOffset) : array{
-			if(is_int($slotOffset)){
+	protected static function getSlotOffset(Inventory $inventory) : ?array{
+		return (function(array|int|null $slotOffset) : ?array{
+			if($slotOffset === null){
+				return null;
+			}elseif(is_int($slotOffset)){
 				$slotOffset = [0 => $slotOffset];
 			}
 			return array_flip($slotOffset);
@@ -211,7 +212,7 @@ class InventoryManager{
 			$inventory instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
 			$inventory instanceof LoomInventory => UIInventorySlotOffset::LOOM,
 			$inventory instanceof PlayerCursorInventory => UIInventorySlotOffset::CURSOR,
-			default => throw new AssumptionFailedError("Unreachable"),
+			default => null,
 		});
 	}
 
@@ -238,10 +239,10 @@ class InventoryManager{
 	public function syncSlot(Inventory $inventory, int $slot) : void{
 		$currentItem = $inventory->getItem($slot);
 		$itemStackWrapper = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($currentItem));
-		if($inventory instanceof UIInventory){
+		if(($slotOffset = self::getSlotOffset($inventory)) !== null){
 			$this->session->sendDataPacket(InventorySlotPacket::create(
 				ContainerIds::UI,
-				self::getSlotOffset($inventory)[$slot],
+				$slotOffset[$slot],
 				$itemStackWrapper
 			));
 		}elseif(($windowId = $this->getWindowId($inventory)) !== null){
@@ -264,12 +265,12 @@ class InventoryManager{
 
 	public function syncContents(Inventory $inventory) : void{
 		$typeConverter = TypeConverter::getInstance();
-		if($inventory instanceof UIInventory){
+		if(($slotOffset = self::getSlotOffset($inventory)) !== null){
 			//TODO: HACK!
 			//"UI Inventory" (a ridiculous inventory with integrated crafting grid, anvil inventory, etc.)
 			// needs to send all 51 slots to update content, which means it needs to send useless empty slots.
 			// This workaround isn't great, but at least it's simple.
-			foreach(self::getSlotOffset($inventory) as $slot => $realSlot){
+			foreach($slotOffset as $slot => $realSlot){
 				$this->session->sendDataPacket(InventorySlotPacket::create(
 					ContainerIds::UI,
 					$realSlot,

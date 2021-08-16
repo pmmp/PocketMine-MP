@@ -24,11 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block\inventory;
 
 use pocketmine\inventory\SimpleInventory;
-use pocketmine\inventory\UIInventory;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 
-final class LoomInventory extends SimpleInventory implements BlockInventory, UIInventory{
+final class LoomInventory extends SimpleInventory implements BlockInventory{
 	use BlockInventoryTrait;
 
 	public const SLOT_BANNER = 0;
