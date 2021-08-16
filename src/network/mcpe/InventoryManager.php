@@ -61,7 +61,6 @@ use function array_map;
 use function array_search;
 use function is_int;
 use function max;
-use function var_dump;
 
 /**
  * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
