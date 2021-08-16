@@ -35,7 +35,7 @@ use pocketmine\player\Player;
  */
 class PlayerEntityInteractEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
-	
+
 	/** @var Entity */
 	protected $entity;
 
