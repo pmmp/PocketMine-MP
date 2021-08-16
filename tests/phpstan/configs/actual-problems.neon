@@ -1,0 +1,42 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/CrashDump.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\console\\\\ConsoleReaderThread and pocketmine\\\\console\\\\ConsoleReaderThread will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\network\\\\Network and pocketmine\\\\network\\\\Network will always evaluate to true\\.$#"
+			count: 2
+			path: ../../../src/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\scheduler\\\\AsyncPool and pocketmine\\\\scheduler\\\\AsyncPool will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/Server.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\world\\\\WorldManager and pocketmine\\\\world\\\\WorldManager will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/Server.php
+
+		-
+			message: "#^Property pocketmine\\\\event\\\\entity\\\\EntityShootBowEvent\\:\\:\\$projectile \\(pocketmine\\\\entity\\\\projectile\\\\Projectile\\) does not accept pocketmine\\\\entity\\\\Entity\\.$#"
+			count: 1
+			path: ../../../src/event/entity/EntityShootBowEvent.php
+
+		-
+			message: "#^Variable property access on \\$this\\(pocketmine\\\\world\\\\generator\\\\PopulationTask\\)\\.$#"
+			count: 4
+			path: ../../../src/world/generator/PopulationTask.php
+

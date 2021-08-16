@@ -1,0 +1,283 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-php:
+    name: Prepare PHP
+    runs-on: ${{ matrix.image }}
+
+    strategy:
+      matrix:
+        image: [ubuntu-20.04]
+        php: [8.0.7]
+
+    steps:
+      - uses: actions/checkout@v2 #needed for build.sh
+      - name: Check for PHP build cache
+        id: php-build-cache
+        uses: actions/cache@v2
+        with:
+          path: "./bin"
+          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+
+      - name: Compile PHP
+        if: steps.php-build-cache.outputs.cache-hit != 'true'
+        run: ./tests/gh-actions/build.sh "${{ matrix.php }}"
+
+  phpstan:
+    name: PHPStan analysis
+    needs: build-php
+    runs-on: ${{ matrix.image }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [ubuntu-20.04]
+        php: [8.0.7]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Restore PHP build cache
+        id: php-build-cache
+        uses: actions/cache@v2
+        with:
+          path: "./bin"
+          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+
+      - name: Kill build on PHP build cache miss (should never happen)
+        if: steps.php-build-cache.outputs.cache-hit != 'true'
+        run: exit 1
+
+      - name: Install cached PHP's dependencies
+        if: steps.php-build-cache.outputs.cache-hit == 'true'
+        run: ./tests/gh-actions/install-dependencies.sh
+
+      - name: Prefix PHP to PATH
+        run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
+
+      - name: Install Composer
+        run: curl -sS https://getcomposer.org/installer | php
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ matrix.php }}-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: php composer.phar install --prefer-dist --no-interaction
+
+      - name: Run PHPStan
+        run: ./vendor/bin/phpstan analyze --no-progress --memory-limit=2G
+
+  phpunit:
+    name: PHPUnit tests
+    needs: build-php
+    runs-on: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [ubuntu-20.04]
+        php: [8.0.7]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Restore PHP build cache
+        id: php-build-cache
+        uses: actions/cache@v2
+        with:
+          path: "./bin"
+          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+
+      - name: Kill build on PHP build cache miss (should never happen)
+        if: steps.php-build-cache.outputs.cache-hit != 'true'
+        run: exit 1
+
+      - name: Install cached PHP's dependencies
+        if: steps.php-build-cache.outputs.cache-hit == 'true'
+        run: ./tests/gh-actions/install-dependencies.sh
+
+      - name: Prefix PHP to PATH
+        run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
+
+      - name: Install Composer
+        run: curl -sS https://getcomposer.org/installer | php
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ matrix.php }}-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: php composer.phar install --prefer-dist --no-interaction
+
+      - name: Run PHPUnit tests
+        run: ./vendor/bin/phpunit --bootstrap vendor/autoload.php --fail-on-warning tests/phpunit
+
+  integration:
+    name: Integration tests
+    needs: build-php
+    runs-on: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [ubuntu-20.04]
+        php: [8.0.7]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Restore PHP build cache
+        id: php-build-cache
+        uses: actions/cache@v2
+        with:
+          path: "./bin"
+          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+
+      - name: Kill build on PHP build cache miss (should never happen)
+        if: steps.php-build-cache.outputs.cache-hit != 'true'
+        run: exit 1
+
+      - name: Install cached PHP's dependencies
+        if: steps.php-build-cache.outputs.cache-hit == 'true'
+        run: ./tests/gh-actions/install-dependencies.sh
+
+      - name: Prefix PHP to PATH
+        run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
+
+      - name: Install Composer
+        run: curl -sS https://getcomposer.org/installer | php
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ matrix.php }}-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: php composer.phar install --no-dev --prefer-dist --no-interaction
+
+      - name: Run integration tests
+        run: ./tests/travis.sh -t4
+
+  preprocessor:
+    name: Preprocessor tests
+    needs: build-php
+    runs-on: ${{ matrix.image }}
+    strategy:
+      fail-fast: false
+      matrix:
+        image: [ubuntu-20.04]
+        php: [8.0.7]
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Restore PHP build cache
+        id: php-build-cache
+        uses: actions/cache@v2
+        with:
+          path: "./bin"
+          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
+
+      - name: Kill build on PHP build cache miss (should never happen)
+        if: steps.php-build-cache.outputs.cache-hit != 'true'
+        run: exit 1
+
+      - name: Install cached PHP's dependencies
+        if: steps.php-build-cache.outputs.cache-hit == 'true'
+        run: ./tests/gh-actions/install-dependencies.sh
+
+      - name: Prefix PHP to PATH
+        run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
+
+      - name: Install Composer
+        run: curl -sS https://getcomposer.org/installer | php
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ matrix.php }}-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: php composer.phar install --no-dev --prefer-dist --no-interaction
+
+      - name: Run preprocessor
+        run: |
+          PM_PREPROCESSOR_PATH="$GITHUB_WORKSPACE/build/preprocessor"
+          php "$PM_PREPROCESSOR_PATH/PreProcessor.php" --path=src --multisize || (echo "Preprocessor exited with code $?" && exit 1)
+
+          #dump the diff of preprocessor replacements to a patch in case it has bugs
+          git diff > preprocessor_diff.patch
+
+          VENDOR_PM="$GITHUB_WORKSPACE/vendor"
+          VENDOR_PM_BACKUP="$GITHUB_WORKSPACE/vendor-before-preprocess"
+          cp -r "$VENDOR_PM" "$VENDOR_PM_BACKUP"
+          for f in $(ls $VENDOR_PM/pocketmine); do
+            echo "Processing directory \"$f\"..."
+            php "$PM_PREPROCESSOR_PATH/PreProcessor.php" --path="$VENDOR_PM/pocketmine/$f/src" --multisize || (echo "Preprocessor exited with code $?" && exit 1)
+            echo "Checking for changes in \"$f\"..."
+            DIFF=$(git diff --no-index "$VENDOR_PM_BACKUP/pocketmine/$f" "$VENDOR_PM/pocketmine/$f" || true)
+            if [ "$DIFF" != "" ]; then
+              PATCH="$GITHUB_WORKSPACE/preprocessor_diff_$f.patch"
+              echo "$DIFF" > "$PATCH"
+              echo "Generated patch file \"$PATCH\""
+            else
+              echo "No diff generated for \"$f\" (preprocessor made no changes)"
+            fi
+          done
+
+      - name: Upload preprocessor diffs
+        uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: preprocessor_diffs_${{ matrix.php }}_${{ matrix.image }}
+          path: ${{ github.workspace }}/preprocessor_diff*.patch
+
+  codestyle:
+    name: Code Style checks
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup PHP and tools
+        uses: shivammathur/setup-php@2.9.0
+        with:
+          php-version: 8.0
+          tools: php-cs-fixer
+
+      - name: Run PHP-CS-Fixer
+        run: php-cs-fixer fix --dry-run --diff

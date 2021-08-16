@@ -1,0 +1,17 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Casting to int something that's already int\\.$#"
+			count: 2
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Instanceof between pocketmine\\\\nbt\\\\tag\\\\CompoundTag and pocketmine\\\\nbt\\\\tag\\\\CompoundTag will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
+
+		-
+			message: "#^Call to function is_array\\(\\) with array\\<string, mixed\\> will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginBase.php
+

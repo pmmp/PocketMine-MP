@@ -1,0 +1,37 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$enderInventory \\(pocketmine\\\\inventory\\\\PlayerEnderInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/entity/Human.php
+
+		-
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$hungerManager \\(pocketmine\\\\entity\\\\HungerManager\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/entity/Human.php
+
+		-
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$inventory \\(pocketmine\\\\inventory\\\\PlayerInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/entity/Human.php
+
+		-
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$offHandInventory \\(pocketmine\\\\inventory\\\\PlayerOffHandInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/entity/Human.php
+
+		-
+			message: "#^Property pocketmine\\\\entity\\\\Human\\:\\:\\$xpManager \\(pocketmine\\\\entity\\\\ExperienceManager\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/entity/Human.php
+
+		-
+			message: "#^Property pocketmine\\\\entity\\\\Living\\:\\:\\$armorInventory \\(pocketmine\\\\inventory\\\\ArmorInventory\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/entity/Living.php
+
+		-
+			message: "#^Property pocketmine\\\\entity\\\\Living\\:\\:\\$effectManager \\(pocketmine\\\\entity\\\\effect\\\\EffectManager\\) does not accept null\\.$#"
+			count: 1
+			path: ../../../src/entity/Living.php
+

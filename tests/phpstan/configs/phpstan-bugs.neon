@@ -1,0 +1,127 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Instanceof between pocketmine\\\\block\\\\utils\\\\BannerPatternLayer and pocketmine\\\\block\\\\utils\\\\BannerPatternLayer will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/block/BaseBanner.php
+
+		-
+			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
+			count: 2
+			path: ../../../src/console/ConsoleReader.php
+
+		-
+			message: "#^Method pocketmine\\\\crafting\\\\CraftingManager\\:\\:getDestructorCallbacks\\(\\) should return pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\> but returns pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\>\\|pocketmine\\\\utils\\\\ObjectSet\\<object\\>\\.$#"
+			count: 1
+			path: ../../../src/crafting/CraftingManager.php
+
+		-
+			message: "#^Property pocketmine\\\\crafting\\\\CraftingManager\\:\\:\\$destructorCallbacks \\(pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\>\\|null\\) does not accept pocketmine\\\\utils\\\\ObjectSet\\<object\\>\\.$#"
+			count: 1
+			path: ../../../src/crafting/CraftingManager.php
+
+		-
+			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/entity/projectile/Projectile.php
+
+		-
+			message: "#^Parameter \\#1 \\$read of function socket_select expects array\\<resource\\>\\|null, array\\<int, Socket\\> given\\.$#"
+			count: 1
+			path: ../../../src/network/query/DedicatedQueryNetworkInterface.php
+
+		-
+			message: "#^Parameter \\#1 \\$ of closure expects TValue, TValue given\\.$#"
+			count: 2
+			path: ../../../src/utils/Promise.php
+
+		-
+			message: "#^Property pocketmine\\\\utils\\\\Promise\\<TValue\\>\\:\\:\\$result \\(TValue\\|null\\) does not accept TValue\\.$#"
+			count: 1
+			path: ../../../src/utils/Promise.php
+
+		-
+			message: "#^Match arm comparison between string and '§3' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§4' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§5' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§6' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§7' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§8' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§9' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§a' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§b' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§c' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§d' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§e' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§f' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Parameter \\#1 \\$ of closure expects TMemberType, TMemberType given\\.$#"
+			count: 1
+			path: ../../../src/utils/Utils.php
+
+		-
+			message: "#^Strict comparison using \\=\\=\\= between string and false will always evaluate to false\\.$#"
+			count: 1
+			path: ../../../src/utils/Utils.php
+
+		-
+			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
+			count: 2
+			path: ../../../src/world/format/io/region/RegionLoader.php
+
+		-
+			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertNotNull\\(\\) with int and string will always evaluate to true\\.$#"
+			count: 1
+			path: ../../phpunit/block/BlockTest.php
+

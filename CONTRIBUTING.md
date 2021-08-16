@@ -42,7 +42,7 @@ We try to ensure that our project's codebase is as clean as possible and ensure 
 - **Details should be provided of tests done.** Simply saying "Tested" or equivalent is not acceptable.
 
 ### Code contributions
-- **Avoid using GitHub Web Editor**. The web editor lacks most useful GIT features and **should only be used for very minor changes**. It is immediately clear if the web editor has been used, and if so the PR is more likely to be rejected. If you want to make serious contributions, **please learn how to use [GIT version control](https://git-scm.com/)**.
+- **Avoid committing changes directly on GitHub. This includes use of the web editor, and also uploading files.** The web editor lacks most useful GIT features and **should only be used for very minor changes**. It is immediately clear if the web editor has been used, and if so the PR is more likely to be rejected. If you want to make serious contributions, **please learn how to use [GIT version control](https://git-scm.com/)**.
 - **Do not copy-paste code**. There are potential license issues implicit with copy-pasting, and copy-paste usually indicates a lack of understanding of the actual code. Copy-pasted code is obvious a mile off and **any PR like this is likely to be closed**. If you want to use somebody else's code from a Git repository, **use [GIT's cherry-pick feature](https://git-scm.com/docs/git-cherry-pick)** to cherry-pick the commit. **Cherry-picking is the politer way to copy somebody's changes** and retains all the original accreditation, so there is no need for copy-pasted commits with descriptions like `Some code, thanks @exampleperson`.
 - **Make sure you can explain your changes**. If you can't provide a good explanation of changes, your PR may be rejected.
 - **Code should use the same style as in PocketMine-MP.** See [below](#code-syntax) for an example.
@@ -116,7 +116,7 @@ class ExampleClass{
 <!-- TODO: RFC and voting on the forums instead -->
 ### RFC and Voting
 * These are big Pull Requests or contributions that change important behavior.
-* RFCs will be tagged with the *PR: RFC* label
+* RFCs will be tagged with the *Type: Request For Comments* label
 * A vote will be held once the RFC is ready. All users can vote commenting on the Pull Request
 * Comments MUST use "Yes" or "No" on the FIRST sentence to signify the vote, except when they don't want it to be counted.
 * If your comment is a voting comment, specify the reason of your vote or it won't be counted.

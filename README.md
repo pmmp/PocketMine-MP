@@ -1,57 +1,41 @@
-# [![PocketMine-MP](http://cdn.pocketmine.net/img/PocketMine-MP-h.png)](https://pmmp.io)
+<p align="center">
+	<a href="https://pmmp.io"><img src="http://cdn.pocketmine.net/img/PocketMine-MP-h.png"></img></a><br>
+	<b>A highly customisable, open source server software for Minecraft: Bedrock Edition written in PHP</b>
+</p>
 
-__A highly customisable, open source server software for Minecraft: Pocket Edition written in PHP__
+<p align="center">
+	<img src="https://github.com/pmmp/PocketMine-MP/workflows/CI/badge.svg" alt="CI" />
+	<a href="https://github.com/pmmp/PocketMine-MP/releases"><img src="https://img.shields.io/github/v/tag/pmmp/PocketMine-MP?label=release&logo=github" alt="GitHub tag (latest semver)" /></a>
+	<a href="https://hub.docker.com/r/pmmp/pocketmine-mp"><img src="https://img.shields.io/docker/v/pmmp/pocketmine-mp?logo=docker&label=image" alt="Docker image version (latest semver)" /></a>
+	<a href="https://discord.gg/bmSAZBG"><img src="https://img.shields.io/discord/373199722573201408?label=discord&color=7289DA&logo=discord" alt="Discord" /></a>
+</p>
 
-[![Build Status](https://travis-ci.org/pmmp/PocketMine-MP.svg?branch=master)](https://travis-ci.org/pmmp/PocketMine-MP)
+## Getting started
+- [Documentation](http://pmmp.readthedocs.org/)
+- [Installation instructions](https://pmmp.readthedocs.io/en/rtfd/installation.html)
+- [Docker image](https://hub.docker.com/r/pmmp/pocketmine-mp)
+- [Plugin repository](https://poggit.pmmp.io/plugins)
 
-### Setup, help & support, FAQs
-Head over to the [documentation site](http://pmmp.readthedocs.org/).
-If you don't find what you're looking for there, [talk to a human](#discussion). Please do not use our issue tracker for support requests.
-
-### Discussion
+## Discussion/Help
 - [Forums](https://forums.pmmp.io/)
+- [Discord](https://discord.gg/bmSAZBG)
+- [StackOverflow](https://stackoverflow.com/tags/pocketmine)
 
-### Plugins
-There are a very wide range of already-written plugins available which you can use to customise your server. Check out [Poggit](https://poggit.pmmp.io), or just search GitHub.
-
-### For developers
+## For developers
+ * [Building and running from source](BUILDING.md)
+ * [Developer documentation](https://devdoc.pmmp.io) - General documentation for PocketMine-MP plugin developers
  * [Latest API documentation](https://jenkins.pmmp.io/job/PocketMine-MP-doc/doxygen/) - Doxygen documentation generated from development
- * [DevTools](https://github.com/pmmp/PocketMine-DevTools/) - A development tools plugin for creating plugins.
+ * [DevTools](https://github.com/pmmp/DevTools/) - Development tools plugin for creating plugins
+ * [ExamplePlugin](https://github.com/pmmp/ExamplePlugin/) - Example plugin demonstrating some basic API features
+ * [Contributing Guidelines](CONTRIBUTING.md)
 
-### Can I contribute?
-Yes you can! Contributions are welcomed provided that they comply with our [Contributing Guidelines](CONTRIBUTING.md). Please ensure you read the relevant sections of the guidelines carefully before making a Pull Request or opening an Issue.
-
-### Where can I get the latest .phar?
-- Latest release builds can be found in our [GitHub releases](https://github.com/pmmp/PocketMine-MP/releases).
-- Latest bleeding-edge development builds (and other builds in the build job channels) can be found on our [Jenkins server](https://jenkins.pmmp.io/).
-
-**Note: Please avoid development builds unless there is no other alternative for what you need.** Development builds are subject to changes at any time without notice, and it is likely that your server or plugins might break without warning.
-
-## Third-party Libraries/Protocols Used
-* __[PHP Sockets](http://php.net/manual/en/book.sockets.php)__
-* __[PHP mbstring](http://php.net/manual/en/book.mbstring.php)__
-* __[PHP BCMath](http://php.net/manual/en/book.bc.php)__
-* __[PHP pthreads](http://pthreads.org/)__ by _[krakjoe](https://github.com/krakjoe)_: Threading for PHP - Share Nothing, Do Everything.
-* __[PHP YAML](https://code.google.com/p/php-yaml/)__ by _Bryan Davis_: The Yaml PHP Extension provides a wrapper to the LibYAML library.
-* __[LibYAML](http://pyyaml.org/wiki/LibYAML)__ by _Kirill Simonov_: A YAML 1.1 parser and emitter written in C.
-* __[cURL](http://curl.haxx.se/)__: cURL is a command line tool for transferring data with URL syntax
-* __[Zlib](http://www.zlib.net/)__: A Massively Spiffy Yet Delicately Unobtrusive Compression Library
-* __[Source RCON Protocol](https://developer.valvesoftware.com/wiki/Source_RCON_Protocol)__
-* __[UT3 Query Protocol](http://wiki.unrealadmin.org/UT3_query_protocol)__
+## Donate
+- Bitcoin Cash (BCH): `qq3r46hn6ljnhnqnfwxt5pg3g447eq9jhvw5ddfear`
+- Bitcoin (BTC): `171u8K9e4FtU6j3e5sqNoxKUgEw9qWQdRV`
+- Stellar Lumens (XLM): `GAAC5WZ33HCTE3BFJFZJXONMEIBNHFLBXM2HJVAZHXXPYA3HP5XPPS7T`
+- [Patreon](https://www.patreon.com/pocketminemp)
 
 ## Licensing information
-
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU Lesser General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU Lesser General Public License for more details.
-
-	You should have received a copy of the GNU Lesser General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+This project is licensed under LGPL-3.0. Please see the [LICENSE](/LICENSE) file for details.
 
 pmmp/PocketMine are not affiliated with Mojang. All brands and trademarks belong to their respective owners. PocketMine-MP is not a Mojang-approved software, nor is it associated with Mojang.

@@ -5,53 +5,90 @@
    "homepage": "https://pmmp.io",
    "license": "LGPL-3.0",
    "require": {
-      "php": ">=7.2.0RC3",
-      "ext-bcmath": "*",
+      "php": "^8.0",
+      "php-64bit": "*",
+      "ext-chunkutils2": "^0.2.0",
+      "ext-crypto": "^0.3.1",
+      "ext-ctype": "*",
       "ext-curl": "*",
+      "ext-date": "*",
+      "ext-gmp": "*",
       "ext-hash": "*",
+      "ext-igbinary": "^3.0.1",
       "ext-json": "*",
+      "ext-leveldb": "^0.2.1 || ^0.3.0",
       "ext-mbstring": "*",
+      "ext-morton": "^0.1.0",
       "ext-openssl": "*",
       "ext-pcre": "*",
       "ext-phar": "*",
-      "ext-pthreads": ">=3.1.7dev",
+      "ext-pthreads": "~3.2.0",
       "ext-reflection": "*",
+      "ext-simplexml": "*",
       "ext-sockets": "*",
       "ext-spl": "*",
       "ext-yaml": ">=2.0.0",
       "ext-zip": "*",
       "ext-zlib": ">=1.2.11",
-      "pocketmine/raklib": "dev-master#31d6522de71a9c404aff5c23c49c6ea0526793fb",
-      "pocketmine/spl": "dev-master#ee32424c100fd11ae7f7b8df7604623fd475f0ec",
-      "pocketmine/binaryutils": "dev-master#03e6851f814aba96487ec64181a6ae948edd9f7a",
-      "pocketmine/nbt": "dev-master#e8fb4c11b291e96c2b44220a5d00f97c1692556e",
-      "pocketmine/math": "dev-master#1df74f0352309a9c1e6728fa416a3f0493d07b16"
+      "composer-runtime-api": "^2.0",
+      "adhocore/json-comment": "^1.1",
+      "fgrosse/phpasn1": "^2.3",
+      "netresearch/jsonmapper": "^4.0",
+      "pocketmine/bedrock-protocol": "dev-master#88ae308a03e8e61ccfdddd42623efabe9e772b42",
+      "pocketmine/binaryutils": "^0.2.1",
+      "pocketmine/callback-validator": "^1.0.2",
+      "pocketmine/classloader": "dev-master",
+      "pocketmine/color": "^0.2.0",
+      "pocketmine/errorhandler": "^0.3.0",
+      "pocketmine/log": "^0.3.0",
+      "pocketmine/log-pthreads": "^0.2.0",
+      "pocketmine/math": "^0.3.0",
+      "pocketmine/nbt": "^0.3.0",
+      "pocketmine/raklib": "^0.13.1",
+      "pocketmine/raklib-ipc": "^0.1.0",
+      "pocketmine/snooze": "^0.3.0",
+      "pocketmine/spl": "dev-master",
+      "ramsey/uuid": "^4.1",
+      "respect/validation": "^2.0",
+      "webmozart/path-util": "^2.3"
+   },
+   "require-dev": {
+      "phpstan/phpstan": "0.12.92",
+      "phpstan/phpstan-phpunit": "^0.12.6",
+      "phpstan/phpstan-strict-rules": "^0.12.2",
+      "phpunit/phpunit": "^9.2"
    },
    "autoload": {
       "psr-4": {
-         "": ["src"]
+         "pocketmine\\": "src/"
+      },
+      "files": [
+         "src/CoreConstants.php"
+      ]
+   },
+   "autoload-dev": {
+      "psr-4": {
+         "pocketmine\\": "tests/phpunit/",
+         "pocketmine\\phpstan\\rules\\": "tests/phpstan/rules"
       }
    },
-   "repositories": [
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/RakLib"
+   "config": {
+      "platform": {
+         "php": "8.0.0"
       },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/SPL"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/BinaryUtils"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/NBT"
-      },
-      {
-         "type": "vcs",
-         "url": "https://github.com/pmmp/Math"
-      }
-   ]
+      "sort-packages": true
+   },
+   "scripts": {
+      "make-devtools": "@php -dphar.readonly=0 tests/plugins/DevTools/src/DevTools/ConsoleScript.php --make tests/plugins/DevTools --out plugins/DevTools.phar",
+      "make-server": [
+         "@composer install --no-dev --classmap-authoritative",
+         "@php -dphar.readonly=0 build/server-phar.php"
+      ],
+      "update-registry-annotations": [
+         "@php build/generate-registry-annotations.php src"
+      ],
+      "update-translation-apis": [
+         "@php build/generate-known-translation-apis.php"
+      ]
+   }
 }

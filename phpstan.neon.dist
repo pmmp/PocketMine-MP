@@ -1,0 +1,57 @@
+includes:
+	- tests/phpstan/configs/actual-problems.neon
+	- tests/phpstan/configs/check-explicit-mixed-baseline.neon
+	- tests/phpstan/configs/gc-hacks.neon
+	- tests/phpstan/configs/impossible-generics.neon
+	- tests/phpstan/configs/l7-baseline.neon
+	- tests/phpstan/configs/l8-baseline.neon
+	- tests/phpstan/configs/php-bugs.neon
+	- tests/phpstan/configs/phpstan-bugs.neon
+	- tests/phpstan/configs/pthreads-bugs.neon
+	- tests/phpstan/configs/runtime-type-checks.neon
+	- vendor/phpstan/phpstan-phpunit/extension.neon
+	- vendor/phpstan/phpstan-phpunit/rules.neon
+	- vendor/phpstan/phpstan-strict-rules/rules.neon
+
+rules:
+	- pocketmine\phpstan\rules\DisallowEnumComparisonRule
+#	- pocketmine\phpstan\rules\ThreadedSupportedTypesRule
+
+parameters:
+	level: 8
+	checkExplicitMixed: true
+	checkMissingCallableSignature: true
+	treatPhpDocTypesAsCertain: false
+	bootstrapFiles:
+		- tests/phpstan/bootstrap.php
+	scanDirectories:
+	    - tests/plugins/TesterPlugin
+	scanFiles:
+		- src/PocketMine.php
+		- build/make-release.php
+		- build/server-phar.php
+		- build/generate-known-translation-apis.php
+	paths:
+		- src
+		- tests/phpstan/rules
+		- build/make-release.php
+		- build/server-phar.php
+		- tests/phpunit
+		- tests/plugins/TesterPlugin
+	dynamicConstantNames:
+		- pocketmine\VersionInfo::IS_DEVELOPMENT_BUILD
+		- pocketmine\DEBUG
+	stubFiles:
+		- tests/phpstan/stubs/JsonMapper.stub
+		- tests/phpstan/stubs/pthreads.stub
+		- tests/phpstan/stubs/leveldb.stub
+		- tests/phpstan/stubs/phpasn1.stub
+	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
+	staticReflectionClassNamePatterns:
+		- "#^COM$#"
+	typeAliases:
+	    #variadics don't work for this - mixed probably shouldn't work either, but for now it does
+	    #what we actually need is something that accepts an infinite number of parameters, but in the absence of that,
+	    #we'll just fill it with 10 - it's very unlikely to encounter a callable with 10 parameters anyway.
+	    anyCallable: 'callable(mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed) : mixed'
+	    anyClosure: '\Closure(mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed) : mixed'

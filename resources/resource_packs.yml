@@ -1,0 +1,12 @@
+#This configuration file controls global resources used on your PocketMine-MP server.
+
+#Choose whether players must use your chosen resource packs to join the server.
+#NOTE: This will do nothing if there are no resource packs in the stack below.
+force_resources: false
+resource_stack:
+  #Resource packs here are applied from bottom to top. This means that resources in higher packs will override those in lower packs.
+  #Entries here must indicate the filename of the resource pack.
+  #Example
+  # - natural.zip
+  # - vanilla.zip
+  #If you want to force clients to use vanilla resources, you must place a vanilla resource pack in your resources folder and add it to the stack here.

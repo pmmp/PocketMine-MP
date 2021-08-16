@@ -1,0 +1,8 @@
+name: TesterPlugin
+main: pmmp\TesterPlugin\Main
+src-namespace-prefix: pmmp\TesterPlugin
+version: 0.1.0
+api: [3.2.0, 4.0.0]
+load: POSTWORLD
+author: pmmp
+description: Plugin used to run tests on PocketMine-MP
