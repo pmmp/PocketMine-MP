@@ -328,7 +328,7 @@ class CrashDump{
 	}
 
 	private function generalData() : void{
-		$version = VersionInfo::getVersionObj();
+		$version = VersionInfo::VERSION();
 		$composerLibraries = [];
 		foreach(InstalledVersions::getInstalledPackages() as $package){
 			$composerLibraries[$package] = sprintf(
@@ -344,7 +344,7 @@ class CrashDump{
 		$this->data["general"]["build"] = VersionInfo::BUILD_NUMBER;
 		$this->data["general"]["is_dev"] = VersionInfo::IS_DEVELOPMENT_BUILD;
 		$this->data["general"]["protocol"] = ProtocolInfo::CURRENT_PROTOCOL;
-		$this->data["general"]["git"] = VersionInfo::getGitHash();
+		$this->data["general"]["git"] = VersionInfo::GIT_HASH();
 		$this->data["general"]["uname"] = php_uname("a");
 		$this->data["general"]["php"] = phpversion();
 		$this->data["general"]["zend"] = zend_version();
@@ -352,7 +352,7 @@ class CrashDump{
 		$this->data["general"]["os"] = Utils::getOS();
 		$this->data["general"]["composer_libraries"] = $composerLibraries;
 		$this->addLine($this->server->getName() . " version: " . $version->getFullVersion(true) . " [Protocol " . ProtocolInfo::CURRENT_PROTOCOL . "]");
-		$this->addLine("Git commit: " . VersionInfo::getGitHash());
+		$this->addLine("Git commit: " . VersionInfo::GIT_HASH());
 		$this->addLine("uname -a: " . php_uname("a"));
 		$this->addLine("PHP Version: " . phpversion());
 		$this->addLine("Zend version: " . zend_version());

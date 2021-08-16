@@ -24,9 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\updater;
 
 use pocketmine\event\server\UpdateNotifyEvent;
-use pocketmine\player\Player;
 use pocketmine\Server;
-use pocketmine\utils\TextFormat;
 use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
 use function date;
@@ -105,14 +103,6 @@ class AutoUpdater{
 		$this->printConsoleMessage($messages, \LogLevel::WARNING);
 	}
 
-	/**
-	 * Shows a warning to a player to tell them there is an update available
-	 */
-	public function showPlayerUpdate(Player $player) : void{
-		$player->sendMessage(TextFormat::DARK_PURPLE . "The version of " . $this->server->getName() . " that this server is running is out of date. Please consider updating to the latest version.");
-		$player->sendMessage(TextFormat::DARK_PURPLE . "Check the console for more details.");
-	}
-
 	protected function showChannelSuggestionStable() : void{
 		$this->printConsoleMessage([
 			"It appears you're running a Stable build, when you've specified that you prefer to run " . ucfirst($this->getChannel()) . " builds.",
@@ -160,7 +150,7 @@ class AutoUpdater{
 		if($this->updateInfo === null){
 			return;
 		}
-		$currentVersion = VersionInfo::getVersionObj();
+		$currentVersion = VersionInfo::VERSION();
 		try{
 			$newVersion = new VersionString($this->updateInfo->base_version, $this->updateInfo->is_dev, $this->updateInfo->build);
 		}catch(\InvalidArgumentException $e){

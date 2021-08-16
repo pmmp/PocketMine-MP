@@ -25,8 +25,8 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function array_chunk;
@@ -46,8 +46,8 @@ class HelpCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_HELP_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_HELP_USAGE,
+			KnownTranslationKeys::POCKETMINE_COMMAND_HELP_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_HELP_USAGE,
 			["?"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_HELP);
@@ -88,10 +88,11 @@ class HelpCommand extends VanillaCommand{
 			if($pageNumber < 1){
 				$pageNumber = 1;
 			}
-			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_HELP_HEADER, [$pageNumber, count($commands)]));
+			$sender->sendMessage(KnownTranslationFactory::commands_help_header((string) $pageNumber, (string) count($commands)));
+			$lang = $sender->getLanguage();
 			if(isset($commands[$pageNumber - 1])){
 				foreach($commands[$pageNumber - 1] as $command){
-					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getName() . ": " . TextFormat::WHITE . $command->getDescription());
+					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getName() . ": " . TextFormat::WHITE . $lang->translateString($command->getDescription()));
 				}
 			}
 
@@ -100,8 +101,8 @@ class HelpCommand extends VanillaCommand{
 			if(($cmd = $sender->getServer()->getCommandMap()->getCommand(strtolower($commandName))) instanceof Command){
 				if($cmd->testPermissionSilent($sender)){
 					$message = TextFormat::YELLOW . "--------- " . TextFormat::WHITE . " Help: /" . $cmd->getName() . TextFormat::YELLOW . " ---------\n";
-					$message .= TextFormat::GOLD . "Description: " . TextFormat::WHITE . $cmd->getDescription() . "\n";
-					$message .= TextFormat::GOLD . "Usage: " . TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $cmd->getUsage())) . "\n";
+					$message .= TextFormat::GOLD . "Description: " . TextFormat::WHITE . $sender->getLanguage()->translateString($cmd->getDescription()) . "\n";
+					$message .= TextFormat::GOLD . "Usage: " . TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $sender->getLanguage()->translateString($cmd->getUsage()))) . "\n";
 					$sender->sendMessage($message);
 
 					return true;

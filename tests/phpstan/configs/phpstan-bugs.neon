@@ -41,6 +41,71 @@ parameters:
 			path: ../../../src/utils/Promise.php
 
 		-
+			message: "#^Match arm comparison between string and '§3' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§4' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§5' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§6' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§7' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§8' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§9' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§a' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§b' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§c' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§d' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§e' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Match arm comparison between string and '§f' is always false\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
 			message: "#^Parameter \\#1 \\$ of closure expects TMemberType, TMemberType given\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php

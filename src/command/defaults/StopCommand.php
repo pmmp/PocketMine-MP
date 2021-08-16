@@ -25,8 +25,8 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 
 class StopCommand extends VanillaCommand{
@@ -34,8 +34,8 @@ class StopCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_STOP_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_STOP_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_STOP_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_STOP_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_STOP);
 	}
@@ -45,7 +45,7 @@ class StopCommand extends VanillaCommand{
 			return true;
 		}
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_STOP_START));
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_stop_start());
 
 		$sender->getServer()->shutdown();
 

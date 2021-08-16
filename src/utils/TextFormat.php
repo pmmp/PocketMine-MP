@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use function is_array;
-use function json_encode;
-use function json_last_error_msg;
 use function mb_scrub;
 use function preg_last_error;
 use function preg_quote;
@@ -33,7 +30,6 @@ use function preg_replace;
 use function preg_split;
 use function str_repeat;
 use function str_replace;
-use const JSON_UNESCAPED_SLASHES;
 use const PREG_BACKTRACK_LIMIT_ERROR;
 use const PREG_BAD_UTF8_ERROR;
 use const PREG_BAD_UTF8_OFFSET_ERROR;
@@ -67,11 +63,39 @@ abstract class TextFormat{
 	public const YELLOW = TextFormat::ESCAPE . "e";
 	public const WHITE = TextFormat::ESCAPE . "f";
 
+	public const COLORS = [
+		self::BLACK => self::BLACK,
+		self::DARK_BLUE => self::DARK_BLUE,
+		self::DARK_GREEN => self::DARK_GREEN,
+		self::DARK_AQUA => self::DARK_AQUA,
+		self::DARK_RED => self::DARK_RED,
+		self::DARK_PURPLE => self::DARK_PURPLE,
+		self::GOLD => self::GOLD,
+		self::GRAY => self::GRAY,
+		self::DARK_GRAY => self::DARK_GRAY,
+		self::BLUE => self::BLUE,
+		self::GREEN => self::GREEN,
+		self::AQUA => self::AQUA,
+		self::RED => self::RED,
+		self::LIGHT_PURPLE => self::LIGHT_PURPLE,
+		self::YELLOW => self::YELLOW,
+		self::WHITE => self::WHITE,
+	];
+
 	public const OBFUSCATED = TextFormat::ESCAPE . "k";
 	public const BOLD = TextFormat::ESCAPE . "l";
 	public const STRIKETHROUGH = TextFormat::ESCAPE . "m";
 	public const UNDERLINE = TextFormat::ESCAPE . "n";
 	public const ITALIC = TextFormat::ESCAPE . "o";
+
+	public const FORMATS = [
+		self::OBFUSCATED => self::OBFUSCATED,
+		self::BOLD => self::BOLD,
+		self::STRIKETHROUGH => self::STRIKETHROUGH,
+		self::UNDERLINE => self::UNDERLINE,
+		self::ITALIC => self::ITALIC,
+	];
+
 	public const RESET = TextFormat::ESCAPE . "r";
 
 	private static function makePcreError() : \InvalidArgumentException{
@@ -133,206 +157,12 @@ abstract class TextFormat{
 	}
 
 	/**
-	 * Returns an JSON-formatted string with colors/markup
-	 *
-	 * @param string|string[] $string
-	 */
-	public static function toJSON($string) : string{
-		if(!is_array($string)){
-			$string = self::tokenize($string);
-		}
-		$newString = new TextFormatJsonObject();
-		$pointer = $newString;
-		$color = "white";
-		$bold = false;
-		$italic = false;
-		$underlined = false;
-		$strikethrough = false;
-		$obfuscated = false;
-		$index = 0;
-
-		foreach($string as $token){
-			if($pointer->text !== null){
-				if($newString->extra === null){
-					$newString->extra = [];
-				}
-				$newString->extra[$index] = $pointer = new TextFormatJsonObject();
-				if($color !== "white"){
-					$pointer->color = $color;
-				}
-				if($bold){
-					$pointer->bold = true;
-				}
-				if($italic){
-					$pointer->italic = true;
-				}
-				if($underlined){
-					$pointer->underlined = true;
-				}
-				if($strikethrough){
-					$pointer->strikethrough = true;
-				}
-				if($obfuscated){
-					$pointer->obfuscated = true;
-				}
-				++$index;
-			}
-			switch($token){
-				case TextFormat::BOLD:
-					if(!$bold){
-						$pointer->bold = true;
-						$bold = true;
-					}
-					break;
-				case TextFormat::OBFUSCATED:
-					if(!$obfuscated){
-						$pointer->obfuscated = true;
-						$obfuscated = true;
-					}
-					break;
-				case TextFormat::ITALIC:
-					if(!$italic){
-						$pointer->italic = true;
-						$italic = true;
-					}
-					break;
-				case TextFormat::UNDERLINE:
-					if(!$underlined){
-						$pointer->underlined = true;
-						$underlined = true;
-					}
-					break;
-				case TextFormat::STRIKETHROUGH:
-					if(!$strikethrough){
-						$pointer->strikethrough = true;
-						$strikethrough = true;
-					}
-					break;
-				case TextFormat::RESET:
-					if($color !== "white"){
-						$pointer->color = "white";
-						$color = "white";
-					}
-					if($bold){
-						$pointer->bold = false;
-						$bold = false;
-					}
-					if($italic){
-						$pointer->italic = false;
-						$italic = false;
-					}
-					if($underlined){
-						$pointer->underlined = false;
-						$underlined = false;
-					}
-					if($strikethrough){
-						$pointer->strikethrough = false;
-						$strikethrough = false;
-					}
-					if($obfuscated){
-						$pointer->obfuscated = false;
-						$obfuscated = false;
-					}
-					break;
-
-				//Colors
-				case TextFormat::BLACK:
-					$pointer->color = "black";
-					$color = "black";
-					break;
-				case TextFormat::DARK_BLUE:
-					$pointer->color = "dark_blue";
-					$color = "dark_blue";
-					break;
-				case TextFormat::DARK_GREEN:
-					$pointer->color = "dark_green";
-					$color = "dark_green";
-					break;
-				case TextFormat::DARK_AQUA:
-					$pointer->color = "dark_aqua";
-					$color = "dark_aqua";
-					break;
-				case TextFormat::DARK_RED:
-					$pointer->color = "dark_red";
-					$color = "dark_red";
-					break;
-				case TextFormat::DARK_PURPLE:
-					$pointer->color = "dark_purple";
-					$color = "dark_purple";
-					break;
-				case TextFormat::GOLD:
-					$pointer->color = "gold";
-					$color = "gold";
-					break;
-				case TextFormat::GRAY:
-					$pointer->color = "gray";
-					$color = "gray";
-					break;
-				case TextFormat::DARK_GRAY:
-					$pointer->color = "dark_gray";
-					$color = "dark_gray";
-					break;
-				case TextFormat::BLUE:
-					$pointer->color = "blue";
-					$color = "blue";
-					break;
-				case TextFormat::GREEN:
-					$pointer->color = "green";
-					$color = "green";
-					break;
-				case TextFormat::AQUA:
-					$pointer->color = "aqua";
-					$color = "aqua";
-					break;
-				case TextFormat::RED:
-					$pointer->color = "red";
-					$color = "red";
-					break;
-				case TextFormat::LIGHT_PURPLE:
-					$pointer->color = "light_purple";
-					$color = "light_purple";
-					break;
-				case TextFormat::YELLOW:
-					$pointer->color = "yellow";
-					$color = "yellow";
-					break;
-				case TextFormat::WHITE:
-					$pointer->color = "white";
-					$color = "white";
-					break;
-				default:
-					$pointer->text = $token;
-					break;
-			}
-		}
-
-		if($newString->extra !== null){
-			foreach($newString->extra as $k => $d){
-				if($d->text === null){
-					unset($newString->extra[$k]);
-				}
-			}
-		}
-
-		$result = json_encode($newString, JSON_UNESCAPED_SLASHES);
-		if($result === false){
-			throw new \InvalidArgumentException("Failed to encode result JSON: " . json_last_error_msg());
-		}
-		return $result;
-	}
-
-	/**
 	 * Returns an HTML-formatted string with colors/markup
-	 *
-	 * @param string|string[] $string
 	 */
-	public static function toHTML($string) : string{
-		if(!is_array($string)){
-			$string = self::tokenize($string);
-		}
+	public static function toHTML(string $string) : string{
 		$newString = "";
 		$tokens = 0;
-		foreach($string as $token){
+		foreach(self::tokenize($string) as $token){
 			switch($token){
 				case TextFormat::BOLD:
 					$newString .= "<span style=font-weight:bold>";

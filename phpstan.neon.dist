@@ -30,7 +30,7 @@ parameters:
 		- src/PocketMine.php
 		- build/make-release.php
 		- build/server-phar.php
-		- build/generate-known-translation-keys.php
+		- build/generate-known-translation-apis.php
 	paths:
 		- src
 		- tests/phpstan/rules

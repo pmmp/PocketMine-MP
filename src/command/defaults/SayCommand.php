@@ -26,8 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\console\ConsoleCommandSender;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -39,8 +39,8 @@ class SayCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_SAY_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_SAY_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_SAY_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_SAY_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SAY);
 	}
@@ -54,7 +54,10 @@ class SayCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$sender->getServer()->broadcastMessage(new TranslationContainer(TextFormat::LIGHT_PURPLE . "%" . KnownTranslationKeys::CHAT_TYPE_ANNOUNCEMENT, [$sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? "Server" : $sender->getName()), TextFormat::LIGHT_PURPLE . implode(" ", $args)]));
+		$sender->getServer()->broadcastMessage(KnownTranslationFactory::chat_type_announcement(
+			$sender instanceof Player ? $sender->getDisplayName() : ($sender instanceof ConsoleCommandSender ? "Server" : $sender->getName()),
+			implode(" ", $args)
+		)->prefix(TextFormat::LIGHT_PURPLE));
 		return true;
 	}
 }

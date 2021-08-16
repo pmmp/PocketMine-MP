@@ -54,7 +54,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
-use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\NbtDataException;
@@ -401,7 +401,7 @@ class World implements ChunkManager{
 		$this->minY = $this->provider->getWorldMinY();
 		$this->maxY = $this->provider->getWorldMaxY();
 
-		$this->server->getLogger()->info($this->server->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_LEVEL_PREPARING, [$this->displayName]));
+		$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_preparing($this->displayName)));
 		$this->generator = GeneratorManager::getInstance()->getGenerator($this->provider->getWorldData()->getGenerator(), true);
 		//TODO: validate generator options
 		$this->chunkPopulationRequestQueue = new \SplQueue();

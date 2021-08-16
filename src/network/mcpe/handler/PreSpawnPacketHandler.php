@@ -95,7 +95,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$pk->worldName = $this->server->getMotd();
 		$pk->itemTable = GlobalItemTypeDictionary::getInstance()->getDictionary()->getEntries(); //TODO: check if this is actually needed
 		$pk->playerMovementSettings = new PlayerMovementSettings(PlayerMovementType::LEGACY, 0, false);
-		$pk->serverSoftwareVersion = sprintf("%s %s", VersionInfo::NAME, VersionInfo::getVersionObj()->getFullVersion(true));
+		$pk->serverSoftwareVersion = sprintf("%s %s", VersionInfo::NAME, VersionInfo::VERSION()->getFullVersion(true));
 		$this->session->sendDataPacket($pk);
 
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getAvailableActorIdentifiers());

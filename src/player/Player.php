@@ -80,9 +80,10 @@ use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\Releasable;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -113,6 +114,7 @@ use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use Ramsey\Uuid\UuidInterface;
 use function abs;
+use function array_map;
 use function assert;
 use function count;
 use function explode;
@@ -276,16 +278,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return;
 		}
 
-		$this->server->getLogger()->info($this->getServer()->getLanguage()->translateString(KnownTranslationKeys::POCKETMINE_PLAYER_LOGIN, [
+		$this->server->getLogger()->info($this->getServer()->getLanguage()->translate(KnownTranslationFactory::pocketmine_player_logIn(
 			TextFormat::AQUA . $this->username . TextFormat::WHITE,
 			$session->getIp(),
-			$session->getPort(),
-			$this->id,
+			(string) $session->getPort(),
+			(string) $this->id,
 			$this->getWorld()->getDisplayName(),
-			round($this->location->x, 4),
-			round($this->location->y, 4),
-			round($this->location->z, 4)
-		]));
+			(string) round($this->location->x, 4),
+			(string) round($this->location->y, 4),
+			(string) round($this->location->z, 4)
+		)));
 
 		$this->server->addOnlinePlayer($this);
 	}
@@ -318,14 +320,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
-	/**
-	 * @return TranslationContainer|string
-	 */
-	public function getLeaveMessage(){
+	public function getLeaveMessage() : Translatable|string{
 		if($this->spawned){
-			return new TranslationContainer(TextFormat::YELLOW . "%" . KnownTranslationKeys::MULTIPLAYER_PLAYER_LEFT, [
-				$this->getDisplayName()
-			]);
+			return KnownTranslationFactory::multiplayer_player_left($this->getDisplayName())->prefix(TextFormat::YELLOW);
 		}
 
 		return "";
@@ -759,9 +756,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		});
 
 		$ev = new PlayerJoinEvent($this,
-			new TranslationContainer(TextFormat::YELLOW . "%" . KnownTranslationKeys::MULTIPLAYER_PLAYER_JOINED, [
-				$this->getDisplayName()
-			])
+			KnownTranslationFactory::multiplayer_player_joined($this->getDisplayName())->prefix(TextFormat::YELLOW)
 		);
 		$ev->call();
 		if($ev->getJoinMessage() !== ""){
@@ -771,10 +766,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->noDamageTicks = 60;
 
 		$this->spawnToAll();
-
-		if($this->server->getUpdater()->hasUpdate() and $this->hasPermission(DefaultPermissionNames::BROADCAST_ADMIN) and $this->server->getConfigGroup()->getPropertyBool("auto-updater.on-update.warn-ops", true)){
-			$this->server->getUpdater()->showPlayerUpdate($this);
-		}
 
 		if($this->getHealth() <= 0){
 			$this->logger->debug("Quit while dead, forcing respawn");
@@ -1781,22 +1772,22 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Sends a direct chat message to a player
-	 *
-	 * @param TranslationContainer|string $message
 	 */
-	public function sendMessage($message) : void{
-		if($message instanceof TranslationContainer){
+	public function sendMessage(Translatable|string $message) : void{
+		if($message instanceof Translatable){
 			$this->sendTranslation($message->getText(), $message->getParameters());
 			return;
 		}
 
-		$this->getNetworkSession()->onRawChatMessage($this->getLanguage()->translateString($message));
+		$this->getNetworkSession()->onRawChatMessage($message);
 	}
 
 	/**
-	 * @param string[] $parameters
+	 * @param string[]|Translatable[] $parameters
 	 */
 	public function sendTranslation(string $message, array $parameters = []) : void{
+		//we can't send nested translations to the client, so make sure they are always pre-translated by the server
+		$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $this->getLanguage()->translate($p) : $p, $parameters);
 		if(!$this->server->isLanguageForced()){
 			foreach($parameters as $i => $p){
 				$parameters[$i] = $this->getLanguage()->translateString($p, [], "pocketmine.");
@@ -1882,16 +1873,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/**
 	 * Kicks a player from the server
-	 *
-	 * @param TranslationContainer|string|null $quitMessage
 	 */
-	public function kick(string $reason = "", $quitMessage = null) : bool{
+	public function kick(string $reason = "", Translatable|string|null $quitMessage = null) : bool{
 		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$reason = $ev->getReason();
 			if($reason === ""){
-				$reason = "disconnectionScreen.noReason";
+				$reason = KnownTranslationKeys::DISCONNECTIONSCREEN_NOREASON;
 			}
 			$this->disconnect($reason, $ev->getQuitMessage());
 
@@ -1910,10 +1899,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * Note for internals developers: Do not call this from network sessions. It will cause a feedback loop.
 	 *
-	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
-	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
+	 * @param string                   $reason Shown to the player, usually this will appear on their disconnect screen.
+	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function disconnect(string $reason, $quitMessage = null) : void{
+	public function disconnect(string $reason, Translatable|string|null $quitMessage = null) : void{
 		if(!$this->isConnected()){
 			return;
 		}
@@ -1927,9 +1916,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * This method executes post-disconnect actions and cleanups.
 	 *
 	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
-	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
+	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function onPostDisconnect(string $reason, $quitMessage) : void{
+	public function onPostDisconnect(string $reason, Translatable|string|null $quitMessage) : void{
 		if($this->isConnected()){
 			throw new \InvalidStateException("Player is still connected");
 		}

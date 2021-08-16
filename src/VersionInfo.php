@@ -40,7 +40,7 @@ final class VersionInfo{
 	/** @var string|null */
 	private static $gitHash = null;
 
-	public static function getGitHash() : string{
+	public static function GIT_HASH() : string{
 		if(self::$gitHash === null){
 			$gitHash = str_repeat("00", 20);
 
@@ -63,7 +63,7 @@ final class VersionInfo{
 	/** @var VersionString|null */
 	private static $fullVersion = null;
 
-	public static function getVersionObj() : VersionString{
+	public static function VERSION() : VersionString{
 		if(self::$fullVersion === null){
 			self::$fullVersion = new VersionString(self::BASE_VERSION, self::IS_DEVELOPMENT_BUILD, self::BUILD_NUMBER);
 		}
