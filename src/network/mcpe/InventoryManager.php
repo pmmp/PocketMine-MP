@@ -58,7 +58,6 @@ use pocketmine\utils\ObjectSet;
 use function array_flip;
 use function array_map;
 use function array_search;
-use function is_int;
 use function max;
 
 /**
