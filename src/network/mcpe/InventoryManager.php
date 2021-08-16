@@ -199,13 +199,13 @@ class InventoryManager{
 	 * @param UIInventory $inventory
 	 * @return array<int, int>
 	 */
-	protected static function getSlotOffset(UIInventory $inventory) : array {
-		return (function(array|int $slotOffset) : array {
+	protected static function getSlotOffset(UIInventory $inventory) : array{
+		return (function(array|int $slotOffset) : array{
 			if(is_int($slotOffset)){
 				$slotOffset = [0 => $slotOffset];
 			}
 			return array_flip($slotOffset);
-		})(match (true) {
+		})(match(true){
 			$inventory instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
 			$inventory instanceof CraftingGrid and $inventory->getGridWidth() === CraftingGrid::SIZE_SMALL => UIInventorySlotOffset::CRAFTING2X2_INPUT,
 			$inventory instanceof CraftingGrid and $inventory->getGridWidth() === CraftingGrid::SIZE_BIG => UIInventorySlotOffset::CRAFTING3X3_INPUT,
