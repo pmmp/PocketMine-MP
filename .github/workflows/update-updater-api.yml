@@ -17,7 +17,6 @@ jobs:
         with:
           repository: pmmp/update.pmmp.io
           ssh-key: ${{ secrets.UPDATE_PMMP_IO_DEPLOY_KEY }}
-          ref: test # TODO: REMOVE ME
 
       - name: Get actual tag name
         id: tag-name
