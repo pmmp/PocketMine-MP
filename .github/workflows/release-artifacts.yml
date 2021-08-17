@@ -7,6 +7,7 @@ on:
 jobs:
   artifacts:
     name: Create release artifacts
+    if: "startsWith(github.event.head_commit.message, 'Release ')"
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
