@@ -11,9 +11,6 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
-      matrix:
-        image: [ubuntu-20.04]
-        php: [8.0.8]
 
     steps:
       - uses: actions/checkout@v2
@@ -23,7 +20,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@2.12.0
         with:
-          php-version: ${{ matrix.php }}
+          php-version: 8.0
 
       - name: Restore Composer package cache
         uses: actions/cache@v2
@@ -31,7 +28,7 @@ jobs:
           path: |
             ~/.cache/composer/files
             ~/.cache/composer/vcs
-          key: "composer-v2-cache-${{ matrix.php }}-${{ hashFiles('./composer.lock') }}"
+          key: "composer-v2-cache-${{ hashFiles('./composer.lock') }}"
           restore-keys: |
             composer-v2-cache-
 
@@ -111,6 +108,6 @@ jobs:
         uses: actions/upload-artifact@v2
         if: always()
         with:
-          name: preprocessor_diffs_${{ matrix.php }}_${{ matrix.image }}
+          name: preprocessor_diffs
           path: ${{ github.workspace }}/preprocessor_diff*.patch
 
