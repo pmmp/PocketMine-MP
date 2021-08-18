@@ -1,12 +1,12 @@
-name: Create and upload release artifacts
+name: Draft release
 
 on:
   push:
     tags: "*"
 
 jobs:
-  artifacts:
-    name: Create release artifacts
+  draft:
+    name: Create GitHub draft release
     if: "startsWith(github.event.head_commit.message, 'Release ')"
     runs-on: ubuntu-20.04
     strategy:
