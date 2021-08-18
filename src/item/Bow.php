@@ -31,6 +31,7 @@ use pocketmine\event\entity\ProjectileLaunchEvent;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\player\Player;
 use pocketmine\world\sound\BowShootSound;
+use pocketmine\world\sound\ItemBreakSound;
 use function intdiv;
 use function min;
 
@@ -119,6 +120,10 @@ class Bow extends Tool implements Releasable{
 				$inventory?->removeItem($arrow);
 			}
 			$this->applyDamage(1);
+			
+			if($this->isBroken()){
+				$location->getWorld()->addSound($location, new ItemBreakSound());
+			}
 		}
 
 		return ItemUseResult::SUCCESS();
