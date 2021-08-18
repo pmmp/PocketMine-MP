@@ -36,3 +36,4 @@ const NAME = "PocketMine-MP";
 const BASE_VERSION = "3.22.2";
 const IS_DEVELOPMENT_BUILD = true;
 const BUILD_NUMBER = 0;
+const BUILD_CHANNEL = "";
