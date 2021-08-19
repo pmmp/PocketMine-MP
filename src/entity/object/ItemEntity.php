@@ -228,13 +228,14 @@ class ItemEntity extends Entity{
 		$item = $this->getItem();
 		$playerInventory = $player->getInventory();
 		if(!$playerInventory->canAddItem($item)){
-			if($player->hasFiniteResources()){
-				return;
-			}
 			$playerInventory = null;
 		}
 
 		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
+		if($player->hasFiniteResources() and $playerInventory === null){
+			$ev->cancel();
+		}
+
 		$ev->call();
 		if($ev->isCancelled()){
 			return;

@@ -176,13 +176,13 @@ class Arrow extends Projectile{
 		$item = VanillaItems::ARROW();
 		$playerInventory = $player->getInventory();
 		if(!$playerInventory->canAddItem($item)){
-			if($player->hasFiniteResources()){
-				return;
-			}
 			$playerInventory = null;
 		}
 
 		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
+		if($player->hasFiniteResources() and $playerInventory === null){
+			$ev->cancel();
+		}
 		if($this->pickupMode === self::PICKUP_NONE or ($this->pickupMode === self::PICKUP_CREATIVE and !$player->isCreative())){
 			$ev->cancel();
 		}
