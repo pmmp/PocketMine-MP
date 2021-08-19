@@ -235,32 +235,39 @@ class InventoryManager{
 	public function syncSlot(Inventory $inventory, int $slot) : void{
 		$currentItem = $inventory->getItem($slot);
 		$itemStackWrapper = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($currentItem));
-		if(($slotOffset = self::getSlotOffset($inventory)) !== null){
-			$this->session->sendDataPacket(InventorySlotPacket::create(
-				ContainerIds::UI,
-				$slotOffset[$slot],
-				$itemStackWrapper
-			));
-		}elseif(($windowId = $this->getWindowId($inventory)) !== null){
+		$clientSideItem = null;
+		$windowId = $this->getWindowId($inventory);
+		if($windowId !== null){
 			$clientSideItem = $this->initiatedSlotChanges[$windowId][$slot] ?? null;
-			if($clientSideItem === null or !$clientSideItem->equalsExact($currentItem)){
-				if($windowId === ContainerIds::OFFHAND){
-					//TODO: HACK!
-					//The client may sometimes ignore the InventorySlotPacket for the offhand slot.
-					//This can cause a lot of problems (totems, arrows, and more...).
-					//The workaround is to send an InventoryContentPacket instead
-					//BDS (Bedrock Dedicated Server) also seems to work this way.
-					$this->session->sendDataPacket(InventoryContentPacket::create($windowId, [$itemStackWrapper]));
-				}else{
-					$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $slot, $itemStackWrapper));
-				}
-			}
 			unset($this->initiatedSlotChanges[$windowId][$slot]);
+		}
+
+		if($clientSideItem === null or !$clientSideItem->equalsExact($currentItem)){
+			if(($slotOffset = self::getSlotOffset($inventory)) !== null){
+				$this->session->sendDataPacket(InventorySlotPacket::create(
+					ContainerIds::UI,
+					$slotOffset[$slot],
+					$itemStackWrapper
+				));
+			}elseif($windowId === ContainerIds::OFFHAND){
+				//TODO: HACK!
+				//The client may sometimes ignore the InventorySlotPacket for the offhand slot.
+				//This can cause a lot of problems (totems, arrows, and more...).
+				//The workaround is to send an InventoryContentPacket instead
+				//BDS (Bedrock Dedicated Server) also seems to work this way.
+				$this->session->sendDataPacket(InventoryContentPacket::create($windowId, [$itemStackWrapper]));
+			}elseif($windowId !== null){
+				$this->session->sendDataPacket(InventorySlotPacket::create($windowId, $slot, $itemStackWrapper));
+			}
 		}
 	}
 
 	public function syncContents(Inventory $inventory) : void{
 		$typeConverter = TypeConverter::getInstance();
+		$windowId = $this->getWindowId($inventory);
+		if($windowId !== null){
+			unset($this->initiatedSlotChanges[$windowId]);
+		}
 		if(($slotOffset = self::getSlotOffset($inventory)) !== null){
 			//TODO: HACK!
 			//"UI Inventory" (a ridiculous inventory with integrated crafting grid, anvil inventory, etc.)
@@ -273,8 +280,7 @@ class InventoryManager{
 					ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($inventory->getItem($slot)))
 				));
 			}
-		}elseif(($windowId = $this->getWindowId($inventory)) !== null){
-			unset($this->initiatedSlotChanges[$windowId]);
+		}elseif($windowId !== null){
 			$this->session->sendDataPacket(InventoryContentPacket::create($windowId, array_map(function(Item $itemStack) use ($typeConverter) : ItemStackWrapper{
 				return ItemStackWrapper::legacy($typeConverter->coreItemStackToNet($itemStack));
 			}, $inventory->getContents(true))));
