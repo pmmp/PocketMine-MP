@@ -99,11 +99,7 @@ class LegacySkinAdapter implements SkinAdapter{
 			$skinData = self::mirroredCopy($skinData, 40, 20, 4, 12, 40, 52);
 			$skinData = self::mirroredCopy($skinData, 52, 20, 4, 12, 44, 52);
 		}
-		return new Skin(
-			$data->getSkinId(),
-			$skinData,
-			$capeData, $geometryName, $data->getGeometryData()
-		);
+		return new Skin($data->getSkinId(), $skinData, $capeData, $geometryName, $data->getGeometryData());
 	}
 
 	private static function mirroredCopy(string $bitmap, int $startX, int $startY, int $width, int $height, int $toX, int $toY) : string{
