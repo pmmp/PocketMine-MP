@@ -196,7 +196,7 @@ class Arrow extends Projectile{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$ev->getInventory()?->addItem(clone $ev->getItem());
+		$ev->getInventory()?->addItem($ev->getItem());
 		$this->flagForDespawn();
 	}
 
