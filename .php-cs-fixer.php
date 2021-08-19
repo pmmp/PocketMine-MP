@@ -41,7 +41,8 @@ return (new PhpCsFixer\Config)
 		],
 		'indentation_type' => true,
 		'native_function_invocation' => [
-			'scope' => 'namespaced'
+			'scope' => 'namespaced',
+			'include' => ['@all'],
 		],
 		'no_closing_tag' => true,
 		'no_empty_phpdoc' => true,
