@@ -174,10 +174,12 @@ class Arrow extends Projectile{
 		}
 
 		$item = VanillaItems::ARROW();
-
 		$playerInventory = $player->getInventory();
-		if($player->hasFiniteResources() and !$playerInventory->canAddItem($item)){
-			return;
+		if(!$playerInventory->canAddItem($item)){
+			if($player->hasFiniteResources()){
+				return;
+			}
+			$playerInventory = null;
 		}
 
 		$ev = new EntityPickupItemEvent($player, $this, $item, $playerInventory);
@@ -194,7 +196,7 @@ class Arrow extends Projectile{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$ev->getInventory()->addItem(clone $ev->getItem());
+		$ev->getInventory()?->addItem(clone $ev->getItem());
 		$this->flagForDespawn();
 	}
 
