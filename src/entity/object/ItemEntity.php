@@ -226,9 +226,9 @@ class ItemEntity extends Entity{
 		}
 
 		$item = $this->getItem();
-		$playerInventory = null;
+		$playerInventory = $player->getInventory();
 
-		if($player->hasFiniteResources() and !($playerInventory = $player->getInventory())->canAddItem($item)){
+		if($player->hasFiniteResources() and !$playerInventory->canAddItem($item)){
 			return;
 		}
 
