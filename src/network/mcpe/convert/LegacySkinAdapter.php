@@ -60,7 +60,7 @@ class LegacySkinAdapter implements SkinAdapter{
 
 	public function fromSkinData(SkinData $data) : Skin{
 		if($data->isPersona()){
-			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 2048));
+			return new Skin("Standard_Custom", str_repeat(random_bytes(3) . "\xff", 4096));
 		}
 
 		$capeData = $data->isPersonaCapeOnClassic() ? "" : $data->getCapeImage()->getData();
@@ -72,6 +72,52 @@ class LegacySkinAdapter implements SkinAdapter{
 			throw new InvalidSkinException("Missing geometry name field");
 		}
 
-		return new Skin($data->getSkinId(), $data->getSkinImage()->getData(), $capeData, $geometryName, $data->getGeometryData());
+		$skinData = $data->getSkinImage()->getData();
+		if(strlen($skinData) === (32 * 64 * 4)) { // convert to 64x64
+			// process from: https://imgur.com/a/hfaqL
+			$skinData = str_pad($skinData, 64 * 64 * 4, "\x00\x00\x00\x00"); // pad to 64x64
+
+			// leg tops
+			$skinData = self::copyAndFlipHorizontally($skinData, 4, 16, 4, 4, 20, 48);
+			$skinData = self::copyAndFlipHorizontally($skinData, 8, 16, 4, 4, 24, 48);
+
+			// arm tops
+			$skinData = self::copyAndFlipHorizontally($skinData, 44, 16, 4, 4, 36, 48);
+			$skinData = self::copyAndFlipHorizontally($skinData, 48, 16, 4, 4, 40, 48);
+
+			// leg pieces
+			$skinData = self::copyAndFlipHorizontally($skinData, 8, 20, 4, 12, 16, 52);
+			$skinData = self::copyAndFlipHorizontally($skinData, 4, 20, 4, 12, 20, 52);
+			$skinData = self::copyAndFlipHorizontally($skinData, 0, 20, 4, 12, 24, 52);
+			$skinData = self::copyAndFlipHorizontally($skinData, 12, 20, 4, 12, 28, 52);
+
+			// arm pieces
+			$skinData = self::copyAndFlipHorizontally($skinData, 48, 20, 4, 12, 32, 52);
+			$skinData = self::copyAndFlipHorizontally($skinData, 44, 20, 4, 12, 36, 52);
+			$skinData = self::copyAndFlipHorizontally($skinData, 40, 20, 4, 12, 40, 52);
+			$skinData = self::copyAndFlipHorizontally($skinData, 52, 20, 4, 12, 44, 52);
+		}
+		return new Skin(
+			$data->getSkinId(),
+			$skinData,
+			$capeData, $geometryName, $data->getGeometryData()
+		);
+	}
+
+	private static function copyAndFlipHorizontally(string $bitmap, int $startX, int $startY, int $width, int $height, int $toX, int $toY) : string{
+		for($x = 0; $x < $width; $x++) {
+			for($y = 0; $y < $height; $y++) {
+				$index = self::toIndex($startX + $x, $startY + $y);
+				$toIndex = self::toIndex($toX + ($width - ($x + 1)), $toY + $y);
+				for($bit = 0; $bit < 4; $bit++) {
+					$bitmap[$toIndex + $bit] = $bitmap[$index + $bit];
+				}
+			}
+		}
+		return $bitmap;
+	}
+
+	private static function toIndex(int $x, int $y) : int{
+		return (64 * $y + $x) * 4;
 	}
 }
