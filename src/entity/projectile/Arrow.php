@@ -180,7 +180,7 @@ class Arrow extends Projectile{
 			return;
 		}
 
-		$ev = new EntityPickupItemEvent($player, $this);
+		$ev = new EntityPickupItemEvent($player, $this, $item, $playerInventory);
 		if($this->pickupMode === self::PICKUP_NONE or ($this->pickupMode === self::PICKUP_CREATIVE and !$player->isCreative())){
 			$ev->cancel();
 		}
@@ -194,7 +194,7 @@ class Arrow extends Projectile{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$playerInventory->addItem(clone $item);
+		$ev->getInventory()->addItem(clone $ev->getItem());
 		$this->flagForDespawn();
 	}
 

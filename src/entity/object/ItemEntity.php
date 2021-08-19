@@ -232,7 +232,7 @@ class ItemEntity extends Entity{
 			return;
 		}
 
-		$ev = new EntityPickupItemEvent($player, $this);
+		$ev = new EntityPickupItemEvent($player, $this, $item, $playerInventory);
 		$ev->call();
 		if($ev->isCancelled()){
 			return;
@@ -242,7 +242,7 @@ class ItemEntity extends Entity{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$playerInventory->addItem(clone $item);
+		$ev->getInventory()?->addItem(clone $ev->getItem());
 		$this->flagForDespawn();
 	}
 }

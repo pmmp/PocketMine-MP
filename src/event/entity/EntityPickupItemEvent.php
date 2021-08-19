@@ -26,6 +26,8 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\inventory\Inventory;
+use pocketmine\item\Item;
 
 /**
  * Called when an entity picks up an item, arrow, etc.
@@ -36,13 +38,43 @@ class EntityPickupItemEvent extends EntityEvent implements Cancellable{
 
 	public function __construct(
 		Entity $collector,
-		private Entity $pickedUp
+		private Entity $origin,
+		private Item $item,
+		private ?Inventory $inventory
 	){
 		$this->entity = $collector;
 	}
 
-	public function getPickedUp() : Entity{
-		return $this->pickedUp;
+	public function getOrigin() : Entity{
+		return $this->origin;
+	}
+
+	/**
+	 * Items to be received
+	 */
+	public function getItem() : Item{
+		return $this->item;
+	}
+
+	/**
+	 * Change the items to receive.
+	 */
+	public function setItem(Item $item) : void{
+		$this->item = $item;
+	}
+
+	/**
+	 * Inventory to which received items will be added.
+	 */
+	public function getInventory() : ?Inventory{
+		return $this->inventory;
+	}
+
+	/**
+	 * Change the inventory to which received items are added.
+	 */
+	public function setInventory(?Inventory $inventory) : void{
+		$this->inventory = $inventory;
 	}
 
 }
