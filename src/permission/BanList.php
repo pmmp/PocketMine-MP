@@ -32,15 +32,12 @@ use function strtolower;
 use function trim;
 
 class BanList{
-
 	/** @var BanEntry[] */
-	private $list = [];
+	private array $list = [];
 
-	/** @var string */
-	private $file;
+	private string $file;
 
-	/** @var bool */
-	private $enabled = true;
+	private bool $enabled = true;
 
 	public function __construct(string $file){
 		$this->file = $file;
@@ -85,14 +82,32 @@ class BanList{
 		$this->save();
 	}
 
-	public function addBan(string $target, ?string $reason = null, ?\DateTime $expires = null, ?string $source = null) : BanEntry{
-		$entry = new BanEntry($target);
-		$entry->setSource($source ?? $entry->getSource());
-		$entry->setExpires($expires);
-		$entry->setReason($reason ?? $entry->getReason());
+	public function addBanFromString(string $banEntry) : ?BanEntry{
+		$parts = explode("|", trim($banEntry));
+
+		$ban = $this->addBan($parts[0], $parts[1] ?? null, $parts[2] ?? null, $parts[3] ?? null, $parts[4] ?? null, false);
+
+		return $ban->isExpired() ? null : $ban;
+	}
+
+	public function addBan(string $target, ?string $source, ?string $reason = null, ?string $creationDate = null, ?string $expirationDate = null, bool $save = true) : BanEntry{
+		$creation = null;
+		if($creationDate && BanEntry::isValidDateString($creationDate)){
+			$creation = strtotime($creationDate);
+		}
+
+		$expires = null;
+		if($expirationDate && BanEntry::isValidDateString($expirationDate)){
+			$expires = strtotime($expirationDate);
+		}
+
+		$entry = new BanEntry($target, $source, $reason, $creation, $expires);
 
 		$this->list[$entry->getName()] = $entry;
-		$this->save();
+
+		if($save){
+			$this->save();
+		}
 
 		return $entry;
 	}
@@ -107,8 +122,8 @@ class BanList{
 
 	public function removeExpired() : void{
 		foreach($this->list as $name => $entry){
-			if($entry->hasExpired()){
-				unset($this->list[$name]);
+			if($entry->isExpired()){
+				$this->remove($name);
 			}
 		}
 	}
@@ -119,14 +134,12 @@ class BanList{
 		if(is_resource($fp)){
 			while(($line = fgets($fp)) !== false){
 				if($line[0] !== "#"){
-					try{
-						$entry = BanEntry::fromString($line);
-						if($entry !== null){
-							$this->list[$entry->getName()] = $entry;
-						}
-					}catch(\RuntimeException $e){
+					$entry = $this->addBanFromString($line);
+					if($entry !== null){
+						$this->list[$entry->getName()] = $entry;
+					}else{
 						$logger = \GlobalLogger::get();
-						$logger->critical("Failed to parse ban entry from string \"" . trim($line) . "\": " . $e->getMessage());
+						$logger->critical("Failed to parse ban entry from string \"" . trim($line) . "\"");
 					}
 
 				}
@@ -138,16 +151,20 @@ class BanList{
 	}
 
 	public function save(bool $writeHeader = true) : void{
-		$this->removeExpired();
 		$fp = @fopen($this->file, "w");
+		$str = "";
+
 		if(is_resource($fp)){
 			if($writeHeader){
-				fwrite($fp, "# victim name | ban date | banned by | banned until | reason\n\n");
+				$str .= "# player | source | reason | creation date | expiration date \n\n";
 			}
 
 			foreach($this->list as $entry){
-				fwrite($fp, $entry->getString() . "\n");
+				$str .= $entry->toString() . "\n";
 			}
+
+			fwrite($fp, $str);
+
 			fclose($fp);
 		}else{
 			\GlobalLogger::get()->error("Could not save ban list");

@@ -28,6 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\permission\BanEntry;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function array_shift;
@@ -55,9 +56,10 @@ class BanCommand extends VanillaCommand{
 		}
 
 		$name = array_shift($args);
-		$reason = implode(" ", $args);
+		$reason = array_shift($args);
+        $expiration = array_shift($args);
 
-		$sender->getServer()->getNameBans()->addBan($name, $reason, null, $sender->getName());
+        $sender->getServer()->getNameBans()->addBan($name, $sender->getName(), $reason, null, $expiration);
 
 		if(($player = $sender->getServer()->getPlayerExact($name)) instanceof Player){
 			$player->kick($reason !== "" ? "Banned by admin. Reason: " . $reason : "Banned by admin.");

@@ -57,15 +57,16 @@ class BanIpCommand extends VanillaCommand{
 
 		$value = array_shift($args);
 		$reason = implode(" ", $args);
+		$expiration = array_shift($args);
 
 		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $value)){
-			$this->processIPBan($value, $sender, $reason);
+			$this->processIPBan($value, $sender, $reason, $expiration);
 
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_banip_success($value));
 		}else{
 			if(($player = $sender->getServer()->getPlayerByPrefix($value)) instanceof Player){
 				$ip = $player->getNetworkSession()->getIp();
-				$this->processIPBan($ip, $sender, $reason);
+				$this->processIPBan($ip, $sender, $reason, $expiration);
 
 				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_banip_success_players($ip, $player->getName()));
 			}else{
@@ -78,8 +79,8 @@ class BanIpCommand extends VanillaCommand{
 		return true;
 	}
 
-	private function processIPBan(string $ip, CommandSender $sender, string $reason) : void{
-		$sender->getServer()->getIPBans()->addBan($ip, $reason, null, $sender->getName());
+	private function processIPBan(string $ip, CommandSender $sender, string $reason, ?string $expiration) : void{
+		$sender->getServer()->getIPBans()->addBan($ip, $sender->getName(), $reason, null, $expiration);
 
 		foreach($sender->getServer()->getOnlinePlayers() as $player){
 			if($player->getNetworkSession()->getIp() === $ip){
