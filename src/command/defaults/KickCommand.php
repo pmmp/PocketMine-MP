@@ -41,8 +41,8 @@ class KickCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_KICK_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_KICK_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_KICK_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_KICK_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_KICK);
 	}

@@ -42,8 +42,8 @@ class TeleportCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_TP_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_TP_USAGE,
+			KnownTranslationKeys::POCKETMINE_COMMAND_TP_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_TP_USAGE,
 			["teleport"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TELEPORT);

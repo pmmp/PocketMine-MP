@@ -29,7 +29,7 @@ namespace pocketmine\command;
 use pocketmine\command\utils\CommandException;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -230,13 +230,9 @@ abstract class Command{
 		$this->usageMessage = $usage;
 	}
 
-	public static function broadcastCommandMessage(CommandSender $source, TranslationContainer|string $message, bool $sendToSource = true) : void{
+	public static function broadcastCommandMessage(CommandSender $source, Translatable|string $message, bool $sendToSource = true) : void{
 		$users = $source->getServer()->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
-		if($message instanceof TranslationContainer){
-			$result = $message->format("[" . $source->getName() . ": ", "]");
-		}else{
-			$result = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
-		}
+		$result = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
 		$colored = $result->prefix(TextFormat::GRAY . TextFormat::ITALIC);
 
 		if($sendToSource and !($source instanceof ConsoleCommandSender)){

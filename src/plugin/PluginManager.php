@@ -32,7 +32,6 @@ use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\event\RegisteredListener;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
@@ -257,7 +256,7 @@ class PluginManager{
 
 				$name = $description->getName();
 				if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
-					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, "%" . KnownTranslationKeys::POCKETMINE_PLUGIN_RESTRICTEDNAME)));
+					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, KnownTranslationFactory::pocketmine_plugin_restrictedName())));
 					continue;
 				}
 				if(strpos($name, " ") !== false){
@@ -272,7 +271,7 @@ class PluginManager{
 				if(!ApiVersion::isCompatible($this->server->getApiVersion(), $description->getCompatibleApis())){
 					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 						$name,
-						$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_incompatibleAPI(implode(", ", $description->getCompatibleApis())))
+						KnownTranslationFactory::pocketmine_plugin_incompatibleAPI(implode(", ", $description->getCompatibleApis()))
 					)));
 					continue;
 				}
@@ -280,7 +279,7 @@ class PluginManager{
 				if(count($ambiguousVersions) > 0){
 					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 						$name,
-						$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_ambiguousMinAPI(implode(", ", $ambiguousVersions)))
+						KnownTranslationFactory::pocketmine_plugin_ambiguousMinAPI(implode(", ", $ambiguousVersions))
 					)));
 					continue;
 				}
@@ -288,7 +287,7 @@ class PluginManager{
 				if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
 					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 						$name,
-						$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_incompatibleOS(implode(", ", $description->getCompatibleOperatingSystems())))
+						KnownTranslationFactory::pocketmine_plugin_incompatibleOS(implode(", ", $description->getCompatibleOperatingSystems()))
 					)));
 					continue;
 				}
@@ -298,7 +297,7 @@ class PluginManager{
 					if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
 						$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 							$name,
-							$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_incompatibleProtocol(implode(", ", $pluginMcpeProtocols)))
+							KnownTranslationFactory::pocketmine_plugin_incompatibleProtocol(implode(", ", $pluginMcpeProtocols))
 						)));
 						continue;
 					}
@@ -336,7 +335,7 @@ class PluginManager{
 						}elseif(!isset($plugins[$dependency])){
 							$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 								$name,
-								$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_unknownDependency($dependency))
+								KnownTranslationFactory::pocketmine_plugin_unknownDependency($dependency)
 							)));
 							unset($plugins[$name]);
 							continue 2;
@@ -381,7 +380,7 @@ class PluginManager{
 			if($loadedThisLoop === 0){
 				//No plugins loaded :(
 				foreach($plugins as $name => $file){
-					$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, "%" . KnownTranslationKeys::POCKETMINE_PLUGIN_CIRCULARDEPENDENCY)));
+					$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, KnownTranslationFactory::pocketmine_plugin_circularDependency())));
 				}
 				$plugins = [];
 			}

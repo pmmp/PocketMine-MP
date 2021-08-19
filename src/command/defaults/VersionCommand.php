@@ -46,8 +46,8 @@ class VersionCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_USAGE,
+			KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_USAGE,
 			["ver", "about"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_VERSION);
@@ -63,8 +63,8 @@ class VersionCommand extends VanillaCommand{
 				VersionInfo::NAME
 			));
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareVersion(
-				VersionInfo::getVersionObj()->getFullVersion(),
-				VersionInfo::getGitHash()
+				VersionInfo::VERSION()->getFullVersion(),
+				VersionInfo::GIT_HASH()
 			));
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_minecraftVersion(
 				ProtocolInfo::MINECRAFT_VERSION_NETWORK,
@@ -88,7 +88,7 @@ class VersionCommand extends VanillaCommand{
 			}else{
 				$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitNotSupported();
 			}
-			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($sender->getLanguage()->translate($jitStatus)));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($jitStatus));
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_operatingSystem(Utils::getOS()));
 		}else{
 			$pluginName = implode(" ", $args);

@@ -34,8 +34,8 @@ class StopCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_STOP_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_STOP_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_STOP_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_STOP_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_STOP);
 	}

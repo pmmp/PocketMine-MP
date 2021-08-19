@@ -347,18 +347,6 @@ final class Utils{
 		return preg_replace('#([^\x20-\x7E])#', '.', $str);
 	}
 
-	/*
-	public static function angle3D($pos1, $pos2){
-		$X = $pos1["x"] - $pos2["x"];
-		$Z = $pos1["z"] - $pos2["z"];
-		$dXZ = sqrt(pow($X, 2) + pow($Z, 2));
-		$Y = $pos1["y"] - $pos2["y"];
-		$hAngle = rad2deg(atan2($Z, $X) - M_PI_2);
-		$vAngle = rad2deg(-atan2($Y, $dXZ));
-
-		return array("yaw" => $hAngle, "pitch" => $vAngle);
-	}*/
-
 	public static function javaStringHash(string $string) : int{
 		$hash = 0;
 		for($i = 0, $len = strlen($string); $i < $len; $i++){

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\build\generate_known_translation_apis;
 
+use pocketmine\lang\Translatable;
 use Webmozart\PathUtil\Path;
 use function array_map;
 use function count;
@@ -31,9 +32,11 @@ use function file_put_contents;
 use function fwrite;
 use function implode;
 use function is_numeric;
+use function ksort;
 use function ob_get_clean;
 use function ob_start;
 use function parse_ini_file;
+use function preg_match_all;
 use function str_replace;
 use function strtoupper;
 use const INI_SCANNER_RAW;
@@ -130,6 +133,8 @@ HEADER;
 	ksort($languageDefinitions, SORT_STRING);
 
 	$parameterRegex = '/{%(.+?)}/';
+
+	$translationContainerClass = (new \ReflectionClass(Translatable::class))->getShortName();
 	foreach($languageDefinitions as $key => $value){
 		$parameters = [];
 		if(preg_match_all($parameterRegex, $value, $matches) > 0){
@@ -143,8 +148,8 @@ HEADER;
 		}
 		echo "\tpublic static function " .
 			functionify($key) .
-			"(" . implode(", ", array_map(fn(string $paramName) => "string \$$paramName", $parameters)) . ") : TranslationContainer{\n";
-		echo "\t\treturn new TranslationContainer(KnownTranslationKeys::" . constantify($key) . ", [";
+			"(" . implode(", ", array_map(fn(string $paramName) => "$translationContainerClass|string \$$paramName", $parameters)) . ") : $translationContainerClass{\n";
+		echo "\t\treturn new $translationContainerClass(KnownTranslationKeys::" . constantify($key) . ", [";
 		foreach($parameters as $parameterKey => $parameterName){
 			echo "\n\t\t\t";
 			if(!is_numeric($parameterKey)){

@@ -39,8 +39,8 @@ class StatusCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_STATUS);
 	}

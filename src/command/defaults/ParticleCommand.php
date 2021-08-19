@@ -79,8 +79,8 @@ class ParticleCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_PARTICLE_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_PARTICLE_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_PARTICLE_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_PARTICLE_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_PARTICLE);
 	}

@@ -35,6 +35,7 @@ use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
@@ -602,7 +603,7 @@ class NetworkSession{
 		}
 
 		if($error !== null){
-			$this->disconnect($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_invalidSession($error)));
+			$this->disconnect($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_disconnect_invalidSession($this->server->getLanguage()->translateString($error))));
 
 			return;
 		}
@@ -611,7 +612,7 @@ class NetworkSession{
 
 		if(!$this->authenticated){
 			if($authRequired){
-				$this->disconnect("disconnectionScreen.notAuthenticated");
+				$this->disconnect(KnownTranslationKeys::DISCONNECTIONSCREEN_NOTAUTHENTICATED);
 				return;
 			}
 			if($this->info instanceof XboxLivePlayerInfo){

@@ -27,24 +27,17 @@ namespace pocketmine\resourcepacks\json;
  * Model for JsonMapper to represent resource pack manifest.json contents.
  */
 final class Manifest{
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $format_version;
+	/** @required */
+	public int $format_version;
 
-	/**
-	 * @var ManifestHeader
-	 * @required
-	 */
-	public $header;
+	/** @required */
+	public ManifestHeader $header;
 
 	/**
 	 * @var ManifestModuleEntry[]
 	 * @required
 	 */
-	public $modules;
+	public array $modules;
 
-	/** @var ManifestMetadata|null */
-	public $metadata = null;
+	public ?ManifestMetadata $metadata = null;
 }

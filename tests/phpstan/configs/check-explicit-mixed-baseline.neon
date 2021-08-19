@@ -51,16 +51,6 @@ parameters:
 			path: ../../../src/VersionInfo.php
 
 		-
-			message: "#^Cannot cast mixed to float\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/VanillaCommand.php
-
-		-
-			message: "#^Cannot cast mixed to int\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/VanillaCommand.php
-
-		-
 			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
 			count: 1
 			path: ../../../src/inventory/CreativeInventory.php

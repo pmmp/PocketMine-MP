@@ -46,7 +46,7 @@ use pocketmine\event\server\QueryRegenerateEvent;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
@@ -260,7 +260,7 @@ class Server{
 	}
 
 	public function getPocketMineVersion() : string{
-		return VersionInfo::getVersionObj()->getFullVersion(true);
+		return VersionInfo::VERSION()->getFullVersion(true);
 	}
 
 	public function getVersion() : string{
@@ -1051,7 +1051,7 @@ class Server{
 
 			$this->configGroup->save();
 
-			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_defaultGameMode($this->getGamemode()->getTranslationKey())));
+			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_defaultGameMode($this->getGamemode()->getTranslatableName())));
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_donate(TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET)));
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_startFinished(strval(round(microtime(true) - $this->startTime, 3)))));
 
@@ -1121,7 +1121,7 @@ class Server{
 	/**
 	 * @param CommandSender[]|null        $recipients
 	 */
-	public function broadcastMessage(TranslationContainer|string $message, ?array $recipients = null) : int{
+	public function broadcastMessage(Translatable|string $message, ?array $recipients = null) : int{
 		$recipients = $recipients ?? $this->getBroadcastChannelSubscribers(self::BROADCAST_CHANNEL_USERS);
 
 		foreach($recipients as $recipient){
@@ -1452,7 +1452,7 @@ class Server{
 					$report = false;
 				}
 
-				if(strrpos(VersionInfo::getGitHash(), "-dirty") !== false or VersionInfo::getGitHash() === str_repeat("00", 20)){
+				if(strrpos(VersionInfo::GIT_HASH(), "-dirty") !== false or VersionInfo::GIT_HASH() === str_repeat("00", 20)){
 					$this->logger->debug("Not sending crashdump due to locally modified");
 					$report = false; //Don't send crashdumps for locally modified builds
 				}

@@ -40,8 +40,8 @@ class KillCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_KILL_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_KILL_USAGE,
+			KnownTranslationKeys::POCKETMINE_COMMAND_KILL_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_KILL_USAGE,
 			["suicide"]
 		);
 		$this->setPermission(implode(";", [DefaultPermissionNames::COMMAND_KILL_SELF, DefaultPermissionNames::COMMAND_KILL_OTHER]));

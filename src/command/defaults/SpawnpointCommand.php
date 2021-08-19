@@ -41,8 +41,8 @@ class SpawnpointCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_SPAWNPOINT_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_SPAWNPOINT_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_SPAWNPOINT_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_SPAWNPOINT_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SPAWNPOINT);
 	}

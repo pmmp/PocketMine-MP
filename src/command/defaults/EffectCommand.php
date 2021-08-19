@@ -40,8 +40,8 @@ class EffectCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_EFFECT_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_EFFECT_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_EFFECT_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_EFFECT_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_EFFECT);
 	}

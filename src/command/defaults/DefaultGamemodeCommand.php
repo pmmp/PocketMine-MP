@@ -37,8 +37,8 @@ class DefaultGamemodeCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_DEFAULTGAMEMODE_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_DEFAULTGAMEMODE_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_DEFAULTGAMEMODE_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_DEFAULTGAMEMODE_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_DEFAULTGAMEMODE);
 	}
@@ -59,7 +59,7 @@ class DefaultGamemodeCommand extends VanillaCommand{
 		}
 
 		$sender->getServer()->getConfigGroup()->setConfigInt("gamemode", GameModeIdMap::getInstance()->toId($gameMode));
-		$sender->sendMessage(KnownTranslationFactory::commands_defaultgamemode_success($gameMode->getTranslationKey()));
+		$sender->sendMessage(KnownTranslationFactory::commands_defaultgamemode_success($gameMode->getTranslatableName()));
 		return true;
 	}
 }

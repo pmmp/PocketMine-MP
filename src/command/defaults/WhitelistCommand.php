@@ -41,8 +41,8 @@ class WhitelistCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_WHITELIST_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_WHITELIST_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_WHITELIST_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_WHITELIST_USAGE
 		);
 		$this->setPermission(implode(";", [
 			DefaultPermissionNames::COMMAND_WHITELIST_RELOAD,
@@ -96,11 +96,11 @@ class WhitelistCommand extends VanillaCommand{
 					return true;
 
 				case "add":
-					$sender->sendMessage(KnownTranslationFactory::commands_generic_usage("%" . KnownTranslationKeys::COMMANDS_WHITELIST_ADD_USAGE));
+					$sender->sendMessage(KnownTranslationFactory::commands_generic_usage(KnownTranslationFactory::commands_whitelist_add_usage()));
 					return true;
 
 				case "remove":
-					$sender->sendMessage(KnownTranslationFactory::commands_generic_usage("%" . KnownTranslationKeys::COMMANDS_WHITELIST_REMOVE_USAGE));
+					$sender->sendMessage(KnownTranslationFactory::commands_generic_usage(KnownTranslationFactory::commands_whitelist_remove_usage()));
 					return true;
 			}
 		}elseif(count($args) === 2){

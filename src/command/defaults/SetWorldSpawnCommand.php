@@ -40,8 +40,8 @@ class SetWorldSpawnCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_SETWORLDSPAWN_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_SETWORLDSPAWN_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_SETWORLDSPAWN_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_SETWORLDSPAWN_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SETWORLDSPAWN);
 	}
