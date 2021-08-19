@@ -1081,7 +1081,7 @@ abstract class Entity{
 	}
 
 	/**
-	 * Called when interacted or tapped by a Player
+	 * Called when interacted or tapped by a Player, Returns true if the interaction was successful.
 	 */
 	public function onInteract(Player $player, Vector3 $clickPos) : bool{
 		return false;
