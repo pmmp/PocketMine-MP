@@ -28,7 +28,7 @@ use pocketmine\block\Leaves;
 use pocketmine\block\Sapling;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\event\block\BlockSproutEvent;
+use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\ChunkManager;
@@ -108,7 +108,7 @@ abstract class Tree{
 		$this->placeCanopy($x, $y, $z, $random, $transaction);
 
 		if($callEvent){
-			$ev = new BlockSproutEvent($world->getBlockAt($x, $y, $z), $transaction);
+			$ev = new StructureGrowEvent($world->getBlockAt($x, $y, $z), $transaction);
 			$ev->call();
 			if($ev->isCancelled()){
 				return;

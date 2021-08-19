@@ -10,10 +10,10 @@ use pocketmine\event\CancellableTrait;
 use pocketmine\world\BlockTransaction;
 
 /**
- * Called when objects such as Saplings or Bamboo grow.
+ * Called when structures such as Saplings or Bamboo grow.
  * These types of plants tend to change multiple blocks at once upon growing.
  */
-class BlockSproutEvent extends BlockEvent implements Cancellable{
+class StructureGrowEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
 	private BlockTransaction $transaction;
