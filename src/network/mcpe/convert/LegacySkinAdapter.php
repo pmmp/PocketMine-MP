@@ -32,8 +32,8 @@ use function is_string;
 use function json_decode;
 use function json_encode;
 use function json_last_error_msg;
-use function str_pad;
 use function random_bytes;
+use function str_pad;
 use function str_repeat;
 use function strlen;
 
