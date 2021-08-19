@@ -1926,6 +1926,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		//prevent the player receiving their own disconnect message
 		$this->server->unsubscribeFromAllBroadcastChannels($this);
 
+		$this->doCloseInventory();
+
 		$ev = new PlayerQuitEvent($this, $quitMessage ?? $this->getLeaveMessage(), $reason);
 		$ev->call();
 		if(($quitMessage = $ev->getQuitMessage()) != ""){

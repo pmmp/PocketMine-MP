@@ -1,0 +1,45 @@
+name: Update update.pmmp.io API info
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install jq
+        run: sudo apt update && sudo apt install jq -y
+
+      - uses: actions/checkout@v2
+        with:
+          repository: pmmp/update.pmmp.io
+          ssh-key: ${{ secrets.UPDATE_PMMP_IO_DEPLOY_KEY }}
+
+      - name: Get actual tag name
+        id: tag-name
+        run: echo ::set-output name=TAG_NAME::$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{')
+
+      - name: Download new release information
+        run: curl -f -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.tag-name.outputs.TAG_NAME }}/build_info.json -o new_build_info.json
+
+      - name: Detect channel
+        id: channel
+        run: echo ::set-output name=CHANNEL::$(jq -r '.channel' new_build_info.json)
+
+      - name: Copy release information
+        run: |
+          cp new_build_info.json channels/${{ steps.channel.outputs.CHANNEL }}.json
+          rm new_build_info.json
+
+      - name: Commit changes
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git diff-index --quiet HEAD || git commit -m "New ${{ steps.channel.outputs.CHANNEL }} release: ${{ github.repository }} ${{ steps.tag-name.outputs.TAG_NAME }}"
+
+      - name: Push changes
+        run: git push

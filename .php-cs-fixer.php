@@ -41,13 +41,14 @@ return (new PhpCsFixer\Config)
 		],
 		'indentation_type' => true,
 		'native_function_invocation' => [
-		    'scope' => 'namespaced'
+			'scope' => 'namespaced',
+			'include' => ['@all'],
 		],
 		'no_closing_tag' => true,
 		'no_empty_phpdoc' => true,
 		'no_extra_blank_lines' => true,
 		'no_superfluous_phpdoc_tags' => [
-            'allow_mixed' => true,
+			'allow_mixed' => true,
 		],
 		'no_trailing_whitespace' => true,
 		'no_trailing_whitespace_in_comment' => true,

@@ -50,7 +50,7 @@ echo '"leveldb",,"https://github.com/pmmp/php-leveldb.git",,"--with-leveldb='$IN
 echo '"chunkutils2",,"https://github.com/pmmp/ext-chunkutils2.git",,,"extension",' >> share/php-build/extension/definition
 echo '"morton",,"https://github.com/pmmp/ext-morton.git",,,"extension",' >> share/php-build/extension/definition
 PHP_BUILD_INSTALL_EXTENSION="\
-pthreads=@acc6e52b2144c61c434b62a3cb680d537e06828e \
+pthreads=@a6afc0434f91c1e9541444aef6ac7a1f16c595be \
 yaml=2.2.1 \
 leveldb=@60763a09bf5c7a10376d16e25b078b99a35c5c37 \
 chunkutils2=@0.2.0 \
