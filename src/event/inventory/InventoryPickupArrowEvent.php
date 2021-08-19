@@ -26,17 +26,19 @@ namespace pocketmine\event\inventory;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\event\Event;
 use pocketmine\inventory\Inventory;
 
-class InventoryPickupArrowEvent extends InventoryEvent implements Cancellable{
+class InventoryPickupArrowEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Arrow */
-	private $arrow;
+	public function __construct(
+		private ?Inventory $inventory,
+		private Arrow $arrow
+	){}
 
-	public function __construct(Inventory $inventory, Arrow $arrow){
-		$this->arrow = $arrow;
-		parent::__construct($inventory);
+	public function getInventory() : ?Inventory{
+		return $this->inventory;
 	}
 
 	public function getArrow() : Arrow{

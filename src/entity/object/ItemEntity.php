@@ -226,9 +226,9 @@ class ItemEntity extends Entity{
 		}
 
 		$item = $this->getItem();
-		$playerInventory = $player->getInventory();
+		$playerInventory = null;
 
-		if($player->hasFiniteResources() and !$playerInventory->canAddItem($item)){
+		if($player->hasFiniteResources() and !($playerInventory = $player->getInventory())->canAddItem($item)){
 			return;
 		}
 
@@ -242,7 +242,7 @@ class ItemEntity extends Entity{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$playerInventory->addItem(clone $item);
+		$playerInventory?->addItem(clone $item);
 		$this->flagForDespawn();
 	}
 }
