@@ -244,6 +244,10 @@ class InventoryManager{
 
 		if($clientSideItem === null or !$clientSideItem->equalsExact($currentItem)){
 			if(($slotOffset = self::getSlotOffset($inventory)) !== null){
+				//TODO: HACK!
+				//"UI Inventory" (a ridiculous inventory with integrated crafting grid, anvil inventory, etc.)
+				// needs to send all 51 slots to update content, which means it needs to send useless empty slots.
+				// This workaround isn't great, but at least it's simple.
 				$this->session->sendDataPacket(InventorySlotPacket::create(
 					ContainerIds::UI,
 					$slotOffset[$slot],
@@ -269,10 +273,6 @@ class InventoryManager{
 			unset($this->initiatedSlotChanges[$windowId]);
 		}
 		if(($slotOffset = self::getSlotOffset($inventory)) !== null){
-			//TODO: HACK!
-			//"UI Inventory" (a ridiculous inventory with integrated crafting grid, anvil inventory, etc.)
-			// needs to send all 51 slots to update content, which means it needs to send useless empty slots.
-			// This workaround isn't great, but at least it's simple.
 			foreach($slotOffset as $slot => $realSlot){
 				$this->session->sendDataPacket(InventorySlotPacket::create(
 					ContainerIds::UI,
