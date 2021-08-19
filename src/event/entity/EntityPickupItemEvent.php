@@ -31,14 +31,14 @@ use pocketmine\event\CancellableTrait;
  * Called when an entity picks up an item, arrow, etc.
  * @phpstan-extends EntityEvent<Entity>
  */
-class EntityItemPickupEvent extends EntityEvent implements Cancellable{
+class EntityPickupItemEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
 	public function __construct(
-		Entity $entity,
+		Entity $collector,
 		private Entity $pickedUp
 	){
-		$this->entity = $entity;
+		$this->entity = $collector;
 	}
 
 	public function getPickedUp() : Entity{
