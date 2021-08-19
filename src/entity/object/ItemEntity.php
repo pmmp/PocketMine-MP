@@ -26,9 +26,9 @@ namespace pocketmine\entity\object;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
+use pocketmine\event\entity\EntityItemPickupEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
-use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -232,7 +232,7 @@ class ItemEntity extends Entity{
 			return;
 		}
 
-		$ev = new InventoryPickupItemEvent($playerInventory, $this);
+		$ev = new EntityItemPickupEvent($player, $this);
 		$ev->call();
 		if($ev->isCancelled()){
 			return;

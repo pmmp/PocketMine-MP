@@ -21,27 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\inventory;
+namespace pocketmine\event\entity;
 
-use pocketmine\entity\object\ItemEntity;
+use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\event\Event;
-use pocketmine\inventory\Inventory;
 
-class InventoryPickupItemEvent extends Event implements Cancellable{
+/**
+ * Called when an entity picks up an item, arrow, etc.
+ * @phpstan-extends EntityEvent<Entity>
+ */
+class EntityItemPickupEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
 	public function __construct(
-		private ?Inventory $inventory,
-		private ItemEntity $itemEntity
-	){}
-
-	public function getInventory() : ?Inventory{
-		return $this->inventory;
+		Entity $entity,
+		private Entity $pickedUp
+	){
+		$this->entity = $entity;
 	}
 
-	public function getItemEntity() : ItemEntity{
-		return $this->itemEntity;
+	public function getPickedUp() : Entity{
+		return $this->pickedUp;
 	}
+
 }
