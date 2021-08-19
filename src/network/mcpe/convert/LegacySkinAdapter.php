@@ -80,24 +80,24 @@ class LegacySkinAdapter implements SkinAdapter{
 			$skinData = str_pad($skinData, 64 * 64 * 4, "\x00\x00\x00\x00"); // pad to 64x64
 
 			// leg tops
-			$skinData = self::copyAndFlipHorizontally($skinData, 4, 16, 4, 4, 20, 48);
-			$skinData = self::copyAndFlipHorizontally($skinData, 8, 16, 4, 4, 24, 48);
+			$skinData = self::mirroredCopy($skinData, 4, 16, 4, 4, 20, 48);
+			$skinData = self::mirroredCopy($skinData, 8, 16, 4, 4, 24, 48);
 
 			// arm tops
-			$skinData = self::copyAndFlipHorizontally($skinData, 44, 16, 4, 4, 36, 48);
-			$skinData = self::copyAndFlipHorizontally($skinData, 48, 16, 4, 4, 40, 48);
+			$skinData = self::mirroredCopy($skinData, 44, 16, 4, 4, 36, 48);
+			$skinData = self::mirroredCopy($skinData, 48, 16, 4, 4, 40, 48);
 
 			// leg pieces
-			$skinData = self::copyAndFlipHorizontally($skinData, 8, 20, 4, 12, 16, 52);
-			$skinData = self::copyAndFlipHorizontally($skinData, 4, 20, 4, 12, 20, 52);
-			$skinData = self::copyAndFlipHorizontally($skinData, 0, 20, 4, 12, 24, 52);
-			$skinData = self::copyAndFlipHorizontally($skinData, 12, 20, 4, 12, 28, 52);
+			$skinData = self::mirroredCopy($skinData, 8, 20, 4, 12, 16, 52);
+			$skinData = self::mirroredCopy($skinData, 4, 20, 4, 12, 20, 52);
+			$skinData = self::mirroredCopy($skinData, 0, 20, 4, 12, 24, 52);
+			$skinData = self::mirroredCopy($skinData, 12, 20, 4, 12, 28, 52);
 
 			// arm pieces
-			$skinData = self::copyAndFlipHorizontally($skinData, 48, 20, 4, 12, 32, 52);
-			$skinData = self::copyAndFlipHorizontally($skinData, 44, 20, 4, 12, 36, 52);
-			$skinData = self::copyAndFlipHorizontally($skinData, 40, 20, 4, 12, 40, 52);
-			$skinData = self::copyAndFlipHorizontally($skinData, 52, 20, 4, 12, 44, 52);
+			$skinData = self::mirroredCopy($skinData, 48, 20, 4, 12, 32, 52);
+			$skinData = self::mirroredCopy($skinData, 44, 20, 4, 12, 36, 52);
+			$skinData = self::mirroredCopy($skinData, 40, 20, 4, 12, 40, 52);
+			$skinData = self::mirroredCopy($skinData, 52, 20, 4, 12, 44, 52);
 		}
 		return new Skin(
 			$data->getSkinId(),
@@ -106,7 +106,7 @@ class LegacySkinAdapter implements SkinAdapter{
 		);
 	}
 
-	private static function copyAndFlipHorizontally(string $bitmap, int $startX, int $startY, int $width, int $height, int $toX, int $toY) : string{
+	private static function mirroredCopy(string $bitmap, int $startX, int $startY, int $width, int $height, int $toX, int $toY) : string{
 		for($x = 0; $x < $width; $x++) {
 			for($y = 0; $y < $height; $y++) {
 				$index = self::toIndex($startX + $x, $startY + $y);
