@@ -242,7 +242,7 @@ class ItemEntity extends Entity{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$playerInventory?->addItem(clone $item);
+		$playerInventory->addItem(clone $item);
 		$this->flagForDespawn();
 	}
 }
