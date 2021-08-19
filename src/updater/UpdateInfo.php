@@ -32,11 +32,6 @@ final class UpdateInfo{
 	 * @var string
 	 * @required
 	 */
-	public $job;
-	/**
-	 * @var string
-	 * @required
-	 */
 	public $php_version;
 	/**
 	 * @var string
@@ -44,20 +39,12 @@ final class UpdateInfo{
 	 */
 	public $base_version;
 	/**
-	 * @var int
-	 * @required
-	 */
-	public $build_number;
-	/**
 	 * @var bool
 	 * @required
 	 */
 	public $is_dev;
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $branch;
+	/** @required */
+	public string $channel;
 	/**
 	 * @var string
 	 * @required
@@ -68,11 +55,6 @@ final class UpdateInfo{
 	 * @required
 	 */
 	public $mcpe_version;
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $phar_name;
 	/**
 	 * @var int
 	 * @required
@@ -93,4 +75,6 @@ final class UpdateInfo{
 	 * @required
 	 */
 	public $download_url;
+	/** @required */
+	public string $source_url;
 }
