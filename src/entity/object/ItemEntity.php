@@ -26,7 +26,7 @@ namespace pocketmine\entity\object;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
-use pocketmine\event\entity\EntityPickupItemEvent;
+use pocketmine\event\entity\EntityItemPickupEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\item\Item;
@@ -234,7 +234,7 @@ class ItemEntity extends Entity{
 			$playerInventory = null;
 		}
 
-		$ev = new EntityPickupItemEvent($player, $this, $item, $playerInventory);
+		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
 		$ev->call();
 		if($ev->isCancelled()){
 			return;

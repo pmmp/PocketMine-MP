@@ -28,7 +28,7 @@ use pocketmine\entity\animation\ArrowShakeAnimation;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
-use pocketmine\event\entity\EntityPickupItemEvent;
+use pocketmine\event\entity\EntityItemPickupEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
@@ -182,7 +182,7 @@ class Arrow extends Projectile{
 			$playerInventory = null;
 		}
 
-		$ev = new EntityPickupItemEvent($player, $this, $item, $playerInventory);
+		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
 		if($this->pickupMode === self::PICKUP_NONE or ($this->pickupMode === self::PICKUP_CREATIVE and !$player->isCreative())){
 			$ev->cancel();
 		}

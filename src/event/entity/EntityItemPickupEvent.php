@@ -33,7 +33,7 @@ use pocketmine\item\Item;
  * Called when an entity picks up an item, arrow, etc.
  * @phpstan-extends EntityEvent<Entity>
  */
-class EntityPickupItemEvent extends EntityEvent implements Cancellable{
+class EntityItemPickupEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
 	public function __construct(
