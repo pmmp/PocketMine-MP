@@ -57,6 +57,8 @@ use pocketmine\command\defaults\StatusCommand;
 use pocketmine\command\defaults\StopCommand;
 use pocketmine\command\defaults\TeleportCommand;
 use pocketmine\command\defaults\TellCommand;
+use pocketmine\command\defaults\TempBanCommand;
+use pocketmine\command\defaults\TempBanIpCommand;
 use pocketmine\command\defaults\TimeCommand;
 use pocketmine\command\defaults\TimingsCommand;
 use pocketmine\command\defaults\TitleCommand;
@@ -128,6 +130,8 @@ class SimpleCommandMap implements CommandMap{
 			new StopCommand("stop"),
 			new TeleportCommand("tp"),
 			new TellCommand("tell"),
+			new TempBanCommand("tempban"),
+			new TempBanIpCommand("tempban-ip"),
 			new TimeCommand("time"),
 			new TimingsCommand("timings"),
 			new TitleCommand("title"),

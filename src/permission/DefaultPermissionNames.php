@@ -60,6 +60,8 @@ final class DefaultPermissionNames{
 	public const COMMAND_STOP = "pocketmine.command.stop";
 	public const COMMAND_TELEPORT = "pocketmine.command.teleport";
 	public const COMMAND_TELL = "pocketmine.command.tell";
+	public const COMMAND_TEMP_BAN_IP = "pocketmine.command.tempban.ip";
+	public const COMMAND_TEMP_BAN_PLAYER = "pocketmine.command.tempban.player";
 	public const COMMAND_TIME_ADD = "pocketmine.command.time.add";
 	public const COMMAND_TIME_QUERY = "pocketmine.command.time.query";
 	public const COMMAND_TIME_SET = "pocketmine.command.time.set";
