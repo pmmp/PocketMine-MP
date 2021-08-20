@@ -34,13 +34,13 @@ use function trim;
 class BanList{
 
 	/** @var BanEntry[] */
-	private $list = [];
+	private array $list = [];
 
 	/** @var string */
-	private $file;
+	private string $file;
 
 	/** @var bool */
-	private $enabled = true;
+	private bool $enabled = true;
 
 	public function __construct(string $file){
 		$this->file = $file;

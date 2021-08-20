@@ -13,7 +13,6 @@ use pocketmine\permission\BanEntry;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
-use RuntimeException;
 
 class TempBanCommand extends Command{
 	public function __construct(string $name){
@@ -38,7 +37,7 @@ class TempBanCommand extends Command{
 
 		try{
 			$expiry = BanEntry::stringToDateTime(array_shift($args));
-		}catch(RuntimeException | AssumptionFailedError){
+		}catch(\RuntimeException | AssumptionFailedError){
 			throw new InvalidCommandSyntaxException();
 		}
 
