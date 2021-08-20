@@ -13,17 +13,14 @@ use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\BanEntry;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
-use function array_shift;
-use function count;
-use function implode;
-use function preg_match;
+use pocketmine\utils\AssumptionFailedError;
 
 class TempBanIpCommand extends Command{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_IP_DESCRIPTION,
-			KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_IP_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_TEMP_BAN_IP_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_TEMP_BANIP_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TEMP_BAN_IP);
 	}
@@ -41,7 +38,7 @@ class TempBanIpCommand extends Command{
 
 		try{
 			$expiry = BanEntry::stringToDateTime(array_shift($args));
-		}catch(\RuntimeException){
+		}catch(\RuntimeException | AssumptionFailedError){
 			throw new InvalidCommandSyntaxException();
 		}
 
@@ -50,15 +47,15 @@ class TempBanIpCommand extends Command{
 		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $value)){
 			$this->processIPBan($value, $sender, $reason, $expiry);
 
-			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tempbanip_success($value));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_temp_banip_success($value));
 		}else{
 			if(($player = $sender->getServer()->getPlayerByPrefix($value)) instanceof Player){
 				$ip = $player->getNetworkSession()->getIp();
 				$this->processIPBan($ip, $sender, $reason, $expiry);
 
-				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tempbanip_success_players($ip, $player->getName()));
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_temp_banip_success_players($ip, $player->getName()));
 			}else{
-				$sender->sendMessage(KnownTranslationFactory::commands_tempbanip_invalid());
+				$sender->sendMessage(KnownTranslationFactory::commands_temp_banip_invalid());
 
 				return false;
 			}
@@ -75,5 +72,7 @@ class TempBanIpCommand extends Command{
 				$player->kick("Temporarily banned by admin. Reason: " . ($reason !== "" ? $reason : "IP banned."));
 			}
 		}
+
+		$sender->getServer()->getNetwork()->blockAddress($ip, -1);
 	}
 }
