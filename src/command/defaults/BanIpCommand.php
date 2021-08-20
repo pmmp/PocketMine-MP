@@ -23,17 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
-use Exception;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\permission\BanEntry;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function array_shift;
 use function count;
+use function implode;
 use function preg_match;
 
 class BanIpCommand extends VanillaCommand{
@@ -57,17 +56,16 @@ class BanIpCommand extends VanillaCommand{
 		}
 
 		$value = array_shift($args);
-		$reason = array_shift($args);
-		$expiration = array_shift($args);
+		$reason = implode(" ", $args);
 
 		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $value)){
-			$this->processIPBan($value, $sender, $reason, $expiration);
+			$this->processIPBan($value, $sender, $reason);
 
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_banip_success($value));
 		}else{
 			if(($player = $sender->getServer()->getPlayerByPrefix($value)) instanceof Player){
 				$ip = $player->getNetworkSession()->getIp();
-				$this->processIPBan($ip, $sender, $reason, $expiration);
+				$this->processIPBan($ip, $sender, $reason);
 
 				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_banip_success_players($ip, $player->getName()));
 			}else{
@@ -80,16 +78,8 @@ class BanIpCommand extends VanillaCommand{
 		return true;
 	}
 
-	private function processIPBan(string $ip, CommandSender $sender, string $reason, ?string $expiration) : void{
-		if($expiration){
-			try{
-				$expiration = BanEntry::parseDate($expiration);
-			}catch(Exception){
-				$expiration = null;
-			}
-		}
-
-		$sender->getServer()->getIPBans()->addBan($ip, $reason, $expiration, $sender->getName());
+	private function processIPBan(string $ip, CommandSender $sender, string $reason) : void{
+		$sender->getServer()->getIPBans()->addBan($ip, $reason, null, $sender->getName());
 
 		foreach($sender->getServer()->getOnlinePlayers() as $player){
 			if($player->getNetworkSession()->getIp() === $ip){
