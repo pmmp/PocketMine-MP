@@ -51,7 +51,7 @@ class TempBanCommand extends Command{
 			$player->kick($reason !== "" ? "Temporarily banned by admin. Reason: " . $reason : "Banned by admin.");
 		}
 
-		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tempban_success($player !== null ? $player->getName() : $name));
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_commands_tempban_success($player !== null ? $player->getName() : $name));
 
 		return true;
 	}
