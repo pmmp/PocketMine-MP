@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-use InvalidArgumentException;
 use pocketmine\utils\AssumptionFailedError;
 use function array_shift;
 use function count;
@@ -35,18 +34,18 @@ use function trim;
 
 class BanEntry{
 	/** @var string */
-	public static string $format = "Y-m-d H:i:s O";
+	public static $format = "Y-m-d H:i:s O";
 
 	/** @var string */
-	private string $name;
+	private $name;
 	/** @var \DateTime */
-	private \DateTime $creationDate;
+	private $creationDate;
 	/** @var string */
-	private string $source = "(Unknown)";
+	private $source = "(Unknown)";
 	/** @var \DateTime|null */
-	private ?\DateTime $expirationDate = null;
+	private $expirationDate = null;
 	/** @var string */
-	private string $reason = "Banned by an operator.";
+	private $reason = "Banned by an operator.";
 
 	public function __construct(string $name){
 		$this->name = strtolower($name);
