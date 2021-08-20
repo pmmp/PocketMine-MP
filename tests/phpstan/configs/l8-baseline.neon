@@ -248,22 +248,22 @@ parameters:
 		-
 			message: "#^Cannot access property \\$date on pocketmine\\\\updater\\\\UpdateInfo\\|null\\.$#"
 			count: 1
-			path: ../../../src/updater/AutoUpdater.php
+			path: ../../../src/updater/UpdateChecker.php
 
 		-
 			message: "#^Cannot access property \\$details_url on pocketmine\\\\updater\\\\UpdateInfo\\|null\\.$#"
 			count: 1
-			path: ../../../src/updater/AutoUpdater.php
+			path: ../../../src/updater/UpdateChecker.php
 
 		-
 			message: "#^Cannot access property \\$download_url on pocketmine\\\\updater\\\\UpdateInfo\\|null\\.$#"
 			count: 1
-			path: ../../../src/updater/AutoUpdater.php
+			path: ../../../src/updater/UpdateChecker.php
 
 		-
 			message: "#^Cannot call method getFullVersion\\(\\) on pocketmine\\\\utils\\\\VersionString\\|null\\.$#"
 			count: 1
-			path: ../../../src/updater/AutoUpdater.php
+			path: ../../../src/updater/UpdateChecker.php
 
 		-
 			message: "#^Method pocketmine\\\\utils\\\\Config\\:\\:fixYAMLIndexes\\(\\) should return string but returns string\\|null\\.$#"

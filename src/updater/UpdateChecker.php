@@ -34,7 +34,7 @@ use function strlen;
 use function strtolower;
 use function ucfirst;
 
-class AutoUpdater{
+class UpdateChecker{
 
 	/** @var Server */
 	protected $server;
@@ -50,7 +50,7 @@ class AutoUpdater{
 
 	public function __construct(Server $server, string $endpoint){
 		$this->server = $server;
-		$this->logger = new \PrefixedLogger($server->getLogger(), "Auto Updater");
+		$this->logger = new \PrefixedLogger($server->getLogger(), "Update Checker");
 		$this->endpoint = "http://$endpoint/api/";
 
 		if($server->getConfigGroup()->getPropertyBool("auto-updater.enabled", true)){
@@ -121,7 +121,7 @@ class AutoUpdater{
 	 * @param string[] $lines
 	 */
 	protected function printConsoleMessage(array $lines, string $logLevel = \LogLevel::INFO) : void{
-		$title = $this->server->getName() . ' Auto Updater';
+		$title = $this->server->getName() . ' Update Checker';
 		$this->logger->log($logLevel, sprintf('----- %s -----', $title));
 		foreach($lines as $line){
 			$this->logger->log($logLevel, $line);
