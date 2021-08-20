@@ -28,9 +28,6 @@ use pocketmine\Server;
 use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
 use function date;
-use function sprintf;
-use function str_repeat;
-use function strlen;
 use function strtolower;
 use function ucfirst;
 
@@ -121,12 +118,9 @@ class UpdateChecker{
 	 * @param string[] $lines
 	 */
 	protected function printConsoleMessage(array $lines, string $logLevel = \LogLevel::INFO) : void{
-		$title = $this->server->getName() . ' Update Checker';
-		$this->logger->log($logLevel, sprintf('----- %s -----', $title));
 		foreach($lines as $line){
 			$this->logger->log($logLevel, $line);
 		}
-		$this->logger->log($logLevel, sprintf('----- %s -----', str_repeat('-', strlen($title))));
 	}
 
 	/**
