@@ -1,0 +1,77 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/World.php
+
+		-
+			message: "#^Cannot call method isEmptyFast\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/World.php
+
+		-
+			message: "#^Cannot call method collectGarbage\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/format/Chunk.php
+
+		-
+			message: "#^Method pocketmine\\\\world\\\\format\\\\HeightArray\\:\\:getValues\\(\\) should return array\\<int, int\\> but returns array\\<int, int\\|null\\>\\.$#"
+			count: 1
+			path: ../../../src/world/format/HeightArray.php
+
+		-
+			message: "#^Cannot call method getBlockLayers\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/format/io/FastChunkSerializer.php
+
+		-
+			message: "#^Cannot call method getBlockLightArray\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/format/io/FastChunkSerializer.php
+
+		-
+			message: "#^Cannot call method getBlockSkyLightArray\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/format/io/FastChunkSerializer.php
+
+		-
+			message: "#^Cannot call method getEmptyBlockId\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/format/io/FastChunkSerializer.php
+
+		-
+			message: "#^Cannot call method getBlockLayers\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Cannot call method isEmptyAuthoritative\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Cannot call method getBlockLayers\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/light/BlockLightUpdate.php
+
+		-
+			message: "#^Cannot call method setBlockLightArray\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/light/BlockLightUpdate.php
+
+		-
+			message: "#^Parameter \\#1 \\$subChunk of method pocketmine\\\\world\\\\light\\\\BlockLightUpdate\\:\\:scanForLightEmittingBlocks\\(\\) expects pocketmine\\\\world\\\\format\\\\SubChunk, pocketmine\\\\world\\\\format\\\\SubChunk\\|null given\\.$#"
+			count: 1
+			path: ../../../src/world/light/BlockLightUpdate.php
+
+		-
+			message: "#^Cannot call method getBlockLightArray\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/light/LightPopulationTask.php
+
+		-
+			message: "#^Cannot call method getBlockSkyLightArray\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/light/LightPopulationTask.php
+
