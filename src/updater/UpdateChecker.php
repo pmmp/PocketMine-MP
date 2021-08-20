@@ -39,8 +39,6 @@ class UpdateChecker{
 	protected $endpoint;
 	/** @var UpdateInfo|null */
 	protected $updateInfo = null;
-	/** @var VersionString|null */
-	protected $newVersion;
 
 	/** @var \Logger */
 	private $logger;
@@ -63,8 +61,7 @@ class UpdateChecker{
 	 * Callback used at the end of the update checking task
 	 */
 	public function checkUpdateCallback(UpdateInfo $updateInfo) : void{
-		$this->updateInfo = $updateInfo;
-		$this->checkUpdate();
+		$this->checkUpdate($updateInfo);
 		if($this->hasUpdate()){
 			(new UpdateNotifyEvent($this))->call();
 			if($this->server->getConfigGroup()->getPropertyBool("auto-updater.on-update.warn-console", true)){
@@ -83,15 +80,19 @@ class UpdateChecker{
 	 * Returns whether there is an update available.
 	 */
 	public function hasUpdate() : bool{
-		return $this->newVersion !== null;
+		return $this->updateInfo !== null;
 	}
 
 	/**
 	 * Posts a warning to the console to tell the user there is an update available
 	 */
 	public function showConsoleUpdate() : void{
+		if($this->updateInfo === null){
+			return;
+		}
+		$newVersion = new VersionString($this->updateInfo->base_version, $this->updateInfo->is_dev, $this->updateInfo->build);
 		$messages = [
-			"Your version of " . $this->server->getName() . " is out of date. Version " . $this->newVersion->getFullVersion(true) . " was released on " . date("D M j h:i:s Y", $this->updateInfo->date)
+			"Your version of " . $this->server->getName() . " is out of date. Version " . $newVersion->getFullVersion(true) . " was released on " . date("D M j h:i:s Y", $this->updateInfo->date)
 		];
 
 		$messages[] = "Details: " . $this->updateInfo->details_url;
@@ -140,13 +141,10 @@ class UpdateChecker{
 	/**
 	 * Checks the update information against the current server version to decide if there's an update
 	 */
-	protected function checkUpdate() : void{
-		if($this->updateInfo === null){
-			return;
-		}
+	protected function checkUpdate(UpdateInfo $updateInfo) : void{
 		$currentVersion = VersionInfo::VERSION();
 		try{
-			$newVersion = new VersionString($this->updateInfo->base_version, $this->updateInfo->is_dev, $this->updateInfo->build);
+			$newVersion = new VersionString($updateInfo->base_version, $updateInfo->is_dev, $updateInfo->build);
 		}catch(\InvalidArgumentException $e){
 			//Invalid version returned from API, assume there's no update
 			$this->logger->debug("Assuming no update because \"" . $e->getMessage() . "\"");
@@ -154,7 +152,7 @@ class UpdateChecker{
 		}
 
 		if($currentVersion->compare($newVersion) > 0 and ($currentVersion->getFullVersion() !== $newVersion->getFullVersion() or $currentVersion->getBuild() > 0)){
-			$this->newVersion = $newVersion;
+			$this->updateInfo = $updateInfo;
 		}
 	}
 
