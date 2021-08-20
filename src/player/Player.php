@@ -2124,6 +2124,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 				$this->setSprinting(false);
 				$this->setSneaking(false);
+				$this->setFlying(false);
 
 				$this->extinguish();
 				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
