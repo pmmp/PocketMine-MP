@@ -1,0 +1,72 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot call method getBlockData\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method getBlockId\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method getBlockDataArray\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
+			message: "#^Cannot call method getBlockDataColumn\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
+			message: "#^Cannot call method getBlockIdArray\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
+			message: "#^Cannot call method getBlockIdColumn\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
+			message: "#^Cannot call method getBlockLightArray\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
+			message: "#^Cannot call method getBlockLightColumn\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
+			message: "#^Cannot call method getBlockSkyLightArray\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
+			message: "#^Cannot call method getBlockSkyLightColumn\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
+			message: "#^Method pocketmine\\\\level\\\\format\\\\Chunk\\:\\:getHeightMapArray\\(\\) should return array\\<int\\> but returns array\\<int, int\\|null\\>\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
+			message: "#^Cannot call method getBlockDataArray\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Cannot call method getBlockIdArray\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Cannot call method isEmpty\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+

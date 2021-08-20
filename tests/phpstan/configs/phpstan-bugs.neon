@@ -16,14 +16,14 @@ parameters:
 			path: ../../../src/pocketmine/level/format/io/region/RegionLoader.php
 
 		-
+			message: "#^Parameter \\#2 \\$count of function array_fill expects int\\<0, max\\>, int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/generator/noise/Noise.php
+
+		-
 			message: "#^Call to function method_exists\\(\\) with pocketmine\\\\network\\\\mcpe\\\\CachedEncapsulatedPacket and '__toString' will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/DataPacket.php
-
-		-
-			message: "#^Parameter \\#1 \\$read of function socket_select expects array\\<resource\\>\\|null, array\\<int\\|string, Socket\\> given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
 
 		-
 			message: "#^Parameter \\#1 \\$ of closure expects TMemberType, TMemberType given\\.$#"
@@ -34,9 +34,4 @@ parameters:
 			message: "#^Strict comparison using \\=\\=\\= between string and false will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/utils/Utils.php
-
-		-
-			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertNotNull\\(\\) with int and string will always evaluate to true\\.$#"
-			count: 1
-			path: ../../phpunit/block/BlockTest.php
 
