@@ -102,15 +102,15 @@ class UpdateChecker{
 
 	protected function showChannelSuggestionStable() : void{
 		$this->printConsoleMessage([
-			"It appears you're running a Stable build, when you've specified that you prefer to run " . ucfirst($this->getChannel()) . " builds.",
-			"If you would like to be kept informed about new Stable builds only, it is recommended that you change 'preferred-channel' in your pocketmine.yml to 'stable'."
+			"You're running a Stable build, but you're receiving update notifications for " . ucfirst($this->getChannel()) . " builds.",
+			"To get notified about new Stable builds only, change 'preferred-channel' in your pocketmine.yml to 'stable'."
 		]);
 	}
 
 	protected function showChannelSuggestionBeta() : void{
 		$this->printConsoleMessage([
-			"It appears you're running a Beta build, when you've specified that you prefer to run Stable builds.",
-			"If you would like to be kept informed about new Beta or Development builds, it is recommended that you change 'preferred-channel' in your pocketmine.yml to 'beta' or 'development'."
+			"You're running a Beta build, but you're receiving update notifications for Stable builds.",
+			"To get notified about new Beta or Development builds, change 'preferred-channel' in your pocketmine.yml to 'beta' or 'development'."
 		]);
 	}
 
