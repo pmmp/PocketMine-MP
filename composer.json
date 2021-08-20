@@ -1,6 +1,6 @@
 {
    "name": "pocketmine/pocketmine-mp",
-   "description": "A server software for Minecraft: Pocket Edition written in PHP",
+   "description": "A server software for Minecraft: Bedrock Edition written in PHP",
    "type": "project",
    "homepage": "https://pmmp.io",
    "license": "LGPL-3.0",
