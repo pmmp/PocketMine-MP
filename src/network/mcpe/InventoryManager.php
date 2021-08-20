@@ -62,6 +62,7 @@ use function max;
 
 /**
  * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
+ * @phpstan-type UISlotOffsetMapClosure \Closure(Inventory $inventory) : (array<int, int>|null)
  */
 class InventoryManager{
 
@@ -93,6 +94,8 @@ class InventoryManager{
 
 	/** @phpstan-var ObjectSet<ContainerOpenClosure> */
 	private ObjectSet $containerOpenCallbacks;
+	/** @phpstan-var ObjectSet<UISlotOffsetMapClosure> */
+	private ObjectSet $uiSlotOffsetMapCallbacks;
 
 	public function __construct(Player $player, NetworkSession $session){
 		$this->player = $player;
@@ -100,6 +103,16 @@ class InventoryManager{
 
 		$this->containerOpenCallbacks = new ObjectSet();
 		$this->containerOpenCallbacks->add(\Closure::fromCallable([self::class, 'createContainerOpen']));
+		$this->uiSlotOffsetMapCallbacks = new ObjectSet();
+		$this->uiSlotOffsetMapCallbacks->add(fn(Inventory $inventory) : ?array => match(true){
+			$inventory instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
+			$inventory instanceof CraftingGrid and $inventory->getGridWidth() === CraftingGrid::SIZE_SMALL => UIInventorySlotOffset::CRAFTING2X2_INPUT,
+			$inventory instanceof CraftingGrid and $inventory->getGridWidth() === CraftingGrid::SIZE_BIG => UIInventorySlotOffset::CRAFTING3X3_INPUT,
+			$inventory instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
+			$inventory instanceof LoomInventory => UIInventorySlotOffset::LOOM,
+			$inventory instanceof PlayerCursorInventory => [UIInventorySlotOffset::CURSOR],
+			default => null,
+		});
 
 		$this->add(ContainerIds::INVENTORY, $this->player->getInventory());
 		$this->add(ContainerIds::OFFHAND, $this->player->getOffHandInventory());
@@ -193,23 +206,20 @@ class InventoryManager{
 		return null;
 	}
 
+	/** @phpstan-return ObjectSet<UISlotOffsetMapClosure> */
+	public function getUISlotOffsetMapCallbacks() : ObjectSet{ return $this->uiSlotOffsetMapCallbacks; }
+
 	/**
 	 * @return array<int, int>|null RealSlot(UI Inventory) => PMSlot
 	 */
-	protected static function getSlotOffset(Inventory $inventory) : ?array{
-		$slotOffset = match(true){
-			$inventory instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
-			$inventory instanceof CraftingGrid and $inventory->getGridWidth() === CraftingGrid::SIZE_SMALL => UIInventorySlotOffset::CRAFTING2X2_INPUT,
-			$inventory instanceof CraftingGrid and $inventory->getGridWidth() === CraftingGrid::SIZE_BIG => UIInventorySlotOffset::CRAFTING3X3_INPUT,
-			$inventory instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
-			$inventory instanceof LoomInventory => UIInventorySlotOffset::LOOM,
-			$inventory instanceof PlayerCursorInventory => [UIInventorySlotOffset::CURSOR],
-			default => null,
-		};
-		if($slotOffset === null){
-			return null;
+	protected function getUISlotOffsetMap(Inventory $inventory) : ?array{
+		foreach($this->uiSlotOffsetMapCallbacks as $callback){
+			$slotOffsetMap = $callback($inventory);
+			if($slotOffsetMap !== null){
+				return array_flip($slotOffsetMap);
+			}
 		}
-		return array_flip($slotOffset);
+		return null;
 	}
 
 	public function onCurrentWindowRemove() : void{
@@ -243,7 +253,7 @@ class InventoryManager{
 		}
 
 		if($clientSideItem === null or !$clientSideItem->equalsExact($currentItem)){
-			if(($slotOffset = self::getSlotOffset($inventory)) !== null){
+			if(($slotOffset = $this->getUISlotOffsetMap($inventory)) !== null){
 				//TODO: HACK!
 				//"UI Inventory" (a ridiculous inventory with integrated crafting grid, anvil inventory, etc.)
 				// needs to send all 51 slots to update content, which means it needs to send useless empty slots.
@@ -272,7 +282,7 @@ class InventoryManager{
 		if($windowId !== null){
 			unset($this->initiatedSlotChanges[$windowId]);
 		}
-		if(($slotOffset = self::getSlotOffset($inventory)) !== null){
+		if(($slotOffset = $this->getUISlotOffsetMap($inventory)) !== null){
 			foreach($slotOffset as $slot => $realSlot){
 				$this->session->sendDataPacket(InventorySlotPacket::create(
 					ContainerIds::UI,
