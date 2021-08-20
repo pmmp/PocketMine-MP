@@ -23,16 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
-use DateTime;
-use InvalidArgumentException;
 use pocketmine\utils\AssumptionFailedError;
-use RuntimeException;
 use function array_shift;
 use function count;
+use function date;
 use function explode;
 use function implode;
 use function strlen;
 use function strtolower;
+use function strtotime;
 use function trim;
 
 class BanEntry{
@@ -41,11 +40,11 @@ class BanEntry{
 
 	/** @var string */
 	private $name;
-	/** @var DateTime */
-	private $creationDate;
+	/** @var \DateTime */
+	private \DateTime $creationDate;
 	/** @var string */
 	private $source = "(Unknown)";
-	/** @var DateTime|null */
+	/** @var \DateTime|null */
 	private $expirationDate = null;
 	/** @var string */
 	private $reason = "Banned by an operator.";
@@ -53,21 +52,21 @@ class BanEntry{
 	public function __construct(string $name){
 		$this->name = strtolower($name);
 		/** @noinspection PhpUnhandledExceptionInspection */
-		$this->creationDate = new DateTime();
+		$this->creationDate = new \DateTime();
 	}
 
 	public function getName() : string{
 		return $this->name;
 	}
 
-	public function getCreated() : DateTime{
+	public function getCreated() : \DateTime{
 		return $this->creationDate;
 	}
 
 	/**
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
-	public function setCreated(DateTime $date) : void{
+	public function setCreated(\DateTime $date) : void{
 		self::validateDate($date);
 		$this->creationDate = $date;
 	}
@@ -80,14 +79,14 @@ class BanEntry{
 		$this->source = $source;
 	}
 
-	public function getExpires() : ?DateTime{
+	public function getExpires() : ?\DateTime{
 		return $this->expirationDate;
 	}
 
 	/**
-	 * @throws InvalidArgumentException
+	 * @throws \InvalidArgumentException
 	 */
-	public function setExpires(?DateTime $date) : void{
+	public function setExpires(?\DateTime $date) : void{
 		if($date !== null){
 			self::validateDate($date);
 		}
@@ -96,7 +95,7 @@ class BanEntry{
 
 	public function hasExpired() : bool{
 		/** @noinspection PhpUnhandledExceptionInspection */
-		$now = new DateTime();
+		$now = new \DateTime();
 
 		return $this->expirationDate === null ? false : $this->expirationDate < $now;
 	}
@@ -130,42 +129,42 @@ class BanEntry{
 	 *
 	 * @link https://bugs.php.net/bug.php?id=75992
 	 *
-	 * @throws InvalidArgumentException if the argument can't be parsed from a formatted date string
+	 * @throws \InvalidArgumentException if the argument can't be parsed from a formatted date string
 	 */
-	private static function validateDate(DateTime $dateTime) : void{
+	private static function validateDate(\DateTime $dateTime) : void{
 		try{
 			self::parseDate($dateTime->format(self::$format));
-		}catch(RuntimeException $e){
-			throw new InvalidArgumentException($e->getMessage(), 0, $e);
+		}catch(\RuntimeException $e){
+			throw new \InvalidArgumentException($e->getMessage(), 0, $e);
 		}
 	}
 
 	/**
-	 * @throws RuntimeException
+	 * @throws \RuntimeException
 	 */
-	public static function parseDate(string $date) : DateTime{
-		$datetime = DateTime::createFromFormat(self::$format, $date);
-		if(!($datetime instanceof DateTime)){
-			$lastErrors = DateTime::getLastErrors();
+	private static function parseDate(string $date) : \DateTime{
+		$datetime = \DateTime::createFromFormat(self::$format, $date);
+		if(!($datetime instanceof \DateTime)){
+			$lastErrors = \DateTime::getLastErrors();
 			if($lastErrors === false) throw new AssumptionFailedError("DateTime::getLastErrors() should not be returning false in here");
-			throw new RuntimeException("Corrupted date/time: " . implode(", ", $lastErrors["errors"]));
+			throw new \RuntimeException("Corrupted date/time: " . implode(", ", $lastErrors["errors"]));
 		}
 
 		return $datetime;
 	}
 
 	/**
-	 * @throws RuntimeException
+	 * @throws \RuntimeException
 	 */
-	public static function stringToDateTime(string $str, ?int $baseTimestamp = null) : DateTime{
+	public static function stringToDateTime(string $str, ?int $baseTimestamp = null) : \DateTime{
 		$timestamp = strtotime($str, $baseTimestamp);
 		if(!$timestamp)
-			throw new RuntimeException("Corrupted date/time: " . $timestamp);
+			throw new \RuntimeException("Corrupted date/time: " . $timestamp);
 		return self::parseDate(date(self::$format, $timestamp));
 	}
 
 	/**
-	 * @throws RuntimeException
+	 * @throws \RuntimeException
 	 */
 	public static function fromString(string $str) : ?BanEntry{
 		if(strlen($str) < 2){

@@ -12,15 +12,16 @@ use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\BanEntry;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
-use pocketmine\utils\AssumptionFailedError;
-use RuntimeException;
+use function array_shift;
+use function count;
+use function implode;
 
 class TempBanCommand extends Command{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_TEMP_BAN_PLAYER_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_TEMP_BAN_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_PLAYER_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_PLAYER_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TEMP_BAN_PLAYER);
 	}
@@ -38,7 +39,7 @@ class TempBanCommand extends Command{
 
 		try{
 			$expiry = BanEntry::stringToDateTime(array_shift($args));
-		}catch(RuntimeException | AssumptionFailedError){
+		}catch(\RuntimeException){
 			throw new InvalidCommandSyntaxException();
 		}
 
@@ -50,7 +51,7 @@ class TempBanCommand extends Command{
 			$player->kick($reason !== "" ? "Temporarily banned by admin. Reason: " . $reason : "Banned by admin.");
 		}
 
-		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_temp_ban_success($player !== null ? $player->getName() : $name));
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tempban_success($player !== null ? $player->getName() : $name));
 
 		return true;
 	}
