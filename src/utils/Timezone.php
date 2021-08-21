@@ -31,6 +31,7 @@ use function file_get_contents;
 use function implode;
 use function ini_get;
 use function ini_set;
+use function is_array;
 use function is_string;
 use function json_decode;
 use function parse_ini_file;
