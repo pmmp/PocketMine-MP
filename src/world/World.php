@@ -2035,7 +2035,7 @@ class World implements ChunkManager{
 	/**
 	 * @return Chunk[]
 	 */
-	public function getChunks() : array{
+	public function getLoadedChunks() : array{
 		return $this->chunks;
 	}
 
