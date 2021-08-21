@@ -242,7 +242,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_TEMPBAN_PLAYER_DESCRIPTION = "pocketmine.command.tempban.player.description";
 	public const POCKETMINE_COMMAND_TEMPBAN_PLAYER_USAGE = "pocketmine.command.tempban.usage";
 	public const POCKETMINE_COMMAND_TEMPBAN_PLAYER_SUCCESS = "pocketmine.command.tempban.success";
-	public const POCKETMINE_COMMAND_TEMPBAN_IP_DESCRIPTION = "pocketmine.command.tempbanip.description";
+	public const POCKETMINE_COMMAND_TEMPBAN_IP_DESCRIPTION = "pocketmine.command.tempban.ip.description";
 	public const POCKETMINE_COMMAND_TEMPBAN_IP_USAGE = "pocketmine.command.tempbanip.usage";
 	public const POCKETMINE_COMMAND_TEMPBAN_IP_INVALID = "pocketmine.command.tempbanip.invalid";
 	public const POCKETMINE_COMMAND_TEMPBAN_IP_SUCCESS = "pocketmine.command.tempbanip.success";
