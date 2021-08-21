@@ -957,18 +957,13 @@ class BlockFactory{
 			throw new \InvalidArgumentException("Block meta value $meta is out of bounds");
 		}
 
-		/** @var Block|null $block */
-		$block = null;
-		try{
-			$index = ($id << Block::INTERNAL_METADATA_BITS) | $meta;
-			if($this->fullList[$index] !== null){
-				$block = clone $this->fullList[$index];
-			}
-		}catch(\RuntimeException $e){
+		$index = ($id << Block::INTERNAL_METADATA_BITS) | $meta;
+		if($index < 0 || $index >= $this->fullList->getSize()){
 			throw new \InvalidArgumentException("Block ID $id is out of bounds");
 		}
-
-		if($block === null){
+		if($this->fullList[$index] !== null){
+			$block = clone $this->fullList[$index];
+		}else{
 			$block = new UnknownBlock(new BID($id, $meta), BlockBreakInfo::instant());
 		}
 
