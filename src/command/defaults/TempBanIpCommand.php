@@ -74,5 +74,7 @@ class TempBanIpCommand extends Command{
 				$player->kick("Temporarily banned by admin. Reason: " . ($reason !== "" ? $reason : "IP banned."));
 			}
 		}
+
+		$sender->getServer()->getNetwork()->blockAddress($ip, $expiry->diff(new \DateTime('now'))->s);
 	}
 }
