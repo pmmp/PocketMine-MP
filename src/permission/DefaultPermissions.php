@@ -73,6 +73,9 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_SAVE_DISABLE, "Allows the user to disable automatic saving"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_SAVE_PERFORM, "Allows the user to perform a manual save"), [$operatorRoot]);
 
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TEMP_BAN_PLAYER, "Allows the user to temporarily ban players"), [$operatorRoot]);
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TEMP_BAN_IP, "Allows the user to temporarily ban IP addresses"), [$operatorRoot]);
+
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TIME_ADD, "Allows the user to fast-forward time"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TIME_SET, "Allows the user to change the time"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TIME_START, "Allows the user to restart the time"), [$operatorRoot]);
