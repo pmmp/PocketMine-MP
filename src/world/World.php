@@ -389,7 +389,7 @@ class World implements ChunkManager{
 	 * Init the default world data
 	 */
 	public function __construct(Server $server, string $name, WritableWorldProvider $provider, AsyncPool $workerPool){
-		$this->worldId = static::$worldIdCounter++;
+		$this->worldId = self::$worldIdCounter++;
 		$this->server = $server;
 
 		$this->provider = $provider;
