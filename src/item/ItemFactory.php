@@ -298,7 +298,7 @@ class ItemFactory{
 		//TODO: minecraft:chest_minecart
 		//TODO: minecraft:command_block_minecart
 		//TODO: minecraft:crossbow
-		//TODO: minecraft:elytra
+		$this->register(new Elytra(new ItemIdentifier(ItemIds::ELYTRA, 0), "Elytra Wings"));
 		//TODO: minecraft:emptyMap
 		//TODO: minecraft:enchanted_book
 		//TODO: minecraft:end_crystal

@@ -328,6 +328,17 @@ abstract class Entity{
 		);
 	}
 
+	/**
+	 * Update entity's height and width
+	 *
+	 * @param float $height
+	 * @param float $width
+	 */
+	public function updateBoundingBox(float $height, float $width) : void{
+		$this->size = new EntitySizeInfo($height, $width, $this->size->getEyeHeight());
+		$this->recalculateBoundingBox();
+	}
+
 	public function isImmobile() : bool{
 		return $this->immobile;
 	}
