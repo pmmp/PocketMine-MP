@@ -49,7 +49,7 @@ abstract class BaseSign extends Transparent{
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSign){
 			$this->text = $tile->getText();
 			$this->editorEntityRuntimeId = $tile->getEditorEntityRuntimeId();
@@ -58,7 +58,7 @@ abstract class BaseSign extends Transparent{
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileSign);
 		$tile->setText($this->text);
 		$tile->setEditorEntityRuntimeId($this->editorEntityRuntimeId);
@@ -83,7 +83,7 @@ abstract class BaseSign extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide($this->getSupportingFace())->getId() === BlockLegacyIds::AIR){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
@@ -130,7 +130,7 @@ abstract class BaseSign extends Transparent{
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->setText($ev->getNewText());
-			$this->pos->getWorld()->setBlock($this->pos, $this);
+			$this->position->getWorld()->setBlock($this->position, $this);
 			return true;
 		}
 

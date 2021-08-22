@@ -64,7 +64,7 @@ final class BambooSapling extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->pos->getWorld()->getBlock($blockReplace->pos->down()))){
+		if(!$this->canBeSupportedBy($blockReplace->position->getWorld()->getBlock($blockReplace->position->down()))){
 			return false;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
@@ -81,21 +81,21 @@ final class BambooSapling extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->pos->getWorld()->getBlock($this->pos->down()))){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+		if(!$this->canBeSupportedBy($this->position->getWorld()->getBlock($this->position->down()))){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	private function grow() : bool{
-		$world = $this->pos->getWorld();
-		if(!$world->getBlock($this->pos->up())->canBeReplaced()){
+		$world = $this->position->getWorld();
+		if(!$world->getBlock($this->position->up())->canBeReplaced()){
 			return false;
 		}
 
 		$tx = new BlockTransaction($world);
 		$bamboo = VanillaBlocks::BAMBOO();
-		$tx->addBlock($this->pos, $bamboo)
-			->addBlock($this->pos->up(), (clone $bamboo)->setLeafSize(Bamboo::SMALL_LEAVES));
+		$tx->addBlock($this->position, $bamboo)
+			->addBlock($this->position->up(), (clone $bamboo)->setLeafSize(Bamboo::SMALL_LEAVES));
 		return $tx->apply();
 	}
 
@@ -104,15 +104,15 @@ final class BambooSapling extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		$world = $this->pos->getWorld();
+		$world = $this->position->getWorld();
 		if($this->ready){
 			$this->ready = false;
-			if($world->getFullLight($this->pos) < 9 || !$this->grow()){
-				$world->setBlock($this->pos, $this);
+			if($world->getFullLight($this->position) < 9 || !$this->grow()){
+				$world->setBlock($this->position, $this);
 			}
-		}elseif($world->getBlock($this->pos->up())->canBeReplaced()){
+		}elseif($world->getBlock($this->position->up())->canBeReplaced()){
 			$this->ready = true;
-			$world->setBlock($this->pos, $this);
+			$world->setBlock($this->position, $this);
 		}
 	}
 

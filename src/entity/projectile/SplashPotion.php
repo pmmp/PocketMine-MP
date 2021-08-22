@@ -133,11 +133,11 @@ class SplashPotion extends Throwable{
 			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
 
 			if($blockIn->getId() === BlockLegacyIds::FIRE){
-				$this->getWorld()->setBlock($blockIn->getPos(), VanillaBlocks::AIR());
+				$this->getWorld()->setBlock($blockIn->getPosition(), VanillaBlocks::AIR());
 			}
 			foreach($blockIn->getHorizontalSides() as $horizontalSide){
 				if($horizontalSide->getId() === BlockLegacyIds::FIRE){
-					$this->getWorld()->setBlock($horizontalSide->getPos(), VanillaBlocks::AIR());
+					$this->getWorld()->setBlock($horizontalSide->getPosition(), VanillaBlocks::AIR());
 				}
 			}
 		}

@@ -35,7 +35,7 @@ class ShulkerBox extends Opaque{
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$shulker = $this->pos->getWorld()->getTile($this->pos);
+		$shulker = $this->position->getWorld()->getTile($this->position);
 		if($shulker instanceof TileShulkerBox){
 			$shulker->setFacing($this->facing);
 		}
@@ -43,7 +43,7 @@ class ShulkerBox extends Opaque{
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$shulker = $this->pos->getWorld()->getTile($this->pos);
+		$shulker = $this->position->getWorld()->getTile($this->position);
 		if($shulker instanceof TileShulkerBox){
 			$this->facing = $shulker->getFacing();
 		}
@@ -71,7 +71,7 @@ class ShulkerBox extends Opaque{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$drop = $this->asItem();
-		if(($tile = $this->pos->getWorld()->getTile($this->pos)) instanceof TileShulkerBox){
+		if(($tile = $this->position->getWorld()->getTile($this->position)) instanceof TileShulkerBox){
 			$this->addDataFromTile($tile, $drop);
 		}
 		return [$drop];
@@ -79,7 +79,7 @@ class ShulkerBox extends Opaque{
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		$result = parent::getPickedItem($addUserData);
-		if($addUserData && ($tile = $this->pos->getWorld()->getTile($this->pos)) instanceof TileShulkerBox){
+		if($addUserData && ($tile = $this->position->getWorld()->getTile($this->position)) instanceof TileShulkerBox){
 			$this->addDataFromTile($tile, $result);
 		}
 		return $result;
@@ -88,7 +88,7 @@ class ShulkerBox extends Opaque{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
 
-			$shulker = $this->pos->getWorld()->getTile($this->pos);
+			$shulker = $this->position->getWorld()->getTile($this->position);
 			if($shulker instanceof TileShulkerBox){
 				if(
 					$this->getSide($this->facing)->getId() !== BlockLegacyIds::AIR or

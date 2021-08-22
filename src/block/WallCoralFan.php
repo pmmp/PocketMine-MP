@@ -121,9 +121,9 @@ final class WallCoralFan extends BaseCoral{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$world = $this->pos->getWorld();
-		if(!$world->getBlock($this->pos->getSide(Facing::opposite($this->facing)))->isSolid()){
-			$world->useBreakOn($this->pos);
+		$world = $this->position->getWorld();
+		if(!$world->getBlock($this->position->getSide(Facing::opposite($this->facing)))->isSolid()){
+			$world->useBreakOn($this->position);
 		}else{
 			parent::onNearbyBlockChange();
 		}

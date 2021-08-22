@@ -1563,7 +1563,7 @@ class World implements ChunkManager{
 
 		$block->position($this, $x, $y, $z);
 		$block->writeStateToWorld();
-		$pos = $block->getPos();
+		$pos = $block->getPosition();
 
 		$chunkHash = World::chunkHash($x >> 4, $z >> 4);
 		$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
@@ -1718,12 +1718,12 @@ class World implements ChunkManager{
 
 	private function destroyBlockInternal(Block $target, Item $item, ?Player $player = null, bool $createParticles = false) : void{
 		if($createParticles){
-			$this->addParticle($target->getPos()->add(0.5, 0.5, 0.5), new BlockBreakParticle($target));
+			$this->addParticle($target->getPosition()->add(0.5, 0.5, 0.5), new BlockBreakParticle($target));
 		}
 
 		$target->onBreak($item, $player);
 
-		$tile = $this->getTile($target->getPos());
+		$tile = $this->getTile($target->getPosition());
 		if($tile !== null){
 			$tile->onBlockDestroyed();
 		}
@@ -1743,12 +1743,12 @@ class World implements ChunkManager{
 			$clickVector = new Vector3(0.0, 0.0, 0.0);
 		}
 
-		if(!$this->isInWorld($blockReplace->getPos()->x, $blockReplace->getPos()->y, $blockReplace->getPos()->z)){
+		if(!$this->isInWorld($blockReplace->getPosition()->x, $blockReplace->getPosition()->y, $blockReplace->getPosition()->z)){
 			//TODO: build height limit messages for custom world heights and mcregion cap
 			return false;
 		}
-		$chunkX = $blockReplace->getPos()->getFloorX() >> 4;
-		$chunkZ = $blockReplace->getPos()->getFloorZ() >> 4;
+		$chunkX = $blockReplace->getPosition()->getFloorX() >> 4;
+		$chunkZ = $blockReplace->getPosition()->getFloorZ() >> 4;
 		if(!$this->isChunkLoaded($chunkX, $chunkZ) || !$this->isChunkGenerated($chunkX, $chunkZ) || $this->isChunkLocked($chunkX, $chunkZ)){
 			return false;
 		}
@@ -1782,14 +1782,14 @@ class World implements ChunkManager{
 
 		if($item->canBePlaced()){
 			$hand = $item->getBlock($face);
-			$hand->position($this, $blockReplace->getPos()->x, $blockReplace->getPos()->y, $blockReplace->getPos()->z);
+			$hand->position($this, $blockReplace->getPosition()->x, $blockReplace->getPosition()->y, $blockReplace->getPosition()->z);
 		}else{
 			return false;
 		}
 
 		if($hand->canBePlacedAt($blockClicked, $clickVector, $face, true)){
 			$blockReplace = $blockClicked;
-			$hand->position($this, $blockReplace->getPos()->x, $blockReplace->getPos()->y, $blockReplace->getPos()->z);
+			$hand->position($this, $blockReplace->getPosition()->x, $blockReplace->getPosition()->y, $blockReplace->getPosition()->z);
 		}elseif(!$hand->canBePlacedAt($blockReplace, $clickVector, $face, false)){
 			return false;
 		}
@@ -1850,7 +1850,7 @@ class World implements ChunkManager{
 		}
 
 		if($playSound){
-			$this->addSound($hand->getPos(), new BlockPlaceSound($hand));
+			$this->addSound($hand->getPosition(), new BlockPlaceSound($hand));
 		}
 
 		$item->pop();
@@ -2367,7 +2367,7 @@ class World implements ChunkManager{
 		if($tile->isClosed()){
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to world");
 		}
-		$pos = $tile->getPos();
+		$pos = $tile->getPosition();
 		if(!$pos->isValid() || $pos->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Tile world");
 		}
@@ -2390,7 +2390,7 @@ class World implements ChunkManager{
 	 * @throws \InvalidArgumentException
 	 */
 	public function removeTile(Tile $tile) : void{
-		$pos = $tile->getPos();
+		$pos = $tile->getPosition();
 		if(!$pos->isValid() || $pos->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Tile world");
 		}
@@ -2507,7 +2507,7 @@ class World implements ChunkManager{
 				}
 				if($tile === null){
 					$this->getLogger()->warning("Chunk $chunkX $chunkZ: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
-				}elseif(!$this->isChunkLoaded($tile->getPos()->getFloorX() >> 4, $tile->getPos()->getFloorZ() >> 4)){
+				}elseif(!$this->isChunkLoaded($tile->getPosition()->getFloorX() >> 4, $tile->getPosition()->getFloorZ() >> 4)){
 					$this->logger->error("Chunk $chunkX $chunkZ: Found tile saved on wrong chunk - unable to fix due to correct chunk not loaded");
 				}else{
 					$this->addTile($tile);

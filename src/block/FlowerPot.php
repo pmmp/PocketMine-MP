@@ -47,7 +47,7 @@ class FlowerPot extends Flowable{
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileFlowerPot){
 			$this->setPlant($tile->getPlant());
 		}else{
@@ -58,7 +58,7 @@ class FlowerPot extends Flowable{
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
 
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileFlowerPot);
 		$tile->setPlant($this->plant);
 	}
@@ -109,7 +109,7 @@ class FlowerPot extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
@@ -121,7 +121,7 @@ class FlowerPot extends Flowable{
 
 		$this->setPlant($plant);
 		$item->pop();
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->position->getWorld()->setBlock($this->position, $this);
 
 		return true;
 	}

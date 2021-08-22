@@ -54,9 +54,9 @@ final class Coral extends BaseCoral{
 
 	public function readStateFromWorld() : void{
 		//TODO: this hack ensures correct state of coral plants, because they don't retain their dead flag in metadata
-		$world = $this->pos->getWorld();
+		$world = $this->position->getWorld();
 		$this->dead = true;
-		foreach($this->pos->sides() as $vector3){
+		foreach($this->position->sides() as $vector3){
 			if($world->getBlock($vector3) instanceof Water){
 				$this->dead = false;
 				break;
@@ -65,16 +65,16 @@ final class Coral extends BaseCoral{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$tx->fetchBlock($blockReplace->getPos()->down())->isSolid()){
+		if(!$tx->fetchBlock($blockReplace->getPosition()->down())->isSolid()){
 			return false;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
-		$world = $this->pos->getWorld();
-		if(!$world->getBlock($this->pos->down())->isSolid()){
-			$world->useBreakOn($this->pos);
+		$world = $this->position->getWorld();
+		if(!$world->getBlock($this->position->down())->isSolid()){
+			$world->useBreakOn($this->position);
 		}else{
 			parent::onNearbyBlockChange();
 		}
