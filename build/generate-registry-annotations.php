@@ -31,6 +31,7 @@ use function file_get_contents;
 use function file_put_contents;
 use function implode;
 use function ksort;
+use function mb_strtoupper;
 use function preg_match;
 use function sprintf;
 use function str_replace;
