@@ -40,8 +40,8 @@ class BanIpCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_BAN_IP_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_BANIP_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_BAN_IP_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_BANIP_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_BAN_IP);
 	}

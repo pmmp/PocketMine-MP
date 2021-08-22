@@ -39,6 +39,7 @@ final class BandwidthStatsTracker{
 	/** @var int */
 	private $totalBytes = 0;
 
+	/** @phpstan-param positive-int $historySize */
 	public function __construct(int $historySize){
 		$this->history = array_fill(0, $historySize, 0);
 	}

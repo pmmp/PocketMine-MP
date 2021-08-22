@@ -36,8 +36,8 @@ class PardonCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_UNBAN_PLAYER_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_UNBAN_USAGE,
+			KnownTranslationKeys::POCKETMINE_COMMAND_UNBAN_PLAYER_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_UNBAN_USAGE,
 			["unban"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_UNBAN_PLAYER);

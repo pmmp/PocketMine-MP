@@ -37,8 +37,11 @@ class CraftingManager{
 	/** @var ShapelessRecipe[][] */
 	protected $shapelessRecipes = [];
 
-	/** @var FurnaceRecipeManager */
-	protected $furnaceRecipeManager;
+	/**
+	 * @var FurnaceRecipeManager[]
+	 * @phpstan-var array<int, FurnaceRecipeManager>
+	 */
+	protected $furnaceRecipeManagers;
 
 	/**
 	 * @var ObjectSet
@@ -48,14 +51,18 @@ class CraftingManager{
 
 	public function __construct(){
 		$this->recipeRegisteredCallbacks = new ObjectSet();
-		$this->furnaceRecipeManager = new FurnaceRecipeManager();
+		foreach(FurnaceType::getAll() as $furnaceType){
+			$this->furnaceRecipeManagers[$furnaceType->id()] = new FurnaceRecipeManager();
+		}
 
 		$recipeRegisteredCallbacks = $this->recipeRegisteredCallbacks;
-		$this->furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(static function(FurnaceRecipe $recipe) use ($recipeRegisteredCallbacks) : void{
-			foreach($recipeRegisteredCallbacks as $callback){
-				$callback();
-			}
-		});
+		foreach($this->furnaceRecipeManagers as $furnaceRecipeManager){
+			$furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(static function(FurnaceRecipe $recipe) use ($recipeRegisteredCallbacks) : void{
+				foreach($recipeRegisteredCallbacks as $callback){
+					$callback();
+				}
+			});
+		}
 	}
 
 	/** @phpstan-return ObjectSet<\Closure() : void> */
@@ -123,8 +130,8 @@ class CraftingManager{
 		return $this->shapedRecipes;
 	}
 
-	public function getFurnaceRecipeManager() : FurnaceRecipeManager{
-		return $this->furnaceRecipeManager;
+	public function getFurnaceRecipeManager(FurnaceType $furnaceType) : FurnaceRecipeManager{
+		return $this->furnaceRecipeManagers[$furnaceType->id()];
 	}
 
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{

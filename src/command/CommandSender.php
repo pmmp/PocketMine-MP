@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 use pocketmine\lang\Language;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use pocketmine\permission\Permissible;
 use pocketmine\Server;
 
@@ -32,7 +32,7 @@ interface CommandSender extends Permissible{
 
 	public function getLanguage() : Language;
 
-	public function sendMessage(TranslationContainer|string $message) : void;
+	public function sendMessage(Translatable|string $message) : void;
 
 	public function getServer() : Server;
 

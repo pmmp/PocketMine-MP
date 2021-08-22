@@ -40,8 +40,8 @@ class ListCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_LIST_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_PLAYERS_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_LIST_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_PLAYERS_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_LIST);
 	}

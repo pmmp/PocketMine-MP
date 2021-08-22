@@ -28,6 +28,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
+use pocketmine\utils\TextFormat;
 use function array_slice;
 use function count;
 use function implode;
@@ -37,8 +38,8 @@ class TitleCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_TITLE_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_TITLE_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_TITLE_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_TITLE_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TITLE);
 	}
@@ -54,7 +55,7 @@ class TitleCommand extends VanillaCommand{
 
 		$player = $sender->getServer()->getPlayerByPrefix($args[0]);
 		if($player === null){
-			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound());
+			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 			return true;
 		}
 

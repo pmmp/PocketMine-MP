@@ -32,6 +32,7 @@ use pocketmine\block\tile\Barrel as TileBarrel;
 use pocketmine\block\tile\Beacon as TileBeacon;
 use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\tile\Bell as TileBell;
+use pocketmine\block\tile\BlastFurnace as TileBlastFurnace;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\tile\Comparator as TileComparator;
@@ -39,14 +40,15 @@ use pocketmine\block\tile\DaylightSensor as TileDaylightSensor;
 use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
-use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\tile\Jukebox as TileJukebox;
 use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
+use pocketmine\block\tile\NormalFurnace as TileNormalFurnace;
 use pocketmine\block\tile\Note as TileNote;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\tile\Skull as TileSkull;
+use pocketmine\block\tile\Smoker as TileSmoker;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\SlabType;
@@ -200,7 +202,9 @@ class BlockFactory{
 			$this->remap(Ids::FLOWER_POT_BLOCK, $meta, $flowerPot);
 		}
 		$this->register(new FrostedIce(new BID(Ids::FROSTED_ICE, 0), "Frosted Ice", new BlockBreakInfo(2.5, BlockToolType::PICKAXE)));
-		$this->register(new Furnace(new BIDFlattened(Ids::FURNACE, [Ids::LIT_FURNACE], 0, null, TileFurnace::class), "Furnace", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new Furnace(new BIDFlattened(Ids::FURNACE, [Ids::LIT_FURNACE], 0, null, TileNormalFurnace::class), "Furnace", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new Furnace(new BIDFlattened(Ids::BLAST_FURNACE, [Ids::LIT_BLAST_FURNACE], 0, null, TileBlastFurnace::class), "Blast Furnace", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->register(new Furnace(new BIDFlattened(Ids::SMOKER, [Ids::LIT_SMOKER], 0, null, TileSmoker::class), "Smoker", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 
 		$glassBreakInfo = new BlockBreakInfo(0.3);
 		$this->register(new Glass(new BID(Ids::GLASS, 0), "Glass", $glassBreakInfo));
@@ -318,7 +322,7 @@ class BlockFactory{
 		$this->register(new Sand(new BID(Ids::SAND, 1), "Red Sand", $sandBreakInfo));
 		$this->register(new SeaLantern(new BID(Ids::SEALANTERN, 0), "Sea Lantern", new BlockBreakInfo(0.3)));
 		$this->register(new SeaPickle(new BID(Ids::SEA_PICKLE, 0), "Sea Pickle", BlockBreakInfo::instant()));
-		$this->register(new Skull(new BID(Ids::MOB_HEAD_BLOCK, 0, null, TileSkull::class), "Mob Head", new BlockBreakInfo(1.0)));
+		$this->register(new Skull(new BID(Ids::MOB_HEAD_BLOCK, 0, ItemIds::SKULL, TileSkull::class), "Mob Head", new BlockBreakInfo(1.0)));
 
 		$this->register(new Snow(new BID(Ids::SNOW, 0), "Snow Block", new BlockBreakInfo(0.2, BlockToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new SnowLayer(new BID(Ids::SNOW_LAYER, 0), "Snow Layer", new BlockBreakInfo(0.1, BlockToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel())));
@@ -549,7 +553,6 @@ class BlockFactory{
 		));
 
 		//region --- auto-generated TODOs for bedrock-1.11.0 ---
-		//TODO: minecraft:blast_furnace
 		//TODO: minecraft:bubble_column
 		//TODO: minecraft:campfire
 		//TODO: minecraft:cartography_table
@@ -570,8 +573,6 @@ class BlockFactory{
 		//TODO: minecraft:kelp
 		//TODO: minecraft:lava_cauldron
 		//TODO: minecraft:lectern
-		//TODO: minecraft:lit_blast_furnace
-		//TODO: minecraft:lit_smoker
 		//TODO: minecraft:movingBlock
 		//TODO: minecraft:observer
 		//TODO: minecraft:piston
@@ -581,7 +582,6 @@ class BlockFactory{
 		//TODO: minecraft:seagrass
 		//TODO: minecraft:slime
 		//TODO: minecraft:smithing_table
-		//TODO: minecraft:smoker
 		//TODO: minecraft:sticky_piston
 		//TODO: minecraft:stonecutter_block
 		//TODO: minecraft:structure_block
@@ -957,18 +957,13 @@ class BlockFactory{
 			throw new \InvalidArgumentException("Block meta value $meta is out of bounds");
 		}
 
-		/** @var Block|null $block */
-		$block = null;
-		try{
-			$index = ($id << Block::INTERNAL_METADATA_BITS) | $meta;
-			if($this->fullList[$index] !== null){
-				$block = clone $this->fullList[$index];
-			}
-		}catch(\RuntimeException $e){
+		$index = ($id << Block::INTERNAL_METADATA_BITS) | $meta;
+		if($index < 0 || $index >= $this->fullList->getSize()){
 			throw new \InvalidArgumentException("Block ID $id is out of bounds");
 		}
-
-		if($block === null){
+		if($this->fullList[$index] !== null){
+			$block = clone $this->fullList[$index];
+		}else{
 			$block = new UnknownBlock(new BID($id, $meta), BlockBreakInfo::instant());
 		}
 

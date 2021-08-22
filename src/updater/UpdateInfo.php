@@ -28,69 +28,26 @@ namespace pocketmine\updater;
  * @link https://update.pmmp.io/api
  */
 final class UpdateInfo{
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $job;
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $php_version;
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $base_version;
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $build_number;
-	/**
-	 * @var bool
-	 * @required
-	 */
-	public $is_dev;
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $branch;
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $git_commit;
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $mcpe_version;
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $phar_name;
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $build;
-	/**
-	 * @var int
-	 * @required
-	 */
-	public $date;
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $details_url;
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $download_url;
+	/** @required */
+	public string $php_version;
+	/** @required */
+	public string $base_version;
+	/** @required */
+	public bool $is_dev;
+	/** @required */
+	public string $channel;
+	/** @required */
+	public string $git_commit;
+	/** @required */
+	public string $mcpe_version;
+	/** @required */
+	public int $build;
+	/** @required */
+	public int $date;
+	/** @required */
+	public string $details_url;
+	/** @required */
+	public string $download_url;
+	/** @required */
+	public string $source_url;
 }

@@ -39,8 +39,8 @@ class OpCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_OP_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_OP_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_OP_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_OP_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_OP_GIVE);
 	}

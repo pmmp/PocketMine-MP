@@ -138,11 +138,11 @@ class ProcessLoginTask extends AsyncTask{
 
 		if($currentPublicKey === null){
 			if(!$first){
-				throw new VerifyLoginException("%" . KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_MISSINGKEY);
+				throw new VerifyLoginException(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_MISSINGKEY);
 			}
 		}elseif($headerDerKey !== $currentPublicKey){
 			//Fast path: if the header key doesn't match what we expected, the signature isn't going to validate anyway
-			throw new VerifyLoginException("%" . KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_BADSIGNATURE);
+			throw new VerifyLoginException(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_BADSIGNATURE);
 		}
 
 		try{
@@ -152,7 +152,7 @@ class ProcessLoginTask extends AsyncTask{
 		}
 		try{
 			if(!JwtUtils::verify($jwt, $signingKeyOpenSSL)){
-				throw new VerifyLoginException("%" . KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_BADSIGNATURE);
+				throw new VerifyLoginException(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_BADSIGNATURE);
 			}
 		}catch(JwtException $e){
 			throw new VerifyLoginException($e->getMessage(), 0, $e);
@@ -178,11 +178,11 @@ class ProcessLoginTask extends AsyncTask{
 
 		$time = time();
 		if(isset($claims->nbf) and $claims->nbf > $time + self::CLOCK_DRIFT_MAX){
-			throw new VerifyLoginException("%" . KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_TOOEARLY);
+			throw new VerifyLoginException(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_TOOEARLY);
 		}
 
 		if(isset($claims->exp) and $claims->exp < $time - self::CLOCK_DRIFT_MAX){
-			throw new VerifyLoginException("%" . KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_TOOLATE);
+			throw new VerifyLoginException(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_TOOLATE);
 		}
 
 		if(isset($claims->identityPublicKey)){

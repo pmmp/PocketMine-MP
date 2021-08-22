@@ -196,9 +196,9 @@ class WorldManager{
 			$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_loadError(
 				$name,
 				count($providers) === 0 ?
-					$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_unknownFormat()) :
-					$this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_ambiguousFormat(implode(", ", array_keys($providers)))
-			))));
+					KnownTranslationFactory::pocketmine_level_unknownFormat() :
+					KnownTranslationFactory::pocketmine_level_ambiguousFormat(implode(", ", array_keys($providers)))
+			)));
 			return false;
 		}
 		$providerClass = array_shift($providers);

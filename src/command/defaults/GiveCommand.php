@@ -30,7 +30,6 @@ use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\nbt\JsonNbtParser;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\permission\DefaultPermissionNames;
@@ -44,8 +43,8 @@ class GiveCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_GIVE);
 	}
@@ -61,14 +60,14 @@ class GiveCommand extends VanillaCommand{
 
 		$player = $sender->getServer()->getPlayerByPrefix($args[0]);
 		if($player === null){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PLAYER_NOTFOUND));
+			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 			return true;
 		}
 
 		try{
 			$item = LegacyStringToItemParser::getInstance()->parse($args[1]);
 		}catch(LegacyStringToItemParserException $e){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GIVE_ITEM_NOTFOUND, [$args[1]]));
+			$sender->sendMessage(KnownTranslationFactory::commands_give_item_notFound($args[1])->prefix(TextFormat::RED));
 			return true;
 		}
 

@@ -60,8 +60,8 @@ class TimingsCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TIMINGS);
 	}

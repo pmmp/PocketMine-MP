@@ -21,23 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\resourcepacks\json;
+namespace pocketmine\block\tile;
 
-/**
- * Model for JsonMapper to represent resource pack manifest.json contents.
- */
-final class Manifest{
-	/** @required */
-	public int $format_version;
+use pocketmine\crafting\FurnaceType;
 
-	/** @required */
-	public ManifestHeader $header;
-
-	/**
-	 * @var ManifestModuleEntry[]
-	 * @required
-	 */
-	public array $modules;
-
-	public ?ManifestMetadata $metadata = null;
+class NormalFurnace extends Furnace{
+	public function getFurnaceType() : FurnaceType{
+		return FurnaceType::FURNACE();
+	}
 }

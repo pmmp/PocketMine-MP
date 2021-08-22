@@ -39,8 +39,8 @@ class DeopCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_DEOP_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_DEOP_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_DEOP_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_DEOP_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_OP_TAKE);
 	}

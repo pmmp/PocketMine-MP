@@ -29,7 +29,6 @@ use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -39,8 +38,8 @@ class EnchantCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_ENCHANT_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_ENCHANT_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_ENCHANT_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_ENCHANT_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_ENCHANT);
 	}
@@ -57,7 +56,7 @@ class EnchantCommand extends VanillaCommand{
 		$player = $sender->getServer()->getPlayerByPrefix($args[0]);
 
 		if($player === null){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PLAYER_NOTFOUND));
+			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 			return true;
 		}
 
@@ -86,7 +85,7 @@ class EnchantCommand extends VanillaCommand{
 		$item->addEnchantment(new EnchantmentInstance($enchantment, $level));
 		$player->getInventory()->setItemInHand($item);
 
-		self::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_ENCHANT_SUCCESS, [$player->getName()]));
+		self::broadcastCommandMessage($sender, KnownTranslationFactory::commands_enchant_success($player->getName()));
 		return true;
 	}
 }

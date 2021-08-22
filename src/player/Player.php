@@ -75,6 +75,7 @@ use pocketmine\form\FormValidationException;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\item\ConsumableItem;
+use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
@@ -83,7 +84,7 @@ use pocketmine\item\Releasable;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -110,10 +111,12 @@ use pocketmine\world\Position;
 use pocketmine\world\sound\EntityAttackNoDamageSound;
 use pocketmine\world\sound\EntityAttackSound;
 use pocketmine\world\sound\FireExtinguishSound;
+use pocketmine\world\sound\ItemBreakSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use Ramsey\Uuid\UuidInterface;
 use function abs;
+use function array_map;
 use function assert;
 use function count;
 use function explode;
@@ -319,11 +322,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
-	public function getLeaveMessage() : TranslationContainer|string{
+	public function getLeaveMessage() : Translatable|string{
 		if($this->spawned){
-			return new TranslationContainer(TextFormat::YELLOW . "%" . KnownTranslationKeys::MULTIPLAYER_PLAYER_LEFT, [
-				$this->getDisplayName()
-			]);
+			return KnownTranslationFactory::multiplayer_player_left($this->getDisplayName())->prefix(TextFormat::YELLOW);
 		}
 
 		return "";
@@ -757,9 +758,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		});
 
 		$ev = new PlayerJoinEvent($this,
-			new TranslationContainer(TextFormat::YELLOW . "%" . KnownTranslationKeys::MULTIPLAYER_PLAYER_JOINED, [
-				$this->getDisplayName()
-			])
+			KnownTranslationFactory::multiplayer_player_joined($this->getDisplayName())->prefix(TextFormat::YELLOW)
 		);
 		$ev->call();
 		if($ev->getJoinMessage() !== ""){
@@ -769,10 +768,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->noDamageTicks = 60;
 
 		$this->spawnToAll();
-
-		if($this->server->getUpdater()->hasUpdate() and $this->hasPermission(DefaultPermissionNames::BROADCAST_ADMIN) and $this->server->getConfigGroup()->getPropertyBool("auto-updater.on-update.warn-ops", true)){
-			$this->server->getUpdater()->showPlayerUpdate($this);
-		}
 
 		if($this->getHealth() <= 0){
 			$this->logger->debug("Quit while dead, forcing respawn");
@@ -1387,6 +1382,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->resetItemCooldown($item);
 		if($this->hasFiniteResources() and !$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
+			if($item instanceof Durable && $item->isBroken()){
+				$this->broadcastSound(new ItemBreakSound());
+			}
 			$this->inventory->setItemInHand($item);
 		}
 
@@ -1448,6 +1446,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			if($result->equals(ItemUseResult::SUCCESS())){
 				$this->resetItemCooldown($item);
 				if(!$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
+					if($item instanceof Durable && $item->isBroken()){
+						$this->broadcastSound(new ItemBreakSound());
+					}
 					$this->inventory->setItemInHand($item);
 				}
 				return true;
@@ -1565,6 +1566,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$oldItem = clone $item;
 			if($this->getWorld()->useBreakOn($pos, $item, $this, true)){
 				if($this->hasFiniteResources() and !$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
+					if($item instanceof Durable && $item->isBroken()){
+						$this->broadcastSound(new ItemBreakSound());
+					}
 					$this->inventory->setItemInHand($item);
 				}
 				$this->hungerManager->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
@@ -1589,6 +1593,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$oldItem = clone $item;
 			if($this->getWorld()->useItemOn($pos, $item, $face, $clickOffset, $this, true)){
 				if($this->hasFiniteResources() and !$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
+					if($item instanceof Durable && $item->isBroken()){
+						$this->broadcastSound(new ItemBreakSound());
+					}
 					$this->inventory->setItemInHand($item);
 				}
 				return true;
@@ -1661,6 +1668,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			//reactive damage like thorns might cause us to be killed by attacking another mob, which
 			//would mean we'd already have dropped the inventory by the time we reached here
 			if($heldItem->onAttackEntity($entity) and $this->hasFiniteResources() and $oldItem->equalsExact($this->inventory->getItemInHand())){ //always fire the hook, even if we are survival
+				if($heldItem instanceof Durable && $heldItem->isBroken()){
+					$this->broadcastSound(new ItemBreakSound());
+				}
 				$this->inventory->setItemInHand($heldItem);
 			}
 
@@ -1780,19 +1790,21 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Sends a direct chat message to a player
 	 */
-	public function sendMessage(TranslationContainer|string $message) : void{
-		if($message instanceof TranslationContainer){
+	public function sendMessage(Translatable|string $message) : void{
+		if($message instanceof Translatable){
 			$this->sendTranslation($message->getText(), $message->getParameters());
 			return;
 		}
 
-		$this->getNetworkSession()->onRawChatMessage($this->getLanguage()->translateString($message));
+		$this->getNetworkSession()->onRawChatMessage($message);
 	}
 
 	/**
-	 * @param string[] $parameters
+	 * @param string[]|Translatable[] $parameters
 	 */
 	public function sendTranslation(string $message, array $parameters = []) : void{
+		//we can't send nested translations to the client, so make sure they are always pre-translated by the server
+		$parameters = array_map(fn(string|Translatable $p) => $p instanceof Translatable ? $this->getLanguage()->translate($p) : $p, $parameters);
 		if(!$this->server->isLanguageForced()){
 			foreach($parameters as $i => $p){
 				$parameters[$i] = $this->getLanguage()->translateString($p, [], "pocketmine.");
@@ -1879,13 +1891,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Kicks a player from the server
 	 */
-	public function kick(string $reason = "", TranslationContainer|string|null $quitMessage = null) : bool{
+	public function kick(string $reason = "", Translatable|string|null $quitMessage = null) : bool{
 		$ev = new PlayerKickEvent($this, $reason, $quitMessage ?? $this->getLeaveMessage());
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$reason = $ev->getReason();
 			if($reason === ""){
-				$reason = "disconnectionScreen.noReason";
+				$reason = KnownTranslationKeys::DISCONNECTIONSCREEN_NOREASON;
 			}
 			$this->disconnect($reason, $ev->getQuitMessage());
 
@@ -1904,10 +1916,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * Note for internals developers: Do not call this from network sessions. It will cause a feedback loop.
 	 *
-	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
-	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
+	 * @param string                   $reason Shown to the player, usually this will appear on their disconnect screen.
+	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function disconnect(string $reason, TranslationContainer|string|null $quitMessage = null) : void{
+	public function disconnect(string $reason, Translatable|string|null $quitMessage = null) : void{
 		if(!$this->isConnected()){
 			return;
 		}
@@ -1921,15 +1933,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * This method executes post-disconnect actions and cleanups.
 	 *
 	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
-	 * @param TranslationContainer|string|null $quitMessage Message to broadcast to online players (null will use default)
+	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
-	public function onPostDisconnect(string $reason, TranslationContainer|string|null $quitMessage) : void{
+	public function onPostDisconnect(string $reason, Translatable|string|null $quitMessage) : void{
 		if($this->isConnected()){
 			throw new \InvalidStateException("Player is still connected");
 		}
 
 		//prevent the player receiving their own disconnect message
 		$this->server->unsubscribeFromAllBroadcastChannels($this);
+
+		$this->doCloseInventory();
 
 		$ev = new PlayerQuitEvent($this, $quitMessage ?? $this->getLeaveMessage(), $reason);
 		$ev->call();
@@ -2110,6 +2124,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 				$this->setSprinting(false);
 				$this->setSneaking(false);
+				$this->setFlying(false);
 
 				$this->extinguish();
 				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());

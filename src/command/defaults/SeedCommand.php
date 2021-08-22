@@ -34,8 +34,8 @@ class SeedCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_SEED_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_SEED_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_SEED_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_SEED_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SEED);
 	}

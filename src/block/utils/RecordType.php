@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\utils\EnumTrait;
 
@@ -51,18 +53,18 @@ final class RecordType{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new RecordType("disk_13", "C418 - 13", LevelSoundEventPacket::SOUND_RECORD_13, "item.record_13.desc"),
-			new RecordType("disk_cat", "C418 - cat", LevelSoundEventPacket::SOUND_RECORD_CAT, "item.record_cat.desc"),
-			new RecordType("disk_blocks", "C418 - blocks", LevelSoundEventPacket::SOUND_RECORD_BLOCKS, "item.record_blocks.desc"),
-			new RecordType("disk_chirp", "C418 - chirp", LevelSoundEventPacket::SOUND_RECORD_CHIRP, "item.record_chirp.desc"),
-			new RecordType("disk_far", "C418 - far", LevelSoundEventPacket::SOUND_RECORD_FAR, "item.record_far.desc"),
-			new RecordType("disk_mall", "C418 - mall", LevelSoundEventPacket::SOUND_RECORD_MALL, "item.record_mall.desc"),
-			new RecordType("disk_mellohi", "C418 - mellohi", LevelSoundEventPacket::SOUND_RECORD_MELLOHI, "item.record_mellohi.desc"),
-			new RecordType("disk_stal", "C418 - stal", LevelSoundEventPacket::SOUND_RECORD_STAL, "item.record_stal.desc"),
-			new RecordType("disk_strad", "C418 - strad", LevelSoundEventPacket::SOUND_RECORD_STRAD, "item.record_strad.desc"),
-			new RecordType("disk_ward", "C418 - ward", LevelSoundEventPacket::SOUND_RECORD_WARD, "item.record_ward.desc"),
-			new RecordType("disk_11", "C418 - 11", LevelSoundEventPacket::SOUND_RECORD_11, "item.record_11.desc"),
-			new RecordType("disk_wait", "C418 - wait", LevelSoundEventPacket::SOUND_RECORD_WAIT, "item.record_wait.desc")
+			new RecordType("disk_13", "C418 - 13", LevelSoundEventPacket::SOUND_RECORD_13, KnownTranslationFactory::item_record_13_desc()),
+			new RecordType("disk_cat", "C418 - cat", LevelSoundEventPacket::SOUND_RECORD_CAT, KnownTranslationFactory::item_record_cat_desc()),
+			new RecordType("disk_blocks", "C418 - blocks", LevelSoundEventPacket::SOUND_RECORD_BLOCKS, KnownTranslationFactory::item_record_blocks_desc()),
+			new RecordType("disk_chirp", "C418 - chirp", LevelSoundEventPacket::SOUND_RECORD_CHIRP, KnownTranslationFactory::item_record_chirp_desc()),
+			new RecordType("disk_far", "C418 - far", LevelSoundEventPacket::SOUND_RECORD_FAR, KnownTranslationFactory::item_record_far_desc()),
+			new RecordType("disk_mall", "C418 - mall", LevelSoundEventPacket::SOUND_RECORD_MALL, KnownTranslationFactory::item_record_mall_desc()),
+			new RecordType("disk_mellohi", "C418 - mellohi", LevelSoundEventPacket::SOUND_RECORD_MELLOHI, KnownTranslationFactory::item_record_mellohi_desc()),
+			new RecordType("disk_stal", "C418 - stal", LevelSoundEventPacket::SOUND_RECORD_STAL, KnownTranslationFactory::item_record_stal_desc()),
+			new RecordType("disk_strad", "C418 - strad", LevelSoundEventPacket::SOUND_RECORD_STRAD, KnownTranslationFactory::item_record_strad_desc()),
+			new RecordType("disk_ward", "C418 - ward", LevelSoundEventPacket::SOUND_RECORD_WARD, KnownTranslationFactory::item_record_ward_desc()),
+			new RecordType("disk_11", "C418 - 11", LevelSoundEventPacket::SOUND_RECORD_11, KnownTranslationFactory::item_record_11_desc()),
+			new RecordType("disk_wait", "C418 - wait", LevelSoundEventPacket::SOUND_RECORD_WAIT, KnownTranslationFactory::item_record_wait_desc())
 			//TODO: Lena Raine - Pigstep
 		);
 	}
@@ -71,14 +73,11 @@ final class RecordType{
 	private $soundName;
 	/** @var int */
 	private $soundId;
-	/** @var string */
-	private $translationKey;
 
-	private function __construct(string $enumName, string $soundName, int $soundId, string $translationKey){
+	private function __construct(string $enumName, string $soundName, int $soundId, private Translatable $translatableName){
 		$this->Enum___construct($enumName);
 		$this->soundName = $soundName;
 		$this->soundId = $soundId;
-		$this->translationKey = $translationKey;
 	}
 
 	public function getSoundName() : string{
@@ -89,7 +88,5 @@ final class RecordType{
 		return $this->soundId;
 	}
 
-	public function getTranslationKey() : string{
-		return $this->translationKey;
-	}
+	public function getTranslatableName() : Translatable{ return $this->translatableName; }
 }

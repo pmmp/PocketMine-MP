@@ -38,8 +38,8 @@ class MeCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_ME_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_ME_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_ME_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_ME_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_ME);
 	}

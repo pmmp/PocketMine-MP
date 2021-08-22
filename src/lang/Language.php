@@ -130,25 +130,27 @@ class Language{
 	}
 
 	/**
-	 * @param (float|int|string)[] $params
+	 * @param (float|int|string|Translatable)[] $params
 	 */
 	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null) : string{
 		$baseText = $this->get($str);
 		$baseText = $this->parseTranslation(($onlyPrefix === null or strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
 
 		foreach($params as $i => $p){
-			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText);
+			$replacement = $p instanceof Translatable ? $this->translate($p) : (string) $p;
+			$baseText = str_replace("{%$i}", $replacement, $baseText);
 		}
 
 		return $baseText;
 	}
 
-	public function translate(TranslationContainer $c) : string{
+	public function translate(Translatable $c) : string{
 		$baseText = $this->internalGet($c->getText());
 		$baseText = $this->parseTranslation($baseText ?? $c->getText());
 
 		foreach($c->getParameters() as $i => $p){
-			$baseText = str_replace("{%$i}", $this->parseTranslation($p), $baseText);
+			$replacement = $p instanceof Translatable ? $this->translate($p) : $p;
+			$baseText = str_replace("{%$i}", $replacement, $baseText);
 		}
 
 		return $baseText;

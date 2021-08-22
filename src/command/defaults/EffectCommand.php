@@ -29,7 +29,6 @@ use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
@@ -41,8 +40,8 @@ class EffectCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_EFFECT_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_EFFECT_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_EFFECT_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_EFFECT_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_EFFECT);
 	}
@@ -59,7 +58,7 @@ class EffectCommand extends VanillaCommand{
 		$player = $sender->getServer()->getPlayerByPrefix($args[0]);
 
 		if($player === null){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PLAYER_NOTFOUND));
+			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 			return true;
 		}
 		$effectManager = $player->getEffects();
@@ -74,7 +73,7 @@ class EffectCommand extends VanillaCommand{
 		try{
 			$effect = VanillaEffects::fromString($args[1]);
 		}catch(\InvalidArgumentException $e){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_EFFECT_NOTFOUND, [$args[1]]));
+			$sender->sendMessage(KnownTranslationFactory::commands_effect_notFound($args[1])->prefix(TextFormat::RED));
 			return true;
 		}
 

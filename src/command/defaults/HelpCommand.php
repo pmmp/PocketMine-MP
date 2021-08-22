@@ -46,8 +46,8 @@ class HelpCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_HELP_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_HELP_USAGE,
+			KnownTranslationKeys::POCKETMINE_COMMAND_HELP_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_HELP_USAGE,
 			["?"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_HELP);
@@ -89,9 +89,10 @@ class HelpCommand extends VanillaCommand{
 				$pageNumber = 1;
 			}
 			$sender->sendMessage(KnownTranslationFactory::commands_help_header((string) $pageNumber, (string) count($commands)));
+			$lang = $sender->getLanguage();
 			if(isset($commands[$pageNumber - 1])){
 				foreach($commands[$pageNumber - 1] as $command){
-					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getName() . ": " . TextFormat::WHITE . $command->getDescription());
+					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getName() . ": " . TextFormat::WHITE . $lang->translateString($command->getDescription()));
 				}
 			}
 
@@ -100,8 +101,8 @@ class HelpCommand extends VanillaCommand{
 			if(($cmd = $sender->getServer()->getCommandMap()->getCommand(strtolower($commandName))) instanceof Command){
 				if($cmd->testPermissionSilent($sender)){
 					$message = TextFormat::YELLOW . "--------- " . TextFormat::WHITE . " Help: /" . $cmd->getName() . TextFormat::YELLOW . " ---------\n";
-					$message .= TextFormat::GOLD . "Description: " . TextFormat::WHITE . $cmd->getDescription() . "\n";
-					$message .= TextFormat::GOLD . "Usage: " . TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $cmd->getUsage())) . "\n";
+					$message .= TextFormat::GOLD . "Description: " . TextFormat::WHITE . $sender->getLanguage()->translateString($cmd->getDescription()) . "\n";
+					$message .= TextFormat::GOLD . "Usage: " . TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $sender->getLanguage()->translateString($cmd->getUsage()))) . "\n";
 					$sender->sendMessage($message);
 
 					return true;

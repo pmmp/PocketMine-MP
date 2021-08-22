@@ -30,7 +30,6 @@ use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -43,8 +42,8 @@ class ClearCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_CLEAR_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_CLEAR_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_CLEAR_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_CLEAR_USAGE
 		);
 		$this->setPermission(implode(";", [DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER]));
 	}
@@ -62,7 +61,7 @@ class ClearCommand extends VanillaCommand{
 		if(isset($args[0])){
 			$target = $sender->getServer()->getPlayerByPrefix($args[0]);
 			if($target === null){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PLAYER_NOTFOUND));
+				$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 				return true;
 			}
 			if($target !== $sender && !$this->testPermission($sender, DefaultPermissionNames::COMMAND_CLEAR_OTHER)){
@@ -89,7 +88,7 @@ class ClearCommand extends VanillaCommand{
 				}
 			}catch(LegacyStringToItemParserException $e){
 				//vanilla checks this at argument parsing layer, can't come up with a better alternative
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GIVE_ITEM_NOTFOUND, [$args[1]]));
+				$sender->sendMessage(KnownTranslationFactory::commands_give_item_notFound($args[1])->prefix(TextFormat::RED));
 				return true;
 			}
 		}
@@ -105,7 +104,7 @@ class ClearCommand extends VanillaCommand{
 			if($count > 0){
 				$sender->sendMessage(KnownTranslationFactory::commands_clear_testing($target->getName(), (string) $count));
 			}else{
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_CLEAR_FAILURE_NO_ITEMS, [$target->getName()]));
+				$sender->sendMessage(KnownTranslationFactory::commands_clear_failure_no_items($target->getName())->prefix(TextFormat::RED));
 			}
 
 			return true;
@@ -167,7 +166,7 @@ class ClearCommand extends VanillaCommand{
 		if($cleared > 0){
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_clear_success($target->getName(), (string) $cleared));
 		}else{
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_CLEAR_FAILURE_NO_ITEMS, [$target->getName()]));
+			$sender->sendMessage(KnownTranslationFactory::commands_clear_failure_no_items($target->getName())->prefix(TextFormat::RED));
 		}
 
 		return true;

@@ -28,7 +28,6 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -41,8 +40,8 @@ class TellCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_TELL_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_MESSAGE_USAGE,
+			KnownTranslationKeys::POCKETMINE_COMMAND_TELL_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_MESSAGE_USAGE,
 			["w", "msg"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TELL);
@@ -60,15 +59,15 @@ class TellCommand extends VanillaCommand{
 		$player = $sender->getServer()->getPlayerByPrefix(array_shift($args));
 
 		if($player === $sender){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_MESSAGE_SAMETARGET));
+			$sender->sendMessage(KnownTranslationFactory::commands_message_sameTarget()->prefix(TextFormat::RED));
 			return true;
 		}
 
 		if($player instanceof Player){
 			$message = implode(" ", $args);
-			$sender->sendMessage(new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%" . KnownTranslationKeys::COMMANDS_MESSAGE_DISPLAY_OUTGOING, [$player->getDisplayName(), $message]));
+			$sender->sendMessage(KnownTranslationFactory::commands_message_display_outgoing($player->getDisplayName(), $message)->prefix(TextFormat::GRAY . TextFormat::ITALIC));
 			$name = $sender instanceof Player ? $sender->getDisplayName() : $sender->getName();
-			$player->sendMessage(new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%" . KnownTranslationKeys::COMMANDS_MESSAGE_DISPLAY_INCOMING, [$name, $message]));
+			$player->sendMessage(KnownTranslationFactory::commands_message_display_incoming($name, $message)->prefix(TextFormat::GRAY . TextFormat::ITALIC));
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_message_display_outgoing($player->getDisplayName(), $message), false);
 		}else{
 			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound());

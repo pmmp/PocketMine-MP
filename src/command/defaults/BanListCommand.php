@@ -41,8 +41,8 @@ class BanListCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_BANLIST_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_BANLIST_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_BANLIST_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_BANLIST_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_BAN_LIST);
 	}
