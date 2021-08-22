@@ -28,6 +28,7 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\LegacyStringToItemParserException;
+use pocketmine\item\StringToItemParser;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
@@ -81,7 +82,7 @@ class ClearCommand extends VanillaCommand{
 		$maxCount = -1;
 		if(isset($args[1])){
 			try{
-				$item = LegacyStringToItemParser::getInstance()->parse($args[1]);
+				$item = StringToItemParser::getInstance()->parse($args[1]) ?? LegacyStringToItemParser::getInstance()->parse($args[1]);
 
 				if(isset($args[2])){
 					$item->setCount($maxCount = $this->getInteger($sender, $args[2], 0));
