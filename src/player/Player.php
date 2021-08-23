@@ -1064,6 +1064,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$bb = clone $this->boundingBox;
 			$bb->minY = $this->location->y - 0.2;
 			$bb->maxY = $this->location->y + 0.2;
+			$bb->contract(0.00001, 0, 0.00001); // account for floating point precision errors
 
 			$this->onGround = $this->isCollided = count($this->getWorld()->getCollisionBlocks($bb, true)) > 0;
 		}
