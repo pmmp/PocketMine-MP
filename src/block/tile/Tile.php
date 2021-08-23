@@ -46,14 +46,14 @@ abstract class Tile{
 	public const TAG_Z = "z";
 
 	/** @var Position */
-	protected $pos;
+	protected $position;
 	/** @var bool */
 	public $closed = false;
 	/** @var TimingsHandler */
 	protected $timings;
 
 	public function __construct(World $world, Vector3 $pos){
-		$this->pos = Position::fromObject($pos, $world);
+		$this->position = Position::fromObject($pos, $world);
 		$this->timings = Timings::getTileEntityTimings($this);
 	}
 
@@ -72,9 +72,9 @@ abstract class Tile{
 	public function saveNBT() : CompoundTag{
 		$nbt = CompoundTag::create()
 			->setString(self::TAG_ID, TileFactory::getInstance()->getSaveId(get_class($this)))
-			->setInt(self::TAG_X, $this->pos->getFloorX())
-			->setInt(self::TAG_Y, $this->pos->getFloorY())
-			->setInt(self::TAG_Z, $this->pos->getFloorZ());
+			->setInt(self::TAG_X, $this->position->getFloorX())
+			->setInt(self::TAG_Y, $this->position->getFloorY())
+			->setInt(self::TAG_Z, $this->position->getFloorZ());
 		$this->writeSaveData($nbt);
 
 		return $nbt;
@@ -97,11 +97,11 @@ abstract class Tile{
 	}
 
 	public function getBlock() : Block{
-		return $this->pos->getWorld()->getBlock($this->pos);
+		return $this->position->getWorld()->getBlock($this->position);
 	}
 
-	public function getPos() : Position{
-		return $this->pos;
+	public function getPosition() : Position{
+		return $this->position;
 	}
 
 	public function isClosed() : bool{
@@ -131,8 +131,8 @@ abstract class Tile{
 		if(!$this->closed){
 			$this->closed = true;
 
-			if($this->pos->isValid()){
-				$this->pos->getWorld()->removeTile($this);
+			if($this->position->isValid()){
+				$this->position->getWorld()->removeTile($this);
 			}
 		}
 	}

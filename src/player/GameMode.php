@@ -23,13 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\player;
 
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Translatable;
 use pocketmine\utils\EnumTrait;
 use function mb_strtolower;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
  * This must be regenerated whenever registry members are added, removed or changed.
- * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
+ * @see build/generate-registry-annotations.php
+ * @generate-registry-docblock
  *
  * @method static GameMode ADVENTURE()
  * @method static GameMode CREATIVE()
@@ -47,10 +50,10 @@ final class GameMode{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("survival", "Survival", "gameMode.survival", ["survival", "s", "0"]),
-			new self("creative", "Creative", "gameMode.creative", ["creative", "c", "1"]),
-			new self("adventure", "Adventure", "gameMode.adventure", ["adventure", "a", "2"]),
-			new self("spectator", "Spectator", "gameMode.spectator", ["spectator", "v", "view", "3"])
+			new self("survival", "Survival", KnownTranslationFactory::gameMode_survival(), ["survival", "s", "0"]),
+			new self("creative", "Creative", KnownTranslationFactory::gameMode_creative(), ["creative", "c", "1"]),
+			new self("adventure", "Adventure", KnownTranslationFactory::gameMode_adventure(), ["adventure", "a", "2"]),
+			new self("spectator", "Spectator", KnownTranslationFactory::gameMode_spectator(), ["spectator", "v", "view", "3"])
 		);
 	}
 
@@ -68,18 +71,15 @@ final class GameMode{
 
 	/** @var string */
 	private $englishName;
-	/** @var string */
-	private $translationKey;
 	/** @var string[] */
 	private $aliases;
 
 	/**
 	 * @param string[] $aliases
 	 */
-	private function __construct(string $enumName, string $englishName, string $translationKey, array $aliases = []){
+	private function __construct(string $enumName, string $englishName, private Translatable $translatableName, array $aliases = []){
 		$this->Enum___construct($enumName);
 		$this->englishName = $englishName;
-		$this->translationKey = $translationKey;
 		$this->aliases = $aliases;
 	}
 
@@ -87,9 +87,7 @@ final class GameMode{
 		return $this->englishName;
 	}
 
-	public function getTranslationKey() : string{
-		return "%" . $this->translationKey;
-	}
+	public function getTranslatableName() : Translatable{ return $this->translatableName; }
 
 	/**
 	 * @return string[]

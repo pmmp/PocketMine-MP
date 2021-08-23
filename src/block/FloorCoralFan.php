@@ -93,12 +93,12 @@ final class FloorCoralFan extends BaseCoral{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$tx->fetchBlock($blockReplace->getPos()->down())->isSolid()){
+		if(!$tx->fetchBlock($blockReplace->getPosition()->down())->isSolid()){
 			return false;
 		}
 		if($player !== null){
 			$playerBlockPos = $player->getPosition()->floor();
-			$directionVector = $blockReplace->getPos()->subtractVector($playerBlockPos)->normalize();
+			$directionVector = $blockReplace->getPosition()->subtractVector($playerBlockPos)->normalize();
 			$angle = rad2deg(atan2($directionVector->getZ(), $directionVector->getX()));
 
 			if($angle <= 45 || 315 <= $angle || (135 <= $angle && $angle <= 225)){
@@ -111,9 +111,9 @@ final class FloorCoralFan extends BaseCoral{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$world = $this->pos->getWorld();
-		if(!$world->getBlock($this->pos->down())->isSolid()){
-			$world->useBreakOn($this->pos);
+		$world = $this->position->getWorld();
+		if(!$world->getBlock($this->position->down())->isSolid()){
+			$world->useBreakOn($this->position);
 		}else{
 			parent::onNearbyBlockChange();
 		}

@@ -25,8 +25,8 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 
 class SaveOnCommand extends VanillaCommand{
@@ -34,8 +34,8 @@ class SaveOnCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_SAVEON_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_SAVE_ON_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_SAVEON_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_SAVE_ON_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_ENABLE);
 	}
@@ -47,7 +47,7 @@ class SaveOnCommand extends VanillaCommand{
 
 		$sender->getServer()->getWorldManager()->setAutoSave(true);
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_SAVE_ENABLED));
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_save_enabled());
 
 		return true;
 	}

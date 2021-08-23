@@ -84,14 +84,14 @@ trait ContainerTrait{
 	/**
 	 * @see Position::asPosition()
 	 */
-	abstract protected function getPos() : Position;
+	abstract protected function getPosition() : Position;
 
 	/**
 	 * @see Tile::onBlockDestroyedHook()
 	 */
 	protected function onBlockDestroyedHook() : void{
 		$inv = $this->getRealInventory();
-		$pos = $this->getPos();
+		$pos = $this->getPosition();
 
 		foreach($inv->getContents() as $k => $item){
 			$pos->getWorld()->dropItem($pos->add(0.5, 0.5, 0.5), $item);

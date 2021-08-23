@@ -27,8 +27,8 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
@@ -40,8 +40,8 @@ class EffectCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_EFFECT_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_EFFECT_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_EFFECT_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_EFFECT_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_EFFECT);
 	}
@@ -58,7 +58,7 @@ class EffectCommand extends VanillaCommand{
 		$player = $sender->getServer()->getPlayerByPrefix($args[0]);
 
 		if($player === null){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_GENERIC_PLAYER_NOTFOUND));
+			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 			return true;
 		}
 		$effectManager = $player->getEffects();
@@ -66,14 +66,14 @@ class EffectCommand extends VanillaCommand{
 		if(strtolower($args[1]) === "clear"){
 			$effectManager->clear();
 
-			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_EFFECT_SUCCESS_REMOVED_ALL, [$player->getDisplayName()]));
+			$sender->sendMessage(KnownTranslationFactory::commands_effect_success_removed_all($player->getDisplayName()));
 			return true;
 		}
 
 		try{
 			$effect = VanillaEffects::fromString($args[1]);
 		}catch(\InvalidArgumentException $e){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%" . KnownTranslationKeys::COMMANDS_EFFECT_NOTFOUND, [$args[1]]));
+			$sender->sendMessage(KnownTranslationFactory::commands_effect_notFound($args[1])->prefix(TextFormat::RED));
 			return true;
 		}
 
@@ -106,19 +106,19 @@ class EffectCommand extends VanillaCommand{
 		if($duration === 0){
 			if(!$effectManager->has($effect)){
 				if(count($effectManager->all()) === 0){
-					$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_EFFECT_FAILURE_NOTACTIVE_ALL, [$player->getDisplayName()]));
+					$sender->sendMessage(KnownTranslationFactory::commands_effect_failure_notActive_all($player->getDisplayName()));
 				}else{
-					$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_EFFECT_FAILURE_NOTACTIVE, [$effect->getName(), $player->getDisplayName()]));
+					$sender->sendMessage(KnownTranslationFactory::commands_effect_failure_notActive($effect->getName(), $player->getDisplayName()));
 				}
 				return true;
 			}
 
 			$effectManager->remove($effect);
-			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::COMMANDS_EFFECT_SUCCESS_REMOVED, [$effect->getName(), $player->getDisplayName()]));
+			$sender->sendMessage(KnownTranslationFactory::commands_effect_success_removed($effect->getName(), $player->getDisplayName()));
 		}else{
 			$instance = new EffectInstance($effect, $duration, $amplification, $visible);
 			$effectManager->add($instance);
-			self::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_EFFECT_SUCCESS, [$effect->getName(), $instance->getAmplifier(), $player->getDisplayName(), $instance->getDuration() / 20]));
+			self::broadcastCommandMessage($sender, KnownTranslationFactory::commands_effect_success($effect->getName(), (string) $instance->getAmplifier(), $player->getDisplayName(), (string) ($instance->getDuration() / 20)));
 		}
 
 		return true;

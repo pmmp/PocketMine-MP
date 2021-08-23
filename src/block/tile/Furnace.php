@@ -26,6 +26,7 @@ namespace pocketmine\block\tile;
 use pocketmine\block\Furnace as BlockFurnace;
 use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\crafting\FurnaceRecipe;
+use pocketmine\crafting\FurnaceType;
 use pocketmine\event\inventory\FurnaceBurnEvent;
 use pocketmine\event\inventory\FurnaceSmeltEvent;
 use pocketmine\inventory\CallbackInventoryListener;
@@ -39,7 +40,7 @@ use pocketmine\world\World;
 use function array_map;
 use function max;
 
-class Furnace extends Spawnable implements Container, Nameable{
+abstract class Furnace extends Spawnable implements Container, Nameable{
 	use NameableTrait;
 	use ContainerTrait;
 
@@ -58,7 +59,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
-		$this->inventory = new FurnaceInventory($this->pos);
+		$this->inventory = new FurnaceInventory($this->position, $this->getFurnaceType());
 		$this->inventory->getListeners()->add(CallbackInventoryListener::onAnyChange(
 			static function(Inventory $unused) use ($world, $pos) : void{
 				$world->scheduleDelayedBlockUpdate($pos, 1);
@@ -136,7 +137,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 		$block = $this->getBlock();
 		if($block instanceof BlockFurnace and !$block->isLit()){
 			$block->setLit(true);
-			$this->pos->getWorld()->setBlock($block->getPos(), $block);
+			$this->position->getWorld()->setBlock($block->getPosition(), $block);
 		}
 	}
 
@@ -144,9 +145,11 @@ class Furnace extends Spawnable implements Container, Nameable{
 		$block = $this->getBlock();
 		if($block instanceof BlockFurnace and $block->isLit()){
 			$block->setLit(false);
-			$this->pos->getWorld()->setBlock($block->getPos(), $block);
+			$this->position->getWorld()->setBlock($block->getPosition(), $block);
 		}
 	}
+
+	abstract public function getFurnaceType() : FurnaceType;
 
 	public function onUpdate() : bool{
 		//TODO: move this to Block
@@ -165,7 +168,9 @@ class Furnace extends Spawnable implements Container, Nameable{
 		$fuel = $this->inventory->getFuel();
 		$raw = $this->inventory->getSmelting();
 		$product = $this->inventory->getResult();
-		$smelt = $this->pos->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager()->match($raw);
+
+		$furnaceType = $this->getFurnaceType();
+		$smelt = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($furnaceType)->match($raw);
 		$canSmelt = ($smelt instanceof FurnaceRecipe and $raw->getCount() > 0 and (($smelt->getResult()->equals($product) and $product->getCount() < $product->getMaxStackSize()) or $product->isNull()));
 
 		if($this->remainingFuelTime <= 0 and $canSmelt and $fuel->getFuelTime() > 0 and $fuel->getCount() > 0){
@@ -178,7 +183,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 			if($smelt instanceof FurnaceRecipe and $canSmelt){
 				++$this->cookTime;
 
-				if($this->cookTime >= 200){ //10 seconds
+				if($this->cookTime >= $furnaceType->getCookDurationTicks()){
 					$product = $smelt->getResult()->setCount($product->getCount() + 1);
 
 					$ev = new FurnaceSmeltEvent($this, $raw, $product);
@@ -190,7 +195,7 @@ class Furnace extends Spawnable implements Container, Nameable{
 						$this->inventory->setSmelting($raw);
 					}
 
-					$this->cookTime -= 200;
+					$this->cookTime -= $furnaceType->getCookDurationTicks();
 				}
 			}elseif($this->remainingFuelTime <= 0){
 				$this->remainingFuelTime = $this->cookTime = $this->maxFuelTime = 0;

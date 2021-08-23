@@ -141,7 +141,7 @@ abstract class Projectile extends Entity{
 		$nbt->setDouble("damage", $this->damage);
 
 		if($this->blockHit !== null){
-			$pos = $this->blockHit->getPos();
+			$pos = $this->blockHit->getPosition();
 			$nbt->setInt("tileX", $pos->x);
 			$nbt->setInt("tileY", $pos->y);
 			$nbt->setInt("tileZ", $pos->z);
@@ -159,7 +159,7 @@ abstract class Projectile extends Entity{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->blockHit !== null and $this->getWorld()->isInLoadedTerrain($this->blockHit->getPos()) and !$this->blockHit->isSameState($this->getWorld()->getBlock($this->blockHit->getPos()))){
+		if($this->blockHit !== null and $this->getWorld()->isInLoadedTerrain($this->blockHit->getPosition()) and !$this->blockHit->isSameState($this->getWorld()->getBlock($this->blockHit->getPosition()))){
 			$this->blockHit = null;
 		}
 

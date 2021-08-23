@@ -26,8 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function array_shift;
@@ -39,8 +39,8 @@ class BanCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_BAN_PLAYER_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_BAN_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_BAN_PLAYER_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_BAN_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_BAN_PLAYER);
 	}
@@ -63,7 +63,7 @@ class BanCommand extends VanillaCommand{
 			$player->kick($reason !== "" ? "Banned by admin. Reason: " . $reason : "Banned by admin.");
 		}
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_BAN_SUCCESS, [$player !== null ? $player->getName() : $name]));
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_ban_success($player !== null ? $player->getName() : $name));
 
 		return true;
 	}

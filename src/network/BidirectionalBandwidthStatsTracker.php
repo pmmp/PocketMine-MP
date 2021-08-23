@@ -31,6 +31,7 @@ final class BidirectionalBandwidthStatsTracker{
 	/** @var BandwidthStatsTracker */
 	private $receive;
 
+	/** @phpstan-param positive-int $historySize */
 	public function __construct(int $historySize){
 		$this->send = new BandwidthStatsTracker($historySize);
 		$this->receive = new BandwidthStatsTracker($historySize);

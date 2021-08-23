@@ -26,8 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\math\Vector3;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
@@ -40,8 +40,8 @@ class SetWorldSpawnCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_SETWORLDSPAWN_DESCRIPTION,
-			"%" . KnownTranslationKeys::COMMANDS_SETWORLDSPAWN_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_SETWORLDSPAWN_DESCRIPTION,
+			KnownTranslationKeys::COMMANDS_SETWORLDSPAWN_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SETWORLDSPAWN);
 	}
@@ -70,7 +70,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 
 		$world->setSpawnLocation($pos);
 
-		Command::broadcastCommandMessage($sender, new TranslationContainer(KnownTranslationKeys::COMMANDS_SETWORLDSPAWN_SUCCESS, [round($pos->x, 2), round($pos->y, 2), round($pos->z, 2)]));
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_setworldspawn_success((string) round($pos->x, 2), (string) round($pos->y, 2), (string) round($pos->z, 2)));
 
 		return true;
 	}

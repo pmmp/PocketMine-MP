@@ -26,6 +26,7 @@ namespace pocketmine\console;
 use function cli_set_process_title;
 use function count;
 use function dirname;
+use function feof;
 use function fwrite;
 use function stream_socket_client;
 

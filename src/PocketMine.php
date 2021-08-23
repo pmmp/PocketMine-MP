@@ -149,6 +149,9 @@ namespace pocketmine {
 	 * @return void
 	 */
 	function emit_performance_warnings(\Logger $logger){
+		if(PHP_DEBUG !== 0){
+			$logger->warning("This PHP binary was compiled in debug mode. This has a major impact on performance.");
+		}
 		if(extension_loaded("xdebug")){
 			$logger->warning("Xdebug extension is enabled. This has a major impact on performance.");
 		}
@@ -229,7 +232,7 @@ JIT_WARNING
 		$composerGitHash = InstalledVersions::getReference('pocketmine/pocketmine-mp');
 		if($composerGitHash !== null){
 			//we can't verify dependency versions if we were installed without using git
-			$currentGitHash = explode("-", VersionInfo::getGitHash())[0];
+			$currentGitHash = explode("-", VersionInfo::GIT_HASH())[0];
 			if($currentGitHash !== $composerGitHash){
 				critical_error("Composer dependencies and/or autoloader are out of sync.");
 				critical_error("- Current revision is $currentGitHash");

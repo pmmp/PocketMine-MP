@@ -24,24 +24,30 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
-use pocketmine\lang\TranslationContainer;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
+use pocketmine\utils\Utils;
+use pocketmine\VersionInfo;
 use function count;
+use function function_exists;
 use function implode;
+use function opcache_get_status;
+use function sprintf;
 use function stripos;
 use function strtolower;
+use const PHP_VERSION;
 
 class VersionCommand extends VanillaCommand{
 
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_USAGE,
+			KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_USAGE,
 			["ver", "about"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_VERSION);
@@ -53,12 +59,37 @@ class VersionCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 0){
-			$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::POCKETMINE_SERVER_INFO_EXTENDED, [
-				$sender->getServer()->getName(),
-				$sender->getServer()->getPocketMineVersion(),
-				$sender->getServer()->getVersion(),
-				ProtocolInfo::CURRENT_PROTOCOL
-			]));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareName(
+				VersionInfo::NAME
+			));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareVersion(
+				VersionInfo::VERSION()->getFullVersion(),
+				VersionInfo::GIT_HASH()
+			));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_minecraftVersion(
+				ProtocolInfo::MINECRAFT_VERSION_NETWORK,
+				(string) ProtocolInfo::CURRENT_PROTOCOL
+			));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpVersion(PHP_VERSION));
+
+			if(
+				function_exists('opcache_get_status') &&
+				($opcacheStatus = opcache_get_status(false)) !== false &&
+				isset($opcacheStatus["jit"]["on"])
+			){
+				$jit = $opcacheStatus["jit"];
+				if($jit["on"] === true){
+					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitEnabled(
+						sprintf("CRTO: %s%s%s%s", $jit["opt_flags"] >> 2, $jit["opt_flags"] & 0x03, $jit["kind"], $jit["opt_level"])
+					);
+				}else{
+					$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitDisabled();
+				}
+			}else{
+				$jitStatus = KnownTranslationFactory::pocketmine_command_version_phpJitNotSupported();
+			}
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_phpJitStatus($jitStatus));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_operatingSystem(Utils::getOS()));
 		}else{
 			$pluginName = implode(" ", $args);
 			$exactPlugin = $sender->getServer()->getPluginManager()->getPlugin($pluginName);
@@ -79,7 +110,7 @@ class VersionCommand extends VanillaCommand{
 			}
 
 			if(!$found){
-				$sender->sendMessage(new TranslationContainer(KnownTranslationKeys::POCKETMINE_COMMAND_VERSION_NOSUCHPLUGIN));
+				$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_noSuchPlugin());
 			}
 		}
 

@@ -37,8 +37,8 @@ class GarbageCollectorCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_GC_DESCRIPTION,
-			"%" . KnownTranslationKeys::POCKETMINE_COMMAND_GC_USAGE
+			KnownTranslationKeys::POCKETMINE_COMMAND_GC_DESCRIPTION,
+			KnownTranslationKeys::POCKETMINE_COMMAND_GC_USAGE
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_GC);
 	}
@@ -54,10 +54,10 @@ class GarbageCollectorCommand extends VanillaCommand{
 		$memory = memory_get_usage();
 
 		foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
-			$diff = [count($world->getChunks()), count($world->getEntities())];
+			$diff = [count($world->getLoadedChunks()), count($world->getEntities())];
 			$world->doChunkGarbageCollection();
 			$world->unloadChunks(true);
-			$chunksCollected += $diff[0] - count($world->getChunks());
+			$chunksCollected += $diff[0] - count($world->getLoadedChunks());
 			$entitiesCollected += $diff[1] - count($world->getEntities());
 			$world->clearCache(true);
 		}

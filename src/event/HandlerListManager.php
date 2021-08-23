@@ -42,10 +42,10 @@ class HandlerListManager{
 	 * Unregisters all the listeners
 	 * If a Plugin or Listener is passed, all the listeners with that object will be removed
 	 *
-	 * @param Plugin|Listener|null $object
+	 * @param Plugin|Listener|RegisteredListener|null $object
 	 */
 	public function unregisterAll($object = null) : void{
-		if($object instanceof Listener or $object instanceof Plugin){
+		if($object instanceof Listener or $object instanceof Plugin or $object instanceof RegisteredListener){
 			foreach($this->allLists as $h){
 				$h->unregister($object);
 			}
