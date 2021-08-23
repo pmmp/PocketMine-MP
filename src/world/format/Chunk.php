@@ -228,7 +228,7 @@ class Chunk{
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to a chunk");
 		}
 
-		$pos = $tile->getPos();
+		$pos = $tile->getPosition();
 		if(isset($this->tiles[$index = Chunk::blockHash($pos->x, $pos->y, $pos->z)]) and $this->tiles[$index] !== $tile){
 			throw new \InvalidArgumentException("Another tile is already at this location");
 		}
@@ -237,7 +237,7 @@ class Chunk{
 	}
 
 	public function removeTile(Tile $tile) : void{
-		$pos = $tile->getPos();
+		$pos = $tile->getPosition();
 		unset($this->tiles[Chunk::blockHash($pos->x, $pos->y, $pos->z)]);
 		$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
 	}

@@ -32,6 +32,7 @@ final class VersionInfo{
 	public const BASE_VERSION = "4.0.0";
 	public const IS_DEVELOPMENT_BUILD = true;
 	public const BUILD_NUMBER = 0;
+	public const BUILD_CHANNEL = "";
 
 	private function __construct(){
 		//NOOP
@@ -40,7 +41,7 @@ final class VersionInfo{
 	/** @var string|null */
 	private static $gitHash = null;
 
-	public static function getGitHash() : string{
+	public static function GIT_HASH() : string{
 		if(self::$gitHash === null){
 			$gitHash = str_repeat("00", 20);
 
@@ -63,7 +64,7 @@ final class VersionInfo{
 	/** @var VersionString|null */
 	private static $fullVersion = null;
 
-	public static function getVersionObj() : VersionString{
+	public static function VERSION() : VersionString{
 		if(self::$fullVersion === null){
 			self::$fullVersion = new VersionString(self::BASE_VERSION, self::IS_DEVELOPMENT_BUILD, self::BUILD_NUMBER);
 		}

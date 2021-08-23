@@ -49,7 +49,7 @@ class Jukebox extends Opaque{
 			}
 		}
 
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->position->getWorld()->setBlock($this->position, $this);
 
 		return true;
 	}
@@ -60,7 +60,7 @@ class Jukebox extends Opaque{
 
 	public function ejectRecord() : void{
 		if($this->record !== null){
-			$this->getPos()->getWorld()->dropItem($this->getPos()->add(0.5, 1, 0.5), $this->record);
+			$this->getPosition()->getWorld()->dropItem($this->getPosition()->add(0.5, 1, 0.5), $this->record);
 			$this->record = null;
 			$this->stopSound();
 		}
@@ -75,12 +75,12 @@ class Jukebox extends Opaque{
 
 	public function startSound() : void{
 		if($this->record !== null){
-			$this->getPos()->getWorld()->addSound($this->getPos(), new RecordSound($this->record->getRecordType()));
+			$this->getPosition()->getWorld()->addSound($this->getPosition(), new RecordSound($this->record->getRecordType()));
 		}
 	}
 
 	public function stopSound() : void{
-		$this->getPos()->getWorld()->addSound($this->getPos(), new RecordStopSound());
+		$this->getPosition()->getWorld()->addSound($this->getPosition(), new RecordStopSound());
 	}
 
 	public function onBreak(Item $item, ?Player $player = null) : bool{
@@ -98,7 +98,7 @@ class Jukebox extends Opaque{
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$jukebox = $this->pos->getWorld()->getTile($this->pos);
+		$jukebox = $this->position->getWorld()->getTile($this->position);
 		if($jukebox instanceof JukeboxTile){
 			$this->record = $jukebox->getRecord();
 		}
@@ -106,7 +106,7 @@ class Jukebox extends Opaque{
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$jukebox = $this->pos->getWorld()->getTile($this->pos);
+		$jukebox = $this->position->getWorld()->getTile($this->position);
 		if($jukebox instanceof JukeboxTile){
 			$jukebox->setRecord($this->record);
 		}

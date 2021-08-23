@@ -87,7 +87,7 @@ use pocketmine\snooze\SleeperNotifier;
 use pocketmine\stats\SendUsageTask;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
-use pocketmine\updater\AutoUpdater;
+use pocketmine\updater\UpdateChecker;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
@@ -183,7 +183,7 @@ class Server{
 
 	private float $profilingTickRate = 20;
 
-	private AutoUpdater $updater;
+	private UpdateChecker $updater;
 
 	private AsyncPool $asyncPool;
 
@@ -260,7 +260,7 @@ class Server{
 	}
 
 	public function getPocketMineVersion() : string{
-		return VersionInfo::getVersionObj()->getFullVersion(true);
+		return VersionInfo::VERSION()->getFullVersion(true);
 	}
 
 	public function getVersion() : string{
@@ -365,7 +365,7 @@ class Server{
 		return $this->logger;
 	}
 
-	public function getUpdater() : AutoUpdater{
+	public function getUpdater() : UpdateChecker{
 		return $this->updater;
 	}
 
@@ -951,7 +951,7 @@ class Server{
 			$this->worldManager->setAutoSave($this->configGroup->getConfigBool("auto-save", $this->worldManager->getAutoSave()));
 			$this->worldManager->setAutoSaveInterval($this->configGroup->getPropertyInt("ticks-per.autosave", 6000));
 
-			$this->updater = new AutoUpdater($this, $this->configGroup->getPropertyString("auto-updater.host", "update.pmmp.io"));
+			$this->updater = new UpdateChecker($this, $this->configGroup->getPropertyString("auto-updater.host", "update.pmmp.io"));
 
 			$this->queryInfo = new QueryInfo($this);
 
@@ -1452,7 +1452,7 @@ class Server{
 					$report = false;
 				}
 
-				if(strrpos(VersionInfo::getGitHash(), "-dirty") !== false or VersionInfo::getGitHash() === str_repeat("00", 20)){
+				if(strrpos(VersionInfo::GIT_HASH(), "-dirty") !== false or VersionInfo::GIT_HASH() === str_repeat("00", 20)){
 					$this->logger->debug("Not sending crashdump due to locally modified");
 					$report = false; //Don't send crashdumps for locally modified builds
 				}

@@ -31,6 +31,7 @@ use function file_get_contents;
 use function implode;
 use function ini_get;
 use function ini_set;
+use function is_array;
 use function is_string;
 use function json_decode;
 use function parse_ini_file;
@@ -76,7 +77,7 @@ abstract class Timezone{
 			}
 		}
 
-		if(($timezone = self::detectSystemTimezone()) and date_default_timezone_set($timezone)){
+		if(($timezone = self::detectSystemTimezone()) !== false and date_default_timezone_set($timezone)){
 			//Success! Timezone has already been set and validated in the if statement.
 			//This here is just for redundancy just in case some program wants to read timezone data from the ini.
 			ini_set("date.timezone", $timezone);
@@ -84,7 +85,7 @@ abstract class Timezone{
 		}
 
 		if(($response = Internet::getURL("http://ip-api.com/json")) !== null //If system timezone detection fails or timezone is an invalid value.
-			and $ip_geolocation_data = json_decode($response->getBody(), true)
+			and is_array($ip_geolocation_data = json_decode($response->getBody(), true))
 			and $ip_geolocation_data['status'] !== 'fail'
 			and date_default_timezone_set($ip_geolocation_data['timezone'])
 		){

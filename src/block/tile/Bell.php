@@ -81,6 +81,6 @@ final class Bell extends Spawnable{
 		$nbt->setByte(self::TAG_RINGING, 1);
 		$nbt->setInt(self::TAG_DIRECTION, BlockDataSerializer::writeLegacyHorizontalFacing($bellHitFace));
 		$nbt->setInt(self::TAG_TICKS, 0);
-		return BlockActorDataPacket::create($this->pos->getFloorX(), $this->pos->getFloorY(), $this->pos->getFloorZ(), new CacheableNbt($nbt));
+		return BlockActorDataPacket::create($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ(), new CacheableNbt($nbt));
 	}
 }

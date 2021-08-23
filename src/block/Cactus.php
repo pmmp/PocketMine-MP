@@ -83,12 +83,12 @@ class Cactus extends Transparent{
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->getId() !== BlockLegacyIds::SAND and !$down->isSameType($this)){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}else{
 			foreach(Facing::HORIZONTAL as $side){
 				$b = $this->getSide($side);
 				if($b->isSolid()){
-					$this->pos->getWorld()->useBreakOn($this->pos);
+					$this->position->getWorld()->useBreakOn($this->position);
 					break;
 				}
 			}
@@ -103,26 +103,26 @@ class Cactus extends Transparent{
 		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
 			if($this->age === 15){
 				for($y = 1; $y < 3; ++$y){
-					if(!$this->pos->getWorld()->isInWorld($this->pos->x, $this->pos->y + $y, $this->pos->z)){
+					if(!$this->position->getWorld()->isInWorld($this->position->x, $this->position->y + $y, $this->position->z)){
 						break;
 					}
-					$b = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + $y, $this->pos->z);
+					$b = $this->position->getWorld()->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
 					if($b->getId() === BlockLegacyIds::AIR){
 						$ev = new BlockGrowEvent($b, VanillaBlocks::CACTUS());
 						$ev->call();
 						if($ev->isCancelled()){
 							break;
 						}
-						$this->pos->getWorld()->setBlock($b->pos, $ev->getNewState());
+						$this->position->getWorld()->setBlock($b->position, $ev->getNewState());
 					}else{
 						break;
 					}
 				}
 				$this->age = 0;
-				$this->pos->getWorld()->setBlock($this->pos, $this);
+				$this->position->getWorld()->setBlock($this->position, $this);
 			}else{
 				++$this->age;
-				$this->pos->getWorld()->setBlock($this->pos, $this);
+				$this->position->getWorld()->setBlock($this->position, $this);
 			}
 		}
 	}

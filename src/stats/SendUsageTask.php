@@ -71,7 +71,7 @@ class SendUsageTask extends AsyncTask{
 			case self::TYPE_OPEN:
 				$data["event"] = "open";
 
-				$version = VersionInfo::getVersionObj();
+				$version = VersionInfo::VERSION();
 
 				$data["server"] = [
 					"port" => $server->getPort(),

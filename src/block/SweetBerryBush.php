@@ -98,13 +98,13 @@ class SweetBerryBush extends Flowable{
 			$ev->call();
 
 			if(!$ev->isCancelled()){
-				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
+				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
 			}
 
 			$item->pop();
 		}elseif(($dropAmount = $this->getBerryDropAmount()) > 0){
-			$this->pos->getWorld()->setBlock($this->pos, $this->setAge(self::STAGE_BUSH_NO_BERRIES));
-			$this->pos->getWorld()->dropItem($this->pos, $this->asItem()->setCount($dropAmount));
+			$this->position->getWorld()->setBlock($this->position, $this->setAge(self::STAGE_BUSH_NO_BERRIES));
+			$this->position->getWorld()->dropItem($this->position, $this->asItem()->setCount($dropAmount));
 		}
 
 		return true;
@@ -126,7 +126,7 @@ class SweetBerryBush extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
@@ -141,7 +141,7 @@ class SweetBerryBush extends Flowable{
 			$ev = new BlockGrowEvent($this, $block);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
+				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
 			}
 		}
 	}

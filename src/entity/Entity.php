@@ -868,43 +868,21 @@ abstract class Entity{
 				$direction = Facing::SOUTH;
 			}
 
+			if($direction === -1){
+				return false;
+			}
+
 			$force = lcg_value() * 0.2 + 0.1;
 
-			if($direction === Facing::WEST){
-				$this->motion = $this->motion->withComponents(-$force, null, null);
-
-				return true;
-			}
-
-			if($direction === Facing::EAST){
-				$this->motion = $this->motion->withComponents($force, null, null);
-
-				return true;
-			}
-
-			if($direction === Facing::DOWN){
-				$this->motion = $this->motion->withComponents(null, -$force, null);
-
-				return true;
-			}
-
-			if($direction === Facing::UP){
-				$this->motion = $this->motion->withComponents(null, $force, null);
-
-				return true;
-			}
-
-			if($direction === Facing::NORTH){
-				$this->motion = $this->motion->withComponents(null, null, -$force);
-
-				return true;
-			}
-
-			if($direction === Facing::SOUTH){
-				$this->motion = $this->motion->withComponents(null, null, $force);
-
-				return true;
-			}
+			$this->motion = match($direction){
+				Facing::WEST => $this->motion->withComponents(-$force, null, null),
+				Facing::EAST => $this->motion->withComponents($force, null, null),
+				Facing::DOWN => $this->motion->withComponents(null, -$force, null),
+				Facing::UP => $this->motion->withComponents(null, $force, null),
+				Facing::NORTH => $this->motion->withComponents(null, null, -$force),
+				Facing::SOUTH => $this->motion->withComponents(null, null, $force),
+			};
+			return true;
 		}
 
 		return false;

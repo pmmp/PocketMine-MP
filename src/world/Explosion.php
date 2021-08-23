@@ -138,7 +138,7 @@ class Explosion{
 										$_block = $blockFactory->fromFullBlock($state);
 										$_block->position($this->world, $vBlockX, $vBlockY, $vBlockZ);
 										foreach($_block->getAffectedBlocks() as $_affectedBlock){
-											$_affectedBlockPos = $_affectedBlock->getPos();
+											$_affectedBlockPos = $_affectedBlock->getPosition();
 											$this->affectedBlocks[World::blockHash($_affectedBlockPos->x, $_affectedBlockPos->y, $_affectedBlockPos->z)] = $_affectedBlock;
 										}
 									}
@@ -214,7 +214,7 @@ class Explosion{
 		$airBlock = VanillaBlocks::AIR();
 
 		foreach($this->affectedBlocks as $block){
-			$pos = $block->getPos();
+			$pos = $block->getPosition();
 			if($block instanceof TNT){
 				$block->ignite(mt_rand(10, 30));
 			}else{
@@ -232,7 +232,7 @@ class Explosion{
 		}
 
 		foreach($this->affectedBlocks as $block){
-			$pos = $block->getPos();
+			$pos = $block->getPosition();
 			foreach(Facing::ALL as $side){
 				$sideBlock = $pos->getSide($side);
 				if(!$this->world->isInWorld($sideBlock->x, $sideBlock->y, $sideBlock->z)){

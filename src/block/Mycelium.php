@@ -46,16 +46,16 @@ class Mycelium extends Opaque{
 
 	public function onRandomTick() : void{
 		//TODO: light levels
-		$x = mt_rand($this->pos->x - 1, $this->pos->x + 1);
-		$y = mt_rand($this->pos->y - 2, $this->pos->y + 2);
-		$z = mt_rand($this->pos->z - 1, $this->pos->z + 1);
-		$block = $this->pos->getWorld()->getBlockAt($x, $y, $z);
+		$x = mt_rand($this->position->x - 1, $this->position->x + 1);
+		$y = mt_rand($this->position->y - 2, $this->position->y + 2);
+		$z = mt_rand($this->position->z - 1, $this->position->z + 1);
+		$block = $this->position->getWorld()->getBlockAt($x, $y, $z);
 		if($block->getId() === BlockLegacyIds::DIRT){
 			if($block->getSide(Facing::UP) instanceof Transparent){
 				$ev = new BlockSpreadEvent($block, $this, VanillaBlocks::MYCELIUM());
 				$ev->call();
 				if(!$ev->isCancelled()){
-					$this->pos->getWorld()->setBlock($block->pos, $ev->getNewState());
+					$this->position->getWorld()->setBlock($block->position, $ev->getNewState());
 				}
 			}
 		}

@@ -63,8 +63,8 @@ class VersionCommand extends VanillaCommand{
 				VersionInfo::NAME
 			));
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_serverSoftwareVersion(
-				VersionInfo::getVersionObj()->getFullVersion(),
-				VersionInfo::getGitHash()
+				VersionInfo::VERSION()->getFullVersion(),
+				VersionInfo::GIT_HASH()
 			));
 			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_version_minecraftVersion(
 				ProtocolInfo::MINECRAFT_VERSION_NETWORK,
