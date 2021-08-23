@@ -76,7 +76,7 @@ class Sapling extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
-			Tree::growTree($this->pos->getWorld(), $this->pos->x, $this->pos->y, $this->pos->z, new Random(mt_rand()), $this->treeType);
+			Tree::growTree($this->position->getWorld(), $this->position->x, $this->position->y, $this->position->z, new Random(mt_rand()), $this->treeType);
 
 			$item->pop();
 
@@ -88,7 +88,7 @@ class Sapling extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
@@ -97,12 +97,12 @@ class Sapling extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->pos->getWorld()->getFullLightAt($this->pos->x, $this->pos->y, $this->pos->z) >= 8 and mt_rand(1, 7) === 1){
+		if($this->position->getWorld()->getFullLightAt($this->position->x, $this->position->y, $this->position->z) >= 8 and mt_rand(1, 7) === 1){
 			if($this->ready){
-				Tree::growTree($this->pos->getWorld(), $this->pos->x, $this->pos->y, $this->pos->z, new Random(mt_rand()), $this->treeType);
+				Tree::growTree($this->position->getWorld(), $this->position->x, $this->position->y, $this->position->z, new Random(mt_rand()), $this->treeType);
 			}else{
 				$this->ready = true;
-				$this->pos->getWorld()->setBlock($this->pos, $this);
+				$this->position->getWorld()->setBlock($this->position, $this);
 			}
 		}
 	}

@@ -62,22 +62,22 @@ class DragonEgg extends Transparent implements Fallable{
 
 	public function teleport() : void{
 		for($tries = 0; $tries < 16; ++$tries){
-			$block = $this->pos->getWorld()->getBlockAt(
-				$this->pos->x + mt_rand(-16, 16),
-				max(World::Y_MIN, min(World::Y_MAX - 1, $this->pos->y + mt_rand(-8, 8))),
-				$this->pos->z + mt_rand(-16, 16)
+			$block = $this->position->getWorld()->getBlockAt(
+				$this->position->x + mt_rand(-16, 16),
+				max(World::Y_MIN, min(World::Y_MAX - 1, $this->position->y + mt_rand(-8, 8))),
+				$this->position->z + mt_rand(-16, 16)
 			);
 			if($block instanceof Air){
-				$ev = new BlockTeleportEvent($this, $block->pos);
+				$ev = new BlockTeleportEvent($this, $block->position);
 				$ev->call();
 				if($ev->isCancelled()){
 					break;
 				}
 
 				$blockPos = $ev->getTo();
-				$this->pos->getWorld()->addParticle($this->pos, new DragonEggTeleportParticle($this->pos->x - $blockPos->x, $this->pos->y - $blockPos->y, $this->pos->z - $blockPos->z));
-				$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::AIR());
-				$this->pos->getWorld()->setBlock($blockPos, $this);
+				$this->position->getWorld()->addParticle($this->position, new DragonEggTeleportParticle($this->position->x - $blockPos->x, $this->position->y - $blockPos->y, $this->position->z - $blockPos->z));
+				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
+				$this->position->getWorld()->setBlock($blockPos, $this);
 				break;
 			}
 		}

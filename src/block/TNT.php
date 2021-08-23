@@ -110,11 +110,11 @@ class TNT extends Opaque{
 	}
 
 	public function ignite(int $fuse = 80) : void{
-		$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::AIR());
+		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 
 		$mot = (new Random())->nextSignedFloat() * M_PI * 2;
 
-		$tnt = new PrimedTNT(Location::fromObject($this->pos->add(0.5, 0, 0.5), $this->pos->getWorld()));
+		$tnt = new PrimedTNT(Location::fromObject($this->position->add(0.5, 0, 0.5), $this->position->getWorld()));
 		$tnt->setFuse($fuse);
 		$tnt->setWorksUnderwater($this->worksUnderwater);
 		$tnt->setMotion(new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));

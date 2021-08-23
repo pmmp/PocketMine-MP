@@ -64,7 +64,7 @@ class Farmland extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::UP)->isSolid()){
-			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::DIRT());
+			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
 		}
 	}
 
@@ -76,24 +76,24 @@ class Farmland extends Transparent{
 		if(!$this->canHydrate()){
 			if($this->wetness > 0){
 				$this->wetness--;
-				$this->pos->getWorld()->setBlock($this->pos, $this, false);
+				$this->position->getWorld()->setBlock($this->position, $this, false);
 			}else{
-				$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::DIRT());
+				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
 			}
 		}elseif($this->wetness < 7){
 			$this->wetness = 7;
-			$this->pos->getWorld()->setBlock($this->pos, $this, false);
+			$this->position->getWorld()->setBlock($this->position, $this, false);
 		}
 	}
 
 	protected function canHydrate() : bool{
 		//TODO: check rain
-		$start = $this->pos->add(-4, 0, -4);
-		$end = $this->pos->add(4, 1, 4);
+		$start = $this->position->add(-4, 0, -4);
+		$end = $this->position->add(4, 1, 4);
 		for($y = $start->y; $y <= $end->y; ++$y){
 			for($z = $start->z; $z <= $end->z; ++$z){
 				for($x = $start->x; $x <= $end->x; ++$x){
-					if($this->pos->getWorld()->getBlockAt($x, $y, $z) instanceof Water){
+					if($this->position->getWorld()->getBlockAt($x, $y, $z) instanceof Water){
 						return true;
 					}
 				}

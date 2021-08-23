@@ -95,7 +95,7 @@ final class Bell extends Transparent{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($face === Facing::UP){
-			if(!$this->canBeSupportedBy($tx->fetchBlock($this->pos->down()))){
+			if(!$this->canBeSupportedBy($tx->fetchBlock($this->position->down()))){
 				return false;
 			}
 			if($player !== null){
@@ -103,18 +103,18 @@ final class Bell extends Transparent{
 			}
 			$this->setAttachmentType(BellAttachmentType::FLOOR());
 		}elseif($face === Facing::DOWN){
-			if(!$this->canBeSupportedBy($tx->fetchBlock($this->pos->up()))){
+			if(!$this->canBeSupportedBy($tx->fetchBlock($this->position->up()))){
 				return false;
 			}
 			$this->setAttachmentType(BellAttachmentType::CEILING());
 		}else{
 			$this->setFacing($face);
-			if($this->canBeSupportedBy($tx->fetchBlock($this->pos->getSide(Facing::opposite($face))))){
+			if($this->canBeSupportedBy($tx->fetchBlock($this->position->getSide(Facing::opposite($face))))){
 				$this->setAttachmentType(BellAttachmentType::ONE_WALL());
 			}else{
 				return false;
 			}
-			if($this->canBeSupportedBy($tx->fetchBlock($this->pos->getSide($face)))){
+			if($this->canBeSupportedBy($tx->fetchBlock($this->position->getSide($face)))){
 				$this->setAttachmentType(BellAttachmentType::TWO_WALLS());
 			}
 		}
@@ -128,7 +128,7 @@ final class Bell extends Transparent{
 			($this->attachmentType->equals(BellAttachmentType::ONE_WALL()) && !$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)))) ||
 			($this->attachmentType->equals(BellAttachmentType::TWO_WALLS()) && (!$this->canBeSupportedBy($this->getSide($this->facing)) || !$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)))))
 		){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
@@ -153,10 +153,10 @@ final class Bell extends Transparent{
 	}
 
 	public function ring(int $faceHit) : void{
-		$this->pos->getWorld()->addSound($this->pos, new BellRingSound());
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$this->position->getWorld()->addSound($this->position, new BellRingSound());
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBell){
-			$this->pos->getWorld()->broadcastPacketToViewers($this->pos, $tile->createFakeUpdatePacket($faceHit));
+			$this->position->getWorld()->broadcastPacketToViewers($this->position, $tile->createFakeUpdatePacket($faceHit));
 		}
 	}
 }

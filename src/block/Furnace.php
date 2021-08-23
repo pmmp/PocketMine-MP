@@ -72,7 +72,7 @@ class Furnace extends Opaque{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
-			$furnace = $this->pos->getWorld()->getTile($this->pos);
+			$furnace = $this->position->getWorld()->getTile($this->position);
 			if($furnace instanceof TileFurnace and $furnace->canOpenWith($item->getCustomName())){
 				$player->setCurrentWindow($furnace->getInventory());
 			}
@@ -82,9 +82,9 @@ class Furnace extends Opaque{
 	}
 
 	public function onScheduledUpdate() : void{
-		$furnace = $this->pos->getWorld()->getTile($this->pos);
+		$furnace = $this->position->getWorld()->getTile($this->position);
 		if($furnace instanceof TileFurnace and $furnace->onUpdate()){
-			$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, 1); //TODO: check this
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
 		}
 	}
 }
