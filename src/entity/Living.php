@@ -610,6 +610,8 @@ abstract class Living extends Entity{
 			$this->attackTime -= $tickDiff;
 		}
 
+		if($this->isGliding()) $this->resetFallDistance();
+
 		Timings::$livingEntityBaseTick->stopTiming();
 
 		return $hasUpdate;

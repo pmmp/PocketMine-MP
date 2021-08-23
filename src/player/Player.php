@@ -1208,9 +1208,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->broadcastMovement();
 
 			$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
-			//TODO: check swimming (adds 0.015 exhaustion in MCPE)
 			if($this->isSprinting()){
 				$this->hungerManager->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
+			}elseif($this->isSwimming()){
+				$this->hungerManager->exhaust(0.015 * $distance, PlayerExhaustEvent::CAUSE_SWIMMING);
 			}else{
 				$this->hungerManager->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
 			}
