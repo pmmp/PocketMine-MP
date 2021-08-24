@@ -1058,6 +1058,13 @@ abstract class Entity{
 
 	}
 
+	/**
+	 * Called when interacted or tapped by a Player. Returns whether something happened as a result of the interaction.
+	 */
+	public function onInteract(Player $player, Vector3 $clickPos) : bool{
+		return false;
+	}
+
 	public function isUnderwater() : bool{
 		$block = $this->getWorld()->getBlockAt((int) floor($this->location->x), $blockY = (int) floor($y = ($this->location->y + $this->getEyeHeight())), (int) floor($this->location->z));
 
