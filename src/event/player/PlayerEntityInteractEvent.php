@@ -30,7 +30,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 /**
- * Called when a player interacts with an entity
+ * Called when a player interacts with an entity (e.g. shearing a sheep, naming a mob using a nametag).
  */
 class PlayerEntityInteractEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
@@ -47,6 +47,9 @@ class PlayerEntityInteractEvent extends PlayerEvent implements Cancellable{
 		return $this->entity;
 	}
 
+	/**
+	 * Returns the absolute coordinates of the click. This is usually on the surface of the entity's hitbox.
+	 */
 	public function getClickPosition() : Vector3{
 		return $this->clickPos;
 	}
