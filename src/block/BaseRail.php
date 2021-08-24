@@ -189,7 +189,7 @@ abstract class BaseRail extends Flowable{
 				if(isset($otherPossible[$otherSide])){
 					$otherConnections[] = $otherSide;
 					$other->setConnections($otherConnections);
-					$this->pos->getWorld()->setBlock($other->pos, $other);
+					$this->position->getWorld()->setBlock($other->position, $other);
 
 					$changed = true;
 					$thisConnections[] = $thisSide;
@@ -202,7 +202,7 @@ abstract class BaseRail extends Flowable{
 
 		if($changed){
 			$this->setConnections($thisConnections);
-			$this->pos->getWorld()->setBlock($this->pos, $this);
+			$this->position->getWorld()->setBlock($this->position, $this);
 		}
 	}
 
@@ -221,11 +221,11 @@ abstract class BaseRail extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}else{
 			foreach($this->getCurrentShapeConnections() as $connection){
 				if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0 and $this->getSide($connection & ~RailConnectionInfo::FLAG_ASCEND)->isTransparent()){
-					$this->pos->getWorld()->useBreakOn($this->pos);
+					$this->position->getWorld()->useBreakOn($this->position);
 					break;
 				}
 			}

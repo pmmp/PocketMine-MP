@@ -104,6 +104,10 @@ abstract class AsyncTask extends \Threaded{
 		return $this->finished or $this->isCrashed();
 	}
 
+	public function hasResult() : bool{
+		return $this->result !== null;
+	}
+
 	/**
 	 * @return mixed
 	 */
@@ -115,23 +119,18 @@ abstract class AsyncTask extends \Threaded{
 		return $this->result;
 	}
 
-	public function cancelRun() : void{
-		$this->cancelRun = true;
-	}
-
-	public function hasCancelledRun() : bool{
-		return $this->cancelRun;
-	}
-
-	public function hasResult() : bool{
-		return $this->result !== null;
-	}
-
 	/**
 	 * @param mixed $result
 	 */
 	public function setResult($result) : void{
 		$this->result = ($this->serialized = !is_scalar($result)) ? igbinary_serialize($result) : $result;
+	}
+
+	public function cancelRun() : void{
+		$this->cancelRun = true;
+	}
+	public function hasCancelledRun() : bool{
+		return $this->cancelRun;
 	}
 
 	public function setSubmitted() : void{

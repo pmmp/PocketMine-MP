@@ -59,7 +59,7 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
-		$this->inventory = new FurnaceInventory($this->pos, $this->getFurnaceType());
+		$this->inventory = new FurnaceInventory($this->position, $this->getFurnaceType());
 		$this->inventory->getListeners()->add(CallbackInventoryListener::onAnyChange(
 			static function(Inventory $unused) use ($world, $pos) : void{
 				$world->scheduleDelayedBlockUpdate($pos, 1);
@@ -137,7 +137,7 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		$block = $this->getBlock();
 		if($block instanceof BlockFurnace and !$block->isLit()){
 			$block->setLit(true);
-			$this->pos->getWorld()->setBlock($block->getPos(), $block);
+			$this->position->getWorld()->setBlock($block->getPosition(), $block);
 		}
 	}
 
@@ -145,7 +145,7 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		$block = $this->getBlock();
 		if($block instanceof BlockFurnace and $block->isLit()){
 			$block->setLit(false);
-			$this->pos->getWorld()->setBlock($block->getPos(), $block);
+			$this->position->getWorld()->setBlock($block->getPosition(), $block);
 		}
 	}
 
@@ -170,7 +170,7 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		$product = $this->inventory->getResult();
 
 		$furnaceType = $this->getFurnaceType();
-		$smelt = $this->pos->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($furnaceType)->match($raw);
+		$smelt = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($furnaceType)->match($raw);
 		$canSmelt = ($smelt instanceof FurnaceRecipe and $raw->getCount() > 0 and (($smelt->getResult()->equals($product) and $product->getCount() < $product->getMaxStackSize()) or $product->isNull()));
 
 		if($this->remainingFuelTime <= 0 and $canSmelt and $fuel->getFuelTime() > 0 and $fuel->getCount() > 0){

@@ -28,13 +28,10 @@ use pocketmine\Server;
 use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
 use function date;
-use function sprintf;
-use function str_repeat;
-use function strlen;
 use function strtolower;
 use function ucfirst;
 
-class AutoUpdater{
+class UpdateChecker{
 
 	/** @var Server */
 	protected $server;
@@ -42,15 +39,13 @@ class AutoUpdater{
 	protected $endpoint;
 	/** @var UpdateInfo|null */
 	protected $updateInfo = null;
-	/** @var VersionString|null */
-	protected $newVersion;
 
 	/** @var \Logger */
 	private $logger;
 
 	public function __construct(Server $server, string $endpoint){
 		$this->server = $server;
-		$this->logger = new \PrefixedLogger($server->getLogger(), "Auto Updater");
+		$this->logger = new \PrefixedLogger($server->getLogger(), "Update Checker");
 		$this->endpoint = "http://$endpoint/api/";
 
 		if($server->getConfigGroup()->getPropertyBool("auto-updater.enabled", true)){
@@ -66,8 +61,7 @@ class AutoUpdater{
 	 * Callback used at the end of the update checking task
 	 */
 	public function checkUpdateCallback(UpdateInfo $updateInfo) : void{
-		$this->updateInfo = $updateInfo;
-		$this->checkUpdate();
+		$this->checkUpdate($updateInfo);
 		if($this->hasUpdate()){
 			(new UpdateNotifyEvent($this))->call();
 			if($this->server->getConfigGroup()->getPropertyBool("auto-updater.on-update.warn-console", true)){
@@ -86,15 +80,19 @@ class AutoUpdater{
 	 * Returns whether there is an update available.
 	 */
 	public function hasUpdate() : bool{
-		return $this->newVersion !== null;
+		return $this->updateInfo !== null;
 	}
 
 	/**
 	 * Posts a warning to the console to tell the user there is an update available
 	 */
 	public function showConsoleUpdate() : void{
+		if($this->updateInfo === null){
+			return;
+		}
+		$newVersion = new VersionString($this->updateInfo->base_version, $this->updateInfo->is_dev, $this->updateInfo->build);
 		$messages = [
-			"Your version of " . $this->server->getName() . " is out of date. Version " . $this->newVersion->getFullVersion(true) . " was released on " . date("D M j h:i:s Y", $this->updateInfo->date)
+			"Your version of " . $this->server->getName() . " is out of date. Version " . $newVersion->getFullVersion(true) . " was released on " . date("D M j h:i:s Y", $this->updateInfo->date)
 		];
 
 		$messages[] = "Details: " . $this->updateInfo->details_url;
@@ -105,15 +103,15 @@ class AutoUpdater{
 
 	protected function showChannelSuggestionStable() : void{
 		$this->printConsoleMessage([
-			"It appears you're running a Stable build, when you've specified that you prefer to run " . ucfirst($this->getChannel()) . " builds.",
-			"If you would like to be kept informed about new Stable builds only, it is recommended that you change 'preferred-channel' in your pocketmine.yml to 'stable'."
+			"You're running a Stable build, but you're receiving update notifications for " . ucfirst($this->getChannel()) . " builds.",
+			"To get notified about new Stable builds only, change 'preferred-channel' in your pocketmine.yml to 'stable'."
 		]);
 	}
 
 	protected function showChannelSuggestionBeta() : void{
 		$this->printConsoleMessage([
-			"It appears you're running a Beta build, when you've specified that you prefer to run Stable builds.",
-			"If you would like to be kept informed about new Beta or Development builds, it is recommended that you change 'preferred-channel' in your pocketmine.yml to 'beta' or 'development'."
+			"You're running a Beta build, but you're receiving update notifications for Stable builds.",
+			"To get notified about new Beta or Development builds, change 'preferred-channel' in your pocketmine.yml to 'beta' or 'development'."
 		]);
 	}
 
@@ -121,12 +119,9 @@ class AutoUpdater{
 	 * @param string[] $lines
 	 */
 	protected function printConsoleMessage(array $lines, string $logLevel = \LogLevel::INFO) : void{
-		$title = $this->server->getName() . ' Auto Updater';
-		$this->logger->log($logLevel, sprintf('----- %s -----', $title));
 		foreach($lines as $line){
 			$this->logger->log($logLevel, $line);
 		}
-		$this->logger->log($logLevel, sprintf('----- %s -----', str_repeat('-', strlen($title))));
 	}
 
 	/**
@@ -146,13 +141,10 @@ class AutoUpdater{
 	/**
 	 * Checks the update information against the current server version to decide if there's an update
 	 */
-	protected function checkUpdate() : void{
-		if($this->updateInfo === null){
-			return;
-		}
+	protected function checkUpdate(UpdateInfo $updateInfo) : void{
 		$currentVersion = VersionInfo::VERSION();
 		try{
-			$newVersion = new VersionString($this->updateInfo->base_version, $this->updateInfo->is_dev, $this->updateInfo->build);
+			$newVersion = new VersionString($updateInfo->base_version, $updateInfo->is_dev, $updateInfo->build);
 		}catch(\InvalidArgumentException $e){
 			//Invalid version returned from API, assume there's no update
 			$this->logger->debug("Assuming no update because \"" . $e->getMessage() . "\"");
@@ -160,7 +152,7 @@ class AutoUpdater{
 		}
 
 		if($currentVersion->compare($newVersion) > 0 and ($currentVersion->getFullVersion() !== $newVersion->getFullVersion() or $currentVersion->getBuild() > 0)){
-			$this->newVersion = $newVersion;
+			$this->updateInfo = $updateInfo;
 		}
 	}
 

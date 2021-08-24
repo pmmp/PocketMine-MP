@@ -34,7 +34,7 @@ class Note extends Opaque{
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileNote){
 			$this->pitch = $tile->getPitch();
 		}else{
@@ -44,7 +44,7 @@ class Note extends Opaque{
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileNote);
 		$tile->setPitch($this->pitch);
 	}

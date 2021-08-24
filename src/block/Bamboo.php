@@ -114,8 +114,8 @@ class Bamboo extends Transparent{
 		return 12 + (self::getOffsetSeed($x, 0, $z) % 5);
 	}
 
-	public function getPosOffset() : ?Vector3{
-		$seed = self::getOffsetSeed($this->pos->getFloorX(), 0, $this->pos->getFloorZ());
+	public function getPositionOffset() : ?Vector3{
+		$seed = self::getOffsetSeed($this->position->getFloorX(), 0, $this->position->getFloorZ());
 		$retX = (($seed % 12) + 1) / 16;
 		$retZ = ((($seed >> 8) % 12) + 1) / 16;
 		return new Vector3($retX, 0, $retZ);
@@ -133,9 +133,9 @@ class Bamboo extends Transparent{
 	}
 
 	private function seekToTop() : Bamboo{
-		$world = $this->pos->getWorld();
+		$world = $this->position->getWorld();
 		$top = $this;
-		while(($next = $world->getBlock($top->pos->up())) instanceof Bamboo && $next->isSameType($this)){
+		while(($next = $world->getBlock($top->position->up())) instanceof Bamboo && $next->isSameType($this)){
 			$top = $next;
 		}
 		return $top;
@@ -144,7 +144,7 @@ class Bamboo extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
 			$top = $this->seekToTop();
-			if($top->grow(self::getMaxHeight($top->pos->getFloorX(), $top->pos->getFloorZ()), mt_rand(1, 2))){
+			if($top->grow(self::getMaxHeight($top->position->getFloorX(), $top->position->getFloorZ()), mt_rand(1, 2))){
 				$item->pop();
 				return true;
 			}
@@ -158,20 +158,20 @@ class Bamboo extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$below = $this->pos->getWorld()->getBlock($this->pos->down());
+		$below = $this->position->getWorld()->getBlock($this->position->down());
 		if(!$this->canBeSupportedBy($below) and !$below->isSameType($this)){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	private function grow(int $maxHeight, int $growAmount) : bool{
-		$world = $this->pos->getWorld();
-		if(!$world->getBlock($this->pos->up())->canBeReplaced()){
+		$world = $this->position->getWorld();
+		if(!$world->getBlock($this->position->up())->canBeReplaced()){
 			return false;
 		}
 
 		$height = 1;
-		while($world->getBlock($this->pos->subtract(0, $height, 0))->isSameType($this)){
+		while($world->getBlock($this->position->subtract(0, $height, 0))->isSameType($this)){
 			if(++$height >= $maxHeight){
 				return false;
 			}
@@ -206,9 +206,9 @@ class Bamboo extends Transparent{
 			}
 		}
 
-		$tx = new BlockTransaction($this->pos->getWorld());
+		$tx = new BlockTransaction($this->position->getWorld());
 		foreach($newBlocks as $idx => $newBlock){
-			$tx->addBlock($this->pos->subtract(0, $idx - $growAmount, 0), $newBlock);
+			$tx->addBlock($this->position->subtract(0, $idx - $growAmount, 0), $newBlock);
 		}
 		return $tx->apply();
 	}
@@ -218,15 +218,15 @@ class Bamboo extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		$world = $this->pos->getWorld();
+		$world = $this->position->getWorld();
 		if($this->ready){
 			$this->ready = false;
-			if($world->getFullLight($this->pos) < 9 || !$this->grow(self::getMaxHeight($this->pos->getFloorX(), $this->pos->getFloorZ()), 1)){
-				$world->setBlock($this->pos, $this);
+			if($world->getFullLight($this->position) < 9 || !$this->grow(self::getMaxHeight($this->position->getFloorX(), $this->position->getFloorZ()), 1)){
+				$world->setBlock($this->position, $this);
 			}
-		}elseif($world->getBlock($this->pos->up())->canBeReplaced()){
+		}elseif($world->getBlock($this->position->up())->canBeReplaced()){
 			$this->ready = true;
-			$world->setBlock($this->pos, $this);
+			$world->setBlock($this->position, $this);
 		}
 	}
 }

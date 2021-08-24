@@ -21,25 +21,36 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\inventory;
+namespace pocketmine\event\player;
 
-use pocketmine\entity\projectile\Arrow;
+use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\inventory\Inventory;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
-class InventoryPickupArrowEvent extends InventoryEvent implements Cancellable{
+/**
+ * Called when a player interacts with an entity (e.g. shearing a sheep, naming a mob using a nametag).
+ */
+class PlayerEntityInteractEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Arrow */
-	private $arrow;
-
-	public function __construct(Inventory $inventory, Arrow $arrow){
-		$this->arrow = $arrow;
-		parent::__construct($inventory);
+	public function __construct(
+		Player $player,
+		private Entity $entity,
+		private Vector3 $clickPos
+	){
+		$this->player = $player;
 	}
 
-	public function getArrow() : Arrow{
-		return $this->arrow;
+	public function getEntity() : Entity{
+		return $this->entity;
+	}
+
+	/**
+	 * Returns the absolute coordinates of the click. This is usually on the surface of the entity's hitbox.
+	 */
+	public function getClickPosition() : Vector3{
+		return $this->clickPos;
 	}
 }

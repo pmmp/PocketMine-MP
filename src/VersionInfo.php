@@ -32,6 +32,7 @@ final class VersionInfo{
 	public const BASE_VERSION = "4.0.0";
 	public const IS_DEVELOPMENT_BUILD = true;
 	public const BUILD_NUMBER = 0;
+	public const BUILD_CHANNEL = "";
 
 	private function __construct(){
 		//NOOP

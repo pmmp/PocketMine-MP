@@ -64,7 +64,7 @@ class Skull extends Flowable{
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSkull){
 			$this->skullType = $tile->getSkullType();
 			$this->rotation = $tile->getRotation();
@@ -74,7 +74,7 @@ class Skull extends Flowable{
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
 		//extra block properties storage hack
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileSkull);
 		$tile->setRotation($this->rotation);
 		$tile->setSkullType($this->skullType);

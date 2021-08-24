@@ -54,10 +54,10 @@ abstract class BaseCoral extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->dead){
-			$world = $this->pos->getWorld();
+			$world = $this->position->getWorld();
 
 			$hasWater = false;
-			foreach($this->pos->sides() as $vector3){
+			foreach($this->position->sides() as $vector3){
 				if($world->getBlock($vector3) instanceof Water){
 					$hasWater = true;
 					break;
@@ -66,7 +66,7 @@ abstract class BaseCoral extends Transparent{
 
 			//TODO: check water inside the block itself (not supported on the API yet)
 			if(!$hasWater){
-				$world->setBlock($this->pos, $this->setDead(true));
+				$world->setBlock($this->position, $this->setDead(true));
 			}
 		}
 	}

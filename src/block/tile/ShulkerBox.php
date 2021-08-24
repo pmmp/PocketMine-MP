@@ -46,7 +46,7 @@ class ShulkerBox extends Spawnable implements Container, Nameable{
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
-		$this->inventory = new ShulkerBoxInventory($this->pos);
+		$this->inventory = new ShulkerBoxInventory($this->position);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{

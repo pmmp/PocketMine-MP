@@ -26,11 +26,6 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Parameter \\#1 \\$read of function socket_select expects array\\<resource\\>\\|null, array\\<int, Socket\\> given\\.$#"
-			count: 1
-			path: ../../../src/network/query/DedicatedQueryNetworkInterface.php
-
-		-
 			message: "#^Parameter \\#1 \\$ of closure expects TValue, TValue given\\.$#"
 			count: 2
 			path: ../../../src/utils/Promise.php
@@ -39,71 +34,6 @@ parameters:
 			message: "#^Property pocketmine\\\\utils\\\\Promise\\<TValue\\>\\:\\:\\$result \\(TValue\\|null\\) does not accept TValue\\.$#"
 			count: 1
 			path: ../../../src/utils/Promise.php
-
-		-
-			message: "#^Match arm comparison between string and '§3' is always false\\.$#"
-			count: 1
-			path: ../../../src/utils/Terminal.php
-
-		-
-			message: "#^Match arm comparison between string and '§4' is always false\\.$#"
-			count: 1
-			path: ../../../src/utils/Terminal.php
-
-		-
-			message: "#^Match arm comparison between string and '§5' is always false\\.$#"
-			count: 1
-			path: ../../../src/utils/Terminal.php
-
-		-
-			message: "#^Match arm comparison between string and '§6' is always false\\.$#"
-			count: 1
-			path: ../../../src/utils/Terminal.php
-
-		-
-			message: "#^Match arm comparison between string and '§7' is always false\\.$#"
-			count: 1
-			path: ../../../src/utils/Terminal.php
-
-		-
-			message: "#^Match arm comparison between string and '§8' is always false\\.$#"
-			count: 1
-			path: ../../../src/utils/Terminal.php
-
-		-
-			message: "#^Match arm comparison between string and '§9' is always false\\.$#"
-			count: 1
-			path: ../../../src/utils/Terminal.php
-
-		-
-			message: "#^Match arm comparison between string and '§a' is always false\\.$#"
-			count: 1
-			path: ../../../src/utils/Terminal.php
-
-		-
-			message: "#^Match arm comparison between string and '§b' is always false\\.$#"
-			count: 1
-			path: ../../../src/utils/Terminal.php
-
-		-
-			message: "#^Match arm comparison between string and '§c' is always false\\.$#"
-			count: 1
-			path: ../../../src/utils/Terminal.php
-
-		-
-			message: "#^Match arm comparison between string and '§d' is always false\\.$#"
-			count: 1
-			path: ../../../src/utils/Terminal.php
-
-		-
-			message: "#^Match arm comparison between string and '§e' is always false\\.$#"
-			count: 1
-			path: ../../../src/utils/Terminal.php
-
-		-
-			message: "#^Match arm comparison between string and '§f' is always false\\.$#"
-			count: 1
-			path: ../../../src/utils/Terminal.php
 
 		-
 			message: "#^Parameter \\#1 \\$ of closure expects TMemberType, TMemberType given\\.$#"
@@ -121,7 +51,7 @@ parameters:
 			path: ../../../src/world/format/io/region/RegionLoader.php
 
 		-
-			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertNotNull\\(\\) with int and string will always evaluate to true\\.$#"
-			count: 1
-			path: ../../phpunit/block/BlockTest.php
+			message: "#^Parameter \\#2 \\$count of function array_fill expects int\\<0, max\\>, int given\\.$#"
+			count: 2
+			path: ../../../src/world/generator/noise/Noise.php
 

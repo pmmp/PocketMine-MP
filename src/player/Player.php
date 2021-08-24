@@ -53,6 +53,7 @@ use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerDisplayNameChangeEvent;
+use pocketmine\event\player\PlayerEntityInteractEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
@@ -75,6 +76,7 @@ use pocketmine\form\FormValidationException;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\item\ConsumableItem;
+use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\MeleeWeaponEnchantment;
 use pocketmine\item\Item;
@@ -110,6 +112,7 @@ use pocketmine\world\Position;
 use pocketmine\world\sound\EntityAttackNoDamageSound;
 use pocketmine\world\sound\EntityAttackSound;
 use pocketmine\world\sound\FireExtinguishSound;
+use pocketmine\world\sound\ItemBreakSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
 use Ramsey\Uuid\UuidInterface;
@@ -1380,6 +1383,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->resetItemCooldown($item);
 		if($this->hasFiniteResources() and !$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
+			if($item instanceof Durable && $item->isBroken()){
+				$this->broadcastSound(new ItemBreakSound());
+			}
 			$this->inventory->setItemInHand($item);
 		}
 
@@ -1441,6 +1447,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			if($result->equals(ItemUseResult::SUCCESS())){
 				$this->resetItemCooldown($item);
 				if(!$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
+					if($item instanceof Durable && $item->isBroken()){
+						$this->broadcastSound(new ItemBreakSound());
+					}
 					$this->inventory->setItemInHand($item);
 				}
 				return true;
@@ -1518,8 +1527,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$block = $target->getSide($face);
 		if($block->getId() === BlockLegacyIds::FIRE){
-			$this->getWorld()->setBlock($block->getPos(), VanillaBlocks::AIR());
-			$this->getWorld()->addSound($block->getPos()->add(0.5, 0.5, 0.5), new FireExtinguishSound());
+			$this->getWorld()->setBlock($block->getPosition(), VanillaBlocks::AIR());
+			$this->getWorld()->addSound($block->getPosition()->add(0.5, 0.5, 0.5), new FireExtinguishSound());
 			return true;
 		}
 
@@ -1558,6 +1567,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$oldItem = clone $item;
 			if($this->getWorld()->useBreakOn($pos, $item, $this, true)){
 				if($this->hasFiniteResources() and !$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
+					if($item instanceof Durable && $item->isBroken()){
+						$this->broadcastSound(new ItemBreakSound());
+					}
 					$this->inventory->setItemInHand($item);
 				}
 				$this->hungerManager->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
@@ -1582,6 +1594,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$oldItem = clone $item;
 			if($this->getWorld()->useItemOn($pos, $item, $face, $clickOffset, $this, true)){
 				if($this->hasFiniteResources() and !$item->equalsExact($oldItem) and $oldItem->equalsExact($this->inventory->getItemInHand())){
+					if($item instanceof Durable && $item->isBroken()){
+						$this->broadcastSound(new ItemBreakSound());
+					}
 					$this->inventory->setItemInHand($item);
 				}
 				return true;
@@ -1654,6 +1669,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			//reactive damage like thorns might cause us to be killed by attacking another mob, which
 			//would mean we'd already have dropped the inventory by the time we reached here
 			if($heldItem->onAttackEntity($entity) and $this->hasFiniteResources() and $oldItem->equalsExact($this->inventory->getItemInHand())){ //always fire the hook, even if we are survival
+				if($heldItem instanceof Durable && $heldItem->isBroken()){
+					$this->broadcastSound(new ItemBreakSound());
+				}
 				$this->inventory->setItemInHand($heldItem);
 			}
 
@@ -1667,7 +1685,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * Interacts with the given entity using the currently-held item.
 	 */
 	public function interactEntity(Entity $entity, Vector3 $clickPos) : bool{
-		//TODO
+		$ev = new PlayerEntityInteractEvent($this, $entity, $clickPos);
+
+		if(!$this->canInteract($entity->getLocation(), 8)){
+			$ev->cancel();
+		}
+
+		$ev->call();
+
+		if(!$ev->isCancelled()){
+			return $entity->onInteract($this, $clickPos);
+		}
 		return false;
 	}
 
@@ -1926,6 +1954,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		//prevent the player receiving their own disconnect message
 		$this->server->unsubscribeFromAllBroadcastChannels($this);
 
+		$this->doCloseInventory();
+
 		$ev = new PlayerQuitEvent($this, $quitMessage ?? $this->getLeaveMessage(), $reason);
 		$ev->call();
 		if(($quitMessage = $ev->getQuitMessage()) != ""){
@@ -2105,6 +2135,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 				$this->setSprinting(false);
 				$this->setSneaking(false);
+				$this->setFlying(false);
 
 				$this->extinguish();
 				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());
