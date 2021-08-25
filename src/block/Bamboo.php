@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -210,6 +211,13 @@ class Bamboo extends Transparent{
 		foreach($newBlocks as $idx => $newBlock){
 			$tx->addBlock($this->position->subtract(0, $idx - $growAmount, 0), $newBlock);
 		}
+
+		$ev = new StructureGrowEvent($this, $tx);
+		$ev->call();
+		if($ev->isCancelled()){
+			return false;
+		}
+
 		return $tx->apply();
 	}
 

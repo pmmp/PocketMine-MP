@@ -28,6 +28,7 @@ use pocketmine\block\Leaves;
 use pocketmine\block\Sapling;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\ChunkManager;
@@ -51,10 +52,11 @@ abstract class Tree{
 
 	/**
 	 * @param TreeType|null $type default oak
+	 * @param bool          $callEvent set this parameter to true to allow the calling of the BlockSproutEvent when the tree grows
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public static function growTree(ChunkManager $world, int $x, int $y, int $z, Random $random, ?TreeType $type = null) : void{
+	public static function growTree(ChunkManager $world, int $x, int $y, int $z, Random $random, ?TreeType $type = null, bool $callEvent = false) : void{
 		/** @var null|Tree $tree */
 		$tree = null;
 		$type = $type ?? TreeType::OAK();
@@ -78,7 +80,7 @@ abstract class Tree{
 		}
 
 		if($tree !== null and $tree->canPlaceObject($world, $x, $y, $z, $random)){
-			$tree->placeObject($world, $x, $y, $z, $random);
+			$tree->placeObject($world, $x, $y, $z, $random, $callEvent);
 		}
 	}
 
@@ -100,10 +102,18 @@ abstract class Tree{
 		return true;
 	}
 
-	public function placeObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : void{
+	public function placeObject(ChunkManager $world, int $x, int $y, int $z, Random $random, bool $callEvent = false) : void{
 		$transaction = new BlockTransaction($world);
 		$this->placeTrunk($x, $y, $z, $random, $this->generateChunkHeight($random), $transaction);
 		$this->placeCanopy($x, $y, $z, $random, $transaction);
+
+		if($callEvent){
+			$ev = new StructureGrowEvent($world->getBlockAt($x, $y, $z), $transaction);
+			$ev->call();
+			if($ev->isCancelled()){
+				return;
+			}
+		}
 
 		$transaction->apply(); //TODO: handle return value on failure
 	}
