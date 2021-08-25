@@ -62,7 +62,9 @@ class Tree extends Populator{
 			if($y === -1){
 				continue;
 			}
-			ObjectTree::growTree($world, $x, $y, $z, $random, $this->type);
+			$tree = ObjectTree::get($random, $this->type);
+			$transaction = $tree?->getBlockTransaction($world, $x, $y, $z, $random);
+			$transaction?->apply();
 		}
 	}
 
