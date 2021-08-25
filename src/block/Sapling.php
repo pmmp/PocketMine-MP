@@ -98,7 +98,7 @@ class Sapling extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->position->getWorld()->getFullLightAt($this->position->x, $this->position->y, $this->position->z) >= 8 and mt_rand(1, 7) === 1){
+		if($this->position->getWorld()->getFullLightAt($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) >= 8 and mt_rand(1, 7) === 1){
 			if($this->ready){
 				$this->grow();
 			}else{
@@ -112,7 +112,7 @@ class Sapling extends Flowable{
 		$random = new Random(mt_rand());
 
 		$tree = Tree::get($random, $this->treeType);
-		$transaction = $tree?->getBlockTransaction($this->position->getWorld(), $this->position->x, $this->position->y, $this->position->z, $random);
+		$transaction = $tree?->getBlockTransaction($this->position->getWorld(), $this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ(), $random);
 		if($transaction === null){
 			return;
 		}
