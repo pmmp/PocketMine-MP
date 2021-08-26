@@ -2452,11 +2452,11 @@ class World implements ChunkManager{
 			$this->orderChunkPopulation($chunkX, $chunkZ, null)->onCompletion(
 				function(Chunk $chunk) use ($tile): void{
 					$chunk->addTile($tile);
-					$this->scheduleDelayedBlockUpdate($tile->getPos()->asVector3(), 1);
+					$this->scheduleDelayedBlockUpdate($tile->getPosition()->asVector3(), 1);
 				},
 				function() use ($tile, $chunkX, $chunkZ): void{
 					$tile->close();
-					$this->getLogger()->error("Tile (" . get_class($tile) . " in unloaded chunk ($chunkX, $chunkZ) was removed at " . $tile->getPos()->__toString());
+					$this->getLogger()->error("Tile (" . get_class($tile) . " in unloaded chunk ($chunkX, $chunkZ) was removed at " . $tile->getPosition()->__toString());
 				}
 			);
 			return;
