@@ -71,7 +71,6 @@ use function array_shift;
 use function count;
 use function explode;
 use function implode;
-use function min;
 use function preg_match_all;
 use function strcasecmp;
 use function stripslashes;
