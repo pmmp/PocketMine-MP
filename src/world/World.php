@@ -1610,7 +1610,7 @@ class World implements ChunkManager{
 		$chunkX = $x >> 4;
 		$chunkZ = $z >> 4;
 		if($this->isChunkLocked($chunkX, $chunkZ)){
-			throw new WorldException("Terrain is locked for generation/population");
+			return;
 		}
 		if($this->loadChunk($chunkX, $chunkZ) === null){ //current expected behaviour is to try to load the terrain synchronously
 			throw new WorldException("Cannot set a block in un-generated terrain");

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "db2d0f1b7626686a7d1d368052ff9a0a",
+    "content-hash": "db707e7155d39811bff61dc825413212",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -198,12 +198,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockProtocol.git",
-                "reference": "854e239319b3ea63b41f18c4ad783fa460c70629"
+                "reference": "3478cebf31a2843e5794222ec4c5e0b03773f8cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/854e239319b3ea63b41f18c4ad783fa460c70629",
-                "reference": "854e239319b3ea63b41f18c4ad783fa460c70629",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/3478cebf31a2843e5794222ec4c5e0b03773f8cc",
+                "reference": "3478cebf31a2843e5794222ec4c5e0b03773f8cc",
                 "shasum": ""
             },
             "require": {
@@ -217,7 +217,7 @@
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.93",
+                "phpstan/phpstan": "0.12.96",
                 "phpstan/phpstan-phpunit": "^0.12.21",
                 "phpstan/phpstan-strict-rules": "^0.12.10",
                 "phpunit/phpunit": "^9.5"
@@ -229,7 +229,11 @@
                     "pocketmine\\network\\mcpe\\protocol\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "pocketmine\\network\\mcpe\\protocol\\": "tests/phpunit/"
+                }
+            },
             "license": [
                 "LGPL-3.0"
             ],
@@ -237,7 +241,7 @@
             "support": {
                 "source": "https://github.com/NetherGamesMC/BedrockProtocol/tree/master"
             },
-            "time": "2021-07-25T10:37:08+00:00"
+            "time": "2021-08-26T17:57:11+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
@@ -3642,5 +3646,5 @@
     "platform-overrides": {
         "php": "8.0.0"
     },
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }

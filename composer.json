@@ -58,6 +58,12 @@
       "phpstan/phpstan-strict-rules": "^0.12.2",
       "phpunit/phpunit": "^9.2"
    },
+   "repositories": [
+      {
+         "type": "vcs",
+         "url":  "git@github.com:NetherGamesMC/BedrockProtocol.git"
+      }
+   ],
    "autoload": {
       "psr-4": {
          "pocketmine\\": "src/"
