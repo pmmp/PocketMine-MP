@@ -50,6 +50,7 @@ final class KnownTranslationKeys{
 	public const COMMANDS_CLEAR_TESTING = "commands.clear.testing";
 	public const COMMANDS_DEFAULTGAMEMODE_SUCCESS = "commands.defaultgamemode.success";
 	public const COMMANDS_DEFAULTGAMEMODE_USAGE = "commands.defaultgamemode.usage";
+	public const COMMANDS_DEOP_MESSAGE = "commands.deop.message";
 	public const COMMANDS_DEOP_SUCCESS = "commands.deop.success";
 	public const COMMANDS_DEOP_USAGE = "commands.deop.usage";
 	public const COMMANDS_DIFFICULTY_SUCCESS = "commands.difficulty.success";
@@ -88,6 +89,7 @@ final class KnownTranslationKeys{
 	public const COMMANDS_MESSAGE_DISPLAY_OUTGOING = "commands.message.display.outgoing";
 	public const COMMANDS_MESSAGE_SAMETARGET = "commands.message.sameTarget";
 	public const COMMANDS_MESSAGE_USAGE = "commands.message.usage";
+	public const COMMANDS_OP_MESSAGE = "commands.op.message";
 	public const COMMANDS_OP_SUCCESS = "commands.op.success";
 	public const COMMANDS_OP_USAGE = "commands.op.usage";
 	public const COMMANDS_PARTICLE_NOTFOUND = "commands.particle.notFound";

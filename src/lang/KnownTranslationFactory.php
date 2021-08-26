@@ -153,6 +153,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_DEFAULTGAMEMODE_USAGE, []);
 	}
 
+	public static function commands_deop_message() : Translatable{
+		return new Translatable(KnownTranslationKeys::COMMANDS_DEOP_MESSAGE, []);
+	}
+
 	public static function commands_deop_success(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_DEOP_SUCCESS, [
 			0 => $param0,
@@ -365,6 +369,10 @@ final class KnownTranslationFactory{
 
 	public static function commands_message_usage() : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_MESSAGE_USAGE, []);
+	}
+
+	public static function commands_op_message() : Translatable{
+		return new Translatable(KnownTranslationKeys::COMMANDS_OP_MESSAGE, []);
 	}
 
 	public static function commands_op_success(Translatable|string $param0) : Translatable{
