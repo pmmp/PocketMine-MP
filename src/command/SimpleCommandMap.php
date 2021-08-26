@@ -71,7 +71,6 @@ use function array_shift;
 use function count;
 use function explode;
 use function implode;
-use function min;
 use function preg_match_all;
 use function strcasecmp;
 use function stripslashes;
@@ -200,29 +199,6 @@ class SimpleCommandMap implements CommandMap{
 		return true;
 	}
 
-	/**
-	 * Returns a command to match the specified command line, or null if no matching command was found.
-	 * This method is intended to provide capability for handling commands with spaces in their name.
-	 * The referenced parameters will be modified accordingly depending on the resulting matched command.
-	 *
-	 * @param string   $commandName reference parameter
-	 * @param string[] $args reference parameter
-	 */
-	public function matchCommand(string &$commandName, array &$args) : ?Command{
-		$count = min(count($args), 255);
-
-		for($i = 0; $i < $count; ++$i){
-			$commandName .= array_shift($args);
-			if(($command = $this->getCommand($commandName)) instanceof Command){
-				return $command;
-			}
-
-			$commandName .= " ";
-		}
-
-		return null;
-	}
-
 	public function dispatch(CommandSender $sender, string $commandLine) : bool{
 		$args = [];
 		preg_match_all('/"((?:\\\\.|[^\\\\"])*)"|(\S+)/u', $commandLine, $matches);
@@ -234,9 +210,11 @@ class SimpleCommandMap implements CommandMap{
 				}
 			}
 		}
-		$sentCommandLabel = "";
-		$target = $this->matchCommand($sentCommandLabel, $args);
-
+		$sentCommandLabel = array_shift($args);
+		if($sentCommandLabel === null){
+			return false;
+		}
+		$target = $this->getCommand($sentCommandLabel);
 		if($target === null){
 			return false;
 		}
@@ -288,8 +266,8 @@ class SimpleCommandMap implements CommandMap{
 
 			foreach($commandStrings as $commandString){
 				$args = explode(" ", $commandString);
-				$commandName = "";
-				$command = $this->matchCommand($commandName, $args);
+				$commandName = array_shift($args);
+				$command = $this->getCommand($commandName);
 
 				if($command === null){
 					$bad[] = $commandString;

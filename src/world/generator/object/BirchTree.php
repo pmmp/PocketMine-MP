@@ -36,11 +36,11 @@ class BirchTree extends Tree{
 		$this->superBirch = $superBirch;
 	}
 
-	public function placeObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : void{
+	public function placeObject(ChunkManager $world, int $x, int $y, int $z, Random $random, bool $callEvent = false) : void{
 		$this->treeHeight = $random->nextBoundedInt(3) + 5;
 		if($this->superBirch){
 			$this->treeHeight += 5;
 		}
-		parent::placeObject($world, $x, $y, $z, $random);
+		parent::placeObject($world, $x, $y, $z, $random, $callEvent);
 	}
 }

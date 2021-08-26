@@ -78,23 +78,23 @@ final class CoralBlock extends Opaque{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->dead){
-			$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, mt_rand(40, 200));
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(40, 200));
 		}
 	}
 
 	public function onScheduledUpdate() : void{
 		if(!$this->dead){
-			$world = $this->pos->getWorld();
+			$world = $this->position->getWorld();
 
 			$hasWater = false;
-			foreach($this->pos->sides() as $vector3){
+			foreach($this->position->sides() as $vector3){
 				if($world->getBlock($vector3) instanceof Water){
 					$hasWater = true;
 					break;
 				}
 			}
 			if(!$hasWater){
-				$world->setBlock($this->pos, $this->setDead(true));
+				$world->setBlock($this->position, $this->setDead(true));
 			}
 		}
 	}

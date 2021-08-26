@@ -54,7 +54,7 @@ class Block{
 	protected BlockIdentifier $idInfo;
 	protected string $fallbackName;
 	protected BlockBreakInfo $breakInfo;
-	protected Position $pos;
+	protected Position $position;
 
 	/** @var AxisAlignedBB[]|null */
 	protected ?array $collisionBoxes = null;
@@ -69,11 +69,11 @@ class Block{
 		$this->idInfo = $idInfo;
 		$this->fallbackName = $name;
 		$this->breakInfo = $breakInfo;
-		$this->pos = new Position(0, 0, 0, null);
+		$this->position = new Position(0, 0, 0, null);
 	}
 
 	public function __clone(){
-		$this->pos = clone $this->pos;
+		$this->position = clone $this->position;
 	}
 
 	public function getIdInfo() : BlockIdentifier{
@@ -142,10 +142,10 @@ class Block{
 	}
 
 	public function writeStateToWorld() : void{
-		$this->pos->getWorld()->getOrLoadChunkAtPosition($this->pos)->setFullBlock($this->pos->x & 0xf, $this->pos->y, $this->pos->z & 0xf, $this->getFullId());
+		$this->position->getWorld()->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & 0xf, $this->position->y, $this->position->z & 0xf, $this->getFullId());
 
 		$tileType = $this->idInfo->getTileClass();
-		$oldTile = $this->pos->getWorld()->getTile($this->pos);
+		$oldTile = $this->position->getWorld()->getTile($this->position);
 		if($oldTile !== null){
 			if($tileType === null or !($oldTile instanceof $tileType)){
 				$oldTile->close();
@@ -159,8 +159,8 @@ class Block{
 			 * @var Tile $tile
 			 * @see Tile::__construct()
 			 */
-			$tile = new $tileType($this->pos->getWorld(), $this->pos->asVector3());
-			$this->pos->getWorld()->addTile($tile);
+			$tile = new $tileType($this->position->getWorld(), $this->position->asVector3());
+			$this->position->getWorld()->addTile($tile);
 		}
 	}
 
@@ -200,7 +200,7 @@ class Block{
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 */
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$tx->addBlock($blockReplace->pos, $this);
+		$tx->addBlock($blockReplace->position, $this);
 		return true;
 	}
 
@@ -219,10 +219,10 @@ class Block{
 	 * Do the actions needed so the block is broken with the Item
 	 */
 	public function onBreak(Item $item, ?Player $player = null) : bool{
-		if(($t = $this->pos->getWorld()->getTile($this->pos)) !== null){
+		if(($t = $this->position->getWorld()->getTile($this->position)) !== null){
 			$t->onBlockDestroyed();
 		}
-		$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::AIR());
+		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 		return true;
 	}
 
@@ -334,15 +334,15 @@ class Block{
 		return null;
 	}
 
-	final public function getPos() : Position{
-		return $this->pos;
+	final public function getPosition() : Position{
+		return $this->position;
 	}
 
 	/**
 	 * @internal
 	 */
 	final public function position(World $world, int $x, int $y, int $z) : void{
-		$this->pos = new Position($x, $y, $z, $world);
+		$this->position = new Position($x, $y, $z, $world);
 	}
 
 	/**
@@ -420,7 +420,7 @@ class Block{
 	public function getPickedItem(bool $addUserData = false) : Item{
 		$item = $this->asItem();
 		if($addUserData){
-			$tile = $this->pos->getWorld()->getTile($this->pos);
+			$tile = $this->position->getWorld()->getTile($this->position);
 			if($tile instanceof Tile){
 				$nbt = $tile->getCleanedNBT();
 				if($nbt instanceof CompoundTag){
@@ -488,8 +488,8 @@ class Block{
 	 * @return Block
 	 */
 	public function getSide(int $side, int $step = 1){
-		if($this->pos->isValid()){
-			return $this->pos->getWorld()->getBlock($this->pos->getSide($side, $step));
+		if($this->position->isValid()){
+			return $this->position->getWorld()->getBlock($this->position->getSide($side, $step));
 		}
 
 		throw new \InvalidStateException("Block does not have a valid world");
@@ -502,8 +502,8 @@ class Block{
 	 * @phpstan-return \Generator<int, Block, void, void>
 	 */
 	public function getHorizontalSides() : \Generator{
-		$world = $this->pos->getWorld();
-		foreach($this->pos->sidesAroundAxis(Axis::Y) as $vector3){
+		$world = $this->position->getWorld();
+		foreach($this->position->sidesAroundAxis(Axis::Y) as $vector3){
 			yield $world->getBlock($vector3);
 		}
 	}
@@ -515,8 +515,8 @@ class Block{
 	 * @phpstan-return \Generator<int, Block, void, void>
 	 */
 	public function getAllSides() : \Generator{
-		$world = $this->pos->getWorld();
-		foreach($this->pos->sides() as $vector3){
+		$world = $this->position->getWorld();
+		foreach($this->position->sides() as $vector3){
 			yield $world->getBlock($vector3);
 		}
 	}
@@ -568,8 +568,8 @@ class Block{
 	final public function getCollisionBoxes() : array{
 		if($this->collisionBoxes === null){
 			$this->collisionBoxes = $this->recalculateCollisionBoxes();
-			$extraOffset = $this->getPosOffset();
-			$offset = $extraOffset !== null ? $this->pos->addVector($extraOffset) : $this->pos;
+			$extraOffset = $this->getPositionOffset();
+			$offset = $extraOffset !== null ? $this->position->addVector($extraOffset) : $this->position;
 			foreach($this->collisionBoxes as $bb){
 				$bb->offset($offset->x, $offset->y, $offset->z);
 			}
@@ -582,7 +582,7 @@ class Block{
 	 * Returns an additional fractional vector to shift the block's effective position by based on the current position.
 	 * Used to randomize position of things like bamboo canes and tall grass.
 	 */
-	public function getPosOffset() : ?Vector3{
+	public function getPositionOffset() : ?Vector3{
 		return null;
 	}
 

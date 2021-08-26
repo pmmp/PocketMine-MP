@@ -28,8 +28,8 @@ use pocketmine\entity\animation\ArrowShakeAnimation;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
+use pocketmine\event\entity\EntityItemPickupEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
@@ -174,13 +174,16 @@ class Arrow extends Projectile{
 		}
 
 		$item = VanillaItems::ARROW();
+		$playerInventory = match(true){
+			$player->getOffHandInventory()->getItem(0)->canStackWith($item) => $player->getOffHandInventory(),
+			$player->getInventory()->canAddItem($item) => $player->getInventory(),
+			default => null
+		};
 
-		$playerInventory = $player->getInventory();
-		if($player->hasFiniteResources() and !$playerInventory->canAddItem($item)){
-			return;
+		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
+		if($player->hasFiniteResources() and $playerInventory === null){
+			$ev->cancel();
 		}
-
-		$ev = new InventoryPickupArrowEvent($playerInventory, $this);
 		if($this->pickupMode === self::PICKUP_NONE or ($this->pickupMode === self::PICKUP_CREATIVE and !$player->isCreative())){
 			$ev->cancel();
 		}
@@ -194,7 +197,7 @@ class Arrow extends Projectile{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$playerInventory->addItem(clone $item);
+		$ev->getInventory()?->addItem($ev->getItem());
 		$this->flagForDespawn();
 	}
 

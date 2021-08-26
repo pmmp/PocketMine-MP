@@ -36,6 +36,7 @@ use function array_reverse;
 use function array_values;
 use function bin2hex;
 use function chunk_split;
+use function class_exists;
 use function count;
 use function debug_zval_dump;
 use function dechex;
@@ -466,17 +467,14 @@ final class Utils{
 	 * @phpstan-param class-string $baseName
 	 */
 	public static function testValidInstance(string $className, string $baseName) : void{
-		try{
-			$base = new \ReflectionClass($baseName);
-		}catch(\ReflectionException $e){
+		if(!class_exists($baseName)){
 			throw new \InvalidArgumentException("Base class $baseName does not exist");
 		}
-
-		try{
-			$class = new \ReflectionClass($className);
-		}catch(\ReflectionException $e){
+		if(!class_exists($className)){
 			throw new \InvalidArgumentException("Class $className does not exist");
 		}
+		$base = new \ReflectionClass($baseName);
+		$class = new \ReflectionClass($className);
 
 		if(!$class->isSubclassOf($baseName)){
 			throw new \InvalidArgumentException("Class $className does not " . ($base->isInterface() ? "implement" : "extend") . " " . $baseName);

@@ -87,7 +87,7 @@ use pocketmine\snooze\SleeperNotifier;
 use pocketmine\stats\SendUsageTask;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
-use pocketmine\updater\AutoUpdater;
+use pocketmine\updater\UpdateChecker;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
@@ -183,7 +183,7 @@ class Server{
 
 	private float $profilingTickRate = 20;
 
-	private AutoUpdater $updater;
+	private UpdateChecker $updater;
 
 	private AsyncPool $asyncPool;
 
@@ -365,7 +365,7 @@ class Server{
 		return $this->logger;
 	}
 
-	public function getUpdater() : AutoUpdater{
+	public function getUpdater() : UpdateChecker{
 		return $this->updater;
 	}
 
@@ -951,7 +951,7 @@ class Server{
 			$this->worldManager->setAutoSave($this->configGroup->getConfigBool("auto-save", $this->worldManager->getAutoSave()));
 			$this->worldManager->setAutoSaveInterval($this->configGroup->getPropertyInt("ticks-per.autosave", 6000));
 
-			$this->updater = new AutoUpdater($this, $this->configGroup->getPropertyString("auto-updater.host", "update.pmmp.io"));
+			$this->updater = new UpdateChecker($this, $this->configGroup->getPropertyString("auto-updater.host", "update.pmmp.io"));
 
 			$this->queryInfo = new QueryInfo($this);
 

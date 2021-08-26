@@ -53,6 +53,7 @@ use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerDisplayNameChangeEvent;
+use pocketmine\event\player\PlayerEntityInteractEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
 use pocketmine\event\player\PlayerInteractEvent;
@@ -1536,8 +1537,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$block = $target->getSide($face);
 		if($block->getId() === BlockLegacyIds::FIRE){
-			$this->getWorld()->setBlock($block->getPos(), VanillaBlocks::AIR());
-			$this->getWorld()->addSound($block->getPos()->add(0.5, 0.5, 0.5), new FireExtinguishSound());
+			$this->getWorld()->setBlock($block->getPosition(), VanillaBlocks::AIR());
+			$this->getWorld()->addSound($block->getPosition()->add(0.5, 0.5, 0.5), new FireExtinguishSound());
 			return true;
 		}
 
@@ -1696,7 +1697,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * Interacts with the given entity using the currently-held item.
 	 */
 	public function interactEntity(Entity $entity, Vector3 $clickPos) : bool{
-		//TODO
+		$ev = new PlayerEntityInteractEvent($this, $entity, $clickPos);
+
+		if(!$this->canInteract($entity->getLocation(), 8)){
+			$ev->cancel();
+		}
+
+		$ev->call();
+
+		if(!$ev->isCancelled()){
+			return $entity->onInteract($this, $clickPos);
+		}
 		return false;
 	}
 
@@ -2140,6 +2151,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 				$this->setSprinting(false);
 				$this->setSneaking(false);
+				$this->setFlying(false);
 
 				$this->extinguish();
 				$this->setAirSupplyTicks($this->getMaxAirSupplyTicks());

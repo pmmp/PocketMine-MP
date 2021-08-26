@@ -39,9 +39,9 @@ class SpruceTree extends Tree{
 		return $this->treeHeight - $random->nextBoundedInt(3);
 	}
 
-	public function placeObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : void{
+	public function placeObject(ChunkManager $world, int $x, int $y, int $z, Random $random, bool $callEvent = false) : void{
 		$this->treeHeight = $random->nextBoundedInt(4) + 6;
-		parent::placeObject($world, $x, $y, $z, $random);
+		parent::placeObject($world, $x, $y, $z, $random, $callEvent);
 	}
 
 	protected function placeCanopy(int $x, int $y, int $z, Random $random, BlockTransaction $transaction) : void{

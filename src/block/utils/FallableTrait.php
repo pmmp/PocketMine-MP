@@ -41,14 +41,14 @@ use pocketmine\world\Position;
  */
 trait FallableTrait{
 
-	abstract protected function getPos() : Position;
+	abstract protected function getPosition() : Position;
 
 	abstract protected function getId() : int;
 
 	abstract protected function getMeta() : int;
 
 	public function onNearbyBlockChange() : void{
-		$pos = $this->getPos();
+		$pos = $this->getPosition();
 		$down = $pos->getWorld()->getBlock($pos->getSide(Facing::DOWN));
 		if($down->getId() === BlockLegacyIds::AIR or $down instanceof Liquid or $down instanceof Fire){
 			$pos->getWorld()->setBlock($pos, VanillaBlocks::AIR());
