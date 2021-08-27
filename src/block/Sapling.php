@@ -110,7 +110,6 @@ class Sapling extends Flowable{
 
 	private function grow() : void{
 		$random = new Random(mt_rand());
-
 		$tree = Tree::get($random, $this->treeType);
 		$transaction = $tree?->getBlockTransaction($this->position->getWorld(), $this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ(), $random);
 		if($transaction === null){
