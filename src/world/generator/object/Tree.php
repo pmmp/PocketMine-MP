@@ -34,11 +34,13 @@ use pocketmine\world\ChunkManager;
 use function abs;
 
 abstract class Tree{
+	/** @var Block */
+	protected $trunkBlock;
+	/** @var Block */
+	protected $leafBlock;
 
-	protected Block $trunkBlock;
-	protected Block $leafBlock;
-
-	protected int $treeHeight;
+	/** @var int */
+	protected $treeHeight;
 
 	public function __construct(Block $trunkBlock, Block $leafBlock, int $treeHeight = 7){
 		$this->trunkBlock = $trunkBlock;

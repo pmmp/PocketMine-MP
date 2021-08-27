@@ -30,7 +30,8 @@ use pocketmine\world\ChunkManager;
 
 class BirchTree extends Tree{
 
-	protected bool $superBirch = false;
+	/** @var bool */
+	protected $superBirch = false;
 
 	public function __construct(bool $superBirch = false){
 		parent::__construct(VanillaBlocks::BIRCH_LOG(), VanillaBlocks::BIRCH_LEAVES());
