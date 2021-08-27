@@ -68,10 +68,6 @@ abstract class Tree{
 		return null;
 	}
 
-	protected function generateChunkHeight(Random $random) : int{
-		return $this->treeHeight - 1;
-	}
-
 	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
 		$radiusToCheck = 0;
 		for($yy = 0; $yy < $this->treeHeight + 3; ++$yy){
@@ -104,6 +100,10 @@ abstract class Tree{
 		$this->placeCanopy($x, $y, $z, $random, $transaction);
 
 		return $transaction;
+	}
+
+	protected function generateChunkHeight(Random $random) : int{
+		return $this->treeHeight - 1;
 	}
 
 	protected function placeTrunk(int $x, int $y, int $z, Random $random, int $trunkHeight, BlockTransaction $transaction) : void{
