@@ -50,20 +50,27 @@ abstract class Tree{
 	}
 
 	/**
-	 * @param TreeType | null 	$treeType 	default tree type: TreeType::OAK()
+	 * @param TreeType|null $type default oak
 	 */
-	public static function get(Random $random, ?TreeType $treeType = null) : ?self {
-		if($treeType === null || $treeType->equals(TreeType::OAK())){
-			return new OakTree();
-		}elseif($treeType->equals(TreeType::SPRUCE())){
+	public static function get(Random $random, ?TreeType $type = null) : ?self {
+		$type = $type ?? TreeType::OAK();
+		if($type->equals(TreeType::SPRUCE())){
 			return new SpruceTree();
-		}elseif($treeType->equals(TreeType::BIRCH())){
+		}elseif($type->equals(TreeType::BIRCH())){
 			if($random->nextBoundedInt(39) === 0){
 				return new BirchTree(true);
+			}else{
+				return new BirchTree();
 			}
-			return new BirchTree();
-		}elseif($treeType->equals(TreeType::JUNGLE())){
+		}elseif($type->equals(TreeType::JUNGLE())){
 			return new JungleTree();
+		}elseif($type->equals(TreeType::OAK())){ //default
+			return new OakTree();
+			/*if($random->nextRange(0, 9) === 0){
+				$tree = new BigTree();
+			}else{*/
+
+			//}
 		}
 		return null;
 	}
