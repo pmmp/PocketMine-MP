@@ -82,7 +82,7 @@ class Note extends Opaque{
 			return false;
 		}
 		$this->pitch = ++$this->pitch % (self::MAX_PITCH + 1);
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->position->getWorld()->setBlock($this->position, $this);
 		$this->triggerNote();
 		return true;
 	}
@@ -110,7 +110,7 @@ class Note extends Opaque{
 
 	public function triggerNote() : void{
 		$instrument = $this->getInstrument();
-		$this->pos->getWorld()->addSound($this->pos, new NoteSound($instrument, $this->pitch));
-		$this->pos->getWorld()->broadcastPacketToViewers($this->pos, BlockEventPacket::create($instrument->getMagicNumber(), $this->pitch, $this->pos));
+		$this->position->getWorld()->addSound($this->position, new NoteSound($instrument, $this->pitch));
+		$this->position->getWorld()->broadcastPacketToViewers($this->position, BlockEventPacket::create($instrument->getMagicNumber(), $this->pitch, $this->position));
 	}
 }
