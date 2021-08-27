@@ -72,9 +72,6 @@ abstract class Tree{
 		return $this->treeHeight - 1;
 	}
 
-	/*
-	 * check if the tree can be grown at the given coordinates
-	 */
 	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
 		$radiusToCheck = 0;
 		for($yy = 0; $yy < $this->treeHeight + 3; ++$yy){
