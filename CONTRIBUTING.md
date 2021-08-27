@@ -17,7 +17,7 @@
 <br>**If you do not provide us with a summary or instructions on how to reproduce the issue, it will be treated as spam and will therefore be closed.**
 <br>In simple words, if the issue cannot be properly confirmed to be valid or lacks required information, the issue will be closed until further information is provided.
 - To express appreciation, objection, confusion or other supported reactions on pull requests, issues or comments on them, use GitHub [reactions](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments) rather than posting an individual comment with an emoji only. This helps keeping the issue/pull request conversation clean and readable.
-- If your issue is related to the PocketMine-MP website, forums, etc., please [talk to a human directly](README.md#discussion).
+- If your issue is related to the PocketMine-MP website, forums, etc., please [talk to a human directly](README.md#discussionhelp).
 
 
 
