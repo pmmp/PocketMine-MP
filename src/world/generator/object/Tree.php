@@ -28,7 +28,6 @@ use pocketmine\block\Leaves;
 use pocketmine\block\Sapling;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
-use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\ChunkManager;
@@ -52,36 +51,28 @@ abstract class Tree{
 
 	/**
 	 * @param TreeType|null $type default oak
-	 * @param bool          $callEvent set this parameter to true to allow the calling of the BlockSproutEvent when the tree grows
-	 *
-	 * @throws \InvalidArgumentException
 	 */
-	public static function growTree(ChunkManager $world, int $x, int $y, int $z, Random $random, ?TreeType $type = null, bool $callEvent = false) : void{
-		/** @var null|Tree $tree */
-		$tree = null;
+	public static function get(Random $random, ?TreeType $type = null) : ?self {
 		$type = $type ?? TreeType::OAK();
 		if($type->equals(TreeType::SPRUCE())){
-			$tree = new SpruceTree();
+			return new SpruceTree();
 		}elseif($type->equals(TreeType::BIRCH())){
 			if($random->nextBoundedInt(39) === 0){
-				$tree = new BirchTree(true);
+				return new BirchTree(true);
 			}else{
-				$tree = new BirchTree();
+				return new BirchTree();
 			}
 		}elseif($type->equals(TreeType::JUNGLE())){
-			$tree = new JungleTree();
+			return new JungleTree();
 		}elseif($type->equals(TreeType::OAK())){ //default
-			$tree = new OakTree();
+			return new OakTree();
 			/*if($random->nextRange(0, 9) === 0){
 				$tree = new BigTree();
 			}else{*/
 
 			//}
 		}
-
-		if($tree !== null and $tree->canPlaceObject($world, $x, $y, $z, $random)){
-			$tree->placeObject($world, $x, $y, $z, $random, $callEvent);
-		}
+		return null;
 	}
 
 	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
@@ -102,20 +93,20 @@ abstract class Tree{
 		return true;
 	}
 
-	public function placeObject(ChunkManager $world, int $x, int $y, int $z, Random $random, bool $callEvent = false) : void{
+	/**
+	 * Returns the BlockTransaction containing all the blocks the tree would change upon growing at the given coordinates
+	 * or null if the tree can't be grown
+	 */
+	public function getBlockTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{
+		if(!$this->canPlaceObject($world, $x, $y, $z, $random)){
+			return null;
+		}
+
 		$transaction = new BlockTransaction($world);
 		$this->placeTrunk($x, $y, $z, $random, $this->generateChunkHeight($random), $transaction);
 		$this->placeCanopy($x, $y, $z, $random, $transaction);
 
-		if($callEvent){
-			$ev = new StructureGrowEvent($world->getBlockAt($x, $y, $z), $transaction);
-			$ev->call();
-			if($ev->isCancelled()){
-				return;
-			}
-		}
-
-		$transaction->apply(); //TODO: handle return value on failure
+		return $transaction;
 	}
 
 	protected function generateChunkHeight(Random $random) : int{
