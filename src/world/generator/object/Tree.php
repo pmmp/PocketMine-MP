@@ -26,7 +26,6 @@ namespace pocketmine\world\generator\object;
 use pocketmine\block\Block;
 use pocketmine\block\Leaves;
 use pocketmine\block\Sapling;
-use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
@@ -47,32 +46,6 @@ abstract class Tree{
 		$this->leafBlock = $leafBlock;
 
 		$this->treeHeight = $treeHeight;
-	}
-
-	/**
-	 * @param TreeType|null $type default oak
-	 */
-	public static function get(Random $random, ?TreeType $type = null) : ?self{
-		$type = $type ?? TreeType::OAK();
-		if($type->equals(TreeType::SPRUCE())){
-			return new SpruceTree();
-		}elseif($type->equals(TreeType::BIRCH())){
-			if($random->nextBoundedInt(39) === 0){
-				return new BirchTree(true);
-			}else{
-				return new BirchTree();
-			}
-		}elseif($type->equals(TreeType::JUNGLE())){
-			return new JungleTree();
-		}elseif($type->equals(TreeType::OAK())){ //default
-			return new OakTree();
-			/*if($random->nextRange(0, 9) === 0){
-				$tree = new BigTree();
-			}else{*/
-
-			//}
-		}
-		return null;
 	}
 
 	public function canPlaceObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : bool{
