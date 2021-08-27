@@ -207,6 +207,7 @@ class Server{
 	private MemoryManager $memoryManager;
 
 	private ConsoleReaderThread $console;
+	private ConsoleCommandSender $consoleSender;
 
 	private SimpleCommandMap $commandMap;
 
@@ -423,6 +424,10 @@ class Server{
 
 	public function getStartTime() : float{
 		return $this->startTime;
+	}
+
+	public function getConsoleSender() : ConsoleCommandSender{
+		return $this->consoleSender;
 	}
 
 	public function getCommandMap() : SimpleCommandMap{
@@ -1056,17 +1061,17 @@ class Server{
 			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_startFinished(strval(round(microtime(true) - $this->startTime, 3)))));
 
 			//TODO: move console parts to a separate component
-			$consoleSender = new ConsoleCommandSender($this, $this->language);
-			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $consoleSender);
-			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $consoleSender);
+			$this->consoleSender = new ConsoleCommandSender($this, $this->language);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_ADMINISTRATIVE, $this->consoleSender);
+			$this->subscribeToBroadcastChannel(self::BROADCAST_CHANNEL_USERS, $this->consoleSender);
 
 			$consoleNotifier = new SleeperNotifier();
 			$commandBuffer = new \Threaded();
 			$this->console = new ConsoleReaderThread($commandBuffer, $consoleNotifier);
-			$this->tickSleeper->addNotifier($consoleNotifier, function() use ($commandBuffer, $consoleSender) : void{
+			$this->tickSleeper->addNotifier($consoleNotifier, function() use ($commandBuffer) : void{
 				Timings::$serverCommand->startTiming();
 				while(($line = $commandBuffer->shift()) !== null){
-					$this->dispatchCommand($consoleSender, (string) $line);
+					$this->dispatchCommand($this->consoleSender, (string) $line);
 				}
 				Timings::$serverCommand->stopTiming();
 			});
