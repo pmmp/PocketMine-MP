@@ -29,7 +29,6 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\ChunkManager;
 
 class BirchTree extends Tree{
-
 	/** @var bool */
 	protected $superBirch = false;
 
