@@ -42,6 +42,11 @@ class Note extends Opaque{
 	/** @var NoteInstrument */
 	private $instrument;
 
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->instrument = NoteInstrument::PIANO();
+		parent::__construct($idInfo, $name, $breakInfo);
+	}
+
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
