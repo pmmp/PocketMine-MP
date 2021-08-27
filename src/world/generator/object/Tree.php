@@ -76,13 +76,13 @@ abstract class Tree{
 		}
 
 		$transaction = new BlockTransaction($world);
-		$this->placeTrunk($x, $y, $z, $random, $this->generateChunkHeight($random), $transaction);
+		$this->placeTrunk($x, $y, $z, $random, $this->generateTrunkHeight($random), $transaction);
 		$this->placeCanopy($x, $y, $z, $random, $transaction);
 
 		return $transaction;
 	}
 
-	protected function generateChunkHeight(Random $random) : int{
+	protected function generateTrunkHeight(Random $random) : int{
 		return $this->treeHeight - 1;
 	}
 

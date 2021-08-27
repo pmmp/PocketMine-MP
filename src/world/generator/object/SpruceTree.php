@@ -35,7 +35,7 @@ class SpruceTree extends Tree{
 		parent::__construct(VanillaBlocks::SPRUCE_LOG(), VanillaBlocks::SPRUCE_LEAVES(), 10);
 	}
 
-	protected function generateChunkHeight(Random $random) : int{
+	protected function generateTrunkHeight(Random $random) : int{
 		return $this->treeHeight - $random->nextBoundedInt(3);
 	}
 
