@@ -417,10 +417,8 @@ class Block{
 
 	/**
 	 * Return the instrument that a noteblock on top of this block will play
-	 *
-	 * @return NoteInstrument
 	 */
-	public function getNoteblockInstrument() : NoteInstrument {
+	public function getNoteblockInstrument() : NoteInstrument{
 		return NoteInstrument::PIANO();
 	}
 

@@ -106,8 +106,6 @@ class Note extends Opaque{
 
 	/**
 	 * Get the instrument that the noteblock will play when it is triggered
-	 *
-	 * @return NoteInstrument
 	 */
 	public function getInstrument() : NoteInstrument{
 		return $this->instrument;
