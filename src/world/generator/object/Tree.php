@@ -52,7 +52,7 @@ abstract class Tree{
 	/**
 	 * @param TreeType|null $type default oak
 	 */
-	public static function get(Random $random, ?TreeType $type = null) : ?self {
+	public static function get(Random $random, ?TreeType $type = null) : ?self{
 		$type = $type ?? TreeType::OAK();
 		if($type->equals(TreeType::SPRUCE())){
 			return new SpruceTree();
