@@ -94,8 +94,7 @@ abstract class Tree{
 	}
 
 	/**
-	 * @return BlockTransaction | null
-	 * returns the BlockTransaction containing all the blocks the tree would change upon growing at the given coordinates
+	 * Returns the BlockTransaction containing all the blocks the tree would change upon growing at the given coordinates
 	 * or null if the tree can't be grown
 	 */
 	public function getBlockTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{
