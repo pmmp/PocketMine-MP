@@ -85,7 +85,7 @@ class Note extends Opaque{
 		if($this->getSide(Facing::UP)->getId() !== BlockLegacyIds::AIR){
 			return false;
 		}
-		$this->pitch = ++$this->pitch % (self::MAX_PITCH + 1);
+		$this->pitch = ($this->pitch + 1) % (self::MAX_PITCH + 1);
 		$this->position->getWorld()->setBlock($this->position, $this);
 		$this->triggerNote();
 		return true;
