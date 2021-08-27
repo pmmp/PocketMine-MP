@@ -39,8 +39,7 @@ class Note extends Opaque{
 
 	private int $pitch = self::MIN_PITCH;
 
-	/** @var NoteInstrument */
-	private $instrument;
+	private NoteInstrument $instrument;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->instrument = NoteInstrument::PIANO();
