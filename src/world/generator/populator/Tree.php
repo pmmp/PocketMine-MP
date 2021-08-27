@@ -29,7 +29,7 @@ use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\generator\object\TreeFactory;
 
-class Tree extends Populator{
+class Tree implements Populator{
 	/** @var int */
 	private $randomAmount = 1;
 	/** @var int */

@@ -28,7 +28,7 @@ use pocketmine\world\ChunkManager;
 use pocketmine\world\generator\object\Ore as ObjectOre;
 use pocketmine\world\generator\object\OreType;
 
-class Ore extends Populator{
+class Ore implements Populator{
 	/** @var OreType[] */
 	private $oreTypes = [];
 
