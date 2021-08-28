@@ -248,13 +248,13 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "88ae308a03e8e61ccfdddd42623efabe9e772b42"
+                "url": "https://github.com/SenseiTarzan/BedrockProtocol.git",
+                "reference": "master"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/88ae308a03e8e61ccfdddd42623efabe9e772b42",
-                "reference": "88ae308a03e8e61ccfdddd42623efabe9e772b42",
+                "url": "https://api.github.com/repos/SenseiTarzan/BedrockProtocol/zipball/master",
+                "reference": "master",
                 "shasum": ""
             },
             "require": {
