@@ -61,7 +61,7 @@ class DeopCommand extends VanillaCommand{
 
 		$sender->getServer()->removeOp($name);
 		if(($player = $sender->getServer()->getPlayerExact($name)) !== null){
-			$player->sendMessage(TextFormat::GRAY . "You are no longer op!");
+			$player->sendMessage(KnownTranslationFactory::commands_deop_message()->prefix(TextFormat::GRAY));
 		}
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_deop_success($name));
 

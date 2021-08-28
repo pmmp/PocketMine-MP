@@ -61,7 +61,7 @@ class OpCommand extends VanillaCommand{
 
 		$sender->getServer()->addOp($name);
 		if(($player = $sender->getServer()->getPlayerExact($name)) !== null){
-			$player->sendMessage(TextFormat::GRAY . "You are now op!");
+			$player->sendMessage(KnownTranslationFactory::commands_op_message()->prefix(TextFormat::GRAY));
 		}
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_op_success($name));
 		return true;

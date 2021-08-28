@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -96,6 +97,13 @@ final class BambooSapling extends Flowable{
 		$bamboo = VanillaBlocks::BAMBOO();
 		$tx->addBlock($this->position, $bamboo)
 			->addBlock($this->position->up(), (clone $bamboo)->setLeafSize(Bamboo::SMALL_LEAVES));
+
+		$ev = new StructureGrowEvent($this, $tx);
+		$ev->call();
+		if($ev->isCancelled()){
+			return false;
+		}
+
 		return $tx->apply();
 	}
 
