@@ -249,12 +249,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SenseiTarzan/BedrockProtocol.git",
-                "reference": "master"
+                "reference": "fefb16d4d408afbeda979bd0cb50a1f545211ffd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SenseiTarzan/BedrockProtocol/zipball/master",
-                "reference": "master",
+                "url": "https://api.github.com/repos/SenseiTarzan/BedrockProtocol/zipball/fefb16d4d408afbeda979bd0cb50a1f545211ffd",
+                "reference": "fefb16d4d408afbeda979bd0cb50a1f545211ffd",
                 "shasum": ""
             },
             "require": {
