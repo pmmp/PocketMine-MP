@@ -23,16 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\BlockInventory;
-use pocketmine\block\inventory\BrewingStandInventory;
-use pocketmine\block\inventory\EnchantInventory;
-use pocketmine\block\inventory\FurnaceInventory;
-use pocketmine\block\inventory\HopperInventory;
-use pocketmine\block\inventory\LoomInventory;
-use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\InventoryFactory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
@@ -50,8 +44,8 @@ use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\player\Player;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
+use UnexpectedValueException;
 use function array_map;
 use function array_search;
 use function max;
@@ -161,30 +155,13 @@ class InventoryManager{
 	 * @phpstan-return list<ClientboundPacket>|null
 	 */
 	protected static function createContainerOpen(int $id, Inventory $inv) : ?array{
-		//TODO: we should be using some kind of tagging system to identify the types. Instanceof is flaky especially
-		//if the class isn't final, not to mention being inflexible.
 		if($inv instanceof BlockInventory){
-			switch(true){
-				case $inv instanceof LoomInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::LOOM, $inv->getHolder())];
-				case $inv instanceof FurnaceInventory:
-					return match($inv->getFurnaceType()->id()){
-						FurnaceType::FURNACE()->id() => [ContainerOpenPacket::blockInvVec3($id, WindowTypes::FURNACE, $inv->getHolder())],
-						FurnaceType::BLAST_FURNACE()->id() => [ContainerOpenPacket::blockInvVec3($id, WindowTypes::BLAST_FURNACE, $inv->getHolder())],
-						FurnaceType::SMOKER()->id() => [ContainerOpenPacket::blockInvVec3($id, WindowTypes::SMOKER, $inv->getHolder())],
-						default => throw new AssumptionFailedError("Unreachable")
-					};
-				case $inv instanceof EnchantInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::ENCHANTMENT, $inv->getHolder())];
-				case $inv instanceof BrewingStandInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::BREWING_STAND, $inv->getHolder())];
-				case $inv instanceof AnvilInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::ANVIL, $inv->getHolder())];
-				case $inv instanceof HopperInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::HOPPER, $inv->getHolder())];
-				default:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::CONTAINER, $inv->getHolder())];
+			try {
+				$type = InventoryFactory::getInstance()->getWindowType($inv);
+			} catch (UnexpectedValueException) {
+				$type = WindowTypes::CONTAINER;
 			}
+			return [ContainerOpenPacket::blockInvVec3($id, $type, $inv->getHolder())];
 		}
 		return null;
 	}

@@ -23,11 +23,9 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\BlockLegacyIds;
-use pocketmine\block\inventory\AnvilInventory;
-use pocketmine\block\inventory\EnchantInventory;
-use pocketmine\block\inventory\LoomInventory;
 use pocketmine\crafting\CraftingGrid;
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\InventoryFactory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -262,15 +260,10 @@ class TypeConverter{
 							function(Inventory $i) : bool{ return $i instanceof CraftingGrid && $i->getGridWidth() === CraftingGrid::SIZE_SMALL; }) ??
 						$this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING3X3_INPUT, $craftingGrid,
 							function(Inventory $i) : bool{ return $i instanceof CraftingGrid && $i->getGridWidth() === CraftingGrid::SIZE_BIG; });
-					if($mapped === null){
-						$current = $player->getCurrentWindow();
-						$mapped =
-							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ANVIL, $current,
-								function(Inventory $i) : bool{ return $i instanceof AnvilInventory; }) ??
-							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ENCHANTING_TABLE, $current,
-								function(Inventory $i) : bool{ return $i instanceof EnchantInventory; }) ??
-							$this->mapUIInventory($pSlot, UIInventorySlotOffset::LOOM, $current,
-								fn(Inventory $i) => $i instanceof LoomInventory);
+					
+					if($mapped === null and ($current = $player->getCurrentWindow()) !== null){
+						$class = InventoryFactory::getInstance()->getOffsetInventory($pSlot);
+						if ($class === $current::class) $mapped = [InventoryFactory::getInstance()->getCoreOffset($pSlot), $current];
 					}
 					if($mapped === null){
 						throw new \UnexpectedValueException("Unmatched UI inventory slot offset $pSlot");
