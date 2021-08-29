@@ -44,6 +44,7 @@ class Hopper extends Spawnable implements Container, Nameable{
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
 		$this->inventory = new HopperInventory($this->position);
+		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
