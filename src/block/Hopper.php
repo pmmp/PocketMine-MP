@@ -129,6 +129,7 @@ class Hopper extends Transparent{
 		}
 
 		$success = $this->push($tile);
+		// Hoppers that have a container above them, won't try to pick up items.
 		$origin = $this->position->getWorld()->getTile($this->position->getSide(Facing::UP));
 		if($origin instanceof Container){
 			$success |= $this->pull($tile, $origin);
