@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
-use pocketmine\world\format\Chunk;
+use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\WorldCreationOptions;
@@ -51,10 +51,10 @@ abstract class WritableRegionWorldProvider extends RegionWorldProvider implement
 		JavaWorldData::generate($path, $name, $options, static::getPcWorldFormatVersion());
 	}
 
-	abstract protected function serializeChunk(Chunk $chunk) : string;
+	abstract protected function serializeChunk(ChunkData $chunk) : string;
 
-	public function saveChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
+	public function saveChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		$this->loadRegion($regionX, $regionZ)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->serializeChunk($chunk));
+		$this->loadRegion($regionX, $regionZ)->writeChunk($chunkX & 0x1f, $chunkZ & 0x1f, $this->serializeChunk($chunkData));
 	}
 }

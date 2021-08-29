@@ -23,9 +23,26 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
-interface WritableWorldProvider extends WorldProvider{
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\world\format\Chunk;
+
+final class ChunkData{
+
 	/**
-	 * Saves a chunk (usually to disk).
+	 * @param CompoundTag[] $entityNBT
+	 * @param CompoundTag[] $tileNBT
 	 */
-	public function saveChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void;
+	public function __construct(
+		private Chunk $chunk,
+		private array $entityNBT,
+		private array $tileNBT
+	){}
+
+	public function getChunk() : Chunk{ return $this->chunk; }
+
+	/** @return CompoundTag[] */
+	public function getEntityNBT() : array{ return $this->entityNBT; }
+
+	/** @return CompoundTag[] */
+	public function getTileNBT() : array{ return $this->tileNBT; }
 }

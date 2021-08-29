@@ -36,6 +36,7 @@ use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
+use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\data\BedrockWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
@@ -232,7 +233,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
+	public function loadChunk(int $chunkX, int $chunkZ) : ?ChunkData{
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
 		$chunkVersionRaw = $this->db->get($index . self::TAG_VERSION);
@@ -405,8 +406,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		$chunk = new Chunk(
 			$subChunks,
-			$entities,
-			$tiles,
 			$biomeArray
 		);
 
@@ -423,16 +422,17 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$chunk->setDirty(); //trigger rewriting chunk to disk if it was converted from an older format
 		}
 
-		return $chunk;
+		return new ChunkData($chunk, $entities, $tiles);
 	}
 
-	public function saveChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
+	public function saveChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{
 		$idMap = LegacyBlockIdToStringIdMap::getInstance();
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
 		$write = new \LevelDBWriteBatch();
 		$write->put($index . self::TAG_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
 
+		$chunk = $chunkData->getChunk();
 		if($chunk->getDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN)){
 			$subChunks = $chunk->getSubChunks();
 			foreach($subChunks as $y => $subChunk){
@@ -474,8 +474,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		//TODO: use this properly
 		$write->put($index . self::TAG_STATE_FINALISATION, chr($chunk->isPopulated() ? self::FINALISATION_DONE : self::FINALISATION_NEEDS_POPULATION));
 
-		$this->writeTags($chunk->getNBTtiles(), $index . self::TAG_BLOCK_ENTITY, $write);
-		$this->writeTags($chunk->getNBTentities(), $index . self::TAG_ENTITY, $write);
+		$this->writeTags($chunkData->getTileNBT(), $index . self::TAG_BLOCK_ENTITY, $write);
+		$this->writeTags($chunkData->getEntityNBT(), $index . self::TAG_ENTITY, $write);
 
 		$write->delete($index . self::TAG_DATA_2D_LEGACY);
 		$write->delete($index . self::TAG_LEGACY_TERRAIN);

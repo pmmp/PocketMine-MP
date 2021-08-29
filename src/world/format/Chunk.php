@@ -31,7 +31,6 @@ use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Tile;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\entity\Entity;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use function array_fill;
 use function array_filter;
@@ -72,18 +71,10 @@ class Chunk{
 	/** @var BiomeArray */
 	protected $biomeIds;
 
-	/** @var CompoundTag[]|null */
-	public $NBTtiles;
-
-	/** @var CompoundTag[]|null */
-	public $NBTentities;
-
 	/**
-	 * @param SubChunk[]    $subChunks
-	 * @param CompoundTag[] $entities
-	 * @param CompoundTag[] $tiles
+	 * @param SubChunk[] $subChunks
 	 */
-	public function __construct(array $subChunks = [], ?array $entities = null, ?array $tiles = null, ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null){
+	public function __construct(array $subChunks = [], ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null){
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
 		foreach($this->subChunks as $y => $null){
@@ -93,9 +84,6 @@ class Chunk{
 		$val = ($this->subChunks->getSize() * 16);
 		$this->heightMap = $heightMap ?? new HeightArray(array_fill(0, 256, $val));
 		$this->biomeIds = $biomeIds ?? BiomeArray::fill(BiomeIds::OCEAN);
-
-		$this->NBTtiles = $tiles;
-		$this->NBTentities = $entities;
 	}
 
 	/**
@@ -290,20 +278,6 @@ class Chunk{
 		foreach($this->getTiles() as $tile){
 			$tile->close();
 		}
-	}
-
-	/**
-	 * @return CompoundTag[]
-	 */
-	public function getNBTtiles() : array{
-		return $this->NBTtiles ?? array_map(function(Tile $tile) : CompoundTag{ return $tile->saveNBT(); }, $this->tiles);
-	}
-
-	/**
-	 * @return CompoundTag[]
-	 */
-	public function getNBTentities() : array{
-		return $this->NBTentities ?? array_map(function(Entity $entity) : CompoundTag{ return $entity->saveNBT(); }, $this->getSavableEntities());
 	}
 
 	public function getBiomeIdArray() : string{

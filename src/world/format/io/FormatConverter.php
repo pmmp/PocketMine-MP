@@ -149,7 +149,7 @@ class FormatConverter{
 		$thisRound = $start;
 		foreach($this->oldProvider->getAllChunks(true, $this->logger) as $coords => $chunk){
 			[$chunkX, $chunkZ] = $coords;
-			$chunk->setDirty();
+			$chunk->getChunk()->setDirty();
 			$new->saveChunk($chunkX, $chunkZ, $chunk);
 			$counter++;
 			if(($counter % $this->chunksPerProgressUpdate) === 0){

@@ -143,7 +143,7 @@ final class FastChunkSerializer{
 			$heightMap = new HeightArray(array_values($unpackedHeightMap));
 		}
 
-		$chunk = new Chunk($subChunks, null, null, $biomeIds, $heightMap);
+		$chunk = new Chunk($subChunks, $biomeIds, $heightMap);
 		$chunk->setPopulated($terrainPopulated);
 		$chunk->setLightPopulated($lightPopulated);
 		$chunk->clearDirtyFlags();
