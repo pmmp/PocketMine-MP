@@ -38,9 +38,10 @@ use pocketmine\world\World;
 use function array_map;
 
 class BrewingStand extends Spawnable implements Container, Nameable{
-
+	use NameableTrait {
+		addAdditionalSpawnData as addNameSpawnData;
+	}
 	use ContainerTrait;
-	use NameableTrait;
 
 	private const TAG_BREW_TIME = "BrewTime"; //TAG_Short
 	private const TAG_BREW_TIME_PE = "CookTime"; //TAG_Short
@@ -84,6 +85,14 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 	protected function writeSaveData(CompoundTag $nbt) : void{
 		$this->saveName($nbt);
 		$this->saveItems($nbt);
+
+		$nbt->setShort(self::TAG_BREW_TIME_PE, $this->brewTime);
+		$nbt->setShort(self::TAG_MAX_FUEL_TIME, $this->maxFuelTime);
+		$nbt->setShort(self::TAG_REMAINING_FUEL_TIME_PE, $this->remainingFuelTime);
+	}
+
+	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
+		$this->addNameSpawnData($nbt);
 
 		$nbt->setShort(self::TAG_BREW_TIME_PE, $this->brewTime);
 		$nbt->setShort(self::TAG_MAX_FUEL_TIME, $this->maxFuelTime);
