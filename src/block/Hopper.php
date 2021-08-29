@@ -170,14 +170,14 @@ class Hopper extends Transparent{
 				// If the hopper is facing in any other direction, it will only push items that can be used as fuel to the furnace's fuel slot.
 				if($this->facing === Facing::DOWN){
 					// ID of the smelting slot
-					$slot = 0;
+					$slotInFurnace = 0;
 					$itemInFurnace = $destination->getInventory()->getSmelting();
 				}else{
 					if($item->getFuelTime() === 0){
 						continue;
 					}
 					// ID of the fuel slot
-					$slot = 1;
+					$slotInFurnace = 1;
 					$itemInFurnace = $destination->getInventory()->getFuel();
 				}
 				if(!$itemInFurnace->isNull()){
@@ -195,7 +195,7 @@ class Hopper extends Transparent{
 
 				// TODO event on item inventory switch
 
-				$destination->getInventory()->setItem($slot, $itemInFurnace);
+				$destination->getInventory()->setItem($slotInFurnace, $itemInFurnace);
 				$tile->getInventory()->setItem($slot, $item->isNull() ? ItemFactory::air() : $item);
 				return true;
 
