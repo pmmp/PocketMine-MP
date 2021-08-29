@@ -34,7 +34,6 @@ use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\item\Bucket;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\Record;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
