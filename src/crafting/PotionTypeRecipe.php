@@ -21,33 +21,38 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\crafting;
 
-use pocketmine\inventory\SimpleInventory;
 use pocketmine\item\Item;
-use pocketmine\world\Position;
 
-class BrewingStandInventory extends SimpleInventory implements BlockInventory{
-	use BlockInventoryTrait;
+class PotionTypeRecipe implements BrewingRecipe{
 
-	public function __construct(Position $holder, int $size = 5){
-		$this->holder = $holder;
-		parent::__construct($size);
+	/** @var Item */
+	private $input;
+	/** @var Item */
+	private $ingredient;
+	/** @var Item */
+	private $output;
+
+	public function __construct(Item $input, Item $ingredient, Item $output) {
+		$this->input = clone $input;
+		$this->ingredient = clone $ingredient;
+		$this->output = clone $output;
+	}
+
+	public function getInput() : Item{
+		return clone $this->input;
 	}
 
 	public function getIngredient() : Item{
-		return $this->getItem(0);
+		return clone $this->ingredient;
 	}
 
-	public function setIngredient(Item $item) : void{
-		$this->setItem(0, $item);
+	public function getOutput() : Item{
+		return clone $this->output;
 	}
 
-	public function getFuel() : Item{
-		return $this->getItem(4);
-	}
-
-	public function setFuel(Item $item) : void{
-		$this->setItem(4, $item);
+	public function getOutputFor(Item $input) : ?Item{
+		return $input->equals($this->getInput(), true, false) ? $this->getOutput() : null;
 	}
 }

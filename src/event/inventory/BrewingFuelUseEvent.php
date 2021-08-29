@@ -21,33 +21,35 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\event\inventory;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\item\Item;
-use pocketmine\world\Position;
+use pocketmine\block\tile\BrewingStand;
+use pocketmine\event\block\BlockEvent;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 
-class BrewingStandInventory extends SimpleInventory implements BlockInventory{
-	use BlockInventoryTrait;
+class BrewingFuelUseEvent extends BlockEvent implements Cancellable{
+	use CancellableTrait;
 
-	public function __construct(Position $holder, int $size = 5){
-		$this->holder = $holder;
-		parent::__construct($size);
+	/** @var BrewingStand */
+	private $brewingStand;
+	/** @var int */
+	private $fuelTime = 20;
+
+	public function __construct(BrewingStand $brewingStand){
+		parent::__construct($brewingStand->getBlock());
+		$this->brewingStand = $brewingStand;
 	}
 
-	public function getIngredient() : Item{
-		return $this->getItem(0);
+	public function getBrewingStand() : BrewingStand{
+		return $this->brewingStand;
 	}
 
-	public function setIngredient(Item $item) : void{
-		$this->setItem(0, $item);
+	public function getFuelTime() : int{
+		return $this->fuelTime;
 	}
 
-	public function getFuel() : Item{
-		return $this->getItem(4);
-	}
-
-	public function setFuel(Item $item) : void{
-		$this->setItem(4, $item);
+	public function setFuelTime(int $fuelTime) : void{
+		$this->fuelTime = $fuelTime;
 	}
 }

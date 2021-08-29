@@ -26,10 +26,13 @@ namespace pocketmine\network\mcpe\cache;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe as ProtocolFurnaceRecipe;
+use pocketmine\network\mcpe\protocol\types\recipe\PotionContainerChangeRecipe as ProtocolPotionContainerChangeRecipe;
+use pocketmine\network\mcpe\protocol\types\recipe\PotionTypeRecipe as ProtocolPotionTypeRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapedRecipe as ProtocolShapedRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe as ProtocolShapelessRecipe;
@@ -132,6 +135,35 @@ final class CraftingDataCache{
 					$input->getMeta(),
 					$converter->coreItemStackToNet($recipe->getResult()),
 					$typeTag
+				);
+			}
+		}
+
+		foreach($manager->getPotionTypeRecipes() as $recipes){
+			foreach($recipes as $recipe){
+				$input = $converter->coreItemStackToNet($recipe->getInput());
+				$ingredient = $converter->coreItemStackToNet($recipe->getIngredient());
+				$output = $converter->coreItemStackToNet($recipe->getOutput());
+				$pk->potionTypeRecipes[] = new ProtocolPotionTypeRecipe(
+					$input->getId(),
+					$input->getMeta(),
+					$ingredient->getId(),
+					$ingredient->getMeta(),
+					$output->getId(),
+					$output->getMeta()
+				);
+			}
+		}
+
+		foreach($manager->getPotionContainerChangeRecipes() as $recipes){
+			foreach($recipes as $recipe){
+				$input = $converter->coreItemStackToNet(ItemFactory::getInstance()->get($recipe->getInputItemId(), -1));
+				$ingredient = $converter->coreItemStackToNet($recipe->getIngredient());
+				$output = $converter->coreItemStackToNet(ItemFactory::getInstance()->get($recipe->getOutputItemId(), -1));
+				$pk->potionContainerRecipes[] = new ProtocolPotionContainerChangeRecipe(
+					$input->getId(),
+					$ingredient->getId(),
+					$output->getId()
 				);
 			}
 		}

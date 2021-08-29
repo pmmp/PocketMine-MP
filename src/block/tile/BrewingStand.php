@@ -24,11 +24,18 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\block\inventory\BrewingStandInventory;
+use pocketmine\event\inventory\BrewingFuelUseEvent;
+use pocketmine\event\inventory\BrewItemEvent;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
+use pocketmine\player\Player;
 use pocketmine\world\World;
+use function array_map;
 
 class BrewingStand extends Spawnable implements Container, Nameable{
 
@@ -45,11 +52,11 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 	private $inventory;
 
 	/** @var int */
-	private $brewTime = 0;
+	private $brewTime;
 	/** @var int */
-	private $maxFuelTime = 0;
+	private $maxFuelTime;
 	/** @var int */
-	private $remainingFuelTime = 0;
+	private $remainingFuelTime;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
@@ -107,5 +114,126 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 	 */
 	public function getRealInventory(){
 		return $this->inventory;
+	}
+
+	private function checkFuel(Item $item) : void{
+		$ev = new BrewingFuelUseEvent($this);
+		$ev->call();
+
+		if($ev->isCancelled()) {
+			return;
+		}
+
+		$item->pop();
+		$this->inventory->setFuel($item);
+
+		$this->maxFuelTime = $this->remainingFuelTime = $ev->getFuelTime();
+	}
+
+	private function canBrew() : bool{
+		if($this->inventory->getIngredient()->isNull()){
+			return false;
+		}
+
+		for($i = 1; $i <= 3; ++$i){
+			$input = $this->inventory->getItem($i);
+			if($input->isNull()) {
+				continue;
+			}
+
+			if($this->position->getWorld()->getServer()->getCraftingManager()->matchBrewingRecipe($input, $this->inventory->getIngredient()) !== null){
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public function onUpdate() : bool{
+		if($this->closed){
+			return false;
+		}
+
+		$this->timings->startTiming();
+
+		$prevBrewTime = $this->brewTime;
+		$prevRemainingFuelTime = $this->remainingFuelTime;
+		$prevMaxFuelTime = $this->maxFuelTime;
+
+		$ret = false;
+
+		$fuel = $this->inventory->getFuel();
+		$ingredient = $this->inventory->getIngredient();
+
+		$canBrew = $this->canBrew();
+
+		if($this->remainingFuelTime <= 0 and $canBrew and $fuel->equals(VanillaItems::BLAZE_POWDER(), true, false)) {
+			$this->checkFuel($fuel);
+		}
+
+		if($this->remainingFuelTime > 0){
+			if($canBrew){
+				if($this->brewTime == 0){
+					$this->brewTime = 400;
+					--$this->remainingFuelTime;
+				}
+
+				--$this->brewTime;
+
+				if($this->brewTime <= 0){
+					for($i = 1; $i <= 3; ++$i){
+						$input = $this->inventory->getItem($i);
+						if($input->isNull()){
+							continue;
+						}
+
+						$recipe = $this->position->getWorld()->getServer()->getCraftingManager()->matchBrewingRecipe($input, $ingredient);
+						$output = $recipe?->getOutputFor($input);
+						if($output === null) {
+							continue;
+						}
+
+						$ev = new BrewItemEvent($this, $input, $output, $recipe);
+						$ev->call();
+						if($ev->isCancelled()) {
+							continue;
+						}
+
+						$this->inventory->setItem($i, $ev->getOutput());
+					}
+
+					$ingredient->pop();
+					$this->inventory->setIngredient($ingredient);
+
+					$this->brewTime = 0;
+				}else{
+					$ret = true;
+				}
+			}else{
+				$this->brewTime = 0;
+			}
+		}else{
+			$this->brewTime = $this->remainingFuelTime = $this->maxFuelTime = 0;
+		}
+
+		$viewers = array_map(fn(Player $p) => $p->getNetworkSession()->getInvManager(), $this->inventory->getViewers());
+		foreach($viewers as $v){
+			if($v === null){
+				continue;
+			}
+			if($prevBrewTime !== $this->brewTime){
+				$v->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_BREWING_STAND_BREW_TIME, $this->brewTime);
+			}
+			if($prevRemainingFuelTime !== $this->remainingFuelTime){
+				$v->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_BREWING_STAND_FUEL_AMOUNT, $this->remainingFuelTime);
+			}
+			if($prevMaxFuelTime !== $this->maxFuelTime){
+				$v->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_BREWING_STAND_FUEL_TOTAL, $this->maxFuelTime);
+			}
+		}
+
+		$this->timings->stopTiming();
+
+		return $ret;
 	}
 }
