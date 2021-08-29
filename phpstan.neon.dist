@@ -36,6 +36,7 @@ parameters:
 	paths:
 		- src
 		- tests/phpstan/rules
+		- build/generate-known-translation-apis.php
 		- build/make-release.php
 		- build/server-phar.php
 		- tests/phpunit
