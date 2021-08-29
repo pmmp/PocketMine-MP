@@ -196,7 +196,7 @@ class Hopper extends Transparent{
 				// TODO event on item inventory switch
 
 				$destination->getInventory()->setItem($slotInFurnace, $itemInFurnace);
-				$tile->getInventory()->setItem($slot, $item->isNull() ? ItemFactory::air() : $item);
+				$tile->getInventory()->setItem($slot, $item);
 				return true;
 
 			}elseif($destination instanceof TileHopper){
@@ -227,7 +227,7 @@ class Hopper extends Transparent{
 				if($jukeboxBlock instanceof Jukebox){
 					$jukeboxBlock->insertRecord($item->pop());
 					$jukeboxBlock->getPosition()->getWorld()->setBlock($jukeboxBlock->getPosition(), $jukeboxBlock);
-					$tile->getInventory()->setItem($slot, $item->isNull() ? ItemFactory::air() : $item);
+					$tile->getInventory()->setItem($slot, $item);
 				}
 				return true;
 
@@ -253,7 +253,7 @@ class Hopper extends Transparent{
 
 			// TODO event on item inventory switch
 
-			$tile->getInventory()->setItem($slot, $item->isNull() ? ItemFactory::air() : $item);
+			$tile->getInventory()->setItem($slot, $item);
 			$destination->getInventory()->addItem($itemToPush);
 			return true;
 		}
@@ -288,7 +288,7 @@ class Hopper extends Transparent{
 
 			// TODO event on item inventory switch
 
-			$origin->getInventory()->setItem($slot, $item->isNull() ? ItemFactory::air() : $item);
+			$origin->getInventory()->setItem($slot, $item);
 			$tile->getInventory()->addItem($itemToPull);
 			return true;
 
@@ -305,7 +305,7 @@ class Hopper extends Transparent{
 
 				// TODO event on item inventory switch
 
-				$origin->getInventory()->setItem($slot, $item->isNull() ? ItemFactory::air() : $item);
+				$origin->getInventory()->setItem($slot, $item);
 				$tile->getInventory()->addItem($itemToPull);
 				return true;
 			}
