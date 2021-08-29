@@ -22,16 +22,14 @@
 declare(strict_types=1);
 
 use pocketmine\world\format\io\FormatConverter;
-use pocketmine\world\format\io\WorldProvider;
 use pocketmine\world\format\io\WorldProviderManager;
-use pocketmine\world\format\io\WritableWorldProvider;
+use pocketmine\world\format\io\WorldProviderManagerEntry;
+use pocketmine\world\format\io\WritableWorldProviderManagerEntry;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 $providerManager = new WorldProviderManager();
-$writableFormats = array_filter($providerManager->getAvailableProviders(), function(string $class){
-	return is_a($class, WritableWorldProvider::class, true);
-});
+$writableFormats = array_filter($providerManager->getAvailableProviders(), fn(WorldProviderManagerEntry $class) => $class instanceof WritableWorldProviderManagerEntry);
 $requiredOpts = [
 	"world" => "path to the input world for conversion",
 	"backup" => "path to back up the original files",
@@ -68,8 +66,7 @@ if(count($oldProviderClasses) > 1){
 	die("Ambiguous input world format: matched " . count($oldProviderClasses) . " (" . implode(array_keys($oldProviderClasses)) . ")");
 }
 $oldProviderClass = array_shift($oldProviderClasses);
-/** @var WorldProvider $oldProvider */
-$oldProvider = new $oldProviderClass($inputPath);
+$oldProvider = $oldProviderClass->fromPath($inputPath);
 
 $converter = new FormatConverter($oldProvider, $writableFormats[$args["format"]], realpath($backupPath), GlobalLogger::get());
 $converter->execute();
