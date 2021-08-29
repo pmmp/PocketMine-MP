@@ -43,8 +43,6 @@ use function rename;
 use function round;
 use function scandir;
 use function unlink;
-use function zlib_decode;
-use function zlib_encode;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
