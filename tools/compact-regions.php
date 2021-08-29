@@ -59,7 +59,11 @@ const SUPPORTED_EXTENSIONS = [
  * @phpstan-param array<string, int> $files
  */
 function find_regions_recursive(string $dir, array &$files) : void{
-	foreach(scandir($dir, SCANDIR_SORT_NONE) as $file){
+	$dirFiles = scandir($dir, SCANDIR_SORT_NONE);
+	if($dirFiles === false){
+		return;
+	}
+	foreach($dirFiles as $file){
 		if($file === "." or $file === ".."){
 			continue;
 		}

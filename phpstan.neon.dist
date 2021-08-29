@@ -27,6 +27,7 @@ parameters:
 		- tests/phpstan/bootstrap.php
 	scanDirectories:
 		- tests/plugins/TesterPlugin
+		- tools
 	scanFiles:
 		- src/PocketMine.php
 		- build/make-release.php
@@ -39,6 +40,7 @@ parameters:
 		- build/server-phar.php
 		- tests/phpunit
 		- tests/plugins/TesterPlugin
+		- tools
 	dynamicConstantNames:
 		- pocketmine\VersionInfo::IS_DEVELOPMENT_BUILD
 		- pocketmine\DEBUG
