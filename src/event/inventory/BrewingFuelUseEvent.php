@@ -45,10 +45,16 @@ class BrewingFuelUseEvent extends BlockEvent implements Cancellable{
 		return $this->brewingStand;
 	}
 
+	/**
+	 * Returns how many brewing steps could be made with the fuel
+	 */
 	public function getFuelTime() : int{
 		return $this->fuelTime;
 	}
 
+	/**
+	 * Sets how many brewing steps could be made with the fuel
+	 */
 	public function setFuelTime(int $fuelTime) : void{
 		$this->fuelTime = $fuelTime;
 	}

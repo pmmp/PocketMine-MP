@@ -43,6 +43,8 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 	}
 	use ContainerTrait;
 
+	public const BREW_TIME = 400; // Brew time in ticks
+
 	private const TAG_BREW_TIME = "BrewTime"; //TAG_Short
 	private const TAG_BREW_TIME_PE = "CookTime"; //TAG_Short
 	private const TAG_MAX_FUEL_TIME = "FuelTotal"; //TAG_Short
@@ -53,11 +55,11 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 	private $inventory;
 
 	/** @var int */
-	private $brewTime;
+	private $brewTime = 0;
 	/** @var int */
-	private $maxFuelTime;
+	private $maxFuelTime = 0;
 	/** @var int */
-	private $remainingFuelTime;
+	private $remainingFuelTime = 0;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
@@ -183,7 +185,7 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 		if($this->remainingFuelTime > 0){
 			if($canBrew){
 				if($this->brewTime == 0){
-					$this->brewTime = 400;
+					$this->brewTime = self::BREW_TIME;
 					--$this->remainingFuelTime;
 				}
 
