@@ -146,7 +146,7 @@ final class FastChunkSerializer{
 		$chunk = new Chunk($subChunks, $biomeIds, $heightMap);
 		$chunk->setPopulated($terrainPopulated);
 		$chunk->setLightPopulated($lightPopulated);
-		$chunk->clearDirtyFlags();
+		$chunk->clearTerrainDirtyFlags();
 
 		return $chunk;
 	}

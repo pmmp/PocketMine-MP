@@ -106,8 +106,8 @@ class PopulationTask extends AsyncTask{
 		if($chunk === null){
 			$generator->generateChunk($manager, $this->chunkX, $this->chunkZ);
 			$chunk = $manager->getChunk($this->chunkX, $this->chunkZ);
-			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
-			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
+			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
+			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
 		}
 
 		foreach($chunks as $i => $c){
@@ -117,8 +117,8 @@ class PopulationTask extends AsyncTask{
 			if($c === null){
 				$generator->generateChunk($manager, $cX, $cZ);
 				$chunks[$i] = $manager->getChunk($cX, $cZ);
-				$chunks[$i]->setDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
-				$chunks[$i]->setDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
+				$chunks[$i]->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
+				$chunks[$i]->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
 			}
 		}
 
@@ -129,7 +129,7 @@ class PopulationTask extends AsyncTask{
 		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
 
 		foreach($chunks as $i => $c){
-			$this->{"chunk$i"} = $c->isDirty() ? FastChunkSerializer::serializeWithoutLight($c) : null;
+			$this->{"chunk$i"} = $c->isTerrainDirty() ? FastChunkSerializer::serializeWithoutLight($c) : null;
 		}
 	}
 

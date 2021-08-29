@@ -419,7 +419,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			$chunk->setPopulated();
 		}
 		if($hasBeenUpgraded){
-			$chunk->setDirty(); //trigger rewriting chunk to disk if it was converted from an older format
+			$chunk->setTerrainDirty(); //trigger rewriting chunk to disk if it was converted from an older format
 		}
 
 		return new ChunkData($chunk, $entities, $tiles);
@@ -433,7 +433,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$write->put($index . self::TAG_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
 
 		$chunk = $chunkData->getChunk();
-		if($chunk->getDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN)){
+		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN)){
 			$subChunks = $chunk->getSubChunks();
 			foreach($subChunks as $y => $subChunk){
 				$key = $index . self::TAG_SUBCHUNK_PREFIX . chr($y);
@@ -467,7 +467,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			}
 		}
 
-		if($chunk->getDirtyFlag(Chunk::DIRTY_FLAG_BIOMES)){
+		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES)){
 			$write->put($index . self::TAG_DATA_2D, str_repeat("\x00", 512) . $chunk->getBiomeIdArray());
 		}
 

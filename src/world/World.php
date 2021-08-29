@@ -1126,15 +1126,13 @@ class World implements ChunkManager{
 		$this->timings->syncChunkSave->startTiming();
 		try{
 			foreach($this->chunks as $chunkHash => $chunk){
-				if($chunk->isDirty()){
-					self::getXZ($chunkHash, $chunkX, $chunkZ);
-					$this->provider->saveChunk($chunkX, $chunkZ, new ChunkData(
-						$chunk,
-						array_map(fn(Entity $e) => $e->saveNBT(), $chunk->getSavableEntities()),
-						array_map(fn(Tile $t) => $t->saveNBT(), $chunk->getTiles()),
-					));
-					$chunk->clearDirtyFlags();
-				}
+				self::getXZ($chunkHash, $chunkX, $chunkZ);
+				$this->provider->saveChunk($chunkX, $chunkZ, new ChunkData(
+					$chunk,
+					array_map(fn(Entity $e) => $e->saveNBT(), $chunk->getSavableEntities()),
+					array_map(fn(Tile $t) => $t->saveNBT(), $chunk->getTiles()),
+				));
+				$chunk->clearTerrainDirtyFlags();
 			}
 		}finally{
 			$this->timings->syncChunkSave->stopTiming();
@@ -2186,7 +2184,7 @@ class World implements ChunkManager{
 
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
-		$chunk->setDirty();
+		$chunk->setTerrainDirty();
 
 		if(!$this->isChunkInUse($chunkX, $chunkZ)){
 			$this->unloadChunkRequest($chunkX, $chunkZ);
@@ -2494,7 +2492,6 @@ class World implements ChunkManager{
 				//here, because entities currently add themselves to the world
 			}
 
-			$this->getChunk($chunkX, $chunkZ)?->setDirtyFlag(Chunk::DIRTY_FLAG_ENTITIES, true);
 			$this->timings->syncChunkLoadEntities->stopTiming();
 		}
 
@@ -2518,7 +2515,6 @@ class World implements ChunkManager{
 				}
 			}
 
-			$this->getChunk($chunkX, $chunkZ)?->setDirtyFlag(Chunk::DIRTY_FLAG_TILES, true);
 			$this->timings->syncChunkLoadTileEntities->stopTiming();
 		}
 	}
@@ -2565,7 +2561,7 @@ class World implements ChunkManager{
 				return false;
 			}
 
-			if($trySave and $this->getAutoSave() and $chunk->isDirty()){
+			if($trySave and $this->getAutoSave()){
 				$this->timings->syncChunkSave->startTiming();
 				try{
 					$this->provider->saveChunk($x, $z, new ChunkData(
