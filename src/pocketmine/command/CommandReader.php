@@ -32,7 +32,6 @@ use function fstat;
 use function is_resource;
 use function microtime;
 use function preg_replace;
-use function readline;
 use function stream_isatty;
 use function stream_select;
 use function trim;
