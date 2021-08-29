@@ -27,7 +27,6 @@ use pocketmine\block\tile\Container;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\tile\Jukebox as TileJukebox;
-use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
@@ -229,16 +228,6 @@ class Hopper extends Transparent{
 					$tile->getInventory()->setItem($slot, $item);
 				}
 				return true;
-
-			}elseif($destination instanceof TileShulkerBox){
-				// Hoppers can't push a shulkerbox into another shulkerbox.
-				if($item->getBlock() instanceof ShulkerBox){
-					continue;
-				}
-				$itemToPush = $item->pop();
-				if(!$destination->getInventory()->canAddItem($itemToPush)){
-					continue;
-				}
 
 			}elseif($destination instanceof Container){
 				$itemToPush = $item->pop();
