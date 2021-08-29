@@ -21,9 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory;
+namespace pocketmine\network\mcpe\convert;
 
 use Closure;
+use pocketmine\block\CraftingTable;
 use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\BrewingStandInventory;
 use pocketmine\block\inventory\EnchantInventory;
@@ -31,6 +32,7 @@ use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
 use pocketmine\block\inventory\LoomInventory;
 use pocketmine\crafting\FurnaceType;
+use pocketmine\inventory\Inventory;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\utils\AssumptionFailedError;

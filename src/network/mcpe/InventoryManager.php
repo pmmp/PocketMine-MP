@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe;
 use pocketmine\block\inventory\BlockInventory;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
-use pocketmine\inventory\InventoryFactory;
+use pocketmine\network\mcpe\convert\InventoryFactory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;

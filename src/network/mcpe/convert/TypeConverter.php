@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\convert;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\crafting\CraftingGrid;
 use pocketmine\inventory\Inventory;
-use pocketmine\inventory\InventoryFactory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
