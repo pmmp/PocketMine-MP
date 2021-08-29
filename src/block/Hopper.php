@@ -227,6 +227,7 @@ class Hopper extends Transparent{
 				if($jukeboxBlock instanceof Jukebox){
 					$jukeboxBlock->insertRecord($item->pop());
 					$jukeboxBlock->getPosition()->getWorld()->setBlock($jukeboxBlock->getPosition(), $jukeboxBlock);
+					$tile->getInventory()->setItem($slot, $item->isNull() ? ItemFactory::air() : $item);
 				}
 				return true;
 
