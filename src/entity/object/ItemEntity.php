@@ -271,14 +271,14 @@ class ItemEntity extends Entity{
 			return;
 		}
 
-		$item = (clone $this->item)->setCount(1);
+		$item = $this->getItem();
 		$playerInventory = match(true){
 			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
 			$player->getInventory()->canAddItem($item) => $player->getInventory(),
 			default => null
 		};
 
-		$ev = new EntityItemPickupEvent($player, $this, $this->item, $playerInventory);
+		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
 		if($player->hasFiniteResources() and $playerInventory === null){
 			$ev->cancel();
 		}
@@ -292,20 +292,7 @@ class ItemEntity extends Entity{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$inventory = $ev->getInventory();
-		if($inventory === null){
-			$this->flagForDespawn();
-			return;
-		}
-
-		$remainingCount = 0;
-		foreach($inventory->addItem($ev->getItem()) as $remaining){
-			$remainingCount += $remaining->getCount();
-		}
-		if($remainingCount <= 0){
-			$this->flagForDespawn();
-			return;
-		}
-		$this->setStackSize($remainingCount);
+		$ev->getInventory()?->addItem($ev->getItem());
+		$this->flagForDespawn();
 	}
 }
