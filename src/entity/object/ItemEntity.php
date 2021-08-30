@@ -112,7 +112,7 @@ class ItemEntity extends Entity{
 			$period = $this->hasMovementUpdate() ? self::MERGE_CHECK_PERIOD_ON_MOVE : self::MERGE_CHECK_PERIOD;
 			if(Server::getInstance()->getTick() % $period === 0){
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
-					if(!$entity->isFlaggedForDespawn() and $entity instanceof ItemEntity){
+					if($entity instanceof ItemEntity and !$entity->isFlaggedForDespawn()){
 						$ev = new ItemMergeEvent($this, $entity);
 						if(!$this->isMergeable($entity)){
 							$ev->cancel();
