@@ -56,6 +56,7 @@ use pocketmine\network\mcpe\handler\PacketHandler;
 use pocketmine\network\mcpe\handler\PreSpawnPacketHandler;
 use pocketmine\network\mcpe\handler\ResourcePacksPacketHandler;
 use pocketmine\network\mcpe\handler\SpawnResponsePacketHandler;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
@@ -934,6 +935,10 @@ class NetworkSession{
 			//TODO: weather needs to be synced here (when implemented)
 			//TODO: world spawn needs to be synced here
 		}
+	}
+
+	public function syncItemEntityStackSize(Entity $entity, int $newCount) : void{
+		$this->sendDataPacket(ActorEventPacket::create($entity->getId(), ActorEventPacket::ITEM_ENTITY_MERGE, $newCount));
 	}
 
 	public function syncWorldTime(int $worldTime) : void{

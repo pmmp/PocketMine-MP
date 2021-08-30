@@ -37,12 +37,15 @@ use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\player\Player;
+use pocketmine\Server;
 use function max;
 
 class ItemEntity extends Entity{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::ITEM; }
 
+	public const MERGE_CHECK_PERIOD_ON_MOVE = 40; // 2 seconds
+	public const MERGE_CHECK_PERIOD = 10; //0.5 seconds
 	public const DEFAULT_DESPAWN_DELAY = 6000; //5 minutes
 	public const NEVER_DESPAWN = -1;
 	public const MAX_DESPAWN_DELAY = 32767 + self::DEFAULT_DESPAWN_DELAY; //max value storable by mojang NBT :(
@@ -105,6 +108,27 @@ class ItemEntity extends Entity{
 			if($this->pickupDelay < 0){
 				$this->pickupDelay = 0;
 			}
+			$period = $this->hasMovementUpdate() ? self::MERGE_CHECK_PERIOD_ON_MOVE : self::MERGE_CHECK_PERIOD;
+			if(Server::getInstance()->getTick() % $period === 0){
+				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
+					if(!$entity->isFlaggedForDespawn() and $entity instanceof ItemEntity and $this->isMergeable($entity)){
+						$count1 = $this->item->getCount();
+						$count2 = $entity->getItem()->getCount();
+						/**
+						 * @var ItemEntity $old
+						 * @var ItemEntity $new
+						 */
+						[$old, $new] = $count1 <= $count2
+							? [$this, $entity]
+							: [$entity, $this];
+						$new->setCount($count1 + $count2);
+						$old->flagForDespawn();
+						$new->setPickupDelay(max($old->getPickupDelay(), $new->getPickupDelay()));
+						$new->setDespawnDelay(max($old->getDespawnDelay(), $new->getDespawnDelay()));
+						break;
+					}
+				}
+			}
 
 			$this->despawnDelay -= $tickDiff;
 			if($this->despawnDelay <= 0){
@@ -120,6 +144,11 @@ class ItemEntity extends Entity{
 		}
 
 		return $hasUpdate;
+	}
+
+	public function isMergeable(ItemEntity $entity) : bool{
+		$item = $entity->getItem();
+		return $this->item->canStackWith($item) and $this->item->getCount() + $item->getCount() <= $this->item->getMaxStackSize();
 	}
 
 	protected function tryChangeMovement() : void{
@@ -216,6 +245,13 @@ class ItemEntity extends Entity{
 		$player->getNetworkSession()->sendDataPacket($pk);
 	}
 
+	public function setCount(int $newCount) : void{
+		$this->item->setCount($newCount);
+		foreach($this->getViewers() as $viewer){
+			$viewer->getNetworkSession()->syncItemEntityStackSize($this, $newCount);
+		}
+	}
+
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
 		return $vector3->add(0, 0.125, 0);
 	}
@@ -225,14 +261,14 @@ class ItemEntity extends Entity{
 			return;
 		}
 
-		$item = $this->getItem();
+		$item = (clone $this->getItem())->setCount(1);
 		$playerInventory = match(true){
 			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
 			$player->getInventory()->canAddItem($item) => $player->getInventory(),
 			default => null
 		};
 
-		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
+		$ev = new EntityItemPickupEvent($player, $this, $this->getItem(), $playerInventory);
 		if($player->hasFiniteResources() and $playerInventory === null){
 			$ev->cancel();
 		}
@@ -246,7 +282,20 @@ class ItemEntity extends Entity{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$ev->getInventory()?->addItem($ev->getItem());
-		$this->flagForDespawn();
+		$inventory = $ev->getInventory();
+		if($inventory === null){
+			$this->flagForDespawn();
+			return;
+		}
+
+		$remainingCount = 0;
+		foreach($inventory->addItem($ev->getItem()) as $remaining){
+			$remainingCount += $remaining->getCount();
+		}
+		if($remainingCount <= 0){
+			$this->flagForDespawn();
+			return;
+		}
+		$this->setCount($remainingCount);
 	}
 }
