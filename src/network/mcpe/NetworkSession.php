@@ -29,6 +29,7 @@ use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
+use pocketmine\entity\object\ItemEntity;
 use pocketmine\event\player\PlayerDuplicateLoginEvent;
 use pocketmine\event\server\DataPacketReceiveEvent;
 use pocketmine\event\server\DataPacketSendEvent;
@@ -937,7 +938,7 @@ class NetworkSession{
 		}
 	}
 
-	public function syncItemEntityStackSize(Entity $entity, int $newCount) : void{
+	public function syncItemEntityStackSize(ItemEntity $entity, int $newCount) : void{
 		$this->sendDataPacket(ActorEventPacket::create($entity->getId(), ActorEventPacket::ITEM_ENTITY_MERGE, $newCount));
 	}
 
