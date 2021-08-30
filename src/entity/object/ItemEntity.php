@@ -45,7 +45,7 @@ class ItemEntity extends Entity{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::ITEM; }
 
-	public const MERGE_CHECK_PERIOD_ON_MOVE = 40; // 2 seconds
+	public const MERGE_CHECK_PERIOD_ON_MOVE = 40; //2 seconds
 	public const MERGE_CHECK_PERIOD = 10; //0.5 seconds
 	public const DEFAULT_DESPAWN_DELAY = 6000; //5 minutes
 	public const NEVER_DESPAWN = -1;
