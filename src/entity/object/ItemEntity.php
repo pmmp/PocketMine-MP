@@ -113,7 +113,7 @@ class ItemEntity extends Entity{
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
 					if(!$entity->isFlaggedForDespawn() and $entity instanceof ItemEntity and $this->isMergeable($entity)){
 						$count1 = $this->item->getCount();
-						$count2 = $entity->getItem()->getCount();
+						$count2 = $entity->item->getCount();
 						/**
 						 * @var ItemEntity $old
 						 * @var ItemEntity $new
@@ -147,7 +147,7 @@ class ItemEntity extends Entity{
 	}
 
 	public function isMergeable(ItemEntity $entity) : bool{
-		$item = $entity->getItem();
+		$item = $entity->item;
 		return $this->item->canStackWith($item) and $this->item->getCount() + $item->getCount() <= $this->item->getMaxStackSize();
 	}
 
@@ -261,7 +261,7 @@ class ItemEntity extends Entity{
 			return;
 		}
 
-		$item = (clone $this->getItem())->setCount(1);
+		$item = (clone $this->item)->setCount(1);
 		$playerInventory = match(true){
 			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
 			$player->getInventory()->canAddItem($item) => $player->getInventory(),
