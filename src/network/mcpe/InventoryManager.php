@@ -210,7 +210,7 @@ class InventoryManager{
 	public function getUISlotOffsetMapCallbacks() : ObjectSet{ return $this->uiSlotOffsetMapCallbacks; }
 
 	/**
-	 * @return array<int, int>|null RealSlot(UI Inventory) => PMSlot
+	 * @return array<int, int>|null Net => Core
 	 */
 	protected function getUISlotOffsetMap(Inventory $inventory) : ?array{
 		foreach($this->uiSlotOffsetMapCallbacks as $callback){
@@ -256,10 +256,10 @@ class InventoryManager{
 			if(($slotOffset = $this->getUISlotOffsetMap($inventory)) !== null){
 				//TODO: HACK!
 				//"UI Inventory" (a ridiculous inventory with integrated crafting grid, anvil inventory, etc.)
-				// needs to send all 51 slots to update content, which means it needs to send useless empty slots.
-				// This workaround isn't great, but at least it's simple.
+				//needs to send all 51 slots to update content, which means it needs to send useless empty slots.
+				//This workaround isn't great, but at least it's simple.
 				$this->session->sendDataPacket(InventorySlotPacket::create(
-					ContainerIds::UI,
+					ContainerIds::UI,//For UIInventory, it is always 124.
 					$slotOffset[$slot],
 					$itemStackWrapper
 				));
