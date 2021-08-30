@@ -28,6 +28,7 @@ use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityItemPickupEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
+use pocketmine\event\entity\ItemMergeEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -111,7 +112,17 @@ class ItemEntity extends Entity{
 			$period = $this->hasMovementUpdate() ? self::MERGE_CHECK_PERIOD_ON_MOVE : self::MERGE_CHECK_PERIOD;
 			if(Server::getInstance()->getTick() % $period === 0){
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
-					if(!$entity->isFlaggedForDespawn() and $entity instanceof ItemEntity and $this->isMergeable($entity)){
+					if(!$entity->isFlaggedForDespawn() and $entity instanceof ItemEntity){
+						$ev = new ItemMergeEvent($this, $entity);
+						if(!$this->isMergeable($entity)){
+							$ev->cancel();
+						}
+						$ev->call();
+
+						if($ev->isCancelled()){
+							continue;
+						}
+
 						$count1 = $this->item->getCount();
 						$count2 = $entity->item->getCount();
 						/**
