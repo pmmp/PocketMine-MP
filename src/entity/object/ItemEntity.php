@@ -121,7 +121,7 @@ class ItemEntity extends Entity{
 						[$old, $new] = $count1 <= $count2
 							? [$this, $entity]
 							: [$entity, $this];
-						$new->setCount($count1 + $count2);
+						$new->setStackSize($count1 + $count2);
 						$old->flagForDespawn();
 						$new->setPickupDelay(max($old->getPickupDelay(), $new->getPickupDelay()));
 						$new->setDespawnDelay(max($old->getDespawnDelay(), $new->getDespawnDelay()));
@@ -245,7 +245,7 @@ class ItemEntity extends Entity{
 		$player->getNetworkSession()->sendDataPacket($pk);
 	}
 
-	public function setCount(int $newCount) : void{
+	public function setStackSize(int $newCount) : void{
 		$this->item->setCount($newCount);
 		foreach($this->getViewers() as $viewer){
 			$viewer->getNetworkSession()->syncItemEntityStackSize($this, $newCount);
@@ -296,6 +296,6 @@ class ItemEntity extends Entity{
 			$this->flagForDespawn();
 			return;
 		}
-		$this->setCount($remainingCount);
+		$this->setStackSize($remainingCount);
 	}
 }
