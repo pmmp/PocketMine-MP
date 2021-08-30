@@ -38,7 +38,6 @@ use pocketmine\network\mcpe\protocol\AddItemActorPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\player\Player;
-use pocketmine\Server;
 use function max;
 
 class ItemEntity extends Entity{
@@ -110,7 +109,7 @@ class ItemEntity extends Entity{
 				$this->pickupDelay = 0;
 			}
 			$period = $this->hasMovementUpdate() ? self::MERGE_CHECK_PERIOD_ON_MOVE : self::MERGE_CHECK_PERIOD;
-			if(Server::getInstance()->getTick() % $period === 0){
+			if($this->despawnDelay % $period === 0){
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
 					if($entity instanceof ItemEntity and !$entity->isFlaggedForDespawn()){
 						$ev = new ItemMergeEvent($this, $entity);
