@@ -21,17 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\generator\object;
+namespace pocketmine\world\format\io;
 
-use pocketmine\block\Block;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\world\format\Chunk;
 
-class OreType{
+final class ChunkData{
+
+	/**
+	 * @param CompoundTag[] $entityNBT
+	 * @param CompoundTag[] $tileNBT
+	 */
 	public function __construct(
-		public Block $material,
-		public Block $replaces,
-		public int $clusterCount,
-		public int $clusterSize,
-		public int $minHeight,
-		public int $maxHeight
+		private Chunk $chunk,
+		private array $entityNBT,
+		private array $tileNBT
 	){}
+
+	public function getChunk() : Chunk{ return $this->chunk; }
+
+	/** @return CompoundTag[] */
+	public function getEntityNBT() : array{ return $this->entityNBT; }
+
+	/** @return CompoundTag[] */
+	public function getTileNBT() : array{ return $this->tileNBT; }
 }

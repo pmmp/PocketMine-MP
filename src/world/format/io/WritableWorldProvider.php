@@ -23,11 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
-use pocketmine\world\format\Chunk;
-
 interface WritableWorldProvider extends WorldProvider{
 	/**
 	 * Saves a chunk (usually to disk).
 	 */
-	public function saveChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void;
+	public function saveChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void;
 }
