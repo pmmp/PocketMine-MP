@@ -116,8 +116,8 @@ class Farmland extends Transparent{
 	}
 
 	public function onEntityFall(Entity $entity, float $fallDistance, Vector3 $fallPos) : void{
-		if($fallDistance > 0.99) {
-			$this->getPosition()->getWorld()->setBlock($this->getPosition(), BlockFactory::getInstance()->get(BlockLegacyIds::DIRT, 0));
+		if($fallDistance > 0.5) {
+			$this->getPosition()->getWorld()->setBlock($this->getPosition(), VanillaBlocks::DIRT());
 		}
 	}
 }
