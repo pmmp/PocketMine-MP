@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\animation\DeathAnimation;
@@ -307,6 +308,8 @@ abstract class Living extends Entity{
 
 	public function fall(float $fallDistance) : void{
 		$damage = ceil($fallDistance - 3 - (($jumpBoost = $this->effectManager->get(VanillaEffects::JUMP_BOOST())) !== null ? $jumpBoost->getEffectLevel() : 0));
+		$fallBlockPos = $this->location->floor();
+		$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev);
@@ -316,8 +319,6 @@ abstract class Living extends Entity{
 				new EntityShortFallSound($this)
 			);
 		}else{
-			$fallBlockPos = $this->location->floor();
-			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
 			if($fallBlock->getId() === BlockLegacyIds::AIR){
 				$fallBlockPos = $fallBlockPos->subtract(0, 1, 0);
 				$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
@@ -325,6 +326,9 @@ abstract class Living extends Entity{
 			if($fallBlock->getId() !== BlockLegacyIds::AIR){
 				$this->broadcastSound(new EntityLandSound($this, $fallBlock));
 			}
+		}
+		if($fallBlock->getId() === BlockLegacyIds::FARMLAND) {
+			$this->getWorld()->setBlock($fallBlockPos, BlockFactory::getInstance()->get(BlockLegacyIds::DIRT, 0));
 		}
 	}
 
