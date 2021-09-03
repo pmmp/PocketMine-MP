@@ -108,7 +108,9 @@ class ItemEntity extends Entity{
 			if($this->pickupDelay < 0){
 				$this->pickupDelay = 0;
 			}
-			$period = $this->hasMovementUpdate() ? self::MERGE_CHECK_PERIOD_ON_MOVE : self::MERGE_CHECK_PERIOD;
+			$period = ($this->forceMovementUpdate or $this->motion->x !== 0.0 or $this->motion->y !== 0.0 or $this->motion->z !== 0.0)
+				? self::MERGE_CHECK_PERIOD_ON_MOVE
+				: self::MERGE_CHECK_PERIOD;
 			if($this->despawnDelay % $period === 0){
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
 					if($entity instanceof ItemEntity and !$entity->isFlaggedForDespawn()){
