@@ -202,7 +202,7 @@ class Hopper extends Transparent{
 				}
 
 			}elseif($destination instanceof TileJukebox){
-				if(!$item instanceof Record){
+				if(!($item instanceof Record)){
 					continue;
 				}
 				//TODO:
