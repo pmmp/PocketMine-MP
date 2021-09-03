@@ -116,13 +116,7 @@ class Hopper extends Transparent{
 			$tile->setTransferCooldown($transferCooldown);
 		}
 
-		if($this->isPowered()){
-			// If a hopper is powered it is deactivated and won't push, pull or pick up items.
-			return;
-		}
-
-		if($transferCooldown > 0){
-			// Skipping this tick because the hopper is still on cooldown of 8 ticks.
+		if($this->isPowered() || $transferCooldown > 0){
 			return;
 		}
 
