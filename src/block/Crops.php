@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -109,6 +110,13 @@ abstract class Crops extends Flowable{
 			if(!$ev->isCancelled()){
 				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
 			}
+		}
+	}
+
+	public function onEntityFall(Entity $entity, float $fallDistance, Vector3 $fallPos) : void{
+		$blockBelow = $this->getSide(Facing::DOWN);
+		if($blockBelow->getId() === BlockLegacyIds::FARMLAND){
+			$blockBelow->onEntityFall($entity, $fallDistance, $fallPos);
 		}
 	}
 }
