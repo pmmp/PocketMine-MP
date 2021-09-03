@@ -154,9 +154,9 @@ class Hopper extends Transparent{
 			}
 
 			// Hoppers interact differently when pushing into different kinds of tiles.
-			// TODO Composter
-			// TODO Brewing Stand
-			// TODO Jukebox (improve)
+			//TODO: Composter
+			//TODO: Brewing Stand
+			//TODO: Jukebox (improve)
 			if($destination instanceof TileFurnace){
 				// If the hopper is facing down, it will push every item to the furnace's smelting slot, even items that aren't smeltable.
 				// If the hopper is facing in any other direction, it will only push items that can be used as fuel to the furnace's fuel slot.
@@ -185,7 +185,7 @@ class Hopper extends Transparent{
 					$itemInFurnace = $item->pop();
 				}
 
-				// TODO event on item inventory switch
+				//TODO: event on item inventory switch
 
 				$destination->getInventory()->setItem($slotInFurnace, $itemInFurnace);
 				$tile->getInventory()->setItem($slot, $item);
@@ -205,7 +205,7 @@ class Hopper extends Transparent{
 				if(!$item instanceof Record){
 					continue;
 				}
-				// TODO
+				//TODO:
 				// Jukeboxes actually emit a redstone signal when playing a record so nearby hoppers are blocked and
 				// prevented from inserting another disk. Because neither does redstone work properly nor can we check if
 				// a jukebox is still playing a record or has already finished it, we can just check if it has already a
@@ -233,7 +233,7 @@ class Hopper extends Transparent{
 				return false;
 			}
 
-			// TODO event on item inventory switch
+			//TODO: event on item inventory switch
 
 			$tile->getInventory()->setItem($slot, $item);
 			$destination->getInventory()->addItem($itemToPush);
@@ -248,9 +248,9 @@ class Hopper extends Transparent{
 	 */
 	private function pull(TileHopper $tile, Container $origin) : bool{
 		// Hoppers interact differently when pulling from different kinds of tiles.
-		// TODO Composter
-		// TODO Brewing Stand
-		// TODO Jukebox
+		//TODO: Composter
+		//TODO: Brewing Stand
+		//TODO: Jukebox
 		if($origin instanceof TileFurnace){
 			// Hoppers either pull empty buckets from the furnace's fuel slot or pull from its result slot.
 			// They prioritise pulling from the fuel slot over the result slot.
@@ -268,7 +268,7 @@ class Hopper extends Transparent{
 			}
 			$itemToPull = $item->pop();
 
-			// TODO event on item inventory switch
+			//TODO: event on item inventory switch
 
 			$origin->getInventory()->setItem($slot, $item);
 			$tile->getInventory()->addItem($itemToPull);
@@ -285,7 +285,7 @@ class Hopper extends Transparent{
 					continue;
 				}
 
-				// TODO event on item inventory switch
+				//TODO: event on item inventory switch
 
 				$origin->getInventory()->setItem($slot, $item);
 				$tile->getInventory()->addItem($itemToPull);
@@ -323,7 +323,7 @@ class Hopper extends Transparent{
 				continue;
 			}
 
-			// TODO event on block picking up an item
+			//TODO: event on block picking up an item
 
 			$tile->getInventory()->addItem($item);
 			$entity->flagForDespawn();
