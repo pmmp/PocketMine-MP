@@ -123,13 +123,14 @@ class Hopper extends Transparent{
 			return;
 		}
 
-		$success = $this->push($tile->getInventory());
+		$inventory = $tile->getInventory();
+		$success = $this->push($inventory);
 		// Hoppers that have a container above them, won't try to pick up items.
 		$origin = $this->position->getWorld()->getTile($this->position->getSide(Facing::UP));
 		if($origin instanceof Container){
-			$success |= $this->pull($tile, $origin);
+			$success |= $this->pull($inventory, $origin->getInventory());
 		}else{
-			$success |= $this->pickup($tile);
+			$success |= $this->pickup($inventory);
 		}
 		// The cooldown is only set back to the default amount of ticks if the hopper has done anything.
 		if((bool) $success){
