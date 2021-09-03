@@ -163,7 +163,7 @@ class Hopper extends Transparent{
 			//TODO: Brewing Stand
 			//TODO: Jukebox (improve)
 			if($destination instanceof TileFurnace){
-				// If the hopper is facing down, it will push every item to the furnace's smelting slot, even items that aren't smeltable.
+				// If the hopper is facing down, it will push every item to the furnace's input slot, even items that aren't smeltable.
 				// If the hopper is facing in any other direction, it will only push items that can be used as fuel to the furnace's fuel slot.
 				if($this->facing === Facing::DOWN){
 					$slotInFurnace = FurnaceInventory::SLOT_INPUT;
