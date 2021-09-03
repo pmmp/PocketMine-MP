@@ -103,7 +103,7 @@ class ItemTest extends TestCase{
 					continue 2;
 				}
 			}
-			self::fail("Unknown extra enchantment found: " . $enchantment->getType()->getName() . " x" . $enchantment->getLevel());
+			self::fail("Unknown extra enchantment found");
 		}
 		self::assertEmpty($enchantments, "Expected all enchantments to be present");
 	}

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\item\enchantment;
 
+use pocketmine\lang\Translatable;
 use function constant;
 
 /**
@@ -32,7 +33,7 @@ class Enchantment{
 
 	public function __construct(
 		private int $internalRuntimeId,
-		private string $name,
+		private Translatable|string $name,
 		private int $rarity,
 		private int $primaryItemFlags,
 		private int $secondaryItemFlags,
@@ -50,7 +51,7 @@ class Enchantment{
 	/**
 	 * Returns a translation key for this enchantment's name.
 	 */
-	public function getName() : string{
+	public function getName() : Translatable|string{
 		return $this->name;
 	}
 
