@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
 use pocketmine\block\tile\Container;
 use pocketmine\block\tile\Furnace as TileFurnace;
@@ -32,6 +33,7 @@ use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
 use pocketmine\entity\object\ItemEntity;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\Bucket;
 use pocketmine\item\Item;
 use pocketmine\item\Record;
@@ -248,22 +250,22 @@ class Hopper extends Transparent{
 	 * This function handles pulling items by the hopper from a container above.
 	 * Returns true if an item was successfully pulled or false on failure.
 	 */
-	private function pull(HopperInventory $inventory, Container $origin) : bool{
+	private function pull(HopperInventory $inventory, Inventory $origin) : bool{
 		// Hoppers interact differently when pulling from different kinds of tiles.
 		//TODO: Composter
 		//TODO: Brewing Stand
 		//TODO: Jukebox
-		if($origin instanceof TileFurnace){
+		if($origin instanceof FurnaceInventory){
 			// Hoppers either pull empty buckets from the furnace's fuel slot or pull from its result slot.
 			// They prioritise pulling from the fuel slot over the result slot.
-			$item = $origin->getInventory()->getFuel();
+			$item = $origin->getFuel();
 			if($item instanceof Bucket){
 				// ID of the fuel slot
 				$slot = 1;
 			}else{
 				// ID of the result slot
 				$slot = 2;
-				$item = $origin->getInventory()->getResult();
+				$item = $origin->getResult();
 				if($item->isNull()){
 					return false;
 				}
@@ -272,13 +274,13 @@ class Hopper extends Transparent{
 
 			//TODO: event on item inventory switch
 
-			$origin->getInventory()->setItem($slot, $item);
+			$origin->setItem($slot, $item);
 			$inventory->addItem($itemToPull);
 			return true;
 
 		}else{
-			for($slot = 0; $slot < $origin->getInventory()->getSize(); $slot++){
-				$item = $origin->getInventory()->getItem($slot);
+			for($slot = 0; $slot < $origin->getSize(); $slot++){
+				$item = $origin->getItem($slot);
 				if($item->isNull()){
 					continue;
 				}
@@ -289,7 +291,7 @@ class Hopper extends Transparent{
 
 				//TODO: event on item inventory switch
 
-				$origin->getInventory()->setItem($slot, $item);
+				$origin->setItem($slot, $item);
 				$inventory->addItem($itemToPull);
 				return true;
 			}
