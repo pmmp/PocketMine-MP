@@ -128,9 +128,9 @@ class Hopper extends Transparent{
 		}else{
 			$success |= $this->pickup($tile);
 		}
-		// The cooldown is only set back to 8 ticks if the hopper has done anything.
+		// The cooldown is only set back to the default amount of ticks if the hopper has done anything.
 		if((bool) $success){
-			$tile->setTransferCooldown(8);
+			$tile->setTransferCooldown(TileHopper::DEFAULT_TRANSFER_COOLDOWN);
 		}
 	}
 
@@ -196,9 +196,9 @@ class Hopper extends Transparent{
 				if(!$destination->getInventory()->canAddItem($itemToPush)){
 					continue;
 				}
-				// Hoppers pushing into empty hoppers set the empty hoppers transfer cooldown back to 8 ticks.
+				// Hoppers pushing into empty hoppers set the empty hoppers transfer cooldown back to the default amount of ticks.
 				if(count($destination->getInventory()->getContents()) === 0){
-					$destination->setTransferCooldown(8);
+					$destination->setTransferCooldown(TileHopper::DEFAULT_TRANSFER_COOLDOWN);
 				}
 
 			}elseif($destination instanceof TileJukebox){

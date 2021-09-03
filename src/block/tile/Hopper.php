@@ -34,6 +34,7 @@ class Hopper extends Spawnable implements Container, Nameable{
 	use NameableTrait;
 
 	private const TAG_TRANSFER_COOLDOWN = "TransferCooldown";
+	public const DEFAULT_TRANSFER_COOLDOWN = 8;
 
 	/** @var HopperInventory */
 	private $inventory;
