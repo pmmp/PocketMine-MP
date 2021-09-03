@@ -26,19 +26,20 @@ namespace pocketmine\entity\effect;
 use pocketmine\color\Color;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
+use pocketmine\lang\Translatable;
 
 class Effect{
 
 	/**
-	 * @param int    $internalRuntimeId Internal runtime ID, unique to this effect type. Used for comparisons.
-	 * @param string $name Translation key used for effect name
-	 * @param Color  $color Color of bubbles given by this effect
-	 * @param bool   $bad Whether the effect is harmful
-	 * @param bool   $hasBubbles Whether the effect has potion bubbles. Some do not (e.g. Instant Damage has its own particles instead of bubbles)
+	 * @param int                 $internalRuntimeId Internal runtime ID, unique to this effect type. Used for comparisons.
+	 * @param Translatable|string $name Translation key used for effect name
+	 * @param Color               $color Color of bubbles given by this effect
+	 * @param bool                $bad Whether the effect is harmful
+	 * @param bool                $hasBubbles Whether the effect has potion bubbles. Some do not (e.g. Instant Damage has its own particles instead of bubbles)
 	 */
 	public function __construct(
 		protected int $internalRuntimeId,
-		protected string $name,
+		protected Translatable|string $name,
 		protected Color $color,
 		protected bool $bad = false,
 		protected bool $hasBubbles = true
@@ -55,7 +56,7 @@ class Effect{
 	/**
 	 * Returns the translation key used to translate this effect's name.
 	 */
-	public function getName() : string{
+	public function getName() : Translatable|string{
 		return $this->name;
 	}
 
