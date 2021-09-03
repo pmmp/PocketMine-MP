@@ -25,11 +25,13 @@ namespace pocketmine\utils;
 
 trait NotSerializable{
 
-	final public function __serialize(){
+	/** @return mixed[] */
+	final public function __serialize() : array{
 		throw new \LogicException("Serialization of " . static::class . " objects is not allowed");
 	}
 
-	final public function __unserialize(array $data){
+	/** @param mixed[] $data */
+	final public function __unserialize(array $data) : void{
 		throw new \LogicException("Unserialization of " . static::class . " objects is not allowed");
 	}
 }
