@@ -327,7 +327,7 @@ abstract class Living extends Entity{
 				$this->broadcastSound(new EntityLandSound($this, $fallBlock));
 			}
 		}
-		if($fallBlock->getId() === BlockLegacyIds::FARMLAND) {
+		if($fallDistance > 0.99 && $fallBlock->getId() === BlockLegacyIds::FARMLAND) {
 			$this->getWorld()->setBlock($fallBlockPos, BlockFactory::getInstance()->get(BlockLegacyIds::DIRT, 0));
 		}
 	}
