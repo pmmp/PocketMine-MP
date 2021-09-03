@@ -221,8 +221,9 @@ class Hopper extends Transparent{
 					$jukeboxBlock->insertRecord($item->pop());
 					$jukeboxBlock->getPosition()->getWorld()->setBlock($jukeboxBlock->getPosition(), $jukeboxBlock);
 					$inventory->setItem($slot, $item);
+					return true;
 				}
-				return true;
+				return false;
 
 			}elseif($destination instanceof Container){
 				$itemToPush = $item->pop();
