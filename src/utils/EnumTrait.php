@@ -27,6 +27,7 @@ use function preg_match;
 
 trait EnumTrait{
 	use RegistryTrait;
+	use NotCloneable;
 	use NotSerializable;
 
 	/**
@@ -97,9 +98,5 @@ trait EnumTrait{
 	 */
 	public function equals(self $other) : bool{
 		return $this->enumName === $other->enumName;
-	}
-
-	public function __clone(){
-		throw new \LogicException("Enum members cannot be cloned");
 	}
 }
