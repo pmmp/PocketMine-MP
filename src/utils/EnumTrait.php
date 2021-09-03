@@ -27,6 +27,7 @@ use function preg_match;
 
 trait EnumTrait{
 	use RegistryTrait;
+	use NotSerializable;
 
 	/**
 	 * Registers the given object as an enum member.
@@ -100,13 +101,5 @@ trait EnumTrait{
 
 	public function __clone(){
 		throw new \LogicException("Enum members cannot be cloned");
-	}
-
-	public function __sleep(){
-		throw new \LogicException("Enum members cannot be serialized");
-	}
-
-	public function __wakeup(){
-		throw new \LogicException("Enum members cannot be unserialized");
 	}
 }
