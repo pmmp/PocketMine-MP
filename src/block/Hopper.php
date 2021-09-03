@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\inventory\HopperInventory;
 use pocketmine\block\tile\Container;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\tile\Hopper as TileHopper;
@@ -120,7 +121,7 @@ class Hopper extends Transparent{
 			return;
 		}
 
-		$success = $this->push($tile);
+		$success = $this->push($tile->getInventory());
 		// Hoppers that have a container above them, won't try to pick up items.
 		$origin = $this->position->getWorld()->getTile($this->position->getSide(Facing::UP));
 		if($origin instanceof Container){
@@ -138,8 +139,8 @@ class Hopper extends Transparent{
 	 * This function handles pushing items from the hopper to a tile in the direction the hopper is facing.
 	 * Returns true if an item was successfully pushed or false on failure.
 	 */
-	private function push(TileHopper $tile) : bool{
-		if(count($tile->getInventory()->getContents()) === 0){
+	private function push(HopperInventory $inventory) : bool{
+		if(count($inventory->getContents()) === 0){
 			return false;
 		}
 		$destination = $this->position->getWorld()->getTile($this->position->getSide($this->facing));
@@ -147,8 +148,8 @@ class Hopper extends Transparent{
 			return false;
 		}
 
-		for($slot = 0; $slot < $tile->getInventory()->getSize(); $slot++){
-			$item = $tile->getInventory()->getItem($slot);
+		for($slot = 0; $slot < $inventory->getSize(); $slot++){
+			$item = $inventory->getItem($slot);
 			if($item->isNull()){
 				continue;
 			}
@@ -188,7 +189,7 @@ class Hopper extends Transparent{
 				//TODO: event on item inventory switch
 
 				$destination->getInventory()->setItem($slotInFurnace, $itemInFurnace);
-				$tile->getInventory()->setItem($slot, $item);
+				$inventory->setItem($slot, $item);
 				return true;
 
 			}elseif($destination instanceof TileHopper){
@@ -219,7 +220,7 @@ class Hopper extends Transparent{
 				if($jukeboxBlock instanceof Jukebox){
 					$jukeboxBlock->insertRecord($item->pop());
 					$jukeboxBlock->getPosition()->getWorld()->setBlock($jukeboxBlock->getPosition(), $jukeboxBlock);
-					$tile->getInventory()->setItem($slot, $item);
+					$inventory->setItem($slot, $item);
 				}
 				return true;
 
@@ -235,7 +236,7 @@ class Hopper extends Transparent{
 
 			//TODO: event on item inventory switch
 
-			$tile->getInventory()->setItem($slot, $item);
+			$inventory->setItem($slot, $item);
 			$destination->getInventory()->addItem($itemToPush);
 			return true;
 		}
@@ -246,7 +247,7 @@ class Hopper extends Transparent{
 	 * This function handles pulling items by the hopper from a container above.
 	 * Returns true if an item was successfully pulled or false on failure.
 	 */
-	private function pull(TileHopper $tile, Container $origin) : bool{
+	private function pull(HopperInventory $inventory, Container $origin) : bool{
 		// Hoppers interact differently when pulling from different kinds of tiles.
 		//TODO: Composter
 		//TODO: Brewing Stand
@@ -271,7 +272,7 @@ class Hopper extends Transparent{
 			//TODO: event on item inventory switch
 
 			$origin->getInventory()->setItem($slot, $item);
-			$tile->getInventory()->addItem($itemToPull);
+			$inventory->addItem($itemToPull);
 			return true;
 
 		}else{
@@ -281,14 +282,14 @@ class Hopper extends Transparent{
 					continue;
 				}
 				$itemToPull = $item->pop();
-				if(!$tile->getInventory()->canAddItem($itemToPull)){
+				if(!$inventory->canAddItem($itemToPull)){
 					continue;
 				}
 
 				//TODO: event on item inventory switch
 
 				$origin->getInventory()->setItem($slot, $item);
-				$tile->getInventory()->addItem($itemToPull);
+				$inventory->addItem($itemToPull);
 				return true;
 			}
 		}
@@ -299,7 +300,7 @@ class Hopper extends Transparent{
 	 * This function handles picking up items by the hopper.
 	 * Returns true if an item was successfully picked up or false on failure.
 	 */
-	private function pickup(TileHopper $tile) : bool{
+	private function pickup(HopperInventory $inventory) : bool{
 		// In Bedrock Edition hoppers collect from the lower 3/4 of the block space above them.
 		$pickupCollisionBox = new AxisAlignedBB(
 			$this->position->getX(),
@@ -319,13 +320,13 @@ class Hopper extends Transparent{
 			// Because of how entities are saved by PocketMine-MP the first entities of this loop are also the first ones who were saved.
 			// That's why we don't need to implement any sorting mechanism.
 			$item = $entity->getItem();
-			if(!$tile->getInventory()->canAddItem($item)){
+			if(!$inventory->canAddItem($item)){
 				continue;
 			}
 
 			//TODO: event on block picking up an item
 
-			$tile->getInventory()->addItem($item);
+			$inventory->addItem($item);
 			$entity->flagForDespawn();
 			return true;
 		}
