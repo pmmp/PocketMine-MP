@@ -24,29 +24,23 @@ declare(strict_types=1);
 namespace pocketmine\item\enchantment;
 
 use pocketmine\lang\Translatable;
-use function constant;
+use pocketmine\utils\NotCloneable;
+use pocketmine\utils\NotSerializable;
 
 /**
  * Manages enchantment type data.
  */
 class Enchantment{
+	use NotCloneable;
+	use NotSerializable;
 
 	public function __construct(
-		private int $internalRuntimeId,
 		private Translatable|string $name,
 		private int $rarity,
 		private int $primaryItemFlags,
 		private int $secondaryItemFlags,
 		private int $maxLevel
 	){}
-
-	/**
-	 * Returns the internal runtime ID of this enchantment.
-	 * WARNING: DO NOT STORE THIS IDENTIFIER - IT MAY CHANGE AFTER RESTART
-	 */
-	public function getRuntimeId() : int{
-		return $this->internalRuntimeId;
-	}
 
 	/**
 	 * Returns a translation key for this enchantment's name.
