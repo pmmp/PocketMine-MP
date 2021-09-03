@@ -175,7 +175,7 @@ class Arrow extends Projectile{
 
 		$item = VanillaItems::ARROW();
 		$playerInventory = match(true){
-			$player->getOffHandInventory()->getItem(0)->canStackWith($item) => $player->getOffHandInventory(),
+			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
 			$player->getInventory()->canAddItem($item) => $player->getInventory(),
 			default => null
 		};

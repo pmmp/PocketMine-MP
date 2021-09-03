@@ -21,29 +21,36 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\event\player;
 
-use pocketmine\inventory\SimpleInventory;
+use pocketmine\entity\Entity;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
+use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\Position;
 
-class AnvilInventory extends SimpleInventory implements BlockInventory{
-	use BlockInventoryTrait;
+/**
+ * Called when a player interacts with an entity (e.g. shearing a sheep, naming a mob using a nametag).
+ */
+class PlayerEntityInteractEvent extends PlayerEvent implements Cancellable{
+	use CancellableTrait;
 
-	public const SLOT_INPUT = 0;
-	public const SLOT_MATERIAL = 1;
-
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(2);
+	public function __construct(
+		Player $player,
+		private Entity $entity,
+		private Vector3 $clickPos
+	){
+		$this->player = $player;
 	}
 
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
+	public function getEntity() : Entity{
+		return $this->entity;
+	}
 
-		foreach($this->getContents() as $item){
-			$who->dropItem($item);
-		}
-		$this->clearAll();
+	/**
+	 * Returns the absolute coordinates of the click. This is usually on the surface of the entity's hitbox.
+	 */
+	public function getClickPosition() : Vector3{
+		return $this->clickPos;
 	}
 }

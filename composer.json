@@ -34,7 +34,7 @@
       "adhocore/json-comment": "^1.1",
       "fgrosse/phpasn1": "^2.3",
       "netresearch/jsonmapper": "^4.0",
-      "pocketmine/bedrock-protocol": "dev-master#88ae308a03e8e61ccfdddd42623efabe9e772b42",
+      "pocketmine/bedrock-protocol": "1.0.0+bedrock1.17.10",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/classloader": "dev-master",
@@ -53,7 +53,7 @@
       "webmozart/path-util": "^2.3"
    },
    "require-dev": {
-      "phpstan/phpstan": "0.12.95",
+      "phpstan/phpstan": "0.12.96",
       "phpstan/phpstan-phpunit": "^0.12.6",
       "phpstan/phpstan-strict-rules": "^0.12.2",
       "phpunit/phpunit": "^9.2"

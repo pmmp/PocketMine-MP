@@ -31,6 +31,10 @@ use pocketmine\world\Position;
 class FurnaceInventory extends SimpleInventory implements BlockInventory{
 	use BlockInventoryTrait;
 
+	public const SLOT_INPUT = 0;
+	public const SLOT_FUEL = 1;
+	public const SLOT_RESULT = 2;
+
 	private FurnaceType $furnaceType;
 
 	public function __construct(Position $holder, FurnaceType $furnaceType){
@@ -42,26 +46,26 @@ class FurnaceInventory extends SimpleInventory implements BlockInventory{
 	public function getFurnaceType() : FurnaceType{ return $this->furnaceType; }
 
 	public function getResult() : Item{
-		return $this->getItem(2);
+		return $this->getItem(self::SLOT_RESULT);
 	}
 
 	public function getFuel() : Item{
-		return $this->getItem(1);
+		return $this->getItem(self::SLOT_FUEL);
 	}
 
 	public function getSmelting() : Item{
-		return $this->getItem(0);
+		return $this->getItem(self::SLOT_INPUT);
 	}
 
 	public function setResult(Item $item) : void{
-		$this->setItem(2, $item);
+		$this->setItem(self::SLOT_RESULT, $item);
 	}
 
 	public function setFuel(Item $item) : void{
-		$this->setItem(1, $item);
+		$this->setItem(self::SLOT_FUEL, $item);
 	}
 
 	public function setSmelting(Item $item) : void{
-		$this->setItem(0, $item);
+		$this->setItem(self::SLOT_INPUT, $item);
 	}
 }

@@ -28,7 +28,7 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
 
-class TallGrass extends Populator{
+class TallGrass implements Populator{
 	/** @var int */
 	private $randomAmount = 1;
 	/** @var int */

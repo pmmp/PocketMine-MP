@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\TreeType;
+use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -31,7 +32,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
-use pocketmine\world\generator\object\Tree;
+use pocketmine\world\generator\object\TreeFactory;
 use function mt_rand;
 
 class Sapling extends Flowable{
@@ -76,7 +77,7 @@ class Sapling extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
-			Tree::growTree($this->position->getWorld(), $this->position->x, $this->position->y, $this->position->z, new Random(mt_rand()), $this->treeType);
+			$this->grow();
 
 			$item->pop();
 
@@ -97,14 +98,31 @@ class Sapling extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->position->getWorld()->getFullLightAt($this->position->x, $this->position->y, $this->position->z) >= 8 and mt_rand(1, 7) === 1){
+		if($this->position->getWorld()->getFullLightAt($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) >= 8 and mt_rand(1, 7) === 1){
 			if($this->ready){
-				Tree::growTree($this->position->getWorld(), $this->position->x, $this->position->y, $this->position->z, new Random(mt_rand()), $this->treeType);
+				$this->grow();
 			}else{
 				$this->ready = true;
 				$this->position->getWorld()->setBlock($this->position, $this);
 			}
 		}
+	}
+
+	private function grow() : void{
+		$random = new Random(mt_rand());
+		$tree = TreeFactory::get($random, $this->treeType);
+		$transaction = $tree?->getBlockTransaction($this->position->getWorld(), $this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ(), $random);
+		if($transaction === null){
+			return;
+		}
+
+		$ev = new StructureGrowEvent($this, $transaction);
+		$ev->call();
+		if($ev->isCancelled()){
+			return;
+		}
+
+		$transaction->apply();
 	}
 
 	public function getFuelTime() : int{

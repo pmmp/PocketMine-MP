@@ -27,9 +27,9 @@ use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\utils\TreeType;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
-use pocketmine\world\generator\object\Tree as ObjectTree;
+use pocketmine\world\generator\object\TreeFactory;
 
-class Tree extends Populator{
+class Tree implements Populator{
 	/** @var int */
 	private $randomAmount = 1;
 	/** @var int */
@@ -62,7 +62,9 @@ class Tree extends Populator{
 			if($y === -1){
 				continue;
 			}
-			ObjectTree::growTree($world, $x, $y, $z, $random, $this->type);
+			$tree = TreeFactory::get($random, $this->type);
+			$transaction = $tree?->getBlockTransaction($world, $x, $y, $z, $random);
+			$transaction?->apply();
 		}
 	}
 

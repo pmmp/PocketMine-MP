@@ -153,6 +153,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_DEFAULTGAMEMODE_USAGE, []);
 	}
 
+	public static function commands_deop_message() : Translatable{
+		return new Translatable(KnownTranslationKeys::COMMANDS_DEOP_MESSAGE, []);
+	}
+
 	public static function commands_deop_success(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_DEOP_SUCCESS, [
 			0 => $param0,
@@ -365,6 +369,10 @@ final class KnownTranslationFactory{
 
 	public static function commands_message_usage() : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_MESSAGE_USAGE, []);
+	}
+
+	public static function commands_op_message() : Translatable{
+		return new Translatable(KnownTranslationKeys::COMMANDS_OP_MESSAGE, []);
 	}
 
 	public static function commands_op_success(Translatable|string $param0) : Translatable{
@@ -983,8 +991,36 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GAMEMODE_DESCRIPTION, []);
 	}
 
+	public static function pocketmine_command_gc_chunks(Translatable|string $chunksCollected) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GC_CHUNKS, [
+			"chunksCollected" => $chunksCollected,
+		]);
+	}
+
+	public static function pocketmine_command_gc_cycles(Translatable|string $cyclesCollected) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GC_CYCLES, [
+			"cyclesCollected" => $cyclesCollected,
+		]);
+	}
+
 	public static function pocketmine_command_gc_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GC_DESCRIPTION, []);
+	}
+
+	public static function pocketmine_command_gc_entities(Translatable|string $entitiesCollected) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GC_ENTITIES, [
+			"entitiesCollected" => $entitiesCollected,
+		]);
+	}
+
+	public static function pocketmine_command_gc_header() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GC_HEADER, []);
+	}
+
+	public static function pocketmine_command_gc_memoryFreed(Translatable|string $memoryFreed) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GC_MEMORYFREED, [
+			"memoryFreed" => $memoryFreed,
+		]);
 	}
 
 	public static function pocketmine_command_gc_usage() : Translatable{

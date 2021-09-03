@@ -106,21 +106,30 @@ class PopulationTask extends AsyncTask{
 		if($chunk === null){
 			$generator->generateChunk($manager, $this->chunkX, $this->chunkZ);
 			$chunk = $manager->getChunk($this->chunkX, $this->chunkZ);
-			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
-			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
+			if($chunk === null){
+				throw new AssumptionFailedError("We just set this chunk, so it must exist");
+			}
+			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
+			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
 		}
 
+		$resultChunks = []; //this is just to keep phpstan's type inference happy
 		foreach($chunks as $i => $c){
 			$cX = (-1 + $i % 3) + $this->chunkX;
 			$cZ = (-1 + intdiv($i, 3)) + $this->chunkZ;
 			$manager->setChunk($cX, $cZ, $c ?? new Chunk());
 			if($c === null){
 				$generator->generateChunk($manager, $cX, $cZ);
-				$chunks[$i] = $manager->getChunk($cX, $cZ);
-				$chunks[$i]->setDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
-				$chunks[$i]->setDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
+				$c = $manager->getChunk($cX, $cZ);
+				if($c === null){
+					throw new AssumptionFailedError("We just set this chunk, so it must exist");
+				}
+				$c->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
+				$c->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
 			}
+			$resultChunks[$i] = $c;
 		}
+		$chunks = $resultChunks;
 
 		$generator->populateChunk($manager, $this->chunkX, $this->chunkZ);
 		$chunk = $manager->getChunk($this->chunkX, $this->chunkZ);
@@ -129,7 +138,7 @@ class PopulationTask extends AsyncTask{
 		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
 
 		foreach($chunks as $i => $c){
-			$this->{"chunk$i"} = $c->isDirty() ? FastChunkSerializer::serializeWithoutLight($c) : null;
+			$this->{"chunk$i"} = $c->isTerrainDirty() ? FastChunkSerializer::serializeWithoutLight($c) : null;
 		}
 	}
 

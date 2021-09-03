@@ -32,7 +32,7 @@ use pocketmine\world\ChunkManager;
 use function count;
 use function min;
 
-class GroundCover extends Populator{
+class GroundCover implements Populator{
 
 	public function populate(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void{
 		$chunk = $world->getChunk($chunkX, $chunkZ);
