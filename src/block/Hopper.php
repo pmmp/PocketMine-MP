@@ -127,6 +127,7 @@ class Hopper extends Transparent{
 		$success = $this->push($inventory);
 		// Hoppers that have a container above them, won't try to pick up items.
 		$origin = $this->position->getWorld()->getTile($this->position->getSide(Facing::UP));
+		//TODO: Not all blocks a hopper can pull from have an inventory (for example: Jukebox).
 		if($origin instanceof Container){
 			$success |= $this->pull($inventory, $origin->getInventory());
 		}else{
