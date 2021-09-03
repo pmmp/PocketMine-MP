@@ -40,6 +40,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function assert;
@@ -142,7 +143,7 @@ class Block{
 	}
 
 	public function writeStateToWorld() : void{
-		$this->position->getWorld()->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & 0xf, $this->position->y, $this->position->z & 0xf, $this->getFullId());
+		$this->position->getWorld()->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getFullId());
 
 		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $this->position->getWorld()->getTile($this->position);

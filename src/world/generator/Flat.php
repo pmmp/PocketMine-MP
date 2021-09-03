@@ -28,6 +28,7 @@ use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\SubChunk;
 use pocketmine\world\generator\object\OreType;
 use pocketmine\world\generator\populator\Ore;
 use pocketmine\world\generator\populator\Populator;
@@ -141,20 +142,20 @@ class Flat extends Generator{
 	protected function generateBaseChunk() : void{
 		$this->chunk = new Chunk();
 
-		for($Z = 0; $Z < 16; ++$Z){
-			for($X = 0; $X < 16; ++$X){
+		for($Z = 0; $Z < Chunk::EDGE_LENGTH; ++$Z){
+			for($X = 0; $X < Chunk::EDGE_LENGTH; ++$X){
 				$this->chunk->setBiomeId($X, $Z, $this->biome);
 			}
 		}
 
 		$count = count($this->structure);
-		for($sy = 0; $sy < $count; $sy += 16){
-			$subchunk = $this->chunk->getSubChunk($sy >> 4);
-			for($y = 0; $y < 16 and isset($this->structure[$y | $sy]); ++$y){
+		for($sy = 0; $sy < $count; $sy += SubChunk::EDGE_LENGTH){
+			$subchunk = $this->chunk->getSubChunk($sy >> SubChunk::COORD_BIT_SIZE);
+			for($y = 0; $y < SubChunk::EDGE_LENGTH and isset($this->structure[$y | $sy]); ++$y){
 				$id = $this->structure[$y | $sy];
 
-				for($Z = 0; $Z < 16; ++$Z){
-					for($X = 0; $X < 16; ++$X){
+				for($Z = 0; $Z < SubChunk::EDGE_LENGTH; ++$Z){
+					for($X = 0; $X < SubChunk::EDGE_LENGTH; ++$X){
 						$subchunk->setFullBlock($X, $y, $Z, $id);
 					}
 				}

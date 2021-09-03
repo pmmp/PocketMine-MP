@@ -27,6 +27,7 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\InvalidGeneratorOptionsException;
 use pocketmine\world\generator\noise\Simplex;
@@ -72,7 +73,7 @@ class Nether extends Generator{
 	public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 
-		$noise = $this->noiseBase->getFastNoise3D(16, 128, 16, 4, 8, 4, $chunkX * 16, 0, $chunkZ * 16);
+		$noise = $this->noiseBase->getFastNoise3D(Chunk::EDGE_LENGTH, 128, Chunk::EDGE_LENGTH, 4, 8, 4, $chunkX * Chunk::EDGE_LENGTH, 0, $chunkZ * Chunk::EDGE_LENGTH);
 
 		$chunk = $world->getChunk($chunkX, $chunkZ);
 
@@ -80,8 +81,8 @@ class Nether extends Generator{
 		$netherrack = VanillaBlocks::NETHERRACK()->getFullId();
 		$stillLava = VanillaBlocks::LAVA()->getFullId();
 
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
+		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
+			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
 				$chunk->setBiomeId($x, $z, BiomeIds::HELL);
 
 				for($y = 0; $y < 128; ++$y){

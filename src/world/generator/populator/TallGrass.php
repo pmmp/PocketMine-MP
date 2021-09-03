@@ -27,6 +27,7 @@ use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\format\Chunk;
 
 class TallGrass implements Populator{
 	/** @var int */
@@ -47,8 +48,8 @@ class TallGrass implements Populator{
 
 		$block = VanillaBlocks::TALL_GRASS();
 		for($i = 0; $i < $amount; ++$i){
-			$x = $random->nextRange($chunkX * 16, $chunkX * 16 + 15);
-			$z = $random->nextRange($chunkZ * 16, $chunkZ * 16 + 15);
+			$x = $random->nextRange($chunkX * Chunk::EDGE_LENGTH, $chunkX * Chunk::EDGE_LENGTH + (Chunk::EDGE_LENGTH - 1));
+			$z = $random->nextRange($chunkZ * Chunk::EDGE_LENGTH, $chunkZ * Chunk::EDGE_LENGTH + (Chunk::EDGE_LENGTH - 1));
 			$y = $this->getHighestWorkableBlock($world, $x, $z);
 
 			if($y !== -1 and $this->canTallGrassStay($world, $x, $y, $z)){
