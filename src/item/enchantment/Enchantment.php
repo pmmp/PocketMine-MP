@@ -30,27 +30,14 @@ use function constant;
  */
 class Enchantment{
 
-	/** @var int */
-	private $internalRuntimeId;
-	/** @var string */
-	private $name;
-	/** @var int */
-	private $rarity;
-	/** @var int */
-	private $primaryItemFlags;
-	/** @var int */
-	private $secondaryItemFlags;
-	/** @var int */
-	private $maxLevel;
-
-	public function __construct(int $internalRuntimeId, string $name, int $rarity, int $primaryItemFlags, int $secondaryItemFlags, int $maxLevel){
-		$this->internalRuntimeId = $internalRuntimeId;
-		$this->name = $name;
-		$this->rarity = $rarity;
-		$this->primaryItemFlags = $primaryItemFlags;
-		$this->secondaryItemFlags = $secondaryItemFlags;
-		$this->maxLevel = $maxLevel;
-	}
+	public function __construct(
+		private int $internalRuntimeId,
+		private string $name,
+		private int $rarity,
+		private int $primaryItemFlags,
+		private int $secondaryItemFlags,
+		private int $maxLevel
+	){}
 
 	/**
 	 * Returns the internal runtime ID of this enchantment.
