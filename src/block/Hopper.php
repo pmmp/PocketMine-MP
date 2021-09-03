@@ -166,15 +166,13 @@ class Hopper extends Transparent{
 				// If the hopper is facing down, it will push every item to the furnace's smelting slot, even items that aren't smeltable.
 				// If the hopper is facing in any other direction, it will only push items that can be used as fuel to the furnace's fuel slot.
 				if($this->facing === Facing::DOWN){
-					// ID of the smelting slot
-					$slotInFurnace = 0;
+					$slotInFurnace = FurnaceInventory::SLOT_INPUT;
 					$itemInFurnace = $destination->getInventory()->getSmelting();
 				}else{
 					if($item->getFuelTime() === 0){
 						continue;
 					}
-					// ID of the fuel slot
-					$slotInFurnace = 1;
+					$slotInFurnace = FurnaceInventory::SLOT_FUEL;
 					$itemInFurnace = $destination->getInventory()->getFuel();
 				}
 				if(!$itemInFurnace->isNull()){
@@ -262,11 +260,9 @@ class Hopper extends Transparent{
 			// They prioritise pulling from the fuel slot over the result slot.
 			$item = $origin->getFuel();
 			if($item instanceof Bucket){
-				// ID of the fuel slot
-				$slot = 1;
+				$slot = FurnaceInventory::SLOT_FUEL;
 			}else{
-				// ID of the result slot
-				$slot = 2;
+				$slot = FurnaceInventory::SLOT_RESULT;
 				$item = $origin->getResult();
 				if($item->isNull()){
 					return false;
