@@ -234,6 +234,14 @@ class Block{
 	}
 
 	/**
+	 * Called when an Entity falls on this block.
+	 */
+	public function onEntityFall(Entity $entity, float $fallDistance, Vector3 $fallPos): void
+	{
+
+	}
+
+	/**
 	 * Returns whether random block updates will be done on this block.
 	 */
 	public function ticksRandomly() : bool{

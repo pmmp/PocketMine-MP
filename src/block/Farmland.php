@@ -24,9 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
 
 class Farmland extends Transparent{
 
@@ -111,5 +113,11 @@ class Farmland extends Transparent{
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		return VanillaBlocks::DIRT()->asItem();
+	}
+
+	public function onEntityFall(Entity $entity, float $fallDistance, Vector3 $fallPos) : void{
+		if($fallDistance > 0.99) {
+			$this->getPosition()->getWorld()->setBlock($this->getPosition(), BlockFactory::getInstance()->get(BlockLegacyIds::DIRT, 0));
+		}
 	}
 }
