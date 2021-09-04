@@ -40,6 +40,9 @@ class ItemMergeEvent extends EntityEvent implements Cancellable{
 		$this->entity = $entity;
 	}
 
+	/**
+	 * Returns the merge destination.
+	 */
 	public function getTarget() : ItemEntity{
 		return $this->target;
 	}
