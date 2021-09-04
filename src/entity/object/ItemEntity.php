@@ -39,6 +39,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\player\Player;
 use function max;
+use function var_dump;
 
 class ItemEntity extends Entity{
 
@@ -115,7 +116,9 @@ class ItemEntity extends Entity{
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
 					if($entity instanceof ItemEntity and !$entity->isFlaggedForDespawn()){
 						$ev = new ItemMergeEvent($this, $entity);
-						if(!$this->isMergeable($entity)){
+						$count1 = $entity->item->getCount();
+						$count2 = $this->item->getCount();
+						if(!$this->isMergeable($entity) or $count1 < $count2){
 							$ev->cancel();
 						}
 						$ev->call();
@@ -124,19 +127,10 @@ class ItemEntity extends Entity{
 							continue;
 						}
 
-						$count1 = $this->item->getCount();
-						$count2 = $entity->item->getCount();
-						/**
-						 * @var ItemEntity $old
-						 * @var ItemEntity $new
-						 */
-						[$old, $new] = $count1 <= $count2
-							? [$this, $entity]
-							: [$entity, $this];
-						$new->setStackSize($count1 + $count2);
-						$old->flagForDespawn();
-						$new->setPickupDelay(max($old->getPickupDelay(), $new->getPickupDelay()));
-						$new->setDespawnDelay(max($old->getDespawnDelay(), $new->getDespawnDelay()));
+						$entity->setStackSize($count1 + $count2);
+						$this->flagForDespawn();
+						$entity->pickupDelay = max($entity->pickupDelay, $this->pickupDelay);
+						$entity->despawnDelay = max($entity->despawnDelay, $this->despawnDelay);
 						break;
 					}
 				}
