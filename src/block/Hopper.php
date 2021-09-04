@@ -129,12 +129,12 @@ class Hopper extends Transparent{
 		$origin = $this->position->getWorld()->getTile($this->position->getSide(Facing::UP));
 		//TODO: Not all blocks a hopper can pull from have an inventory (for example: Jukebox).
 		if($origin instanceof Container){
-			$success |= $this->pull($inventory, $origin->getInventory());
+			$success = $this->pull($inventory, $origin->getInventory()) || $success;
 		}else{
-			$success |= $this->pickup($inventory);
+			$success = $this->pickup($inventory) || $success;
 		}
 		// The cooldown is only set back to the default amount of ticks if the hopper has done anything.
-		if((bool) $success){
+		if($success){
 			$tile->setTransferCooldown(TileHopper::DEFAULT_TRANSFER_COOLDOWN);
 		}
 	}
