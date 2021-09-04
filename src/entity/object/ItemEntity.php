@@ -111,23 +111,11 @@ class ItemEntity extends Entity{
 			$period = $this->hasMovementUpdate() ? self::MERGE_CHECK_PERIOD_ON_MOVE : self::MERGE_CHECK_PERIOD;
 			if($this->despawnDelay % $period === 0){
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
-					if($entity instanceof ItemEntity and !$entity->isFlaggedForDespawn()){
-						$ev = new ItemMergeEvent($this, $entity);
-						$count1 = $entity->item->getCount();
-						$count2 = $this->item->getCount();
-						if(!$this->isMergeable($entity) or $count1 < $count2){
-							$ev->cancel();
-						}
-						$ev->call();
+					if(!$entity instanceof ItemEntity or $entity->isFlaggedForDespawn()){
+						continue;
+					}
 
-						if($ev->isCancelled()){
-							continue;
-						}
-
-						$entity->setStackSize($count1 + $count2);
-						$this->flagForDespawn();
-						$entity->pickupDelay = max($entity->pickupDelay, $this->pickupDelay);
-						$entity->despawnDelay = max($entity->despawnDelay, $this->despawnDelay);
+					if($this->tryMerge($entity)){
 						break;
 					}
 				}
@@ -152,6 +140,27 @@ class ItemEntity extends Entity{
 	public function isMergeable(ItemEntity $entity) : bool{
 		$item = $entity->item;
 		return $entity->pickupDelay !== self::NEVER_DESPAWN and $this->item->canStackWith($item) and $this->item->getCount() + $item->getCount() <= $this->item->getMaxStackSize();
+	}
+
+	public function tryMerge(ItemEntity $entity) : bool{
+		$ev = new ItemMergeEvent($this, $entity);
+		$count1 = $entity->item->getCount();
+		$count2 = $this->item->getCount();
+		if(!$this->isMergeable($entity) or $count1 < $count2){
+			$ev->cancel();
+		}
+		$ev->call();
+
+		if($ev->isCancelled()){
+			return false;
+		}
+
+		$entity->setStackSize($count1 + $count2);
+		$this->flagForDespawn();
+		$entity->pickupDelay = max($entity->pickupDelay, $this->pickupDelay);
+		$entity->despawnDelay = max($entity->despawnDelay, $this->despawnDelay);
+
+		return true;
 	}
 
 	protected function tryChangeMovement() : void{
