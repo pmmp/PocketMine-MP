@@ -39,7 +39,6 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\player\Player;
 use function max;
-use function var_dump;
 
 class ItemEntity extends Entity{
 
