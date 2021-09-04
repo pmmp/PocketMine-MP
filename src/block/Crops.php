@@ -112,11 +112,4 @@ abstract class Crops extends Flowable{
 			}
 		}
 	}
-
-	public function onEntityFall(Entity $entity, float $fallDistance, Vector3 $fallPos) : void{
-		$blockBelow = $this->getSide(Facing::DOWN);
-		if($blockBelow->getId() === BlockLegacyIds::FARMLAND){
-			$blockBelow->onEntityFall($entity, $fallDistance, $fallPos);
-		}
-	}
 }

@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\Flowable;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\animation\DeathAnimation;
 use pocketmine\entity\animation\HurtAnimation;
@@ -329,7 +329,11 @@ abstract class Living extends Entity{
 			}
 		}
 
-		$fallBlock->onEntityFall($this, $fallDistance, $fallBlockPos);
+		if ($fallBlock instanceof Flowable ){
+			$fallBlockPos = $fallBlockPos->subtract(0, 1, 0);
+			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
+		}
+		$fallBlock->onEntityFall($this, $fallDistance, $this->getJumpVelocity());
 	}
 
 	/**
