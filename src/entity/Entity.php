@@ -1096,45 +1096,7 @@ abstract class Entity{
 		}else{
 			$this->ySize *= self::STEP_CLIP_MULTIPLIER;
 
-			/*
-			if($this->isColliding){ //With cobweb?
-				$this->isColliding = false;
-				$dx *= 0.25;
-				$dy *= 0.05;
-				$dz *= 0.25;
-				$this->motionX = 0;
-				$this->motionY = 0;
-				$this->motionZ = 0;
-			}
-			*/
-
 			$moveBB = clone $this->boundingBox;
-
-			/*$sneakFlag = $this->onGround and $this instanceof Player;
-
-			if($sneakFlag){
-				for($mov = 0.05; $dx != 0.0 and count($this->world->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox($dx, -1, 0))) === 0; $movX = $dx){
-					if($dx < $mov and $dx >= -$mov){
-						$dx = 0;
-					}elseif($dx > 0){
-						$dx -= $mov;
-					}else{
-						$dx += $mov;
-					}
-				}
-
-				for(; $dz != 0.0 and count($this->world->getCollisionCubes($this, $this->boundingBox->getOffsetBoundingBox(0, -1, $dz))) === 0; $movZ = $dz){
-					if($dz < $mov and $dz >= -$mov){
-						$dz = 0;
-					}elseif($dz > 0){
-						$dz -= $mov;
-					}else{
-						$dz += $mov;
-					}
-				}
-
-				//TODO: big messy loop
-			}*/
 
 			assert(abs($dx) <= 20 and abs($dy) <= 20 and abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
 
