@@ -236,7 +236,7 @@ class Block{
 	/**
 	 * Called when an Entity falls on this block.
 	 */
-	public function onEntityFall(Entity $entity, float $fallDistance, float $jumpVelocity): void{
+	public function onEntityFall(Entity $entity, float $fallDistance): void{
 
 	}
 

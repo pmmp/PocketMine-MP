@@ -28,7 +28,6 @@ use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
-use pocketmine\math\Vector3;
 
 class Farmland extends Transparent{
 
@@ -115,7 +114,7 @@ class Farmland extends Transparent{
 		return VanillaBlocks::DIRT()->asItem();
 	}
 
-	public function onEntityFall(Entity $entity, float $fallDistance, float $jumpVelocity) : void{
+	public function onEntityFall(Entity $entity, float $fallDistance) : void{
 		if($fallDistance > 0.5){
 			$this->getPosition()->getWorld()->setBlock($this->getPosition(), VanillaBlocks::DIRT());
 		}

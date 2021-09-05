@@ -333,7 +333,7 @@ abstract class Living extends Entity{
 			$fallBlockPos = $fallBlockPos->subtract(0, 1, 0);
 			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
 		}
-		$fallBlock->onEntityFall($this, $fallDistance, $this->getJumpVelocity());
+		$fallBlock->onEntityFall($this, $fallDistance);
 	}
 
 	/**
