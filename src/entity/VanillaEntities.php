@@ -42,6 +42,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\RegistryTrait;
 use pocketmine\utils\Utils;
+use function mb_strtoupper;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
