@@ -1018,6 +1018,12 @@ abstract class Entity{
 		);
 	}
 
+	public function getFallDistance() : float{ return $this->fallDistance; }
+
+	public function setFallDistance(float $fallDistance) : void{
+		$this->fallDistance = $fallDistance;
+	}
+
 	public function resetFallDistance() : void{
 		$this->fallDistance = 0.0;
 	}
