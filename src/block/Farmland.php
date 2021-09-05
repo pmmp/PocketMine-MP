@@ -90,7 +90,7 @@ class Farmland extends Transparent{
 	}
 
 	public function onEntityLand(Entity $entity): ?float{
-		if($entity instanceof Living && lcg_value() < $entity->getFallDistance()){
+		if($entity instanceof Living && lcg_value() < $entity->getFallDistance() - 0.5){
 			$ev = new EntityTrampleFarmlandEvent($entity, $this->getPosition()->getWorld()->getBlock($entity->getPosition()->down()));
 			$ev->call();
 			if(!$ev->isCancelled()){
