@@ -262,7 +262,7 @@ abstract class Projectile extends Entity{
 		}
 
 		$this->getWorld()->onEntityMoved($this);
-		$this->checkBlockCollision();
+		$this->checkBlockIntersections();
 
 		Timings::$entityMove->stopTiming();
 	}

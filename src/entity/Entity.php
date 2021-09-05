@@ -632,7 +632,7 @@ abstract class Entity{
 
 		$hasUpdate = false;
 
-		$this->checkBlockCollision();
+		$this->checkBlockIntersections();
 
 		if($this->location->y <= -16 and $this->isAlive()){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10);
@@ -1181,7 +1181,7 @@ abstract class Entity{
 		);
 
 		$this->getWorld()->onEntityMoved($this);
-		$this->checkBlockCollision();
+		$this->checkBlockIntersections();
 		$this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
 		$this->updateFallState($dy, $this->onGround);
 
@@ -1243,7 +1243,7 @@ abstract class Entity{
 		return true;
 	}
 
-	protected function checkBlockCollision() : void{
+	protected function checkBlockIntersections() : void{
 		$vectors = [];
 
 		foreach($this->getBlocksAroundWithEntityInsideActions() as $block){
