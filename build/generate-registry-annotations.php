@@ -42,6 +42,55 @@ if(count($argv) !== 2){
 	die("Provide a path to process");
 }
 
+function value2str($value){
+	if(is_string($value)) return "\"$value\"";
+	elseif(is_bool($value)) return $value ? "true" : "false";
+	elseif(is_null($value)) return "null";
+	elseif(is_array($value)) return "[]"; // todo: array values
+	return (string) $value;
+}
+
+// returns a tuple of (return type, [parameters...])
+function typehintObject(string $currentNamespace, $object) : array{
+	$reflect = new \ReflectionClass($object);
+	while($reflect !== false and $reflect->isAnonymous()){
+		$reflect = $reflect->getParentClass();
+	}
+	if($reflect === false){
+		return ["object", []];
+	}elseif($reflect->getNamespaceName() === $currentNamespace){
+		return [$reflect->getShortName(), []];
+	}elseif(is_callable($object)){
+		$refClosure = new \ReflectionFunction($object);
+		$refClass = new \ReflectionClass($refClosure->getReturnType()->getName());
+		$params = [];
+		foreach($refClosure->getParameters() as $parameter){
+			$paramStr = "";
+			if($parameter->allowsNull()) $paramStr .= "?";
+
+			$typeName = $parameter->getType()->getName();
+			try{
+				$shNameRef = new \ReflectionClass($typeName);
+				$paramStr .= $shNameRef->getShortName();
+			}catch(\ReflectionException $e){
+				$paramStr .= $typeName; // we can't resolve a linear type's shortname... fallback to the given name
+			}
+
+			$paramStr .= " ";
+			if($parameter->isVariadic()) $paramStr .= "...";
+			if($parameter->isPassedByReference()) $paramStr .= "&";
+			$paramStr .= "$" . $parameter->getName();
+			// todo: default values that are constants
+			if($parameter->isDefaultValueAvailable()){
+				$paramStr .= " = " . value2str($parameter->getDefaultValue());
+			}
+			$params[] = $paramStr;
+		}
+		return [$refClass->getShortName(), $params];
+	}
+	return ['\\' . $reflect->getName(), []];
+}
+
 /**
  * @param object[] $members
  */
@@ -54,22 +103,12 @@ function generateMethodAnnotations(string $namespaceName, array $members) : stri
 	$lines[] = " * @generate-registry-docblock";
 	$lines[] = " *";
 
-	static $lineTmpl = " * @method static %2\$s %s()";
+	static $lineTmpl = " * @method static %2\$s %s(%3\$s)";
 	$memberLines = [];
 	foreach($members as $name => $member){
-		$reflect = new \ReflectionClass($member);
-		while($reflect !== false and $reflect->isAnonymous()){
-			$reflect = $reflect->getParentClass();
-		}
-		if($reflect === false){
-			$typehint = "object";
-		}elseif($reflect->getNamespaceName() === $namespaceName){
-			$typehint = $reflect->getShortName();
-		}else{
-			$typehint = '\\' . $reflect->getName();
-		}
+		[$typehint, $args] = typehintObject($namespaceName, $member);
 		$accessor = mb_strtoupper($name);
-		$memberLines[$accessor] = sprintf($lineTmpl, $accessor, $typehint);
+		$memberLines[$accessor] = sprintf($lineTmpl, $accessor, $typehint, implode(", ", $args));
 	}
 	ksort($memberLines, SORT_STRING);
 
