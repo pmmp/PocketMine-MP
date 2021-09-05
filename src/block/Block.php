@@ -563,6 +563,14 @@ class Block{
 	}
 
 	/**
+	 * Called when an entity lands on this block (usually due to falling).
+	 * @return float|null The new vertical velocity of the entity, or null if unchanged.
+	 */
+	public function onEntityLand(Entity $entity) : ?float{
+		return null;
+	}
+
+	/**
 	 * @return AxisAlignedBB[]
 	 */
 	final public function getCollisionBoxes() : array{

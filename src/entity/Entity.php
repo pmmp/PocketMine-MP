@@ -1022,11 +1022,12 @@ abstract class Entity{
 		$this->fallDistance = 0.0;
 	}
 
-	protected function updateFallState(float $distanceThisTick, bool $onGround) : void{
+	protected function updateFallState(float $distanceThisTick, bool $onGround) : ?float{
 		if($onGround){
 			if($this->fallDistance > 0){
-				$this->onHitGround();
+				$newVerticalVelocity = $this->onHitGround();
 				$this->resetFallDistance();
+				return $newVerticalVelocity;
 			}
 		}elseif($distanceThisTick < $this->fallDistance){
 			//we've fallen some distance (distanceThisTick is negative)
@@ -1037,13 +1038,14 @@ abstract class Entity{
 			//reset it so it will be measured starting from the new, higher position
 			$this->fallDistance = 0;
 		}
+		return null;
 	}
 
 	/**
 	 * Called when a falling entity hits the ground.
 	 */
-	protected function onHitGround() : void{
-
+	protected function onHitGround() : ?float{
+		return null;
 	}
 
 	public function getEyeHeight() : float{
@@ -1183,11 +1185,11 @@ abstract class Entity{
 		$this->getWorld()->onEntityMoved($this);
 		$this->checkBlockIntersections();
 		$this->checkGroundState($wantedX, $wantedY, $wantedZ, $dx, $dy, $dz);
-		$this->updateFallState($dy, $this->onGround);
+		$postFallVerticalVelocity = $this->updateFallState($dy, $this->onGround);
 
 		$this->motion = $this->motion->withComponents(
 			$wantedX != $dx ? 0 : null,
-			$wantedY != $dy ? 0 : null,
+			$postFallVerticalVelocity ?? ($wantedY != $dy ? 0 : null),
 			$wantedZ != $dz ? 0 : null
 		);
 
