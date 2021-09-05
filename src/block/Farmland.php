@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -84,6 +86,14 @@ class Farmland extends Transparent{
 			$this->wetness = 7;
 			$this->position->getWorld()->setBlock($this->position, $this, false);
 		}
+	}
+
+	public function onEntityLand(Entity $entity): ?float
+	{
+		if($entity instanceof Living && lcg_value() < $entity->getFallDistance()) {
+			$this->getPosition()->getWorld()->setBlock($this->getPosition(), VanillaBlocks::DIRT(), true);
+		}
+		return null;
 	}
 
 	protected function canHydrate() : bool{
