@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
+use pocketmine\event\entity\EntityTrampleFarmlandEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -88,10 +89,13 @@ class Farmland extends Transparent{
 		}
 	}
 
-	public function onEntityLand(Entity $entity): ?float
-	{
-		if($entity instanceof Living && lcg_value() < $entity->getFallDistance()) {
-			$this->getPosition()->getWorld()->setBlock($this->getPosition(), VanillaBlocks::DIRT(), true);
+	public function onEntityLand(Entity $entity): ?float{
+		if($entity instanceof Living && lcg_value() < $entity->getFallDistance()){
+			$ev = new EntityTrampleFarmlandEvent($entity, $this->getPosition()->getWorld()->getBlock($entity->getPosition()->down()));
+			$ev->call();
+			if(!$ev->isCancelled()){
+				$this->getPosition()->getWorld()->setBlock($this->getPosition(), VanillaBlocks::DIRT());
+			}
 		}
 		return null;
 	}
