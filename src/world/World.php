@@ -1804,7 +1804,7 @@ class World implements ChunkManager{
 		foreach($tx->getBlocks() as [$x, $y, $z, $block]){
 			$block->position($this, $x, $y, $z);
 			foreach($block->getCollisionBoxes() as $collisionBox){
-				if(count($entities = $this->getCollidingEntities($collisionBox)) > 0){
+				if(count($this->getCollidingEntities($collisionBox)) > 0){
 					return false;  //Entity in block
 				}
 			}
