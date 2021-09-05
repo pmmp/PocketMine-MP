@@ -489,6 +489,7 @@ use function assert;
  * @method static SeaLantern SEA_LANTERN()
  * @method static SeaPickle SEA_PICKLE()
  * @method static ShulkerBox SHULKER_BOX()
+ * @method static Slime SLIME()
  * @method static Furnace SMOKER()
  * @method static Opaque SMOOTH_QUARTZ()
  * @method static Slab SMOOTH_QUARTZ_SLAB()
@@ -1054,6 +1055,7 @@ final class VanillaBlocks{
 		self::register("sea_lantern", $factory->get(169, 0));
 		self::register("sea_pickle", $factory->get(411, 0));
 		self::register("shulker_box", $factory->get(205, 0));
+		self::register("slime", $factory->get(165, 0));
 		self::register("smoker", $factory->get(453, 2));
 		self::register("smooth_quartz", $factory->get(155, 3));
 		self::register("smooth_quartz_slab", $factory->get(421, 1));
