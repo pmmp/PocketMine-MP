@@ -1804,7 +1804,7 @@ class World implements ChunkManager{
 		foreach($tx->getBlocks() as [$x, $y, $z, $block]){
 			$block->position($this, $x, $y, $z);
 			foreach($block->getCollisionBoxes() as $collisionBox){
-				if(count($this->getCollidingEntities($collisionBox)) > 0){
+				if(count($this->getNearbyEntities($collisionBox)) > 0){
 					return false;  //Entity in block
 				}
 			}
@@ -1878,12 +1878,12 @@ class World implements ChunkManager{
 	 *
 	 * @return Entity[]
 	 */
-	public function getCollidingEntities(AxisAlignedBB $bb, ?Entity $entity = null) : array{
+	public function getCollidingEntities(AxisAlignedBB $bb, Entity $entity) : array{
 		$nearby = [];
 
-		if($entity === null or $entity->canCollide){
+		if($entity->canCollide){
 			foreach($this->getNearbyEntities($bb, $entity) as $ent){
-				if($ent->canBeCollidedWith() and ($entity === null or $entity->canCollideWith($ent))){
+				if($ent->canBeCollidedWith() and $entity->canCollideWith($ent)){
 					$nearby[] = $ent;
 				}
 			}
