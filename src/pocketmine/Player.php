@@ -1073,7 +1073,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	 * @return void
 	 */
 	public function doFirstSpawn(){
-		if($this->spawned){
+		if($this->spawned || !$this->constructed){
 			return; //avoid player spawning twice (this can only happen on 3.x with a custom malicious client)
 		}
 		$this->spawned = true;
