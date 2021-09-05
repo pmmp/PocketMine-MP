@@ -1882,22 +1882,9 @@ class World implements ChunkManager{
 		$nearby = [];
 
 		if($entity === null or $entity->canCollide){
-			$minX = ((int) floor($bb->minX - 2)) >> 4;
-			$maxX = ((int) floor($bb->maxX + 2)) >> 4;
-			$minZ = ((int) floor($bb->minZ - 2)) >> 4;
-			$maxZ = ((int) floor($bb->maxZ + 2)) >> 4;
-
-			for($x = $minX; $x <= $maxX; ++$x){
-				for($z = $minZ; $z <= $maxZ; ++$z){
-					if(!$this->isChunkLoaded($x, $z)){
-						continue;
-					}
-					foreach($this->getChunk($x, $z)->getEntities() as $ent){
-						/** @var Entity|null $entity */
-						if($ent->canBeCollidedWith() and ($entity === null or ($ent !== $entity and $entity->canCollideWith($ent))) and $ent->boundingBox->intersectsWith($bb)){
-							$nearby[] = $ent;
-						}
-					}
+			foreach($this->getNearbyEntities($bb, $entity) as $ent){
+				if($ent->canBeCollidedWith() and ($entity === null or $entity->canCollideWith($ent))){
+					$nearby[] = $ent;
 				}
 			}
 		}
