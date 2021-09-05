@@ -1058,7 +1058,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return 0;
 	}
 
-	protected function checkGroundState(float $movX, float $movY, float $movZ, float $dx, float $dy, float $dz) : void{
+	protected function checkGroundState(float $wantedX, float $wantedY, float $wantedZ, float $dx, float $dy, float $dz) : void{
 		if($this->isSpectator()){
 			$this->onGround = false;
 		}else{

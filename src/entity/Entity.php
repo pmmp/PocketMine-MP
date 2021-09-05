@@ -1087,9 +1087,9 @@ abstract class Entity{
 
 		Timings::$entityMove->startTiming();
 
-		$movX = $dx;
-		$movY = $dy;
-		$movZ = $dz;
+		$wantedX = $dx;
+		$wantedY = $dy;
+		$wantedZ = $dz;
 
 		if($this->keepMovement){
 			$this->boundingBox->offset($dx, $dy, $dz);
@@ -1108,7 +1108,7 @@ abstract class Entity{
 
 			$moveBB->offset(0, $dy, 0);
 
-			$fallingFlag = ($this->onGround or ($dy != $movY and $movY < 0));
+			$fallingFlag = ($this->onGround or ($dy != $wantedY and $wantedY < 0));
 
 			foreach($list as $bb){
 				$dx = $bb->calculateXOffset($moveBB, $dx);
@@ -1122,13 +1122,13 @@ abstract class Entity{
 
 			$moveBB->offset(0, 0, $dz);
 
-			if($this->stepHeight > 0 and $fallingFlag and ($movX != $dx or $movZ != $dz)){
+			if($this->stepHeight > 0 and $fallingFlag and ($wantedX != $dx or $wantedZ != $dz)){
 				$cx = $dx;
 				$cy = $dy;
 				$cz = $dz;
-				$dx = $movX;
+				$dx = $wantedX;
 				$dy = $this->stepHeight;
-				$dz = $movZ;
+				$dz = $wantedZ;
 
 				$stepBB = clone $this->boundingBox;
 
@@ -1182,13 +1182,13 @@ abstract class Entity{
 
 		$this->getWorld()->onEntityMoved($this);
 		$this->checkBlockIntersections();
-		$this->checkGroundState($movX, $movY, $movZ, $dx, $dy, $dz);
+		$this->checkGroundState($wantedX, $wantedY, $wantedZ, $dx, $dy, $dz);
 		$this->updateFallState($dy, $this->onGround);
 
 		$this->motion = $this->motion->withComponents(
-			$movX != $dx ? 0 : null,
-			$movY != $dy ? 0 : null,
-			$movZ != $dz ? 0 : null
+			$wantedX != $dx ? 0 : null,
+			$wantedY != $dy ? 0 : null,
+			$wantedZ != $dz ? 0 : null
 		);
 
 		//TODO: vehicle collision events (first we need to spawn them!)
@@ -1196,11 +1196,11 @@ abstract class Entity{
 		Timings::$entityMove->stopTiming();
 	}
 
-	protected function checkGroundState(float $movX, float $movY, float $movZ, float $dx, float $dy, float $dz) : void{
-		$this->isCollidedVertically = $movY != $dy;
-		$this->isCollidedHorizontally = ($movX != $dx or $movZ != $dz);
+	protected function checkGroundState(float $wantedX, float $wantedY, float $wantedZ, float $dx, float $dy, float $dz) : void{
+		$this->isCollidedVertically = $wantedY != $dy;
+		$this->isCollidedHorizontally = ($wantedX != $dx or $wantedZ != $dz);
 		$this->isCollided = ($this->isCollidedHorizontally or $this->isCollidedVertically);
-		$this->onGround = ($movY != $dy and $movY < 0);
+		$this->onGround = ($wantedY != $dy and $wantedY < 0);
 	}
 
 	/**
