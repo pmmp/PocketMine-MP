@@ -1200,10 +1200,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->sendPosition($from, $from->yaw, $from->pitch, MovePlayerPacket::MODE_RESET);
 	}
 
-	protected function onHitGround() : void{
-		if(!$this->flying){
-			parent::onHitGround();
-		}
+	protected function calculateFallDamage(float $fallDistance) : float{
+		return $this->flying ? 0 : parent::calculateFallDamage($fallDistance);
 	}
 
 	public function jump() : void{
