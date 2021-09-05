@@ -318,7 +318,7 @@ abstract class Living extends Entity{
 		}else{
 			$fallBlockPos = $this->location->floor();
 			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
-			if($fallBlock->getId() === BlockLegacyIds::AIR){
+			if(count($fallBlock->getCollisionBoxes()) === 0){
 				$fallBlockPos = $fallBlockPos->subtract(0, 1, 0);
 				$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
 			}
