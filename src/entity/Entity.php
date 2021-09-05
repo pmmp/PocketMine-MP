@@ -1025,7 +1025,7 @@ abstract class Entity{
 	protected function updateFallState(float $distanceThisTick, bool $onGround) : void{
 		if($onGround){
 			if($this->fallDistance > 0){
-				$this->fall();
+				$this->onHitGround();
 				$this->resetFallDistance();
 			}
 		}elseif($distanceThisTick < $this->fallDistance){
@@ -1042,7 +1042,7 @@ abstract class Entity{
 	/**
 	 * Called when a falling entity hits the ground.
 	 */
-	public function fall() : void{
+	protected function onHitGround() : void{
 
 	}
 
