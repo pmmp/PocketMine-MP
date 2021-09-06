@@ -30,6 +30,7 @@ use pocketmine\event\entity\EntityTrampleFarmlandEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use function lcg_value;
 
 class Farmland extends Transparent{
 
@@ -89,9 +90,9 @@ class Farmland extends Transparent{
 		}
 	}
 
-	public function onEntityLand(Entity $entity): ?float{
+	public function onEntityLand(Entity $entity) : ?float{
 		if($entity instanceof Living && lcg_value() < $entity->getFallDistance() - 0.5){
-			$ev = new EntityTrampleFarmlandEvent($entity, $this->getPosition()->getWorld()->getBlock($entity->getPosition()->down()));
+			$ev = new EntityTrampleFarmlandEvent($entity, $this);
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->getPosition()->getWorld()->setBlock($this->getPosition(), VanillaBlocks::DIRT());
