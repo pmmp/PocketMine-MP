@@ -152,14 +152,14 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 		}
 
 		$recipes = [];
-		for($i = 1; $i <= 3; ++$i){
-			$input = $this->inventory->getItem($i);
+		foreach([BrewingStandInventory::SLOT_BOTTLE_LEFT, BrewingStandInventory::SLOT_BOTTLE_MIDDLE, BrewingStandInventory::SLOT_BOTTLE_RIGHT] as $slot){
+			$input = $this->inventory->getItem($slot);
 			if($input->isNull()){
 				continue;
 			}
 
 			if(($recipe = $this->position->getWorld()->getServer()->getCraftingManager()->matchBrewingRecipe($input, $this->inventory->getIngredient())) !== null){
-				$recipes[$i] = $recipe;
+				$recipes[$slot] = $recipe;
 			}
 		}
 
@@ -199,8 +199,8 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 				--$this->brewTime;
 
 				if($this->brewTime <= 0){
-					for($i = 1; $i <= 3; ++$i){
-						$input = $this->inventory->getItem($i);
+					foreach([BrewingStandInventory::SLOT_BOTTLE_LEFT, BrewingStandInventory::SLOT_BOTTLE_MIDDLE, BrewingStandInventory::SLOT_BOTTLE_RIGHT] as $slot){
+						$input = $this->inventory->getItem($slot);
 						if($input->isNull()){
 							continue;
 						}
@@ -211,13 +211,13 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 							continue;
 						}
 
-						$ev = new BrewItemEvent($this, $i, $input, $output, $recipe);
+						$ev = new BrewItemEvent($this, $slot, $input, $output, $recipe);
 						$ev->call();
 						if($ev->isCancelled()){
 							continue;
 						}
 
-						$this->inventory->setItem($i, $ev->getOutput());
+						$this->inventory->setItem($slot, $ev->getOutput());
 					}
 
 					$ingredient->pop();

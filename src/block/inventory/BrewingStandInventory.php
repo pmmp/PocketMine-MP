@@ -30,24 +30,30 @@ use pocketmine\world\Position;
 class BrewingStandInventory extends SimpleInventory implements BlockInventory{
 	use BlockInventoryTrait;
 
+	public const SLOT_INGREDIENT = 0;
+	public const SLOT_BOTTLE_LEFT = 1;
+	public const SLOT_BOTTLE_MIDDLE = 2;
+	public const SLOT_BOTTLE_RIGHT = 3;
+	public const SLOT_FUEL = 4;
+
 	public function __construct(Position $holder, int $size = 5){
 		$this->holder = $holder;
 		parent::__construct($size);
 	}
 
 	public function getIngredient() : Item{
-		return $this->getItem(0);
+		return $this->getItem(self::SLOT_INGREDIENT);
 	}
 
 	public function setIngredient(Item $item) : void{
-		$this->setItem(0, $item);
+		$this->setItem(self::SLOT_INGREDIENT, $item);
 	}
 
 	public function getFuel() : Item{
-		return $this->getItem(4);
+		return $this->getItem(self::SLOT_FUEL);
 	}
 
 	public function setFuel(Item $item) : void{
-		$this->setItem(4, $item);
+		$this->setItem(self::SLOT_FUEL, $item);
 	}
 }
