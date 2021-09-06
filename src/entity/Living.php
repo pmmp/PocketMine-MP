@@ -305,8 +305,20 @@ abstract class Living extends Entity{
 		}
 	}
 
-	public function fall(float $fallDistance) : void{
-		$damage = ceil($fallDistance - 3 - (($jumpBoost = $this->effectManager->get(VanillaEffects::JUMP_BOOST())) !== null ? $jumpBoost->getEffectLevel() : 0));
+	protected function calculateFallDamage(float $fallDistance) : float{
+		return ceil($fallDistance - 3 - (($jumpBoost = $this->effectManager->get(VanillaEffects::JUMP_BOOST())) !== null ? $jumpBoost->getEffectLevel() : 0));
+	}
+
+	protected function onHitGround() : ?float{
+		$fallBlockPos = $this->location->floor();
+		$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
+		if(count($fallBlock->getCollisionBoxes()) === 0){
+			$fallBlockPos = $fallBlockPos->down();
+			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
+		}
+		$newVerticalVelocity = $fallBlock->onEntityLand($this);
+
+		$damage = $this->calculateFallDamage($this->fallDistance);
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev);
@@ -315,17 +327,10 @@ abstract class Living extends Entity{
 				new EntityLongFallSound($this) :
 				new EntityShortFallSound($this)
 			);
-		}else{
-			$fallBlockPos = $this->location->floor();
-			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
-			if($fallBlock->getId() === BlockLegacyIds::AIR){
-				$fallBlockPos = $fallBlockPos->subtract(0, 1, 0);
-				$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
-			}
-			if($fallBlock->getId() !== BlockLegacyIds::AIR){
-				$this->broadcastSound(new EntityLandSound($this, $fallBlock));
-			}
+		}elseif($fallBlock->getId() !== BlockLegacyIds::AIR){
+			$this->broadcastSound(new EntityLandSound($this, $fallBlock));
 		}
+		return $newVerticalVelocity;
 	}
 
 	/**

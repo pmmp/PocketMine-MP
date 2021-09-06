@@ -21,29 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\block;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\player\Player;
-use pocketmine\world\Position;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 
-class AnvilInventory extends SimpleInventory implements BlockInventory{
-	use BlockInventoryTrait;
+final class Slime extends Transparent{
 
-	public const SLOT_INPUT = 0;
-	public const SLOT_MATERIAL = 1;
-
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(2);
+	public function getFrictionFactor() : float{
+		return 0.8; //???
 	}
 
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
-
-		foreach($this->getContents() as $item){
-			$who->dropItem($item);
+	public function onEntityLand(Entity $entity) : ?float{
+		if($entity instanceof Living && $entity->isSneaking()){
+			return null;
 		}
-		$this->clearAll();
+		$entity->resetFallDistance();
+		return -$entity->getMotion()->y;
 	}
+
+	//TODO: slime blocks should slow entities walking on them to about 0.4x original speed
 }

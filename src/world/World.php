@@ -75,6 +75,7 @@ use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\LightArray;
@@ -1125,11 +1126,13 @@ class World implements ChunkManager{
 		$this->timings->syncChunkSave->startTiming();
 		try{
 			foreach($this->chunks as $chunkHash => $chunk){
-				if($chunk->isDirty()){
-					self::getXZ($chunkHash, $chunkX, $chunkZ);
-					$this->provider->saveChunk($chunkX, $chunkZ, $chunk);
-					$chunk->clearDirtyFlags();
-				}
+				self::getXZ($chunkHash, $chunkX, $chunkZ);
+				$this->provider->saveChunk($chunkX, $chunkZ, new ChunkData(
+					$chunk,
+					array_map(fn(Entity $e) => $e->saveNBT(), $chunk->getSavableEntities()),
+					array_map(fn(Tile $t) => $t->saveNBT(), $chunk->getTiles()),
+				));
+				$chunk->clearTerrainDirtyFlags();
 			}
 		}finally{
 			$this->timings->syncChunkSave->stopTiming();
@@ -1801,7 +1804,7 @@ class World implements ChunkManager{
 		foreach($tx->getBlocks() as [$x, $y, $z, $block]){
 			$block->position($this, $x, $y, $z);
 			foreach($block->getCollisionBoxes() as $collisionBox){
-				if(count($entities = $this->getCollidingEntities($collisionBox)) > 0){
+				if(count($this->getNearbyEntities($collisionBox)) > 0){
 					return false;  //Entity in block
 				}
 			}
@@ -1875,26 +1878,13 @@ class World implements ChunkManager{
 	 *
 	 * @return Entity[]
 	 */
-	public function getCollidingEntities(AxisAlignedBB $bb, ?Entity $entity = null) : array{
+	public function getCollidingEntities(AxisAlignedBB $bb, Entity $entity) : array{
 		$nearby = [];
 
-		if($entity === null or $entity->canCollide){
-			$minX = ((int) floor($bb->minX - 2)) >> 4;
-			$maxX = ((int) floor($bb->maxX + 2)) >> 4;
-			$minZ = ((int) floor($bb->minZ - 2)) >> 4;
-			$maxZ = ((int) floor($bb->maxZ + 2)) >> 4;
-
-			for($x = $minX; $x <= $maxX; ++$x){
-				for($z = $minZ; $z <= $maxZ; ++$z){
-					if(!$this->isChunkLoaded($x, $z)){
-						continue;
-					}
-					foreach($this->getChunk($x, $z)->getEntities() as $ent){
-						/** @var Entity|null $entity */
-						if($ent->canBeCollidedWith() and ($entity === null or ($ent !== $entity and $entity->canCollideWith($ent))) and $ent->boundingBox->intersectsWith($bb)){
-							$nearby[] = $ent;
-						}
-					}
+		if($entity->canCollide){
+			foreach($this->getNearbyEntities($bb, $entity) as $ent){
+				if($ent->canBeCollidedWith() and $entity->canCollideWith($ent)){
+					$nearby[] = $ent;
 				}
 			}
 		}
@@ -2181,7 +2171,7 @@ class World implements ChunkManager{
 
 		unset($this->blockCache[$chunkHash]);
 		unset($this->changedBlocks[$chunkHash]);
-		$chunk->setDirty();
+		$chunk->setTerrainDirty();
 
 		if(!$this->isChunkInUse($chunkX, $chunkZ)){
 			$this->unloadChunkRequest($chunkX, $chunkZ);
@@ -2443,31 +2433,31 @@ class World implements ChunkManager{
 			return null;
 		}
 
-		$this->chunks[$chunkHash] = $chunk;
+		$this->chunks[$chunkHash] = $chunk->getChunk();
 		unset($this->blockCache[$chunkHash]);
 
 		$this->initChunk($x, $z, $chunk);
 
-		(new ChunkLoadEvent($this, $x, $z, $chunk, false))->call();
+		(new ChunkLoadEvent($this, $x, $z, $this->chunks[$chunkHash], false))->call();
 
 		if(!$this->isChunkInUse($x, $z)){
 			$this->logger->debug("Newly loaded chunk $x $z has no loaders registered, will be unloaded at next available opportunity");
 			$this->unloadChunkRequest($x, $z);
 		}
 		foreach($this->getChunkListeners($x, $z) as $listener){
-			$listener->onChunkLoaded($x, $z, $chunk);
+			$listener->onChunkLoaded($x, $z, $this->chunks[$chunkHash]);
 		}
 
 		$this->timings->syncChunkLoad->stopTiming();
 
-		return $chunk;
+		return $this->chunks[$chunkHash];
 	}
 
-	private function initChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
-		if($chunk->NBTentities !== null){
+	private function initChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{
+		if(count($chunkData->getEntityNBT()) !== 0){
 			$this->timings->syncChunkLoadEntities->startTiming();
 			$entityFactory = EntityFactory::getInstance();
-			foreach($chunk->NBTentities as $k => $nbt){
+			foreach($chunkData->getEntityNBT() as $k => $nbt){
 				try{
 					$entity = $entityFactory->createFromData($this, $nbt);
 				}catch(NbtDataException $e){
@@ -2489,14 +2479,13 @@ class World implements ChunkManager{
 				//here, because entities currently add themselves to the world
 			}
 
-			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_ENTITIES, true);
-			$chunk->NBTentities = null;
 			$this->timings->syncChunkLoadEntities->stopTiming();
 		}
-		if($chunk->NBTtiles !== null){
+
+		if(count($chunkData->getTileNBT()) !== 0){
 			$this->timings->syncChunkLoadTileEntities->startTiming();
 			$tileFactory = TileFactory::getInstance();
-			foreach($chunk->NBTtiles as $k => $nbt){
+			foreach($chunkData->getTileNBT() as $k => $nbt){
 				try{
 					$tile = $tileFactory->createFromData($this, $nbt);
 				}catch(NbtDataException $e){
@@ -2513,8 +2502,6 @@ class World implements ChunkManager{
 				}
 			}
 
-			$chunk->setDirtyFlag(Chunk::DIRTY_FLAG_TILES, true);
-			$chunk->NBTtiles = null;
 			$this->timings->syncChunkLoadTileEntities->stopTiming();
 		}
 	}
@@ -2561,10 +2548,14 @@ class World implements ChunkManager{
 				return false;
 			}
 
-			if($trySave and $this->getAutoSave() and $chunk->isDirty()){
+			if($trySave and $this->getAutoSave()){
 				$this->timings->syncChunkSave->startTiming();
 				try{
-					$this->provider->saveChunk($x, $z, $chunk);
+					$this->provider->saveChunk($x, $z, new ChunkData(
+						$chunk,
+						array_map(fn(Entity $e) => $e->saveNBT(), $chunk->getSavableEntities()),
+						array_map(fn(Tile $t) => $t->saveNBT(), $chunk->getTiles()),
+					));
 				}finally{
 					$this->timings->syncChunkSave->stopTiming();
 				}

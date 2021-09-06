@@ -31,6 +31,7 @@ use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\SubChunk;
@@ -49,7 +50,7 @@ trait LegacyAnvilChunkTrait{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function deserializeChunk(string $data) : Chunk{
+	protected function deserializeChunk(string $data) : ChunkData{
 		$decompressed = @zlib_decode($data);
 		if($decompressed === false){
 			throw new CorruptedChunkException("Failed to decompress chunk NBT");
@@ -89,12 +90,14 @@ trait LegacyAnvilChunkTrait{
 
 		$result = new Chunk(
 			$subChunks,
-			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
-			($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
 			$biomeArray
 		);
 		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
-		return $result;
+		return new ChunkData(
+			$result,
+			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
+			($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
+		);
 	}
 
 	abstract protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk;

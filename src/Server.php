@@ -93,6 +93,8 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
+use pocketmine\utils\NotCloneable;
+use pocketmine\utils\NotSerializable;
 use pocketmine\utils\Process;
 use pocketmine\utils\Promise;
 use pocketmine\utils\Terminal;
@@ -160,6 +162,9 @@ use const ZLIB_ENCODING_GZIP;
  * The class that manages everything
  */
 class Server{
+	use NotCloneable;
+	use NotSerializable;
+
 	public const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
 	public const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
@@ -1666,14 +1671,5 @@ class Server{
 		}else{
 			$this->nextTick += 0.05;
 		}
-	}
-
-	/**
-	 * Called when something attempts to serialize the server instance.
-	 *
-	 * @throws \BadMethodCallException because Server instances cannot be serialized
-	 */
-	public function __sleep(){
-		throw new \BadMethodCallException("Cannot serialize Server instance");
 	}
 }

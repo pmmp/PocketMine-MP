@@ -21,29 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\utils;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\player\Player;
-use pocketmine\world\Position;
+trait NotSerializable{
 
-class AnvilInventory extends SimpleInventory implements BlockInventory{
-	use BlockInventoryTrait;
-
-	public const SLOT_INPUT = 0;
-	public const SLOT_MATERIAL = 1;
-
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(2);
+	/** @return mixed[] */
+	final public function __serialize() : array{
+		throw new \LogicException("Serialization of " . static::class . " objects is not allowed");
 	}
 
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
-
-		foreach($this->getContents() as $item){
-			$who->dropItem($item);
-		}
-		$this->clearAll();
+	/** @param mixed[] $data */
+	final public function __unserialize(array $data) : void{
+		throw new \LogicException("Unserialization of " . static::class . " objects is not allowed");
 	}
 }

@@ -38,9 +38,14 @@ use function strtolower;
 use function trim;
 
 /**
- * This class fills in as a substitute for all the stuff that used to make ItemFactory::fromString()
- * work. Since legacy item IDs are on their way out, we can't keep using their constants as stringy
- * IDs (especially not considering the unnoticed BC-break potential posed by such a stupid idea).
+ * @deprecated
+ * @see StringToItemParser
+ *
+ * This class replaces the functionality that used to be provided by ItemFactory::fromString(), but in a more dynamic
+ * way.
+ * Avoid using this wherever possible. Unless you need to parse item strings containing meta (e.g. "dye:4", "351:4") or
+ * item IDs (e.g. "351"), you should prefer the newer StringToItemParser, which is much more user-friendly, more
+ * flexible, and also supports registering custom aliases for any item in any state.
  */
 final class LegacyStringToItemParser{
 	use SingletonTrait;

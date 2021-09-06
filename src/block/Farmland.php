@@ -24,9 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
+use pocketmine\event\entity\EntityTrampleFarmlandEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use function lcg_value;
 
 class Farmland extends Transparent{
 
@@ -84,6 +88,17 @@ class Farmland extends Transparent{
 			$this->wetness = 7;
 			$this->position->getWorld()->setBlock($this->position, $this, false);
 		}
+	}
+
+	public function onEntityLand(Entity $entity) : ?float{
+		if($entity instanceof Living && lcg_value() < $entity->getFallDistance() - 0.5){
+			$ev = new EntityTrampleFarmlandEvent($entity, $this);
+			$ev->call();
+			if(!$ev->isCancelled()){
+				$this->getPosition()->getWorld()->setBlock($this->getPosition(), VanillaBlocks::DIRT());
+			}
+		}
+		return null;
 	}
 
 	protected function canHydrate() : bool{

@@ -21,29 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\event\entity;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\player\Player;
-use pocketmine\world\Position;
+use pocketmine\block\Block;
+use pocketmine\entity\Living;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 
-class AnvilInventory extends SimpleInventory implements BlockInventory{
-	use BlockInventoryTrait;
+/**
+ * @phpstan-extends EntityEvent<Living>
+ */
+class EntityTrampleFarmlandEvent extends EntityEvent implements Cancellable{
+	use CancellableTrait;
 
-	public const SLOT_INPUT = 0;
-	public const SLOT_MATERIAL = 1;
+	/** @var Block */
+	private $block;
 
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(2);
+	public function __construct(Living $entity, Block $block){
+		$this->entity = $entity;
+		$this->block = $block;
 	}
 
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
-
-		foreach($this->getContents() as $item){
-			$who->dropItem($item);
-		}
-		$this->clearAll();
+	public function getBlock() : Block{
+		return $this->block;
 	}
 }
