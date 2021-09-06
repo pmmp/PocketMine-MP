@@ -48,11 +48,13 @@ if(count($argv) !== 2){
 }
 
 function value2str($value){
-	if(is_string($value)) return "\"$value\"";
-	elseif(is_bool($value)) return $value ? "true" : "false";
-	elseif(is_null($value)) return "null";
-	elseif(is_array($value)) return "[]"; // todo: array values
-	return (string) $value;
+	return match(true){
+		is_string($value) => \"$value\"",
+		is_bool($value) => $value ? "true" : "false",
+		is_null($value) => "null",
+		is_array($value) => "[]", // todo: array values
+		default => (string) $value;
+	};
 }
 
 // returns a tuple of (return type, [parameters...])
