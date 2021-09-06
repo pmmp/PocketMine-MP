@@ -1029,13 +1029,7 @@ abstract class Entity{
 	}
 
 	protected function updateFallState(float $distanceThisTick, bool $onGround) : ?float{
-		if($onGround){
-			if($this->fallDistance > 0){
-				$newVerticalVelocity = $this->onHitGround();
-				$this->resetFallDistance();
-				return $newVerticalVelocity;
-			}
-		}elseif($distanceThisTick < $this->fallDistance){
+		if($distanceThisTick < $this->fallDistance){
 			//we've fallen some distance (distanceThisTick is negative)
 			//or we ascended back towards where fall distance was measured from initially (distanceThisTick is positive but less than existing fallDistance)
 			$this->fallDistance -= $distanceThisTick;
@@ -1043,6 +1037,11 @@ abstract class Entity{
 			//we ascended past the apex where fall distance was originally being measured from
 			//reset it so it will be measured starting from the new, higher position
 			$this->fallDistance = 0;
+		}
+		if($onGround && $this->fallDistance > 0){
+			$newVerticalVelocity = $this->onHitGround();
+			$this->resetFallDistance();
+			return $newVerticalVelocity;
 		}
 		return null;
 	}
