@@ -476,38 +476,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_STOP_USAGE, []);
 	}
 
-	public static function pocketmine_commands_tempban_success(Translatable|string $param0) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_PLAYER_SUCCESS, [
-			0 => $param0,
-		]);
-	}
-
-	public static function pocketmine_commands_tempban_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_PLAYER_USAGE, []);
-	}
-
-	public static function pocketmine_commands_tempbanip_success(Translatable|string $param0) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_IP_SUCCESS, [
-			0 => $param0,
-		]);
-	}
-
-	public static function pocketmine_commands_tempbanip_success_players(Translatable|string $param0, Translatable|string $param1) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_IP_SUCCESS_PLAYERS, [
-			0 => $param0,
-			1 => $param1,
-		]);
-	}
-
-
-	public static function pocketmine_commands_tempbanip_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_IP_USAGE, []);
-	}
-
-	public static function pocketmine_commands_tempbanip_invalid() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_IP_INVALID, []);
-	}
-
 	public static function commands_time_added(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_TIME_ADDED, [
 			0 => $param0,

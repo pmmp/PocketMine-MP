@@ -24,7 +24,7 @@ class TempBanIpCommand extends Command{
 			KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_IP_DESCRIPTION,
 			KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_IP_USAGE
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_TEMP_BAN_IP);
+		$this->setPermission(DefaultPermissionNames::COMMAND_TEMPBAN_IP);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

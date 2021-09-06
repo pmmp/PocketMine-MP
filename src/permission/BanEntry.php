@@ -153,14 +153,9 @@ class BanEntry{
 		return $datetime;
 	}
 
-	/**
-	 * @throws \RuntimeException
-	 */
-	public static function stringToDateTime(string $str, ?int $baseTimestamp = null) : \DateTime{
+	public static function stringToDateTime(string $str, ?int $baseTimestamp = null) : ?\DateTime{
 		$timestamp = strtotime($str, $baseTimestamp);
-		if(!$timestamp)
-			throw new \RuntimeException("Corrupted date/time: " . $timestamp);
-		return self::parseDate(date(self::$format, $timestamp));
+		return $timestamp !== false ? self::parseDate(date(self::$format, $timestamp)) : null;
 	}
 
 	/**

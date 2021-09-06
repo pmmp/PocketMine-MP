@@ -239,14 +239,6 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_STATUS_USAGE = "pocketmine.command.status.usage";
 	public const POCKETMINE_COMMAND_STOP_DESCRIPTION = "pocketmine.command.stop.description";
 	public const POCKETMINE_COMMAND_TELL_DESCRIPTION = "pocketmine.command.tell.description";
-	public const POCKETMINE_COMMAND_TEMPBAN_PLAYER_DESCRIPTION = "pocketmine.command.tempban.player.description";
-	public const POCKETMINE_COMMAND_TEMPBAN_PLAYER_USAGE = "pocketmine.command.tempban.usage";
-	public const POCKETMINE_COMMAND_TEMPBAN_PLAYER_SUCCESS = "pocketmine.command.tempban.success";
-	public const POCKETMINE_COMMAND_TEMPBAN_IP_DESCRIPTION = "pocketmine.command.tempban.ip.description";
-	public const POCKETMINE_COMMAND_TEMPBAN_IP_USAGE = "pocketmine.command.tempbanip.usage";
-	public const POCKETMINE_COMMAND_TEMPBAN_IP_INVALID = "pocketmine.command.tempbanip.invalid";
-	public const POCKETMINE_COMMAND_TEMPBAN_IP_SUCCESS = "pocketmine.command.tempbanip.success";
-	public const POCKETMINE_COMMAND_TEMPBAN_IP_SUCCESS_PLAYERS = "pocketmine.command.tempbanip.success.players";
 	public const POCKETMINE_COMMAND_TIME_DESCRIPTION = "pocketmine.command.time.description";
 	public const POCKETMINE_COMMAND_TIME_USAGE = "pocketmine.command.time.usage";
 	public const POCKETMINE_COMMAND_TIMINGS_ALREADYENABLED = "pocketmine.command.timings.alreadyEnabled";

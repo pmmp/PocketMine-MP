@@ -23,7 +23,7 @@ class TempBanCommand extends Command{
 			KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_PLAYER_DESCRIPTION,
 			KnownTranslationKeys::POCKETMINE_COMMAND_TEMPBAN_PLAYER_USAGE
 		);
-		$this->setPermission(DefaultPermissionNames::COMMAND_TEMP_BAN_PLAYER);
+		$this->setPermission(DefaultPermissionNames::COMMAND_TEMPBAN_PLAYER);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
