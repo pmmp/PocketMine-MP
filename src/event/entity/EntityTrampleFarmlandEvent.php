@@ -25,16 +25,20 @@ namespace pocketmine\event\entity;
 
 use pocketmine\block\Block;
 use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 
+/**
+ * @phpstan-extends EntityEvent<Living>
+ */
 class EntityTrampleFarmlandEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
 	/** @var Block */
 	private $block;
 
-	public function __construct(Entity $entity, Block $block){
+	public function __construct(Living $entity, Block $block){
 		$this->entity = $entity;
 		$this->block = $block;
 	}
@@ -42,5 +46,4 @@ class EntityTrampleFarmlandEvent extends EntityEvent implements Cancellable{
 	public function getBlock() : Block{
 		return $this->block;
 	}
-
 }
