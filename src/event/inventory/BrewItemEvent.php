@@ -33,27 +33,25 @@ use pocketmine\item\Item;
 class BrewItemEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var BrewingStand */
-	private $brewingStand;
-
-	/** @var Item */
-	private $input;
-	/** @var Item */
-	private $output;
-
-	/** @var BrewingRecipe */
-	private $recipe;
-
-	public function __construct(BrewingStand $brewingStand, Item $input, Item $output, BrewingRecipe $recipe){
+	public function __construct(
+		private BrewingStand $brewingStand,
+		private int $slot,
+		private Item $input,
+		private Item $output,
+		private BrewingRecipe $recipe
+	){
 		parent::__construct($brewingStand->getBlock());
-		$this->brewingStand = $brewingStand;
-		$this->input = $input;
-		$this->output = $output;
-		$this->recipe = $recipe;
 	}
 
 	public function getBrewingStand() : BrewingStand{
 		return $this->brewingStand;
+	}
+
+	/**
+	 * Returns slot of the item, which is being brewed
+	 */
+	public function getSlot() : int{
+		return $this->slot;
 	}
 
 	public function getInput() : Item{

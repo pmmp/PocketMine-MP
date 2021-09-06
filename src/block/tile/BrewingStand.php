@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\block\inventory\BrewingStandInventory;
+use pocketmine\crafting\BrewingRecipe;
 use pocketmine\event\inventory\BrewingFuelUseEvent;
 use pocketmine\event\inventory\BrewItemEvent;
 use pocketmine\inventory\CallbackInventoryListener;
@@ -36,6 +37,7 @@ use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\player\Player;
 use pocketmine\world\World;
 use function array_map;
+use function count;
 
 class BrewingStand extends Spawnable implements Container, Nameable{
 	use NameableTrait {
@@ -51,15 +53,11 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 	private const TAG_REMAINING_FUEL_TIME = "Fuel"; //TAG_Byte
 	private const TAG_REMAINING_FUEL_TIME_PE = "FuelAmount"; //TAG_Short
 
-	/** @var BrewingStandInventory */
-	private $inventory;
+	private BrewingStandInventory $inventory;
 
-	/** @var int */
-	private $brewTime = 0;
-	/** @var int */
-	private $maxFuelTime = 0;
-	/** @var int */
-	private $remainingFuelTime = 0;
+	private int $brewTime = 0;
+	private int $maxFuelTime = 0;
+	private int $remainingFuelTime = 0;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
@@ -129,9 +127,12 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 
 	private function checkFuel(Item $item) : void{
 		$ev = new BrewingFuelUseEvent($this);
-		$ev->call();
+		if(!$item->equals(VanillaItems::BLAZE_POWDER(), true, false)) {
+			$ev->cancel();
+		}
 
-		if($ev->isCancelled()) {
+		$ev->call();
+		if($ev->isCancelled()){
 			return;
 		}
 
@@ -141,23 +142,28 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 		$this->maxFuelTime = $this->remainingFuelTime = $ev->getFuelTime();
 	}
 
-	private function canBrew() : bool{
+	/**
+	 * @return BrewingRecipe[]
+	 * @phpstan-return array<int, BrewingRecipe>
+	 */
+	private function getBrewableRecipes() : array{
 		if($this->inventory->getIngredient()->isNull()){
-			return false;
+			return [];
 		}
 
+		$recipes = [];
 		for($i = 1; $i <= 3; ++$i){
 			$input = $this->inventory->getItem($i);
-			if($input->isNull()) {
+			if($input->isNull()){
 				continue;
 			}
 
-			if($this->position->getWorld()->getServer()->getCraftingManager()->matchBrewingRecipe($input, $this->inventory->getIngredient()) !== null){
-				return true;
+			if(($recipe = $this->position->getWorld()->getServer()->getCraftingManager()->matchBrewingRecipe($input, $this->inventory->getIngredient())) !== null){
+				$recipes[$i] = $recipe;
 			}
 		}
 
-		return false;
+		return $recipes;
 	}
 
 	public function onUpdate() : bool{
@@ -176,15 +182,16 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 		$fuel = $this->inventory->getFuel();
 		$ingredient = $this->inventory->getIngredient();
 
-		$canBrew = $this->canBrew();
+		$recipes = $this->getBrewableRecipes();
+		$canBrew = count($recipes) !== 0;
 
-		if($this->remainingFuelTime <= 0 and $canBrew and $fuel->equals(VanillaItems::BLAZE_POWDER(), true, false)) {
+		if($this->remainingFuelTime <= 0 and $canBrew){
 			$this->checkFuel($fuel);
 		}
 
 		if($this->remainingFuelTime > 0){
 			if($canBrew){
-				if($this->brewTime == 0){
+				if($this->brewTime === 0){
 					$this->brewTime = self::BREW_TIME;
 					--$this->remainingFuelTime;
 				}
@@ -200,13 +207,13 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 
 						$recipe = $this->position->getWorld()->getServer()->getCraftingManager()->matchBrewingRecipe($input, $ingredient);
 						$output = $recipe?->getOutputFor($input);
-						if($output === null) {
+						if($output === null){
 							continue;
 						}
 
-						$ev = new BrewItemEvent($this, $input, $output, $recipe);
+						$ev = new BrewItemEvent($this, $i, $input, $output, $recipe);
 						$ev->call();
-						if($ev->isCancelled()) {
+						if($ev->isCancelled()){
 							continue;
 						}
 

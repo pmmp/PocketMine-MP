@@ -31,14 +31,12 @@ use pocketmine\event\CancellableTrait;
 class BrewingFuelUseEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var BrewingStand */
-	private $brewingStand;
-	/** @var int */
-	private $fuelTime = 20;
+	private int $fuelTime = 20;
 
-	public function __construct(BrewingStand $brewingStand){
+	public function __construct(
+		private BrewingStand $brewingStand
+	){
 		parent::__construct($brewingStand->getBlock());
-		$this->brewingStand = $brewingStand;
 	}
 
 	public function getBrewingStand() : BrewingStand{

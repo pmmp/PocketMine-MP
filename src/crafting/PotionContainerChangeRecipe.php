@@ -28,17 +28,14 @@ use pocketmine\item\ItemFactory;
 
 class PotionContainerChangeRecipe implements BrewingRecipe{
 
-	/** @var int */
-	private $inputItemId;
-	/** @var Item */
-	private $ingredient;
-	/** @var int */
-	private $outputItemId;
+	private Item $ingredient;
 
-	public function __construct(int $inputItemId, Item $ingredient, int $outputItemId) {
-		$this->inputItemId = $inputItemId;
+	public function __construct(
+		private int $inputItemId,
+		Item $ingredient,
+		private int $outputItemId
+	){
 		$this->ingredient = clone $ingredient;
-		$this->outputItemId = $outputItemId;
 	}
 
 	public function getInputItemId() : int{
@@ -54,6 +51,6 @@ class PotionContainerChangeRecipe implements BrewingRecipe{
 	}
 
 	public function getOutputFor(Item $input) : ?Item{
-		return $input->getId() == $this->getInputItemId() ? ItemFactory::getInstance()->get($this->getOutputItemId(), $input->getMeta()) : null;
+		return $input->getId() === $this->getInputItemId() ? ItemFactory::getInstance()->get($this->getOutputItemId(), $input->getMeta()) : null;
 	}
 }
