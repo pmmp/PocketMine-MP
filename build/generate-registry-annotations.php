@@ -49,7 +49,7 @@ if(count($argv) !== 2){
 
 function value2str($value){
 	return match(true){
-		is_string($value) => \"$value\"",
+		is_string($value) => "\"$value\"",
 		is_bool($value) => $value ? "true" : "false",
 		is_null($value) => "null",
 		is_array($value) => "[]", // todo: array values
