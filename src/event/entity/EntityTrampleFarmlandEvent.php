@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\event\entity;
 
 use pocketmine\block\Block;
-use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
