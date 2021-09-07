@@ -30,8 +30,10 @@ use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
 use pocketmine\Player;
+use pocketmine\scheduler\ClosureTask;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
+use pocketmine\utils\Internet;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
 use raklib\RakLib;
@@ -39,6 +41,7 @@ use raklib\server\RakLibServer;
 use raklib\server\ServerHandler;
 use raklib\server\ServerInstance;
 use raklib\utils\InternetAddress;
+use Zedstar16\_Api\OwnageAPI;
 use function addcslashes;
 use function base64_encode;
 use function get_class;
@@ -169,12 +172,36 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 					$player->handleDataPacket($pk);
 				}
 			}catch(\Throwable $e){
-				$logger = $this->server->getLogger();
-				$logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . ": " . base64_encode($packet->buffer));
-				$logger->logException($e);
+                $logger = $this->server->getLogger();
+                $logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . ": " . base64_encode($packet->buffer));
+                $logger->logException($e);
 
-				$player->close($player->getLeaveMessage(), "Internal server error");
-				$this->interface->blockAddress($address, 5);
+                $lines = explode("\n", $e->getTraceAsString());
+                $new = [];
+                foreach ($lines as $key => $line) {
+                    $new[] = str_replace(["/home/servers/", "PocketMine-MP.phar"], "", $line);
+                }
+               /* $urls = [
+                    19134 => "https://discord.com/api/webhooks/",
+                    19136 => "https://discord.com/api/webhooks/",
+                    19135 => "https://discord.com/api/webhooks/",
+                    19169 => "https://discord.com/api/webhooks/",
+                ];
+                $url = $urls[Server::getInstance()->getPort(
+                    )] ?? "https://discord.com/api/webhooks/";
+                $timestamp = new \DateTime();
+                $timestamp->setTimezone(new \DateTimeZone("UTC"));
+                $webhookdata = [];
+                $webhookdata['content'] = "";
+                $webhookdata['embeds'][] = [
+                    'color' => 0xff0000,
+                    'timestamp' => $timestamp->format("Y-m-d\TH:i:s.v\Z"),
+                    'title' => $e->getMessage(),
+                    'description' => substr(implode("\n", $new), 0, 2000)
+                ];
+                Internet::postURL($url, json_encode($webhookdata), 1, ["Content-Type: application/json"]);
+               */
+                $player->sendMessage("§b> §cAn internal server error occurred");
 			}
 		}
 	}
