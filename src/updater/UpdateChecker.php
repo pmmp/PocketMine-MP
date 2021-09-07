@@ -151,7 +151,7 @@ class UpdateChecker{
 			return;
 		}
 
-		if($currentVersion->compare($newVersion) > 0 and ($currentVersion->getFullVersion() !== $newVersion->getFullVersion() or $currentVersion->getBuild() > 0)){
+		if($currentVersion->getBuild() > 0 && $currentVersion->compare($newVersion) > 0){
 			$this->updateInfo = $updateInfo;
 		}
 	}
