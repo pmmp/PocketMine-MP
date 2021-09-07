@@ -1573,10 +1573,9 @@ class Server{
 
 	private function titleTick() : void{
 		Timings::$titleTick->startTiming();
-		$d = Process::getRealMemoryUsage();
 
 		$u = Process::getAdvancedMemoryUsage();
-		$usage = sprintf("%g/%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($d[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Process::getThreadCount());
+		$usage = sprintf("%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Process::getThreadCount());
 
 		$online = count($this->playerList);
 		$connecting = $this->network->getConnectionCount() - $online;
