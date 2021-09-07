@@ -24,10 +24,12 @@ parameters:
 	scanDirectories:
 		- tests/plugins/TesterPlugin
 	scanFiles:
+		- build/generate-build-info-json.php
 		- build/make-release.php
 		- build/server-phar.php
 		- src/pocketmine/PocketMine.php
 	paths:
+		- build/generate-build-info-json.php
 		- build/make-release.php
 		- build/server-phar.php
 		- src
