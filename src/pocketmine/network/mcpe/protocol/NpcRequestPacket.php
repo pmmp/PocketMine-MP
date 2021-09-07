@@ -46,7 +46,7 @@ class NpcRequestPacket extends DataPacket{
 	public $commandString;
 	/** @var int */
 	public $actionType;
-	public string $sceneName;
+	public  $sceneName;
 
 	protected function decodePayload(){
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
