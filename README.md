@@ -1,3 +1,11 @@
+## Ownage PM Fork, Why?
+- Production servers can't be frequently dealing with server crashes as that will affect the playerbase, so instead we prevent the crash from happening and log it to patch later
+- Internal Server Error irritates players so that's changed to a message rather than a kick. It logs via a webhook to be patched later
+- Downgraded server php version to 7.3 as a full update of all the Ownage plugins cannot be done yet so this will suffice for now
+- Added Compatibility with older plugins that used to break when using `ItemBlock::write()`
+
+- If for whatever godforsaken reason you want to use this be aware that server crashes & internal server error kicks happen for a reason and disregarding them could lead to server data corruption
+
 <p align="center">
 	<a href="https://pmmp.io"><img src="http://cdn.pocketmine.net/img/PocketMine-MP-h.png"></img></a><br>
 	<b>A highly customisable, open source server software for Minecraft: Bedrock Edition written in PHP</b>
