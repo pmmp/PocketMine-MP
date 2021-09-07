@@ -41,8 +41,8 @@ class ApiVersionTest extends TestCase{
 		yield ["4.0.0", "3.0.0", false];
 		yield ["3.0.0", "3.0.1", false]; //bug fix patch required
 		yield ["3.0.1", "3.0.0", true];
-		yield ["3.0.0-ALPHA1", "3.0.0-ALPHA2", false];
-		yield ["3.0.0-ALPHA2", "3.0.0-ALPHA1", false];
+		yield ["3.0.0-ALPHA1", "3.0.0-ALPHA2", true];
+		yield ["3.0.0-ALPHA2", "3.0.0-ALPHA1", true]; //at the time these weren't actually compatible, but these are just test samples.
 		yield ["3.0.0-ALPHA1", "3.0.0-ALPHA1", true];
 		yield ["3.0.0-ALPHA1", "4.0.0-ALPHA1", false];
 	}
