@@ -315,6 +315,8 @@ class Server{
 	private $dataPath;
 	/** @var string */
 	private $pluginPath;
+	/** @var array  */
+	private $crashes = [];
 
 	/**
 	 * @var string[]
@@ -1991,7 +1993,19 @@ class Server{
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.donate", [TextFormat::AQUA . "https://patreon.com/pocketminemp" . TextFormat::RESET]));
 		$this->logger->info($this->getLanguage()->translateString("pocketmine.server.startFinished", [round(microtime(true) - \pocketmine\START_TIME, 3)]));
 
-		$this->tickProcessor();
+		while ($this->isRunning()) {
+			try {
+				$this->tickProcessor();
+			}catch (\Throwable $err){
+				$this->exceptionHandler($err);
+				$this->crashes[] = time();
+				if(count(array_filter($this->crashes, function ($time){
+						return $time > time()-10;
+					})) > 5){
+					$this->forceShutdown();
+				}
+			}
+		}
 		$this->forceShutdown();
 	}
 
