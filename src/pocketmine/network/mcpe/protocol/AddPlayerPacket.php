@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\DeviceOS;
@@ -129,6 +130,9 @@ class AddPlayerPacket extends DataPacket{
 		$this->putLFloat($this->pitch);
 		$this->putLFloat($this->yaw);
 		$this->putLFloat($this->headYaw ?? $this->yaw);
+        if ($this->item instanceof Item) {
+            $this->item = ItemStackWrapper::legacy($this->item);
+        }
 		$this->item->write($this);
 		$this->putEntityMetadata($this->metadata);
 
