@@ -85,6 +85,7 @@ function main(array $argv) : void{
 		));
 	}
 
+	echo "About to tag version $currentVer. Next version will be $nextVer.\n";
 	echo "please add appropriate notes to the changelog and press enter...";
 	fgets(STDIN);
 	system('git add "' . dirname(__DIR__) . '/changelogs"');

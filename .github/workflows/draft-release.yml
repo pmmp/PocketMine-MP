@@ -68,7 +68,7 @@ jobs:
           done
 
       - name: Build PocketMine-MP.phar
-        run: composer make-server
+        run: php -dphar.readonly=0 build/server-phar.php --git ${{ github.sha }}
 
       - name: Get PocketMine-MP release version
         id: get-pm-version
