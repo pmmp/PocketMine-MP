@@ -145,11 +145,11 @@ class SubChunk{
 		}
 		$this->blockLayers = array_values($this->blockLayers);
 
-		if($this->skyLight !== null){
-			$this->skyLight->collectGarbage();
+		if($this->skyLight !== null && $this->skyLight->isUniform(0)){
+			$this->skyLight = null;
 		}
-		if($this->blockLight !== null){
-			$this->blockLight->collectGarbage();
+		if($this->blockLight !== null && $this->blockLight->isUniform(0)){
+			$this->blockLight = null;
 		}
 	}
 
