@@ -39,10 +39,10 @@ jobs:
         run: |
           BUILD_NUMBER=2000+$GITHUB_RUN_NUMBER #to stay above jenkins
           echo "Build number: $BUILD_NUMBER"
-          sed -i "s/const BUILD_NUMBER = 0/const BUILD_NUMBER = ${BUILD_NUMBER}/" src/pocketmine/VersionInfo.php
+          sed -i "s/const BUILD_NUMBER = 0/const BUILD_NUMBER = ${BUILD_NUMBER}/" src/VersionInfo.php
 
       - name: Minify BedrockData JSON files
-        run: php src/pocketmine/resources/vanilla/.minify_json.php
+        run: php resources/vanilla/.minify_json.php
 
       - name: Run preprocessor
         run: |
@@ -73,10 +73,10 @@ jobs:
       - name: Get PocketMine-MP release version
         id: get-pm-version
         run: |
-          echo ::set-output name=PM_VERSION::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\BASE_VERSION;')
+          echo ::set-output name=PM_VERSION::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BASE_VERSION;')
           echo ::set-output name=MCPE_VERSION::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\network\mcpe\protocol\ProtocolInfo::MINECRAFT_VERSION_NETWORK;')
-          echo ::set-output name=PM_VERSION_SHORT::$(php -r 'require "vendor/autoload.php"; $v = explode(".", \pocketmine\BASE_VERSION); array_pop($v); echo implode(".", $v);')
-          echo ::set-output name=PM_VERSION_MD::$(php -r 'require "vendor/autoload.php"; echo str_replace(".", "", \pocketmine\BASE_VERSION);')
+          echo ::set-output name=PM_VERSION_SHORT::$(php -r 'require "vendor/autoload.php"; $v = explode(".", \pocketmine\VersionInfo::BASE_VERSION); array_pop($v); echo implode(".", $v);')
+          echo ::set-output name=PM_VERSION_MD::$(php -r 'require "vendor/autoload.php"; echo str_replace(".", "", \pocketmine\VersionInfo::BASE_VERSION);')
 
       - name: Generate build info
         run: php build/generate-build-info-json.php ${{ github.sha }} ${{ steps.get-pm-version.outputs.PM_VERSION }} ${{ github.repository }} > build_info.json
