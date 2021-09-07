@@ -1165,6 +1165,17 @@ class World implements ChunkManager{
 	}
 
 	/**
+	 * Notify the blocks at and around the position that the block at the position may have changed.
+	 * This will cause onNeighbourBlockUpdate() to be called for these blocks.
+	 */
+	public function notifyNeighbourBlockUpdate(Vector3 $pos) : void{
+		$this->tryAddToNeighbourUpdateQueue($pos);
+		foreach($pos->sides() as $side){
+			$this->tryAddToNeighbourUpdateQueue($side);
+		}
+	}
+
+	/**
 	 * @return Block[]
 	 */
 	public function getCollisionBlocks(AxisAlignedBB $bb, bool $targetFirst = false) : array{
