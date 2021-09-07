@@ -50,8 +50,8 @@ class SetTitlePacket extends DataPacket{
 	public $stayTime = 0;
 	/** @var int */
 	public $fadeOutTime = 0;
-	public string $xuid = "";
-	public string $platformOnlineId = "";
+	public $xuid = "";
+	public $platformOnlineId = "";
 
 	protected function decodePayload(){
 		$this->type = $this->getVarInt();
