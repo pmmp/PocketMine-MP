@@ -55,7 +55,7 @@ jobs:
           cp -r "$VENDOR_PM" "$VENDOR_PM_BACKUP"
           for f in $(ls $VENDOR_PM/pocketmine); do
             echo "Processing directory \"$f\"..."
-            php "$PM_PREPROCESSOR_PATH/PreProcessor.php" --path="$VENDOR_PM/pocketmine/$f" --multisize || (echo "Preprocessor exited with code $?" && exit 1)
+            php "$PM_PREPROCESSOR_PATH/PreProcessor.php" --path="$VENDOR_PM/pocketmine/$f/src" --multisize || (echo "Preprocessor exited with code $?" && exit 1)
             echo "Checking for changes in \"$f\"..."
             DIFF=$(git diff --no-index "$VENDOR_PM_BACKUP/pocketmine/$f" "$VENDOR_PM/pocketmine/$f" || true)
             if [ "$DIFF" != "" ]; then
