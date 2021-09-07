@@ -44,29 +44,6 @@ jobs:
       - name: Minify BedrockData JSON files
         run: php resources/vanilla/.minify_json.php
 
-      - name: Run preprocessor
-        run: |
-          PM_PREPROCESSOR_PATH="$GITHUB_WORKSPACE/build/preprocessor"
-          php "$PM_PREPROCESSOR_PATH/PreProcessor.php" --path=src --multisize || (echo "Preprocessor exited with code $?" && exit 1)
-          #dump the diff of preprocessor replacements to a patch in case it has bugs
-          git diff > preprocessor_diff.patch
-          VENDOR_PM="$GITHUB_WORKSPACE/vendor"
-          VENDOR_PM_BACKUP="$GITHUB_WORKSPACE/vendor-before-preprocess"
-          cp -r "$VENDOR_PM" "$VENDOR_PM_BACKUP"
-          for f in $(ls $VENDOR_PM/pocketmine); do
-            echo "Processing directory \"$f\"..."
-            php "$PM_PREPROCESSOR_PATH/PreProcessor.php" --path="$VENDOR_PM/pocketmine/$f" --multisize || (echo "Preprocessor exited with code $?" && exit 1)
-            echo "Checking for changes in \"$f\"..."
-            DIFF=$(git diff --no-index "$VENDOR_PM_BACKUP/pocketmine/$f" "$VENDOR_PM/pocketmine/$f" || true)
-            if [ "$DIFF" != "" ]; then
-              PATCH="$GITHUB_WORKSPACE/preprocessor_diff_$f.patch"
-              echo "$DIFF" > "$PATCH"
-              echo "Generated patch file \"$PATCH\""
-            else
-              echo "No diff generated for \"$f\" (preprocessor made no changes)"
-            fi
-          done
-
       - name: Build PocketMine-MP.phar
         run: php -dphar.readonly=0 build/server-phar.php --git ${{ github.sha }}
 
@@ -103,11 +80,3 @@ jobs:
             **For Minecraft: Bedrock Edition ${{ steps.get-pm-version.outputs.MCPE_VERSION }}**
 
             Please see the [changelogs](/changelogs/${{ steps.get-pm-version.outputs.PM_VERSION_SHORT }}.md#${{ steps.get-pm-version.outputs.PM_VERSION_MD }}) for details.
-
-      - name: Upload preprocessor diffs
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: preprocessor_diffs
-          path: ${{ github.workspace }}/preprocessor_diff*.patch
-
