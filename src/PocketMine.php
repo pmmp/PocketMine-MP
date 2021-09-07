@@ -129,7 +129,7 @@ namespace pocketmine {
 		}
 
 		$chunkutils2_version = phpversion("chunkutils2");
-		$wantedVersionLock = "0.2";
+		$wantedVersionLock = "0.3";
 		$wantedVersionMin = "$wantedVersionLock.0";
 		if($chunkutils2_version !== false && (
 			version_compare($chunkutils2_version, $wantedVersionMin) < 0 ||

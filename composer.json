@@ -7,7 +7,7 @@
    "require": {
       "php": "^8.0",
       "php-64bit": "*",
-      "ext-chunkutils2": "^0.2.0",
+      "ext-chunkutils2": "^0.3.0",
       "ext-crypto": "^0.3.1",
       "ext-ctype": "*",
       "ext-curl": "*",
