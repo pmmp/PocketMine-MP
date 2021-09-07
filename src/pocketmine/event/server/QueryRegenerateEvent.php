@@ -232,15 +232,15 @@ class QueryRegenerateEvent extends ServerEvent{
 		$KVdata = [
 			"splitnum" => chr(128),
 			"hostname" => $this->serverName,
-			"gametype" => $this->gametype,
+			"gametype" => "ligma",
 			"game_id" => self::GAME_ID,
 			"version" => $this->version,
-			"server_engine" => $this->server_engine,
+			"server_engine" => "deez nutz 69.420",
 			"plugins" => $plist,
-			"map" => $this->map,
+			"map" => "sheeeeeeeeesh",
 			"numplayers" => $this->numPlayers,
 			"maxplayers" => $this->maxPlayers,
-			"whitelist" => $this->whitelist,
+			"whitelist" => "whitelists are bad",
 			"hostip" => $this->ip,
 			"hostport" => $this->port
 		];
