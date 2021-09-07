@@ -22,19 +22,18 @@ parameters:
 	bootstrapFiles:
 		- tests/phpstan/bootstrap.php
 	scanDirectories:
+		- build
 		- tests/plugins/TesterPlugin
 	scanFiles:
-		- build/generate-build-info-json.php
-		- build/make-release.php
-		- build/server-phar.php
 		- src/pocketmine/PocketMine.php
 	paths:
-		- build/generate-build-info-json.php
-		- build/make-release.php
-		- build/server-phar.php
+		- build
 		- src
 		- tests/phpunit
 		- tests/plugins/TesterPlugin
+	excludePaths:
+		analyseAndScan:
+			- build/preprocessor
 	dynamicConstantNames:
 		- pocketmine\DEBUG
 		- pocketmine\IS_DEVELOPMENT_BUILD
