@@ -804,6 +804,7 @@ class World implements ChunkManager{
 		//Normal updates
 		while($this->neighbourBlockUpdateQueue->count() > 0){
 			$index = $this->neighbourBlockUpdateQueue->dequeue();
+			unset($this->neighbourBlockUpdateQueueIndex[$index]);
 			World::getBlockXYZ($index, $x, $y, $z);
 			if(!$this->isChunkLoaded($x >> 4, $z >> 4)){
 				continue;
@@ -820,7 +821,6 @@ class World implements ChunkManager{
 				}
 				$block->onNearbyBlockChange();
 			}
-			unset($this->neighbourBlockUpdateQueueIndex[$index]);
 		}
 
 		$this->timings->scheduledBlockUpdates->stopTiming();
