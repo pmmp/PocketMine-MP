@@ -220,7 +220,7 @@ abstract class Entity{
 	public function __construct(Location $location, ?CompoundTag $nbt = null){
 		$this->timings = Timings::getEntityTimings($this);
 
-		$this->resetSize();
+		$this->size = $this->getInitialSizeInfo();
 
 		$this->id = self::nextRuntimeId();
 		$this->server = $location->getWorld()->getServer();
