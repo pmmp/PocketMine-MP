@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item\enchantment;
 
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\lang\Translatable;
 use function array_flip;
 use function floor;
 
@@ -38,8 +39,8 @@ class ProtectionEnchantment extends Enchantment{
 	 *
 	 * @param int[]|null $applicableDamageTypes EntityDamageEvent::CAUSE_* constants which this enchantment type applies to, or null if it applies to all types of damage.
 	 */
-	public function __construct(int $internalRuntimeId, string $name, int $rarity, int $primaryItemFlags, int $secondaryItemFlags, int $maxLevel, float $typeModifier, ?array $applicableDamageTypes){
-		parent::__construct($internalRuntimeId, $name, $rarity, $primaryItemFlags, $secondaryItemFlags, $maxLevel);
+	public function __construct(Translatable|string $name, int $rarity, int $primaryItemFlags, int $secondaryItemFlags, int $maxLevel, float $typeModifier, ?array $applicableDamageTypes){
+		parent::__construct($name, $rarity, $primaryItemFlags, $secondaryItemFlags, $maxLevel);
 
 		$this->typeModifier = $typeModifier;
 		if($applicableDamageTypes !== null){

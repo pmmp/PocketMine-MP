@@ -75,6 +75,11 @@ use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
+use pocketmine\inventory\transaction\action\DropItemAction;
+use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\inventory\transaction\TransactionBuilderInventory;
+use pocketmine\inventory\transaction\TransactionCancelledException;
+use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\ConsumableItem;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
@@ -630,12 +635,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$world = $world ?? $this->getWorld();
 		$index = World::chunkHash($x, $z);
 		if(isset($this->usedChunks[$index])){
-			$chunk = $world->getChunk($x, $z);
-			if($chunk !== null){ //this might be a chunk that hasn't been generated yet
-				foreach($chunk->getEntities() as $entity){
-					if($entity !== $this){
-						$entity->despawnFrom($this);
-					}
+			foreach($world->getChunkEntities($x, $z) as $entity){
+				if($entity !== $this){
+					$entity->despawnFrom($this);
 				}
 			}
 			$this->getNetworkSession()->stopUsingChunk($x, $z);
@@ -656,7 +658,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	protected function spawnEntitiesOnChunk(int $chunkX, int $chunkZ) : void{
-		foreach($this->getWorld()->getChunk($chunkX, $chunkZ)->getEntities() as $entity){
+		foreach($this->getWorld()->getChunkEntities($chunkX, $chunkZ) as $entity){
 			if($entity !== $this and !$entity->isFlaggedForDespawn()){
 				$entity->spawnTo($this);
 			}
@@ -1058,7 +1060,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return 0;
 	}
 
-	protected function checkGroundState(float $movX, float $movY, float $movZ, float $dx, float $dy, float $dz) : void{
+	protected function checkGroundState(float $wantedX, float $wantedY, float $wantedZ, float $dx, float $dy, float $dz) : void{
 		if($this->isSpectator()){
 			$this->onGround = false;
 		}else{
@@ -1200,10 +1202,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->sendPosition($from, $from->yaw, $from->pitch, MovePlayerPacket::MODE_RESET);
 	}
 
-	public function fall(float $fallDistance) : void{
-		if(!$this->flying){
-			parent::fall($fallDistance);
-		}
+	protected function calculateFallDamage(float $fallDistance) : float{
+		return $this->flying ? 0 : parent::calculateFallDamage($fallDistance);
 	}
 
 	public function jump() : void{
@@ -2287,15 +2287,40 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function doCloseInventory() : void{
 		/** @var Inventory[] $inventories */
 		$inventories = [$this->craftingGrid, $this->cursorInventory];
+
+		$transaction = new InventoryTransaction($this);
+		$mainInventoryTransactionBuilder = new TransactionBuilderInventory($this->inventory);
 		foreach($inventories as $inventory){
 			$contents = $inventory->getContents();
+
 			if(count($contents) > 0){
-				$drops = $this->inventory->addItem(...$contents);
+				$drops = $mainInventoryTransactionBuilder->addItem(...$contents);
 				foreach($drops as $drop){
-					$this->dropItem($drop);
+					$transaction->addAction(new DropItemAction($drop));
 				}
 
-				$inventory->clearAll();
+				$clearedInventoryTransactionBuilder = new TransactionBuilderInventory($inventory);
+				$clearedInventoryTransactionBuilder->clearAll();
+				foreach($clearedInventoryTransactionBuilder->generateActions() as $action){
+					$transaction->addAction($action);
+				}
+			}
+		}
+		foreach($mainInventoryTransactionBuilder->generateActions() as $action){
+			$transaction->addAction($action);
+		}
+
+		if(count($transaction->getActions()) !== 0){
+			try{
+				$transaction->execute();
+				$this->logger->debug("Successfully evacuated items from temporary inventories");
+			}catch(TransactionCancelledException){
+				$this->logger->debug("Plugin cancelled transaction evacuating items from temporary inventories; items will be destroyed");
+				foreach($inventories as $inventory){
+					$inventory->clearAll();
+				}
+			}catch(TransactionValidationException $e){
+				throw new AssumptionFailedError("This server-generated transaction should never be invalid", 0, $e);
 			}
 		}
 

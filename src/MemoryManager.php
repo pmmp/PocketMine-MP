@@ -47,6 +47,7 @@ use function get_declared_classes;
 use function get_defined_functions;
 use function ini_get;
 use function ini_set;
+use function intdiv;
 use function is_array;
 use function is_object;
 use function is_resource;
@@ -115,7 +116,7 @@ class MemoryManager{
 			}else{
 				switch(mb_strtoupper($matches[2])){
 					case "K":
-						$defaultMemory = $m / 1024;
+						$defaultMemory = intdiv($m, 1024);
 						break;
 					case "M":
 						$defaultMemory = $m;

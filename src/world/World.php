@@ -94,6 +94,7 @@ use pocketmine\world\sound\Sound;
 use pocketmine\world\utils\SubChunkExplorer;
 use function abs;
 use function array_fill_keys;
+use function array_filter;
 use function array_key_exists;
 use function array_map;
 use function array_merge;
@@ -158,6 +159,12 @@ class World implements ChunkManager{
 	 * @phpstan-var array<int, Vector3>
 	 */
 	private $entityLastKnownPositions = [];
+
+	/**
+	 * @var Entity[][]
+	 * @phpstan-var array<int, array<int, Entity>>
+	 */
+	private array $entitiesByChunk = [];
 
 	/** @var Entity[] */
 	public $updateEntities = [];
@@ -517,6 +524,20 @@ class World implements ChunkManager{
 			self::getXZ($chunkHash, $chunkX, $chunkZ);
 			$this->unloadChunk($chunkX, $chunkZ, false);
 		}
+		foreach($this->entitiesByChunk as $chunkHash => $entities){
+			self::getXZ($chunkHash, $chunkX, $chunkZ);
+
+			$leakedEntities = 0;
+			foreach($entities as $entity){
+				if(!$entity->isFlaggedForDespawn()){
+					$leakedEntities++;
+				}
+				$entity->close();
+			}
+			if($leakedEntities !== 0){
+				$this->logger->warning("$leakedEntities leaked entities found in ungenerated chunk $chunkX $chunkZ during unload, they won't be saved!");
+			}
+		}
 
 		$this->save();
 
@@ -805,6 +826,7 @@ class World implements ChunkManager{
 		//Normal updates
 		while($this->neighbourBlockUpdateQueue->count() > 0){
 			$index = $this->neighbourBlockUpdateQueue->dequeue();
+			unset($this->neighbourBlockUpdateQueueIndex[$index]);
 			World::getBlockXYZ($index, $x, $y, $z);
 			if(!$this->isChunkLoaded($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)){
 				continue;
@@ -821,7 +843,6 @@ class World implements ChunkManager{
 				}
 				$block->onNearbyBlockChange();
 			}
-			unset($this->neighbourBlockUpdateQueueIndex[$index]);
 		}
 
 		$this->timings->scheduledBlockUpdates->stopTiming();
@@ -1071,7 +1092,7 @@ class World implements ChunkManager{
 		if($chunk === null){
 			throw new \InvalidArgumentException("Chunk is not loaded");
 		}
-		foreach($chunk->getEntities() as $entity){
+		foreach($this->getChunkEntities($chunkX, $chunkZ) as $entity){
 			$entity->onRandomUpdate();
 		}
 
@@ -1130,7 +1151,7 @@ class World implements ChunkManager{
 				self::getXZ($chunkHash, $chunkX, $chunkZ);
 				$this->provider->saveChunk($chunkX, $chunkZ, new ChunkData(
 					$chunk,
-					array_map(fn(Entity $e) => $e->saveNBT(), $chunk->getSavableEntities()),
+					array_map(fn(Entity $e) => $e->saveNBT(), array_filter($this->getChunkEntities($chunkX, $chunkZ), fn(Entity $e) => $e->canSaveWithChunk())),
 					array_map(fn(Tile $t) => $t->saveNBT(), $chunk->getTiles()),
 				));
 				$chunk->clearTerrainDirtyFlags();
@@ -1162,6 +1183,17 @@ class World implements ChunkManager{
 				$this->neighbourBlockUpdateQueue->enqueue($hash);
 				$this->neighbourBlockUpdateQueueIndex[$hash] = true;
 			}
+		}
+	}
+
+	/**
+	 * Notify the blocks at and around the position that the block at the position may have changed.
+	 * This will cause onNeighbourBlockUpdate() to be called for these blocks.
+	 */
+	public function notifyNeighbourBlockUpdate(Vector3 $pos) : void{
+		$this->tryAddToNeighbourUpdateQueue($pos);
+		foreach($pos->sides() as $side){
+			$this->tryAddToNeighbourUpdateQueue($side);
 		}
 	}
 
@@ -1805,7 +1837,7 @@ class World implements ChunkManager{
 		foreach($tx->getBlocks() as [$x, $y, $z, $block]){
 			$block->position($this, $x, $y, $z);
 			foreach($block->getCollisionBoxes() as $collisionBox){
-				if(count($entities = $this->getCollidingEntities($collisionBox)) > 0){
+				if(count($this->getNearbyEntities($collisionBox)) > 0){
 					return false;  //Entity in block
 				}
 			}
@@ -1879,26 +1911,13 @@ class World implements ChunkManager{
 	 *
 	 * @return Entity[]
 	 */
-	public function getCollidingEntities(AxisAlignedBB $bb, ?Entity $entity = null) : array{
+	public function getCollidingEntities(AxisAlignedBB $bb, Entity $entity) : array{
 		$nearby = [];
 
-		if($entity === null or $entity->canCollide){
-			$minX = ((int) floor($bb->minX - 2)) >> Chunk::COORD_BIT_SIZE;
-			$maxX = ((int) floor($bb->maxX + 2)) >> Chunk::COORD_BIT_SIZE;
-			$minZ = ((int) floor($bb->minZ - 2)) >> Chunk::COORD_BIT_SIZE;
-			$maxZ = ((int) floor($bb->maxZ + 2)) >> Chunk::COORD_BIT_SIZE;
-
-			for($x = $minX; $x <= $maxX; ++$x){
-				for($z = $minZ; $z <= $maxZ; ++$z){
-					if(!$this->isChunkLoaded($x, $z)){
-						continue;
-					}
-					foreach($this->getChunk($x, $z)->getEntities() as $ent){
-						/** @var Entity|null $entity */
-						if($ent->canBeCollidedWith() and ($entity === null or ($ent !== $entity and $entity->canCollideWith($ent))) and $ent->boundingBox->intersectsWith($bb)){
-							$nearby[] = $ent;
-						}
-					}
+		if($entity->canCollide){
+			foreach($this->getNearbyEntities($bb, $entity) as $ent){
+				if($ent->canBeCollidedWith() and $entity->canCollideWith($ent)){
+					$nearby[] = $ent;
 				}
 			}
 		}
@@ -1924,7 +1943,7 @@ class World implements ChunkManager{
 				if(!$this->isChunkLoaded($x, $z)){
 					continue;
 				}
-				foreach($this->getChunk($x, $z)->getEntities() as $ent){
+				foreach($this->getChunkEntities($x, $z) as $ent){
 					if($ent !== $entity and $ent->boundingBox->intersectsWith($bb)){
 						$nearby[] = $ent;
 					}
@@ -1967,7 +1986,7 @@ class World implements ChunkManager{
 				if(!$this->isChunkLoaded($x, $z)){
 					continue;
 				}
-				foreach($this->getChunk($x, $z)->getEntities() as $entity){
+				foreach($this->getChunkEntities($x, $z) as $entity){
 					if(!($entity instanceof $entityType) or $entity->isFlaggedForDespawn() or (!$includeDead and !$entity->isAlive())){
 						continue;
 					}
@@ -2044,6 +2063,13 @@ class World implements ChunkManager{
 
 	public function getChunk(int $chunkX, int $chunkZ) : ?Chunk{
 		return $this->chunks[World::chunkHash($chunkX, $chunkZ)] ?? null;
+	}
+
+	/**
+	 * @return Entity[]
+	 */
+	public function getChunkEntities(int $chunkX, int $chunkZ) : array{
+		return $this->entitiesByChunk[World::chunkHash($chunkX, $chunkZ)] ?? [];
 	}
 
 	/**
@@ -2157,11 +2183,8 @@ class World implements ChunkManager{
 		$oldChunk = $this->loadChunk($chunkX, $chunkZ);
 		if($oldChunk !== null and $oldChunk !== $chunk){
 			if($deleteEntitiesAndTiles){
-				foreach($oldChunk->getEntities() as $entity){
-					if($entity instanceof Player){
-						$chunk->addEntity($entity);
-						$oldChunk->removeEntity($entity);
-					}else{
+				foreach($this->getChunkEntities($chunkX, $chunkZ) as $entity){
+					if(!($entity instanceof Player)){
 						$entity->close();
 					}
 				}
@@ -2169,11 +2192,6 @@ class World implements ChunkManager{
 					$tile->close();
 				}
 			}else{
-				foreach($oldChunk->getEntities() as $entity){
-					$chunk->addEntity($entity);
-					$oldChunk->removeEntity($entity);
-				}
-
 				foreach($oldChunk->getTiles() as $tile){
 					$chunk->addTile($tile);
 					$oldChunk->removeTile($tile);
@@ -2275,7 +2293,7 @@ class World implements ChunkManager{
 		if($chunk === null){
 			throw new \InvalidArgumentException("Cannot add an Entity in an ungenerated chunk");
 		}
-		$chunk->addEntity($entity);
+		$this->entitiesByChunk[World::chunkHash($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE)][$entity->getId()] = $entity;
 		$this->entityLastKnownPositions[$entity->getId()] = $pos;
 
 		if($entity instanceof Player){
@@ -2297,9 +2315,12 @@ class World implements ChunkManager{
 			throw new \InvalidArgumentException("Entity is not tracked by this world (possibly already removed?)");
 		}
 		$pos = $this->entityLastKnownPositions[$entity->getId()];
-		$chunk = $this->getChunk($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE);
-		if($chunk !== null){ //we don't care if the chunk already went out of scope
-			$chunk->removeEntity($entity);
+		$chunkHash = World::chunkHash($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE);
+		if(isset($this->entitiesByChunk[$chunkHash][$entity->getId()])){
+			unset($this->entitiesByChunk[$chunkHash][$entity->getId()]);
+			if(count($this->entitiesByChunk[$chunkHash]) === 0){
+				unset($this->entitiesByChunk[$chunkHash]);
+			}
 		}
 		unset($this->entityLastKnownPositions[$entity->getId()]);
 
@@ -2329,35 +2350,28 @@ class World implements ChunkManager{
 		$newChunkZ = $newPosition->getFloorZ() >> Chunk::COORD_BIT_SIZE;
 
 		if($oldChunkX !== $newChunkX || $oldChunkZ !== $newChunkZ){
-			$oldChunk = $this->getChunk($oldChunkX, $oldChunkZ);
-			if($oldChunk !== null){
-				$oldChunk->removeEntity($entity);
+			$oldChunkHash = World::chunkHash($oldChunkX, $oldChunkZ);
+			if(isset($this->entitiesByChunk[$oldChunkHash][$entity->getId()])){
+				unset($this->entitiesByChunk[$oldChunkHash][$entity->getId()]);
+				if(count($this->entitiesByChunk[$oldChunkHash]) === 0){
+					unset($this->entitiesByChunk[$oldChunkHash]);
+				}
 			}
-			$newChunk = $this->loadChunk($newChunkX, $newChunkZ);
-			if($newChunk === null){
-				//TODO: this is a non-ideal solution for a hard problem
-				//when this happens the entity won't be tracked by any chunk, so we can't have it hanging around in memory
-				//we also can't allow this to cause chunk generation, nor can we just create an empty ungenerated chunk
-				//for it, because an empty chunk won't get saved, so the entity will vanish anyway. Therefore, this is
-				//the cleanest way to make sure this doesn't result in leaks.
-				$this->logger->debug("Entity " . $entity->getId() . " is in ungenerated terrain, flagging for despawn");
-				$entity->flagForDespawn();
-				$entity->despawnFromAll();
-			}else{
-				$newViewers = $this->getViewersForPosition($newPosition);
-				foreach($entity->getViewers() as $player){
-					if(!isset($newViewers[spl_object_id($player)])){
-						$entity->despawnFrom($player);
-					}else{
-						unset($newViewers[spl_object_id($player)]);
-					}
-				}
-				foreach($newViewers as $player){
-					$entity->spawnTo($player);
-				}
 
-				$newChunk->addEntity($entity);
+			$newViewers = $this->getViewersForPosition($newPosition);
+			foreach($entity->getViewers() as $player){
+				if(!isset($newViewers[spl_object_id($player)])){
+					$entity->despawnFrom($player);
+				}else{
+					unset($newViewers[spl_object_id($player)]);
+				}
 			}
+			foreach($newViewers as $player){
+				$entity->spawnTo($player);
+			}
+
+			$newChunkHash = World::chunkHash($newChunkX, $newChunkZ);
+			$this->entitiesByChunk[$newChunkHash][$entity->getId()] = $entity;
 		}
 		$this->entityLastKnownPositions[$entity->getId()] = $newPosition->asVector3();
 	}
@@ -2567,7 +2581,7 @@ class World implements ChunkManager{
 				try{
 					$this->provider->saveChunk($x, $z, new ChunkData(
 						$chunk,
-						array_map(fn(Entity $e) => $e->saveNBT(), $chunk->getSavableEntities()),
+						array_map(fn(Entity $e) => $e->saveNBT(), array_filter($this->getChunkEntities($x, $z), fn(Entity $e) => $e->canSaveWithChunk())),
 						array_map(fn(Tile $t) => $t->saveNBT(), $chunk->getTiles()),
 					));
 				}finally{
@@ -2577,6 +2591,13 @@ class World implements ChunkManager{
 
 			foreach($this->getChunkListeners($x, $z) as $listener){
 				$listener->onChunkUnloaded($x, $z, $chunk);
+			}
+
+			foreach($this->getChunkEntities($x, $z) as $entity){
+				if($entity instanceof Player){
+					continue;
+				}
+				$entity->close();
 			}
 
 			$chunk->onUnload();
