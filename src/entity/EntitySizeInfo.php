@@ -52,4 +52,20 @@ final class EntitySizeInfo{
 			$this->eyeHeight * $newScale
 		);
 	}
+
+	public function add(float $height = 0, float $width = 0, float $eyeHeight = 0) : self{
+		return new self(
+			$this->height + $height,
+			$this->width + $width,
+			$this->eyeHeight + $eyeHeight
+		);
+	}
+
+	public function multiply(float $height = 1, float $width = 1, float $eyeHeight = 1) : self{
+		return new self(
+			$this->height * $height,
+			$this->width * $width,
+			$this->eyeHeight * $eyeHeight
+		);
+	}
 }
