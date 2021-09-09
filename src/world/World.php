@@ -525,11 +525,16 @@ class World implements ChunkManager{
 		}
 		foreach($this->entitiesByChunk as $chunkHash => $entities){
 			self::getXZ($chunkHash, $chunkX, $chunkZ);
-			if(count($entities) !== 0){
-				$this->logger->warning(count($entities) . " entities found in ungenerated chunk $chunkX $chunkZ, they won't be saved!");
-			}
+
+			$leakedEntities = 0;
 			foreach($entities as $entity){
+				if(!$entity->isFlaggedForDespawn()){
+					$leakedEntities++;
+				}
 				$entity->close();
+			}
+			if($leakedEntities !== 0){
+				$this->logger->warning("$leakedEntities leaked entities found in ungenerated chunk $chunkX $chunkZ during unload, they won't be saved!");
 			}
 		}
 
