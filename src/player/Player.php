@@ -35,6 +35,7 @@ use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\CriticalHitAnimation;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
+use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
@@ -68,8 +69,10 @@ use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerToggleFlightEvent;
+use pocketmine\event\player\PlayerToggleGlideEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
+use pocketmine\event\player\PlayerToggleSwimEvent;
 use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
@@ -946,6 +949,36 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
+	public function setSneaking(bool $value = true) : void{
+		parent::setSneaking($value);
+
+		if($value){
+			$this->setSize($this->getInitialSizeInfo()->multiply(11 / 12,1,11 / 12)->scale($this->getScale()));
+		}else{
+			$this->resetSize();
+		}
+	}
+
+	public function setGliding(bool $value = true) : void{
+		parent::setGliding($value);
+
+		if($value){
+			$this->setSize((new EntitySizeInfo($this->size->getWidth(),$this->size->getWidth(),$this->size->getWidth()-($this->size->getHeight() - $this->size->getEyeHeight())))->scale($this->getScale()));
+		}else{
+			$this->resetSize();
+		}
+	}
+
+	public function setSwimming(bool $value = true) : void{
+		parent::setSwimming($value);
+
+		if($value){
+			$this->setSize((new EntitySizeInfo($this->size->getWidth(),$this->size->getWidth(),$this->size->getWidth()-($this->size->getHeight() - $this->size->getEyeHeight())))->scale($this->getScale()));
+		}else{
+			$this->resetSize();
+		}
+	}
+
 	public function getGamemode() : GameMode{
 		return $this->gamemode;
 	}
@@ -1731,6 +1764,28 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		//don't use setFlying() here, to avoid feedback loops - TODO: get rid of this hack
 		$this->flying = $fly;
 		$this->resetFallDistance();
+		return true;
+	}
+
+	public function toggleGlide(bool $glide) : bool{
+		//TODO maybe move to Entity?
+		$ev = new PlayerToggleGlideEvent($this, $glide);
+		$ev->call();
+		if($ev->isCancelled()){
+			return false;
+		}
+		$this->setGliding($glide);
+		return true;
+	}
+
+	public function toggleSwim(bool $swimming) : bool{
+		//TODO maybe move to Entity?
+		$ev = new PlayerToggleSwimEvent($this, $swimming);
+		$ev->call();
+		if($ev->isCancelled()){
+			return false;
+		}
+		$this->setSwimming($swimming);
 		return true;
 	}
 

@@ -24,6 +24,7 @@ declare(strict_types=1);
 /**
  * All the entity classes
  */
+
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
@@ -219,7 +220,7 @@ abstract class Entity{
 	public function __construct(Location $location, ?CompoundTag $nbt = null){
 		$this->timings = Timings::getEntityTimings($this);
 
-		$this->size = $this->getInitialSizeInfo();
+		$this->resetSize();
 
 		$this->id = self::nextRuntimeId();
 		$this->server = $location->getWorld()->getServer();
@@ -303,12 +304,9 @@ abstract class Entity{
 		if($value <= 0){
 			throw new \InvalidArgumentException("Scale must be greater than 0");
 		}
-		$this->size = $this->getInitialSizeInfo()->scale($value);
+		$this->setSize($this->getInitialSizeInfo()->scale($value));
 
 		$this->scale = $value;
-
-		$this->recalculateBoundingBox();
-		$this->networkPropertiesDirty = true;
 	}
 
 	public function getBoundingBox() : AxisAlignedBB{
@@ -326,6 +324,16 @@ abstract class Entity{
 			$this->location->y + $this->size->getHeight() + $this->ySize,
 			$this->location->z + $halfWidth
 		);
+	}
+
+	public function setSize(EntitySizeInfo $size) : void{
+		$this->size = $size;
+		$this->recalculateBoundingBox();
+		$this->networkPropertiesDirty = true;
+	}
+
+	public function resetSize() : void{
+		$this->setSize($this->getInitialSizeInfo());
 	}
 
 	public function isImmobile() : bool{
@@ -829,10 +837,10 @@ abstract class Entity{
 		$diffZ = $z - $floorZ;
 
 		if($world->getBlockAt($floorX, $floorY, $floorZ)->isSolid()){
-			$westNonSolid  = !$world->getBlockAt($floorX - 1, $floorY, $floorZ)->isSolid();
-			$eastNonSolid  = !$world->getBlockAt($floorX + 1, $floorY, $floorZ)->isSolid();
-			$downNonSolid  = !$world->getBlockAt($floorX, $floorY - 1, $floorZ)->isSolid();
-			$upNonSolid    = !$world->getBlockAt($floorX, $floorY + 1, $floorZ)->isSolid();
+			$westNonSolid = !$world->getBlockAt($floorX - 1, $floorY, $floorZ)->isSolid();
+			$eastNonSolid = !$world->getBlockAt($floorX + 1, $floorY, $floorZ)->isSolid();
+			$downNonSolid = !$world->getBlockAt($floorX, $floorY - 1, $floorZ)->isSolid();
+			$upNonSolid = !$world->getBlockAt($floorX, $floorY + 1, $floorZ)->isSolid();
 			$northNonSolid = !$world->getBlockAt($floorX, $floorY, $floorZ - 1)->isSolid();
 			$southNonSolid = !$world->getBlockAt($floorX, $floorY, $floorZ + 1)->isSolid();
 
@@ -874,7 +882,7 @@ abstract class Entity{
 
 			$force = lcg_value() * 0.2 + 0.1;
 
-			$this->motion = match($direction){
+			$this->motion = match ($direction) {
 				Facing::WEST => $this->motion->withComponents(-$force, null, null),
 				Facing::EAST => $this->motion->withComponents($force, null, null),
 				Facing::DOWN => $this->motion->withComponents(null, -$force, null),
@@ -1545,8 +1553,8 @@ abstract class Entity{
 	}
 
 	/**
-	 * @param Player[]|null      $targets
-	 * @param MetadataProperty[] $data Properly formatted entity data, defaults to everything
+	 * @param Player[]|null                        $targets
+	 * @param MetadataProperty[]                   $data Properly formatted entity data, defaults to everything
 	 *
 	 * @phpstan-param array<int, MetadataProperty> $data
 	 */
@@ -1615,6 +1623,7 @@ abstract class Entity{
 
 	/**
 	 * Broadcasts a sound caused by the entity. If the entity is considered "silent", the sound will be dropped.
+	 *
 	 * @param Player[]|null $targets
 	 */
 	public function broadcastSound(Sound $sound, ?array $targets = null) : void{
