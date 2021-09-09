@@ -75,6 +75,11 @@ use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
+use pocketmine\inventory\transaction\action\DropItemAction;
+use pocketmine\inventory\transaction\InventoryTransaction;
+use pocketmine\inventory\transaction\TransactionBuilderInventory;
+use pocketmine\inventory\transaction\TransactionCancelledException;
+use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\ConsumableItem;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\EnchantmentInstance;
@@ -2282,15 +2287,40 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function doCloseInventory() : void{
 		/** @var Inventory[] $inventories */
 		$inventories = [$this->craftingGrid, $this->cursorInventory];
+
+		$transaction = new InventoryTransaction($this);
+		$mainInventoryTransactionBuilder = new TransactionBuilderInventory($this->inventory);
 		foreach($inventories as $inventory){
 			$contents = $inventory->getContents();
+
 			if(count($contents) > 0){
-				$drops = $this->inventory->addItem(...$contents);
+				$drops = $mainInventoryTransactionBuilder->addItem(...$contents);
 				foreach($drops as $drop){
-					$this->dropItem($drop);
+					$transaction->addAction(new DropItemAction($drop));
 				}
 
-				$inventory->clearAll();
+				$clearedInventoryTransactionBuilder = new TransactionBuilderInventory($inventory);
+				$clearedInventoryTransactionBuilder->clearAll();
+				foreach($clearedInventoryTransactionBuilder->generateActions() as $action){
+					$transaction->addAction($action);
+				}
+			}
+		}
+		foreach($mainInventoryTransactionBuilder->generateActions() as $action){
+			$transaction->addAction($action);
+		}
+
+		if(count($transaction->getActions()) !== 0){
+			try{
+				$transaction->execute();
+				$this->logger->debug("Successfully evacuated items from temporary inventories");
+			}catch(TransactionCancelledException){
+				$this->logger->debug("Plugin cancelled transaction evacuating items from temporary inventories; items will be destroyed");
+				foreach($inventories as $inventory){
+					$inventory->clearAll();
+				}
+			}catch(TransactionValidationException $e){
+				throw new AssumptionFailedError("This server-generated transaction should never be invalid", 0, $e);
 			}
 		}
 
