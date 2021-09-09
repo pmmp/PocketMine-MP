@@ -630,12 +630,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$world = $world ?? $this->getWorld();
 		$index = World::chunkHash($x, $z);
 		if(isset($this->usedChunks[$index])){
-			$chunk = $world->getChunk($x, $z);
-			if($chunk !== null){ //this might be a chunk that hasn't been generated yet
-				foreach($chunk->getEntities() as $entity){
-					if($entity !== $this){
-						$entity->despawnFrom($this);
-					}
+			foreach($world->getChunkEntities($x, $z) as $entity){
+				if($entity !== $this){
+					$entity->despawnFrom($this);
 				}
 			}
 			$this->getNetworkSession()->stopUsingChunk($x, $z);
@@ -656,7 +653,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	protected function spawnEntitiesOnChunk(int $chunkX, int $chunkZ) : void{
-		foreach($this->getWorld()->getChunk($chunkX, $chunkZ)->getEntities() as $entity){
+		foreach($this->getWorld()->getChunkEntities($chunkX, $chunkZ) as $entity){
 			if($entity !== $this and !$entity->isFlaggedForDespawn()){
 				$entity->spawnTo($this);
 			}
