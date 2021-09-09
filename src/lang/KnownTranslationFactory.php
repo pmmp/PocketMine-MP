@@ -759,6 +759,154 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::DISCONNECTIONSCREEN_SERVERFULL, []);
 	}
 
+	public static function enchantment_arrowDamage() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_ARROWDAMAGE, []);
+	}
+
+	public static function enchantment_arrowFire() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_ARROWFIRE, []);
+	}
+
+	public static function enchantment_arrowInfinite() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_ARROWINFINITE, []);
+	}
+
+	public static function enchantment_arrowKnockback() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_ARROWKNOCKBACK, []);
+	}
+
+	public static function enchantment_crossbowMultishot() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_CROSSBOWMULTISHOT, []);
+	}
+
+	public static function enchantment_crossbowPiercing() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_CROSSBOWPIERCING, []);
+	}
+
+	public static function enchantment_crossbowQuickCharge() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_CROSSBOWQUICKCHARGE, []);
+	}
+
+	public static function enchantment_curse_binding() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_CURSE_BINDING, []);
+	}
+
+	public static function enchantment_curse_vanishing() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_CURSE_VANISHING, []);
+	}
+
+	public static function enchantment_damage_all() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_DAMAGE_ALL, []);
+	}
+
+	public static function enchantment_damage_arthropods() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_DAMAGE_ARTHROPODS, []);
+	}
+
+	public static function enchantment_damage_undead() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_DAMAGE_UNDEAD, []);
+	}
+
+	public static function enchantment_digging() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_DIGGING, []);
+	}
+
+	public static function enchantment_durability() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_DURABILITY, []);
+	}
+
+	public static function enchantment_fire() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_FIRE, []);
+	}
+
+	public static function enchantment_fishingSpeed() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_FISHINGSPEED, []);
+	}
+
+	public static function enchantment_frostwalker() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_FROSTWALKER, []);
+	}
+
+	public static function enchantment_knockback() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_KNOCKBACK, []);
+	}
+
+	public static function enchantment_lootBonus() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_LOOTBONUS, []);
+	}
+
+	public static function enchantment_lootBonusDigger() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_LOOTBONUSDIGGER, []);
+	}
+
+	public static function enchantment_lootBonusFishing() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_LOOTBONUSFISHING, []);
+	}
+
+	public static function enchantment_mending() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_MENDING, []);
+	}
+
+	public static function enchantment_oxygen() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_OXYGEN, []);
+	}
+
+	public static function enchantment_protect_all() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_PROTECT_ALL, []);
+	}
+
+	public static function enchantment_protect_explosion() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_PROTECT_EXPLOSION, []);
+	}
+
+	public static function enchantment_protect_fall() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_PROTECT_FALL, []);
+	}
+
+	public static function enchantment_protect_fire() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_PROTECT_FIRE, []);
+	}
+
+	public static function enchantment_protect_projectile() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_PROTECT_PROJECTILE, []);
+	}
+
+	public static function enchantment_soul_speed() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_SOUL_SPEED, []);
+	}
+
+	public static function enchantment_thorns() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_THORNS, []);
+	}
+
+	public static function enchantment_tridentChanneling() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_TRIDENTCHANNELING, []);
+	}
+
+	public static function enchantment_tridentImpaling() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_TRIDENTIMPALING, []);
+	}
+
+	public static function enchantment_tridentLoyalty() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_TRIDENTLOYALTY, []);
+	}
+
+	public static function enchantment_tridentRiptide() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_TRIDENTRIPTIDE, []);
+	}
+
+	public static function enchantment_untouching() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_UNTOUCHING, []);
+	}
+
+	public static function enchantment_waterWalker() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_WATERWALKER, []);
+	}
+
+	public static function enchantment_waterWorker() : Translatable{
+		return new Translatable(KnownTranslationKeys::ENCHANTMENT_WATERWORKER, []);
+	}
+
 	public static function gameMode_adventure() : Translatable{
 		return new Translatable(KnownTranslationKeys::GAMEMODE_ADVENTURE, []);
 	}

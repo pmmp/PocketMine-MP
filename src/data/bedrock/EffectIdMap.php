@@ -27,6 +27,7 @@ use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\utils\SingletonTrait;
 use function array_key_exists;
+use function spl_object_id;
 
 final class EffectIdMap{
 	use SingletonTrait;
@@ -79,7 +80,7 @@ final class EffectIdMap{
 
 	public function register(int $mcpeId, Effect $effect) : void{
 		$this->idToEffect[$mcpeId] = $effect;
-		$this->effectToId[$effect->getRuntimeId()] = $mcpeId;
+		$this->effectToId[spl_object_id($effect)] = $mcpeId;
 	}
 
 	public function fromId(int $id) : ?Effect{
@@ -88,10 +89,10 @@ final class EffectIdMap{
 	}
 
 	public function toId(Effect $effect) : int{
-		if(!array_key_exists($effect->getRuntimeId(), $this->effectToId)){
+		if(!array_key_exists(spl_object_id($effect), $this->effectToId)){
 			//this should never happen, so we treat it as an exceptional condition
 			throw new \InvalidArgumentException("Effect does not have a mapped ID");
 		}
-		return $this->effectToId[$effect->getRuntimeId()];
+		return $this->effectToId[spl_object_id($effect)];
 	}
 }

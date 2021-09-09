@@ -21,22 +21,17 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\utils;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\world\Position;
+trait NotSerializable{
 
-class BrewingStandInventory extends SimpleInventory implements BlockInventory{
-	use BlockInventoryTrait;
+	/** @return mixed[] */
+	final public function __serialize() : array{
+		throw new \LogicException("Serialization of " . static::class . " objects is not allowed");
+	}
 
-	public const SLOT_INGREDIENT = 0;
-	public const SLOT_BOTTLE_LEFT = 1;
-	public const SLOT_BOTTLE_MIDDLE = 2;
-	public const SLOT_BOTTLE_RIGHT = 3;
-	public const SLOT_FUEL = 4;
-
-	public function __construct(Position $holder, int $size = 5){
-		$this->holder = $holder;
-		parent::__construct($size);
+	/** @param mixed[] $data */
+	final public function __unserialize(array $data) : void{
+		throw new \LogicException("Unserialization of " . static::class . " objects is not allowed");
 	}
 }

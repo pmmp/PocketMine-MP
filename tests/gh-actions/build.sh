@@ -53,7 +53,7 @@ PHP_BUILD_INSTALL_EXTENSION="\
 pthreads=@a6afc0434f91c1e9541444aef6ac7a1f16c595be \
 yaml=2.2.1 \
 leveldb=@60763a09bf5c7a10376d16e25b078b99a35c5c37 \
-chunkutils2=@0.2.0 \
+chunkutils2=@0.3.1 \
 morton=@0.1.2 \
 igbinary=3.2.1 \
 " PHP_BUILD_ZTS_ENABLE=on PHP_BUILD_CONFIGURE_OPTS='--with-gmp' ./bin/php-build "$VERSION" "$INSTALL_DIR" || exit 1

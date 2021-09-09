@@ -30,6 +30,7 @@ use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\utils\ObjectSet;
 use function abs;
 use function count;
+use function spl_object_id;
 
 class EffectManager{
 
@@ -83,7 +84,7 @@ class EffectManager{
 	 * Removes the effect with the specified ID from the mob.
 	 */
 	public function remove(Effect $effectType) : void{
-		$index = $effectType->getRuntimeId();
+		$index = spl_object_id($effectType);
 		if(isset($this->effects[$index])){
 			$effect = $this->effects[$index];
 			$hasExpired = $effect->hasExpired();
@@ -113,14 +114,14 @@ class EffectManager{
 	 * effect.
 	 */
 	public function get(Effect $effect) : ?EffectInstance{
-		return $this->effects[$effect->getRuntimeId()] ?? null;
+		return $this->effects[spl_object_id($effect)] ?? null;
 	}
 
 	/**
 	 * Returns whether the specified effect is active on the mob.
 	 */
 	public function has(Effect $effect) : bool{
-		return isset($this->effects[$effect->getRuntimeId()]);
+		return isset($this->effects[spl_object_id($effect)]);
 	}
 
 	/**
@@ -134,7 +135,7 @@ class EffectManager{
 		$oldEffect = null;
 		$cancelled = false;
 
-		$index = $effect->getType()->getRuntimeId();
+		$index = spl_object_id($effect->getType());
 		if(isset($this->effects[$index])){
 			$oldEffect = $this->effects[$index];
 			if(

@@ -21,22 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\world\format\io;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\world\Position;
+use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\world\format\Chunk;
 
-class BrewingStandInventory extends SimpleInventory implements BlockInventory{
-	use BlockInventoryTrait;
+final class ChunkData{
 
-	public const SLOT_INGREDIENT = 0;
-	public const SLOT_BOTTLE_LEFT = 1;
-	public const SLOT_BOTTLE_MIDDLE = 2;
-	public const SLOT_BOTTLE_RIGHT = 3;
-	public const SLOT_FUEL = 4;
+	/**
+	 * @param CompoundTag[] $entityNBT
+	 * @param CompoundTag[] $tileNBT
+	 */
+	public function __construct(
+		private Chunk $chunk,
+		private array $entityNBT,
+		private array $tileNBT
+	){}
 
-	public function __construct(Position $holder, int $size = 5){
-		$this->holder = $holder;
-		parent::__construct($size);
-	}
+	public function getChunk() : Chunk{ return $this->chunk; }
+
+	/** @return CompoundTag[] */
+	public function getEntityNBT() : array{ return $this->entityNBT; }
+
+	/** @return CompoundTag[] */
+	public function getTileNBT() : array{ return $this->tileNBT; }
 }

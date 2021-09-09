@@ -129,11 +129,11 @@ namespace pocketmine {
 		}
 
 		$chunkutils2_version = phpversion("chunkutils2");
-		$wantedVersionLock = "0.2";
+		$wantedVersionLock = "0.3";
 		$wantedVersionMin = "$wantedVersionLock.0";
 		if($chunkutils2_version !== false && (
 			version_compare($chunkutils2_version, $wantedVersionMin) < 0 ||
-			preg_match("/^" . preg_quote($wantedVersionLock, "/") . "\.\d+$/", $chunkutils2_version) === 0 //lock in at ^0.2, optionally at a patch release
+			preg_match("/^" . preg_quote($wantedVersionLock, "/") . "\.\d+(?:-dev)?$/", $chunkutils2_version) === 0 //lock in at ^0.2, optionally at a patch release
 		)){
 			$messages[] = "chunkutils2 ^$wantedVersionMin is required, while you have $chunkutils2_version.";
 		}

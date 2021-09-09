@@ -30,6 +30,9 @@ use pocketmine\world\Position;
 class EnchantInventory extends SimpleInventory implements BlockInventory{
 	use BlockInventoryTrait;
 
+	public const SLOT_INPUT = 0;
+	public const SLOT_LAPIS = 1;
+
 	public function __construct(Position $holder){
 		$this->holder = $holder;
 		parent::__construct(2);
