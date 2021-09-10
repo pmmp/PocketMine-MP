@@ -27,11 +27,11 @@ use pocketmine\item\Item;
 
 class PotionTypeRecipe implements BrewingRecipe{
 
-	private Item $input;
-	private Item $ingredient;
-	private Item $output;
-
-	public function __construct(Item $input, Item $ingredient, Item $output){
+	public function __construct(
+		private Item $input,
+		private Item $ingredient,
+		private Item $output
+	){
 		$this->input = clone $input;
 		$this->ingredient = clone $ingredient;
 		$this->output = clone $output;

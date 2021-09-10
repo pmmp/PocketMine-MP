@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block\inventory;
 
 use pocketmine\inventory\SimpleInventory;
-use pocketmine\item\Item;
 use pocketmine\world\Position;
 
 class BrewingStandInventory extends SimpleInventory implements BlockInventory{
@@ -39,21 +38,5 @@ class BrewingStandInventory extends SimpleInventory implements BlockInventory{
 	public function __construct(Position $holder, int $size = 5){
 		$this->holder = $holder;
 		parent::__construct($size);
-	}
-
-	public function getIngredient() : Item{
-		return $this->getItem(self::SLOT_INGREDIENT);
-	}
-
-	public function setIngredient(Item $item) : void{
-		$this->setItem(self::SLOT_INGREDIENT, $item);
-	}
-
-	public function getFuel() : Item{
-		return $this->getItem(self::SLOT_FUEL);
-	}
-
-	public function setFuel(Item $item) : void{
-		$this->setItem(self::SLOT_FUEL, $item);
 	}
 }

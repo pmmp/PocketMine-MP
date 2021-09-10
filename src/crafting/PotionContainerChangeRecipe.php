@@ -28,11 +28,9 @@ use pocketmine\item\ItemFactory;
 
 class PotionContainerChangeRecipe implements BrewingRecipe{
 
-	private Item $ingredient;
-
 	public function __construct(
 		private int $inputItemId,
-		Item $ingredient,
+		private Item $ingredient,
 		private int $outputItemId
 	){
 		$this->ingredient = clone $ingredient;
