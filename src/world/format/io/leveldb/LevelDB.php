@@ -216,8 +216,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 			self::deserializeExtraDataKey($chunkVersion, $key, $x, $fullY, $z);
 
-			$ySub = ($fullY >> 4) & 0xf;
-			$y = $key & 0xf;
+			$ySub = ($fullY >> SubChunk::COORD_BIT_SIZE);
+			$y = $key & SubChunk::COORD_MASK;
 
 			$blockId = $value & 0xff;
 			$blockData = ($value >> 8) & 0xf;

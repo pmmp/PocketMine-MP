@@ -100,6 +100,7 @@ use pocketmine\utils\Promise;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProviderManagerEntry;
 use pocketmine\world\generator\Generator;
@@ -546,7 +547,7 @@ class Server{
 			$spawn = $world->getSpawnLocation();
 		}
 		$playerPromise = new Promise();
-		$world->requestChunkPopulation($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, null)->onCompletion(
+		$world->requestChunkPopulation($spawn->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawn->getFloorZ() >> Chunk::COORD_BIT_SIZE, null)->onCompletion(
 			function() use ($playerPromise, $class, $session, $playerInfo, $authenticated, $world, $playerPos, $spawn, $offlinePlayerData) : void{
 				if(!$session->isConnected()){
 					$playerPromise->reject();

@@ -37,6 +37,7 @@ use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\world\format\SubChunk;
 use pocketmine\world\particle\HugeExplodeSeedParticle;
 use pocketmine\world\sound\ExplodeSound;
 use pocketmine\world\utils\SubChunkExplorer;
@@ -128,7 +129,7 @@ class Explosion{
 								continue;
 							}
 
-							$state = $this->subChunkExplorer->currentSubChunk->getFullBlock($vBlockX & 0x0f, $vBlockY & 0x0f, $vBlockZ & 0x0f);
+							$state = $this->subChunkExplorer->currentSubChunk->getFullBlock($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
 
 							$blastResistance = $blockFactory->blastResistance[$state];
 							if($blastResistance >= 0){
