@@ -66,7 +66,7 @@ function replaceVersion(string $versionInfoPath, string $newVersion, bool $isDev
  */
 function main(array $argv) : void{
 	if(count($argv) < 2){
-		fwrite(STDERR, "Arguments: <channel> [release version]\n");
+		fwrite(STDERR, "Arguments: <channel> [release version] [next version]\n");
 		exit(1);
 	}
 	if(isset($argv[2])){
@@ -74,13 +74,18 @@ function main(array $argv) : void{
 	}else{
 		$currentVer = VersionInfo::VERSION();
 	}
-	$nextVer = new VersionString(sprintf(
-		"%u.%u.%u",
-		$currentVer->getMajor(),
-		$currentVer->getMinor(),
-		$currentVer->getPatch() + 1
-	));
+	if(isset($argv[3])){
+		$nextVer = new VersionString($argv[3]);
+	}else{
+		$nextVer = new VersionString(sprintf(
+			"%u.%u.%u",
+			$currentVer->getMajor(),
+			$currentVer->getMinor(),
+			$currentVer->getPatch() + 1
+		));
+	}
 
+	echo "About to tag version $currentVer. Next version will be $nextVer.\n";
 	echo "please add appropriate notes to the changelog and press enter...";
 	fgets(STDIN);
 	system('git add "' . dirname(__DIR__) . '/changelogs"');

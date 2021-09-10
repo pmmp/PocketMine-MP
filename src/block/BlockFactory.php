@@ -323,7 +323,7 @@ class BlockFactory{
 		$this->register(new SeaLantern(new BID(Ids::SEALANTERN, 0), "Sea Lantern", new BlockBreakInfo(0.3)));
 		$this->register(new SeaPickle(new BID(Ids::SEA_PICKLE, 0), "Sea Pickle", BlockBreakInfo::instant()));
 		$this->register(new Skull(new BID(Ids::MOB_HEAD_BLOCK, 0, ItemIds::SKULL, TileSkull::class), "Mob Head", new BlockBreakInfo(1.0)));
-
+		$this->register(new Slime(new BID(Ids::SLIME, 0), "Slime Block", BlockBreakInfo::instant()));
 		$this->register(new Snow(new BID(Ids::SNOW, 0), "Snow Block", new BlockBreakInfo(0.2, BlockToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new SnowLayer(new BID(Ids::SNOW_LAYER, 0), "Snow Layer", new BlockBreakInfo(0.1, BlockToolType::SHOVEL, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new SoulSand(new BID(Ids::SOUL_SAND, 0), "Soul Sand", new BlockBreakInfo(0.5, BlockToolType::SHOVEL)));
@@ -580,7 +580,6 @@ class BlockFactory{
 		//TODO: minecraft:repeating_command_block
 		//TODO: minecraft:scaffolding
 		//TODO: minecraft:seagrass
-		//TODO: minecraft:slime
 		//TODO: minecraft:smithing_table
 		//TODO: minecraft:sticky_piston
 		//TODO: minecraft:stonecutter_block

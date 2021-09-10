@@ -93,11 +93,14 @@ use pocketmine\utils\Config;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Internet;
 use pocketmine\utils\MainLogger;
+use pocketmine\utils\NotCloneable;
+use pocketmine\utils\NotSerializable;
 use pocketmine\utils\Process;
 use pocketmine\utils\Promise;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProviderManagerEntry;
 use pocketmine\world\generator\Generator;
@@ -160,6 +163,9 @@ use const ZLIB_ENCODING_GZIP;
  * The class that manages everything
  */
 class Server{
+	use NotCloneable;
+	use NotSerializable;
+
 	public const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
 	public const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
 
@@ -541,7 +547,7 @@ class Server{
 			$spawn = $world->getSpawnLocation();
 		}
 		$playerPromise = new Promise();
-		$world->requestChunkPopulation($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, null)->onCompletion(
+		$world->requestChunkPopulation($spawn->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawn->getFloorZ() >> Chunk::COORD_BIT_SIZE, null)->onCompletion(
 			function() use ($playerPromise, $class, $session, $playerInfo, $authenticated, $world, $playerPos, $spawn, $offlinePlayerData) : void{
 				if(!$session->isConnected()){
 					$playerPromise->reject();
@@ -1352,8 +1358,7 @@ class Server{
 
 			if(isset($this->console)){
 				$this->getLogger()->debug("Closing console");
-				$this->console->shutdown();
-				$this->console->notify();
+				$this->console->quit();
 			}
 
 			if(isset($this->network)){
@@ -1568,10 +1573,9 @@ class Server{
 
 	private function titleTick() : void{
 		Timings::$titleTick->startTiming();
-		$d = Process::getRealMemoryUsage();
 
 		$u = Process::getAdvancedMemoryUsage();
-		$usage = sprintf("%g/%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($d[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Process::getThreadCount());
+		$usage = sprintf("%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Process::getThreadCount());
 
 		$online = count($this->playerList);
 		$connecting = $this->network->getConnectionCount() - $online;
@@ -1666,14 +1670,5 @@ class Server{
 		}else{
 			$this->nextTick += 0.05;
 		}
-	}
-
-	/**
-	 * Called when something attempts to serialize the server instance.
-	 *
-	 * @throws \BadMethodCallException because Server instances cannot be serialized
-	 */
-	public function __sleep(){
-		throw new \BadMethodCallException("Cannot serialize Server instance");
 	}
 }

@@ -216,8 +216,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 			self::deserializeExtraDataKey($chunkVersion, $key, $x, $fullY, $z);
 
-			$ySub = ($fullY >> 4) & 0xf;
-			$y = $key & 0xf;
+			$ySub = ($fullY >> SubChunk::COORD_BIT_SIZE);
+			$y = $key & SubChunk::COORD_MASK;
 
 			$blockId = $value & 0xff;
 			$blockData = ($value >> 8) & 0xf;
@@ -446,8 +446,15 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					$layers = $subChunk->getBlockLayers();
 					$subStream->putByte(count($layers));
 					foreach($layers as $blocks){
-						$subStream->putByte($blocks->getBitsPerBlock() << 1);
-						$subStream->put($blocks->getWordArray());
+						if($blocks->getBitsPerBlock() !== 0){
+							$subStream->putByte($blocks->getBitsPerBlock() << 1);
+							$subStream->put($blocks->getWordArray());
+						}else{
+							//TODO: we use these in-memory, but they aren't supported on disk by the game yet
+							//polyfill them with a zero'd 1-bpb instead
+							$subStream->putByte(1 << 1);
+							$subStream->put(str_repeat("\x00", PalettedBlockArray::getExpectedWordArraySize(1)));
+						}
 
 						$palette = $blocks->getPalette();
 						$subStream->putLInt(count($palette));

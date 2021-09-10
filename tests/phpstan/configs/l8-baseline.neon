@@ -196,11 +196,6 @@ parameters:
 			path: ../../../src/permission/DefaultPermissions.php
 
 		-
-			message: "#^Cannot call method getEntities\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
 			message: "#^Cannot call method getSpawnLocation\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/player/Player.php
@@ -264,11 +259,6 @@ parameters:
 			message: "#^Only numeric types are allowed in /, float\\|null given on the left side\\.$#"
 			count: 1
 			path: ../../../src/world/Explosion.php
-
-		-
-			message: "#^Cannot call method getEntities\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 3
-			path: ../../../src/world/World.php
 
 		-
 			message: "#^Parameter \\#3 \\$chunk of method pocketmine\\\\player\\\\Player\\:\\:onChunkChanged\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"

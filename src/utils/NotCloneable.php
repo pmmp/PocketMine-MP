@@ -21,22 +21,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\utils;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\world\Position;
+trait NotCloneable{
 
-class BrewingStandInventory extends SimpleInventory implements BlockInventory{
-	use BlockInventoryTrait;
-
-	public const SLOT_INGREDIENT = 0;
-	public const SLOT_BOTTLE_LEFT = 1;
-	public const SLOT_BOTTLE_MIDDLE = 2;
-	public const SLOT_BOTTLE_RIGHT = 3;
-	public const SLOT_FUEL = 4;
-
-	public function __construct(Position $holder, int $size = 5){
-		$this->holder = $holder;
-		parent::__construct($size);
+	final public function __clone(){
+		throw new \LogicException("Cloning " . static::class . " objects is not allowed");
 	}
 }

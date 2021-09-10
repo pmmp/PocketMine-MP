@@ -30,10 +30,7 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Tile;
 use pocketmine\data\bedrock\BiomeIds;
-use pocketmine\entity\Entity;
-use pocketmine\player\Player;
 use function array_fill;
-use function array_filter;
 use function array_map;
 
 class Chunk{
@@ -41,6 +38,10 @@ class Chunk{
 	public const DIRTY_FLAG_BIOMES = 1 << 3;
 
 	public const MAX_SUBCHUNKS = 16;
+
+	public const EDGE_LENGTH = SubChunk::EDGE_LENGTH;
+	public const COORD_BIT_SIZE = SubChunk::COORD_BIT_SIZE;
+	public const COORD_MASK = SubChunk::COORD_MASK;
 
 	/** @var int */
 	private $terrainDirtyFlags = 0;
@@ -59,9 +60,6 @@ class Chunk{
 	/** @var Tile[] */
 	protected $tiles = [];
 
-	/** @var Entity[] */
-	protected $entities = [];
-
 	/** @var HeightArray */
 	protected $heightMap;
 
@@ -78,7 +76,7 @@ class Chunk{
 			$this->subChunks[$y] = $subChunks[$y] ?? new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, []);
 		}
 
-		$val = ($this->subChunks->getSize() * 16);
+		$val = ($this->subChunks->getSize() * SubChunk::EDGE_LENGTH);
 		$this->heightMap = $heightMap ?? new HeightArray(array_fill(0, 256, $val));
 		$this->biomeIds = $biomeIds ?? BiomeArray::fill(BiomeIds::OCEAN);
 	}
@@ -100,14 +98,14 @@ class Chunk{
 	 * @return int bitmap, (id << 4) | meta
 	 */
 	public function getFullBlock(int $x, int $y, int $z) : int{
-		return $this->getSubChunk($y >> 4)->getFullBlock($x, $y & 0x0f, $z);
+		return $this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->getFullBlock($x, $y & SubChunk::COORD_MASK, $z);
 	}
 
 	/**
 	 * Sets the blockstate at the given coordinate by internal ID.
 	 */
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
-		$this->getSubChunk($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
+		$this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->setFullBlock($x, $y & SubChunk::COORD_MASK, $z, $block);
 		$this->terrainDirtyFlags |= self::DIRTY_FLAG_TERRAIN;
 	}
 
@@ -123,7 +121,7 @@ class Chunk{
 		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
 			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z);
 			if($height !== null){
-				return $height | ($y << 4);
+				return $height | ($y << SubChunk::COORD_BIT_SIZE);
 			}
 		}
 
@@ -191,17 +189,6 @@ class Chunk{
 		$this->terrainDirtyFlags |= self::DIRTY_FLAG_TERRAIN;
 	}
 
-	public function addEntity(Entity $entity) : void{
-		if($entity->isClosed()){
-			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to a chunk");
-		}
-		$this->entities[$entity->getId()] = $entity;
-	}
-
-	public function removeEntity(Entity $entity) : void{
-		unset($this->entities[$entity->getId()]);
-	}
-
 	public function addTile(Tile $tile) : void{
 		if($tile->isClosed()){
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to a chunk");
@@ -217,22 +204,6 @@ class Chunk{
 	public function removeTile(Tile $tile) : void{
 		$pos = $tile->getPosition();
 		unset($this->tiles[Chunk::blockHash($pos->x, $pos->y, $pos->z)]);
-	}
-
-	/**
-	 * Returns an array of entities currently using this chunk.
-	 *
-	 * @return Entity[]
-	 */
-	public function getEntities() : array{
-		return $this->entities;
-	}
-
-	/**
-	 * @return Entity[]
-	 */
-	public function getSavableEntities() : array{
-		return array_filter($this->entities, function(Entity $entity) : bool{ return $entity->canSaveWithChunk(); });
 	}
 
 	/**
@@ -257,13 +228,6 @@ class Chunk{
 	 * Called when the chunk is unloaded, closing entities and tiles.
 	 */
 	public function onUnload() : void{
-		foreach($this->getEntities() as $entity){
-			if($entity instanceof Player){
-				continue;
-			}
-			$entity->close();
-		}
-
 		foreach($this->getTiles() as $tile){
 			$tile->close();
 		}
@@ -368,6 +332,8 @@ class Chunk{
 	 * @param int $z 0-15
 	 */
 	public static function blockHash(int $x, int $y, int $z) : int{
-		return ($y << 8) | (($z & 0x0f) << 4) | ($x & 0x0f);
+		return ($y << (2 * SubChunk::COORD_BIT_SIZE)) |
+			(($z & SubChunk::COORD_MASK) << SubChunk::COORD_BIT_SIZE) |
+			($x & SubChunk::COORD_MASK);
 	}
 }

@@ -26,30 +26,27 @@ parameters:
 	bootstrapFiles:
 		- tests/phpstan/bootstrap.php
 	scanDirectories:
+		- build
 		- tests/plugins/TesterPlugin
 		- tools
 	scanFiles:
 		- src/PocketMine.php
-		- build/make-release.php
-		- build/server-phar.php
-		- build/generate-known-translation-apis.php
 	paths:
+		- build
 		- src
 		- tests/phpstan/rules
-		- build/generate-known-translation-apis.php
-		- build/make-release.php
-		- build/server-phar.php
 		- tests/phpunit
 		- tests/plugins/TesterPlugin
 		- tools
 	dynamicConstantNames:
 		- pocketmine\VersionInfo::IS_DEVELOPMENT_BUILD
 		- pocketmine\DEBUG
+		- pocketmine\IS_DEVELOPMENT_BUILD
 	stubFiles:
 		- tests/phpstan/stubs/JsonMapper.stub
-		- tests/phpstan/stubs/pthreads.stub
 		- tests/phpstan/stubs/leveldb.stub
 		- tests/phpstan/stubs/phpasn1.stub
+		- tests/phpstan/stubs/pthreads.stub
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	staticReflectionClassNamePatterns:
 		- "#^COM$#"
