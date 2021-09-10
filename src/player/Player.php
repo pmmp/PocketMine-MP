@@ -1575,6 +1575,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->hungerManager->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
 				return true;
 			}
+		}else{
+			$this->logger->debug("Cancelled block break at $pos due to not currently being interactable");
 		}
 
 		return false;
@@ -1601,6 +1603,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				}
 				return true;
 			}
+		}else{
+			$this->logger->debug("Cancelled interaction of block at $pos due to not currently being interactable");
 		}
 
 		return false;
@@ -1625,7 +1629,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$oldItem = clone $heldItem;
 
 		$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
-		if($this->isSpectator() or !$this->canInteract($entity->getLocation(), 8) or ($entity instanceof Player and !$this->server->getConfigGroup()->getConfigBool("pvp"))){
+		if(!$this->canInteract($entity->getLocation(), 8)){
+			$this->logger->debug("Cancelled attack of entity " . $entity->getId() . " due to not currently being interactable");
+			$ev->cancel();
+		}elseif($this->isSpectator() or ($entity instanceof Player and !$this->server->getConfigGroup()->getConfigBool("pvp"))){
 			$ev->cancel();
 		}
 
@@ -1688,6 +1695,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$ev = new PlayerEntityInteractEvent($this, $entity, $clickPos);
 
 		if(!$this->canInteract($entity->getLocation(), 8)){
+			$this->logger->debug("Cancelled interaction with entity " . $entity->getId() . " due to not currently being interactable");
 			$ev->cancel();
 		}
 
