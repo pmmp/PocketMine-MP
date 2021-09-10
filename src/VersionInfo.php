@@ -29,10 +29,10 @@ use function str_repeat;
 
 final class VersionInfo{
 	public const NAME = "PocketMine-MP";
-	public const BASE_VERSION = "4.0.0-BETA2";
-	public const IS_DEVELOPMENT_BUILD = false;
+	public const BASE_VERSION = "4.0.0-BETA3";
+	public const IS_DEVELOPMENT_BUILD = true;
 	public const BUILD_NUMBER = 0;
-	public const BUILD_CHANNEL = "beta";
+	public const BUILD_CHANNEL = "";
 
 	private function __construct(){
 		//NOOP
