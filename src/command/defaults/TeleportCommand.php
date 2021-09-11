@@ -28,7 +28,6 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\Location;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
@@ -42,8 +41,8 @@ class TeleportCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_TP_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_TP_USAGE,
+			KnownTranslationFactory::pocketmine_command_tp_description(),
+			KnownTranslationFactory::commands_tp_usage(),
 			["teleport"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TELEPORT);

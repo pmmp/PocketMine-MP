@@ -27,7 +27,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function count;
@@ -41,8 +40,8 @@ class WhitelistCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_WHITELIST_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_WHITELIST_USAGE
+			KnownTranslationFactory::pocketmine_command_whitelist_description(),
+			KnownTranslationFactory::commands_whitelist_usage()
 		);
 		$this->setPermission(implode(";", [
 			DefaultPermissionNames::COMMAND_WHITELIST_RELOAD,

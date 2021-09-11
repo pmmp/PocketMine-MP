@@ -81,7 +81,7 @@ parameters:
 			path: ../../../src/permission/PermissionParser.php
 
 		-
-			message: "#^Parameter \\#1 \\$description of method pocketmine\\\\command\\\\Command\\:\\:setDescription\\(\\) expects string, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$description of method pocketmine\\\\command\\\\Command\\:\\:setDescription\\(\\) expects pocketmine\\\\lang\\\\Translatable\\|string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginBase.php
 
@@ -91,7 +91,7 @@ parameters:
 			path: ../../../src/plugin/PluginBase.php
 
 		-
-			message: "#^Parameter \\#1 \\$usage of method pocketmine\\\\command\\\\Command\\:\\:setUsage\\(\\) expects string, mixed given\\.$#"
+			message: "#^Parameter \\#1 \\$usage of method pocketmine\\\\command\\\\Command\\:\\:setUsage\\(\\) expects pocketmine\\\\lang\\\\Translatable\\|string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginBase.php
 
