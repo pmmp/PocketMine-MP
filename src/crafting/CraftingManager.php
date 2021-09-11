@@ -24,9 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
+use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\TreeRoot;
+use pocketmine\utils\BinaryStream;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
-use function json_encode;
 use function usort;
 
 class CraftingManager{
@@ -108,12 +110,16 @@ class CraftingManager{
 	private static function hashOutputs(array $outputs) : string{
 		$outputs = self::pack($outputs);
 		usort($outputs, [self::class, "sort"]);
+		$result = new BinaryStream();
 		foreach($outputs as $o){
-			//this reduces accuracy of hash, but it's necessary to deal with recipe book shift-clicking stupidity
-			$o->setCount(1);
+			//count is not written because the outputs might be from multiple repetitions of a single recipe
+			//this reduces the accuracy of the hash, but it won't matter in most cases.
+			$result->putVarInt($o->getId());
+			$result->putVarInt($o->getMeta());
+			$result->put((new LittleEndianNbtSerializer())->write(new TreeRoot($o->getNamedTag())));
 		}
 
-		return json_encode($outputs);
+		return $result->getBuffer();
 	}
 
 	/**

@@ -26,6 +26,7 @@ namespace pocketmine\world\light;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\HeightArray;
 use pocketmine\world\format\LightArray;
+use pocketmine\world\format\SubChunk;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use pocketmine\world\World;
@@ -68,17 +69,17 @@ class SkyLightUpdate extends LightUpdate{
 		}
 		$chunk = $this->subChunkExplorer->currentChunk;
 
-		$oldHeightMap = $chunk->getHeightMap($x & 0xf, $z & 0xf);
-		$source = $this->subChunkExplorer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf);
+		$oldHeightMap = $chunk->getHeightMap($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK);
+		$source = $this->subChunkExplorer->currentSubChunk->getFullBlock($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
 
 		$yPlusOne = $y + 1;
 
 		if($yPlusOne === $oldHeightMap){ //Block changed directly beneath the heightmap. Check if a block was removed or changed to a different light-filter.
-			$newHeightMap = self::recalculateHeightMapColumn($chunk, $x & 0x0f, $z & 0x0f, $this->directSkyLightBlockers);
-			$chunk->setHeightMap($x & 0xf, $z & 0xf, $newHeightMap);
+			$newHeightMap = self::recalculateHeightMapColumn($chunk, $x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $this->directSkyLightBlockers);
+			$chunk->setHeightMap($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $newHeightMap);
 		}elseif($yPlusOne > $oldHeightMap){ //Block changed above the heightmap.
 			if($this->directSkyLightBlockers[$source]){
-				$chunk->setHeightMap($x & 0xf, $z & 0xf, $yPlusOne);
+				$chunk->setHeightMap($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $yPlusOne);
 				$newHeightMap = $yPlusOne;
 			}else{ //Block changed which has no effect on direct sky light, for example placing or removing glass.
 				return;
@@ -112,7 +113,7 @@ class SkyLightUpdate extends LightUpdate{
 		//setAndUpdateLight() won't bother propagating from nodes that are already what we want to change them to, so we
 		//have to avoid filling full light for any subchunk that contains a heightmap Y coordinate
 		$highestHeightMapPlusOne = max($chunk->getHeightMapArray()) + 1;
-		$lowestClearSubChunk = ($highestHeightMapPlusOne >> 4) + (($highestHeightMapPlusOne & 0xf) !== 0 ? 1 : 0);
+		$lowestClearSubChunk = ($highestHeightMapPlusOne >> SubChunk::COORD_BIT_SIZE) + (($highestHeightMapPlusOne & SubChunk::COORD_MASK) !== 0 ? 1 : 0);
 		$chunkHeight = $chunk->getSubChunks()->count();
 		for($y = 0; $y < $lowestClearSubChunk && $y < $chunkHeight; $y++){
 			$chunk->getSubChunk($y)->setBlockSkyLightArray(LightArray::fill(0));
@@ -123,10 +124,10 @@ class SkyLightUpdate extends LightUpdate{
 
 		$lightSources = 0;
 
-		$baseX = $chunkX << 4;
-		$baseZ = $chunkZ << 4;
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
+		$baseX = $chunkX << Chunk::COORD_BIT_SIZE;
+		$baseZ = $chunkZ << Chunk::COORD_BIT_SIZE;
+		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
+			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
 				$currentHeight = $chunk->getHeightMap($x, $z);
 				$maxAdjacentHeight = 0;
 				if($x !== 0){
@@ -154,9 +155,9 @@ class SkyLightUpdate extends LightUpdate{
 					$this->setAndUpdateLight($x + $baseX, $y, $z + $baseZ, 15);
 					$lightSources++;
 				}
-				for($y = $nodeColumnEnd + 1, $yMax = $lowestClearSubChunk * 16; $y < $yMax; $y++){
+				for($y = $nodeColumnEnd + 1, $yMax = $lowestClearSubChunk * SubChunk::EDGE_LENGTH; $y < $yMax; $y++){
 					if($this->subChunkExplorer->moveTo($x + $baseX, $y, $z + $baseZ) !== SubChunkExplorerStatus::INVALID){
-						$this->getCurrentLightArray()->set($x, $y & 0xf, $z, 15);
+						$this->getCurrentLightArray()->set($x, $y & SubChunk::COORD_MASK, $z, 15);
 					}
 				}
 			}
@@ -183,13 +184,13 @@ class SkyLightUpdate extends LightUpdate{
 			return $result;
 		}
 
-		for($z = 0; $z < 16; ++$z){
-			for($x = 0; $x < 16; ++$x){
+		for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
+			for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
 				$y = null;
 				for($subChunkY = $maxSubChunkY; $subChunkY >= 0; $subChunkY--){
 					$subHighestBlockY = $chunk->getSubChunk($subChunkY)->getHighestBlockAt($x, $z);
 					if($subHighestBlockY !== null){
-						$y = ($subChunkY * 16) + $subHighestBlockY;
+						$y = ($subChunkY * SubChunk::EDGE_LENGTH) + $subHighestBlockY;
 						break;
 					}
 				}

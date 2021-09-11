@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use function count;
+use function spl_object_id;
 
 /**
  * This trait encapsulates all enchantment handling needed for itemstacks.
@@ -40,12 +41,12 @@ trait ItemEnchantmentHandlingTrait{
 	}
 
 	public function hasEnchantment(Enchantment $enchantment, int $level = -1) : bool{
-		$id = $enchantment->getRuntimeId();
+		$id = spl_object_id($enchantment);
 		return isset($this->enchantments[$id]) and ($level === -1 or $this->enchantments[$id]->getLevel() === $level);
 	}
 
 	public function getEnchantment(Enchantment $enchantment) : ?EnchantmentInstance{
-		return $this->enchantments[$enchantment->getRuntimeId()] ?? null;
+		return $this->enchantments[spl_object_id($enchantment)] ?? null;
 	}
 
 	/**
@@ -54,7 +55,7 @@ trait ItemEnchantmentHandlingTrait{
 	public function removeEnchantment(Enchantment $enchantment, int $level = -1) : self{
 		$instance = $this->getEnchantment($enchantment);
 		if($instance !== null and ($level === -1 or $instance->getLevel() === $level)){
-			unset($this->enchantments[$enchantment->getRuntimeId()]);
+			unset($this->enchantments[spl_object_id($enchantment)]);
 		}
 
 		return $this;
@@ -72,7 +73,7 @@ trait ItemEnchantmentHandlingTrait{
 	 * @return $this
 	 */
 	public function addEnchantment(EnchantmentInstance $enchantment) : self{
-		$this->enchantments[$enchantment->getRuntimeId()] = $enchantment;
+		$this->enchantments[spl_object_id($enchantment->getType())] = $enchantment;
 		return $this;
 	}
 

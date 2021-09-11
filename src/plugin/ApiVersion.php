@@ -45,7 +45,7 @@ final class ApiVersion{
 			//Format: majorVersion.minorVersion.patch (3.0.0)
 			//    or: majorVersion.minorVersion.patch-devBuild (3.0.0-alpha1)
 			if($version->getBaseVersion() !== $myVersion->getBaseVersion()){
-				if($version->getMajor() !== $myVersion->getMajor() or $version->getSuffix() !== $myVersion->getSuffix()){
+				if($version->getMajor() !== $myVersion->getMajor()){
 					continue;
 				}
 

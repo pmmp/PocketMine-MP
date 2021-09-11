@@ -23,25 +23,34 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator\object;
 
-use pocketmine\block\VanillaBlocks;
+use pocketmine\block\utils\TreeType;
 use pocketmine\utils\Random;
-use pocketmine\world\BlockTransaction;
-use pocketmine\world\ChunkManager;
 
-class BirchTree extends Tree{
-	/** @var bool */
-	protected $superBirch = false;
+final class TreeFactory{
 
-	public function __construct(bool $superBirch = false){
-		parent::__construct(VanillaBlocks::BIRCH_LOG(), VanillaBlocks::BIRCH_LEAVES());
-		$this->superBirch = $superBirch;
-	}
+	/**
+	 * @param TreeType|null $type default oak
+	 */
+	public static function get(Random $random, ?TreeType $type = null) : ?Tree{
+		$type = $type ?? TreeType::OAK();
+		if($type->equals(TreeType::SPRUCE())){
+			return new SpruceTree();
+		}elseif($type->equals(TreeType::BIRCH())){
+			if($random->nextBoundedInt(39) === 0){
+				return new BirchTree(true);
+			}else{
+				return new BirchTree();
+			}
+		}elseif($type->equals(TreeType::JUNGLE())){
+			return new JungleTree();
+		}elseif($type->equals(TreeType::OAK())){ //default
+			return new OakTree();
+			/*if($random->nextRange(0, 9) === 0){
+				$tree = new BigTree();
+			}else{*/
 
-	public function getBlockTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{
-		$this->treeHeight = $random->nextBoundedInt(3) + 5;
-		if($this->superBirch){
-			$this->treeHeight += 5;
+			//}
 		}
-		return parent::getBlockTransaction($world, $x, $y, $z, $random);
+		return null;
 	}
 }
