@@ -95,23 +95,17 @@ final class KnownTranslationKeys{
 	public const COMMANDS_PARTICLE_NOTFOUND = "commands.particle.notFound";
 	public const COMMANDS_PARTICLE_SUCCESS = "commands.particle.success";
 	public const COMMANDS_PLAYERS_LIST = "commands.players.list";
-	public const COMMANDS_PLAYERS_USAGE = "commands.players.usage";
-	public const COMMANDS_SAVE_OFF_USAGE = "commands.save-off.usage";
-	public const COMMANDS_SAVE_ON_USAGE = "commands.save-on.usage";
 	public const COMMANDS_SAVE_DISABLED = "commands.save.disabled";
 	public const COMMANDS_SAVE_ENABLED = "commands.save.enabled";
 	public const COMMANDS_SAVE_START = "commands.save.start";
 	public const COMMANDS_SAVE_SUCCESS = "commands.save.success";
-	public const COMMANDS_SAVE_USAGE = "commands.save.usage";
 	public const COMMANDS_SAY_USAGE = "commands.say.usage";
 	public const COMMANDS_SEED_SUCCESS = "commands.seed.success";
-	public const COMMANDS_SEED_USAGE = "commands.seed.usage";
 	public const COMMANDS_SETWORLDSPAWN_SUCCESS = "commands.setworldspawn.success";
 	public const COMMANDS_SETWORLDSPAWN_USAGE = "commands.setworldspawn.usage";
 	public const COMMANDS_SPAWNPOINT_SUCCESS = "commands.spawnpoint.success";
 	public const COMMANDS_SPAWNPOINT_USAGE = "commands.spawnpoint.usage";
 	public const COMMANDS_STOP_START = "commands.stop.start";
-	public const COMMANDS_STOP_USAGE = "commands.stop.usage";
 	public const COMMANDS_TIME_ADDED = "commands.time.added";
 	public const COMMANDS_TIME_QUERY = "commands.time.query";
 	public const COMMANDS_TIME_SET = "commands.time.set";
@@ -257,7 +251,6 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_GC_ENTITIES = "pocketmine.command.gc.entities";
 	public const POCKETMINE_COMMAND_GC_HEADER = "pocketmine.command.gc.header";
 	public const POCKETMINE_COMMAND_GC_MEMORYFREED = "pocketmine.command.gc.memoryFreed";
-	public const POCKETMINE_COMMAND_GC_USAGE = "pocketmine.command.gc.usage";
 	public const POCKETMINE_COMMAND_GIVE_DESCRIPTION = "pocketmine.command.give.description";
 	public const POCKETMINE_COMMAND_GIVE_USAGE = "pocketmine.command.give.usage";
 	public const POCKETMINE_COMMAND_HELP_DESCRIPTION = "pocketmine.command.help.description";
@@ -271,7 +264,6 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_PARTICLE_USAGE = "pocketmine.command.particle.usage";
 	public const POCKETMINE_COMMAND_PLUGINS_DESCRIPTION = "pocketmine.command.plugins.description";
 	public const POCKETMINE_COMMAND_PLUGINS_SUCCESS = "pocketmine.command.plugins.success";
-	public const POCKETMINE_COMMAND_PLUGINS_USAGE = "pocketmine.command.plugins.usage";
 	public const POCKETMINE_COMMAND_SAVE_DESCRIPTION = "pocketmine.command.save.description";
 	public const POCKETMINE_COMMAND_SAVEOFF_DESCRIPTION = "pocketmine.command.saveoff.description";
 	public const POCKETMINE_COMMAND_SAVEON_DESCRIPTION = "pocketmine.command.saveon.description";
@@ -280,7 +272,6 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_SETWORLDSPAWN_DESCRIPTION = "pocketmine.command.setworldspawn.description";
 	public const POCKETMINE_COMMAND_SPAWNPOINT_DESCRIPTION = "pocketmine.command.spawnpoint.description";
 	public const POCKETMINE_COMMAND_STATUS_DESCRIPTION = "pocketmine.command.status.description";
-	public const POCKETMINE_COMMAND_STATUS_USAGE = "pocketmine.command.status.usage";
 	public const POCKETMINE_COMMAND_STOP_DESCRIPTION = "pocketmine.command.stop.description";
 	public const POCKETMINE_COMMAND_TELL_DESCRIPTION = "pocketmine.command.tell.description";
 	public const POCKETMINE_COMMAND_TIME_DESCRIPTION = "pocketmine.command.time.description";

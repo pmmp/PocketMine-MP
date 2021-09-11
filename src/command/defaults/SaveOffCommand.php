@@ -33,8 +33,7 @@ class SaveOffCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationFactory::pocketmine_command_saveoff_description(),
-			KnownTranslationFactory::commands_save_off_usage()
+			KnownTranslationFactory::pocketmine_command_saveoff_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_SAVE_DISABLE);
 	}
