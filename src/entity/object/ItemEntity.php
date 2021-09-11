@@ -44,8 +44,7 @@ class ItemEntity extends Entity{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::ITEM; }
 
-	public const MERGE_CHECK_PERIOD_ON_MOVE = 2; //0.1 seconds
-	public const MERGE_CHECK_PERIOD = 40; //2 seconds
+	public const MERGE_CHECK_PERIOD = 2; //0.1 seconds
 	public const DEFAULT_DESPAWN_DELAY = 6000; //5 minutes
 	public const NEVER_DESPAWN = -1;
 	public const MAX_DESPAWN_DELAY = 32767 + self::DEFAULT_DESPAWN_DELAY; //max value storable by mojang NBT :(
@@ -108,14 +107,21 @@ class ItemEntity extends Entity{
 			if($this->pickupDelay < 0){
 				$this->pickupDelay = 0;
 			}
-			$period = $this->hasMovementUpdate() ? self::MERGE_CHECK_PERIOD_ON_MOVE : self::MERGE_CHECK_PERIOD;
-			if($this->despawnDelay % $period === 0){
+			if($this->hasMovementUpdate() and $this->despawnDelay % self::MERGE_CHECK_PERIOD === 0){
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
 					if(!$entity instanceof ItemEntity or $entity->isFlaggedForDespawn()){
 						continue;
 					}
 
-					if($this->tryMerge($entity)){
+
+					/**
+					 * @var ItemEntity $new
+					 * @var ItemEntity $old
+					 */
+					[$new, $old] = $entity->item->getCount() <= $this->item->getCount()
+						? [$this, $entity]
+						: [$entity, $this];
+					if($old->tryMerge($new)){
 						break;
 					}
 				}
@@ -139,14 +145,14 @@ class ItemEntity extends Entity{
 
 	public function isMergeable(ItemEntity $entity) : bool{
 		$item = $entity->item;
-		return $entity->pickupDelay !== self::NEVER_DESPAWN and $this->item->canStackWith($item) and $this->item->getCount() + $item->getCount() <= $this->item->getMaxStackSize();
+		return $entity->pickupDelay !== self::NEVER_DESPAWN and $item->canStackWith($this->item) and $item->getCount() + $this->item->getCount() <= $item->getMaxStackSize();
 	}
 
 	public function tryMerge(ItemEntity $entity) : bool{
 		$ev = new ItemMergeEvent($this, $entity);
 		$count1 = $entity->item->getCount();
 		$count2 = $this->item->getCount();
-		if(!$this->isMergeable($entity) or $count1 < $count2){
+		if(!$this->isMergeable($entity)){
 			$ev->cancel();
 		}
 		$ev->call();
