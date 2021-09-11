@@ -148,12 +148,13 @@ class ItemEntity extends Entity{
 	}
 
 	public function tryMerge(ItemEntity $entity) : bool{
+		if(!$this->isMergeable($entity)){
+			return false;
+		}
+
 		$ev = new ItemMergeEvent($this, $entity);
 		$count1 = $entity->item->getCount();
 		$count2 = $this->item->getCount();
-		if(!$this->isMergeable($entity)){
-			$ev->cancel();
-		}
 		$ev->call();
 
 		if($ev->isCancelled()){
