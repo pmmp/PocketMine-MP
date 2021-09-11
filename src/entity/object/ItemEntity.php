@@ -44,8 +44,8 @@ class ItemEntity extends Entity{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::ITEM; }
 
-	public const MERGE_CHECK_PERIOD_ON_MOVE = 40; //2 seconds
-	public const MERGE_CHECK_PERIOD = 2; //0.1 seconds
+	public const MERGE_CHECK_PERIOD_ON_MOVE = 2; //0.1 seconds
+	public const MERGE_CHECK_PERIOD = 40; //2 seconds
 	public const DEFAULT_DESPAWN_DELAY = 6000; //5 minutes
 	public const NEVER_DESPAWN = -1;
 	public const MAX_DESPAWN_DELAY = 32767 + self::DEFAULT_DESPAWN_DELAY; //max value storable by mojang NBT :(
