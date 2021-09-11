@@ -113,7 +113,6 @@ class ItemEntity extends Entity{
 						continue;
 					}
 
-
 					/**
 					 * @var ItemEntity $new
 					 * @var ItemEntity $old
