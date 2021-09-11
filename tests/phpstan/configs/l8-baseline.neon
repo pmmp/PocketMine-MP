@@ -6,11 +6,6 @@ parameters:
 			path: ../../../build/make-release.php
 
 		-
-			message: "#^Parameter \\#1 \\$constraint of method pocketmine\\\\block\\\\BaseRail\\:\\:getPossibleConnectionDirectionsOneConstraint\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/block/BaseRail.php
-
-		-
 			message: "#^Cannot call method setFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/block/Block.php
@@ -281,23 +276,13 @@ parameters:
 			path: ../../../src/world/format/HeightArray.php
 
 		-
-			message: "#^Cannot call method isDirty\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/generator/PopulationTask.php
-
-		-
-			message: "#^Cannot call method setDirtyFlag\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 4
-			path: ../../../src/world/generator/PopulationTask.php
-
-		-
 			message: "#^Cannot call method setPopulated\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/generator/PopulationTask.php
 
 		-
 			message: "#^Parameter \\#1 \\$chunk of static method pocketmine\\\\world\\\\format\\\\io\\\\FastChunkSerializer\\:\\:serializeWithoutLight\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
-			count: 2
+			count: 1
 			path: ../../../src/world/generator/PopulationTask.php
 
 		-
