@@ -153,15 +153,13 @@ class ItemEntity extends Entity{
 		}
 
 		$ev = new ItemMergeEvent($this, $entity);
-		$count1 = $entity->item->getCount();
-		$count2 = $this->item->getCount();
 		$ev->call();
 
 		if($ev->isCancelled()){
 			return false;
 		}
 
-		$entity->setStackSize($count1 + $count2);
+		$entity->setStackSize($entity->item->getCount() + $this->item->getCount());
 		$this->flagForDespawn();
 		$entity->pickupDelay = max($entity->pickupDelay, $this->pickupDelay);
 		$entity->despawnDelay = max($entity->despawnDelay, $this->despawnDelay);
