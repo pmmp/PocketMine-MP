@@ -444,7 +444,6 @@ abstract class Liquid extends Transparent{
 
 			if(!$this->canFlowInto($block)){
 				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::BLOCKED;
-				continue;
 			}elseif($this->position->getWorld()->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
 				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::CAN_FLOW_DOWN;
 				$flowCost[$j] = $maxCost = 0;
