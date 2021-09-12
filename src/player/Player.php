@@ -1126,7 +1126,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->logger->debug("Moved too fast, reverting movement");
 			$this->logger->debug("Old position: " . $this->location->asVector3() . ", new position: " . $newPos);
 			$revert = true;
-		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos) or !$this->getWorld()->isChunkGenerated($newPos->getFloorX() >> Chunk::COORD_BIT_SIZE, $newPos->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
+		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos)){
 			$revert = true;
 			$this->nextChunkOrderRun = 0;
 		}
