@@ -25,7 +25,6 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function array_filter;
@@ -40,8 +39,7 @@ class ListCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_LIST_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_PLAYERS_USAGE
+			KnownTranslationFactory::pocketmine_command_list_description()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_LIST);
 	}

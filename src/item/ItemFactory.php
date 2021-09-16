@@ -432,6 +432,10 @@ class ItemFactory{
 		$this->list[self::getListOffset($identifier->getId(), $identifier->getMeta())] = clone $item;
 	}
 
+	private static function itemToBlockId(int $id) : int{
+		return $id < 0 ? 255 - $id : $id;
+	}
+
 	/**
 	 * @deprecated This method should ONLY be used for deserializing data, e.g. from a config or database. For all other
 	 * purposes, use VanillaItems.
@@ -456,7 +460,7 @@ class ItemFactory{
 				}
 			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
 				//TODO: do not assume that item IDs and block IDs are the same or related
-				$item = new ItemBlock(new ItemIdentifier($id, $meta), BlockFactory::getInstance()->get($id < 0 ? 255 - $id : $id, $meta & 0xf));
+				$item = new ItemBlock(new ItemIdentifier($id, $meta), BlockFactory::getInstance()->get(self::itemToBlockId($id), $meta & 0xf));
 			}
 		}
 
@@ -481,7 +485,7 @@ class ItemFactory{
 	 */
 	public function isRegistered(int $id, int $variant = 0) : bool{
 		if($id < 256){
-			return BlockFactory::getInstance()->isRegistered($id);
+			return BlockFactory::getInstance()->isRegistered(self::itemToBlockId($id));
 		}
 
 		return isset($this->list[self::getListOffset($id, $variant)]);

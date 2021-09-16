@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "db707e7155d39811bff61dc825413212",
+    "content-hash": "772322f77afd2061a55f5c9963555b89",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -198,12 +198,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockProtocol.git",
-                "reference": "3478cebf31a2843e5794222ec4c5e0b03773f8cc"
+                "reference": "d50a093b53329a807d2915b2db55ffcda1206eb1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/3478cebf31a2843e5794222ec4c5e0b03773f8cc",
-                "reference": "3478cebf31a2843e5794222ec4c5e0b03773f8cc",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/d50a093b53329a807d2915b2db55ffcda1206eb1",
+                "reference": "d50a093b53329a807d2915b2db55ffcda1206eb1",
                 "shasum": ""
             },
             "require": {
@@ -241,7 +241,7 @@
             "support": {
                 "source": "https://github.com/NetherGamesMC/BedrockProtocol/tree/master"
             },
-            "time": "2021-08-26T17:57:11+00:00"
+            "time": "2021-09-16T19:24:13+00:00"
         },
         {
             "name": "netresearch/jsonmapper",

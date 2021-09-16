@@ -43,29 +43,35 @@ $plainArgs = getopt("", array_map(function(string $str){ return "$str:"; }, arra
 $args = [];
 foreach($requiredOpts as $opt => $desc){
 	if(!isset($plainArgs[$opt]) || !is_string($plainArgs[$opt])){
-		die($usageMessage);
+		fwrite(STDERR, $usageMessage);
+		exit(1);
 	}
 	$args[$opt] = $plainArgs[$opt];
 }
 if(!array_key_exists($args["format"], $writableFormats)){
-	die($usageMessage);
+	fwrite(STDERR, $usageMessage);
+	exit(1);
 }
 
 $inputPath = realpath($args["world"]);
 if($inputPath === false){
-	die("Cannot find input world at location: " . $args["world"]);
+	fwrite(STDERR, "Cannot find input world at location: " . $args["world"] . PHP_EOL);
+	exit(1);
 }
 $backupPath = realpath($args["backup"]);
 if($backupPath === false || (!@mkdir($backupPath, 0777, true) and !is_dir($backupPath)) or !is_writable($backupPath)){
-	die("Backup file path " . $args["backup"] . " is not writable (permission error or doesn't exist), aborting");
+	fwrite(STDERR, "Backup file path " . $args["backup"] . " is not writable (permission error or doesn't exist), aborting" . PHP_EOL);
+	exit(1);
 }
 
 $oldProviderClasses = $providerManager->getMatchingProviders($inputPath);
 if(count($oldProviderClasses) === 0){
-	die("Unknown input world format");
+	fwrite(STDERR, "Unknown input world format" . PHP_EOL);
+	exit(1);
 }
 if(count($oldProviderClasses) > 1){
-	die("Ambiguous input world format: matched " . count($oldProviderClasses) . " (" . implode(array_keys($oldProviderClasses)) . ")");
+	fwrite(STDERR, "Ambiguous input world format: matched " . count($oldProviderClasses) . " (" . implode(array_keys($oldProviderClasses)) . ")" . PHP_EOL);
+	exit(1);
 }
 $oldProviderClass = array_shift($oldProviderClasses);
 $oldProvider = $oldProviderClass->fromPath($inputPath);

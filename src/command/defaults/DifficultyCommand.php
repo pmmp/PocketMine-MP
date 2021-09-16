@@ -27,7 +27,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\world\World;
 use function count;
@@ -37,8 +36,8 @@ class DifficultyCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_DIFFICULTY_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_DIFFICULTY_USAGE
+			KnownTranslationFactory::pocketmine_command_difficulty_description(),
+			KnownTranslationFactory::commands_difficulty_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_DIFFICULTY);
 	}
