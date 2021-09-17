@@ -51,7 +51,7 @@ class FallingBlock extends Entity{
 
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
-	
+
 	/** @var int */
 	private $fallTime = 0;
 
