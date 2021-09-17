@@ -129,7 +129,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 			case EntityDamageEvent::CAUSE_DROWNING:
 				return KnownTranslationFactory::death_attack_drown($name);
 
-			Case EntityDamageEvent::CAUSE_FALLING_ANVIL:
+			case EntityDamageEvent::CAUSE_FALLING_BLOCK:
 				return KnownTranslationFactory::death_attack_anvil($name);
 
 			case EntityDamageEvent::CAUSE_CONTACT:

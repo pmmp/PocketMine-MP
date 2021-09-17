@@ -569,11 +569,9 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_WHITELIST_REMOVE_USAGE, []);
 	}
 
-
 	public static function commands_whitelist_usage() : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_WHITELIST_USAGE, []);
 	}
-
 
 	public static function death_attack_anvil(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::DEATH_ATTACK_ANVIL, [

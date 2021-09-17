@@ -101,7 +101,7 @@ class FallingBlock extends Entity{
 		if($this->closed){
 			return false;
 		}
-		$this->fallTime+=1;
+		$this->fallTime++;
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
@@ -110,14 +110,14 @@ class FallingBlock extends Entity{
 			$pos = $this->location->add(-$this->size->getWidth() / 2, $this->size->getHeight(), -$this->size->getWidth() / 2)->floor();
 
 
-			if($this->getBlock()->getId() == VanillaBlocks::ANVIL()->GetId()) {
+			if($this->getBlock()->getId() === VanillaBlocks::ANVIL()->getId()) {
 
 				$collidedEntities = $world->getCollidingEntities($this->getBoundingBox());
 				foreach($collidedEntities as $ent)
 					if($ent instanceof Living) {
 						$lastCause = $ent->lastDamageCause;
 						if(!($lastCause instanceof EntityDamageByBlockEvent) || $lastCause->getDamager() !== $this->getBlock()) {
-							$ev = new EntityDamageByBlockEvent($this->getBlock(), $ent, EntityDamageEvent::CAUSE_FALLING_ANVIL, min($this->fallTime, 40));
+							$ev = new EntityDamageByBlockEvent($this->getBlock(), $ent, EntityDamageEvent::CAUSE_FALLING_BLOCK, min($this->fallTime, 40));
 							$ent->attack($ev);
 						}
 					}
@@ -173,5 +173,4 @@ class FallingBlock extends Entity{
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
 		return $vector3->add(0, 0.49, 0); //TODO: check if height affects this
 	}
-
 }
