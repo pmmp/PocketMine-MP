@@ -128,6 +128,7 @@ final class KnownTranslationKeys{
 	public const COMMANDS_WHITELIST_REMOVE_SUCCESS = "commands.whitelist.remove.success";
 	public const COMMANDS_WHITELIST_REMOVE_USAGE = "commands.whitelist.remove.usage";
 	public const COMMANDS_WHITELIST_USAGE = "commands.whitelist.usage";
+	public const DEATH_ATTACK_ANVIL = "death.attack.anvil";
 	public const DEATH_ATTACK_ARROW = "death.attack.arrow";
 	public const DEATH_ATTACK_ARROW_ITEM = "death.attack.arrow.item";
 	public const DEATH_ATTACK_CACTUS = "death.attack.cactus";

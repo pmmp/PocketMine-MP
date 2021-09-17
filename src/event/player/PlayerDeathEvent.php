@@ -129,6 +129,9 @@ class PlayerDeathEvent extends EntityDeathEvent{
 			case EntityDamageEvent::CAUSE_DROWNING:
 				return KnownTranslationFactory::death_attack_drown($name);
 
+			Case EntityDamageEvent::CAUSE_FALLING_ANVIL:
+				return KnownTranslationFactory::death_attack_anvil($name);
+
 			case EntityDamageEvent::CAUSE_CONTACT:
 				if($deathCause instanceof EntityDamageByBlockEvent){
 					if($deathCause->getDamager()->getId() === BlockLegacyIds::CACTUS){

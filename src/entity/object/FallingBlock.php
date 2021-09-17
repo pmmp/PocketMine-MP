@@ -28,8 +28,11 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\Fallable;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
+use pocketmine\entity\Living;
 use pocketmine\entity\Location;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\event\entity\EntityBlockChangeEvent;
+use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
@@ -47,6 +50,7 @@ class FallingBlock extends Entity{
 
 	protected $gravity = 0.04;
 	protected $drag = 0.02;
+	private $fallTime = 0;
 
 	/** @var Block */
 	protected $block;
@@ -97,12 +101,28 @@ class FallingBlock extends Entity{
 		if($this->closed){
 			return false;
 		}
+		$this->fallTime+=1;
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
 		if(!$this->isFlaggedForDespawn()){
 			$world = $this->getWorld();
 			$pos = $this->location->add(-$this->size->getWidth() / 2, $this->size->getHeight(), -$this->size->getWidth() / 2)->floor();
+
+
+			if($this->getBlock()->getId() == VanillaBlocks::ANVIL()->GetId()) {
+
+				$collidedEntities = $world->getCollidingEntities($this->getBoundingBox());
+				foreach($collidedEntities as $ent)
+					if($ent instanceof Living) {
+						$lastCause = $ent->lastDamageCause;
+						if(!($lastCause instanceof EntityDamageByBlockEvent) || $lastCause->getDamager() !== $this->getBlock()) {
+							$ev = new EntityDamageByBlockEvent($this->getBlock(), $ent, EntityDamageEvent::CAUSE_FALLING_ANVIL, min($this->fallTime, 40));
+							$ent->attack($ev);
+						}
+					}
+			}
+
 
 			$this->block->position($world, $pos->x, $pos->y, $pos->z);
 
@@ -153,4 +173,5 @@ class FallingBlock extends Entity{
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
 		return $vector3->add(0, 0.49, 0); //TODO: check if height affects this
 	}
+
 }
