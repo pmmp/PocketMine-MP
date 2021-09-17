@@ -341,6 +341,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
+	 * Returns an object containing information about the player, such as their username, skin, and misc extra
+	 * client-specific data.
+	 */
+	public function getPlayerInfo() : PlayerInfo{ return $this->playerInfo; }
+
+	/**
 	 * If the player is logged into Xbox Live, returns their Xbox user ID (XUID) as a string. Returns an empty string if
 	 * the player is not logged into Xbox Live.
 	 */
