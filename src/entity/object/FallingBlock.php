@@ -26,11 +26,11 @@ namespace pocketmine\entity\object;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\Fallable;
+use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
-use pocketmine\block\VanillaBlocks;
 use pocketmine\event\entity\EntityBlockChangeEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -43,6 +43,7 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use function abs;
+use function min;
 
 class FallingBlock extends Entity{
 
@@ -109,7 +110,6 @@ class FallingBlock extends Entity{
 			$world = $this->getWorld();
 			$pos = $this->location->add(-$this->size->getWidth() / 2, $this->size->getHeight(), -$this->size->getWidth() / 2)->floor();
 
-
 			if($this->getBlock()->getId() === VanillaBlocks::ANVIL()->getId()) {
 
 				$collidedEntities = $world->getCollidingEntities($this->getBoundingBox());
@@ -122,7 +122,6 @@ class FallingBlock extends Entity{
 						}
 					}
 			}
-
 
 			$this->block->position($world, $pos->x, $pos->y, $pos->z);
 
