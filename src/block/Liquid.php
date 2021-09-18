@@ -29,6 +29,7 @@ use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\world\sound\FizzSound;
 use pocketmine\world\sound\Sound;
@@ -326,22 +327,8 @@ abstract class Liquid extends Transparent{
 			}
 
 			if($adjacentDecay < 8){
-				$flags = $this->getOptimalFlowDirections();
-
-				if($flags[0]){
-					$this->flowIntoBlock($world->getBlockAt($this->position->x - 1, $this->position->y, $this->position->z), $adjacentDecay, false);
-				}
-
-				if($flags[1]){
-					$this->flowIntoBlock($world->getBlockAt($this->position->x + 1, $this->position->y, $this->position->z), $adjacentDecay, false);
-				}
-
-				if($flags[2]){
-					$this->flowIntoBlock($world->getBlockAt($this->position->x, $this->position->y, $this->position->z - 1), $adjacentDecay, false);
-				}
-
-				if($flags[3]){
-					$this->flowIntoBlock($world->getBlockAt($this->position->x, $this->position->y, $this->position->z + 1), $adjacentDecay, false);
+				foreach($this->getOptimalFlowDirections() as $facing){
+					$this->flowIntoBlock($world->getBlock($this->position->getSide($facing)), $adjacentDecay, false);
 				}
 			}
 		}
@@ -371,7 +358,7 @@ abstract class Liquid extends Transparent{
 		$cost = 1000;
 
 		$world = $this->position->getWorld();
-		for($j = 0; $j < 4; ++$j){
+		foreach(Facing::HORIZONTAL as $j){
 			if($j === $originOpposite or $j === $lastOpposite){
 				continue;
 			}
@@ -380,13 +367,13 @@ abstract class Liquid extends Transparent{
 			$y = $blockY;
 			$z = $blockZ;
 
-			if($j === 0){
+			if($j === Facing::WEST){
 				--$x;
-			}elseif($j === 1){
+			}elseif($j === Facing::EAST){
 				++$x;
-			}elseif($j === 2){
+			}elseif($j === Facing::NORTH){
 				--$z;
-			}elseif($j === 3){
+			}elseif($j === Facing::SOUTH){
 				++$z;
 			}
 
@@ -413,7 +400,7 @@ abstract class Liquid extends Transparent{
 				continue;
 			}
 
-			$realCost = $this->calculateFlowCost($x, $y, $z, $accumulatedCost + 1, $maxCost, $originOpposite, $j ^ 0x01);
+			$realCost = $this->calculateFlowCost($x, $y, $z, $accumulatedCost + 1, $maxCost, $originOpposite, Facing::opposite($j));
 
 			if($realCost < $cost){
 				$cost = $realCost;
@@ -424,24 +411,24 @@ abstract class Liquid extends Transparent{
 	}
 
 	/**
-	 * @return bool[]
+	 * @return int[]
 	 */
 	private function getOptimalFlowDirections() : array{
 		$world = $this->position->getWorld();
 		$flowCost = array_fill(0, 4, 1000);
 		$maxCost = intdiv(4, $this->getFlowDecayPerBlock());
-		for($j = 0; $j < 4; ++$j){
+		foreach(Facing::HORIZONTAL as $j){
 			$x = $this->position->x;
 			$y = $this->position->y;
 			$z = $this->position->z;
 
-			if($j === 0){
+			if($j === Facing::WEST){
 				--$x;
-			}elseif($j === 1){
+			}elseif($j === Facing::EAST){
 				++$x;
-			}elseif($j === 2){
+			}elseif($j === Facing::NORTH){
 				--$z;
-			}elseif($j === 3){
+			}elseif($j === Facing::SOUTH){
 				++$z;
 			}
 			$block = $world->getBlockAt($x, $y, $z);
@@ -453,7 +440,8 @@ abstract class Liquid extends Transparent{
 				$flowCost[$j] = $maxCost = 0;
 			}elseif($maxCost > 0){
 				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::CAN_FLOW;
-				$flowCost[$j] = $this->calculateFlowCost($x, $y, $z, 1, $maxCost, $j ^ 0x01, $j ^ 0x01);
+				$opposite = Facing::opposite($j);
+				$flowCost[$j] = $this->calculateFlowCost($x, $y, $z, 1, $maxCost, $opposite, $opposite);
 				$maxCost = min($maxCost, $flowCost[$j]);
 			}
 		}
@@ -464,8 +452,10 @@ abstract class Liquid extends Transparent{
 
 		$isOptimalFlowDirection = [];
 
-		for($i = 0; $i < 4; ++$i){
-			$isOptimalFlowDirection[$i] = ($flowCost[$i] === $minCost);
+		foreach($flowCost as $facing => $cost){
+			if($cost === $minCost){
+				$isOptimalFlowDirection[] = $facing;
+			}
 		}
 
 		return $isOptimalFlowDirection;
