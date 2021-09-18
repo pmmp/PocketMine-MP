@@ -43,6 +43,7 @@ use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function array_intersect;
 use function array_merge;
+use function array_reverse;
 use function class_exists;
 use function count;
 use function dirname;
@@ -407,7 +408,7 @@ class PluginManager{
 	}
 
 	public function disablePlugins() : void{
-		foreach($this->getPlugins() as $plugin){
+		foreach(array_reverse($this->getPlugins()) as $plugin){
 			$this->disablePlugin($plugin);
 		}
 	}
