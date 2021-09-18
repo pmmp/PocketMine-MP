@@ -24,20 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\MinimumCostFlowCalculator;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\world\sound\FizzSound;
 use pocketmine\world\sound\Sound;
-use pocketmine\world\World;
-use function array_fill;
-use function intdiv;
 use function lcg_value;
-use function min;
 
 abstract class Liquid extends Transparent{
 
@@ -46,13 +42,6 @@ abstract class Liquid extends Transparent{
 	public int $adjacentSources = 0;
 
 	protected ?Vector3 $flowVector = null;
-
-	/** @var int[] */
-	private array $flowCostVisited = [];
-
-	private const CAN_FLOW_DOWN = 1;
-	private const CAN_FLOW = 0;
-	private const BLOCKED = -1;
 
 	protected bool $falling = false;
 	protected int $decay = 0; //PC "level" property
@@ -327,7 +316,8 @@ abstract class Liquid extends Transparent{
 			}
 
 			if($adjacentDecay < 8){
-				foreach($this->getOptimalFlowDirections() as $facing){
+				$calculator = new MinimumCostFlowCalculator($this->position->getWorld(), $this->getFlowDecayPerBlock(), \Closure::fromCallable([$this, 'canFlowInto']));
+				foreach($calculator->getOptimalFlowDirections($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) as $facing){
 					$this->flowIntoBlock($world->getBlock($this->position->getSide($facing)), $adjacentDecay, false);
 				}
 			}
@@ -352,113 +342,6 @@ abstract class Liquid extends Transparent{
 				$this->position->getWorld()->setBlock($block->position, $ev->getNewState());
 			}
 		}
-	}
-
-	private function calculateFlowCost(int $blockX, int $blockY, int $blockZ, int $accumulatedCost, int $maxCost, int $originOpposite, int $lastOpposite) : int{
-		$cost = 1000;
-
-		$world = $this->position->getWorld();
-		foreach(Facing::HORIZONTAL as $j){
-			if($j === $originOpposite or $j === $lastOpposite){
-				continue;
-			}
-
-			$x = $blockX;
-			$y = $blockY;
-			$z = $blockZ;
-
-			if($j === Facing::WEST){
-				--$x;
-			}elseif($j === Facing::EAST){
-				++$x;
-			}elseif($j === Facing::NORTH){
-				--$z;
-			}elseif($j === Facing::SOUTH){
-				++$z;
-			}
-
-			if(!isset($this->flowCostVisited[$hash = World::blockHash($x, $y, $z)])){
-				$blockSide = $world->getBlockAt($x, $y, $z);
-				if(!$this->canFlowInto($blockSide)){
-					$this->flowCostVisited[$hash] = self::BLOCKED;
-				}elseif($world->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
-					$this->flowCostVisited[$hash] = self::CAN_FLOW_DOWN;
-				}else{
-					$this->flowCostVisited[$hash] = self::CAN_FLOW;
-				}
-			}
-
-			$status = $this->flowCostVisited[$hash];
-
-			if($status === self::BLOCKED){
-				continue;
-			}elseif($status === self::CAN_FLOW_DOWN){
-				return $accumulatedCost;
-			}
-
-			if($accumulatedCost >= $maxCost){
-				continue;
-			}
-
-			$realCost = $this->calculateFlowCost($x, $y, $z, $accumulatedCost + 1, $maxCost, $originOpposite, Facing::opposite($j));
-
-			if($realCost < $cost){
-				$cost = $realCost;
-			}
-		}
-
-		return $cost;
-	}
-
-	/**
-	 * @return int[]
-	 */
-	private function getOptimalFlowDirections() : array{
-		$world = $this->position->getWorld();
-		$flowCost = array_fill(0, 4, 1000);
-		$maxCost = intdiv(4, $this->getFlowDecayPerBlock());
-		foreach(Facing::HORIZONTAL as $j){
-			$x = $this->position->x;
-			$y = $this->position->y;
-			$z = $this->position->z;
-
-			if($j === Facing::WEST){
-				--$x;
-			}elseif($j === Facing::EAST){
-				++$x;
-			}elseif($j === Facing::NORTH){
-				--$z;
-			}elseif($j === Facing::SOUTH){
-				++$z;
-			}
-			$block = $world->getBlockAt($x, $y, $z);
-
-			if(!$this->canFlowInto($block)){
-				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::BLOCKED;
-			}elseif($world->getBlockAt($x, $y - 1, $z)->canBeFlowedInto()){
-				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::CAN_FLOW_DOWN;
-				$flowCost[$j] = $maxCost = 0;
-			}elseif($maxCost > 0){
-				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::CAN_FLOW;
-				$opposite = Facing::opposite($j);
-				$flowCost[$j] = $this->calculateFlowCost($x, $y, $z, 1, $maxCost, $opposite, $opposite);
-				$maxCost = min($maxCost, $flowCost[$j]);
-			}
-		}
-
-		$this->flowCostVisited = [];
-
-		$minCost = min($flowCost);
-
-		$isOptimalFlowDirection = [];
-
-		foreach($flowCost as $facing => $cost){
-			if($cost === $minCost){
-				$isOptimalFlowDirection[] = $facing;
-			}
-		}
-
-		return $isOptimalFlowDirection;
 	}
 
 	/** @phpstan-impure */
@@ -494,7 +377,6 @@ abstract class Liquid extends Transparent{
 
 	protected function canFlowInto(Block $block) : bool{
 		return
-			$this->position->getWorld()->isInWorld($block->position->x, $block->position->y, $block->position->z) and
 			$block->canBeFlowedInto() and
 			!($block instanceof Liquid and $block->isSource()); //TODO: I think this should only be liquids of the same type
 	}
