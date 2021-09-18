@@ -35,7 +35,6 @@ use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\CriticalHitAnimation;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
-use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Human;
 use pocketmine\entity\Living;
 use pocketmine\entity\Location;
@@ -949,36 +948,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
-	public function setSneaking(bool $value = true) : void{
-		parent::setSneaking($value);
-
-		if($value){
-			$this->setSize($this->getInitialSizeInfo()->multiply(11 / 12,1,11 / 12)->scale($this->getScale()));
-		}else{
-			$this->resetSize();
-		}
-	}
-
-	public function setGliding(bool $value = true) : void{
-		parent::setGliding($value);
-
-		if($value){
-			$this->setSize((new EntitySizeInfo($this->size->getWidth(),$this->size->getWidth(),$this->size->getWidth()-($this->size->getHeight() - $this->size->getEyeHeight())))->scale($this->getScale()));
-		}else{
-			$this->resetSize();
-		}
-	}
-
-	public function setSwimming(bool $value = true) : void{
-		parent::setSwimming($value);
-
-		if($value){
-			$this->setSize((new EntitySizeInfo($this->size->getWidth(),$this->size->getWidth(),$this->size->getWidth()-($this->size->getHeight() - $this->size->getEyeHeight())))->scale($this->getScale()));
-		}else{
-			$this->resetSize();
-		}
-	}
-
 	public function getGamemode() : GameMode{
 		return $this->gamemode;
 	}
@@ -1768,7 +1737,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function toggleGlide(bool $glide) : bool{
-		//TODO maybe move to Entity?
 		$ev = new PlayerToggleGlideEvent($this, $glide);
 		$ev->call();
 		if($ev->isCancelled()){
@@ -1779,7 +1747,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function toggleSwim(bool $swimming) : bool{
-		//TODO maybe move to Entity?
 		$ev = new PlayerToggleSwimEvent($this, $swimming);
 		$ev->call();
 		if($ev->isCancelled()){

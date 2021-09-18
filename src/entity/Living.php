@@ -215,6 +215,7 @@ abstract class Living extends Entity{
 	public function setSneaking(bool $value = true) : void{
 		$this->sneaking = $value;
 		$this->networkPropertiesDirty = true;
+		$this->recalculateSize();
 	}
 
 	public function isSprinting() : bool{
@@ -229,6 +230,7 @@ abstract class Living extends Entity{
 			$this->setMovementSpeed($value ? ($moveSpeed * 1.3) : ($moveSpeed / 1.3));
 			$this->moveSpeedAttr->markSynchronized(false); //TODO: reevaluate this hack
 		}
+		$this->recalculateSize();
 	}
 
 	public function isGliding() : bool{
@@ -238,6 +240,7 @@ abstract class Living extends Entity{
 	public function setGliding(bool $value = true) : void{
 		$this->gliding = $value;
 		$this->networkPropertiesDirty = true;
+		$this->recalculateSize();
 	}
 
 	public function isSwimming() : bool{
@@ -247,6 +250,19 @@ abstract class Living extends Entity{
 	public function setSwimming(bool $value = true) : void{
 		$this->swimming = $value;
 		$this->networkPropertiesDirty = true;
+		$this->recalculateSize();
+	}
+
+	public function recalculateSize() : void{
+		parent::recalculateSize();
+
+		if($this->isSwimming() || $this->isGliding()){
+			$this->setSize((new EntitySizeInfo($this->getInitialSizeInfo()->getWidth(), $this->getInitialSizeInfo()->getWidth(), $this->getInitialSizeInfo()->getHeight() - $this->getInitialSizeInfo()->getEyeHeight()))->scale($this->getScale()));
+		}elseif($this->isSneaking()){
+			$this->setSize($this->getInitialSizeInfo()->multiply(11 / 12, 1, 11 / 12)->scale($this->getScale()));
+		}else{
+			$this->resetSize();
+		}
 	}
 
 	public function getMovementSpeed() : float{
@@ -492,8 +508,8 @@ abstract class Living extends Entity{
 		$this->applyDamageModifiers($source);
 
 		if($source instanceof EntityDamageByEntityEvent and (
-			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION or
-			$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION)
+				$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION or
+				$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION)
 		){
 			//TODO: knockback should not just apply for entity damage sources
 			//this doesn't matter for TNT right now because the PrimedTNT entity is considered the source, not the block.
