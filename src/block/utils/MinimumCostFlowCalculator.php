@@ -63,15 +63,12 @@ final class MinimumCostFlowCalculator{
 			$y = $blockY;
 			$z = $blockZ;
 
-			if($j === Facing::WEST){
-				--$x;
-			}elseif($j === Facing::EAST){
-				++$x;
-			}elseif($j === Facing::NORTH){
-				--$z;
-			}elseif($j === Facing::SOUTH){
-				++$z;
-			}
+			match($j){
+				Facing::WEST => --$x,
+				Facing::EAST => ++$x,
+				Facing::NORTH => --$z,
+				Facing::SOUTH => ++$z
+			};
 
 			if(!isset($this->flowCostVisited[$hash = World::blockHash($x, $y, $z)])){
 				if(!$this->world->isInWorld($x, $y, $z) || !$this->canFlowInto($this->world->getBlockAt($x, $y, $z))){
@@ -116,15 +113,12 @@ final class MinimumCostFlowCalculator{
 			$y = $originY;
 			$z = $originZ;
 
-			if($j === Facing::WEST){
-				--$x;
-			}elseif($j === Facing::EAST){
-				++$x;
-			}elseif($j === Facing::NORTH){
-				--$z;
-			}elseif($j === Facing::SOUTH){
-				++$z;
-			}
+			match($j){
+				Facing::WEST => --$x,
+				Facing::EAST => ++$x,
+				Facing::NORTH => --$z,
+				Facing::SOUTH => ++$z
+			};
 
 			if(!$this->world->isInWorld($x, $y, $z) || !$this->canFlowInto($this->world->getBlockAt($x, $y, $z))){
 				$this->flowCostVisited[World::blockHash($x, $y, $z)] = self::BLOCKED;
