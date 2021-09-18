@@ -508,8 +508,8 @@ abstract class Living extends Entity{
 		$this->applyDamageModifiers($source);
 
 		if($source instanceof EntityDamageByEntityEvent and (
-				$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION or
-				$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION)
+			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION or
+			$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION)
 		){
 			//TODO: knockback should not just apply for entity damage sources
 			//this doesn't matter for TNT right now because the PrimedTNT entity is considered the source, not the block.

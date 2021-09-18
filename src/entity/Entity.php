@@ -73,7 +73,6 @@ use function is_nan;
 use function lcg_value;
 use function sin;
 use function spl_object_id;
-use function var_dump;
 use const M_PI_2;
 
 abstract class Entity{
@@ -334,7 +333,6 @@ abstract class Entity{
 		$this->size = $size;
 		$this->recalculateBoundingBox();
 		$this->networkPropertiesDirty = true;
-		var_dump(__LINE__, $this->size);
 	}
 
 	public function resetSize() : void{
@@ -845,10 +843,10 @@ abstract class Entity{
 		$diffZ = $z - $floorZ;
 
 		if($world->getBlockAt($floorX, $floorY, $floorZ)->isSolid()){
-			$westNonSolid = !$world->getBlockAt($floorX - 1, $floorY, $floorZ)->isSolid();
-			$eastNonSolid = !$world->getBlockAt($floorX + 1, $floorY, $floorZ)->isSolid();
-			$downNonSolid = !$world->getBlockAt($floorX, $floorY - 1, $floorZ)->isSolid();
-			$upNonSolid = !$world->getBlockAt($floorX, $floorY + 1, $floorZ)->isSolid();
+			$westNonSolid  = !$world->getBlockAt($floorX - 1, $floorY, $floorZ)->isSolid();
+			$eastNonSolid  = !$world->getBlockAt($floorX + 1, $floorY, $floorZ)->isSolid();
+			$downNonSolid  = !$world->getBlockAt($floorX, $floorY - 1, $floorZ)->isSolid();
+			$upNonSolid    = !$world->getBlockAt($floorX, $floorY + 1, $floorZ)->isSolid();
 			$northNonSolid = !$world->getBlockAt($floorX, $floorY, $floorZ - 1)->isSolid();
 			$southNonSolid = !$world->getBlockAt($floorX, $floorY, $floorZ + 1)->isSolid();
 
@@ -890,7 +888,7 @@ abstract class Entity{
 
 			$force = lcg_value() * 0.2 + 0.1;
 
-			$this->motion = match ($direction) {
+			$this->motion = match($direction){
 				Facing::WEST => $this->motion->withComponents(-$force, null, null),
 				Facing::EAST => $this->motion->withComponents($force, null, null),
 				Facing::DOWN => $this->motion->withComponents(null, -$force, null),
@@ -1561,7 +1559,7 @@ abstract class Entity{
 	}
 
 	/**
-	 * @param Player[]|null $targets
+	 * @param Player[]|null      $targets
 	 * @param MetadataProperty[] $data Properly formatted entity data, defaults to everything
 	 *
 	 * @phpstan-param array<int, MetadataProperty> $data
@@ -1631,7 +1629,6 @@ abstract class Entity{
 
 	/**
 	 * Broadcasts a sound caused by the entity. If the entity is considered "silent", the sound will be dropped.
-	 *
 	 * @param Player[]|null $targets
 	 */
 	public function broadcastSound(Sound $sound, ?array $targets = null) : void{
