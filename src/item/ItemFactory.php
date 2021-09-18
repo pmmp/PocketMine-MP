@@ -298,7 +298,6 @@ class ItemFactory{
 		//TODO: minecraft:chest_minecart
 		//TODO: minecraft:command_block_minecart
 		//TODO: minecraft:crossbow
-		//TODO: minecraft:elytra
 		//TODO: minecraft:emptyMap
 		//TODO: minecraft:enchanted_book
 		//TODO: minecraft:end_crystal
@@ -391,6 +390,7 @@ class ItemFactory{
 		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_CHESTPLATE, 0), "Golden Chestplate", new ArmorTypeInfo(5, 113, ArmorInventory::SLOT_CHEST)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::IRON_CHESTPLATE, 0), "Iron Chestplate", new ArmorTypeInfo(6, 241, ArmorInventory::SLOT_CHEST)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::LEATHER_CHESTPLATE, 0), "Leather Tunic", new ArmorTypeInfo(3, 81, ArmorInventory::SLOT_CHEST)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::ELYTRA, 0), "Elytra", new ArmorTypeInfo(0, 432, ArmorInventory::SLOT_CHEST)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_HELMET, 0), "Chainmail Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_HELMET, 0), "Diamond Helmet", new ArmorTypeInfo(3, 364, ArmorInventory::SLOT_HEAD)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_HELMET, 0), "Golden Helmet", new ArmorTypeInfo(2, 78, ArmorInventory::SLOT_HEAD)));
