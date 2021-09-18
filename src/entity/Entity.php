@@ -74,6 +74,7 @@ use function is_nan;
 use function lcg_value;
 use function sin;
 use function spl_object_id;
+use function var_dump;
 use const M_PI_2;
 
 abstract class Entity{
@@ -326,10 +327,15 @@ abstract class Entity{
 		);
 	}
 
+	public function getSize() : EntitySizeInfo{
+		return $this->size;
+	}
+
 	public function setSize(EntitySizeInfo $size) : void{
 		$this->size = $size;
 		$this->recalculateBoundingBox();
 		$this->networkPropertiesDirty = true;
+		var_dump(__LINE__, $this->size);
 	}
 
 	public function resetSize() : void{
