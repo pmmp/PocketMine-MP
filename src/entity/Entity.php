@@ -24,7 +24,6 @@ declare(strict_types=1);
 /**
  * All the entity classes
  */
-
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
