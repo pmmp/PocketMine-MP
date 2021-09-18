@@ -1556,8 +1556,8 @@ abstract class Entity{
 	}
 
 	/**
-	 * @param Player[]|null                        $targets
-	 * @param MetadataProperty[]                   $data Properly formatted entity data, defaults to everything
+	 * @param Player[]|null $targets
+	 * @param MetadataProperty[] $data Properly formatted entity data, defaults to everything
 	 *
 	 * @phpstan-param array<int, MetadataProperty> $data
 	 */
