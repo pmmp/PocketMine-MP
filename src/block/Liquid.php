@@ -30,6 +30,7 @@ use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\world\sound\FizzSound;
 use pocketmine\world\sound\Sound;
@@ -221,17 +222,15 @@ abstract class Liquid extends Transparent{
 		$vector = new Vector3($vX, $vY, $vZ);
 
 		if($this->falling){
-			if(
-				!$this->canFlowInto($world->getBlockAt($this->position->x, $this->position->y, $this->position->z - 1)) or
-				!$this->canFlowInto($world->getBlockAt($this->position->x, $this->position->y, $this->position->z + 1)) or
-				!$this->canFlowInto($world->getBlockAt($this->position->x - 1, $this->position->y, $this->position->z)) or
-				!$this->canFlowInto($world->getBlockAt($this->position->x + 1, $this->position->y, $this->position->z)) or
-				!$this->canFlowInto($world->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z - 1)) or
-				!$this->canFlowInto($world->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z + 1)) or
-				!$this->canFlowInto($world->getBlockAt($this->position->x - 1, $this->position->y + 1, $this->position->z)) or
-				!$this->canFlowInto($world->getBlockAt($this->position->x + 1, $this->position->y + 1, $this->position->z))
-			){
-				$vector = $vector->normalize()->add(0, -6, 0);
+			foreach(Facing::HORIZONTAL as $facing){
+				$pos = $this->position->getSide($facing);
+				if(
+					!$this->canFlowInto($world->getBlockAt($pos->x, $pos->y, $pos->z)) ||
+					!$this->canFlowInto($world->getBlockAt($pos->x, $pos->y + 1, $pos->z))
+				){
+					$vector = $vector->normalize()->add(0, -6, 0);
+					break;
+				}
 			}
 		}
 
