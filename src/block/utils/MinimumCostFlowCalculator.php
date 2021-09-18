@@ -26,7 +26,7 @@ namespace pocketmine\block\utils;
 use pocketmine\block\Block;
 use pocketmine\math\Facing;
 use pocketmine\world\World;
-use function array_fill;
+use function array_fill_keys;
 use function intdiv;
 use function min;
 
@@ -106,7 +106,7 @@ final class MinimumCostFlowCalculator{
 	 * @return int[]
 	 */
 	public function getOptimalFlowDirections(int $originX, int $originY, int $originZ) : array{
-		$flowCost = array_fill(0, 4, 1000);
+		$flowCost = array_fill_keys(Facing::HORIZONTAL, 1000);
 		$maxCost = intdiv(4, $this->flowDecayPerBlock);
 		foreach(Facing::HORIZONTAL as $j){
 			$x = $originX;
