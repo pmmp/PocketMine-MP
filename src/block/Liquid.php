@@ -249,6 +249,14 @@ abstract class Liquid extends Transparent{
 		return 1;
 	}
 
+	/**
+	 * Returns the number of source blocks of this liquid that must be horizontally adjacent to this block in order for
+	 * this block to become a source block itself, or null if the liquid does not exhibit source-forming behaviour.
+	 */
+	public function getMinAdjacentSourcesToFormSource() : ?int{
+		return null;
+	}
+
 	public function onNearbyBlockChange() : void{
 		if(!$this->checkForHarden()){
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, $this->tickRate());
@@ -279,9 +287,10 @@ abstract class Liquid extends Transparent{
 				$falling = true;
 			}
 
-			if($this->adjacentSources >= 2 and $this instanceof Water){
+			$minAdjacentSources = $this->getMinAdjacentSourcesToFormSource();
+			if($minAdjacentSources !== null && $this->adjacentSources >= $minAdjacentSources){
 				$bottomBlock = $world->getBlockAt($this->position->x, $this->position->y - 1, $this->position->z);
-				if($bottomBlock->isSolid() or ($bottomBlock instanceof Water and $bottomBlock->isSource())){
+				if($bottomBlock->isSolid() or ($bottomBlock instanceof Liquid and $bottomBlock->isSameType($this) and $bottomBlock->isSource())){
 					$newDecay = 0;
 					$falling = false;
 				}
