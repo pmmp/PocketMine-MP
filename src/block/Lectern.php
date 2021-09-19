@@ -76,23 +76,18 @@ class Lectern extends Transparent {
 	}
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
-		if($this->book !== ItemFactory::air() && $this->hasBook)
+		$tile = $this->position->getWorld()->getTile($this->position);
+		if($this->book !== ItemFactory::air() && $this->hasBook && $tile instanceof TileLectern)
 		{
-			$tile = $this->position->getWorld()->getTile($this->position);
 			$droppedBook = new ItemEntity(Location::fromObject($this->position->up(), $this->position->getWorld(), 0, 0), $this->book);
 			$droppedBook->spawnToAll();
 
-			$tile->SetBook(ItemFactory::air());
-			$tile->SetPage(0);
+			$tile->setBook(ItemFactory::air());
+			$tile->setPage(0);
 			$tile->setTotalPages(0);
 			$this->readStateFromWorld();
 			$this->position->getWorld()->setBlock($this->position, $this);
 		}
 		return parent::onAttack($item, $face, $player);
 	}
-
-	public function getMeta() : int{
-		return parent::getMeta();
-	}
-
 }

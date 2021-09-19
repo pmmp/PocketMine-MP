@@ -36,8 +36,8 @@ class Lectern extends Spawnable {
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setByte(self::TAG_HAS_BOOK, $this->hasBook ? 1 : 0);
-		$nbt->setint(self::TAG_PAGE, $this->page);
-		$nbt->setint(self::TAG_TOTAL_PAGES, $this->totalPages);
+		$nbt->setInt(self::TAG_PAGE, $this->page);
+		$nbt->setInt(self::TAG_TOTAL_PAGES, $this->totalPages);
 		$nbt->setTag(self::TAG_BOOK, $this->book->nbtSerialize());
 	}
 
@@ -48,7 +48,7 @@ class Lectern extends Spawnable {
 		}
 		$this->hasBook = $nbt->getByte(self::TAG_HAS_BOOK, 0) !== 0;
 		$this->page = $nbt->getInt(self::TAG_PAGE, 0);
-		$this->totalPages = $nbt->getint(self::TAG_TOTAL_PAGES, 0);
+		$this->totalPages = $nbt->getInt(self::TAG_TOTAL_PAGES, 0);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
