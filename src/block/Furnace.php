@@ -87,5 +87,4 @@ class Furnace extends Opaque{
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
 		}
 	}
-
 }
