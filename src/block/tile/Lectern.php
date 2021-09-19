@@ -1,14 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace pocketmine\block\tile;
 
-use pocketmine\block\VanillaBlocks;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\item\VanillaItems;
-use pocketmine\nbt\NbtDataException;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
 
 class Lectern extends Spawnable {

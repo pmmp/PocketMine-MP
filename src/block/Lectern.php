@@ -1,22 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Lectern as TileLectern;
-use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
-use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\entity\Location;
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
-use pocketmine\math\Facing;
-use pocketmine\item\RottenFlesh;
 use pocketmine\item\WritableBookBase;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\BlockTransaction;
 
 class Lectern extends Transparent {
 	use FacesOppositePlacingPlayerTrait;
@@ -48,7 +46,7 @@ class Lectern extends Transparent {
 			$this->book = $tile->getBook();
 			$this->hasBook = $tile->hasBook();
 			$this->page = $tile->getPage();
-			$this->totalPages = $tile->GetTotalPages();
+			$this->totalPages = $tile->getTotalPages();
 
 		}
 	}
@@ -66,7 +64,7 @@ class Lectern extends Transparent {
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		parent::onInteract($item, $face, $clickVector, $player);
 
-		if($this->book->isNull() && !$item->isNull() && $item instanceof WritableBookBase) {
+		if($this->book->isNull() && !$item !== null && $item instanceof WritableBookBase) {
 			$this->book = $item->pop();
 			$this->position->getWorld()->setBlock($this->position, $this);
 
@@ -77,7 +75,7 @@ class Lectern extends Transparent {
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
 		$tile = $this->position->getWorld()->getTile($this->position);
-		if($this->book !== ItemFactory::air() && $this->hasBook && $tile instanceof TileLectern)
+		if(!$this->book->isNull() && $this->hasBook && $tile instanceof TileLectern)
 		{
 			$droppedBook = new ItemEntity(Location::fromObject($this->position->up(), $this->position->getWorld(), 0, 0), $this->book);
 			$droppedBook->spawnToAll();
