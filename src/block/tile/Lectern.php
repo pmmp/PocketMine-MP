@@ -19,8 +19,14 @@ class Lectern extends Spawnable {
 
 	/** @var Boolean */
 	private $hasBook = false;
+
+	/** @var int */
 	private $page = 0;
+
+	/** @var int */
 	private $totalPages = 0;
+
+	/** @var Item */
 	private $book;
 
 	public function __construct(World $world, Vector3 $pos){
@@ -33,7 +39,6 @@ class Lectern extends Spawnable {
 		$nbt->setint(self::TAG_PAGE, $this->page);
 		$nbt->setint(self::TAG_TOTAL_PAGES, $this->totalPages);
 		$nbt->setTag(self::TAG_BOOK, $this->book->nbtSerialize());
-
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
@@ -54,10 +59,8 @@ class Lectern extends Spawnable {
 	}
 
 	public function hasBook() : bool {
-		//$this->position->getWorld()->getLogger()->info(strval($this->book != ItemFactory::air()));
 		return $this->hasBook;
 	}
-
 
 	public function getBook() : Item{
 		return clone $this->book;
