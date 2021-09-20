@@ -341,6 +341,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
+	 * Returns an object containing information about the player, such as their username, skin, and misc extra
+	 * client-specific data.
+	 */
+	public function getPlayerInfo() : PlayerInfo{ return $this->playerInfo; }
+
+	/**
 	 * If the player is logged into Xbox Live, returns their Xbox user ID (XUID) as a string. Returns an empty string if
 	 * the player is not logged into Xbox Live.
 	 */
@@ -1126,7 +1132,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->logger->debug("Moved too fast, reverting movement");
 			$this->logger->debug("Old position: " . $this->location->asVector3() . ", new position: " . $newPos);
 			$revert = true;
-		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos) or !$this->getWorld()->isChunkGenerated($newPos->getFloorX() >> Chunk::COORD_BIT_SIZE, $newPos->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
+		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos)){
 			$revert = true;
 			$this->nextChunkOrderRun = 0;
 		}

@@ -58,10 +58,10 @@ abstract class Command{
 	/** @var CommandMap|null */
 	private $commandMap = null;
 
-	/** @var string */
+	/** @var Translatable|string */
 	protected $description = "";
 
-	/** @var string */
+	/** @var Translatable|string */
 	protected $usageMessage;
 
 	/** @var string|null */
@@ -76,7 +76,7 @@ abstract class Command{
 	/**
 	 * @param string[] $aliases
 	 */
-	public function __construct(string $name, string $description = "", ?string $usageMessage = null, array $aliases = []){
+	public function __construct(string $name, Translatable|string $description = "", Translatable|string|null $usageMessage = null, array $aliases = []){
 		$this->name = $name;
 		$this->setLabel($name);
 		$this->setDescription($description);
@@ -200,11 +200,11 @@ abstract class Command{
 		return $this->permissionMessage;
 	}
 
-	public function getDescription() : string{
+	public function getDescription() : Translatable|string{
 		return $this->description;
 	}
 
-	public function getUsage() : string{
+	public function getUsage() : Translatable|string{
 		return $this->usageMessage;
 	}
 
@@ -218,7 +218,7 @@ abstract class Command{
 		}
 	}
 
-	public function setDescription(string $description) : void{
+	public function setDescription(Translatable|string $description) : void{
 		$this->description = $description;
 	}
 
@@ -226,7 +226,7 @@ abstract class Command{
 		$this->permissionMessage = $permissionMessage;
 	}
 
-	public function setUsage(string $usage) : void{
+	public function setUsage(Translatable|string $usage) : void{
 		$this->usageMessage = $usage;
 	}
 

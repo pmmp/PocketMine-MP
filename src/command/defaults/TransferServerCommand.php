@@ -25,7 +25,7 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function count;
@@ -35,8 +35,8 @@ class TransferServerCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_TRANSFERSERVER_DESCRIPTION,
-			KnownTranslationKeys::POCKETMINE_COMMAND_TRANSFERSERVER_USAGE
+			KnownTranslationFactory::pocketmine_command_transferserver_description(),
+			KnownTranslationFactory::pocketmine_command_transferserver_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TRANSFERSERVER);
 	}

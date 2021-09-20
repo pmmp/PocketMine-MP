@@ -405,18 +405,6 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function commands_players_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_PLAYERS_USAGE, []);
-	}
-
-	public static function commands_save_off_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_SAVE_OFF_USAGE, []);
-	}
-
-	public static function commands_save_on_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_SAVE_ON_USAGE, []);
-	}
-
 	public static function commands_save_disabled() : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_SAVE_DISABLED, []);
 	}
@@ -433,10 +421,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_SAVE_SUCCESS, []);
 	}
 
-	public static function commands_save_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_SAVE_USAGE, []);
-	}
-
 	public static function commands_say_usage() : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_SAY_USAGE, []);
 	}
@@ -445,10 +429,6 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_SEED_SUCCESS, [
 			0 => $param0,
 		]);
-	}
-
-	public static function commands_seed_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_SEED_USAGE, []);
 	}
 
 	public static function commands_setworldspawn_success(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2) : Translatable{
@@ -478,10 +458,6 @@ final class KnownTranslationFactory{
 
 	public static function commands_stop_start() : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_STOP_START, []);
-	}
-
-	public static function commands_stop_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::COMMANDS_STOP_USAGE, []);
 	}
 
 	public static function commands_time_added(Translatable|string $param0) : Translatable{
@@ -1171,10 +1147,6 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function pocketmine_command_gc_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GC_USAGE, []);
-	}
-
 	public static function pocketmine_command_give_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_DESCRIPTION, []);
 	}
@@ -1230,10 +1202,6 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function pocketmine_command_plugins_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_PLUGINS_USAGE, []);
-	}
-
 	public static function pocketmine_command_save_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_SAVE_DESCRIPTION, []);
 	}
@@ -1264,10 +1232,6 @@ final class KnownTranslationFactory{
 
 	public static function pocketmine_command_status_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_DESCRIPTION, []);
-	}
-
-	public static function pocketmine_command_status_usage() : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_STATUS_USAGE, []);
 	}
 
 	public static function pocketmine_command_stop_description() : Translatable{

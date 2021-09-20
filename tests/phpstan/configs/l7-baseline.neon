@@ -331,36 +331,6 @@ parameters:
 			path: ../../../src/block/Mycelium.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/Sapling.php
-
-		-
-			message: "#^Parameter \\#2 \\$x of static method pocketmine\\\\world\\\\generator\\\\object\\\\Tree\\:\\:growTree\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
-			path: ../../../src/block/Sapling.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/Sapling.php
-
-		-
-			message: "#^Parameter \\#3 \\$y of static method pocketmine\\\\world\\\\generator\\\\object\\\\Tree\\:\\:growTree\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
-			path: ../../../src/block/Sapling.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/Sapling.php
-
-		-
-			message: "#^Parameter \\#4 \\$z of static method pocketmine\\\\world\\\\generator\\\\object\\\\Tree\\:\\:growTree\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
-			path: ../../../src/block/Sapling.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockLightAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/SnowLayer.php
@@ -464,11 +434,6 @@ parameters:
 			message: "#^Property pocketmine\\\\console\\\\ConsoleReader\\:\\:\\$stdin \\(resource\\) does not accept resource\\|false\\.$#"
 			count: 1
 			path: ../../../src/console/ConsoleReader.php
-
-		-
-			message: "#^Method pocketmine\\\\crafting\\\\CraftingManager\\:\\:hashOutputs\\(\\) should return string but returns string\\|false\\.$#"
-			count: 1
-			path: ../../../src/crafting/CraftingManager.php
 
 		-
 			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
