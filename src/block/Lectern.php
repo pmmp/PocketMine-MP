@@ -62,20 +62,18 @@ class Lectern extends Transparent {
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		parent::onInteract($item, $face, $clickVector, $player);
 
-		if($this->book->isNull() && !$item !== null && $item instanceof WritableBookBase) {
+		if($item instanceof WritableBookBase) {
 			$this->book = $item->pop();
 			$this->position->getWorld()->setBlock($this->position, $this);
-
+			return true;
 		}
-
-		return true;
+		return false;
 	}
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
 		$tile = $this->position->getWorld()->getTile($this->position);
-		if(!$this->book->isNull() && $this->hasBook && $tile instanceof TileLectern)
+		if($this->book !== null && $this->hasBook && $tile instanceof TileLectern)
 		{
 			$droppedBook = new ItemEntity(Location::fromObject($this->position->up(), $this->position->getWorld(), 0, 0), $this->book);
 			$droppedBook->spawnToAll();
@@ -85,7 +83,8 @@ class Lectern extends Transparent {
 			$tile->setTotalPages(0);
 			$this->readStateFromWorld();
 			$this->position->getWorld()->setBlock($this->position, $this);
+			return true;
 		}
-		return parent::onAttack($item, $face, $player);
+		return false;
 	}
 }
