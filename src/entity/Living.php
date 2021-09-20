@@ -93,7 +93,7 @@ abstract class Living extends Entity{
 	/** @var EffectManager */
 	protected $effectManager;
 
-	/** @var ArmorInventory */
+	/** @var ?ArmorInventory */
 	protected $armorInventory;
 
 	/** @var bool */
