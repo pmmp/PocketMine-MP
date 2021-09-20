@@ -90,7 +90,7 @@ abstract class Living extends Entity{
 	/** @var float */
 	protected $jumpVelocity = 0.42;
 
-	/** @var EffectManager */
+	/** @var ?EffectManager */
 	protected $effectManager;
 
 	/** @var ?ArmorInventory */
