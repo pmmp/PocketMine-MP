@@ -27,6 +27,7 @@ use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\event\block\BlockTeleportEvent;
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
@@ -82,4 +83,6 @@ class DragonEgg extends Transparent implements Fallable{
 			}
 		}
 	}
+
+	public function onHitGround(int $fallDistance, int $fallTime, AxisAlignedBB $boundsOnDespawn) : void{}
 }

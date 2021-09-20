@@ -27,6 +27,7 @@ use pocketmine\block\utils\ColorInMetadataTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
 class ConcretePowder extends Opaque implements Fallable{
@@ -64,4 +65,6 @@ class ConcretePowder extends Opaque implements Fallable{
 
 		return null;
 	}
+
+	public function onHitGround(int $fallDistance, int $fallTime, AxisAlignedBB $boundsOnDespawn) : void{}
 }

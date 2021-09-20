@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
+use pocketmine\math\AxisAlignedBB;
 
 class Sand extends Opaque implements Fallable{
 	use FallableTrait;
@@ -32,4 +33,6 @@ class Sand extends Opaque implements Fallable{
 	public function tickFalling() : ?Block{
 		return null;
 	}
+
+	public function onHitGround(int $fallDistance, int $fallTime, AxisAlignedBB $boundsOnDespawn) : void{}
 }

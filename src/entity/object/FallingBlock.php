@@ -26,13 +26,10 @@ namespace pocketmine\entity\object;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\Fallable;
-use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
-use pocketmine\entity\Living;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityBlockChangeEvent;
-use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\ByteTag;
@@ -44,7 +41,6 @@ use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use UnexpectedValueException;
 use function abs;
-use function min;
 
 class FallingBlock extends Entity{
 
@@ -162,16 +158,8 @@ class FallingBlock extends Entity{
 	}
 
 	protected function onHitGround() : ?float{
-		if($this->getBlock()->getId() === VanillaBlocks::ANVIL()->getId()) {
-			foreach($this->getWorld()->getCollidingEntities($this->getBoundingBox()) as $ent){
-				if($ent instanceof Living){
-					$lastCause = $ent->lastDamageCause;
-					if(!($lastCause instanceof EntityDamageByBlockEvent) || $lastCause->getDamager() !== $this->getBlock()){
-						$damageSource = new EntityDamageByBlockEvent($this->getBlock(), $ent, EntityDamageEvent::CAUSE_FALLING_BLOCK, min($this->fallTime / 2, 40));
-						$ent->attack($damageSource);
-					}
-				}
-			}
+		if($this->block instanceof Fallable){
+			$this->block->onHitGround((int) $this->fallDistance, $this->fallTime, $this->getBoundingBox());
 		}
 		return parent::onHitGround();
 	}

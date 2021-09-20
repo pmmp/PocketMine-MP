@@ -113,4 +113,6 @@ class SnowLayer extends Flowable implements Fallable{
 			VanillaItems::SNOWBALL()->setCount(max(1, (int) floor($this->layers / 2)))
 		];
 	}
+
+	public function onHitGround(int $fallDistance, int $fallTime, AxisAlignedBB $boundsOnDespawn) : void{}
 }

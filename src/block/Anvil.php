@@ -29,6 +29,9 @@ use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\entity\Living;
+use pocketmine\event\entity\EntityDamageByBlockEvent;
+use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -94,5 +97,14 @@ class Anvil extends Transparent implements Fallable{
 
 	public function tickFalling() : ?Block{
 		return null;
+	}
+
+	public function onHitGround(int $fallDistance, int $fallTime, AxisAlignedBB $boundsOnDespawn) : void{
+		foreach($this->position->getWorld()->getCollidingEntities($boundsOnDespawn) as $ent){
+			if($ent instanceof Living){
+				$damageSource = new EntityDamageByBlockEvent($this, $ent, EntityDamageEvent::CAUSE_FALLING_BLOCK, min($fallDistance * 2, 40));
+				$ent->attack($damageSource);
+			}
+		}
 	}
 }
