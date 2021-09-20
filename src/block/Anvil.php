@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use InvalidArgumentException;
 use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\Fallable;
@@ -63,7 +64,7 @@ class Anvil extends Transparent implements Fallable{
 	/** @return $this */
 	public function setDamage(int $damage) : self{
 		if($damage < 0 || $damage > 2){
-			throw new \InvalidArgumentException("Damage must be in range 0-2");
+			throw new InvalidArgumentException("Damage must be in range 0-2");
 		}
 		$this->damage = $damage;
 		return $this;

@@ -42,6 +42,7 @@ use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use UnexpectedValueException;
 use function abs;
 use function min;
 
@@ -53,10 +54,10 @@ class FallingBlock extends Entity{
 	protected $drag = 0.02;
 
 	/** @var int */
-	private $fallTime = 0;
+	private int $fallTime = 0;
 
 	/** @var Block */
-	protected $block;
+	protected Block $block;
 
 	public $canCollide = false;
 
@@ -78,7 +79,7 @@ class FallingBlock extends Entity{
 		}
 
 		if($blockId === 0){
-			throw new \UnexpectedValueException("Missing block info from NBT");
+			throw new UnexpectedValueException("Missing block info from NBT");
 		}
 
 		$damage = $nbt->getByte("Data", 0);
@@ -112,20 +113,7 @@ class FallingBlock extends Entity{
 			$world = $this->getWorld();
 			$pos = $this->location->add(-$this->size->getWidth() / 2, $this->size->getHeight(), -$this->size->getWidth() / 2)->floor();
 
-			if($this->getBlock()->getId() === VanillaBlocks::ANVIL()->getId()) {
-
-				$collidedEntities = $world->getCollidingEntities($this->getBoundingBox());
-				foreach($collidedEntities as $ent)
-					if($ent instanceof Living) {
-						$lastCause = $ent->lastDamageCause;
-						if(!($lastCause instanceof EntityDamageByBlockEvent) || $lastCause->getDamager() !== $this->getBlock()) {
-							$ev = new EntityDamageByBlockEvent($this->getBlock(), $ent, EntityDamageEvent::CAUSE_FALLING_BLOCK, min($this->fallTime, 40));
-							$ent->attack($ev);
-						}
-					}
-			}
-
-			$this->block->position($world, $pos->x, $pos->y, $pos->z);
+			$this->block->position($world, $pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ());
 
 			$blockTarget = null;
 			if($this->block instanceof Fallable){
@@ -173,5 +161,20 @@ class FallingBlock extends Entity{
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
 		return $vector3->add(0, 0.49, 0); //TODO: check if height affects this
+	}
+
+	protected function onHitGround() : ?float{
+		if($this->getBlock()->getId() === VanillaBlocks::ANVIL()->getId()) {
+			foreach($this->getWorld()->getCollidingEntities($this->getBoundingBox()) as $ent){
+				if($ent instanceof Living){
+					$lastCause = $ent->lastDamageCause;
+					if(!($lastCause instanceof EntityDamageByBlockEvent) || $lastCause->getDamager() !== $this->getBlock()){
+						$damageSource = new EntityDamageByBlockEvent($this->getBlock(), $ent, EntityDamageEvent::CAUSE_FALLING_BLOCK, min($this->fallTime / 2, 40));
+						$ent->attack($damageSource);
+					}
+				}
+			}
+		}
+		return parent::onHitGround();
 	}
 }
