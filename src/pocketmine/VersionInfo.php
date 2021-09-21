@@ -33,7 +33,7 @@ if(defined('pocketmine\_VERSION_INFO_INCLUDED')){
 const _VERSION_INFO_INCLUDED = true;
 
 const NAME = "PocketMine-MP";
-const BASE_VERSION = "3.22.6";
-const IS_DEVELOPMENT_BUILD = true;
+const BASE_VERSION = "3.23.0";
+const IS_DEVELOPMENT_BUILD = false;
 const BUILD_NUMBER = 0;
-const BUILD_CHANNEL = "";
+const BUILD_CHANNEL = "stable";
