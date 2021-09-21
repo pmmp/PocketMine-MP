@@ -30,7 +30,8 @@ use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\entity\Living;
-use pocketmine\event\entity\EntityDamageByBlockEvent;
+use pocketmine\entity\object\FallingBlock;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -100,10 +101,10 @@ class Anvil extends Transparent implements Fallable{
 		return null;
 	}
 
-	public function onHitGround(int $fallDistance, int $fallTime, AxisAlignedBB $boundsOnDespawn) : void{
-		foreach($this->position->getWorld()->getCollidingEntities($boundsOnDespawn) as $ent){
+	public function onHitGround(FallingBlock $blockEntity) : void{
+		foreach($this->position->getWorld()->getCollidingEntities($blockEntity->getBoundingBox()) as $ent){
 			if($ent instanceof Living){
-				$damageSource = new EntityDamageByBlockEvent($this, $ent, EntityDamageEvent::CAUSE_FALLING_BLOCK, min($fallDistance * 2, 40));
+				$damageSource = new EntityDamageByEntityEvent($blockEntity, $ent, EntityDamageEvent::CAUSE_FALLING_BLOCK, min($blockEntity->fallDistance * 2, 40));
 				$ent->attack($damageSource);
 			}
 		}
