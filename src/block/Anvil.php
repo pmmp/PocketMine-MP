@@ -104,8 +104,10 @@ class Anvil extends Transparent implements Fallable{
 	public function onHitGround(FallingBlock $blockEntity) : void{
 		foreach($this->position->getWorld()->getCollidingEntities($blockEntity->getBoundingBox()) as $ent){
 			if($ent instanceof Living){
-				$damageSource = new EntityDamageByEntityEvent($blockEntity, $ent, EntityDamageEvent::CAUSE_FALLING_BLOCK, min($blockEntity->fallDistance * 2, 40));
-				$ent->attack($damageSource);
+				if($blockEntity->fallDistance > 1) {
+					$damageSource = new EntityDamageByEntityEvent($blockEntity, $ent, EntityDamageEvent::CAUSE_FALLING_BLOCK, min($blockEntity->fallDistance * 2, 40));
+					$ent->attack($damageSource);
+				}
 			}
 		}
 	}
