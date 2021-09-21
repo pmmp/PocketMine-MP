@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\utils;
 
 use pocketmine\block\Block;
-use pocketmine\math\AxisAlignedBB;
+use pocketmine\entity\object\FallingBlock;
 
 interface Fallable{
 
@@ -36,7 +36,7 @@ interface Fallable{
 	public function tickFalling() : ?Block;
 
 	/**
-	 * Called just before entity destroys itself.
+	 * Called just before entity destroys itself and creates a block.
 	 */
-	public function onHitGround(int $fallDistance, int $fallTime, AxisAlignedBB $boundsOnDespawn) : void;
+	public function onHitGround(FallingBlock $blockEntity) : void;
 }
