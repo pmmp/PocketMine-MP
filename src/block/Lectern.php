@@ -20,7 +20,6 @@ class Lectern extends Transparent {
 	use FacesOppositePlacingPlayerTrait;
 	use HorizontalFacingTrait;
 
-	protected bool $hasBook = false;
 	protected int $page = 0;
 	protected int $totalPages = 0;
 	protected ?Item $book = null;
@@ -44,7 +43,6 @@ class Lectern extends Transparent {
 		if($tile instanceof TileLectern) {
 
 			$this->book = $tile->getBook();
-			$this->hasBook = $tile->hasBook();
 			$this->page = $tile->getPage();
 			$this->totalPages = $tile->getTotalPages();
 
@@ -73,7 +71,7 @@ class Lectern extends Transparent {
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
 		$tile = $this->position->getWorld()->getTile($this->position);
-		if($this->book !== null && $this->hasBook && $tile instanceof TileLectern)
+		if($this->book !== null && !$this->book->isNull() && $tile instanceof TileLectern)
 		{
 			$droppedBook = new ItemEntity(Location::fromObject($this->position->up(), $this->position->getWorld(), 0, 0), $this->book);
 			$droppedBook->spawnToAll();

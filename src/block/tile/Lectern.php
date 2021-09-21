@@ -57,10 +57,6 @@ class Lectern extends Spawnable {
 		$nbt->setTag(self::TAG_BOOK, $this->book->nbtSerialize());
 	}
 
-	public function hasBook() : bool {
-		return $this->hasBook;
-	}
-
 	public function getBook() : Item{
 		return clone $this->book;
 	}
