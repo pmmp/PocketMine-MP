@@ -53,15 +53,7 @@ final class EntitySizeInfo{
 		);
 	}
 
-	public function add(float $height, float $width, float $eyeHeight = 0) : self{
-		return new self(
-			$this->height + $height,
-			$this->width + $width,
-			$this->eyeHeight + $eyeHeight
-		);
-	}
-
-	public function multiply(float $height, float $width, float $eyeHeight = 1) : self{
+	public function multiply(float $height, float $width, float $eyeHeight) : self{
 		return new self(
 			$this->height * $height,
 			$this->width * $width,
