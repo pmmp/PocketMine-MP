@@ -159,7 +159,7 @@ class FallingBlock extends Entity{
 
 	protected function onHitGround() : ?float{
 		if($this->block instanceof Fallable){
-			$this->block->onHitGround((int) $this->fallDistance, $this->fallTime, $this->getBoundingBox());
+			$this->block->onHitGround($this);
 		}
 		return parent::onHitGround();
 	}
