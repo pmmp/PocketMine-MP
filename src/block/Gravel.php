@@ -25,9 +25,9 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
+use pocketmine\entity\object\FallingBlock;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
-use pocketmine\math\AxisAlignedBB;
 use function mt_rand;
 
 class Gravel extends Opaque implements Fallable{
@@ -51,5 +51,5 @@ class Gravel extends Opaque implements Fallable{
 		return null;
 	}
 
-	public function onHitGround(int $fallDistance, int $fallTime, AxisAlignedBB $boundsOnDespawn) : void {}
+	public function onHitGround(FallingBlock $blockEntity) : void {}
 }
