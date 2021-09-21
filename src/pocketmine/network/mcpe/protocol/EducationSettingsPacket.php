@@ -133,9 +133,10 @@ class EducationSettingsPacket extends DataPacket{
 		$this->putBool($this->disableLegacyTitleBar);
 		$this->putString($this->postProcessFilter);
 		$this->putString($this->screenshotBorderResourcePath);
-		if($this->agentCapabilities !== null){
+		$agentCapabilities = $this->agentCapabilities;
+		if($agentCapabilities !== null){
 			$this->putBool(true);
-			$this->agentCapabilities->write($this);
+			$agentCapabilities->write($this);
 		}else{
 			$this->putBool(false);
 		}
@@ -144,9 +145,10 @@ class EducationSettingsPacket extends DataPacket{
 			$this->putString($this->codeBuilderOverrideUri);
 		}
 		$this->putBool($this->hasQuiz);
-		if($this->linkSettings !== null){
+		$linkSettings = $this->linkSettings;
+		if($linkSettings !== null){
 			$this->putBool(true);
-			$this->linkSettings->write($this);
+			$linkSettings->write($this);
 		}else{
 			$this->putBool(false);
 		}
