@@ -38,6 +38,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function min;
 
 class Anvil extends Transparent implements Fallable{
 	use FallableTrait;
