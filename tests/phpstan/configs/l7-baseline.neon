@@ -41,7 +41,12 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
-			message: "#^Parameter \\#8 \\$animationData of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
+			message: "#^Parameter \\#8 \\$geometryDataEngineVersion of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#9 \\$animationData of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
