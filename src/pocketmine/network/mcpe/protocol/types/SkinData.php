@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\UUID;
 
 class SkinData{
@@ -44,14 +45,9 @@ class SkinData{
 	private $capeImage;
 	/** @var string */
 	private $geometryData;
+	private string $geometryDataEngineVersion;
 	/** @var string */
 	private $animationData;
-	/** @var bool */
-	private $persona;
-	/** @var bool */
-	private $premium;
-	/** @var bool */
-	private $personaCapeOnClassic;
 	/** @var string */
 	private $capeId;
 	/** @var string */
@@ -66,13 +62,21 @@ class SkinData{
 	private $pieceTintColors;
 	/** @var bool */
 	private $isVerified;
+	/** @var bool */
+	private $persona;
+	/** @var bool */
+	private $premium;
+	/** @var bool */
+	private $personaCapeOnClassic;
+	/** @var bool */
+	private $isPrimaryUser;
 
 	/**
 	 * @param SkinAnimation[]         $animations
 	 * @param PersonaSkinPiece[]      $personaPieces
 	 * @param PersonaPieceTintColor[] $pieceTintColors
 	 */
-	public function __construct(string $skinId, string $playFabId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $animationData = "", bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, string $capeId = "", ?string $fullSkinId = null, string $armSize = self::ARM_SIZE_WIDE, string $skinColor = "", array $personaPieces = [], array $pieceTintColors = [], bool $isVerified = true){
+	public function __construct(string $skinId, string $playFabId, string $resourcePatch, SkinImage $skinImage, array $animations = [], SkinImage $capeImage = null, string $geometryData = "", string $geometryDataEngineVersion = ProtocolInfo::MINECRAFT_VERSION_NETWORK, string $animationData = "", string $capeId = "", ?string $fullSkinId = null, string $armSize = self::ARM_SIZE_WIDE, string $skinColor = "", array $personaPieces = [], array $pieceTintColors = [], bool $isVerified = true, bool $premium = false, bool $persona = false, bool $personaCapeOnClassic = false, bool $isPrimaryUser = true){
 		$this->skinId = $skinId;
 		$this->playFabId = $playFabId;
 		$this->resourcePatch = $resourcePatch;
@@ -80,10 +84,8 @@ class SkinData{
 		$this->animations = $animations;
 		$this->capeImage = $capeImage ?? new SkinImage(0, 0, "");
 		$this->geometryData = $geometryData;
+		$this->geometryDataEngineVersion = $geometryDataEngineVersion;
 		$this->animationData = $animationData;
-		$this->premium = $premium;
-		$this->persona = $persona;
-		$this->personaCapeOnClassic = $personaCapeOnClassic;
 		$this->capeId = $capeId;
 		//this has to be unique or the client will do stupid things
 		$this->fullSkinId = $fullSkinId ?? UUID::fromRandom()->toString();
@@ -92,6 +94,10 @@ class SkinData{
 		$this->personaPieces = $personaPieces;
 		$this->pieceTintColors = $pieceTintColors;
 		$this->isVerified = $isVerified;
+		$this->premium = $premium;
+		$this->persona = $persona;
+		$this->personaCapeOnClassic = $personaCapeOnClassic;
+		$this->isPrimaryUser = $isPrimaryUser;
 	}
 
 	public function getSkinId() : string{
@@ -123,20 +129,10 @@ class SkinData{
 		return $this->geometryData;
 	}
 
+	public function getGeometryDataEngineVersion() : string{ return $this->geometryDataEngineVersion; }
+
 	public function getAnimationData() : string{
 		return $this->animationData;
-	}
-
-	public function isPersona() : bool{
-		return $this->persona;
-	}
-
-	public function isPremium() : bool{
-		return $this->premium;
-	}
-
-	public function isPersonaCapeOnClassic() : bool{
-		return $this->personaCapeOnClassic;
 	}
 
 	public function getCapeId() : string{
@@ -168,6 +164,20 @@ class SkinData{
 	public function getPieceTintColors() : array{
 		return $this->pieceTintColors;
 	}
+
+	public function isPersona() : bool{
+		return $this->persona;
+	}
+
+	public function isPremium() : bool{
+		return $this->premium;
+	}
+
+	public function isPersonaCapeOnClassic() : bool{
+		return $this->personaCapeOnClassic;
+	}
+
+	public function isPrimaryUser() : bool{ return $this->isPrimaryUser; }
 
 	public function isVerified() : bool{
 		return $this->isVerified;

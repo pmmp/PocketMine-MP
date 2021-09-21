@@ -200,6 +200,10 @@ class PacketPool{
 		static::registerPacket(new RemoveVolumeEntityPacket());
 		static::registerPacket(new SimulationTypePacket());
 		static::registerPacket(new NpcDialoguePacket());
+		static::registerPacket(new EduUriResourcePacket());
+		static::registerPacket(new CreatePhotoPacket());
+		static::registerPacket(new UpdateSubChunkBlocksPacket());
+		static::registerPacket(new PhotoInfoRequestPacket());
 	}
 
 	/**

@@ -27,29 +27,26 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class HurtArmorPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::HURT_ARMOR_PACKET;
+class PhotoInfoRequestPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::PHOTO_INFO_REQUEST_PACKET;
 
-	/** @var int */
-	public $cause;
-	/** @var int */
-	public $health;
-	/** @var int */
-	public $armorSlotFlags;
+	private int $photoId;
 
-	protected function decodePayload(){
-		$this->cause = $this->getVarInt();
-		$this->health = $this->getVarInt();
-		$this->armorSlotFlags = $this->getUnsignedVarLong();
+	public static function create(int $photoId) : self{
+		$result = new self;
+		$result->photoId = $photoId;
+		return $result;
 	}
 
-	protected function encodePayload(){
-		$this->putVarInt($this->cause);
-		$this->putVarInt($this->health);
-		$this->putUnsignedVarLong($this->armorSlotFlags);
+	protected function decodePayload() : void{
+		$this->photoId = $this->getEntityUniqueId();
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleHurtArmor($this);
+	protected function encodePayload() : void{
+		$this->putEntityUniqueId($this->photoId);
+	}
+
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handlePhotoInfoRequest($this);
 	}
 }

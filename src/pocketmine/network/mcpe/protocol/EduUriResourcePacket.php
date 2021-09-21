@@ -26,30 +26,30 @@ namespace pocketmine\network\mcpe\protocol;
 #include <rules/DataPacket.h>
 
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\EducationUriResource;
 
-class HurtArmorPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::HURT_ARMOR_PACKET;
+class EduUriResourcePacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::EDU_URI_RESOURCE_PACKET;
 
-	/** @var int */
-	public $cause;
-	/** @var int */
-	public $health;
-	/** @var int */
-	public $armorSlotFlags;
+	private EducationUriResource $resource;
 
-	protected function decodePayload(){
-		$this->cause = $this->getVarInt();
-		$this->health = $this->getVarInt();
-		$this->armorSlotFlags = $this->getUnsignedVarLong();
+	public static function create(EducationUriResource $resource) : self{
+		$result = new self;
+		$result->resource = $resource;
+		return $result;
 	}
 
-	protected function encodePayload(){
-		$this->putVarInt($this->cause);
-		$this->putVarInt($this->health);
-		$this->putUnsignedVarLong($this->armorSlotFlags);
+	public function getResource() : EducationUriResource{ return $this->resource; }
+
+	protected function decodePayload() : void{
+		$this->resource = EducationUriResource::read($this);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleHurtArmor($this);
+	protected function encodePayload() : void{
+		$this->resource->write($this);
+	}
+
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handleEduUriResource($this);
 	}
 }

@@ -37,6 +37,8 @@ class AnimateEntityPacket extends DataPacket/* implements ClientboundPacket*/{
 	private $nextState;
 	/** @var string */
 	private $stopExpression;
+	/** @var int */
+	private $stopExpressionVersion;
 	/** @var string */
 	private $controller;
 	/** @var float */
@@ -51,11 +53,12 @@ class AnimateEntityPacket extends DataPacket/* implements ClientboundPacket*/{
 	 * @param int[] $actorRuntimeIds
 	 * @phpstan-param list<int> $actorRuntimeIds
 	 */
-	public static function create(string $animation, string $nextState, string $stopExpression, string $controller, float $blendOutTime, array $actorRuntimeIds) : self{
+	public static function create(string $animation, string $nextState, string $stopExpression, int $stopExpressionVersion, string $controller, float $blendOutTime, array $actorRuntimeIds) : self{
 		$result = new self;
 		$result->animation = $animation;
 		$result->nextState = $nextState;
 		$result->stopExpression = $stopExpression;
+		$result->stopExpressionVersion = $stopExpressionVersion;
 		$result->controller = $controller;
 		$result->blendOutTime = $blendOutTime;
 		$result->actorRuntimeIds = $actorRuntimeIds;
@@ -67,6 +70,8 @@ class AnimateEntityPacket extends DataPacket/* implements ClientboundPacket*/{
 	public function getNextState() : string{ return $this->nextState; }
 
 	public function getStopExpression() : string{ return $this->stopExpression; }
+
+	public function getStopExpressionVersion() : int{ return $this->stopExpressionVersion; }
 
 	public function getController() : string{ return $this->controller; }
 
@@ -82,6 +87,7 @@ class AnimateEntityPacket extends DataPacket/* implements ClientboundPacket*/{
 		$this->animation = $this->getString();
 		$this->nextState = $this->getString();
 		$this->stopExpression = $this->getString();
+		$this->stopExpressionVersion = $this->getLInt();
 		$this->controller = $this->getString();
 		$this->blendOutTime = $this->getLFloat();
 		$this->actorRuntimeIds = [];
@@ -94,6 +100,7 @@ class AnimateEntityPacket extends DataPacket/* implements ClientboundPacket*/{
 		$this->putString($this->animation);
 		$this->putString($this->nextState);
 		$this->putString($this->stopExpression);
+		$this->putLInt($this->stopExpressionVersion);
 		$this->putString($this->controller);
 		$this->putLFloat($this->blendOutTime);
 		$this->putUnsignedVarInt(count($this->actorRuntimeIds));

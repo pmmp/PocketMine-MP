@@ -36,17 +36,33 @@ class PhotoTransferPacket extends DataPacket{
 	public $photoData;
 	/** @var string */
 	public $bookId; //photos are stored in a sibling directory to the games folder (screenshots/(some UUID)/bookID/example.png)
+	/** @var int */
+	public $type;
+	/** @var int */
+	public $sourceType;
+	/** @var int */
+	public $ownerEntityUniqueId;
+	/** @var string */
+	public $newPhotoName; //???
 
 	protected function decodePayload(){
 		$this->photoName = $this->getString();
 		$this->photoData = $this->getString();
 		$this->bookId = $this->getString();
+		$this->type = $this->getByte();
+		$this->sourceType = $this->getByte();
+		$this->ownerEntityUniqueId = $this->getLLong(); //...............
+		$this->newPhotoName = $this->getString();
 	}
 
 	protected function encodePayload(){
 		$this->putString($this->photoName);
 		$this->putString($this->photoData);
 		$this->putString($this->bookId);
+		$this->putByte($this->type);
+		$this->putByte($this->sourceType);
+		$this->putLLong($this->ownerEntityUniqueId);
+		$this->putString($this->newPhotoName);
 	}
 
 	public function handle(NetworkSession $session) : bool{

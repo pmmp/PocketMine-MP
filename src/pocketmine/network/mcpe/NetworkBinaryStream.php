@@ -105,10 +105,8 @@ class NetworkBinaryStream extends BinaryStream{
 		}
 		$capeData = $this->getSkinImage();
 		$geometryData = $this->getString();
+		$geometryDataVersion = $this->getString();
 		$animationData = $this->getString();
-		$premium = $this->getBool();
-		$persona = $this->getBool();
-		$capeOnClassic = $this->getBool();
 		$capeId = $this->getString();
 		$fullSkinId = $this->getString();
 		$armSize = $this->getString();
@@ -137,8 +135,12 @@ class NetworkBinaryStream extends BinaryStream{
 				$colors
 			);
 		}
+		$premium = $this->getBool();
+		$persona = $this->getBool();
+		$capeOnClassic = $this->getBool();
+		$isPrimaryUser = $this->getBool();
 
-		return new SkinData($skinId, $skinPlayFabId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $animationData, $premium, $persona, $capeOnClassic, $capeId, $fullSkinId, $armSize, $skinColor, $personaPieces, $pieceTintColors);
+		return new SkinData($skinId, $skinPlayFabId, $skinResourcePatch, $skinData, $animations, $capeData, $geometryData, $geometryDataVersion, $animationData, $capeId, $fullSkinId, $armSize, $skinColor, $personaPieces, $pieceTintColors, true, $premium, $persona, $capeOnClassic, $isPrimaryUser);
 	}
 
 	/**
@@ -158,10 +160,8 @@ class NetworkBinaryStream extends BinaryStream{
 		}
 		$this->putSkinImage($skin->getCapeImage());
 		$this->putString($skin->getGeometryData());
+		$this->putString($skin->getGeometryDataEngineVersion());
 		$this->putString($skin->getAnimationData());
-		$this->putBool($skin->isPremium());
-		$this->putBool($skin->isPersona());
-		$this->putBool($skin->isPersonaCapeOnClassic());
 		$this->putString($skin->getCapeId());
 		$this->putString($skin->getFullSkinId());
 		$this->putString($skin->getArmSize());
@@ -182,6 +182,10 @@ class NetworkBinaryStream extends BinaryStream{
 				$this->putString($color);
 			}
 		}
+		$this->putBool($skin->isPremium());
+		$this->putBool($skin->isPersona());
+		$this->putBool($skin->isPersonaCapeOnClassic());
+		$this->putBool($skin->isPrimaryUser());
 	}
 
 	private function getSkinImage() : SkinImage{
