@@ -37,7 +37,6 @@ interface Fallable{
 
 	/**
 	 * Called just before entity destroys itself.
-	 *
 	 */
 	public function onHitGround(int $fallDistance, int $fallTime, AxisAlignedBB $boundsOnDespawn) : void;
 }
