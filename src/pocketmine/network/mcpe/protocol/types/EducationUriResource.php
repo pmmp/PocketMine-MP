@@ -26,8 +26,8 @@ namespace pocketmine\network\mcpe\protocol\types;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 
 final class EducationUriResource{
-	private string $buttonName;
-	private string $linkUri;
+	private $buttonName;
+	private $linkUri;
 
 	public function __construct(string $buttonName, string $linkUri){
 		$this->buttonName = $buttonName;
