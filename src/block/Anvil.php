@@ -33,6 +33,7 @@ use pocketmine\entity\Living;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\Durable;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -108,7 +109,7 @@ class Anvil extends Transparent implements Fallable{
 					if($blockEntity->fallDistance > 1){
 						//If player has helmet do 1/4 the normal damage
 						$helmet = $ent->getArmorInventory()->getHelmet();
-						if($helmet !== null && !$helmet->isNull()){
+						if($helmet != null && !$helmet->isNull() && $helmet instanceof Durable){
 							$damageDone = $blockEntity->fallDistance * 0.5;
 							$ent->damageItem($helmet, (int) $damageDone);
 						}else{
