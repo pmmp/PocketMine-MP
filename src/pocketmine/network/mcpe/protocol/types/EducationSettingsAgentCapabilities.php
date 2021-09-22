@@ -27,7 +27,7 @@ use pocketmine\network\mcpe\NetworkBinaryStream;
 
 final class EducationSettingsAgentCapabilities{
 
-	private ?bool $canModifyBlocks;
+	private $canModifyBlocks;
 
 	public function __construct(?bool $canModifyBlocks){
 		$this->canModifyBlocks = $canModifyBlocks;
