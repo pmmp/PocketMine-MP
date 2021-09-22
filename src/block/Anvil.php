@@ -102,11 +102,22 @@ class Anvil extends Transparent implements Fallable{
 	}
 
 	public function onHitGround(FallingBlock $blockEntity) : void{
-		foreach($this->position->getWorld()->getCollidingEntities($blockEntity->getBoundingBox()) as $ent){
-			if($ent instanceof Living){
-				if($blockEntity->fallDistance > 1) {
-					$damageSource = new EntityDamageByEntityEvent($blockEntity, $ent, EntityDamageEvent::CAUSE_FALLING_BLOCK, min($blockEntity->fallDistance * 2, 40));
-					$ent->attack($damageSource);
+		if($this->position->isValid()){
+			foreach($this->position->getWorld()->getCollidingEntities($blockEntity->getBoundingBox()) as $ent){
+				if($ent instanceof Living){
+					if($blockEntity->fallDistance > 1){
+						//If player has helmet do 1/4 the normal damage
+						$helmet = $ent->getArmorInventory()->getHelmet();
+						if($helmet !== null && !$helmet->isNull()){
+							$damageDone = $blockEntity->fallDistance * 0.5;
+							$ent->damageItem($helmet, (int) $damageDone);
+						}else{
+							$damageDone = $blockEntity->fallDistance * 2;
+						}
+
+						$damageSource = new EntityDamageByEntityEvent($blockEntity, $ent, EntityDamageEvent::CAUSE_FALLING_BLOCK, min($damageDone, 40));
+						$ent->attack($damageSource);
+					}
 				}
 			}
 		}
