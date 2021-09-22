@@ -34,15 +34,19 @@ class ActorPickRequestPacket extends DataPacket{
 	public $entityUniqueId;
 	/** @var int */
 	public $hotbarSlot;
+	/** @var bool */
+	public $addUserData;
 
 	protected function decodePayload(){
 		$this->entityUniqueId = $this->getLLong();
 		$this->hotbarSlot = $this->getByte();
+		$this->addUserData = $this->getBool();
 	}
 
 	protected function encodePayload(){
 		$this->putLLong($this->entityUniqueId);
 		$this->putByte($this->hotbarSlot);
+		$this->putBool($this->addUserData);
 	}
 
 	public function handle(NetworkSession $session) : bool{

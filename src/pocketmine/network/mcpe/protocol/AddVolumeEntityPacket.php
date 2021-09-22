@@ -36,11 +36,14 @@ class AddVolumeEntityPacket extends DataPacket{
 	private $entityNetId;
 	/** @var CompoundTag */
 	private $data;
+	/** @var string */
+	private $engineVersion;
 
-	public static function create(int $entityNetId, CompoundTag $data) : self{
+	public static function create(int $entityNetId, CompoundTag $data, string $engineVersion) : self{
 		$result = new self;
 		$result->entityNetId = $entityNetId;
 		$result->data = $data;
+		$result->engineVersion = $engineVersion;
 		return $result;
 	}
 
@@ -48,14 +51,18 @@ class AddVolumeEntityPacket extends DataPacket{
 
 	public function getData() : CompoundTag{ return $this->data; }
 
+	public function getEngineVersion() : string{ return $this->engineVersion; }
+
 	protected function decodePayload() : void{
 		$this->entityNetId = $this->getUnsignedVarInt();
 		$this->data = $this->getNbtCompoundRoot();
+		$this->engineVersion = $this->getString();
 	}
 
 	protected function encodePayload() : void{
 		$this->putUnsignedVarInt($this->entityNetId);
 		$this->put((new NetworkLittleEndianNBTStream())->write($this->data));
+		$this->putString($this->engineVersion);
 	}
 
 	public function handle(NetworkSession $handler) : bool{

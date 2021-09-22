@@ -21,19 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\network\mcpe\protocol\types;
 
-use function defined;
+final class MaterialReducerRecipeOutput{
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-// TODO: drop this file and use a final class with constants
-if(defined('pocketmine\_VERSION_INFO_INCLUDED')){
-	return;
+	private int $itemId;
+	private int $count;
+
+	public function __construct(int $itemId, int $count){
+		$this->itemId = $itemId;
+		$this->count = $count;
+	}
+
+	public function getItemId() : int{ return $this->itemId; }
+
+	public function getCount() : int{ return $this->count; }
 }
-const _VERSION_INFO_INCLUDED = true;
-
-const NAME = "PocketMine-MP";
-const BASE_VERSION = "3.23.2";
-const IS_DEVELOPMENT_BUILD = true;
-const BUILD_NUMBER = 0;
-const BUILD_CHANNEL = "";

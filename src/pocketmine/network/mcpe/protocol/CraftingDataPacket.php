@@ -32,6 +32,8 @@ use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\NetworkBinaryStream;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\types\MaterialReducerRecipe;
+use pocketmine\network\mcpe\protocol\types\MaterialReducerRecipeOutput;
 use pocketmine\network\mcpe\protocol\types\PotionContainerChangeRecipe;
 use pocketmine\network\mcpe\protocol\types\PotionTypeRecipe;
 #ifndef COMPILE
@@ -58,6 +60,8 @@ class CraftingDataPacket extends DataPacket{
 	public $potionTypeRecipes = [];
 	/** @var PotionContainerChangeRecipe[] */
 	public $potionContainerRecipes = [];
+	/** @var MaterialReducerRecipe[] */
+	public $materialReducerRecipes = [];
 	/** @var bool */
 	public $cleanRecipes = false;
 
@@ -168,6 +172,17 @@ class CraftingDataPacket extends DataPacket{
 			$outputIdNet = $this->getVarInt();
 			[$output, ] = ItemTranslator::getInstance()->fromNetworkId($outputIdNet, 0);
 			$this->potionContainerRecipes[] = new PotionContainerChangeRecipe($input, $ingredient, $output);
+		}
+		for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			$inputIdAndData = $this->getVarInt();
+			[$inputId, $inputMeta] = [$inputIdAndData >> 16, $inputIdAndData & 0x7fff];
+			$outputs = [];
+			for($j = 0, $outputCount = $this->getUnsignedVarInt(); $j < $outputCount; ++$j){
+				$outputItemId = $this->getVarInt();
+				$outputItemCount = $this->getVarInt();
+				$outputs[] = new MaterialReducerRecipeOutput($outputItemId, $outputItemCount);
+			}
+			$this->materialReducerRecipes[] = new MaterialReducerRecipe($inputId, $inputMeta, $outputs);
 		}
 		$this->cleanRecipes = $this->getBool();
 	}
@@ -300,6 +315,15 @@ class CraftingDataPacket extends DataPacket{
 			$this->putVarInt($recipe->getInputItemId());
 			$this->putVarInt($recipe->getIngredientItemId());
 			$this->putVarInt($recipe->getOutputItemId());
+		}
+		$this->putUnsignedVarInt(count($this->materialReducerRecipes));
+		foreach($this->materialReducerRecipes as $recipe){
+			$this->putVarInt(($recipe->getInputItemId() << 16) | $recipe->getInputItemMeta());
+			$this->putUnsignedVarInt(count($recipe->getOutputs()));
+			foreach($recipe->getOutputs() as $output){
+				$this->putVarInt($output->getItemId());
+				$this->putVarInt($output->getCount());
+			}
 		}
 
 		$this->putBool($this->cleanRecipes);

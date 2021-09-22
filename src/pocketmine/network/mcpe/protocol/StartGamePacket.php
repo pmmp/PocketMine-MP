@@ -30,6 +30,7 @@ use pocketmine\nbt\NetworkLittleEndianNBTStream;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\BlockPaletteEntry;
 use pocketmine\network\mcpe\protocol\types\EducationEditionOffer;
+use pocketmine\network\mcpe\protocol\types\EducationUriResource;
 use pocketmine\network\mcpe\protocol\types\Experiments;
 use pocketmine\network\mcpe\protocol\types\GameRuleType;
 use pocketmine\network\mcpe\protocol\types\GeneratorType;
@@ -143,6 +144,8 @@ class StartGamePacket extends DataPacket{
 	public $limitedWorldLength = 0;
 	/** @var bool */
 	public $isNewNether = true;
+	/** @var EducationUriResource|null */
+	public $eduSharedUriResource = null;
 	/** @var bool|null */
 	public $experimentalGameplayOverride = null;
 
@@ -227,6 +230,7 @@ class StartGamePacket extends DataPacket{
 		$this->limitedWorldWidth = $this->getLInt();
 		$this->limitedWorldLength = $this->getLInt();
 		$this->isNewNether = $this->getBool();
+		$this->eduSharedUriResource = EducationUriResource::read($this);
 		if($this->getBool()){
 			$this->experimentalGameplayOverride = $this->getBool();
 		}else{
@@ -311,6 +315,7 @@ class StartGamePacket extends DataPacket{
 		$this->putLInt($this->limitedWorldWidth);
 		$this->putLInt($this->limitedWorldLength);
 		$this->putBool($this->isNewNether);
+		($this->eduSharedUriResource ?? new EducationUriResource("", ""))->write($this);
 		$this->putBool($this->experimentalGameplayOverride !== null);
 		if($this->experimentalGameplayOverride !== null){
 			$this->putBool($this->experimentalGameplayOverride);

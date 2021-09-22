@@ -21,19 +21,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\network\mcpe\protocol\types;
 
-use function defined;
+use pocketmine\network\mcpe\NetworkBinaryStream;
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-// TODO: drop this file and use a final class with constants
-if(defined('pocketmine\_VERSION_INFO_INCLUDED')){
-	return;
+final class EducationSettingsAgentCapabilities{
+
+	private ?bool $canModifyBlocks;
+
+	public function __construct(?bool $canModifyBlocks){
+		$this->canModifyBlocks = $canModifyBlocks;
+	}
+
+	public function getCanModifyBlocks() : ?bool{ return $this->canModifyBlocks; }
+
+	public static function read(NetworkBinaryStream $in) : self{
+		$canModifyBlocks = $in->getBool() ? $in->getBool() : null;
+		return new self($canModifyBlocks);
+	}
+
+	public function write(NetworkBinaryStream $out) : void{
+		if($this->canModifyBlocks !== null){
+			$out->putBool(true);
+			$out->putBool($this->canModifyBlocks);
+		}else{
+			$out->putBool(false);
+		}
+	}
 }
-const _VERSION_INFO_INCLUDED = true;
-
-const NAME = "PocketMine-MP";
-const BASE_VERSION = "3.23.2";
-const IS_DEVELOPMENT_BUILD = true;
-const BUILD_NUMBER = 0;
-const BUILD_CHANNEL = "";

@@ -1976,17 +1976,19 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				base64_decode($packet->clientData["CapeData"] ?? "", true)
 			),
 			base64_decode($packet->clientData["SkinGeometryData"] ?? "", true),
+			base64_decode($packet->clientData["SkinGeometryDataEngineVersion"], true),
 			base64_decode($packet->clientData["SkinAnimationData"] ?? "", true),
-			$packet->clientData["PremiumSkin"] ?? false,
-			$packet->clientData["PersonaSkin"] ?? false,
-			$packet->clientData["CapeOnClassicSkin"] ?? false,
 			$packet->clientData["CapeId"] ?? "",
 			null,
 			$packet->clientData["ArmSize"] ?? SkinData::ARM_SIZE_WIDE,
 			$packet->clientData["SkinColor"] ?? "",
 			$personaPieces,
 			$pieceTintColors,
-			true
+			true,
+			$packet->clientData["PremiumSkin"] ?? false,
+			$packet->clientData["PersonaSkin"] ?? false,
+			$packet->clientData["CapeOnClassicSkin"] ?? false,
+			true, //assume this is true? there's no field for it ...
 		);
 
 		try{

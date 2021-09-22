@@ -66,11 +66,13 @@ use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\network\mcpe\protocol\CorrectPlayerMovePredictionPacket;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
+use pocketmine\network\mcpe\protocol\CreatePhotoPacket;
 use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\DebugInfoPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\EducationSettingsPacket;
+use pocketmine\network\mcpe\protocol\EduUriResourcePacket;
 use pocketmine\network\mcpe\protocol\EmoteListPacket;
 use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\EventPacket;
@@ -114,6 +116,7 @@ use pocketmine\network\mcpe\protocol\NpcDialoguePacket;
 use pocketmine\network\mcpe\protocol\NpcRequestPacket;
 use pocketmine\network\mcpe\protocol\OnScreenTextureAnimationPacket;
 use pocketmine\network\mcpe\protocol\PacketViolationWarningPacket;
+use pocketmine\network\mcpe\protocol\PhotoInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\PhotoTransferPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerArmorDamagePacket;
@@ -187,6 +190,7 @@ use pocketmine\network\mcpe\protocol\UpdateBlockSyncedPacket;
 use pocketmine\network\mcpe\protocol\UpdateEquipPacket;
 use pocketmine\network\mcpe\protocol\UpdatePlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\UpdateSoftEnumPacket;
+use pocketmine\network\mcpe\protocol\UpdateSubChunkBlocksPacket;
 use pocketmine\network\mcpe\protocol\UpdateTradePacket;
 
 abstract class NetworkSession{
@@ -849,6 +853,22 @@ abstract class NetworkSession{
 	}
 
 	public function handleNpcDialogue(NpcDialoguePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleEduUriResource(EduUriResourcePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleCreatePhoto(CreatePhotoPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleUpdateSubChunkBlocks(UpdateSubChunkBlocksPacket $packet) : bool{
+		return false;
+	}
+
+	public function handlePhotoInfoRequest(PhotoInfoRequestPacket $packet) : bool{
 		return false;
 	}
 }
