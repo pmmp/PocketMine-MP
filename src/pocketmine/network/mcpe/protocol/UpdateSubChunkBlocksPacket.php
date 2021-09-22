@@ -32,14 +32,14 @@ use function count;
 class UpdateSubChunkBlocksPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::UPDATE_SUB_CHUNK_BLOCKS_PACKET;
 
-	private int $subChunkX;
-	private int $subChunkY;
-	private int $subChunkZ;
+	private $subChunkX;
+	private $subChunkY;
+	private $subChunkZ;
 
 	/** @var UpdateSubChunkBlocksPacketEntry[] */
-	private array $layer0Updates;
+	private $layer0Updates;
 	/** @var UpdateSubChunkBlocksPacketEntry[] */
-	private array $layer1Updates;
+	private $layer1Updates;
 
 	/**
 	 * @param UpdateSubChunkBlocksPacketEntry[] $layer0
