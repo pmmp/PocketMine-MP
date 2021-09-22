@@ -30,7 +30,9 @@ use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\recipe\CraftingRecipeBlockName;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe as ProtocolFurnaceRecipe;
+use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipeBlockName;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapedRecipe as ProtocolShapedRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe as ProtocolShapelessRecipe;
@@ -92,7 +94,7 @@ final class CraftingDataCache{
 							return $converter->coreItemStackToNet($dictionaryProtocol, $item);
 						}, $recipe->getResults()),
 						$nullUUID,
-						"crafting_table",
+						CraftingRecipeBlockName::CRAFTING_TABLE,
 						50,
 						$counter
 					);
@@ -115,7 +117,7 @@ final class CraftingDataCache{
 							return $converter->coreItemStackToNet($dictionaryProtocol, $item);
 						}, $recipe->getResults()),
 						$nullUUID,
-						"crafting_table",
+						CraftingRecipeBlockName::CRAFTING_TABLE,
 						50,
 						$counter
 					);
@@ -124,9 +126,9 @@ final class CraftingDataCache{
 
 			foreach(FurnaceType::getAll() as $furnaceType){
 				$typeTag = match ($furnaceType->id()) {
-					FurnaceType::FURNACE()->id() => "furnace",
-					FurnaceType::BLAST_FURNACE()->id() => "blast_furnace",
-					FurnaceType::SMOKER()->id() => "smoker",
+					FurnaceType::FURNACE()->id() => FurnaceRecipeBlockName::FURNACE,
+					FurnaceType::BLAST_FURNACE()->id() => FurnaceRecipeBlockName::BLAST_FURNACE,
+					FurnaceType::SMOKER()->id() => FurnaceRecipeBlockName::SMOKER,
 					default => throw new AssumptionFailedError("Unreachable"),
 				};
 				foreach($manager->getFurnaceRecipeManager($furnaceType)->getAll() as $recipe){

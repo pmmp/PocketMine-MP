@@ -53,6 +53,7 @@ final class RuntimeBlockMapping{
 	private function __construct(){
 		$paths = [
 			ProtocolInfo::CURRENT_PROTOCOL => "",
+			ProtocolInfo::PROTOCOL_1_17_10 => "-1.17.10",
 			ProtocolInfo::PROTOCOL_1_17_0 => "-1.17.0",
 			ProtocolInfo::PROTOCOL_1_16_220 => "-1.16.220",
 			ProtocolInfo::PROTOCOL_1_16_200 => "-1.16.200"
@@ -71,7 +72,7 @@ final class RuntimeBlockMapping{
 			$this->bedrockKnownStates[$mappingProtocol] = $list;
 
 			if($mappingProtocol === ProtocolInfo::PROTOCOL_1_17_0){
-				$this->setupLegacyMappings($mappingProtocol, "");
+				$this->setupLegacyMappings($mappingProtocol, $paths[ProtocolInfo::PROTOCOL_1_17_10]);
 			}else{
 				$this->setupLegacyMappings($mappingProtocol, $path);
 			}
@@ -89,6 +90,10 @@ final class RuntimeBlockMapping{
 
 		if($protocolId <= ProtocolInfo::PROTOCOL_1_17_0){
 			return ProtocolInfo::PROTOCOL_1_17_0;
+		}
+
+		if($protocolId <= ProtocolInfo::PROTOCOL_1_17_10){
+			return ProtocolInfo::PROTOCOL_1_17_10;
 		}
 
 		return ProtocolInfo::CURRENT_PROTOCOL;

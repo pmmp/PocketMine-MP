@@ -126,6 +126,7 @@ use function in_array;
 use function json_encode;
 use function json_last_error_msg;
 use function strlen;
+use function strpos;
 use function strtolower;
 use function substr;
 use function time;
