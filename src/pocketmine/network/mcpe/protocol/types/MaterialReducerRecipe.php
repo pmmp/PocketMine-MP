@@ -31,7 +31,7 @@ final class MaterialReducerRecipe{
 	 * @var MaterialReducerRecipeOutput[]
 	 * @phpstan-var list<MaterialReducerRecipeOutput>
 	 */
-	private array $outputs;
+	private  $outputs;
 
 	/**
 	 * @param MaterialReducerRecipeOutput[] $outputs

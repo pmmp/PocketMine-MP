@@ -28,16 +28,16 @@ use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 
 final class UpdateSubChunkBlocksPacketEntry{
 
-	private int $x;
-	private int $y;
-	private int $z;
-	private int $blockRuntimeId;
+	private  $x;
+	private  $y;
+	private  $z;
+	private  $blockRuntimeId;
 
-	private int $flags;
+	private  $flags;
 
 	//These two fields are useless 99.9% of the time; they are here to allow this packet to provide UpdateBlockSyncedPacket functionality.
-	private int $syncedUpdateEntityUniqueId;
-	private int $syncedUpdateType;
+	private  $syncedUpdateEntityUniqueId;
+	private  $syncedUpdateType;
 
 	public function __construct(int $x, int $y, int $z, int $blockRuntimeId, int $flags, int $syncedUpdateEntityUniqueId, int $syncedUpdateType){
 		$this->x = $x;

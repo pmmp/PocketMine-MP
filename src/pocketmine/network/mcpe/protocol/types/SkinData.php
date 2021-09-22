@@ -45,7 +45,7 @@ class SkinData{
 	private $capeImage;
 	/** @var string */
 	private $geometryData;
-	private string $geometryDataEngineVersion;
+	private $geometryDataEngineVersion;
 	/** @var string */
 	private $animationData;
 	/** @var string */
