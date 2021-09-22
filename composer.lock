@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b21a1c4f07a3cccadb5f0fbe01ecf633",
+    "content-hash": "bd5d7fc81a75739bfd2ef04b38220b84",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -671,28 +671,28 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.13.1",
+            "version": "0.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "0b2b84f894adebe6a746237f9cc36d80cc4227ab"
+                "reference": "ed27bfd83f4de5ff32f71ec7611a66c4857a82ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/0b2b84f894adebe6a746237f9cc36d80cc4227ab",
-                "reference": "0b2b84f894adebe6a746237f9cc36d80cc4227ab",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/ed27bfd83f4de5ff32f71ec7611a66c4857a82ce",
+                "reference": "ed27bfd83f4de5ff32f71ec7611a66c4857a82ce",
                 "shasum": ""
             },
             "require": {
                 "ext-sockets": "*",
-                "php": "^7.4 || ^8.0",
+                "php": "^8.0",
                 "php-64bit": "*",
                 "php-ipv6": "*",
                 "pocketmine/binaryutils": "^0.2.0",
-                "pocketmine/log": "^0.3.0"
+                "pocketmine/log": "^0.3.0 || ^0.4.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.88",
+                "phpstan/phpstan": "0.12.99",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
@@ -708,29 +708,29 @@
             "description": "A RakNet server implementation written in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/0.13.1"
+                "source": "https://github.com/pmmp/RakLib/tree/0.14.0"
             },
-            "time": "2021-05-18T21:14:20+00:00"
+            "time": "2021-09-20T21:53:31+00:00"
         },
         {
             "name": "pocketmine/raklib-ipc",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLibIpc.git",
-                "reference": "85f1a4834e34abd6d77f622f14731e8ef06dc7cf"
+                "reference": "922a6444b0c6c7daaa5aa5a832107e1ec4738aed"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLibIpc/zipball/85f1a4834e34abd6d77f622f14731e8ef06dc7cf",
-                "reference": "85f1a4834e34abd6d77f622f14731e8ef06dc7cf",
+                "url": "https://api.github.com/repos/pmmp/RakLibIpc/zipball/922a6444b0c6c7daaa5aa5a832107e1ec4738aed",
+                "reference": "922a6444b0c6c7daaa5aa5a832107e1ec4738aed",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.4 || ^8.0",
                 "php-64bit": "*",
                 "pocketmine/binaryutils": "^0.2.0",
-                "pocketmine/raklib": "^0.13.1"
+                "pocketmine/raklib": "^0.13.1 || ^0.14.0"
             },
             "require-dev": {
                 "phpstan/phpstan": "0.12.81",
@@ -749,9 +749,9 @@
             "description": "Channel-based protocols for inter-thread/inter-process communication with RakLib",
             "support": {
                 "issues": "https://github.com/pmmp/RakLibIpc/issues",
-                "source": "https://github.com/pmmp/RakLibIpc/tree/0.1.0"
+                "source": "https://github.com/pmmp/RakLibIpc/tree/0.1.1"
             },
-            "time": "2021-05-18T21:19:03+00:00"
+            "time": "2021-09-22T17:01:12+00:00"
         },
         {
             "name": "pocketmine/snooze",
