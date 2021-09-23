@@ -32,6 +32,7 @@ use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
 use pocketmine\entity\Entity;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
@@ -571,6 +572,10 @@ class Item implements \JsonSerializable{
 	 */
 	final public function canStackWith(Item $other) : bool{
 		return $this->equals($other, true, true);
+	}
+
+	public function isValidSlot(Inventory $inventory, int $slot) : bool{
+		return true;
 	}
 
 	/**

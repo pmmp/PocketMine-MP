@@ -25,6 +25,9 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\VanillaBlocks;
+use pocketmine\inventory\ArmorInventory;
+use pocketmine\inventory\Inventory;
 
 /**
  * Class used for Items that can be Blocks
@@ -48,5 +51,15 @@ class ItemBlock extends Item{
 
 	public function getMaxStackSize() : int{
 		return $this->getBlock()->getMaxStackSize();
+	}
+
+	public function isValidSlot(Inventory $inventory, int $slot) : bool{
+		return match ($inventory instanceof ArmorInventory) {//TODO test
+			$slot === ArmorInventory::SLOT_HEAD => match (true) {
+				$this->blockFullId === VanillaBlocks::CARVED_PUMPKIN()->getFullId() => true,
+				default => false
+			},
+			default => parent::isValidSlot($inventory, $slot)
+		};
 	}
 }

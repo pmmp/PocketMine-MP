@@ -26,6 +26,7 @@ namespace pocketmine\item;
 use pocketmine\color\Color;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\inventory\ArmorInventory;
+use pocketmine\inventory\Inventory;
 use pocketmine\item\enchantment\ProtectionEnchantment;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\math\Vector3;
@@ -149,5 +150,9 @@ class Armor extends Durable{
 		$this->customColor !== null ?
 			$tag->setInt(self::TAG_CUSTOM_COLOR, Binary::signInt($this->customColor->toARGB())) :
 			$tag->removeTag(self::TAG_CUSTOM_COLOR);
+	}
+
+	public function isValidSlot(Inventory $inventory, int $slot) : bool{
+		return $inventory instanceof ArmorInventory && $this->getArmorSlot() === $slot;
 	}
 }

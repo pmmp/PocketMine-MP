@@ -26,6 +26,8 @@ namespace pocketmine\item;
 use pocketmine\block\Block;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\inventory\ArmorInventory;
+use pocketmine\inventory\Inventory;
 
 class Skull extends Item{
 
@@ -45,5 +47,12 @@ class Skull extends Item{
 
 	public function getSkullType() : SkullType{
 		return $this->skullType;
+	}
+
+	public function isValidSlot(Inventory $inventory, int $slot) : bool{
+		if($inventory instanceof ArmorInventory){
+			return $slot === ArmorInventory::SLOT_HEAD;
+		}
+		return parent::isValidSlot($inventory, $slot);
 	}
 }
