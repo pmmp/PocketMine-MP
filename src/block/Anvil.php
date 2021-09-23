@@ -109,15 +109,19 @@ class Anvil extends Transparent implements Fallable{
 					if($blockEntity->fallDistance > 1){
 						//If player has helmet do 1/4 the normal damage
 						$helmet = $ent->getArmorInventory()->getHelmet();
+
 						if(!$helmet->isNull() && $helmet instanceof Durable){
-							$damageDone = $blockEntity->fallDistance * 0.5;
-							$ent->damageItem($helmet, (int) $damageDone);
+							$damageDone = $blockEntity->fallDistance * 1.5;
 						}else{
 							$damageDone = $blockEntity->fallDistance * 2;
 						}
 
 						$damageSource = new EntityDamageByEntityEvent($blockEntity, $ent, EntityDamageEvent::CAUSE_FALLING_BLOCK, min($damageDone, 40));
 						$ent->attack($damageSource);
+
+						if(!$damageSource->isCancelled() && !$helmet->isNull() && $helmet instanceof Durable) {
+							$ent->damageItem($helmet, (int) $damageDone);
+						}
 					}
 				}
 			}
