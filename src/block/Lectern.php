@@ -16,7 +16,7 @@ use pocketmine\item\WritableBookBase;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-class Lectern extends Transparent {
+class Lectern extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
 	use HorizontalFacingTrait;
 
@@ -40,7 +40,7 @@ class Lectern extends Transparent {
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 
-		if($tile instanceof TileLectern) {
+		if($tile instanceof TileLectern){
 
 			$this->book = $tile->getBook();
 			$this->page = $tile->getPage();
@@ -61,7 +61,7 @@ class Lectern extends Transparent {
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 
-		if($item instanceof WritableBookBase) {
+		if($item instanceof WritableBookBase){
 			$this->book = $item->pop();
 			$this->position->getWorld()->setBlock($this->position, $this);
 			return true;
@@ -71,8 +71,7 @@ class Lectern extends Transparent {
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
 		$tile = $this->position->getWorld()->getTile($this->position);
-		if($this->book !== null && !$this->book->isNull() && $tile instanceof TileLectern)
-		{
+		if($this->book !== null && !$this->book->isNull() && $tile instanceof TileLectern){
 			$droppedBook = new ItemEntity(Location::fromObject($this->position->up(), $this->position->getWorld(), 0, 0), $this->book);
 			$droppedBook->spawnToAll();
 

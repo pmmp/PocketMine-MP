@@ -10,23 +10,19 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
 
-class Lectern extends Spawnable {
+class Lectern extends Spawnable{
 	public const TAG_HAS_BOOK = "hasBook";
 	public const TAG_PAGE = "page";
 	public const TAG_TOTAL_PAGES = "totalPages";
 	public const TAG_BOOK = "book";
 
-	/** @var Boolean */
-	private $hasBook = false;
+	private bool $hasBook = false;
 
-	/** @var int */
-	private $page = 0;
+	private int $page = 0;
 
-	/** @var int */
-	private $totalPages = 0;
+	private int $totalPages = 0;
 
-	/** @var Item */
-	private $book;
+	private ?item $book;
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->book = ItemFactory::air();
@@ -71,19 +67,19 @@ class Lectern extends Spawnable {
 		}
 	}
 
-	public function getPage() : int {
+	public function getPage() : int{
 		return $this->page;
 	}
 
-	public function setPage(int $page): void {
+	public function setPage(int $page) : void{
 		$this->page = $page;
 	}
 
-	public function getTotalPages(): int {
+	public function getTotalPages() : int{
 		return $this->totalPages;
 	}
 
-	public function setTotalPages(int $totalPages): void {
+	public function setTotalPages(int $totalPages) : void{
 		$this->totalPages = $totalPages;
 	}
 
