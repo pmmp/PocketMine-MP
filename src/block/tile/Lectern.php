@@ -10,6 +10,7 @@ use pocketmine\item\WritableBookBase;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
+use function count;
 
 class Lectern extends Spawnable{
 	public const TAG_HAS_BOOK = "hasBook";
