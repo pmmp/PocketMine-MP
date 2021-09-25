@@ -26,14 +26,17 @@ namespace pocketmine\network\mcpe\serializer;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 use function count;
+use function str_repeat;
 
 final class ChunkSerializer{
 
@@ -82,7 +85,14 @@ final class ChunkSerializer{
 
 		foreach($layers as $blocks){
 			$bitsPerBlock = $blocks->getBitsPerBlock();
-			$words = $blocks->getWordArray();
+			if($mappingProtocol <= ProtocolInfo::PROTOCOL_1_17_0 && $bitsPerBlock === 0){
+				//TODO: we use these in memory, but the game doesn't support them yet
+				//polyfill them with 1-bpb instead
+				$bitsPerBlock = 1;
+				$words = str_repeat("\x00", PalettedBlockArray::getExpectedWordArraySize(1));
+			}else{
+				$words = $blocks->getWordArray();
+			}
 			$stream->putByte(($bitsPerBlock << 1) | ($persistentBlockStates ? 0 : 1));
 			$stream->put($words);
 			$palette = $blocks->getPalette();
