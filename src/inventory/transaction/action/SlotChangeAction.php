@@ -28,6 +28,7 @@ use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
+use function get_class;
 
 /**
  * Represents an action causing a change in an inventory slot.
@@ -70,6 +71,9 @@ class SlotChangeAction extends InventoryAction{
 		}
 		if(!$this->inventory->getItem($this->inventorySlot)->equalsExact($this->sourceItem)){
 			throw new TransactionValidationException("Slot does not contain expected original item");
+		}
+		if(!$this->sourceItem->isValidSlot($this->inventory, $this->inventorySlot)){
+			throw new TransactionValidationException("Slot {$this->inventorySlot} in inventory of type ".get_class($this->inventory)." does not accept this item");
 		}
 	}
 
