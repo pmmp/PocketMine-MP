@@ -20,8 +20,7 @@ class Lectern extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
 	use HorizontalFacingTrait;
 
-	protected int $page = 0;
-	protected int $totalPages = 0;
+	protected int $viewedPage = 0;
 	protected ?Item $book = null;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
@@ -43,8 +42,7 @@ class Lectern extends Transparent{
 		if($tile instanceof TileLectern){
 
 			$this->book = $tile->getBook();
-			$this->page = $tile->getPage();
-			$this->totalPages = $tile->getTotalPages();
+			$this->viewedPage = $tile->getViewedPage();
 
 		}
 	}
@@ -54,8 +52,7 @@ class Lectern extends Transparent{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileLectern){
 			$tile->setBook($this->book);
-			$tile->setPage($this->page);
-			$tile->setTotalPages($this->totalPages);
+			$tile->setViewedPage($this->viewedPage);
 		}
 	}
 
@@ -75,13 +72,26 @@ class Lectern extends Transparent{
 			$droppedBook = new ItemEntity(Location::fromObject($this->position->up(), $this->position->getWorld(), 0, 0), $this->book);
 			$droppedBook->spawnToAll();
 
-			$tile->setBook(ItemFactory::air());
-			$tile->setPage(0);
-			$tile->setTotalPages(0);
-			$this->readStateFromWorld();
+			$this->book = ItemFactory::air();
+			$this->viewedPage = 0;
+
 			$this->position->getWorld()->setBlock($this->position, $this);
 			return true;
 		}
 		return false;
+	}
+
+	public function setViewedPage(int $pageNumber) : void{
+		$this->viewedPage = $pageNumber;
+
+		$this->position->getWorld()->setBlock($this->position, $this);
+	}
+
+	public function getViewedPage() : int{
+		return $this->viewedPage;
+	}
+
+	public function setBook(Item $book) : void{
+		$this->book = $book;
 	}
 }

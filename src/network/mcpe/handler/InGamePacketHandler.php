@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\BaseSign;
 use pocketmine\block\ItemFrame;
+use pocketmine\block\Lectern;
 use pocketmine\block\utils\SignText;
 use pocketmine\crafting\CraftingGrid;
 use pocketmine\entity\animation\ConsumingItemAnimation;
@@ -62,6 +63,7 @@ use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
+use pocketmine\network\mcpe\protocol\LecternUpdatePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
@@ -94,6 +96,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\world\Position;
 use function array_key_exists;
 use function array_push;
 use function base64_encode;
@@ -867,6 +870,20 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleLabTable(LabTablePacket $packet) : bool{
 		return false; //TODO
+	}
+
+	public function handleLecternUpdate(LecternUpdatePacket $packet) : bool{
+		//TODO: Cancel page turn event
+		//Drop book is handled on server side with an interact event.
+		//Total pages is gathered from book.
+
+		$lectern = $this->player->getWorld()->getBlock(new Position($packet->x, $packet->y, $packet->z, $this->player->getWorld()));
+		if($lectern instanceof Lectern){
+			$lectern->setViewedPage($packet->page);
+			return true;
+		}
+
+		return false;
 	}
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{

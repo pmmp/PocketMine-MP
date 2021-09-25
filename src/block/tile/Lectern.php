@@ -6,6 +6,7 @@ namespace pocketmine\block\tile;
 
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\WritableBookBase;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
@@ -16,13 +17,9 @@ class Lectern extends Spawnable{
 	public const TAG_TOTAL_PAGES = "totalPages";
 	public const TAG_BOOK = "book";
 
-	private bool $hasBook = false;
+	private int $viewedPage = 0;
 
-	private int $page = 0;
-
-	private int $totalPages = 0;
-
-	private ?item $book;
+	private Item $book;
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->book = ItemFactory::air();
@@ -30,27 +27,31 @@ class Lectern extends Spawnable{
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_HAS_BOOK, $this->hasBook ? 1 : 0);
-		$nbt->setInt(self::TAG_PAGE, $this->page);
-		$nbt->setInt(self::TAG_TOTAL_PAGES, $this->totalPages);
+		$nbt->setByte(self::TAG_HAS_BOOK, !$this->book->isNull() ? 1 : 0);
+		$nbt->setInt(self::TAG_PAGE, $this->viewedPage);
 		$nbt->setTag(self::TAG_BOOK, $this->book->nbtSerialize());
+
+		if($this->book instanceof WritableBookBase){
+			$nbt->setInt(self::TAG_TOTAL_PAGES, 0);
+		}
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
+		$this->viewedPage = $nbt->getInt(self::TAG_PAGE, 0);
 		if(($itemTag = $nbt->getCompoundTag(self::TAG_BOOK)) !== null){
 
 			$this->book = Item::nbtDeserialize($itemTag);
 		}
-		$this->hasBook = $nbt->getByte(self::TAG_HAS_BOOK, 0) !== 0;
-		$this->page = $nbt->getInt(self::TAG_PAGE, 0);
-		$this->totalPages = $nbt->getInt(self::TAG_TOTAL_PAGES, 0);
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_HAS_BOOK, $this->hasBook ? 1 : 0);
-		$nbt->setInt(self::TAG_PAGE, $this->page);
-		$nbt->setInt(self::TAG_TOTAL_PAGES, $this->totalPages);
+		$nbt->setByte(self::TAG_HAS_BOOK, !$this->book->isNull() ? 1 : 0);
 		$nbt->setTag(self::TAG_BOOK, $this->book->nbtSerialize());
+		$nbt->setInt(self::TAG_PAGE, $this->viewedPage);
+
+		if($this->book instanceof WritableBookBase){
+			$nbt->setInt(self::TAG_TOTAL_PAGES, count($this->book->getPages()));
+		}
 	}
 
 	public function getBook() : Item{
@@ -59,28 +60,18 @@ class Lectern extends Spawnable{
 
 	public function setBook(?Item $item) : void{
 		if($item !== null and !$item->isNull()){
-			$this->hasBook = true;
 			$this->book = clone $item;
 		}else{
-			$this->hasBook = false;
 			$this->book = ItemFactory::air();
 		}
 	}
 
-	public function getPage() : int{
-		return $this->page;
+	public function getViewedPage() : int{
+		return $this->viewedPage;
 	}
 
-	public function setPage(int $page) : void{
-		$this->page = $page;
-	}
-
-	public function getTotalPages() : int{
-		return $this->totalPages;
-	}
-
-	public function setTotalPages(int $totalPages) : void{
-		$this->totalPages = $totalPages;
+	public function setViewedPage(int $viewedPage) : void{
+		$this->viewedPage = $viewedPage;
 	}
 
 }
