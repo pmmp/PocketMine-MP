@@ -73,7 +73,7 @@ class SlotChangeAction extends InventoryAction{
 			throw new TransactionValidationException("Slot does not contain expected original item");
 		}
 		if(!$this->sourceItem->isValidSlot($this->inventory, $this->inventorySlot)){
-			throw new TransactionValidationException("Slot {$this->inventorySlot} in inventory of type ".get_class($this->inventory)." does not accept this item");
+			throw new TransactionValidationException("Slot {$this->inventorySlot} in inventory of type " . get_class($this->inventory) . " does not accept this item");
 		}
 	}
 

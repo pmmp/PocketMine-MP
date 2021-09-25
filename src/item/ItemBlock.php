@@ -54,12 +54,12 @@ class ItemBlock extends Item{
 	}
 
 	public function isValidSlot(Inventory $inventory, int $slot) : bool{
-		return match ($inventory instanceof ArmorInventory) {//TODO test
+		return $inventory instanceof ArmorInventory && match (true) {
 			$slot === ArmorInventory::SLOT_HEAD => match (true) {
 				$this->blockFullId === VanillaBlocks::CARVED_PUMPKIN()->getFullId() => true,
 				default => false
 			},
 			default => parent::isValidSlot($inventory, $slot)
-		};
+		} || parent::isValidSlot($inventory, $slot);
 	}
 }

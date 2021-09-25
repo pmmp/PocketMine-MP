@@ -153,6 +153,6 @@ class Armor extends Durable{
 	}
 
 	public function isValidSlot(Inventory $inventory, int $slot) : bool{
-		return $inventory instanceof ArmorInventory && $this->getArmorSlot() === $slot;
+		return ($inventory instanceof ArmorInventory && $this->getArmorSlot() === $slot) || parent::isValidSlot($inventory, $slot);
 	}
 }
