@@ -32,10 +32,8 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
-use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 use function count;
-use function str_repeat;
 
 final class ChunkSerializer{
 
@@ -83,23 +81,18 @@ final class ChunkSerializer{
 		$stream->putByte(count($layers));
 
 		foreach($layers as $blocks){
-			if($blocks->getBitsPerBlock() === 0){
-				//TODO: we use these in memory, but the game doesn't support them yet
-				//polyfill them with 1-bpb instead
-				$bitsPerBlock = 1;
-				$words = str_repeat("\x00", PalettedBlockArray::getExpectedWordArraySize(1));
-			}else{
-				$bitsPerBlock = $blocks->getBitsPerBlock();
-				$words = $blocks->getWordArray();
-			}
+			$bitsPerBlock = $blocks->getBitsPerBlock();
+			$words = $blocks->getWordArray();
 			$stream->putByte(($bitsPerBlock << 1) | ($persistentBlockStates ? 0 : 1));
 			$stream->put($words);
 			$palette = $blocks->getPalette();
 
-			//these LSHIFT by 1 uvarints are optimizations: the client expects zigzag varints here
-			//but since we know they are always unsigned, we can avoid the extra fcall overhead of
-			//zigzag and just shift directly.
-			$stream->putUnsignedVarInt(count($palette) << 1); //yes, this is intentionally zigzag
+			if($bitsPerBlock !== 0){
+				//these LSHIFT by 1 uvarints are optimizations: the client expects zigzag varints here
+				//but since we know they are always unsigned, we can avoid the extra fcall overhead of
+				//zigzag and just shift directly.
+				$stream->putUnsignedVarInt(count($palette) << 1); //yes, this is intentionally zigzag
+			}
 			if($persistentBlockStates){
 				$nbtSerializer = new NetworkNbtSerializer();
 				foreach($palette as $p){
