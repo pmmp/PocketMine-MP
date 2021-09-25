@@ -877,9 +877,10 @@ class InGamePacketHandler extends PacketHandler{
 		//Drop book is handled on server side with an interact event.
 		//Total pages is gathered from book.
 
-		$lectern = $this->player->getWorld()->getBlock(new Position($packet->x, $packet->y, $packet->z, $this->player->getWorld()));
+		$lectern = $this->player->getWorld()->getBlockAt($packet->x, $packet->y, $packet->z);
 		if($lectern instanceof Lectern){
 			$lectern->setViewedPage($packet->page);
+			$this->player->getWorld()->setBlockAt($packet->x, $packet->y, $packet->z, $lectern);
 			return true;
 		}
 

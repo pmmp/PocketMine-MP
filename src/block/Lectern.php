@@ -81,10 +81,8 @@ class Lectern extends Transparent{
 		return false;
 	}
 
-	public function setViewedPage(int $pageNumber) : void{
-		$this->viewedPage = $pageNumber;
-
-		$this->position->getWorld()->setBlock($this->position, $this);
+	public function setViewedPage(int $viewedPage) : void{
+		$this->viewedPage = $viewedPage;
 	}
 
 	public function getViewedPage() : int{
