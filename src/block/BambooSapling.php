@@ -73,7 +73,7 @@ final class BambooSapling extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer || $item instanceof ItemBamboo){
-			if($this->grow($item, $player)){
+			if($this->grow($player)){
 				$item->pop();
 				return true;
 			}
@@ -87,7 +87,7 @@ final class BambooSapling extends Flowable{
 		}
 	}
 
-	private function grow(?Item $item, ?Player $player) : bool{
+	private function grow(?Player $player) : bool{
 		$world = $this->position->getWorld();
 		if(!$world->getBlock($this->position->up())->canBeReplaced()){
 			return false;
@@ -98,7 +98,7 @@ final class BambooSapling extends Flowable{
 		$tx->addBlock($this->position, $bamboo)
 			->addBlock($this->position->up(), (clone $bamboo)->setLeafSize(Bamboo::SMALL_LEAVES));
 
-		$ev = new StructureGrowEvent($this, $tx, $item, $player);
+		$ev = new StructureGrowEvent($this, $tx, $player);
 		$ev->call();
 		if($ev->isCancelled()){
 			return false;
@@ -115,7 +115,7 @@ final class BambooSapling extends Flowable{
 		$world = $this->position->getWorld();
 		if($this->ready){
 			$this->ready = false;
-			if($world->getFullLight($this->position) < 9 || !$this->grow(null, null)){
+			if($world->getFullLight($this->position) < 9 || !$this->grow(null)){
 				$world->setBlock($this->position, $this);
 			}
 		}elseif($world->getBlock($this->position->up())->canBeReplaced()){
