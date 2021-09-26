@@ -79,6 +79,7 @@ use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\LightArray;
+use pocketmine\world\format\SubChunk;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\generator\GeneratorRegisterTask;
 use pocketmine\world\generator\GeneratorUnregisterTask;
@@ -625,14 +626,14 @@ class World implements ChunkManager{
 	 * @return Player[]
 	 */
 	public function getViewersForPosition(Vector3 $pos) : array{
-		return $this->getChunkPlayers($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
+		return $this->getChunkPlayers($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE);
 	}
 
 	/**
 	 * Broadcasts a packet to every player who has the target position within their view distance.
 	 */
 	public function broadcastPacketToViewers(Vector3 $pos, ClientboundPacket $packet) : void{
-		$this->broadcastPacketToPlayersUsingChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4, $packet);
+		$this->broadcastPacketToPlayersUsingChunk($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE, $packet);
 	}
 
 	private function broadcastPacketToPlayersUsingChunk(int $chunkX, int $chunkZ, ClientboundPacket $packet) : void{
@@ -827,7 +828,7 @@ class World implements ChunkManager{
 			$index = $this->neighbourBlockUpdateQueue->dequeue();
 			unset($this->neighbourBlockUpdateQueueIndex[$index]);
 			World::getBlockXYZ($index, $x, $y, $z);
-			if(!$this->isChunkLoaded($x >> 4, $z >> 4)){
+			if(!$this->isChunkLoaded($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)){
 				continue;
 			}
 
@@ -1008,8 +1009,8 @@ class World implements ChunkManager{
 		$randRange = (int) ($randRange > $this->chunkTickRadius ? $this->chunkTickRadius : $randRange);
 
 		foreach($this->tickingLoaders as $loader){
-			$chunkX = (int) floor($loader->getX()) >> 4;
-			$chunkZ = (int) floor($loader->getZ()) >> 4;
+			$chunkX = (int) floor($loader->getX()) >> Chunk::COORD_BIT_SIZE;
+			$chunkZ = (int) floor($loader->getZ()) >> Chunk::COORD_BIT_SIZE;
 
 			for($chunk = 0; $chunk < $chunksPerLoader; ++$chunk){
 				$dx = mt_rand(-$randRange, $randRange);
@@ -1103,17 +1104,17 @@ class World implements ChunkManager{
 						//60 bits will be used by 5 blocks (12 bits each)
 						$k = mt_rand(0, (1 << 60) - 1);
 					}
-					$x = $k & 0x0f;
-					$y = ($k >> 4) & 0x0f;
-					$z = ($k >> 8) & 0x0f;
-					$k >>= 12;
+					$x = $k & SubChunk::COORD_MASK;
+					$y = ($k >> SubChunk::COORD_BIT_SIZE) & SubChunk::COORD_MASK;
+					$z = ($k >> (SubChunk::COORD_BIT_SIZE * 2)) & SubChunk::COORD_MASK;
+					$k >>= (SubChunk::COORD_BIT_SIZE * 3);
 
 					$state = $subChunk->getFullBlock($x, $y, $z);
 
 					if(isset($this->randomTickBlocks[$state])){
 						/** @var Block $block */
 						$block = BlockFactory::getInstance()->fromFullBlock($state);
-						$block->position($this, $chunkX * 16 + $x, ($Y << 4) + $y, $chunkZ * 16 + $z);
+						$block->position($this, $chunkX * Chunk::EDGE_LENGTH + $x, ($Y << SubChunk::COORD_BIT_SIZE) + $y, $chunkZ * Chunk::EDGE_LENGTH + $z);
 						$block->onRandomTick();
 					}
 				}
@@ -1369,8 +1370,8 @@ class World implements ChunkManager{
 		if(!$this->isInWorld($x, $y, $z)){
 			return $y >= self::Y_MAX ? 15 : 0;
 		}
-		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null && $chunk->isLightPopulated() === true){
-			return $chunk->getSubChunk($y >> 4)->getBlockSkyLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
+		if(($chunk = $this->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) !== null && $chunk->isLightPopulated() === true){
+			return $chunk->getSubChunk($y >> Chunk::COORD_BIT_SIZE)->getBlockSkyLightArray()->get($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
 		}
 		return 0; //TODO: this should probably throw instead (light not calculated yet)
 	}
@@ -1394,14 +1395,14 @@ class World implements ChunkManager{
 		if(!$this->isInWorld($x, $y, $z)){
 			return 0;
 		}
-		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) !== null && $chunk->isLightPopulated() === true){
-			return $chunk->getSubChunk($y >> 4)->getBlockLightArray()->get($x & 0x0f, $y & 0xf, $z & 0x0f);
+		if(($chunk = $this->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) !== null && $chunk->isLightPopulated() === true){
+			return $chunk->getSubChunk($y >> Chunk::COORD_BIT_SIZE)->getBlockLightArray()->get($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
 		}
 		return 0; //TODO: this should probably throw instead (light not calculated yet)
 	}
 
 	public function updateAllLight(int $x, int $y, int $z) : void{
-		if(($chunk = $this->getChunk($x >> 4, $z >> 4)) === null || $chunk->isLightPopulated() !== true){
+		if(($chunk = $this->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) === null || $chunk->isLightPopulated() !== true){
 			$this->logger->debug("Skipped runtime light update of x=$x,y=$y,z=$z because the target area has not received base light calculation");
 			return;
 		}
@@ -1437,7 +1438,7 @@ class World implements ChunkManager{
 		] as [$x1, $y1, $z1]){
 			if(
 				!$this->isInWorld($x1, $y1, $z1) ||
-				($chunk = $this->getChunk($x1 >> 4, $z1 >> 4)) === null ||
+				($chunk = $this->getChunk($x1 >> Chunk::COORD_BIT_SIZE, $z1 >> Chunk::COORD_BIT_SIZE)) === null ||
 				$chunk->isLightPopulated() !== true
 			){
 				continue;
@@ -1518,7 +1519,7 @@ class World implements ChunkManager{
 	 */
 	public function getBlockAt(int $x, int $y, int $z, bool $cached = true, bool $addToCache = true) : Block{
 		$relativeBlockHash = null;
-		$chunkHash = World::chunkHash($x >> 4, $z >> 4);
+		$chunkHash = World::chunkHash($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE);
 
 		if($this->isInWorld($x, $y, $z)){
 			$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
@@ -1529,7 +1530,7 @@ class World implements ChunkManager{
 
 			$chunk = $this->chunks[$chunkHash] ?? null;
 			if($chunk !== null){
-				$block = BlockFactory::getInstance()->fromFullBlock($chunk->getFullBlock($x & 0x0f, $y, $z & 0x0f));
+				$block = BlockFactory::getInstance()->fromFullBlock($chunk->getFullBlock($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK));
 			}else{
 				$addToCache = false;
 				$block = VanillaBlocks::AIR();
@@ -1581,8 +1582,8 @@ class World implements ChunkManager{
 		if(!$this->isInWorld($x, $y, $z)){
 			throw new \InvalidArgumentException("Pos x=$x,y=$y,z=$z is outside of the world bounds");
 		}
-		$chunkX = $x >> 4;
-		$chunkZ = $z >> 4;
+		$chunkX = $x >> Chunk::COORD_BIT_SIZE;
+		$chunkZ = $z >> Chunk::COORD_BIT_SIZE;
 		if($this->isChunkLocked($chunkX, $chunkZ)){
 			throw new WorldException("Terrain is locked for generation/population");
 		}
@@ -1600,7 +1601,7 @@ class World implements ChunkManager{
 		$block->writeStateToWorld();
 		$pos = $block->getPosition();
 
-		$chunkHash = World::chunkHash($x >> 4, $z >> 4);
+		$chunkHash = World::chunkHash($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE);
 		$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
 
 		unset($this->blockCache[$chunkHash][$relativeBlockHash]);
@@ -1610,7 +1611,7 @@ class World implements ChunkManager{
 		}
 		$this->changedBlocks[$chunkHash][$relativeBlockHash] = $pos;
 
-		foreach($this->getChunkListeners($x >> 4, $z >> 4) as $listener){
+		foreach($this->getChunkListeners($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE) as $listener){
 			$listener->onBlockChanged($pos);
 		}
 
@@ -1671,9 +1672,9 @@ class World implements ChunkManager{
 	public function useBreakOn(Vector3 $vector, Item &$item = null, ?Player $player = null, bool $createParticles = false) : bool{
 		$vector = $vector->floor();
 
-		$chunkX = $vector->getFloorX() >> 4;
-		$chunkZ = $vector->getFloorZ() >> 4;
-		if(!$this->isChunkLoaded($chunkX, $chunkZ) || !$this->isChunkGenerated($chunkX, $chunkZ) || $this->isChunkLocked($chunkX, $chunkZ)){
+		$chunkX = $vector->getFloorX() >> Chunk::COORD_BIT_SIZE;
+		$chunkZ = $vector->getFloorZ() >> Chunk::COORD_BIT_SIZE;
+		if(!$this->isChunkLoaded($chunkX, $chunkZ) || $this->isChunkLocked($chunkX, $chunkZ)){
 			return false;
 		}
 
@@ -1686,12 +1687,12 @@ class World implements ChunkManager{
 
 		$drops = [];
 		if($player === null or $player->hasFiniteResources()){
-			$drops = array_merge(...array_map(function(Block $block) use ($item) : array{ return $block->getDrops($item); }, $affectedBlocks));
+			$drops = array_merge(...array_map(fn(Block $block) => $block->getDrops($item), $affectedBlocks));
 		}
 
 		$xpDrop = 0;
 		if($player !== null and $player->hasFiniteResources()){
-			$xpDrop = array_sum(array_map(function(Block $block) use ($item) : int{ return $block->getXpDropForTool($item); }, $affectedBlocks));
+			$xpDrop = array_sum(array_map(fn(Block $block) => $block->getXpDropForTool($item), $affectedBlocks));
 		}
 
 		if($player !== null){
@@ -1782,9 +1783,9 @@ class World implements ChunkManager{
 			//TODO: build height limit messages for custom world heights and mcregion cap
 			return false;
 		}
-		$chunkX = $blockReplace->getPosition()->getFloorX() >> 4;
-		$chunkZ = $blockReplace->getPosition()->getFloorZ() >> 4;
-		if(!$this->isChunkLoaded($chunkX, $chunkZ) || !$this->isChunkGenerated($chunkX, $chunkZ) || $this->isChunkLocked($chunkX, $chunkZ)){
+		$chunkX = $blockReplace->getPosition()->getFloorX() >> Chunk::COORD_BIT_SIZE;
+		$chunkZ = $blockReplace->getPosition()->getFloorZ() >> Chunk::COORD_BIT_SIZE;
+		if(!$this->isChunkLoaded($chunkX, $chunkZ) || $this->isChunkLocked($chunkX, $chunkZ)){
 			return false;
 		}
 
@@ -1836,7 +1837,7 @@ class World implements ChunkManager{
 		foreach($tx->getBlocks() as [$x, $y, $z, $block]){
 			$block->position($this, $x, $y, $z);
 			foreach($block->getCollisionBoxes() as $collisionBox){
-				if(count($this->getNearbyEntities($collisionBox)) > 0){
+				if(count($this->getCollidingEntities($collisionBox)) > 0){
 					return false;  //Entity in block
 				}
 			}
@@ -1910,12 +1911,12 @@ class World implements ChunkManager{
 	 *
 	 * @return Entity[]
 	 */
-	public function getCollidingEntities(AxisAlignedBB $bb, Entity $entity) : array{
+	public function getCollidingEntities(AxisAlignedBB $bb, ?Entity $entity = null) : array{
 		$nearby = [];
 
-		if($entity->canCollide){
+		if($entity === null or $entity->canCollide){
 			foreach($this->getNearbyEntities($bb, $entity) as $ent){
-				if($ent->canBeCollidedWith() and $entity->canCollideWith($ent)){
+				if($ent->canBeCollidedWith() and ($entity === null or $entity->canCollideWith($ent))){
 					$nearby[] = $ent;
 				}
 			}
@@ -1932,10 +1933,10 @@ class World implements ChunkManager{
 	public function getNearbyEntities(AxisAlignedBB $bb, ?Entity $entity = null) : array{
 		$nearby = [];
 
-		$minX = ((int) floor($bb->minX - 2)) >> 4;
-		$maxX = ((int) floor($bb->maxX + 2)) >> 4;
-		$minZ = ((int) floor($bb->minZ - 2)) >> 4;
-		$maxZ = ((int) floor($bb->maxZ + 2)) >> 4;
+		$minX = ((int) floor($bb->minX - 2)) >> Chunk::COORD_BIT_SIZE;
+		$maxX = ((int) floor($bb->maxX + 2)) >> Chunk::COORD_BIT_SIZE;
+		$minZ = ((int) floor($bb->minZ - 2)) >> Chunk::COORD_BIT_SIZE;
+		$maxZ = ((int) floor($bb->maxZ + 2)) >> Chunk::COORD_BIT_SIZE;
 
 		for($x = $minX; $x <= $maxX; ++$x){
 			for($z = $minZ; $z <= $maxZ; ++$z){
@@ -1967,10 +1968,10 @@ class World implements ChunkManager{
 	public function getNearestEntity(Vector3 $pos, float $maxDistance, string $entityType = Entity::class, bool $includeDead = false) : ?Entity{
 		assert(is_a($entityType, Entity::class, true));
 
-		$minX = ((int) floor($pos->x - $maxDistance)) >> 4;
-		$maxX = ((int) floor($pos->x + $maxDistance)) >> 4;
-		$minZ = ((int) floor($pos->z - $maxDistance)) >> 4;
-		$maxZ = ((int) floor($pos->z + $maxDistance)) >> 4;
+		$minX = ((int) floor($pos->x - $maxDistance)) >> Chunk::COORD_BIT_SIZE;
+		$maxX = ((int) floor($pos->x + $maxDistance)) >> Chunk::COORD_BIT_SIZE;
+		$minZ = ((int) floor($pos->z - $maxDistance)) >> Chunk::COORD_BIT_SIZE;
+		$maxZ = ((int) floor($pos->z + $maxDistance)) >> Chunk::COORD_BIT_SIZE;
 
 		$currentTargetDistSq = $maxDistance ** 2;
 
@@ -2024,12 +2025,12 @@ class World implements ChunkManager{
 	 * Returns the tile at the specified x,y,z coordinates, or null if it does not exist.
 	 */
 	public function getTileAt(int $x, int $y, int $z) : ?Tile{
-		return ($chunk = $this->loadChunk($x >> 4, $z >> 4)) !== null ? $chunk->getTile($x & 0x0f, $y, $z & 0x0f) : null;
+		return ($chunk = $this->loadChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) !== null ? $chunk->getTile($x & Chunk::COORD_MASK, $y, $z & Chunk::COORD_MASK) : null;
 	}
 
 	public function getBiomeId(int $x, int $z) : int{
-		if(($chunk = $this->loadChunk($x >> 4, $z >> 4)) !== null){
-			return $chunk->getBiomeId($x & 0x0f, $z & 0x0f);
+		if(($chunk = $this->loadChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) !== null){
+			return $chunk->getBiomeId($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK);
 		}
 		return BiomeIds::OCEAN; //TODO: this should probably throw instead (terrain not generated yet)
 	}
@@ -2039,14 +2040,14 @@ class World implements ChunkManager{
 	}
 
 	public function setBiomeId(int $x, int $z, int $biomeId) : void{
-		$chunkX = $x >> 4;
-		$chunkZ = $z >> 4;
+		$chunkX = $x >> Chunk::COORD_BIT_SIZE;
+		$chunkZ = $z >> Chunk::COORD_BIT_SIZE;
 		if($this->isChunkLocked($chunkX, $chunkZ)){
 			//the changes would be overwritten when the generation finishes
 			throw new WorldException("Chunk is currently locked for async generation/population");
 		}
 		if(($chunk = $this->loadChunk($chunkX, $chunkZ)) !== null){
-			$chunk->setBiomeId($x & 0x0f, $z & 0x0f, $biomeId);
+			$chunk->setBiomeId($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $biomeId);
 		}else{
 			//if we allowed this, the modifications would be lost when the chunk is created
 			throw new WorldException("Cannot set biome in a non-generated chunk");
@@ -2075,7 +2076,7 @@ class World implements ChunkManager{
 	 * Returns the chunk containing the given Vector3 position.
 	 */
 	public function getOrLoadChunkAtPosition(Vector3 $pos) : ?Chunk{
-		return $this->loadChunk($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
+		return $this->loadChunk($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE);
 	}
 
 	/**
@@ -2228,8 +2229,8 @@ class World implements ChunkManager{
 	 * @throws WorldException if the terrain is not generated
 	 */
 	public function getHighestBlockAt(int $x, int $z) : ?int{
-		if(($chunk = $this->loadChunk($x >> 4, $z >> 4)) !== null){
-			return $chunk->getHighestBlockAt($x & 0x0f, $z & 0x0f);
+		if(($chunk = $this->loadChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) !== null){
+			return $chunk->getHighestBlockAt($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK);
 		}
 		throw new WorldException("Cannot get highest block in an ungenerated chunk");
 	}
@@ -2238,7 +2239,7 @@ class World implements ChunkManager{
 	 * Returns whether the given position is in a loaded area of terrain.
 	 */
 	public function isInLoadedTerrain(Vector3 $pos) : bool{
-		return $this->isChunkLoaded($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
+		return $this->isChunkLoaded($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE);
 	}
 
 	public function isChunkLoaded(int $x, int $z) : bool{
@@ -2292,7 +2293,7 @@ class World implements ChunkManager{
 		if($chunk === null){
 			throw new \InvalidArgumentException("Cannot add an Entity in an ungenerated chunk");
 		}
-		$this->entitiesByChunk[World::chunkHash($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4)][$entity->getId()] = $entity;
+		$this->entitiesByChunk[World::chunkHash($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE)][$entity->getId()] = $entity;
 		$this->entityLastKnownPositions[$entity->getId()] = $pos;
 
 		if($entity instanceof Player){
@@ -2314,7 +2315,7 @@ class World implements ChunkManager{
 			throw new \InvalidArgumentException("Entity is not tracked by this world (possibly already removed?)");
 		}
 		$pos = $this->entityLastKnownPositions[$entity->getId()];
-		$chunkHash = World::chunkHash($pos->getFloorX() >> 4, $pos->getFloorZ() >> 4);
+		$chunkHash = World::chunkHash($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE);
 		if(isset($this->entitiesByChunk[$chunkHash][$entity->getId()])){
 			unset($this->entitiesByChunk[$chunkHash][$entity->getId()]);
 			if(count($this->entitiesByChunk[$chunkHash]) === 0){
@@ -2343,10 +2344,10 @@ class World implements ChunkManager{
 		$oldPosition = $this->entityLastKnownPositions[$entity->getId()];
 		$newPosition = $entity->getPosition();
 
-		$oldChunkX = $oldPosition->getFloorX() >> 4;
-		$oldChunkZ = $oldPosition->getFloorZ() >> 4;
-		$newChunkX = $newPosition->getFloorX() >> 4;
-		$newChunkZ = $newPosition->getFloorZ() >> 4;
+		$oldChunkX = $oldPosition->getFloorX() >> Chunk::COORD_BIT_SIZE;
+		$oldChunkZ = $oldPosition->getFloorZ() >> Chunk::COORD_BIT_SIZE;
+		$newChunkX = $newPosition->getFloorX() >> Chunk::COORD_BIT_SIZE;
+		$newChunkZ = $newPosition->getFloorZ() >> Chunk::COORD_BIT_SIZE;
 
 		if($oldChunkX !== $newChunkX || $oldChunkZ !== $newChunkZ){
 			$oldChunkHash = World::chunkHash($oldChunkX, $oldChunkZ);
@@ -2388,8 +2389,8 @@ class World implements ChunkManager{
 			throw new \InvalidArgumentException("Invalid Tile world");
 		}
 
-		$chunkX = $pos->getFloorX() >> 4;
-		$chunkZ = $pos->getFloorZ() >> 4;
+		$chunkX = $pos->getFloorX() >> Chunk::COORD_BIT_SIZE;
+		$chunkZ = $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE;
 
 		if(isset($this->chunks[$hash = World::chunkHash($chunkX, $chunkZ)])){
 			$this->chunks[$hash]->addTile($tile);
@@ -2411,8 +2412,8 @@ class World implements ChunkManager{
 			throw new \InvalidArgumentException("Invalid Tile world");
 		}
 
-		$chunkX = $pos->getFloorX() >> 4;
-		$chunkZ = $pos->getFloorZ() >> 4;
+		$chunkX = $pos->getFloorX() >> Chunk::COORD_BIT_SIZE;
+		$chunkZ = $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE;
 
 		if(isset($this->chunks[$hash = World::chunkHash($chunkX, $chunkZ)])){
 			$this->chunks[$hash]->removeTile($tile);
@@ -2522,7 +2523,7 @@ class World implements ChunkManager{
 				}
 				if($tile === null){
 					$this->getLogger()->warning("Chunk $chunkX $chunkZ: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
-				}elseif(!$this->isChunkLoaded($tile->getPosition()->getFloorX() >> 4, $tile->getPosition()->getFloorZ() >> 4)){
+				}elseif(!$this->isChunkLoaded($tile->getPosition()->getFloorX() >> Chunk::COORD_BIT_SIZE, $tile->getPosition()->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
 					$this->logger->error("Chunk $chunkX $chunkZ: Found tile saved on wrong chunk - unable to fix due to correct chunk not loaded");
 				}else{
 					$this->addTile($tile);
@@ -2621,8 +2622,8 @@ class World implements ChunkManager{
 	 */
 	public function isSpawnChunk(int $X, int $Z) : bool{
 		$spawn = $this->getSpawnLocation();
-		$spawnX = $spawn->x >> 4;
-		$spawnZ = $spawn->z >> 4;
+		$spawnX = $spawn->x >> Chunk::COORD_BIT_SIZE;
+		$spawnZ = $spawn->z >> Chunk::COORD_BIT_SIZE;
 
 		return abs($X - $spawnX) <= 1 and abs($Z - $spawnZ) <= 1;
 	}

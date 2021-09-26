@@ -28,7 +28,6 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
@@ -40,8 +39,8 @@ class EffectCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_EFFECT_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_EFFECT_USAGE
+			KnownTranslationFactory::pocketmine_command_effect_description(),
+			KnownTranslationFactory::commands_effect_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_EFFECT);
 	}

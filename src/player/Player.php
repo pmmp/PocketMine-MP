@@ -272,9 +272,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$world = $spawnLocation->getWorld();
 		//load the spawn chunk so we can see the terrain
-		$world->registerChunkLoader($this->chunkLoader, $spawnLocation->getFloorX() >> 4, $spawnLocation->getFloorZ() >> 4, true);
-		$world->registerChunkListener($this, $spawnLocation->getFloorX() >> 4, $spawnLocation->getFloorZ() >> 4);
-		$this->usedChunks[World::chunkHash($spawnLocation->getFloorX() >> 4, $spawnLocation->getFloorZ() >> 4)] = UsedChunkStatus::NEEDED();
+		$world->registerChunkLoader($this->chunkLoader, $spawnLocation->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE, true);
+		$world->registerChunkListener($this, $spawnLocation->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE);
+		$this->usedChunks[World::chunkHash($spawnLocation->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE)] = UsedChunkStatus::NEEDED();
 
 		parent::__construct($spawnLocation, $this->playerInfo->getSkin(), $namedtag);
 
@@ -339,6 +339,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function isAuthenticated() : bool{
 		return $this->authenticated;
 	}
+
+	/**
+	 * Returns an object containing information about the player, such as their username, skin, and misc extra
+	 * client-specific data.
+	 */
+	public function getPlayerInfo() : PlayerInfo{ return $this->playerInfo; }
 
 	/**
 	 * If the player is logged into Xbox Live, returns their Xbox user ID (XUID) as a string. Returns an empty string if
@@ -794,8 +800,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		foreach($this->chunkSelector->selectChunks(
 			$this->server->getAllowedViewDistance($this->viewDistance),
-			$this->location->getFloorX() >> 4,
-			$this->location->getFloorZ() >> 4
+			$this->location->getFloorX() >> Chunk::COORD_BIT_SIZE,
+			$this->location->getFloorZ() >> Chunk::COORD_BIT_SIZE
 		) as $hash){
 			if(!isset($this->usedChunks[$hash]) or $this->usedChunks[$hash]->equals(UsedChunkStatus::NEEDED())){
 				$newOrder[$hash] = true;
@@ -1126,7 +1132,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->logger->debug("Moved too fast, reverting movement");
 			$this->logger->debug("Old position: " . $this->location->asVector3() . ", new position: " . $newPos);
 			$revert = true;
-		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos) or !$this->getWorld()->isChunkGenerated($newPos->getFloorX() >> 4, $newPos->getFloorZ() >> 4)){
+		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos)){
 			$revert = true;
 			$this->nextChunkOrderRun = 0;
 		}
@@ -1575,6 +1581,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->hungerManager->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
 				return true;
 			}
+		}else{
+			$this->logger->debug("Cancelled block break at $pos due to not currently being interactable");
 		}
 
 		return false;
@@ -1601,6 +1609,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				}
 				return true;
 			}
+		}else{
+			$this->logger->debug("Cancelled interaction of block at $pos due to not currently being interactable");
 		}
 
 		return false;
@@ -1625,7 +1635,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$oldItem = clone $heldItem;
 
 		$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
-		if($this->isSpectator() or !$this->canInteract($entity->getLocation(), 8) or ($entity instanceof Player and !$this->server->getConfigGroup()->getConfigBool("pvp"))){
+		if(!$this->canInteract($entity->getLocation(), 8)){
+			$this->logger->debug("Cancelled attack of entity " . $entity->getId() . " due to not currently being interactable");
+			$ev->cancel();
+		}elseif($this->isSpectator() or ($entity instanceof Player and !$this->server->getConfigGroup()->getConfigBool("pvp"))){
 			$ev->cancel();
 		}
 
@@ -1688,6 +1701,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$ev = new PlayerEntityInteractEvent($this, $entity, $clickPos);
 
 		if(!$this->canInteract($entity->getLocation(), 8)){
+			$this->logger->debug("Cancelled interaction with entity " . $entity->getId() . " due to not currently being interactable");
 			$ev->cancel();
 		}
 
@@ -2120,7 +2134,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->logger->debug("Waiting for spawn terrain generation for respawn");
 		$spawn = $this->getSpawn();
-		$spawn->getWorld()->orderChunkPopulation($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, null)->onCompletion(
+		$spawn->getWorld()->orderChunkPopulation($spawn->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawn->getFloorZ() >> Chunk::COORD_BIT_SIZE, null)->onCompletion(
 			function() use ($spawn) : void{
 				if(!$this->isConnected()){
 					return;

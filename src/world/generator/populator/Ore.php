@@ -25,6 +25,7 @@ namespace pocketmine\world\generator\populator;
 
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\object\Ore as ObjectOre;
 use pocketmine\world\generator\object\OreType;
 
@@ -36,9 +37,9 @@ class Ore implements Populator{
 		foreach($this->oreTypes as $type){
 			$ore = new ObjectOre($random, $type);
 			for($i = 0; $i < $ore->type->clusterCount; ++$i){
-				$x = $random->nextRange($chunkX << 4, ($chunkX << 4) + 15);
+				$x = $random->nextRange($chunkX << Chunk::COORD_BIT_SIZE, ($chunkX << Chunk::COORD_BIT_SIZE) + Chunk::EDGE_LENGTH - 1);
 				$y = $random->nextRange($ore->type->minHeight, $ore->type->maxHeight);
-				$z = $random->nextRange($chunkZ << 4, ($chunkZ << 4) + 15);
+				$z = $random->nextRange($chunkZ << Chunk::COORD_BIT_SIZE, ($chunkZ << Chunk::COORD_BIT_SIZE) + Chunk::EDGE_LENGTH - 1);
 				if($ore->canPlaceObject($world, $x, $y, $z)){
 					$ore->placeObject($world, $x, $y, $z);
 				}

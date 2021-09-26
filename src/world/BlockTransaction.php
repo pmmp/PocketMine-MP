@@ -95,10 +95,15 @@ class BlockTransaction{
 				}
 			}
 		}
+		$changedBlocks = 0;
 		foreach($this->getBlocks() as [$x, $y, $z, $block]){
-			$this->world->setBlockAt($x, $y, $z, $block);
+			$oldBlock = $this->world->getBlockAt($x, $y, $z);
+			if(!$oldBlock->isSameState($block)){
+				$this->world->setBlockAt($x, $y, $z, $block);
+				$changedBlocks++;
+			}
 		}
-		return true;
+		return $changedBlocks !== 0;
 	}
 
 	/**

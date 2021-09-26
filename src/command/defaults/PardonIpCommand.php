@@ -27,7 +27,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use function count;
 use function preg_match;
@@ -37,8 +36,8 @@ class PardonIpCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_UNBAN_IP_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_UNBANIP_USAGE,
+			KnownTranslationFactory::pocketmine_command_unban_ip_description(),
+			KnownTranslationFactory::commands_unbanip_usage(),
 			["unban-ip"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_UNBAN_IP);

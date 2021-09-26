@@ -27,7 +27,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\world\World;
@@ -39,8 +38,8 @@ class TimeCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_TIME_DESCRIPTION,
-			KnownTranslationKeys::POCKETMINE_COMMAND_TIME_USAGE
+			KnownTranslationFactory::pocketmine_command_time_description(),
+			KnownTranslationFactory::pocketmine_command_time_usage()
 		);
 		$this->setPermission(implode(";", [
 			DefaultPermissionNames::COMMAND_TIME_ADD,

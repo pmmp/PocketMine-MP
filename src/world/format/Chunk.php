@@ -39,6 +39,10 @@ class Chunk{
 
 	public const MAX_SUBCHUNKS = 16;
 
+	public const EDGE_LENGTH = SubChunk::EDGE_LENGTH;
+	public const COORD_BIT_SIZE = SubChunk::COORD_BIT_SIZE;
+	public const COORD_MASK = SubChunk::COORD_MASK;
+
 	/** @var int */
 	private $terrainDirtyFlags = 0;
 
@@ -72,7 +76,7 @@ class Chunk{
 			$this->subChunks[$y] = $subChunks[$y] ?? new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, []);
 		}
 
-		$val = ($this->subChunks->getSize() * 16);
+		$val = ($this->subChunks->getSize() * SubChunk::EDGE_LENGTH);
 		$this->heightMap = $heightMap ?? new HeightArray(array_fill(0, 256, $val));
 		$this->biomeIds = $biomeIds ?? BiomeArray::fill(BiomeIds::OCEAN);
 	}
@@ -94,14 +98,14 @@ class Chunk{
 	 * @return int bitmap, (id << 4) | meta
 	 */
 	public function getFullBlock(int $x, int $y, int $z) : int{
-		return $this->getSubChunk($y >> 4)->getFullBlock($x, $y & 0x0f, $z);
+		return $this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->getFullBlock($x, $y & SubChunk::COORD_MASK, $z);
 	}
 
 	/**
 	 * Sets the blockstate at the given coordinate by internal ID.
 	 */
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
-		$this->getSubChunk($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
+		$this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->setFullBlock($x, $y & SubChunk::COORD_MASK, $z, $block);
 		$this->terrainDirtyFlags |= self::DIRTY_FLAG_TERRAIN;
 	}
 
@@ -117,7 +121,7 @@ class Chunk{
 		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
 			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z);
 			if($height !== null){
-				return $height | ($y << 4);
+				return $height | ($y << SubChunk::COORD_BIT_SIZE);
 			}
 		}
 
@@ -328,6 +332,8 @@ class Chunk{
 	 * @param int $z 0-15
 	 */
 	public static function blockHash(int $x, int $y, int $z) : int{
-		return ($y << 8) | (($z & 0x0f) << 4) | ($x & 0x0f);
+		return ($y << (2 * SubChunk::COORD_BIT_SIZE)) |
+			(($z & SubChunk::COORD_MASK) << SubChunk::COORD_BIT_SIZE) |
+			($x & SubChunk::COORD_MASK);
 	}
 }

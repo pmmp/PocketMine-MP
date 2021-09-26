@@ -35,6 +35,7 @@ use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\form\Form;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
@@ -832,9 +833,10 @@ class NetworkSession{
 				$aliasObj = new CommandEnum(ucfirst($command->getName()) . "Aliases", array_values($aliases));
 			}
 
+			$description = $command->getDescription();
 			$data = new CommandData(
 				$lname, //TODO: commands containing uppercase letters in the name crash 1.9.0 client
-				$this->player->getLanguage()->translateString($command->getDescription()),
+				$description instanceof Translatable ? $this->player->getLanguage()->translate($description) : $description,
 				0,
 				0,
 				$aliasObj,
