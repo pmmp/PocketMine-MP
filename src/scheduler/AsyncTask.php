@@ -129,6 +129,7 @@ abstract class AsyncTask extends \Threaded{
 	public function cancelRun() : void{
 		$this->cancelRun = true;
 	}
+
 	public function hasCancelledRun() : bool{
 		return $this->cancelRun;
 	}
