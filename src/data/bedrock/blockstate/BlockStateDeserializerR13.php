@@ -44,6 +44,7 @@ use pocketmine\block\SweetBerryBush;
 use pocketmine\block\Trapdoor;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\block\utils\CoralType;
+use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Wall;
@@ -819,6 +820,21 @@ final class BlockStateDeserializerR13{
 				->setNoDecay($in->readBool(BlockStateNamesR13::PERSISTENT_BIT))
 				->setCheckDecay($in->readBool(BlockStateNamesR13::UPDATE_BIT));
 		});
+		$this->mapVanilla("lever", function(BlockStateReader $in) : Block{
+			return VanillaBlocks::LEVER()
+				->setActivated($in->readBool(BlockStateNamesR13::OPEN_BIT))
+				->setFacing(match($value = $in->readString(BlockStateNamesR13::LEVER_DIRECTION)){
+					StringValues::LEVER_DIRECTION_DOWN_NORTH_SOUTH => LeverFacing::DOWN_AXIS_Z(),
+					StringValues::LEVER_DIRECTION_DOWN_EAST_WEST => LeverFacing::DOWN_AXIS_X(),
+					StringValues::LEVER_DIRECTION_UP_NORTH_SOUTH => LeverFacing::UP_AXIS_Z(),
+					StringValues::LEVER_DIRECTION_UP_EAST_WEST => LeverFacing::UP_AXIS_X(),
+					StringValues::LEVER_DIRECTION_NORTH => LeverFacing::NORTH(),
+					StringValues::LEVER_DIRECTION_SOUTH => LeverFacing::SOUTH(),
+					StringValues::LEVER_DIRECTION_WEST => LeverFacing::WEST(),
+					StringValues::LEVER_DIRECTION_EAST => LeverFacing::EAST(),
+					default => throw $in->badValueException(BlockStateNamesR13::LEVER_DIRECTION, $value),
+				});
+		});
 		$this->mapVanilla("light_blue_glazed_terracotta", fn(BlockStateReader $in) => $this->decodeGlazedTerracotta(VanillaBlocks::LIGHT_BLUE_GLAZED_TERRACOTTA(), $in));
 		$this->mapVanilla("light_weighted_pressure_plate", function(BlockStateReader $in) : Block{
 			return VanillaBlocks::WEIGHTED_PRESSURE_PLATE_LIGHT()
@@ -1386,12 +1402,6 @@ final class BlockStateDeserializerR13{
 			/* TODO: parse properties
 			 * direction (IntTag) = 0, 1, 2, 3
 			 * powered_bit (ByteTag) = 0, 1
-			 */
-		//});
-		//$this->mapVanilla("lever", function(BlockStateReader $in) : Block{
-			/* TODO: parse properties
-			 * lever_direction (StringTag) = down_east_west, down_north_south, east, north, south, up_east_west, up_north_south, west
-			 * open_bit (ByteTag) = 0, 1
 			 */
 		//});
 		//$this->mapVanilla("light_block", function(BlockStateReader $in) : Block{
