@@ -17,7 +17,7 @@ INSTALL_DIR="$(pwd)/bin/php7"
 export CFLAGS="$CFLAGS -march=x86-64"
 export CXXFLAGS="$CXXFLAGS -march=x86-64"
 
-git clone https://github.com/php-build/php-build.git
+git clone https://github.com/pmmp/php-build.git
 cd php-build
 ./install-dependencies.sh
 echo '"pthreads",,"https://github.com/pmmp/pthreads.git",,,"extension",' >> share/php-build/extension/definition
