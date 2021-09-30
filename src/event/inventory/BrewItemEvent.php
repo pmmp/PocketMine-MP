@@ -55,15 +55,15 @@ class BrewItemEvent extends BlockEvent implements Cancellable{
 	}
 
 	public function getInput() : Item{
-		return $this->input;
+		return clone $this->input;
 	}
 
 	public function getResult() : Item{
-		return $this->result;
+		return clone $this->result;
 	}
 
 	public function setResult(Item $result) : void{
-		$this->result = $result;
+		$this->result = clone $result;
 	}
 
 	public function getRecipe() : BrewingRecipe{
