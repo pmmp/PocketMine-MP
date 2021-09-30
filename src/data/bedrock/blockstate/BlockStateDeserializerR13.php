@@ -36,7 +36,6 @@ use pocketmine\block\Liquid;
 use pocketmine\block\RedMushroomBlock;
 use pocketmine\block\RedstoneComparator;
 use pocketmine\block\RedstoneRepeater;
-use pocketmine\block\Sapling;
 use pocketmine\block\SimplePressurePlate;
 use pocketmine\block\Slab;
 use pocketmine\block\Stair;
@@ -77,6 +76,7 @@ final class BlockStateDeserializerR13{
 	private function mapVanilla(string $minecraftId, \Closure $c) : void{
 		$this->mapId("minecraft:$minecraftId", $c);
 	}
+
 	/** @throws BlockStateDeserializeException */
 	private function decodeButton(Button $block, BlockStateReader $in) : Button{
 		return $block
