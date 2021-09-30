@@ -182,21 +182,21 @@ class CraftingManager{
 		}
 	}
 
-	public function registerPotionTypeRecipe(PotionTypeRecipe $recipe): void{
+	public function registerPotionTypeRecipe(PotionTypeRecipe $recipe) : void{
 		$input = $recipe->getInput();
 		$ingredient = $recipe->getIngredient();
 		$this->potionTypeRecipes[$input->getId() . ":" . $input->getMeta()][$ingredient->getId() . ":" . ($ingredient->hasAnyDamageValue() ? "?" : $ingredient->getMeta())] = $recipe;
 
-		foreach($this->recipeRegisteredCallbacks as $callback) {
+		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
 		}
 	}
 
-	public function registerPotionContainerChangeRecipe(PotionContainerChangeRecipe $recipe): void {
+	public function registerPotionContainerChangeRecipe(PotionContainerChangeRecipe $recipe) : void{
 		$ingredient = $recipe->getIngredient();
 		$this->potionContainerChangeRecipes[$recipe->getInputItemId()][$ingredient->getId() . ":" . ($ingredient->hasAnyDamageValue() ? "?" : $ingredient->getMeta())] = $recipe;
 
-		foreach($this->recipeRegisteredCallbacks as $callback) {
+		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
 		}
 	}
@@ -257,6 +257,5 @@ class CraftingManager{
 			$this->potionTypeRecipes[$input->getId() . ":" . $input->getMeta()][$ingredient->getId() . ":?"] ??
 			$this->potionContainerChangeRecipes[$input->getId()][$ingredient->getId() . ":" . $ingredient->getMeta()] ??
 			$this->potionContainerChangeRecipes[$input->getId()][$ingredient->getId() . ":?"] ?? null;
-
 	}
 }
