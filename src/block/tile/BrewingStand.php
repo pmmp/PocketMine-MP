@@ -201,10 +201,6 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 				if($this->brewTime <= 0){
 					foreach($recipes as $slot => $recipe){
 						$input = $this->inventory->getItem($slot);
-						if($input->isNull()){
-							continue;
-						}
-
 						$output = $recipe->getResultFor($input);
 						if($output === null){
 							continue;
