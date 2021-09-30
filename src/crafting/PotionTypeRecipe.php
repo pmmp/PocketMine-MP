@@ -49,7 +49,7 @@ class PotionTypeRecipe implements BrewingRecipe{
 		return clone $this->output;
 	}
 
-	public function getOutputFor(Item $input) : ?Item{
+	public function getResultFor(Item $input) : ?Item{
 		return $input->equals($this->input, true, false) ? $this->getOutput() : null;
 	}
 }

@@ -205,7 +205,7 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 							continue;
 						}
 
-						$output = $recipe->getOutputFor($input);
+						$output = $recipe->getResultFor($input);
 						if($output === null){
 							continue;
 						}
@@ -216,7 +216,7 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 							continue;
 						}
 
-						$this->inventory->setItem($slot, $ev->getOutput());
+						$this->inventory->setItem($slot, $ev->getResult());
 					}
 
 					$ingredient->pop();

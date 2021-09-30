@@ -48,7 +48,7 @@ class PotionContainerChangeRecipe implements BrewingRecipe{
 		return $this->outputItemId;
 	}
 
-	public function getOutputFor(Item $input) : ?Item{
+	public function getResultFor(Item $input) : ?Item{
 		return $input->getId() === $this->getInputItemId() ? ItemFactory::getInstance()->get($this->getOutputItemId(), $input->getMeta()) : null;
 	}
 }

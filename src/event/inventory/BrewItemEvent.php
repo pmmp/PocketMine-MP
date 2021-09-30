@@ -37,7 +37,7 @@ class BrewItemEvent extends BlockEvent implements Cancellable{
 		private BrewingStand $brewingStand,
 		private int $slot,
 		private Item $input,
-		private Item $output,
+		private Item $result,
 		private BrewingRecipe $recipe
 	){
 		parent::__construct($brewingStand->getBlock());
@@ -58,12 +58,12 @@ class BrewItemEvent extends BlockEvent implements Cancellable{
 		return $this->input;
 	}
 
-	public function getOutput() : Item{
-		return $this->output;
+	public function getResult() : Item{
+		return $this->result;
 	}
 
-	public function setOutput(Item $output) : void{
-		$this->output = $output;
+	public function setResult(Item $result) : void{
+		$this->result = $result;
 	}
 
 	public function getRecipe() : BrewingRecipe{
