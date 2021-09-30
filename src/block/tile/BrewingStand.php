@@ -25,8 +25,8 @@ namespace pocketmine\block\tile;
 
 use pocketmine\block\inventory\BrewingStandInventory;
 use pocketmine\crafting\BrewingRecipe;
-use pocketmine\event\inventory\BrewingFuelUseEvent;
-use pocketmine\event\inventory\BrewItemEvent;
+use pocketmine\event\block\BrewingFuelUseEvent;
+use pocketmine\event\block\BrewItemEvent;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;

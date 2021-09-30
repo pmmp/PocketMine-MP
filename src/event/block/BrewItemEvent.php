@@ -21,20 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\inventory;
+namespace pocketmine\event\block;
 
 use pocketmine\block\tile\BrewingStand;
-use pocketmine\event\block\BlockEvent;
+use pocketmine\crafting\BrewingRecipe;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\item\Item;
 
-class BrewingFuelUseEvent extends BlockEvent implements Cancellable{
+class BrewItemEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	private int $fuelTime = 20;
-
 	public function __construct(
-		private BrewingStand $brewingStand
+		private BrewingStand $brewingStand,
+		private int $slot,
+		private Item $input,
+		private Item $result,
+		private BrewingRecipe $recipe
 	){
 		parent::__construct($brewingStand->getBlock());
 	}
@@ -44,16 +47,25 @@ class BrewingFuelUseEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * Returns how many brewing "steps" could be made with the fuel, one "step" takes 400 ticks
+	 * Returns slot of the item, which is being brewed
 	 */
-	public function getFuelTime() : int{
-		return $this->fuelTime;
+	public function getSlot() : int{
+		return $this->slot;
 	}
 
-	/**
-	 * Sets how many brewing "steps" could be made with the fuel, one "step" takes 400 ticks
-	 */
-	public function setFuelTime(int $fuelTime) : void{
-		$this->fuelTime = $fuelTime;
+	public function getInput() : Item{
+		return clone $this->input;
+	}
+
+	public function getResult() : Item{
+		return clone $this->result;
+	}
+
+	public function setResult(Item $result) : void{
+		$this->result = clone $result;
+	}
+
+	public function getRecipe() : BrewingRecipe{
+		return $this->recipe;
 	}
 }
