@@ -952,7 +952,7 @@ class BlockFactory{
 	 * Deserializes a block from the provided legacy ID and legacy meta.
 	 */
 	public function get(int $id, int $meta) : Block{
-		if($meta < 0 or $meta > (1 << Block::INTERNAL_METADATA_BITS)){
+		if($meta < 0 or $meta >= (1 << Block::INTERNAL_METADATA_BITS)){
 			throw new \InvalidArgumentException("Block meta value $meta is out of bounds");
 		}
 

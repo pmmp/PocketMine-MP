@@ -28,7 +28,6 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -38,8 +37,8 @@ class EnchantCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_ENCHANT_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_ENCHANT_USAGE
+			KnownTranslationFactory::pocketmine_command_enchant_description(),
+			KnownTranslationFactory::commands_enchant_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_ENCHANT);
 	}

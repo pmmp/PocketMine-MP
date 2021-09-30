@@ -772,7 +772,7 @@ abstract class Living extends Entity{
 	 */
 	public function lookAt(Vector3 $target) : void{
 		$horizontal = sqrt(($target->x - $this->location->x) ** 2 + ($target->z - $this->location->z) ** 2);
-		$vertical = $target->y - $this->location->y;
+		$vertical = $target->y - ($this->location->y + $this->getEyeHeight());
 		$this->location->pitch = -atan2($vertical, $horizontal) / M_PI * 180; //negative is up, positive is down
 
 		$xDist = $target->x - $this->location->x;

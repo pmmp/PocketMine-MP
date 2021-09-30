@@ -82,6 +82,10 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 
 		$this->loadName($nbt);
 		$this->loadItems($nbt);
+
+		if($this->remainingFuelTime > 0){
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{

@@ -100,6 +100,7 @@ use pocketmine\utils\Promise;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProviderManagerEntry;
 use pocketmine\world\generator\Generator;
@@ -546,7 +547,7 @@ class Server{
 			$spawn = $world->getSpawnLocation();
 		}
 		$playerPromise = new Promise();
-		$world->requestChunkPopulation($spawn->getFloorX() >> 4, $spawn->getFloorZ() >> 4, null)->onCompletion(
+		$world->requestChunkPopulation($spawn->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawn->getFloorZ() >> Chunk::COORD_BIT_SIZE, null)->onCompletion(
 			function() use ($playerPromise, $class, $session, $playerInfo, $authenticated, $world, $playerPos, $spawn, $offlinePlayerData) : void{
 				if(!$session->isConnected()){
 					$playerPromise->reject();
@@ -1357,8 +1358,7 @@ class Server{
 
 			if(isset($this->console)){
 				$this->getLogger()->debug("Closing console");
-				$this->console->shutdown();
-				$this->console->notify();
+				$this->console->quit();
 			}
 
 			if(isset($this->network)){
@@ -1573,10 +1573,9 @@ class Server{
 
 	private function titleTick() : void{
 		Timings::$titleTick->startTiming();
-		$d = Process::getRealMemoryUsage();
 
 		$u = Process::getAdvancedMemoryUsage();
-		$usage = sprintf("%g/%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($d[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Process::getThreadCount());
+		$usage = sprintf("%g/%g/%g MB @ %d threads", round(($u[0] / 1024) / 1024, 2), round(($u[1] / 1024) / 1024, 2), round(($u[2] / 1024) / 1024, 2), Process::getThreadCount());
 
 		$online = count($this->playerList);
 		$connecting = $this->network->getConnectionCount() - $online;

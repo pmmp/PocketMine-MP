@@ -25,7 +25,6 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
@@ -40,8 +39,8 @@ class PluginsCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_PLUGINS_DESCRIPTION,
-			KnownTranslationKeys::POCKETMINE_COMMAND_PLUGINS_USAGE,
+			KnownTranslationFactory::pocketmine_command_plugins_description(),
+			null,
 			["pl"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_PLUGINS);

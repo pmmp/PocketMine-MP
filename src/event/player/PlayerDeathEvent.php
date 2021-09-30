@@ -36,7 +36,7 @@ use pocketmine\player\Player;
 
 class PlayerDeathEvent extends EntityDeathEvent{
 	/** @var Player */
-	protected $entity;
+	protected $player;
 
 	/** @var Translatable|string */
 	private $deathMessage;
@@ -49,6 +49,7 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	 */
 	public function __construct(Player $entity, array $drops, int $xp, Translatable|string|null $deathMessage){
 		parent::__construct($entity, $drops, $xp);
+		$this->player = $entity;
 		$this->deathMessage = $deathMessage ?? self::deriveMessage($entity->getDisplayName(), $entity->getLastDamageCause());
 	}
 
@@ -56,11 +57,11 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	 * @return Player
 	 */
 	public function getEntity(){
-		return $this->entity;
+		return $this->player;
 	}
 
 	public function getPlayer() : Player{
-		return $this->entity;
+		return $this->player;
 	}
 
 	public function getDeathMessage() : Translatable|string{

@@ -27,7 +27,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function array_shift;
@@ -39,8 +38,8 @@ class BanCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_BAN_PLAYER_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_BAN_USAGE
+			KnownTranslationFactory::pocketmine_command_ban_player_description(),
+			KnownTranslationFactory::commands_ban_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_BAN_PLAYER);
 	}

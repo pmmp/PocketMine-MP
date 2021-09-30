@@ -26,7 +26,6 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -38,8 +37,8 @@ class MeCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_ME_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_ME_USAGE
+			KnownTranslationFactory::pocketmine_command_me_description(),
+			KnownTranslationFactory::commands_me_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_ME);
 	}

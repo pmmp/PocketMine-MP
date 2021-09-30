@@ -26,7 +26,6 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function array_slice;
@@ -38,8 +37,8 @@ class TitleCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_TITLE_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_TITLE_USAGE
+			KnownTranslationFactory::pocketmine_command_title_description(),
+			KnownTranslationFactory::commands_title_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TITLE);
 	}

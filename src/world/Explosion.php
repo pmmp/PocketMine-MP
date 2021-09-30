@@ -28,15 +28,14 @@ use pocketmine\block\BlockFactory;
 use pocketmine\block\TNT;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\entity\Entity;
-use pocketmine\event\block\BlockUpdateEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityExplodeEvent;
 use pocketmine\item\ItemFactory;
 use pocketmine\math\AxisAlignedBB;
-use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\world\format\SubChunk;
 use pocketmine\world\particle\HugeExplodeSeedParticle;
 use pocketmine\world\sound\ExplodeSound;
 use pocketmine\world\utils\SubChunkExplorer;
@@ -128,7 +127,7 @@ class Explosion{
 								continue;
 							}
 
-							$state = $this->subChunkExplorer->currentSubChunk->getFullBlock($vBlockX & 0x0f, $vBlockY & 0x0f, $vBlockZ & 0x0f);
+							$state = $this->subChunkExplorer->currentSubChunk->getFullBlock($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
 
 							$blastResistance = $blockFactory->blastResistance[$state];
 							if($blastResistance >= 0){
@@ -226,29 +225,7 @@ class Explosion{
 				if(($t = $this->world->getTileAt($pos->x, $pos->y, $pos->z)) !== null){
 					$t->onBlockDestroyed(); //needed to create drops for inventories
 				}
-				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock, false); //TODO: should updating really be disabled here?
-				$this->world->updateAllLight($pos->x, $pos->y, $pos->z);
-			}
-		}
-
-		foreach($this->affectedBlocks as $block){
-			$pos = $block->getPosition();
-			foreach(Facing::ALL as $side){
-				$sideBlock = $pos->getSide($side);
-				if(!$this->world->isInWorld($sideBlock->x, $sideBlock->y, $sideBlock->z)){
-					continue;
-				}
-				if(!isset($this->affectedBlocks[$index = World::blockHash($sideBlock->x, $sideBlock->y, $sideBlock->z)]) and !isset($updateBlocks[$index])){
-					$ev = new BlockUpdateEvent($this->world->getBlockAt($sideBlock->x, $sideBlock->y, $sideBlock->z));
-					$ev->call();
-					if(!$ev->isCancelled()){
-						foreach($this->world->getNearbyEntities(AxisAlignedBB::one()->offset($sideBlock->x, $sideBlock->y, $sideBlock->z)->expand(1, 1, 1)) as $entity){
-							$entity->onNearbyBlockChange();
-						}
-						$ev->getBlock()->onNearbyBlockChange();
-					}
-					$updateBlocks[$index] = true;
-				}
+				$this->world->setBlockAt($pos->x, $pos->y, $pos->z, $airBlock);
 			}
 		}
 

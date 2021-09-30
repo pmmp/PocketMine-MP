@@ -31,6 +31,7 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\player\ChunkSelector;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\io\FormatConverter;
@@ -268,8 +269,8 @@ class WorldManager{
 			$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_backgroundGeneration($name)));
 
 			$spawnLocation = $world->getSpawnLocation();
-			$centerX = $spawnLocation->getFloorX() >> 4;
-			$centerZ = $spawnLocation->getFloorZ() >> 4;
+			$centerX = $spawnLocation->getFloorX() >> Chunk::COORD_BIT_SIZE;
+			$centerZ = $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE;
 
 			$selected = iterator_to_array((new ChunkSelector())->selectChunks(8, $centerX, $centerZ));
 			$done = 0;

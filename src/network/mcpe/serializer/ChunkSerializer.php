@@ -81,14 +81,18 @@ final class ChunkSerializer{
 		$stream->putByte(count($layers));
 
 		foreach($layers as $blocks){
-			$stream->putByte(($blocks->getBitsPerBlock() << 1) | ($persistentBlockStates ? 0 : 1));
-			$stream->put($blocks->getWordArray());
+			$bitsPerBlock = $blocks->getBitsPerBlock();
+			$words = $blocks->getWordArray();
+			$stream->putByte(($bitsPerBlock << 1) | ($persistentBlockStates ? 0 : 1));
+			$stream->put($words);
 			$palette = $blocks->getPalette();
 
-			//these LSHIFT by 1 uvarints are optimizations: the client expects zigzag varints here
-			//but since we know they are always unsigned, we can avoid the extra fcall overhead of
-			//zigzag and just shift directly.
-			$stream->putUnsignedVarInt(count($palette) << 1); //yes, this is intentionally zigzag
+			if($bitsPerBlock !== 0){
+				//these LSHIFT by 1 uvarints are optimizations: the client expects zigzag varints here
+				//but since we know they are always unsigned, we can avoid the extra fcall overhead of
+				//zigzag and just shift directly.
+				$stream->putUnsignedVarInt(count($palette) << 1); //yes, this is intentionally zigzag
+			}
 			if($persistentBlockStates){
 				$nbtSerializer = new NetworkNbtSerializer();
 				foreach($palette as $p){

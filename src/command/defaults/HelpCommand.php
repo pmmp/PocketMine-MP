@@ -26,7 +26,7 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
+use pocketmine\lang\Translatable;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function array_chunk;
@@ -46,8 +46,8 @@ class HelpCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_HELP_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_HELP_USAGE,
+			KnownTranslationFactory::pocketmine_command_help_description(),
+			KnownTranslationFactory::commands_help_usage(),
 			["?"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_HELP);
@@ -92,7 +92,9 @@ class HelpCommand extends VanillaCommand{
 			$lang = $sender->getLanguage();
 			if(isset($commands[$pageNumber - 1])){
 				foreach($commands[$pageNumber - 1] as $command){
-					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getName() . ": " . TextFormat::WHITE . $lang->translateString($command->getDescription()));
+					$description = $command->getDescription();
+					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
+					$sender->sendMessage(TextFormat::DARK_GREEN . "/" . $command->getName() . ": " . TextFormat::WHITE . $descriptionString);
 				}
 			}
 
@@ -100,9 +102,14 @@ class HelpCommand extends VanillaCommand{
 		}else{
 			if(($cmd = $sender->getServer()->getCommandMap()->getCommand(strtolower($commandName))) instanceof Command){
 				if($cmd->testPermissionSilent($sender)){
+					$lang = $sender->getLanguage();
+					$description = $cmd->getDescription();
+					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
 					$message = TextFormat::YELLOW . "--------- " . TextFormat::WHITE . " Help: /" . $cmd->getName() . TextFormat::YELLOW . " ---------\n";
-					$message .= TextFormat::GOLD . "Description: " . TextFormat::WHITE . $sender->getLanguage()->translateString($cmd->getDescription()) . "\n";
-					$message .= TextFormat::GOLD . "Usage: " . TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $sender->getLanguage()->translateString($cmd->getUsage()))) . "\n";
+					$message .= TextFormat::GOLD . "Description: " . TextFormat::WHITE . $descriptionString . "\n";
+					$usage = $cmd->getUsage();
+					$usageString = $usage instanceof Translatable ? $lang->translate($usage) : $usage;
+					$message .= TextFormat::GOLD . "Usage: " . TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $usageString)) . "\n";
 					$sender->sendMessage($message);
 
 					return true;

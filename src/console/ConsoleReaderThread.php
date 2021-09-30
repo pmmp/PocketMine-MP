@@ -46,22 +46,16 @@ final class ConsoleReaderThread extends Thread{
 	private \Threaded $buffer;
 	private ?SleeperNotifier $notifier;
 
-	public bool $shutdown = false;
-
 	public function __construct(\Threaded $buffer, ?SleeperNotifier $notifier = null){
 		$this->buffer = $buffer;
 		$this->notifier = $notifier;
-	}
-
-	public function shutdown() : void{
-		$this->shutdown = true;
 	}
 
 	protected function onRun() : void{
 		$buffer = $this->buffer;
 		$notifier = $this->notifier;
 
-		while(!$this->shutdown){
+		while(!$this->isKilled){
 			$this->runSubprocess($buffer, $notifier);
 		}
 	}
@@ -105,7 +99,7 @@ final class ConsoleReaderThread extends Thread{
 			throw new AssumptionFailedError("stream_socket_accept() returned false");
 		}
 		stream_socket_shutdown($server, STREAM_SHUT_RDWR);
-		while(!$this->shutdown){
+		while(!$this->isKilled){
 			$r = [$client];
 			$w = null;
 			$e = null;
