@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\cache;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
@@ -157,15 +157,16 @@ final class CraftingDataCache{
 			}
 		}
 
+		$itemTranslator = ItemTranslator::getInstance();
 		foreach($manager->getPotionContainerChangeRecipes() as $recipes){
 			foreach($recipes as $recipe){
-				$input = $converter->coreItemStackToNet(ItemFactory::getInstance()->get($recipe->getInputItemId(), -1));
-				$ingredient = $converter->coreItemStackToNet($recipe->getIngredient());
-				$output = $converter->coreItemStackToNet(ItemFactory::getInstance()->get($recipe->getOutputItemId(), -1));
+				$input = $itemTranslator->toNetworkId($recipe->getInputItemId(), 0);
+				$ingredient = $itemTranslator->toNetworkId($recipe->getIngredient()->getId(), 0);
+				$output = $itemTranslator->toNetworkId($recipe->getOutputItemId(), 0);
 				$pk->potionContainerRecipes[] = new ProtocolPotionContainerChangeRecipe(
-					$input->getId(),
-					$ingredient->getId(),
-					$output->getId()
+					$input[0],
+					$ingredient[0],
+					$output[0]
 				);
 			}
 		}
