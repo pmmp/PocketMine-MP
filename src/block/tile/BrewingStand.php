@@ -205,7 +205,7 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 							continue;
 						}
 
-						$output = $recipe?->getOutputFor($input);
+						$output = $recipe->getOutputFor($input);
 						if($output === null){
 							continue;
 						}
