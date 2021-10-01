@@ -133,6 +133,9 @@ class PopulationTask extends AsyncTask{
 
 		$generator->populateChunk($manager, $this->chunkX, $this->chunkZ);
 		$chunk = $manager->getChunk($this->chunkX, $this->chunkZ);
+		if($chunk === null){
+			throw new AssumptionFailedError("We just generated this chunk, so it must exist");
+		}
 		$chunk->setPopulated();
 
 		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
