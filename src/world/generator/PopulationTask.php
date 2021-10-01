@@ -68,10 +68,10 @@ class PopulationTask extends AsyncTask{
 		$this->worldId = $world->getId();
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
-		$this->chunk = $chunk !== null ? FastChunkSerializer::serializeWithoutLight($chunk) : null;
+		$this->chunk = $chunk !== null ? FastChunkSerializer::serializeTerrain($chunk) : null;
 
 		foreach($world->getAdjacentChunks($chunkX, $chunkZ) as $i => $c){
-			$this->{"chunk$i"} = $c !== null ? FastChunkSerializer::serializeWithoutLight($c) : null;
+			$this->{"chunk$i"} = $c !== null ? FastChunkSerializer::serializeTerrain($c) : null;
 		}
 
 		$this->storeLocal(self::TLS_KEY_WORLD, $world);
@@ -88,7 +88,7 @@ class PopulationTask extends AsyncTask{
 		/** @var Chunk[] $chunks */
 		$chunks = [];
 
-		$chunk = $this->chunk !== null ? FastChunkSerializer::deserialize($this->chunk) : null;
+		$chunk = $this->chunk !== null ? FastChunkSerializer::deserializeTerrain($this->chunk) : null;
 
 		for($i = 0; $i < 9; ++$i){
 			if($i === 4){
@@ -98,7 +98,7 @@ class PopulationTask extends AsyncTask{
 			if($ck === null){
 				$chunks[$i] = null;
 			}else{
-				$chunks[$i] = FastChunkSerializer::deserialize($ck);
+				$chunks[$i] = FastChunkSerializer::deserializeTerrain($ck);
 			}
 		}
 
@@ -135,10 +135,10 @@ class PopulationTask extends AsyncTask{
 		$chunk = $manager->getChunk($this->chunkX, $this->chunkZ);
 		$chunk->setPopulated();
 
-		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
+		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
 
 		foreach($chunks as $i => $c){
-			$this->{"chunk$i"} = $c->isTerrainDirty() ? FastChunkSerializer::serializeWithoutLight($c) : null;
+			$this->{"chunk$i"} = $c->isTerrainDirty() ? FastChunkSerializer::serializeTerrain($c) : null;
 		}
 	}
 
@@ -146,7 +146,7 @@ class PopulationTask extends AsyncTask{
 		/** @var World $world */
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
 		if($world->isLoaded()){
-			$chunk = $this->chunk !== null ? FastChunkSerializer::deserialize($this->chunk) : null;
+			$chunk = $this->chunk !== null ? FastChunkSerializer::deserializeTerrain($this->chunk) : null;
 
 			for($i = 0; $i < 9; ++$i){
 				if($i === 4){
@@ -157,7 +157,7 @@ class PopulationTask extends AsyncTask{
 					$xx = -1 + $i % 3;
 					$zz = -1 + intdiv($i, 3);
 
-					$c = FastChunkSerializer::deserialize($c);
+					$c = FastChunkSerializer::deserializeTerrain($c);
 					$world->generateChunkCallback($this->chunkX + $xx, $this->chunkZ + $zz, $c);
 				}
 			}
