@@ -51,7 +51,7 @@ class LightPopulationTask extends AsyncTask{
 	 * @phpstan-param \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, array<int, int> $heightMap) : void $onCompletion
 	 */
 	public function __construct(Chunk $chunk, \Closure $onCompletion){
-		$this->chunk = FastChunkSerializer::serialize($chunk);
+		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
 		$this->storeLocal(self::TLS_KEY_COMPLETION_CALLBACK, $onCompletion);
 	}
 
