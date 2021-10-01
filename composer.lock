@@ -671,16 +671,16 @@
         },
         {
             "name": "pocketmine/raklib",
-            "version": "0.14.0",
+            "version": "0.14.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/RakLib.git",
-                "reference": "ed27bfd83f4de5ff32f71ec7611a66c4857a82ce"
+                "reference": "2d7bac3d593219880696ca2ca254f083f1e71850"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/ed27bfd83f4de5ff32f71ec7611a66c4857a82ce",
-                "reference": "ed27bfd83f4de5ff32f71ec7611a66c4857a82ce",
+                "url": "https://api.github.com/repos/pmmp/RakLib/zipball/2d7bac3d593219880696ca2ca254f083f1e71850",
+                "reference": "2d7bac3d593219880696ca2ca254f083f1e71850",
                 "shasum": ""
             },
             "require": {
@@ -708,9 +708,9 @@
             "description": "A RakNet server implementation written in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/RakLib/issues",
-                "source": "https://github.com/pmmp/RakLib/tree/0.14.0"
+                "source": "https://github.com/pmmp/RakLib/tree/0.14.1"
             },
-            "time": "2021-09-20T21:53:31+00:00"
+            "time": "2021-10-01T20:35:44+00:00"
         },
         {
             "name": "pocketmine/raklib-ipc",
