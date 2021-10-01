@@ -67,7 +67,7 @@ final class FastChunkSerializer{
 
 		//subchunks
 		$subChunks = $chunk->getSubChunks();
-		$count = $subChunks->count();
+		$count = count($subChunks);
 		$stream->putByte($count);
 
 		foreach($subChunks as $y => $subChunk){
