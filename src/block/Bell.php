@@ -37,8 +37,6 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\BellRingSound;
 
 final class Bell extends Transparent{
-	private const BELL_RINGING_REPEAT_TICKS = 20;
-
 	use HorizontalFacingTrait;
 
 	private BellAttachmentType $attachmentType;

@@ -41,7 +41,6 @@ use function unpack;
  * The serialization format **is not intended for permanent storage** and may change without warning.
  */
 final class FastChunkSerializer{
-	private const FLAG_GENERATED = 1 << 0;
 	private const FLAG_POPULATED = 1 << 1;
 	private const FLAG_HAS_LIGHT = 1 << 2;
 
