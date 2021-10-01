@@ -102,32 +102,13 @@ class PopulationTask extends AsyncTask{
 			}
 		}
 
-		$manager->setChunk($this->chunkX, $this->chunkZ, $chunk ?? new Chunk());
-		if($chunk === null){
-			$generator->generateChunk($manager, $this->chunkX, $this->chunkZ);
-			$chunk = $manager->getChunk($this->chunkX, $this->chunkZ);
-			if($chunk === null){
-				throw new AssumptionFailedError("We just set this chunk, so it must exist");
-			}
-			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
-			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
-		}
+		self::setOrGenerateChunk($manager, $generator, $this->chunkX, $this->chunkZ, $chunk);
 
 		$resultChunks = []; //this is just to keep phpstan's type inference happy
 		foreach($chunks as $i => $c){
 			$cX = (-1 + $i % 3) + $this->chunkX;
 			$cZ = (-1 + intdiv($i, 3)) + $this->chunkZ;
-			$manager->setChunk($cX, $cZ, $c ?? new Chunk());
-			if($c === null){
-				$generator->generateChunk($manager, $cX, $cZ);
-				$c = $manager->getChunk($cX, $cZ);
-				if($c === null){
-					throw new AssumptionFailedError("We just set this chunk, so it must exist");
-				}
-				$c->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
-				$c->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
-			}
-			$resultChunks[$i] = $c;
+			$resultChunks[$i] = self::setOrGenerateChunk($manager, $generator, $cX, $cZ, $c);
 		}
 		$chunks = $resultChunks;
 
@@ -143,6 +124,20 @@ class PopulationTask extends AsyncTask{
 		foreach($chunks as $i => $c){
 			$this->{"chunk$i"} = $c->isTerrainDirty() ? FastChunkSerializer::serializeTerrain($c) : null;
 		}
+	}
+
+	private static function setOrGenerateChunk(SimpleChunkManager $manager, Generator $generator, int $chunkX, int $chunkZ, ?Chunk $chunk) : Chunk{
+		$manager->setChunk($chunkX, $chunkZ, $chunk ?? new Chunk());
+		if($chunk === null){
+			$generator->generateChunk($manager, $chunkX, $chunkZ);
+			$chunk = $manager->getChunk($chunkX, $chunkZ);
+			if($chunk === null){
+				throw new AssumptionFailedError("We just set this chunk, so it must exist");
+			}
+			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
+			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
+		}
+		return $chunk;
 	}
 
 	public function onCompletion() : void{
