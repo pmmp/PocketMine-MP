@@ -246,6 +246,8 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_ENCHANT_DESCRIPTION = "pocketmine.command.enchant.description";
 	public const POCKETMINE_COMMAND_EXCEPTION = "pocketmine.command.exception";
 	public const POCKETMINE_COMMAND_GAMEMODE_DESCRIPTION = "pocketmine.command.gamemode.description";
+	public const POCKETMINE_COMMAND_GAMEMODE_FAILURE = "pocketmine.command.gamemode.failure";
+	public const POCKETMINE_COMMAND_GAMEMODE_UNKNOWN = "pocketmine.command.gamemode.unknown";
 	public const POCKETMINE_COMMAND_GC_CHUNKS = "pocketmine.command.gc.chunks";
 	public const POCKETMINE_COMMAND_GC_CYCLES = "pocketmine.command.gc.cycles";
 	public const POCKETMINE_COMMAND_GC_DESCRIPTION = "pocketmine.command.gc.description";

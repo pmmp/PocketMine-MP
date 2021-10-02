@@ -1121,6 +1121,18 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GAMEMODE_DESCRIPTION, []);
 	}
 
+	public static function pocketmine_command_gamemode_failure(Translatable|string $playerName) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GAMEMODE_FAILURE, [
+			"playerName" => $playerName,
+		]);
+	}
+
+	public static function pocketmine_command_gamemode_unknown(Translatable|string $gameModeName) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GAMEMODE_UNKNOWN, [
+			"gameModeName" => $gameModeName,
+		]);
+	}
+
 	public static function pocketmine_command_gc_chunks(Translatable|string $chunksCollected) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_GC_CHUNKS, [
 			"chunksCollected" => $chunksCollected,

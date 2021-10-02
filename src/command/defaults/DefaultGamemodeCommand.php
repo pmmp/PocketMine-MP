@@ -53,7 +53,7 @@ class DefaultGamemodeCommand extends VanillaCommand{
 
 		$gameMode = GameMode::fromString($args[0]);
 		if($gameMode === null){
-			$sender->sendMessage("Unknown game mode");
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gamemode_unknown($args[0]));
 			return true;
 		}
 
