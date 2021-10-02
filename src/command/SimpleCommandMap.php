@@ -67,6 +67,7 @@ use pocketmine\command\defaults\WhitelistCommand;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 use function array_shift;
 use function count;
 use function explode;
@@ -210,26 +211,23 @@ class SimpleCommandMap implements CommandMap{
 				}
 			}
 		}
+
 		$sentCommandLabel = array_shift($args);
-		if($sentCommandLabel === null){
-			return false;
-		}
-		$target = $this->getCommand($sentCommandLabel);
-		if($target === null){
-			return false;
-		}
+		if($sentCommandLabel !== null && ($target = $this->getCommand($sentCommandLabel)) !== null){
+			$target->timings->startTiming();
 
-		$target->timings->startTiming();
-
-		try{
-			$target->execute($sender, $sentCommandLabel, $args);
-		}catch(InvalidCommandSyntaxException $e){
-			$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
-		}finally{
-			$target->timings->stopTiming();
+			try{
+				$target->execute($sender, $sentCommandLabel, $args);
+			}catch(InvalidCommandSyntaxException $e){
+				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
+			}finally{
+				$target->timings->stopTiming();
+			}
+			return true;
 		}
 
-		return true;
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound($sentCommandLabel ?? "", "/help")->prefix(TextFormat::RED));
+		return false;
 	}
 
 	public function clearCommands() : void{

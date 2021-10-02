@@ -1293,13 +1293,7 @@ class Server{
 			$commandLine = $ev->getCommand();
 		}
 
-		if($this->commandMap->dispatch($sender, $commandLine)){
-			return true;
-		}
-
-		$sender->sendMessage(KnownTranslationFactory::commands_generic_notFound()->prefix(TextFormat::RED));
-
-		return false;
+		return $this->commandMap->dispatch($sender, $commandLine);
 	}
 
 	/**

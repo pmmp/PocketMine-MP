@@ -260,6 +260,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_KILL_USAGE = "pocketmine.command.kill.usage";
 	public const POCKETMINE_COMMAND_LIST_DESCRIPTION = "pocketmine.command.list.description";
 	public const POCKETMINE_COMMAND_ME_DESCRIPTION = "pocketmine.command.me.description";
+	public const POCKETMINE_COMMAND_NOTFOUND = "pocketmine.command.notFound";
 	public const POCKETMINE_COMMAND_OP_DESCRIPTION = "pocketmine.command.op.description";
 	public const POCKETMINE_COMMAND_PARTICLE_DESCRIPTION = "pocketmine.command.particle.description";
 	public const POCKETMINE_COMMAND_PARTICLE_USAGE = "pocketmine.command.particle.usage";
