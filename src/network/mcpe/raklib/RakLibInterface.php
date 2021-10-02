@@ -51,7 +51,6 @@ use function mt_rand;
 use function random_bytes;
 use function rtrim;
 use function substr;
-use const PTHREADS_INHERIT_CONSTANTS;
 
 class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	/**
@@ -131,7 +130,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			while($this->eventReceiver->handle($this));
 		});
 		$this->server->getLogger()->debug("Waiting for RakLib to start...");
-		$this->rakLib->startAndWait(PTHREADS_INHERIT_CONSTANTS); //HACK: MainLogger needs constants for exception logging
+		$this->rakLib->startAndWait();
 		$this->server->getLogger()->debug("RakLib booted successfully");
 	}
 

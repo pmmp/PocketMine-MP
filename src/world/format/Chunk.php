@@ -299,11 +299,11 @@ class Chunk{
 	}
 
 	/**
-	 * @return \SplFixedArray|SubChunk[]
-	 * @phpstan-return \SplFixedArray<SubChunk>
+	 * @return SubChunk[]
+	 * @phpstan-return array<int, SubChunk>
 	 */
-	public function getSubChunks() : \SplFixedArray{
-		return $this->subChunks;
+	public function getSubChunks() : array{
+		return $this->subChunks->toArray();
 	}
 
 	/**

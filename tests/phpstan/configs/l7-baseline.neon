@@ -261,13 +261,8 @@ parameters:
 			path: ../../../src/block/Leaves.php
 
 		-
-			message: "#^Parameter \\#1 \\$blockX of method pocketmine\\\\block\\\\Liquid\\:\\:calculateFlowCost\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/Liquid.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 23
+			count: 11
 			path: ../../../src/block/Liquid.php
 
 		-
@@ -276,18 +271,8 @@ parameters:
 			path: ../../../src/block/Liquid.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
-			path: ../../../src/block/Liquid.php
-
-		-
-			message: "#^Parameter \\#2 \\$blockY of method pocketmine\\\\block\\\\Liquid\\:\\:calculateFlowCost\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/Liquid.php
-
-		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 23
+			count: 11
 			path: ../../../src/block/Liquid.php
 
 		-
@@ -296,28 +281,13 @@ parameters:
 			path: ../../../src/block/Liquid.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
-			path: ../../../src/block/Liquid.php
-
-		-
-			message: "#^Parameter \\#3 \\$blockZ of method pocketmine\\\\block\\\\Liquid\\:\\:calculateFlowCost\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/block/Liquid.php
-
-		-
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 23
+			count: 11
 			path: ../../../src/block/Liquid.php
 
 		-
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
-			path: ../../../src/block/Liquid.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 3
 			path: ../../../src/block/Liquid.php
 
 		-
@@ -611,17 +581,7 @@ parameters:
 			path: ../../../src/utils/Timezone.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/Explosion.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/Explosion.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/Explosion.php
 
@@ -631,17 +591,7 @@ parameters:
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:updateAllLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/Explosion.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
-			path: ../../../src/world/Explosion.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/Explosion.php
 
@@ -651,27 +601,12 @@ parameters:
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/Explosion.php
-
-		-
 			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:setBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:updateAllLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/Explosion.php
-
-		-
 			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
-			path: ../../../src/world/Explosion.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/Explosion.php
 
@@ -681,23 +616,13 @@ parameters:
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/Explosion.php
-
-		-
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:setBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:updateAllLight\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/Explosion.php
-
-		-
 			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
-			count: 2
+			count: 1
 			path: ../../../src/world/Explosion.php
 
 		-

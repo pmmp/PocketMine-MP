@@ -68,10 +68,10 @@ class PopulationTask extends AsyncTask{
 		$this->worldId = $world->getId();
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
-		$this->chunk = $chunk !== null ? FastChunkSerializer::serializeWithoutLight($chunk) : null;
+		$this->chunk = $chunk !== null ? FastChunkSerializer::serializeTerrain($chunk) : null;
 
 		foreach($world->getAdjacentChunks($chunkX, $chunkZ) as $i => $c){
-			$this->{"chunk$i"} = $c !== null ? FastChunkSerializer::serializeWithoutLight($c) : null;
+			$this->{"chunk$i"} = $c !== null ? FastChunkSerializer::serializeTerrain($c) : null;
 		}
 
 		$this->storeLocal(self::TLS_KEY_WORLD, $world);
@@ -88,7 +88,7 @@ class PopulationTask extends AsyncTask{
 		/** @var Chunk[] $chunks */
 		$chunks = [];
 
-		$chunk = $this->chunk !== null ? FastChunkSerializer::deserialize($this->chunk) : null;
+		$chunk = $this->chunk !== null ? FastChunkSerializer::deserializeTerrain($this->chunk) : null;
 
 		for($i = 0; $i < 9; ++$i){
 			if($i === 4){
@@ -98,55 +98,53 @@ class PopulationTask extends AsyncTask{
 			if($ck === null){
 				$chunks[$i] = null;
 			}else{
-				$chunks[$i] = FastChunkSerializer::deserialize($ck);
+				$chunks[$i] = FastChunkSerializer::deserializeTerrain($ck);
 			}
 		}
 
-		$manager->setChunk($this->chunkX, $this->chunkZ, $chunk ?? new Chunk());
+		self::setOrGenerateChunk($manager, $generator, $this->chunkX, $this->chunkZ, $chunk);
+
+		$resultChunks = []; //this is just to keep phpstan's type inference happy
+		foreach($chunks as $i => $c){
+			$cX = (-1 + $i % 3) + $this->chunkX;
+			$cZ = (-1 + intdiv($i, 3)) + $this->chunkZ;
+			$resultChunks[$i] = self::setOrGenerateChunk($manager, $generator, $cX, $cZ, $c);
+		}
+		$chunks = $resultChunks;
+
+		$generator->populateChunk($manager, $this->chunkX, $this->chunkZ);
+		$chunk = $manager->getChunk($this->chunkX, $this->chunkZ);
 		if($chunk === null){
-			$generator->generateChunk($manager, $this->chunkX, $this->chunkZ);
-			$chunk = $manager->getChunk($this->chunkX, $this->chunkZ);
+			throw new AssumptionFailedError("We just generated this chunk, so it must exist");
+		}
+		$chunk->setPopulated();
+
+		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
+
+		foreach($chunks as $i => $c){
+			$this->{"chunk$i"} = $c->isTerrainDirty() ? FastChunkSerializer::serializeTerrain($c) : null;
+		}
+	}
+
+	private static function setOrGenerateChunk(SimpleChunkManager $manager, Generator $generator, int $chunkX, int $chunkZ, ?Chunk $chunk) : Chunk{
+		$manager->setChunk($chunkX, $chunkZ, $chunk ?? new Chunk());
+		if($chunk === null){
+			$generator->generateChunk($manager, $chunkX, $chunkZ);
+			$chunk = $manager->getChunk($chunkX, $chunkZ);
 			if($chunk === null){
 				throw new AssumptionFailedError("We just set this chunk, so it must exist");
 			}
 			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
 			$chunk->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
 		}
-
-		$resultChunks = []; //this is just to keep phpstan's type inference happy
-		foreach($chunks as $i => $c){
-			$cX = (-1 + $i % 3) + $this->chunkX;
-			$cZ = (-1 + intdiv($i, 3)) + $this->chunkZ;
-			$manager->setChunk($cX, $cZ, $c ?? new Chunk());
-			if($c === null){
-				$generator->generateChunk($manager, $cX, $cZ);
-				$c = $manager->getChunk($cX, $cZ);
-				if($c === null){
-					throw new AssumptionFailedError("We just set this chunk, so it must exist");
-				}
-				$c->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN, true);
-				$c->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES, true);
-			}
-			$resultChunks[$i] = $c;
-		}
-		$chunks = $resultChunks;
-
-		$generator->populateChunk($manager, $this->chunkX, $this->chunkZ);
-		$chunk = $manager->getChunk($this->chunkX, $this->chunkZ);
-		$chunk->setPopulated();
-
-		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
-
-		foreach($chunks as $i => $c){
-			$this->{"chunk$i"} = $c->isTerrainDirty() ? FastChunkSerializer::serializeWithoutLight($c) : null;
-		}
+		return $chunk;
 	}
 
 	public function onCompletion() : void{
 		/** @var World $world */
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
 		if($world->isLoaded()){
-			$chunk = $this->chunk !== null ? FastChunkSerializer::deserialize($this->chunk) : null;
+			$chunk = $this->chunk !== null ? FastChunkSerializer::deserializeTerrain($this->chunk) : null;
 
 			for($i = 0; $i < 9; ++$i){
 				if($i === 4){
@@ -157,7 +155,7 @@ class PopulationTask extends AsyncTask{
 					$xx = -1 + $i % 3;
 					$zz = -1 + intdiv($i, 3);
 
-					$c = FastChunkSerializer::deserialize($c);
+					$c = FastChunkSerializer::deserializeTerrain($c);
 					$world->generateChunkCallback($this->chunkX + $xx, $this->chunkZ + $zz, $c);
 				}
 			}

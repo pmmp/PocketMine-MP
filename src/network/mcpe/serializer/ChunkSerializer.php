@@ -49,7 +49,7 @@ final class ChunkSerializer{
 	 * Chunks are sent in a stack, so every chunk below the top non-empty one must be sent.
 	 */
 	public static function getSubChunkCount(Chunk $chunk) : int{
-		for($count = $chunk->getSubChunks()->count(); $count > 0; --$count){
+		for($count = count($chunk->getSubChunks()); $count > 0; --$count){
 			if($chunk->getSubChunk($count - 1)->isEmptyFast()){
 				continue;
 			}

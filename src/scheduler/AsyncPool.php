@@ -33,7 +33,6 @@ use function count;
 use function spl_object_id;
 use function time;
 use const PHP_INT_MAX;
-use const PTHREADS_INHERIT_CONSTANTS;
 use const PTHREADS_INHERIT_INI;
 
 /**
@@ -41,7 +40,7 @@ use const PTHREADS_INHERIT_INI;
  * workers.
  */
 class AsyncPool{
-	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI | PTHREADS_INHERIT_CONSTANTS;
+	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI;
 
 	/** @var \ClassLoader */
 	private $classLoader;

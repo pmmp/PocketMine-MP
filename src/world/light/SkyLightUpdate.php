@@ -30,6 +30,7 @@ use pocketmine\world\format\SubChunk;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use pocketmine\world\World;
+use function count;
 use function max;
 
 class SkyLightUpdate extends LightUpdate{
@@ -114,7 +115,7 @@ class SkyLightUpdate extends LightUpdate{
 		//have to avoid filling full light for any subchunk that contains a heightmap Y coordinate
 		$highestHeightMapPlusOne = max($chunk->getHeightMapArray()) + 1;
 		$lowestClearSubChunk = ($highestHeightMapPlusOne >> SubChunk::COORD_BIT_SIZE) + (($highestHeightMapPlusOne & SubChunk::COORD_MASK) !== 0 ? 1 : 0);
-		$chunkHeight = $chunk->getSubChunks()->count();
+		$chunkHeight = count($chunk->getSubChunks());
 		for($y = 0; $y < $lowestClearSubChunk && $y < $chunkHeight; $y++){
 			$chunk->getSubChunk($y)->setBlockSkyLightArray(LightArray::fill(0));
 		}
@@ -173,7 +174,7 @@ class SkyLightUpdate extends LightUpdate{
 	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
 	 */
 	private static function recalculateHeightMap(Chunk $chunk, \SplFixedArray $directSkyLightBlockers) : HeightArray{
-		$maxSubChunkY = $chunk->getSubChunks()->count() - 1;
+		$maxSubChunkY = count($chunk->getSubChunks()) - 1;
 		for(; $maxSubChunkY >= 0; $maxSubChunkY--){
 			if(!$chunk->getSubChunk($maxSubChunkY)->isEmptyFast()){
 				break;
