@@ -42,7 +42,7 @@ function build_leveldb {
 build_leveldb 84348b9b826cc280cde659185695d2170b54824c
 
 rm -rf php-build
-git clone https://github.com/php-build/php-build.git
+git clone https://github.com/pmmp/php-build.git
 cd php-build
 ./install-dependencies.sh
 echo '"pthreads",,"https://github.com/pmmp/pthreads.git",,,"extension",' >> share/php-build/extension/definition
