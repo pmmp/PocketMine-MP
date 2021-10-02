@@ -1371,7 +1371,7 @@ class Server{
 		}catch(\Throwable $e){
 			$this->logger->logException($e);
 			$this->logger->emergency("Crashed while crashing, killing process");
-			@Process::kill(Process::pid());
+			@Process::kill(Process::pid(), true);
 		}
 
 	}
@@ -1501,7 +1501,7 @@ class Server{
 			echo "--- Waiting $spacing seconds to throttle automatic restart (you can kill the process safely now) ---" . PHP_EOL;
 			sleep($spacing);
 		}
-		@Process::kill(Process::pid());
+		@Process::kill(Process::pid(), true);
 		exit(1);
 	}
 
