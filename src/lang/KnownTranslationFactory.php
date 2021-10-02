@@ -1165,6 +1165,24 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_HELP_DESCRIPTION, []);
 	}
 
+	public static function pocketmine_command_help_specificCommand_description(Translatable|string $description) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_DESCRIPTION, [
+			"description" => $description,
+		]);
+	}
+
+	public static function pocketmine_command_help_specificCommand_header(Translatable|string $commandName) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_HEADER, [
+			"commandName" => $commandName,
+		]);
+	}
+
+	public static function pocketmine_command_help_specificCommand_usage(Translatable|string $usage) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_USAGE, [
+			"usage" => $usage,
+		]);
+	}
+
 	public static function pocketmine_command_kick_description() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_KICK_DESCRIPTION, []);
 	}

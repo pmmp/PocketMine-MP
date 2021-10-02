@@ -105,17 +105,20 @@ class HelpCommand extends VanillaCommand{
 					$lang = $sender->getLanguage();
 					$description = $cmd->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
-					$message = TextFormat::YELLOW . "--------- " . TextFormat::WHITE . " Help: /" . $cmd->getName() . TextFormat::YELLOW . " ---------\n";
-					$message .= TextFormat::GOLD . "Description: " . TextFormat::WHITE . $descriptionString . "\n";
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($commandName)
+						->format(TextFormat::YELLOW . "--------- " . TextFormat::WHITE, TextFormat::YELLOW . " ---------"));
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_description(TextFormat::WHITE . $descriptionString)
+						->prefix(TextFormat::GOLD));
+
 					$usage = $cmd->getUsage();
 					$usageString = $usage instanceof Translatable ? $lang->translate($usage) : $usage;
-					$message .= TextFormat::GOLD . "Usage: " . TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $usageString)) . "\n";
-					$sender->sendMessage($message);
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_usage(TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $usageString)))
+						->prefix(TextFormat::GOLD));
 
 					return true;
 				}
 			}
-			$sender->sendMessage(TextFormat::RED . "No help for " . strtolower($commandName));
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound($commandName, "/help")->prefix(TextFormat::RED));
 
 			return true;
 		}

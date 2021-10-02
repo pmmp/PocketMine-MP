@@ -255,6 +255,9 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_GIVE_DESCRIPTION = "pocketmine.command.give.description";
 	public const POCKETMINE_COMMAND_GIVE_USAGE = "pocketmine.command.give.usage";
 	public const POCKETMINE_COMMAND_HELP_DESCRIPTION = "pocketmine.command.help.description";
+	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_DESCRIPTION = "pocketmine.command.help.specificCommand.description";
+	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_HEADER = "pocketmine.command.help.specificCommand.header";
+	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_USAGE = "pocketmine.command.help.specificCommand.usage";
 	public const POCKETMINE_COMMAND_KICK_DESCRIPTION = "pocketmine.command.kick.description";
 	public const POCKETMINE_COMMAND_KILL_DESCRIPTION = "pocketmine.command.kill.description";
 	public const POCKETMINE_COMMAND_KILL_USAGE = "pocketmine.command.kill.usage";
