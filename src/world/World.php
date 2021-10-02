@@ -2289,10 +2289,6 @@ class World implements ChunkManager{
 			}
 		}
 		$pos = $entity->getPosition()->asVector3();
-		$chunk = $this->getOrLoadChunkAtPosition($pos);
-		if($chunk === null){
-			throw new \InvalidArgumentException("Cannot add an Entity in an ungenerated chunk");
-		}
 		$this->entitiesByChunk[World::chunkHash($pos->getFloorX() >> Chunk::COORD_BIT_SIZE, $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE)][$entity->getId()] = $entity;
 		$this->entityLastKnownPositions[$entity->getId()] = $pos;
 
