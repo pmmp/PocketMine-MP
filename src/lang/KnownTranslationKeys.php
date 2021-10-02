@@ -128,6 +128,7 @@ final class KnownTranslationKeys{
 	public const COMMANDS_WHITELIST_REMOVE_SUCCESS = "commands.whitelist.remove.success";
 	public const COMMANDS_WHITELIST_REMOVE_USAGE = "commands.whitelist.remove.usage";
 	public const COMMANDS_WHITELIST_USAGE = "commands.whitelist.usage";
+	public const DEATH_ATTACK_ANVIL = "death.attack.anvil";
 	public const DEATH_ATTACK_ARROW = "death.attack.arrow";
 	public const DEATH_ATTACK_ARROW_ITEM = "death.attack.arrow.item";
 	public const DEATH_ATTACK_CACTUS = "death.attack.cactus";
@@ -324,13 +325,19 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_LEVEL_AMBIGUOUSFORMAT = "pocketmine.level.ambiguousFormat";
 	public const POCKETMINE_LEVEL_BACKGROUNDGENERATION = "pocketmine.level.backgroundGeneration";
 	public const POCKETMINE_LEVEL_BADDEFAULTFORMAT = "pocketmine.level.badDefaultFormat";
+	public const POCKETMINE_LEVEL_CONVERSION_FINISH = "pocketmine.level.conversion.finish";
+	public const POCKETMINE_LEVEL_CONVERSION_START = "pocketmine.level.conversion.start";
+	public const POCKETMINE_LEVEL_CORRUPTED = "pocketmine.level.corrupted";
 	public const POCKETMINE_LEVEL_DEFAULTERROR = "pocketmine.level.defaultError";
 	public const POCKETMINE_LEVEL_GENERATIONERROR = "pocketmine.level.generationError";
 	public const POCKETMINE_LEVEL_LOADERROR = "pocketmine.level.loadError";
 	public const POCKETMINE_LEVEL_NOTFOUND = "pocketmine.level.notFound";
 	public const POCKETMINE_LEVEL_PREPARING = "pocketmine.level.preparing";
+	public const POCKETMINE_LEVEL_SPAWNTERRAINGENERATIONPROGRESS = "pocketmine.level.spawnTerrainGenerationProgress";
 	public const POCKETMINE_LEVEL_UNKNOWNFORMAT = "pocketmine.level.unknownFormat";
+	public const POCKETMINE_LEVEL_UNKNOWNGENERATOR = "pocketmine.level.unknownGenerator";
 	public const POCKETMINE_LEVEL_UNLOADING = "pocketmine.level.unloading";
+	public const POCKETMINE_LEVEL_UNSUPPORTEDFORMAT = "pocketmine.level.unsupportedFormat";
 	public const POCKETMINE_PLAYER_INVALIDENTITY = "pocketmine.player.invalidEntity";
 	public const POCKETMINE_PLAYER_INVALIDMOVE = "pocketmine.player.invalidMove";
 	public const POCKETMINE_PLAYER_LOGIN = "pocketmine.player.logIn";

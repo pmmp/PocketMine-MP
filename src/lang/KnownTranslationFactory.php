@@ -573,6 +573,12 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_WHITELIST_USAGE, []);
 	}
 
+	public static function death_attack_anvil(Translatable|string $param0) : Translatable{
+		return new Translatable(KnownTranslationKeys::DEATH_ATTACK_ANVIL, [
+			0 => $param0,
+		]);
+	}
+
 	public static function death_attack_arrow(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::DEATH_ATTACK_ARROW, [
 			0 => $param0,
@@ -1490,6 +1496,25 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function pocketmine_level_conversion_finish(Translatable|string $worldName, Translatable|string $backupPath) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_CONVERSION_FINISH, [
+			"worldName" => $worldName,
+			"backupPath" => $backupPath,
+		]);
+	}
+
+	public static function pocketmine_level_conversion_start(Translatable|string $worldName) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_CONVERSION_START, [
+			"worldName" => $worldName,
+		]);
+	}
+
+	public static function pocketmine_level_corrupted(Translatable|string $details) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_CORRUPTED, [
+			"details" => $details,
+		]);
+	}
+
 	public static function pocketmine_level_defaultError() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_DEFAULTERROR, []);
 	}
@@ -1520,13 +1545,33 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function pocketmine_level_spawnTerrainGenerationProgress(Translatable|string $done, Translatable|string $total, Translatable|string $percentageDone) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_SPAWNTERRAINGENERATIONPROGRESS, [
+			"done" => $done,
+			"total" => $total,
+			"percentageDone" => $percentageDone,
+		]);
+	}
+
 	public static function pocketmine_level_unknownFormat() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_UNKNOWNFORMAT, []);
+	}
+
+	public static function pocketmine_level_unknownGenerator(Translatable|string $generatorName) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_UNKNOWNGENERATOR, [
+			"generatorName" => $generatorName,
+		]);
 	}
 
 	public static function pocketmine_level_unloading(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_UNLOADING, [
 			0 => $param0,
+		]);
+	}
+
+	public static function pocketmine_level_unsupportedFormat(Translatable|string $details) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_UNSUPPORTEDFORMAT, [
+			"details" => $details,
 		]);
 	}
 
