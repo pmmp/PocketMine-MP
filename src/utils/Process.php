@@ -132,7 +132,7 @@ final class Process{
 		}
 		switch(Utils::getOS()){
 			case Utils::OS_WINDOWS:
-				exec("taskkill.exe /F " . ($subprocesses ? "/T " : "") . "/PID $pid");
+				exec("taskkill.exe /F " . ($subprocesses ? "/T " : "") . "/PID $pid > NUL 2> NUL");
 				break;
 			case Utils::OS_MACOS:
 			case Utils::OS_LINUX:
