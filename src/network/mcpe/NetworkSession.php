@@ -756,6 +756,11 @@ class NetworkSession{
 		$this->sendDataPacket(SetSpawnPositionPacket::playerSpawn($x, $y, $z, DimensionIds::OVERWORLD, $x, $y, $z));
 	}
 
+	public function syncWorldSpawnPoint(Position $newSpawn) : void{
+		[$x, $y, $z] = [$newSpawn->getFloorX(), $newSpawn->getFloorY(), $newSpawn->getFloorZ()];
+		$this->sendDataPacket(SetSpawnPositionPacket::worldSpawn($x, $y, $z, DimensionIds::OVERWORLD, $x, $y, $z));
+	}
+
 	public function syncGameMode(GameMode $mode, bool $isRollback = false) : void{
 		$this->sendDataPacket(SetPlayerGameTypePacket::create(TypeConverter::getInstance()->coreGameModeToProtocol($mode)));
 		if($this->player !== null){
@@ -939,8 +944,8 @@ class NetworkSession{
 			$world = $this->player->getWorld();
 			$this->syncWorldTime($world->getTime());
 			$this->syncWorldDifficulty($world->getDifficulty());
+			$this->syncWorldSpawnPoint($world->getSpawnLocation());
 			//TODO: weather needs to be synced here (when implemented)
-			//TODO: world spawn needs to be synced here
 		}
 	}
 
