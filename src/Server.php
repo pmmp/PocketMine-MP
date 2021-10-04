@@ -40,6 +40,7 @@ use pocketmine\entity\Location;
 use pocketmine\event\HandlerListManager;
 use pocketmine\event\player\PlayerCreationEvent;
 use pocketmine\event\player\PlayerDataSaveEvent;
+use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\event\server\CommandEvent;
 use pocketmine\event\server\DataPacketSendEvent;
 use pocketmine\event\server\QueryRegenerateEvent;
@@ -1521,7 +1522,28 @@ class Server{
 		}
 	}
 
-	public function addOnlinePlayer(Player $player) : void{
+	public function addOnlinePlayer(Player $player) : bool{
+		$ev = new PlayerLoginEvent($player, "Plugin reason");
+		$ev->call();
+		if($ev->isCancelled() or !$player->isConnected()){
+			$player->disconnect($ev->getKickMessage());
+
+			return false;
+		}
+
+		$session = $player->getNetworkSession();
+		$position = $player->getPosition();
+		$this->logger->info($this->language->translate(KnownTranslationFactory::pocketmine_player_logIn(
+			TextFormat::AQUA . $player->getName() . TextFormat::WHITE,
+			$session->getIp(),
+			(string) $session->getPort(),
+			(string) $player->getId(),
+			$position->getWorld()->getDisplayName(),
+			(string) round($position->x, 4),
+			(string) round($position->y, 4),
+			(string) round($position->z, 4)
+		)));
+
 		foreach($this->playerList as $p){
 			$p->getNetworkSession()->onPlayerAdded($player);
 		}
@@ -1531,6 +1553,8 @@ class Server{
 		if($this->sendUsageTicker > 0){
 			$this->uniquePlayers[$rawUUID] = $rawUUID;
 		}
+
+		return true;
 	}
 
 	public function removeOnlinePlayer(Player $player) : void{

@@ -234,6 +234,10 @@ class NetworkSession{
 			return;
 		}
 		$this->player = $player;
+		if(!$this->server->addOnlinePlayer($player)){
+			return;
+		}
+
 		$this->invManager = new InventoryManager($this->player, $this);
 
 		$effectManager = $this->player->getEffects();
