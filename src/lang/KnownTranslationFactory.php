@@ -1109,6 +1109,12 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_ENCHANT_DESCRIPTION, []);
 	}
 
+	public static function pocketmine_command_error_playerNotFound(Translatable|string $playerName) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_ERROR_PLAYERNOTFOUND, [
+			"playerName" => $playerName,
+		]);
+	}
+
 	public static function pocketmine_command_exception(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_EXCEPTION, [
 			0 => $param0,
