@@ -32,6 +32,7 @@ use pocketmine\item\StringToItemParser;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\nbt\JsonNbtParser;
 use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\NbtException;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function array_slice;
@@ -86,7 +87,12 @@ class GiveCommand extends VanillaCommand{
 				return true;
 			}
 
-			$item->setNamedTag($tags);
+			try{
+				$item->setNamedTag($tags);
+			}catch(NbtException $e){
+				$sender->sendMessage(KnownTranslationFactory::commands_give_tagError($e->getMessage()));
+				return true;
+			}
 		}
 
 		//TODO: overflow
