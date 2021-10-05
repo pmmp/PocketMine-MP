@@ -33,6 +33,7 @@ parameters:
 		- tests/plugins/TesterPlugin
 	excludePaths:
 		analyseAndScan:
+			- build/php
 			- build/preprocessor
 	dynamicConstantNames:
 		- pocketmine\DEBUG
