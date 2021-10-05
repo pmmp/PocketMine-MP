@@ -364,6 +364,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_PLUGIN_INCOMPATIBLEPHPVERSION = "pocketmine.plugin.incompatiblePhpVersion";
 	public const POCKETMINE_PLUGIN_INCOMPATIBLEPROTOCOL = "pocketmine.plugin.incompatibleProtocol";
 	public const POCKETMINE_PLUGIN_INVALIDAPI = "pocketmine.plugin.invalidAPI";
+	public const POCKETMINE_PLUGIN_INVALIDMANIFEST = "pocketmine.plugin.invalidManifest";
 	public const POCKETMINE_PLUGIN_LOAD = "pocketmine.plugin.load";
 	public const POCKETMINE_PLUGIN_LOADERROR = "pocketmine.plugin.loadError";
 	public const POCKETMINE_PLUGIN_RESTRICTEDNAME = "pocketmine.plugin.restrictedName";

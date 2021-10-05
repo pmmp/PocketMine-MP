@@ -246,6 +246,13 @@ class PluginManager{
 				}
 				try{
 					$description = $loader->getPluginDescription($file);
+				}catch(PluginDescriptionParseException $e){
+					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_fileError(
+						$file,
+						$directory,
+						KnownTranslationFactory::pocketmine_plugin_invalidManifest($e->getMessage())
+					)));
+					continue;
 				}catch(\RuntimeException $e){ //TODO: more specific exception handling
 					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_fileError($file, $directory, $e->getMessage())));
 					$this->server->getLogger()->logException($e);
