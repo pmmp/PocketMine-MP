@@ -40,6 +40,7 @@ use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
+use pocketmine\utils\VersionString;
 use Webmozart\PathUtil\Path;
 use function array_intersect;
 use function array_merge;
@@ -266,6 +267,16 @@ class PluginManager{
 				if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
 					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_duplicateError($name)));
 					continue;
+				}
+
+				foreach($description->getCompatibleApis() as $api){
+					if(!VersionString::isValidBaseVersion($api)){
+						$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+							$name,
+							KnownTranslationFactory::pocketmine_plugin_invalidAPI($api)
+						)));
+						continue 2;
+					}
 				}
 
 				if(!ApiVersion::isCompatible($this->server->getApiVersion(), $description->getCompatibleApis())){

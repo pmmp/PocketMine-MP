@@ -63,6 +63,10 @@ class VersionString{
 		$this->suffix = $matches[4] ?? "";
 	}
 
+	public static function isValidBaseVersion(string $baseVersion) : bool{
+		return preg_match('/^\d+\.\d+\.\d+(?:-(.*))?$/', $baseVersion, $matches) === 1;
+	}
+
 	public function getNumber() : int{
 		return (($this->major << 9) | ($this->minor << 5) | $this->patch);
 	}
