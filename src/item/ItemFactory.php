@@ -41,6 +41,7 @@ use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
@@ -444,6 +445,7 @@ class ItemFactory{
 	 * Deserializes an item from the provided legacy ID, legacy meta, count and NBT.
 	 *
 	 * @throws \InvalidArgumentException
+	 * @throws NbtException
 	 */
 	public function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
 		/** @var Item|null $item */
