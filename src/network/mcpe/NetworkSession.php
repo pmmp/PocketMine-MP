@@ -757,8 +757,7 @@ class NetworkSession{
 	}
 
 	public function syncWorldSpawnPoint(Position $newSpawn) : void{
-		[$x, $y, $z] = [$newSpawn->getFloorX(), $newSpawn->getFloorY(), $newSpawn->getFloorZ()];
-		$this->sendDataPacket(SetSpawnPositionPacket::worldSpawn($x, $y, $z, DimensionIds::OVERWORLD, $x, $y, $z));
+		$this->sendDataPacket(SetSpawnPositionPacket::worldSpawn($newSpawn->getFloorX(), $newSpawn->getFloorY(), $newSpawn->getFloorZ(), DimensionIds::OVERWORLD));
 	}
 
 	public function syncGameMode(GameMode $mode, bool $isRollback = false) : void{
