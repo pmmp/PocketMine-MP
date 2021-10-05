@@ -357,7 +357,6 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_PLUGIN_DISABLE = "pocketmine.plugin.disable";
 	public const POCKETMINE_PLUGIN_DUPLICATEERROR = "pocketmine.plugin.duplicateError";
 	public const POCKETMINE_PLUGIN_ENABLE = "pocketmine.plugin.enable";
-	public const POCKETMINE_PLUGIN_FILEERROR = "pocketmine.plugin.fileError";
 	public const POCKETMINE_PLUGIN_GENERICLOADERROR = "pocketmine.plugin.genericLoadError";
 	public const POCKETMINE_PLUGIN_INCOMPATIBLEAPI = "pocketmine.plugin.incompatibleAPI";
 	public const POCKETMINE_PLUGIN_INCOMPATIBLEOS = "pocketmine.plugin.incompatibleOS";

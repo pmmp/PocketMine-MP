@@ -1702,14 +1702,6 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function pocketmine_plugin_fileError(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2) : Translatable{
-		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_FILEERROR, [
-			0 => $param0,
-			1 => $param1,
-			2 => $param2,
-		]);
-	}
-
 	public static function pocketmine_plugin_genericLoadError(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_GENERICLOADERROR, [
 			0 => $param0,
