@@ -42,6 +42,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
+use pocketmine\network\mcpe\convert\TypeConversionException;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
@@ -271,8 +272,8 @@ class InGamePacketHandler extends PacketHandler{
 				if($action !== null){
 					$actions[] = $action;
 				}
-			}catch(\UnexpectedValueException $e){
-				$this->session->getLogger()->debug("Unhandled inventory action: " . $e->getMessage());
+			}catch(TypeConversionException $e){
+				$this->session->getLogger()->debug("Error unpacking inventory action: " . $e->getMessage());
 				return false;
 			}
 		}
