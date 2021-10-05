@@ -21,18 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\network\mcpe\convert;
 
-use function define;
-use function defined;
-use function dirname;
+/**
+ * Thrown by TypeConverter if a problem occurred during converting of network types to PM core types (e.g. invalid item
+ * ID, invalid NBT, etc).
+ */
+final class TypeConversionException extends \RuntimeException{
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-if(defined('pocketmine\_CORE_CONSTANTS_INCLUDED')){
-	return;
+	public static function wrap(\Throwable $previous, ?string $prefix = null) : self{
+		return new self(($prefix !== null ? $prefix . ": " : "") . $previous->getMessage(), 0, $previous);
+	}
 }
-define('pocketmine\_CORE_CONSTANTS_INCLUDED', true);
-
-define('pocketmine\PATH', dirname(__DIR__) . '/');
-define('pocketmine\RESOURCE_PATH', dirname(__DIR__) . '/resources/');
-define('pocketmine\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__) . '/vendor/autoload.php');

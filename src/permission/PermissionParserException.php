@@ -21,18 +21,11 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\permission;
 
-use function define;
-use function defined;
-use function dirname;
+/**
+ * Thrown by PermissionParser when it encounters data that it doesn't like.
+ */
+final class PermissionParserException extends \RuntimeException{
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-if(defined('pocketmine\_CORE_CONSTANTS_INCLUDED')){
-	return;
 }
-define('pocketmine\_CORE_CONSTANTS_INCLUDED', true);
-
-define('pocketmine\PATH', dirname(__DIR__) . '/');
-define('pocketmine\RESOURCE_PATH', dirname(__DIR__) . '/resources/');
-define('pocketmine\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__) . '/vendor/autoload.php');

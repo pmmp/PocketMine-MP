@@ -63,7 +63,6 @@ use pocketmine\event\player\PlayerItemUseEvent;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerKickEvent;
-use pocketmine\event\player\PlayerLoginEvent;
 use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
@@ -133,7 +132,6 @@ use function max;
 use function microtime;
 use function min;
 use function preg_match;
-use function round;
 use function spl_object_id;
 use function sqrt;
 use function strlen;
@@ -278,27 +276,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->usedChunks[World::chunkHash($spawnLocation->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE)] = UsedChunkStatus::NEEDED();
 
 		parent::__construct($spawnLocation, $this->playerInfo->getSkin(), $namedtag);
-
-		$ev = new PlayerLoginEvent($this, "Plugin reason");
-		$ev->call();
-		if($ev->isCancelled() or !$this->isConnected()){
-			$this->disconnect($ev->getKickMessage());
-
-			return;
-		}
-
-		$this->server->getLogger()->info($this->getServer()->getLanguage()->translate(KnownTranslationFactory::pocketmine_player_logIn(
-			TextFormat::AQUA . $this->username . TextFormat::WHITE,
-			$session->getIp(),
-			(string) $session->getPort(),
-			(string) $this->id,
-			$this->getWorld()->getDisplayName(),
-			(string) round($this->location->x, 4),
-			(string) round($this->location->y, 4),
-			(string) round($this->location->z, 4)
-		)));
-
-		$this->server->addOnlinePlayer($this);
 	}
 
 	protected function initHumanData(CompoundTag $nbt) : void{

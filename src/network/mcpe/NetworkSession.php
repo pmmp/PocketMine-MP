@@ -239,6 +239,10 @@ class NetworkSession{
 			return;
 		}
 		$this->player = $player;
+		if(!$this->server->addOnlinePlayer($player)){
+			return;
+		}
+
 		$this->invManager = new InventoryManager($this->player, $this);
 
 		$effectManager = $this->player->getEffects();
@@ -778,14 +782,17 @@ class NetworkSession{
 		$this->sendDataPacket(SetSpawnPositionPacket::playerSpawn($x, $y, $z, DimensionIds::OVERWORLD, $x, $y, $z));
 	}
 
+	public function syncWorldSpawnPoint(Position $newSpawn) : void{
+		$this->sendDataPacket(SetSpawnPositionPacket::worldSpawn($newSpawn->getFloorX(), $newSpawn->getFloorY(), $newSpawn->getFloorZ(), DimensionIds::OVERWORLD));
+	}
+
 	public function syncGameMode(GameMode $mode, bool $isRollback = false) : void{
 		$this->sendDataPacket(SetPlayerGameTypePacket::create(TypeConverter::getInstance()->coreGameModeToProtocol($mode)));
 		if($this->player !== null){
 			$this->syncAdventureSettings($this->player);
-
-			if(!$isRollback){
-				$this->invManager->syncCreative();
-			}
+		}
+		if(!$isRollback && $this->invManager !== null){
+			$this->invManager->syncCreative();
 		}
 	}
 
@@ -962,8 +969,8 @@ class NetworkSession{
 			$world = $this->player->getWorld();
 			$this->syncWorldTime($world->getTime());
 			$this->syncWorldDifficulty($world->getDifficulty());
+			$this->syncWorldSpawnPoint($world->getSpawnLocation());
 			//TODO: weather needs to be synced here (when implemented)
-			//TODO: world spawn needs to be synced here
 		}
 	}
 

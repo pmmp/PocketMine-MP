@@ -25,6 +25,7 @@ namespace pocketmine\plugin;
 
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionParser;
+use pocketmine\permission\PermissionParserException;
 use function array_map;
 use function array_values;
 use function is_array;
@@ -99,20 +100,20 @@ class PluginDescription{
 
 	/**
 	 * @param mixed[] $plugin
-	 * @throws PluginException
+	 * @throws PluginDescriptionParseException
 	 */
 	private function loadMap(array $plugin) : void{
 		$this->map = $plugin;
 
 		$this->name = $plugin["name"];
 		if(preg_match('/^[A-Za-z0-9 _.-]+$/', $this->name) === 0){
-			throw new PluginException("Invalid Plugin name");
+			throw new PluginDescriptionParseException("Invalid Plugin name");
 		}
 		$this->name = str_replace(" ", "_", $this->name);
 		$this->version = (string) $plugin["version"];
 		$this->main = $plugin["main"];
 		if(stripos($this->main, "pocketmine\\") === 0){
-			throw new PluginException("Invalid Plugin main, cannot start within the PocketMine namespace");
+			throw new PluginDescriptionParseException("Invalid Plugin main, cannot start within the PocketMine namespace");
 		}
 
 		$this->srcNamespacePrefix = $plugin["src-namespace-prefix"] ?? "";
@@ -153,7 +154,7 @@ class PluginDescription{
 		if(isset($plugin["load"])){
 			$order = PluginEnableOrder::fromString($plugin["load"]);
 			if($order === null){
-				throw new PluginException("Invalid Plugin \"load\"");
+				throw new PluginDescriptionParseException("Invalid Plugin \"load\"");
 			}
 			$this->order = $order;
 		}else{
@@ -175,7 +176,11 @@ class PluginDescription{
 		}
 
 		if(isset($plugin["permissions"])){
-			$this->permissions = PermissionParser::loadPermissions($plugin["permissions"]);
+			try{
+				$this->permissions = PermissionParser::loadPermissions($plugin["permissions"]);
+			}catch(PermissionParserException $e){
+				throw new PluginDescriptionParseException("Invalid Plugin \"permissions\": " . $e->getMessage(), 0, $e);
+			}
 		}
 	}
 

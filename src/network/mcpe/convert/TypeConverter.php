@@ -37,6 +37,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\network\mcpe\InventoryManager;
@@ -183,6 +184,9 @@ class TypeConverter{
 		);
 	}
 
+	/**
+	 * @throws TypeConversionException
+	 */
 	public function netItemStackToCore(int $protocolId, ItemStack $itemStack) : Item{
 		if($itemStack->getId() === 0){
 			return ItemFactory::getInstance()->get(ItemIds::AIR, 0, 0);
@@ -214,12 +218,16 @@ class TypeConverter{
 			}
 		}
 
-		return ItemFactory::getInstance()->get(
-			$id,
-			$meta,
-			$itemStack->getCount(),
-			$compound
-		);
+		try{
+			return ItemFactory::getInstance()->get(
+				$id,
+				$meta,
+				$itemStack->getCount(),
+				$compound
+			);
+		}catch(NbtException $e){
+			throw TypeConversionException::wrap($e, "Bad itemstack NBT data");
+		}
 	}
 
 	/**
@@ -239,15 +247,23 @@ class TypeConverter{
 	}
 
 	/**
-	 * @throws \UnexpectedValueException
+	 * @throws TypeConversionException
 	 */
 	public function createInventoryAction(int $protocolId, NetworkInventoryAction $action, Player $player, InventoryManager $inventoryManager) : ?InventoryAction{
 		if($action->oldItem->getItemStack()->equals($action->newItem->getItemStack())){
 			//filter out useless noise in 1.13
 			return null;
 		}
-		$old = $this->netItemStackToCore($protocolId, $action->oldItem->getItemStack());
-		$new = $this->netItemStackToCore($protocolId, $action->newItem->getItemStack());
+		try{
+			$old = $this->netItemStackToCore($protocolId, $action->oldItem->getItemStack());
+		}catch(TypeConversionException $e){
+			throw TypeConversionException::wrap($e, "Inventory action: oldItem");
+		}
+		try{
+			$new = $this->netItemStackToCore($protocolId, $action->newItem->getItemStack());
+		}catch(TypeConversionException $e){
+			throw TypeConversionException::wrap($e, "Inventory action: newItem");
+		}
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
 				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){
@@ -273,7 +289,7 @@ class TypeConverter{
 								fn(Inventory $i) => $i instanceof LoomInventory);
 					}
 					if($mapped === null){
-						throw new \UnexpectedValueException("Unmatched UI inventory slot offset $pSlot");
+						throw new TypeConversionException("Unmatched UI inventory slot offset $pSlot");
 					}
 					[$slot, $window] = $mapped;
 				}else{
@@ -284,10 +300,10 @@ class TypeConverter{
 					return new SlotChangeAction($window, $slot, $old, $new);
 				}
 
-				throw new \UnexpectedValueException("No open container with window ID $action->windowId");
+				throw new TypeConversionException("No open container with window ID $action->windowId");
 			case NetworkInventoryAction::SOURCE_WORLD:
 				if($action->inventorySlot !== NetworkInventoryAction::ACTION_MAGIC_SLOT_DROP_ITEM){
-					throw new \UnexpectedValueException("Only expecting drop-item world actions from the client!");
+					throw new TypeConversionException("Only expecting drop-item world actions from the client!");
 				}
 
 				return new DropItemAction($new);
@@ -298,7 +314,7 @@ class TypeConverter{
 					case NetworkInventoryAction::ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM:
 						return new CreateItemAction($old);
 					default:
-						throw new \UnexpectedValueException("Unexpected creative action type $action->inventorySlot");
+						throw new TypeConversionException("Unexpected creative action type $action->inventorySlot");
 
 				}
 			case NetworkInventoryAction::SOURCE_TODO:
@@ -310,9 +326,9 @@ class TypeConverter{
 				}
 
 				//TODO: more stuff
-				throw new \UnexpectedValueException("No open container with window ID $action->windowId");
+				throw new TypeConversionException("No open container with window ID $action->windowId");
 			default:
-				throw new \UnexpectedValueException("Unknown inventory source type $action->sourceType");
+				throw new TypeConversionException("Unknown inventory source type $action->sourceType");
 		}
 	}
 }

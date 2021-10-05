@@ -37,6 +37,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
@@ -240,6 +241,7 @@ class Item implements \JsonSerializable{
 	 * Sets the Item's NBT from the supplied CompoundTag object.
 	 *
 	 * @return $this
+	 * @throws NbtException
 	 */
 	public function setNamedTag(CompoundTag $tag) : Item{
 		if($tag->getCount() === 0){
@@ -255,6 +257,7 @@ class Item implements \JsonSerializable{
 	/**
 	 * Removes the Item's NBT.
 	 * @return $this
+	 * @throws NbtException
 	 */
 	public function clearNamedTag() : Item{
 		$this->nbt = new CompoundTag();
@@ -262,6 +265,9 @@ class Item implements \JsonSerializable{
 		return $this;
 	}
 
+	/**
+	 * @throws NbtException
+	 */
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
 		$this->customName = "";
 		$this->lore = [];

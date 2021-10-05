@@ -214,20 +214,13 @@ JIT_WARNING
 		error_reporting(-1);
 		set_ini_entries();
 
-		$opts = getopt("", ["bootstrap:"]);
-		if(isset($opts["bootstrap"])){
-			$bootstrap = ($real = realpath($opts["bootstrap"])) !== false ? $real : $opts["bootstrap"];
-		}else{
-			$bootstrap = dirname(__FILE__, 2) . '/vendor/autoload.php';
-		}
-
-		if($bootstrap === false or !is_file($bootstrap)){
+		$bootstrap = dirname(__FILE__, 2) . '/vendor/autoload.php';
+		if(!is_file($bootstrap)){
 			critical_error("Composer autoloader not found at " . $bootstrap);
 			critical_error("Please install/update Composer dependencies or use provided builds.");
 			exit(1);
 		}
-		define('pocketmine\COMPOSER_AUTOLOADER_PATH', $bootstrap);
-		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+		require_once($bootstrap);
 
 		$composerGitHash = InstalledVersions::getReference('pocketmine/pocketmine-mp');
 		if($composerGitHash !== null){
@@ -307,7 +300,7 @@ JIT_WARNING
 
 			if(ThreadManager::getInstance()->stopAll() > 0){
 				$logger->debug("Some threads could not be stopped, performing a force-kill");
-				Process::kill(Process::pid());
+				Process::kill(Process::pid(), true);
 			}
 		}while(false);
 

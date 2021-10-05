@@ -38,6 +38,9 @@ parameters:
 		- tests/phpunit
 		- tests/plugins/TesterPlugin
 		- tools
+	excludePaths:
+		analyseAndScan:
+			- build/php
 	dynamicConstantNames:
 		- pocketmine\VersionInfo::IS_DEVELOPMENT_BUILD
 		- pocketmine\DEBUG
