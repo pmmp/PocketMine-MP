@@ -195,9 +195,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 				}
 
 				if(isset($data["permission"])){
-					if(is_bool($data["permission"])){
-						$newCmd->setPermission($data["permission"] ? "true" : "false");
-					}elseif(is_string($data["permission"])){
+					if(is_string($data["permission"])){
 						$newCmd->setPermission($data["permission"]);
 					}else{
 						$this->logger->error("Permission must be a string, " . gettype($data["permission"]) . " given for command $key");
