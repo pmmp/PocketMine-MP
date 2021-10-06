@@ -1,0 +1,280 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+	"additionalProperties": false,
+	"definitions": {
+		"VersionConstraint": {
+			"description": "The name of the extension, or a mapping of the extension to the required version constraint.",
+			"pattern": "\\*|((<=|le|<>|!=|ne|<|lt|==|=|eq|>=|ge|>|gt).*)",
+			"type": "string"
+		}
+	},
+	"properties": {
+		"api": {
+			"anyOf": [
+				{
+					"items": {
+						"type": "string"
+					},
+					"type": "array"
+				},
+				{
+					"type": "string"
+				}
+			],
+			"description": "The PocketMine-MP API version(s) supported by the plugin."
+		},
+		"author": {
+			"description": "The author name",
+			"anyOf": [
+				{
+					"type": "string"
+				},
+				{
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				}
+			],
+			"type": "string"
+		},
+		"authors": {
+			"description": "The author names, will be appended to `author` if both are present.",
+			"items": {
+				"type": "string"
+			},
+			"type": "array"
+		},
+		"commands": {
+			"description": "The commands to be registered automatically. The keys are command name.",
+			"additionalProperties": {
+				"properties": {
+					"aliases": {
+						"description": "Aliases of the command",
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"description": {
+						"description": "Description of the command as shown in /help",
+						"type": "string"
+					},
+					"permission": {
+						"description": "Name of the permission to check for, or multiple permissions separated",
+						"type": "string"
+					},
+					"permission-message": {
+						"description": "Message to send to users if permission checks fail. Occurrences of <permission> are replaced with the `permission` property.",
+						"type": "string"
+					},
+					"usage": {
+						"description": "Usage message of the command",
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"required": [
+					"permission"
+				],
+				"additionalProperties": false
+			},
+			"type": "object"
+		},
+		"depend": {
+			"anyOf": [
+				{
+					"items": {
+						"type": "string",
+						"pattern": "^[A-Za-z0-9 _.-]+$"
+					},
+					"type": "array"
+				},
+				{
+					"type": "string",
+					"pattern": "^[A-Za-z0-9 _.-]+$"
+				}
+			],
+			"description": "List of plugins required by this plugin"
+		},
+		"description": {
+			"description": "Description of the plugin",
+			"type": "string"
+		},
+		"extensions": {
+			"anyOf": [
+				{
+					"items": {
+						"type": "string"
+					},
+					"type": "array"
+				},
+				{
+					"additionalProperties": {
+						"anyOf": [
+							{
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"type": "object"
+				},
+				{
+					"type": "string"
+				}
+			],
+			"description": "List of extensions (and their version constraints) required by this plugin"
+		},
+		"load": {
+			"description": "The point of loading the plugin, defaults to POSTWORLD",
+			"enum": [
+				"POSTWORLD",
+				"STARTUP"
+			],
+			"type": "string"
+		},
+		"loadbefore": {
+			"anyOf": [
+				{
+					"items": {
+						"type": "string",
+						"pattern": "^[A-Za-z0-9 _.-]+$"
+					},
+					"type": "array"
+				},
+				{
+					"type": "string",
+					"pattern": "^[A-Za-z0-9 _.-]+$"
+				}
+			],
+			"description": "Plugins that this plugin must load before, if present"
+		},
+		"main": {
+			"description": "The fully-qualified name of the main class that extends PluginBase",
+			"pattern": "([A-Za-z_]\\w+\\\\)*([A-Za-z_]\\w+)",
+			"type": "string"
+		},
+		"mcpe-protocol": {
+			"anyOf": [
+				{
+					"items": {
+						"type": "integer"
+					},
+					"type": "array"
+				},
+				{
+					"type": "integer"
+				}
+			],
+			"description": "MCPE protocol versions supported by the plugin"
+		},
+		"name": {
+			"description": "Name of the plugin",
+			"pattern": "^[A-Za-z0-9 _.-]+$",
+			"type": "string"
+		},
+		"os": {
+			"oneOf": [
+				{
+					"type": "array",
+					"items": {
+						"type": "string"
+					}
+				},
+				{
+					"type": "string"
+				}
+			]
+		},
+		"permissions": {
+			"description": "Permissions to be registered by this plugin automatically",
+			"type": "object",
+			"additionalProperties": {
+				"type": "object",
+				"properties": {
+					"default": {
+						"description": "Permission group which has this permission by default",
+						"enum": [
+							"!admin",
+							"!op",
+							"!operator",
+							"admin",
+							false,
+							"false",
+							"isadmin",
+							"isop",
+							"isoperator",
+							"notadmin",
+							"notop",
+							"notoperator",
+							"op",
+							"operator",
+							true,
+							"true"
+						]
+					},
+					"description": {
+						"description": "Description of the permission",
+						"type": "string"
+					}
+				},
+				"required": [
+					"default"
+				],
+				"additionalProperties": false
+			}
+		},
+		"prefix": {
+			"description": "Prefix used by the plugin's logger, defaults to plugin name",
+			"type": "string"
+		},
+		"softdepend": {
+			"anyOf": [
+				{
+					"items": {
+						"type": "string",
+						"pattern": "^[A-Za-z0-9 _.-]+$"
+					},
+					"type": "array",
+					"pattern": "^[A-Za-z0-9 _.-]+$"
+				},
+				{
+					"type": "string"
+				}
+			],
+			"description": "Plugins that must load before this plugin, if available"
+		},
+		"src-namespace-prefix": {
+			"description": "Classes found in src/ are assumed to be relative to this namespace prefix",
+			"type": "string"
+		},
+		"version": {
+			"description": "Plugin version",
+			"anyOf": [
+				{
+					"type": "string"
+				},
+				{
+					"type": "number"
+				}
+			]
+		},
+		"website": {
+			"description": "The plugin's website",
+			"type": "string"
+		}
+	},
+	"required": [
+		"api",
+		"main",
+		"name",
+		"version"
+	],
+	"type": "object"
+}

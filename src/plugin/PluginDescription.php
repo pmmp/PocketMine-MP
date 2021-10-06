@@ -23,11 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use PHPModelGenerator\Exception\ValidationException;
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionParser;
-use pocketmine\permission\PermissionParserException;
-use function array_map;
-use function array_values;
+use pocketmine\plugin\model\PluginManifest;
 use function is_array;
 use function is_string;
 use function phpversion;
@@ -87,83 +86,82 @@ class PluginDescription{
 
 	/**
 	 * @param string|mixed[] $yamlString
+	 *
+	 * @throws PluginDescriptionParseException
 	 */
 	public function __construct($yamlString){
-		$this->loadMap(!is_array($yamlString) ? yaml_parse($yamlString) : $yamlString);
+		if(!is_array($yamlString)){
+			$yamlString = yaml_parse($yamlString);
+			if(!is_array($yamlString)){
+				throw new PluginDescriptionParseException("Manifest must be a set of properties");
+			}
+		}
+		$this->map = $yamlString;
+
+		try{
+			$this->loadMap(new PluginManifest($this->map));
+		}catch(ValidationException $e){
+			throw new PluginDescriptionParseException($e->getMessage(), 0, $e);
+		}
 	}
 
 	/**
-	 * @param mixed[] $plugin
 	 * @throws PluginDescriptionParseException
 	 */
-	private function loadMap(array $plugin) : void{
-		$this->map = $plugin;
-
-		$this->name = $plugin["name"];
+	private function loadMap(PluginManifest $model) : void{
+		$this->name = $model->getName();
 		if(preg_match('/^[A-Za-z0-9 _.-]+$/', $this->name) === 0){
 			throw new PluginDescriptionParseException("Invalid Plugin name");
 		}
 		$this->name = str_replace(" ", "_", $this->name);
-		$this->version = (string) $plugin["version"];
-		$this->main = $plugin["main"];
+		$this->version = (string) $model->getVersion();
+		$this->main = $model->getMain();
 		if(stripos($this->main, "pocketmine\\") === 0){
 			throw new PluginDescriptionParseException("Invalid Plugin main, cannot start within the PocketMine namespace");
 		}
 
-		$this->srcNamespacePrefix = $plugin["src-namespace-prefix"] ?? "";
+		$this->srcNamespacePrefix = $model->getSrcNamespacePrefix() ?? "";
 
-		$this->api = array_map("\strval", (array) ($plugin["api"] ?? []));
-		$this->compatibleMcpeProtocols = array_map("\intval", (array) ($plugin["mcpe-protocol"] ?? []));
-		$this->compatibleOperatingSystems = array_map("\strval", (array) ($plugin["os"] ?? []));
+		$this->api = (array) ($model->getApi() ?? []);
+		$this->compatibleMcpeProtocols = (array) ($model->getMcpeProtocol() ?? []);
+		$this->compatibleOperatingSystems = (array) ($model->getOs() ?? []);
 
-		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
-			foreach($plugin["commands"] as $commandName => $commandData){
-				if(!is_string($commandName)){
-					throw new PluginDescriptionParseException("Invalid Plugin commands, key must be the name of the command");
-				}
-				if(!is_array($commandData)){
-					throw new PluginDescriptionParseException("Command $commandName has invalid properties");
-				}
-				if(!isset($commandData["permission"]) || !is_string($commandData["permission"])){
-					throw new PluginDescriptionParseException("Command $commandName does not have a valid permission set");
-				}
-				$this->commands[$commandName] = new PluginDescriptionCommandEntry(
-					$commandData["description"] ?? null,
-					$commandData["usage"] ?? null,
-					$commandData["aliases"] ?? [],
-					$commandData["permission"],
-					$commandData["permission-message"] ?? null
+		if(($commands = $model->getCommands()) !== null){
+			foreach(($commands->getAdditionalProperties()) as $commandName => $commandData){
+				$this->commands[(string) $commandName] = new PluginDescriptionCommandEntry(
+					$commandData->getDescription(),
+					$commandData->getUsage(),
+					$commandData->getAliases() ?? [],
+					$commandData->getPermission(),
+					$commandData->getPermissionMessage()
 				);
 			}
 		}
 
-		if(isset($plugin["depend"])){
-			$this->depend = (array) $plugin["depend"];
-		}
-		if(isset($plugin["extensions"])){
-			$extensions = (array) $plugin["extensions"];
-			$isLinear = $extensions === array_values($extensions);
-			foreach($extensions as $k => $v){
-				if($isLinear){
-					$k = $v;
-					$v = "*";
-				}
-				$this->extensions[$k] = array_map('strval', is_array($v) ? $v : [$v]);
+		$this->depend = (array) ($model->getDepend() ?? []);
+
+		$parsedExtensions = $model->getExtensions();
+		if(is_string($parsedExtensions)){
+			$this->extensions[$parsedExtensions] = ["*"];
+		}elseif(is_array($parsedExtensions)){
+			foreach($parsedExtensions as $v){
+				$this->extensions[$v] = ["*"];
+			}
+		}elseif($parsedExtensions !== null){
+			foreach($parsedExtensions->getAdditionalProperties() as $extension => $constraints){
+				$this->extensions[(string) $extension] = is_array($constraints) ? $constraints : [$constraints];
 			}
 		}
 
-		$this->softDepend = (array) ($plugin["softdepend"] ?? $this->softDepend);
+		$this->softDepend = (array) ($model->getSoftdepend() ?? []);
+		$this->loadBefore = (array) ($model->getLoadbefore() ?? []);
+		$this->website = $model->getWebsite() ?? "";
+		$this->description = $model->getDescription() ?? "";
+		$this->prefix = $model->getPrefix() ?? "";
 
-		$this->loadBefore = (array) ($plugin["loadbefore"] ?? $this->loadBefore);
-
-		$this->website = (string) ($plugin["website"] ?? $this->website);
-
-		$this->description = (string) ($plugin["description"] ?? $this->description);
-
-		$this->prefix = (string) ($plugin["prefix"] ?? $this->prefix);
-
-		if(isset($plugin["load"])){
-			$order = PluginEnableOrder::fromString($plugin["load"]);
+		$load = $model->getLoad();
+		if($load !== null){
+			$order = PluginEnableOrder::fromString($load);
 			if($order === null){
 				throw new PluginDescriptionParseException("Invalid Plugin \"load\"");
 			}
@@ -172,25 +170,21 @@ class PluginDescription{
 			$this->order = PluginEnableOrder::POSTWORLD();
 		}
 
-		$this->authors = [];
-		if(isset($plugin["author"])){
-			if(is_array($plugin["author"])){
-				$this->authors = $plugin["author"];
-			}else{
-				$this->authors[] = $plugin["author"];
-			}
-		}
-		if(isset($plugin["authors"])){
-			foreach($plugin["authors"] as $author){
+		$this->authors = (array) ($model->getAuthor() ?? []);
+		if(($additionalAuthors = $model->getAuthors()) !== null){
+			foreach($additionalAuthors as $author){
 				$this->authors[] = $author;
 			}
 		}
 
-		if(isset($plugin["permissions"])){
-			try{
-				$this->permissions = PermissionParser::loadPermissions($plugin["permissions"]);
-			}catch(PermissionParserException $e){
-				throw new PluginDescriptionParseException("Invalid Plugin \"permissions\": " . $e->getMessage(), 0, $e);
+		if(($permissions = $model->getPermissions()) !== null){
+			foreach($permissions->getAdditionalProperties() as $permissionName => $properties){
+				$default = PermissionParser::defaultFromString($properties->getDefault());
+				if($default === null){
+					throw new PluginDescriptionParseException("Failed to parse plugin permission \"$permissionName\": Invalid default \"" . $properties->getDefault() . "\"");
+				}
+
+				$this->permissions[$default][] = new Permission($permissionName, $properties->getDescription());
 			}
 		}
 	}

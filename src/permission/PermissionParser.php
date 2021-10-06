@@ -54,10 +54,8 @@ class PermissionParser{
 
 	/**
 	 * @param bool|string $value
-	 *
-	 * @throws PermissionParserException
 	 */
-	public static function defaultFromString($value) : string{
+	public static function defaultFromString($value) : ?string{
 		if(is_bool($value)){
 			if($value){
 				return "true";
@@ -70,35 +68,6 @@ class PermissionParser{
 			return self::DEFAULT_STRING_MAP[$lower];
 		}
 
-		throw new PermissionParserException("Unknown permission default name \"$value\"");
-	}
-
-	/**
-	 * @param mixed[][] $data
-	 * @phpstan-param array<string, array<string, mixed>> $data
-	 *
-	 * @return Permission[][]
-	 * @phpstan-return array<string, list<Permission>>
-	 * @throws PermissionParserException
-	 */
-	public static function loadPermissions(array $data, string $default = self::DEFAULT_FALSE) : array{
-		$result = [];
-		foreach($data as $name => $entry){
-			$desc = null;
-			if(isset($entry["default"])){
-				$default = PermissionParser::defaultFromString($entry["default"]);
-			}
-
-			if(isset($entry["children"])){
-				throw new PermissionParserException("Nested permission declarations are no longer supported. Declare each permission separately.");
-			}
-
-			if(isset($entry["description"])){
-				$desc = $entry["description"];
-			}
-
-			$result[$default][] = new Permission($name, $desc);
-		}
-		return $result;
+		return null;
 	}
 }
