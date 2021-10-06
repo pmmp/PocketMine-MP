@@ -81,21 +81,6 @@ parameters:
 			path: ../../../src/permission/PermissionParser.php
 
 		-
-			message: "#^Parameter \\#1 \\$description of method pocketmine\\\\command\\\\Command\\:\\:setDescription\\(\\) expects pocketmine\\\\lang\\\\Translatable\\|string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginBase.php
-
-		-
-			message: "#^Parameter \\#1 \\$permissionMessage of method pocketmine\\\\command\\\\Command\\:\\:setPermissionMessage\\(\\) expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginBase.php
-
-		-
-			message: "#^Parameter \\#1 \\$usage of method pocketmine\\\\command\\\\Command\\:\\:setUsage\\(\\) expects pocketmine\\\\lang\\\\Translatable\\|string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginBase.php
-
-		-
 			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php

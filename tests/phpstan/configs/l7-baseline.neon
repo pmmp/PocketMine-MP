@@ -36,11 +36,6 @@ parameters:
 			path: ../../../src/PocketMine.php
 
 		-
-			message: "#^Parameter \\#1 \\$path of function realpath expects string, array\\<int, mixed\\>\\|string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/PocketMine.php
-
-		-
 			message: "#^Parameter \\#1 \\$path of function realpath expects string, string\\|false given\\.$#"
 			count: 2
 			path: ../../../src/PocketMine.php
