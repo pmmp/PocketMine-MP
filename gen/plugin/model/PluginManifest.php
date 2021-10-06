@@ -38,7 +38,7 @@ class PluginManifest implements JSONModelInterface
         /** @var string[]|null The author names, will be appended to `author` if both are present. */
         protected $authors;
     
-        /** @var PluginManifest_Commands615cf799005e9|null The commands to be registered automatically. The keys are command name. */
+        /** @var PluginManifest_Commands203cc24a51260f5159621c162d65197f|null The commands to be registered automatically. The keys are command name. */
         protected $commands;
     
         /** @var string[]|string|null List of plugins required by this plugin */
@@ -47,7 +47,7 @@ class PluginManifest implements JSONModelInterface
         /** @var string|null Description of the plugin */
         protected $description;
     
-        /** @var string[]|string|PluginManifest_Extensions615cf799009ec|null List of extensions (and their version constraints) required by this plugin */
+        /** @var string[]|string|PluginManifest_Extensions12b9155a1b150cc965e30cfd7084bb1b|null List of extensions (and their version constraints) required by this plugin */
         protected $extensions;
     
         /** @var string|null The point of loading the plugin, defaults to POSTWORLD */
@@ -68,7 +68,7 @@ class PluginManifest implements JSONModelInterface
         /** @var string[]|string|null */
         protected $os;
     
-        /** @var PluginManifest_Permissions615cf79900d50|null Permissions to be registered by this plugin automatically */
+        /** @var PluginManifest_Permissionsef9664664ee0e1dbf0ec96e57e8e5e3b|null Permissions to be registered by this plugin automatically */
         protected $permissions;
     
         /** @var string|null Prefix used by the plugin's logger, defaults to plugin name */
@@ -357,8 +357,8 @@ class PluginManifest implements JSONModelInterface
 ));
                     }
                 
-                    $invalidItems_615cf7990025d = [];
-                    if (is_array($value) && (function (&$items) use (&$invalidItems_615cf7990025d) {
+                    $invalidItems_615da03c1636c = [];
+                    if (is_array($value) && (function (&$items) use (&$invalidItems_615da03c1636c) {
     
 
     foreach ($items as $index => &$value) {
@@ -380,19 +380,19 @@ class PluginManifest implements JSONModelInterface
             
         } catch (\Exception $e) {
             // collect all errors concerning invalid items
-            isset($invalidItems_615cf7990025d[$index])
-                ? $invalidItems_615cf7990025d[$index][] = $e
-                : $invalidItems_615cf7990025d[$index] = [$e];
+            isset($invalidItems_615da03c1636c[$index])
+                ? $invalidItems_615da03c1636c[$index][] = $e
+                : $invalidItems_615da03c1636c[$index] = [$e];
         }
     }
 
     
 
-    return !empty($invalidItems_615cf7990025d);
+    return !empty($invalidItems_615da03c1636c);
 })($value)) {
                         throw new \PHPModelGenerator\Exception\Arrays\InvalidItemException($value ?? null, ...array (
   0 => 'api',
-  1 => $invalidItems_615cf7990025d,
+  1 => $invalidItems_615da03c1636c,
 ));
                     }
                 
@@ -683,8 +683,8 @@ class PluginManifest implements JSONModelInterface
 ));
                     }
                 
-                    $invalidItems_615cf7990056c = [];
-                    if (is_array($value) && (function (&$items) use (&$invalidItems_615cf7990056c) {
+                    $invalidItems_615da03c16b83 = [];
+                    if (is_array($value) && (function (&$items) use (&$invalidItems_615da03c16b83) {
     
 
     foreach ($items as $index => &$value) {
@@ -706,19 +706,19 @@ class PluginManifest implements JSONModelInterface
             
         } catch (\Exception $e) {
             // collect all errors concerning invalid items
-            isset($invalidItems_615cf7990056c[$index])
-                ? $invalidItems_615cf7990056c[$index][] = $e
-                : $invalidItems_615cf7990056c[$index] = [$e];
+            isset($invalidItems_615da03c16b83[$index])
+                ? $invalidItems_615da03c16b83[$index][] = $e
+                : $invalidItems_615da03c16b83[$index] = [$e];
         }
     }
 
     
 
-    return !empty($invalidItems_615cf7990056c);
+    return !empty($invalidItems_615da03c16b83);
 })($value)) {
                         throw new \PHPModelGenerator\Exception\Arrays\InvalidItemException($value ?? null, ...array (
   0 => 'author',
-  1 => $invalidItems_615cf7990056c,
+  1 => $invalidItems_615da03c16b83,
 ));
                     }
                 
@@ -830,8 +830,8 @@ class PluginManifest implements JSONModelInterface
 ));
                     }
                 
-                    $invalidItems_615cf7990058e = [];
-                    if (is_array($value) && (function (&$items) use (&$invalidItems_615cf7990058e) {
+                    $invalidItems_615da03c16ba9 = [];
+                    if (is_array($value) && (function (&$items) use (&$invalidItems_615da03c16ba9) {
     
 
     foreach ($items as $index => &$value) {
@@ -853,19 +853,19 @@ class PluginManifest implements JSONModelInterface
             
         } catch (\Exception $e) {
             // collect all errors concerning invalid items
-            isset($invalidItems_615cf7990058e[$index])
-                ? $invalidItems_615cf7990058e[$index][] = $e
-                : $invalidItems_615cf7990058e[$index] = [$e];
+            isset($invalidItems_615da03c16ba9[$index])
+                ? $invalidItems_615da03c16ba9[$index][] = $e
+                : $invalidItems_615da03c16ba9[$index] = [$e];
         }
     }
 
     
 
-    return !empty($invalidItems_615cf7990058e);
+    return !empty($invalidItems_615da03c16ba9);
 })($value)) {
                         throw new \PHPModelGenerator\Exception\Arrays\InvalidItemException($value ?? null, ...array (
   0 => 'authors',
-  1 => $invalidItems_615cf7990058e,
+  1 => $invalidItems_615da03c16ba9,
 ));
                     }
                 
@@ -880,10 +880,10 @@ class PluginManifest implements JSONModelInterface
              *
              * The commands to be registered automatically. The keys are command name.
              *
-             * @return PluginManifest_Commands615cf799005e9|null
+             * @return PluginManifest_Commands203cc24a51260f5159621c162d65197f|null
              */
             public function getCommands()
-                : ?PluginManifest_Commands615cf799005e9
+                : ?PluginManifest_Commands203cc24a51260f5159621c162d65197f
             {
                 
 
@@ -913,7 +913,7 @@ class PluginManifest implements JSONModelInterface
 
                 $value = (function ($value) {
     try {
-        return is_array($value) ? new PluginManifest_Commands615cf799005e9($value) : $value;
+        return is_array($value) ? new PluginManifest_Commands203cc24a51260f5159621c162d65197f($value) : $value;
     } catch (\Exception $instantiationException) {
         
             throw new \PHPModelGenerator\Exception\Object\NestedObjectException($value ?? null, ...array (
@@ -945,10 +945,10 @@ class PluginManifest implements JSONModelInterface
                     }
                 
                     
-                    if (is_object($value) && !($value instanceof \Exception) && !($value instanceof PluginManifest_Commands615cf799005e9)) {
+                    if (is_object($value) && !($value instanceof \Exception) && !($value instanceof PluginManifest_Commands203cc24a51260f5159621c162d65197f)) {
                         throw new \PHPModelGenerator\Exception\Object\InvalidInstanceOfException($value ?? null, ...array (
   0 => 'commands',
-  1 => 'PluginManifest_Commands615cf799005e9',
+  1 => 'PluginManifest_Commands203cc24a51260f5159621c162d65197f',
 ));
                     }
                 
@@ -1064,8 +1064,8 @@ class PluginManifest implements JSONModelInterface
 ));
                     }
                 
-                    $invalidItems_615cf79900983 = [];
-                    if (is_array($value) && (function (&$items) use (&$invalidItems_615cf79900983) {
+                    $invalidItems_615da03c17678 = [];
+                    if (is_array($value) && (function (&$items) use (&$invalidItems_615da03c17678) {
     
 
     foreach ($items as $index => &$value) {
@@ -1095,19 +1095,19 @@ class PluginManifest implements JSONModelInterface
             
         } catch (\Exception $e) {
             // collect all errors concerning invalid items
-            isset($invalidItems_615cf79900983[$index])
-                ? $invalidItems_615cf79900983[$index][] = $e
-                : $invalidItems_615cf79900983[$index] = [$e];
+            isset($invalidItems_615da03c17678[$index])
+                ? $invalidItems_615da03c17678[$index][] = $e
+                : $invalidItems_615da03c17678[$index] = [$e];
         }
     }
 
     
 
-    return !empty($invalidItems_615cf79900983);
+    return !empty($invalidItems_615da03c17678);
 })($value)) {
                         throw new \PHPModelGenerator\Exception\Arrays\InvalidItemException($value ?? null, ...array (
   0 => 'depend',
-  1 => $invalidItems_615cf79900983,
+  1 => $invalidItems_615da03c17678,
 ));
                     }
                 
@@ -1298,7 +1298,7 @@ class PluginManifest implements JSONModelInterface
              *
              * List of extensions (and their version constraints) required by this plugin
              *
-             * @return string[]|string|PluginManifest_Extensions615cf799009ec|null
+             * @return string[]|string|PluginManifest_Extensions12b9155a1b150cc965e30cfd7084bb1b|null
              */
             public function getExtensions()
                 
@@ -1399,8 +1399,8 @@ class PluginManifest implements JSONModelInterface
 ));
                     }
                 
-                    $invalidItems_615cf799009da = [];
-                    if (is_array($value) && (function (&$items) use (&$invalidItems_615cf799009da) {
+                    $invalidItems_615da03c176dc = [];
+                    if (is_array($value) && (function (&$items) use (&$invalidItems_615da03c176dc) {
     
 
     foreach ($items as $index => &$value) {
@@ -1422,19 +1422,19 @@ class PluginManifest implements JSONModelInterface
             
         } catch (\Exception $e) {
             // collect all errors concerning invalid items
-            isset($invalidItems_615cf799009da[$index])
-                ? $invalidItems_615cf799009da[$index][] = $e
-                : $invalidItems_615cf799009da[$index] = [$e];
+            isset($invalidItems_615da03c176dc[$index])
+                ? $invalidItems_615da03c176dc[$index][] = $e
+                : $invalidItems_615da03c176dc[$index] = [$e];
         }
     }
 
     
 
-    return !empty($invalidItems_615cf799009da);
+    return !empty($invalidItems_615da03c176dc);
 })($value)) {
                         throw new \PHPModelGenerator\Exception\Arrays\InvalidItemException($value ?? null, ...array (
   0 => 'extensions',
-  1 => $invalidItems_615cf799009da,
+  1 => $invalidItems_615da03c176dc,
 ));
                     }
                 
@@ -1489,7 +1489,7 @@ class PluginManifest implements JSONModelInterface
 
                 $value = (function ($value) {
     try {
-        return is_array($value) ? new PluginManifest_Extensions615cf799009ec($value) : $value;
+        return is_array($value) ? new PluginManifest_Extensions12b9155a1b150cc965e30cfd7084bb1b($value) : $value;
     } catch (\Exception $instantiationException) {
         
             
@@ -1512,10 +1512,10 @@ class PluginManifest implements JSONModelInterface
                     }
                 
                     
-                    if (is_object($value) && !($value instanceof \Exception) && !($value instanceof PluginManifest_Extensions615cf799009ec)) {
+                    if (is_object($value) && !($value instanceof \Exception) && !($value instanceof PluginManifest_Extensions12b9155a1b150cc965e30cfd7084bb1b)) {
                         throw new \PHPModelGenerator\Exception\Object\InvalidInstanceOfException($value ?? null, ...array (
   0 => 'extensions',
-  1 => 'PluginManifest_Extensions615cf799009ec',
+  1 => 'PluginManifest_Extensions12b9155a1b150cc965e30cfd7084bb1b',
 ));
                     }
                 
@@ -1608,7 +1608,7 @@ class PluginManifest implements JSONModelInterface
         if (is_object($proposedValue)) {
             $value = (function ($value) {
     try {
-        return is_array($value) ? new PluginManifest_Extensions615cf799009ec($value) : $value;
+        return is_array($value) ? new PluginManifest_Extensions12b9155a1b150cc965e30cfd7084bb1b($value) : $value;
     } catch (\Exception $instantiationException) {
         
             
@@ -1831,8 +1831,8 @@ class PluginManifest implements JSONModelInterface
 ));
                     }
                 
-                    $invalidItems_615cf79900aeb = [];
-                    if (is_array($value) && (function (&$items) use (&$invalidItems_615cf79900aeb) {
+                    $invalidItems_615da03c17841 = [];
+                    if (is_array($value) && (function (&$items) use (&$invalidItems_615da03c17841) {
     
 
     foreach ($items as $index => &$value) {
@@ -1862,19 +1862,19 @@ class PluginManifest implements JSONModelInterface
             
         } catch (\Exception $e) {
             // collect all errors concerning invalid items
-            isset($invalidItems_615cf79900aeb[$index])
-                ? $invalidItems_615cf79900aeb[$index][] = $e
-                : $invalidItems_615cf79900aeb[$index] = [$e];
+            isset($invalidItems_615da03c17841[$index])
+                ? $invalidItems_615da03c17841[$index][] = $e
+                : $invalidItems_615da03c17841[$index] = [$e];
         }
     }
 
     
 
-    return !empty($invalidItems_615cf79900aeb);
+    return !empty($invalidItems_615da03c17841);
 })($value)) {
                         throw new \PHPModelGenerator\Exception\Arrays\InvalidItemException($value ?? null, ...array (
   0 => 'loadbefore',
-  1 => $invalidItems_615cf79900aeb,
+  1 => $invalidItems_615da03c17841,
 ));
                     }
                 
@@ -2177,8 +2177,8 @@ class PluginManifest implements JSONModelInterface
 ));
                     }
                 
-                    $invalidItems_615cf79900b37 = [];
-                    if (is_array($value) && (function (&$items) use (&$invalidItems_615cf79900b37) {
+                    $invalidItems_615da03c178a1 = [];
+                    if (is_array($value) && (function (&$items) use (&$invalidItems_615da03c178a1) {
     
 
     foreach ($items as $index => &$value) {
@@ -2200,19 +2200,19 @@ class PluginManifest implements JSONModelInterface
             
         } catch (\Exception $e) {
             // collect all errors concerning invalid items
-            isset($invalidItems_615cf79900b37[$index])
-                ? $invalidItems_615cf79900b37[$index][] = $e
-                : $invalidItems_615cf79900b37[$index] = [$e];
+            isset($invalidItems_615da03c178a1[$index])
+                ? $invalidItems_615da03c178a1[$index][] = $e
+                : $invalidItems_615da03c178a1[$index] = [$e];
         }
     }
 
     
 
-    return !empty($invalidItems_615cf79900b37);
+    return !empty($invalidItems_615da03c178a1);
 })($value)) {
                         throw new \PHPModelGenerator\Exception\Arrays\InvalidItemException($value ?? null, ...array (
   0 => 'mcpe-protocol',
-  1 => $invalidItems_615cf79900b37,
+  1 => $invalidItems_615da03c178a1,
 ));
                     }
                 
@@ -2507,8 +2507,8 @@ class PluginManifest implements JSONModelInterface
 ));
                     }
                 
-                    $invalidItems_615cf79900d2b = [];
-                    if (is_array($value) && (function (&$items) use (&$invalidItems_615cf79900d2b) {
+                    $invalidItems_615da03c17cbc = [];
+                    if (is_array($value) && (function (&$items) use (&$invalidItems_615da03c17cbc) {
     
 
     foreach ($items as $index => &$value) {
@@ -2530,19 +2530,19 @@ class PluginManifest implements JSONModelInterface
             
         } catch (\Exception $e) {
             // collect all errors concerning invalid items
-            isset($invalidItems_615cf79900d2b[$index])
-                ? $invalidItems_615cf79900d2b[$index][] = $e
-                : $invalidItems_615cf79900d2b[$index] = [$e];
+            isset($invalidItems_615da03c17cbc[$index])
+                ? $invalidItems_615da03c17cbc[$index][] = $e
+                : $invalidItems_615da03c17cbc[$index] = [$e];
         }
     }
 
     
 
-    return !empty($invalidItems_615cf79900d2b);
+    return !empty($invalidItems_615da03c17cbc);
 })($value)) {
                         throw new \PHPModelGenerator\Exception\Arrays\InvalidItemException($value ?? null, ...array (
   0 => 'os',
-  1 => $invalidItems_615cf79900d2b,
+  1 => $invalidItems_615da03c17cbc,
 ));
                     }
                 
@@ -2664,10 +2664,10 @@ class PluginManifest implements JSONModelInterface
              *
              * Permissions to be registered by this plugin automatically
              *
-             * @return PluginManifest_Permissions615cf79900d50|null
+             * @return PluginManifest_Permissionsef9664664ee0e1dbf0ec96e57e8e5e3b|null
              */
             public function getPermissions()
-                : ?PluginManifest_Permissions615cf79900d50
+                : ?PluginManifest_Permissionsef9664664ee0e1dbf0ec96e57e8e5e3b
             {
                 
 
@@ -2697,7 +2697,7 @@ class PluginManifest implements JSONModelInterface
 
                 $value = (function ($value) {
     try {
-        return is_array($value) ? new PluginManifest_Permissions615cf79900d50($value) : $value;
+        return is_array($value) ? new PluginManifest_Permissionsef9664664ee0e1dbf0ec96e57e8e5e3b($value) : $value;
     } catch (\Exception $instantiationException) {
         
             throw new \PHPModelGenerator\Exception\Object\NestedObjectException($value ?? null, ...array (
@@ -2729,10 +2729,10 @@ class PluginManifest implements JSONModelInterface
                     }
                 
                     
-                    if (is_object($value) && !($value instanceof \Exception) && !($value instanceof PluginManifest_Permissions615cf79900d50)) {
+                    if (is_object($value) && !($value instanceof \Exception) && !($value instanceof PluginManifest_Permissionsef9664664ee0e1dbf0ec96e57e8e5e3b)) {
                         throw new \PHPModelGenerator\Exception\Object\InvalidInstanceOfException($value ?? null, ...array (
   0 => 'permissions',
-  1 => 'PluginManifest_Permissions615cf79900d50',
+  1 => 'PluginManifest_Permissionsef9664664ee0e1dbf0ec96e57e8e5e3b',
 ));
                     }
                 
@@ -2909,8 +2909,8 @@ class PluginManifest implements JSONModelInterface
 ));
                     }
                 
-                    $invalidItems_615cf79900e95 = [];
-                    if (is_array($value) && (function (&$items) use (&$invalidItems_615cf79900e95) {
+                    $invalidItems_615da03c17f45 = [];
+                    if (is_array($value) && (function (&$items) use (&$invalidItems_615da03c17f45) {
     
 
     foreach ($items as $index => &$value) {
@@ -2940,19 +2940,19 @@ class PluginManifest implements JSONModelInterface
             
         } catch (\Exception $e) {
             // collect all errors concerning invalid items
-            isset($invalidItems_615cf79900e95[$index])
-                ? $invalidItems_615cf79900e95[$index][] = $e
-                : $invalidItems_615cf79900e95[$index] = [$e];
+            isset($invalidItems_615da03c17f45[$index])
+                ? $invalidItems_615da03c17f45[$index][] = $e
+                : $invalidItems_615da03c17f45[$index] = [$e];
         }
     }
 
     
 
-    return !empty($invalidItems_615cf79900e95);
+    return !empty($invalidItems_615da03c17f45);
 })($value)) {
                         throw new \PHPModelGenerator\Exception\Arrays\InvalidItemException($value ?? null, ...array (
   0 => 'softdepend',
-  1 => $invalidItems_615cf79900e95,
+  1 => $invalidItems_615da03c17f45,
 ));
                     }
                 

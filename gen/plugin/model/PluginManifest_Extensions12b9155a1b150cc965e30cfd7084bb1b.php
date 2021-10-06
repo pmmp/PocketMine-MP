@@ -16,7 +16,7 @@ declare(strict_types = 1);
 
 
 /**
- * Class PluginManifest_Extensions615cf799009ec
+ * Class PluginManifest_Extensions12b9155a1b150cc965e30cfd7084bb1b
  * @package pocketmine\plugin\model 
  *
 
@@ -24,7 +24,7 @@ declare(strict_types = 1);
  * If you need to implement something in this class use inheritance. Else you will loose your changes if the classes
  * are re-generated.
  */
-class PluginManifest_Extensions615cf799009ec implements JSONModelInterface
+class PluginManifest_Extensions12b9155a1b150cc965e30cfd7084bb1b implements JSONModelInterface
 {
     
 
@@ -39,7 +39,7 @@ class PluginManifest_Extensions615cf799009ec implements JSONModelInterface
     
 
     /**
-     * PluginManifest_Extensions615cf799009ec constructor.
+     * PluginManifest_Extensions12b9155a1b150cc965e30cfd7084bb1b constructor.
      *
      * @param array $modelData
      *
@@ -151,8 +151,8 @@ class PluginManifest_Extensions615cf799009ec implements JSONModelInterface
 ));
                     }
                 
-                    $invalidItems_615cf79900a13 = [];
-                    if (is_array($value) && (function (&$items) use (&$invalidItems_615cf79900a13) {
+                    $invalidItems_615da03c1771c = [];
+                    if (is_array($value) && (function (&$items) use (&$invalidItems_615da03c1771c) {
     
 
     foreach ($items as $index => &$value) {
@@ -174,19 +174,19 @@ class PluginManifest_Extensions615cf799009ec implements JSONModelInterface
             
         } catch (\Exception $e) {
             // collect all errors concerning invalid items
-            isset($invalidItems_615cf79900a13[$index])
-                ? $invalidItems_615cf79900a13[$index][] = $e
-                : $invalidItems_615cf79900a13[$index] = [$e];
+            isset($invalidItems_615da03c1771c[$index])
+                ? $invalidItems_615da03c1771c[$index][] = $e
+                : $invalidItems_615da03c1771c[$index] = [$e];
         }
     }
 
     
 
-    return !empty($invalidItems_615cf79900a13);
+    return !empty($invalidItems_615da03c1771c);
 })($value)) {
                         throw new \PHPModelGenerator\Exception\Arrays\InvalidItemException($value ?? null, ...array (
   0 => 'additional property',
-  1 => $invalidItems_615cf79900a13,
+  1 => $invalidItems_615da03c1771c,
 ));
                     }
                 
@@ -322,7 +322,7 @@ class PluginManifest_Extensions615cf799009ec implements JSONModelInterface
     return !empty($invalidProperties);
 })()) {
                     throw new \PHPModelGenerator\Exception\Object\InvalidAdditionalPropertiesException($value ?? null, ...array (
-  0 => 'PluginManifest_Extensions615cf799009ec',
+  0 => 'PluginManifest_Extensions12b9155a1b150cc965e30cfd7084bb1b',
   1 => $invalidProperties,
 ));
                 }

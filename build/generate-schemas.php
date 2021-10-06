@@ -24,10 +24,21 @@ declare(strict_types=1);
 namespace pocketmine\generate_schemas;
 
 use PHPModelGenerator\Model\GeneratorConfiguration;
+use PHPModelGenerator\Model\SchemaDefinition\JsonSchema;
 use PHPModelGenerator\ModelGenerator;
 use PHPModelGenerator\SchemaProcessor\PostProcessor\AdditionalPropertiesAccessorPostProcessor;
 use PHPModelGenerator\SchemaProvider\RecursiveDirectoryProvider;
+use PHPModelGenerator\Utils\ClassNameGeneratorInterface;
+use pocketmine\utils\AssumptionFailedError;
 use function dirname;
+use function json_encode;
+use function md5;
+use function preg_replace;
+use function sprintf;
+use function str_replace;
+use function trim;
+use function ucfirst;
+use const JSON_THROW_ON_ERROR;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -36,6 +47,26 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 		->setNamespacePrefix('pocketmine\\plugin\\model')
 		->setCollectErrors(false)
 		->setImmutable(true)
+		->setOutputEnabled(true)
+		->setClassNameGenerator(new class implements ClassNameGeneratorInterface{
+			public function getClassName(string $propertyName, JsonSchema $schema, bool $isMergeClass, string $currentClassName = '') : string{
+				$className = sprintf(
+					$isMergeClass ? '%s_Merged_%s' : '%s_%s',
+					$currentClassName,
+					ucfirst(
+						isset($schema->getJson()['$id'])
+							? str_replace('#', '', $schema->getJson()['$id'])
+							: ($propertyName . ($currentClassName !== '' ? md5(json_encode($schema->getJson(), JSON_THROW_ON_ERROR)) : ''))
+					)
+				);
+
+				$replaced = preg_replace('/\W/', '', trim($className, '_'));
+				if($replaced === null){
+					throw new AssumptionFailedError();
+				}
+				return ucfirst($replaced);
+			}
+		})
 ))
 	->generateModelDirectory(dirname(__DIR__) . '/gen/plugin/model')
 	->addPostProcessor(new AdditionalPropertiesAccessorPostProcessor(false))

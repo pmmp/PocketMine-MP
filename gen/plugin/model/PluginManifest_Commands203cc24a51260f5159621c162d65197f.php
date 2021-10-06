@@ -16,21 +16,21 @@ declare(strict_types = 1);
 
 
 /**
- * Class PluginManifest_Permissions615cf79900d50
+ * Class PluginManifest_Commands203cc24a51260f5159621c162d65197f
  * @package pocketmine\plugin\model 
  *
- * Permissions to be registered by this plugin automatically
+ * The commands to be registered automatically. The keys are command name.
  *
  * This is an auto-implemented class implemented by the php-json-schema-model-generator.
  * If you need to implement something in this class use inheritance. Else you will loose your changes if the classes
  * are re-generated.
  */
-class PluginManifest_Permissions615cf79900d50 implements JSONModelInterface
+class PluginManifest_Commands203cc24a51260f5159621c162d65197f implements JSONModelInterface
 {
     
 
     
-        /** @var PluginManifest_Additionalproperty615cf79900d83[] Collect all additional properties provided to the schema */
+        /** @var PluginManifest_Additionalproperty3a366b0629f407e724333385722a07cf[] Collect all additional properties provided to the schema */
         private $_additionalProperties = array (
 );
     
@@ -40,7 +40,7 @@ class PluginManifest_Permissions615cf79900d50 implements JSONModelInterface
     
 
     /**
-     * PluginManifest_Permissions615cf79900d50 constructor.
+     * PluginManifest_Commands203cc24a51260f5159621c162d65197f constructor.
      *
      * @param array $modelData
      *
@@ -94,7 +94,7 @@ class PluginManifest_Permissions615cf79900d50 implements JSONModelInterface
 
             $value = (function ($value) {
     try {
-        return is_array($value) ? new PluginManifest_Additionalproperty615cf79900d83($value) : $value;
+        return is_array($value) ? new PluginManifest_Additionalproperty3a366b0629f407e724333385722a07cf($value) : $value;
     } catch (\Exception $instantiationException) {
         
             
@@ -117,10 +117,10 @@ class PluginManifest_Permissions615cf79900d50 implements JSONModelInterface
                 }
             
                 
-                if (is_object($value) && !($value instanceof \Exception) && !($value instanceof PluginManifest_Additionalproperty615cf79900d83)) {
+                if (is_object($value) && !($value instanceof \Exception) && !($value instanceof PluginManifest_Additionalproperty3a366b0629f407e724333385722a07cf)) {
                     throw new \PHPModelGenerator\Exception\Object\InvalidInstanceOfException($value ?? null, ...array (
   0 => 'additional property',
-  1 => 'PluginManifest_Additionalproperty615cf79900d83',
+  1 => 'PluginManifest_Additionalproperty3a366b0629f407e724333385722a07cf',
 ));
                 }
             
@@ -149,7 +149,7 @@ class PluginManifest_Permissions615cf79900d50 implements JSONModelInterface
     return !empty($invalidProperties);
 })()) {
                     throw new \PHPModelGenerator\Exception\Object\InvalidAdditionalPropertiesException($value ?? null, ...array (
-  0 => 'PluginManifest_Permissions615cf79900d50',
+  0 => 'PluginManifest_Commands203cc24a51260f5159621c162d65197f',
   1 => $invalidProperties,
 ));
                 }
@@ -177,7 +177,7 @@ class PluginManifest_Permissions615cf79900d50 implements JSONModelInterface
         /**
  * Get additional properties
  *
- * @return PluginManifest_Additionalproperty615cf79900d83[]
+ * @return PluginManifest_Additionalproperty3a366b0629f407e724333385722a07cf[]
  */
 public function getAdditionalProperties(): array
 {
@@ -190,9 +190,9 @@ public function getAdditionalProperties(): array
  *
  * @param string $property The key of the additional property
  *
- * @return PluginManifest_Additionalproperty615cf79900d83|null
+ * @return PluginManifest_Additionalproperty3a366b0629f407e724333385722a07cf|null
  */
-public function getAdditionalProperty(string $property): ?PluginManifest_Additionalproperty615cf79900d83
+public function getAdditionalProperty(string $property): ?PluginManifest_Additionalproperty3a366b0629f407e724333385722a07cf
 {
     return $this->_additionalProperties[$property] ?? null;
 }

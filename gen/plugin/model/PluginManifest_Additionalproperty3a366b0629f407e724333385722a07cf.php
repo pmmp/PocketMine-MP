@@ -16,7 +16,7 @@ declare(strict_types = 1);
 
 
 /**
- * Class PluginManifest_Additionalproperty615cf799006a0
+ * Class PluginManifest_Additionalproperty3a366b0629f407e724333385722a07cf
  * @package pocketmine\plugin\model 
  *
 
@@ -24,7 +24,7 @@ declare(strict_types = 1);
  * If you need to implement something in this class use inheritance. Else you will loose your changes if the classes
  * are re-generated.
  */
-class PluginManifest_Additionalproperty615cf799006a0 implements JSONModelInterface
+class PluginManifest_Additionalproperty3a366b0629f407e724333385722a07cf implements JSONModelInterface
 {
     
 
@@ -50,7 +50,7 @@ class PluginManifest_Additionalproperty615cf799006a0 implements JSONModelInterfa
     
 
     /**
-     * PluginManifest_Additionalproperty615cf799006a0 constructor.
+     * PluginManifest_Additionalproperty3a366b0629f407e724333385722a07cf constructor.
      *
      * @param array $modelData
      *
@@ -116,7 +116,7 @@ class PluginManifest_Additionalproperty615cf799006a0 implements JSONModelInterfa
     return $additionalProperties;
 })()) {
                     throw new \PHPModelGenerator\Exception\Object\AdditionalPropertiesException($value ?? null, ...array (
-  0 => 'PluginManifest_Additionalproperty615cf799006a0',
+  0 => 'PluginManifest_Additionalproperty3a366b0629f407e724333385722a07cf',
   1 => $additionalProperties,
 ));
                 }
@@ -193,8 +193,8 @@ class PluginManifest_Additionalproperty615cf799006a0 implements JSONModelInterfa
 ));
                     }
                 
-                    $invalidItems_615cf799006be = [];
-                    if (is_array($value) && (function (&$items) use (&$invalidItems_615cf799006be) {
+                    $invalidItems_615da03c16e0e = [];
+                    if (is_array($value) && (function (&$items) use (&$invalidItems_615da03c16e0e) {
     
 
     foreach ($items as $index => &$value) {
@@ -216,19 +216,19 @@ class PluginManifest_Additionalproperty615cf799006a0 implements JSONModelInterfa
             
         } catch (\Exception $e) {
             // collect all errors concerning invalid items
-            isset($invalidItems_615cf799006be[$index])
-                ? $invalidItems_615cf799006be[$index][] = $e
-                : $invalidItems_615cf799006be[$index] = [$e];
+            isset($invalidItems_615da03c16e0e[$index])
+                ? $invalidItems_615da03c16e0e[$index][] = $e
+                : $invalidItems_615da03c16e0e[$index] = [$e];
         }
     }
 
     
 
-    return !empty($invalidItems_615cf799006be);
+    return !empty($invalidItems_615da03c16e0e);
 })($value)) {
                         throw new \PHPModelGenerator\Exception\Arrays\InvalidItemException($value ?? null, ...array (
   0 => 'aliases',
-  1 => $invalidItems_615cf799006be,
+  1 => $invalidItems_615da03c16e0e,
 ));
                     }
                 

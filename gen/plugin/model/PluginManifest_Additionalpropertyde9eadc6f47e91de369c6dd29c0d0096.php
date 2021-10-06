@@ -16,7 +16,7 @@ declare(strict_types = 1);
 
 
 /**
- * Class PluginManifest_Additionalproperty615cf79900d83
+ * Class PluginManifest_Additionalpropertyde9eadc6f47e91de369c6dd29c0d0096
  * @package pocketmine\plugin\model 
  *
 
@@ -24,7 +24,7 @@ declare(strict_types = 1);
  * If you need to implement something in this class use inheritance. Else you will loose your changes if the classes
  * are re-generated.
  */
-class PluginManifest_Additionalproperty615cf79900d83 implements JSONModelInterface
+class PluginManifest_Additionalpropertyde9eadc6f47e91de369c6dd29c0d0096 implements JSONModelInterface
 {
     
 
@@ -41,7 +41,7 @@ class PluginManifest_Additionalproperty615cf79900d83 implements JSONModelInterfa
     
 
     /**
-     * PluginManifest_Additionalproperty615cf79900d83 constructor.
+     * PluginManifest_Additionalpropertyde9eadc6f47e91de369c6dd29c0d0096 constructor.
      *
      * @param array $modelData
      *
@@ -92,7 +92,7 @@ class PluginManifest_Additionalproperty615cf79900d83 implements JSONModelInterfa
     return $additionalProperties;
 })()) {
                     throw new \PHPModelGenerator\Exception\Object\AdditionalPropertiesException($value ?? null, ...array (
-  0 => 'PluginManifest_Additionalproperty615cf79900d83',
+  0 => 'PluginManifest_Additionalpropertyde9eadc6f47e91de369c6dd29c0d0096',
   1 => $additionalProperties,
 ));
                 }
