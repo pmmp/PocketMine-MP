@@ -44,53 +44,46 @@ class PluginDescription{
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private $map;
+	private array $map;
 
-	/** @var string */
-	private $name;
-	/** @var string */
-	private $main;
+	private string $name;
+	private string $main;
 	private string $srcNamespacePrefix = "";
 	/** @var string[] */
-	private $api;
+	private array $api;
 	/** @var int[] */
-	private $compatibleMcpeProtocols = [];
+	private array $compatibleMcpeProtocols = [];
 	/** @var string[] */
-	private $compatibleOperatingSystems = [];
+	private array $compatibleOperatingSystems = [];
 	/**
 	 * @var string[][]
 	 * @phpstan-var array<string, list<string>>
 	 */
-	private $extensions = [];
+	private array $extensions = [];
 	/** @var string[] */
-	private $depend = [];
+	private array $depend = [];
 	/** @var string[] */
-	private $softDepend = [];
+	private array $softDepend = [];
 	/** @var string[] */
-	private $loadBefore = [];
-	/** @var string */
-	private $version;
+	private array $loadBefore = [];
+	private string $version;
 	/**
 	 * @var PluginDescriptionCommandEntry[]
 	 * @phpstan-var array<string, PluginDescriptionCommandEntry>
 	 */
-	private $commands = [];
-	/** @var string */
-	private $description = "";
+	private array $commands = [];
+	private string $description = "";
 	/** @var string[] */
-	private $authors = [];
-	/** @var string */
-	private $website = "";
-	/** @var string */
-	private $prefix = "";
-	/** @var PluginEnableOrder */
-	private $order;
+	private array $authors = [];
+	private string $website = "";
+	private string $prefix = "";
+	private PluginEnableOrder $order;
 
 	/**
 	 * @var Permission[][]
 	 * @phpstan-var array<string, list<Permission>>
 	 */
-	private $permissions = [];
+	private array $permissions = [];
 
 	/**
 	 * @param string|mixed[] $yamlString
