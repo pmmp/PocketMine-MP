@@ -29,6 +29,7 @@ use pocketmine\permission\PermissionParserException;
 use function array_map;
 use function array_values;
 use function is_array;
+use function is_string;
 use function phpversion;
 use function preg_match;
 use function str_replace;
@@ -43,53 +44,46 @@ class PluginDescription{
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private $map;
+	private array $map;
 
-	/** @var string */
-	private $name;
-	/** @var string */
-	private $main;
+	private string $name;
+	private string $main;
 	private string $srcNamespacePrefix = "";
 	/** @var string[] */
-	private $api;
+	private array $api;
 	/** @var int[] */
-	private $compatibleMcpeProtocols = [];
+	private array $compatibleMcpeProtocols = [];
 	/** @var string[] */
-	private $compatibleOperatingSystems = [];
+	private array $compatibleOperatingSystems = [];
 	/**
 	 * @var string[][]
 	 * @phpstan-var array<string, list<string>>
 	 */
-	private $extensions = [];
+	private array $extensions = [];
 	/** @var string[] */
-	private $depend = [];
+	private array $depend = [];
 	/** @var string[] */
-	private $softDepend = [];
+	private array $softDepend = [];
 	/** @var string[] */
-	private $loadBefore = [];
-	/** @var string */
-	private $version;
+	private array $loadBefore = [];
+	private string $version;
 	/**
-	 * @var mixed[][]
-	 * @phpstan-var array<string, array<string, mixed>>
+	 * @var PluginDescriptionCommandEntry[]
+	 * @phpstan-var array<string, PluginDescriptionCommandEntry>
 	 */
-	private $commands = [];
-	/** @var string */
-	private $description = "";
+	private array $commands = [];
+	private string $description = "";
 	/** @var string[] */
-	private $authors = [];
-	/** @var string */
-	private $website = "";
-	/** @var string */
-	private $prefix = "";
-	/** @var PluginEnableOrder */
-	private $order;
+	private array $authors = [];
+	private string $website = "";
+	private string $prefix = "";
+	private PluginEnableOrder $order;
 
 	/**
 	 * @var Permission[][]
 	 * @phpstan-var array<string, list<Permission>>
 	 */
-	private $permissions = [];
+	private array $permissions = [];
 
 	/**
 	 * @param string|mixed[] $yamlString
@@ -123,7 +117,24 @@ class PluginDescription{
 		$this->compatibleOperatingSystems = array_map("\strval", (array) ($plugin["os"] ?? []));
 
 		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
-			$this->commands = $plugin["commands"];
+			foreach($plugin["commands"] as $commandName => $commandData){
+				if(!is_string($commandName)){
+					throw new PluginDescriptionParseException("Invalid Plugin commands, key must be the name of the command");
+				}
+				if(!is_array($commandData)){
+					throw new PluginDescriptionParseException("Command $commandName has invalid properties");
+				}
+				if(!isset($commandData["permission"]) || !is_string($commandData["permission"])){
+					throw new PluginDescriptionParseException("Command $commandName does not have a valid permission set");
+				}
+				$this->commands[$commandName] = new PluginDescriptionCommandEntry(
+					$commandData["description"] ?? null,
+					$commandData["usage"] ?? null,
+					$commandData["aliases"] ?? [],
+					$commandData["permission"],
+					$commandData["permission-message"] ?? null
+				);
+			}
 		}
 
 		if(isset($plugin["depend"])){
@@ -221,8 +232,8 @@ class PluginDescription{
 	}
 
 	/**
-	 * @return mixed[][]
-	 * @phpstan-return array<string, array<string, mixed>>
+	 * @return PluginDescriptionCommandEntry[]
+	 * @phpstan-return array<string, PluginDescriptionCommandEntry>
 	 */
 	public function getCommands() : array{
 		return $this->commands;
