@@ -199,7 +199,11 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 						$newCmd->setPermission($data["permission"]);
 					}else{
 						$this->logger->error("Permission must be a string, " . gettype($data["permission"]) . " given for command $key");
+						continue;
 					}
+				}else{
+					$this->logger->error("No permission set for command $key");
+					continue;
 				}
 
 				if(isset($data["permission-message"])){
