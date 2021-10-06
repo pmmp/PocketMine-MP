@@ -132,7 +132,7 @@ class PluginDescription{
 					throw new PluginDescriptionParseException("Command $commandName has invalid properties");
 				}
 				if(!isset($commandData["permission"]) || !is_string($commandData["permission"])){
-					throw new PluginDescriptionParseException("Command $commandName does not have a permission set");
+					throw new PluginDescriptionParseException("Command $commandName does not have a valid permission set");
 				}
 				$this->commands[$commandName] = new PluginDescriptionCommandEntry(
 					$commandData["description"] ?? null,
