@@ -29,6 +29,7 @@ use pocketmine\permission\PermissionParserException;
 use function array_map;
 use function array_values;
 use function is_array;
+use function is_string;
 use function phpversion;
 use function preg_match;
 use function str_replace;
@@ -70,8 +71,8 @@ class PluginDescription{
 	/** @var string */
 	private $version;
 	/**
-	 * @var mixed[][]
-	 * @phpstan-var array<string, array<string, mixed>>
+	 * @var PluginDescriptionCommandEntry[]
+	 * @phpstan-var array<string, PluginDescriptionCommandEntry>
 	 */
 	private $commands = [];
 	/** @var string */
@@ -123,7 +124,24 @@ class PluginDescription{
 		$this->compatibleOperatingSystems = array_map("\strval", (array) ($plugin["os"] ?? []));
 
 		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
-			$this->commands = $plugin["commands"];
+			foreach($plugin["commands"] as $commandName => $commandData){
+				if(!is_string($commandName)){
+					throw new PluginDescriptionParseException("Invalid Plugin commands, key must be the name of the command");
+				}
+				if(!is_array($commandData)){
+					throw new PluginDescriptionParseException("Command $commandName has invalid properties");
+				}
+				if(!isset($commandData["permission"]) || !is_string($commandData["permission"])){
+					throw new PluginDescriptionParseException("Command $commandName does not have a permission set");
+				}
+				$this->commands[$commandName] = new PluginDescriptionCommandEntry(
+					$commandData["description"] ?? null,
+					$commandData["usage"] ?? null,
+					$commandData["aliases"] ?? [],
+					$commandData["permission"],
+					$commandData["permission-message"] ?? null
+				);
+			}
 		}
 
 		if(isset($plugin["depend"])){
@@ -221,8 +239,8 @@ class PluginDescription{
 	}
 
 	/**
-	 * @return mixed[][]
-	 * @phpstan-return array<string, array<string, mixed>>
+	 * @return PluginDescriptionCommandEntry[]
+	 * @phpstan-return array<string, PluginDescriptionCommandEntry>
 	 */
 	public function getCommands() : array{
 		return $this->commands;
