@@ -557,6 +557,13 @@ class Config{
 					case "no":
 						$v = false;
 						break;
+					default:
+						$v = match($v){
+							(string) ((int) $v) => (int) $v,
+							(string) ((float) $v) => (float) $v,
+							default => $v,
+						};
+						break;
 				}
 				if(isset($result[$k])){
 					\GlobalLogger::get()->debug("[Config] Repeated property " . $k . " on file " . $this->file);
