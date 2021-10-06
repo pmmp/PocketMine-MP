@@ -1961,7 +1961,7 @@ class Server{
 			$this->network->blockAddress($entry->getName(), -1);
 		}
 
-		if((bool) $this->getProperty("settings.send-usage", true)){
+		if((bool) $this->getProperty("anonymous-statistics.enabled", true)){
 			$this->sendUsageTicker = 6000;
 			$this->sendUsage(SendUsageTask::TYPE_OPEN);
 		}
