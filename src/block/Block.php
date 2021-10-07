@@ -179,7 +179,7 @@ class Block{
 	 * Returns whether the given block has the same type and properties as this block.
 	 */
 	public function isSameState(Block $other) : bool{
-		return $this->isSameType($other) and $this->writeStateToMeta() === $other->writeStateToMeta();
+		return $this->getFullId() === $other->getFullId();
 	}
 
 	/**

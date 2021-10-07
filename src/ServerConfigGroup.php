@@ -110,16 +110,20 @@ final class ServerConfigGroup{
 		}else{
 			$value = $this->serverProperties->exists($variable) ? $this->serverProperties->get($variable) : $defaultValue;
 		}
-
 		if(is_bool($value)){
 			return $value;
 		}
-		switch(strtolower($value)){
-			case "on":
-			case "true":
-			case "1":
-			case "yes":
-				return true;
+		if(is_int($value)){
+			return $value !== 0;
+		}
+		if(is_string($value)){
+			switch(strtolower($value)){
+				case "on":
+				case "true":
+				case "1":
+				case "yes":
+					return true;
+			}
 		}
 
 		return false;
