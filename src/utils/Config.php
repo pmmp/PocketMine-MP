@@ -529,8 +529,6 @@ class Config{
 		foreach($this->config as $k => $v){
 			if(is_bool($v)){
 				$v = $v ? "on" : "off";
-			}elseif(is_array($v)){
-				$v = implode(";", $v);
 			}
 			$content .= $k . "=" . $v . "\r\n";
 		}
