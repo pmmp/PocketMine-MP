@@ -244,12 +244,11 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 
 		$this->synchronized(function() use ($message, $level, $time) : void{
 			Terminal::writeLine($message);
+			$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
 
 			foreach($this->attachments as $attachment){
 				$attachment->call($level, $message);
 			}
-
-			$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
 		});
 	}
 
