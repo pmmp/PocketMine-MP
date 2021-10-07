@@ -41,11 +41,6 @@ parameters:
 			path: ../../../src/ServerConfigGroup.php
 
 		-
-			message: "#^Parameter \\#1 \\$string of function strtolower expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/ServerConfigGroup.php
-
-		-
 			message: "#^Cannot access offset 'git' on mixed\\.$#"
 			count: 2
 			path: ../../../src/VersionInfo.php
