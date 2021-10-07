@@ -193,8 +193,8 @@ class PluginManifest_Additionalproperty3a366b0629f407e724333385722a07cf implemen
 ));
                     }
                 
-                    $invalidItems_615da03c16e0e = [];
-                    if (is_array($value) && (function (&$items) use (&$invalidItems_615da03c16e0e) {
+                    $invalidItems_59914f24f37c7daa41a38db269718114 = [];
+                    if (is_array($value) && (function (&$items) use (&$invalidItems_59914f24f37c7daa41a38db269718114) {
     
 
     foreach ($items as $index => &$value) {
@@ -216,19 +216,19 @@ class PluginManifest_Additionalproperty3a366b0629f407e724333385722a07cf implemen
             
         } catch (\Exception $e) {
             // collect all errors concerning invalid items
-            isset($invalidItems_615da03c16e0e[$index])
-                ? $invalidItems_615da03c16e0e[$index][] = $e
-                : $invalidItems_615da03c16e0e[$index] = [$e];
+            isset($invalidItems_59914f24f37c7daa41a38db269718114[$index])
+                ? $invalidItems_59914f24f37c7daa41a38db269718114[$index][] = $e
+                : $invalidItems_59914f24f37c7daa41a38db269718114[$index] = [$e];
         }
     }
 
     
 
-    return !empty($invalidItems_615da03c16e0e);
+    return !empty($invalidItems_59914f24f37c7daa41a38db269718114);
 })($value)) {
                         throw new \PHPModelGenerator\Exception\Arrays\InvalidItemException($value ?? null, ...array (
   0 => 'aliases',
-  1 => $invalidItems_615da03c16e0e,
+  1 => $invalidItems_59914f24f37c7daa41a38db269718114,
 ));
                     }
                 

@@ -58,7 +58,7 @@
       "phpstan/phpstan-phpunit": "^0.12.6",
       "phpstan/phpstan-strict-rules": "^0.12.2",
       "phpunit/phpunit": "^9.2",
-      "wol-soft/php-json-schema-model-generator": "^0.21.0"
+      "wol-soft/php-json-schema-model-generator": "^0.21.1"
    },
    "autoload": {
       "psr-4": {

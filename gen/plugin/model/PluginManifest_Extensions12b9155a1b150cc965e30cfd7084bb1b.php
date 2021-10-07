@@ -151,8 +151,8 @@ class PluginManifest_Extensions12b9155a1b150cc965e30cfd7084bb1b implements JSONM
 ));
                     }
                 
-                    $invalidItems_615da03c1771c = [];
-                    if (is_array($value) && (function (&$items) use (&$invalidItems_615da03c1771c) {
+                    $invalidItems_430c91e3f38137953c40e0a11914ca3d = [];
+                    if (is_array($value) && (function (&$items) use (&$invalidItems_430c91e3f38137953c40e0a11914ca3d) {
     
 
     foreach ($items as $index => &$value) {
@@ -174,19 +174,19 @@ class PluginManifest_Extensions12b9155a1b150cc965e30cfd7084bb1b implements JSONM
             
         } catch (\Exception $e) {
             // collect all errors concerning invalid items
-            isset($invalidItems_615da03c1771c[$index])
-                ? $invalidItems_615da03c1771c[$index][] = $e
-                : $invalidItems_615da03c1771c[$index] = [$e];
+            isset($invalidItems_430c91e3f38137953c40e0a11914ca3d[$index])
+                ? $invalidItems_430c91e3f38137953c40e0a11914ca3d[$index][] = $e
+                : $invalidItems_430c91e3f38137953c40e0a11914ca3d[$index] = [$e];
         }
     }
 
     
 
-    return !empty($invalidItems_615da03c1771c);
+    return !empty($invalidItems_430c91e3f38137953c40e0a11914ca3d);
 })($value)) {
                         throw new \PHPModelGenerator\Exception\Arrays\InvalidItemException($value ?? null, ...array (
   0 => 'additional property',
-  1 => $invalidItems_615da03c1771c,
+  1 => $invalidItems_430c91e3f38137953c40e0a11914ca3d,
 ));
                     }
                 

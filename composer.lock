@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6983fc2794378cefbe42fe72ccc1fd4b",
+    "content-hash": "0fb30f1402bf32d4c7288a34f054e958",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -3736,16 +3736,16 @@
         },
         {
             "name": "wol-soft/php-json-schema-model-generator",
-            "version": "0.21.0",
+            "version": "0.21.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wol-soft/php-json-schema-model-generator.git",
-                "reference": "d88a21312ce3746e63160f3345223c6434204e62"
+                "reference": "f31b2161442b80ce9c9120e6f37c7d01f34affcf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wol-soft/php-json-schema-model-generator/zipball/d88a21312ce3746e63160f3345223c6434204e62",
-                "reference": "d88a21312ce3746e63160f3345223c6434204e62",
+                "url": "https://api.github.com/repos/wol-soft/php-json-schema-model-generator/zipball/f31b2161442b80ce9c9120e6f37c7d01f34affcf",
+                "reference": "f31b2161442b80ce9c9120e6f37c7d01f34affcf",
                 "shasum": ""
             },
             "require": {
@@ -3778,9 +3778,9 @@
             "homepage": "https://github.com/wol-soft/php-json-schema-model-generator",
             "support": {
                 "issues": "https://github.com/wol-soft/php-json-schema-model-generator/issues",
-                "source": "https://github.com/wol-soft/php-json-schema-model-generator/tree/0.21.0"
+                "source": "https://github.com/wol-soft/php-json-schema-model-generator/tree/0.21.1"
             },
-            "time": "2021-07-08T14:37:29+00:00"
+            "time": "2021-10-07T10:05:14+00:00"
         },
         {
             "name": "wol-soft/php-micro-template",
