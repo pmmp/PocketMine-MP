@@ -183,7 +183,7 @@ class Config{
 					$config = unserialize($content);
 					break;
 				case Config::ENUM:
-					$config = self::parseList($content);
+					$config = array_fill_keys(self::parseList($content), true);
 					break;
 				default:
 					throw new \InvalidStateException("Config type is unknown");
@@ -223,7 +223,7 @@ class Config{
 				$content = serialize($this->config);
 				break;
 			case Config::ENUM:
-				$content = implode("\r\n", array_keys($this->config));
+				$content = self::writeList(array_keys($this->config));
 				break;
 			default:
 				throw new \InvalidStateException("Config type is unknown, has not been set or not detected");
@@ -509,19 +509,27 @@ class Config{
 	}
 
 	/**
-	 * @return true[]
-	 * @phpstan-return array<string, true>
+	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
-	private static function parseList(string $content) : array{
+	public static function parseList(string $content) : array{
 		$result = [];
 		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
-			if($v == ""){
+			if($v === ""){
 				continue;
 			}
-			$result[$v] = true;
+			$result[] = $v;
 		}
 		return $result;
+	}
+
+	/**
+	 * @param string[] $entries
+	 * @phpstan-param list<string> $entries
+	 */
+	public static function writeList(array $entries) : string{
+		return implode("\n", array_keys($entries));
 	}
 
 	/**
