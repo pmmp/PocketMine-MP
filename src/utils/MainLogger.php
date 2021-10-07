@@ -28,6 +28,7 @@ use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\thread\Thread;
 use pocketmine\thread\Worker;
 use function get_class;
+use function implode;
 use function is_int;
 use function preg_replace;
 use function sprintf;
