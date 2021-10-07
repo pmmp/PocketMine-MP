@@ -140,18 +140,20 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 			$trace = $e->getTrace();
 		}
 
-		$this->buffer(function() use ($e, $trace) : void{
-			$this->critical(self::printExceptionMessage($e));
-			foreach(Utils::printableTrace($trace) as $line){
-				$this->critical($line);
+		$lines = [self::printExceptionMessage($e)];
+		$lines[] = "--- Stack trace ---";
+		foreach(Utils::printableTrace($trace) as $line){
+			$lines[] = "  " . $line;
+		}
+		for($prev = $e->getPrevious(); $prev !== null; $prev = $prev->getPrevious()){
+			$lines[] = "--- Previous ---";
+			$lines[] = self::printExceptionMessage($prev);
+			foreach(Utils::printableTrace($prev->getTrace()) as $line){
+				$lines[] = "  " . $line;
 			}
-			for($prev = $e->getPrevious(); $prev !== null; $prev = $prev->getPrevious()){
-				$this->critical("Previous: " . self::printExceptionMessage($prev));
-				foreach(Utils::printableTrace($prev->getTrace()) as $line){
-					$this->critical("  " . $line);
-				}
-			}
-		});
+		}
+		$lines[] = "--- End of exception information ---";
+		$this->critical(implode("\n", $lines));
 
 		$this->syncFlushBuffer();
 	}
