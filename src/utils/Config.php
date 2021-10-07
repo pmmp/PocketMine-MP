@@ -170,7 +170,7 @@ class Config{
 			$config = null;
 			switch($this->type){
 				case Config::PROPERTIES:
-					$config = $this->parseProperties($content);
+					$config = self::parseProperties($content);
 					break;
 				case Config::JSON:
 					$config = json_decode($content, true);
@@ -211,7 +211,7 @@ class Config{
 		$content = null;
 		switch($this->type){
 			case Config::PROPERTIES:
-				$content = $this->writeProperties();
+				$content = self::writeProperties($this->config);
 				break;
 			case Config::JSON:
 				$content = json_encode($this->config, $this->jsonOptions);
@@ -524,9 +524,13 @@ class Config{
 		return $result;
 	}
 
-	private function writeProperties() : string{
+	/**
+	 * @param string[]|int[]|float[]|bool[] $config
+	 * @phpstan-param array<string, string|int|float|bool> $config
+	 */
+	public static function writeProperties(array $config) : string{
 		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
-		foreach($this->config as $k => $v){
+		foreach($config as $k => $v){
 			if(is_bool($v)){
 				$v = $v ? "on" : "off";
 			}
@@ -537,9 +541,10 @@ class Config{
 	}
 
 	/**
-	 * @return mixed[]
+	 * @return string[]|int[]|float[]|bool[]
+	 * @phpstan-return array<string, string|int|float|bool>
 	 */
-	private function parseProperties(string $content) : array{
+	public static function parseProperties(string $content) : array{
 		$result = [];
 		if(preg_match_all('/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
@@ -563,10 +568,7 @@ class Config{
 						};
 						break;
 				}
-				if(isset($result[$k])){
-					\GlobalLogger::get()->debug("[Config] Repeated property " . $k . " on file " . $this->file);
-				}
-				$result[$k] = $v;
+				$result[(string) $k] = $v;
 			}
 		}
 
