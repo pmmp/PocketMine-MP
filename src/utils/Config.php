@@ -530,7 +530,7 @@ class Config{
 	 * @phpstan-param list<string> $entries
 	 */
 	public static function writeList(array $entries) : string{
-		return implode("\n", array_keys($entries));
+		return implode("\n", $entries);
 	}
 
 	/**
