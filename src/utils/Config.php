@@ -25,6 +25,7 @@ namespace pocketmine\utils;
 
 use Webmozart\PathUtil\Path;
 use function array_change_key_case;
+use function array_fill_keys;
 use function array_keys;
 use function array_shift;
 use function count;
