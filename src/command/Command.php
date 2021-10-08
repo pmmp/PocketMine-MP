@@ -117,7 +117,7 @@ abstract class Command{
 		}
 
 		if($this->permissionMessage === null){
-			$target->sendMessage(KnownTranslationFactory::commands_generic_permission()->prefix(TextFormat::RED));
+			$target->sendMessage(KnownTranslationFactory::pocketmine_command_error_permission($this->name)->prefix(TextFormat::RED));
 		}elseif($this->permissionMessage !== ""){
 			$target->sendMessage(str_replace("<permission>", $permission ?? $this->permission, $this->permissionMessage));
 		}
