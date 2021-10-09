@@ -454,7 +454,7 @@ class Utils{
 	 * @param callable|null $onSuccess    function to be called if there is no error. Accepts a resource argument as the cURL handle.
 	 * @phpstan-param array<int, mixed>                $extraOpts
 	 * @phpstan-param list<string>                     $extraHeaders
-	 * @phpstan-param (callable(PhpCurlHandle) : void)|null $onSuccess
+	 * @phpstan-param (callable(\CurlHandle) : void)|null $onSuccess
 	 *
 	 * @return array a plain array of three [result body : string, headers : string[][], HTTP response code : int]. Headers are grouped by requests with strtolower(header name) as keys and header value as values
 	 * @phpstan-return array{string, list<array<string, string>>, int}
@@ -642,7 +642,6 @@ class Utils{
 		preg_match_all('/(*ANYCRLF)^[\t ]*(?:\* )?@([a-zA-Z]+)(?:[\t ]+(.+?))?[\t ]*$/m', $rawDocComment, $matches);
 
 		$result = array_combine($matches[1], $matches[2]);
-		if($result === false) throw new AssumptionFailedError("array_combine() doesn't return false with two equal-sized arrays");
 		return $result;
 	}
 

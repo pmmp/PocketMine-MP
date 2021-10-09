@@ -60,10 +60,7 @@ class RCONInstance extends Thread{
 
 	/** @var bool */
 	private $stop;
-	/**
-	 * @var \Socket|resource
-	 * @phpstan-var PhpSocket
-	 */
+	/** @var \Socket */
 	private $socket;
 	/** @var string */
 	private $password;
@@ -71,21 +68,12 @@ class RCONInstance extends Thread{
 	private $maxClients;
 	/** @var \ThreadedLogger */
 	private $logger;
-	/**
-	 * @var \Socket|resource
-	 * @phpstan-var PhpSocket
-	 */
+	/** @var \Socket */
 	private $ipcSocket;
 	/** @var SleeperNotifier|null */
 	private $notifier;
 
-	/**
-	 * @param \Socket|resource             $socket
-	 * @param \Socket|resource             $ipcSocket
-	 * @phpstan-param PhpSocket $socket
-	 * @phpstan-param PhpSocket $ipcSocket
-	 */
-	public function __construct($socket, string $password, int $maxClients, \ThreadedLogger $logger, $ipcSocket, ?SleeperNotifier $notifier){
+	public function __construct(\Socket $socket, string $password, int $maxClients, \ThreadedLogger $logger, \Socket $ipcSocket, ?SleeperNotifier $notifier){
 		$this->stop = false;
 		$this->cmd = "";
 		$this->response = "";
@@ -100,12 +88,9 @@ class RCONInstance extends Thread{
 	}
 
 	/**
-	 * @param \Socket|resource $client
-	 * @phpstan-param PhpSocket $client
-	 *
 	 * @return int|false
 	 */
-	private function writePacket($client, int $requestID, int $packetType, string $payload){
+	private function writePacket(\Socket $client, int $requestID, int $packetType, string $payload){
 		$pk = Binary::writeLInt($requestID)
 			. Binary::writeLInt($packetType)
 			. $payload
@@ -114,15 +99,13 @@ class RCONInstance extends Thread{
 	}
 
 	/**
-	 * @param \Socket|resource $client
 	 * @param int      $requestID reference parameter
 	 * @param int      $packetType reference parameter
 	 * @param string   $payload reference parameter
-	 * @phpstan-param PhpSocket $client
 	 *
 	 * @return bool
 	 */
-	private function readPacket($client, ?int &$requestID, ?int &$packetType, ?string &$payload){
+	private function readPacket(\Socket $client, ?int &$requestID, ?int &$packetType, ?string &$payload){
 		$d = @socket_read($client, 4);
 
 		socket_getpeername($client, $ip, $port);
@@ -176,8 +159,8 @@ class RCONInstance extends Thread{
 		$this->registerClassLoader();
 
 		/**
-		 * @var \Socket[]|resource[] $clients
-		 * @phpstan-var array<int, PhpSocket> $clients
+		 * @var \Socket[] $clients
+		 * @phpstan-var array<int, \Socket> $clients
 		 */
 		$clients = [];
 		/** @var bool[] $authenticated */
@@ -277,11 +260,7 @@ class RCONInstance extends Thread{
 		}
 	}
 
-	/**
-	 * @param \Socket|resource $client
-	 * @phpstan-param PhpSocket $client
-	 */
-	private function disconnectClient($client) : void{
+	private function disconnectClient(\Socket $client) : void{
 		socket_getpeername($client, $ip, $port);
 		@socket_set_option($client, SOL_SOCKET, SO_LINGER, ["l_onoff" => 1, "l_linger" => 1]);
 		@socket_shutdown($client, 2);
