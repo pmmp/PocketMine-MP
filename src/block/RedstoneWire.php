@@ -23,11 +23,30 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Item;
+use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\world\BlockTransaction;
 
 class RedstoneWire extends Flowable{
 	use AnalogRedstoneSignalEmitterTrait;
+
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		$down = $this->getSide(Facing::DOWN);
+		if($down->isSolid()){
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		}
+
+		return false;
+	}
+
+	public function onNearbyBlockChange() : void{
+		if($this->getSide(Facing::DOWN)->isTransparent()){
+			$this->position->getWorld()->useBreakOn($this->position);
+		}
+	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->signalStrength = BlockDataSerializer::readBoundedInt("signalStrength", $stateMeta, 0, 15);
