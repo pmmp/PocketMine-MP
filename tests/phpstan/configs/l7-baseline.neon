@@ -76,11 +76,6 @@ parameters:
 			path: ../../../src/pocketmine/PocketMine.php
 
 		-
-			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to int\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/Server.php
-
-		-
 			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to string\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Server.php
