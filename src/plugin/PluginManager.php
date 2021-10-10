@@ -178,11 +178,15 @@ class PluginManager{
 			if($loader->canLoadPlugin($path)){
 				$description = $loader->getPluginDescription($path);
 				if($description instanceof PluginDescription){
+					$language = $this->server->getLanguage();
 					$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_load($description->getFullName())));
 
 					$dataFolder = $this->getDataDirectory($path, $description->getName());
 					if(file_exists($dataFolder) and !is_dir($dataFolder)){
-						$this->server->getLogger()->error("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory");
+						$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+							$description->getName(),
+							KnownTranslationFactory::pocketmine_plugin_badDataFolder($dataFolder)
+						)));
 						return null;
 					}
 					if(!file_exists($dataFolder)){
@@ -194,11 +198,17 @@ class PluginManager{
 
 					$mainClass = $description->getMain();
 					if(!class_exists($mainClass, true)){
-						$this->server->getLogger()->error("Main class for plugin " . $description->getName() . " not found");
+						$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+							$description->getName(),
+							KnownTranslationFactory::pocketmine_plugin_mainClassNotFound()
+						)));
 						return null;
 					}
 					if(!is_a($mainClass, Plugin::class, true)){
-						$this->server->getLogger()->error("Main class for plugin " . $description->getName() . " is not an instance of " . Plugin::class);
+						$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+							$description->getName(),
+							KnownTranslationFactory::pocketmine_plugin_mainClassWrongType(Plugin::class)
+						)));
 						return null;
 					}
 
@@ -316,7 +326,7 @@ class PluginManager{
 				if($this->graylist !== null and !$this->graylist->isAllowed($name)){
 					$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 						$name,
-						"Disallowed by graylist"
+						$this->graylist->isWhitelist() ? KnownTranslationFactory::pocketmine_plugin_disallowedByWhitelist() : KnownTranslationFactory::pocketmine_plugin_disallowedByBlacklist()
 					)));
 					continue;
 				}
@@ -381,8 +391,6 @@ class PluginManager{
 					$loadedThisLoop++;
 					if(($plugin = $this->loadPlugin($file, $loaders)) instanceof Plugin){
 						$loadedPlugins[$name] = $plugin;
-					}else{
-						$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_genericLoadError($name)));
 					}
 				}
 			}
