@@ -115,7 +115,7 @@ class Bamboo extends Transparent{
 		return 12 + (self::getOffsetSeed($x, 0, $z) % 5);
 	}
 
-	public function getPositionOffset() : ?Vector3{
+	public function getModelPositionOffset() : ?Vector3{
 		$seed = self::getOffsetSeed($this->position->getFloorX(), 0, $this->position->getFloorZ());
 		$retX = (($seed % 12) + 1) / 16;
 		$retZ = ((($seed >> 8) % 12) + 1) / 16;
