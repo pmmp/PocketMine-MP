@@ -36,8 +36,8 @@ class RedstoneWire extends Flowable{
 	use AnalogRedstoneSignalEmitterTrait;
 
 	private function canBeSupportedBy(Block $block) : bool{
-		if($block instanceof Slab) {
-			if ($block->getSlabType()->equals(SlabType::BOTTOM())) {
+		if($block instanceof Slab){
+			if($block->getSlabType()->equals(SlabType::BOTTOM())){
 				return false;
 			}
 			return true;
@@ -53,7 +53,7 @@ class RedstoneWire extends Flowable{
 			$block instanceof Melon ||
 			$block instanceof SeaLantern ||
 			$block instanceof Slime
-		) {
+		){
 			return true;
 		}
 		return !$block->isTransparent();
