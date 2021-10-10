@@ -23,19 +23,44 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SlabType;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class RedstoneWire extends Flowable{
 	use AnalogRedstoneSignalEmitterTrait;
 
+	private function canBeSupportedBy(Block $block) : bool{
+		if($block instanceof Slab) {
+			if ($block->getSlabType()->equals(SlabType::BOTTOM())) {
+				return false;
+			}
+			return true;
+		}
+		if($block instanceof Beacon ||
+			$block instanceof Glass ||
+			$block instanceof Farmland ||
+			$block instanceof Glowstone ||
+			$block instanceof GrassPath ||
+			$block instanceof HardenedGlass ||
+			$block instanceof Hopper ||
+			$block instanceof Ice ||
+			$block instanceof Melon ||
+			$block instanceof SeaLantern ||
+			$block instanceof Slime
+		) {
+			return true;
+		}
+		return !$block->isTransparent();
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		if($down->isSolid()){
+		if($this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -43,7 +68,7 @@ class RedstoneWire extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
