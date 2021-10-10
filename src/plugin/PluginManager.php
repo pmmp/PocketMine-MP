@@ -32,6 +32,7 @@ use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\event\RegisteredListener;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
@@ -128,6 +129,47 @@ class PluginManager{
 		return Path::join(dirname($pluginPath), $pluginName);
 	}
 
+	private function checkPluginLoadability(PluginDescription $description) : Translatable|string|null{
+		$name = $description->getName();
+		if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
+			return KnownTranslationFactory::pocketmine_plugin_restrictedName();
+		}
+
+		foreach($description->getCompatibleApis() as $api){
+			if(!VersionString::isValidBaseVersion($api)){
+				return KnownTranslationFactory::pocketmine_plugin_invalidAPI($api);
+			}
+		}
+
+		if(!ApiVersion::isCompatible($this->server->getApiVersion(), $description->getCompatibleApis())){
+			return KnownTranslationFactory::pocketmine_plugin_incompatibleAPI(implode(", ", $description->getCompatibleApis()));
+		}
+
+		$ambiguousVersions = ApiVersion::checkAmbiguousVersions($description->getCompatibleApis());
+		if(count($ambiguousVersions) > 0){
+			return KnownTranslationFactory::pocketmine_plugin_ambiguousMinAPI(implode(", ", $ambiguousVersions));
+		}
+
+		if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
+			return KnownTranslationFactory::pocketmine_plugin_incompatibleOS(implode(", ", $description->getCompatibleOperatingSystems()));
+		}
+
+		if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
+			$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
+			if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
+				return KnownTranslationFactory::pocketmine_plugin_incompatibleProtocol(implode(", ", $pluginMcpeProtocols));
+			}
+		}
+
+		try{
+			$description->checkRequiredExtensions();
+		}catch(PluginException $ex){
+			return $ex->getMessage();
+		}
+
+		return null;
+	}
+
 	/**
 	 * @param PluginLoader[] $loaders
 	 */
@@ -137,12 +179,6 @@ class PluginManager{
 				$description = $loader->getPluginDescription($path);
 				if($description instanceof PluginDescription){
 					$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_load($description->getFullName())));
-					try{
-						$description->checkRequiredExtensions();
-					}catch(PluginException $ex){
-						$this->server->getLogger()->error($ex->getMessage());
-						return null;
-					}
 
 					$dataFolder = $this->getDataDirectory($path, $description->getName());
 					if(file_exists($dataFolder) and !is_dir($dataFolder)){
@@ -262,12 +298,10 @@ class PluginManager{
 				}
 
 				$name = $description->getName();
-				if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
-					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, KnownTranslationFactory::pocketmine_plugin_restrictedName())));
+
+				if(($loadabilityError = $this->checkPluginLoadability($description)) !== null){
+					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, $loadabilityError)));
 					continue;
-				}
-				if(strpos($name, " ") !== false){
-					$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_spacesDiscouraged($name)));
 				}
 
 				if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
@@ -275,49 +309,8 @@ class PluginManager{
 					continue;
 				}
 
-				foreach($description->getCompatibleApis() as $api){
-					if(!VersionString::isValidBaseVersion($api)){
-						$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
-							$name,
-							KnownTranslationFactory::pocketmine_plugin_invalidAPI($api)
-						)));
-						continue 2;
-					}
-				}
-
-				if(!ApiVersion::isCompatible($this->server->getApiVersion(), $description->getCompatibleApis())){
-					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
-						$name,
-						KnownTranslationFactory::pocketmine_plugin_incompatibleAPI(implode(", ", $description->getCompatibleApis()))
-					)));
-					continue;
-				}
-				$ambiguousVersions = ApiVersion::checkAmbiguousVersions($description->getCompatibleApis());
-				if(count($ambiguousVersions) > 0){
-					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
-						$name,
-						KnownTranslationFactory::pocketmine_plugin_ambiguousMinAPI(implode(", ", $ambiguousVersions))
-					)));
-					continue;
-				}
-
-				if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
-					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
-						$name,
-						KnownTranslationFactory::pocketmine_plugin_incompatibleOS(implode(", ", $description->getCompatibleOperatingSystems()))
-					)));
-					continue;
-				}
-
-				if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
-					$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
-					if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
-						$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
-							$name,
-							KnownTranslationFactory::pocketmine_plugin_incompatibleProtocol(implode(", ", $pluginMcpeProtocols))
-						)));
-						continue;
-					}
+				if(strpos($name, " ") !== false){
+					$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_spacesDiscouraged($name)));
 				}
 
 				if($this->graylist !== null and !$this->graylist->isAllowed($name)){
