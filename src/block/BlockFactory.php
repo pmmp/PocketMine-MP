@@ -183,6 +183,7 @@ class BlockFactory{
 		$this->register(new EnderChest(new BID(Ids::ENDER_CHEST, 0, null, TileEnderChest::class), "Ender Chest", new BlockBreakInfo(22.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 3000.0)));
 		$this->register(new Farmland(new BID(Ids::FARMLAND, 0), "Farmland", new BlockBreakInfo(0.6, BlockToolType::SHOVEL)));
 		$this->register(new Fire(new BID(Ids::FIRE, 0), "Fire Block", BlockBreakInfo::instant()));
+		$this->register(new FletchingTable(new BID(Ids::FLETCHING_TABLE, 0), "Fletching Table", new BlockBreakInfo(2.5, BlockToolType::AXE, 0, 2.5)));
 		$this->register(new Flower(new BID(Ids::DANDELION, 0), "Dandelion", BlockBreakInfo::instant()));
 		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_ALLIUM), "Allium", BlockBreakInfo::instant()));
 		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_AZURE_BLUET), "Azure Bluet", BlockBreakInfo::instant()));
@@ -567,7 +568,6 @@ class BlockFactory{
 		//TODO: minecraft:dropper
 		//TODO: minecraft:end_gateway
 		//TODO: minecraft:end_portal
-		//TODO: minecraft:fletching_table
 		//TODO: minecraft:grindstone
 		//TODO: minecraft:jigsaw
 		//TODO: minecraft:kelp
