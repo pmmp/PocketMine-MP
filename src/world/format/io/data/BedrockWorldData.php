@@ -39,6 +39,7 @@ use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
+use Webmozart\PathUtil\Path;
 use function file_get_contents;
 use function file_put_contents;
 use function strlen;
@@ -101,7 +102,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 
 		$nbt = new LittleEndianNbtSerializer();
 		$buffer = $nbt->write(new TreeRoot($worldData));
-		file_put_contents($path . "level.dat", Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
+		file_put_contents(Path::join($path, "level.dat"), Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 	}
 
 	protected function load() : CompoundTag{

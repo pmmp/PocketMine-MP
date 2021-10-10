@@ -41,11 +41,6 @@ parameters:
 			path: ../../../src/ServerConfigGroup.php
 
 		-
-			message: "#^Parameter \\#1 \\$string of function strtolower expects string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/ServerConfigGroup.php
-
-		-
 			message: "#^Cannot access offset 'git' on mixed\\.$#"
 			count: 2
 			path: ../../../src/VersionInfo.php
@@ -169,6 +164,11 @@ parameters:
 			message: "#^Method pocketmine\\\\timings\\\\TimingsHandler\\:\\:time\\(\\) should return TClosureReturn but returns TClosureReturn\\.$#"
 			count: 1
 			path: ../../../src/timings/TimingsHandler.php
+
+		-
+			message: "#^Parameter \\#1 \\$config of static method pocketmine\\\\utils\\\\Config\\:\\:writeProperties\\(\\) expects array\\<string, bool\\|float\\|int\\|string\\>, array\\<string, mixed\\> given\\.$#"
+			count: 1
+			path: ../../../src/utils/Config.php
 
 		-
 			message: "#^Parameter \\#2 \\$offset of function substr expects int, mixed given\\.$#"
