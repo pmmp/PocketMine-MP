@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator;
 
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\LegacyStringToItemParserException;
 use function array_map;
@@ -99,7 +100,7 @@ final class FlatGeneratorOptions{
 	public static function parsePreset(string $presetString) : self{
 		$preset = explode(";", $presetString);
 		$blocks = $preset[1] ?? "";
-		$biomeId = (int) ($preset[2] ?? 1);
+		$biomeId = (int) ($preset[2] ?? BiomeIds::PLAINS);
 		$optionsString = $preset[3] ?? "";
 		$structure = self::parseLayers($blocks);
 
