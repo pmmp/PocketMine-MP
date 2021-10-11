@@ -106,6 +106,7 @@ use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProviderManagerEntry;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
+use pocketmine\world\generator\normal\Normal;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
@@ -979,7 +980,7 @@ class Server{
 
 					if(isset($options["generator"])){
 						$generatorOptions = explode(":", $options["generator"]);
-						$creationOptions->setGeneratorClass(GeneratorManager::getInstance()->getGenerator(array_shift($generatorOptions)));
+						$creationOptions->setGeneratorClass(GeneratorManager::getInstance()->getGenerator(array_shift($generatorOptions)) ?? Normal::class);
 						if(count($generatorOptions) > 0){
 							$creationOptions->setGeneratorOptions(implode(":", $generatorOptions));
 						}
@@ -1010,7 +1011,7 @@ class Server{
 				}
 				if(!$this->worldManager->loadWorld($default, true)){
 					$creationOptions = WorldCreationOptions::create()
-						->setGeneratorClass(GeneratorManager::getInstance()->getGenerator($this->configGroup->getConfigString("level-type")))
+						->setGeneratorClass(GeneratorManager::getInstance()->getGenerator($this->configGroup->getConfigString("level-type")) ?? Normal::class)
 						->setGeneratorOptions($this->configGroup->getConfigString("generator-settings"));
 					$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
 					if($convertedSeed !== null){

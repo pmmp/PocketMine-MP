@@ -220,9 +220,8 @@ class WorldManager{
 			)));
 			return false;
 		}
-		try{
-			GeneratorManager::getInstance()->getGenerator($provider->getWorldData()->getGenerator(), true);
-		}catch(\InvalidArgumentException $e){
+
+		if(GeneratorManager::getInstance()->getGenerator($provider->getWorldData()->getGenerator()) === null){
 			$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_loadError(
 				$name,
 				KnownTranslationFactory::pocketmine_level_unknownGenerator($provider->getWorldData()->getGenerator())

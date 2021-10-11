@@ -79,20 +79,11 @@ final class GeneratorManager{
 	 *
 	 * @param bool   $throwOnMissing @deprecated this is for backwards compatibility only
 	 *
-	 * @return string Name of class that extends Generator
-	 * @phpstan-return class-string<Generator>
-	 *
-	 * @throws \InvalidArgumentException if the generator type isn't registered
+	 * @return string|null Name of class that extends Generator, or null if no generator is mapped to that name
+	 * @phpstan-return class-string<Generator>|null
 	 */
-	public function getGenerator(string $name, bool $throwOnMissing = false){
-		if(isset($this->list[$name = strtolower($name)])){
-			return $this->list[$name];
-		}
-
-		if($throwOnMissing){
-			throw new \InvalidArgumentException("Alias \"$name\" does not map to any known generator");
-		}
-		return Normal::class;
+	public function getGenerator(string $name, bool $throwOnMissing = false) : ?string{
+		return $this->list[strtolower($name)] ?? null;
 	}
 
 	/**
