@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\event\EventPriority;
 use pocketmine\event\HandlerListManager;
@@ -60,6 +61,7 @@ use function is_subclass_of;
 use function iterator_to_array;
 use function mkdir;
 use function shuffle;
+use function sprintf;
 use function stripos;
 use function strpos;
 use function strtolower;
@@ -528,6 +530,14 @@ class PluginManager{
 
 			$handleCancelled = false;
 			if(isset($tags[ListenerMethodTags::HANDLE_CANCELLED])){
+				if(!is_a($eventClass, Cancellable::class, true)){
+					throw new PluginException(sprintf(
+						"Event handler %s() declares @%s for non-cancellable event of type %s",
+						Utils::getNiceClosureName($handlerClosure),
+						ListenerMethodTags::HANDLE_CANCELLED,
+						$eventClass
+					));
+				}
 				switch(strtolower($tags[ListenerMethodTags::HANDLE_CANCELLED])){
 					case "true":
 					case "":
