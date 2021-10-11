@@ -39,32 +39,22 @@ use function preg_match;
 use function preg_match_all;
 
 class Flat extends Generator{
+
 	/** @var Chunk */
 	private $chunk;
 	/** @var Populator[] */
 	private $populators = [];
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private $structure;
-	/** @var int */
-	private $biome;
 
-	/**
-	 * @var mixed[]
-	 * @phpstan-var array<string, mixed>
-	 */
-	private array $options = [];
+	private FlatGeneratorOptions $options;
 
 	/**
 	 * @throws InvalidGeneratorOptionsException
 	 */
 	public function __construct(int $seed, string $preset){
 		parent::__construct($seed, $preset !== "" ? $preset : "2;bedrock,2xdirt,grass;1;");
-		$this->parsePreset();
+		$this->options = FlatGeneratorOptions::parsePreset($this->preset);
 
-		if(isset($this->options["decoration"])){
+		if(isset($this->options->getExtraOptions()["decoration"])){
 			$ores = new Ore();
 			$stone = VanillaBlocks::STONE();
 			$ores->setOreTypes([
@@ -83,76 +73,22 @@ class Flat extends Generator{
 		$this->generateBaseChunk();
 	}
 
-	/**
-	 * @return int[]
-	 * @phpstan-return array<int, int>
-	 *
-	 * @throws InvalidGeneratorOptionsException
-	 */
-	public static function parseLayers(string $layers) : array{
-		$result = [];
-		$split = array_map('\trim', explode(',', $layers));
-		$y = 0;
-		$itemParser = LegacyStringToItemParser::getInstance();
-		foreach($split as $line){
-			preg_match('#^(?:(\d+)[x|*])?(.+)$#', $line, $matches);
-			if(count($matches) !== 3){
-				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\"");
-			}
-
-			$cnt = $matches[1] !== "" ? (int) $matches[1] : 1;
-			try{
-				$b = $itemParser->parse($matches[2])->getBlock();
-			}catch(LegacyStringToItemParserException $e){
-				throw new InvalidGeneratorOptionsException("Invalid preset layer \"$line\": " . $e->getMessage(), 0, $e);
-			}
-			for($cY = $y, $y += $cnt; $cY < $y; ++$cY){
-				$result[$cY] = $b->getFullId();
-			}
-		}
-
-		return $result;
-	}
-
-	protected function parsePreset() : void{
-		$preset = explode(";", $this->preset);
-		$blocks = $preset[1] ?? "";
-		$this->biome = (int) ($preset[2] ?? 1);
-		$options = $preset[3] ?? "";
-		$this->structure = self::parseLayers($blocks);
-
-		//TODO: more error checking
-		preg_match_all('#(([0-9a-z_]{1,})\(?([0-9a-z_ =:]{0,})\)?),?#', $options, $matches);
-		foreach($matches[2] as $i => $option){
-			$params = true;
-			if($matches[3][$i] !== ""){
-				$params = [];
-				$p = explode(" ", $matches[3][$i]);
-				foreach($p as $k){
-					$k = explode("=", $k);
-					if(isset($k[1])){
-						$params[$k[0]] = $k[1];
-					}
-				}
-			}
-			$this->options[$option] = $params;
-		}
-	}
-
 	protected function generateBaseChunk() : void{
 		$this->chunk = new Chunk();
 
+		$biomeId = $this->options->getBiomeId();
 		for($Z = 0; $Z < Chunk::EDGE_LENGTH; ++$Z){
 			for($X = 0; $X < Chunk::EDGE_LENGTH; ++$X){
-				$this->chunk->setBiomeId($X, $Z, $this->biome);
+				$this->chunk->setBiomeId($X, $Z, $biomeId);
 			}
 		}
 
-		$count = count($this->structure);
+		$structure = $this->options->getStructure();
+		$count = count($structure);
 		for($sy = 0; $sy < $count; $sy += SubChunk::EDGE_LENGTH){
 			$subchunk = $this->chunk->getSubChunk($sy >> SubChunk::COORD_BIT_SIZE);
-			for($y = 0; $y < SubChunk::EDGE_LENGTH and isset($this->structure[$y | $sy]); ++$y){
-				$id = $this->structure[$y | $sy];
+			for($y = 0; $y < SubChunk::EDGE_LENGTH and isset($structure[$y | $sy]); ++$y){
+				$id = $structure[$y | $sy];
 
 				for($Z = 0; $Z < SubChunk::EDGE_LENGTH; ++$Z){
 					for($X = 0; $X < SubChunk::EDGE_LENGTH; ++$X){
