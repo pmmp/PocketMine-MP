@@ -269,7 +269,7 @@ class PluginManager{
 	 * @param string[]|null $newLoaders
 	 * @phpstan-param list<class-string<PluginLoader>> $newLoaders
 	 */
-	public function triagePlugins(string $directory, PluginLoadTriage $triage, ?array $newLoaders = null) : void{
+	private function triagePlugins(string $directory, PluginLoadTriage $triage, ?array $newLoaders = null) : void{
 		if(!is_dir($directory)){
 			return;
 		}
