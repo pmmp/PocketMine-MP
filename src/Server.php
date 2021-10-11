@@ -992,7 +992,7 @@ class Server{
 				}elseif(!is_array($options)){
 					continue;
 				}
-				if(!$this->worldManager->loadWorld($name, true)){
+				if(!$this->worldManager->loadWorld($name, true) && !$this->worldManager->isWorldGenerated($name)){
 					$creationOptions = WorldCreationOptions::create();
 					//TODO: error checking
 
@@ -1028,7 +1028,7 @@ class Server{
 					$default = "world";
 					$this->configGroup->setConfigString("level-name", "world");
 				}
-				if(!$this->worldManager->loadWorld($default, true)){
+				if(!$this->worldManager->loadWorld($default, true) && !$this->worldManager->isWorldGenerated($default)){
 					$generatorName = $this->configGroup->getConfigString("level-type");
 					$generatorOptions = $this->configGroup->getConfigString("generator-settings");
 					$generatorClass = $getGenerator($generatorName, $generatorOptions, $default);
