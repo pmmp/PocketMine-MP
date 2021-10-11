@@ -142,10 +142,10 @@ final class ItemTranslator{
 	}
 
 	/**
-	 * @return int[]
-	 * @phpstan-return array{int, int}
+	 * @return int[]|null
+	 * @phpstan-return array{int, int}|null
 	 */
-	public function toNetworkId(int $internalId, int $internalMeta) : array{
+	public function toNetworkIdQuiet(int $internalId, int $internalMeta) : ?array{
 		if($internalMeta === -1){
 			$internalMeta = 0x7fff;
 		}
@@ -156,7 +156,16 @@ final class ItemTranslator{
 			return [$this->simpleCoreToNetMapping[$internalId], $internalMeta];
 		}
 
-		throw new \InvalidArgumentException("Unmapped ID/metadata combination $internalId:$internalMeta");
+		return null;
+	}
+
+	/**
+	 * @return int[]
+	 * @phpstan-return array{int, int}
+	 */
+	public function toNetworkId(int $internalId, int $internalMeta) : array{
+		return $this->toNetworkIdQuiet($internalId, $internalMeta) ??
+			throw new \InvalidArgumentException("Unmapped ID/metadata combination $internalId:$internalMeta");
 	}
 
 	/**
