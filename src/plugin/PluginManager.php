@@ -451,7 +451,6 @@ class PluginManager{
 								KnownTranslationFactory::pocketmine_plugin_unknownDependency(implode(", ", $unknownDependencies))
 							)));
 							unset($triage->plugins[$name]);
-							continue;
 						}
 					}
 				}
