@@ -25,8 +25,8 @@ namespace pocketmine\plugin;
 
 final class PluginLoadTriage{
 	/**
-	 * @var string[]
-	 * @phpstan-var array<string, string>
+	 * @var PluginLoadTriageEntry[]
+	 * @phpstan-var array<string, PluginLoadTriageEntry>
 	 */
 	public $plugins = [];
 	/**
