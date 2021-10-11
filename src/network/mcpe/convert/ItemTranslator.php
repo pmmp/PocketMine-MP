@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\data\bedrock\LegacyItemIdToStringIdMap;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
@@ -76,10 +77,7 @@ final class ItemTranslator{
 		if($legacyStringToIntMapRaw === false){
 			throw new AssumptionFailedError("Missing required resource file");
 		}
-		$legacyStringToIntMap = json_decode($legacyStringToIntMapRaw, true);
-		if(!is_array($legacyStringToIntMap)){
-			throw new AssumptionFailedError("Invalid mapping table format");
-		}
+		$legacyStringToIntMap = LegacyItemIdToStringIdMap::getInstance();
 
 		/** @phpstan-var array<string, int> $simpleMappings */
 		$simpleMappings = [];
@@ -87,13 +85,14 @@ final class ItemTranslator{
 			if(!is_string($oldId) || !is_string($newId)){
 				throw new AssumptionFailedError("Invalid item table format");
 			}
-			if(!isset($legacyStringToIntMap[$oldId])){
+			$intId = $legacyStringToIntMap->stringToLegacy($oldId);
+			if($intId === null){
 				//new item without a fixed legacy ID - we can't handle this right now
 				continue;
 			}
-			$simpleMappings[$newId] = $legacyStringToIntMap[$oldId];
+			$simpleMappings[$newId] = $intId;
 		}
-		foreach($legacyStringToIntMap as $stringId => $intId){
+		foreach($legacyStringToIntMap->getStringToLegacyMap() as $stringId => $intId){
 			if(isset($simpleMappings[$stringId])){
 				throw new \UnexpectedValueException("Old ID $stringId collides with new ID");
 			}
@@ -110,7 +109,12 @@ final class ItemTranslator{
 				if(!is_numeric($meta) || !is_string($newId)){
 					throw new AssumptionFailedError("Invalid item table format");
 				}
-				$complexMappings[$newId] = [$legacyStringToIntMap[$oldId], (int) $meta];
+				$intId = $legacyStringToIntMap->stringToLegacy($oldId);
+				if($intId === null){
+					//new item without a fixed legacy ID - we can't handle this right now
+					continue;
+				}
+				$complexMappings[$newId] = [$intId, (int) $meta];
 			}
 		}
 
