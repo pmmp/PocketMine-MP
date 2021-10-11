@@ -1575,6 +1575,14 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function pocketmine_level_invalidGeneratorOptions(Translatable|string $preset, Translatable|string $generatorName, Translatable|string $details) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_INVALIDGENERATOROPTIONS, [
+			"preset" => $preset,
+			"generatorName" => $generatorName,
+			"details" => $details,
+		]);
+	}
+
 	public static function pocketmine_level_loadError(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_LOADERROR, [
 			0 => $param0,

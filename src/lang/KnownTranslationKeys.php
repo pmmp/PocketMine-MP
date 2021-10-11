@@ -338,6 +338,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_LEVEL_CORRUPTED = "pocketmine.level.corrupted";
 	public const POCKETMINE_LEVEL_DEFAULTERROR = "pocketmine.level.defaultError";
 	public const POCKETMINE_LEVEL_GENERATIONERROR = "pocketmine.level.generationError";
+	public const POCKETMINE_LEVEL_INVALIDGENERATOROPTIONS = "pocketmine.level.invalidGeneratorOptions";
 	public const POCKETMINE_LEVEL_LOADERROR = "pocketmine.level.loadError";
 	public const POCKETMINE_LEVEL_NOTFOUND = "pocketmine.level.notFound";
 	public const POCKETMINE_LEVEL_PREPARING = "pocketmine.level.preparing";

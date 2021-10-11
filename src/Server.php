@@ -106,6 +106,7 @@ use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProviderManagerEntry;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
+use pocketmine\world\generator\InvalidGeneratorOptionsException;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
@@ -964,15 +965,25 @@ class Server{
 			$this->pluginManager->loadPlugins($this->pluginPath);
 			$this->enablePlugins(PluginEnableOrder::STARTUP());
 
-			$getGenerator = function(string $generatorName, string $worldName) : ?string{
-				$generatorClass = GeneratorManager::getInstance()->getGenerator($generatorName);
-				if($generatorClass === null){
+			$getGenerator = function(string $generatorName, string $generatorOptions, string $worldName) : ?string{
+				$generatorEntry = GeneratorManager::getInstance()->getGenerator($generatorName);
+				if($generatorEntry === null){
 					$this->logger->error($this->language->translate(KnownTranslationFactory::pocketmine_level_generationError(
 						$worldName,
 						KnownTranslationFactory::pocketmine_level_unknownGenerator($generatorName)
 					)));
+					return null;
 				}
-				return $generatorClass;
+				try{
+					$generatorEntry->validateGeneratorOptions($generatorOptions);
+				}catch(InvalidGeneratorOptionsException $e){
+					$this->logger->error($this->language->translate(KnownTranslationFactory::pocketmine_level_generationError(
+						$worldName,
+						KnownTranslationFactory::pocketmine_level_invalidGeneratorOptions($generatorOptions, $generatorName, $e->getMessage())
+					)));
+					return null;
+				}
+				return $generatorEntry->getGeneratorClass();
 			};
 
 			foreach((array) $this->configGroup->getProperty("worlds", []) as $name => $options){
@@ -985,19 +996,20 @@ class Server{
 					$creationOptions = WorldCreationOptions::create();
 					//TODO: error checking
 
-					if(isset($options["generator"])){
-						$generatorClass = $getGenerator($options["generator"], $name);
-						if($generatorClass === null){
-							continue;
-						}
-						$creationOptions->setGeneratorClass($generatorClass);
+					$generatorName = $options["generator"] ?? "default";
+					$generatorOptions = isset($options["preset"]) && is_string($options["preset"]) ? $options["preset"] : "";
+
+					$generatorClass = $getGenerator($generatorName, $generatorOptions, $name);
+					if($generatorClass === null){
+						continue;
 					}
+					$creationOptions->setGeneratorClass($generatorClass);
+					$creationOptions->setGeneratorOptions($generatorOptions);
+
 					if(isset($options["difficulty"]) && is_string($options["difficulty"])){
 						$creationOptions->setDifficulty(World::getDifficultyFromString($options["difficulty"]));
 					}
-					if(isset($options["preset"]) && is_string($options["preset"])){
-						$creationOptions->setGeneratorOptions($options["preset"]);
-					}
+
 					if(isset($options["seed"])){
 						$convertedSeed = Generator::convertSeed((string) ($options["seed"] ?? ""));
 						if($convertedSeed !== null){
@@ -1017,11 +1029,13 @@ class Server{
 					$this->configGroup->setConfigString("level-name", "world");
 				}
 				if(!$this->worldManager->loadWorld($default, true)){
-					$generatorClass = $getGenerator($this->configGroup->getConfigString("level-type"), $default);
+					$generatorName = $this->configGroup->getConfigString("level-type");
+					$generatorOptions = $this->configGroup->getConfigString("generator-settings");
+					$generatorClass = $getGenerator($generatorName, $generatorOptions, $default);
 					if($generatorClass !== null){
 						$creationOptions = WorldCreationOptions::create()
 							->setGeneratorClass($generatorClass)
-							->setGeneratorOptions($this->configGroup->getConfigString("generator-settings"));
+							->setGeneratorOptions($generatorOptions);
 						$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
 						if($convertedSeed !== null){
 							$creationOptions->setSeed($convertedSeed);

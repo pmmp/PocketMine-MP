@@ -115,7 +115,7 @@ class FormatConverter{
 		$this->newProvider->generate($convertedOutput, $data->getName(), WorldCreationOptions::create()
 			//TODO: defaulting to NORMAL here really isn't very good behaviour, but it's consistent with what we already
 			//did previously; besides, WorldManager checks for unknown generators before this is reached anyway.
-			->setGeneratorClass(GeneratorManager::getInstance()->getGenerator($data->getGenerator()) ?? Normal::class)
+			->setGeneratorClass(GeneratorManager::getInstance()->getGenerator($data->getGenerator())?->getGeneratorClass() ?? Normal::class)
 			->setGeneratorOptions($data->getGeneratorOptions())
 			->setSeed($data->getSeed())
 			->setSpawnPosition($data->getSpawn())
