@@ -530,6 +530,7 @@ final class StringToItemParser{
 		$result->registerBlock("fence_gate_spruce", fn() => VanillaBlocks::SPRUCE_FENCE_GATE());
 		$result->registerBlock("fern", fn() => VanillaBlocks::FERN());
 		$result->registerBlock("fire", fn() => VanillaBlocks::FIRE());
+		$result->registerBlock("fletching_table", fn() => VanillaBlocks::FLETCHING_TABLE());
 		$result->registerBlock("flower_pot", fn() => VanillaBlocks::FLOWER_POT());
 		$result->registerBlock("flower_pot_block", fn() => VanillaBlocks::FLOWER_POT());
 		$result->registerBlock("flowing_lava", fn() => VanillaBlocks::LAVA());
