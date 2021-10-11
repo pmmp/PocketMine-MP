@@ -62,7 +62,6 @@ final class FlatGeneratorOptions{
 	 */
 	public function getExtraOptions() : array{ return $this->extraOptions; }
 
-
 	/**
 	 * @return int[]
 	 * @phpstan-return array<int, int>

@@ -24,19 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\world\generator;
 
 use pocketmine\block\VanillaBlocks;
-use pocketmine\item\LegacyStringToItemParser;
-use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\generator\object\OreType;
 use pocketmine\world\generator\populator\Ore;
 use pocketmine\world\generator\populator\Populator;
-use function array_map;
 use function count;
-use function explode;
-use function preg_match;
-use function preg_match_all;
 
 class Flat extends Generator{
 
