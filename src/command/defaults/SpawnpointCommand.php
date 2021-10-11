@@ -26,7 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use pocketmine\world\Position;
@@ -39,10 +40,10 @@ class SpawnpointCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.spawnpoint.description",
-			"%commands.spawnpoint.usage"
+			KnownTranslationFactory::pocketmine_command_spawnpoint_description(),
+			KnownTranslationFactory::commands_spawnpoint_usage()
 		);
-		$this->setPermission("pocketmine.command.spawnpoint");
+		$this->setPermission(DefaultPermissionNames::COMMAND_SPAWNPOINT);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -63,7 +64,7 @@ class SpawnpointCommand extends VanillaCommand{
 		}else{
 			$target = $sender->getServer()->getPlayerByPrefix($args[0]);
 			if($target === null){
-				$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.generic.player.notFound"));
+				$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 
 				return true;
 			}
@@ -77,7 +78,7 @@ class SpawnpointCommand extends VanillaCommand{
 			$z = $this->getRelativeDouble($pos->z, $sender, $args[3]);
 			$target->setSpawn(new Position($x, $y, $z, $world));
 
-			Command::broadcastCommandMessage($sender, new TranslationContainer("commands.spawnpoint.success", [$target->getName(), round($x, 2), round($y, 2), round($z, 2)]));
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_spawnpoint_success($target->getName(), (string) round($x, 2), (string) round($y, 2), (string) round($z, 2)));
 
 			return true;
 		}elseif(count($args) <= 1){
@@ -86,7 +87,7 @@ class SpawnpointCommand extends VanillaCommand{
 				$pos = Position::fromObject($cpos->floor(), $cpos->getWorld());
 				$target->setSpawn($pos);
 
-				Command::broadcastCommandMessage($sender, new TranslationContainer("commands.spawnpoint.success", [$target->getName(), round($pos->x, 2), round($pos->y, 2), round($pos->z, 2)]));
+				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_spawnpoint_success($target->getName(), (string) round($pos->x, 2), (string) round($pos->y, 2), (string) round($pos->z, 2)));
 				return true;
 			}else{
 				$sender->sendMessage(TextFormat::RED . "Please provide a player!");

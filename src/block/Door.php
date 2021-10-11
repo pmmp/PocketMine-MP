@@ -38,13 +38,9 @@ class Door extends Transparent{
 	use HorizontalFacingTrait;
 	use PoweredByRedstoneTrait;
 
-	/** @var bool */
-	protected $top = false;
-	/** @var bool */
-	protected $hingeRight = false;
-
-	/** @var bool */
-	protected $open = false;
+	protected bool $top = false;
+	protected bool $hingeRight = false;
+	protected bool $open = false;
 
 	protected function writeStateToMeta() : int{
 		if($this->top){
@@ -119,12 +115,13 @@ class Door extends Transparent{
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()->trim($this->open ? Facing::rotateY($this->facing, !$this->hingeRight) : $this->facing, 13 / 16)];
+		//TODO: doors are 0.1825 blocks thick, instead of 0.1875 like JE (https://bugs.mojang.com/browse/MCPE-19214)
+		return [AxisAlignedBB::one()->trim($this->open ? Facing::rotateY($this->facing, !$this->hingeRight) : $this->facing, 327 / 400)];
 	}
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->getId() === BlockLegacyIds::AIR){ //Replace with common break method
-			$this->pos->getWorld()->useBreakOn($this->pos); //this will delete both halves if they exist
+			$this->position->getWorld()->useBreakOn($this->position); //this will delete both halves if they exist
 		}
 	}
 
@@ -150,7 +147,7 @@ class Door extends Transparent{
 			$topHalf = clone $this;
 			$topHalf->top = true;
 
-			$tx->addBlock($blockReplace->pos, $this)->addBlock($blockUp->pos, $topHalf);
+			$tx->addBlock($blockReplace->position, $this)->addBlock($blockUp->position, $topHalf);
 			return true;
 		}
 
@@ -163,11 +160,11 @@ class Door extends Transparent{
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
 		if($other instanceof Door and $other->isSameType($this)){
 			$other->open = $this->open;
-			$this->pos->getWorld()->setBlock($other->pos, $other);
+			$this->position->getWorld()->setBlock($other->position, $other);
 		}
 
-		$this->pos->getWorld()->setBlock($this->pos, $this);
-		$this->pos->getWorld()->addSound($this->pos, new DoorSound());
+		$this->position->getWorld()->setBlock($this->position, $this);
+		$this->position->getWorld()->addSound($this->position, new DoorSound());
 
 		return true;
 	}

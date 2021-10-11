@@ -26,27 +26,25 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format;
 
+use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Tile;
 use pocketmine\data\bedrock\BiomeIds;
-use pocketmine\entity\Entity;
-use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\player\Player;
 use function array_fill;
-use function array_filter;
 use function array_map;
-use function count;
 
 class Chunk{
 	public const DIRTY_FLAG_TERRAIN = 1 << 0;
-	public const DIRTY_FLAG_ENTITIES = 1 << 1;
-	public const DIRTY_FLAG_TILES = 1 << 2;
 	public const DIRTY_FLAG_BIOMES = 1 << 3;
 
 	public const MAX_SUBCHUNKS = 16;
 
+	public const EDGE_LENGTH = SubChunk::EDGE_LENGTH;
+	public const COORD_BIT_SIZE = SubChunk::COORD_BIT_SIZE;
+	public const COORD_MASK = SubChunk::COORD_MASK;
+
 	/** @var int */
-	private $dirtyFlags = 0;
+	private $terrainDirtyFlags = 0;
 
 	/** @var bool|null */
 	protected $lightPopulated = false;
@@ -62,39 +60,25 @@ class Chunk{
 	/** @var Tile[] */
 	protected $tiles = [];
 
-	/** @var Entity[] */
-	protected $entities = [];
-
 	/** @var HeightArray */
 	protected $heightMap;
 
 	/** @var BiomeArray */
 	protected $biomeIds;
 
-	/** @var CompoundTag[]|null */
-	public $NBTtiles;
-
-	/** @var CompoundTag[]|null */
-	public $NBTentities;
-
 	/**
-	 * @param SubChunk[]    $subChunks
-	 * @param CompoundTag[] $entities
-	 * @param CompoundTag[] $tiles
+	 * @param SubChunk[] $subChunks
 	 */
-	public function __construct(array $subChunks = [], ?array $entities = null, ?array $tiles = null, ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null){
+	public function __construct(array $subChunks = [], ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null){
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
 		foreach($this->subChunks as $y => $null){
-			$this->subChunks[$y] = $subChunks[$y] ?? new SubChunk(BlockLegacyIds::AIR << 4, []);
+			$this->subChunks[$y] = $subChunks[$y] ?? new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, []);
 		}
 
-		$val = ($this->subChunks->getSize() * 16);
+		$val = ($this->subChunks->getSize() * SubChunk::EDGE_LENGTH);
 		$this->heightMap = $heightMap ?? new HeightArray(array_fill(0, 256, $val));
 		$this->biomeIds = $biomeIds ?? BiomeArray::fill(BiomeIds::OCEAN);
-
-		$this->NBTtiles = $tiles;
-		$this->NBTentities = $entities;
 	}
 
 	/**
@@ -114,15 +98,15 @@ class Chunk{
 	 * @return int bitmap, (id << 4) | meta
 	 */
 	public function getFullBlock(int $x, int $y, int $z) : int{
-		return $this->getSubChunk($y >> 4)->getFullBlock($x, $y & 0x0f, $z);
+		return $this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->getFullBlock($x, $y & SubChunk::COORD_MASK, $z);
 	}
 
 	/**
 	 * Sets the blockstate at the given coordinate by internal ID.
 	 */
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
-		$this->getSubChunk($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
-		$this->dirtyFlags |= self::DIRTY_FLAG_TERRAIN;
+		$this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->setFullBlock($x, $y & SubChunk::COORD_MASK, $z, $block);
+		$this->terrainDirtyFlags |= self::DIRTY_FLAG_TERRAIN;
 	}
 
 	/**
@@ -137,7 +121,7 @@ class Chunk{
 		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
 			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z);
 			if($height !== null){
-				return $height | ($y << 4);
+				return $height | ($y << SubChunk::COORD_BIT_SIZE);
 			}
 		}
 
@@ -185,7 +169,7 @@ class Chunk{
 	 */
 	public function setBiomeId(int $x, int $z, int $biomeId) : void{
 		$this->biomeIds->set($x, $z, $biomeId);
-		$this->dirtyFlags |= self::DIRTY_FLAG_BIOMES;
+		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BIOMES;
 	}
 
 	public function isLightPopulated() : ?bool{
@@ -202,24 +186,7 @@ class Chunk{
 
 	public function setPopulated(bool $value = true) : void{
 		$this->terrainPopulated = $value;
-		$this->dirtyFlags |= self::DIRTY_FLAG_TERRAIN;
-	}
-
-	public function addEntity(Entity $entity) : void{
-		if($entity->isClosed()){
-			throw new \InvalidArgumentException("Attempted to add a garbage closed Entity to a chunk");
-		}
-		$this->entities[$entity->getId()] = $entity;
-		if(!($entity instanceof Player)){
-			$this->dirtyFlags |= self::DIRTY_FLAG_ENTITIES;
-		}
-	}
-
-	public function removeEntity(Entity $entity) : void{
-		unset($this->entities[$entity->getId()]);
-		if(!($entity instanceof Player)){
-			$this->dirtyFlags |= self::DIRTY_FLAG_ENTITIES;
-		}
+		$this->terrainDirtyFlags |= self::DIRTY_FLAG_TERRAIN;
 	}
 
 	public function addTile(Tile $tile) : void{
@@ -227,34 +194,16 @@ class Chunk{
 			throw new \InvalidArgumentException("Attempted to add a garbage closed Tile to a chunk");
 		}
 
-		$pos = $tile->getPos();
+		$pos = $tile->getPosition();
 		if(isset($this->tiles[$index = Chunk::blockHash($pos->x, $pos->y, $pos->z)]) and $this->tiles[$index] !== $tile){
-			$this->tiles[$index]->close();
+			throw new \InvalidArgumentException("Another tile is already at this location");
 		}
 		$this->tiles[$index] = $tile;
-		$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
 	}
 
 	public function removeTile(Tile $tile) : void{
-		$pos = $tile->getPos();
+		$pos = $tile->getPosition();
 		unset($this->tiles[Chunk::blockHash($pos->x, $pos->y, $pos->z)]);
-		$this->dirtyFlags |= self::DIRTY_FLAG_TILES;
-	}
-
-	/**
-	 * Returns an array of entities currently using this chunk.
-	 *
-	 * @return Entity[]
-	 */
-	public function getEntities() : array{
-		return $this->entities;
-	}
-
-	/**
-	 * @return Entity[]
-	 */
-	public function getSavableEntities() : array{
-		return array_filter($this->entities, function(Entity $entity) : bool{ return $entity->canSaveWithChunk(); });
 	}
 
 	/**
@@ -279,30 +228,9 @@ class Chunk{
 	 * Called when the chunk is unloaded, closing entities and tiles.
 	 */
 	public function onUnload() : void{
-		foreach($this->getEntities() as $entity){
-			if($entity instanceof Player){
-				continue;
-			}
-			$entity->close();
-		}
-
 		foreach($this->getTiles() as $tile){
 			$tile->close();
 		}
-	}
-
-	/**
-	 * @return CompoundTag[]
-	 */
-	public function getNBTtiles() : array{
-		return $this->NBTtiles ?? array_map(function(Tile $tile) : CompoundTag{ return $tile->saveNBT(); }, $this->tiles);
-	}
-
-	/**
-	 * @return CompoundTag[]
-	 */
-	public function getNBTentities() : array{
-		return $this->NBTentities ?? array_map(function(Entity $entity) : CompoundTag{ return $entity->saveNBT(); }, $this->getSavableEntities());
 	}
 
 	public function getBiomeIdArray() : string{
@@ -323,32 +251,32 @@ class Chunk{
 		$this->heightMap = new HeightArray($values);
 	}
 
-	public function isDirty() : bool{
-		return $this->dirtyFlags !== 0 or count($this->tiles) > 0 or count($this->getSavableEntities()) > 0;
+	public function isTerrainDirty() : bool{
+		return $this->terrainDirtyFlags !== 0;
 	}
 
-	public function getDirtyFlag(int $flag) : bool{
-		return ($this->dirtyFlags & $flag) !== 0;
+	public function getTerrainDirtyFlag(int $flag) : bool{
+		return ($this->terrainDirtyFlags & $flag) !== 0;
 	}
 
-	public function getDirtyFlags() : int{
-		return $this->dirtyFlags;
+	public function getTerrainDirtyFlags() : int{
+		return $this->terrainDirtyFlags;
 	}
 
-	public function setDirtyFlag(int $flag, bool $value) : void{
+	public function setTerrainDirtyFlag(int $flag, bool $value) : void{
 		if($value){
-			$this->dirtyFlags |= $flag;
+			$this->terrainDirtyFlags |= $flag;
 		}else{
-			$this->dirtyFlags &= ~$flag;
+			$this->terrainDirtyFlags &= ~$flag;
 		}
 	}
 
-	public function setDirty() : void{
-		$this->dirtyFlags = ~0;
+	public function setTerrainDirty() : void{
+		$this->terrainDirtyFlags = ~0;
 	}
 
-	public function clearDirtyFlags() : void{
-		$this->dirtyFlags = 0;
+	public function clearTerrainDirtyFlags() : void{
+		$this->terrainDirtyFlags = 0;
 	}
 
 	public function getSubChunk(int $y) : SubChunk{
@@ -366,16 +294,16 @@ class Chunk{
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
 
-		$this->subChunks[$y] = $subChunk ?? new SubChunk(BlockLegacyIds::AIR << 4, []);
-		$this->setDirtyFlag(self::DIRTY_FLAG_TERRAIN, true);
+		$this->subChunks[$y] = $subChunk ?? new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, []);
+		$this->setTerrainDirtyFlag(self::DIRTY_FLAG_TERRAIN, true);
 	}
 
 	/**
-	 * @return \SplFixedArray|SubChunk[]
-	 * @phpstan-return \SplFixedArray<SubChunk>
+	 * @return SubChunk[]
+	 * @phpstan-return array<int, SubChunk>
 	 */
-	public function getSubChunks() : \SplFixedArray{
-		return $this->subChunks;
+	public function getSubChunks() : array{
+		return $this->subChunks->toArray();
 	}
 
 	/**
@@ -404,6 +332,8 @@ class Chunk{
 	 * @param int $z 0-15
 	 */
 	public static function blockHash(int $x, int $y, int $z) : int{
-		return ($y << 8) | (($z & 0x0f) << 4) | ($x & 0x0f);
+		return ($y << (2 * SubChunk::COORD_BIT_SIZE)) |
+			(($z & SubChunk::COORD_MASK) << SubChunk::COORD_BIT_SIZE) |
+			($x & SubChunk::COORD_MASK);
 	}
 }

@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 
 class SeedCommand extends VanillaCommand{
@@ -32,10 +33,9 @@ class SeedCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.seed.description",
-			"%commands.seed.usage"
+			KnownTranslationFactory::pocketmine_command_seed_description()
 		);
-		$this->setPermission("pocketmine.command.seed");
+		$this->setPermission(DefaultPermissionNames::COMMAND_SEED);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -48,7 +48,7 @@ class SeedCommand extends VanillaCommand{
 		}else{
 			$seed = $sender->getServer()->getWorldManager()->getDefaultWorld()->getSeed();
 		}
-		$sender->sendMessage(new TranslationContainer("commands.seed.success", [$seed]));
+		$sender->sendMessage(KnownTranslationFactory::commands_seed_success((string) $seed));
 
 		return true;
 	}

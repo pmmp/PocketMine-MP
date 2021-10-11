@@ -185,7 +185,7 @@ class Internet{
 	 * @param \Closure|null $onSuccess    function to be called if there is no error. Accepts a resource argument as the cURL handle.
 	 * @phpstan-param array<int, mixed>                $extraOpts
 	 * @phpstan-param list<string>                     $extraHeaders
-	 * @phpstan-param (\Closure(resource) : void)|null $onSuccess
+	 * @phpstan-param (\Closure(\CurlHandle) : void)|null $onSuccess
 	 *
 	 * @throws InternetException if a cURL error occurs
 	 */
@@ -209,7 +209,7 @@ class Internet{
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_CONNECTTIMEOUT_MS => (int) ($timeout * 1000),
 			CURLOPT_TIMEOUT_MS => (int) ($timeout * 1000),
-			CURLOPT_HTTPHEADER => array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 " . VersionInfo::NAME . "/" . VersionInfo::getVersionObj()->getFullVersion(true)], $extraHeaders),
+			CURLOPT_HTTPHEADER => array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 " . VersionInfo::NAME . "/" . VersionInfo::VERSION()->getFullVersion(true)], $extraHeaders),
 			CURLOPT_HEADER => true
 		]);
 		try{

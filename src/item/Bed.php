@@ -42,7 +42,7 @@ class Bed extends Item{
 	}
 
 	public function getBlock(?int $clickedFace = null) : Block{
-		return VanillaBlocks::BED();
+		return VanillaBlocks::BED()->setColor($this->color);
 	}
 
 	public function getMaxStackSize() : int{

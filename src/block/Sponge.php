@@ -25,12 +25,7 @@ namespace pocketmine\block;
 
 class Sponge extends Opaque{
 
-	/** @var bool */
-	protected $wet = false;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::HOE));
-	}
+	protected bool $wet = false;
 
 	protected function writeStateToMeta() : int{
 		return $this->wet ? BlockLegacyMetadata::SPONGE_FLAG_WET : 0;
@@ -40,12 +35,12 @@ class Sponge extends Opaque{
 		$this->wet = ($stateMeta & BlockLegacyMetadata::SPONGE_FLAG_WET) !== 0;
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1;
+	protected function writeStateToItemMeta() : int{
+		return $this->writeStateToMeta();
 	}
 
-	public function getNonPersistentStateBitmask() : int{
-		return 0;
+	public function getStateBitmask() : int{
+		return 0b1;
 	}
 
 	public function isWet() : bool{ return $this->wet; }

@@ -123,6 +123,8 @@ abstract class Living extends Entity{
 		parent::initEntity($nbt);
 
 		$this->effectManager = new EffectManager($this);
+		$this->effectManager->getEffectAddHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
+		$this->effectManager->getEffectRemoveHooks()->add(function() : void{ $this->networkPropertiesDirty = true; });
 
 		$this->armorInventory = new ArmorInventory($this);
 		//TODO: load/save armor inventory contents
@@ -140,7 +142,7 @@ abstract class Living extends Entity{
 			$health = $healFTag->getValue();
 		}elseif(($healthTag = $nbt->getTag("Health")) instanceof ShortTag){
 			$health = $healthTag->getValue(); //Older versions of PocketMine-MP incorrectly saved this as a short instead of a float
-		}elseif(($healthTag = $nbt->getTag("Health")) instanceof FloatTag){
+		}elseif($healthTag instanceof FloatTag){
 			$health = $healthTag->getValue();
 		}
 
@@ -208,6 +210,7 @@ abstract class Living extends Entity{
 
 	public function setSneaking(bool $value = true) : void{
 		$this->sneaking = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function isSprinting() : bool{
@@ -217,6 +220,7 @@ abstract class Living extends Entity{
 	public function setSprinting(bool $value = true) : void{
 		if($value !== $this->isSprinting()){
 			$this->sprinting = $value;
+			$this->networkPropertiesDirty = true;
 			$moveSpeed = $this->getMovementSpeed();
 			$this->setMovementSpeed($value ? ($moveSpeed * 1.3) : ($moveSpeed / 1.3));
 			$this->moveSpeedAttr->markSynchronized(false); //TODO: reevaluate this hack
@@ -301,8 +305,20 @@ abstract class Living extends Entity{
 		}
 	}
 
-	public function fall(float $fallDistance) : void{
-		$damage = ceil($fallDistance - 3 - (($jumpBoost = $this->effectManager->get(VanillaEffects::JUMP_BOOST())) !== null ? $jumpBoost->getEffectLevel() : 0));
+	protected function calculateFallDamage(float $fallDistance) : float{
+		return ceil($fallDistance - 3 - (($jumpBoost = $this->effectManager->get(VanillaEffects::JUMP_BOOST())) !== null ? $jumpBoost->getEffectLevel() : 0));
+	}
+
+	protected function onHitGround() : ?float{
+		$fallBlockPos = $this->location->floor();
+		$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
+		if(count($fallBlock->getCollisionBoxes()) === 0){
+			$fallBlockPos = $fallBlockPos->down();
+			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
+		}
+		$newVerticalVelocity = $fallBlock->onEntityLand($this);
+
+		$damage = $this->calculateFallDamage($this->fallDistance);
 		if($damage > 0){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_FALL, $damage);
 			$this->attack($ev);
@@ -311,17 +327,10 @@ abstract class Living extends Entity{
 				new EntityLongFallSound($this) :
 				new EntityShortFallSound($this)
 			);
-		}else{
-			$fallBlockPos = $this->location->floor();
-			$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
-			if($fallBlock->getId() === BlockLegacyIds::AIR){
-				$fallBlockPos = $fallBlockPos->subtract(0, 1, 0);
-				$fallBlock = $this->getWorld()->getBlock($fallBlockPos);
-			}
-			if($fallBlock->getId() !== BlockLegacyIds::AIR){
-				$this->broadcastSound(new EntityLandSound($this, $fallBlock));
-			}
+		}elseif($fallBlock->getId() !== BlockLegacyIds::AIR){
+			$this->broadcastSound(new EntityLandSound($this, $fallBlock));
 		}
+		return $newVerticalVelocity;
 	}
 
 	/**
@@ -503,7 +512,7 @@ abstract class Living extends Entity{
 		$this->broadcastAnimation(new HurtAnimation($this));
 	}
 
-	public function knockBack(float $x, float $z, float $base = 0.4) : void{
+	public function knockBack(float $x, float $z, float $force = 0.4, ?float $verticalLimit = 0.4) : void{
 		$f = sqrt($x * $x + $z * $z);
 		if($f <= 0){
 			return;
@@ -514,12 +523,13 @@ abstract class Living extends Entity{
 			$motionX = $this->motion->x / 2;
 			$motionY = $this->motion->y / 2;
 			$motionZ = $this->motion->z / 2;
-			$motionX += $x * $f * $base;
-			$motionY += $base;
-			$motionZ += $z * $f * $base;
+			$motionX += $x * $f * $force;
+			$motionY += $force;
+			$motionZ += $z * $f * $force;
 
-			if($motionY > $base){
-				$motionY = $base;
+			$verticalLimit ??= $force;
+			if($motionY > $verticalLimit){
+				$motionY = $verticalLimit;
 			}
 
 			$this->setMotion(new Vector3($motionX, $motionY, $motionZ));
@@ -643,6 +653,7 @@ abstract class Living extends Entity{
 	 */
 	public function setBreathing(bool $value = true) : void{
 		$this->breathing = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -658,6 +669,7 @@ abstract class Living extends Entity{
 	 */
 	public function setAirSupplyTicks(int $ticks) : void{
 		$this->breathTicks = $ticks;
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -672,6 +684,7 @@ abstract class Living extends Entity{
 	 */
 	public function setMaxAirSupplyTicks(int $ticks) : void{
 		$this->maxBreathTicks = $ticks;
+		$this->networkPropertiesDirty = true;
 	}
 
 	/**
@@ -759,7 +772,7 @@ abstract class Living extends Entity{
 	 */
 	public function lookAt(Vector3 $target) : void{
 		$horizontal = sqrt(($target->x - $this->location->x) ** 2 + ($target->z - $this->location->z) ** 2);
-		$vertical = $target->y - $this->location->y;
+		$vertical = $target->y - ($this->location->y + $this->getEyeHeight());
 		$this->location->pitch = -atan2($vertical, $horizontal) / M_PI * 180; //negative is up, positive is down
 
 		$xDist = $target->x - $this->location->x;

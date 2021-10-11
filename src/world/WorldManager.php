@@ -27,16 +27,19 @@ use pocketmine\entity\Entity;
 use pocketmine\event\world\WorldInitEvent;
 use pocketmine\event\world\WorldLoadEvent;
 use pocketmine\event\world\WorldUnloadEvent;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\player\ChunkSelector;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\format\io\FormatConverter;
-use pocketmine\world\format\io\WorldProvider;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\GeneratorManager;
+use pocketmine\world\generator\InvalidGeneratorOptionsException;
+use Webmozart\PathUtil\Path;
 use function array_keys;
 use function array_shift;
 use function assert;
@@ -48,8 +51,8 @@ use function iterator_to_array;
 use function microtime;
 use function round;
 use function sprintf;
+use function strval;
 use function trim;
-use const DIRECTORY_SEPARATOR;
 
 class WorldManager{
 	/** @var string */
@@ -149,12 +152,17 @@ class WorldManager{
 			return false;
 		}
 
-		$this->server->getLogger()->info($this->server->getLanguage()->translateString("pocketmine.level.unloading", [$world->getDisplayName()]));
+		$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_unloading($world->getDisplayName())));
+		try{
+			$safeSpawn = $this->defaultWorld !== null ? $this->defaultWorld->getSafeSpawn() : null;
+		}catch(WorldException $e){
+			$safeSpawn = null;
+		}
 		foreach($world->getPlayers() as $player){
-			if($world === $this->defaultWorld or $this->defaultWorld === null){
+			if($world === $this->defaultWorld or $safeSpawn === null){
 				$player->disconnect("Forced default world unload");
 			}else{
-				$player->teleport($this->defaultWorld->getSafeSpawn());
+				$player->teleport($safeSpawn);
 			}
 		}
 
@@ -163,7 +171,7 @@ class WorldManager{
 		}
 		unset($this->worlds[$world->getId()]);
 
-		$world->close();
+		$world->onUnload();
 		return true;
 	}
 
@@ -188,45 +196,63 @@ class WorldManager{
 
 		$providers = $this->providerManager->getMatchingProviders($path);
 		if(count($providers) !== 1){
-			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [
+			$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_loadError(
 				$name,
 				count($providers) === 0 ?
-					$this->server->getLanguage()->translateString("pocketmine.level.unknownFormat") :
-					$this->server->getLanguage()->translateString("pocketmine.level.ambiguousFormat", [implode(", ", array_keys($providers))])
-			]));
+					KnownTranslationFactory::pocketmine_level_unknownFormat() :
+					KnownTranslationFactory::pocketmine_level_ambiguousFormat(implode(", ", array_keys($providers)))
+			)));
 			return false;
 		}
 		$providerClass = array_shift($providers);
 
 		try{
-			/**
-			 * @var WorldProvider $provider
-			 * @see WorldProvider::__construct()
-			 */
-			$provider = new $providerClass($path);
+			$provider = $providerClass->fromPath($path);
 		}catch(CorruptedWorldException $e){
-			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Corruption detected: " . $e->getMessage()]));
+			$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_loadError(
+				$name,
+				KnownTranslationFactory::pocketmine_level_corrupted($e->getMessage())
+			)));
 			return false;
 		}catch(UnsupportedWorldFormatException $e){
-			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Unsupported format: " . $e->getMessage()]));
+			$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_loadError(
+				$name,
+				KnownTranslationFactory::pocketmine_level_unsupportedFormat($e->getMessage())
+			)));
+			return false;
+		}
+
+		$generatorEntry = GeneratorManager::getInstance()->getGenerator($provider->getWorldData()->getGenerator());
+		if($generatorEntry === null){
+			$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_loadError(
+				$name,
+				KnownTranslationFactory::pocketmine_level_unknownGenerator($provider->getWorldData()->getGenerator())
+			)));
 			return false;
 		}
 		try{
-			GeneratorManager::getInstance()->getGenerator($provider->getWorldData()->getGenerator(), true);
-		}catch(\InvalidArgumentException $e){
-			$this->server->getLogger()->error($this->server->getLanguage()->translateString("pocketmine.level.loadError", [$name, "Unknown generator \"" . $provider->getWorldData()->getGenerator() . "\""]));
+			$generatorEntry->validateGeneratorOptions($provider->getWorldData()->getGeneratorOptions());
+		}catch(InvalidGeneratorOptionsException $e){
+			$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_loadError(
+				$name,
+				KnownTranslationFactory::pocketmine_level_invalidGeneratorOptions(
+					$provider->getWorldData()->getGeneratorOptions(),
+					$provider->getWorldData()->getGenerator(),
+					$e->getMessage()
+				)
+			)));
 			return false;
 		}
 		if(!($provider instanceof WritableWorldProvider)){
 			if(!$autoUpgrade){
 				throw new UnsupportedWorldFormatException("World \"$name\" is in an unsupported format and needs to be upgraded");
 			}
-			$this->server->getLogger()->notice("Upgrading world \"$name\" to new format. This may take a while.");
+			$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_conversion_start($name)));
 
-			$converter = new FormatConverter($provider, $this->providerManager->getDefault(), $this->server->getDataPath() . "backups" . DIRECTORY_SEPARATOR . "worlds", $this->server->getLogger());
+			$converter = new FormatConverter($provider, $this->providerManager->getDefault(), Path::join($this->server->getDataPath(), "backups", "worlds"), $this->server->getLogger());
 			$provider = $converter->execute();
 
-			$this->server->getLogger()->notice("Upgraded world \"$name\" to new format successfully. Backed up pre-conversion world at " . $converter->getBackupPath());
+			$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_conversion_finish($name, $converter->getBackupPath())));
 		}
 
 		$world = new World($this->server, $name, $provider, $this->server->getAsyncPool());
@@ -249,14 +275,12 @@ class WorldManager{
 			return false;
 		}
 
-		$providerClass = $this->providerManager->getDefault();
+		$providerEntry = $this->providerManager->getDefault();
 
 		$path = $this->getWorldPath($name);
-		/** @var WritableWorldProvider $providerClass */
-		$providerClass::generate($path, $name, $options);
+		$providerEntry->generate($path, $name, $options);
 
-		/** @see WritableWorldProvider::__construct() */
-		$world = new World($this->server, $name, new $providerClass($path), $this->server->getAsyncPool());
+		$world = new World($this->server, $name, $providerEntry->fromPath($path), $this->server->getAsyncPool());
 		$this->worlds[$world->getId()] = $world;
 
 		$world->setAutoSave($this->autoSave);
@@ -266,11 +290,11 @@ class WorldManager{
 		(new WorldLoadEvent($world))->call();
 
 		if($backgroundGeneration){
-			$this->server->getLogger()->notice($this->server->getLanguage()->translateString("pocketmine.level.backgroundGeneration", [$name]));
+			$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_backgroundGeneration($name)));
 
 			$spawnLocation = $world->getSpawnLocation();
-			$centerX = $spawnLocation->getFloorX() >> 4;
-			$centerZ = $spawnLocation->getFloorZ() >> 4;
+			$centerX = $spawnLocation->getFloorX() >> Chunk::COORD_BIT_SIZE;
+			$centerZ = $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE;
 
 			$selected = iterator_to_array((new ChunkSelector())->selectChunks(8, $centerX, $centerZ));
 			$done = 0;
@@ -282,7 +306,7 @@ class WorldManager{
 						$oldProgress = (int) floor(($done / $total) * 100);
 						$newProgress = (int) floor((++$done / $total) * 100);
 						if(intdiv($oldProgress, 10) !== intdiv($newProgress, 10) || $done === $total || $done === 1){
-							$world->getLogger()->info("Generating spawn terrain chunks: $done / $total ($newProgress%)");
+							$world->getLogger()->info($world->getServer()->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_spawnTerrainGenerationProgress(strval($done), strval($total), strval($newProgress))));
 						}
 					},
 					static function() : void{
@@ -295,7 +319,7 @@ class WorldManager{
 	}
 
 	private function getWorldPath(string $name) : string{
-		return $this->dataPath . "/" . $name . "/";
+		return Path::join($this->dataPath, $name) . "/"; //TODO: check if we still need the trailing dirsep (I'm a little scared to remove it)
 	}
 
 	public function isWorldGenerated(string $name) : bool{
@@ -316,7 +340,7 @@ class WorldManager{
 	 */
 	public function findEntity(int $entityId) : ?Entity{
 		foreach($this->worlds as $world){
-			assert(!$world->isClosed());
+			assert($world->isLoaded());
 			if(($entity = $world->getEntity($entityId)) instanceof Entity){
 				return $entity;
 			}

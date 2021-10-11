@@ -27,19 +27,17 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandExecutor;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
+use Webmozart\PathUtil\Path;
 use function count;
 use function dirname;
 use function fclose;
 use function file_exists;
 use function fopen;
-use function gettype;
-use function is_array;
-use function is_bool;
-use function is_string;
 use function mkdir;
 use function rtrim;
 use function stream_copy_to_stream;
@@ -86,7 +84,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$this->dataFolder = rtrim($dataFolder, "/" . DIRECTORY_SEPARATOR) . "/";
 		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
-		$this->configFile = $this->dataFolder . "config.yml";
+		$this->configFile = Path::join($this->dataFolder, "config.yml");
 
 		$prefix = $this->getDescription()->getPrefix();
 		$this->logger = new PluginLogger($server->getLogger(), $prefix !== "" ? $prefix : $this->getName());
@@ -166,48 +164,37 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 
 		foreach($this->getDescription()->getCommands() as $key => $data){
 			if(strpos($key, ":") !== false){
-				$this->logger->error($this->server->getLanguage()->translateString("pocketmine.plugin.commandError", [$key, $this->getDescription()->getFullName()]));
+				$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_commandError($key, $this->getDescription()->getFullName())));
 				continue;
 			}
-			if(is_array($data)){ //TODO: error out if it isn't
-				$newCmd = new PluginCommand($key, $this, $this);
-				if(isset($data["description"])){
-					$newCmd->setDescription($data["description"]);
-				}
 
-				if(isset($data["usage"])){
-					$newCmd->setUsage($data["usage"]);
-				}
-
-				if(isset($data["aliases"]) and is_array($data["aliases"])){
-					$aliasList = [];
-					foreach($data["aliases"] as $alias){
-						if(strpos($alias, ":") !== false){
-							$this->logger->error($this->server->getLanguage()->translateString("pocketmine.plugin.aliasError", [$alias, $this->getDescription()->getFullName()]));
-							continue;
-						}
-						$aliasList[] = $alias;
-					}
-
-					$newCmd->setAliases($aliasList);
-				}
-
-				if(isset($data["permission"])){
-					if(is_bool($data["permission"])){
-						$newCmd->setPermission($data["permission"] ? "true" : "false");
-					}elseif(is_string($data["permission"])){
-						$newCmd->setPermission($data["permission"]);
-					}else{
-						$this->logger->error("Permission must be a string, " . gettype($data["permission"]) . " given for command $key");
-					}
-				}
-
-				if(isset($data["permission-message"])){
-					$newCmd->setPermissionMessage($data["permission-message"]);
-				}
-
-				$pluginCmds[] = $newCmd;
+			$newCmd = new PluginCommand($key, $this, $this);
+			if(($description = $data->getDescription()) !== null){
+				$newCmd->setDescription($description);
 			}
+
+			if(($usageMessage = $data->getUsageMessage()) !== null){
+				$newCmd->setUsage($usageMessage);
+			}
+
+			$aliasList = [];
+			foreach($data->getAliases() as $alias){
+				if(strpos($alias, ":") !== false){
+					$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_aliasError($alias, $this->getDescription()->getFullName())));
+					continue;
+				}
+				$aliasList[] = $alias;
+			}
+
+			$newCmd->setAliases($aliasList);
+
+			$newCmd->setPermission($data->getPermission());
+
+			if(($permissionDeniedMessage = $data->getPermissionDeniedMessage()) !== null){
+				$newCmd->setPermissionMessage($permissionDeniedMessage);
+			}
+
+			$pluginCmds[] = $newCmd;
 		}
 
 		if(count($pluginCmds) > 0){
@@ -261,7 +248,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			return false;
 		}
 
-		$out = $this->dataFolder . $filename;
+		$out = Path::join($this->dataFolder, $filename);
 		if(!file_exists(dirname($out))){
 			mkdir(dirname($out), 0755, true);
 		}

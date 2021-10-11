@@ -27,9 +27,6 @@ use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\SkullType;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
-use pocketmine\item\Skull as ItemSkull;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -39,20 +36,16 @@ use function assert;
 use function floor;
 
 class Skull extends Flowable{
-	/** @var SkullType */
-	protected $skullType;
 
-	/** @var int */
-	protected $facing = Facing::NORTH;
+	protected SkullType $skullType;
 
+	protected int $facing = Facing::NORTH;
 	protected bool $noDrops = false;
+	protected int $rotation = 0; //TODO: split this into floor skull and wall skull handling
 
-	/** @var int */
-	protected $rotation = 0; //TODO: split this into floor skull and wall skull handling
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->skullType = SkullType::SKELETON(); //TODO: this should be a parameter
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0));
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	protected function writeStateToMeta() : int{
@@ -71,7 +64,7 @@ class Skull extends Flowable{
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSkull){
 			$this->skullType = $tile->getSkullType();
 			$this->rotation = $tile->getRotation();
@@ -81,7 +74,7 @@ class Skull extends Flowable{
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
 		//extra block properties storage hack
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileSkull);
 		$tile->setRotation($this->rotation);
 		$tile->setSkullType($this->skullType);
@@ -141,16 +134,13 @@ class Skull extends Flowable{
 		}
 
 		$this->facing = $face;
-		if($item instanceof ItemSkull){
-			$this->skullType = $item->getSkullType(); //TODO: the item should handle this, but this hack is currently needed because of tile mess
-		}
 		if($player !== null and $face === Facing::UP){
 			$this->rotation = ((int) floor(($player->getLocation()->getYaw() * 16 / 360) + 0.5)) & 0xf;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function asItem() : Item{
-		return ItemFactory::getInstance()->get(ItemIds::SKULL, $this->skullType->getMagicNumber());
+	protected function writeStateToItemMeta() : int{
+		return $this->skullType->getMagicNumber();
 	}
 }

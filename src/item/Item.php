@@ -37,6 +37,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
@@ -240,6 +241,7 @@ class Item implements \JsonSerializable{
 	 * Sets the Item's NBT from the supplied CompoundTag object.
 	 *
 	 * @return $this
+	 * @throws NbtException
 	 */
 	public function setNamedTag(CompoundTag $tag) : Item{
 		if($tag->getCount() === 0){
@@ -255,6 +257,7 @@ class Item implements \JsonSerializable{
 	/**
 	 * Removes the Item's NBT.
 	 * @return $this
+	 * @throws NbtException
 	 */
 	public function clearNamedTag() : Item{
 		$this->nbt = new CompoundTag();
@@ -262,6 +265,9 @@ class Item implements \JsonSerializable{
 		return $this;
 	}
 
+	/**
+	 * @throws NbtException
+	 */
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
 		$this->customName = "";
 		$this->lore = [];
@@ -567,6 +573,13 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Returns whether this item could stack with the given item (ignoring stack size and count).
+	 */
+	final public function canStackWith(Item $other) : bool{
+		return $this->equals($other, true, true);
+	}
+
+	/**
 	 * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
 	 */
 	final public function equalsExact(Item $other) : bool{
@@ -671,12 +684,13 @@ class Item implements \JsonSerializable{
 		if($idTag instanceof ShortTag){
 			$item = ItemFactory::getInstance()->get($idTag->getValue(), $meta, $count);
 		}elseif($idTag instanceof StringTag){ //PC item save format
-			//TODO: this isn't a very good mapping source, we need a dedicated mapping for PC
-			$id = LegacyStringToItemParser::getInstance()->parseId($idTag->getValue());
-			if($id === null){
+			try{
+				$item = LegacyStringToItemParser::getInstance()->parse($idTag->getValue() . ":$meta");
+			}catch(LegacyStringToItemParserException $e){
+				//TODO: improve error handling
 				return ItemFactory::air();
 			}
-			$item = ItemFactory::getInstance()->get($id, $meta, $count);
+			$item->setCount($count);
 		}else{
 			throw new \InvalidArgumentException("Item CompoundTag ID must be an instance of StringTag or ShortTag, " . get_class($idTag) . " given");
 		}

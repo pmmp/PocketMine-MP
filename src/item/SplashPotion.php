@@ -30,12 +30,11 @@ use pocketmine\player\Player;
 
 class SplashPotion extends ProjectileItem{
 
-	/** @var int */
-	private $potionId;
+	private PotionType $potionType;
 
-	public function __construct(ItemIdentifier $identifier, string $name, int $potionId){
+	public function __construct(ItemIdentifier $identifier, string $name, PotionType $potionType){
 		parent::__construct($identifier, $name);
-		$this->potionId = $potionId;
+		$this->potionType = $potionType;
 	}
 
 	public function getMaxStackSize() : int{
@@ -43,9 +42,7 @@ class SplashPotion extends ProjectileItem{
 	}
 
 	protected function createEntity(Location $location, Player $thrower) : Throwable{
-		$projectile = new SplashPotionEntity($location, $thrower);
-		$projectile->setPotionId($this->potionId);
-		return $projectile;
+		return new SplashPotionEntity($location, $thrower, $this->potionType);
 	}
 
 	public function getThrowForce() : float{

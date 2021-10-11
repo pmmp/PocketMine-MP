@@ -1,0 +1,82 @@
+name: Draft release
+
+on:
+  push:
+    tags: "*"
+
+jobs:
+  draft:
+    name: Create GitHub draft release
+    if: "startsWith(github.event.head_commit.message, 'Release ')"
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@2.12.0
+        with:
+          php-version: 8.0
+
+      - name: Restore Composer package cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/composer/files
+            ~/.cache/composer/vcs
+          key: "composer-v2-cache-${{ hashFiles('./composer.lock') }}"
+          restore-keys: |
+            composer-v2-cache-
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --prefer-dist --no-interaction --ignore-platform-reqs
+
+      - name: Patch VersionInfo
+        run: |
+          BUILD_NUMBER=2000+$GITHUB_RUN_NUMBER #to stay above jenkins
+          echo "Build number: $BUILD_NUMBER"
+          sed -i "s/const BUILD_NUMBER = 0/const BUILD_NUMBER = ${BUILD_NUMBER}/" src/VersionInfo.php
+
+      - name: Minify BedrockData JSON files
+        run: php resources/vanilla/.minify_json.php
+
+      - name: Build PocketMine-MP.phar
+        run: php -dphar.readonly=0 build/server-phar.php --git ${{ github.sha }}
+
+      - name: Get PocketMine-MP release version
+        id: get-pm-version
+        run: |
+          echo ::set-output name=PM_VERSION::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\VersionInfo::BASE_VERSION;')
+          echo ::set-output name=MCPE_VERSION::$(php -r 'require "vendor/autoload.php"; echo \pocketmine\network\mcpe\protocol\ProtocolInfo::MINECRAFT_VERSION_NETWORK;')
+          echo ::set-output name=PM_VERSION_SHORT::$(php -r 'require "vendor/autoload.php"; $v = explode(".", \pocketmine\VersionInfo::BASE_VERSION); array_pop($v); echo implode(".", $v);')
+          echo ::set-output name=PM_VERSION_MD::$(php -r 'require "vendor/autoload.php"; echo str_replace(".", "", \pocketmine\VersionInfo::BASE_VERSION);')
+
+      - name: Generate build info
+        run: php build/generate-build-info-json.php ${{ github.sha }} ${{ steps.get-pm-version.outputs.PM_VERSION }} ${{ github.repository }} > build_info.json
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: release_artifacts
+          path: |
+            ${{ github.workspace }}/PocketMine-MP.phar
+            ${{ github.workspace }}/start.*
+            ${{ github.workspace }}/build_info.json
+
+      - name: Create draft release
+        uses: ncipollo/release-action@v1.8.6
+        with:
+          artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json
+          commit: ${{ github.sha }}
+          draft: true
+          name: PocketMine-MP ${{ steps.get-pm-version.outputs.PM_VERSION }}
+          tag: ${{ steps.get-pm-version.outputs.PM_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            **For Minecraft: Bedrock Edition ${{ steps.get-pm-version.outputs.MCPE_VERSION }}**
+
+            Please see the [changelogs](/changelogs/${{ steps.get-pm-version.outputs.PM_VERSION_SHORT }}.md#${{ steps.get-pm-version.outputs.PM_VERSION_MD }}) for details.

@@ -41,13 +41,8 @@ use const M_PI;
 
 class TNT extends Opaque{
 
-	/** @var bool */
-	protected $unstable = false; //TODO: Usage unclear, seems to be a weird hack in vanilla
+	protected bool $unstable = false; //TODO: Usage unclear, seems to be a weird hack in vanilla
 	protected bool $worksUnderwater = false;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->unstable = ($stateMeta & BlockLegacyMetadata::TNT_FLAG_UNSTABLE) !== 0;
@@ -58,11 +53,13 @@ class TNT extends Opaque{
 		return ($this->unstable ? BlockLegacyMetadata::TNT_FLAG_UNSTABLE : 0) | ($this->worksUnderwater ? BlockLegacyMetadata::TNT_FLAG_UNDERWATER : 0);
 	}
 
+	protected function writeStateToItemMeta() : int{
+		return $this->worksUnderwater ? BlockLegacyMetadata::TNT_FLAG_UNDERWATER : 0;
+	}
+
 	public function getStateBitmask() : int{
 		return 0b11;
 	}
-
-	public function getNonPersistentStateBitmask() : int{ return 0b1; }
 
 	public function isUnstable() : bool{ return $this->unstable; }
 
@@ -113,11 +110,11 @@ class TNT extends Opaque{
 	}
 
 	public function ignite(int $fuse = 80) : void{
-		$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::AIR());
+		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 
 		$mot = (new Random())->nextSignedFloat() * M_PI * 2;
 
-		$tnt = new PrimedTNT(Location::fromObject($this->pos->add(0.5, 0, 0.5), $this->pos->getWorld()));
+		$tnt = new PrimedTNT(Location::fromObject($this->position->add(0.5, 0, 0.5), $this->position->getWorld()));
 		$tnt->setFuse($fuse);
 		$tnt->setWorksUnderwater($this->worksUnderwater);
 		$tnt->setMotion(new Vector3(-sin($mot) * 0.02, 0.2, -cos($mot) * 0.02));

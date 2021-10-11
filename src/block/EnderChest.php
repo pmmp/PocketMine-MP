@@ -28,7 +28,6 @@ use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -37,10 +36,6 @@ use pocketmine\player\Player;
 class EnderChest extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
 	use NormalHorizontalFacingInMetadataTrait;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(22.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 3000.0));
-	}
 
 	public function getLightLevel() : int{
 		return 7;
@@ -56,9 +51,10 @@ class EnderChest extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
-			$enderChest = $this->pos->getWorld()->getTile($this->pos);
+			$enderChest = $this->position->getWorld()->getTile($this->position);
 			if($enderChest instanceof TileEnderChest and $this->getSide(Facing::UP)->isTransparent()){
-				$player->setCurrentWindow(new EnderChestInventory($this->pos, $player->getEnderInventory()));
+				$enderChest->setViewerCount($enderChest->getViewerCount() + 1);
+				$player->setCurrentWindow(new EnderChestInventory($this->position, $player->getEnderInventory()));
 			}
 		}
 

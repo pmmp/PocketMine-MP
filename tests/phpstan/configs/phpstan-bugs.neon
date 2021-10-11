@@ -1,9 +1,14 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Instanceof between pocketmine\\\\block\\\\utils\\\\BannerPatternLayer and pocketmine\\\\block\\\\utils\\\\BannerPatternLayer will always evaluate to true\\.$#"
+			count: 1
+			path: ../../../src/block/BaseBanner.php
+
+		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
 			count: 2
-			path: ../../../src/command/CommandReader.php
+			path: ../../../src/console/ConsoleReader.php
 
 		-
 			message: "#^Method pocketmine\\\\crafting\\\\CraftingManager\\:\\:getDestructorCallbacks\\(\\) should return pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\> but returns pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\>\\|pocketmine\\\\utils\\\\ObjectSet\\<object\\>\\.$#"
@@ -21,6 +26,16 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
+			message: "#^Parameter \\#1 \\$ of closure expects TValue, TValue given\\.$#"
+			count: 2
+			path: ../../../src/utils/Promise.php
+
+		-
+			message: "#^Property pocketmine\\\\utils\\\\Promise\\<TValue\\>\\:\\:\\$result \\(TValue\\|null\\) does not accept TValue\\.$#"
+			count: 1
+			path: ../../../src/utils/Promise.php
+
+		-
 			message: "#^Parameter \\#1 \\$ of closure expects TMemberType, TMemberType given\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
@@ -36,7 +51,7 @@ parameters:
 			path: ../../../src/world/format/io/region/RegionLoader.php
 
 		-
-			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertNotNull\\(\\) with int and string will always evaluate to true\\.$#"
-			count: 1
-			path: ../../phpunit/block/BlockTest.php
+			message: "#^Parameter \\#2 \\$count of function array_fill expects int\\<0, max\\>, int given\\.$#"
+			count: 2
+			path: ../../../src/world/generator/noise/Noise.php
 

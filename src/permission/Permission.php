@@ -78,7 +78,7 @@ class Permission{
 	}
 
 	/**
-	 * @return Permissible[]
+	 * @return PermissibleInternal[]
 	 */
 	public function getPermissibles() : array{
 		return PermissionManager::getInstance()->getPermissionSubscriptions($this->name);

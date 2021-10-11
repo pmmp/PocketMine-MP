@@ -26,9 +26,9 @@ namespace pocketmine\entity\object;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
+use pocketmine\event\entity\EntityItemPickupEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
-use pocketmine\event\inventory\InventoryPickupItemEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -226,13 +226,17 @@ class ItemEntity extends Entity{
 		}
 
 		$item = $this->getItem();
-		$playerInventory = $player->getInventory();
+		$playerInventory = match(true){
+			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
+			$player->getInventory()->canAddItem($item) => $player->getInventory(),
+			default => null
+		};
 
-		if($player->hasFiniteResources() and !$playerInventory->canAddItem($item)){
-			return;
+		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
+		if($player->hasFiniteResources() and $playerInventory === null){
+			$ev->cancel();
 		}
 
-		$ev = new InventoryPickupItemEvent($playerInventory, $this);
 		$ev->call();
 		if($ev->isCancelled()){
 			return;
@@ -242,7 +246,7 @@ class ItemEntity extends Entity{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$playerInventory->addItem(clone $item);
+		$ev->getInventory()?->addItem($ev->getItem());
 		$this->flagForDespawn();
 	}
 }

@@ -27,15 +27,21 @@ use pocketmine\item\Item;
 use function get_class;
 
 class BlockBreakInfo{
+	/**
+	 * If the tool is the correct type and high enough harvest level (tool tier), base break time is hardness multiplied
+	 * by this value.
+	 */
+	public const COMPATIBLE_TOOL_MULTIPLIER = 1.5;
+	/**
+	 * If the tool is an incorrect type or too low harvest level (tool tier), base break time is hardness multiplied by
+	 * this value.
+	 */
+	public const INCOMPATIBLE_TOOL_MULTIPLIER = 5.0;
 
-	/** @var float */
-	private $hardness;
-	/** @var float */
-	private $blastResistance;
-	/** @var int */
-	private $toolType;
-	/** @var int */
-	private $toolHarvestLevel;
+	private float $hardness;
+	private float $blastResistance;
+	private int $toolType;
+	private int $toolHarvestLevel;
 
 	/**
 	 * @param float|null $blastResistance default 5x hardness
@@ -125,9 +131,9 @@ class BlockBreakInfo{
 	public function getBreakTime(Item $item) : float{
 		$base = $this->hardness;
 		if($this->isToolCompatible($item)){
-			$base *= 1.5;
+			$base *= self::COMPATIBLE_TOOL_MULTIPLIER;
 		}else{
-			$base *= 5;
+			$base *= self::INCOMPATIBLE_TOOL_MULTIPLIER;
 		}
 
 		$efficiency = $item->getMiningEfficiency(($this->toolType & $item->getBlockToolType()) !== 0);

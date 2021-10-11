@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\plugin\Plugin;
 use pocketmine\utils\TextFormat;
 use function array_map;
@@ -38,11 +39,11 @@ class PluginsCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.plugins.description",
-			"%pocketmine.command.plugins.usage",
+			KnownTranslationFactory::pocketmine_command_plugins_description(),
+			null,
 			["pl"]
 		);
-		$this->setPermission("pocketmine.command.plugins");
+		$this->setPermission(DefaultPermissionNames::COMMAND_PLUGINS);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -55,7 +56,7 @@ class PluginsCommand extends VanillaCommand{
 		}, $sender->getServer()->getPluginManager()->getPlugins());
 		sort($list, SORT_STRING);
 
-		$sender->sendMessage(new TranslationContainer("pocketmine.command.plugins.success", [count($list), implode(TextFormat::WHITE . ", ", $list)]));
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_plugins_success((string) count($list), implode(TextFormat::WHITE . ", ", $list)));
 		return true;
 	}
 }

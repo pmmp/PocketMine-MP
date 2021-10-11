@@ -28,6 +28,7 @@ use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\utils\SingletonTrait;
+use Webmozart\PathUtil\Path;
 use function file_get_contents;
 
 class StaticPacketCache{
@@ -49,8 +50,8 @@ class StaticPacketCache{
 
 	private static function make() : self{
 		return new self(
-			BiomeDefinitionListPacket::create(self::loadCompoundFromFile(\pocketmine\RESOURCE_PATH . '/vanilla/biome_definitions.nbt')),
-			AvailableActorIdentifiersPacket::create(self::loadCompoundFromFile(\pocketmine\RESOURCE_PATH . '/vanilla/entity_identifiers.nbt'))
+			BiomeDefinitionListPacket::create(self::loadCompoundFromFile(Path::join(\pocketmine\RESOURCE_PATH, 'vanilla', 'biome_definitions.nbt'))),
+			AvailableActorIdentifiersPacket::create(self::loadCompoundFromFile(Path::join(\pocketmine\RESOURCE_PATH, 'vanilla', 'entity_identifiers.nbt')))
 		);
 	}
 

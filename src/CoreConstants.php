@@ -35,3 +35,4 @@ define('pocketmine\_CORE_CONSTANTS_INCLUDED', true);
 
 define('pocketmine\PATH', dirname(__DIR__) . '/');
 define('pocketmine\RESOURCE_PATH', dirname(__DIR__) . '/resources/');
+define('pocketmine\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__) . '/vendor/autoload.php');

@@ -31,12 +31,18 @@ abstract class BaseCoral extends Transparent{
 	protected CoralType $coralType;
 	protected bool $dead = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, CoralType $coralType){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		parent::__construct($idInfo, $name, $breakInfo);
-		$this->coralType = $coralType;
+		$this->coralType = CoralType::TUBE();
 	}
 
 	public function getCoralType() : CoralType{ return $this->coralType; }
+
+	/** @return $this */
+	public function setCoralType(CoralType $coralType) : self{
+		$this->coralType = $coralType;
+		return $this;
+	}
 
 	public function isDead() : bool{ return $this->dead; }
 
@@ -48,10 +54,10 @@ abstract class BaseCoral extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->dead){
-			$world = $this->pos->getWorld();
+			$world = $this->position->getWorld();
 
 			$hasWater = false;
-			foreach($this->pos->sides() as $vector3){
+			foreach($this->position->sides() as $vector3){
 				if($world->getBlock($vector3) instanceof Water){
 					$hasWater = true;
 					break;
@@ -60,7 +66,7 @@ abstract class BaseCoral extends Transparent{
 
 			//TODO: check water inside the block itself (not supported on the API yet)
 			if(!$hasWater){
-				$world->setBlock($this->pos, $this->setDead(true));
+				$world->setBlock($this->position, $this->setDead(true));
 			}
 		}
 	}

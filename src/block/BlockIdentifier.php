@@ -27,17 +27,11 @@ use pocketmine\block\tile\Tile;
 
 class BlockIdentifier{
 
-	/** @var int */
-	private $blockId;
-	/** @var int */
-	private $variant;
-	/** @var int|null */
-	private $itemId;
-	/**
-	 * @var string|null
-	 * @phpstan-var class-string<Tile>|null
-	 */
-	private $tileClass;
+	private int $blockId;
+	private int $variant;
+	private ?int $itemId;
+	/** @phpstan-var class-string<Tile>|null */
+	private ?string $tileClass;
 
 	/**
 	 * @phpstan-param class-string<Tile>|null $tileClass

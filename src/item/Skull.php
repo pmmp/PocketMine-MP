@@ -38,7 +38,9 @@ class Skull extends Item{
 	}
 
 	public function getBlock(?int $clickedFace = null) : Block{
-		return VanillaBlocks::MOB_HEAD();
+		//TODO: we ought to be able to represent this as a regular ItemBlock
+		//but that's not currently possible because the skulltype isn't part of the internal block runtimeID
+		return VanillaBlocks::MOB_HEAD()->setSkullType($this->skullType);
 	}
 
 	public function getSkullType() : SkullType{

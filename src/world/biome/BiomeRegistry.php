@@ -42,17 +42,17 @@ final class BiomeRegistry{
 		$this->register(BiomeIds::OCEAN, new OceanBiome());
 		$this->register(BiomeIds::PLAINS, new PlainBiome());
 		$this->register(BiomeIds::DESERT, new DesertBiome());
-		$this->register(BiomeIds::MOUNTAINS, new MountainsBiome());
+		$this->register(BiomeIds::EXTREME_HILLS, new MountainsBiome());
 		$this->register(BiomeIds::FOREST, new ForestBiome());
 		$this->register(BiomeIds::TAIGA, new TaigaBiome());
-		$this->register(BiomeIds::SWAMP, new SwampBiome());
+		$this->register(BiomeIds::SWAMPLAND, new SwampBiome());
 		$this->register(BiomeIds::RIVER, new RiverBiome());
 
 		$this->register(BiomeIds::HELL, new HellBiome());
 
 		$this->register(BiomeIds::ICE_PLAINS, new IcePlainsBiome());
 
-		$this->register(BiomeIds::SMALL_MOUNTAINS, new SmallMountainsBiome());
+		$this->register(BiomeIds::EXTREME_HILLS_EDGE, new SmallMountainsBiome());
 
 		$this->register(BiomeIds::BIRCH_FOREST, new ForestBiome(TreeType::BIRCH()));
 	}

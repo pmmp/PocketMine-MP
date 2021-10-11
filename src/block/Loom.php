@@ -49,7 +49,7 @@ final class Loom extends Opaque{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			$player->setCurrentWindow(new LoomInventory($this->pos));
+			$player->setCurrentWindow(new LoomInventory($this->position));
 			return true;
 		}
 		return false;

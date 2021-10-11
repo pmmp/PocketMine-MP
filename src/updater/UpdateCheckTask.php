@@ -39,7 +39,7 @@ class UpdateCheckTask extends AsyncTask{
 	/** @var string */
 	private $error = "Unknown error";
 
-	public function __construct(AutoUpdater $updater, string $endpoint, string $channel){
+	public function __construct(UpdateChecker $updater, string $endpoint, string $channel){
 		$this->storeLocal(self::TLS_KEY_UPDATER, $updater);
 		$this->endpoint = $endpoint;
 		$this->channel = $channel;
@@ -74,7 +74,7 @@ class UpdateCheckTask extends AsyncTask{
 	}
 
 	public function onCompletion() : void{
-		/** @var AutoUpdater $updater */
+		/** @var UpdateChecker $updater */
 		$updater = $this->fetchLocal(self::TLS_KEY_UPDATER);
 		if($this->hasResult()){
 			/** @var UpdateInfo $response */

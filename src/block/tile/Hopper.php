@@ -43,7 +43,7 @@ class Hopper extends Spawnable implements Container, Nameable{
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
-		$this->inventory = new HopperInventory($this->pos);
+		$this->inventory = new HopperInventory($this->position);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
@@ -63,7 +63,6 @@ class Hopper extends Spawnable implements Container, Nameable{
 	public function close() : void{
 		if(!$this->closed){
 			$this->inventory->removeAllViewers();
-			$this->inventory = null;
 
 			parent::close();
 		}

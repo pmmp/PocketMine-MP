@@ -61,10 +61,17 @@ final class CraftingManagerFromDataHelper{
 			));
 		}
 		foreach($recipes["smelting"] as $recipe){
-			if($recipe["block"] !== "furnace"){ //TODO: filter others out for now to avoid breaking economics
+			$furnaceType = match ($recipe["block"]){
+				"furnace" => FurnaceType::FURNACE(),
+				"blast_furnace" => FurnaceType::BLAST_FURNACE(),
+				"smoker" => FurnaceType::SMOKER(),
+				//TODO: campfire
+				default => null
+			};
+			if($furnaceType === null){
 				continue;
 			}
-			$result->getFurnaceRecipeManager()->register(new FurnaceRecipe(
+			$result->getFurnaceRecipeManager($furnaceType)->register(new FurnaceRecipe(
 				Item::jsonDeserialize($recipe["output"]),
 				Item::jsonDeserialize($recipe["input"]))
 			);

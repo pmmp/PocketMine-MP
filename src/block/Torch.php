@@ -32,12 +32,7 @@ use pocketmine\world\BlockTransaction;
 
 class Torch extends Flowable{
 
-	/** @var int */
-	protected $facing = Facing::UP;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
+	protected int $facing = Facing::UP;
 
 	protected function writeStateToMeta() : int{
 		return $this->facing === Facing::UP ? 5 : 6 - BlockDataSerializer::writeHorizontalFacing($this->facing);
@@ -72,7 +67,7 @@ class Torch extends Flowable{
 		$face = Facing::opposite($this->facing);
 
 		if($this->getSide($face)->isTransparent() and !($face === Facing::DOWN and ($below->getId() === BlockLegacyIds::FENCE or $below->getId() === BlockLegacyIds::COBBLESTONE_WALL))){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 

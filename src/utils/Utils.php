@@ -36,6 +36,7 @@ use function array_reverse;
 use function array_values;
 use function bin2hex;
 use function chunk_split;
+use function class_exists;
 use function count;
 use function debug_zval_dump;
 use function dechex;
@@ -51,6 +52,7 @@ use function getenv;
 use function gettype;
 use function implode;
 use function is_array;
+use function is_bool;
 use function is_object;
 use function is_string;
 use function mb_check_encoding;
@@ -64,6 +66,7 @@ use function preg_grep;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
+use function spl_object_id;
 use function str_pad;
 use function str_split;
 use function stripos;
@@ -345,18 +348,6 @@ final class Utils{
 		return preg_replace('#([^\x20-\x7E])#', '.', $str);
 	}
 
-	/*
-	public static function angle3D($pos1, $pos2){
-		$X = $pos1["x"] - $pos2["x"];
-		$Z = $pos1["z"] - $pos2["z"];
-		$dXZ = sqrt(pow($X, 2) + pow($Z, 2));
-		$Y = $pos1["y"] - $pos2["y"];
-		$hAngle = rad2deg(atan2($Z, $X) - M_PI_2);
-		$vAngle = rad2deg(-atan2($Y, $dXZ));
-
-		return array("yaw" => $hAngle, "pitch" => $vAngle);
-	}*/
-
 	public static function javaStringHash(string $string) : int{
 		$hash = 0;
 		for($i = 0, $len = strlen($string); $i < $len; $i++){
@@ -412,13 +403,16 @@ final class Utils{
 
 				$params = implode(", ", array_map(function($value) use($maxStringLength) : string{
 					if(is_object($value)){
-						return "object " . self::getNiceClassName($value);
+						return "object " . self::getNiceClassName($value) . "#" . spl_object_id($value);
 					}
 					if(is_array($value)){
 						return "array[" . count($value) . "]";
 					}
 					if(is_string($value)){
 						return "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength);
+					}
+					if(is_bool($value)){
+						return $value ? "true" : "false";
 					}
 					return gettype($value) . " " . Utils::printable((string) $value);
 				}, $args));
@@ -465,9 +459,7 @@ final class Utils{
 		}
 		preg_match_all('/(*ANYCRLF)^[\t ]*(?:\* )?@([a-zA-Z]+)(?:[\t ]+(.+?))?[\t ]*$/m', $rawDocComment, $matches);
 
-		$result = array_combine($matches[1], $matches[2]);
-		if($result === false) throw new AssumptionFailedError("array_combine() doesn't return false with two equal-sized arrays");
-		return $result;
+		return array_combine($matches[1], $matches[2]);
 	}
 
 	/**
@@ -475,17 +467,14 @@ final class Utils{
 	 * @phpstan-param class-string $baseName
 	 */
 	public static function testValidInstance(string $className, string $baseName) : void{
-		try{
-			$base = new \ReflectionClass($baseName);
-		}catch(\ReflectionException $e){
+		if(!class_exists($baseName)){
 			throw new \InvalidArgumentException("Base class $baseName does not exist");
 		}
-
-		try{
-			$class = new \ReflectionClass($className);
-		}catch(\ReflectionException $e){
+		if(!class_exists($className)){
 			throw new \InvalidArgumentException("Class $className does not exist");
 		}
+		$base = new \ReflectionClass($baseName);
+		$class = new \ReflectionClass($className);
 
 		if(!$class->isSubclassOf($baseName)){
 			throw new \InvalidArgumentException("Class $className does not " . ($base->isInterface() ? "implement" : "extend") . " " . $baseName);
@@ -499,17 +488,20 @@ final class Utils{
 	 * Verifies that the given callable is compatible with the desired signature. Throws a TypeError if they are
 	 * incompatible.
 	 *
-	 * @param callable $signature Dummy callable with the required parameters and return type
-	 * @param callable $subject Callable to check the signature of
-	 * @phpstan-param anyCallable $signature
-	 * @phpstan-param anyCallable $subject
+	 * @param callable|CallbackType $signature Dummy callable with the required parameters and return type
+	 * @param callable              $subject Callable to check the signature of
+	 * @phpstan-param anyCallable|CallbackType $signature
+	 * @phpstan-param anyCallable              $subject
 	 *
 	 * @throws \DaveRandom\CallbackValidator\InvalidCallbackException
 	 * @throws \TypeError
 	 */
-	public static function validateCallableSignature(callable $signature, callable $subject) : void{
-		if(!($sigType = CallbackType::createFromCallable($signature))->isSatisfiedBy($subject)){
-			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($subject) . "` must be compatible with `" . $sigType . "`");
+	public static function validateCallableSignature(callable|CallbackType $signature, callable $subject) : void{
+		if(!($signature instanceof CallbackType)){
+			$signature = CallbackType::createFromCallable($signature);
+		}
+		if(!$signature->isSatisfiedBy($subject)){
+			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($subject) . "` must be compatible with `" . $signature . "`");
 		}
 	}
 

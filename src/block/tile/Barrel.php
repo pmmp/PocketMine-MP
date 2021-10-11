@@ -37,7 +37,7 @@ class Barrel extends Spawnable implements Container, Nameable{
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
-		$this->inventory = new BarrelInventory($this->pos);
+		$this->inventory = new BarrelInventory($this->position);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
@@ -53,7 +53,6 @@ class Barrel extends Spawnable implements Container, Nameable{
 	public function close() : void{
 		if(!$this->closed){
 			$this->inventory->removeAllViewers();
-			$this->inventory = null;
 			parent::close();
 		}
 	}

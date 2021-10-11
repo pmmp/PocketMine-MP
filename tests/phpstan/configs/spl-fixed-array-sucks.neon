@@ -1,0 +1,17 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Cannot call method collectGarbage\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/world/format/Chunk.php
+
+		-
+			message: "#^Method pocketmine\\\\world\\\\format\\\\Chunk\\:\\:getSubChunks\\(\\) should return array\\<int, pocketmine\\\\world\\\\format\\\\SubChunk\\> but returns array\\<int, pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\>\\.$#"
+			count: 1
+			path: ../../../src/world/format/Chunk.php
+
+		-
+			message: "#^Method pocketmine\\\\world\\\\format\\\\HeightArray\\:\\:getValues\\(\\) should return array\\<int, int\\> but returns array\\<int, int\\|null\\>\\.$#"
+			count: 1
+			path: ../../../src/world/format/HeightArray.php
+

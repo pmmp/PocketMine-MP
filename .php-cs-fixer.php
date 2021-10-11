@@ -4,9 +4,8 @@ $finder = PhpCsFixer\Finder::create()
 	->in(__DIR__ . '/src')
 	->in(__DIR__ . '/build')
 	->in(__DIR__ . '/tests')
+	->in(__DIR__ . '/tools')
 	->notPath('plugins/DevTools')
-	->notPath('preprocessor')
-	->notContains('#ifndef COMPILE') //preprocessor will break if these are changed
 	->notName('PocketMine.php');
 
 return (new PhpCsFixer\Config)
@@ -41,13 +40,14 @@ return (new PhpCsFixer\Config)
 		],
 		'indentation_type' => true,
 		'native_function_invocation' => [
-		    'scope' => 'namespaced'
+			'scope' => 'namespaced',
+			'include' => ['@all'],
 		],
 		'no_closing_tag' => true,
 		'no_empty_phpdoc' => true,
 		'no_extra_blank_lines' => true,
 		'no_superfluous_phpdoc_tags' => [
-            'allow_mixed' => true,
+			'allow_mixed' => true,
 		],
 		'no_trailing_whitespace' => true,
 		'no_trailing_whitespace_in_comment' => true,

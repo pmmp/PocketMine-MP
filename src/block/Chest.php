@@ -36,10 +36,6 @@ class Chest extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
 	use NormalHorizontalFacingInMetadataTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::AXE));
-	}
-
 	/**
 	 * @return AxisAlignedBB[]
 	 */
@@ -49,7 +45,7 @@ class Chest extends Transparent{
 	}
 
 	public function onPostPlace() : void{
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileChest){
 			foreach([
 				Facing::rotateY($this->facing, true),
@@ -57,7 +53,7 @@ class Chest extends Transparent{
 			] as $side){
 				$c = $this->getSide($side);
 				if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
-					$pair = $this->pos->getWorld()->getTile($c->pos);
+					$pair = $this->position->getWorld()->getTile($c->position);
 					if($pair instanceof TileChest and !$pair->isPaired()){
 						$pair->pairWith($tile);
 						$tile->pairWith($pair);
@@ -71,7 +67,7 @@ class Chest extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
 
-			$chest = $this->pos->getWorld()->getTile($this->pos);
+			$chest = $this->position->getWorld()->getTile($this->position);
 			if($chest instanceof TileChest){
 				if(
 					!$this->getSide(Facing::UP)->isTransparent() or

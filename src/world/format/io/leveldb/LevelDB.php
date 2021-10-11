@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\leveldb;
 
+use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\LittleEndianNbtSerializer;
@@ -35,6 +36,7 @@ use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
+use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\data\BedrockWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
@@ -46,6 +48,7 @@ use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\format\PalettedBlockArray;
 use pocketmine\world\format\SubChunk;
 use pocketmine\world\WorldCreationOptions;
+use Webmozart\PathUtil\Path;
 use function array_map;
 use function array_values;
 use function chr;
@@ -61,7 +64,6 @@ use function strlen;
 use function substr;
 use function trim;
 use function unpack;
-use const DIRECTORY_SEPARATOR;
 use const LEVELDB_ZLIB_RAW_COMPRESSION;
 
 class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
@@ -109,7 +111,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	 * @throws \LevelDBException
 	 */
 	private static function createDB(string $path) : \LevelDB{
-		return new \LevelDB($path . "/db", [
+		return new \LevelDB(Path::join($path, "db"), [
 			"compression" => LEVELDB_ZLIB_RAW_COMPRESSION,
 			"block_size" => 64 * 1024 //64KB, big enough for most chunks
 		]);
@@ -128,7 +130,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	protected function loadLevelData() : WorldData{
-		return new BedrockWorldData($this->getPath() . DIRECTORY_SEPARATOR . "level.dat");
+		return new BedrockWorldData(Path::join($this->getPath(), "level.dat"));
 	}
 
 	public function getWorldMinY() : int{
@@ -140,14 +142,15 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	public static function isValid(string $path) : bool{
-		return file_exists($path . "/level.dat") and is_dir($path . "/db/");
+		return file_exists(Path::join($path, "level.dat")) and is_dir(Path::join($path, "db"));
 	}
 
 	public static function generate(string $path, string $name, WorldCreationOptions $options) : void{
 		self::checkForLevelDBExtension();
 
-		if(!file_exists($path . "/db")){
-			mkdir($path . "/db", 0777, true);
+		$dbPath = Path::join($path, "db");
+		if(!file_exists($dbPath)){
+			mkdir($dbPath, 0777, true);
 		}
 
 		BedrockWorldData::generate($path, $name, $options);
@@ -176,7 +179,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 				//we really need a proper state fixer, but this is a pressing issue.
 				$data = 0;
 			}
-			$palette[] = ($id << 4) | $data;
+			$palette[] = ($id << Block::INTERNAL_METADATA_BITS) | $data;
 		}
 
 		//TODO: exceptions
@@ -213,15 +216,15 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 			self::deserializeExtraDataKey($chunkVersion, $key, $x, $fullY, $z);
 
-			$ySub = ($fullY >> 4) & 0xf;
-			$y = $key & 0xf;
+			$ySub = ($fullY >> SubChunk::COORD_BIT_SIZE);
+			$y = $key & SubChunk::COORD_MASK;
 
 			$blockId = $value & 0xff;
 			$blockData = ($value >> 8) & 0xf;
 			if(!isset($extraDataLayers[$ySub])){
-				$extraDataLayers[$ySub] = new PalettedBlockArray(BlockLegacyIds::AIR << 4);
+				$extraDataLayers[$ySub] = new PalettedBlockArray(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS);
 			}
-			$extraDataLayers[$ySub]->set($x, $y, $z, ($blockId << 4) | $blockData);
+			$extraDataLayers[$ySub]->set($x, $y, $z, ($blockId << Block::INTERNAL_METADATA_BITS) | $blockData);
 		}
 
 		return $extraDataLayers;
@@ -230,7 +233,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
+	public function loadChunk(int $chunkX, int $chunkZ) : ?ChunkData{
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
 		$chunkVersionRaw = $this->db->get($index . self::TAG_VERSION);
@@ -301,14 +304,14 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 								$storages[] = $convertedLegacyExtraData[$y];
 							}
 
-							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, $storages);
+							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
 							break;
 						case 1: //paletted v1, has a single blockstorage
 							$storages = [$this->deserializePaletted($binaryStream)];
 							if(isset($convertedLegacyExtraData[$y])){
 								$storages[] = $convertedLegacyExtraData[$y];
 							}
-							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, $storages);
+							$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
 							break;
 						case 8:
 							//legacy extradata layers intentionally ignored because they aren't supposed to exist in v8
@@ -319,7 +322,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 								for($k = 0; $k < $storageCount; ++$k){
 									$storages[] = $this->deserializePaletted($binaryStream);
 								}
-								$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, $storages);
+								$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
 							}
 							break;
 						default:
@@ -362,7 +365,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					if(isset($convertedLegacyExtraData[$yy])){
 						$storages[] = $convertedLegacyExtraData[$yy];
 					}
-					$subChunks[$yy] = new SubChunk(BlockLegacyIds::AIR << 4, $storages);
+					$subChunks[$yy] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, $storages);
 				}
 
 				try{
@@ -385,7 +388,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$entities = [];
 		if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false and $entityData !== ""){
 			try{
-				$entities = array_map(function(TreeRoot $root) : CompoundTag{ return $root->mustGetCompoundTag(); }, $nbt->readMultiple($entityData));
+				$entities = array_map(fn(TreeRoot $root) => $root->mustGetCompoundTag(), $nbt->readMultiple($entityData));
 			}catch(NbtDataException $e){
 				throw new CorruptedChunkException($e->getMessage(), 0, $e);
 			}
@@ -395,7 +398,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$tiles = [];
 		if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false and $tileData !== ""){
 			try{
-				$tiles = array_map(function(TreeRoot $root) : CompoundTag{ return $root->mustGetCompoundTag(); }, $nbt->readMultiple($tileData));
+				$tiles = array_map(fn(TreeRoot $root) => $root->mustGetCompoundTag(), $nbt->readMultiple($tileData));
 			}catch(NbtDataException $e){
 				throw new CorruptedChunkException($e->getMessage(), 0, $e);
 			}
@@ -403,29 +406,34 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		$chunk = new Chunk(
 			$subChunks,
-			$entities,
-			$tiles,
 			$biomeArray
 		);
 
 		//TODO: tile ticks, biome states (?)
 
-		$chunk->setPopulated();
+		$finalisationChr = $this->db->get($index . self::TAG_STATE_FINALISATION);
+		if($finalisationChr !== false){
+			$finalisation = ord($finalisationChr);
+			$chunk->setPopulated($finalisation === self::FINALISATION_DONE);
+		}else{ //older versions didn't have this tag
+			$chunk->setPopulated();
+		}
 		if($hasBeenUpgraded){
-			$chunk->setDirty(); //trigger rewriting chunk to disk if it was converted from an older format
+			$chunk->setTerrainDirty(); //trigger rewriting chunk to disk if it was converted from an older format
 		}
 
-		return $chunk;
+		return new ChunkData($chunk, $entities, $tiles);
 	}
 
-	public function saveChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
+	public function saveChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{
 		$idMap = LegacyBlockIdToStringIdMap::getInstance();
 		$index = LevelDB::chunkIndex($chunkX, $chunkZ);
 
 		$write = new \LevelDBWriteBatch();
 		$write->put($index . self::TAG_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
 
-		if($chunk->getDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN)){
+		$chunk = $chunkData->getChunk();
+		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN)){
 			$subChunks = $chunk->getSubChunks();
 			foreach($subChunks as $y => $subChunk){
 				$key = $index . self::TAG_SUBCHUNK_PREFIX . chr($y);
@@ -438,17 +446,24 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 					$layers = $subChunk->getBlockLayers();
 					$subStream->putByte(count($layers));
 					foreach($layers as $blocks){
-						$subStream->putByte($blocks->getBitsPerBlock() << 1);
-						$subStream->put($blocks->getWordArray());
+						if($blocks->getBitsPerBlock() !== 0){
+							$subStream->putByte($blocks->getBitsPerBlock() << 1);
+							$subStream->put($blocks->getWordArray());
+						}else{
+							//TODO: we use these in-memory, but they aren't supported on disk by the game yet
+							//polyfill them with a zero'd 1-bpb instead
+							$subStream->putByte(1 << 1);
+							$subStream->put(str_repeat("\x00", PalettedBlockArray::getExpectedWordArraySize(1)));
+						}
 
 						$palette = $blocks->getPalette();
 						$subStream->putLInt(count($palette));
 						$tags = [];
 						foreach($palette as $p){
 							$tags[] = new TreeRoot(CompoundTag::create()
-								->setString("name", $idMap->legacyToString($p >> 4) ?? "minecraft:info_update")
-								->setInt("oldid", $p >> 4) //PM only (debugging), vanilla doesn't have this
-								->setShort("val", $p & 0xf));
+								->setString("name", $idMap->legacyToString($p >> Block::INTERNAL_METADATA_BITS) ?? "minecraft:info_update")
+								->setInt("oldid", $p >> Block::INTERNAL_METADATA_BITS) //PM only (debugging), vanilla doesn't have this
+								->setShort("val", $p & Block::INTERNAL_METADATA_MASK));
 						}
 
 						$subStream->put((new LittleEndianNbtSerializer())->writeMultiple($tags));
@@ -459,15 +474,15 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			}
 		}
 
-		if($chunk->getDirtyFlag(Chunk::DIRTY_FLAG_BIOMES)){
+		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_BIOMES)){
 			$write->put($index . self::TAG_DATA_2D, str_repeat("\x00", 512) . $chunk->getBiomeIdArray());
 		}
 
 		//TODO: use this properly
-		$write->put($index . self::TAG_STATE_FINALISATION, chr(self::FINALISATION_DONE));
+		$write->put($index . self::TAG_STATE_FINALISATION, chr($chunk->isPopulated() ? self::FINALISATION_DONE : self::FINALISATION_NEEDS_POPULATION));
 
-		$this->writeTags($chunk->getNBTtiles(), $index . self::TAG_BLOCK_ENTITY, $write);
-		$this->writeTags($chunk->getNBTentities(), $index . self::TAG_ENTITY, $write);
+		$this->writeTags($chunkData->getTileNBT(), $index . self::TAG_BLOCK_ENTITY, $write);
+		$this->writeTags($chunkData->getEntityNBT(), $index . self::TAG_ENTITY, $write);
 
 		$write->delete($index . self::TAG_DATA_2D_LEGACY);
 		$write->delete($index . self::TAG_LEGACY_TERRAIN);
@@ -481,7 +496,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	private function writeTags(array $targets, string $index, \LevelDBWriteBatch $write) : void{
 		if(count($targets) > 0){
 			$nbt = new LittleEndianNbtSerializer();
-			$write->put($index, $nbt->writeMultiple(array_map(function(CompoundTag $tag) : TreeRoot{ return new TreeRoot($tag); }, $targets)));
+			$write->put($index, $nbt->writeMultiple(array_map(fn(CompoundTag $tag) => new TreeRoot($tag), $targets)));
 		}else{
 			$write->delete($index);
 		}

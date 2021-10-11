@@ -28,6 +28,8 @@ use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\thread\Thread;
 use pocketmine\thread\Worker;
 use function get_class;
+use function implode;
+use function is_int;
 use function preg_replace;
 use function sprintf;
 use function trim;
@@ -139,18 +141,20 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 			$trace = $e->getTrace();
 		}
 
-		$this->buffer(function() use ($e, $trace) : void{
-			$this->critical(self::printExceptionMessage($e));
-			foreach(Utils::printableTrace($trace) as $line){
-				$this->critical($line);
+		$lines = [self::printExceptionMessage($e)];
+		$lines[] = "--- Stack trace ---";
+		foreach(Utils::printableTrace($trace) as $line){
+			$lines[] = "  " . $line;
+		}
+		for($prev = $e->getPrevious(); $prev !== null; $prev = $prev->getPrevious()){
+			$lines[] = "--- Previous ---";
+			$lines[] = self::printExceptionMessage($prev);
+			foreach(Utils::printableTrace($prev->getTrace()) as $line){
+				$lines[] = "  " . $line;
 			}
-			for($prev = $e->getPrevious(); $prev !== null; $prev = $prev->getPrevious()){
-				$this->critical("Previous: " . self::printExceptionMessage($prev));
-				foreach(Utils::printableTrace($prev->getTrace()) as $line){
-					$this->critical("  " . $line);
-				}
-			}
-		});
+		}
+		$lines[] = "--- End of exception information ---";
+		$this->critical(implode("\n", $lines));
 
 		$this->syncFlushBuffer();
 	}
@@ -159,10 +163,12 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		$errstr = preg_replace('/\s+/', ' ', trim($e->getMessage()));
 
 		$errno = $e->getCode();
-		try{
-			$errno = ErrorTypeToStringMap::get($errno);
-		}catch(\InvalidArgumentException $ex){
-			//pass
+		if(is_int($errno)){
+			try{
+				$errno = ErrorTypeToStringMap::get($errno);
+			}catch(\InvalidArgumentException $ex){
+				//pass
+			}
 		}
 
 		$errfile = Filesystem::cleanPath($e->getFile());
@@ -241,12 +247,11 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 
 		$this->synchronized(function() use ($message, $level, $time) : void{
 			Terminal::writeLine($message);
+			$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
 
 			foreach($this->attachments as $attachment){
 				$attachment->call($level, $message);
 			}
-
-			$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
 		});
 	}
 

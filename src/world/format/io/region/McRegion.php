@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
+use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
@@ -32,6 +33,7 @@ use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\SubChunkConverter;
@@ -42,7 +44,7 @@ class McRegion extends RegionWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function deserializeChunk(string $data) : Chunk{
+	protected function deserializeChunk(string $data) : ChunkData{
 		$decompressed = @zlib_decode($data);
 		if($decompressed === false){
 			throw new CorruptedChunkException("Failed to decompress chunk NBT");
@@ -63,7 +65,7 @@ class McRegion extends RegionWorldProvider{
 		$fullData = self::readFixedSizeByteArray($chunk, "Data", 16384);
 
 		for($y = 0; $y < 8; ++$y){
-			$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << 4, [SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $y)]);
+			$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, [SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $y)]);
 		}
 
 		$makeBiomeArray = function(string $biomeIds) : BiomeArray{
@@ -80,14 +82,13 @@ class McRegion extends RegionWorldProvider{
 			$biomeIds = $makeBiomeArray($biomesTag->getValue());
 		}
 
-		$result = new Chunk(
-			$subChunks,
+		$result = new Chunk($subChunks, $biomeIds);
+		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
+		return new ChunkData(
+			$result,
 			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
 			($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
-			$biomeIds
 		);
-		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
-		return $result;
 	}
 
 	protected static function getRegionFileExtension() : string{

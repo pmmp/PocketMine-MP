@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\TreeType;
+use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -31,18 +32,17 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use pocketmine\world\BlockTransaction;
-use pocketmine\world\generator\object\Tree;
+use pocketmine\world\generator\object\TreeFactory;
 use function mt_rand;
 
 class Sapling extends Flowable{
 
-	/** @var bool */
-	protected $ready = false;
-	/** @var TreeType */
-	private $treeType;
+	protected bool $ready = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	private TreeType $treeType;
+
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, TreeType $treeType){
+		parent::__construct($idInfo, $name, $breakInfo);
 		$this->treeType = $treeType;
 	}
 
@@ -77,7 +77,7 @@ class Sapling extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
-			Tree::growTree($this->pos->getWorld(), $this->pos->x, $this->pos->y, $this->pos->z, new Random(mt_rand()), $this->treeType);
+			$this->grow($player);
 
 			$item->pop();
 
@@ -89,7 +89,7 @@ class Sapling extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
@@ -98,14 +98,31 @@ class Sapling extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->pos->getWorld()->getFullLightAt($this->pos->x, $this->pos->y, $this->pos->z) >= 8 and mt_rand(1, 7) === 1){
+		if($this->position->getWorld()->getFullLightAt($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) >= 8 and mt_rand(1, 7) === 1){
 			if($this->ready){
-				Tree::growTree($this->pos->getWorld(), $this->pos->x, $this->pos->y, $this->pos->z, new Random(mt_rand()), $this->treeType);
+				$this->grow(null);
 			}else{
 				$this->ready = true;
-				$this->pos->getWorld()->setBlock($this->pos, $this);
+				$this->position->getWorld()->setBlock($this->position, $this);
 			}
 		}
+	}
+
+	private function grow(?Player $player) : void{
+		$random = new Random(mt_rand());
+		$tree = TreeFactory::get($random, $this->treeType);
+		$transaction = $tree?->getBlockTransaction($this->position->getWorld(), $this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ(), $random);
+		if($transaction === null){
+			return;
+		}
+
+		$ev = new StructureGrowEvent($this, $transaction, $player);
+		$ev->call();
+		if($ev->isCancelled()){
+			return;
+		}
+
+		$transaction->apply();
 	}
 
 	public function getFuelTime() : int{

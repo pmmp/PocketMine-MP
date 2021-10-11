@@ -28,6 +28,10 @@ use function array_values;
 use function count;
 
 class SubChunk{
+	public const COORD_BIT_SIZE = 4;
+	public const COORD_MASK = ~(~0 << self::COORD_BIT_SIZE);
+	public const EDGE_LENGTH = 1 << self::COORD_BIT_SIZE;
+
 	/** @var int */
 	private $emptyBlockId;
 	/** @var PalettedBlockArray[] */
@@ -100,7 +104,7 @@ class SubChunk{
 		if(count($this->blockLayers) === 0){
 			return null;
 		}
-		for($y = 15; $y >= 0; --$y){
+		for($y = self::EDGE_LENGTH - 1; $y >= 0; --$y){
 			if($this->blockLayers[0]->get($x, $y, $z) !== $this->emptyBlockId){
 				return $y;
 			}
@@ -145,11 +149,11 @@ class SubChunk{
 		}
 		$this->blockLayers = array_values($this->blockLayers);
 
-		if($this->skyLight !== null){
-			$this->skyLight->collectGarbage();
+		if($this->skyLight !== null && $this->skyLight->isUniform(0)){
+			$this->skyLight = null;
 		}
-		if($this->blockLight !== null){
-			$this->blockLight->collectGarbage();
+		if($this->blockLight !== null && $this->blockLight->isUniform(0)){
+			$this->blockLight = null;
 		}
 	}
 

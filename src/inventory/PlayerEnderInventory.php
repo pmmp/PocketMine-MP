@@ -25,7 +25,7 @@ namespace pocketmine\inventory;
 
 use pocketmine\entity\Human;
 
-final class PlayerEnderInventory extends BaseInventory{
+final class PlayerEnderInventory extends SimpleInventory{
 
 	private Human $holder;
 

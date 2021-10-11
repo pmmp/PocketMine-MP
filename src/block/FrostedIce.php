@@ -28,12 +28,7 @@ use function mt_rand;
 
 class FrostedIce extends Ice{
 
-	/** @var int */
-	protected $age = 0;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::PICKAXE));
-	}
+	protected int $age = 0;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 3);
@@ -60,15 +55,15 @@ class FrostedIce extends Ice{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->checkAdjacentBlocks(2)){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}else{
-			$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, mt_rand(20, 40));
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
 		}
 	}
 
 	public function onRandomTick() : void{
 		if((!$this->checkAdjacentBlocks(4) or mt_rand(0, 2) === 0) and
-			$this->pos->getWorld()->getHighestAdjacentFullLightAt($this->pos->x, $this->pos->y, $this->pos->z) >= 12 - $this->age){
+			$this->position->getWorld()->getHighestAdjacentFullLightAt($this->position->x, $this->position->y, $this->position->z) >= 12 - $this->age){
 			if($this->tryMelt()){
 				foreach($this->getAllSides() as $block){
 					if($block instanceof FrostedIce){
@@ -77,7 +72,7 @@ class FrostedIce extends Ice{
 				}
 			}
 		}else{
-			$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, mt_rand(20, 40));
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
 		}
 	}
 
@@ -93,7 +88,7 @@ class FrostedIce extends Ice{
 					continue;
 				}
 				if(
-					$this->pos->getWorld()->getBlockAt($this->pos->x + $x, $this->pos->y, $this->pos->z + $z) instanceof FrostedIce and
+					$this->position->getWorld()->getBlockAt($this->position->x + $x, $this->position->y, $this->position->z + $z) instanceof FrostedIce and
 					++$found >= $requirement
 				){
 					return true;
@@ -110,13 +105,13 @@ class FrostedIce extends Ice{
 	 */
 	private function tryMelt() : bool{
 		if($this->age >= 3){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 			return true;
 		}
 
 		$this->age++;
-		$this->pos->getWorld()->setBlock($this->pos, $this);
-		$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, mt_rand(20, 40));
+		$this->position->getWorld()->setBlock($this->position, $this);
+		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(20, 40));
 		return false;
 	}
 }

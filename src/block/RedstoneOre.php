@@ -24,29 +24,28 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function mt_rand;
 
 class RedstoneOre extends Opaque{
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
 
-	/** @var bool */
-	protected $lit = false;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel()));
+	protected bool $lit = false;
+
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->lit ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->lit ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->lit = $id === $this->idInfo->getSecondId();
+		$this->lit = $id === $this->idInfoFlattened->getSecondId();
 	}
 
 	public function isLit() : bool{
@@ -68,7 +67,7 @@ class RedstoneOre extends Opaque{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$this->lit){
 			$this->lit = true;
-			$this->pos->getWorld()->setBlock($this->pos, $this); //no return here - this shouldn't prevent block placement
+			$this->position->getWorld()->setBlock($this->position, $this); //no return here - this shouldn't prevent block placement
 		}
 		return false;
 	}
@@ -76,7 +75,7 @@ class RedstoneOre extends Opaque{
 	public function onNearbyBlockChange() : void{
 		if(!$this->lit){
 			$this->lit = true;
-			$this->pos->getWorld()->setBlock($this->pos, $this);
+			$this->position->getWorld()->setBlock($this->position, $this);
 		}
 	}
 
@@ -87,7 +86,7 @@ class RedstoneOre extends Opaque{
 	public function onRandomTick() : void{
 		if($this->lit){
 			$this->lit = false;
-			$this->pos->getWorld()->setBlock($this->pos, $this);
+			$this->position->getWorld()->setBlock($this->position, $this);
 		}
 	}
 

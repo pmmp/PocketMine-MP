@@ -64,6 +64,11 @@ interface Inventory{
 	public function canAddItem(Item $item) : bool;
 
 	/**
+	 * Returns how many items from the given itemstack can be added to this inventory.
+	 */
+	public function getAddableItemQuantity(Item $item) : int;
+
+	/**
 	 * Removes the given Item from the inventory.
 	 * It will return the Items that couldn't be removed.
 	 *

@@ -36,12 +36,7 @@ use function abs;
 class Barrel extends Opaque{
 	use AnyFacingTrait;
 
-	/** @var bool */
-	protected $open = false;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(2.5, BlockToolType::AXE));
-	}
+	protected bool $open = false;
 
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::writeFacing($this->facing) | ($this->open ? BlockLegacyMetadata::BARREL_FLAG_OPEN : 0);
@@ -68,12 +63,12 @@ class Barrel extends Opaque{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			if(abs($player->getPosition()->getX() - $this->pos->getX()) < 2 && abs($player->getPosition()->getZ() - $this->pos->getZ()) < 2){
+			if(abs($player->getPosition()->getX() - $this->position->getX()) < 2 && abs($player->getPosition()->getZ() - $this->position->getZ()) < 2){
 				$y = $player->getEyePos()->getY();
 
-				if($y - $this->pos->getY() > 2){
+				if($y - $this->position->getY() > 2){
 					$this->facing = Facing::UP;
-				}elseif($this->pos->getY() - $y > 0){
+				}elseif($this->position->getY() - $y > 0){
 					$this->facing = Facing::DOWN;
 				}else{
 					$this->facing = Facing::opposite($player->getHorizontalFacing());
@@ -88,7 +83,7 @@ class Barrel extends Opaque{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
-			$barrel = $this->pos->getWorld()->getTile($this->pos);
+			$barrel = $this->position->getWorld()->getTile($this->position);
 			if($barrel instanceof TileBarrel){
 				if(!$barrel->canOpenWith($item->getCustomName())){
 					return true;

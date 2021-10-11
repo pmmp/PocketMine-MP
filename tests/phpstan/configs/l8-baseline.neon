@@ -2,13 +2,8 @@ parameters:
 	ignoreErrors:
 		-
 			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|null given\\.$#"
-			count: 1
+			count: 2
 			path: ../../../build/make-release.php
-
-		-
-			message: "#^Parameter \\#1 \\$constraint of method pocketmine\\\\block\\\\BaseRail\\:\\:getPossibleConnectionDirectionsOneConstraint\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/block/BaseRail.php
 
 		-
 			message: "#^Cannot call method setFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
@@ -106,7 +101,12 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method getWorld\\(\\) on pocketmine\\\\player\\\\Player\\|null\\.$#"
+			message: "#^Cannot call method getUsername\\(\\) on pocketmine\\\\player\\\\PlayerInfo\\|null\\.$#"
+			count: 2
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Cannot call method getUuid\\(\\) on pocketmine\\\\player\\\\PlayerInfo\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
@@ -126,17 +126,7 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Cannot call method syncCreative\\(\\) on pocketmine\\\\network\\\\mcpe\\\\InventoryManager\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
-			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:getInvManager\\(\\) should return pocketmine\\\\network\\\\mcpe\\\\InventoryManager but returns pocketmine\\\\network\\\\mcpe\\\\InventoryManager\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/NetworkSession.php
-
-		-
-			message: "#^Parameter \\#1 \\$clientPub of class pocketmine\\\\network\\\\mcpe\\\\encryption\\\\PrepareEncryptionTask constructor expects Mdanter\\\\Ecc\\\\Crypto\\\\Key\\\\PublicKeyInterface, Mdanter\\\\Ecc\\\\Crypto\\\\Key\\\\PublicKeyInterface\\|null given\\.$#"
+			message: "#^Parameter \\#1 \\$clientPub of class pocketmine\\\\network\\\\mcpe\\\\encryption\\\\PrepareEncryptionTask constructor expects string, string\\|null given\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/NetworkSession.php
 
@@ -152,7 +142,7 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$for of method pocketmine\\\\network\\\\mcpe\\\\NetworkSession\\:\\:syncAdventureSettings\\(\\) expects pocketmine\\\\player\\\\Player, pocketmine\\\\player\\\\Player\\|null given\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
@@ -176,34 +166,19 @@ parameters:
 			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\LevelSoundEventPacket\\:\\:\\$position \\(pocketmine\\\\math\\\\Vector3\\) does not accept pocketmine\\\\math\\\\Vector3\\|null\\.$#"
+			message: "#^Parameter \\#2 \\$playerInfo of method pocketmine\\\\Server\\:\\:createPlayer\\(\\) expects pocketmine\\\\player\\\\PlayerInfo, pocketmine\\\\player\\\\PlayerInfo\\|null given\\.$#"
 			count: 1
-			path: ../../../src/network/mcpe/protocol/LevelSoundEventPacket.php
+			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/SetScorePacket.php
+			message: "#^Parameter \\#3 \\$inventoryManager of class pocketmine\\\\network\\\\mcpe\\\\handler\\\\InGamePacketHandler constructor expects pocketmine\\\\network\\\\mcpe\\\\InventoryManager, pocketmine\\\\network\\\\mcpe\\\\InventoryManager\\|null given\\.$#"
+			count: 2
+			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
-			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putString\\(\\) expects string, string\\|null given\\.$#"
+			message: "#^Parameter \\#4 \\$inventoryManager of class pocketmine\\\\network\\\\mcpe\\\\handler\\\\PreSpawnPacketHandler constructor expects pocketmine\\\\network\\\\mcpe\\\\InventoryManager, pocketmine\\\\network\\\\mcpe\\\\InventoryManager\\|null given\\.$#"
 			count: 1
-			path: ../../../src/network/mcpe/protocol/SetScorePacket.php
-
-		-
-			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/SetScoreboardIdentityPacket.php
-
-		-
-			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putVarInt\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/protocol/types/recipe/FurnaceRecipe.php
-
-		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\raklib\\\\RakLibServer\\:\\:\\$mainThreadNotifier \\(pocketmine\\\\snooze\\\\SleeperNotifier\\) does not accept pocketmine\\\\snooze\\\\SleeperNotifier\\|null\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/raklib/RakLibServer.php
+			path: ../../../src/network/mcpe/NetworkSession.php
 
 		-
 			message: "#^Method pocketmine\\\\permission\\\\DefaultPermissions\\:\\:registerPermission\\(\\) should return pocketmine\\\\permission\\\\Permission but returns pocketmine\\\\permission\\\\Permission\\|null\\.$#"
@@ -211,12 +186,7 @@ parameters:
 			path: ../../../src/permission/DefaultPermissions.php
 
 		-
-			message: "#^Cannot call method getEntities\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/player/Player.php
-
-		-
-			message: "#^Cannot call method getSafeSpawn\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
+			message: "#^Cannot call method getSpawnLocation\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/player/Player.php
 
@@ -261,26 +231,6 @@ parameters:
 			path: ../../../src/scheduler/DumpWorkerMemoryTask.php
 
 		-
-			message: "#^Cannot access property \\$date on pocketmine\\\\updater\\\\UpdateInfo\\|null\\.$#"
-			count: 1
-			path: ../../../src/updater/AutoUpdater.php
-
-		-
-			message: "#^Cannot access property \\$details_url on pocketmine\\\\updater\\\\UpdateInfo\\|null\\.$#"
-			count: 1
-			path: ../../../src/updater/AutoUpdater.php
-
-		-
-			message: "#^Cannot access property \\$download_url on pocketmine\\\\updater\\\\UpdateInfo\\|null\\.$#"
-			count: 1
-			path: ../../../src/updater/AutoUpdater.php
-
-		-
-			message: "#^Cannot call method getFullVersion\\(\\) on pocketmine\\\\utils\\\\VersionString\\|null\\.$#"
-			count: 1
-			path: ../../../src/updater/AutoUpdater.php
-
-		-
 			message: "#^Method pocketmine\\\\utils\\\\Config\\:\\:fixYAMLIndexes\\(\\) should return string but returns string\\|null\\.$#"
 			count: 1
 			path: ../../../src/utils/Config.php
@@ -301,11 +251,6 @@ parameters:
 			path: ../../../src/world/Explosion.php
 
 		-
-			message: "#^Cannot call method getEntities\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 3
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Parameter \\#3 \\$chunk of method pocketmine\\\\player\\\\Player\\:\\:onChunkChanged\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
@@ -324,26 +269,6 @@ parameters:
 			message: "#^Method pocketmine\\\\world\\\\format\\\\HeightArray\\:\\:get\\(\\) should return int but returns int\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/format/HeightArray.php
-
-		-
-			message: "#^Cannot call method isDirty\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/generator/PopulationTask.php
-
-		-
-			message: "#^Cannot call method setDirtyFlag\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 4
-			path: ../../../src/world/generator/PopulationTask.php
-
-		-
-			message: "#^Cannot call method setPopulated\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
-			path: ../../../src/world/generator/PopulationTask.php
-
-		-
-			message: "#^Parameter \\#1 \\$chunk of static method pocketmine\\\\world\\\\format\\\\io\\\\FastChunkSerializer\\:\\:serializeWithoutLight\\(\\) expects pocketmine\\\\world\\\\format\\\\Chunk, pocketmine\\\\world\\\\format\\\\Chunk\\|null given\\.$#"
-			count: 2
-			path: ../../../src/world/generator/PopulationTask.php
 
 		-
 			message: "#^Method pocketmine\\\\world\\\\generator\\\\biome\\\\BiomeSelector\\:\\:pickBiome\\(\\) should return pocketmine\\\\world\\\\biome\\\\Biome but returns pocketmine\\\\world\\\\biome\\\\Biome\\|null\\.$#"

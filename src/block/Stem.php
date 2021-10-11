@@ -31,10 +31,6 @@ use function mt_rand;
 
 abstract class Stem extends Crops{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
-
 	abstract protected function getPlant() : Block;
 
 	public function onRandomTick() : void{
@@ -45,7 +41,7 @@ abstract class Stem extends Crops{
 				$ev = new BlockGrowEvent($this, $block);
 				$ev->call();
 				if(!$ev->isCancelled()){
-					$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
+					$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
 				}
 			}else{
 				$grow = $this->getPlant();
@@ -61,7 +57,7 @@ abstract class Stem extends Crops{
 					$ev = new BlockGrowEvent($side, $grow);
 					$ev->call();
 					if(!$ev->isCancelled()){
-						$this->pos->getWorld()->setBlock($side->pos, $ev->getNewState());
+						$this->position->getWorld()->setBlock($side->position, $ev->getNewState());
 					}
 				}
 			}

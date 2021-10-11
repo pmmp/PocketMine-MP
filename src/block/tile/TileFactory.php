@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
@@ -52,6 +53,8 @@ final class TileFactory{
 		$this->register(Banner::class, ["Banner", "minecraft:banner"]);
 		$this->register(Beacon::class, ["Beacon", "minecraft:beacon"]);
 		$this->register(Bed::class, ["Bed", "minecraft:bed"]);
+		$this->register(Bell::class, ["Bell", "minecraft:bell"]);
+		$this->register(BlastFurnace::class, ["BlastFurnace", "minecraft:blast_furnace"]);
 		$this->register(BrewingStand::class, ["BrewingStand", "minecraft:brewing_stand"]);
 		$this->register(Chest::class, ["Chest", "minecraft:chest"]);
 		$this->register(Comparator::class, ["Comparator", "minecraft:comparator"]);
@@ -59,17 +62,17 @@ final class TileFactory{
 		$this->register(EnchantTable::class, ["EnchantTable", "minecraft:enchanting_table"]);
 		$this->register(EnderChest::class, ["EnderChest", "minecraft:ender_chest"]);
 		$this->register(FlowerPot::class, ["FlowerPot", "minecraft:flower_pot"]);
-		$this->register(Furnace::class, ["Furnace", "minecraft:furnace"]);
+		$this->register(NormalFurnace::class, ["Furnace", "minecraft:furnace"]);
 		$this->register(Hopper::class, ["Hopper", "minecraft:hopper"]);
 		$this->register(ItemFrame::class, ["ItemFrame"]); //this is an entity in PC
 		$this->register(Jukebox::class, ["Jukebox", "RecordPlayer", "minecraft:jukebox"]);
 		$this->register(MonsterSpawner::class, ["MobSpawner", "minecraft:mob_spawner"]);
 		$this->register(Note::class, ["Music", "minecraft:noteblock"]);
+		$this->register(ShulkerBox::class, ["ShulkerBox", "minecraft:shulker_box"]);
 		$this->register(Sign::class, ["Sign", "minecraft:sign"]);
+		$this->register(Smoker::class, ["Smoker", "minecraft:smoker"]);
 		$this->register(Skull::class, ["Skull", "minecraft:skull"]);
 
-		//TODO: Bell
-		//TODO: BlastFurnace
 		//TODO: Campfire
 		//TODO: Cauldron
 		//TODO: ChalkboardBlock
@@ -85,8 +88,6 @@ final class TileFactory{
 		//TODO: MovingBlock
 		//TODO: NetherReactor
 		//TODO: PistonArm
-		//TODO: ShulkerBox
-		//TODO: Smoker
 		//TODO: StructureBlock
 	}
 
@@ -111,6 +112,7 @@ final class TileFactory{
 
 	/**
 	 * @internal
+	 * @throws NbtDataException
 	 */
 	public function createFromData(World $world, CompoundTag $nbt) : ?Tile{
 		$type = $nbt->getString(Tile::TAG_ID, "");

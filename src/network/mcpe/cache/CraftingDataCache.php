@@ -24,15 +24,19 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\cache;
 
 use pocketmine\crafting\CraftingManager;
+use pocketmine\crafting\FurnaceType;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
+use pocketmine\network\mcpe\protocol\types\recipe\CraftingRecipeBlockName;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe as ProtocolFurnaceRecipe;
+use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipeBlockName;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapedRecipe as ProtocolShapedRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe as ProtocolShapelessRecipe;
 use pocketmine\timings\Timings;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
 use pocketmine\utils\SingletonTrait;
 use Ramsey\Uuid\Uuid;
@@ -77,7 +81,7 @@ final class CraftingDataCache{
 			foreach($list as $recipe){
 				$pk->entries[] = new ProtocolShapelessRecipe(
 					CraftingDataPacket::ENTRY_SHAPELESS,
-					Binary::writeInt($counter++),
+					Binary::writeInt(++$counter),
 					array_map(function(Item $item) use ($converter) : RecipeIngredient{
 						return $converter->coreItemStackToRecipeIngredient($item);
 					}, $recipe->getIngredientList()),
@@ -85,7 +89,7 @@ final class CraftingDataCache{
 						return $converter->coreItemStackToNet($item);
 					}, $recipe->getResults()),
 					$nullUUID,
-					"crafting_table",
+					CraftingRecipeBlockName::CRAFTING_TABLE,
 					50,
 					$counter
 				);
@@ -102,28 +106,36 @@ final class CraftingDataCache{
 				}
 				$pk->entries[] = $r = new ProtocolShapedRecipe(
 					CraftingDataPacket::ENTRY_SHAPED,
-					Binary::writeInt($counter++),
+					Binary::writeInt(++$counter),
 					$inputs,
 					array_map(function(Item $item) use ($converter) : ItemStack{
 						return $converter->coreItemStackToNet($item);
 					}, $recipe->getResults()),
 					$nullUUID,
-					"crafting_table",
+					CraftingRecipeBlockName::CRAFTING_TABLE,
 					50,
 					$counter
 				);
 			}
 		}
 
-		foreach($manager->getFurnaceRecipeManager()->getAll() as $recipe){
-			$input = $converter->coreItemStackToNet($recipe->getInput());
-			$pk->entries[] = new ProtocolFurnaceRecipe(
-				CraftingDataPacket::ENTRY_FURNACE_DATA,
-				$input->getId(),
-				$input->getMeta(),
-				$converter->coreItemStackToNet($recipe->getResult()),
-				"furnace"
-			);
+		foreach(FurnaceType::getAll() as $furnaceType){
+			$typeTag = match($furnaceType->id()){
+				FurnaceType::FURNACE()->id() => FurnaceRecipeBlockName::FURNACE,
+				FurnaceType::BLAST_FURNACE()->id() => FurnaceRecipeBlockName::BLAST_FURNACE,
+				FurnaceType::SMOKER()->id() => FurnaceRecipeBlockName::SMOKER,
+				default => throw new AssumptionFailedError("Unreachable"),
+			};
+			foreach($manager->getFurnaceRecipeManager($furnaceType)->getAll() as $recipe){
+				$input = $converter->coreItemStackToNet($recipe->getInput());
+				$pk->entries[] = new ProtocolFurnaceRecipe(
+					CraftingDataPacket::ENTRY_FURNACE_DATA,
+					$input->getId(),
+					$input->getMeta(),
+					$converter->coreItemStackToNet($recipe->getResult()),
+					$typeTag
+				);
+			}
 		}
 
 		Timings::$craftingDataCacheRebuild->stopTiming();

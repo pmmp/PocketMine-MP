@@ -27,21 +27,18 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\player\Player;
 use pocketmine\utils\ObjectSet;
-use function array_map;
 use function array_slice;
 use function count;
+use function max;
+use function min;
 use function spl_object_id;
 
+/**
+ * This class provides everything needed to implement an inventory, minus the underlying storage system.
+ */
 abstract class BaseInventory implements Inventory{
-	use InventoryHelpersTrait;
-
 	/** @var int */
 	protected $maxStackSize = Inventory::MAX_STACK;
-	/**
-	 * @var \SplFixedArray|(Item|null)[]
-	 * @phpstan-var \SplFixedArray<Item|null>
-	 */
-	protected $slots;
 	/** @var Player[] */
 	protected $viewers = [];
 	/**
@@ -50,42 +47,18 @@ abstract class BaseInventory implements Inventory{
 	 */
 	protected $listeners;
 
-	public function __construct(int $size){
-		$this->slots = new \SplFixedArray($size);
+	public function __construct(){
 		$this->listeners = new ObjectSet();
-	}
-
-	/**
-	 * Returns the size of the inventory.
-	 */
-	public function getSize() : int{
-		return $this->slots->getSize();
 	}
 
 	public function getMaxStackSize() : int{
 		return $this->maxStackSize;
 	}
 
-	public function getItem(int $index) : Item{
-		return $this->slots[$index] !== null ? clone $this->slots[$index] : ItemFactory::air();
-	}
-
 	/**
-	 * @return Item[]
+	 * @param Item[] $items
 	 */
-	public function getContents(bool $includeEmpty = false) : array{
-		$contents = [];
-
-		foreach($this->slots as $i => $slot){
-			if($slot !== null){
-				$contents[$i] = clone $slot;
-			}elseif($includeEmpty){
-				$contents[$i] = ItemFactory::air();
-			}
-		}
-
-		return $contents;
-	}
+	abstract protected function internalSetContents(array $items) : void;
 
 	/**
 	 * @param Item[] $items
@@ -95,22 +68,14 @@ abstract class BaseInventory implements Inventory{
 			$items = array_slice($items, 0, $this->getSize(), true);
 		}
 
-		$oldContents = array_map(function(?Item $item) : Item{
-			return $item ?? ItemFactory::air();
-		}, $this->slots->toArray());
+		$oldContents = $this->getContents(true);
 
 		$listeners = $this->listeners->toArray();
 		$this->listeners->clear();
 		$viewers = $this->viewers;
 		$this->viewers = [];
 
-		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			if(!isset($items[$i])){
-				$this->clear($i);
-			}else{
-				$this->setItem($i, $items[$i]);
-			}
-		}
+		$this->internalSetContents($items);
 
 		$this->listeners->add(...$listeners); //don't directly write, in case listeners were added while operation was in progress
 		foreach($viewers as $id => $viewer){
@@ -119,6 +84,8 @@ abstract class BaseInventory implements Inventory{
 
 		$this->onContentChange($oldContents);
 	}
+
+	abstract protected function internalSetItem(int $index, Item $item) : void;
 
 	public function setItem(int $index, Item $item) : void{
 		if($item->isNull()){
@@ -129,8 +96,212 @@ abstract class BaseInventory implements Inventory{
 
 		$oldItem = $this->getItem($index);
 
-		$this->slots[$index] = $item->isNull() ? null : $item;
+		$this->internalSetItem($index, $item);
 		$this->onSlotChange($index, $oldItem);
+	}
+
+	public function contains(Item $item) : bool{
+		$count = max(1, $item->getCount());
+		$checkDamage = !$item->hasAnyDamageValue();
+		$checkTags = $item->hasNamedTag();
+		foreach($this->getContents() as $i){
+			if($item->equals($i, $checkDamage, $checkTags)){
+				$count -= $i->getCount();
+				if($count <= 0){
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public function all(Item $item) : array{
+		$slots = [];
+		$checkDamage = !$item->hasAnyDamageValue();
+		$checkTags = $item->hasNamedTag();
+		foreach($this->getContents() as $index => $i){
+			if($item->equals($i, $checkDamage, $checkTags)){
+				$slots[$index] = $i;
+			}
+		}
+
+		return $slots;
+	}
+
+	public function remove(Item $item) : void{
+		$checkDamage = !$item->hasAnyDamageValue();
+		$checkTags = $item->hasNamedTag();
+
+		foreach($this->getContents() as $index => $i){
+			if($item->equals($i, $checkDamage, $checkTags)){
+				$this->clear($index);
+			}
+		}
+	}
+
+	public function first(Item $item, bool $exact = false) : int{
+		$count = $exact ? $item->getCount() : max(1, $item->getCount());
+		$checkDamage = $exact || !$item->hasAnyDamageValue();
+		$checkTags = $exact || $item->hasNamedTag();
+
+		foreach($this->getContents() as $index => $i){
+			if($item->equals($i, $checkDamage, $checkTags) and ($i->getCount() === $count or (!$exact and $i->getCount() > $count))){
+				return $index;
+			}
+		}
+
+		return -1;
+	}
+
+	public function firstEmpty() : int{
+		foreach($this->getContents(true) as $i => $slot){
+			if($slot->isNull()){
+				return $i;
+			}
+		}
+
+		return -1;
+	}
+
+	public function isSlotEmpty(int $index) : bool{
+		return $this->getItem($index)->isNull();
+	}
+
+	public function canAddItem(Item $item) : bool{
+		return $this->getAddableItemQuantity($item) === $item->getCount();
+	}
+
+	public function getAddableItemQuantity(Item $item) : int{
+		$count = $item->getCount();
+		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
+			$slot = $this->getItem($i);
+			if($item->canStackWith($slot)){
+				if(($diff = min($slot->getMaxStackSize(), $item->getMaxStackSize()) - $slot->getCount()) > 0){
+					$count -= $diff;
+				}
+			}elseif($slot->isNull()){
+				$count -= min($this->getMaxStackSize(), $item->getMaxStackSize());
+			}
+
+			if($count <= 0){
+				return $item->getCount();
+			}
+		}
+
+		return $item->getCount() - $count;
+	}
+
+	public function addItem(Item ...$slots) : array{
+		/** @var Item[] $itemSlots */
+		/** @var Item[] $slots */
+		$itemSlots = [];
+		foreach($slots as $slot){
+			if(!$slot->isNull()){
+				$itemSlots[] = clone $slot;
+			}
+		}
+
+		/** @var Item[] $returnSlots */
+		$returnSlots = [];
+
+		foreach($itemSlots as $item){
+			$leftover = $this->internalAddItem($item);
+			if(!$leftover->isNull()){
+				$returnSlots[] = $leftover;
+			}
+		}
+
+		return $returnSlots;
+	}
+
+	private function internalAddItem(Item $slot) : Item{
+		$emptySlots = [];
+
+		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
+			$item = $this->getItem($i);
+			if($item->isNull()){
+				$emptySlots[] = $i;
+			}
+
+			if($slot->canStackWith($item) and $item->getCount() < $item->getMaxStackSize()){
+				$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
+				if($amount > 0){
+					$slot->setCount($slot->getCount() - $amount);
+					$item->setCount($item->getCount() + $amount);
+					$this->setItem($i, $item);
+					if($slot->getCount() <= 0){
+						break;
+					}
+				}
+			}
+		}
+
+		if(count($emptySlots) > 0){
+			foreach($emptySlots as $slotIndex){
+				$amount = min($slot->getMaxStackSize(), $slot->getCount(), $this->getMaxStackSize());
+				$slot->setCount($slot->getCount() - $amount);
+				$item = clone $slot;
+				$item->setCount($amount);
+				$this->setItem($slotIndex, $item);
+				if($slot->getCount() <= 0){
+					break;
+				}
+			}
+		}
+
+		return $slot;
+	}
+
+	public function removeItem(Item ...$slots) : array{
+		/** @var Item[] $itemSlots */
+		/** @var Item[] $slots */
+		$itemSlots = [];
+		foreach($slots as $slot){
+			if(!$slot->isNull()){
+				$itemSlots[] = clone $slot;
+			}
+		}
+
+		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
+			$item = $this->getItem($i);
+			if($item->isNull()){
+				continue;
+			}
+
+			foreach($itemSlots as $index => $slot){
+				if($slot->equals($item, !$slot->hasAnyDamageValue(), $slot->hasNamedTag())){
+					$amount = min($item->getCount(), $slot->getCount());
+					$slot->setCount($slot->getCount() - $amount);
+					$item->setCount($item->getCount() - $amount);
+					$this->setItem($i, $item);
+					if($slot->getCount() <= 0){
+						unset($itemSlots[$index]);
+					}
+				}
+			}
+
+			if(count($itemSlots) === 0){
+				break;
+			}
+		}
+
+		return $itemSlots;
+	}
+
+	public function clear(int $index) : void{
+		$this->setItem($index, ItemFactory::air());
+	}
+
+	public function clearAll() : void{
+		$this->setContents([]);
+	}
+
+	public function swap(int $slot1, int $slot2) : void{
+		$i1 = $this->getItem($slot1);
+		$i2 = $this->getItem($slot2);
+		$this->setItem($slot1, $i2);
+		$this->setItem($slot2, $i1);
 	}
 
 	/**
@@ -169,7 +340,11 @@ abstract class BaseInventory implements Inventory{
 			$listener->onSlotChange($this, $index, $before);
 		}
 		foreach($this->viewers as $viewer){
-			$viewer->getNetworkSession()->getInvManager()->syncSlot($this, $index);
+			$invManager = $viewer->getNetworkSession()->getInvManager();
+			if($invManager === null){
+				continue;
+			}
+			$invManager->syncSlot($this, $index);
 		}
 	}
 
@@ -183,12 +358,16 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		foreach($this->getViewers() as $viewer){
-			$viewer->getNetworkSession()->getInvManager()->syncContents($this);
+			$invManager = $viewer->getNetworkSession()->getInvManager();
+			if($invManager === null){
+				continue;
+			}
+			$invManager->syncContents($this);
 		}
 	}
 
 	public function slotExists(int $slot) : bool{
-		return $slot >= 0 and $slot < $this->slots->getSize();
+		return $slot >= 0 and $slot < $this->getSize();
 	}
 
 	public function getListeners() : ObjectSet{

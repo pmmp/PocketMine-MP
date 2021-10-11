@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\RecordType;
 use pocketmine\block\utils\SkullType;
@@ -32,6 +33,7 @@ use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\EntityLegacyIds;
+use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\Squid;
@@ -39,6 +41,7 @@ use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
@@ -77,11 +80,11 @@ class ItemFactory{
 		$this->register(new Clock(new ItemIdentifier(ItemIds::CLOCK, 0), "Clock"));
 		$this->register(new Clownfish(new ItemIdentifier(ItemIds::CLOWNFISH, 0), "Clownfish"));
 		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 0), "Coal"));
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 0), VanillaBlocks::TUBE_CORAL_FAN(), VanillaBlocks::TUBE_WALL_CORAL_FAN()), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 1), VanillaBlocks::BRAIN_CORAL_FAN(), VanillaBlocks::BRAIN_WALL_CORAL_FAN()), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 2), VanillaBlocks::BUBBLE_CORAL_FAN(), VanillaBlocks::BUBBLE_WALL_CORAL_FAN()), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 3), VanillaBlocks::FIRE_CORAL_FAN(), VanillaBlocks::FIRE_WALL_CORAL_FAN()), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 4), VanillaBlocks::HORN_CORAL_FAN(), VanillaBlocks::HORN_WALL_CORAL_FAN()), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 0), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::TUBE()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::TUBE())), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 1), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::BRAIN()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::BRAIN())), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 2), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::BUBBLE()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::BUBBLE())), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 3), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::FIRE()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::FIRE())), true);
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 4), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::HORN()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::HORN())), true);
 		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 1), "Charcoal"));
 		$this->register(new CocoaBeans(new ItemIdentifier(ItemIds::DYE, 3), "Cocoa Beans"));
 		$this->register(new Compass(new ItemIdentifier(ItemIds::COMPASS, 0), "Compass"));
@@ -238,12 +241,12 @@ class ItemFactory{
 		$this->register(new Redstone(new ItemIdentifier(ItemIds::REDSTONE, 0), "Redstone"));
 		$this->register(new RottenFlesh(new ItemIdentifier(ItemIds::ROTTEN_FLESH, 0), "Rotten Flesh"));
 		$this->register(new Shears(new ItemIdentifier(ItemIds::SHEARS, 0), "Shears"));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::SIGN, 0), VanillaBlocks::OAK_SIGN(), VanillaBlocks::OAK_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::SPRUCE_SIGN, 0), VanillaBlocks::SPRUCE_SIGN(), VanillaBlocks::SPRUCE_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::BIRCH_SIGN, 0), VanillaBlocks::BIRCH_SIGN(), VanillaBlocks::BIRCH_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::JUNGLE_SIGN, 0), VanillaBlocks::JUNGLE_SIGN(), VanillaBlocks::JUNGLE_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::ACACIA_SIGN, 0), VanillaBlocks::ACACIA_SIGN(), VanillaBlocks::ACACIA_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::DARKOAK_SIGN, 0), VanillaBlocks::DARK_OAK_SIGN(), VanillaBlocks::DARK_OAK_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::SIGN, 0), VanillaBlocks::OAK_SIGN(), VanillaBlocks::OAK_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::SPRUCE_SIGN, 0), VanillaBlocks::SPRUCE_SIGN(), VanillaBlocks::SPRUCE_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::BIRCH_SIGN, 0), VanillaBlocks::BIRCH_SIGN(), VanillaBlocks::BIRCH_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::JUNGLE_SIGN, 0), VanillaBlocks::JUNGLE_SIGN(), VanillaBlocks::JUNGLE_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::ACACIA_SIGN, 0), VanillaBlocks::ACACIA_SIGN(), VanillaBlocks::ACACIA_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::DARKOAK_SIGN, 0), VanillaBlocks::DARK_OAK_SIGN(), VanillaBlocks::DARK_OAK_WALL_SIGN()));
 		$this->register(new Snowball(new ItemIdentifier(ItemIds::SNOWBALL, 0), "Snowball"));
 		$this->register(new SpiderEye(new ItemIdentifier(ItemIds::SPIDER_EYE, 0), "Spider Eye"));
 		$this->register(new Steak(new ItemIdentifier(ItemIds::STEAK, 0), "Steak"));
@@ -277,9 +280,10 @@ class ItemFactory{
 			))->setColor($color));
 		}
 
-		foreach(Potion::ALL as $type){
-			$this->register(new Potion(new ItemIdentifier(ItemIds::POTION, $type), "Potion", $type));
-			$this->register(new SplashPotion(new ItemIdentifier(ItemIds::SPLASH_POTION, $type), "Splash Potion", $type));
+		foreach(PotionType::getAll() as $type){
+			$typeId = PotionTypeIdMap::getInstance()->toId($type);
+			$this->register(new Potion(new ItemIdentifier(ItemIds::POTION, $typeId), $type->getDisplayName() . " Potion", $type));
+			$this->register(new SplashPotion(new ItemIdentifier(ItemIds::SPLASH_POTION, $typeId), $type->getDisplayName() . " Splash Potion", $type));
 		}
 
 		foreach(TreeType::getAll() as $type){
@@ -323,7 +327,7 @@ class ItemFactory{
 		//TODO: minecraft:shield
 		//TODO: minecraft:sparkler
 		//TODO: minecraft:spawn_egg
-		//TODO: minecraft:sweet_berries
+		$this->register(new SweetBerries(new ItemIdentifier(ItemIds::SWEET_BERRIES, 0), "Sweet Berries"));
 		//TODO: minecraft:tnt_minecart
 		//TODO: minecraft:trident
 		//TODO: minecraft:turtle_helmet
@@ -429,6 +433,10 @@ class ItemFactory{
 		$this->list[self::getListOffset($identifier->getId(), $identifier->getMeta())] = clone $item;
 	}
 
+	private static function itemToBlockId(int $id) : int{
+		return $id < 0 ? 255 - $id : $id;
+	}
+
 	/**
 	 * @deprecated This method should ONLY be used for deserializing data, e.g. from a config or database. For all other
 	 * purposes, use VanillaItems.
@@ -437,6 +445,7 @@ class ItemFactory{
 	 * Deserializes an item from the provided legacy ID, legacy meta, count and NBT.
 	 *
 	 * @throws \InvalidArgumentException
+	 * @throws NbtException
 	 */
 	public function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
 		/** @var Item|null $item */
@@ -453,7 +462,7 @@ class ItemFactory{
 				}
 			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
 				//TODO: do not assume that item IDs and block IDs are the same or related
-				$item = new ItemBlock(new ItemIdentifier($id, $meta), BlockFactory::getInstance()->get($id < 0 ? 255 - $id : $id, $meta & 0xf));
+				$item = new ItemBlock(new ItemIdentifier($id, $meta), BlockFactory::getInstance()->get(self::itemToBlockId($id), $meta & 0xf));
 			}
 		}
 
@@ -478,7 +487,7 @@ class ItemFactory{
 	 */
 	public function isRegistered(int $id, int $variant = 0) : bool{
 		if($id < 256){
-			return BlockFactory::getInstance()->isRegistered($id);
+			return BlockFactory::getInstance()->isRegistered(self::itemToBlockId($id));
 		}
 
 		return isset($this->list[self::getListOffset($id, $variant)]);

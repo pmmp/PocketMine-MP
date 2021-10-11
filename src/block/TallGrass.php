@@ -33,10 +33,6 @@ use function mt_rand;
 
 class TallGrass extends Flowable{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant(BlockToolType::SHEARS, 1));
-	}
-
 	public function canBeReplaced() : bool{
 		return true;
 	}
@@ -52,15 +48,11 @@ class TallGrass extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){ //Replace with common break method
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
-	public function getDrops(Item $item) : array{
-		if($this->breakInfo->isToolCompatible($item)){
-			return parent::getDrops($item);
-		}
-
+	public function getDropsForIncompatibleTool(Item $item) : array{
 		if(mt_rand(0, 15) === 0){
 			return [
 				VanillaItems::WHEAT_SEEDS()

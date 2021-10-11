@@ -33,7 +33,6 @@ use function count;
 use function spl_object_id;
 use function time;
 use const PHP_INT_MAX;
-use const PTHREADS_INHERIT_CONSTANTS;
 use const PTHREADS_INHERIT_INI;
 
 /**
@@ -41,7 +40,7 @@ use const PTHREADS_INHERIT_INI;
  * workers.
  */
 class AsyncPool{
-	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI | PTHREADS_INHERIT_CONSTANTS;
+	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI;
 
 	/** @var \ClassLoader */
 	private $classLoader;
@@ -147,7 +146,7 @@ class AsyncPool{
 			$this->eventLoop->addNotifier($notifier, function() use ($worker) : void{
 				$this->collectTasksFromWorker($worker);
 			});
-			$this->workers[$worker]->setClassLoader($this->classLoader);
+			$this->workers[$worker]->setClassLoaders([$this->classLoader]);
 			$this->workers[$worker]->start(self::WORKER_START_OPTIONS);
 
 			$this->taskQueues[$worker] = new \SplQueue();
@@ -233,11 +232,17 @@ class AsyncPool{
 	 * @return bool whether there are tasks left to be collected
 	 */
 	public function collectTasks() : bool{
-		$more = false;
 		foreach($this->taskQueues as $worker => $queue){
-			$more = $this->collectTasksFromWorker($worker) || $more;
+			$this->collectTasksFromWorker($worker);
 		}
-		return $more;
+
+		//we check this in a second loop, because task collection could have caused new tasks to be added to the queues
+		foreach($this->taskQueues as $queue){
+			if(!$queue->isEmpty()){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function collectTasksFromWorker(int $worker) : bool{
@@ -307,20 +312,8 @@ class AsyncPool{
 	 * Cancels all pending tasks and shuts down all the workers in the pool.
 	 */
 	public function shutdown() : void{
-		$this->collectTasks();
-
-		foreach($this->workers as $worker){
-			/** @var AsyncTask $task */
-			while(($task = $worker->unstack()) !== null){
-				//NOOP: the below loop will deal with marking tasks as garbage
-			}
-		}
-		foreach($this->taskQueues as $queue){
-			while(!$queue->isEmpty()){
-				/** @var AsyncTask $task */
-				$task = $queue->dequeue();
-				$task->cancelRun();
-			}
+		while($this->collectTasks()){
+			//NOOP
 		}
 
 		foreach($this->workers as $worker){

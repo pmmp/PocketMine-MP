@@ -27,7 +27,6 @@ use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
@@ -37,23 +36,22 @@ class Furnace extends Opaque{
 		readStateFromData as readFacingStateFromData;
 	}
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	/** @var bool */
-	protected $lit = false; //this is set based on the blockID
+	protected bool $lit = false; //this is set based on the blockID
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->lit ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->lit ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->readFacingStateFromData($id, $stateMeta);
-		$this->lit = $id === $this->idInfo->getSecondId();
+		$this->lit = $id === $this->idInfoFlattened->getSecondId();
 	}
 
 	public function getLightLevel() : int{
@@ -74,7 +72,7 @@ class Furnace extends Opaque{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
-			$furnace = $this->pos->getWorld()->getTile($this->pos);
+			$furnace = $this->position->getWorld()->getTile($this->position);
 			if($furnace instanceof TileFurnace and $furnace->canOpenWith($item->getCustomName())){
 				$player->setCurrentWindow($furnace->getInventory());
 			}
@@ -84,9 +82,9 @@ class Furnace extends Opaque{
 	}
 
 	public function onScheduledUpdate() : void{
-		$furnace = $this->pos->getWorld()->getTile($this->pos);
+		$furnace = $this->position->getWorld()->getTile($this->position);
 		if($furnace instanceof TileFurnace and $furnace->onUpdate()){
-			$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, 1); //TODO: check this
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
 		}
 	}
 }

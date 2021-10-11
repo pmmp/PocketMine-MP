@@ -27,14 +27,15 @@ use pocketmine\color\Color;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\lang\Translatable;
 
 class PoisonEffect extends Effect{
 
 	/** @var bool */
 	private $fatal;
 
-	public function __construct(int $internalRuntimeId, string $name, Color $color, bool $isBad = false, bool $hasBubbles = true, bool $fatal = false){
-		parent::__construct($internalRuntimeId, $name, $color, $isBad, $hasBubbles);
+	public function __construct(Translatable|string $name, Color $color, bool $isBad = false, bool $hasBubbles = true, bool $fatal = false){
+		parent::__construct($name, $color, $isBad, $hasBubbles);
 		$this->fatal = $fatal;
 	}
 

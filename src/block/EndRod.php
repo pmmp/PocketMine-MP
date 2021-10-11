@@ -36,10 +36,6 @@ use pocketmine\world\BlockTransaction;
 class EndRod extends Flowable{
 	use AnyFacingTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
-
 	protected function writeStateToMeta() : int{
 		$result = BlockDataSerializer::writeFacing($this->facing);
 		if(Facing::axis($this->facing) !== Axis::Y){

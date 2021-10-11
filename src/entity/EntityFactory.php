@@ -28,6 +28,8 @@ use DaveRandom\CallbackValidator\ParameterType;
 use DaveRandom\CallbackValidator\ReturnType;
 use pocketmine\block\BlockFactory;
 use pocketmine\data\bedrock\EntityLegacyIds;
+use pocketmine\data\bedrock\PotionTypeIdMap;
+use pocketmine\data\bedrock\PotionTypeIds;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\entity\object\ItemEntity;
@@ -43,9 +45,11 @@ use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
+use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
@@ -76,7 +80,7 @@ final class EntityFactory{
 		//TODO: index them by version to allow proper multi-save compatibility
 
 		$this->register(Arrow::class, function(World $world, CompoundTag $nbt) : Arrow{
-			return new Arrow(EntityDataHelper::parseLocation($nbt, $world), null, false, $nbt); //TODO: missing critical flag
+			return new Arrow(EntityDataHelper::parseLocation($nbt, $world), null, $nbt->getByte(Arrow::TAG_CRIT, 0) === 1, $nbt);
 		}, ['Arrow', 'minecraft:arrow'], EntityLegacyIds::ARROW);
 
 		$this->register(Egg::class, function(World $world, CompoundTag $nbt) : Egg{
@@ -92,7 +96,14 @@ final class EntityFactory{
 		}, ['ThrownExpBottle', 'minecraft:xp_bottle'], EntityLegacyIds::XP_BOTTLE);
 
 		$this->register(ExperienceOrb::class, function(World $world, CompoundTag $nbt) : ExperienceOrb{
-			return new ExperienceOrb(EntityDataHelper::parseLocation($nbt, $world), $nbt);
+			$value = 1;
+			if(($valuePcTag = $nbt->getTag(ExperienceOrb::TAG_VALUE_PC)) instanceof ShortTag){ //PC
+				$value = $valuePcTag->getValue();
+			}elseif(($valuePeTag = $nbt->getTag(ExperienceOrb::TAG_VALUE_PE)) instanceof IntTag){ //PE save format
+				$value = $valuePeTag->getValue();
+			}
+
+			return new ExperienceOrb(EntityDataHelper::parseLocation($nbt, $world), $value, $nbt);
 		}, ['XPOrb', 'minecraft:xp_orb'], EntityLegacyIds::XP_ORB);
 
 		$this->register(FallingBlock::class, function(World $world, CompoundTag $nbt) : FallingBlock{
@@ -138,7 +149,11 @@ final class EntityFactory{
 		}, ['Snowball', 'minecraft:snowball'], EntityLegacyIds::SNOWBALL);
 
 		$this->register(SplashPotion::class, function(World $world, CompoundTag $nbt) : SplashPotion{
-			return new SplashPotion(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
+			$potionType = PotionTypeIdMap::getInstance()->fromId($nbt->getShort("PotionId", PotionTypeIds::WATER));
+			if($potionType === null){
+				throw new \UnexpectedValueException("No such potion type");
+			}
+			return new SplashPotion(EntityDataHelper::parseLocation($nbt, $world), null, $potionType, $nbt);
 		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
 
 		$this->register(Squid::class, function(World $world, CompoundTag $nbt) : Squid{
@@ -208,6 +223,7 @@ final class EntityFactory{
 	 * Creates an entity from data stored on a chunk.
 	 *
 	 * @throws \RuntimeException
+	 * @throws NbtDataException
 	 * @internal
 	 */
 	public function createFromData(World $world, CompoundTag $nbt) : ?Entity{

@@ -63,6 +63,10 @@ class VersionString{
 		$this->suffix = $matches[4] ?? "";
 	}
 
+	public static function isValidBaseVersion(string $baseVersion) : bool{
+		return preg_match('/^\d+\.\d+\.\d+(?:-(.*))?$/', $baseVersion, $matches) === 1;
+	}
+
 	public function getNumber() : int{
 		return (($this->major << 9) | ($this->minor << 5) | $this->patch);
 	}
@@ -117,18 +121,16 @@ class VersionString{
 		if($diff){
 			return $tNumber - $number;
 		}
-		if($number > $tNumber){
-			return -1; //Target is older
-		}elseif($number < $tNumber){
-			return 1; //Target is newer
-		}elseif($target->isDev() and !$this->isDev()){
-			return -1; //Dev builds of the same version are always considered older than a release
-		}elseif($target->getBuild() > $this->getBuild()){
-			return 1;
-		}elseif($target->getBuild() < $this->getBuild()){
-			return -1;
-		}else{
-			return 0; //Same version
+
+		if(($result = $tNumber <=> $number) !== 0){
+			return $result;
 		}
+		if($target->isDev() !== $this->isDev()){
+			return $this->isDev() ? 1 : -1; //Dev builds of the same version are always considered older than a release
+		}
+		if(($target->getSuffix() === "") !== ($this->suffix === "")){
+			return $this->suffix !== "" ? 1 : -1; //alpha/beta/whatever releases are always considered older than a non-suffixed version
+		}
+		return $target->getBuild() <=> $this->getBuild();
 	}
 }

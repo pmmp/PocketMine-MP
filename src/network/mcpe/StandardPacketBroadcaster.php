@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\network\mcpe\compression\Compressor;
+use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\Server;
 use function spl_object_id;
 
@@ -38,7 +40,8 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 	}
 
 	public function broadcastPackets(array $recipients, array $packets) : void{
-		$stream = PacketBatch::fromPackets(...$packets);
+		//TODO: we should be using session-specific serializer contexts for this
+		$stream = PacketBatch::fromPackets(new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary()), ...$packets);
 
 		/** @var Compressor[] $compressors */
 		$compressors = [];

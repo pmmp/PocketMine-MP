@@ -29,10 +29,6 @@ use pocketmine\player\Player;
 
 class Ice extends Transparent{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::PICKAXE));
-	}
-
 	public function getLightFilter() : int{
 		return 2;
 	}
@@ -43,7 +39,7 @@ class Ice extends Transparent{
 
 	public function onBreak(Item $item, ?Player $player = null) : bool{
 		if(($player === null or $player->isSurvival()) and !$item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
-			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::WATER());
+			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::WATER());
 			return true;
 		}
 		return parent::onBreak($item, $player);
@@ -54,8 +50,8 @@ class Ice extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if($this->pos->getWorld()->getHighestAdjacentBlockLight($this->pos->x, $this->pos->y, $this->pos->z) >= 12){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+		if($this->position->getWorld()->getHighestAdjacentBlockLight($this->position->x, $this->position->y, $this->position->z) >= 12){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 

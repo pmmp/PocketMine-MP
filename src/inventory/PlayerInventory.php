@@ -28,7 +28,7 @@ use pocketmine\item\Item;
 use pocketmine\player\Player;
 use pocketmine\utils\ObjectSet;
 
-class PlayerInventory extends BaseInventory{
+class PlayerInventory extends SimpleInventory{
 
 	/** @var Human */
 	protected $holder;

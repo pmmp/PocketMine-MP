@@ -40,6 +40,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function assert;
@@ -48,21 +49,16 @@ use function dechex;
 use const PHP_INT_MAX;
 
 class Block{
+	public const INTERNAL_METADATA_BITS = 4;
+	public const INTERNAL_METADATA_MASK = ~(~0 << self::INTERNAL_METADATA_BITS);
 
-	/** @var BlockIdentifier */
-	protected $idInfo;
-
-	/** @var string */
-	protected $fallbackName;
-
-	/** @var BlockBreakInfo */
-	protected $breakInfo;
-
-	/** @var Position */
-	protected $pos;
+	protected BlockIdentifier $idInfo;
+	protected string $fallbackName;
+	protected BlockBreakInfo $breakInfo;
+	protected Position $position;
 
 	/** @var AxisAlignedBB[]|null */
-	protected $collisionBoxes = null;
+	protected ?array $collisionBoxes = null;
 
 	/**
 	 * @param string          $name English name of the block type (TODO: implement translations)
@@ -74,11 +70,11 @@ class Block{
 		$this->idInfo = $idInfo;
 		$this->fallbackName = $name;
 		$this->breakInfo = $breakInfo;
-		$this->pos = new Position(0, 0, 0, null);
+		$this->position = new Position(0, 0, 0, null);
 	}
 
 	public function __clone(){
-		$this->pos = clone $this->pos;
+		$this->position = clone $this->position;
 	}
 
 	public function getIdInfo() : BlockIdentifier{
@@ -97,13 +93,13 @@ class Block{
 	 * @internal
 	 */
 	public function getFullId() : int{
-		return ($this->getId() << 4) | $this->getMeta();
+		return ($this->getId() << self::INTERNAL_METADATA_BITS) | $this->getMeta();
 	}
 
 	public function asItem() : Item{
 		return ItemFactory::getInstance()->get(
 			$this->idInfo->getItemId(),
-			$this->idInfo->getVariant() | ($this->writeStateToMeta() & ~$this->getNonPersistentStateBitmask())
+			$this->idInfo->getVariant() | $this->writeStateToItemMeta()
 		);
 	}
 
@@ -113,15 +109,15 @@ class Block{
 		return $this->idInfo->getVariant() | $stateMeta;
 	}
 
+	protected function writeStateToItemMeta() : int{
+		return 0;
+	}
+
 	/**
 	 * Returns a bitmask used to extract state bits from block metadata.
 	 */
 	public function getStateBitmask() : int{
 		return 0;
-	}
-
-	public function getNonPersistentStateBitmask() : int{
-		return $this->getStateBitmask();
 	}
 
 	protected function writeStateToMeta() : int{
@@ -147,10 +143,10 @@ class Block{
 	}
 
 	public function writeStateToWorld() : void{
-		$this->pos->getWorld()->getOrLoadChunkAtPosition($this->pos)->setFullBlock($this->pos->x & 0xf, $this->pos->y, $this->pos->z & 0xf, $this->getFullId());
+		$this->position->getWorld()->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getFullId());
 
 		$tileType = $this->idInfo->getTileClass();
-		$oldTile = $this->pos->getWorld()->getTile($this->pos);
+		$oldTile = $this->position->getWorld()->getTile($this->position);
 		if($oldTile !== null){
 			if($tileType === null or !($oldTile instanceof $tileType)){
 				$oldTile->close();
@@ -164,8 +160,8 @@ class Block{
 			 * @var Tile $tile
 			 * @see Tile::__construct()
 			 */
-			$tile = new $tileType($this->pos->getWorld(), $this->pos->asVector3());
-			$this->pos->getWorld()->addTile($tile);
+			$tile = new $tileType($this->position->getWorld(), $this->position->asVector3());
+			$this->position->getWorld()->addTile($tile);
 		}
 	}
 
@@ -183,7 +179,7 @@ class Block{
 	 * Returns whether the given block has the same type and properties as this block.
 	 */
 	public function isSameState(Block $other) : bool{
-		return $this->isSameType($other) and $this->writeStateToMeta() === $other->writeStateToMeta();
+		return $this->getFullId() === $other->getFullId();
 	}
 
 	/**
@@ -205,7 +201,7 @@ class Block{
 	 * Places the Block, using block space and block target, and side. Returns if the block has been placed.
 	 */
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$tx->addBlock($blockReplace->pos, $this);
+		$tx->addBlock($blockReplace->position, $this);
 		return true;
 	}
 
@@ -224,10 +220,10 @@ class Block{
 	 * Do the actions needed so the block is broken with the Item
 	 */
 	public function onBreak(Item $item, ?Player $player = null) : bool{
-		if(($t = $this->pos->getWorld()->getTile($this->pos)) !== null){
+		if(($t = $this->position->getWorld()->getTile($this->position)) !== null){
 			$t->onBlockDestroyed();
 		}
-		$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::AIR());
+		$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 		return true;
 	}
 
@@ -339,15 +335,15 @@ class Block{
 		return null;
 	}
 
-	final public function getPos() : Position{
-		return $this->pos;
+	final public function getPosition() : Position{
+		return $this->position;
 	}
 
 	/**
 	 * @internal
 	 */
 	final public function position(World $world, int $x, int $y, int $z) : void{
-		$this->pos = new Position($x, $y, $z, $world);
+		$this->position = new Position($x, $y, $z, $world);
 	}
 
 	/**
@@ -364,7 +360,7 @@ class Block{
 			return $this->getDropsForCompatibleTool($item);
 		}
 
-		return [];
+		return $this->getDropsForIncompatibleTool($item);
 	}
 
 	/**
@@ -374,6 +370,15 @@ class Block{
 	 */
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [$this->asItem()];
+	}
+
+	/**
+	 * Returns the items dropped by this block when broken with an incorrect tool type (or tool with a too-low tier).
+	 *
+	 * @return Item[]
+	 */
+	public function getDropsForIncompatibleTool(Item $item) : array{
+		return [];
 	}
 
 	/**
@@ -416,7 +421,7 @@ class Block{
 	public function getPickedItem(bool $addUserData = false) : Item{
 		$item = $this->asItem();
 		if($addUserData){
-			$tile = $this->pos->getWorld()->getTile($this->pos);
+			$tile = $this->position->getWorld()->getTile($this->position);
 			if($tile instanceof Tile){
 				$nbt = $tile->getCleanedNBT();
 				if($nbt instanceof CompoundTag){
@@ -433,6 +438,13 @@ class Block{
 	 */
 	public function getFuelTime() : int{
 		return 0;
+	}
+
+	/**
+	 * Returns the maximum number of this block that can fit into a single item stack.
+	 */
+	public function getMaxStackSize() : int{
+		return 64;
 	}
 
 	/**
@@ -477,8 +489,8 @@ class Block{
 	 * @return Block
 	 */
 	public function getSide(int $side, int $step = 1){
-		if($this->pos->isValid()){
-			return $this->pos->getWorld()->getBlock($this->pos->getSide($side, $step));
+		if($this->position->isValid()){
+			return $this->position->getWorld()->getBlock($this->position->getSide($side, $step));
 		}
 
 		throw new \InvalidStateException("Block does not have a valid world");
@@ -491,8 +503,8 @@ class Block{
 	 * @phpstan-return \Generator<int, Block, void, void>
 	 */
 	public function getHorizontalSides() : \Generator{
-		$world = $this->pos->getWorld();
-		foreach($this->pos->sidesAroundAxis(Axis::Y) as $vector3){
+		$world = $this->position->getWorld();
+		foreach($this->position->sidesAroundAxis(Axis::Y) as $vector3){
 			yield $world->getBlock($vector3);
 		}
 	}
@@ -504,8 +516,8 @@ class Block{
 	 * @phpstan-return \Generator<int, Block, void, void>
 	 */
 	public function getAllSides() : \Generator{
-		$world = $this->pos->getWorld();
-		foreach($this->pos->sides() as $vector3){
+		$world = $this->position->getWorld();
+		foreach($this->position->sides() as $vector3){
 			yield $world->getBlock($vector3);
 		}
 	}
@@ -552,13 +564,21 @@ class Block{
 	}
 
 	/**
+	 * Called when an entity lands on this block (usually due to falling).
+	 * @return float|null The new vertical velocity of the entity, or null if unchanged.
+	 */
+	public function onEntityLand(Entity $entity) : ?float{
+		return null;
+	}
+
+	/**
 	 * @return AxisAlignedBB[]
 	 */
 	final public function getCollisionBoxes() : array{
 		if($this->collisionBoxes === null){
 			$this->collisionBoxes = $this->recalculateCollisionBoxes();
-			$extraOffset = $this->getPosOffset();
-			$offset = $extraOffset !== null ? $this->pos->addVector($extraOffset) : $this->pos;
+			$extraOffset = $this->getModelPositionOffset();
+			$offset = $extraOffset !== null ? $this->position->addVector($extraOffset) : $this->position;
 			foreach($this->collisionBoxes as $bb){
 				$bb->offset($offset->x, $offset->y, $offset->z);
 			}
@@ -568,10 +588,10 @@ class Block{
 	}
 
 	/**
-	 * Returns an additional fractional vector to shift the block's effective position by based on the current position.
+	 * Returns an additional fractional vector to shift the block model's position by based on the current position.
 	 * Used to randomize position of things like bamboo canes and tall grass.
 	 */
-	public function getPosOffset() : ?Vector3{
+	public function getModelPositionOffset() : ?Vector3{
 		return null;
 	}
 

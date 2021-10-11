@@ -36,11 +36,8 @@ use pocketmine\world\BlockTransaction;
 class Stair extends Transparent{
 	use HorizontalFacingTrait;
 
-	/** @var bool */
-	protected $upsideDown = false;
-
-	/** @var StairShape */
-	protected $shape;
+	protected bool $upsideDown = false;
+	protected StairShape $shape;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->shape = StairShape::STRAIGHT();

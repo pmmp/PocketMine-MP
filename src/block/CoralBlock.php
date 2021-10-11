@@ -31,11 +31,8 @@ use function mt_rand;
 
 final class CoralBlock extends Opaque{
 
-	/** @var CoralType */
-	private $coralType;
-
-	/** @var bool */
-	private $dead = false;
+	private CoralType $coralType;
+	private bool $dead = false;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->coralType = CoralType::TUBE();
@@ -55,12 +52,12 @@ final class CoralBlock extends Opaque{
 		return ($this->dead ? BlockLegacyMetadata::CORAL_BLOCK_FLAG_DEAD : 0) | CoralTypeIdMap::getInstance()->toId($this->coralType);
 	}
 
-	public function getStateBitmask() : int{
-		return 0b1111;
+	protected function writeStateToItemMeta() : int{
+		return $this->writeStateToMeta();
 	}
 
-	public function getNonPersistentStateBitmask() : int{
-		return 0;
+	public function getStateBitmask() : int{
+		return 0b1111;
 	}
 
 	public function getCoralType() : CoralType{ return $this->coralType; }
@@ -81,23 +78,23 @@ final class CoralBlock extends Opaque{
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->dead){
-			$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, mt_rand(40, 200));
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(40, 200));
 		}
 	}
 
 	public function onScheduledUpdate() : void{
 		if(!$this->dead){
-			$world = $this->pos->getWorld();
+			$world = $this->position->getWorld();
 
 			$hasWater = false;
-			foreach($this->pos->sides() as $vector3){
+			foreach($this->position->sides() as $vector3){
 				if($world->getBlock($vector3) instanceof Water){
 					$hasWater = true;
 					break;
 				}
 			}
 			if(!$hasWater){
-				$world->setBlock($this->pos, $this->setDead(true));
+				$world->setBlock($this->position, $this->setDead(true));
 			}
 		}
 	}

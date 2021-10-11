@@ -42,7 +42,7 @@ function build_leveldb {
 build_leveldb 84348b9b826cc280cde659185695d2170b54824c
 
 rm -rf php-build
-git clone https://github.com/php-build/php-build.git
+git clone https://github.com/pmmp/php-build.git
 cd php-build
 ./install-dependencies.sh
 echo '"pthreads",,"https://github.com/pmmp/pthreads.git",,,"extension",' >> share/php-build/extension/definition
@@ -50,10 +50,10 @@ echo '"leveldb",,"https://github.com/pmmp/php-leveldb.git",,"--with-leveldb='$IN
 echo '"chunkutils2",,"https://github.com/pmmp/ext-chunkutils2.git",,,"extension",' >> share/php-build/extension/definition
 echo '"morton",,"https://github.com/pmmp/ext-morton.git",,,"extension",' >> share/php-build/extension/definition
 PHP_BUILD_INSTALL_EXTENSION="\
-pthreads=@acc6e52b2144c61c434b62a3cb680d537e06828e \
+pthreads=@a6afc0434f91c1e9541444aef6ac7a1f16c595be \
 yaml=2.2.1 \
 leveldb=@60763a09bf5c7a10376d16e25b078b99a35c5c37 \
-chunkutils2=@0.2.0 \
+chunkutils2=@0.3.1 \
 morton=@0.1.2 \
 igbinary=3.2.1 \
 " PHP_BUILD_ZTS_ENABLE=on PHP_BUILD_CONFIGURE_OPTS='--with-gmp' ./bin/php-build "$VERSION" "$INSTALL_DIR" || exit 1
@@ -70,4 +70,3 @@ echo "extension=crypto.so" >> "$INSTALL_DIR/etc/conf.d/crypto.ini"
 cd ..
 
 rm "$INSTALL_DIR/etc/conf.d/xdebug.ini" || true
-cp install-dependencies.sh "$INSTALL_DIR"

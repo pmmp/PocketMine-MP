@@ -31,6 +31,7 @@ use pocketmine\plugin\PluginManager;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use Webmozart\PathUtil\Path;
 use function base64_encode;
 use function date;
 use function error_get_last;
@@ -46,6 +47,7 @@ use function is_dir;
 use function is_resource;
 use function json_encode;
 use function json_last_error_msg;
+use function ksort;
 use function max;
 use function mb_strtoupper;
 use function microtime;
@@ -67,6 +69,7 @@ use const FILE_IGNORE_NEW_LINES;
 use const JSON_UNESCAPED_SLASHES;
 use const PHP_EOL;
 use const PHP_OS;
+use const SORT_STRING;
 
 class CrashDump{
 
@@ -101,10 +104,12 @@ class CrashDump{
 	public function __construct(Server $server){
 		$this->time = microtime(true);
 		$this->server = $server;
-		if(!is_dir($this->server->getDataPath() . "crashdumps")){
-			mkdir($this->server->getDataPath() . "crashdumps");
+
+		$crashPath = Path::join($this->server->getDataPath(), "crashdumps");
+		if(!is_dir($crashPath)){
+			mkdir($crashPath);
 		}
-		$this->path = $this->server->getDataPath() . "crashdumps/" . date("D_M_j-H.i.s-T_Y", (int) $this->time) . ".log";
+		$this->path = Path::join($crashPath, date("D_M_j-H.i.s-T_Y", (int) $this->time) . ".log");
 		$fp = @fopen($this->path, "wb");
 		if(!is_resource($fp)){
 			throw new \RuntimeException("Could not create Crash Dump");
@@ -165,7 +170,9 @@ class CrashDump{
 			$this->addLine();
 			$this->addLine("Loaded plugins:");
 			$this->data["plugins"] = [];
-			foreach($this->server->getPluginManager()->getPlugins() as $p){
+			$plugins = $this->server->getPluginManager()->getPlugins();
+			ksort($plugins, SORT_STRING);
+			foreach($plugins as $p){
 				$d = $p->getDescription();
 				$this->data["plugins"][$d->getName()] = [
 					"name" => $d->getName(),
@@ -187,14 +194,14 @@ class CrashDump{
 	private function extraData() : void{
 		global $argv;
 
-		if($this->server->getConfigGroup()->getProperty("auto-report.send-settings", true) !== false){
+		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-settings", true)){
 			$this->data["parameters"] = (array) $argv;
-			if(($serverDotProperties = @file_get_contents($this->server->getDataPath() . "server.properties")) !== false){
+			if(($serverDotProperties = @file_get_contents(Path::join($this->server->getDataPath(), "server.properties"))) !== false){
 				$this->data["server.properties"] = preg_replace("#^rcon\\.password=(.*)$#m", "rcon.password=******", $serverDotProperties);
 			}else{
 				$this->data["server.properties"] = $serverDotProperties;
 			}
-			if(($pocketmineDotYml = @file_get_contents($this->server->getDataPath() . "pocketmine.yml")) !== false){
+			if(($pocketmineDotYml = @file_get_contents(Path::join($this->server->getDataPath(), "pocketmine.yml"))) !== false){
 				$this->data["pocketmine.yml"] = $pocketmineDotYml;
 			}else{
 				$this->data["pocketmine.yml"] = "";
@@ -210,7 +217,7 @@ class CrashDump{
 		}
 		$this->data["extensions"] = $extensions;
 
-		if($this->server->getConfigGroup()->getProperty("auto-report.send-phpinfo", true) !== false){
+		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-phpinfo", true)){
 			ob_start();
 			phpinfo();
 			$this->data["phpinfo"] = ob_get_contents();
@@ -272,7 +279,7 @@ class CrashDump{
 		$this->addLine("Code:");
 		$this->data["code"] = [];
 
-		if($this->server->getConfigGroup()->getProperty("auto-report.send-code", true) !== false and file_exists($error["fullFile"])){
+		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-code", true) and file_exists($error["fullFile"])){
 			$file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
 			if($file !== false){
 				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 and isset($file[$l]); ++$l){
@@ -321,7 +328,7 @@ class CrashDump{
 	}
 
 	private function generalData() : void{
-		$version = VersionInfo::getVersionObj();
+		$version = VersionInfo::VERSION();
 		$composerLibraries = [];
 		foreach(InstalledVersions::getInstalledPackages() as $package){
 			$composerLibraries[$package] = sprintf(
@@ -337,7 +344,7 @@ class CrashDump{
 		$this->data["general"]["build"] = VersionInfo::BUILD_NUMBER;
 		$this->data["general"]["is_dev"] = VersionInfo::IS_DEVELOPMENT_BUILD;
 		$this->data["general"]["protocol"] = ProtocolInfo::CURRENT_PROTOCOL;
-		$this->data["general"]["git"] = VersionInfo::getGitHash();
+		$this->data["general"]["git"] = VersionInfo::GIT_HASH();
 		$this->data["general"]["uname"] = php_uname("a");
 		$this->data["general"]["php"] = phpversion();
 		$this->data["general"]["zend"] = zend_version();
@@ -345,7 +352,7 @@ class CrashDump{
 		$this->data["general"]["os"] = Utils::getOS();
 		$this->data["general"]["composer_libraries"] = $composerLibraries;
 		$this->addLine($this->server->getName() . " version: " . $version->getFullVersion(true) . " [Protocol " . ProtocolInfo::CURRENT_PROTOCOL . "]");
-		$this->addLine("Git commit: " . VersionInfo::getGitHash());
+		$this->addLine("Git commit: " . VersionInfo::GIT_HASH());
 		$this->addLine("uname -a: " . php_uname("a"));
 		$this->addLine("PHP Version: " . phpversion());
 		$this->addLine("Zend version: " . zend_version());

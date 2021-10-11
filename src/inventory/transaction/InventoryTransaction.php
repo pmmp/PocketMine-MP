@@ -158,7 +158,7 @@ class InventoryTransaction{
 
 		foreach($needItems as $i => $needItem){
 			foreach($haveItems as $j => $haveItem){
-				if($needItem->equals($haveItem)){
+				if($needItem->canStackWith($haveItem)){
 					$amount = min($needItem->getCount(), $haveItem->getCount());
 					$needItem->setCount($needItem->getCount() - $amount);
 					$haveItem->setCount($haveItem->getCount() - $amount);

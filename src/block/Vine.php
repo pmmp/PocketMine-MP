@@ -36,11 +36,7 @@ use function count;
 class Vine extends Flowable{
 
 	/** @var int[] */
-	protected $faces = [];
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::AXE));
-	}
+	protected array $faces = [];
 
 	protected function writeStateToMeta() : int{
 		return
@@ -146,9 +142,9 @@ class Vine extends Flowable{
 
 		if($changed){
 			if(count($this->faces) === 0){
-				$this->pos->getWorld()->useBreakOn($this->pos);
+				$this->position->getWorld()->useBreakOn($this->position);
 			}else{
-				$this->pos->getWorld()->setBlock($this->pos, $this);
+				$this->position->getWorld()->setBlock($this->position, $this);
 			}
 		}
 	}

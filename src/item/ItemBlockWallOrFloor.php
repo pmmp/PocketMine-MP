@@ -51,4 +51,8 @@ class ItemBlockWallOrFloor extends Item{
 	public function getFuelTime() : int{
 		return $this->getBlock()->getFuelTime();
 	}
+
+	public function getMaxStackSize() : int{
+		return $this->getBlock()->getMaxStackSize();
+	}
 }

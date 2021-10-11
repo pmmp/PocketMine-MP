@@ -24,9 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
+use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\TreeRoot;
+use pocketmine\utils\BinaryStream;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
-use function json_encode;
 use function usort;
 
 class CraftingManager{
@@ -37,8 +39,11 @@ class CraftingManager{
 	/** @var ShapelessRecipe[][] */
 	protected $shapelessRecipes = [];
 
-	/** @var FurnaceRecipeManager */
-	protected $furnaceRecipeManager;
+	/**
+	 * @var FurnaceRecipeManager[]
+	 * @phpstan-var array<int, FurnaceRecipeManager>
+	 */
+	protected $furnaceRecipeManagers;
 
 	/**
 	 * @var ObjectSet
@@ -48,14 +53,18 @@ class CraftingManager{
 
 	public function __construct(){
 		$this->recipeRegisteredCallbacks = new ObjectSet();
-		$this->furnaceRecipeManager = new FurnaceRecipeManager();
+		foreach(FurnaceType::getAll() as $furnaceType){
+			$this->furnaceRecipeManagers[$furnaceType->id()] = new FurnaceRecipeManager();
+		}
 
 		$recipeRegisteredCallbacks = $this->recipeRegisteredCallbacks;
-		$this->furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(static function(FurnaceRecipe $recipe) use ($recipeRegisteredCallbacks) : void{
-			foreach($recipeRegisteredCallbacks as $callback){
-				$callback();
-			}
-		});
+		foreach($this->furnaceRecipeManagers as $furnaceRecipeManager){
+			$furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(static function(FurnaceRecipe $recipe) use ($recipeRegisteredCallbacks) : void{
+				foreach($recipeRegisteredCallbacks as $callback){
+					$callback();
+				}
+			});
+		}
 	}
 
 	/** @phpstan-return ObjectSet<\Closure() : void> */
@@ -82,7 +91,7 @@ class CraftingManager{
 
 		foreach($items as $i => $item){
 			foreach($result as $otherItem){
-				if($item->equals($otherItem)){
+				if($item->canStackWith($otherItem)){
 					$otherItem->setCount($otherItem->getCount() + $item->getCount());
 					continue 2;
 				}
@@ -101,12 +110,16 @@ class CraftingManager{
 	private static function hashOutputs(array $outputs) : string{
 		$outputs = self::pack($outputs);
 		usort($outputs, [self::class, "sort"]);
+		$result = new BinaryStream();
 		foreach($outputs as $o){
-			//this reduces accuracy of hash, but it's necessary to deal with recipe book shift-clicking stupidity
-			$o->setCount(1);
+			//count is not written because the outputs might be from multiple repetitions of a single recipe
+			//this reduces the accuracy of the hash, but it won't matter in most cases.
+			$result->putVarInt($o->getId());
+			$result->putVarInt($o->getMeta());
+			$result->put((new LittleEndianNbtSerializer())->write(new TreeRoot($o->getNamedTag())));
 		}
 
-		return json_encode($outputs);
+		return $result->getBuffer();
 	}
 
 	/**
@@ -123,8 +136,8 @@ class CraftingManager{
 		return $this->shapedRecipes;
 	}
 
-	public function getFurnaceRecipeManager() : FurnaceRecipeManager{
-		return $this->furnaceRecipeManager;
+	public function getFurnaceRecipeManager(FurnaceType $furnaceType) : FurnaceRecipeManager{
+		return $this->furnaceRecipeManagers[$furnaceType->id()];
 	}
 
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{

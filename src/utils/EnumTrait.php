@@ -27,6 +27,8 @@ use function preg_match;
 
 trait EnumTrait{
 	use RegistryTrait;
+	use NotCloneable;
+	use NotSerializable;
 
 	/**
 	 * Registers the given object as an enum member.
@@ -53,19 +55,6 @@ trait EnumTrait{
 		//phpstan doesn't support generic traits yet :(
 		/** @var self[] $result */
 		$result = self::_registryGetAll();
-		return $result;
-	}
-
-	/**
-	 * Returns the enum member matching the given name.
-	 * This is overridden to change the return typehint.
-	 *
-	 * @throws \InvalidArgumentException if no member matches.
-	 */
-	public static function fromString(string $name) : self{
-		//phpstan doesn't support generic traits yet :(
-		/** @var self $result */
-		$result = self::_registryFromString($name);
 		return $result;
 	}
 

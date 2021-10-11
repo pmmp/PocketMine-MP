@@ -25,7 +25,7 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\Translatable;
 use pocketmine\player\Player;
 
 /**
@@ -34,18 +34,13 @@ use pocketmine\player\Player;
 class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var TranslationContainer|string */
+	/** @var Translatable|string */
 	protected $quitMessage;
 
 	/** @var string */
 	protected $reason;
 
-	/**
-	 * PlayerKickEvent constructor.
-	 *
-	 * @param TranslationContainer|string $quitMessage
-	 */
-	public function __construct(Player $player, string $reason, $quitMessage){
+	public function __construct(Player $player, string $reason, Translatable|string $quitMessage){
 		$this->player = $player;
 		$this->quitMessage = $quitMessage;
 		$this->reason = $reason;
@@ -59,17 +54,11 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 		return $this->reason;
 	}
 
-	/**
-	 * @param TranslationContainer|string $quitMessage
-	 */
-	public function setQuitMessage($quitMessage) : void{
+	public function setQuitMessage(Translatable|string $quitMessage) : void{
 		$this->quitMessage = $quitMessage;
 	}
 
-	/**
-	 * @return TranslationContainer|string
-	 */
-	public function getQuitMessage(){
+	public function getQuitMessage() : Translatable|string{
 		return $this->quitMessage;
 	}
 }

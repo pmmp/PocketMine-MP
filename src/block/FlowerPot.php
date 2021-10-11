@@ -34,45 +34,31 @@ use function assert;
 
 class FlowerPot extends Flowable{
 
-	/**
-	 * TODO: get rid of this hack (it's currently needed to deal with blockfactory state handling)
-	 * @var bool
-	 */
-	protected $occupied = false;
-
-	/** @var Block|null */
-	protected $plant = null;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
+	protected ?Block $plant = null;
 
 	protected function writeStateToMeta() : int{
-		return $this->occupied ? BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED : 0;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->occupied = ($stateMeta & BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED) !== 0;
+		//TODO: HACK! this is just to make the client actually render the plant - we purposely don't read the flag back
+		return $this->plant !== null ? BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED : 0;
 	}
 
 	public function getStateBitmask() : int{
-		return 0b1111; //vanilla uses various values, we only care about 1 and 0 for PE
+		return 0b1;
 	}
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileFlowerPot){
 			$this->setPlant($tile->getPlant());
 		}else{
-			$this->occupied = false;
+			$this->setPlant(null);
 		}
 	}
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
 
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileFlowerPot);
 		$tile->setPlant($this->plant);
 	}
@@ -88,7 +74,6 @@ class FlowerPot extends Flowable{
 		}else{
 			$this->plant = clone $plant;
 		}
-		$this->occupied = $this->plant !== null;
 		return $this;
 	}
 
@@ -124,7 +109,7 @@ class FlowerPot extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
@@ -136,7 +121,7 @@ class FlowerPot extends Flowable{
 
 		$this->setPlant($plant);
 		$item->pop();
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->position->getWorld()->setBlock($this->position, $this);
 
 		return true;
 	}

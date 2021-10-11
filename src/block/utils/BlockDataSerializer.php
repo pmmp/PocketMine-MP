@@ -131,7 +131,7 @@ final class BlockDataSerializer{
 			3 => Facing::SOUTH
 		][$value] ?? null;
 		if($result === null){
-			throw new \InvalidArgumentException("Invalid coral facing $value");
+			throw new InvalidBlockStateException("Invalid coral facing $value");
 		}
 		return $result;
 	}

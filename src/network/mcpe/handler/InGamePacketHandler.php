@@ -42,6 +42,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
+use pocketmine\network\mcpe\convert\TypeConversionException;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
@@ -143,9 +144,12 @@ class InGamePacketHandler extends PacketHandler{
 	 */
 	protected $openHardcodedWindows = [];
 
-	public function __construct(Player $player, NetworkSession $session){
+	private InventoryManager $inventoryManager;
+
+	public function __construct(Player $player, NetworkSession $session, InventoryManager $inventoryManager){
 		$this->player = $player;
 		$this->session = $session;
+		$this->inventoryManager = $inventoryManager;
 	}
 
 	public function handleText(TextPacket $packet) : bool{
@@ -174,10 +178,9 @@ class InGamePacketHandler extends PacketHandler{
 		$this->player->setRotation($yaw, $pitch);
 
 		$curPos = $this->player->getLocation();
-		$newPos = $packet->position->subtract(0, 1.62, 0);
+		$newPos = $packet->position->round(4)->subtract(0, 1.62, 0);
 
 		if($this->forceMoveSync and $newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
-			$this->session->syncMovement($curPos, null, null, MovePlayerPacket::MODE_RESET);
 			$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
 			//Still getting movements from before teleport, ignore them
 			return false;
@@ -224,7 +227,7 @@ class InGamePacketHandler extends PacketHandler{
 			$result = $this->handleNormalTransaction($packet->trData);
 		}elseif($packet->trData instanceof MismatchTransactionData){
 			$this->session->getLogger()->debug("Mismatch transaction received");
-			$this->session->getInvManager()->syncAll();
+			$this->inventoryManager->syncAll();
 			$result = true;
 		}elseif($packet->trData instanceof UseItemTransactionData){
 			$result = $this->handleUseItemTransaction($packet->trData);
@@ -235,7 +238,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		if(!$result){
-			$this->session->getInvManager()->syncAll();
+			$this->inventoryManager->syncAll();
 		}
 		return $result;
 	}
@@ -265,12 +268,12 @@ class InGamePacketHandler extends PacketHandler{
 			}
 
 			try{
-				$action = $converter->createInventoryAction($networkInventoryAction, $this->player);
+				$action = $converter->createInventoryAction($networkInventoryAction, $this->player, $this->inventoryManager);
 				if($action !== null){
 					$actions[] = $action;
 				}
-			}catch(\UnexpectedValueException $e){
-				$this->session->getLogger()->debug("Unhandled inventory action: " . $e->getMessage());
+			}catch(TypeConversionException $e){
+				$this->session->getLogger()->debug("Error unpacking inventory action: " . $e->getMessage());
 				return false;
 			}
 		}
@@ -293,14 +296,14 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			}
 			try{
-				$this->session->getInvManager()->onTransactionStart($this->craftingTransaction);
+				$this->inventoryManager->onTransactionStart($this->craftingTransaction);
 				$this->craftingTransaction->execute();
 			}catch(TransactionException $e){
 				$this->session->getLogger()->debug("Failed to execute crafting transaction: " . $e->getMessage());
 
 				//TODO: only sync slots that the client tried to change
 				foreach($this->craftingTransaction->getInventories() as $inventory){
-					$this->session->getInvManager()->syncContents($inventory);
+					$this->inventoryManager->syncContents($inventory);
 				}
 				/*
 				 * TODO: HACK!
@@ -328,7 +331,7 @@ class InGamePacketHandler extends PacketHandler{
 			}
 
 			$transaction = new InventoryTransaction($this->player, $actions);
-			$this->session->getInvManager()->onTransactionStart($transaction);
+			$this->inventoryManager->onTransactionStart($transaction);
 			try{
 				$transaction->execute();
 			}catch(TransactionException $e){
@@ -337,7 +340,7 @@ class InGamePacketHandler extends PacketHandler{
 				$logger->debug("Actions: " . json_encode($data->getActions()));
 
 				foreach($transaction->getInventories() as $inventory){
-					$this->session->getInvManager()->syncContents($inventory);
+					$this->inventoryManager->syncContents($inventory);
 				}
 
 				return false;
@@ -348,6 +351,8 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
+		$this->player->selectHotbarSlot($data->getHotbarSlot());
+
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
 				//TODO: start hack for client spam bug
@@ -392,12 +397,12 @@ class InGamePacketHandler extends PacketHandler{
 			case UseItemTransactionData::ACTION_CLICK_AIR:
 				if($this->player->isUsingItem()){
 					if(!$this->player->consumeHeldItem()){
-						$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
+						$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 					}
 					return true;
 				}
 				if(!$this->player->useHeldItem()){
-					$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
+					$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 				}
 				return true;
 		}
@@ -409,7 +414,7 @@ class InGamePacketHandler extends PacketHandler{
 	 * Internal function used to execute rollbacks when an action fails on a block.
 	 */
 	private function onFailedBlockAction(Vector3 $blockPos, ?int $face) : void{
-		$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
+		$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 		if($blockPos->distanceSquared($this->player->getLocation()) < 10000){
 			$blocks = $blockPos->sidesArray();
 			if($face !== null){
@@ -432,16 +437,18 @@ class InGamePacketHandler extends PacketHandler{
 			return false;
 		}
 
+		$this->player->selectHotbarSlot($data->getHotbarSlot());
+
 		//TODO: use transactiondata for rollbacks here
 		switch($data->getActionType()){
 			case UseItemOnEntityTransactionData::ACTION_INTERACT:
 				if(!$this->player->interactEntity($target, $data->getClickPos())){
-					$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
+					$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 				}
 				return true;
 			case UseItemOnEntityTransactionData::ACTION_ATTACK:
 				if(!$this->player->attackEntity($target)){
-					$this->session->getInvManager()->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
+					$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 				}
 				return true;
 		}
@@ -450,11 +457,13 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data) : bool{
+		$this->player->selectHotbarSlot($data->getHotbarSlot());
+
 		//TODO: use transactiondata for rollbacks here (resending entire inventory is very wasteful)
 		switch($data->getActionType()){
 			case ReleaseItemTransactionData::ACTION_RELEASE:
 				if(!$this->player->releaseHeldItem()){
-					$this->session->getInvManager()->syncContents($this->player->getInventory());
+					$this->inventoryManager->syncContents($this->player->getInventory());
 				}
 				return true;
 		}
@@ -467,9 +476,9 @@ class InGamePacketHandler extends PacketHandler{
 			return true; //this happens when we put an item into the offhand
 		}
 		if($packet->windowId === ContainerIds::INVENTORY){
-			$this->session->getInvManager()->onClientSelectHotbarSlot($packet->hotbarSlot);
+			$this->inventoryManager->onClientSelectHotbarSlot($packet->hotbarSlot);
 			if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
-				$this->session->getInvManager()->syncSelectedHotbarSlot();
+				$this->inventoryManager->syncSelectedHotbarSlot();
 			}
 			return true;
 		}
@@ -603,7 +612,7 @@ class InGamePacketHandler extends PacketHandler{
 		if(array_key_exists($packet->windowId, $this->openHardcodedWindows)){
 			unset($this->openHardcodedWindows[$packet->windowId]);
 		}else{
-			$this->session->getInvManager()->onClientRemoveWindow($packet->windowId);
+			$this->inventoryManager->onClientRemoveWindow($packet->windowId);
 		}
 
 		$this->session->sendDataPacket(ContainerClosePacket::create($packet->windowId, false));
