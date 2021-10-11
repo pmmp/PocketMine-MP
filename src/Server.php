@@ -106,7 +106,6 @@ use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProviderManagerEntry;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
-use pocketmine\world\generator\normal\Normal;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
@@ -968,6 +967,17 @@ class Server{
 			$this->pluginManager->loadPlugins($this->pluginPath);
 			$this->enablePlugins(PluginEnableOrder::STARTUP());
 
+			$getGenerator = function(string $generatorName, string $worldName) : ?string{
+				$generatorClass = GeneratorManager::getInstance()->getGenerator($generatorName);
+				if($generatorClass === null){
+					$this->logger->error($this->language->translate(KnownTranslationFactory::pocketmine_level_generationError(
+						$worldName,
+						KnownTranslationFactory::pocketmine_level_unknownGenerator($generatorName)
+					)));
+				}
+				return $generatorClass;
+			};
+
 			foreach((array) $this->configGroup->getProperty("worlds", []) as $name => $options){
 				if($options === null){
 					$options = [];
@@ -980,7 +990,11 @@ class Server{
 
 					if(isset($options["generator"])){
 						$generatorOptions = explode(":", $options["generator"]);
-						$creationOptions->setGeneratorClass(GeneratorManager::getInstance()->getGenerator(array_shift($generatorOptions)) ?? Normal::class);
+						$generatorClass = $getGenerator(array_shift($generatorOptions), $name);
+						if($generatorClass === null){
+							continue;
+						}
+						$creationOptions->setGeneratorClass($generatorClass);
 						if(count($generatorOptions) > 0){
 							$creationOptions->setGeneratorOptions(implode(":", $generatorOptions));
 						}
@@ -1010,14 +1024,17 @@ class Server{
 					$this->configGroup->setConfigString("level-name", "world");
 				}
 				if(!$this->worldManager->loadWorld($default, true)){
-					$creationOptions = WorldCreationOptions::create()
-						->setGeneratorClass(GeneratorManager::getInstance()->getGenerator($this->configGroup->getConfigString("level-type")) ?? Normal::class)
-						->setGeneratorOptions($this->configGroup->getConfigString("generator-settings"));
-					$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
-					if($convertedSeed !== null){
-						$creationOptions->setSeed($convertedSeed);
+					$generatorClass = $getGenerator($this->configGroup->getConfigString("level-type"), $default);
+					if($generatorClass !== null){
+						$creationOptions = WorldCreationOptions::create()
+							->setGeneratorClass($generatorClass)
+							->setGeneratorOptions($this->configGroup->getConfigString("generator-settings"));
+						$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
+						if($convertedSeed !== null){
+							$creationOptions->setSeed($convertedSeed);
+						}
+						$this->worldManager->generateWorld($default, $creationOptions);
 					}
-					$this->worldManager->generateWorld($default, $creationOptions);
 				}
 
 				$world = $this->worldManager->getWorldByName($default);
