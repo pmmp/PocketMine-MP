@@ -989,15 +989,11 @@ class Server{
 					//TODO: error checking
 
 					if(isset($options["generator"])){
-						$generatorOptions = explode(":", $options["generator"]);
-						$generatorClass = $getGenerator(array_shift($generatorOptions), $name);
+						$generatorClass = $getGenerator($options["generator"], $name);
 						if($generatorClass === null){
 							continue;
 						}
 						$creationOptions->setGeneratorClass($generatorClass);
-						if(count($generatorOptions) > 0){
-							$creationOptions->setGeneratorOptions(implode(":", $generatorOptions));
-						}
 					}
 					if(isset($options["difficulty"]) && is_string($options["difficulty"])){
 						$creationOptions->setDifficulty(World::getDifficultyFromString($options["difficulty"]));
