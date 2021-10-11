@@ -351,6 +351,27 @@ class PluginManager{
 	}
 
 	/**
+	 * @param string[][] $dependencyLists
+	 * @param Plugin[]   $loadedPlugins
+	 */
+	private function checkDepsForTriage(string $pluginName, string $dependencyType, array &$dependencyLists, array $loadedPlugins, PluginLoadTriage $triage) : void{
+		if(isset($dependencyLists[$pluginName])){
+			foreach($dependencyLists[$pluginName] as $key => $dependency){
+				if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
+					$this->server->getLogger()->debug("Successfully resolved $dependencyType dependency \"$dependency\" for plugin \"$pluginName\"");
+					unset($dependencyLists[$pluginName][$key]);
+				}elseif(array_key_exists($dependency, $triage->plugins)){
+					$this->server->getLogger()->debug("Deferring resolution of $dependencyType dependency \"$dependency\" for plugin \"$pluginName\" (found but not loaded yet)");
+				}
+			}
+
+			if(count($dependencyLists[$pluginName]) === 0){
+				unset($dependencyLists[$pluginName]);
+			}
+		}
+	}
+
+	/**
 	 * @return Plugin[]
 	 */
 	public function loadPlugins(string $directory) : array{
@@ -362,35 +383,8 @@ class PluginManager{
 		while(count($triage->plugins) > 0){
 			$loadedThisLoop = 0;
 			foreach($triage->plugins as $name => $entry){
-				if(isset($triage->dependencies[$name])){
-					foreach($triage->dependencies[$name] as $key => $dependency){
-						if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
-							$this->server->getLogger()->debug("Successfully resolved hard dependency \"$dependency\" for plugin \"$name\"");
-							unset($triage->dependencies[$name][$key]);
-						}elseif(array_key_exists($dependency, $triage->plugins)){
-							$this->server->getLogger()->debug("Deferring resolution of dependency \"$dependency\" for plugin \"$name\" (found but not loaded yet)");
-						}
-					}
-
-					if(count($triage->dependencies[$name]) === 0){
-						unset($triage->dependencies[$name]);
-					}
-				}
-
-				if(isset($triage->softDependencies[$name])){
-					foreach($triage->softDependencies[$name] as $key => $dependency){
-						if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
-							$this->server->getLogger()->debug("Successfully resolved soft dependency \"$dependency\" for plugin \"$name\"");
-							unset($triage->softDependencies[$name][$key]);
-						}elseif(array_key_exists($dependency, $triage->plugins)){
-							$this->server->getLogger()->debug("Deferring resolution of soft dependency \"$dependency\" for plugin \"$name\" (found but not loaded yet)");
-						}
-					}
-
-					if(count($triage->softDependencies[$name]) === 0){
-						unset($triage->softDependencies[$name]);
-					}
-				}
+				$this->checkDepsForTriage($name, "hard", $triage->dependencies, $loadedPlugins, $triage);
+				$this->checkDepsForTriage($name, "soft", $triage->softDependencies, $loadedPlugins, $triage);
 
 				if(!isset($triage->dependencies[$name]) and !isset($triage->softDependencies[$name])){
 					unset($triage->plugins[$name]);
