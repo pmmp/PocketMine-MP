@@ -415,7 +415,7 @@ class PluginManager{
 
 				//check for skippable soft dependencies first, in case the dependents could resolve hard dependencies
 				foreach($triage->plugins as $name => $file){
-					if(isset($triage->softDependencies[$name])){
+					if(isset($triage->softDependencies[$name]) && !isset($triage->dependencies[$name])){
 						foreach($triage->softDependencies[$name] as $k => $dependency){
 							if($this->getPlugin($dependency) === null && !array_key_exists($dependency, $triage->plugins)){
 								//TODO: another plugin with an unresolved soft dependency might cause our soft
