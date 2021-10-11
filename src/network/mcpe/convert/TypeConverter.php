@@ -215,9 +215,6 @@ class TypeConverter{
 			if(($idTag = $compound->getTag(self::PM_ID_TAG)) instanceof IntTag){
 				$id = $idTag->getValue();
 				$compound->removeTag(self::PM_ID_TAG);
-				if($compound->count() === 0){
-					$compound = null;
-				}
 			}
 			if(($damageTag = $compound->getTag(self::DAMAGE_TAG)) instanceof IntTag){
 				$meta = $damageTag->getValue();
@@ -225,8 +222,6 @@ class TypeConverter{
 				if(($conflicted = $compound->getTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION)) !== null){
 					$compound->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
 					$compound->setTag(self::DAMAGE_TAG, $conflicted);
-				}elseif($compound->count() === 0){
-					$compound = null;
 				}
 			}elseif(($metaTag = $compound->getTag(self::PM_META_TAG)) instanceof IntTag){
 				//TODO HACK: This foul-smelling code ensures that we can correctly deserialize an item when the
@@ -234,9 +229,9 @@ class TypeConverter{
 				//client-side. Aside from being very annoying, this also breaks various server-side behaviours.
 				$meta = $metaTag->getValue();
 				$compound->removeTag(self::PM_META_TAG);
-				if($compound->count() === 0){
-					$compound = null;
-				}
+			}
+			if($compound->count() === 0){
+				$compound = null;
 			}
 		}
 
