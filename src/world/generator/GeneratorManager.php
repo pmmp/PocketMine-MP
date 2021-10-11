@@ -77,12 +77,10 @@ final class GeneratorManager{
 	/**
 	 * Returns a class name of a registered Generator matching the given name.
 	 *
-	 * @param bool   $throwOnMissing @deprecated this is for backwards compatibility only
-	 *
 	 * @return string|null Name of class that extends Generator, or null if no generator is mapped to that name
 	 * @phpstan-return class-string<Generator>|null
 	 */
-	public function getGenerator(string $name, bool $throwOnMissing = false) : ?string{
+	public function getGenerator(string $name) : ?string{
 		return $this->list[strtolower($name)] ?? null;
 	}
 
