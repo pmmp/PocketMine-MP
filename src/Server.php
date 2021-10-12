@@ -1076,7 +1076,7 @@ class Server{
 				$this->network->registerInterface(new UPnPNetworkInterface($this->logger, Internet::getInternalIP(), $this->getPort()));
 			}
 
-			if($this->configGroup->getPropertyBool("settings.send-usage", true)){
+			if($this->configGroup->getPropertyBool("anonymous-statistics.enabled", true)){
 				$this->sendUsageTicker = 6000;
 				$this->sendUsage(SendUsageTask::TYPE_OPEN);
 			}
