@@ -67,7 +67,7 @@ class GiveCommand extends VanillaCommand{
 
 		try{
 			$item = StringToItemParser::getInstance()->parse($args[1]) ?? LegacyStringToItemParser::getInstance()->parse($args[1]);
-		}catch(LegacyStringToItemParserException $e){
+		}catch(LegacyStringToItemParserException | \InvalidArgumentException $e){
 			$sender->sendMessage(KnownTranslationFactory::commands_give_item_notFound($args[1])->prefix(TextFormat::RED));
 			return true;
 		}
