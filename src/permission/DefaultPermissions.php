@@ -105,7 +105,7 @@ abstract class DefaultPermissions{
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_STATUS, "Allows the user to view the server performance"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_GC, "Allows the user to fire garbage collection tasks"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_DUMPMEMORY, "Allows the user to dump memory contents"), [$consoleRoot]);
-		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TIMINGS, "Allows the user to records timings for all plugin events"), [$operatorRoot]);
+		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TIMINGS, "Allows the user to record timings to analyse server performance"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_SPAWNPOINT, "Allows the user to change player's spawnpoint"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_SETWORLDSPAWN, "Allows the user to change the world spawn"), [$operatorRoot]);
 		self::registerPermission(new Permission(DefaultPermissionNames::COMMAND_TRANSFERSERVER, "Allows the user to transfer self to another server"), [$operatorRoot]);
