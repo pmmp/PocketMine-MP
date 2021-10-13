@@ -118,11 +118,9 @@ class Sapling extends Flowable{
 
 		$ev = new StructureGrowEvent($this, $transaction, $player);
 		$ev->call();
-		if($ev->isCancelled()){
-			return;
+		if(!$ev->isCancelled()){
+			$transaction->apply();
 		}
-
-		$transaction->apply();
 	}
 
 	public function getFuelTime() : int{
