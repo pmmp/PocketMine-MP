@@ -85,6 +85,14 @@ final class LegacyStringToItemParser{
 	}
 
 	/**
+	 * @return int[]
+	 * @phpstan-return array<string, int>
+	 */
+	public function getMappings() : array{
+		return $this->map;
+	}
+
+	/**
 	 * Tries to parse the specified string into Item types.
 	 *
 	 * Example accepted formats:
