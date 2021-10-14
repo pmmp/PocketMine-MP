@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use function function_exists;
+use function pcntl_async_signals;
 use function pcntl_signal;
 use function sapi_windows_set_ctrl_handler;
 use const PHP_WINDOWS_EVENT_CTRL_BREAK;
