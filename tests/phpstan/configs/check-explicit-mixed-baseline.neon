@@ -181,17 +181,22 @@ parameters:
 			path: ../../../src/utils/Internet.php
 
 		-
-			message: "#^Part \\$errno \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
-			count: 1
-			path: ../../../src/utils/MainLogger.php
-
-		-
 			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
 
 		-
+			message: "#^Parameter \\#1 \\$trace of static method pocketmine\\\\utils\\\\Utils\\:\\:printableTrace\\(\\) expects array\\<int, array\\<string, mixed\\>\\>, array given\\.$#"
+			count: 1
+			path: ../../../src/utils/Utils.php
+
+		-
 			message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
+			count: 1
+			path: ../../../src/utils/Utils.php
+
+		-
+			message: "#^Part \\$errno \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
 
