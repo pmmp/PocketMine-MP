@@ -192,10 +192,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$logger->error("Bad packet (error ID $errorId): " . $e->getMessage());
 
 				//intentionally doesn't use logException, we don't want spammy packet error traces to appear in release mode
-				$logger->debug("Origin: " . Filesystem::cleanPath($e->getFile()) . "(" . $e->getLine() . ")");
-				foreach(Utils::printableTrace($e->getTrace()) as $frame){
-					$logger->debug($frame);
-				}
+				$logger->debug(implode("\n", Utils::printableExceptionInfo($e)));
 				$session->disconnect("Packet processing error (Error ID: $errorId)");
 				$this->interface->blockAddress($address, 5);
 			}
