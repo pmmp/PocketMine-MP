@@ -61,7 +61,7 @@
    },
    "autoload": {
       "psr-4": {
-         "pocketmine\\": ["src/", "gen/"]
+         "pocketmine\\": "src/"
       },
       "files": [
          "src/CoreConstants.php"

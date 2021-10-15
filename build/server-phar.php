@@ -145,7 +145,6 @@ function main() : void{
 		$opts["out"] ?? getcwd() . DIRECTORY_SEPARATOR . "PocketMine-MP.phar",
 		dirname(__DIR__) . DIRECTORY_SEPARATOR,
 		[
-			'gen',
 			'resources',
 			'src',
 			'vendor'
