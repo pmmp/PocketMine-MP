@@ -161,11 +161,6 @@ parameters:
 			path: ../../../src/thread/ThreadManager.php
 
 		-
-			message: "#^Method pocketmine\\\\timings\\\\TimingsHandler\\:\\:time\\(\\) should return TClosureReturn but returns TClosureReturn\\.$#"
-			count: 1
-			path: ../../../src/timings/TimingsHandler.php
-
-		-
 			message: "#^Parameter \\#1 \\$config of static method pocketmine\\\\utils\\\\Config\\:\\:writeProperties\\(\\) expects array\\<string, bool\\|float\\|int\\|string\\>, array\\<string, mixed\\> given\\.$#"
 			count: 1
 			path: ../../../src/utils/Config.php
