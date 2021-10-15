@@ -66,16 +66,6 @@ parameters:
 			path: ../../../src/network/mcpe/raklib/PthreadsChannelReader.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of static method pocketmine\\\\permission\\\\PermissionParser\\:\\:defaultFromString\\(\\) expects bool\\|string, mixed given\\.$#"
-			count: 1
-			path: ../../../src/permission/PermissionParser.php
-
-		-
-			message: "#^Parameter \\#2 \\$description of class pocketmine\\\\permission\\\\Permission constructor expects string\\|null, mixed given\\.$#"
-			count: 1
-			path: ../../../src/permission/PermissionParser.php
-
-		-
 			message: "#^Parameter \\#1 \\$plugins of class pocketmine\\\\plugin\\\\PluginGraylist constructor expects array\\<string\\>, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginGraylist.php
