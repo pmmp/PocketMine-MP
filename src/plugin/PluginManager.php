@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\event\EventPriority;
 use pocketmine\event\HandlerListManager;
@@ -32,6 +33,7 @@ use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\event\RegisteredListener;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
@@ -59,6 +61,7 @@ use function is_subclass_of;
 use function iterator_to_array;
 use function mkdir;
 use function shuffle;
+use function sprintf;
 use function stripos;
 use function strpos;
 use function strtolower;
@@ -128,6 +131,47 @@ class PluginManager{
 		return Path::join(dirname($pluginPath), $pluginName);
 	}
 
+	private function checkPluginLoadability(PluginDescription $description) : Translatable|string|null{
+		$name = $description->getName();
+		if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
+			return KnownTranslationFactory::pocketmine_plugin_restrictedName();
+		}
+
+		foreach($description->getCompatibleApis() as $api){
+			if(!VersionString::isValidBaseVersion($api)){
+				return KnownTranslationFactory::pocketmine_plugin_invalidAPI($api);
+			}
+		}
+
+		if(!ApiVersion::isCompatible($this->server->getApiVersion(), $description->getCompatibleApis())){
+			return KnownTranslationFactory::pocketmine_plugin_incompatibleAPI(implode(", ", $description->getCompatibleApis()));
+		}
+
+		$ambiguousVersions = ApiVersion::checkAmbiguousVersions($description->getCompatibleApis());
+		if(count($ambiguousVersions) > 0){
+			return KnownTranslationFactory::pocketmine_plugin_ambiguousMinAPI(implode(", ", $ambiguousVersions));
+		}
+
+		if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
+			return KnownTranslationFactory::pocketmine_plugin_incompatibleOS(implode(", ", $description->getCompatibleOperatingSystems()));
+		}
+
+		if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
+			$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
+			if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
+				return KnownTranslationFactory::pocketmine_plugin_incompatibleProtocol(implode(", ", $pluginMcpeProtocols));
+			}
+		}
+
+		try{
+			$description->checkRequiredExtensions();
+		}catch(PluginException $ex){
+			return $ex->getMessage();
+		}
+
+		return null;
+	}
+
 	/**
 	 * @param PluginLoader[] $loaders
 	 */
@@ -136,78 +180,86 @@ class PluginManager{
 			if($loader->canLoadPlugin($path)){
 				$description = $loader->getPluginDescription($path);
 				if($description instanceof PluginDescription){
-					$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_load($description->getFullName())));
-					try{
-						$description->checkRequiredExtensions();
-					}catch(PluginException $ex){
-						$this->server->getLogger()->error($ex->getMessage());
-						return null;
-					}
-
-					$dataFolder = $this->getDataDirectory($path, $description->getName());
-					if(file_exists($dataFolder) and !is_dir($dataFolder)){
-						$this->server->getLogger()->error("Projected dataFolder '" . $dataFolder . "' for " . $description->getName() . " exists and is not a directory");
-						return null;
-					}
-					if(!file_exists($dataFolder)){
-						mkdir($dataFolder, 0777, true);
-					}
-
-					$prefixed = $loader->getAccessProtocol() . $path;
-					$loader->loadPlugin($prefixed);
-
-					$mainClass = $description->getMain();
-					if(!class_exists($mainClass, true)){
-						$this->server->getLogger()->error("Main class for plugin " . $description->getName() . " not found");
-						return null;
-					}
-					if(!is_a($mainClass, Plugin::class, true)){
-						$this->server->getLogger()->error("Main class for plugin " . $description->getName() . " is not an instance of " . Plugin::class);
-						return null;
-					}
-
-					$permManager = PermissionManager::getInstance();
-					$opRoot = $permManager->getPermission(DefaultPermissions::ROOT_OPERATOR);
-					$everyoneRoot = $permManager->getPermission(DefaultPermissions::ROOT_USER);
-					foreach($description->getPermissions() as $default => $perms){
-						foreach($perms as $perm){
-							$permManager->addPermission($perm);
-							switch($default){
-								case PermissionParser::DEFAULT_TRUE:
-									$everyoneRoot->addChild($perm->getName(), true);
-									break;
-								case PermissionParser::DEFAULT_OP:
-									$opRoot->addChild($perm->getName(), true);
-									break;
-								case PermissionParser::DEFAULT_NOT_OP:
-									//TODO: I don't think anyone uses this, and it currently relies on some magic inside PermissibleBase
-									//to ensure that the operator override actually applies.
-									//Explore getting rid of this.
-									//The following grants this permission to anyone who has the "everyone" root permission.
-									//However, if the operator root node (which has higher priority) is present, the
-									//permission will be denied instead.
-									$everyoneRoot->addChild($perm->getName(), true);
-									$opRoot->addChild($perm->getName(), false);
-									break;
-								default:
-									break;
-							}
-						}
-					}
-
-					/**
-					 * @var Plugin $plugin
-					 * @see Plugin::__construct()
-					 */
-					$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed, new DiskResourceProvider($prefixed . "/resources/"));
-					$this->plugins[$plugin->getDescription()->getName()] = $plugin;
-
-					return $plugin;
+					$this->internalLoadPlugin($path, $loader, $description);
 				}
 			}
 		}
 
 		return null;
+	}
+
+	private function internalLoadPlugin(string $path, PluginLoader $loader, PluginDescription $description) : ?Plugin{
+		$language = $this->server->getLanguage();
+		$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_load($description->getFullName())));
+
+		$dataFolder = $this->getDataDirectory($path, $description->getName());
+		if(file_exists($dataFolder) and !is_dir($dataFolder)){
+			$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+				$description->getName(),
+				KnownTranslationFactory::pocketmine_plugin_badDataFolder($dataFolder)
+			)));
+			return null;
+		}
+		if(!file_exists($dataFolder)){
+			mkdir($dataFolder, 0777, true);
+		}
+
+		$prefixed = $loader->getAccessProtocol() . $path;
+		$loader->loadPlugin($prefixed);
+
+		$mainClass = $description->getMain();
+		if(!class_exists($mainClass, true)){
+			$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+				$description->getName(),
+				KnownTranslationFactory::pocketmine_plugin_mainClassNotFound()
+			)));
+			return null;
+		}
+		if(!is_a($mainClass, Plugin::class, true)){
+			$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+				$description->getName(),
+				KnownTranslationFactory::pocketmine_plugin_mainClassWrongType(Plugin::class)
+			)));
+			return null;
+		}
+
+		$permManager = PermissionManager::getInstance();
+		$opRoot = $permManager->getPermission(DefaultPermissions::ROOT_OPERATOR);
+		$everyoneRoot = $permManager->getPermission(DefaultPermissions::ROOT_USER);
+		foreach($description->getPermissions() as $default => $perms){
+			foreach($perms as $perm){
+				$permManager->addPermission($perm);
+				switch($default){
+					case PermissionParser::DEFAULT_TRUE:
+						$everyoneRoot->addChild($perm->getName(), true);
+						break;
+					case PermissionParser::DEFAULT_OP:
+						$opRoot->addChild($perm->getName(), true);
+						break;
+					case PermissionParser::DEFAULT_NOT_OP:
+						//TODO: I don't think anyone uses this, and it currently relies on some magic inside PermissibleBase
+						//to ensure that the operator override actually applies.
+						//Explore getting rid of this.
+						//The following grants this permission to anyone who has the "everyone" root permission.
+						//However, if the operator root node (which has higher priority) is present, the
+						//permission will be denied instead.
+						$everyoneRoot->addChild($perm->getName(), true);
+						$opRoot->addChild($perm->getName(), false);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+
+		/**
+		 * @var Plugin $plugin
+		 * @see Plugin::__construct()
+		 */
+		$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed, new DiskResourceProvider($prefixed . "/resources/"));
+		$this->plugins[$plugin->getDescription()->getName()] = $plugin;
+
+		return $plugin;
 	}
 
 	/**
@@ -262,12 +314,10 @@ class PluginManager{
 				}
 
 				$name = $description->getName();
-				if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
-					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, KnownTranslationFactory::pocketmine_plugin_restrictedName())));
+
+				if(($loadabilityError = $this->checkPluginLoadability($description)) !== null){
+					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, $loadabilityError)));
 					continue;
-				}
-				if(strpos($name, " ") !== false){
-					$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_spacesDiscouraged($name)));
 				}
 
 				if(isset($plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
@@ -275,59 +325,18 @@ class PluginManager{
 					continue;
 				}
 
-				foreach($description->getCompatibleApis() as $api){
-					if(!VersionString::isValidBaseVersion($api)){
-						$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
-							$name,
-							KnownTranslationFactory::pocketmine_plugin_invalidAPI($api)
-						)));
-						continue 2;
-					}
-				}
-
-				if(!ApiVersion::isCompatible($this->server->getApiVersion(), $description->getCompatibleApis())){
-					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
-						$name,
-						KnownTranslationFactory::pocketmine_plugin_incompatibleAPI(implode(", ", $description->getCompatibleApis()))
-					)));
-					continue;
-				}
-				$ambiguousVersions = ApiVersion::checkAmbiguousVersions($description->getCompatibleApis());
-				if(count($ambiguousVersions) > 0){
-					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
-						$name,
-						KnownTranslationFactory::pocketmine_plugin_ambiguousMinAPI(implode(", ", $ambiguousVersions))
-					)));
-					continue;
-				}
-
-				if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
-					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
-						$name,
-						KnownTranslationFactory::pocketmine_plugin_incompatibleOS(implode(", ", $description->getCompatibleOperatingSystems()))
-					)));
-					continue;
-				}
-
-				if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
-					$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
-					if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
-						$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
-							$name,
-							KnownTranslationFactory::pocketmine_plugin_incompatibleProtocol(implode(", ", $pluginMcpeProtocols))
-						)));
-						continue;
-					}
+				if(strpos($name, " ") !== false){
+					$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_spacesDiscouraged($name)));
 				}
 
 				if($this->graylist !== null and !$this->graylist->isAllowed($name)){
 					$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 						$name,
-						"Disallowed by graylist"
+						$this->graylist->isWhitelist() ? KnownTranslationFactory::pocketmine_plugin_disallowedByWhitelist() : KnownTranslationFactory::pocketmine_plugin_disallowedByBlacklist()
 					)));
 					continue;
 				}
-				$plugins[$name] = $file;
+				$plugins[$name] = new PluginLoadTriageEntry($file, $loader, $description);
 
 				$softDependencies[$name] = array_merge($softDependencies[$name] ?? [], $description->getSoftDepend());
 				$dependencies[$name] = $description->getDepend();
@@ -344,7 +353,7 @@ class PluginManager{
 
 		while(count($plugins) > 0){
 			$loadedThisLoop = 0;
-			foreach($plugins as $name => $file){
+			foreach($plugins as $name => $entry){
 				if(isset($dependencies[$name])){
 					foreach($dependencies[$name] as $key => $dependency){
 						if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
@@ -386,10 +395,8 @@ class PluginManager{
 				if(!isset($dependencies[$name]) and !isset($softDependencies[$name])){
 					unset($plugins[$name]);
 					$loadedThisLoop++;
-					if(($plugin = $this->loadPlugin($file, $loaders)) instanceof Plugin){
+					if(($plugin = $this->internalLoadPlugin($entry->getFile(), $entry->getLoader(), $entry->getDescription())) instanceof Plugin){
 						$loadedPlugins[$name] = $plugin;
-					}else{
-						$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_genericLoadError($name)));
 					}
 				}
 			}
@@ -523,6 +530,14 @@ class PluginManager{
 
 			$handleCancelled = false;
 			if(isset($tags[ListenerMethodTags::HANDLE_CANCELLED])){
+				if(!is_a($eventClass, Cancellable::class, true)){
+					throw new PluginException(sprintf(
+						"Event handler %s() declares @%s for non-cancellable event of type %s",
+						Utils::getNiceClosureName($handlerClosure),
+						ListenerMethodTags::HANDLE_CANCELLED,
+						$eventClass
+					));
+				}
 				switch(strtolower($tags[ListenerMethodTags::HANDLE_CANCELLED])){
 					case "true":
 					case "":

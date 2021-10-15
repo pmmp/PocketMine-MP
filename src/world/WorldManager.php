@@ -38,6 +38,7 @@ use pocketmine\world\format\io\FormatConverter;
 use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProvider;
 use pocketmine\world\generator\GeneratorManager;
+use pocketmine\world\generator\InvalidGeneratorOptionsException;
 use Webmozart\PathUtil\Path;
 use function array_keys;
 use function array_shift;
@@ -220,12 +221,25 @@ class WorldManager{
 			)));
 			return false;
 		}
-		try{
-			GeneratorManager::getInstance()->getGenerator($provider->getWorldData()->getGenerator(), true);
-		}catch(\InvalidArgumentException $e){
+
+		$generatorEntry = GeneratorManager::getInstance()->getGenerator($provider->getWorldData()->getGenerator());
+		if($generatorEntry === null){
 			$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_loadError(
 				$name,
 				KnownTranslationFactory::pocketmine_level_unknownGenerator($provider->getWorldData()->getGenerator())
+			)));
+			return false;
+		}
+		try{
+			$generatorEntry->validateGeneratorOptions($provider->getWorldData()->getGeneratorOptions());
+		}catch(InvalidGeneratorOptionsException $e){
+			$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_loadError(
+				$name,
+				KnownTranslationFactory::pocketmine_level_invalidGeneratorOptions(
+					$provider->getWorldData()->getGeneratorOptions(),
+					$provider->getWorldData()->getGenerator(),
+					$e->getMessage()
+				)
 			)));
 			return false;
 		}

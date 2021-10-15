@@ -681,10 +681,12 @@ abstract class Entity{
 			throw new \InvalidArgumentException("Fire ticks must be in range 0 ... " . 0x7fff . ", got $fireTicks");
 		}
 		$this->fireTicks = $fireTicks;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function extinguish() : void{
 		$this->fireTicks = 0;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function isFireProof() : bool{

@@ -98,6 +98,7 @@ use pocketmine\utils\NotCloneable;
 use pocketmine\utils\NotSerializable;
 use pocketmine\utils\Process;
 use pocketmine\utils\Promise;
+use pocketmine\utils\SignalHandler;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
@@ -106,24 +107,22 @@ use pocketmine\world\format\io\WorldProviderManager;
 use pocketmine\world\format\io\WritableWorldProviderManagerEntry;
 use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
+use pocketmine\world\generator\InvalidGeneratorOptionsException;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
 use pocketmine\world\WorldManager;
 use Ramsey\Uuid\UuidInterface;
 use Webmozart\PathUtil\Path;
-use function array_shift;
 use function array_sum;
 use function base64_encode;
 use function cli_set_process_title;
 use function copy;
 use function count;
-use function explode;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
 use function filemtime;
 use function get_class;
-use function implode;
 use function ini_set;
 use function is_array;
 use function is_string;
@@ -251,6 +250,8 @@ class Server{
 
 	/** @var Player[] */
 	private array $playerList = [];
+
+	private SignalHandler $signalHandler;
 
 	/**
 	 * @var CommandSender[][]
@@ -745,6 +746,11 @@ class Server{
 		$this->autoloader = $autoloader;
 		$this->logger = $logger;
 
+		$this->signalHandler = new SignalHandler(function() : void{
+			$this->logger->info("Received signal interrupt, stopping the server");
+			$this->shutdown();
+		});
+
 		try{
 			foreach([
 				$dataPath,
@@ -967,91 +973,16 @@ class Server{
 			$this->pluginManager->loadPlugins($this->pluginPath);
 			$this->enablePlugins(PluginEnableOrder::STARTUP());
 
-			foreach((array) $this->configGroup->getProperty("worlds", []) as $name => $options){
-				if($options === null){
-					$options = [];
-				}elseif(!is_array($options)){
-					continue;
-				}
-				if(!$this->worldManager->loadWorld($name, true)){
-					$creationOptions = WorldCreationOptions::create();
-					//TODO: error checking
-
-					if(isset($options["generator"])){
-						$generatorOptions = explode(":", $options["generator"]);
-						$creationOptions->setGeneratorClass(GeneratorManager::getInstance()->getGenerator(array_shift($generatorOptions)));
-						if(count($generatorOptions) > 0){
-							$creationOptions->setGeneratorOptions(implode(":", $generatorOptions));
-						}
-					}
-					if(isset($options["difficulty"]) && is_string($options["difficulty"])){
-						$creationOptions->setDifficulty(World::getDifficultyFromString($options["difficulty"]));
-					}
-					if(isset($options["preset"]) && is_string($options["preset"])){
-						$creationOptions->setGeneratorOptions($options["preset"]);
-					}
-					if(isset($options["seed"])){
-						$convertedSeed = Generator::convertSeed((string) ($options["seed"] ?? ""));
-						if($convertedSeed !== null){
-							$creationOptions->setSeed($convertedSeed);
-						}
-					}
-
-					$this->worldManager->generateWorld($name, $creationOptions);
-				}
+			if(!$this->startupPrepareWorlds()){
+				return;
 			}
-
-			if($this->worldManager->getDefaultWorld() === null){
-				$default = $this->configGroup->getConfigString("level-name", "world");
-				if(trim($default) == ""){
-					$this->getLogger()->warning("level-name cannot be null, using default");
-					$default = "world";
-					$this->configGroup->setConfigString("level-name", "world");
-				}
-				if(!$this->worldManager->loadWorld($default, true)){
-					$creationOptions = WorldCreationOptions::create()
-						->setGeneratorClass(GeneratorManager::getInstance()->getGenerator($this->configGroup->getConfigString("level-type")))
-						->setGeneratorOptions($this->configGroup->getConfigString("generator-settings"));
-					$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
-					if($convertedSeed !== null){
-						$creationOptions->setSeed($convertedSeed);
-					}
-					$this->worldManager->generateWorld($default, $creationOptions);
-				}
-
-				$world = $this->worldManager->getWorldByName($default);
-				if($world === null){
-					$this->getLogger()->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_defaultError()));
-					$this->forceShutdown();
-
-					return;
-				}
-				$this->worldManager->setDefaultWorld($world);
-			}
-
 			$this->enablePlugins(PluginEnableOrder::POSTWORLD());
 
-			$useQuery = $this->configGroup->getConfigBool("enable-query", true);
-			if(!$this->network->registerInterface(new RakLibInterface($this)) && $useQuery){
-				//RakLib would normally handle the transport for Query packets
-				//if it's not registered we need to make sure Query still works
-				$this->network->registerInterface(new DedicatedQueryNetworkInterface($this->getIp(), $this->getPort(), new \PrefixedLogger($this->logger, "Dedicated Query Interface")));
-			}
-			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_networkStart($this->getIp(), (string) $this->getPort())));
-
-			if($useQuery){
-				$this->network->registerRawPacketHandler(new QueryHandler($this));
+			if(!$this->startupPrepareNetworkInterfaces()){
+				return;
 			}
 
-			foreach($this->getIPBans()->getEntries() as $entry){
-				$this->network->blockAddress($entry->getName(), -1);
-			}
-
-			if($this->configGroup->getPropertyBool("network.upnp-forwarding", false)){
-				$this->network->registerInterface(new UPnPNetworkInterface($this->logger, Internet::getInternalIP(), $this->getPort()));
-			}
-
-			if($this->configGroup->getPropertyBool("settings.send-usage", true)){
+			if($this->configGroup->getPropertyBool("anonymous-statistics.enabled", true)){
 				$this->sendUsageTicker = 6000;
 				$this->sendUsage(SendUsageTask::TYPE_OPEN);
 			}
@@ -1084,6 +1015,123 @@ class Server{
 		}catch(\Throwable $e){
 			$this->exceptionHandler($e);
 		}
+	}
+
+	private function startupPrepareWorlds() : bool{
+		$getGenerator = function(string $generatorName, string $generatorOptions, string $worldName) : ?string{
+			$generatorEntry = GeneratorManager::getInstance()->getGenerator($generatorName);
+			if($generatorEntry === null){
+				$this->logger->error($this->language->translate(KnownTranslationFactory::pocketmine_level_generationError(
+					$worldName,
+					KnownTranslationFactory::pocketmine_level_unknownGenerator($generatorName)
+				)));
+				return null;
+			}
+			try{
+				$generatorEntry->validateGeneratorOptions($generatorOptions);
+			}catch(InvalidGeneratorOptionsException $e){
+				$this->logger->error($this->language->translate(KnownTranslationFactory::pocketmine_level_generationError(
+					$worldName,
+					KnownTranslationFactory::pocketmine_level_invalidGeneratorOptions($generatorOptions, $generatorName, $e->getMessage())
+				)));
+				return null;
+			}
+			return $generatorEntry->getGeneratorClass();
+		};
+
+		foreach((array) $this->configGroup->getProperty("worlds", []) as $name => $options){
+			if($options === null){
+				$options = [];
+			}elseif(!is_array($options)){
+				continue;
+			}
+			if(!$this->worldManager->loadWorld($name, true) && !$this->worldManager->isWorldGenerated($name)){
+				$creationOptions = WorldCreationOptions::create();
+				//TODO: error checking
+
+				$generatorName = $options["generator"] ?? "default";
+				$generatorOptions = isset($options["preset"]) && is_string($options["preset"]) ? $options["preset"] : "";
+
+				$generatorClass = $getGenerator($generatorName, $generatorOptions, $name);
+				if($generatorClass === null){
+					continue;
+				}
+				$creationOptions->setGeneratorClass($generatorClass);
+				$creationOptions->setGeneratorOptions($generatorOptions);
+
+				if(isset($options["difficulty"]) && is_string($options["difficulty"])){
+					$creationOptions->setDifficulty(World::getDifficultyFromString($options["difficulty"]));
+				}
+
+				if(isset($options["seed"])){
+					$convertedSeed = Generator::convertSeed((string) ($options["seed"] ?? ""));
+					if($convertedSeed !== null){
+						$creationOptions->setSeed($convertedSeed);
+					}
+				}
+
+				$this->worldManager->generateWorld($name, $creationOptions);
+			}
+		}
+
+		if($this->worldManager->getDefaultWorld() === null){
+			$default = $this->configGroup->getConfigString("level-name", "world");
+			if(trim($default) == ""){
+				$this->getLogger()->warning("level-name cannot be null, using default");
+				$default = "world";
+				$this->configGroup->setConfigString("level-name", "world");
+			}
+			if(!$this->worldManager->loadWorld($default, true) && !$this->worldManager->isWorldGenerated($default)){
+				$generatorName = $this->configGroup->getConfigString("level-type");
+				$generatorOptions = $this->configGroup->getConfigString("generator-settings");
+				$generatorClass = $getGenerator($generatorName, $generatorOptions, $default);
+				if($generatorClass !== null){
+					$creationOptions = WorldCreationOptions::create()
+						->setGeneratorClass($generatorClass)
+						->setGeneratorOptions($generatorOptions);
+					$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
+					if($convertedSeed !== null){
+						$creationOptions->setSeed($convertedSeed);
+					}
+					$this->worldManager->generateWorld($default, $creationOptions);
+				}
+			}
+
+			$world = $this->worldManager->getWorldByName($default);
+			if($world === null){
+				$this->getLogger()->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_defaultError()));
+				$this->forceShutdown();
+
+				return false;
+			}
+			$this->worldManager->setDefaultWorld($world);
+		}
+
+		return true;
+	}
+
+	private function startupPrepareNetworkInterfaces() : bool{
+		$useQuery = $this->configGroup->getConfigBool("enable-query", true);
+		if(!$this->network->registerInterface(new RakLibInterface($this)) && $useQuery){
+			//RakLib would normally handle the transport for Query packets
+			//if it's not registered we need to make sure Query still works
+			$this->network->registerInterface(new DedicatedQueryNetworkInterface($this->getIp(), $this->getPort(), new \PrefixedLogger($this->logger, "Dedicated Query Interface")));
+		}
+		$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_networkStart($this->getIp(), (string) $this->getPort())));
+
+		if($useQuery){
+			$this->network->registerRawPacketHandler(new QueryHandler($this));
+		}
+
+		foreach($this->getIPBans()->getEntries() as $entry){
+			$this->network->blockAddress($entry->getName(), -1);
+		}
+
+		if($this->configGroup->getPropertyBool("network.upnp-forwarding", false)){
+			$this->network->registerInterface(new UPnPNetworkInterface($this->logger, Internet::getInternalIP(), $this->getPort()));
+		}
+
+		return true;
 	}
 
 	/**
@@ -1301,7 +1349,10 @@ class Server{
 	 * Shuts the server down correctly
 	 */
 	public function shutdown() : void{
-		$this->isRunning = false;
+		if($this->isRunning){
+			$this->isRunning = false;
+			$this->signalHandler->unregister();
+		}
 	}
 
 	public function forceShutdown() : void{

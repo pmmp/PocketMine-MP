@@ -115,7 +115,7 @@ class Bamboo extends Transparent{
 		return 12 + (self::getOffsetSeed($x, 0, $z) % 5);
 	}
 
-	public function getPositionOffset() : ?Vector3{
+	public function getModelPositionOffset() : ?Vector3{
 		$seed = self::getOffsetSeed($this->position->getFloorX(), 0, $this->position->getFloorZ());
 		$retX = (($seed % 12) + 1) / 16;
 		$retZ = ((($seed >> 8) % 12) + 1) / 16;
@@ -145,12 +145,12 @@ class Bamboo extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
 			$top = $this->seekToTop();
-			if($top->grow(self::getMaxHeight($top->position->getFloorX(), $top->position->getFloorZ()), mt_rand(1, 2))){
+			if($top->grow(self::getMaxHeight($top->position->getFloorX(), $top->position->getFloorZ()), mt_rand(1, 2), $player)){
 				$item->pop();
 				return true;
 			}
 		}elseif($item instanceof ItemBamboo){
-			if($this->seekToTop()->grow(PHP_INT_MAX, 1)){
+			if($this->seekToTop()->grow(PHP_INT_MAX, 1, $player)){
 				$item->pop();
 				return true;
 			}
@@ -165,7 +165,7 @@ class Bamboo extends Transparent{
 		}
 	}
 
-	private function grow(int $maxHeight, int $growAmount) : bool{
+	private function grow(int $maxHeight, int $growAmount, ?Player $player) : bool{
 		$world = $this->position->getWorld();
 		if(!$world->getBlock($this->position->up())->canBeReplaced()){
 			return false;
@@ -212,7 +212,7 @@ class Bamboo extends Transparent{
 			$tx->addBlock($this->position->subtract(0, $idx - $growAmount, 0), $newBlock);
 		}
 
-		$ev = new StructureGrowEvent($this, $tx);
+		$ev = new StructureGrowEvent($this, $tx, $player);
 		$ev->call();
 		if($ev->isCancelled()){
 			return false;
@@ -229,7 +229,7 @@ class Bamboo extends Transparent{
 		$world = $this->position->getWorld();
 		if($this->ready){
 			$this->ready = false;
-			if($world->getFullLight($this->position) < 9 || !$this->grow(self::getMaxHeight($this->position->getFloorX(), $this->position->getFloorZ()), 1)){
+			if($world->getFullLight($this->position) < 9 || !$this->grow(self::getMaxHeight($this->position->getFloorX(), $this->position->getFloorZ()), 1, null)){
 				$world->setBlock($this->position, $this);
 			}
 		}elseif($world->getBlock($this->position->up())->canBeReplaced()){

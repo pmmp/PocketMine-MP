@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use DaveRandom\CallbackValidator\CallbackType;
+use pocketmine\errorhandler\ErrorTypeToStringMap;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function array_combine;
@@ -46,6 +47,7 @@ use function file;
 use function file_exists;
 use function file_get_contents;
 use function function_exists;
+use function get_class;
 use function get_current_user;
 use function get_loaded_extensions;
 use function getenv;
@@ -53,6 +55,7 @@ use function gettype;
 use function implode;
 use function is_array;
 use function is_bool;
+use function is_int;
 use function is_object;
 use function is_string;
 use function mb_check_encoding;
@@ -384,6 +387,49 @@ final class Utils{
 		return -1;
 	}
 
+	private static function printableExceptionMessage(\Throwable $e) : string{
+		$errstr = preg_replace('/\s+/', ' ', trim($e->getMessage()));
+
+		$errno = $e->getCode();
+		if(is_int($errno)){
+			try{
+				$errno = ErrorTypeToStringMap::get($errno);
+			}catch(\InvalidArgumentException $ex){
+				//pass
+			}
+		}
+
+		$errfile = Filesystem::cleanPath($e->getFile());
+		$errline = $e->getLine();
+
+		return get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
+	}
+
+	/**
+	 * @param mixed[] $trace
+	 * @return string[]
+	 */
+	public static function printableExceptionInfo(\Throwable $e, $trace = null) : array{
+		if($trace === null){
+			$trace = $e->getTrace();
+		}
+
+		$lines = [self::printableExceptionMessage($e)];
+		$lines[] = "--- Stack trace ---";
+		foreach(Utils::printableTrace($trace) as $line){
+			$lines[] = "  " . $line;
+		}
+		for($prev = $e->getPrevious(); $prev !== null; $prev = $prev->getPrevious()){
+			$lines[] = "--- Previous ---";
+			$lines[] = self::printableExceptionMessage($prev);
+			foreach(Utils::printableTrace($prev->getTrace()) as $line){
+				$lines[] = "  " . $line;
+			}
+		}
+		$lines[] = "--- End of exception information ---";
+		return $lines;
+	}
+
 	/**
 	 * @param mixed[][] $trace
 	 * @phpstan-param list<array<string, mixed>> $trace
@@ -488,17 +534,20 @@ final class Utils{
 	 * Verifies that the given callable is compatible with the desired signature. Throws a TypeError if they are
 	 * incompatible.
 	 *
-	 * @param callable $signature Dummy callable with the required parameters and return type
-	 * @param callable $subject Callable to check the signature of
-	 * @phpstan-param anyCallable $signature
-	 * @phpstan-param anyCallable $subject
+	 * @param callable|CallbackType $signature Dummy callable with the required parameters and return type
+	 * @param callable              $subject Callable to check the signature of
+	 * @phpstan-param anyCallable|CallbackType $signature
+	 * @phpstan-param anyCallable              $subject
 	 *
 	 * @throws \DaveRandom\CallbackValidator\InvalidCallbackException
 	 * @throws \TypeError
 	 */
-	public static function validateCallableSignature(callable $signature, callable $subject) : void{
-		if(!($sigType = CallbackType::createFromCallable($signature))->isSatisfiedBy($subject)){
-			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($subject) . "` must be compatible with `" . $sigType . "`");
+	public static function validateCallableSignature(callable|CallbackType $signature, callable $subject) : void{
+		if(!($signature instanceof CallbackType)){
+			$signature = CallbackType::createFromCallable($signature);
+		}
+		if(!$signature->isSatisfiedBy($subject)){
+			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($subject) . "` must be compatible with `" . $signature . "`");
 		}
 	}
 

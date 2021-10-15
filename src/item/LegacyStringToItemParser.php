@@ -31,7 +31,6 @@ use function file_get_contents;
 use function is_array;
 use function is_int;
 use function is_numeric;
-use function is_string;
 use function json_decode;
 use function str_replace;
 use function strtolower;
@@ -63,8 +62,8 @@ final class LegacyStringToItemParser{
 		if(!is_array($mappings)) throw new AssumptionFailedError("Invalid mappings format, expected array");
 
 		foreach($mappings as $name => $id){
-			if(!is_string($name) or !is_int($id)) throw new AssumptionFailedError("Invalid mappings format, expected string keys and int values");
-			$result->addMapping($name, $id);
+			if(!is_int($id)) throw new AssumptionFailedError("Invalid mappings format, expected int values");
+			$result->addMapping((string) $name, $id);
 		}
 
 		return $result;
@@ -82,6 +81,14 @@ final class LegacyStringToItemParser{
 
 	public function addMapping(string $alias, int $id) : void{
 		$this->map[$alias] = $id;
+	}
+
+	/**
+	 * @return int[]
+	 * @phpstan-return array<string, int>
+	 */
+	public function getMappings() : array{
+		return $this->map;
 	}
 
 	/**
@@ -106,9 +113,7 @@ final class LegacyStringToItemParser{
 			throw new LegacyStringToItemParserException("Unable to parse \"" . $b[1] . "\" from \"" . $input . "\" as a valid meta value");
 		}
 
-		if(is_numeric($b[0])){
-			$item = $this->itemFactory->get((int) $b[0], $meta);
-		}elseif(isset($this->map[strtolower($b[0])])){
+		if(isset($this->map[strtolower($b[0])])){
 			$item = $this->itemFactory->get($this->map[strtolower($b[0])], $meta);
 		}else{
 			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
