@@ -24,9 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use PHPModelGenerator\Exception\ValidationException;
+use pocketmine\model\immutable\PluginManifest;
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionParser;
-use pocketmine\plugin\model\PluginManifest;
 use function is_array;
 use function is_string;
 use function phpversion;
