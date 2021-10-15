@@ -23,15 +23,11 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-use Respect\Validation\Exceptions\NestedValidationException;
-use Respect\Validation\Rules\AllOf;
-use Respect\Validation\Rules\ArrayType;
-use Respect\Validation\Rules\Each;
-use Respect\Validation\Rules\In;
-use Respect\Validation\Rules\Key;
-use Respect\Validation\Rules\StringType;
-use Respect\Validation\Validator;
 use function array_flip;
+use function is_array;
+use function is_float;
+use function is_int;
+use function is_string;
 
 class PluginGraylist{
 
@@ -70,17 +66,27 @@ class PluginGraylist{
 	 * @param mixed[] $array
 	 */
 	public static function fromArray(array $array) : PluginGraylist{
-		$validator = new Validator(
-			new Key("mode", new In(['whitelist', 'blacklist'], true), true),
-			new Key("plugins", new AllOf(new ArrayType(), new Each(new StringType())), true)
-		);
-		$validator->setName('plugin_list.yml');
-		try{
-			$validator->assert($array);
-		}catch(NestedValidationException $e){
-			throw new \InvalidArgumentException($e->getFullMessage(), 0, $e);
+		if(!isset($array["mode"]) || ($array["mode"] !== "whitelist" && $array["mode"] !== "blacklist")){
+			throw new \InvalidArgumentException("\"mode\" must be set");
 		}
-		return new PluginGraylist($array["plugins"], $array["mode"] === 'whitelist');
+		$isWhitelist = match($array["mode"]){
+			"whitelist" => true,
+			"blacklist" => false,
+			default => throw new \InvalidArgumentException("\"mode\" must be either \"whitelist\" or \"blacklist\"")
+		};
+		$plugins = [];
+		if(isset($array["plugins"])){
+			if(!is_array($array["plugins"])){
+				throw new \InvalidArgumentException("\"plugins\" must be an array");
+			}
+			foreach($array["plugins"] as $k => $v){
+				if(!is_string($v) && !is_int($v) && !is_float($v)){
+					throw new \InvalidArgumentException("\"plugins\" contains invalid element at position $k");
+				}
+				$plugins[] = (string) $v;
+			}
+		}
+		return new PluginGraylist($plugins, $isWhitelist);
 	}
 
 	/**

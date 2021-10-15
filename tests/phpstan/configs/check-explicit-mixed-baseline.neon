@@ -136,11 +136,6 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Parameter \\#1 \\$plugins of class pocketmine\\\\plugin\\\\PluginGraylist constructor expects array\\<string\\>, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginGraylist.php
-
-		-
 			message: "#^Parameter \\#2 \\$code of class pocketmine\\\\resourcepacks\\\\ResourcePackException constructor expects int, mixed given\\.$#"
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
