@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use PHPModelGenerator\Exception\ValidationException;
-use pocketmine\model\immutable\PluginManifest;
+use pocketmine\datamodels\immutable\PluginManifest;
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionParser;
 use function is_array;
