@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
+use pocketmine\entity\animation\ItemEntityStackSizeChangeAnimation;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
@@ -263,9 +264,7 @@ class ItemEntity extends Entity{
 
 	public function setStackSize(int $newCount) : void{
 		$this->item->setCount($newCount);
-		foreach($this->getViewers() as $viewer){
-			$viewer->getNetworkSession()->syncItemEntityStackSize($this, $newCount);
-		}
+		$this->broadcastAnimation(new ItemEntityStackSizeChangeAnimation($this, $newCount));
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
