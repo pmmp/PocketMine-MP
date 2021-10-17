@@ -114,14 +114,7 @@ class ItemEntity extends Entity{
 						continue;
 					}
 
-					/**
-					 * @var ItemEntity $consumer
-					 * @var ItemEntity $consumed
-					 */
-					[$consumer, $consumed] = $entity->item->getCount() <= $this->item->getCount()
-						? [$this, $entity]
-						: [$entity, $this];
-					if($consumed->tryMergeInto($consumer)){
+					if(($entity->item->getCount() <= $this->item->getCount() && $entity->tryMergeInto($this)) || $this->tryMergeInto($entity)){
 						break;
 					}
 				}
