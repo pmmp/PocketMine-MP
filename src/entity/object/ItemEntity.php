@@ -115,13 +115,13 @@ class ItemEntity extends Entity{
 					}
 
 					/**
-					 * @var ItemEntity $new
-					 * @var ItemEntity $old
+					 * @var ItemEntity $consumer
+					 * @var ItemEntity $consumed
 					 */
-					[$new, $old] = $entity->item->getCount() <= $this->item->getCount()
+					[$consumer, $consumed] = $entity->item->getCount() <= $this->item->getCount()
 						? [$this, $entity]
 						: [$entity, $this];
-					if($old->tryMerge($new)){
+					if($consumed->tryMergeInto($consumer)){
 						break;
 					}
 				}
@@ -148,22 +148,22 @@ class ItemEntity extends Entity{
 		return $entity->pickupDelay !== self::NEVER_DESPAWN and $item->canStackWith($this->item) and $item->getCount() + $this->item->getCount() <= $item->getMaxStackSize();
 	}
 
-	public function tryMerge(ItemEntity $entity) : bool{
-		if(!$this->isMergeable($entity)){
+	public function tryMergeInto(ItemEntity $consumer) : bool{
+		if(!$this->isMergeable($consumer)){
 			return false;
 		}
 
-		$ev = new ItemMergeEvent($this, $entity);
+		$ev = new ItemMergeEvent($this, $consumer);
 		$ev->call();
 
 		if($ev->isCancelled()){
 			return false;
 		}
 
-		$entity->setStackSize($entity->item->getCount() + $this->item->getCount());
+		$consumer->setStackSize($consumer->item->getCount() + $this->item->getCount());
 		$this->flagForDespawn();
-		$entity->pickupDelay = max($entity->pickupDelay, $this->pickupDelay);
-		$entity->despawnDelay = max($entity->despawnDelay, $this->despawnDelay);
+		$consumer->pickupDelay = max($consumer->pickupDelay, $this->pickupDelay);
+		$consumer->despawnDelay = max($consumer->despawnDelay, $this->despawnDelay);
 
 		return true;
 	}
