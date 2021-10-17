@@ -141,7 +141,7 @@ class ItemEntity extends Entity{
 	 */
 	public function isMergeable(ItemEntity $entity) : bool{
 		$item = $entity->item;
-		return $entity->pickupDelay !== self::NEVER_DESPAWN and $item->canStackWith($this->item) and $item->getCount() + $this->item->getCount() <= $item->getMaxStackSize();
+		return $entity !== $this && $entity->pickupDelay !== self::NEVER_DESPAWN and $item->canStackWith($this->item) and $item->getCount() + $this->item->getCount() <= $item->getMaxStackSize();
 	}
 
 	/**
