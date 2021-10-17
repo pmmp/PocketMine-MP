@@ -256,6 +256,9 @@ class ItemEntity extends Entity{
 	}
 
 	public function setStackSize(int $newCount) : void{
+		if($newCount <= 0){
+			throw new \InvalidArgumentException("Stack size must be at least 1");
+		}
 		$this->item->setCount($newCount);
 		$this->broadcastAnimation(new ItemEntityStackSizeChangeAnimation($this, $newCount));
 	}
