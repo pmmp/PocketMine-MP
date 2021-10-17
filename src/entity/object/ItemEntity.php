@@ -124,10 +124,9 @@ class ItemEntity extends Entity{
 					}
 				}
 				foreach($mergeable as $itemEntity){
-					if($itemEntity === $mergeTarget){
-						continue;
+					if($itemEntity !== $mergeTarget){
+						$itemEntity->tryMergeInto($mergeTarget);
 					}
-					$itemEntity->tryMergeInto($mergeTarget);
 				}
 			}
 
