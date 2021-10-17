@@ -28,6 +28,7 @@ use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityItemPickupEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
+use pocketmine\event\entity\ItemMergeEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -43,6 +44,7 @@ class ItemEntity extends Entity{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::ITEM; }
 
+	public const MERGE_CHECK_PERIOD = 2; //0.1 seconds
 	public const DEFAULT_DESPAWN_DELAY = 6000; //5 minutes
 	public const NEVER_DESPAWN = -1;
 	public const MAX_DESPAWN_DELAY = 32767 + self::DEFAULT_DESPAWN_DELAY; //max value storable by mojang NBT :(
@@ -105,6 +107,24 @@ class ItemEntity extends Entity{
 			if($this->pickupDelay < 0){
 				$this->pickupDelay = 0;
 			}
+			if($this->hasMovementUpdate() and $this->despawnDelay % self::MERGE_CHECK_PERIOD === 0){
+				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
+					if(!$entity instanceof ItemEntity or $entity->isFlaggedForDespawn()){
+						continue;
+					}
+
+					/**
+					 * @var ItemEntity $new
+					 * @var ItemEntity $old
+					 */
+					[$new, $old] = $entity->item->getCount() <= $this->item->getCount()
+						? [$this, $entity]
+						: [$entity, $this];
+					if($old->tryMerge($new)){
+						break;
+					}
+				}
+			}
 
 			$this->despawnDelay -= $tickDiff;
 			if($this->despawnDelay <= 0){
@@ -120,6 +140,31 @@ class ItemEntity extends Entity{
 		}
 
 		return $hasUpdate;
+	}
+
+	public function isMergeable(ItemEntity $entity) : bool{
+		$item = $entity->item;
+		return $entity->pickupDelay !== self::NEVER_DESPAWN and $item->canStackWith($this->item) and $item->getCount() + $this->item->getCount() <= $item->getMaxStackSize();
+	}
+
+	public function tryMerge(ItemEntity $entity) : bool{
+		if(!$this->isMergeable($entity)){
+			return false;
+		}
+
+		$ev = new ItemMergeEvent($this, $entity);
+		$ev->call();
+
+		if($ev->isCancelled()){
+			return false;
+		}
+
+		$entity->setStackSize($entity->item->getCount() + $this->item->getCount());
+		$this->flagForDespawn();
+		$entity->pickupDelay = max($entity->pickupDelay, $this->pickupDelay);
+		$entity->despawnDelay = max($entity->despawnDelay, $this->despawnDelay);
+
+		return true;
 	}
 
 	protected function tryChangeMovement() : void{
@@ -214,6 +259,13 @@ class ItemEntity extends Entity{
 		$pk->metadata = $this->getAllNetworkData();
 
 		$player->getNetworkSession()->sendDataPacket($pk);
+	}
+
+	public function setStackSize(int $newCount) : void{
+		$this->item->setCount($newCount);
+		foreach($this->getViewers() as $viewer){
+			$viewer->getNetworkSession()->syncItemEntityStackSize($this, $newCount);
+		}
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
