@@ -136,11 +136,17 @@ class ItemEntity extends Entity{
 		return $hasUpdate;
 	}
 
+	/**
+	 * Returns whether this item entity can merge with the given one.
+	 */
 	public function isMergeable(ItemEntity $entity) : bool{
 		$item = $entity->item;
 		return $entity->pickupDelay !== self::NEVER_DESPAWN and $item->canStackWith($this->item) and $item->getCount() + $this->item->getCount() <= $item->getMaxStackSize();
 	}
 
+	/**
+	 * Attempts to merge this item entity into the given item entity. Returns true if it was successful.
+	 */
 	public function tryMergeInto(ItemEntity $consumer) : bool{
 		if(!$this->isMergeable($consumer)){
 			return false;

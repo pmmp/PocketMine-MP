@@ -28,6 +28,8 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 
 /**
+ * Called when an item entity tries to merge into another item entity.
+ *
  * @phpstan-extends EntityEvent<ItemEntity>
  */
 class ItemMergeEvent extends EntityEvent implements Cancellable{
