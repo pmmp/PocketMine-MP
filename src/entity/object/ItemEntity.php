@@ -109,14 +109,25 @@ class ItemEntity extends Entity{
 				$this->pickupDelay = 0;
 			}
 			if($this->hasMovementUpdate() and $this->despawnDelay % self::MERGE_CHECK_PERIOD === 0){
+				$mergeable = [$this]; //in case the merge target ends up not being this
+				$mergeTarget = $this;
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
 					if(!$entity instanceof ItemEntity or $entity->isFlaggedForDespawn()){
 						continue;
 					}
 
-					if(($entity->item->getCount() <= $this->item->getCount() && $entity->tryMergeInto($this)) || $this->tryMergeInto($entity)){
-						break;
+					if($entity->isMergeable($this)){
+						$mergeable[] = $entity;
+						if($entity->item->getCount() > $mergeTarget->item->getCount()){
+							$mergeTarget = $entity;
+						}
 					}
+				}
+				foreach($mergeable as $itemEntity){
+					if($itemEntity === $mergeTarget){
+						continue;
+					}
+					$itemEntity->tryMergeInto($mergeTarget);
 				}
 			}
 
