@@ -33,7 +33,9 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\convert\TypeConverter;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AddItemActorPacket;
+use pocketmine\network\mcpe\protocol\AnimateEntityPacket;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\player\Player;
@@ -225,13 +227,14 @@ class ItemEntity extends Entity{
 			return;
 		}
 
-		$item = $this->getItem();
+		$item = clone $this->getItem();
 		$playerInventory = match(true){
 			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->getAddableItemQuantity($item) > 0 => $player->getOffHandInventory(),
 			$player->getInventory()->getAddableItemQuantity($item) > 0 => $player->getInventory(),
 			default => null
 		};
 
+		$item->setCount($playerInventory?->getAddableItemQuantity($item) ?? $item->getCount());
 		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
 		if($player->hasFiniteResources() and $playerInventory === null){
 			$ev->cancel();
@@ -246,14 +249,20 @@ class ItemEntity extends Entity{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$leftovers = $ev->getInventory()?->addItem($ev->getItem());
-		if(!isset($leftovers) || count($leftovers) <= 0){
+		$leftovers = $ev->getInventory()?->addItem($this->getItem()) ?? [];
+		$count = array_sum(array_map(static function (Item $item) : int{
+			return $item->getCount();
+		}, $leftovers));
+
+		if($count <= 0){
 			$this->flagForDespawn();
-		}else{
-			$count = array_sum(array_map(static function (Item $item): int{
-				return $item->getCount();
-			}, $leftovers));
-			$this->getItem()->setCount($count);
+			return;
+		}
+
+		$this->getItem()->setCount($count);
+		$pk = ActorEventPacket::create($this->getId(), ActorEventPacket::ITEM_ENTITY_MERGE, $count);
+		foreach ($this->getViewers() as $viewer) {
+			$viewer->getNetworkSession()->sendDataPacket($pk);
 		}
 	}
 }

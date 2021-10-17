@@ -57,13 +57,6 @@ class EntityItemPickupEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
-	 * Change the items to receive.
-	 */
-	public function setItem(Item $item) : void{
-		$this->item = clone $item;
-	}
-
-	/**
 	 * Inventory to which received items will be added.
 	 */
 	public function getInventory() : ?Inventory{
