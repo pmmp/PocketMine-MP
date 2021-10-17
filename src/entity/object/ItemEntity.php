@@ -220,15 +220,16 @@ class ItemEntity extends Entity{
 		return $vector3->add(0, 0.125, 0);
 	}
 
-	public function onCollideWithPlayer(Player $player) : void{
+	public function onCollideWithPlayer(Player $player) : void
+	{
 		if($this->getPickupDelay() !== 0){
 			return;
 		}
 
 		$item = $this->getItem();
 		$playerInventory = match(true){
-			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
-			$player->getInventory()->canAddItem($item) => $player->getInventory(),
+			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->getAddableItemQuantity($item) > 0 => $player->getOffHandInventory(),
+			$player->getInventory()->getAddableItemQuantity($item) > 0 => $player->getInventory(),
 			default => null
 		};
 
@@ -246,7 +247,14 @@ class ItemEntity extends Entity{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$ev->getInventory()?->addItem($ev->getItem());
-		$this->flagForDespawn();
+		$leftovers = $ev->getInventory()?->addItem($ev->getItem());
+		if(!isset($leftovers) || count($leftovers) <= 0){
+			$this->flagForDespawn();
+		}else{
+			$count = array_sum(array_map(static function (Item $item): int{
+				return $item->getCount();
+			}, $leftovers));
+			$this->getItem()->setCount($count);
+		}
 	}
 }
