@@ -220,8 +220,7 @@ class ItemEntity extends Entity{
 		return $vector3->add(0, 0.125, 0);
 	}
 
-	public function onCollideWithPlayer(Player $player) : void
-	{
+	public function onCollideWithPlayer(Player $player) : void{
 		if($this->getPickupDelay() !== 0){
 			return;
 		}
