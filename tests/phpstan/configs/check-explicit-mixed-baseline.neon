@@ -136,11 +136,6 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Parameter \\#1 \\$plugins of class pocketmine\\\\plugin\\\\PluginGraylist constructor expects array\\<string\\>, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginGraylist.php
-
-		-
 			message: "#^Parameter \\#2 \\$code of class pocketmine\\\\resourcepacks\\\\ResourcePackException constructor expects int, mixed given\\.$#"
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
@@ -161,11 +156,6 @@ parameters:
 			path: ../../../src/thread/ThreadManager.php
 
 		-
-			message: "#^Method pocketmine\\\\timings\\\\TimingsHandler\\:\\:time\\(\\) should return TClosureReturn but returns TClosureReturn\\.$#"
-			count: 1
-			path: ../../../src/timings/TimingsHandler.php
-
-		-
 			message: "#^Parameter \\#1 \\$config of static method pocketmine\\\\utils\\\\Config\\:\\:writeProperties\\(\\) expects array\\<string, bool\\|float\\|int\\|string\\>, array\\<string, mixed\\> given\\.$#"
 			count: 1
 			path: ../../../src/utils/Config.php
@@ -181,17 +171,22 @@ parameters:
 			path: ../../../src/utils/Internet.php
 
 		-
-			message: "#^Part \\$errno \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
-			count: 1
-			path: ../../../src/utils/MainLogger.php
-
-		-
 			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
 
 		-
+			message: "#^Parameter \\#1 \\$trace of static method pocketmine\\\\utils\\\\Utils\\:\\:printableTrace\\(\\) expects array\\<int, array\\<string, mixed\\>\\>, array given\\.$#"
+			count: 1
+			path: ../../../src/utils/Utils.php
+
+		-
 			message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
+			count: 1
+			path: ../../../src/utils/Utils.php
+
+		-
+			message: "#^Part \\$errno \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
 

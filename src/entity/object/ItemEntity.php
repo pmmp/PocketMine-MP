@@ -227,8 +227,8 @@ class ItemEntity extends Entity{
 
 		$item = $this->getItem();
 		$playerInventory = match(true){
-			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
-			$player->getInventory()->canAddItem($item) => $player->getInventory(),
+			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->getAddableItemQuantity($item) > 0 => $player->getOffHandInventory(),
+			$player->getInventory()->getAddableItemQuantity($item) > 0 => $player->getInventory(),
 			default => null
 		};
 
@@ -246,7 +246,12 @@ class ItemEntity extends Entity{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$ev->getInventory()?->addItem($ev->getItem());
+		$inventory = $ev->getInventory();
+		if($inventory !== null){
+			foreach($inventory->addItem($ev->getItem()) as $remains){
+				$this->getWorld()->dropItem($this->location, $remains, new Vector3(0, 0, 0));
+			}
+		}
 		$this->flagForDespawn();
 	}
 }

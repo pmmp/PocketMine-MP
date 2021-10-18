@@ -57,5 +57,5 @@ parameters:
 		#variadics don't work for this - mixed probably shouldn't work either, but for now it does
 		#what we actually need is something that accepts an infinite number of parameters, but in the absence of that,
 		#we'll just fill it with 10 - it's very unlikely to encounter a callable with 10 parameters anyway.
-		anyCallable: 'callable(mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed) : mixed'
-		anyClosure: '\Closure(mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed, mixed) : mixed'
+		anyCallable: 'callable(never, never, never, never, never, never, never, never, never, never) : mixed'
+		anyClosure: '\Closure(never, never, never, never, never, never, never, never, never, never) : mixed'

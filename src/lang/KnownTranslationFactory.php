@@ -1575,6 +1575,14 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function pocketmine_level_invalidGeneratorOptions(Translatable|string $preset, Translatable|string $generatorName, Translatable|string $details) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_INVALIDGENERATOROPTIONS, [
+			"preset" => $preset,
+			"generatorName" => $generatorName,
+			"details" => $details,
+		]);
+	}
+
 	public static function pocketmine_level_loadError(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_LEVEL_LOADERROR, [
 			0 => $param0,
@@ -1671,6 +1679,12 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function pocketmine_plugin_badDataFolder(Translatable|string $dataFolder) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_BADDATAFOLDER, [
+			"dataFolder" => $dataFolder,
+		]);
+	}
+
 	public static function pocketmine_plugin_circularDependency() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_CIRCULARDEPENDENCY, []);
 	}
@@ -1696,15 +1710,36 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function pocketmine_plugin_disallowedByBlacklist() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_DISALLOWEDBYBLACKLIST, []);
+	}
+
+	public static function pocketmine_plugin_disallowedByWhitelist() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_DISALLOWEDBYWHITELIST, []);
+	}
+
 	public static function pocketmine_plugin_duplicateError(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_DUPLICATEERROR, [
 			0 => $param0,
 		]);
 	}
 
+	public static function pocketmine_plugin_emptyExtensionVersionConstraint(Translatable|string $constraintIndex, Translatable|string $extensionName) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_EMPTYEXTENSIONVERSIONCONSTRAINT, [
+			"constraintIndex" => $constraintIndex,
+			"extensionName" => $extensionName,
+		]);
+	}
+
 	public static function pocketmine_plugin_enable(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_ENABLE, [
 			0 => $param0,
+		]);
+	}
+
+	public static function pocketmine_plugin_extensionNotLoaded(Translatable|string $extensionName) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_EXTENSIONNOTLOADED, [
+			"extensionName" => $extensionName,
 		]);
 	}
 
@@ -1717,6 +1752,14 @@ final class KnownTranslationFactory{
 	public static function pocketmine_plugin_incompatibleAPI(Translatable|string $param0) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_INCOMPATIBLEAPI, [
 			0 => $param0,
+		]);
+	}
+
+	public static function pocketmine_plugin_incompatibleExtensionVersion(Translatable|string $extensionVersion, Translatable|string $extensionName, Translatable|string $pluginRequirement) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_INCOMPATIBLEEXTENSIONVERSION, [
+			"extensionVersion" => $extensionVersion,
+			"extensionName" => $extensionName,
+			"pluginRequirement" => $pluginRequirement,
 		]);
 	}
 
@@ -1744,6 +1787,13 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function pocketmine_plugin_invalidExtensionVersionConstraint(Translatable|string $versionConstraint, Translatable|string $extensionName) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_INVALIDEXTENSIONVERSIONCONSTRAINT, [
+			"versionConstraint" => $versionConstraint,
+			"extensionName" => $extensionName,
+		]);
+	}
+
 	public static function pocketmine_plugin_invalidManifest(Translatable|string $details) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_INVALIDMANIFEST, [
 			"details" => $details,
@@ -1760,6 +1810,16 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_LOADERROR, [
 			0 => $param0,
 			1 => $param1,
+		]);
+	}
+
+	public static function pocketmine_plugin_mainClassNotFound() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_MAINCLASSNOTFOUND, []);
+	}
+
+	public static function pocketmine_plugin_mainClassWrongType(Translatable|string $pluginInterface) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_MAINCLASSWRONGTYPE, [
+			"pluginInterface" => $pluginInterface,
 		]);
 	}
 

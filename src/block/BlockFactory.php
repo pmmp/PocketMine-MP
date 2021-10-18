@@ -183,6 +183,7 @@ class BlockFactory{
 		$this->register(new EnderChest(new BID(Ids::ENDER_CHEST, 0, null, TileEnderChest::class), "Ender Chest", new BlockBreakInfo(22.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 3000.0)));
 		$this->register(new Farmland(new BID(Ids::FARMLAND, 0), "Farmland", new BlockBreakInfo(0.6, BlockToolType::SHOVEL)));
 		$this->register(new Fire(new BID(Ids::FIRE, 0), "Fire Block", BlockBreakInfo::instant()));
+		$this->register(new FletchingTable(new BID(Ids::FLETCHING_TABLE, 0), "Fletching Table", new BlockBreakInfo(2.5, BlockToolType::AXE, 0, 2.5)));
 		$this->register(new Flower(new BID(Ids::DANDELION, 0), "Dandelion", BlockBreakInfo::instant()));
 		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_ALLIUM), "Allium", BlockBreakInfo::instant()));
 		$this->register(new Flower(new BID(Ids::RED_FLOWER, Meta::FLOWER_AZURE_BLUET), "Azure Bluet", BlockBreakInfo::instant()));
@@ -402,6 +403,7 @@ class BlockFactory{
 		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_STONE), "Stone", $stoneSlabBreakInfo));
 		$this->register(new Opaque(new BID(Ids::STONECUTTER, 0), "Stonecutter", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->register(new Sugarcane(new BID(Ids::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane", BlockBreakInfo::instant()));
+		$this->register(new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH, 0, ItemIds::SWEET_BERRIES), "Sweet Berry Bush", BlockBreakInfo::instant()));
 		$this->register(new TNT(new BID(Ids::TNT, 0), "TNT", BlockBreakInfo::instant()));
 
 		$fern = new TallGrass(new BID(Ids::TALLGRASS, Meta::TALLGRASS_FERN), "Fern", BlockBreakInfo::instant(BlockToolType::SHEARS, 1));
@@ -567,7 +569,6 @@ class BlockFactory{
 		//TODO: minecraft:dropper
 		//TODO: minecraft:end_gateway
 		//TODO: minecraft:end_portal
-		//TODO: minecraft:fletching_table
 		//TODO: minecraft:grindstone
 		//TODO: minecraft:jigsaw
 		//TODO: minecraft:kelp
@@ -584,7 +585,6 @@ class BlockFactory{
 		//TODO: minecraft:sticky_piston
 		//TODO: minecraft:stonecutter_block
 		//TODO: minecraft:structure_block
-		$this->register(new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH, 0, ItemIds::SWEET_BERRIES), "Sweet Berry Bush", BlockBreakInfo::instant()));
 		//TODO: minecraft:turtle_egg
 		//endregion
 

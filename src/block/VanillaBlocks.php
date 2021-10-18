@@ -300,6 +300,7 @@ use function assert;
  * @method static Farmland FARMLAND()
  * @method static TallGrass FERN()
  * @method static Fire FIRE()
+ * @method static FletchingTable FLETCHING_TABLE()
  * @method static FlowerPot FLOWER_POT()
  * @method static FrostedIce FROSTED_ICE()
  * @method static Furnace FURNACE()
@@ -866,6 +867,7 @@ final class VanillaBlocks{
 		self::register("farmland", $factory->get(60, 0));
 		self::register("fern", $factory->get(31, 2));
 		self::register("fire", $factory->get(51, 0));
+		self::register("fletching_table", $factory->get(456, 0));
 		self::register("flower_pot", $factory->get(140, 0));
 		self::register("frosted_ice", $factory->get(207, 0));
 		self::register("furnace", $factory->get(61, 2));
