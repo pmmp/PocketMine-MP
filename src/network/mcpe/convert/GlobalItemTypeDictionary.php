@@ -43,6 +43,7 @@ final class GlobalItemTypeDictionary{
 	private static function make() : self{
 		$paths = [
 			ProtocolInfo::CURRENT_PROTOCOL => "",
+			ProtocolInfo::PROTOCOL_1_17_30 => "-1.17.30",
 			ProtocolInfo::PROTOCOL_1_17_10 => "-1.17.10",
 			ProtocolInfo::PROTOCOL_1_17_0 => "-1.17.0",
 			ProtocolInfo::PROTOCOL_1_16_220 => "-1.16.220"
@@ -93,6 +94,10 @@ final class GlobalItemTypeDictionary{
 
 		if($protocolId <= ProtocolInfo::PROTOCOL_1_17_10){
 			return ProtocolInfo::PROTOCOL_1_17_10;
+		}
+
+		if($protocolId <= ProtocolInfo::PROTOCOL_1_17_30){
+			return ProtocolInfo::PROTOCOL_1_17_30;
 		}
 
 		return ProtocolInfo::CURRENT_PROTOCOL;
