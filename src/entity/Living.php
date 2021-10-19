@@ -112,14 +112,10 @@ abstract class Living extends Entity{
 	/** @var Attribute */
 	protected $moveSpeedAttr;
 
-	/** @var bool */
-	protected $sprinting = false;
-	/** @var bool */
-	protected $sneaking = false;
-	/** @var bool */
-	protected $gliding = false;
-	/** @var bool */
-	protected $swimming = false;
+	protected bool $sprinting = false;
+	protected bool $sneaking = false;
+	protected bool $gliding = false;
+	protected bool $swimming = false;
 
 	abstract public function getName() : string;
 
@@ -255,11 +251,11 @@ abstract class Living extends Entity{
 
 	public function recalculateSize() : void{
 		parent::recalculateSize();
-
+		$size = $this->getInitialSizeInfo();
 		if($this->isSwimming() || $this->isGliding()){
-			$this->setSize((new EntitySizeInfo($this->getInitialSizeInfo()->getWidth(), $this->getInitialSizeInfo()->getWidth(), $this->getInitialSizeInfo()->getHeight() - $this->getInitialSizeInfo()->getEyeHeight()))->scale($this->getScale()));
+			$this->setSize((new EntitySizeInfo($size->getWidth(), $size->getWidth(), $size->getHeight() - $size->getEyeHeight()))->scale($this->getScale()));
 		}elseif($this->isSneaking()){
-			$this->setSize($this->getInitialSizeInfo()->multiply(11 / 12, 1, 11 / 12)->scale($this->getScale()));
+			$this->setSize($size->multiply(11 / 12, 1, 11 / 12)->scale($this->getScale()));
 		}else{
 			$this->resetSize();
 		}

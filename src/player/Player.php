@@ -1965,7 +1965,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @internal
 	 * This method executes post-disconnect actions and cleanups.
 	 *
-	 * @param string                   $reason Shown to the player, usually this will appear on their disconnect screen.
+	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
 	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
 	public function onPostDisconnect(string $reason, Translatable|string|null $quitMessage) : void{

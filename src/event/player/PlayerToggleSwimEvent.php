@@ -30,12 +30,8 @@ use pocketmine\player\Player;
 class PlayerToggleSwimEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var bool */
-	protected $isSwimming;
-
-	public function __construct(Player $player, bool $isSwimming){
+	public function __construct(Player $player, protected bool $isSwimming){
 		$this->player = $player;
-		$this->isSwimming = $isSwimming;
 	}
 
 	public function isSwimming() : bool{

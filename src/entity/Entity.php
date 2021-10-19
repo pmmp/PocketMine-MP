@@ -339,9 +339,6 @@ abstract class Entity{
 		$this->setSize($this->getInitialSizeInfo());
 	}
 
-	public function recalculateSize() : void{
-	}
-
 	public function isImmobile() : bool{
 		return $this->immobile;
 	}

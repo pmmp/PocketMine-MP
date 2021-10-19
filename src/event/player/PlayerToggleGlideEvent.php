@@ -30,12 +30,8 @@ use pocketmine\player\Player;
 class PlayerToggleGlideEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var bool */
-	protected $isGliding;
-
-	public function __construct(Player $player, bool $isGlide){
+	public function __construct(Player $player, protected bool $isGliding){
 		$this->player = $player;
-		$this->isGliding = $isGlide;
 	}
 
 	public function isGliding() : bool{

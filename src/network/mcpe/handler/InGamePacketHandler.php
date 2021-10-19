@@ -585,17 +585,13 @@ class InGamePacketHandler extends PacketHandler{
 				$this->player->continueBreakBlock($pos, $packet->face);
 				break;
 			case PlayerActionPacket::ACTION_START_SWIMMING:
-				if(!$this->player->isSwimming()) {
-					if(!$this->player->toggleSwim(true)){
-						$this->player->sendData([$this->player]);
-					}
+				if(!$this->player->toggleSwim(true)){
+					$this->player->sendData([$this->player]);
 				}
 				return true;
 			case PlayerActionPacket::ACTION_STOP_SWIMMING:
-				if($this->player->isSwimming()) {
-					if(!$this->player->toggleSwim(false)){
-						$this->player->sendData([$this->player]);
-					}
+				if(!$this->player->toggleSwim(false)){
+					$this->player->sendData([$this->player]);
 				}
 				return true;
 			case PlayerActionPacket::ACTION_INTERACT_BLOCK: //TODO: ignored (for now)
