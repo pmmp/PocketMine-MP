@@ -250,7 +250,6 @@ abstract class Living extends Entity{
 	}
 
 	public function recalculateSize() : void{
-		parent::recalculateSize();
 		$size = $this->getInitialSizeInfo();
 		if($this->isSwimming() || $this->isGliding()){
 			$this->setSize((new EntitySizeInfo($size->getWidth(), $size->getWidth(), $size->getHeight() - $size->getEyeHeight()))->scale($this->getScale()));
