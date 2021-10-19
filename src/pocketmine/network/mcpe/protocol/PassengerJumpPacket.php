@@ -27,8 +27,8 @@ namespace pocketmine\network\mcpe\protocol;
 
 use pocketmine\network\mcpe\NetworkSession;
 
-class RiderJumpPacket extends DataPacket{
-	public const NETWORK_ID = ProtocolInfo::RIDER_JUMP_PACKET;
+class PassengerJumpPacket extends DataPacket{
+	public const NETWORK_ID = ProtocolInfo::PASSENGER_JUMP_PACKET;
 
 	/** @var int */
 	public $jumpStrength; //percentage
@@ -41,7 +41,7 @@ class RiderJumpPacket extends DataPacket{
 		$this->putVarInt($this->jumpStrength);
 	}
 
-	public function handle(NetworkSession $session) : bool{
-		return $session->handleRiderJump($this);
+	public function handle(NetworkSession $handler) : bool{
+		return $handler->handlePassengerJump($this);
 	}
 }

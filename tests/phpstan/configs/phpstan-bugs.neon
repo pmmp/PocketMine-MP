@@ -1,14 +1,59 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\Player\\)\\: bool given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(string\\)\\: bool given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
 			count: 3
 			path: ../../../src/pocketmine/command/CommandReader.php
 
 		-
+			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\Player\\)\\: bool given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/ListCommand.php
+
+		-
+			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\entity\\\\Attribute\\)\\: bool given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/AttributeMap.php
+
+		-
+			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\item\\\\Item\\)\\: bool given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/entity/projectile/Projectile.php
+
+		-
+			message: "#^Parameter \\#2 \\$callback of function usort expects callable\\(mixed, mixed\\)\\: int, array\\('pocketmine\\\\\\\\inventory\\\\\\\\CraftingManager', 'sort'\\) given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/inventory/CraftingManager.php
+
+		-
+			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(string\\)\\: bool given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/lang/BaseLang.php
+
+		-
+			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\entity\\\\Entity\\)\\: bool given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
+			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(string\\)\\: bool given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
 
 		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
@@ -24,11 +69,6 @@ parameters:
 			message: "#^Call to function method_exists\\(\\) with pocketmine\\\\network\\\\mcpe\\\\CachedEncapsulatedPacket and '__toString' will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/DataPacket.php
-
-		-
-			message: "#^Parameter \\#1 \\$ of closure expects TMemberType, TMemberType given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/utils/Utils.php
 
 		-
 			message: "#^Strict comparison using \\=\\=\\= between string and false will always evaluate to false\\.$#"

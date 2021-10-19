@@ -54,7 +54,7 @@ class PacketPool{
 		static::registerPacket(new TakeItemActorPacket());
 		static::registerPacket(new MoveActorAbsolutePacket());
 		static::registerPacket(new MovePlayerPacket());
-		static::registerPacket(new RiderJumpPacket());
+		static::registerPacket(new PassengerJumpPacket());
 		static::registerPacket(new UpdateBlockPacket());
 		static::registerPacket(new AddPaintingPacket());
 		static::registerPacket(new TickSyncPacket());
@@ -204,6 +204,8 @@ class PacketPool{
 		static::registerPacket(new CreatePhotoPacket());
 		static::registerPacket(new UpdateSubChunkBlocksPacket());
 		static::registerPacket(new PhotoInfoRequestPacket());
+		static::registerPacket(new SubChunkPacket());
+		static::registerPacket(new SubChunkRequestPacket());
 	}
 
 	/**

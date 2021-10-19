@@ -261,11 +261,6 @@ parameters:
 			path: ../../../src/pocketmine/block/BaseRail.php
 
 		-
-			message: "#^Parameter \\#1 \\$constraint of method pocketmine\\\\block\\\\BaseRail\\:\\:getPossibleConnectionDirectionsOneConstraint\\(\\) expects int, int\\|null given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/block/BaseRail.php
-
-		-
 			message: "#^Only numeric types are allowed in \\-, int\\|null given on the left side\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Bed.php

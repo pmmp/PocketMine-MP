@@ -57,24 +57,15 @@ use const SOL_TCP;
 class RCON{
 	/** @var Server */
 	private $server;
-	/**
-	 * @var \Socket|resource
-	 * @phpstan-var PhpSocket
-	 */
+	/** @var \Socket */
 	private $socket;
 
 	/** @var RCONInstance */
 	private $instance;
 
-	/**
-	 * @var \Socket|resource
-	 * @phpstan-var PhpSocket
-	 */
+	/** @var \Socket */
 	private $ipcMainSocket;
-	/**
-	 * @var resource
-	 * @phpstan-var PhpSocket
-	 */
+	/** @var \Socket */
 	private $ipcThreadSocket;
 
 	public function __construct(Server $server, string $password, int $port = 19132, string $interface = "0.0.0.0", int $maxClients = 50){
