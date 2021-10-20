@@ -2075,6 +2075,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POTION_SATURATION, []);
 	}
 
+	public static function potion_slowFalling() : Translatable{
+		return new Translatable(KnownTranslationKeys::POTION_SLOWFALLING, []);
+	}
+
 	public static function potion_waterBreathing() : Translatable{
 		return new Translatable(KnownTranslationKeys::POTION_WATERBREATHING, []);
 	}

@@ -430,6 +430,7 @@ final class KnownTranslationKeys{
 	public const POTION_REGENERATION = "potion.regeneration";
 	public const POTION_RESISTANCE = "potion.resistance";
 	public const POTION_SATURATION = "potion.saturation";
+	public const POTION_SLOWFALLING = "potion.slowFalling";
 	public const POTION_WATERBREATHING = "potion.waterBreathing";
 	public const POTION_WEAKNESS = "potion.weakness";
 	public const POTION_WITHER = "potion.wither";
