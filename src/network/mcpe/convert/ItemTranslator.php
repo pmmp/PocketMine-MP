@@ -175,11 +175,12 @@ final class ItemTranslator{
 	/**
 	 * @return int[]
 	 * @phpstan-return array{int, int}
+	 * @throws TypeConversionException
 	 */
 	public function fromNetworkId(int $networkId, int $networkMeta, ?bool &$isComplexMapping = null) : array{
 		if(isset($this->complexNetToCoreMapping[$networkId])){
 			if($networkMeta !== 0){
-				throw new \UnexpectedValueException("Unexpected non-zero network meta on complex item mapping");
+				throw new TypeConversionException("Unexpected non-zero network meta on complex item mapping");
 			}
 			$isComplexMapping = true;
 			return $this->complexNetToCoreMapping[$networkId];
@@ -188,12 +189,13 @@ final class ItemTranslator{
 		if(isset($this->simpleNetToCoreMapping[$networkId])){
 			return [$this->simpleNetToCoreMapping[$networkId], $networkMeta];
 		}
-		throw new \UnexpectedValueException("Unmapped network ID/metadata combination $networkId:$networkMeta");
+		throw new TypeConversionException("Unmapped network ID/metadata combination $networkId:$networkMeta");
 	}
 
 	/**
 	 * @return int[]
 	 * @phpstan-return array{int, int}
+	 * @throws TypeConversionException
 	 */
 	public function fromNetworkIdWithWildcardHandling(int $networkId, int $networkMeta) : array{
 		$isComplexMapping = false;
