@@ -33,8 +33,6 @@ use pocketmine\event\plugin\PluginDisableEvent;
 use pocketmine\event\plugin\PluginEnableEvent;
 use pocketmine\event\RegisteredListener;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\Translatable;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
 use pocketmine\permission\PermissionParser;
@@ -42,10 +40,8 @@ use pocketmine\Server;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
-use pocketmine\utils\VersionString;
 use Webmozart\PathUtil\Path;
 use function array_diff_assoc;
-use function array_intersect;
 use function array_key_exists;
 use function array_keys;
 use function array_merge;
@@ -55,7 +51,6 @@ use function dirname;
 use function file_exists;
 use function get_class;
 use function implode;
-use function in_array;
 use function is_a;
 use function is_array;
 use function is_dir;
@@ -64,16 +59,11 @@ use function is_string;
 use function is_subclass_of;
 use function iterator_to_array;
 use function mkdir;
-use function phpversion;
 use function realpath;
 use function shuffle;
 use function sprintf;
-use function stripos;
-use function strlen;
 use function strpos;
 use function strtolower;
-use function substr;
-use function version_compare;
 
 /**
  * Manages all the plugins
@@ -138,68 +128,6 @@ class PluginManager{
 			return Path::join($this->pluginDataDirectory, $pluginName);
 		}
 		return Path::join(dirname($pluginPath), $pluginName);
-	}
-
-	private function checkPluginLoadability(PluginDescription $description) : Translatable|null{
-		$name = $description->getName();
-		if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
-			return KnownTranslationFactory::pocketmine_plugin_restrictedName();
-		}
-
-		foreach($description->getCompatibleApis() as $api){
-			if(!VersionString::isValidBaseVersion($api)){
-				return KnownTranslationFactory::pocketmine_plugin_invalidAPI($api);
-			}
-		}
-
-		if(!ApiVersion::isCompatible($this->server->getApiVersion(), $description->getCompatibleApis())){
-			return KnownTranslationFactory::pocketmine_plugin_incompatibleAPI(implode(", ", $description->getCompatibleApis()));
-		}
-
-		$ambiguousVersions = ApiVersion::checkAmbiguousVersions($description->getCompatibleApis());
-		if(count($ambiguousVersions) > 0){
-			return KnownTranslationFactory::pocketmine_plugin_ambiguousMinAPI(implode(", ", $ambiguousVersions));
-		}
-
-		if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
-			return KnownTranslationFactory::pocketmine_plugin_incompatibleOS(implode(", ", $description->getCompatibleOperatingSystems()));
-		}
-
-		if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
-			$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
-			if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
-				return KnownTranslationFactory::pocketmine_plugin_incompatibleProtocol(implode(", ", $pluginMcpeProtocols));
-			}
-		}
-
-		foreach($description->getRequiredExtensions() as $extensionName => $versionConstrs){
-			$gotVersion = phpversion($extensionName);
-			if($gotVersion === false){
-				return KnownTranslationFactory::pocketmine_plugin_extensionNotLoaded($extensionName);
-			}
-
-			foreach($versionConstrs as $k => $constr){ // versionConstrs_loop
-				if($constr === "*"){
-					continue;
-				}
-				if($constr === ""){
-					return KnownTranslationFactory::pocketmine_plugin_emptyExtensionVersionConstraint(extensionName: $extensionName, constraintIndex: "$k");
-				}
-				foreach(["<=", "le", "<>", "!=", "ne", "<", "lt", "==", "=", "eq", ">=", "ge", ">", "gt"] as $comparator){
-					// warning: the > character should be quoted in YAML
-					if(substr($constr, 0, strlen($comparator)) === $comparator){
-						$version = substr($constr, strlen($comparator));
-						if(!version_compare($gotVersion, $version, $comparator)){
-							return KnownTranslationFactory::pocketmine_plugin_incompatibleExtensionVersion(extensionName: $extensionName, extensionVersion: $gotVersion, pluginRequirement: $constr);
-						}
-						continue 2; // versionConstrs_loop
-					}
-				}
-				return KnownTranslationFactory::pocketmine_plugin_invalidExtensionVersionConstraint(extensionName: $extensionName, versionConstraint: $constr);
-			}
-		}
-
-		return null;
 	}
 
 	private function internalLoadPlugin(string $path, PluginLoader $loader, PluginDescription $description) : ?Plugin{
@@ -302,6 +230,8 @@ class PluginManager{
 		}else{
 			return;
 		}
+
+		$loadabilityChecker = new PluginLoadabilityChecker($this->server->getApiVersion());
 		foreach($loaders as $loader){
 			foreach($files as $file){
 				if(!is_string($file)) throw new AssumptionFailedError("FilesystemIterator current should be string when using CURRENT_AS_PATHNAME");
@@ -327,7 +257,7 @@ class PluginManager{
 
 				$name = $description->getName();
 
-				if(($loadabilityError = $this->checkPluginLoadability($description)) !== null){
+				if(($loadabilityError = $loadabilityChecker->check($description)) !== null){
 					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, $loadabilityError)));
 					continue;
 				}
