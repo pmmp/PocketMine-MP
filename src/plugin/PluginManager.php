@@ -269,11 +269,7 @@ class PluginManager{
 	 * @param string[]|null $newLoaders
 	 * @phpstan-param list<class-string<PluginLoader>> $newLoaders
 	 */
-	private function triagePlugins(string $directory, PluginLoadTriage $triage, ?array $newLoaders = null) : void{
-		if(!is_dir($directory)){
-			return;
-		}
-
+	private function triagePlugins(string $path, PluginLoadTriage $triage, ?array $newLoaders = null) : void{
 		if(is_array($newLoaders)){
 			$loaders = [];
 			foreach($newLoaders as $key){
@@ -285,8 +281,16 @@ class PluginManager{
 			$loaders = $this->fileAssociations;
 		}
 
-		$files = iterator_to_array(new \FilesystemIterator($directory, \FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS));
-		shuffle($files); //this prevents plugins implicitly relying on the filesystem name order when they should be using dependency properties
+		if(is_dir($path)){
+			$files = iterator_to_array(new \FilesystemIterator($path, \FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS));
+			shuffle($files); //this prevents plugins implicitly relying on the filesystem name order when they should be using dependency properties
+		}elseif(is_file($path)){
+			$realPath = realpath($path);
+			if($realPath === false) throw new AssumptionFailedError("realpath() should not return false on an accessible, existing file");
+			$files = [$realPath];
+		}else{
+			return;
+		}
 		foreach($loaders as $loader){
 			foreach($files as $file){
 				if(!is_string($file)) throw new AssumptionFailedError("FilesystemIterator current should be string when using CURRENT_AS_PATHNAME");
@@ -374,9 +378,9 @@ class PluginManager{
 	/**
 	 * @return Plugin[]
 	 */
-	public function loadPlugins(string $directory) : array{
+	public function loadPlugins(string $path) : array{
 		$triage = new PluginLoadTriage();
-		$this->triagePlugins($directory, $triage);
+		$this->triagePlugins($path, $triage);
 
 		$loadedPlugins = [];
 
@@ -402,7 +406,7 @@ class PluginManager{
 						if(count($diffLoaders) !== 0){
 							$this->server->getLogger()->debug("Plugin $name registered a new plugin loader during load, scanning for new plugins");
 							$plugins = $triage->plugins;
-							$this->triagePlugins($directory, $triage, $diffLoaders);
+							$this->triagePlugins($path, $triage, $diffLoaders);
 							$diffPlugins = array_diff_assoc($triage->plugins, $plugins);
 							$this->server->getLogger()->debug("Re-triage found plugins: " . implode(", ", array_keys($diffPlugins)));
 						}
