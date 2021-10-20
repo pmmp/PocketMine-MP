@@ -175,22 +175,6 @@ class PluginManager{
 		return null;
 	}
 
-	/**
-	 * @param PluginLoader[] $loaders
-	 */
-	public function loadPlugin(string $path, ?array $loaders = null) : ?Plugin{
-		foreach($loaders ?? $this->fileAssociations as $loader){
-			if($loader->canLoadPlugin($path)){
-				$description = $loader->getPluginDescription($path);
-				if($description instanceof PluginDescription){
-					$this->internalLoadPlugin($path, $loader, $description);
-				}
-			}
-		}
-
-		return null;
-	}
-
 	private function internalLoadPlugin(string $path, PluginLoader $loader, PluginDescription $description) : ?Plugin{
 		$language = $this->server->getLanguage();
 		$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_load($description->getFullName())));
