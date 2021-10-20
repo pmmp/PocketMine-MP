@@ -418,9 +418,6 @@ class PluginManager{
 					if(isset($triage->softDependencies[$name]) && !isset($triage->dependencies[$name])){
 						foreach($triage->softDependencies[$name] as $k => $dependency){
 							if($this->getPlugin($dependency) === null && !array_key_exists($dependency, $triage->plugins)){
-								//TODO: another plugin with an unresolved soft dependency might cause our soft
-								//dependency to be resolved after we already decided to ignore it
-								//wtf are we supposed to do if that happens???
 								$this->server->getLogger()->debug("Skipping resolution of missing soft dependency \"$dependency\" for plugin \"$name\"");
 								unset($triage->softDependencies[$name][$k]);
 							}
