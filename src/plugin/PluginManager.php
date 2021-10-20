@@ -79,6 +79,8 @@ class PluginManager{
 	/** @var Plugin[] */
 	protected $enabledPlugins = [];
 
+	private bool $loadPluginsGuard = false;
+
 	/**
 	 * @var PluginLoader[]
 	 * @phpstan-var array<class-string<PluginLoader>, PluginLoader>
@@ -320,6 +322,11 @@ class PluginManager{
 	 * @return Plugin[]
 	 */
 	public function loadPlugins(string $path) : array{
+		if($this->loadPluginsGuard){
+			throw new \LogicException(__METHOD__ . "() cannot be called from within itself");
+		}
+		$this->loadPluginsGuard = true;
+
 		$triage = new PluginLoadTriage();
 		$this->triagePlugins($path, $triage);
 
@@ -404,6 +411,7 @@ class PluginManager{
 			}
 		}
 
+		$this->loadPluginsGuard = false;
 		return $loadedPlugins;
 	}
 
