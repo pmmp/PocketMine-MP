@@ -23,11 +23,30 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types\inventory\stackrequest;
 
+use pocketmine\network\mcpe\NetworkBinaryStream;
+
 /**
  * Tells that the current transaction crafted the specified recipe.
  */
 final class CraftRecipeStackRequestAction extends ItemStackRequestAction{
-	use CraftRecipeStackRequestActionTrait;
+
+	/** @var int */
+	private $recipeId;
+
+	final public function __construct(int $recipeId){
+		$this->recipeId = $recipeId;
+	}
+
+	public function getRecipeId() : int{ return $this->recipeId; }
 
 	public static function getTypeId() : int{ return ItemStackRequestActionType::CRAFTING_RECIPE; }
+
+	public static function read(NetworkBinaryStream $in) : self{
+		$recipeId = $in->readGenericTypeNetworkId();
+		return new self($recipeId);
+	}
+
+	public function write(NetworkBinaryStream $out) : void{
+		$out->writeGenericTypeNetworkId($this->recipeId);
+	}
 }
