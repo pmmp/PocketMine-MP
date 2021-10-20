@@ -223,9 +223,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->inventory = new PlayerInventory($this);
 		$syncHeldItem = function() : void{
 			foreach($this->getViewers() as $viewer){
-				if($viewer->isConnected()){
-					$viewer->getNetworkSession()->onMobMainHandItemChange($this);
-				}
+				$viewer->getNetworkSession()->onMobMainHandItemChange($this);
 			}
 		};
 		$this->inventory->getListeners()->add(new CallbackInventoryListener(
@@ -272,9 +270,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 		$this->offHandInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(function() : void{
 			foreach($this->getViewers() as $viewer){
-				if($viewer->isConnected()){
-					$viewer->getNetworkSession()->onMobOffHandItemChange($this);
-				}
+				$viewer->getNetworkSession()->onMobOffHandItemChange($this);
 			}
 		}));
 
@@ -289,9 +285,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->inventory->setHeldItemIndex($nbt->getInt("SelectedInventorySlot", 0));
 		$this->inventory->getHeldItemIndexChangeListeners()->add(function(int $oldIndex) : void{
 			foreach($this->getViewers() as $viewer){
-				if($viewer->isConnected()){
-					$viewer->getNetworkSession()->onMobMainHandItemChange($this);
-				}
+				$viewer->getNetworkSession()->onMobMainHandItemChange($this);
 			}
 		});
 

@@ -638,6 +638,7 @@ abstract class Entity{
 			}
 
 			foreach(EntityMetadataCollection::sortByProtocol($targets) as $protocolId => $players){
+				/** @phpstan-ignore-next-line */
 				$this->sendData($players, $protocolId === ProtocolInfo::CURRENT_PROTOCOL ? $changedProperties : $this->getDirtyNetworkData($protocolId));
 			}
 			$this->networkProperties->clearDirtyProperties();
@@ -1482,7 +1483,7 @@ abstract class Entity{
 	public function despawnFrom(Player $player, bool $send = true) : void{
 		$id = spl_object_id($player);
 		if(isset($this->hasSpawned[$id])){
-			if($send && $player->isConnected()){
+			if($send){
 				$player->getNetworkSession()->onEntityRemoved($this);
 			}
 			unset($this->hasSpawned[$id]);
@@ -1574,16 +1575,12 @@ abstract class Entity{
 				$data = $this->getAllNetworkData($protocolId);
 
 				foreach($players as $p){
-					if($p->isConnected()){
-						$p->getNetworkSession()->syncActorData($this, $data);
-					}
+					$p->getNetworkSession()->syncActorData($this, $data);
 				}
 			}
 		}else{
 			foreach($targets as $p){
-				if($p->isConnected()){
-					$p->getNetworkSession()->syncActorData($this, $data);
-				}
+				$p->getNetworkSession()->syncActorData($this, $data);
 			}
 		}
 	}

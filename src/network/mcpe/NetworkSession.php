@@ -140,7 +140,7 @@ class NetworkSession{
 	private string $ip;
 	private int $port;
 	protected ?PlayerInfo $info = null;
-	protected ?int $ping = null;
+	private ?int $ping = null;
 
 	private ?PacketHandler $handler = null;
 
@@ -218,7 +218,7 @@ class NetworkSession{
 		$this->logger->info("Session opened");
 	}
 
-	protected function getLogPrefix() : string{
+	private function getLogPrefix() : string{
 		return "NetworkSession: " . $this->getDisplayName();
 	}
 

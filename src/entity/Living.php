@@ -131,9 +131,7 @@ abstract class Living extends Entity{
 		$this->armorInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(
 			function(Inventory $unused) : void{
 				foreach($this->getViewers() as $viewer){
-					if($viewer->isConnected()){
-						$viewer->getNetworkSession()->onMobArmorChange($this);
-					}
+					$viewer->getNetworkSession()->onMobArmorChange($this);
 				}
 			}
 		));

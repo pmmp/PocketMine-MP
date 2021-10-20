@@ -69,6 +69,8 @@ final class CraftingDataCache{
 
 	/**
 	 * Rebuilds the cached CraftingDataPacket.
+	 *
+	 * @return CraftingDataPacket[]
 	 */
 	private function buildCraftingDataCache(CraftingManager $manager) : array{
 		Timings::$craftingDataCacheRebuild->startTiming();
