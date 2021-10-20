@@ -64,12 +64,16 @@ use function is_string;
 use function is_subclass_of;
 use function iterator_to_array;
 use function mkdir;
+use function phpversion;
 use function realpath;
 use function shuffle;
 use function sprintf;
 use function stripos;
+use function strlen;
 use function strpos;
 use function strtolower;
+use function substr;
+use function version_compare;
 
 /**
  * Manages all the plugins
@@ -136,7 +140,7 @@ class PluginManager{
 		return Path::join(dirname($pluginPath), $pluginName);
 	}
 
-	private function checkPluginLoadability(PluginDescription $description) : Translatable|string|null{
+	private function checkPluginLoadability(PluginDescription $description) : Translatable|null{
 		$name = $description->getName();
 		if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
 			return KnownTranslationFactory::pocketmine_plugin_restrictedName();
@@ -168,10 +172,31 @@ class PluginManager{
 			}
 		}
 
-		try{
-			$description->checkRequiredExtensions();
-		}catch(PluginException $ex){
-			return $ex->getMessage();
+		foreach($description->getRequiredExtensions() as $extensionName => $versionConstrs){
+			$gotVersion = phpversion($extensionName);
+			if($gotVersion === false){
+				return KnownTranslationFactory::pocketmine_plugin_extensionNotLoaded($extensionName);
+			}
+
+			foreach($versionConstrs as $k => $constr){ // versionConstrs_loop
+				if($constr === "*"){
+					continue;
+				}
+				if($constr === ""){
+					return KnownTranslationFactory::pocketmine_plugin_emptyExtensionVersionConstraint(extensionName: $extensionName, constraintIndex: "$k");
+				}
+				foreach(["<=", "le", "<>", "!=", "ne", "<", "lt", "==", "=", "eq", ">=", "ge", ">", "gt"] as $comparator){
+					// warning: the > character should be quoted in YAML
+					if(substr($constr, 0, strlen($comparator)) === $comparator){
+						$version = substr($constr, strlen($comparator));
+						if(!version_compare($gotVersion, $version, $comparator)){
+							return KnownTranslationFactory::pocketmine_plugin_incompatibleExtensionVersion(extensionName: $extensionName, extensionVersion: $gotVersion, pluginRequirement: $constr);
+						}
+						continue 2; // versionConstrs_loop
+					}
+				}
+				return KnownTranslationFactory::pocketmine_plugin_invalidExtensionVersionConstraint(extensionName: $extensionName, versionConstraint: $constr);
+			}
 		}
 
 		return null;
