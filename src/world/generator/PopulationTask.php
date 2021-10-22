@@ -64,7 +64,7 @@ class PopulationTask extends AsyncTask{
 	/** @var string|null */
 	public $chunk8;
 
-	public function __construct(World $world, int $chunkX, int $chunkZ, ?Chunk $chunk){
+	public function __construct(World $world, int $chunkX, int $chunkZ, ?Chunk $chunk, private int $populationTaskId){
 		$this->worldId = $world->getId();
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
@@ -144,7 +144,8 @@ class PopulationTask extends AsyncTask{
 		/** @var World $world */
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
 		if($world->isLoaded()){
-			$chunk = $this->chunk !== null ? FastChunkSerializer::deserializeTerrain($this->chunk) : null;
+			$centerChunk = $this->chunk !== null ? FastChunkSerializer::deserializeTerrain($this->chunk) : throw new AssumptionFailedError("Center chunk should never be null");
+			$adjacentChunks = [];
 
 			for($i = 0; $i < 9; ++$i){
 				if($i === 4){
@@ -156,11 +157,11 @@ class PopulationTask extends AsyncTask{
 					$zz = -1 + intdiv($i, 3);
 
 					$c = FastChunkSerializer::deserializeTerrain($c);
-					$world->generateChunkCallback($this->chunkX + $xx, $this->chunkZ + $zz, $c);
+					$adjacentChunks[World::chunkHash($this->chunkX + $xx, $this->chunkZ + $zz)] = $c;
 				}
 			}
 
-			$world->generateChunkCallback($this->chunkX, $this->chunkZ, $chunk);
+			$world->generateChunkCallback($this->populationTaskId, $this->chunkX, $this->chunkZ, $centerChunk, $adjacentChunks);
 		}
 	}
 }
