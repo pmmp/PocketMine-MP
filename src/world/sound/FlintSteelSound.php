@@ -29,6 +29,6 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 class FlintSteelSound implements Sound{
 
 	public function encode(?Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_IGNITE, $pos)];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEventPacket::SOUND_IGNITE, $pos, false)];
 	}
 }

@@ -36,7 +36,9 @@ class EntityAttackNoDamageSound implements Sound{
 			LevelSoundEventPacket::SOUND_ATTACK_NODAMAGE,
 			$pos,
 			-1,
-			"minecraft:player"
+			"minecraft:player",
+			false,
+			false
 		)];
 	}
 }

@@ -29,6 +29,6 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 class ExplodeSound implements Sound{
 
 	public function encode(?Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_EXPLODE, $pos)];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEventPacket::SOUND_EXPLODE, $pos, false)];
 	}
 }

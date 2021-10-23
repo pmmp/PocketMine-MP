@@ -45,8 +45,9 @@ class EntityLongFallSound implements Sound{
 			LevelSoundEventPacket::SOUND_FALL_BIG,
 			$pos,
 			-1,
-			$this->entity::getNetworkTypeId()
-			//TODO: is isBaby relevant here?
+			$this->entity::getNetworkTypeId(),
+			false, //TODO: is isBaby relevant here?
+			false
 		)];
 	}
 }

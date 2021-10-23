@@ -49,8 +49,9 @@ class EntityLandSound implements Sound{
 			LevelSoundEventPacket::SOUND_LAND,
 			$pos,
 			RuntimeBlockMapping::getInstance()->toRuntimeId($this->blockLandedOn->getFullId()),
-			$this->entity::getNetworkTypeId()
-			//TODO: does isBaby have any relevance here?
+			$this->entity::getNetworkTypeId(),
+			false, //TODO: does isBaby have any relevance here?
+			false
 		)];
 	}
 }

@@ -207,7 +207,7 @@ class ItemEntity extends Entity{
 
 	protected function sendSpawnPacket(Player $player) : void{
 		$pk = new AddItemActorPacket();
-		$pk->entityRuntimeId = $this->getId();
+		$pk->actorRuntimeId = $this->getId();
 		$pk->position = $this->location->asVector3();
 		$pk->motion = $this->getMotion();
 		$pk->item = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getItem()));

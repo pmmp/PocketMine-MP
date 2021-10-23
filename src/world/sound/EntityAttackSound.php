@@ -36,7 +36,9 @@ class EntityAttackSound implements Sound{
 			LevelSoundEventPacket::SOUND_ATTACK_STRONG, //TODO: seems like ATTACK is dysfunctional
 			$pos,
 			-1,
-			"minecraft:player"
+			"minecraft:player",
+			false,
+			false
 		)];
 	}
 }

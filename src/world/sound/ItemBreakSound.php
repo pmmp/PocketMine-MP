@@ -29,6 +29,6 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 class ItemBreakSound implements Sound{
 
 	public function encode(?Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_BREAK, $pos)];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEventPacket::SOUND_BREAK, $pos, false)];
 	}
 }

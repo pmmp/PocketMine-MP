@@ -44,8 +44,9 @@ class EntityShortFallSound implements Sound{
 			LevelSoundEventPacket::SOUND_FALL_SMALL,
 			$pos,
 			-1,
-			$this->entity::getNetworkTypeId()
-			//TODO: does isBaby have any relevance here?
+			$this->entity::getNetworkTypeId(),
+			false, //TODO: does isBaby have any relevance here?
+			false
 		)];
 	}
 }

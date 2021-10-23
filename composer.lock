@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc2b425a6f436a01de4e423ea651dc84",
+    "content-hash": "ddbcdbc7ea7247bea7fcb37e5c42340b",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -249,16 +249,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "3.0.2+bedrock1.17.40",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "3edb21da787c1ab0f028d35243f87bd7c9038b9e"
+                "reference": "97fa88e9eff2c9bd5408fa964515504a4d9230bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/3edb21da787c1ab0f028d35243f87bd7c9038b9e",
-                "reference": "3edb21da787c1ab0f028d35243f87bd7c9038b9e",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/97fa88e9eff2c9bd5408fa964515504a4d9230bf",
+                "reference": "97fa88e9eff2c9bd5408fa964515504a4d9230bf",
                 "shasum": ""
             },
             "require": {
@@ -277,6 +277,7 @@
                 "phpstan/phpstan-strict-rules": "^0.12.10",
                 "phpunit/phpunit": "^9.5"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -290,9 +291,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/3.0.2+bedrock1.17.40"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/master"
             },
-            "time": "2021-10-20T18:52:14+00:00"
+            "time": "2021-10-23T00:06:46+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -3490,6 +3491,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "pocketmine/bedrock-protocol": 20,
         "pocketmine/classloader": 20,
         "pocketmine/spl": 20
     },

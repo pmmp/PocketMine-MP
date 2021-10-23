@@ -45,6 +45,7 @@ use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
@@ -164,26 +165,27 @@ class InventoryManager{
 		//TODO: we should be using some kind of tagging system to identify the types. Instanceof is flaky especially
 		//if the class isn't final, not to mention being inflexible.
 		if($inv instanceof BlockInventory){
+			$blockPosition = BlockPosition::fromVector3($inv->getHolder());
 			switch(true){
 				case $inv instanceof LoomInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::LOOM, $inv->getHolder())];
+					return [ContainerOpenPacket::blockInv($id, WindowTypes::LOOM, $blockPosition)];
 				case $inv instanceof FurnaceInventory:
 					return match($inv->getFurnaceType()->id()){
-						FurnaceType::FURNACE()->id() => [ContainerOpenPacket::blockInvVec3($id, WindowTypes::FURNACE, $inv->getHolder())],
-						FurnaceType::BLAST_FURNACE()->id() => [ContainerOpenPacket::blockInvVec3($id, WindowTypes::BLAST_FURNACE, $inv->getHolder())],
-						FurnaceType::SMOKER()->id() => [ContainerOpenPacket::blockInvVec3($id, WindowTypes::SMOKER, $inv->getHolder())],
+						FurnaceType::FURNACE()->id() => [ContainerOpenPacket::blockInv($id, WindowTypes::FURNACE, $blockPosition)],
+						FurnaceType::BLAST_FURNACE()->id() => [ContainerOpenPacket::blockInv($id, WindowTypes::BLAST_FURNACE, $blockPosition)],
+						FurnaceType::SMOKER()->id() => [ContainerOpenPacket::blockInv($id, WindowTypes::SMOKER, $blockPosition)],
 						default => throw new AssumptionFailedError("Unreachable")
 					};
 				case $inv instanceof EnchantInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::ENCHANTMENT, $inv->getHolder())];
+					return [ContainerOpenPacket::blockInv($id, WindowTypes::ENCHANTMENT, $blockPosition)];
 				case $inv instanceof BrewingStandInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::BREWING_STAND, $inv->getHolder())];
+					return [ContainerOpenPacket::blockInv($id, WindowTypes::BREWING_STAND, $blockPosition)];
 				case $inv instanceof AnvilInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::ANVIL, $inv->getHolder())];
+					return [ContainerOpenPacket::blockInv($id, WindowTypes::ANVIL, $blockPosition)];
 				case $inv instanceof HopperInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::HOPPER, $inv->getHolder())];
+					return [ContainerOpenPacket::blockInv($id, WindowTypes::HOPPER, $blockPosition)];
 				default:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::CONTAINER, $inv->getHolder())];
+					return [ContainerOpenPacket::blockInv($id, WindowTypes::CONTAINER, $blockPosition)];
 			}
 		}
 		return null;
@@ -278,6 +280,7 @@ class InventoryManager{
 			$this->session->sendDataPacket(MobEquipmentPacket::create(
 				$this->player->getId(),
 				ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->player->getInventory()->getItemInHand())),
+				$selected,
 				$selected,
 				ContainerIds::INVENTORY
 			));

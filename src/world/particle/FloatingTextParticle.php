@@ -99,7 +99,7 @@ class FloatingTextParticle implements Particle{
 			$pk = new AddPlayerPacket();
 			$pk->uuid = $uuid;
 			$pk->username = $name;
-			$pk->entityRuntimeId = $this->entityId;
+			$pk->actorRuntimeId = $this->entityId;
 			$pk->position = $pos; //TODO: check offset
 			$pk->item = ItemStackWrapper::legacy(ItemStack::null());
 

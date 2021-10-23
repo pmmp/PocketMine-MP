@@ -79,7 +79,7 @@ final class CraftingDataCache{
 		$converter = TypeConverter::getInstance();
 		foreach($manager->getShapelessRecipes() as $list){
 			foreach($list as $recipe){
-				$pk->entries[] = new ProtocolShapelessRecipe(
+				$pk->recipesWithTypeIds[] = new ProtocolShapelessRecipe(
 					CraftingDataPacket::ENTRY_SHAPELESS,
 					Binary::writeInt(++$counter),
 					array_map(function(Item $item) use ($converter) : RecipeIngredient{
@@ -104,7 +104,7 @@ final class CraftingDataCache{
 						$inputs[$row][$column] = $converter->coreItemStackToRecipeIngredient($recipe->getIngredient($column, $row));
 					}
 				}
-				$pk->entries[] = $r = new ProtocolShapedRecipe(
+				$pk->recipesWithTypeIds[] = $r = new ProtocolShapedRecipe(
 					CraftingDataPacket::ENTRY_SHAPED,
 					Binary::writeInt(++$counter),
 					$inputs,
@@ -128,7 +128,7 @@ final class CraftingDataCache{
 			};
 			foreach($manager->getFurnaceRecipeManager($furnaceType)->getAll() as $recipe){
 				$input = $converter->coreItemStackToNet($recipe->getInput());
-				$pk->entries[] = new ProtocolFurnaceRecipe(
+				$pk->recipesWithTypeIds[] = new ProtocolFurnaceRecipe(
 					CraftingDataPacket::ENTRY_FURNACE_DATA,
 					$input->getId(),
 					$input->getMeta(),

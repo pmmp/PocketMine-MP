@@ -1419,7 +1419,7 @@ abstract class Entity{
 	 */
 	protected function sendSpawnPacket(Player $player) : void{
 		$pk = new AddActorPacket();
-		$pk->entityRuntimeId = $this->getId();
+		$pk->actorRuntimeId = $this->getId();
 		$pk->type = static::getNetworkTypeId();
 		$pk->position = $this->location->asVector3();
 		$pk->motion = $this->getMotion();

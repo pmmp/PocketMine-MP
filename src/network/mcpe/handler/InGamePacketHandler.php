@@ -199,13 +199,13 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleActorEvent(ActorEventPacket $packet) : bool{
-		if($packet->entityRuntimeId !== $this->player->getId()){
+		if($packet->actorRuntimeId !== $this->player->getId()){
 			//TODO HACK: EATING_ITEM is sent back to the server when the server sends it for other players (1.14 bug, maybe earlier)
-			return $packet->event === ActorEventPacket::EATING_ITEM;
+			return $packet->actorRuntimeId === ActorEventPacket::EATING_ITEM;
 		}
 		$this->player->doCloseInventory();
 
-		switch($packet->event){
+		switch($packet->eventId){
 			case ActorEventPacket::EATING_ITEM: //TODO: ignore this and handle it server-side
 				$item = $this->player->getInventory()->getItemInHand();
 				if($item->isNull()){
@@ -356,12 +356,12 @@ class InGamePacketHandler extends PacketHandler{
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
 				//TODO: start hack for client spam bug
-				$clickPos = $data->getClickPos();
+				$clickPos = $data->getClickPosition();
 				$spamBug = ($this->lastRightClickData !== null and
 					microtime(true) - $this->lastRightClickTime < 0.1 and //100ms
-					$this->lastRightClickData->getPlayerPos()->distanceSquared($data->getPlayerPos()) < 0.00001 and
-					$this->lastRightClickData->getBlockPos()->equals($data->getBlockPos()) and
-					$this->lastRightClickData->getClickPos()->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
+					$this->lastRightClickData->getPlayerPosition()->distanceSquared($data->getPlayerPosition()) < 0.00001 and
+					$this->lastRightClickData->getBlockPosition()->equals($data->getBlockPosition()) and
+					$this->lastRightClickData->getClickPosition()->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
 				);
 				//get rid of continued spam if the player clicks and holds right-click
 				$this->lastRightClickData = $data;
@@ -371,9 +371,10 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				//TODO: end hack for client spam bug
 
-				$blockPos = $data->getBlockPos();
-				if(!$this->player->interactBlock($blockPos, $data->getFace(), $clickPos)){
-					$this->onFailedBlockAction($blockPos, $data->getFace());
+				$blockPos = $data->getBlockPosition();
+				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
+				if(!$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos)){
+					$this->onFailedBlockAction($vBlockPos, $data->getFace());
 				}elseif(
 					!array_key_exists($windowId = InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID, $this->openHardcodedWindows) &&
 					$this->player->getCraftingGrid()->getGridWidth() === CraftingGrid::SIZE_BIG
@@ -381,7 +382,7 @@ class InGamePacketHandler extends PacketHandler{
 					//TODO: HACK! crafting grid doesn't fit very well into the current PM container system, so this hack
 					//allows it to carry on working approximately the same way as it did in 1.14
 					$this->openHardcodedWindows[$windowId] = true;
-					$this->session->sendDataPacket(ContainerOpenPacket::blockInvVec3(
+					$this->session->sendDataPacket(ContainerOpenPacket::blockInv(
 						InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID,
 						WindowTypes::WORKBENCH,
 						$blockPos
@@ -389,9 +390,10 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				return true;
 			case UseItemTransactionData::ACTION_BREAK_BLOCK:
-				$blockPos = $data->getBlockPos();
-				if(!$this->player->breakBlock($blockPos)){
-					$this->onFailedBlockAction($blockPos, null);
+				$blockPos = $data->getBlockPosition();
+				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
+				if(!$this->player->breakBlock($vBlockPos)){
+					$this->onFailedBlockAction($vBlockPos, null);
 				}
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:
@@ -432,7 +434,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	private function handleUseItemOnEntityTransaction(UseItemOnEntityTransactionData $data) : bool{
-		$target = $this->player->getWorld()->getEntity($data->getEntityRuntimeId());
+		$target = $this->player->getWorld()->getEntity($data->getActorRuntimeId());
 		if($target === null){
 			return false;
 		}
@@ -442,7 +444,7 @@ class InGamePacketHandler extends PacketHandler{
 		//TODO: use transactiondata for rollbacks here
 		switch($data->getActionType()){
 			case UseItemOnEntityTransactionData::ACTION_INTERACT:
-				if(!$this->player->interactEntity($target, $data->getClickPos())){
+				if(!$this->player->interactEntity($target, $data->getClickPosition())){
 					$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 				}
 				return true;
@@ -498,7 +500,7 @@ class InGamePacketHandler extends PacketHandler{
 			//TODO: implement handling for this where it matters
 			return true;
 		}
-		$target = $this->player->getWorld()->getEntity($packet->target);
+		$target = $this->player->getWorld()->getEntity($packet->targetActorRuntimeId);
 		if($target === null){
 			return false;
 		}
@@ -521,7 +523,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
-		return $this->player->pickBlock(new Vector3($packet->blockX, $packet->blockY, $packet->blockZ), $packet->addUserData);
+		return $this->player->pickBlock(new Vector3($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ()), $packet->addUserData);
 	}
 
 	public function handleActorPickRequest(ActorPickRequestPacket $packet) : bool{
@@ -529,7 +531,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
-		$pos = new Vector3($packet->x, $packet->y, $packet->z);
+		$pos = new Vector3($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ());
 
 		switch($packet->action){
 			case PlayerActionPacket::ACTION_START_BREAK:
@@ -628,7 +630,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
-		if($packet->entityUniqueId !== $this->player->getId()){
+		if($packet->targetActorUniqueId !== $this->player->getId()){
 			return false; //TODO: operators can change other people's permissions using this
 		}
 
@@ -648,13 +650,13 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{
-		$pos = new Vector3($packet->x, $packet->y, $packet->z);
+		$pos = new Vector3($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ());
 		if($pos->distanceSquared($this->player->getLocation()) > 10000){
 			return false;
 		}
 
 		$block = $this->player->getLocation()->getWorld()->getBlock($pos);
-		$nbt = $packet->namedtag->getRoot();
+		$nbt = $packet->nbt->getRoot();
 		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
 
 		if($block instanceof BaseSign){
@@ -678,7 +680,7 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			}
 
-			$this->session->getLogger()->debug("Invalid sign update data: " . base64_encode($packet->namedtag->getEncodedNbt()));
+			$this->session->getLogger()->debug("Invalid sign update data: " . base64_encode($packet->nbt->getEncodedNbt()));
 		}
 
 		return false;
@@ -712,9 +714,10 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
-		$block = $this->player->getWorld()->getBlockAt($packet->x, $packet->y, $packet->z);
+		$blockPosition = $packet->blockPosition;
+		$block = $this->player->getWorld()->getBlockAt($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
 		if($block instanceof ItemFrame and $block->getFramedItem() !== null){
-			return $this->player->attackBlock(new Vector3($packet->x, $packet->y, $packet->z), $block->getFacing());
+			return $this->player->attackBlock(new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ()), $block->getFacing());
 		}
 		return false;
 	}

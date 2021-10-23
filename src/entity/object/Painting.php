@@ -150,7 +150,7 @@ class Painting extends Entity{
 
 	protected function sendSpawnPacket(Player $player) : void{
 		$pk = new AddPaintingPacket();
-		$pk->entityRuntimeId = $this->getId();
+		$pk->actorRuntimeId = $this->getId();
 		$pk->position = new Vector3(
 			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
 			($this->boundingBox->minY + $this->boundingBox->maxY) / 2,
