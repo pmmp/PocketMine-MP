@@ -245,6 +245,15 @@ use function assert;
  * @method static Item NETHER_BRICK()
  * @method static Item NETHER_QUARTZ()
  * @method static Item NETHER_STAR()
+ * @method static Axe NETHERITE_AXE()
+ * @method static Hoe NETHERITE_HOE()
+ * @method static Pickaxe NETHERITE_PICKAXE()
+ * @method static Shovel NETHERITE_SHOVEL()
+ * @method static Sword NETHERITE_SWORD()
+ * @method static Armor NETHERITE_HELMET()
+ * @method static Armor NETHERITE_CHESTPLATE()
+ * @method static Armor NETHERITE_LEGGINGS()
+ * @method static Armor NETHERITE_BOOTS()
  * @method static Potion NIGHT_VISION_POTION()
  * @method static SplashPotion NIGHT_VISION_SPLASH_POTION()
  * @method static Boat OAK_BOAT()
@@ -612,6 +621,15 @@ final class VanillaItems{
 		self::register("nether_brick", $factory->get(405));
 		self::register("nether_quartz", $factory->get(406));
 		self::register("nether_star", $factory->get(399));
+		self::register("netherite_sword", $factory->get(743));
+		self::register("netherite_shovel", $factory->get(744));
+		self::register("netherite_pickaxe", $factory->get(745));
+		self::register("netherite_axe", $factory->get(746));
+		self::register("netherite_hoe", $factory->get(747));
+		self::register("netherite_helmet", $factory->get(748));
+		self::register("netherite_chestplate", $factory->get(749));
+		self::register("netherite_leggings", $factory->get(750));
+		self::register("netherite_boots", $factory->get(751));
 		self::register("night_vision_potion", $factory->get(373, 5));
 		self::register("night_vision_splash_potion", $factory->get(438, 5));
 		self::register("oak_boat", $factory->get(333));

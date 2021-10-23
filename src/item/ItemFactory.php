@@ -354,26 +354,31 @@ class ItemFactory{
 	}
 
 	private function registerTierToolItems() : void{
+		$this->register(new Axe(new ItemIdentifier(ItemIds::NETHERITE_AXE, 0), "Netherite Axe", ToolTier::DIAMOND()));
 		$this->register(new Axe(new ItemIdentifier(ItemIds::DIAMOND_AXE, 0), "Diamond Axe", ToolTier::DIAMOND()));
 		$this->register(new Axe(new ItemIdentifier(ItemIds::GOLDEN_AXE, 0), "Golden Axe", ToolTier::GOLD()));
 		$this->register(new Axe(new ItemIdentifier(ItemIds::IRON_AXE, 0), "Iron Axe", ToolTier::IRON()));
 		$this->register(new Axe(new ItemIdentifier(ItemIds::STONE_AXE, 0), "Stone Axe", ToolTier::STONE()));
 		$this->register(new Axe(new ItemIdentifier(ItemIds::WOODEN_AXE, 0), "Wooden Axe", ToolTier::WOOD()));
+		$this->register(new Hoe(new ItemIdentifier(ItemIds::NETHERITE_HOE, 0), "Netherite Hoe", ToolTier::NETHERITE()));
 		$this->register(new Hoe(new ItemIdentifier(ItemIds::DIAMOND_HOE, 0), "Diamond Hoe", ToolTier::DIAMOND()));
 		$this->register(new Hoe(new ItemIdentifier(ItemIds::GOLDEN_HOE, 0), "Golden Hoe", ToolTier::GOLD()));
 		$this->register(new Hoe(new ItemIdentifier(ItemIds::IRON_HOE, 0), "Iron Hoe", ToolTier::IRON()));
 		$this->register(new Hoe(new ItemIdentifier(ItemIds::STONE_HOE, 0), "Stone Hoe", ToolTier::STONE()));
 		$this->register(new Hoe(new ItemIdentifier(ItemIds::WOODEN_HOE, 0), "Wooden Hoe", ToolTier::WOOD()));
+		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::NETHERITE_PICKAXE, 0), "Netherite Pickaxe", ToolTier::NETHERITE()));
 		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::DIAMOND_PICKAXE, 0), "Diamond Pickaxe", ToolTier::DIAMOND()));
 		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::GOLDEN_PICKAXE, 0), "Golden Pickaxe", ToolTier::GOLD()));
 		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::IRON_PICKAXE, 0), "Iron Pickaxe", ToolTier::IRON()));
 		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::STONE_PICKAXE, 0), "Stone Pickaxe", ToolTier::STONE()));
 		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::WOODEN_PICKAXE, 0), "Wooden Pickaxe", ToolTier::WOOD()));
+		$this->register(new Shovel(new ItemIdentifier(ItemIds::NETHERITE_SHOVEL, 0), "Netherite Shovel", ToolTier::NETHERITE()));
 		$this->register(new Shovel(new ItemIdentifier(ItemIds::DIAMOND_SHOVEL, 0), "Diamond Shovel", ToolTier::DIAMOND()));
 		$this->register(new Shovel(new ItemIdentifier(ItemIds::GOLDEN_SHOVEL, 0), "Golden Shovel", ToolTier::GOLD()));
 		$this->register(new Shovel(new ItemIdentifier(ItemIds::IRON_SHOVEL, 0), "Iron Shovel", ToolTier::IRON()));
 		$this->register(new Shovel(new ItemIdentifier(ItemIds::STONE_SHOVEL, 0), "Stone Shovel", ToolTier::STONE()));
 		$this->register(new Shovel(new ItemIdentifier(ItemIds::WOODEN_SHOVEL, 0), "Wooden Shovel", ToolTier::WOOD()));
+		$this->register(new Sword(new ItemIdentifier(ItemIds::NETHERITE_SWORD, 0), "Netherite Sword", ToolTier::NETHERITE()));
 		$this->register(new Sword(new ItemIdentifier(ItemIds::DIAMOND_SWORD, 0), "Diamond Sword", ToolTier::DIAMOND()));
 		$this->register(new Sword(new ItemIdentifier(ItemIds::GOLDEN_SWORD, 0), "Golden Sword", ToolTier::GOLD()));
 		$this->register(new Sword(new ItemIdentifier(ItemIds::IRON_SWORD, 0), "Iron Sword", ToolTier::IRON()));
