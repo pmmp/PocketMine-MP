@@ -39,7 +39,7 @@ class ClickSound implements Sound{
 		return $this->pitch;
 	}
 
-	public function encode(?Vector3 $pos) : array{
+	public function encode(Vector3 $pos) : array{
 		return [LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_CLICK, (int) ($this->pitch * 1000), $pos)];
 	}
 }

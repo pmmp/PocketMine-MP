@@ -28,7 +28,7 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 final class FireExtinguishSound implements Sound{
 
-	public function encode(?Vector3 $pos) : array{
+	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::nonActorSound(LevelSoundEventPacket::SOUND_EXTINGUISH_FIRE, $pos, false)];
 	}
 }

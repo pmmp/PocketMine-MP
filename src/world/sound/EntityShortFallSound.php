@@ -39,7 +39,7 @@ class EntityShortFallSound implements Sound{
 		$this->entity = $entity;
 	}
 
-	public function encode(?Vector3 $pos) : array{
+	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::create(
 			LevelSoundEventPacket::SOUND_FALL_SMALL,
 			$pos,

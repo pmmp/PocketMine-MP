@@ -28,7 +28,7 @@ use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class BucketFillWaterSound implements Sound{
 
-	public function encode(?Vector3 $pos) : array{
+	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::nonActorSound(LevelSoundEventPacket::SOUND_BUCKET_FILL_WATER, $pos, false)];
 	}
 }

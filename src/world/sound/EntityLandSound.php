@@ -44,7 +44,7 @@ class EntityLandSound implements Sound{
 		$this->blockLandedOn = $blockLandedOn;
 	}
 
-	public function encode(?Vector3 $pos) : array{
+	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::create(
 			LevelSoundEventPacket::SOUND_LAND,
 			$pos,

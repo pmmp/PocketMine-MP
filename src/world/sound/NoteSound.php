@@ -41,7 +41,7 @@ class NoteSound implements Sound{
 		$this->note = $note;
 	}
 
-	public function encode(?Vector3 $pos) : array{
+	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::nonActorSound(LevelSoundEventPacket::SOUND_NOTE, $pos, false, ($this->instrument->getMagicNumber() << 8) | $this->note)];
 	}
 }
