@@ -25,7 +25,6 @@ namespace pocketmine\block\utils;
 
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 use pocketmine\utils\EnumTrait;
 
