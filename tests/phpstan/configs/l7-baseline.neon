@@ -651,16 +651,6 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BlockActorDataPacket\\:\\:create\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\UpdateBlockPacket\\:\\:create\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/world/World.php
@@ -691,16 +681,6 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BlockActorDataPacket\\:\\:create\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\UpdateBlockPacket\\:\\:create\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\world\\\\World\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
 			count: 3
 			path: ../../../src/world/World.php
@@ -728,16 +708,6 @@ parameters:
 		-
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
 			count: 3
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BlockActorDataPacket\\:\\:create\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
-			path: ../../../src/world/World.php
-
-		-
-			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\UpdateBlockPacket\\:\\:create\\(\\) expects int, float\\|int given\\.$#"
-			count: 1
 			path: ../../../src/world/World.php
 
 		-
