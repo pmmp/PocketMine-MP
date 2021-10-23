@@ -206,14 +206,15 @@ class ItemEntity extends Entity{
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{
-		$pk = new AddItemActorPacket();
-		$pk->actorRuntimeId = $this->getId();
-		$pk->position = $this->location->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->item = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getItem()));
-		$pk->metadata = $this->getAllNetworkData();
-
-		$player->getNetworkSession()->sendDataPacket($pk);
+		$player->getNetworkSession()->sendDataPacket(AddItemActorPacket::create(
+			$this->getId(), //TODO: entity unique ID
+			$this->getId(),
+			ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getItem())),
+			$this->location->asVector3(),
+			$this->getMotion(),
+			$this->getAllNetworkData(),
+			false //TODO: I have no idea what this is needed for, but right now we don't support fishing anyway
+		));
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{

@@ -776,7 +776,15 @@ class NetworkSession{
 	 * TODO: make this less specialized
 	 */
 	public function syncAdventureSettings(Player $for) : void{
-		$pk = new AdventureSettingsPacket();
+		$isOp = $for->hasPermission(DefaultPermissions::ROOT_OPERATOR);
+		$pk = AdventureSettingsPacket::create(
+			0,
+			$isOp ? AdventureSettingsPacket::PERMISSION_OPERATOR : AdventureSettingsPacket::PERMISSION_NORMAL,
+			0,
+			$isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER,
+			0,
+			$for->getId()
+		);
 
 		$pk->setFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $for->isSpectator());
 		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->isSpectator());
@@ -786,11 +794,6 @@ class NetworkSession{
 		$pk->setFlag(AdventureSettingsPacket::FLYING, $for->isFlying());
 
 		//TODO: permission flags
-
-		$isOp = $for->hasPermission(DefaultPermissions::ROOT_OPERATOR);
-		$pk->commandPermission = ($isOp ? AdventureSettingsPacket::PERMISSION_OPERATOR : AdventureSettingsPacket::PERMISSION_NORMAL);
-		$pk->playerPermission = ($isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER);
-		$pk->targetActorUniqueId = $for->getId();
 
 		$this->sendDataPacket($pk);
 	}
@@ -828,9 +831,9 @@ class NetworkSession{
 	}
 
 	public function syncAvailableCommands() : void{
-		$pk = new AvailableCommandsPacket();
+		$commandData = [];
 		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
-			if(isset($pk->commandData[$command->getName()]) or $command->getName() === "help" or !$command->testPermissionSilent($this->player)){
+			if(isset($commandData[$command->getName()]) or $command->getName() === "help" or !$command->testPermissionSilent($this->player)){
 				continue;
 			}
 
@@ -857,10 +860,10 @@ class NetworkSession{
 				]
 			);
 
-			$pk->commandData[$command->getName()] = $data;
+			$commandData[$command->getName()] = $data;
 		}
 
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, [], [], []));
 	}
 
 	public function onRawChatMessage(string $message) : void{
