@@ -25,10 +25,11 @@ namespace pocketmine\world\sound;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 class BarrelOpenSound implements Sound{
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::nonActorSound(LevelSoundEventPacket::SOUND_BLOCK_BARREL_OPEN, $pos, false)];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BLOCK_BARREL_OPEN, $pos, false)];
 	}
 }

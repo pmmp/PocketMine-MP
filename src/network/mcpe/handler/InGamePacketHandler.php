@@ -83,6 +83,7 @@ use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\types\ActorEvent;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
@@ -92,6 +93,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
+use pocketmine\network\mcpe\protocol\types\PlayerAction;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
@@ -201,12 +203,12 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleActorEvent(ActorEventPacket $packet) : bool{
 		if($packet->actorRuntimeId !== $this->player->getId()){
 			//TODO HACK: EATING_ITEM is sent back to the server when the server sends it for other players (1.14 bug, maybe earlier)
-			return $packet->actorRuntimeId === ActorEventPacket::EATING_ITEM;
+			return $packet->actorRuntimeId === ActorEvent::EATING_ITEM;
 		}
 		$this->player->doCloseInventory();
 
 		switch($packet->eventId){
-			case ActorEventPacket::EATING_ITEM: //TODO: ignore this and handle it server-side
+			case ActorEvent::EATING_ITEM: //TODO: ignore this and handle it server-side
 				$item = $this->player->getInventory()->getItemInHand();
 				if($item->isNull()){
 					return false;
@@ -534,60 +536,60 @@ class InGamePacketHandler extends PacketHandler{
 		$pos = new Vector3($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ());
 
 		switch($packet->action){
-			case PlayerActionPacket::ACTION_START_BREAK:
+			case PlayerAction::START_BREAK:
 				if(!$this->player->attackBlock($pos, $packet->face)){
 					$this->onFailedBlockAction($pos, $packet->face);
 				}
 
 				break;
 
-			case PlayerActionPacket::ACTION_ABORT_BREAK:
-			case PlayerActionPacket::ACTION_STOP_BREAK:
+			case PlayerAction::ABORT_BREAK:
+			case PlayerAction::STOP_BREAK:
 				$this->player->stopBreakBlock($pos);
 				break;
-			case PlayerActionPacket::ACTION_START_SLEEPING:
+			case PlayerAction::START_SLEEPING:
 				//unused
 				break;
-			case PlayerActionPacket::ACTION_STOP_SLEEPING:
+			case PlayerAction::STOP_SLEEPING:
 				$this->player->stopSleep();
 				break;
-			case PlayerActionPacket::ACTION_JUMP:
+			case PlayerAction::JUMP:
 				$this->player->jump();
 				return true;
-			case PlayerActionPacket::ACTION_START_SPRINT:
+			case PlayerAction::START_SPRINT:
 				if(!$this->player->toggleSprint(true)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerActionPacket::ACTION_STOP_SPRINT:
+			case PlayerAction::STOP_SPRINT:
 				if(!$this->player->toggleSprint(false)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerActionPacket::ACTION_START_SNEAK:
+			case PlayerAction::START_SNEAK:
 				if(!$this->player->toggleSneak(true)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerActionPacket::ACTION_STOP_SNEAK:
+			case PlayerAction::STOP_SNEAK:
 				if(!$this->player->toggleSneak(false)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerActionPacket::ACTION_START_GLIDE:
-			case PlayerActionPacket::ACTION_STOP_GLIDE:
+			case PlayerAction::START_GLIDE:
+			case PlayerAction::STOP_GLIDE:
 				break; //TODO
-			case PlayerActionPacket::ACTION_CRACK_BREAK:
+			case PlayerAction::CRACK_BREAK:
 				$this->player->continueBreakBlock($pos, $packet->face);
 				break;
-			case PlayerActionPacket::ACTION_START_SWIMMING:
+			case PlayerAction::START_SWIMMING:
 				break; //TODO
-			case PlayerActionPacket::ACTION_STOP_SWIMMING:
+			case PlayerAction::STOP_SWIMMING:
 				//TODO: handle this when it doesn't spam every damn tick (yet another spam bug!!)
 				break;
-			case PlayerActionPacket::ACTION_INTERACT_BLOCK: //TODO: ignored (for now)
+			case PlayerAction::INTERACT_BLOCK: //TODO: ignored (for now)
 				break;
-			case PlayerActionPacket::ACTION_CREATIVE_PLAYER_DESTROY_BLOCK:
+			case PlayerAction::CREATIVE_PLAYER_DESTROY_BLOCK:
 				//TODO: do we need to handle this?
 				break;
 			default:

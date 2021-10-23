@@ -25,10 +25,11 @@ namespace pocketmine\world\particle;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
 class EndermanTeleportParticle implements Particle{
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_ENDERMAN_TELEPORT, 0, $pos)];
+		return [LevelEventPacket::create(LevelEvent::PARTICLE_ENDERMAN_TELEPORT, 0, $pos)];
 	}
 }

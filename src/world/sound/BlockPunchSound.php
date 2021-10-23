@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 /**
  * Played when a player attacks a block in survival, attempting to break it.
@@ -42,7 +43,7 @@ class BlockPunchSound implements Sound{
 
 	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::nonActorSound(
-			LevelSoundEventPacket::SOUND_HIT,
+			LevelSoundEvent::HIT,
 			$pos,
 			false,
 			RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId())

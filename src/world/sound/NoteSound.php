@@ -25,6 +25,7 @@ namespace pocketmine\world\sound;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 class NoteSound implements Sound{
 
@@ -42,6 +43,6 @@ class NoteSound implements Sound{
 	}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::nonActorSound(LevelSoundEventPacket::SOUND_NOTE, $pos, false, ($this->instrument->getMagicNumber() << 8) | $this->note)];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::NOTE, $pos, false, ($this->instrument->getMagicNumber() << 8) | $this->note)];
 	}
 }

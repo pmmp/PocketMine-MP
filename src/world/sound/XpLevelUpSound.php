@@ -25,6 +25,7 @@ namespace pocketmine\world\sound;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 use function intdiv;
 use function min;
 
@@ -44,6 +45,6 @@ class XpLevelUpSound implements Sound{
 	public function encode(Vector3 $pos) : array{
 		//No idea why such odd numbers, but this works...
 		//TODO: check arbitrary volume
-		return [LevelSoundEventPacket::nonActorSound(LevelSoundEventPacket::SOUND_LEVELUP, $pos, false, 0x10000000 * intdiv(min(30, $this->xpLevel), 5))];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::LEVELUP, $pos, false, 0x10000000 * intdiv(min(30, $this->xpLevel), 5))];
 	}
 }

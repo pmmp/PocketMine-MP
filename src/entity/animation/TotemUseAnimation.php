@@ -25,6 +25,7 @@ namespace pocketmine\entity\animation;
 
 use pocketmine\entity\Human;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
 final class TotemUseAnimation implements Animation{
 
@@ -38,7 +39,7 @@ final class TotemUseAnimation implements Animation{
 
 	public function encode() : array{
 		return [
-			ActorEventPacket::create($this->human->getId(), ActorEventPacket::CONSUME_TOTEM, 0)
+			ActorEventPacket::create($this->human->getId(), ActorEvent::CONSUME_TOTEM, 0)
 		];
 	}
 }

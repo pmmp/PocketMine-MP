@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\handler;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
+use pocketmine\network\mcpe\protocol\types\PlayerAction;
 use pocketmine\player\Player;
 
 class DeathPacketHandler extends PacketHandler{
@@ -49,7 +50,7 @@ class DeathPacketHandler extends PacketHandler{
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
-		if($packet->action === PlayerActionPacket::ACTION_RESPAWN){
+		if($packet->action === PlayerAction::RESPAWN){
 			$this->player->respawn();
 			return true;
 		}

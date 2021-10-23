@@ -25,6 +25,7 @@ namespace pocketmine\world\sound;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
 class PopSound implements Sound{
 
@@ -40,6 +41,6 @@ class PopSound implements Sound{
 	}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_POP, (int) ($this->pitch * 1000), $pos)];
+		return [LevelEventPacket::create(LevelEvent::SOUND_POP, (int) ($this->pitch * 1000), $pos)];
 	}
 }

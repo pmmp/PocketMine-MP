@@ -25,10 +25,11 @@ namespace pocketmine\world\sound;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 class PotionSplashSound implements Sound{
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::nonActorSound(LevelSoundEventPacket::SOUND_GLASS, $pos, false)];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::GLASS, $pos, false)];
 	}
 }

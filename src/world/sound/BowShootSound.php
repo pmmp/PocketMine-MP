@@ -25,10 +25,11 @@ namespace pocketmine\world\sound;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 class BowShootSound implements Sound{
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::nonActorSound(LevelSoundEventPacket::SOUND_BOW, $pos, false)];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BOW, $pos, false)];
 	}
 }

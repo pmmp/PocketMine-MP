@@ -25,6 +25,7 @@ namespace pocketmine\entity\animation;
 
 use pocketmine\entity\Living;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
 final class RespawnAnimation implements Animation{
 
@@ -37,7 +38,7 @@ final class RespawnAnimation implements Animation{
 
 	public function encode() : array{
 		return [
-			ActorEventPacket::create($this->entity->getId(), ActorEventPacket::RESPAWN, 0)
+			ActorEventPacket::create($this->entity->getId(), ActorEvent::RESPAWN, 0)
 		];
 	}
 }
