@@ -387,21 +387,25 @@ class ItemFactory{
 	}
 
 	private function registerArmorItems() : void{
+		$this->register(new Armor(new ItemIdentifier(ItemIds::NETHERITE_BOOTS, 0), "Netherite Boots", new ArmorTypeInfo(3, 481, ArmorInventory::SLOT_FEET)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_BOOTS, 0), "Chainmail Boots", new ArmorTypeInfo(1, 196, ArmorInventory::SLOT_FEET)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_BOOTS, 0), "Diamond Boots", new ArmorTypeInfo(3, 430, ArmorInventory::SLOT_FEET)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_BOOTS, 0), "Golden Boots", new ArmorTypeInfo(1, 92, ArmorInventory::SLOT_FEET)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::IRON_BOOTS, 0), "Iron Boots", new ArmorTypeInfo(2, 196, ArmorInventory::SLOT_FEET)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::LEATHER_BOOTS, 0), "Leather Boots", new ArmorTypeInfo(1, 66, ArmorInventory::SLOT_FEET)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::NETHERITE_CHESTPLATE, 0), "Netherite Chestplate", new ArmorTypeInfo(8, 592, ArmorInventory::SLOT_CHEST)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_CHESTPLATE, 0), "Chainmail Chestplate", new ArmorTypeInfo(5, 241, ArmorInventory::SLOT_CHEST)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_CHESTPLATE, 0), "Diamond Chestplate", new ArmorTypeInfo(8, 529, ArmorInventory::SLOT_CHEST)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_CHESTPLATE, 0), "Golden Chestplate", new ArmorTypeInfo(5, 113, ArmorInventory::SLOT_CHEST)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::IRON_CHESTPLATE, 0), "Iron Chestplate", new ArmorTypeInfo(6, 241, ArmorInventory::SLOT_CHEST)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::LEATHER_CHESTPLATE, 0), "Leather Tunic", new ArmorTypeInfo(3, 81, ArmorInventory::SLOT_CHEST)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::NETHERITE_HELMET, 0), "Netherite Helmet", new ArmorTypeInfo(3, 407, ArmorInventory::SLOT_HEAD)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_HELMET, 0), "Chainmail Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_HELMET, 0), "Diamond Helmet", new ArmorTypeInfo(3, 364, ArmorInventory::SLOT_HEAD)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_HELMET, 0), "Golden Helmet", new ArmorTypeInfo(2, 78, ArmorInventory::SLOT_HEAD)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::IRON_HELMET, 0), "Iron Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::LEATHER_HELMET, 0), "Leather Cap", new ArmorTypeInfo(1, 56, ArmorInventory::SLOT_HEAD)));
+		$this->register(new Armor(new ItemIdentifier(ItemIds::NETHERITE_LEGGINGS, 0), "Netherite Leggings", new ArmorTypeInfo(6, 555, ArmorInventory::SLOT_LEGS)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_LEGGINGS, 0), "Chainmail Leggings", new ArmorTypeInfo(4, 226, ArmorInventory::SLOT_LEGS)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_LEGGINGS, 0), "Diamond Leggings", new ArmorTypeInfo(6, 496, ArmorInventory::SLOT_LEGS)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_LEGGINGS, 0), "Golden Leggings", new ArmorTypeInfo(3, 106, ArmorInventory::SLOT_LEGS)));
