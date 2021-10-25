@@ -519,12 +519,10 @@ final class Utils{
 		if(!class_exists($className)){
 			throw new \InvalidArgumentException("Class $className does not exist");
 		}
-		$base = new \ReflectionClass($baseName);
-		$class = new \ReflectionClass($className);
-
-		if(!$class->isSubclassOf($baseName)){
-			throw new \InvalidArgumentException("Class $className does not " . ($base->isInterface() ? "implement" : "extend") . " " . $baseName);
+		if(!is_a($className, $baseName, true)){
+			throw new \InvalidArgumentException("Class $className does not extend or implement $baseName");
 		}
+		$class = new \ReflectionClass($className);
 		if(!$class->isInstantiable()){
 			throw new \InvalidArgumentException("Class $className cannot be constructed");
 		}
