@@ -149,7 +149,9 @@ class PopulationTask extends AsyncTask{
 		/** @var World $world */
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
 		if($world->isLoaded()){
-			$chunk = $this->chunk !== null ? FastChunkSerializer::deserializeTerrain($this->chunk) : null;
+			$chunk = $this->chunk !== null ?
+				FastChunkSerializer::deserializeTerrain($this->chunk) :
+				throw new AssumptionFailedError("Center chunk should never be null");
 
 			for($i = 0; $i < 9; ++$i){
 				if($i === 4){
