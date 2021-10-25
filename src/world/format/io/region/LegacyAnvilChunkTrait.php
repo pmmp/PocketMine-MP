@@ -88,13 +88,13 @@ trait LegacyAnvilChunkTrait{
 			$biomeArray = $makeBiomeArray($biomesTag->getValue());
 		}
 
-		$result = new Chunk(
-			$subChunks,
-			$biomeArray
-		);
-		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
 		return new ChunkData(
-			$result,
+			new Chunk(
+				$subChunks,
+				$biomeArray,
+				null,
+				$chunk->getByte("TerrainPopulated", 0) !== 0
+			),
 			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
 			($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
 		);

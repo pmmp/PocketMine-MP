@@ -404,20 +404,23 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			}
 		}
 
-		$chunk = new Chunk(
-			$subChunks,
-			$biomeArray
-		);
-
-		//TODO: tile ticks, biome states (?)
-
 		$finalisationChr = $this->db->get($index . self::TAG_STATE_FINALISATION);
 		if($finalisationChr !== false){
 			$finalisation = ord($finalisationChr);
-			$chunk->setPopulated($finalisation === self::FINALISATION_DONE);
+			$terrainPopulated = $finalisation === self::FINALISATION_DONE;
 		}else{ //older versions didn't have this tag
-			$chunk->setPopulated();
+			$terrainPopulated = true;
 		}
+
+		//TODO: tile ticks, biome states (?)
+
+		$chunk = new Chunk(
+			$subChunks,
+			$biomeArray,
+			null,
+			$terrainPopulated
+		);
+
 		if($hasBeenUpgraded){
 			$chunk->setTerrainDirty(); //trigger rewriting chunk to disk if it was converted from an older format
 		}

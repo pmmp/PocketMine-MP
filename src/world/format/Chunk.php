@@ -69,7 +69,7 @@ class Chunk{
 	/**
 	 * @param SubChunk[] $subChunks
 	 */
-	public function __construct(array $subChunks = [], ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null){
+	public function __construct(array $subChunks = [], ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null, bool $terrainPopulated = false){
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
 		foreach($this->subChunks as $y => $null){
@@ -79,6 +79,8 @@ class Chunk{
 		$val = ($this->subChunks->getSize() * SubChunk::EDGE_LENGTH);
 		$this->heightMap = $heightMap ?? new HeightArray(array_fill(0, 256, $val));
 		$this->biomeIds = $biomeIds ?? BiomeArray::fill(BiomeIds::OCEAN);
+
+		$this->terrainPopulated = $terrainPopulated;
 	}
 
 	/**

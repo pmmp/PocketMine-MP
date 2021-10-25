@@ -115,10 +115,6 @@ final class FastChunkSerializer{
 
 		$biomeIds = new BiomeArray($stream->get(256));
 
-		$chunk = new Chunk($subChunks, $biomeIds);
-		$chunk->setPopulated($terrainPopulated);
-		$chunk->clearTerrainDirtyFlags();
-
-		return $chunk;
+		return new Chunk($subChunks, $biomeIds, null, $terrainPopulated);
 	}
 }
