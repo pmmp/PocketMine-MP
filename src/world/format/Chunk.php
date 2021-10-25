@@ -30,7 +30,6 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Tile;
 use pocketmine\data\bedrock\BiomeIds;
-use function array_fill;
 use function array_map;
 
 class Chunk{
@@ -77,7 +76,7 @@ class Chunk{
 		}
 
 		$val = ($this->subChunks->getSize() * SubChunk::EDGE_LENGTH);
-		$this->heightMap = new HeightArray(array_fill(0, 256, $val)); //TODO: what about lazily initializing this?
+		$this->heightMap = HeightArray::fill($val); //TODO: what about lazily initializing this?
 		$this->biomeIds = $biomeIds ?? BiomeArray::fill(BiomeIds::OCEAN);
 
 		$this->terrainPopulated = $terrainPopulated;
