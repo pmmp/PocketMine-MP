@@ -89,6 +89,7 @@ class PopulationTask extends AsyncTask{
 
 		/** @var Chunk[] $chunks */
 		$chunks = [];
+		$oldModCounts = [];
 
 		$chunk = $this->chunk !== null ? FastChunkSerializer::deserializeTerrain($this->chunk) : null;
 
@@ -101,6 +102,7 @@ class PopulationTask extends AsyncTask{
 				$chunks[$i] = null;
 			}else{
 				$chunks[$i] = FastChunkSerializer::deserializeTerrain($ck);
+				$oldModCounts[$i] = $chunks[$i]->getModificationCount();
 			}
 		}
 
@@ -124,7 +126,8 @@ class PopulationTask extends AsyncTask{
 		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
 
 		foreach($chunks as $i => $c){
-			$this->{"chunk$i"} = $c->isTerrainDirty() ? FastChunkSerializer::serializeTerrain($c) : null;
+			$oldModCount = $oldModCounts[$i] ?? 0;
+			$this->{"chunk$i"} = $oldModCount !== $c->getModificationCounter() ? FastChunkSerializer::serializeTerrain($c) : null;
 		}
 	}
 
