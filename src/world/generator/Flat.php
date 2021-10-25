@@ -69,7 +69,7 @@ class Flat extends Generator{
 	}
 
 	protected function generateBaseChunk() : void{
-		$this->chunk = new Chunk([], BiomeArray::fill($this->options->getBiomeId()));
+		$this->chunk = new Chunk([], BiomeArray::fill($this->options->getBiomeId()), false);
 
 		$structure = $this->options->getStructure();
 		$count = count($structure);

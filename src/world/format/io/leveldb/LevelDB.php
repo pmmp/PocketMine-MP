@@ -25,6 +25,7 @@ namespace pocketmine\world\format\io\leveldb;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
@@ -416,7 +417,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		$chunk = new Chunk(
 			$subChunks,
-			$biomeArray,
+			$biomeArray ?? BiomeArray::fill(BiomeIds::OCEAN), //TODO: maybe missing biomes should be an error?
 			$terrainPopulated
 		);
 

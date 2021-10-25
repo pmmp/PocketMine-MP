@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteArrayTag;
@@ -86,6 +87,8 @@ trait LegacyAnvilChunkTrait{
 			$biomeArray = $makeBiomeArray(ChunkUtils::convertBiomeColors($biomeColorsTag->getValue())); //Convert back to original format
 		}elseif(($biomesTag = $chunk->getTag("Biomes")) instanceof ByteArrayTag){
 			$biomeArray = $makeBiomeArray($biomesTag->getValue());
+		}else{
+			$biomeArray = BiomeArray::fill(BiomeIds::OCEAN);
 		}
 
 		return new ChunkData(
