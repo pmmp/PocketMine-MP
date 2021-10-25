@@ -53,6 +53,7 @@ use function get_loaded_extensions;
 use function getenv;
 use function gettype;
 use function implode;
+use function interface_exists;
 use function is_array;
 use function is_bool;
 use function is_int;
@@ -513,14 +514,18 @@ final class Utils{
 	 * @phpstan-param class-string $baseName
 	 */
 	public static function testValidInstance(string $className, string $baseName) : void{
+		$baseInterface = false;
 		if(!class_exists($baseName)){
-			throw new \InvalidArgumentException("Base class $baseName does not exist");
+			if(!interface_exists($baseName)){
+				throw new \InvalidArgumentException("Base class $baseName does not exist");
+			}
+			$baseInterface = true;
 		}
 		if(!class_exists($className)){
-			throw new \InvalidArgumentException("Class $className does not exist");
+			throw new \InvalidArgumentException("Class $className does not exist or is not a class");
 		}
 		if(!is_a($className, $baseName, true)){
-			throw new \InvalidArgumentException("Class $className does not extend or implement $baseName");
+			throw new \InvalidArgumentException("Class $className does not " . ($baseInterface ? "implement" : "extend") . " $baseName");
 		}
 		$class = new \ReflectionClass($className);
 		if(!$class->isInstantiable()){
