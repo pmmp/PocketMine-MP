@@ -54,6 +54,7 @@ use function getenv;
 use function gettype;
 use function implode;
 use function interface_exists;
+use function is_a;
 use function is_array;
 use function is_bool;
 use function is_int;
