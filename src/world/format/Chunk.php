@@ -29,7 +29,6 @@ namespace pocketmine\world\format;
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Tile;
-use pocketmine\data\bedrock\BiomeIds;
 use function array_map;
 
 class Chunk{
