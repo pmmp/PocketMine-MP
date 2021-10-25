@@ -417,7 +417,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$chunk = new Chunk(
 			$subChunks,
 			$biomeArray,
-			null,
 			$terrainPopulated
 		);
 

@@ -86,7 +86,6 @@ class McRegion extends RegionWorldProvider{
 			new Chunk(
 				$subChunks,
 				$biomeIds,
-				null,
 				$chunk->getByte("TerrainPopulated", 0) !== 0
 			),
 			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],

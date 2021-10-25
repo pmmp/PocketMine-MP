@@ -92,7 +92,6 @@ trait LegacyAnvilChunkTrait{
 			new Chunk(
 				$subChunks,
 				$biomeArray,
-				null,
 				$chunk->getByte("TerrainPopulated", 0) !== 0
 			),
 			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
