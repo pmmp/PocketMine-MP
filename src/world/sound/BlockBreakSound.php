@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 class BlockBreakSound extends MappingSound{
 
@@ -37,7 +38,7 @@ class BlockBreakSound extends MappingSound{
 		$this->block = $block;
 	}
 
-	public function encode(?Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_BREAK, $pos, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->mappingProtocol))];
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BREAK, $pos, false, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->mappingProtocol))];
 	}
 }

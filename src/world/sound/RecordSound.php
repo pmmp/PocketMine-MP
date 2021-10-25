@@ -36,7 +36,7 @@ class RecordSound implements Sound{
 		$this->recordType = $recordType;
 	}
 
-	public function encode(?Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create($this->recordType->getSoundId(), $pos)];
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound($this->recordType->getSoundId(), $pos, false)];
 	}
 }

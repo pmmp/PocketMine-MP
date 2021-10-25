@@ -29,8 +29,6 @@ namespace pocketmine\world\format;
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Tile;
-use pocketmine\data\bedrock\BiomeIds;
-use function array_fill;
 use function array_map;
 
 class Chunk{
@@ -42,6 +40,8 @@ class Chunk{
 	public const EDGE_LENGTH = SubChunk::EDGE_LENGTH;
 	public const COORD_BIT_SIZE = SubChunk::COORD_BIT_SIZE;
 	public const COORD_MASK = SubChunk::COORD_MASK;
+
+	private int $modificationCount;
 
 	/** @var int */
 	private $terrainDirtyFlags = 0;
@@ -69,7 +69,7 @@ class Chunk{
 	/**
 	 * @param SubChunk[] $subChunks
 	 */
-	public function __construct(array $subChunks = [], ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null){
+	public function __construct(array $subChunks, BiomeArray $biomeIds, bool $terrainPopulated, int $modificationCount = 0){
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
 		foreach($this->subChunks as $y => $null){
@@ -77,8 +77,11 @@ class Chunk{
 		}
 
 		$val = ($this->subChunks->getSize() * SubChunk::EDGE_LENGTH);
-		$this->heightMap = $heightMap ?? new HeightArray(array_fill(0, 256, $val));
-		$this->biomeIds = $biomeIds ?? BiomeArray::fill(BiomeIds::OCEAN);
+		$this->heightMap = HeightArray::fill($val); //TODO: what about lazily initializing this?
+		$this->biomeIds = $biomeIds;
+
+		$this->terrainPopulated = $terrainPopulated;
+		$this->modificationCount = $modificationCount;
 	}
 
 	/**
@@ -107,6 +110,7 @@ class Chunk{
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
 		$this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->setFullBlock($x, $y & SubChunk::COORD_MASK, $z, $block);
 		$this->terrainDirtyFlags |= self::DIRTY_FLAG_TERRAIN;
+		$this->modificationCount++;
 	}
 
 	/**
@@ -170,6 +174,7 @@ class Chunk{
 	public function setBiomeId(int $x, int $z, int $biomeId) : void{
 		$this->biomeIds->set($x, $z, $biomeId);
 		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BIOMES;
+		$this->modificationCount++;
 	}
 
 	public function isLightPopulated() : ?bool{
@@ -187,6 +192,7 @@ class Chunk{
 	public function setPopulated(bool $value = true) : void{
 		$this->terrainPopulated = $value;
 		$this->terrainDirtyFlags |= self::DIRTY_FLAG_TERRAIN;
+		$this->modificationCount++;
 	}
 
 	public function addTile(Tile $tile) : void{
@@ -269,15 +275,23 @@ class Chunk{
 		}else{
 			$this->terrainDirtyFlags &= ~$flag;
 		}
+		$this->modificationCount++;
 	}
 
 	public function setTerrainDirty() : void{
 		$this->terrainDirtyFlags = ~0;
+		$this->modificationCount++;
 	}
 
 	public function clearTerrainDirtyFlags() : void{
 		$this->terrainDirtyFlags = 0;
 	}
+
+	/**
+	 * Returns the modcount for this chunk. Any saveable change to the chunk will cause this number to be incremented,
+	 * so you can use this to detect when the chunk has been modified.
+	 */
+	public function getModificationCount() : int{ return $this->modificationCount; }
 
 	public function getSubChunk(int $y) : SubChunk{
 		if($y < 0 || $y >= $this->subChunks->getSize()){

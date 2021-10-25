@@ -21,24 +21,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\world\sound;
+namespace pocketmine\plugin;
 
-use pocketmine\block\Block;
-use pocketmine\math\Vector3;
-use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
-use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
-use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
-
-class BlockPlaceSound extends MappingSound{
-
-	/** @var Block */
-	private $block;
-
-	public function __construct(Block $block){
-		$this->block = $block;
-	}
-
-	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::PLACE, $pos, false, RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->mappingProtocol))];
-	}
+final class PluginLoadTriage{
+	/**
+	 * @var PluginLoadTriageEntry[]
+	 * @phpstan-var array<string, PluginLoadTriageEntry>
+	 */
+	public $plugins = [];
+	/**
+	 * @var string[][]
+	 * @phpstan-var array<string, list<string>>
+	 */
+	public $dependencies = [];
+	/**
+	 * @var string[][]
+	 * @phpstan-var array<string, list<string>>
+	 */
+	public $softDependencies = [];
 }

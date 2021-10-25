@@ -23,8 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\world\generator;
 
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
 use pocketmine\world\SimpleChunkManager;
@@ -87,6 +89,7 @@ class PopulationTask extends AsyncTask{
 
 		/** @var Chunk[] $chunks */
 		$chunks = [];
+		$oldModCounts = [];
 
 		$chunk = $this->chunk !== null ? FastChunkSerializer::deserializeTerrain($this->chunk) : null;
 
@@ -99,6 +102,7 @@ class PopulationTask extends AsyncTask{
 				$chunks[$i] = null;
 			}else{
 				$chunks[$i] = FastChunkSerializer::deserializeTerrain($ck);
+				$oldModCounts[$i] = $chunks[$i]->getModificationCount();
 			}
 		}
 
@@ -122,12 +126,13 @@ class PopulationTask extends AsyncTask{
 		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
 
 		foreach($chunks as $i => $c){
-			$this->{"chunk$i"} = $c->isTerrainDirty() ? FastChunkSerializer::serializeTerrain($c) : null;
+			$oldModCount = $oldModCounts[$i] ?? 0;
+			$this->{"chunk$i"} = $oldModCount !== $c->getModificationCount() ? FastChunkSerializer::serializeTerrain($c) : null;
 		}
 	}
 
 	private static function setOrGenerateChunk(SimpleChunkManager $manager, Generator $generator, int $chunkX, int $chunkZ, ?Chunk $chunk) : Chunk{
-		$manager->setChunk($chunkX, $chunkZ, $chunk ?? new Chunk());
+		$manager->setChunk($chunkX, $chunkZ, $chunk ?? new Chunk([], BiomeArray::fill(BiomeIds::OCEAN), false));
 		if($chunk === null){
 			$generator->generateChunk($manager, $chunkX, $chunkZ);
 			$chunk = $manager->getChunk($chunkX, $chunkZ);
@@ -144,7 +149,9 @@ class PopulationTask extends AsyncTask{
 		/** @var World $world */
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
 		if($world->isLoaded()){
-			$chunk = $this->chunk !== null ? FastChunkSerializer::deserializeTerrain($this->chunk) : null;
+			$chunk = $this->chunk !== null ?
+				FastChunkSerializer::deserializeTerrain($this->chunk) :
+				throw new AssumptionFailedError("Center chunk should never be null");
 
 			for($i = 0; $i < 9; ++$i){
 				if($i === 4){

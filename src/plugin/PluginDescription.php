@@ -30,13 +30,9 @@ use function array_map;
 use function array_values;
 use function is_array;
 use function is_string;
-use function phpversion;
 use function preg_match;
 use function str_replace;
 use function stripos;
-use function strlen;
-use function substr;
-use function version_compare;
 use function yaml_parse;
 
 class PluginDescription{
@@ -245,40 +241,6 @@ class PluginDescription{
 	 */
 	public function getRequiredExtensions() : array{
 		return $this->extensions;
-	}
-
-	/**
-	 * Checks if the current PHP runtime has the extensions required by the plugin.
-	 *
-	 * @throws PluginException if there are required extensions missing or have incompatible version, or if the version constraint cannot be parsed
-	 */
-	public function checkRequiredExtensions() : void{
-		foreach($this->extensions as $name => $versionConstrs){
-			$gotVersion = phpversion($name);
-			if($gotVersion === false){
-				throw new PluginException("Required extension $name not loaded");
-			}
-
-			foreach($versionConstrs as $constr){ // versionConstrs_loop
-				if($constr === "*"){
-					continue;
-				}
-				if($constr === ""){
-					throw new PluginException("One of the extension version constraints of $name is empty. Consider quoting the version string in plugin.yml");
-				}
-				foreach(["<=", "le", "<>", "!=", "ne", "<", "lt", "==", "=", "eq", ">=", "ge", ">", "gt"] as $comparator){
-					// warning: the > character should be quoted in YAML
-					if(substr($constr, 0, strlen($comparator)) === $comparator){
-						$version = substr($constr, strlen($comparator));
-						if(!version_compare($gotVersion, $version, $comparator)){
-							throw new PluginException("Required extension $name has an incompatible version ($gotVersion not $constr)");
-						}
-						continue 2; // versionConstrs_loop
-					}
-				}
-				throw new PluginException("Error parsing version constraint: $constr");
-			}
-		}
 	}
 
 	/**

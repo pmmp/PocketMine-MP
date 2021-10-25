@@ -31,9 +31,11 @@ use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\StartGamePacket;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\BoolGameRule;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\network\mcpe\protocol\types\Experiments;
+use pocketmine\network\mcpe\protocol\types\LevelSettings;
 use pocketmine\network\mcpe\protocol\types\PlayerMovementSettings;
 use pocketmine\network\mcpe\protocol\types\PlayerMovementType;
 use pocketmine\network\mcpe\protocol\types\SpawnSettings;
@@ -63,39 +65,46 @@ class PreSpawnPacketHandler extends PacketHandler{
 
 	public function setUp() : void{
 		$dictionaryProtocol = GlobalItemTypeDictionary::getDictionaryProtocol($this->session->getProtocolId());
-		$spawnPosition = $this->player->getSpawn();
 		$location = $this->player->getLocation();
 
-		$pk = new StartGamePacket();
-		$pk->entityUniqueId = $this->player->getId();
-		$pk->entityRuntimeId = $this->player->getId();
-		$pk->playerGamemode = TypeConverter::getInstance()->coreGameModeToProtocol($this->player->getGamemode());
-		$pk->playerPosition = $this->player->getOffsetPosition($location);
-		$pk->pitch = $location->pitch;
-		$pk->yaw = $location->yaw;
-		$pk->seed = -1;
-		$pk->spawnSettings = new SpawnSettings(SpawnSettings::BIOME_TYPE_DEFAULT, "", DimensionIds::OVERWORLD); //TODO: implement this properly
-		$pk->worldGamemode = TypeConverter::getInstance()->coreGameModeToProtocol($this->server->getGamemode());
-		$pk->difficulty = $location->getWorld()->getDifficulty();
-		$pk->spawnX = $spawnPosition->getFloorX();
-		$pk->spawnY = $spawnPosition->getFloorY();
-		$pk->spawnZ = $spawnPosition->getFloorZ();
-		$pk->hasAchievementsDisabled = true;
-		$pk->time = $location->getWorld()->getTime();
-		$pk->eduEditionOffer = 0;
-		$pk->rainLevel = 0; //TODO: implement these properly
-		$pk->lightningLevel = 0;
-		$pk->commandsEnabled = true;
-		$pk->gameRules = [
+		$levelSettings = new LevelSettings();
+		$levelSettings->seed = -1;
+		$levelSettings->spawnSettings = new SpawnSettings(SpawnSettings::BIOME_TYPE_DEFAULT, "", DimensionIds::OVERWORLD); //TODO: implement this properly
+		$levelSettings->worldGamemode = TypeConverter::getInstance()->coreGameModeToProtocol($this->server->getGamemode());
+		$levelSettings->difficulty = $location->getWorld()->getDifficulty();
+		$levelSettings->spawnPosition = BlockPosition::fromVector3($location->getWorld()->getSpawnLocation());
+		$levelSettings->hasAchievementsDisabled = true;
+		$levelSettings->time = $location->getWorld()->getTime();
+		$levelSettings->eduEditionOffer = 0;
+		$levelSettings->rainLevel = 0; //TODO: implement these properly
+		$levelSettings->lightningLevel = 0;
+		$levelSettings->commandsEnabled = true;
+		$levelSettings->gameRules = [
 			"naturalregeneration" => new BoolGameRule(false, false) //Hack for client side regeneration
 		];
-		$pk->experiments = new Experiments([], false);
-		$pk->levelId = "";
-		$pk->worldName = $this->server->getMotd();
-		$pk->itemTable = GlobalItemTypeDictionary::getInstance()->getDictionary($dictionaryProtocol)->getEntries(); //TODO: check if this is actually needed
-		$pk->playerMovementSettings = new PlayerMovementSettings(PlayerMovementType::LEGACY, 0, false);
-		$pk->serverSoftwareVersion = "NetherGames v4.0";
-		$this->session->sendDataPacket($pk);
+		$levelSettings->experiments = new Experiments([], false);
+
+		$this->session->sendDataPacket(StartGamePacket::create(
+			$this->player->getId(),
+			$this->player->getId(),
+			TypeConverter::getInstance()->coreGameModeToProtocol($this->player->getGamemode()),
+			$this->player->getOffsetPosition($location),
+			$location->pitch,
+			$location->yaw,
+			$levelSettings,
+			"",
+			$this->server->getMotd(),
+			"",
+			false,
+			new PlayerMovementSettings(PlayerMovementType::LEGACY, 0, false),
+			0,
+			0,
+			"",
+			false,
+			 "NetherGames v4.0",
+			[],
+			GlobalItemTypeDictionary::getInstance()->getDictionary($dictionaryProtocol)->getEntries()
+		));
 
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getAvailableActorIdentifiers());
 		$this->session->sendDataPacket(StaticPacketCache::getInstance()->getBiomeDefs());

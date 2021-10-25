@@ -238,11 +238,10 @@ jobs:
       - name: Regenerate KnownTranslation APIs
         run: php build/generate-known-translation-apis.php
 
-      - name: Run git diff
-        run: git diff
-
-      - name: Fail job if changes were made
-        run: git diff --quiet
+      - name: Verify code is unchanged
+        run: |
+          git diff
+          git diff --quiet
 
   codestyle:
     name: Code Style checks

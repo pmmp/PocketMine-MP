@@ -28,6 +28,7 @@ use pocketmine\inventory\DelegateInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerEnderInventory;
 use pocketmine\network\mcpe\protocol\BlockEventPacket;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\player\Player;
 use pocketmine\world\Position;
 use pocketmine\world\sound\EnderChestCloseSound;
@@ -74,7 +75,7 @@ class EnderChestInventory extends DelegateInventory implements BlockInventory{
 		$holder = $this->getHolder();
 
 		//event ID is always 1 for a chest
-		$holder->getWorld()->broadcastPacketToViewers($holder, BlockEventPacket::create(1, $isOpen ? 1 : 0, $holder->asVector3()));
+		$holder->getWorld()->broadcastPacketToViewers($holder, BlockEventPacket::create(BlockPosition::fromVector3($holder), 1, $isOpen ? 1 : 0));
 	}
 
 	public function onClose(Player $who) : void{

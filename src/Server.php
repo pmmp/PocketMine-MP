@@ -1476,7 +1476,7 @@ class Server{
 		ini_set("memory_limit", '-1'); //Fix error dump not dumped on memory problems
 		try{
 			$this->logger->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_crash_create()));
-			$dump = new CrashDump($this);
+			$dump = new CrashDump($this, $this->pluginManager ?? null);
 
 			$this->logger->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_crash_submit($dump->getPath())));
 

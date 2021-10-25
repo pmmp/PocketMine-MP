@@ -101,9 +101,12 @@ class CrashDump{
 	/** @var string */
 	private $path;
 
-	public function __construct(Server $server){
+	private ?PluginManager $pluginManager;
+
+	public function __construct(Server $server, ?PluginManager $pluginManager){
 		$this->time = microtime(true);
 		$this->server = $server;
+		$this->pluginManager = $pluginManager;
 
 		$crashPath = Path::join($this->server->getDataPath(), "crashdumps");
 		if(!is_dir($crashPath)){
@@ -166,11 +169,11 @@ class CrashDump{
 	}
 
 	private function pluginsData() : void{
-		if($this->server->getPluginManager() instanceof PluginManager){
+		if($this->pluginManager !== null){
+			$plugins = $this->pluginManager->getPlugins();
 			$this->addLine();
 			$this->addLine("Loaded plugins:");
 			$this->data["plugins"] = [];
-			$plugins = $this->server->getPluginManager()->getPlugins();
 			ksort($plugins, SORT_STRING);
 			foreach($plugins as $p){
 				$d = $p->getDescription();
