@@ -61,12 +61,14 @@ class TypeConverter{
 	private const PM_ID_TAG = "___Id___";
 	private const PM_META_TAG = "___Meta___";
 
-	/** @var int */
-	private $shieldRuntimeId;
+	/** @var int[] */
+	private $shieldRuntimeIds;
 
 	public function __construct(){
 		//TODO: inject stuff via constructor
-		$this->shieldRuntimeId = GlobalItemTypeDictionary::getInstance()->getDictionary()->fromStringId("minecraft:shield");
+		foreach(GlobalItemTypeDictionary::getInstance()->getDictionaries() as $protocolId => $dictionary){
+			$this->shieldRuntimeIds[$protocolId] = $dictionary->fromStringId("minecraft:shield");
+		}
 	}
 
 	/**
@@ -195,7 +197,7 @@ class TypeConverter{
 			$nbt,
 			[],
 			[],
-			$id === $this->shieldRuntimeId ? 0 : null
+			$id === $this->shieldRuntimeIds[$dictionaryProtocol] ? 0 : null
 		);
 	}
 
