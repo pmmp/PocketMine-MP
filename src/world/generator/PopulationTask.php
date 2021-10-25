@@ -127,7 +127,7 @@ class PopulationTask extends AsyncTask{
 
 		foreach($chunks as $i => $c){
 			$oldModCount = $oldModCounts[$i] ?? 0;
-			$this->{"chunk$i"} = $oldModCount !== $c->getModificationCounter() ? FastChunkSerializer::serializeTerrain($c) : null;
+			$this->{"chunk$i"} = $oldModCount !== $c->getModificationCount() ? FastChunkSerializer::serializeTerrain($c) : null;
 		}
 	}
 
