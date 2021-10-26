@@ -2145,12 +2145,13 @@ class World implements ChunkManager{
 		}
 	}
 
-	public function generateChunkCallback(int $x, int $z, ?Chunk $chunk) : void{
+	/**
+	 * @param Chunk[] $adjacentChunks
+	 * @phpstan-param array<int, Chunk> $adjacentChunks
+	 */
+	public function generateChunkCallback(int $x, int $z, Chunk $chunk, array $adjacentChunks) : void{
 		Timings::$generationCallback->startTiming();
 		if(isset($this->chunkPopulationRequestMap[$index = World::chunkHash($x, $z)]) && isset($this->activeChunkPopulationTasks[$index])){
-			if($chunk === null){
-				throw new AssumptionFailedError("Primary chunk should never be NULL");
-			}
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
 					$this->unlockChunk($x + $xx, $z + $zz);
@@ -2159,6 +2160,12 @@ class World implements ChunkManager{
 
 			$oldChunk = $this->loadChunk($x, $z);
 			$this->setChunk($x, $z, $chunk, false);
+
+			foreach($adjacentChunks as $adjacentChunkHash => $adjacentChunk){
+				World::getXZ($adjacentChunkHash, $xAdjacentChunk, $zAdjacentChunk);
+				$this->setChunk($xAdjacentChunk, $zAdjacentChunk, $adjacentChunk);
+			}
+
 			if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
 				(new ChunkPopulateEvent($this, $x, $z, $chunk))->call();
 
@@ -2172,14 +2179,6 @@ class World implements ChunkManager{
 			$promise->resolve($chunk);
 
 			$this->drainPopulationRequestQueue();
-		}elseif($this->isChunkLocked($x, $z)){
-			$this->unlockChunk($x, $z);
-			if($chunk !== null){
-				$this->setChunk($x, $z, $chunk, false);
-			}
-			$this->drainPopulationRequestQueue();
-		}elseif($chunk !== null){
-			$this->setChunk($x, $z, $chunk, false);
 		}
 		Timings::$generationCallback->stopTiming();
 	}

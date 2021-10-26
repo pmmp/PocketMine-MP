@@ -153,6 +153,7 @@ class PopulationTask extends AsyncTask{
 				FastChunkSerializer::deserializeTerrain($this->chunk) :
 				throw new AssumptionFailedError("Center chunk should never be null");
 
+			$adjacentChunks = [];
 			for($i = 0; $i < 9; ++$i){
 				if($i === 4){
 					continue;
@@ -162,12 +163,11 @@ class PopulationTask extends AsyncTask{
 					$xx = -1 + $i % 3;
 					$zz = -1 + intdiv($i, 3);
 
-					$c = FastChunkSerializer::deserializeTerrain($c);
-					$world->generateChunkCallback($this->chunkX + $xx, $this->chunkZ + $zz, $c);
+					$adjacentChunks[World::chunkHash($this->chunkX + $xx, $this->chunkZ + $zz)] = FastChunkSerializer::deserializeTerrain($c);
 				}
 			}
 
-			$world->generateChunkCallback($this->chunkX, $this->chunkZ, $chunk);
+			$world->generateChunkCallback($this->chunkX, $this->chunkZ, $chunk, $adjacentChunks);
 		}
 	}
 }
