@@ -5,8 +5,3 @@ parameters:
 			count: 1
 			path: ../../../src/event/entity/EntityShootBowEvent.php
 
-		-
-			message: "#^Variable property access on \\$this\\(pocketmine\\\\world\\\\generator\\\\PopulationTask\\)\\.$#"
-			count: 4
-			path: ../../../src/world/generator/PopulationTask.php
-
