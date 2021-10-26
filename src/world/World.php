@@ -1610,7 +1610,7 @@ class World implements ChunkManager{
 		$block->writeStateToWorld();
 		$pos = $block->getPosition();
 
-		$chunkHash = World::chunkHash($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE);
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
 
 		unset($this->blockCache[$chunkHash][$relativeBlockHash]);
@@ -1620,7 +1620,7 @@ class World implements ChunkManager{
 		}
 		$this->changedBlocks[$chunkHash][$relativeBlockHash] = $pos;
 
-		foreach($this->getChunkListeners($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE) as $listener){
+		foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
 			$listener->onBlockChanged($pos);
 		}
 
