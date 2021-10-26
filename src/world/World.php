@@ -2091,7 +2091,7 @@ class World implements ChunkManager{
 	/**
 	 * Returns the chunks adjacent to the specified chunk.
 	 *
-	 * @return (Chunk|null)[]
+	 * @return Chunk[]|null[]
 	 */
 	public function getAdjacentChunks(int $x, int $z) : array{
 		$result = [];

@@ -35,8 +35,6 @@ use function array_map;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 use function intdiv;
-use function is_array;
-use function is_string;
 
 class PopulationTask extends AsyncTask{
 	private const TLS_KEY_WORLD = "world";
