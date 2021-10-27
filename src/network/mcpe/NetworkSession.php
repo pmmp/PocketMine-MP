@@ -727,16 +727,17 @@ class NetworkSession{
 			$yaw = $yaw ?? $location->getYaw();
 			$pitch = $pitch ?? $location->getPitch();
 
-			$pk = new MovePlayerPacket();
-			$pk->actorRuntimeId = $this->player->getId();
-			$pk->position = $this->player->getOffsetPosition($pos);
-			$pk->pitch = $pitch;
-			$pk->headYaw = $yaw;
-			$pk->yaw = $yaw;
-			$pk->mode = $mode;
-			$pk->onGround = $this->player->onGround;
-
-			$this->sendDataPacket($pk);
+			$this->sendDataPacket(MovePlayerPacket::simple(
+				$this->player->getId(),
+				$this->player->getOffsetPosition($pos),
+				$pitch,
+				$yaw,
+				$yaw, //TODO: head yaw
+				$mode,
+				$this->player->onGround,
+				0, //TODO: riding entity ID
+				0 //TODO: tick
+			));
 
 			if($this->handler instanceof InGamePacketHandler){
 				$this->handler->forceMoveSync = true;
