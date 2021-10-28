@@ -436,7 +436,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$write->put($index . self::TAG_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
 
 		$chunk = $chunkData->getChunk();
-		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN)){
+		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_BLOCKS)){
 			$subChunks = $chunk->getSubChunks();
 			foreach($subChunks as $y => $subChunk){
 				$key = $index . self::TAG_SUBCHUNK_PREFIX . chr($y);
