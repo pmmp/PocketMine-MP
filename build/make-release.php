@@ -111,6 +111,7 @@ function main() : void{
 	$channel = $filteredOpts["channel"] ?? VersionInfo::BUILD_CHANNEL;
 
 	echo "About to tag version $currentVer. Next version will be $nextVer.\n";
+	echo "$currentVer will be published on release channel \"$channel\".\n";
 	echo "please add appropriate notes to the changelog and press enter...";
 	fgets(STDIN);
 	system('git add "' . dirname(__DIR__) . '/changelogs"');
