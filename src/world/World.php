@@ -2124,22 +2124,35 @@ class World implements ChunkManager{
 		return isset($this->chunkLock[World::chunkHash($chunkX, $chunkZ)]);
 	}
 
-	/**
-	 * @param bool $deleteTiles Whether to delete tiles on the old chunk, or transfer them to the new one
-	 */
-	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk, bool $deleteTiles = true) : void{
+	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$oldChunk = $this->loadChunk($chunkX, $chunkZ);
 		if($oldChunk !== null and $oldChunk !== $chunk){
-			if($deleteTiles){
-				foreach($oldChunk->getTiles() as $tile){
-					$tile->close();
+			$deletedTiles = 0;
+			$transferredTiles = 0;
+			foreach($oldChunk->getTiles() as $oldTile){
+				$tilePosition = $oldTile->getPosition();
+				$localX = $tilePosition->getFloorX() & Chunk::COORD_MASK;
+				$localY = $tilePosition->getFloorY();
+				$localZ = $tilePosition->getFloorZ() & Chunk::COORD_MASK;
+
+				$newBlock = BlockFactory::getInstance()->fromFullBlock($chunk->getFullBlock($localX, $localY, $localZ));
+				$expectedTileClass = $newBlock->getIdInfo()->getTileClass();
+				if(
+					$expectedTileClass === null || //new block doesn't expect a tile
+					!($oldTile instanceof $expectedTileClass) || //new block expects a different tile
+					(($newTile = $chunk->getTile($localX, $localY, $localZ)) !== null && $newTile !== $oldTile) //new chunk already has a different tile
+				){
+					$oldTile->close();
+					$deletedTiles++;
+				}else{
+					$transferredTiles++;
+					$chunk->addTile($oldTile);
+					$oldChunk->removeTile($oldTile);
 				}
-			}else{
-				foreach($oldChunk->getTiles() as $tile){
-					$chunk->addTile($tile);
-					$oldChunk->removeTile($tile);
-				}
+			}
+			if($deletedTiles > 0 || $transferredTiles > 0){
+				$this->logger->debug("Replacement of chunk $chunkX $chunkZ caused deletion of $deletedTiles obsolete/conflicted tiles, and transfer of $transferredTiles");
 			}
 		}
 
@@ -2830,11 +2843,11 @@ class World implements ChunkManager{
 			}
 
 			$oldChunk = $this->loadChunk($x, $z);
-			$this->setChunk($x, $z, $chunk, false);
+			$this->setChunk($x, $z, $chunk);
 
 			foreach($adjacentChunks as $adjacentChunkHash => $adjacentChunk){
 				World::getXZ($adjacentChunkHash, $xAdjacentChunk, $zAdjacentChunk);
-				$this->setChunk($xAdjacentChunk, $zAdjacentChunk, $adjacentChunk, false);
+				$this->setChunk($xAdjacentChunk, $zAdjacentChunk, $adjacentChunk);
 			}
 
 			if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
