@@ -2177,6 +2177,14 @@ class World implements ChunkManager{
 				$listener->onChunkChanged($chunkX, $chunkZ, $chunk);
 			}
 		}
+
+		for($cX = -1; $cX <= 1; ++$cX){
+			for($cZ = -1; $cZ <= 1; ++$cZ){
+				foreach($this->getChunkEntities($chunkX + $cX, $chunkZ + $cZ) as $entity){
+					$entity->onNearbyBlockChange();
+				}
+			}
+		}
 	}
 
 	/**
