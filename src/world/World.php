@@ -2839,7 +2839,7 @@ class World implements ChunkManager{
 
 			foreach($adjacentChunks as $adjacentChunkHash => $adjacentChunk){
 				World::getXZ($adjacentChunkHash, $xAdjacentChunk, $zAdjacentChunk);
-				$this->setChunk($xAdjacentChunk, $zAdjacentChunk, $adjacentChunk);
+				$this->setChunk($xAdjacentChunk, $zAdjacentChunk, $adjacentChunk, false);
 			}
 
 			if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
