@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc2b425a6f436a01de4e423ea651dc84",
+    "content-hash": "ddbcdbc7ea7247bea7fcb37e5c42340b",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -249,16 +249,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "3.0.1+bedrock1.17.40",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "1add11e06366b983b97fa415fee55f31af3cb7a9"
+                "reference": "58c53a259e819a076bf8fe875d2a012da7d19d65"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/1add11e06366b983b97fa415fee55f31af3cb7a9",
-                "reference": "1add11e06366b983b97fa415fee55f31af3cb7a9",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/58c53a259e819a076bf8fe875d2a012da7d19d65",
+                "reference": "58c53a259e819a076bf8fe875d2a012da7d19d65",
                 "shasum": ""
             },
             "require": {
@@ -277,6 +277,7 @@
                 "phpstan/phpstan-strict-rules": "^0.12.10",
                 "phpunit/phpunit": "^9.5"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -290,22 +291,22 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/3.0.1+bedrock1.17.40"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/master"
             },
-            "time": "2021-10-20T14:00:00+00:00"
+            "time": "2021-10-27T19:49:20+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
-            "version": "0.2.1",
+            "version": "0.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "8cd078e2426f8100331f2d73bef10f481dad6cde"
+                "reference": "f883e1cf9099ed6a757a10a2f75b3333eeb2cdf9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/8cd078e2426f8100331f2d73bef10f481dad6cde",
-                "reference": "8cd078e2426f8100331f2d73bef10f481dad6cde",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/f883e1cf9099ed6a757a10a2f75b3333eeb2cdf9",
+                "reference": "f883e1cf9099ed6a757a10a2f75b3333eeb2cdf9",
                 "shasum": ""
             },
             "require": {
@@ -314,7 +315,7 @@
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.85",
+                "phpstan/phpstan": "0.12.99",
                 "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
@@ -330,9 +331,9 @@
             "description": "Classes and methods for conveniently handling binary data",
             "support": {
                 "issues": "https://github.com/pmmp/BinaryUtils/issues",
-                "source": "https://github.com/pmmp/BinaryUtils/tree/0.2.1"
+                "source": "https://github.com/pmmp/BinaryUtils/tree/0.2.2"
             },
-            "time": "2021-05-30T19:42:57+00:00"
+            "time": "2021-10-22T19:54:16+00:00"
         },
         {
             "name": "pocketmine/callback-validator",
@@ -3325,7 +3326,6 @@
                     "type": "github"
                 }
             ],
-            "abandoned": true,
             "time": "2020-09-28T06:45:17+00:00"
         },
         {
@@ -3491,6 +3491,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "pocketmine/bedrock-protocol": 20,
         "pocketmine/classloader": 20,
         "pocketmine/spl": 20
     },

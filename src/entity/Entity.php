@@ -1418,20 +1418,21 @@ abstract class Entity{
 	 * Called by spawnTo() to send whatever packets needed to spawn the entity to the client.
 	 */
 	protected function sendSpawnPacket(Player $player) : void{
-		$pk = new AddActorPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->type = static::getNetworkTypeId();
-		$pk->position = $this->location->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->yaw = $this->location->yaw;
-		$pk->headYaw = $this->location->yaw; //TODO
-		$pk->pitch = $this->location->pitch;
-		$pk->attributes = array_map(function(Attribute $attr) : NetworkAttribute{
-			return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
-		}, $this->attributeMap->getAll());
-		$pk->metadata = $this->getAllNetworkData();
-
-		$player->getNetworkSession()->sendDataPacket($pk);
+		$player->getNetworkSession()->sendDataPacket(AddActorPacket::create(
+			$this->getId(), //TODO: actor unique ID
+			$this->getId(),
+			static::getNetworkTypeId(),
+			$this->location->asVector3(),
+			$this->getMotion(),
+			$this->location->pitch,
+			$this->location->yaw,
+			$this->location->yaw, //TODO: head yaw
+			array_map(function(Attribute $attr) : NetworkAttribute{
+				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
+			}, $this->attributeMap->getAll()),
+			$this->getAllNetworkData(),
+			[] //TODO: entity links
+		));
 	}
 
 	public function spawnTo(Player $player) : void{

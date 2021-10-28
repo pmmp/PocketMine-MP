@@ -25,11 +25,12 @@ namespace pocketmine\world\sound;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
 class PaintingPlaceSound implements Sound{
 
-	public function encode(?Vector3 $pos) : array{
+	public function encode(Vector3 $pos) : array{
 		//item frame and painting have the same sound
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_ITEMFRAME_PLACE, 0, $pos)];
+		return [LevelEventPacket::create(LevelEvent::SOUND_ITEMFRAME_PLACE, 0, $pos)];
 	}
 }

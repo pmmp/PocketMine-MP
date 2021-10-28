@@ -25,6 +25,7 @@ namespace pocketmine\entity\animation;
 
 use pocketmine\entity\Squid;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
 final class SquidInkCloudAnimation implements Animation{
 
@@ -37,7 +38,7 @@ final class SquidInkCloudAnimation implements Animation{
 
 	public function encode() : array{
 		return [
-			ActorEventPacket::create($this->squid->getId(), ActorEventPacket::SQUID_INK_CLOUD, 0)
+			ActorEventPacket::create($this->squid->getId(), ActorEvent::SQUID_INK_CLOUD, 0)
 		];
 	}
 }
