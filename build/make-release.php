@@ -96,7 +96,7 @@ function main() : void{
 	if(isset($filteredOpts["current"])){
 		$currentVer = new VersionString($filteredOpts["current"]);
 	}else{
-		$currentVer = VersionInfo::VERSION();
+		$currentVer = new VersionString(VersionInfo::BASE_VERSION);
 	}
 	if(isset($filteredOpts["next"])){
 		$nextVer = new VersionString($filteredOpts["next"]);
