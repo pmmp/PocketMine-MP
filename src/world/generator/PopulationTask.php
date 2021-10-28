@@ -81,7 +81,6 @@ class PopulationTask extends AsyncTask{
 			fn(?string $serialized) => $serialized !== null ? FastChunkSerializer::deserializeTerrain($serialized) : null,
 			$serialChunks
 		);
-		$oldModCounts = array_map(fn(?Chunk $chunk) => $chunk !== null ? $chunk->getModificationCount() : null, $chunks);
 
 		self::setOrGenerateChunk($manager, $generator, $this->chunkX, $this->chunkZ, $chunk);
 
@@ -105,7 +104,7 @@ class PopulationTask extends AsyncTask{
 
 		$serialChunks = [];
 		foreach($chunks as $i => $c){
-			$serialChunks[$i] = $oldModCounts[$i] !== $c->getModificationCount() ? FastChunkSerializer::serializeTerrain($c) : null;
+			$serialChunks[$i] = $c->isTerrainDirty() ? FastChunkSerializer::serializeTerrain($c) : null;
 		}
 		$this->adjacentChunks = igbinary_serialize($serialChunks) ?? throw new AssumptionFailedError("igbinary_serialize() returned null");
 	}

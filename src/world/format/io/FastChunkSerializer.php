@@ -51,8 +51,6 @@ final class FastChunkSerializer{
 	 */
 	public static function serializeTerrain(Chunk $chunk) : string{
 		$stream = new BinaryStream();
-		$stream->putLong($chunk->getModificationCount());
-
 		$stream->putByte(
 			($chunk->isPopulated() ? self::FLAG_POPULATED : 0)
 		);
@@ -90,7 +88,6 @@ final class FastChunkSerializer{
 	 */
 	public static function deserializeTerrain(string $data) : Chunk{
 		$stream = new BinaryStream($data);
-		$modificationCounter = $stream->getLong();
 
 		$flags = $stream->getByte();
 		$terrainPopulated = (bool) ($flags & self::FLAG_POPULATED);
@@ -118,6 +115,6 @@ final class FastChunkSerializer{
 
 		$biomeIds = new BiomeArray($stream->get(256));
 
-		return new Chunk($subChunks, $biomeIds, $terrainPopulated, $modificationCounter);
+		return new Chunk($subChunks, $biomeIds, $terrainPopulated);
 	}
 }
