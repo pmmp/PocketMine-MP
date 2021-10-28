@@ -447,6 +447,8 @@ class NetworkSession{
 		}
 	}
 
+	public function getPacketSerializerContext() : PacketSerializerContext{ return $this->packetSerializerContext; }
+
 	public function getBroadcaster() : PacketBroadcaster{ return $this->broadcaster; }
 
 	public function getCompressor() : Compressor{
