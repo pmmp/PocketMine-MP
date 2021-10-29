@@ -34,9 +34,11 @@ class PlayerEmoteEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
 	public function __construct(
-		public Player $player,
+		Player $player,
 		private string $emoteId
-	){}
+	){
+		$this->player = $player;
+	}
 
 	public function getEmoteId() : string {
 		return $this->emoteId;
