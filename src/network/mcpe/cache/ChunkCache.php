@@ -72,10 +72,12 @@ class ChunkCache implements ChunkListener{
 	public static function pruneCaches() : void{
 		foreach(self::$instances as $compressorMap){
 			foreach($compressorMap as $chunkCache){
-				foreach($chunkCache->caches as $chunkHash => $promise){
-					if($promise->hasResult()){
-						//Do not clear promises that are not yet fulfilled; they will have requesters waiting on them
-						unset($chunkCache->caches[$chunkHash]);
+				foreach($chunkCache->caches as $chunkHash => $caches){
+					foreach($caches as $mappingProtocol => $promise){
+						if($promise->hasResult()){
+							//Do not clear promises that are not yet fulfilled; they will have requesters waiting on them
+							unset($chunkCache->caches[$chunkHash][$mappingProtocol]);
+						}
 					}
 				}
 			}
