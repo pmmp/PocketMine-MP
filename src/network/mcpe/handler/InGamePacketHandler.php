@@ -892,7 +892,7 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleEmote(EmotePacket $packet) : bool {
 		if($this->player->getServer()->getTick() - $this->player->lastEmoteTick > 5){
-			$this->player->getWorld()->broadcastPacketToViewers($this->player->getPosition(), $packet);
+			$this->player->getWorld()->broadcastPacketToViewers($this->player->getPosition(), EmotePacket::create($packet->getActorRuntimeId(), $packet->getEmoteId(), $packet::FLAG_SERVER));
 			$this->player->lastEmoteTick = $this->player->getServer()->getTick();
 		}
 		return true;
