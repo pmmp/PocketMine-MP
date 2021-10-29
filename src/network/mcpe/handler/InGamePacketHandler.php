@@ -30,6 +30,7 @@ use pocketmine\crafting\CraftingGrid;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerEditBookEvent;
+use pocketmine\event\player\PlayerEmoteEvent;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
@@ -891,8 +892,10 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleEmote(EmotePacket $packet) : bool {
-		if($this->player->getServer()->getTick() - $this->player->lastEmoteTick > 5){
-			$this->player->getWorld()->broadcastPacketToViewers($this->player->getPosition(), EmotePacket::create($packet->getActorRuntimeId(), $packet->getEmoteId(), $packet::FLAG_SERVER));
+		$event = new PlayerEmoteEvent($this->player, $packet->getEmoteId());
+		$event->call();
+		if($this->player->getServer()->getTick() - $this->player->lastEmoteTick > 5 && !$event->isCancelled()){
+			$this->player->getWorld()->broadcastPacketToViewers($this->player->getPosition(), EmotePacket::create($packet->getActorRuntimeId(), $event->getEmoteId(), EmotePacket::FLAG_SERVER));
 			$this->player->lastEmoteTick = $this->player->getServer()->getTick();
 		}
 		return true;
