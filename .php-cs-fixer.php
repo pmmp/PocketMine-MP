@@ -61,6 +61,11 @@ return (new PhpCsFixer\Config)
 			],
 			'sort_algorithm' => 'alpha'
 		],
+		'phpdoc_line_span' => [
+			'property' => 'single',
+			'method' => null,
+			'const' => null
+		],
 		'phpdoc_trim' => true,
 		'phpdoc_trim_consecutive_blank_line_separation' => true,
 		'single_import_per_statement' => true,

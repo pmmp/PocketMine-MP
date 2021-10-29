@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine;
 
 use pocketmine\event\server\LowMemoryEvent;
+use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\scheduler\DumpWorkerMemoryTask;
 use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\timings\Timings;
@@ -187,6 +188,7 @@ class MemoryManager{
 			foreach($this->server->getWorldManager()->getWorlds() as $world){
 				$world->clearCache(true);
 			}
+			ChunkCache::pruneCaches();
 		}
 
 		if($this->lowMemChunkGC){

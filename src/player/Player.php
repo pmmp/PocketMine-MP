@@ -272,9 +272,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$world = $spawnLocation->getWorld();
 		//load the spawn chunk so we can see the terrain
-		$world->registerChunkLoader($this->chunkLoader, $spawnLocation->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE, true);
-		$world->registerChunkListener($this, $spawnLocation->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE);
-		$this->usedChunks[World::chunkHash($spawnLocation->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE)] = UsedChunkStatus::NEEDED();
+		$xSpawnChunk = $spawnLocation->getFloorX() >> Chunk::COORD_BIT_SIZE;
+		$zSpawnChunk = $spawnLocation->getFloorZ() >> Chunk::COORD_BIT_SIZE;
+		$world->registerChunkLoader($this->chunkLoader, $xSpawnChunk, $zSpawnChunk, true);
+		$world->registerChunkListener($this, $xSpawnChunk, $zSpawnChunk);
+		$this->usedChunks[World::chunkHash($xSpawnChunk, $zSpawnChunk)] = UsedChunkStatus::NEEDED();
 
 		parent::__construct($spawnLocation, $this->playerInfo->getSkin(), $namedtag);
 	}
@@ -402,7 +404,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function spawnTo(Player $player) : void{
-		if($this->isAlive() and $player->isAlive() and $player->getWorld() === $this->getWorld() and $player->canSee($this) and !$this->isSpectator()){
+		if($this->isAlive() and $player->isAlive() and $player->canSee($this) and !$this->isSpectator()){
 			parent::spawnTo($player);
 		}
 	}

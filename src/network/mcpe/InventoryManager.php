@@ -166,27 +166,21 @@ class InventoryManager{
 		//if the class isn't final, not to mention being inflexible.
 		if($inv instanceof BlockInventory){
 			$blockPosition = BlockPosition::fromVector3($inv->getHolder());
-			switch(true){
-				case $inv instanceof LoomInventory:
-					return [ContainerOpenPacket::blockInv($id, WindowTypes::LOOM, $blockPosition)];
-				case $inv instanceof FurnaceInventory:
-					return match($inv->getFurnaceType()->id()){
-						FurnaceType::FURNACE()->id() => [ContainerOpenPacket::blockInv($id, WindowTypes::FURNACE, $blockPosition)],
-						FurnaceType::BLAST_FURNACE()->id() => [ContainerOpenPacket::blockInv($id, WindowTypes::BLAST_FURNACE, $blockPosition)],
-						FurnaceType::SMOKER()->id() => [ContainerOpenPacket::blockInv($id, WindowTypes::SMOKER, $blockPosition)],
+			$windowType = match(true){
+				$inv instanceof LoomInventory => WindowTypes::LOOM,
+				$inv instanceof FurnaceInventory => match($inv->getFurnaceType()->id()){
+						FurnaceType::FURNACE()->id() => WindowTypes::FURNACE,
+						FurnaceType::BLAST_FURNACE()->id() => WindowTypes::BLAST_FURNACE,
+						FurnaceType::SMOKER()->id() => WindowTypes::SMOKER,
 						default => throw new AssumptionFailedError("Unreachable")
-					};
-				case $inv instanceof EnchantInventory:
-					return [ContainerOpenPacket::blockInv($id, WindowTypes::ENCHANTMENT, $blockPosition)];
-				case $inv instanceof BrewingStandInventory:
-					return [ContainerOpenPacket::blockInv($id, WindowTypes::BREWING_STAND, $blockPosition)];
-				case $inv instanceof AnvilInventory:
-					return [ContainerOpenPacket::blockInv($id, WindowTypes::ANVIL, $blockPosition)];
-				case $inv instanceof HopperInventory:
-					return [ContainerOpenPacket::blockInv($id, WindowTypes::HOPPER, $blockPosition)];
-				default:
-					return [ContainerOpenPacket::blockInv($id, WindowTypes::CONTAINER, $blockPosition)];
-			}
+					},
+				$inv instanceof EnchantInventory => WindowTypes::ENCHANTMENT,
+				$inv instanceof BrewingStandInventory => WindowTypes::BREWING_STAND,
+				$inv instanceof AnvilInventory => WindowTypes::ANVIL,
+				$inv instanceof HopperInventory => WindowTypes::HOPPER,
+				default => WindowTypes::CONTAINER
+			};
+			return [ContainerOpenPacket::blockInv($id, $windowType, $blockPosition)];
 		}
 		return null;
 	}

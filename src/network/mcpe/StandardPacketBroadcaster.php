@@ -23,10 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe;
 
-use pocketmine\network\mcpe\compression\Compressor;
-use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
-use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\Server;
 use function spl_object_id;
 
@@ -43,35 +40,40 @@ final class StandardPacketBroadcaster implements PacketBroadcaster{
 	}
 
 	public function broadcastPackets(array $recipients, array $packets) : void{
-		//TODO: we should be using session-specific serializer contexts for this
-		$stream = PacketBatch::fromPackets($this->protocolId, new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($this->protocolId))), ...$packets);
-
-		/** @var Compressor[] $compressors */
+		$buffers = [];
 		$compressors = [];
-		/** @var NetworkSession[][] $compressorTargets */
-		$compressorTargets = [];
+		$targetMap = [];
 		foreach($recipients as $recipient){
-			$compressor = $recipient->getCompressor();
-			$compressorId = spl_object_id($compressor);
+			$serializerContext = $recipient->getPacketSerializerContext();
+			$bufferId = spl_object_id($serializerContext);
+			if(!isset($buffers[$bufferId])){
+				$buffers[$bufferId] = PacketBatch::fromPackets($this->protocolId, $serializerContext, ...$packets);
+			}
+
 			//TODO: different compressors might be compatible, it might not be necessary to split them up by object
-			$compressors[$compressorId] = $compressor;
-			$compressorTargets[$compressorId][] = $recipient;
+			$compressor = $recipient->getCompressor();
+			$compressors[spl_object_id($compressor)] = $compressor;
+
+			$targetMap[$bufferId][spl_object_id($compressor)][] = $recipient;
 		}
 
-		foreach($compressors as $compressorId => $compressor){
-			if(!$compressor->willCompress($stream->getBuffer())){
-				foreach($compressorTargets[$compressorId] as $target){
-					foreach($packets as $pk){
-						$target->addToSendBuffer($pk);
+		foreach($targetMap as $bufferId => $compressorMap){
+			$buffer = $buffers[$bufferId];
+			foreach($compressorMap as $compressorId => $compressorTargets){
+				$compressor = $compressors[$compressorId];
+				if(!$compressor->willCompress($buffer->getBuffer())){
+					foreach($compressorTargets as $target){
+						foreach($packets as $pk){
+							$target->addToSendBuffer($pk);
+						}
 					}
-				}
-			}else{
-				$promise = $this->server->prepareBatch($stream, $compressor);
-				foreach($compressorTargets[$compressorId] as $target){
-					$target->queueCompressed($promise);
+				}else{
+					$promise = $this->server->prepareBatch($buffer, $compressor);
+					foreach($compressorTargets as $target){
+						$target->queueCompressed($promise);
+					}
 				}
 			}
 		}
-
 	}
 }

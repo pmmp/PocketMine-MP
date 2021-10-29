@@ -41,7 +41,7 @@ use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
-use function array_diff_assoc;
+use function array_diff_key;
 use function array_key_exists;
 use function array_keys;
 use function array_merge;
@@ -355,7 +355,7 @@ class PluginManager{
 							$this->server->getLogger()->debug("Plugin $name registered a new plugin loader during load, scanning for new plugins");
 							$plugins = $triage->plugins;
 							$this->triagePlugins($path, $triage, $diffLoaders);
-							$diffPlugins = array_diff_assoc($triage->plugins, $plugins);
+							$diffPlugins = array_diff_key($triage->plugins, $plugins);
 							$this->server->getLogger()->debug("Re-triage found plugins: " . implode(", ", array_keys($diffPlugins)));
 						}
 					}

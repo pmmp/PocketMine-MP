@@ -25,18 +25,26 @@ namespace pocketmine\build\make_release;
 
 use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
-use function count;
+use function array_keys;
+use function array_map;
 use function dirname;
 use function fgets;
 use function file_get_contents;
 use function file_put_contents;
 use function fwrite;
+use function getopt;
+use function is_string;
+use function max;
 use function preg_replace;
 use function sleep;
 use function sprintf;
+use function str_pad;
+use function strlen;
 use function system;
 use const STDERR;
 use const STDIN;
+use const STDOUT;
+use const STR_PAD_LEFT;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -60,22 +68,38 @@ function replaceVersion(string $versionInfoPath, string $newVersion, bool $isDev
 	file_put_contents($versionInfoPath, $versionInfo);
 }
 
-/**
- * @param string[] $argv
- * @phpstan-param list<string> $argv
- */
-function main(array $argv) : void{
-	if(count($argv) < 2){
-		fwrite(STDERR, "Arguments: <channel> [release version] [next version]\n");
-		exit(1);
+const ACCEPTED_OPTS = [
+	"current" => "Version to insert and tag",
+	"next" => "Version to put in the file after tagging",
+	"channel" => "Release channel to post this build into"
+];
+
+function main() : void{
+	$filteredOpts = [];
+	foreach(getopt("", ["current:", "next:", "channel:", "help"]) as $optName => $optValue){
+		if($optName === "help"){
+			fwrite(STDOUT, "Options:\n");
+
+			$maxLength = max(array_map(fn(string $str) => strlen($str), array_keys(ACCEPTED_OPTS)));
+			foreach(ACCEPTED_OPTS as $acceptedName => $description){
+				fwrite(STDOUT, str_pad("--$acceptedName", $maxLength + 4, " ", STR_PAD_LEFT) . ": $description\n");
+			}
+			exit(0);
+		}
+		if(!is_string($optValue)){
+			fwrite(STDERR, "--$optName expects exactly 1 value\n");
+			exit(1);
+		}
+		$filteredOpts[$optName] = $optValue;
 	}
-	if(isset($argv[2])){
-		$currentVer = new VersionString($argv[2]);
+
+	if(isset($filteredOpts["current"])){
+		$currentVer = new VersionString($filteredOpts["current"]);
 	}else{
-		$currentVer = VersionInfo::VERSION();
+		$currentVer = new VersionString(VersionInfo::BASE_VERSION);
 	}
-	if(isset($argv[3])){
-		$nextVer = new VersionString($argv[3]);
+	if(isset($filteredOpts["next"])){
+		$nextVer = new VersionString($filteredOpts["next"]);
 	}else{
 		$nextVer = new VersionString(sprintf(
 			"%u.%u.%u",
@@ -84,8 +108,10 @@ function main(array $argv) : void{
 			$currentVer->getPatch() + 1
 		));
 	}
+	$channel = $filteredOpts["channel"] ?? VersionInfo::BUILD_CHANNEL;
 
 	echo "About to tag version $currentVer. Next version will be $nextVer.\n";
+	echo "$currentVer will be published on release channel \"$channel\".\n";
 	echo "please add appropriate notes to the changelog and press enter...";
 	fgets(STDIN);
 	system('git add "' . dirname(__DIR__) . '/changelogs"');
@@ -95,10 +121,10 @@ function main(array $argv) : void{
 		exit(1);
 	}
 	$versionInfoPath = dirname(__DIR__) . '/src/VersionInfo.php';
-	replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false, $argv[1]);
+	replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false, $channel);
 	system('git commit -m "Release ' . $currentVer->getBaseVersion() . '" --include "' . $versionInfoPath . '"');
 	system('git tag ' . $currentVer->getBaseVersion());
-	replaceVersion($versionInfoPath, $nextVer->getBaseVersion(), true, "");
+	replaceVersion($versionInfoPath, $nextVer->getBaseVersion(), true, $channel);
 	system('git add "' . $versionInfoPath . '"');
 	system('git commit -m "' . $nextVer->getBaseVersion() . ' is next" --include "' . $versionInfoPath . '"');
 	echo "pushing changes in 5 seconds\n";
@@ -106,4 +132,4 @@ function main(array $argv) : void{
 	system('git push origin HEAD ' . $currentVer->getBaseVersion());
 }
 
-main($argv);
+main();
