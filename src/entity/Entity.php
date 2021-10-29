@@ -1185,9 +1185,9 @@ abstract class Entity{
 			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
 			$this->boundingBox->minY - $this->ySize,
 			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2,
+			$this->location->world,
 			$this->location->yaw,
-			$this->location->pitch,
-			$this->location->world
+			$this->location->pitch
 		);
 
 		$this->getWorld()->onEntityMoved($this);
