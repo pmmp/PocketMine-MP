@@ -34,7 +34,7 @@ class Location extends Position{
 	/** @var float */
 	public $pitch;
 
-	public function __construct(float $x, float $y, float $z, float $yaw = 0.0, float $pitch = 0.0, ?World $world = null){
+	public function __construct(float $x, float $y, float $z, float $yaw, float $pitch, ?World $world){
 		$this->yaw = $yaw;
 		$this->pitch = $pitch;
 		parent::__construct($x, $y, $z, $world);
