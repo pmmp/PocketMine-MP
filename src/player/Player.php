@@ -234,6 +234,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/** @var int[] ID => ticks map */
 	protected array $usedItemsCooldown = [];
 
+	public int $lastEmoteTick = 0;
+
 	protected int $formIdCounter = 0;
 	/** @var Form[] */
 	protected array $forms = [];
