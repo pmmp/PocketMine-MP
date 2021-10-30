@@ -2813,13 +2813,15 @@ class World implements ChunkManager{
 				$this->chunkPopulationRequestMap[$index] = $promise;
 			}
 
+			$temporaryChunkLoader = new class implements ChunkLoader{};
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
 					$this->lockChunk($x + $xx, $z + $zz);
+					$this->registerChunkLoader($temporaryChunkLoader, $x + $xx, $z + $zz);
 				}
 			}
 
-			$task = new PopulationTask($this, $x, $z, $chunk);
+			$task = new PopulationTask($this, $x, $z, $chunk, $temporaryChunkLoader);
 			$workerId = $this->workerPool->selectWorker();
 			if(!isset($this->generatorRegisteredWorkers[$workerId])){
 				$this->registerGeneratorToWorker($workerId);
@@ -2840,8 +2842,15 @@ class World implements ChunkManager{
 	 * @param Chunk[] $adjacentChunks
 	 * @phpstan-param array<int, Chunk> $adjacentChunks
 	 */
-	public function generateChunkCallback(int $x, int $z, Chunk $chunk, array $adjacentChunks) : void{
+	public function generateChunkCallback(int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
 		Timings::$generationCallback->startTiming();
+
+		for($xx = -1; $xx <= 1; ++$xx){
+			for($zz = -1; $zz <= 1; ++$zz){
+				$this->unregisterChunkLoader($temporaryChunkLoader, $x + $xx, $z + $zz);
+			}
+		}
+
 		if(isset($this->chunkPopulationRequestMap[$index = World::chunkHash($x, $z)]) && isset($this->activeChunkPopulationTasks[$index])){
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){

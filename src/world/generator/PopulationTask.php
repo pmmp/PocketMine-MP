@@ -26,6 +26,7 @@ namespace pocketmine\world\generator;
 use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\world\ChunkLoader;
 use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
@@ -38,6 +39,7 @@ use function intdiv;
 
 class PopulationTask extends AsyncTask{
 	private const TLS_KEY_WORLD = "world";
+	private const TLS_KEY_CHUNK_LOADER = "chunkLoader";
 
 	/** @var int */
 	public $worldId;
@@ -51,7 +53,7 @@ class PopulationTask extends AsyncTask{
 
 	private string $adjacentChunks;
 
-	public function __construct(World $world, int $chunkX, int $chunkZ, ?Chunk $chunk){
+	public function __construct(World $world, int $chunkX, int $chunkZ, ?Chunk $chunk, ChunkLoader $temporaryChunkLoader){
 		$this->worldId = $world->getId();
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
@@ -63,6 +65,7 @@ class PopulationTask extends AsyncTask{
 		)) ?? throw new AssumptionFailedError("igbinary_serialize() returned null");
 
 		$this->storeLocal(self::TLS_KEY_WORLD, $world);
+		$this->storeLocal(self::TLS_KEY_CHUNK_LOADER, $temporaryChunkLoader);
 	}
 
 	public function onRun() : void{
@@ -126,6 +129,8 @@ class PopulationTask extends AsyncTask{
 	public function onCompletion() : void{
 		/** @var World $world */
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
+		/** @var ChunkLoader $temporaryChunkLoader */
+		$temporaryChunkLoader = $this->fetchLocal(self::TLS_KEY_CHUNK_LOADER);
 		if($world->isLoaded()){
 			$chunk = $this->chunk !== null ?
 				FastChunkSerializer::deserializeTerrain($this->chunk) :
@@ -146,7 +151,7 @@ class PopulationTask extends AsyncTask{
 				}
 			}
 
-			$world->generateChunkCallback($this->chunkX, $this->chunkZ, $chunk, $adjacentChunks);
+			$world->generateChunkCallback($this->chunkX, $this->chunkZ, $chunk, $adjacentChunks, $temporaryChunkLoader);
 		}
 	}
 }
