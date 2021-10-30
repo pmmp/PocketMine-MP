@@ -383,7 +383,7 @@ class CrashDump{
 		$this->addLine("uname -a: " . php_uname("a"));
 		$this->addLine("PHP Version: " . phpversion());
 		$this->addLine("Zend version: " . zend_version());
-		$this->addLine("OS : " . PHP_OS . ", " . Utils::getOS());
+		$this->addLine("OS: " . PHP_OS . ", " . Utils::getOS());
 		$this->addLine("Composer libraries: ");
 		foreach($composerLibraries as $library => $libraryVersion){
 			$this->addLine("- $library $libraryVersion");
