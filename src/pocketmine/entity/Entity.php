@@ -1950,12 +1950,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 	}
 
 	public function spawnTo(Player $player) : void{
-		if($player->getLevelNonNull() !== $this->level){
-			throw new \InvalidArgumentException("Player is not in the same world");
-		}
 		if(
 			!isset($this->hasSpawned[$player->getLoaderId()]) and
 			$this->chunk !== null and
+			$player->getLevelNonNull() === $this->level and
 			isset($player->usedChunks[$chunkHash = Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())]) and
 			$player->usedChunks[$chunkHash] === true
 		){
