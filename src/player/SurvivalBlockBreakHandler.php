@@ -101,8 +101,7 @@ final class SurvivalBlockBreakHandler{
 	}
 
 	public function update() : bool{
-		if(
-			$this->player->getPosition()->distanceSquared($this->blockPos->add(0.5, 0.5, 0.5)) > $this->maxPlayerDistance ** 2){
+		if($this->player->getPosition()->distanceSquared($this->blockPos->add(0.5, 0.5, 0.5)) > $this->maxPlayerDistance ** 2){
 			return false;
 		}
 
