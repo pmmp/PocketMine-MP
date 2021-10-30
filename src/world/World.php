@@ -1412,7 +1412,6 @@ class World implements ChunkManager{
 
 	public function updateAllLight(int $x, int $y, int $z) : void{
 		if(($chunk = $this->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) === null || $chunk->isLightPopulated() !== true){
-			$this->logger->debug("Skipped runtime light update of x=$x,y=$y,z=$z because the target area has not received base light calculation");
 			return;
 		}
 
