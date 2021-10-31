@@ -48,4 +48,8 @@ final class Promise{
 			$this->shared->onFailure[spl_object_id($onFailure)] = $onFailure;
 		}
 	}
+
+	public function isResolved() : bool{
+		return $this->shared->resolved;
+	}
 }
