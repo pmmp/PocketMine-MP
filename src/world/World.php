@@ -2869,9 +2869,9 @@ class World implements ChunkManager{
 		$this->unregisterChunkLoader($temporaryChunkLoader, $x, $z);
 
 		//chunk is already populated; return a pre-resolved promise that will directly fire callbacks assigned
-		$result = new PromiseResolver();
-		$result->resolve($chunk);
-		return $result->getPromise();
+		$resolver ??= new PromiseResolver();
+		$resolver->resolve($chunk);
+		return $resolver->getPromise();
 	}
 
 	/**
