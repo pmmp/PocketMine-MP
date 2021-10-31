@@ -2799,6 +2799,19 @@ class World implements ChunkManager{
 			//generation is already running
 			return $resolver->getPromise();
 		}
+
+		$temporaryChunkLoader = new class implements ChunkLoader{};
+		$this->registerChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
+		$chunk = $this->loadChunk($chunkX, $chunkZ);
+		$this->unregisterChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
+		if($chunk !== null && $chunk->isPopulated()){
+			//chunk is already populated; return a pre-resolved promise that will directly fire callbacks assigned
+			$resolver ??= new PromiseResolver();
+			unset($this->chunkPopulationRequestMap[$chunkHash]);
+			$resolver->resolve($chunk);
+			return $resolver->getPromise();
+		}
+
 		if(count($this->activeChunkPopulationTasks) >= $this->maxConcurrentChunkPopulationTasks){
 			//too many chunks are already generating; delay resolution of the request until later
 			return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
