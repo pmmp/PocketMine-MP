@@ -45,6 +45,6 @@ class MilkBucket extends Item implements ConsumableItem{
 	}
 
 	public function canStartUsingItem(Player $player) : bool{
-		return !$player->isSpectator();
+		return true;
 	}
 }
