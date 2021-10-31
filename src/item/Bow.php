@@ -125,13 +125,7 @@ class Bow extends Tool implements Releasable{
 	}
 
 	public function canStartUsingItem(Player $player) : bool{
-		if($player->isSpectator()){
-			return false;
-		}
-		if(!$player->hasFiniteResources()){
-			return true;
-		}
 		$arrow = VanillaItems::ARROW();
-		return $player->getOffHandInventory()->contains($arrow) || $player->getInventory()->contains($arrow);
+		return !$player->isSpectator() && !$player->hasFiniteResources() || $player->getOffHandInventory()->contains($arrow) || $player->getInventory()->contains($arrow);
 	}
 }
