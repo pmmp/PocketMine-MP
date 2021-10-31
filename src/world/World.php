@@ -249,9 +249,7 @@ class World implements ChunkManager{
 
 	/** @var bool[] */
 	private $activeChunkPopulationTasks = [];
-
-	private int $nextChunkPopulationLockId = 0;
-	/** @var int[] */
+	/** @var ChunkLockId[] */
 	private $chunkLock = [];
 	/** @var int */
 	private $maxConcurrentChunkPopulationTasks = 2;
@@ -2115,7 +2113,7 @@ class World implements ChunkManager{
 	 * WARNING: Be sure to release all locks once you're done with them, or you WILL have problems with terrain not
 	 * being generated.
 	 */
-	public function lockChunk(int $chunkX, int $chunkZ, int $lockId) : void{
+	public function lockChunk(int $chunkX, int $chunkZ, ChunkLockId $lockId) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunkLock[$chunkHash])){
 			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ is already locked");
@@ -2126,12 +2124,12 @@ class World implements ChunkManager{
 	/**
 	 * Unlocks a chunk previously locked by lockChunk().
 	 *
-	 * You should provide the same lockID as provided to lockChunk() to ensure you don't remove a lock that isn't yours.
+	 * You must provide the same lockID as provided to lockChunk().
 	 * If a null lockID is given, any existing lock will be removed from the chunk, regardless of who owns it.
 	 *
 	 * Returns true if unlocking was successful, false otherwise.
 	 */
-	public function unlockChunk(int $chunkX, int $chunkZ, ?int $lockId) : bool{
+	public function unlockChunk(int $chunkX, int $chunkZ, ?ChunkLockId $lockId) : bool{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunkLock[$chunkHash]) && ($lockId === null || $this->chunkLock[$chunkHash] === $lockId)){
 			unset($this->chunkLock[$chunkHash]);
@@ -2844,7 +2842,7 @@ class World implements ChunkManager{
 				$this->chunkPopulationRequestMap[$index] = $resolver;
 			}
 
-			$chunkPopulationLockId = $this->nextChunkPopulationLockId++;
+			$chunkPopulationLockId = new ChunkLockId();
 
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
@@ -2878,7 +2876,7 @@ class World implements ChunkManager{
 	 * @param Chunk[] $adjacentChunks chunkHash => chunk
 	 * @phpstan-param array<int, Chunk> $adjacentChunks
 	 */
-	public function generateChunkCallback(int $populationTaskId, int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
+	public function generateChunkCallback(ChunkLockId $chunkLockId, int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
 		Timings::$generationCallback->startTiming();
 
 		for($xx = -1; $xx <= 1; ++$xx){
@@ -2891,7 +2889,7 @@ class World implements ChunkManager{
 			$dirtyChunks = 0;
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
-					if(!$this->unlockChunk($x + $xx, $z + $zz, $populationTaskId)){
+					if(!$this->unlockChunk($x + $xx, $z + $zz, $chunkLockId)){
 						$dirtyChunks++;
 					}
 				}
