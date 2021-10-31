@@ -2884,9 +2884,6 @@ class World implements ChunkManager{
 						$listener->onChunkPopulated($x, $z, $chunk);
 					}
 				}
-				if(count($adjacentChunks) > 0){
-					$this->logger->debug("Population for chunk x=$x,z=$z resulted in modification of " . count($adjacentChunks) . " adjacent chunks");
-				}
 			}else{
 				$this->logger->debug("Discarding population result for chunk x=$x,z=$z - terrain was modified on the main thread before async population completed");
 			}
