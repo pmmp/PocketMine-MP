@@ -98,6 +98,7 @@ use pocketmine\utils\NotCloneable;
 use pocketmine\utils\NotSerializable;
 use pocketmine\utils\Process;
 use pocketmine\utils\Promise;
+use pocketmine\utils\PromiseResolver;
 use pocketmine\utils\SignalHandler;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
@@ -548,11 +549,11 @@ class Server{
 			$playerPos = null;
 			$spawn = $world->getSpawnLocation();
 		}
-		$playerPromise = new Promise();
+		$playerPromiseResolver = new PromiseResolver();
 		$world->requestChunkPopulation($spawn->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawn->getFloorZ() >> Chunk::COORD_BIT_SIZE, null)->onCompletion(
-			function() use ($playerPromise, $class, $session, $playerInfo, $authenticated, $world, $playerPos, $spawn, $offlinePlayerData) : void{
+			function() use ($playerPromiseResolver, $class, $session, $playerInfo, $authenticated, $world, $playerPos, $spawn, $offlinePlayerData) : void{
 				if(!$session->isConnected()){
-					$playerPromise->reject();
+					$playerPromiseResolver->reject();
 					return;
 				}
 
@@ -572,16 +573,16 @@ class Server{
 				if(!$player->hasPlayedBefore()){
 					$player->onGround = true;  //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
 				}
-				$playerPromise->resolve($player);
+				$playerPromiseResolver->resolve($player);
 			},
-			static function() use ($playerPromise, $session) : void{
+			static function() use ($playerPromiseResolver, $session) : void{
 				if($session->isConnected()){
 					$session->disconnect("Spawn terrain generation failed");
 				}
-				$playerPromise->reject();
+				$playerPromiseResolver->reject();
 			}
 		);
-		return $playerPromise;
+		return $playerPromiseResolver->getPromise();
 	}
 
 	/**
