@@ -27,6 +27,7 @@ use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\ChunkLoader;
+use pocketmine\world\ChunkLockId;
 use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
@@ -40,6 +41,7 @@ use function intdiv;
 class PopulationTask extends AsyncTask{
 	private const TLS_KEY_WORLD = "world";
 	private const TLS_KEY_CHUNK_LOADER = "chunkLoader";
+	private const TLS_KEY_LOCK_ID = "chunkLockId";
 
 	/** @var int */
 	public $worldId;
@@ -53,7 +55,7 @@ class PopulationTask extends AsyncTask{
 
 	private string $adjacentChunks;
 
-	public function __construct(World $world, int $chunkX, int $chunkZ, ?Chunk $chunk, ChunkLoader $temporaryChunkLoader){
+	public function __construct(World $world, int $chunkX, int $chunkZ, ?Chunk $chunk, ChunkLoader $temporaryChunkLoader, ChunkLockId $chunkLockId){
 		$this->worldId = $world->getId();
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
@@ -66,6 +68,7 @@ class PopulationTask extends AsyncTask{
 
 		$this->storeLocal(self::TLS_KEY_WORLD, $world);
 		$this->storeLocal(self::TLS_KEY_CHUNK_LOADER, $temporaryChunkLoader);
+		$this->storeLocal(self::TLS_KEY_LOCK_ID, $chunkLockId);
 	}
 
 	public function onRun() : void{
@@ -131,6 +134,8 @@ class PopulationTask extends AsyncTask{
 		$world = $this->fetchLocal(self::TLS_KEY_WORLD);
 		/** @var ChunkLoader $temporaryChunkLoader */
 		$temporaryChunkLoader = $this->fetchLocal(self::TLS_KEY_CHUNK_LOADER);
+		/** @var ChunkLockId $lockId */
+		$lockId = $this->fetchLocal(self::TLS_KEY_LOCK_ID);
 		if($world->isLoaded()){
 			$chunk = $this->chunk !== null ?
 				FastChunkSerializer::deserializeTerrain($this->chunk) :
@@ -151,7 +156,7 @@ class PopulationTask extends AsyncTask{
 				}
 			}
 
-			$world->generateChunkCallback($this->chunkX, $this->chunkZ, $chunk, $adjacentChunks, $temporaryChunkLoader);
+			$world->generateChunkCallback($lockId, $this->chunkX, $this->chunkZ, $chunk, $adjacentChunks, $temporaryChunkLoader);
 		}
 	}
 }
