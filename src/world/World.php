@@ -251,7 +251,7 @@ class World implements ChunkManager{
 
 	private int $nextChunkPopulationLockId = 0;
 	/** @var int[] */
-	private $chunkPopulationLock = [];
+	private $chunkLock = [];
 	/** @var int */
 	private $maxConcurrentChunkPopulationTasks = 2;
 	/**
@@ -2100,25 +2100,25 @@ class World implements ChunkManager{
 		return $result;
 	}
 
-	private function lockChunk(int $chunkX, int $chunkZ, int $populationTaskId) : void{
+	public function lockChunk(int $chunkX, int $chunkZ, int $lockId) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		if(isset($this->chunkPopulationLock[$chunkHash])){
+		if(isset($this->chunkLock[$chunkHash])){
 			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ is already locked");
 		}
-		$this->chunkPopulationLock[$chunkHash] = $populationTaskId;
+		$this->chunkLock[$chunkHash] = $lockId;
 	}
 
-	private function unlockChunk(int $chunkX, int $chunkZ, ?int $populationTaskId) : bool{
+	public function unlockChunk(int $chunkX, int $chunkZ, ?int $lockId) : bool{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		if(isset($this->chunkPopulationLock[$chunkHash]) && ($populationTaskId === null || $this->chunkPopulationLock[$chunkHash] === $populationTaskId)){
-			unset($this->chunkPopulationLock[$chunkHash]);
+		if(isset($this->chunkLock[$chunkHash]) && ($lockId === null || $this->chunkLock[$chunkHash] === $lockId)){
+			unset($this->chunkLock[$chunkHash]);
 			return true;
 		}
 		return false;
 	}
 
-	private function isChunkLocked(int $chunkX, int $chunkZ) : bool{
-		return isset($this->chunkPopulationLock[World::chunkHash($chunkX, $chunkZ)]);
+	public function isChunkLocked(int $chunkX, int $chunkZ) : bool{
+		return isset($this->chunkLock[World::chunkHash($chunkX, $chunkZ)]);
 	}
 
 	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
