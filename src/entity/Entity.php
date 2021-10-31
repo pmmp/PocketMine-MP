@@ -1185,9 +1185,9 @@ abstract class Entity{
 			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
 			$this->boundingBox->minY - $this->ySize,
 			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2,
+			$this->location->world,
 			$this->location->yaw,
-			$this->location->pitch,
-			$this->location->world
+			$this->location->pitch
 		);
 
 		$this->getWorld()->onEntityMoved($this);
@@ -1436,6 +1436,9 @@ abstract class Entity{
 	}
 
 	public function spawnTo(Player $player) : void{
+		if($player->getWorld() !== $this->getWorld()){
+			throw new \InvalidArgumentException("Player is not in the same world");
+		}
 		$id = spl_object_id($player);
 		//TODO: this will cause some visible lag during chunk resends; if the player uses a spawn egg in a chunk, the
 		//created entity won't be visible until after the resend arrives. However, this is better than possibly crashing

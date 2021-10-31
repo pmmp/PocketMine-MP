@@ -733,14 +733,9 @@ class World implements ChunkManager{
 	 * Unregisters a chunk listener from all chunks it is listening on in this World.
 	 */
 	public function unregisterChunkListenerFromAll(ChunkListener $listener) : void{
-		$id = spl_object_id($listener);
 		foreach($this->chunkListeners as $hash => $listeners){
-			if(isset($listeners[$id])){
-				unset($this->chunkListeners[$hash][$id]);
-				if(count($this->chunkListeners[$hash]) === 0){
-					unset($this->chunkListeners[$hash]);
-				}
-			}
+			World::getXZ($hash, $chunkX, $chunkZ);
+			$this->unregisterChunkListener($listener, $chunkX, $chunkZ);
 		}
 	}
 
@@ -1414,7 +1409,6 @@ class World implements ChunkManager{
 
 	public function updateAllLight(int $x, int $y, int $z) : void{
 		if(($chunk = $this->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) === null || $chunk->isLightPopulated() !== true){
-			$this->logger->debug("Skipped runtime light update of x=$x,y=$y,z=$z because the target area has not received base light calculation");
 			return;
 		}
 
@@ -2126,27 +2120,35 @@ class World implements ChunkManager{
 		return ($this->chunkPopulationLock[World::chunkHash($chunkX, $chunkZ)] ?? null) === $populationTaskId;
 	}
 
-	/**
-	 * @param bool       $deleteEntitiesAndTiles Whether to delete entities and tiles on the old chunk, or transfer them to the new one
-	 */
-	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk, bool $deleteEntitiesAndTiles = true) : void{
+	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$oldChunk = $this->loadChunk($chunkX, $chunkZ);
 		if($oldChunk !== null and $oldChunk !== $chunk){
-			if($deleteEntitiesAndTiles){
-				foreach($this->getChunkEntities($chunkX, $chunkZ) as $entity){
-					if(!($entity instanceof Player)){
-						$entity->close();
-					}
+			$deletedTiles = 0;
+			$transferredTiles = 0;
+			foreach($oldChunk->getTiles() as $oldTile){
+				$tilePosition = $oldTile->getPosition();
+				$localX = $tilePosition->getFloorX() & Chunk::COORD_MASK;
+				$localY = $tilePosition->getFloorY();
+				$localZ = $tilePosition->getFloorZ() & Chunk::COORD_MASK;
+
+				$newBlock = BlockFactory::getInstance()->fromFullBlock($chunk->getFullBlock($localX, $localY, $localZ));
+				$expectedTileClass = $newBlock->getIdInfo()->getTileClass();
+				if(
+					$expectedTileClass === null || //new block doesn't expect a tile
+					!($oldTile instanceof $expectedTileClass) || //new block expects a different tile
+					(($newTile = $chunk->getTile($localX, $localY, $localZ)) !== null && $newTile !== $oldTile) //new chunk already has a different tile
+				){
+					$oldTile->close();
+					$deletedTiles++;
+				}else{
+					$transferredTiles++;
+					$chunk->addTile($oldTile);
+					$oldChunk->removeTile($oldTile);
 				}
-				foreach($oldChunk->getTiles() as $tile){
-					$tile->close();
-				}
-			}else{
-				foreach($oldChunk->getTiles() as $tile){
-					$chunk->addTile($tile);
-					$oldChunk->removeTile($tile);
-				}
+			}
+			if($deletedTiles > 0 || $transferredTiles > 0){
+				$this->logger->debug("Replacement of chunk $chunkX $chunkZ caused deletion of $deletedTiles obsolete/conflicted tiles, and transfer of $transferredTiles");
 			}
 		}
 
@@ -2169,6 +2171,14 @@ class World implements ChunkManager{
 		}else{
 			foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
 				$listener->onChunkChanged($chunkX, $chunkZ, $chunk);
+			}
+		}
+
+		for($cX = -1; $cX <= 1; ++$cX){
+			for($cZ = -1; $cZ <= 1; ++$cZ){
+				foreach($this->getChunkEntities($chunkX + $cX, $chunkZ + $cZ) as $entity){
+					$entity->onNearbyBlockChange();
+				}
 			}
 		}
 	}
@@ -2429,6 +2439,7 @@ class World implements ChunkManager{
 	}
 
 	private function initChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{
+		$logger = new \PrefixedLogger($this->logger, "Loading chunk $chunkX $chunkZ");
 		if(count($chunkData->getEntityNBT()) !== 0){
 			$this->timings->syncChunkLoadEntities->startTiming();
 			$entityFactory = EntityFactory::getInstance();
@@ -2436,8 +2447,8 @@ class World implements ChunkManager{
 				try{
 					$entity = $entityFactory->createFromData($this, $nbt);
 				}catch(NbtDataException $e){
-					$this->getLogger()->error("Chunk $chunkX $chunkZ: Bad entity data at list position $k: " . $e->getMessage());
-					$this->getLogger()->logException($e);
+					$logger->error("Bad entity data at list position $k: " . $e->getMessage());
+					$logger->logException($e);
 					continue;
 				}
 				if($entity === null){
@@ -2448,7 +2459,7 @@ class World implements ChunkManager{
 					}elseif($saveIdTag instanceof IntTag){ //legacy MCPE format
 						$saveId = "legacy(" . $saveIdTag->getValue() . ")";
 					}
-					$this->getLogger()->warning("Chunk $chunkX $chunkZ: Deleted unknown entity type $saveId");
+					$logger->warning("Deleted unknown entity type $saveId");
 				}
 				//TODO: we can't prevent entities getting added to unloaded chunks if they were saved in the wrong place
 				//here, because entities currently add themselves to the world
@@ -2464,14 +2475,16 @@ class World implements ChunkManager{
 				try{
 					$tile = $tileFactory->createFromData($this, $nbt);
 				}catch(NbtDataException $e){
-					$this->getLogger()->error("Chunk $chunkX $chunkZ: Bad tile entity data at list position $k: " . $e->getMessage());
-					$this->getLogger()->logException($e);
+					$logger->error("Bad tile entity data at list position $k: " . $e->getMessage());
+					$logger->logException($e);
 					continue;
 				}
 				if($tile === null){
-					$this->getLogger()->warning("Chunk $chunkX $chunkZ: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
+					$logger->warning("Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
 				}elseif(!$this->isChunkLoaded($tile->getPosition()->getFloorX() >> Chunk::COORD_BIT_SIZE, $tile->getPosition()->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
-					$this->logger->error("Chunk $chunkX $chunkZ: Found tile saved on wrong chunk - unable to fix due to correct chunk not loaded");
+					$logger->error("Found tile saved on wrong chunk - unable to fix due to correct chunk not loaded");
+				}elseif($this->getTile($tilePosition = $tile->getPosition()) !== null){
+					$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Another tile is already at that position");
 				}else{
 					$this->addTile($tile);
 				}
@@ -2790,6 +2803,8 @@ class World implements ChunkManager{
 			}
 		}
 
+		$temporaryChunkLoader = new class implements ChunkLoader{};
+		$this->registerChunkLoader($temporaryChunkLoader, $x, $z);
 		$chunk = $this->loadChunk($x, $z);
 		if($chunk === null || !$chunk->isPopulated()){
 			Timings::$population->startTiming();
@@ -2805,10 +2820,13 @@ class World implements ChunkManager{
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
 					$this->lockChunk($x + $xx, $z + $zz, $chunkPopulationLockId);
+					if($xx !== 0 || $zz !== 0){ //avoid registering it twice for the center chunk; we already did that above
+						$this->registerChunkLoader($temporaryChunkLoader, $x + $xx, $z + $zz);
+					}
 				}
 			}
 
-			$task = new PopulationTask($this, $x, $z, $chunk, $chunkPopulationLockId);
+			$task = new PopulationTask($this, $x, $z, $chunk, $temporaryChunkLoader, $chunkPopulationLockId);
 			$workerId = $this->workerPool->selectWorker();
 			if(!isset($this->generatorRegisteredWorkers[$workerId])){
 				$this->registerGeneratorToWorker($workerId);
@@ -2818,6 +2836,8 @@ class World implements ChunkManager{
 			Timings::$population->stopTiming();
 			return $promise;
 		}
+
+		$this->unregisterChunkLoader($temporaryChunkLoader, $x, $z);
 
 		//chunk is already populated; return a pre-resolved promise that will directly fire callbacks assigned
 		$result = new Promise();
@@ -2829,8 +2849,15 @@ class World implements ChunkManager{
 	 * @param Chunk[] $adjacentChunks chunkHash => chunk
 	 * @phpstan-param array<int, Chunk> $adjacentChunks
 	 */
-	public function generateChunkCallback(int $populationTaskId, int $x, int $z, Chunk $centerChunk, array $adjacentChunks) : void{
+	public function generateChunkCallback(int $populationTaskId, int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
 		Timings::$generationCallback->startTiming();
+
+		for($xx = -1; $xx <= 1; ++$xx){
+			for($zz = -1; $zz <= 1; ++$zz){
+				$this->unregisterChunkLoader($temporaryChunkLoader, $x + $xx, $z + $zz);
+			}
+		}
+
 		if(isset($this->chunkPopulationRequestMap[$index = World::chunkHash($x, $z)]) && isset($this->activeChunkPopulationTasks[$index])){
 			$dirtyChunks = 0;
 			for($xx = -1; $xx <= 1; ++$xx){
@@ -2844,19 +2871,19 @@ class World implements ChunkManager{
 			}
 			if($dirtyChunks === 0){
 				$oldChunk = $this->loadChunk($x, $z);
-				$this->setChunk($x, $z, $centerChunk, false);
-				if(($oldChunk === null or !$oldChunk->isPopulated()) and $centerChunk->isPopulated()){
-					(new ChunkPopulateEvent($this, $x, $z, $centerChunk))->call();
-
-					foreach($this->getChunkListeners($x, $z) as $listener){
-						$listener->onChunkPopulated($x, $z, $centerChunk);
-					}
-				}
+				$this->setChunk($x, $z, $chunk);
 
 				foreach($adjacentChunks as $adjacentChunkHash => $adjacentChunk){
-					$xAdjacentChunk = $zAdjacentChunk = 0;
 					World::getXZ($adjacentChunkHash, $xAdjacentChunk, $zAdjacentChunk);
-					$this->setChunk($xAdjacentChunk, $zAdjacentChunk, $adjacentChunk, false);
+					$this->setChunk($xAdjacentChunk, $zAdjacentChunk, $adjacentChunk);
+				}
+
+				if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
+					(new ChunkPopulateEvent($this, $x, $z, $chunk))->call();
+
+					foreach($this->getChunkListeners($x, $z) as $listener){
+						$listener->onChunkPopulated($x, $z, $chunk);
+					}
 				}
 				if(count($adjacentChunks) > 0){
 					$this->logger->debug("Population for chunk x=$x,z=$z resulted in modification of " . count($adjacentChunks) . " adjacent chunks");
@@ -2876,7 +2903,7 @@ class World implements ChunkManager{
 			if($dirtyChunks === 0){
 				$promise = $this->chunkPopulationRequestMap[$index];
 				unset($this->chunkPopulationRequestMap[$index]);
-				$promise->resolve($centerChunk);
+				$promise->resolve($chunk);
 			}else{
 				//request failed, stick it back on the queue
 				//we didn't resolve the promise or touch it in any way, so any fake chunk loaders are still valid and

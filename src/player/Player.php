@@ -394,7 +394,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function spawnTo(Player $player) : void{
-		if($this->isAlive() and $player->isAlive() and $player->getWorld() === $this->getWorld() and $player->canSee($this) and !$this->isSpectator()){
+		if($this->isAlive() and $player->isAlive() and $player->canSee($this) and !$this->isSpectator()){
 			parent::spawnTo($player);
 		}
 	}
@@ -1518,8 +1518,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return true;
 		}
 
-		if(!$this->isCreative()){
-			$this->blockBreakHandler = SurvivalBlockBreakHandler::createIfNecessary($this, $pos, $target, $face, 16);
+		if(!$this->isCreative() && !$block->getBreakInfo()->breaksInstantly()){
+			$this->blockBreakHandler = new SurvivalBlockBreakHandler($this, $pos, $target, $face, 16);
 		}
 
 		return true;

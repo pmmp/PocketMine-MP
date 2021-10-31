@@ -126,6 +126,9 @@ namespace pocketmine {
 			if(version_compare($leveldb_version, "0.2.1") < 0){
 				$messages[] = "php-leveldb >= 0.2.1 is required, while you have $leveldb_version.";
 			}
+			if(!defined('LEVELDB_ZLIB_RAW_COMPRESSION')){
+				$messages[] = "Given version of php-leveldb doesn't support ZLIB_RAW compression (use https://github.com/pmmp/php-leveldb)";
+			}
 		}
 
 		$chunkutils2_version = phpversion("chunkutils2");

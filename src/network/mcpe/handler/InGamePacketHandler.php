@@ -297,6 +297,7 @@ class InGamePacketHandler extends PacketHandler{
 				//all of the parts before we can execute it
 				return true;
 			}
+			$this->player->setUsingItem(false);
 			try{
 				$this->inventoryManager->onTransactionStart($this->craftingTransaction);
 				$this->craftingTransaction->execute();
@@ -332,6 +333,7 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			}
 
+			$this->player->setUsingItem(false);
 			$transaction = new InventoryTransaction($this->player, $actions);
 			$this->inventoryManager->onTransactionStart($transaction);
 			try{
