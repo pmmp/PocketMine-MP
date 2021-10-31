@@ -2836,20 +2836,21 @@ class World implements ChunkManager{
 			//generation is already running
 			return $resolver->getPromise();
 		}
-		for($xx = -1; $xx <= 1; ++$xx){
-			for($zz = -1; $zz <= 1; ++$zz){
-				if($this->isChunkLocked($chunkX + $xx, $chunkZ + $zz)){
-					//chunk is already in use by another generation request; queue the request for later
-					return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
-				}
-			}
-		}
 
 		$temporaryChunkLoader = new class implements ChunkLoader{};
 		$this->registerChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
 		$chunk = $this->loadChunk($chunkX, $chunkZ);
 		if($chunk === null || !$chunk->isPopulated()){
 			Timings::$population->startTiming();
+
+			for($xx = -1; $xx <= 1; ++$xx){
+				for($zz = -1; $zz <= 1; ++$zz){
+					if($this->isChunkLocked($chunkX + $xx, $chunkZ + $zz)){
+						//chunk is already in use by another generation request; queue the request for later
+						return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
+					}
+				}
+			}
 
 			$this->activeChunkPopulationTasks[$chunkHash] = true;
 			if($resolver === null){
