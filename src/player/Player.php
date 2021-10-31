@@ -676,8 +676,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 			++$count;
 
-			$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_GENERATION();
-			unset($this->loadQueue[$index]);
+			$this->usedChunks[$index] = UsedChunkStatus::NEEDED();
 			$this->getWorld()->registerChunkLoader($this->chunkLoader, $X, $Z, true);
 			$this->getWorld()->registerChunkListener($this, $X, $Z);
 
@@ -686,10 +685,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					if(!$this->isConnected() || !isset($this->usedChunks[$index]) || $world !== $this->getWorld()){
 						return;
 					}
-					if(!$this->usedChunks[$index]->equals(UsedChunkStatus::REQUESTED_GENERATION())){
-						throw new AssumptionFailedError("Used chunk status should not have changed while in REQUESTED_GENERATION mode");
+					if(!$this->usedChunks[$index]->equals(UsedChunkStatus::NEEDED())){
+						//TODO: make this an error
+						//we may have added multiple completion handlers, since the Player keeps re-requesting chunks
+						//it doesn't have yet (a relic from the old system, but also currently relied on for chunk resends).
+						//in this event, make sure we don't try to send the chunk multiple times.
+						return;
 					}
-					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_SENDING();
+					unset($this->loadQueue[$index]);
+					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED();
 
 					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index) : void{
 						$this->usedChunks[$index] = UsedChunkStatus::SENT();
