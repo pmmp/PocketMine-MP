@@ -1595,7 +1595,7 @@ class World implements ChunkManager{
 
 		$this->timings->setBlock->startTiming();
 
-		$this->unlockChunk($chunkX, $chunkZ);
+		$this->unlockChunk($chunkX, $chunkZ, null);
 
 		$oldBlock = $this->getBlockAt($x, $y, $z, true, false);
 
@@ -2046,7 +2046,7 @@ class World implements ChunkManager{
 	public function setBiomeId(int $x, int $z, int $biomeId) : void{
 		$chunkX = $x >> Chunk::COORD_BIT_SIZE;
 		$chunkZ = $z >> Chunk::COORD_BIT_SIZE;
-		$this->unlockChunk($chunkX, $chunkZ);
+		$this->unlockChunk($chunkX, $chunkZ, null);
 		if(($chunk = $this->loadChunk($chunkX, $chunkZ)) !== null){
 			$chunk->setBiomeId($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $biomeId);
 		}else{
@@ -2108,16 +2108,17 @@ class World implements ChunkManager{
 		$this->chunkPopulationLock[$chunkHash] = $populationTaskId;
 	}
 
-	private function unlockChunk(int $chunkX, int $chunkZ) : void{
-		unset($this->chunkPopulationLock[World::chunkHash($chunkX, $chunkZ)]);
+	private function unlockChunk(int $chunkX, int $chunkZ, ?int $populationTaskId) : bool{
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
+		if(isset($this->chunkPopulationLock[$chunkHash]) && ($populationTaskId === null || $this->chunkPopulationLock[$chunkHash] === $populationTaskId)){
+			unset($this->chunkPopulationLock[$chunkHash]);
+			return true;
+		}
+		return false;
 	}
 
 	private function isChunkLocked(int $chunkX, int $chunkZ) : bool{
 		return isset($this->chunkPopulationLock[World::chunkHash($chunkX, $chunkZ)]);
-	}
-
-	private function isChunkLockedBy(int $chunkX, int $chunkZ, int $populationTaskId) : bool{
-		return ($this->chunkPopulationLock[World::chunkHash($chunkX, $chunkZ)] ?? null) === $populationTaskId;
 	}
 
 	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
@@ -2862,10 +2863,8 @@ class World implements ChunkManager{
 			$dirtyChunks = 0;
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
-					if(!$this->isChunkLockedBy($x + $xx, $z + $zz, $populationTaskId)){
+					if(!$this->unlockChunk($x + $xx, $z + $zz, $populationTaskId)){
 						$dirtyChunks++;
-					}else{
-						$this->unlockChunk($x + $xx, $z + $zz);
 					}
 				}
 			}
