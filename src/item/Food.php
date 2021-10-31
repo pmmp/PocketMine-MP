@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Living;
+use pocketmine\player\Player;
 
 abstract class Food extends Item implements FoodSourceItem{
 	public function requiresHunger() : bool{
@@ -40,5 +41,15 @@ abstract class Food extends Item implements FoodSourceItem{
 
 	public function onConsume(Living $consumer) : void{
 
+	}
+
+	public function canStartUsingItem(Player $player) : bool{
+		if($player->isSpectator()){
+			return false;
+		}
+		if(!$player->hasFiniteResources()){
+			return true;
+		}
+		return !$this->requiresHunger() || $player->getHungerManager()->isHungry();
 	}
 }
