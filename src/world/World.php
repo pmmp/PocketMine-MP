@@ -2801,6 +2801,8 @@ class World implements ChunkManager{
 			}
 		}
 
+		$temporaryChunkLoader = new class implements ChunkLoader{};
+		$this->registerChunkLoader($temporaryChunkLoader, $x, $z);
 		$chunk = $this->loadChunk($x, $z);
 		if($chunk === null || !$chunk->isPopulated()){
 			Timings::$population->startTiming();
@@ -2811,11 +2813,12 @@ class World implements ChunkManager{
 				$this->chunkPopulationRequestMap[$index] = $promise;
 			}
 
-			$temporaryChunkLoader = new class implements ChunkLoader{};
 			for($xx = -1; $xx <= 1; ++$xx){
 				for($zz = -1; $zz <= 1; ++$zz){
 					$this->lockChunk($x + $xx, $z + $zz);
-					$this->registerChunkLoader($temporaryChunkLoader, $x + $xx, $z + $zz);
+					if($xx !== 0 || $zz !== 0){ //avoid registering it twice for the center chunk; we already did that above
+						$this->registerChunkLoader($temporaryChunkLoader, $x + $xx, $z + $zz);
+					}
 				}
 			}
 
@@ -2829,6 +2832,8 @@ class World implements ChunkManager{
 			Timings::$population->stopTiming();
 			return $promise;
 		}
+
+		$this->unregisterChunkLoader($temporaryChunkLoader, $x, $z);
 
 		//chunk is already populated; return a pre-resolved promise that will directly fire callbacks assigned
 		$result = new Promise();
