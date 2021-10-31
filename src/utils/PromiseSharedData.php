@@ -23,29 +23,29 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use function spl_object_id;
-
 /**
+ * @internal
+ * @see PromiseResolver
  * @phpstan-template TValue
  */
-final class Promise{
+final class PromiseSharedData{
 	/**
-	 * @internal Do NOT call this directly; create a new Resolver and call Resolver->promise()
-	 * @see PromiseResolver
-	 * @phpstan-param PromiseSharedData<TValue> $shared
+	 * @var \Closure[]
+	 * @phpstan-var array<int, \Closure(TValue) : void>
 	 */
-	public function __construct(private PromiseSharedData $shared){}
+	public array $onSuccess = [];
 
 	/**
-	 * @phpstan-param \Closure(TValue) : void $onSuccess
-	 * @phpstan-param \Closure() : void $onFailure
+	 * @var \Closure[]
+	 * @phpstan-var array<int, \Closure() : void>
 	 */
-	public function onCompletion(\Closure $onSuccess, \Closure $onFailure) : void{
-		if($this->shared->resolved){
-			$this->shared->result === null ? $onFailure() : $onSuccess($this->shared->result);
-		}else{
-			$this->shared->onSuccess[spl_object_id($onSuccess)] = $onSuccess;
-			$this->shared->onFailure[spl_object_id($onFailure)] = $onFailure;
-		}
-	}
+	public array $onFailure = [];
+
+	public bool $resolved = false;
+
+	/**
+	 * @var mixed
+	 * @phpstan-var TValue|null
+	 */
+	public $result = null;
 }

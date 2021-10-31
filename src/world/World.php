@@ -72,6 +72,7 @@ use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\Promise;
+use pocketmine\utils\PromiseResolver;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\biome\BiomeRegistry;
@@ -253,8 +254,8 @@ class World implements ChunkManager{
 	/** @var int */
 	private $maxConcurrentChunkPopulationTasks = 2;
 	/**
-	 * @var Promise[] chunkHash => promise
-	 * @phpstan-var array<int, Promise<Chunk>>
+	 * @var PromiseResolver[] chunkHash => promise
+	 * @phpstan-var array<int, PromiseResolver<Chunk>>
 	 */
 	private array $chunkPopulationRequestMap = [];
 	/**
@@ -2717,16 +2718,16 @@ class World implements ChunkManager{
 	private function enqueuePopulationRequest(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$this->chunkPopulationRequestQueue->enqueue($chunkHash);
-		$promise = $this->chunkPopulationRequestMap[$chunkHash] = new Promise();
+		$resolver = $this->chunkPopulationRequestMap[$chunkHash] = new PromiseResolver();
 		if($associatedChunkLoader === null){
 			$temporaryLoader = new class implements ChunkLoader{};
 			$this->registerChunkLoader($temporaryLoader, $chunkX, $chunkZ);
-			$promise->onCompletion(
+			$resolver->getPromise()->onCompletion(
 				fn() => $this->unregisterChunkLoader($temporaryLoader, $chunkX, $chunkZ),
 				static function() : void{}
 			);
 		}
-		return $promise;
+		return $resolver->getPromise();
 	}
 
 	private function drainPopulationRequestQueue() : void{
@@ -2763,14 +2764,14 @@ class World implements ChunkManager{
 	 */
 	public function requestChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$promise = $this->chunkPopulationRequestMap[$chunkHash] ?? null;
-		if($promise !== null && isset($this->activeChunkPopulationTasks[$chunkHash])){
+		$resolver = $this->chunkPopulationRequestMap[$chunkHash] ?? null;
+		if($resolver !== null && isset($this->activeChunkPopulationTasks[$chunkHash])){
 			//generation is already running
-			return $promise;
+			return $resolver->getPromise();
 		}
 		if(count($this->activeChunkPopulationTasks) >= $this->maxConcurrentChunkPopulationTasks){
 			//too many chunks are already generating; delay resolution of the request until later
-			return $promise ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
+			return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
 		}
 		return $this->orderChunkPopulation($chunkX, $chunkZ, $associatedChunkLoader);
 	}
@@ -2787,16 +2788,16 @@ class World implements ChunkManager{
 	 */
 	public function orderChunkPopulation(int $x, int $z, ?ChunkLoader $associatedChunkLoader) : Promise{
 		$index = World::chunkHash($x, $z);
-		$promise = $this->chunkPopulationRequestMap[$index] ?? null;
-		if($promise !== null && isset($this->activeChunkPopulationTasks[$index])){
+		$resolver = $this->chunkPopulationRequestMap[$index] ?? null;
+		if($resolver !== null && isset($this->activeChunkPopulationTasks[$index])){
 			//generation is already running
-			return $promise;
+			return $resolver->getPromise();
 		}
 		for($xx = -1; $xx <= 1; ++$xx){
 			for($zz = -1; $zz <= 1; ++$zz){
 				if($this->isChunkLocked($x + $xx, $z + $zz)){
 					//chunk is already in use by another generation request; queue the request for later
-					return $promise ?? $this->enqueuePopulationRequest($x, $z, $associatedChunkLoader);
+					return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($x, $z, $associatedChunkLoader);
 				}
 			}
 		}
@@ -2808,9 +2809,9 @@ class World implements ChunkManager{
 			Timings::$population->startTiming();
 
 			$this->activeChunkPopulationTasks[$index] = true;
-			if($promise === null){
-				$promise = new Promise();
-				$this->chunkPopulationRequestMap[$index] = $promise;
+			if($resolver === null){
+				$resolver = new PromiseResolver();
+				$this->chunkPopulationRequestMap[$index] = $resolver;
 			}
 
 			for($xx = -1; $xx <= 1; ++$xx){
@@ -2830,15 +2831,15 @@ class World implements ChunkManager{
 			$this->workerPool->submitTaskToWorker($task, $workerId);
 
 			Timings::$population->stopTiming();
-			return $promise;
+			return $resolver->getPromise();
 		}
 
 		$this->unregisterChunkLoader($temporaryChunkLoader, $x, $z);
 
 		//chunk is already populated; return a pre-resolved promise that will directly fire callbacks assigned
-		$result = new Promise();
+		$result = new PromiseResolver();
 		$result->resolve($chunk);
-		return $result;
+		return $result->getPromise();
 	}
 
 	/**
