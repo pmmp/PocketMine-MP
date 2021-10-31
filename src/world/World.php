@@ -731,14 +731,9 @@ class World implements ChunkManager{
 	 * Unregisters a chunk listener from all chunks it is listening on in this World.
 	 */
 	public function unregisterChunkListenerFromAll(ChunkListener $listener) : void{
-		$id = spl_object_id($listener);
 		foreach($this->chunkListeners as $hash => $listeners){
-			if(isset($listeners[$id])){
-				unset($this->chunkListeners[$hash][$id]);
-				if(count($this->chunkListeners[$hash]) === 0){
-					unset($this->chunkListeners[$hash]);
-				}
-			}
+			World::getXZ($hash, $chunkX, $chunkZ);
+			$this->unregisterChunkListener($listener, $chunkX, $chunkZ);
 		}
 	}
 
