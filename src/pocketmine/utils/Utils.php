@@ -71,6 +71,7 @@ use function rmdir;
 use function rtrim;
 use function scandir;
 use function sha1;
+use function shell_exec;
 use function spl_object_hash;
 use function str_pad;
 use function str_replace;
@@ -235,7 +236,7 @@ class Utils{
 		}elseif($os === Utils::OS_ANDROID){
 			$machine .= @file_get_contents("/system/build.prop");
 		}elseif($os === Utils::OS_MACOS){
-			$machine .= `system_profiler SPHardwareDataType | grep UUID`;
+			$machine .= shell_exec("system_profiler SPHardwareDataType | grep UUID");
 		}
 		$data = $machine . PHP_MAXPATHLEN;
 		$data .= PHP_INT_MAX;
@@ -358,7 +359,7 @@ class Utils{
 				break;
 			case Utils::OS_BSD:
 			case Utils::OS_MACOS:
-				$processors = (int) `sysctl -n hw.ncpu`;
+				$processors = (int) shell_exec("sysctl -n hw.ncpu");
 				break;
 			case Utils::OS_WINDOWS:
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
