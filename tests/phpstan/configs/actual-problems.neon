@@ -1,12 +1,487 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../build/make-release.php
+
+		-
+			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|null given\\.$#"
+			count: 2
+			path: ../../../build/make-release.php
+
+		-
+			message: "#^Parameter \\#1 \\$pharPath of function pocketmine\\\\build\\\\server_phar\\\\buildPhar expects string, array\\<int, mixed\\>\\|string\\|false given\\.$#"
+			count: 1
+			path: ../../../build/server-phar.php
+
+		-
+			message: "#^Parameter \\#1 \\$strings of function pocketmine\\\\build\\\\server_phar\\\\preg_quote_array expects array\\<string\\>, array\\<int, string\\|false\\> given\\.$#"
+			count: 1
+			path: ../../../build/server-phar.php
+
+		-
+			message: "#^Cannot access offset \\(float\\|int\\) on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/CrashDump.php
+
+		-
+			message: "#^Cannot access offset string on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/CrashDump.php
+
+		-
 			message: "#^Instanceof between pocketmine\\\\plugin\\\\PluginManager and pocketmine\\\\plugin\\\\PluginManager will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/CrashDump.php
 
 		-
+			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Utils\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/CrashDump.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 7
+			path: ../../../src/pocketmine/MemoryManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/MemoryManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fwrite expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/MemoryManager.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access offset 'AnimationExpression' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access offset 'Colors' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access offset 'Frames' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access offset 'Image' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access offset 'ImageHeight' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access offset 'ImageWidth' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access offset 'IsDefault' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access offset 'PackId' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access offset 'PieceId' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access offset 'PieceType' on mixed\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access offset 'ProductId' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access offset 'Type' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access property \\$x on pocketmine\\\\level\\\\Position\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access property \\$y on pocketmine\\\\level\\\\Position\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot access property \\$z on pocketmine\\\\level\\\\Position\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method broadcastLevelEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method checkSpawnProtection\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method dropExperience\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method dropItem\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method equals\\(\\) on pocketmine\\\\utils\\\\UUID\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getAllValues\\(\\) on pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 6
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getBlockAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getChunkEntities\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getCollisionBlocks\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getDifficulty\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getEntity\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getFloorX\\(\\) on pocketmine\\\\level\\\\Position\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getFloorY\\(\\) on pocketmine\\\\level\\\\Position\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getFloorZ\\(\\) on pocketmine\\\\level\\\\Position\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getFolderName\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getLevelNonNull\\(\\) on pocketmine\\\\level\\\\Position\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getName\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getNearbyEntities\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getSafeSpawn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getTileAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method getTime\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method isChunkGenerated\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method isInLoadedTerrain\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method populateChunk\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method registerChunkLoader\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method requestChunk\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method sendBlocks\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method sendDifficulty\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method sendTime\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method setSleepTicks\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method unregisterChunkLoader\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot call method useItemOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Method pocketmine\\\\Player\\:\\:getSpawn\\(\\) should return pocketmine\\\\level\\\\Position but returns pocketmine\\\\level\\\\Position\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
 			message: "#^Only booleans are allowed in &&, mixed given on the right side\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Only numeric types are allowed in \\-, int\\|null given on the left side\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Only numeric types are allowed in \\-, int\\|null given on the right side\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#1 \\$height of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinImage constructor expects int, mixed given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#1 \\$level of method pocketmine\\\\entity\\\\Human\\:\\:__construct\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#1 \\$pieceId of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\PersonaSkinPiece constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#1 \\$pieceType of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\PersonaPieceTintColor constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#1 \\$skinId of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function base64_decode expects string, mixed given\\.$#"
+			count: 7
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#1 \\$uuid of method pocketmine\\\\Server\\:\\:updatePlayerListData\\(\\) expects pocketmine\\\\utils\\\\UUID, pocketmine\\\\utils\\\\UUID\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#1 \\.\\.\\.\\$slots of method pocketmine\\\\inventory\\\\BaseInventory\\:\\:addItem\\(\\) expects pocketmine\\\\item\\\\Item, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#10 \\$capeId of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#12 \\$armSize of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#13 \\$skinColor of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#17 \\$premium of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#18 \\$persona of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#19 \\$personaCapeOnClassic of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects bool, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#2 \\$colors of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\PersonaPieceTintColor constructor expects array\\<string\\>, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#2 \\$pieceType of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\PersonaSkinPiece constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#2 \\$playFabId of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#2 \\$type of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinAnimation constructor expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#2 \\$width of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinImage constructor expects int, mixed given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#3 \\$data of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinImage constructor expects string, string\\|false given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#3 \\$frames of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinAnimation constructor expects float, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#3 \\$packId of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\PersonaSkinPiece constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#3 \\$resourcePatch of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#4 \\$expressionType of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinAnimation constructor expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#4 \\$isDefaultPiece of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\PersonaSkinPiece constructor expects bool, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#5 \\$productId of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\PersonaSkinPiece constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#7 \\$geometryData of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#8 \\$geometryDataEngineVersion of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
+			message: "#^Parameter \\#9 \\$animationData of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/Player.php
 
@@ -16,9 +491,79 @@ parameters:
 			path: ../../../src/pocketmine/Player.php
 
 		-
+			message: "#^Binary operation \"\\.\" between array\\<int, mixed\\>\\|string\\|false and '/'\\|'\\\\\\\\' results in an error\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Cannot access offset 'git' on mixed\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/PocketMine.php
+
+		-
 			message: "#^Do\\-while loop condition is always false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Parameter \\#1 \\$haystack of function substr_count expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Parameter \\#1 \\$path of function realpath expects string, array\\<int, mixed\\>\\|string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Parameter \\#1 \\$path of function realpath expects string, string\\|false given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Parameter \\#1 \\$version1 of function version_compare expects string, string\\|false given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/PocketMine.php
+
+		-
+			message: "#^Cannot access offset 'type' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Cannot call method getFolderName\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Cannot call method getSafeSpawn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Cannot call method wait\\(\\) on Threaded\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Cannot cast array\\<int, mixed\\>\\|string\\|false to string\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Cannot cast mixed to float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 7
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
 
 		-
 			message: "#^Instanceof between pocketmine\\\\command\\\\CommandReader and pocketmine\\\\command\\\\CommandReader will always evaluate to true\\.$#"
@@ -41,6 +586,71 @@ parameters:
 			path: ../../../src/pocketmine/Server.php
 
 		-
+			message: "#^Only numeric types are allowed in \\+, int\\|false given on the left side\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of function array_filter expects array, array\\<int, string\\>\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\NBTStream\\:\\:readCompressed\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#1 \\$name of static method pocketmine\\\\level\\\\format\\\\io\\\\LevelProviderManager\\:\\:getProviderByName\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strtolower expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#1 \\$uuid of method pocketmine\\\\Server\\:\\:removePlayerListData\\(\\) expects pocketmine\\\\utils\\\\UUID, pocketmine\\\\utils\\\\UUID\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#1 \\$uuid of method pocketmine\\\\Server\\:\\:updatePlayerListData\\(\\) expects pocketmine\\\\utils\\\\UUID, pocketmine\\\\utils\\\\UUID\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#1 \\$uuid of static method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\PlayerListEntry\\:\\:createAdditionEntry\\(\\) expects pocketmine\\\\utils\\\\UUID, pocketmine\\\\utils\\\\UUID\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#2 \\$defaultValue of method pocketmine\\\\Server\\:\\:getConfigString\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#2 \\$endpoint of class pocketmine\\\\updater\\\\AutoUpdater constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#2 \\$reason of method pocketmine\\\\Player\\:\\:close\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Server.php
+
+		-
+			message: "#^Method pocketmine\\\\ThreadManager\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\Thread\\|pocketmine\\\\Worker\\> but returns array\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/ThreadManager.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\Air\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Air.php
@@ -51,9 +661,19 @@ parameters:
 			path: ../../../src/pocketmine/block/Anvil.php
 
 		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/BaseRail.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\BaseRail\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/BaseRail.php
+
+		-
+			message: "#^Only numeric types are allowed in \\-, int\\|null given on the left side\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Bed.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\Bed\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
@@ -71,9 +691,44 @@ parameters:
 			path: ../../../src/pocketmine/block/Beetroot.php
 
 		-
+			message: "#^Cannot call method getBlockMetadata\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/block/Block.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\Block\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\level\\\\Position\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Block.php
+
+		-
+			message: "#^Cannot access property \\$level on pocketmine\\\\block\\\\Block\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/BlockFactory.php
+
+		-
+			message: "#^Cannot access property \\$x on pocketmine\\\\block\\\\Block\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/BlockFactory.php
+
+		-
+			message: "#^Cannot access property \\$y on pocketmine\\\\block\\\\Block\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/BlockFactory.php
+
+		-
+			message: "#^Cannot access property \\$z on pocketmine\\\\block\\\\Block\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/BlockFactory.php
+
+		-
+			message: "#^Cannot clone pocketmine\\\\block\\\\Block\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/BlockFactory.php
+
+		-
+			message: "#^Method pocketmine\\\\block\\\\BlockFactory\\:\\:get\\(\\) should return pocketmine\\\\block\\\\Block but returns pocketmine\\\\block\\\\Block\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/BlockFactory.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\BoneBlock\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
@@ -106,14 +761,39 @@ parameters:
 			path: ../../../src/pocketmine/block/BurningFurnace.php
 
 		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Button.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\Button\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Button.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Cactus.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Cactus.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Cactus.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\Cactus\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Cactus.php
+
+		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Cake.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\Cake\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
@@ -181,6 +861,11 @@ parameters:
 			path: ../../../src/pocketmine/block/Concrete.php
 
 		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/ConcretePowder.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\ConcretePowder\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/ConcretePowder.php
@@ -221,6 +906,26 @@ parameters:
 			path: ../../../src/pocketmine/block/Dirt.php
 
 		-
+			message: "#^Cannot call method addSound\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/block/Door.php
+
+		-
+			message: "#^Cannot call method getDirection\\(\\) on pocketmine\\\\Player\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Door.php
+
+		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/block/Door.php
+
+		-
+			message: "#^Only numeric types are allowed in \\+, int\\|null given on the left side\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Door.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\DoublePlant\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/DoublePlant.php
@@ -251,6 +956,11 @@ parameters:
 			path: ../../../src/pocketmine/block/EndPortalFrame.php
 
 		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/EndRod.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\EndRod\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/EndRod.php
@@ -266,6 +976,21 @@ parameters:
 			path: ../../../src/pocketmine/block/EndStoneBricks.php
 
 		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Fallable.php
+
+		-
+			message: "#^Cannot call method getBlockIdAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Farmland.php
+
+		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/block/Farmland.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\Farmland\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Farmland.php
@@ -274,6 +999,26 @@ parameters:
 			message: "#^pocketmine\\\\block\\\\Fence\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Fence.php
+
+		-
+			message: "#^Cannot call method addSound\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/FenceGate.php
+
+		-
+			message: "#^Only numeric types are allowed in \\-, int\\|null given on the left side\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/block/FenceGate.php
+
+		-
+			message: "#^Cannot call method scheduleDelayedBlockUpdate\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/block/Fire.php
+
+		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/block/Fire.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\Fire\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
@@ -301,6 +1046,11 @@ parameters:
 			path: ../../../src/pocketmine/block/GlassPane.php
 
 		-
+			message: "#^Only numeric types are allowed in \\-, int\\|null given on the left side\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/GlazedTerracotta.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\GlowingObsidian\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/GlowingObsidian.php
@@ -321,9 +1071,49 @@ parameters:
 			path: ../../../src/pocketmine/block/GoldOre.php
 
 		-
+			message: "#^Cannot call method getBlockAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Grass.php
+
+		-
+			message: "#^Cannot call method getBlockDataAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Grass.php
+
+		-
+			message: "#^Cannot call method getBlockIdAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/block/Grass.php
+
+		-
+			message: "#^Cannot call method getFullLightAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/block/Grass.php
+
+		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/block/Grass.php
+
+		-
+			message: "#^Parameter \\#1 \\$min of function mt_rand expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/block/Grass.php
+
+		-
+			message: "#^Parameter \\#2 \\$max of function mt_rand expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/block/Grass.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\Grass\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Grass.php
+
+		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/GrassPath.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\GrassPath\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
@@ -344,6 +1134,16 @@ parameters:
 			message: "#^pocketmine\\\\block\\\\HayBale\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/HayBale.php
+
+		-
+			message: "#^Cannot call method getHighestAdjacentBlockLight\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Ice.php
+
+		-
+			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Ice.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\Ice\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
@@ -376,9 +1176,29 @@ parameters:
 			path: ../../../src/pocketmine/block/IronOre.php
 
 		-
+			message: "#^Cannot call method getTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/block/ItemFrame.php
+
+		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/ItemFrame.php
+
+		-
+			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/ItemFrame.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\ItemFrame\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/ItemFrame.php
+
+		-
+			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Ladder.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\Ladder\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
@@ -406,9 +1226,74 @@ parameters:
 			path: ../../../src/pocketmine/block/Leaves.php
 
 		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Lever.php
+
+		-
+			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Lever.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\Lever\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Lever.php
+
+		-
+			message: "#^Cannot call method addSound\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^Cannot call method getBlockAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 25
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^Cannot call method scheduleDelayedBlockUpdate\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^Parameter \\#1 \\$blockX of method pocketmine\\\\block\\\\Liquid\\:\\:calculateFlowCost\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^Parameter \\#2 \\$blockY of method pocketmine\\\\block\\\\Liquid\\:\\:calculateFlowCost\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^Parameter \\#3 \\$blockZ of method pocketmine\\\\block\\\\Liquid\\:\\:calculateFlowCost\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Liquid.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/block/Liquid.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\Magma\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
@@ -429,6 +1314,16 @@ parameters:
 			message: "#^pocketmine\\\\block\\\\MonsterSpawner\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/MonsterSpawner.php
+
+		-
+			message: "#^Parameter \\#1 \\$min of function mt_rand expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/block/Mycelium.php
+
+		-
+			message: "#^Parameter \\#2 \\$max of function mt_rand expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/block/Mycelium.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\Mycelium\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
@@ -566,6 +1461,26 @@ parameters:
 			path: ../../../src/pocketmine/block/SandstoneStairs.php
 
 		-
+			message: "#^Cannot call method getFullLightAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Sapling.php
+
+		-
+			message: "#^Parameter \\#2 \\$x of static method pocketmine\\\\level\\\\generator\\\\object\\\\Tree\\:\\:growTree\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/block/Sapling.php
+
+		-
+			message: "#^Parameter \\#3 \\$y of static method pocketmine\\\\level\\\\generator\\\\object\\\\Tree\\:\\:growTree\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/block/Sapling.php
+
+		-
+			message: "#^Parameter \\#4 \\$z of static method pocketmine\\\\level\\\\generator\\\\object\\\\Tree\\:\\:growTree\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/block/Sapling.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\Sapling\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Sapling.php
@@ -579,6 +1494,11 @@ parameters:
 			message: "#^pocketmine\\\\block\\\\SignPost\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/SignPost.php
+
+		-
+			message: "#^Cannot call method getTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Skull.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\Skull\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
@@ -596,6 +1516,11 @@ parameters:
 			path: ../../../src/pocketmine/block/Snow.php
 
 		-
+			message: "#^Cannot call method getBlockLightAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/SnowLayer.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\SnowLayer\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/SnowLayer.php
@@ -609,6 +1534,11 @@ parameters:
 			message: "#^pocketmine\\\\block\\\\Sponge\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Sponge.php
+
+		-
+			message: "#^Cannot call method getTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/StandingBanner.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\StandingBanner\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
@@ -641,6 +1571,21 @@ parameters:
 			path: ../../../src/pocketmine/block/Stonecutter.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/block/Sugarcane.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/block/Sugarcane.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/block/Sugarcane.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\Sugarcane\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Sugarcane.php
@@ -661,6 +1606,11 @@ parameters:
 			path: ../../../src/pocketmine/block/Torch.php
 
 		-
+			message: "#^Cannot call method addSound\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Trapdoor.php
+
+		-
 			message: "#^pocketmine\\\\block\\\\Trapdoor\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/Trapdoor.php
@@ -674,6 +1624,16 @@ parameters:
 			message: "#^pocketmine\\\\block\\\\TripwireHook\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/block/TripwireHook.php
+
+		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Vine.php
+
+		-
+			message: "#^Cannot call method useBreakOn\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/block/Vine.php
 
 		-
 			message: "#^pocketmine\\\\block\\\\Vine\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\block\\\\Block\\.$#"
@@ -711,6 +1671,551 @@ parameters:
 			path: ../../../src/pocketmine/block/Wool.php
 
 		-
+			message: "#^Parameter \\#2 \\$replace of function str_replace expects array\\|string, string\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/Command.php
+
+		-
+			message: "#^Cannot access offset 'mode' on array\\{0\\: int, 1\\: int, 2\\: int, 3\\: int, 4\\: int, 5\\: int, 6\\: int, 7\\: int, \\.\\.\\.\\}\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/CommandReader.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/CommandReader.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of method pocketmine\\\\command\\\\CommandReader\\:\\:isPipe\\(\\) expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/CommandReader.php
+
+		-
+			message: "#^Static property pocketmine\\\\command\\\\CommandReader\\:\\:\\$stdin \\(resource\\) does not accept resource\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/CommandReader.php
+
+		-
+			message: "#^Cannot call method startTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/SimpleCommandMap.php
+
+		-
+			message: "#^Cannot call method stopTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/SimpleCommandMap.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, int\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/BanIpCommand.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, int\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/PardonIpCommand.php
+
+		-
+			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/ParticleCommand.php
+
+		-
+			message: "#^Cannot call method getSeed\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/SeedCommand.php
+
+		-
+			message: "#^Cannot call method setSpawnLocation\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/SetWorldSpawnCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$num of function round expects float\\|int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/StatusCommand.php
+
+		-
+			message: "#^Cannot call method getTime\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/TimeCommand.php
+
+		-
+			message: "#^Cannot access offset 0 on mixed\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$fp of static method pocketmine\\\\timings\\\\TimingsHandler\\:\\:printTimings\\(\\) expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function fseek expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#1 \\$stream of function stream_get_contents expects resource, resource\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#2 \\$host of class class@anonymous/src/pocketmine/command/defaults/TimingsCommand\\.php\\:126 constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Parameter \\#4 \\$data of class class@anonymous/src/pocketmine/command/defaults/TimingsCommand\\.php\\:126 constructor expects array\\<string, string\\>, array\\<string, string\\|false\\> given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Cannot cast mixed to float\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/VanillaCommand.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/command/defaults/VanillaCommand.php
+
+		-
+			message: "#^Cannot call method getValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/entity/Effect.php
+
+		-
+			message: "#^Cannot call method setValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/entity/Effect.php
+
+		-
+			message: "#^Parameter \\#1 \\$id of static method pocketmine\\\\entity\\\\Effect\\:\\:getEffect\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Effect.php
+
+		-
+			message: "#^Array \\(array\\<class\\-string\\<pocketmine\\\\entity\\\\Entity\\>, string\\>\\) does not accept string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot access property \\$updateEntities on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method addEntity\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method addEntity\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method broadcastPacketToViewers\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method getAllValues\\(\\) on pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method getBlockAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method getBlockIdAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 7
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method getChunk\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method getChunkAtPosition\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method getCollisionBlocks\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method getCollisionCubes\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method getTickRateTime\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method getValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method getViewersForPosition\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method removeEntity\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method setValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Method pocketmine\\\\entity\\\\Entity\\:\\:getNameTag\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Method pocketmine\\\\entity\\\\Entity\\:\\:getScale\\(\\) should return float but returns float\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, bool\\|null given\\.$#"
+			count: 6
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Only booleans are allowed in an if condition, bool\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Parameter \\#1 \\$fireTicks of method pocketmine\\\\entity\\\\Entity\\:\\:setFireTicks\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Parameter \\#2 \\$originLevel of class pocketmine\\\\event\\\\entity\\\\EntityLevelChangeEvent constructor expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setShort\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Entity.php
+
+		-
+			message: "#^Cannot call method broadcastLevelEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Cannot call method broadcastLevelSoundEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Cannot call method getDifficulty\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Cannot call method getMaxValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Cannot call method getMinValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Cannot call method getValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
+			count: 8
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Cannot call method setValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
+			count: 6
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Parameter \\#1 \\$attribute of method pocketmine\\\\entity\\\\AttributeMap\\:\\:addAttribute\\(\\) expects pocketmine\\\\entity\\\\Attribute, pocketmine\\\\entity\\\\Attribute\\|null given\\.$#"
+			count: 5
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Parameter \\#1 \\$index of method pocketmine\\\\inventory\\\\BaseInventory\\:\\:setItem\\(\\) expects int, int\\|string given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\AddPlayerPacket\\:\\:\\$uuid \\(pocketmine\\\\utils\\\\UUID\\) does not accept pocketmine\\\\utils\\\\UUID\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\PlayerSkinPacket\\:\\:\\$uuid \\(pocketmine\\\\utils\\\\UUID\\) does not accept pocketmine\\\\utils\\\\UUID\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Human.php
+
+		-
+			message: "#^Cannot call method attack\\(\\) on pocketmine\\\\entity\\\\Entity\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Cannot call method broadcastLevelSoundEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Cannot call method dropExperience\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Cannot call method getBlockAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Cannot call method getEffectLevel\\(\\) on pocketmine\\\\entity\\\\EffectInstance\\|null\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Cannot call method getMaxValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Cannot call method getValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Cannot call method setMaxValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Cannot call method setValue\\(\\) on pocketmine\\\\entity\\\\Attribute\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Method pocketmine\\\\entity\\\\Living\\:\\:getAirSupplyTicks\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Method pocketmine\\\\entity\\\\Living\\:\\:getMaxAirSupplyTicks\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Parameter \\#1 \\$attribute of method pocketmine\\\\entity\\\\AttributeMap\\:\\:addAttribute\\(\\) expects pocketmine\\\\entity\\\\Attribute, pocketmine\\\\entity\\\\Attribute\\|null given\\.$#"
+			count: 6
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Parameter \\#2 \\$entity of class pocketmine\\\\event\\\\entity\\\\EntityDamageByEntityEvent constructor expects pocketmine\\\\entity\\\\Entity, pocketmine\\\\entity\\\\Entity\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Living.php
+
+		-
+			message: "#^Method pocketmine\\\\entity\\\\Villager\\:\\:getProfession\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/Villager.php
+
+		-
+			message: "#^Cannot call method getEntity\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/object/ExperienceOrb.php
+
+		-
+			message: "#^Cannot call method getNearestEntity\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/object/ExperienceOrb.php
+
+		-
+			message: "#^Cannot call method getBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/object/FallingBlock.php
+
+		-
+			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/object/Painting.php
+
+		-
+			message: "#^Cannot call method dropItem\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/object/Painting.php
+
+		-
+			message: "#^Method pocketmine\\\\entity\\\\object\\\\Painting\\:\\:getMotive\\(\\) should return pocketmine\\\\entity\\\\object\\\\PaintingMotive but returns pocketmine\\\\entity\\\\object\\\\PaintingMotive\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/object/Painting.php
+
+		-
+			message: "#^Parameter \\#1 \\$level of static method pocketmine\\\\entity\\\\object\\\\Painting\\:\\:canFit\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/object/Painting.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/object/Painting.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/object/Painting.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/object/Painting.php
+
+		-
+			message: "#^Cannot call method broadcastLevelEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/object/PrimedTNT.php
+
+		-
+			message: "#^Cannot call method broadcastLevelSoundEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/Arrow.php
+
+		-
+			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/Egg.php
+
+		-
+			message: "#^Cannot call method addSound\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/entity/projectile/EnderPearl.php
+
+		-
+			message: "#^Cannot call method broadcastLevelEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/EnderPearl.php
+
+		-
+			message: "#^Cannot call method broadcastLevelEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/ExperienceBottle.php
+
+		-
+			message: "#^Cannot call method broadcastLevelSoundEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/ExperienceBottle.php
+
+		-
+			message: "#^Cannot call method dropExperience\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/ExperienceBottle.php
+
+		-
+			message: "#^Cannot call method getBlockAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/entity/projectile/Projectile.php
+
+		-
+			message: "#^Cannot call method getCollidingEntities\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/Projectile.php
+
+		-
+			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setByte\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/Projectile.php
+
+		-
+			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/entity/projectile/Projectile.php
+
+		-
+			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/Projectile.php
+
+		-
+			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/Snowball.php
+
+		-
+			message: "#^Cannot call method broadcastLevelEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/SplashPotion.php
+
+		-
+			message: "#^Cannot call method broadcastLevelSoundEvent\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/SplashPotion.php
+
+		-
+			message: "#^Cannot call method getNearbyEntities\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/entity/projectile/SplashPotion.php
+
+		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/entity/projectile/SplashPotion.php
+
+		-
+			message: "#^Method pocketmine\\\\event\\\\EventPriority\\:\\:fromString\\(\\) should return int but returns mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/event/EventPriority.php
+
+		-
+			message: "#^Parameter \\#1 \\$objectOrClass of class ReflectionClass constructor expects class\\-string\\<T of object\\>\\|T of object, string given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/event/HandlerList.php
+
+		-
+			message: "#^Cannot call method getEffectLevel\\(\\) on pocketmine\\\\entity\\\\EffectInstance\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/event/entity/EntityDamageByEntityEvent.php
+
+		-
 			message: "#^Property pocketmine\\\\event\\\\entity\\\\EntityShootBowEvent\\:\\:\\$projectile \\(pocketmine\\\\entity\\\\projectile\\\\Projectile\\) does not accept pocketmine\\\\entity\\\\Entity\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/event/entity/EntityShootBowEvent.php
@@ -724,6 +2229,21 @@ parameters:
 			message: "#^PHPDoc type pocketmine\\\\tile\\\\Chest of property pocketmine\\\\inventory\\\\ChestInventory\\:\\:\\$holder is not the same as PHPDoc type pocketmine\\\\math\\\\Vector3 of overridden property pocketmine\\\\inventory\\\\ContainerInventory\\:\\:\\$holder\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/inventory/ChestInventory.php
+
+		-
+			message: "#^Method pocketmine\\\\inventory\\\\CraftingManager\\:\\:getCraftingDataPacket\\(\\) should return pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket but returns pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/inventory/CraftingManager.php
+
+		-
+			message: "#^Method pocketmine\\\\inventory\\\\CraftingManager\\:\\:hashOutputs\\(\\) should return string but returns string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/inventory/CraftingManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/inventory/CraftingManager.php
 
 		-
 			message: "#^pocketmine\\\\inventory\\\\DoubleChestInventory\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\inventory\\\\ChestInventory\\.$#"
@@ -756,14 +2276,364 @@ parameters:
 			path: ../../../src/pocketmine/inventory/MultiRecipe.php
 
 		-
+			message: "#^Parameter \\#2 \\$recipe of class pocketmine\\\\event\\\\inventory\\\\CraftItemEvent constructor expects pocketmine\\\\inventory\\\\CraftingRecipe, pocketmine\\\\inventory\\\\CraftingRecipe\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/inventory/transaction/CraftingTransaction.php
+
+		-
+			message: "#^Parameter \\#3 \\$repetitions of class pocketmine\\\\event\\\\inventory\\\\CraftItemEvent constructor expects int, int\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/inventory/transaction/CraftingTransaction.php
+
+		-
+			message: "#^Cannot call method count\\(\\) on pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/Banner.php
+
+		-
+			message: "#^Cannot call method isset\\(\\) on pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/Banner.php
+
+		-
+			message: "#^Cannot call method spawnToAll\\(\\) on pocketmine\\\\entity\\\\Entity\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/Bow.php
+
+		-
+			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/item/GoldenApple.php
+
+		-
+			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/item/GoldenAppleEnchanted.php
+
+		-
 			message: "#^pocketmine\\\\item\\\\GoldenAppleEnchanted\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\item\\\\GoldenApple\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/item/GoldenAppleEnchanted.php
 
 		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/Item.php
+
+		-
+			message: "#^Method pocketmine\\\\item\\\\Item\\:\\:writeCompoundTag\\(\\) should return string but returns string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\item\\\\Item\\:\\:jsonDeserialize\\(\\) expects array\\{id\\: int, damage\\?\\: int, count\\?\\: int, nbt\\?\\: string, nbt_hex\\?\\: string, nbt_b64\\?\\: string\\}, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$object of function get_class expects object, pocketmine\\\\nbt\\\\tag\\\\NamedTag\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/Item.php
+
+		-
+			message: "#^Parameter \\#1 \\$id of static method pocketmine\\\\item\\\\ItemFactory\\:\\:get\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/ItemFactory.php
+
+		-
+			message: "#^Parameter \\#1 \\$level of static method pocketmine\\\\entity\\\\object\\\\Painting\\:\\:canFit\\(\\) expects pocketmine\\\\level\\\\Level, pocketmine\\\\level\\\\Level\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/PaintingItem.php
+
+		-
+			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/PoisonousPotato.php
+
+		-
+			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/item/Pufferfish.php
+
+		-
+			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/RawChicken.php
+
+		-
+			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/RottenFlesh.php
+
+		-
+			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/SpiderEye.php
+
+		-
+			message: "#^Parameter \\#2 \\$pageText of method pocketmine\\\\item\\\\WritableBook\\:\\:setPageText\\(\\) expects string, string\\|null given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/item/WritableBook.php
+
+		-
 			message: "#^pocketmine\\\\item\\\\WrittenBook\\:\\:__construct\\(\\) does not call parent constructor from pocketmine\\\\item\\\\WritableBook\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/item/WrittenBook.php
+
+		-
+			message: "#^Parameter \\#1 \\$id of static method pocketmine\\\\item\\\\enchantment\\\\Enchantment\\:\\:getEnchantment\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/enchantment/Enchantment.php
+
+		-
+			message: "#^Method pocketmine\\\\item\\\\enchantment\\\\EnchantmentList\\:\\:getSlot\\(\\) should return pocketmine\\\\item\\\\enchantment\\\\EnchantmentEntry but returns pocketmine\\\\item\\\\enchantment\\\\EnchantmentEntry\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/item/enchantment/EnchantmentList.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of function array_map expects array, array\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/lang/BaseLang.php
+
+		-
+			message: "#^Cannot call method getBlockData\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Cannot call method getBlockId\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Only numeric types are allowed in /, float\\|null given on the left side\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:setBlockDataAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:setBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:setBlockDataAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:setBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:setBlockDataAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:setBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Explosion.php
+
+		-
+			message: "#^Cannot access offset 'data' on array\\{priority\\: int, data\\: pocketmine\\\\math\\\\Vector3\\}\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot access offset 'priority' on array\\{priority\\: int, data\\: pocketmine\\\\math\\\\Vector3\\}\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot access property \\$level on pocketmine\\\\block\\\\Block\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot access property \\$x on pocketmine\\\\block\\\\Block\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot access property \\$y on pocketmine\\\\block\\\\Block\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot access property \\$z on pocketmine\\\\block\\\\Block\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method getBiomeId\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method getBlockData\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method getBlockId\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method getBlockLight\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method getBlockSkyLight\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method getHeightMap\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method getHighestBlockAt\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method isPopulated\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method recalculateHeightMapColumn\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method setBiomeId\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method setBlockData\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method setBlockId\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method setBlockLight\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method setBlockSkyLight\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot call method setHeightMap\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Cannot clone pocketmine\\\\block\\\\Block\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Method pocketmine\\\\level\\\\Level\\:\\:getBlockAt\\(\\) should return pocketmine\\\\block\\\\Block but returns pocketmine\\\\block\\\\Block\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
 
 		-
 			message: "#^Only booleans are allowed in &&, mixed given on the right side\\.$#"
@@ -776,9 +2646,339 @@ parameters:
 			path: ../../../src/pocketmine/level/Level.php
 
 		-
+			message: "#^Only numeric types are allowed in \\-, int\\|null given on the right side\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#1 \\$chunk of method pocketmine\\\\Player\\:\\:onChunkChanged\\(\\) expects pocketmine\\\\level\\\\format\\\\Chunk, pocketmine\\\\level\\\\format\\\\Chunk\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#1 \\$keys of function array_fill_keys expects array, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getFullBlock\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:updateBlockLight\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:updateBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of static method pocketmine\\\\level\\\\Level\\:\\:chunkBlockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#2 \\$chunk of class pocketmine\\\\level\\\\generator\\\\PopulationTask constructor expects pocketmine\\\\level\\\\format\\\\Chunk, pocketmine\\\\level\\\\format\\\\Chunk\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getFullBlock\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:updateBlockLight\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:updateBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of static method pocketmine\\\\level\\\\Level\\:\\:chunkBlockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getFullBlock\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:updateBlockLight\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:updateBlockSkyLight\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\level\\\\Level\\:\\:blockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of static method pocketmine\\\\level\\\\Level\\:\\:chunkBlockHash\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Parameter \\#4 \\$newLevel of method pocketmine\\\\level\\\\light\\\\LightUpdate\\:\\:setAndUpdateLight\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\UpdateBlockPacket\\:\\:\\$x \\(int\\) does not accept float\\|int\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\UpdateBlockPacket\\:\\:\\$y \\(int\\) does not accept float\\|int\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\UpdateBlockPacket\\:\\:\\$z \\(int\\) does not accept float\\|int\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/Level.php
+
+		-
+			message: "#^Method pocketmine\\\\level\\\\biome\\\\Biome\\:\\:getBiome\\(\\) should return pocketmine\\\\level\\\\biome\\\\Biome but returns pocketmine\\\\level\\\\biome\\\\Biome\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/biome/Biome.php
+
+		-
+			message: "#^Cannot call method networkSerialize\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
+			message: "#^Method pocketmine\\\\level\\\\format\\\\Chunk\\:\\:getHeightMap\\(\\) should return int but returns int\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
+			message: "#^Method pocketmine\\\\level\\\\format\\\\Chunk\\:\\:getSubChunk\\(\\) should return pocketmine\\\\level\\\\format\\\\SubChunkInterface but returns pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
 			message: "#^Only booleans are allowed in \\|\\|, bool\\|null given on the right side\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/format/Chunk.php
+
+		-
+			message: "#^Property pocketmine\\\\level\\\\format\\\\io\\\\BaseLevelProvider\\:\\:\\$levelData \\(pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\) does not accept pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/BaseLevelProvider.php
+
+		-
+			message: "#^Parameter \\#1 \\$buffer of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/ChunkRequestTask.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strlen expects string, string\\|false given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Parameter \\#2 \\$string of function explode expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Parameter \\#2 \\$value of class pocketmine\\\\nbt\\\\tag\\\\StringTag constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Parameter \\#2 \\$value of method LevelDB\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Cannot call method getByte\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/format/io/region/Anvil.php
+
+		-
+			message: "#^Cannot call method getByteArray\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/Anvil.php
+
+		-
+			message: "#^Cannot call method getInt\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/format/io/region/Anvil.php
+
+		-
+			message: "#^Cannot call method getIntArray\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/format/io/region/Anvil.php
+
+		-
+			message: "#^Cannot call method getListTag\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/level/format/io/region/Anvil.php
+
+		-
+			message: "#^Cannot call method hasTag\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/level/format/io/region/Anvil.php
+
+		-
+			message: "#^Method pocketmine\\\\level\\\\format\\\\io\\\\region\\\\Anvil\\:\\:nbtSerialize\\(\\) should return string but returns string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/Anvil.php
+
+		-
+			message: "#^Parameter \\#2 \\$list of static method pocketmine\\\\level\\\\format\\\\io\\\\region\\\\McRegion\\:\\:getCompoundList\\(\\) expects pocketmine\\\\nbt\\\\tag\\\\ListTag, pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/format/io/region/Anvil.php
+
+		-
+			message: "#^Cannot call method getBlockDataColumn\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Cannot call method getBlockIdColumn\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Cannot call method getBlockLightColumn\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Cannot call method getBlockSkyLightColumn\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Cannot call method getByte\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Cannot call method getByteArray\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 6
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Cannot call method getInt\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Cannot call method getIntArray\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Cannot call method getListTag\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Cannot call method hasTag\\(\\) on pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\|null\\.$#"
+			count: 10
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Cannot call method readChunk\\(\\) on pocketmine\\\\level\\\\format\\\\io\\\\region\\\\RegionLoader\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Cannot call method writeChunk\\(\\) on pocketmine\\\\level\\\\format\\\\io\\\\region\\\\RegionLoader\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Method pocketmine\\\\level\\\\format\\\\io\\\\region\\\\McRegion\\:\\:nbtSerialize\\(\\) should return string but returns string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of function array_filter expects array, array\\<int, string\\>\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Parameter \\#2 \\$list of static method pocketmine\\\\level\\\\format\\\\io\\\\region\\\\McRegion\\:\\:getCompoundList\\(\\) expects pocketmine\\\\nbt\\\\tag\\\\ListTag, pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Parameter \\#2 \\$value of class pocketmine\\\\nbt\\\\tag\\\\StringTag constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+
+		-
+			message: "#^Only numeric types are allowed in %%, int\\<0, max\\>\\|false given on the left side\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/format/io/region/RegionLoader.php
 
 		-
 			message: "#^Parameter \\#2 \\$length of function fread expects int\\<0, max\\>, int given\\.$#"
@@ -791,9 +2991,89 @@ parameters:
 			path: ../../../src/pocketmine/level/format/io/region/RegionLoader.php
 
 		-
+			message: "#^Property pocketmine\\\\level\\\\generator\\\\Flat\\:\\:\\$preset \\(string\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/Flat.php
+
+		-
+			message: "#^Cannot call method fastSerialize\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/generator/PopulationTask.php
+
+		-
+			message: "#^Cannot call method getAsyncWorkerId\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/PopulationTask.php
+
+		-
+			message: "#^Cannot call method getX\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 5
+			path: ../../../src/pocketmine/level/generator/PopulationTask.php
+
+		-
+			message: "#^Cannot call method getZ\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 5
+			path: ../../../src/pocketmine/level/generator/PopulationTask.php
+
+		-
+			message: "#^Cannot call method hasChanged\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/PopulationTask.php
+
+		-
+			message: "#^Cannot call method isGenerated\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/PopulationTask.php
+
+		-
+			message: "#^Cannot call method populateSkyLight\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/PopulationTask.php
+
+		-
+			message: "#^Cannot call method recalculateHeightMap\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/PopulationTask.php
+
+		-
+			message: "#^Cannot call method setGenerated\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/generator/PopulationTask.php
+
+		-
+			message: "#^Cannot call method setLightPopulated\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/PopulationTask.php
+
+		-
+			message: "#^Cannot call method setPopulated\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/PopulationTask.php
+
+		-
 			message: "#^Variable property access on \\$this\\(pocketmine\\\\level\\\\generator\\\\PopulationTask\\)\\.$#"
 			count: 4
 			path: ../../../src/pocketmine/level/generator/PopulationTask.php
+
+		-
+			message: "#^Method pocketmine\\\\level\\\\generator\\\\biome\\\\BiomeSelector\\:\\:pickBiome\\(\\) should return pocketmine\\\\level\\\\biome\\\\Biome but returns pocketmine\\\\level\\\\biome\\\\Biome\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/biome/BiomeSelector.php
+
+		-
+			message: "#^Cannot call method getBiomeId\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/hell/Nether.php
+
+		-
+			message: "#^Cannot call method setBiomeId\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/hell/Nether.php
+
+		-
+			message: "#^Cannot call method setBlockId\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/level/generator/hell/Nether.php
 
 		-
 			message: "#^Constructor of class pocketmine\\\\level\\\\generator\\\\hell\\\\Nether has an unused parameter \\$options\\.$#"
@@ -801,7 +3081,27 @@ parameters:
 			path: ../../../src/pocketmine/level/generator/hell/Nether.php
 
 		-
+			message: "#^Cannot call method getBiomeId\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/normal/Normal.php
+
+		-
+			message: "#^Cannot call method setBiomeId\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/normal/Normal.php
+
+		-
+			message: "#^Cannot call method setBlockId\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/level/generator/normal/Normal.php
+
+		-
 			message: "#^Constructor of class pocketmine\\\\level\\\\generator\\\\normal\\\\Normal has an unused parameter \\$options\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/normal/Normal.php
+
+		-
+			message: "#^Offset int does not exist on array\\<array\\<float\\>\\>\\|null\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/generator/normal/Normal.php
 
@@ -809,6 +3109,61 @@ parameters:
 			message: "#^Property pocketmine\\\\level\\\\generator\\\\object\\\\Pond\\:\\:\\$random is never read, only written\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/generator/object/Pond.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, bool\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/object/SpruceTree.php
+
+		-
+			message: "#^Parameter \\#1 \\$start of method pocketmine\\\\utils\\\\Random\\:\\:nextRange\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/generator/object/TallGrass.php
+
+		-
+			message: "#^Parameter \\#2 \\$end of method pocketmine\\\\utils\\\\Random\\:\\:nextRange\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/generator/object/TallGrass.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\ChunkManager\\:\\:getBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/level/generator/object/TallGrass.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\ChunkManager\\:\\:setBlockDataAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/object/TallGrass.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\ChunkManager\\:\\:setBlockIdAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/object/TallGrass.php
+
+		-
+			message: "#^Only booleans are allowed in a negated boolean, bool\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/object/Tree.php
+
+		-
+			message: "#^Cannot call method getBiomeId\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/populator/GroundCover.php
+
+		-
+			message: "#^Cannot call method getBlockIdColumn\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/populator/GroundCover.php
+
+		-
+			message: "#^Cannot call method setBlock\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/populator/GroundCover.php
+
+		-
+			message: "#^Cannot call method setBlockId\\(\\) on pocketmine\\\\level\\\\format\\\\Chunk\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/generator/populator/GroundCover.php
 
 		-
 			message: "#^Property pocketmine\\\\level\\\\generator\\\\populator\\\\Pond\\:\\:\\$lavaOdd is never read, only written\\.$#"
@@ -821,9 +3176,259 @@ parameters:
 			path: ../../../src/pocketmine/level/generator/populator/Pond.php
 
 		-
+			message: "#^Cannot call method getBlockLight\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/light/BlockLightUpdate.php
+
+		-
+			message: "#^Cannot call method setBlockLight\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/light/BlockLightUpdate.php
+
+		-
+			message: "#^Cannot call method getBlockId\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/light/LightUpdate.php
+
+		-
+			message: "#^Only numeric types are allowed in \\-, int\\|null given on the right side\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/light/LightUpdate.php
+
+		-
+			message: "#^Cannot call method getBlockSkyLight\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/light/SkyLightUpdate.php
+
+		-
+			message: "#^Cannot call method setBlockSkyLight\\(\\) on pocketmine\\\\level\\\\format\\\\SubChunkInterface\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/level/light/SkyLightUpdate.php
+
+		-
 			message: "#^Method pocketmine\\\\metadata\\\\MetadataStore\\:\\:getMetadataInternal\\(\\) should return array\\<pocketmine\\\\metadata\\\\MetadataValue\\> but returns SplObjectStorage\\<pocketmine\\\\plugin\\\\Plugin, pocketmine\\\\metadata\\\\MetadataValue\\>\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/metadata/MetadataStore.php
+
+		-
+			message: "#^Parameter \\#1 \\$buffer of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/CompressBatchedTask.php
+
+		-
+			message: "#^Cannot access property \\$x on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Cannot access property \\$y on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Cannot access property \\$z on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:getGameRules\\(\\) should return array\\<string, array\\{int, bool\\|float\\|int, bool\\}\\> but returns array\\<string, array\\{int, bool\\|float\\|int\\|null, bool\\}\\>\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of method pocketmine\\\\nbt\\\\NBTStream\\:\\:write\\(\\) expects array\\<pocketmine\\\\nbt\\\\tag\\\\NamedTag\\>\\|pocketmine\\\\nbt\\\\tag\\\\NamedTag, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putString\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putBool\\(\\) expects bool, bool\\|float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putByte\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putLFloat\\(\\) expects float, bool\\|float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putLFloat\\(\\) expects float, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putLShort\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putUnsignedVarInt\\(\\) expects int, bool\\|float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putVarInt\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\utils\\\\BinaryStream\\:\\:putVarLong\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Parameter \\#1 \\$vector of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putVector3Nullable\\(\\) expects pocketmine\\\\math\\\\Vector3\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
+
+		-
+			message: "#^Cannot access offset 'down' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/RakLibInterface.php
+
+		-
+			message: "#^Cannot access offset 'up' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/RakLibInterface.php
+
+		-
+			message: "#^Cannot cast mixed to int\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/RakLibInterface.php
+
+		-
+			message: "#^Parameter \\#1 \\$upload of method pocketmine\\\\network\\\\Network\\:\\:addStatistics\\(\\) expects float, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/RakLibInterface.php
+
+		-
+			message: "#^Parameter \\#2 \\$download of method pocketmine\\\\network\\\\Network\\:\\:addStatistics\\(\\) expects float, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/RakLibInterface.php
+
+		-
+			message: "#^Cannot access offset 'exp' on mixed\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
+
+		-
+			message: "#^Cannot access offset 'identityPublicKey' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
+
+		-
+			message: "#^Cannot access offset 'nbf' on mixed\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
+
+		-
+			message: "#^Cannot access offset 'x5u' on mixed\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
+
+		-
+			message: "#^Cannot use array destructuring on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
+
+		-
+			message: "#^Offset 'chain' does not exist on array\\{chain\\?\\: array\\<int, string\\>\\}\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function str_split expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strlen expects string, string\\|false given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function wordwrap expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
+
+		-
+			message: "#^Argument of an invalid type array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Cannot access offset string on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\convert\\\\RuntimeBlockMapping\\:\\:getBedrockKnownStates\\(\\) should return array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\> but returns array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Offset mixed does not exist on array\\<pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\>\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Parameter \\#1 \\$buffer of class pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream constructor expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Parameter \\#2 \\$legacyId of static method pocketmine\\\\network\\\\mcpe\\\\convert\\\\RuntimeBlockMapping\\:\\:registerMapping\\(\\) expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\AddActorPacket\\:\\:\\$metadata \\(array\\<int, array\\{int, mixed\\}\\>\\) does not accept array\\<int, mixed\\>\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/AddActorPacket.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\AddItemActorPacket\\:\\:\\$metadata \\(array\\<int, array\\{int, mixed\\}\\>\\) does not accept array\\<int, mixed\\>\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/AddItemActorPacket.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\AddPlayerPacket\\:\\:\\$metadata \\(array\\<int, array\\{int, mixed\\}\\>\\) does not accept array\\<int, mixed\\>\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/AddPlayerPacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/AddVolumeEntityPacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/AvailableActorIdentifiersPacket.php
 
 		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\AvailableActorIdentifiersPacket\\:\\:\\$namedtag \\(string\\) on left side of \\?\\? is not nullable\\.$#"
@@ -831,9 +3436,144 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/protocol/AvailableActorIdentifiersPacket.php
 
 		-
+			message: "#^Static property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\AvailableActorIdentifiersPacket\\:\\:\\$DEFAULT_NBT_CACHE \\(string\\|null\\) does not accept string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/AvailableActorIdentifiersPacket.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BatchPacket\\:\\:\\$payload \\(string\\) does not accept string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/BatchPacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/BiomeDefinitionListPacket.php
+
+		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BiomeDefinitionListPacket\\:\\:\\$namedtag \\(string\\) on left side of \\?\\? is not nullable\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/BiomeDefinitionListPacket.php
+
+		-
+			message: "#^Static property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BiomeDefinitionListPacket\\:\\:\\$DEFAULT_NBT_CACHE \\(string\\|null\\) does not accept string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/BiomeDefinitionListPacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/ItemComponentPacket.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\LevelEventGenericPacket\\:\\:\\$eventData \\(string\\) does not accept string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/LevelEventGenericPacket.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Cannot access offset 'XUID' on mixed\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Cannot access offset 'chain' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Cannot access offset 'displayName' on mixed\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Cannot access offset 'identity' on mixed\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$token of static method pocketmine\\\\utils\\\\Utils\\:\\:decodeJWT\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\LoginPacket\\:\\:\\$chainData \\(array\\{chain\\?\\: array\\<int, string\\>\\}\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\LoginPacket\\:\\:\\$clientId \\(int\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\LoginPacket\\:\\:\\$clientUUID \\(string\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\LoginPacket\\:\\:\\$identityPublicKey \\(string\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\LoginPacket\\:\\:\\$locale \\(string\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\LoginPacket\\:\\:\\$serverAddress \\(string\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\LoginPacket\\:\\:\\$username \\(string\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\LoginPacket\\:\\:\\$xuid \\(string\\|null\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/LoginPacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/PositionTrackingDBServerBroadcastPacket.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\SetActorDataPacket\\:\\:\\$metadata \\(array\\<int, array\\{int, mixed\\}\\>\\) does not accept array\\<int, mixed\\>\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/SetActorDataPacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/SetScorePacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$v of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putString\\(\\) expects string, string\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/SetScorePacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$eid of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putEntityUniqueId\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/SetScoreboardIdentityPacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/StartGamePacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$str of method pocketmine\\\\utils\\\\BinaryStream\\:\\:put\\(\\) expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/SyncActorPropertyPacket.php
 
 		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\UnknownPacket\\:\\:\\$payload \\(string\\) on left side of \\?\\? is not nullable\\.$#"
@@ -841,9 +3581,169 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/protocol/UnknownPacket.php
 
 		-
+			message: "#^Parameter \\#3 \\$resourcePatch of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinData constructor expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/types/LegacySkinAdapter.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:putBlockPosition\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/protocol/types/inventory/UseItemTransactionData.php
+
+		-
+			message: "#^Cannot call method wakeupSleeper\\(\\) on pocketmine\\\\snooze\\\\SleeperNotifier\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/rcon/RCONInstance.php
+
+		-
+			message: "#^Method pocketmine\\\\permission\\\\DefaultPermissions\\:\\:registerPermission\\(\\) should return pocketmine\\\\permission\\\\Permission but returns pocketmine\\\\permission\\\\Permission\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/permission/DefaultPermissions.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method pocketmine\\\\permission\\\\Permission\\:\\:getByName\\(\\) expects bool\\|string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/permission/Permission.php
+
+		-
+			message: "#^Parameter \\#2 \\$description of class pocketmine\\\\permission\\\\Permission constructor expects string\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/permission/Permission.php
+
+		-
 			message: "#^Variable method call on pocketmine\\\\event\\\\Listener\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/plugin/MethodEventExecutor.php
+
+		-
+			message: "#^Method pocketmine\\\\plugin\\\\PluginBase\\:\\:getConfig\\(\\) should return pocketmine\\\\utils\\\\Config but returns pocketmine\\\\utils\\\\Config\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginBase.php
+
+		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Array \\(array\\<string\\>\\) does not accept mixed\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Parameter \\#1 \\$data of static method pocketmine\\\\permission\\\\Permission\\:\\:loadPermissions\\(\\) expects array\\<string, array\\<string, mixed\\>\\>, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Parameter \\#1 \\$haystack of function stripos expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Parameter \\#1 \\$plugin of method pocketmine\\\\plugin\\\\PluginDescription\\:\\:loadMap\\(\\) expects array, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function mb_strtoupper expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$depend \\(array\\<string\\>\\) does not accept array\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$loadBefore \\(array\\<string\\>\\) does not accept array\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$main \\(string\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$name \\(string\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$order \\(int\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Property pocketmine\\\\plugin\\\\PluginDescription\\:\\:\\$softDepend \\(array\\<string\\>\\) does not accept array\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Parameter \\#1 \\$description of method pocketmine\\\\command\\\\Command\\:\\:setDescription\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$permissionMessage of method pocketmine\\\\command\\\\Command\\:\\:setPermissionMessage\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginManager.php
+
+		-
+			message: "#^Parameter \\#1 \\$usage of method pocketmine\\\\command\\\\Command\\:\\:setUsage\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginManager.php
+
+		-
+			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackChunk\\(\\) should return string but returns string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
+
+		-
+			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackSize\\(\\) should return int but returns int\\<0, max\\>\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
+
+		-
+			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getSha256\\(\\) should return string but returns string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strlen expects string, string\\|false given\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
+
+		-
+			message: "#^Parameter \\#2 \\$code of class pocketmine\\\\resourcepacks\\\\ResourcePackException constructor expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
 
 		-
 			message: "#^Parameter \\#2 \\$length of function fread expects int\\<0, max\\>, int given\\.$#"
@@ -851,12 +3751,282 @@ parameters:
 			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
 
 		-
+			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
+
+		-
+			message: "#^Property pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:\\$fileResource \\(resource\\) does not accept resource\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
+
+		-
+			message: "#^Property pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:\\$sha256 \\(string\\|null\\) does not accept string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
+
+		-
+			message: "#^Cannot call method handleException\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/scheduler/AsyncTask.php
+
+		-
 			message: "#^PHPDoc type pocketmine\\\\scheduler\\\\AsyncWorker\\|null of property pocketmine\\\\scheduler\\\\AsyncTask\\:\\:\\$worker is not the same as PHPDoc type Worker of overridden property Threaded\\:\\:\\$worker\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/scheduler/AsyncTask.php
 
 		-
+			message: "#^Parameter \\#1 \\$data of function unserialize expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/scheduler/AsyncTask.php
+
+		-
+			message: "#^Property pocketmine\\\\scheduler\\\\AsyncTask\\:\\:\\$result \\(bool\\|float\\|int\\|string\\|null\\) does not accept mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/scheduler/AsyncTask.php
+
+		-
+			message: "#^Cannot call method getAsyncWorkerId\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/scheduler/DumpWorkerMemoryTask.php
+
+		-
+			message: "#^Cannot call method getLogger\\(\\) on pocketmine\\\\scheduler\\\\AsyncWorker\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/scheduler/DumpWorkerMemoryTask.php
+
+		-
+			message: "#^Cannot call method toBinary\\(\\) on pocketmine\\\\utils\\\\UUID\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/scheduler/SendUsageTask.php
+
+		-
+			message: "#^Cannot call method getNextRun\\(\\) on array\\<string, int\\|pocketmine\\\\scheduler\\\\TaskHandler\\>\\|int\\|pocketmine\\\\scheduler\\\\TaskHandler\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/scheduler/TaskScheduler.php
+
+		-
 			message: "#^Constructor of class pocketmine\\\\scheduler\\\\TaskScheduler has an unused parameter \\$logger\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/scheduler/TaskScheduler.php
+
+		-
+			message: "#^Parameter \\#1 \\$tag of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setTag\\(\\) expects pocketmine\\\\nbt\\\\tag\\\\NamedTag, pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Banner.php
+
+		-
+			message: "#^Argument of an invalid type pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Chest.php
+
+		-
+			message: "#^Cannot call method isChunkLoaded\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Chest.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of class pocketmine\\\\math\\\\Vector3 constructor expects float\\|int, int\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Chest.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\level\\\\Level\\:\\:getTileAt\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Chest.php
+
+		-
+			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, int\\|null given\\.$#"
+			count: 4
+			path: ../../../src/pocketmine/tile/Chest.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\level\\\\Level\\:\\:getTileAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Chest.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of class pocketmine\\\\math\\\\Vector3 constructor expects float\\|int, int\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Chest.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\level\\\\Level\\:\\:getTileAt\\(\\) expects int, int\\|null given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Chest.php
+
+		-
+			message: "#^Property pocketmine\\\\tile\\\\Chest\\:\\:\\$pairX \\(int\\|null\\) does not accept float\\|int\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/tile/Chest.php
+
+		-
+			message: "#^Property pocketmine\\\\tile\\\\Chest\\:\\:\\$pairZ \\(int\\|null\\) does not accept float\\|int\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/tile/Chest.php
+
+		-
+			message: "#^Argument of an invalid type pocketmine\\\\nbt\\\\tag\\\\ListTag\\|null supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Furnace.php
+
+		-
+			message: "#^Cannot call method broadcastPacketToViewers\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Spawnable.php
+
+		-
+			message: "#^Cannot call method clearChunkCache\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Spawnable.php
+
+		-
+			message: "#^Parameter \\#2 \\$value of class pocketmine\\\\nbt\\\\tag\\\\IntTag constructor expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/tile/Spawnable.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BlockActorDataPacket\\:\\:\\$x \\(int\\) does not accept float\\|int\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Spawnable.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BlockActorDataPacket\\:\\:\\$y \\(int\\) does not accept float\\|int\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Spawnable.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\BlockActorDataPacket\\:\\:\\$z \\(int\\) does not accept float\\|int\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Spawnable.php
+
+		-
+			message: "#^Array \\(array\\<class\\-string\\<pocketmine\\\\tile\\\\Tile\\>, string\\>\\) does not accept string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Tile.php
+
+		-
+			message: "#^Cannot access property \\$updateTiles on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Tile.php
+
+		-
+			message: "#^Cannot call method getBlockAt\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Tile.php
+
+		-
+			message: "#^Cannot call method removeTile\\(\\) on pocketmine\\\\level\\\\Level\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/tile/Tile.php
+
+		-
+			message: "#^Parameter \\#2 \\$value of method pocketmine\\\\nbt\\\\tag\\\\CompoundTag\\:\\:setInt\\(\\) expects int, float\\|int given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/tile/Tile.php
+
+		-
+			message: "#^Cannot call method getFullVersion\\(\\) on pocketmine\\\\utils\\\\VersionString\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/updater/AutoUpdater.php
+
+		-
+			message: "#^Offset 'date' does not exist on array\\<string, mixed\\>\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/updater/AutoUpdater.php
+
+		-
+			message: "#^Offset 'details_url' does not exist on array\\<string, mixed\\>\\|null\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/updater/AutoUpdater.php
+
+		-
+			message: "#^Offset 'download_url' does not exist on array\\<string, mixed\\>\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/updater/AutoUpdater.php
+
+		-
+			message: "#^Parameter \\#1 \\$baseVersion of class pocketmine\\\\utils\\\\VersionString constructor expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/updater/AutoUpdater.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function strtolower expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/updater/AutoUpdater.php
+
+		-
+			message: "#^Parameter \\#2 \\$isDevBuild of class pocketmine\\\\utils\\\\VersionString constructor expects bool, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/updater/AutoUpdater.php
+
+		-
+			message: "#^Parameter \\#2 \\$timestamp of function date expects int\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/updater/AutoUpdater.php
+
+		-
+			message: "#^Parameter \\#3 \\$buildNumber of class pocketmine\\\\utils\\\\VersionString constructor expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/updater/AutoUpdater.php
+
+		-
+			message: "#^Cannot access offset string on mixed\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/utils/Config.php
+
+		-
+			message: "#^Method pocketmine\\\\utils\\\\Config\\:\\:fixYAMLIndexes\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Config.php
+
+		-
+			message: "#^Parameter \\#2 \\$offset of function substr expects int, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Internet.php
+
+		-
+			message: "#^Parameter \\#3 \\$length of function substr expects int\\|null, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Internet.php
+
+		-
+			message: "#^Method pocketmine\\\\utils\\\\MainLogger\\:\\:getLogger\\(\\) should return pocketmine\\\\utils\\\\MainLogger but returns pocketmine\\\\utils\\\\MainLogger\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/MainLogger.php
+
+		-
+			message: "#^Parameter \\#1 \\$string of function trim expects string, string\\|false given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Timezone.php
+
+		-
+			message: "#^Cannot cast mixed to string\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Utils.php
+
+		-
+			message: "#^Method pocketmine\\\\utils\\\\Utils\\:\\:printable\\(\\) should return string but returns string\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Utils.php
+
+		-
+			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Utils\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Utils.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/utils/Utils.php
+
+		-
+			message: "#^Parameter \\#1 \\$enchantment of class pocketmine\\\\item\\\\enchantment\\\\EnchantmentInstance constructor expects pocketmine\\\\item\\\\enchantment\\\\Enchantment, pocketmine\\\\item\\\\enchantment\\\\Enchantment\\|null given\\.$#"
+			count: 1
+			path: ../../phpunit/item/ItemTest.php
+
+		-
+			message: "#^Cannot call method cancel\\(\\) on pocketmine\\\\scheduler\\\\TaskHandler\\|null\\.$#"
+			count: 1
+			path: ../../plugins/TesterPlugin/src/pmmp/TesterPlugin/CheckTestCompletionTask.php
 
