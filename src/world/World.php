@@ -2829,7 +2829,7 @@ class World implements ChunkManager{
 			//too many chunks are already generating; delay resolution of the request until later
 			return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
 		}
-		return $this->orderChunkPopulation($chunkX, $chunkZ, $associatedChunkLoader);
+		return $this->internalOrderChunkPopulation($chunkX, $chunkZ, $associatedChunkLoader, $resolver);
 	}
 
 	/**
@@ -2848,6 +2848,14 @@ class World implements ChunkManager{
 			return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
 		}
 
+		return $this->internalOrderChunkPopulation($chunkX, $chunkZ, $associatedChunkLoader, $resolver);
+	}
+
+	/**
+	 * @phpstan-param PromiseResolver<Chunk>|null $resolver
+	 * @phpstan-return Promise<Chunk>
+	 */
+	private function internalOrderChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader, ?PromiseResolver $resolver) : Promise{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 
 		Timings::$population->startTiming();
