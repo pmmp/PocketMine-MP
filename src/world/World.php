@@ -2760,8 +2760,17 @@ class World implements ChunkManager{
 
 	private function drainPopulationRequestQueue() : void{
 		$failed = [];
+		$seen = [];
 		while(count($this->activeChunkPopulationTasks) < $this->maxConcurrentChunkPopulationTasks && !$this->chunkPopulationRequestQueue->isEmpty()){
 			$nextChunkHash = $this->chunkPopulationRequestQueue->dequeue();
+			if(isset($seen[$nextChunkHash])){
+				//We may have previously requested this, decided we didn't want it, and then decided we did want it
+				//again, all before the generation request got executed. In that case, the chunk hash may appear in the
+				//queue multiple times (it can't be quickly removed from the queue when the request is cancelled, so we
+				//leave it in the queue).
+				continue;
+			}
+			$seen[$nextChunkHash] = true;
 			World::getXZ($nextChunkHash, $nextChunkX, $nextChunkZ);
 			if(isset($this->chunkPopulationRequestMap[$nextChunkHash])){
 				assert(!isset($this->activeChunkPopulationTasks[$nextChunkHash]), "Population for chunk $nextChunkX $nextChunkZ already running");
