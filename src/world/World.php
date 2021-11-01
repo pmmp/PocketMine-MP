@@ -2782,22 +2782,16 @@ class World implements ChunkManager{
 	}
 
 	/**
-	 * Attempts to initiate asynchronous generation/population of the target chunk, if it's currently reasonable to do
-	 * so (and if it isn't already generated/populated).
-	 * If the generator is busy, the request will be put into a queue and delayed until a better time.
-	 *
-	 * A ChunkLoader can be associated with the generation request to ensure that the generation request is cancelled if
-	 * no loaders are attached to the target chunk. If no loader is provided, one will be assigned (and automatically
-	 * removed when the generation request completes).
-	 *
-	 * @phpstan-return Promise<Chunk>
+	 * Checks if a chunk needs to be populated, and whether it's ready to do so.
+	 * @return bool[]|PromiseResolver[]|null[]
+	 * @phpstan-return array{?PromiseResolver<Chunk>, bool}
 	 */
-	public function requestChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
+	private function checkChunkPopulationPreconditions(int $chunkX, int $chunkZ) : array{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$resolver = $this->chunkPopulationRequestMap[$chunkHash] ?? null;
 		if($resolver !== null && isset($this->activeChunkPopulationTasks[$chunkHash])){
 			//generation is already running
-			return $resolver->getPromise();
+			return [$resolver, false];
 		}
 
 		$temporaryChunkLoader = new class implements ChunkLoader{};
@@ -2809,7 +2803,26 @@ class World implements ChunkManager{
 			$resolver ??= new PromiseResolver();
 			unset($this->chunkPopulationRequestMap[$chunkHash]);
 			$resolver->resolve($chunk);
-			return $resolver->getPromise();
+			return [$resolver, false];
+		}
+		return [$resolver, true];
+	}
+
+	/**
+	 * Attempts to initiate asynchronous generation/population of the target chunk, if it's currently reasonable to do
+	 * so (and if it isn't already generated/populated).
+	 * If the generator is busy, the request will be put into a queue and delayed until a better time.
+	 *
+	 * A ChunkLoader can be associated with the generation request to ensure that the generation request is cancelled if
+	 * no loaders are attached to the target chunk. If no loader is provided, one will be assigned (and automatically
+	 * removed when the generation request completes).
+	 *
+	 * @phpstan-return Promise<Chunk>
+	 */
+	public function requestChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
+		[$resolver, $proceedWithPopulation] = $this->checkChunkPopulationPreconditions($chunkX, $chunkZ);
+		if(!$proceedWithPopulation){
+			return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
 		}
 
 		if(count($this->activeChunkPopulationTasks) >= $this->maxConcurrentChunkPopulationTasks){
@@ -2830,25 +2843,12 @@ class World implements ChunkManager{
 	 * @phpstan-return Promise<Chunk>
 	 */
 	public function orderChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
+		[$resolver, $proceedWithPopulation] = $this->checkChunkPopulationPreconditions($chunkX, $chunkZ);
+		if(!$proceedWithPopulation){
+			return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
+		}
+
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$resolver = $this->chunkPopulationRequestMap[$chunkHash] ?? null;
-		if($resolver !== null && isset($this->activeChunkPopulationTasks[$chunkHash])){
-			//generation is already running
-			return $resolver->getPromise();
-		}
-
-		$temporaryChunkLoader = new class implements ChunkLoader{};
-		$this->registerChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
-		$chunk = $this->loadChunk($chunkX, $chunkZ);
-		if($chunk !== null && $chunk->isPopulated()){
-			$this->unregisterChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
-
-			//chunk is already populated; return a pre-resolved promise that will directly fire callbacks assigned
-			$resolver ??= new PromiseResolver();
-			unset($this->chunkPopulationRequestMap[$chunkHash]);
-			$resolver->resolve($chunk);
-			return $resolver->getPromise();
-		}
 
 		Timings::$population->startTiming();
 
@@ -2869,16 +2869,15 @@ class World implements ChunkManager{
 
 		$chunkPopulationLockId = new ChunkLockId();
 
+		$temporaryChunkLoader = new class implements ChunkLoader{};
 		for($xx = -1; $xx <= 1; ++$xx){
 			for($zz = -1; $zz <= 1; ++$zz){
 				$this->lockChunk($chunkX + $xx, $chunkZ + $zz, $chunkPopulationLockId);
-				if($xx !== 0 || $zz !== 0){ //avoid registering it twice for the center chunk; we already did that above
-					$this->registerChunkLoader($temporaryChunkLoader, $chunkX + $xx, $chunkZ + $zz);
-				}
+				$this->registerChunkLoader($temporaryChunkLoader, $chunkX + $xx, $chunkZ + $zz);
 			}
 		}
 
-		$task = new PopulationTask($this, $chunkX, $chunkZ, $chunk, $temporaryChunkLoader, $chunkPopulationLockId);
+		$task = new PopulationTask($this, $chunkX, $chunkZ, $this->loadChunk($chunkX, $chunkZ), $temporaryChunkLoader, $chunkPopulationLockId);
 		$workerId = $this->workerPool->selectWorker();
 		if(!isset($this->generatorRegisteredWorkers[$workerId])){
 			$this->registerGeneratorToWorker($workerId);
