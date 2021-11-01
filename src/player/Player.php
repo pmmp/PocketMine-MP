@@ -759,7 +759,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		if($this->getHealth() <= 0){
 			$this->logger->debug("Quit while dead, forcing respawn");
-			$this->respawn();
+			$this->actuallyRespawn();
 		}
 	}
 
@@ -2100,16 +2100,21 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function respawn() : void{
-		if($this->respawnLocked){
-			return;
-		}
-		$this->respawnLocked = true;
 		if($this->server->isHardcore()){
 			if($this->kick("You have been banned because you died in hardcore mode")){ //this allows plugins to prevent the ban by cancelling PlayerKickEvent
 				$this->server->getNameBans()->addBan($this->getName(), "Died in hardcore mode");
 			}
 			return;
 		}
+
+		$this->actuallyRespawn();
+	}
+
+	protected function actuallyRespawn() : void{
+		if($this->respawnLocked){
+			return;
+		}
+		$this->respawnLocked = true;
 
 		$this->logger->debug("Waiting for spawn terrain generation for respawn");
 		$spawn = $this->getSpawn();
