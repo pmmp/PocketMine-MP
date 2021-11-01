@@ -16,7 +16,7 @@
       "ext-openssl": "*",
       "ext-pcre": "*",
       "ext-phar": "*",
-      "ext-pthreads": "~3.2.0",
+      "ext-pthreads": "^4.0",
       "ext-reflection": "*",
       "ext-simplexml": "*",
       "ext-sockets": "*",
