@@ -80,33 +80,29 @@ abstract class Projectile extends Entity{
 		$this->setHealth(1);
 		$this->damage = $this->namedtag->getDouble("damage", $this->damage);
 
-		do{
-			$blockHit = null;
-			$blockId = null;
-			$blockData = null;
-
+		(function() : void{
 			if($this->namedtag->hasTag("tileX", IntTag::class) and $this->namedtag->hasTag("tileY", IntTag::class) and $this->namedtag->hasTag("tileZ", IntTag::class)){
 				$blockHit = new Vector3($this->namedtag->getInt("tileX"), $this->namedtag->getInt("tileY"), $this->namedtag->getInt("tileZ"));
 			}else{
-				break;
+				return;
 			}
 
 			if($this->namedtag->hasTag("blockId", IntTag::class)){
 				$blockId = $this->namedtag->getInt("blockId");
 			}else{
-				break;
+				return;
 			}
 
 			if($this->namedtag->hasTag("blockData", ByteTag::class)){
 				$blockData = $this->namedtag->getByte("blockData");
 			}else{
-				break;
+				return;
 			}
 
 			$this->blockHit = $blockHit;
 			$this->blockHitId = $blockId;
 			$this->blockHitData = $blockData;
-		}while(false);
+		})();
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
