@@ -2840,52 +2840,52 @@ class World implements ChunkManager{
 		$temporaryChunkLoader = new class implements ChunkLoader{};
 		$this->registerChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
 		$chunk = $this->loadChunk($chunkX, $chunkZ);
-		if($chunk === null || !$chunk->isPopulated()){
-			Timings::$population->startTiming();
+		if($chunk !== null && $chunk->isPopulated()){
+			$this->unregisterChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
 
-			for($xx = -1; $xx <= 1; ++$xx){
-				for($zz = -1; $zz <= 1; ++$zz){
-					if($this->isChunkLocked($chunkX + $xx, $chunkZ + $zz)){
-						//chunk is already in use by another generation request; queue the request for later
-						return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
-					}
-				}
-			}
-
-			$this->activeChunkPopulationTasks[$chunkHash] = true;
-			if($resolver === null){
-				$resolver = new PromiseResolver();
-				$this->chunkPopulationRequestMap[$chunkHash] = $resolver;
-			}
-
-			$chunkPopulationLockId = new ChunkLockId();
-
-			for($xx = -1; $xx <= 1; ++$xx){
-				for($zz = -1; $zz <= 1; ++$zz){
-					$this->lockChunk($chunkX + $xx, $chunkZ + $zz, $chunkPopulationLockId);
-					if($xx !== 0 || $zz !== 0){ //avoid registering it twice for the center chunk; we already did that above
-						$this->registerChunkLoader($temporaryChunkLoader, $chunkX + $xx, $chunkZ + $zz);
-					}
-				}
-			}
-
-			$task = new PopulationTask($this, $chunkX, $chunkZ, $chunk, $temporaryChunkLoader, $chunkPopulationLockId);
-			$workerId = $this->workerPool->selectWorker();
-			if(!isset($this->generatorRegisteredWorkers[$workerId])){
-				$this->registerGeneratorToWorker($workerId);
-			}
-			$this->workerPool->submitTaskToWorker($task, $workerId);
-
-			Timings::$population->stopTiming();
+			//chunk is already populated; return a pre-resolved promise that will directly fire callbacks assigned
+			$resolver ??= new PromiseResolver();
+			unset($this->chunkPopulationRequestMap[$chunkHash]);
+			$resolver->resolve($chunk);
 			return $resolver->getPromise();
 		}
 
-		$this->unregisterChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
+		Timings::$population->startTiming();
 
-		//chunk is already populated; return a pre-resolved promise that will directly fire callbacks assigned
-		$resolver ??= new PromiseResolver();
-		unset($this->chunkPopulationRequestMap[$chunkHash]);
-		$resolver->resolve($chunk);
+		for($xx = -1; $xx <= 1; ++$xx){
+			for($zz = -1; $zz <= 1; ++$zz){
+				if($this->isChunkLocked($chunkX + $xx, $chunkZ + $zz)){
+					//chunk is already in use by another generation request; queue the request for later
+					return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
+				}
+			}
+		}
+
+		$this->activeChunkPopulationTasks[$chunkHash] = true;
+		if($resolver === null){
+			$resolver = new PromiseResolver();
+			$this->chunkPopulationRequestMap[$chunkHash] = $resolver;
+		}
+
+		$chunkPopulationLockId = new ChunkLockId();
+
+		for($xx = -1; $xx <= 1; ++$xx){
+			for($zz = -1; $zz <= 1; ++$zz){
+				$this->lockChunk($chunkX + $xx, $chunkZ + $zz, $chunkPopulationLockId);
+				if($xx !== 0 || $zz !== 0){ //avoid registering it twice for the center chunk; we already did that above
+					$this->registerChunkLoader($temporaryChunkLoader, $chunkX + $xx, $chunkZ + $zz);
+				}
+			}
+		}
+
+		$task = new PopulationTask($this, $chunkX, $chunkZ, $chunk, $temporaryChunkLoader, $chunkPopulationLockId);
+		$workerId = $this->workerPool->selectWorker();
+		if(!isset($this->generatorRegisteredWorkers[$workerId])){
+			$this->registerGeneratorToWorker($workerId);
+		}
+		$this->workerPool->submitTaskToWorker($task, $workerId);
+
+		Timings::$population->stopTiming();
 		return $resolver->getPromise();
 	}
 
