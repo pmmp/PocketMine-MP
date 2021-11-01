@@ -1,34 +1,64 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\Player\\)\\: bool given\\.$#"
+			message: "#^Cannot access offset 'base_version' on mixed\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/Server.php
+			path: ../../../src/pocketmine/CrashDump.php
 
 		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(string\\)\\: bool given\\.$#"
+			message: "#^Cannot access offset 'build' on mixed\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/Server.php
+			path: ../../../src/pocketmine/CrashDump.php
+
+		-
+			message: "#^Cannot access offset 'composer_libraries' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/CrashDump.php
+
+		-
+			message: "#^Cannot access offset 'git' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/CrashDump.php
+
+		-
+			message: "#^Cannot access offset 'is_dev' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/CrashDump.php
+
+		-
+			message: "#^Cannot access offset 'os' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/CrashDump.php
+
+		-
+			message: "#^Cannot access offset 'php' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/CrashDump.php
+
+		-
+			message: "#^Cannot access offset 'php_os' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/CrashDump.php
+
+		-
+			message: "#^Cannot access offset 'protocol' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/CrashDump.php
+
+		-
+			message: "#^Cannot access offset 'uname' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/CrashDump.php
+
+		-
+			message: "#^Cannot access offset 'zend' on mixed\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/CrashDump.php
 
 		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
-			count: 3
+			count: 2
 			path: ../../../src/pocketmine/command/CommandReader.php
-
-		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\Player\\)\\: bool given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/command/defaults/ListCommand.php
-
-		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\entity\\\\Attribute\\)\\: bool given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/entity/AttributeMap.php
-
-		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\item\\\\Item\\)\\: bool given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/entity/Human.php
 
 		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
@@ -36,24 +66,9 @@ parameters:
 			path: ../../../src/pocketmine/entity/projectile/Projectile.php
 
 		-
-			message: "#^Parameter \\#2 \\$callback of function usort expects callable\\(mixed, mixed\\)\\: int, array\\('pocketmine\\\\\\\\inventory\\\\\\\\CraftingManager', 'sort'\\) given\\.$#"
+			message: "#^Dead catch \\- ReflectionException is never thrown in the try block\\.$#"
 			count: 1
-			path: ../../../src/pocketmine/inventory/CraftingManager.php
-
-		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(string\\)\\: bool given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/lang/BaseLang.php
-
-		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\entity\\\\Entity\\)\\: bool given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/format/Chunk.php
-
-		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(string\\)\\: bool given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
+			path: ../../../src/pocketmine/level/format/io/LevelProviderManager.php
 
 		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
@@ -61,14 +76,24 @@ parameters:
 			path: ../../../src/pocketmine/level/format/io/region/RegionLoader.php
 
 		-
-			message: "#^Parameter \\#2 \\$count of function array_fill expects int\\<0, max\\>, int given\\.$#"
-			count: 2
-			path: ../../../src/pocketmine/level/generator/noise/Noise.php
-
-		-
 			message: "#^Call to function method_exists\\(\\) with pocketmine\\\\network\\\\mcpe\\\\CachedEncapsulatedPacket and '__toString' will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/DataPacket.php
+
+		-
+			message: "#^Parameter \\#1 \\$array of function array_values expects array, array given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Parameter \\#2 \\$array of function array_map expects array, array given\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/plugin/PluginDescription.php
+
+		-
+			message: "#^Dead catch \\- ReflectionException is never thrown in the try block\\.$#"
+			count: 2
+			path: ../../../src/pocketmine/utils/Utils.php
 
 		-
 			message: "#^Strict comparison using \\=\\=\\= between string and false will always evaluate to false\\.$#"

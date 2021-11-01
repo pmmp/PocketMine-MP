@@ -972,11 +972,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
-			count: 32
-			path: ../../../src/pocketmine/item/Potion.php
-
-		-
-			message: "#^Parameter \\#1 \\$effectType of class pocketmine\\\\entity\\\\EffectInstance constructor expects pocketmine\\\\entity\\\\Effect, pocketmine\\\\entity\\\\Effect\\|null given\\.$#"
 			count: 3
 			path: ../../../src/pocketmine/item/Pufferfish.php
 

@@ -26,6 +26,11 @@ parameters:
 			path: ../../../src/pocketmine/MemoryManager.php
 
 		-
+			message: "#^Parameter \\#1 \\$start of method pocketmine\\\\resourcepacks\\\\ResourcePack\\:\\:getPackChunk\\(\\) expects int\\<0, max\\>, int given\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/Player.php
+
+		-
 			message: "#^Parameter \\#3 \\$data of class pocketmine\\\\network\\\\mcpe\\\\protocol\\\\types\\\\SkinImage constructor expects string, string\\|false given\\.$#"
 			count: 3
 			path: ../../../src/pocketmine/Player.php
@@ -196,7 +201,7 @@ parameters:
 			path: ../../../src/pocketmine/block/Sugarcane.php
 
 		-
-			message: "#^Cannot access offset 'mode' on array\\(0 \\=\\> int, 1 \\=\\> int, 2 \\=\\> int, 3 \\=\\> int, 4 \\=\\> int, 5 \\=\\> int, 6 \\=\\> int, 7 \\=\\> int, \\.\\.\\.\\)\\|false\\.$#"
+			message: "#^Cannot access offset 'mode' on array\\{0\\: int, 1\\: int, 2\\: int, 3\\: int, 4\\: int, 5\\: int, 6\\: int, 7\\: int, \\.\\.\\.\\}\\|false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/command/CommandReader.php
 
@@ -396,12 +401,12 @@ parameters:
 			path: ../../../src/pocketmine/level/Explosion.php
 
 		-
-			message: "#^Cannot access offset 'data' on array\\('priority' \\=\\> int, 'data' \\=\\> pocketmine\\\\math\\\\Vector3\\)\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
+			message: "#^Cannot access offset 'data' on array\\{priority\\: int, data\\: pocketmine\\\\math\\\\Vector3\\}\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Level.php
 
 		-
-			message: "#^Cannot access offset 'priority' on array\\('priority' \\=\\> int, 'data' \\=\\> pocketmine\\\\math\\\\Vector3\\)\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
+			message: "#^Cannot access offset 'priority' on array\\{priority\\: int, data\\: pocketmine\\\\math\\\\Vector3\\}\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/Level.php
 
@@ -551,7 +556,7 @@ parameters:
 			path: ../../../src/pocketmine/level/format/io/region/McRegion.php
 
 		-
-			message: "#^Only numeric types are allowed in %%, int\\|false given on the left side\\.$#"
+			message: "#^Only numeric types are allowed in %%, int\\<0, max\\>\\|false given on the left side\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/level/format/io/region/RegionLoader.php
 
@@ -581,7 +586,7 @@ parameters:
 			path: ../../../src/pocketmine/level/generator/object/TallGrass.php
 
 		-
-			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:getGameRules\\(\\) should return array\\<string, array\\(int, bool\\|float\\|int, bool\\)\\> but returns array\\<string, array\\(int, bool\\|float\\|int\\|null, bool\\)\\>\\.$#"
+			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\NetworkBinaryStream\\:\\:getGameRules\\(\\) should return array\\<string, array\\{int, bool\\|float\\|int, bool\\}\\> but returns array\\<string, array\\{int, bool\\|float\\|int\\|null, bool\\}\\>\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
 
@@ -606,7 +611,7 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/NetworkBinaryStream.php
 
 		-
-			message: "#^Offset 'chain' does not exist on array\\(\\?'chain' \\=\\> array\\<int, string\\>\\)\\.$#"
+			message: "#^Offset 'chain' does not exist on array\\{chain\\?\\: array\\<int, string\\>\\}\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/VerifyLoginTask.php
 
@@ -716,7 +721,7 @@ parameters:
 			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackSize\\(\\) should return int but returns int\\|false\\.$#"
+			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackSize\\(\\) should return int but returns int\\<0, max\\>\\|false\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/resourcepacks/ZippedResourcePack.php
 
