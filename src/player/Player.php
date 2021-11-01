@@ -687,7 +687,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 						return;
 					}
 					if(!$this->usedChunks[$index]->equals(UsedChunkStatus::REQUESTED_GENERATION())){
-						throw new AssumptionFailedError("Used chunk status should not have changed while in REQUESTED_GENERATION mode");
+						//We may have previously requested this, decided we didn't want it, and then decided we did want
+						//it again, all before the generation request got executed. In that case, the promise would have
+						//multiple callbacks for this player. In that case, only the first one matters.
+						return;
 					}
 					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_SENDING();
 
