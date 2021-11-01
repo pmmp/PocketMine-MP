@@ -30,7 +30,10 @@ use pocketmine\utils\TextFormat;
  * Handles the achievement list and a bit more
  */
 abstract class Achievement{
-	/** @var array[] */
+	/**
+	 * @var mixed[][]
+	 * @phpstan-var array<string, array{name: string, requires: list<string>}>
+	 */
 	public static $list = [
 		/*"openInventory" => array(
 			"name" => "Taking Inventory",
