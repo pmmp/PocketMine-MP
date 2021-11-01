@@ -210,7 +210,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 			$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
 
 			foreach($this->attachments as $attachment){
-				$attachment->call($level, $message);
+				$attachment->log($level, $message);
 			}
 		});
 	}

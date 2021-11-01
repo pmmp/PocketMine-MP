@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3aab4c7b78ea85bf5e68e8b953cd9e1f",
+    "content-hash": "9b3c01e7b850d45218b81a436f463011",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -508,16 +508,16 @@
         },
         {
             "name": "pocketmine/log",
-            "version": "0.3.0",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Log.git",
-                "reference": "03ab1316da0b1978a7a1c8dd73e1c2a973cb62ec"
+                "reference": "e6c912c0f9055c81d23108ec2d179b96f404c043"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Log/zipball/03ab1316da0b1978a7a1c8dd73e1c2a973cb62ec",
-                "reference": "03ab1316da0b1978a7a1c8dd73e1c2a973cb62ec",
+                "url": "https://api.github.com/repos/pmmp/Log/zipball/e6c912c0f9055c81d23108ec2d179b96f404c043",
+                "reference": "e6c912c0f9055c81d23108ec2d179b96f404c043",
                 "shasum": ""
             },
             "require": {
@@ -527,7 +527,7 @@
                 "pocketmine/spl": "<0.4"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.80",
+                "phpstan/phpstan": "0.12.88",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
@@ -543,28 +543,28 @@
             "description": "Logging components used by PocketMine-MP and related projects",
             "support": {
                 "issues": "https://github.com/pmmp/Log/issues",
-                "source": "https://github.com/pmmp/Log/tree/0.3.0"
+                "source": "https://github.com/pmmp/Log/tree/0.4.0"
             },
-            "time": "2021-05-18T21:00:49+00:00"
+            "time": "2021-06-18T19:08:09+00:00"
         },
         {
             "name": "pocketmine/log-pthreads",
-            "version": "0.2.1",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/LogPthreads.git",
-                "reference": "26f51ed44b1884f6dd72c06a883d9d07613af4f1"
+                "reference": "61f709e8cf36bcc24e4efe02acded680a1ce23cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/26f51ed44b1884f6dd72c06a883d9d07613af4f1",
-                "reference": "26f51ed44b1884f6dd72c06a883d9d07613af4f1",
+                "url": "https://api.github.com/repos/pmmp/LogPthreads/zipball/61f709e8cf36bcc24e4efe02acded680a1ce23cd",
+                "reference": "61f709e8cf36bcc24e4efe02acded680a1ce23cd",
                 "shasum": ""
             },
             "require": {
                 "ext-pthreads": "~3.2.0 || ^4.0",
                 "php": "^7.4 || ^8.0",
-                "pocketmine/log": "^0.2.0 || ^0.3.0"
+                "pocketmine/log": "^0.4.0"
             },
             "conflict": {
                 "pocketmine/spl": "<0.4"
@@ -587,9 +587,9 @@
             "description": "Logging components specialized for pthreads used by PocketMine-MP and related projects",
             "support": {
                 "issues": "https://github.com/pmmp/LogPthreads/issues",
-                "source": "https://github.com/pmmp/LogPthreads/tree/0.2.1"
+                "source": "https://github.com/pmmp/LogPthreads/tree/0.4.0"
             },
-            "time": "2021-11-01T20:41:37+00:00"
+            "time": "2021-11-01T21:42:09+00:00"
         },
         {
             "name": "pocketmine/math",
