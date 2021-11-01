@@ -1,10 +1,7 @@
 includes:
 	- tests/phpstan/configs/actual-problems.neon
-	- tests/phpstan/configs/check-explicit-mixed-baseline.neon
 	- tests/phpstan/configs/gc-hacks.neon
 	- tests/phpstan/configs/impossible-generics.neon
-	- tests/phpstan/configs/l7-baseline.neon
-	- tests/phpstan/configs/l8-baseline.neon
 	- tests/phpstan/configs/php-bugs.neon
 	- tests/phpstan/configs/phpstan-bugs.neon
 	- tests/phpstan/configs/pthreads-bugs.neon
@@ -19,8 +16,7 @@ rules:
 #	- pocketmine\phpstan\rules\ThreadedSupportedTypesRule
 
 parameters:
-	level: 8
-	checkExplicitMixed: true
+	level: 9
 	checkMissingCallableSignature: true
 	treatPhpDocTypesAsCertain: false
 	bootstrapFiles:

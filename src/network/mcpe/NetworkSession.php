@@ -348,6 +348,10 @@ class NetworkSession{
 
 		try{
 			foreach($stream->getPackets($this->packetPool, $this->packetSerializerContext, 500) as [$packet, $buffer]){
+				if($packet === null){
+					$this->logger->debug("Unknown packet: " . base64_encode($buffer));
+					throw new PacketHandlingException("Unknown packet received");
+				}
 				try{
 					$this->handleDataPacket($packet, $buffer);
 				}catch(PacketHandlingException $e){
@@ -924,7 +928,7 @@ class NetworkSession{
 					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
 					return;
 				}
-				if(!$status->equals(UsedChunkStatus::REQUESTED())){
+				if(!$status->equals(UsedChunkStatus::REQUESTED_SENDING())){
 					//TODO: make this an error
 					//this could be triggered due to the shitty way that chunk resends are handled
 					//right now - not because of the spammy re-requesting, but because the chunk status reverts

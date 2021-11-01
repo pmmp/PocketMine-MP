@@ -676,7 +676,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 			++$count;
 
-			$this->usedChunks[$index] = UsedChunkStatus::NEEDED();
+			$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_GENERATION();
+			unset($this->loadQueue[$index]);
 			$this->getWorld()->registerChunkLoader($this->chunkLoader, $X, $Z, true);
 			$this->getWorld()->registerChunkListener($this, $X, $Z);
 
@@ -685,15 +686,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					if(!$this->isConnected() || !isset($this->usedChunks[$index]) || $world !== $this->getWorld()){
 						return;
 					}
-					if(!$this->usedChunks[$index]->equals(UsedChunkStatus::NEEDED())){
-						//TODO: make this an error
-						//we may have added multiple completion handlers, since the Player keeps re-requesting chunks
-						//it doesn't have yet (a relic from the old system, but also currently relied on for chunk resends).
-						//in this event, make sure we don't try to send the chunk multiple times.
+					if(!$this->usedChunks[$index]->equals(UsedChunkStatus::REQUESTED_GENERATION())){
+						//We may have previously requested this, decided we didn't want it, and then decided we did want
+						//it again, all before the generation request got executed. In that case, the promise would have
+						//multiple callbacks for this player. In that case, only the first one matters.
 						return;
 					}
-					unset($this->loadQueue[$index]);
-					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED();
+					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_SENDING();
 
 					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index) : void{
 						$this->usedChunks[$index] = UsedChunkStatus::SENT();
@@ -760,7 +759,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		if($this->getHealth() <= 0){
 			$this->logger->debug("Quit while dead, forcing respawn");
-			$this->respawn();
+			$this->actuallyRespawn();
 		}
 	}
 
@@ -2101,16 +2100,21 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function respawn() : void{
-		if($this->respawnLocked){
-			return;
-		}
-		$this->respawnLocked = true;
 		if($this->server->isHardcore()){
 			if($this->kick("You have been banned because you died in hardcore mode")){ //this allows plugins to prevent the ban by cancelling PlayerKickEvent
 				$this->server->getNameBans()->addBan($this->getName(), "Died in hardcore mode");
 			}
 			return;
 		}
+
+		$this->actuallyRespawn();
+	}
+
+	protected function actuallyRespawn() : void{
+		if($this->respawnLocked){
+			return;
+		}
+		$this->respawnLocked = true;
 
 		$this->logger->debug("Waiting for spawn terrain generation for respawn");
 		$spawn = $this->getSpawn();
