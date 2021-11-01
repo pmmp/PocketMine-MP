@@ -1596,8 +1596,6 @@ class World implements ChunkManager{
 
 		$this->unlockChunk($chunkX, $chunkZ, null);
 
-		$oldBlock = $this->getBlockAt($x, $y, $z, true, false);
-
 		$block = clone $block;
 
 		$block->position($this, $x, $y, $z);
@@ -1619,9 +1617,7 @@ class World implements ChunkManager{
 		}
 
 		if($update){
-			if($oldBlock->getLightFilter() !== $block->getLightFilter() or $oldBlock->getLightLevel() !== $block->getLightLevel()){
-				$this->updateAllLight($x, $y, $z);
-			}
+			$this->updateAllLight($x, $y, $z);
 			$this->tryAddToNeighbourUpdateQueue($pos);
 			foreach($pos->sides() as $side){
 				$this->tryAddToNeighbourUpdateQueue($side);
