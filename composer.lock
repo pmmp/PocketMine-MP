@@ -253,12 +253,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "c8d891b4dff9817d5fcd373dfec0608b20be3b0a"
+                "reference": "146498c279b3dc645ab6b8cdf45f7b96d8a33f8b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/c8d891b4dff9817d5fcd373dfec0608b20be3b0a",
-                "reference": "c8d891b4dff9817d5fcd373dfec0608b20be3b0a",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/146498c279b3dc645ab6b8cdf45f7b96d8a33f8b",
+                "reference": "146498c279b3dc645ab6b8cdf45f7b96d8a33f8b",
                 "shasum": ""
             },
             "require": {
@@ -293,7 +293,7 @@
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
                 "source": "https://github.com/pmmp/BedrockProtocol/tree/master"
             },
-            "time": "2021-10-29T20:54:42+00:00"
+            "time": "2021-11-01T15:46:55+00:00"
         },
         {
             "name": "pocketmine/binaryutils",

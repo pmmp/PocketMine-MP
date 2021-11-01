@@ -348,6 +348,10 @@ class NetworkSession{
 
 		try{
 			foreach($stream->getPackets($this->packetPool, $this->packetSerializerContext, 500) as [$packet, $buffer]){
+				if($packet === null){
+					$this->logger->debug("Unknown packet: " . base64_encode($buffer));
+					throw new PacketHandlingException("Unknown packet received");
+				}
 				try{
 					$this->handleDataPacket($packet, $buffer);
 				}catch(PacketHandlingException $e){
