@@ -359,49 +359,6 @@ class AvailableCommandsPacket extends DataPacket{
 		}
 	}
 
-	/**
-	 * @param string[] $postfixes
-	 * @phpstan-param array<int, string> $postfixes
-	 */
-	private function argTypeToString(int $argtype, array $postfixes) : string{
-		if(($argtype & self::ARG_FLAG_VALID) !== 0){
-			if(($argtype & self::ARG_FLAG_ENUM) !== 0){
-				return "stringenum (" . ($argtype & 0xffff) . ")";
-			}
-
-			switch($argtype & 0xffff){
-				case self::ARG_TYPE_INT:
-					return "int";
-				case self::ARG_TYPE_FLOAT:
-					return "float";
-				case self::ARG_TYPE_VALUE:
-					return "mixed";
-				case self::ARG_TYPE_TARGET:
-					return "target";
-				case self::ARG_TYPE_STRING:
-					return "string";
-				case self::ARG_TYPE_POSITION:
-					return "xyz";
-				case self::ARG_TYPE_MESSAGE:
-					return "message";
-				case self::ARG_TYPE_RAWTEXT:
-					return "text";
-				case self::ARG_TYPE_JSON:
-					return "json";
-				case self::ARG_TYPE_COMMAND:
-					return "command";
-			}
-		}elseif(($argtype & self::ARG_FLAG_POSTFIX) !== 0){
-			$postfix = $postfixes[$argtype & 0xffff];
-
-			return "int (postfix $postfix)";
-		}else{
-			throw new \UnexpectedValueException("Unknown arg type 0x" . dechex($argtype));
-		}
-
-		return "unknown ($argtype)";
-	}
-
 	protected function encodePayload(){
 		/** @var int[] $enumValueIndexes */
 		$enumValueIndexes = [];
