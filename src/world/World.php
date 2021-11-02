@@ -2904,6 +2904,10 @@ class World implements ChunkManager{
 			}
 		);
 		$workerId = $this->workerPool->selectWorker();
+		if(!isset($this->workerPool->getRunningWorkers()[$workerId]) && isset($this->generatorRegisteredWorkers[$workerId])){
+			$this->logger->debug("Selected worker $workerId previously had generator registered, but is now offline");
+			unset($this->generatorRegisteredWorkers[$workerId]);
+		}
 		if(!isset($this->generatorRegisteredWorkers[$workerId])){
 			$this->registerGeneratorToWorker($workerId);
 		}
