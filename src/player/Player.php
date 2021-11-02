@@ -53,6 +53,7 @@ use pocketmine\event\player\PlayerChatEvent;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerDeathEvent;
 use pocketmine\event\player\PlayerDisplayNameChangeEvent;
+use pocketmine\event\player\PlayerEmoteEvent;
 use pocketmine\event\player\PlayerEntityInteractEvent;
 use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\event\player\PlayerGameModeChangeEvent;
@@ -233,6 +234,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected int $startAction = -1;
 	/** @var int[] ID => ticks map */
 	protected array $usedItemsCooldown = [];
+
+	private int $lastEmoteTick = 0;
 
 	protected int $formIdCounter = 0;
 	/** @var Form[] */
@@ -1725,6 +1728,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->flying = $fly;
 		$this->resetFallDistance();
 		return true;
+	}
+
+	public function emote(string $emoteId) : void{
+		$event = new PlayerEmoteEvent($this, $emoteId);
+		$event->call();
+		if(!$event->isCancelled() && $this->getServer()->getTick() - $this->lastEmoteTick > 5){
+			$this->lastEmoteTick = $this->getServer()->getTick();
+			foreach($this->getViewers() as $player){
+				$player->getNetworkSession()->onEmote($this, $emoteId);
+			}
+		}
 	}
 
 	/**
