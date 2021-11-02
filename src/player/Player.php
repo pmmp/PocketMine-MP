@@ -1729,6 +1729,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return true;
 	}
 
+	public function doEmote(string $emoteId) : void{
+		foreach($this->getViewers() as $player){
+			$player->getNetworkSession()->onEmote($this, $emoteId);
+		}
+	}
+
 	/**
 	 * Drops an item on the ground in front of the player.
 	 */

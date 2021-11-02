@@ -40,11 +40,11 @@ class PlayerEmoteEvent extends PlayerEvent implements Cancellable{
 		$this->player = $player;
 	}
 
-	public function getEmoteId() : string {
+	public function getEmoteId() : string{
 		return $this->emoteId;
 	}
 
-	public function setEmoteId(string $emoteId) : void {
+	public function setEmoteId(string $emoteId) : void{
 		$this->emoteId = $emoteId;
 	}
 
