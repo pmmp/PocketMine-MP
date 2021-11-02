@@ -493,7 +493,7 @@ class Block{
 			return $this->position->getWorld()->getBlock($this->position->getSide($side, $step));
 		}
 
-		throw new \InvalidStateException("Block does not have a valid world");
+		throw new \LogicException("Block does not have a valid world");
 	}
 
 	/**

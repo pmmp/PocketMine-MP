@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c21a54bf5e8f7088d29c3e4cec6de1c6",
+    "content-hash": "dc8d53bdcd36e3a444e80154ef4d30f8",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -197,17 +197,42 @@
             "time": "2021-04-24T19:01:55+00:00"
         },
         {
-            "name": "nethergames/bedrock-protocol",
+            "name": "nethergamesmc/bedrock-data",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/NetherGamesMC/BedrockData.git",
+                "reference": "dcc57d21246109bacdc11e0d5edf912788ae8b8b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockData/zipball/dcc57d21246109bacdc11e0d5edf912788ae8b8b",
+                "reference": "dcc57d21246109bacdc11e0d5edf912788ae8b8b",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
+            "support": {
+                "source": "https://github.com/NetherGamesMC/BedrockData/tree/master"
+            },
+            "time": "2021-11-02T17:10:05+00:00"
+        },
+        {
+            "name": "nethergamesmc/bedrock-protocol",
             "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockProtocol.git",
-                "reference": "1bb48cfef13956e1dac6337458c7cf6ac6c914d2"
+                "reference": "59b5ce553226b6ad4a75c810244d82236ad541d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/1bb48cfef13956e1dac6337458c7cf6ac6c914d2",
-                "reference": "1bb48cfef13956e1dac6337458c7cf6ac6c914d2",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/59b5ce553226b6ad4a75c810244d82236ad541d8",
+                "reference": "59b5ce553226b6ad4a75c810244d82236ad541d8",
                 "shasum": ""
             },
             "require": {
@@ -245,7 +270,7 @@
             "support": {
                 "source": "https://github.com/NetherGamesMC/BedrockProtocol/tree/master"
             },
-            "time": "2021-11-02T12:27:31+00:00"
+            "time": "2021-11-02T17:08:12+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
@@ -800,43 +825,6 @@
                 "source": "https://github.com/pmmp/Snooze/tree/0.3.1"
             },
             "time": "2021-11-01T20:50:08+00:00"
-        },
-        {
-            "name": "pocketmine/spl",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pmmp/SPL.git",
-                "reference": "b7a8904f912c1f6d38ad867ff1120614ccb80171"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/b7a8904f912c1f6d38ad867ff1120614ccb80171",
-                "reference": "b7a8904f912c1f6d38ad867ff1120614ccb80171",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2 || ^8.0"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^0.12.8"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "./src"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-3.0"
-            ],
-            "description": "Standard library files required by PocketMine-MP and related projects",
-            "support": {
-                "issues": "https://github.com/pmmp/SPL/issues",
-                "source": "https://github.com/pmmp/SPL/tree/master"
-            },
-            "time": "2021-01-15T15:19:34+00:00"
         },
         {
             "name": "ramsey/collection",
@@ -3496,8 +3484,8 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "nethergames/bedrock-protocol": 20,
-        "pocketmine/spl": 20
+        "nethergamesmc/bedrock-data": 20,
+        "nethergamesmc/bedrock-protocol": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

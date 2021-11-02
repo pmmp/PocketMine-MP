@@ -21,15 +21,12 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock;
+namespace pocketmine\network;
 
-use pocketmine\utils\SingletonTrait;
-use Webmozart\PathUtil\Path;
+/**
+ * Thrown when a network interface fails to start for some reason.
+ * This should be used when, for example, your network interface can't bind to the port it wants.
+ */
+final class NetworkInterfaceStartException extends \RuntimeException{
 
-final class LegacyEntityIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
-	use SingletonTrait;
-
-	public function __construct(){
-		parent::__construct(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'entity_id_map.json'));
-	}
 }

@@ -401,6 +401,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_SERVER_INFO_EXTENDED = "pocketmine.server.info.extended";
 	public const POCKETMINE_SERVER_LICENSE = "pocketmine.server.license";
 	public const POCKETMINE_SERVER_NETWORKSTART = "pocketmine.server.networkStart";
+	public const POCKETMINE_SERVER_NETWORKSTARTFAILED = "pocketmine.server.networkStartFailed";
 	public const POCKETMINE_SERVER_QUERY_RUNNING = "pocketmine.server.query.running";
 	public const POCKETMINE_SERVER_START = "pocketmine.server.start";
 	public const POCKETMINE_SERVER_STARTFINISHED = "pocketmine.server.startFinished";

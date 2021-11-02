@@ -59,7 +59,7 @@ class CompressBatchPromise{
 	public function resolve(string $result) : void{
 		if(!$this->cancelled){
 			if($this->result !== null){
-				throw new \InvalidStateException("Cannot resolve promise more than once");
+				throw new \LogicException("Cannot resolve promise more than once");
 			}
 			$this->result = $result;
 			foreach($this->callbacks as $callback){
@@ -80,7 +80,7 @@ class CompressBatchPromise{
 	public function getResult() : string{
 		$this->checkCancelled();
 		if($this->result === null){
-			throw new \InvalidStateException("Promise has not yet been resolved");
+			throw new \LogicException("Promise has not yet been resolved");
 		}
 		return $this->result;
 	}
@@ -95,7 +95,7 @@ class CompressBatchPromise{
 
 	public function cancel() : void{
 		if($this->hasResult()){
-			throw new \InvalidStateException("Cannot cancel a resolved promise");
+			throw new \LogicException("Cannot cancel a resolved promise");
 		}
 		$this->cancelled = true;
 	}

@@ -151,7 +151,7 @@ class InventoryManager{
 				return;
 			}
 		}
-		throw new \UnsupportedOperationException("Unsupported inventory type");
+		throw new \LogicException("Unsupported inventory type");
 	}
 
 	/** @phpstan-return ObjectSet<ContainerOpenClosure> */

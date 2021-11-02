@@ -7,6 +7,3 @@
 [submodule "build/php"]
 	path = build/php
 	url = https://github.com/NetherGamesMC/php-build-scripts.git
-[submodule "resources/vanilla"]
-	path = resources/vanilla
-	url = https://github.com/NetherGamesMC/BedrockData.git
