@@ -78,9 +78,6 @@ final class CraftingDataCache{
 		$packets = [];
 
 		foreach(GlobalItemTypeDictionary::getInstance()->getDictionaries() as $dictionaryProtocol => $unused){
-			$pk = new CraftingDataPacket();
-			$pk->cleanRecipes = true;
-
 			$counter = 0;
 			$nullUUID = Uuid::fromString(Uuid::NIL);
 			$converter = TypeConverter::getInstance();
