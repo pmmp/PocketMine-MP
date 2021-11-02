@@ -62,6 +62,7 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
+use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
@@ -813,7 +814,8 @@ class NetworkSession{
 	}
 
 	/**
-	 * @param MetadataProperty[] $properties
+	 * @param MetadataProperty[]                   $properties
+	 *
 	 * @phpstan-param array<int, MetadataProperty> $properties
 	 */
 	public function syncActorData(Entity $entity, array $properties) : void{
@@ -905,16 +907,18 @@ class NetworkSession{
 
 	/**
 	 * Instructs the networksession to start using the chunk at the given coordinates. This may occur asynchronously.
+	 *
 	 * @param \Closure $onCompletion To be called when chunk sending has completed.
+	 *
 	 * @phpstan-param \Closure() : void $onCompletion
 	 */
 	public function startUsingChunk(int $chunkX, int $chunkZ, \Closure $onCompletion) : void{
-		Utils::validateCallableSignature(function() : void{}, $onCompletion);
+		Utils::validateCallableSignature(function() : void{ }, $onCompletion);
 
 		$world = $this->player->getLocation()->getWorld();
 		ChunkCache::getInstance($world, $this->compressor)->request($chunkX, $chunkZ)->onResolve(
 
-			//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
+		//this callback may be called synchronously or asynchronously, depending on whether the promise is resolved yet
 			function(CompressBatchPromise $promise) use ($world, $onCompletion, $chunkX, $chunkZ) : void{
 				if(!$this->isConnected()){
 					return;
@@ -1039,6 +1043,10 @@ class NetworkSession{
 
 	public function onTitleDuration(int $fadeIn, int $stay, int $fadeOut) : void{
 		$this->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
+	}
+
+	public function onEmote(Player $from, string $emoteId) : void{
+		$this->sendDataPacket(EmotePacket::create($from->getId(), $emoteId, EmotePacket::FLAG_SERVER));
 	}
 
 	public function tick() : void{
