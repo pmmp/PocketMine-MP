@@ -88,7 +88,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	/** @var PacketBroadcaster */
 	private $broadcaster;
 
-	public function __construct(Server $server){
+	public function __construct(Server $server, string $ip, int $port, bool $ipV6){
 		$this->server = $server;
 		$this->rakServerId = mt_rand(0, PHP_INT_MAX);
 
@@ -101,7 +101,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$this->server->getLogger(),
 			$mainToThreadBuffer,
 			$threadToMainBuffer,
-			new InternetAddress($this->server->getIp(), $this->server->getPort(), 4),
+			new InternetAddress($ip, $port, $ipV6 ? 6 : 4),
 			$this->rakServerId,
 			$this->server->getConfigGroup()->getPropertyInt("network.max-mtu-size", 1492),
 			self::MCPE_RAKNET_PROTOCOL_VERSION,
