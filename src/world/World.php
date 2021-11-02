@@ -2928,6 +2928,9 @@ class World implements ChunkManager{
 
 				foreach($adjacentChunks as $relativeChunkHash => $adjacentChunk){
 					World::getXZ($relativeChunkHash, $relativeX, $relativeZ);
+					if($relativeX < -1 || $relativeX > 1 || $relativeZ < -1 || $relativeZ > 1){
+						throw new AssumptionFailedError("Adjacent chunks should be in range -1 ... +1 coordinates");
+					}
 					$this->setChunk($x + $relativeX, $z + $relativeZ, $adjacentChunk);
 				}
 
