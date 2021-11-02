@@ -34,7 +34,8 @@
       "adhocore/json-comment": "^1.1",
       "fgrosse/phpasn1": "^2.3",
       "netresearch/jsonmapper": "^4.0",
-      "pocketmine/bedrock-protocol": "dev-master",
+      "pocketmine/bedrock-data": "^1.4.0+bedrock-1.17.40",
+      "pocketmine/bedrock-protocol": "^5.0.0+bedrock-1.17.40",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/classloader": "^0.2.0",
@@ -47,7 +48,6 @@
       "pocketmine/raklib": "^0.14.2",
       "pocketmine/raklib-ipc": "^0.1.0",
       "pocketmine/snooze": "^0.3.0",
-      "pocketmine/spl": "dev-master",
       "ramsey/uuid": "^4.1",
       "webmozart/path-util": "^2.3"
    },

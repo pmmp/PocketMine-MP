@@ -536,8 +536,6 @@ class NetworkSession{
 
 	/**
 	 * Instructs the remote client to connect to a different server.
-	 *
-	 * @throws \UnsupportedOperationException
 	 */
 	public function transfer(string $ip, int $port, string $reason = "transfer") : void{
 		$this->tryDisconnect(function() use ($ip, $port, $reason) : void{

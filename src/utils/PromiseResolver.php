@@ -43,7 +43,7 @@ final class PromiseResolver{
 	 */
 	public function resolve($value) : void{
 		if($this->shared->resolved){
-			throw new \InvalidStateException("Promise has already been resolved/rejected");
+			throw new \LogicException("Promise has already been resolved/rejected");
 		}
 		$this->shared->resolved = true;
 		$this->shared->result = $value;
@@ -56,7 +56,7 @@ final class PromiseResolver{
 
 	public function reject() : void{
 		if($this->shared->resolved){
-			throw new \InvalidStateException("Promise has already been resolved/rejected");
+			throw new \LogicException("Promise has already been resolved/rejected");
 		}
 		$this->shared->resolved = true;
 		foreach($this->shared->onFailure as $c){

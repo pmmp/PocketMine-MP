@@ -88,12 +88,9 @@ class TaskScheduler{
 		return $this->tasks->contains($task);
 	}
 
-	/**
-	 * @throws \InvalidStateException
-	 */
 	private function addTask(Task $task, int $delay, int $period) : TaskHandler{
 		if(!$this->enabled){
-			throw new \InvalidStateException("Tried to schedule task to disabled scheduler");
+			throw new \LogicException("Tried to schedule task to disabled scheduler");
 		}
 
 		if($delay <= 0){

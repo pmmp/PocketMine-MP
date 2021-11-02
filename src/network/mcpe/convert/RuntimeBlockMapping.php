@@ -49,7 +49,7 @@ final class RuntimeBlockMapping{
 	private $bedrockKnownStates;
 
 	private function __construct(){
-		$canonicalBlockStatesFile = file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "vanilla", "canonical_block_states.nbt"));
+		$canonicalBlockStatesFile = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"));
 		if($canonicalBlockStatesFile === false){
 			throw new AssumptionFailedError("Missing required resource file");
 		}
@@ -67,7 +67,7 @@ final class RuntimeBlockMapping{
 		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
-		$legacyStateMapReader = PacketSerializer::decoder(file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "vanilla", "r12_to_current_block_map.bin")), 0, new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary()));
+		$legacyStateMapReader = PacketSerializer::decoder(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map.bin")), 0, new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary()));
 		$nbtReader = new NetworkNbtSerializer();
 		while(!$legacyStateMapReader->feof()){
 			$id = $legacyStateMapReader->getString();

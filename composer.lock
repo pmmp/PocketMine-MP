@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9b3c01e7b850d45218b81a436f463011",
+    "content-hash": "3fa50836a0e8560fe59ba9e73cc50c44",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -248,8 +248,34 @@
             "time": "2020-12-01T19:48:11+00:00"
         },
         {
+            "name": "pocketmine/bedrock-data",
+            "version": "1.4.0+bedrock-1.17.40",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/BedrockData.git",
+                "reference": "f29b7be8fa3046d2ee4c6421485b97b3f5b07774"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/f29b7be8fa3046d2ee4c6421485b97b3f5b07774",
+                "reference": "f29b7be8fa3046d2ee4c6421485b97b3f5b07774",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
+            "support": {
+                "issues": "https://github.com/pmmp/BedrockData/issues",
+                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.17.40"
+            },
+            "time": "2021-10-19T16:55:41+00:00"
+        },
+        {
             "name": "pocketmine/bedrock-protocol",
-            "version": "dev-master",
+            "version": "5.0.0+bedrock-1.17.40",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
@@ -277,7 +303,6 @@
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -291,7 +316,7 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/master"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/5.0.0+bedrock-1.17.40"
             },
             "time": "2021-11-02T01:27:05+00:00"
         },
@@ -797,43 +822,6 @@
                 "source": "https://github.com/pmmp/Snooze/tree/0.3.1"
             },
             "time": "2021-11-01T20:50:08+00:00"
-        },
-        {
-            "name": "pocketmine/spl",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pmmp/SPL.git",
-                "reference": "b7a8904f912c1f6d38ad867ff1120614ccb80171"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/b7a8904f912c1f6d38ad867ff1120614ccb80171",
-                "reference": "b7a8904f912c1f6d38ad867ff1120614ccb80171",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2 || ^8.0"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^0.12.8"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "./src"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-3.0"
-            ],
-            "description": "Standard library files required by PocketMine-MP and related projects",
-            "support": {
-                "issues": "https://github.com/pmmp/SPL/issues",
-                "source": "https://github.com/pmmp/SPL/tree/master"
-            },
-            "time": "2021-01-15T15:19:34+00:00"
         },
         {
             "name": "ramsey/collection",
@@ -3492,10 +3480,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "pocketmine/bedrock-protocol": 20,
-        "pocketmine/spl": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
