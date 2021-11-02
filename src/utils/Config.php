@@ -205,8 +205,6 @@ class Config{
 
 	/**
 	 * Flushes the config to disk in the appropriate format.
-	 *
-	 * @throws \InvalidStateException if config type is not valid
 	 */
 	public function save() : void{
 		$content = null;
@@ -227,7 +225,7 @@ class Config{
 				$content = self::writeList(array_keys($this->config));
 				break;
 			default:
-				throw new \InvalidStateException("Config type is unknown, has not been set or not detected");
+				throw new AssumptionFailedError("Config type is unknown, has not been set or not detected");
 		}
 
 		file_put_contents($this->file, $content);
