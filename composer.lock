@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9b3c01e7b850d45218b81a436f463011",
+    "content-hash": "94aedb2c8c81dd851b775b7b4e1467cb",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -797,43 +797,6 @@
                 "source": "https://github.com/pmmp/Snooze/tree/0.3.1"
             },
             "time": "2021-11-01T20:50:08+00:00"
-        },
-        {
-            "name": "pocketmine/spl",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/pmmp/SPL.git",
-                "reference": "b7a8904f912c1f6d38ad867ff1120614ccb80171"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/SPL/zipball/b7a8904f912c1f6d38ad867ff1120614ccb80171",
-                "reference": "b7a8904f912c1f6d38ad867ff1120614ccb80171",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.2 || ^8.0"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^0.12.8"
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "./src"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL-3.0"
-            ],
-            "description": "Standard library files required by PocketMine-MP and related projects",
-            "support": {
-                "issues": "https://github.com/pmmp/SPL/issues",
-                "source": "https://github.com/pmmp/SPL/tree/master"
-            },
-            "time": "2021-01-15T15:19:34+00:00"
         },
         {
             "name": "ramsey/collection",
@@ -3493,8 +3456,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "pocketmine/bedrock-protocol": 20,
-        "pocketmine/spl": 20
+        "pocketmine/bedrock-protocol": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

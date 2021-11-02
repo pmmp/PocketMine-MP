@@ -47,7 +47,6 @@
       "pocketmine/raklib": "^0.14.2",
       "pocketmine/raklib-ipc": "^0.1.0",
       "pocketmine/snooze": "^0.3.0",
-      "pocketmine/spl": "dev-master",
       "ramsey/uuid": "^4.1",
       "webmozart/path-util": "^2.3"
    },
