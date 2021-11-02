@@ -1731,12 +1731,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function emote(string $emoteId) : void{
-		$event = new PlayerEmoteEvent($this, $emoteId);
-		$event->call();
-		if(!$event->isCancelled() && $this->getServer()->getTick() - $this->lastEmoteTick > 5){
-			$this->lastEmoteTick = $this->getServer()->getTick();
-			foreach($this->getViewers() as $player){
-				$player->getNetworkSession()->onEmote($this, $emoteId);
+		$currentTick = $this->server->getTick();
+		if($currentTick - $this->lastEmoteTick > 5){
+			$this->lastEmoteTick = $currentTick;
+			$event = new PlayerEmoteEvent($this, $emoteId);
+			$event->call();
+			if(!$event->isCancelled()){
+				foreach($this->getViewers() as $player){
+					$player->getNetworkSession()->onEmote($this, $emoteId);
+				}
 			}
 		}
 	}
