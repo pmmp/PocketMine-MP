@@ -2889,7 +2889,22 @@ class World implements ChunkManager{
 			}
 		}
 
-		$task = new PopulationTask($this, $chunkX, $chunkZ, $this->loadChunk($chunkX, $chunkZ), $temporaryChunkLoader, $chunkPopulationLockId);
+		$centerChunk = $this->loadChunk($chunkX, $chunkZ);
+		$adjacentChunks = $this->getAdjacentChunks($chunkX, $chunkZ);
+		$task = new PopulationTask(
+			$this->worldId,
+			$chunkX,
+			$chunkZ,
+			$centerChunk,
+			$adjacentChunks,
+			function(Chunk $centerChunk, array $adjacentChunks) use ($chunkPopulationLockId, $chunkX, $chunkZ, $temporaryChunkLoader) : void{
+				if(!$this->isLoaded()){
+					return;
+				}
+
+				$this->generateChunkCallback($chunkPopulationLockId, $chunkX, $chunkZ, $centerChunk, $adjacentChunks, $temporaryChunkLoader);
+			}
+		);
 		$workerId = $this->workerPool->selectWorker();
 		if(!isset($this->generatorRegisteredWorkers[$workerId])){
 			$this->registerGeneratorToWorker($workerId);
@@ -2904,7 +2919,7 @@ class World implements ChunkManager{
 	 * @param Chunk[] $adjacentChunks chunkHash => chunk
 	 * @phpstan-param array<int, Chunk> $adjacentChunks
 	 */
-	public function generateChunkCallback(ChunkLockId $chunkLockId, int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
+	private function generateChunkCallback(ChunkLockId $chunkLockId, int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
 		Timings::$generationCallback->startTiming();
 
 		$dirtyChunks = 0;
