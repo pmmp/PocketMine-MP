@@ -36,7 +36,6 @@ use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
-use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
 use raklib\generic\SocketException;
 use raklib\protocol\EncapsulatedPacket;

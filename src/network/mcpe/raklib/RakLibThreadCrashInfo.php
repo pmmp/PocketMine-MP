@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\raklib;
 
 use pocketmine\utils\Filesystem;
 use function get_class;
+use function sprintf;
 
 final class RakLibThreadCrashInfo{
 
