@@ -2918,7 +2918,11 @@ class World implements ChunkManager{
 			}
 		}
 
-		if(isset($this->chunkPopulationRequestMap[$index = World::chunkHash($x, $z)]) && isset($this->activeChunkPopulationTasks[$index])){
+		$index = World::chunkHash($x, $z);
+		if(!isset($this->chunkPopulationRequestMap[$index])){
+			$this->logger->debug("Discarding population result for chunk x=$x,z=$z - promise was already broken");
+			unset($this->activeChunkPopulationTasks[$index]);
+		}elseif(isset($this->activeChunkPopulationTasks[$index])){
 			if($dirtyChunks === 0){
 				$oldChunk = $this->loadChunk($x, $z);
 				$this->setChunk($x, $z, $chunk);
