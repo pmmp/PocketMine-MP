@@ -28,7 +28,7 @@
       "adhocore/json-comment": "^1.1",
       "pocketmine/binaryutils": "^0.1.9",
       "pocketmine/callback-validator": "^1.0.2",
-      "pocketmine/classloader": "^0.1.0",
+      "pocketmine/classloader": "^0.2.0",
       "pocketmine/log": "^0.2.0",
       "pocketmine/log-pthreads": "^0.1.0",
       "pocketmine/math": "^0.2.0",
