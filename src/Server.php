@@ -739,7 +739,7 @@ class Server{
 
 	public function __construct(\DynamicClassLoader $autoloader, \AttachableThreadedLogger $logger, string $dataPath, string $pluginPath){
 		if(self::$instance !== null){
-			throw new \InvalidStateException("Only one server instance can exist at once");
+			throw new \LogicException("Only one server instance can exist at once");
 		}
 		self::$instance = $this;
 		$this->startTime = microtime(true);

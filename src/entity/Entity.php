@@ -980,7 +980,7 @@ abstract class Entity{
 
 	final public function scheduleUpdate() : void{
 		if($this->closed){
-			throw new \InvalidStateException("Cannot schedule update on garbage entity " . get_class($this));
+			throw new \LogicException("Cannot schedule update on garbage entity " . get_class($this));
 		}
 		$this->getWorld()->updateEntities[$this->id] = $this;
 	}

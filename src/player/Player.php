@@ -475,7 +475,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function getNetworkSession() : NetworkSession{
 		if($this->networkSession === null){
-			throw new \InvalidStateException("Player is not connected");
+			throw new \LogicException("Player is not connected");
 		}
 		return $this->networkSession;
 	}
@@ -1941,7 +1941,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function onPostDisconnect(string $reason, Translatable|string|null $quitMessage) : void{
 		if($this->isConnected()){
-			throw new \InvalidStateException("Player is still connected");
+			throw new \LogicException("Player is still connected");
 		}
 
 		//prevent the player receiving their own disconnect message

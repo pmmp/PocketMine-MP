@@ -64,7 +64,7 @@ abstract class Terminal{
 
 	public static function hasFormattingCodes() : bool{
 		if(self::$formattingCodes === null){
-			throw new \InvalidStateException("Formatting codes have not been initialized");
+			throw new \LogicException("Formatting codes have not been initialized");
 		}
 		return self::$formattingCodes;
 	}

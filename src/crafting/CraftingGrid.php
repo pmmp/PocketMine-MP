@@ -111,7 +111,7 @@ class CraftingGrid extends SimpleInventory{
 			return $this->getItem(($y + $this->startY) * $this->gridWidth + ($x + $this->startX));
 		}
 
-		throw new \InvalidStateException("No ingredients found in grid");
+		throw new \LogicException("No ingredients found in grid");
 	}
 
 	/**

@@ -516,7 +516,7 @@ class World implements ChunkManager{
 	 */
 	public function onUnload() : void{
 		if($this->unloaded){
-			throw new \InvalidStateException("Tried to close a world which is already closed");
+			throw new \LogicException("Tried to close a world which is already closed");
 		}
 
 		foreach($this->unloadCallbacks as $callback){
@@ -770,7 +770,7 @@ class World implements ChunkManager{
 	 */
 	public function doTick(int $currentTick) : void{
 		if($this->unloaded){
-			throw new \InvalidStateException("Attempted to tick a world which has been closed");
+			throw new \LogicException("Attempted to tick a world which has been closed");
 		}
 
 		$this->timings->doTick->startTiming();
@@ -2374,7 +2374,7 @@ class World implements ChunkManager{
 		if(isset($this->chunks[$hash = World::chunkHash($chunkX, $chunkZ)])){
 			$this->chunks[$hash]->addTile($tile);
 		}else{
-			throw new \InvalidStateException("Attempted to create tile " . get_class($tile) . " in unloaded chunk $chunkX $chunkZ");
+			throw new \InvalidArgumentException("Attempted to create tile " . get_class($tile) . " in unloaded chunk $chunkX $chunkZ");
 		}
 
 		//delegate tile ticking to the corresponding block
@@ -2411,8 +2411,6 @@ class World implements ChunkManager{
 	 * returned directly.
 	 *
 	 * @return Chunk|null the requested chunk, or null on failure.
-	 *
-	 * @throws \InvalidStateException
 	 */
 	public function loadChunk(int $x, int $z) : ?Chunk{
 		if(isset($this->chunks[$chunkHash = World::chunkHash($x, $z)])){
