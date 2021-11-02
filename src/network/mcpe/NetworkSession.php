@@ -563,7 +563,7 @@ class NetworkSession{
 	 */
 	private function doServerDisconnect(string $reason, bool $notify = true) : void{
 		if($notify){
-			$this->sendDataPacket($reason === "" ? DisconnectPacket::silent() : DisconnectPacket::message($reason), true);
+			$this->sendDataPacket(DisconnectPacket::create($reason !== "" ? $reason : null), true);
 		}
 
 		$this->sender->close($notify ? $reason : "");
