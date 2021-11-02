@@ -2082,13 +2082,12 @@ class World implements ChunkManager{
 	 */
 	public function getAdjacentChunks(int $x, int $z) : array{
 		$result = [];
-		for($xx = 0; $xx <= 2; ++$xx){
-			for($zz = 0; $zz <= 2; ++$zz){
-				$i = $zz * 3 + $xx;
-				if($i === 4){
+		for($xx = -1; $xx <= 1; ++$xx){
+			for($zz = -1; $zz <= 1; ++$zz){
+				if($xx === 0 && $zz === 0){
 					continue; //center chunk
 				}
-				$result[$i] = $this->loadChunk($x + $xx - 1, $z + $zz - 1);
+				$result[World::chunkHash($xx, $zz)] = $this->loadChunk($x + $xx, $z + $zz);
 			}
 		}
 
@@ -2927,9 +2926,9 @@ class World implements ChunkManager{
 				$oldChunk = $this->loadChunk($x, $z);
 				$this->setChunk($x, $z, $chunk);
 
-				foreach($adjacentChunks as $adjacentChunkHash => $adjacentChunk){
-					World::getXZ($adjacentChunkHash, $xAdjacentChunk, $zAdjacentChunk);
-					$this->setChunk($xAdjacentChunk, $zAdjacentChunk, $adjacentChunk);
+				foreach($adjacentChunks as $relativeChunkHash => $adjacentChunk){
+					World::getXZ($relativeChunkHash, $relativeX, $relativeZ);
+					$this->setChunk($x + $relativeX, $z + $relativeZ, $adjacentChunk);
 				}
 
 				if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){

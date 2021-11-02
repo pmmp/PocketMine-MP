@@ -36,7 +36,6 @@ use pocketmine\world\World;
 use function array_map;
 use function igbinary_serialize;
 use function igbinary_unserialize;
-use function intdiv;
 
 class PopulationTask extends AsyncTask{
 	private const TLS_KEY_WORLD = "world";
@@ -92,10 +91,9 @@ class PopulationTask extends AsyncTask{
 
 		/** @var Chunk[] $resultChunks */
 		$resultChunks = []; //this is just to keep phpstan's type inference happy
-		foreach($chunks as $i => $c){
-			$cX = (-1 + $i % 3) + $this->chunkX;
-			$cZ = (-1 + intdiv($i, 3)) + $this->chunkZ;
-			$resultChunks[$i] = self::setOrGenerateChunk($manager, $generator, $cX, $cZ, $c);
+		foreach($chunks as $relativeChunkHash => $c){
+			World::getXZ($relativeChunkHash, $relativeX, $relativeZ);
+			$resultChunks[$relativeChunkHash] = self::setOrGenerateChunk($manager, $generator, $this->chunkX + $relativeX, $this->chunkZ + $relativeZ, $c);
 		}
 		$chunks = $resultChunks;
 
@@ -109,8 +107,8 @@ class PopulationTask extends AsyncTask{
 		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
 
 		$serialChunks = [];
-		foreach($chunks as $i => $c){
-			$serialChunks[$i] = $c->isTerrainDirty() ? FastChunkSerializer::serializeTerrain($c) : null;
+		foreach($chunks as $relativeChunkHash => $c){
+			$serialChunks[$relativeChunkHash] = $c->isTerrainDirty() ? FastChunkSerializer::serializeTerrain($c) : null;
 		}
 		$this->adjacentChunks = igbinary_serialize($serialChunks) ?? throw new AssumptionFailedError("igbinary_serialize() returned null");
 	}
@@ -147,12 +145,9 @@ class PopulationTask extends AsyncTask{
 			 */
 			$serialAdjacentChunks = igbinary_unserialize($this->adjacentChunks);
 			$adjacentChunks = [];
-			foreach($serialAdjacentChunks as $i => $c){
+			foreach($serialAdjacentChunks as $relativeChunkHash => $c){
 				if($c !== null){
-					$xx = -1 + $i % 3;
-					$zz = -1 + intdiv($i, 3);
-
-					$adjacentChunks[World::chunkHash($this->chunkX + $xx, $this->chunkZ + $zz)] = FastChunkSerializer::deserializeTerrain($c);
+					$adjacentChunks[$relativeChunkHash] = FastChunkSerializer::deserializeTerrain($c);
 				}
 			}
 
