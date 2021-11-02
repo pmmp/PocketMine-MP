@@ -488,9 +488,8 @@ class InGamePacketHandler extends PacketHandler{
 			if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
 				$this->inventoryManager->syncSelectedHotbarSlot();
 			}
-			$inventory = $this->player->getInventory();
-			if($this->player->isUsingItem() && $inventory->isHotbarSlot($packet->hotbarSlot)){
-				$item = $inventory->getItem($packet->hotbarSlot);
+			if($this->player->isUsingItem()){
+				$item = $this->player->getInventory()->getItemInHand();
 				if($item instanceof Releasable && !($item instanceof Durable)){
 					//TODO: HACK
 					//Why exclude Durable Item
