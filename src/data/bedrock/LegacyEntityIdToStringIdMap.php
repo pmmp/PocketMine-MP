@@ -30,6 +30,6 @@ final class LegacyEntityIdToStringIdMap extends LegacyToStringBidirectionalIdMap
 	use SingletonTrait;
 
 	public function __construct(){
-		parent::__construct(Path::join(\pocketmine\RESOURCE_PATH, 'vanilla', 'entity_id_map.json'));
+		parent::__construct(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'entity_id_map.json'));
 	}
 }

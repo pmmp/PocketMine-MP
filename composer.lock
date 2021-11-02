@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea2d9321ba41afb67761c8f0cf3afe22",
+    "content-hash": "3fa50836a0e8560fe59ba9e73cc50c44",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -246,6 +246,32 @@
                 "source": "https://github.com/cweiske/jsonmapper/tree/v4.0.0"
             },
             "time": "2020-12-01T19:48:11+00:00"
+        },
+        {
+            "name": "pocketmine/bedrock-data",
+            "version": "1.4.0+bedrock-1.17.40",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/BedrockData.git",
+                "reference": "f29b7be8fa3046d2ee4c6421485b97b3f5b07774"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/f29b7be8fa3046d2ee4c6421485b97b3f5b07774",
+                "reference": "f29b7be8fa3046d2ee4c6421485b97b3f5b07774",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0"
+            ],
+            "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
+            "support": {
+                "issues": "https://github.com/pmmp/BedrockData/issues",
+                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.17.40"
+            },
+            "time": "2021-10-19T16:55:41+00:00"
         },
         {
             "name": "pocketmine/bedrock-protocol",
