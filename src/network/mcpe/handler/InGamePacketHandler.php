@@ -894,12 +894,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleEmote(EmotePacket $packet) : bool{
-		$event = new PlayerEmoteEvent($this->player, $packet->getEmoteId());
-		$event->call();
-		if($this->player->getServer()->getTick() - $this->player->lastEmoteTick > 5 && !$event->isCancelled()){
-			$this->player->doEmote($packet->getEmoteId());
-			$this->player->lastEmoteTick = $this->player->getServer()->getTick();
-		}
+		$this->player->emote($packet->getEmoteId());
 		return true;
 	}
 }
