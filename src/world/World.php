@@ -2908,21 +2908,21 @@ class World implements ChunkManager{
 	public function generateChunkCallback(ChunkLockId $chunkLockId, int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
 		Timings::$generationCallback->startTiming();
 
+		$dirtyChunks = 0;
 		for($xx = -1; $xx <= 1; ++$xx){
 			for($zz = -1; $zz <= 1; ++$zz){
 				$this->unregisterChunkLoader($temporaryChunkLoader, $x + $xx, $z + $zz);
+				if(!$this->unlockChunk($x + $xx, $z + $zz, $chunkLockId)){
+					$dirtyChunks++;
+				}
 			}
 		}
 
-		if(isset($this->chunkPopulationRequestMap[$index = World::chunkHash($x, $z)]) && isset($this->activeChunkPopulationTasks[$index])){
-			$dirtyChunks = 0;
-			for($xx = -1; $xx <= 1; ++$xx){
-				for($zz = -1; $zz <= 1; ++$zz){
-					if(!$this->unlockChunk($x + $xx, $z + $zz, $chunkLockId)){
-						$dirtyChunks++;
-					}
-				}
-			}
+		$index = World::chunkHash($x, $z);
+		if(!isset($this->chunkPopulationRequestMap[$index])){
+			$this->logger->debug("Discarding population result for chunk x=$x,z=$z - promise was already broken");
+			unset($this->activeChunkPopulationTasks[$index]);
+		}elseif(isset($this->activeChunkPopulationTasks[$index])){
 			if($dirtyChunks === 0){
 				$oldChunk = $this->loadChunk($x, $z);
 				$this->setChunk($x, $z, $chunk);

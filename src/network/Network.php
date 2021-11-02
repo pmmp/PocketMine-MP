@@ -91,6 +91,9 @@ class Network{
 		$this->sessionManager->tick();
 	}
 
+	/**
+	 * @throws NetworkInterfaceStartException
+	 */
 	public function registerInterface(NetworkInterface $interface) : bool{
 		$ev = new NetworkInterfaceRegisterEvent($interface);
 		$ev->call();
