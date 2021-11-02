@@ -492,6 +492,20 @@ class InGamePacketHandler extends PacketHandler{
 			if($this->player->isUsingItem() && $inventory->isHotbarSlot($packet->hotbarSlot)){
 				$item = $inventory->getItem($packet->hotbarSlot);
 				if($item instanceof Releasable && !($item instanceof Durable)){
+					//TODO: HACK
+					//Why exclude Durable Item
+					//This is a workaround for a possible problem with bows
+					//and tridents.
+					//In fact, the durability values are handled on the client
+					//side, so when you release them, a MobEquipmentPacket
+					//is sent. This is where the problem occurs. If the client has
+					//already started using the item before the server
+					//processes these packets, the client will send another
+					//MobEquipmentPacket because the item in hand will be
+					//updated when the server sends the calculated durability
+					//value. Then, when the item is actually released, the
+					//server side thinks that the client has already suspended
+					//the use of the item, so the item release will be invalid.
 					$this->player->setUsingItem(false);
 				}
 			}
