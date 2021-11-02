@@ -25,16 +25,28 @@ namespace pocketmine\plugin;
 
 use function spl_object_id;
 
+/**
+ * @phpstan-import-type LoggerAttachment from \AttachableLogger
+ */
 class PluginLogger extends \PrefixedLogger implements \AttachableLogger{
 
-	/** @var \LoggerAttachment[] */
+	/**
+	 * @var \Closure[]
+	 * @phpstan-var LoggerAttachment[]
+	 */
 	private $attachments = [];
 
-	public function addAttachment(\LoggerAttachment $attachment){
+	/**
+	 * @phpstan-param LoggerAttachment $attachment
+	 */
+	public function addAttachment(\Closure $attachment){
 		$this->attachments[spl_object_id($attachment)] = $attachment;
 	}
 
-	public function removeAttachment(\LoggerAttachment $attachment){
+	/**
+	 * @phpstan-param LoggerAttachment $attachment
+	 */
+	public function removeAttachment(\Closure $attachment){
 		unset($this->attachments[spl_object_id($attachment)]);
 	}
 
@@ -49,7 +61,7 @@ class PluginLogger extends \PrefixedLogger implements \AttachableLogger{
 	public function log($level, $message){
 		parent::log($level, $message);
 		foreach($this->attachments as $attachment){
-			$attachment->log($level, $message);
+			$attachment($level, $message);
 		}
 	}
 }

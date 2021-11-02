@@ -21,30 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\player;
+namespace pocketmine\world;
 
-use pocketmine\utils\EnumTrait;
+use pocketmine\utils\NotCloneable;
+use pocketmine\utils\NotSerializable;
 
 /**
- * This doc-block is generated automatically, do not modify it manually.
- * This must be regenerated whenever registry members are added, removed or changed.
- * @see build/generate-registry-annotations.php
- * @generate-registry-docblock
+ * Represents a unique lock ID for use with World chunk locking.
  *
- * @method static UsedChunkStatus NEEDED()
- * @method static UsedChunkStatus REQUESTED_GENERATION()
- * @method static UsedChunkStatus REQUESTED_SENDING()
- * @method static UsedChunkStatus SENT()
+ * @see World::lockChunk()
+ * @see World::unlockChunk()
  */
-final class UsedChunkStatus{
-	use EnumTrait;
-
-	protected static function setup() : void{
-		self::registerAll(
-			new self("NEEDED"),
-			new self("REQUESTED_GENERATION"),
-			new self("REQUESTED_SENDING"),
-			new self("SENT")
-		);
-	}
+final class ChunkLockId{
+	use NotCloneable;
+	use NotSerializable;
 }

@@ -364,6 +364,10 @@ class NetworkSession{
 
 		try{
 			foreach($stream->getPackets($this->packetPool, $this->packetSerializerContext, 500) as [$packet, $buffer]){
+				if($packet === null){
+					$this->logger->debug("Unknown packet: " . base64_encode($buffer));
+					throw new PacketHandlingException("Unknown packet received");
+				}
 				try{
 					$this->handleDataPacket($packet, $this->getProtocolId(), $buffer);
 				}catch(PacketHandlingException $e){
@@ -578,7 +582,7 @@ class NetworkSession{
 	 */
 	private function doServerDisconnect(string $reason, bool $notify = true) : void{
 		if($notify){
-			$this->sendDataPacket($reason === "" ? DisconnectPacket::silent() : DisconnectPacket::message($reason), true);
+			$this->sendDataPacket(DisconnectPacket::create($reason !== "" ? $reason : null), true);
 		}
 
 		$event = new SessionDisconnectEvent($this);
@@ -950,7 +954,7 @@ class NetworkSession{
 					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
 					return;
 				}
-				if(!$status->equals(UsedChunkStatus::REQUESTED())){
+				if(!$status->equals(UsedChunkStatus::REQUESTED_SENDING())){
 					//TODO: make this an error
 					//this could be triggered due to the shitty way that chunk resends are handled
 					//right now - not because of the spammy re-requesting, but because the chunk status reverts

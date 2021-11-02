@@ -22,7 +22,7 @@
       "ext-openssl": "*",
       "ext-pcre": "*",
       "ext-phar": "*",
-      "ext-pthreads": "~3.2.0",
+      "ext-pthreads": "^4.0",
       "ext-reflection": "*",
       "ext-simplexml": "*",
       "ext-sockets": "*",
@@ -37,11 +37,11 @@
       "nethergames/bedrock-protocol": "dev-master",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
-      "pocketmine/classloader": "dev-master",
+      "pocketmine/classloader": "^0.2.0",
       "pocketmine/color": "^0.2.0",
       "pocketmine/errorhandler": "^0.3.0",
-      "pocketmine/log": "^0.3.0",
-      "pocketmine/log-pthreads": "^0.2.0",
+      "pocketmine/log": "^0.4.0",
+      "pocketmine/log-pthreads": "^0.4.0",
       "pocketmine/math": "^0.4.0",
       "pocketmine/nbt": "^0.3.0",
       "pocketmine/raklib": "^0.14.2",
@@ -52,9 +52,9 @@
       "webmozart/path-util": "^2.3"
    },
    "require-dev": {
-      "phpstan/phpstan": "0.12.99",
-      "phpstan/phpstan-phpunit": "^0.12.6",
-      "phpstan/phpstan-strict-rules": "^0.12.2",
+      "phpstan/phpstan": "1.0.0",
+      "phpstan/phpstan-phpunit": "^1.0.0",
+      "phpstan/phpstan-strict-rules": "^1.0.0",
       "phpunit/phpunit": "^9.2"
    },
    "repositories": [
