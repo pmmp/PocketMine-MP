@@ -495,7 +495,7 @@ class InGamePacketHandler extends PacketHandler{
 					//TODO: HACK
 					//Why exclude Durable Item
 					//This is a workaround for a possible problem with bows
-					//and tridents.
+					//, tridents, etc...
 					//In fact, the durability values are handled on the client
 					//side, so when you release them, a MobEquipmentPacket
 					//is sent. This is where the problem occurs. If the client has
