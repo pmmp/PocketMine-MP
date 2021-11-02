@@ -1374,7 +1374,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->inventory->setItemInHand($item);
 		}
 
-		$this->setUsingItem($item instanceof Releasable);
+		$this->setUsingItem($item instanceof Releasable && $item->canStartUsingItem($this));
 
 		return true;
 	}

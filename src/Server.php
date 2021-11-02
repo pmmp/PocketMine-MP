@@ -64,6 +64,7 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\Network;
+use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\query\DedicatedQueryNetworkInterface;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\query\QueryInfo;
@@ -980,6 +981,7 @@ class Server{
 			$this->enablePlugins(PluginEnableOrder::POSTWORLD());
 
 			if(!$this->startupPrepareNetworkInterfaces()){
+				$this->forceShutdown();
 				return;
 			}
 
@@ -1113,7 +1115,18 @@ class Server{
 
 	private function startupPrepareNetworkInterfaces() : bool{
 		$useQuery = $this->configGroup->getConfigBool("enable-query", true);
-		if(!$this->network->registerInterface(new RakLibInterface($this)) && $useQuery){
+
+		try{
+			$rakLibRegistered = $this->network->registerInterface(new RakLibInterface($this));
+		}catch(NetworkInterfaceStartException $e){
+			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_networkStartFailed(
+				$this->getIp(),
+				(string) $this->getPort(),
+				$e->getMessage()
+			)));
+			return false;
+		}
+		if(!$rakLibRegistered && $useQuery){
 			//RakLib would normally handle the transport for Query packets
 			//if it's not registered we need to make sure Query still works
 			$this->network->registerInterface(new DedicatedQueryNetworkInterface($this->getIp(), $this->getPort(), new \PrefixedLogger($this->logger, "Dedicated Query Interface")));

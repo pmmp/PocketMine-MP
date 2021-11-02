@@ -21,31 +21,12 @@
 
 declare(strict_types=1);
 
-/**
- * Network-related classes
- */
 namespace pocketmine\network;
 
 /**
- * Network interfaces are transport layers which can be used to transmit packets between the server and clients.
+ * Thrown when a network interface fails to start for some reason.
+ * This should be used when, for example, your network interface can't bind to the port it wants.
  */
-interface NetworkInterface{
+final class NetworkInterfaceStartException extends \RuntimeException{
 
-	/**
-	 * Performs actions needed to start the interface after it is registered.
-	 * @throws NetworkInterfaceStartException
-	 */
-	public function start() : void;
-
-	public function setName(string $name) : void;
-
-	/**
-	 * Called every tick to process events on the interface.
-	 */
-	public function tick() : void;
-
-	/**
-	 * Gracefully shuts down the network interface.
-	 */
-	public function shutdown() : void;
 }
