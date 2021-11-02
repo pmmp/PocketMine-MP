@@ -35,6 +35,8 @@ use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionException;
 use pocketmine\inventory\transaction\TransactionValidationException;
+use pocketmine\item\Durable;
+use pocketmine\item\Releasable;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
@@ -485,6 +487,13 @@ class InGamePacketHandler extends PacketHandler{
 			$this->inventoryManager->onClientSelectHotbarSlot($packet->hotbarSlot);
 			if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
 				$this->inventoryManager->syncSelectedHotbarSlot();
+			}
+			$inventory = $this->player->getInventory();
+			if($this->player->isUsingItem() && $inventory->isHotbarSlot($packet->hotbarSlot)){
+				$item = $inventory->getItem($packet->hotbarSlot);
+				if($item instanceof Releasable && !($item instanceof Durable)){
+					$this->player->setUsingItem(false);
+				}
 			}
 			return true;
 		}
