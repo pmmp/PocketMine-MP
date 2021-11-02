@@ -1270,7 +1270,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Returns whether the player can interact with the specified position. This checks distance and direction.
 	 *
-	 * @param float $maxDiff defaults to half of the 3D diagonal width of a block
+	 * @param float   $maxDiff defaults to half of the 3D diagonal width of a block
 	 */
 	public function canInteract(Vector3 $pos, float $maxDistance, float $maxDiff = M_SQRT3 / 2) : bool{
 		$eyePos = $this->getEyePos();
@@ -1729,12 +1729,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return true;
 	}
 
-	public function doEmote(string $emoteId) : void{
-		foreach($this->getViewers() as $player){
-			$player->getNetworkSession()->onEmote($this, $emoteId);
-		}
-	}
-
 	/**
 	 * Drops an item on the ground in front of the player.
 	 */
@@ -1746,9 +1740,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * Adds a title text to the user's screen, with an optional subtitle.
 	 *
-	 * @param int $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
-	 * @param int $stay Duration in ticks to stay on screen for
-	 * @param int $fadeOut Duration in ticks for fade-out.
+	 * @param int    $fadeIn Duration in ticks for fade-in. If -1 is given, client-sided defaults will be used.
+	 * @param int    $stay Duration in ticks to stay on screen for
+	 * @param int    $fadeOut Duration in ticks for fade-out.
 	 */
 	public function sendTitle(string $title, string $subtitle = "", int $fadeIn = -1, int $stay = -1, int $fadeOut = -1) : void{
 		$this->setTitleDuration($fadeIn, $stay, $fadeOut);
@@ -1941,12 +1935,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	/**
-	 * @param string                   $reason Shown to the player, usually this will appear on their disconnect screen.
-	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
-	 *
 	 * @internal
 	 * This method executes post-disconnect actions and cleanups.
 	 *
+	 * @param string                           $reason Shown to the player, usually this will appear on their disconnect screen.
+	 * @param Translatable|string|null $quitMessage Message to broadcast to online players (null will use default)
 	 */
 	public function onPostDisconnect(string $reason, Translatable|string|null $quitMessage) : void{
 		if($this->isConnected()){

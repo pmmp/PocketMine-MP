@@ -852,8 +852,7 @@ class InGamePacketHandler extends PacketHandler{
 						$inQuotes = true;
 					}else{
 						$backslashes = 0;
-						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){
-						}
+						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
 						if(($backslashes % 2) === 0){ //unescaped quote
 							$inQuotes = false;
 						}
@@ -894,11 +893,11 @@ class InGamePacketHandler extends PacketHandler{
 		return true;
 	}
 
-	public function handleEmote(EmotePacket $packet) : bool{
+	public function handleEmote(EmotePacket $packet) : bool {
 		$event = new PlayerEmoteEvent($this->player, $packet->getEmoteId());
 		$event->call();
 		if($this->player->getServer()->getTick() - $this->player->lastEmoteTick > 5 && !$event->isCancelled()){
-			$this->player->doEmote($packet->getEmoteId());
+			$this->player->getWorld()->broadcastPacketToViewers($this->player->getPosition(), EmotePacket::create($packet->getActorRuntimeId(), $event->getEmoteId(), EmotePacket::FLAG_SERVER));
 			$this->player->lastEmoteTick = $this->player->getServer()->getTick();
 		}
 		return true;
