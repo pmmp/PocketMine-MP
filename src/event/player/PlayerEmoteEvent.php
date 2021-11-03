@@ -21,31 +21,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\utils;
+namespace pocketmine\event\player;
+
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
+use pocketmine\player\Player;
 
 /**
- * @internal
- * @see PromiseResolver
- * @phpstan-template TValue
+ * Called when a player uses an emote.
  */
-final class PromiseSharedData{
-	/**
-	 * @var \Closure[]
-	 * @phpstan-var array<int, \Closure(TValue) : void>
-	 */
-	public array $onSuccess = [];
+class PlayerEmoteEvent extends PlayerEvent implements Cancellable{
+	use CancellableTrait;
 
-	/**
-	 * @var \Closure[]
-	 * @phpstan-var array<int, \Closure() : void>
-	 */
-	public array $onFailure = [];
+	public function __construct(
+		Player $player,
+		private string $emoteId
+	){
+		$this->player = $player;
+	}
 
-	public bool $resolved = false;
+	public function getEmoteId() : string{
+		return $this->emoteId;
+	}
 
-	/**
-	 * @var mixed
-	 * @phpstan-var TValue|null
-	 */
-	public $result = null;
+	public function setEmoteId(string $emoteId) : void{
+		$this->emoteId = $emoteId;
+	}
+
 }
