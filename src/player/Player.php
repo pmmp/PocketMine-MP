@@ -73,6 +73,7 @@ use pocketmine\event\player\PlayerToggleSprintEvent;
 use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
+use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -290,6 +291,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 		$this->addDefaultWindows();
+
+		$this->inventory->getListeners()->add(new CallbackInventoryListener(
+			function(Inventory $unused, int $slot) : void{
+				if($slot === $this->inventory->getHeldItemIndex()){
+					$this->setUsingItem(false);
+				}
+			},
+			function() : void{
+				$this->setUsingItem(false);
+			}
+		));
 
 		$this->firstPlayed = $nbt->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
 		$this->lastPlayed = $nbt->getLong("lastPlayed", $now);
