@@ -81,16 +81,6 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/protocol/DataPacket.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of function array_values expects array, array given\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#2 \\$array of function array_map expects array, array given\\.$#"
-			count: 3
-			path: ../../../src/pocketmine/plugin/PluginDescription.php
-
-		-
 			message: "#^Dead catch \\- ReflectionException is never thrown in the try block\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/utils/Utils.php
