@@ -67,13 +67,13 @@ use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\player\Player;
+use pocketmine\promise\Promise;
+use pocketmine\promise\PromiseResolver;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
-use pocketmine\utils\Promise;
-use pocketmine\utils\PromiseResolver;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\biome\BiomeRegistry;
@@ -267,6 +267,12 @@ class World implements ChunkManager{
 	 * @phpstan-var \SplQueue<int>
 	 */
 	private \SplQueue $chunkPopulationRequestQueue;
+	/**
+	 * @var true[] chunkHash => dummy
+	 * @phpstan-var array<int, true>
+	 */
+	private array $chunkPopulationRequestQueueIndex = [];
+
 	/** @var bool[] */
 	private $generatorRegisteredWorkers = [];
 
@@ -2802,12 +2808,19 @@ class World implements ChunkManager{
 		}
 	}
 
+	private function addChunkHashToPopulationRequestQueue(int $chunkHash) : void{
+		if(!isset($this->chunkPopulationRequestQueueIndex[$chunkHash])){
+			$this->chunkPopulationRequestQueue->enqueue($chunkHash);
+			$this->chunkPopulationRequestQueueIndex[$chunkHash] = true;
+		}
+	}
+
 	/**
 	 * @phpstan-return Promise<Chunk>
 	 */
 	private function enqueuePopulationRequest(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$this->chunkPopulationRequestQueue->enqueue($chunkHash);
+		$this->addChunkHashToPopulationRequestQueue($chunkHash);
 		$resolver = $this->chunkPopulationRequestMap[$chunkHash] = new PromiseResolver();
 		if($associatedChunkLoader === null){
 			$temporaryLoader = new class implements ChunkLoader{};
@@ -2822,17 +2835,9 @@ class World implements ChunkManager{
 
 	private function drainPopulationRequestQueue() : void{
 		$failed = [];
-		$seen = [];
 		while(count($this->activeChunkPopulationTasks) < $this->maxConcurrentChunkPopulationTasks && !$this->chunkPopulationRequestQueue->isEmpty()){
 			$nextChunkHash = $this->chunkPopulationRequestQueue->dequeue();
-			if(isset($seen[$nextChunkHash])){
-				//We may have previously requested this, decided we didn't want it, and then decided we did want it
-				//again, all before the generation request got executed. In that case, the chunk hash may appear in the
-				//queue multiple times (it can't be quickly removed from the queue when the request is cancelled, so we
-				//leave it in the queue).
-				continue;
-			}
-			$seen[$nextChunkHash] = true;
+			unset($this->chunkPopulationRequestQueueIndex[$nextChunkHash]);
 			World::getXZ($nextChunkHash, $nextChunkX, $nextChunkZ);
 			if(isset($this->chunkPopulationRequestMap[$nextChunkHash])){
 				assert(!isset($this->activeChunkPopulationTasks[$nextChunkHash]), "Population for chunk $nextChunkX $nextChunkZ already running");
@@ -2848,7 +2853,7 @@ class World implements ChunkManager{
 		//these requests failed even though they weren't rate limited; we can't directly re-add them to the back of the
 		//queue because it would result in an infinite loop
 		foreach($failed as $hash){
-			$this->chunkPopulationRequestQueue->enqueue($hash);
+			$this->addChunkHashToPopulationRequestQueue($hash);
 		}
 	}
 
@@ -3047,7 +3052,7 @@ class World implements ChunkManager{
 				//request failed, stick it back on the queue
 				//we didn't resolve the promise or touch it in any way, so any fake chunk loaders are still valid and
 				//don't need to be added a second time.
-				$this->chunkPopulationRequestQueue->enqueue($index);
+				$this->addChunkHashToPopulationRequestQueue($index);
 			}
 
 			$this->drainPopulationRequestQueue();

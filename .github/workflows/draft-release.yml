@@ -42,7 +42,7 @@ jobs:
           sed -i "s/const BUILD_NUMBER = 0/const BUILD_NUMBER = ${BUILD_NUMBER}/" src/VersionInfo.php
 
       - name: Minify BedrockData JSON files
-        run: php resources/vanilla/.minify_json.php
+        run: php vendor/pocketmine/bedrock-data/.minify_json.php
 
       - name: Build PocketMine-MP.phar
         run: php -dphar.readonly=0 build/server-phar.php --git ${{ github.sha }}
