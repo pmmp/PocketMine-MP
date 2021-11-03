@@ -487,9 +487,7 @@ class InGamePacketHandler extends PacketHandler{
 			if(!$this->player->selectHotbarSlot($packet->hotbarSlot)){
 				$this->inventoryManager->syncSelectedHotbarSlot();
 			}
-			if($this->player->isUsingItem()){
-				$this->player->setUsingItem(false);
-			}
+			$this->player->setUsingItem(false);
 			return true;
 		}
 		return false;
