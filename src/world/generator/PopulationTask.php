@@ -41,11 +41,11 @@ use function igbinary_unserialize;
 class PopulationTask extends AsyncTask{
 	private const TLS_KEY_ON_COMPLETION = "onCompletion";
 
-	public int $worldId;
+	private int $worldId;
 	private int $chunkX;
 	private int $chunkZ;
 
-	public ?string $chunk;
+	private ?string $chunk;
 
 	private string $adjacentChunks;
 
