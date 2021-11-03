@@ -35,8 +35,6 @@ use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionException;
 use pocketmine\inventory\transaction\TransactionValidationException;
-use pocketmine\item\Durable;
-use pocketmine\item\Releasable;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
@@ -490,24 +488,7 @@ class InGamePacketHandler extends PacketHandler{
 				$this->inventoryManager->syncSelectedHotbarSlot();
 			}
 			if($this->player->isUsingItem()){
-				$item = $this->player->getInventory()->getItemInHand();
-				if($item instanceof Releasable && !($item instanceof Durable)){
-					//TODO: HACK
-					//Why exclude Durable Item
-					//This is a workaround for a possible problem with bows
-					//, tridents, etc...
-					//In fact, the durability values are handled on the client
-					//side, so when you release them, a MobEquipmentPacket
-					//is sent. This is where the problem occurs. If the client has
-					//already started using the item before the server
-					//processes these packets, the client will send another
-					//MobEquipmentPacket because the item in hand will be
-					//updated when the server sends the calculated durability
-					//value. Then, when the item is actually released, the
-					//server side thinks that the client has already suspended
-					//the use of the item, so the item release will be invalid.
-					$this->player->setUsingItem(false);
-				}
+				$this->player->setUsingItem(false);
 			}
 			return true;
 		}
