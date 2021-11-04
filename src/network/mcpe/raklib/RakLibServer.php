@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe\raklib;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\Thread;
 use raklib\generic\Socket;
+use raklib\generic\SocketException;
 use raklib\server\ipc\RakLibToUserThreadMessageSender;
 use raklib\server\ipc\UserToRakLibThreadMessageReceiver;
 use raklib\server\Server;
@@ -68,7 +69,7 @@ class RakLibServer extends Thread{
 	/** @var SleeperNotifier */
 	protected $mainThreadNotifier;
 
-	/** @var string|null */
+	/** @var RakLibThreadCrashInfo|null */
 	public $crashInfo = null;
 
 	public function __construct(
@@ -102,24 +103,24 @@ class RakLibServer extends Thread{
 	 * @return void
 	 */
 	public function shutdownHandler(){
-		if($this->cleanShutdown !== true){
+		if($this->cleanShutdown !== true && $this->crashInfo === null){
 			$error = error_get_last();
 
 			if($error !== null){
 				$this->logger->emergency("Fatal error: " . $error["message"] . " in " . $error["file"] . " on line " . $error["line"]);
-				$this->setCrashInfo($error['message']);
+				$this->setCrashInfo(RakLibThreadCrashInfo::fromLastErrorInfo($error));
 			}else{
 				$this->logger->emergency("RakLib shutdown unexpectedly");
 			}
 		}
 	}
 
-	public function getCrashInfo() : ?string{
+	public function getCrashInfo() : ?RakLibThreadCrashInfo{
 		return $this->crashInfo;
 	}
 
-	private function setCrashInfo(string $info) : void{
-		$this->synchronized(function(string $info) : void{
+	private function setCrashInfo(RakLibThreadCrashInfo $info) : void{
+		$this->synchronized(function(RakLibThreadCrashInfo $info) : void{
 			$this->crashInfo = $info;
 			$this->notify();
 		}, $info);
@@ -131,8 +132,12 @@ class RakLibServer extends Thread{
 			while(!$this->ready and $this->crashInfo === null){
 				$this->wait();
 			}
-			if($this->crashInfo !== null){
-				throw new \RuntimeException("RakLib failed to start: $this->crashInfo");
+			$crashInfo = $this->crashInfo;
+			if($crashInfo !== null){
+				if($crashInfo->getClass() === SocketException::class){
+					throw new SocketException($crashInfo->getMessage());
+				}
+				throw new \RuntimeException("RakLib failed to start: " . $crashInfo->makePrettyMessage());
 			}
 		});
 	}
@@ -145,7 +150,12 @@ class RakLibServer extends Thread{
 
 			register_shutdown_function([$this, "shutdownHandler"]);
 
-			$socket = new Socket($this->address);
+			try{
+				$socket = new Socket($this->address);
+			}catch(SocketException $e){
+				$this->setCrashInfo(RakLibThreadCrashInfo::fromThrowable($e));
+				return;
+			}
 			$manager = new Server(
 				$this->serverId,
 				$this->logger,
@@ -166,7 +176,7 @@ class RakLibServer extends Thread{
 			$manager->waitShutdown();
 			$this->cleanShutdown = true;
 		}catch(\Throwable $e){
-			$this->setCrashInfo($e->getMessage());
+			$this->setCrashInfo(RakLibThreadCrashInfo::fromThrowable($e));
 			$this->logger->logException($e);
 		}
 	}

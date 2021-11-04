@@ -24,6 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\utils\fixtures\TestAbstractClass;
+use pocketmine\utils\fixtures\TestInstantiableClass;
+use pocketmine\utils\fixtures\TestInterface;
+use pocketmine\utils\fixtures\TestSubclassOfInstantiableClass;
+use pocketmine\utils\fixtures\TestTrait;
 use function define;
 use function defined;
 
@@ -88,5 +93,58 @@ class UtilsTest extends TestCase{
 	public function testNamespacedNiceClosureName() : void{
 		//be careful with this test. The closure has to be declared on the same line as the assertion.
 		self::assertSame('closure@' . Filesystem::cleanPath(__FILE__) . '#L' . __LINE__, Utils::getNiceClosureName(function() : void{}));
+	}
+
+	/**
+	 * @return string[][]
+	 * @return list<array{class-string, class-string}>
+	 */
+	public function validInstanceProvider() : array{
+		return [
+			//direct instance / implement / extend
+			[TestInstantiableClass::class, TestInstantiableClass::class],
+			[TestInstantiableClass::class, TestAbstractClass::class],
+			[TestInstantiableClass::class, TestInterface::class],
+
+			//inherited
+			[TestSubclassOfInstantiableClass::class, TestInstantiableClass::class],
+			[TestSubclassOfInstantiableClass::class, TestAbstractClass::class],
+			[TestSubclassOfInstantiableClass::class, TestInterface::class]
+		];
+	}
+
+	/**
+	 * @dataProvider validInstanceProvider
+	 * @doesNotPerformAssertions
+	 * @phpstan-param class-string $className
+	 * @phpstan-param class-string $baseName
+	 */
+	public function testValidInstanceWithValidCombinations(string $className, string $baseName) : void{
+		Utils::testValidInstance($className, $baseName);
+	}
+
+	/**
+	 * @return string[][]
+	 * @return list<array{string, string}>
+	 */
+	public function validInstanceInvalidCombinationsProvider() : array{
+		return [
+			["iDontExist abc", TestInstantiableClass::class],
+			[TestInstantiableClass::class, "iDon'tExist abc"],
+			["iDontExist", "iAlsoDontExist"],
+			[TestInstantiableClass::class, TestTrait::class],
+			[TestTrait::class, TestTrait::class],
+			[TestAbstractClass::class, TestAbstractClass::class],
+			[TestInterface::class, TestInterface::class],
+			[TestInstantiableClass::class, TestSubclassOfInstantiableClass::class]
+		];
+	}
+
+	/**
+	 * @dataProvider validInstanceInvalidCombinationsProvider
+	 */
+	public function testValidInstanceInvalidParameters(string $className, string $baseName) : void{
+		$this->expectException(\InvalidArgumentException::class);
+		Utils::testValidInstance($className, $baseName); //@phpstan-ignore-line
 	}
 }

@@ -34,6 +34,7 @@ use pocketmine\console\ConsoleCommandSender;
 use pocketmine\console\ConsoleReaderThread;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
+use pocketmine\crash\CrashDump;
 use pocketmine\data\java\GameModeIdMap;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\Location;
@@ -64,6 +65,7 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\raklib\RakLibInterface;
 use pocketmine\network\Network;
+use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\query\DedicatedQueryNetworkInterface;
 use pocketmine\network\query\QueryHandler;
 use pocketmine\network\query\QueryInfo;
@@ -81,6 +83,8 @@ use pocketmine\plugin\PluginGraylist;
 use pocketmine\plugin\PluginManager;
 use pocketmine\plugin\PluginOwned;
 use pocketmine\plugin\ScriptPluginLoader;
+use pocketmine\promise\Promise;
+use pocketmine\promise\PromiseResolver;
 use pocketmine\resourcepacks\ResourcePackManager;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\snooze\SleeperHandler;
@@ -97,7 +101,6 @@ use pocketmine\utils\MainLogger;
 use pocketmine\utils\NotCloneable;
 use pocketmine\utils\NotSerializable;
 use pocketmine\utils\Process;
-use pocketmine\utils\Promise;
 use pocketmine\utils\SignalHandler;
 use pocketmine\utils\Terminal;
 use pocketmine\utils\TextFormat;
@@ -548,11 +551,11 @@ class Server{
 			$playerPos = null;
 			$spawn = $world->getSpawnLocation();
 		}
-		$playerPromise = new Promise();
+		$playerPromiseResolver = new PromiseResolver();
 		$world->requestChunkPopulation($spawn->getFloorX() >> Chunk::COORD_BIT_SIZE, $spawn->getFloorZ() >> Chunk::COORD_BIT_SIZE, null)->onCompletion(
-			function() use ($playerPromise, $class, $session, $playerInfo, $authenticated, $world, $playerPos, $spawn, $offlinePlayerData) : void{
+			function() use ($playerPromiseResolver, $class, $session, $playerInfo, $authenticated, $world, $playerPos, $spawn, $offlinePlayerData) : void{
 				if(!$session->isConnected()){
-					$playerPromise->reject();
+					$playerPromiseResolver->reject();
 					return;
 				}
 
@@ -572,16 +575,16 @@ class Server{
 				if(!$player->hasPlayedBefore()){
 					$player->onGround = true;  //TODO: this hack is needed for new players in-air ticks - they don't get detected as on-ground until they move
 				}
-				$playerPromise->resolve($player);
+				$playerPromiseResolver->resolve($player);
 			},
-			static function() use ($playerPromise, $session) : void{
+			static function() use ($playerPromiseResolver, $session) : void{
 				if($session->isConnected()){
 					$session->disconnect("Spawn terrain generation failed");
 				}
-				$playerPromise->reject();
+				$playerPromiseResolver->reject();
 			}
 		);
-		return $playerPromise;
+		return $playerPromiseResolver->getPromise();
 	}
 
 	/**
@@ -737,7 +740,7 @@ class Server{
 
 	public function __construct(\DynamicClassLoader $autoloader, \AttachableThreadedLogger $logger, string $dataPath, string $pluginPath){
 		if(self::$instance !== null){
-			throw new \InvalidStateException("Only one server instance can exist at once");
+			throw new \LogicException("Only one server instance can exist at once");
 		}
 		self::$instance = $this;
 		$this->startTime = microtime(true);
@@ -930,7 +933,7 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\RESOURCE_PATH, "vanilla", "recipes.json"));
+			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\BEDROCK_DATA_PATH, "recipes.json"));
 
 			$this->resourceManager = new ResourcePackManager(Path::join($this->getDataPath(), "resource_packs"), $this->logger);
 
@@ -979,6 +982,7 @@ class Server{
 			$this->enablePlugins(PluginEnableOrder::POSTWORLD());
 
 			if(!$this->startupPrepareNetworkInterfaces()){
+				$this->forceShutdown();
 				return;
 			}
 
@@ -1112,7 +1116,18 @@ class Server{
 
 	private function startupPrepareNetworkInterfaces() : bool{
 		$useQuery = $this->configGroup->getConfigBool("enable-query", true);
-		if(!$this->network->registerInterface(new RakLibInterface($this)) && $useQuery){
+
+		try{
+			$rakLibRegistered = $this->network->registerInterface(new RakLibInterface($this));
+		}catch(NetworkInterfaceStartException $e){
+			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_networkStartFailed(
+				$this->getIp(),
+				(string) $this->getPort(),
+				$e->getMessage()
+			)));
+			return false;
+		}
+		if(!$rakLibRegistered && $useQuery){
 			//RakLib would normally handle the transport for Query packets
 			//if it's not registered we need to make sure Query still works
 			$this->network->registerInterface(new DedicatedQueryNetworkInterface($this->getIp(), $this->getPort(), new \PrefixedLogger($this->logger, "Dedicated Query Interface")));
@@ -1490,8 +1505,8 @@ class Server{
 				}
 				@touch($stamp); //update file timestamp
 
-				$plugin = $dump->getData()["plugin"];
-				if(is_string($plugin)){
+				$plugin = $dump->getData()->plugin;
+				if($plugin !== ""){
 					$p = $this->pluginManager->getPlugin($plugin);
 					if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
 						$this->logger->debug("Not sending crashdump due to caused by non-phar plugin");
@@ -1499,7 +1514,7 @@ class Server{
 					}
 				}
 
-				if($dump->getData()["error"]["type"] === \ParseError::class){
+				if($dump->getData()->error["type"] === \ParseError::class){
 					$report = false;
 				}
 

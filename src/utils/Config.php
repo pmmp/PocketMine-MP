@@ -144,8 +144,7 @@ class Config{
 	 * @param mixed[] $default
 	 * @phpstan-param array<string, mixed> $default
 	 *
-	 * @throws \InvalidArgumentException if config type could not be auto-detected
-	 * @throws \InvalidStateException if config type is invalid
+	 * @throws \InvalidArgumentException if config type is invalid or could not be auto-detected
 	 */
 	private function load(string $file, int $type = Config::DETECT, array $default = []) : void{
 		$this->file = $file;
@@ -187,7 +186,7 @@ class Config{
 					$config = array_fill_keys(self::parseList($content), true);
 					break;
 				default:
-					throw new \InvalidStateException("Config type is unknown");
+					throw new \InvalidArgumentException("Invalid config type specified");
 			}
 			$this->config = is_array($config) ? $config : $default;
 			if($this->fillDefaults($default, $this->config) > 0){
@@ -205,8 +204,6 @@ class Config{
 
 	/**
 	 * Flushes the config to disk in the appropriate format.
-	 *
-	 * @throws \InvalidStateException if config type is not valid
 	 */
 	public function save() : void{
 		$content = null;
@@ -227,7 +224,7 @@ class Config{
 				$content = self::writeList(array_keys($this->config));
 				break;
 			default:
-				throw new \InvalidStateException("Config type is unknown, has not been set or not detected");
+				throw new AssumptionFailedError("Config type is unknown, has not been set or not detected");
 		}
 
 		file_put_contents($this->file, $content);

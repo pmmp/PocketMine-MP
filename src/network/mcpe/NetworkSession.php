@@ -62,6 +62,7 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
+use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
@@ -348,6 +349,10 @@ class NetworkSession{
 
 		try{
 			foreach($stream->getPackets($this->packetPool, $this->packetSerializerContext, 500) as [$packet, $buffer]){
+				if($packet === null){
+					$this->logger->debug("Unknown packet: " . base64_encode($buffer));
+					throw new PacketHandlingException("Unknown packet received");
+				}
 				try{
 					$this->handleDataPacket($packet, $buffer);
 				}catch(PacketHandlingException $e){
@@ -447,6 +452,8 @@ class NetworkSession{
 		}
 	}
 
+	public function getPacketSerializerContext() : PacketSerializerContext{ return $this->packetSerializerContext; }
+
 	public function getBroadcaster() : PacketBroadcaster{ return $this->broadcaster; }
 
 	public function getCompressor() : Compressor{
@@ -530,8 +537,6 @@ class NetworkSession{
 
 	/**
 	 * Instructs the remote client to connect to a different server.
-	 *
-	 * @throws \UnsupportedOperationException
 	 */
 	public function transfer(string $ip, int $port, string $reason = "transfer") : void{
 		$this->tryDisconnect(function() use ($ip, $port, $reason) : void{
@@ -557,7 +562,7 @@ class NetworkSession{
 	 */
 	private function doServerDisconnect(string $reason, bool $notify = true) : void{
 		if($notify){
-			$this->sendDataPacket($reason === "" ? DisconnectPacket::silent() : DisconnectPacket::message($reason), true);
+			$this->sendDataPacket(DisconnectPacket::create($reason !== "" ? $reason : null), true);
 		}
 
 		$this->sender->close($notify ? $reason : "");
@@ -727,16 +732,17 @@ class NetworkSession{
 			$yaw = $yaw ?? $location->getYaw();
 			$pitch = $pitch ?? $location->getPitch();
 
-			$pk = new MovePlayerPacket();
-			$pk->actorRuntimeId = $this->player->getId();
-			$pk->position = $this->player->getOffsetPosition($pos);
-			$pk->pitch = $pitch;
-			$pk->headYaw = $yaw;
-			$pk->yaw = $yaw;
-			$pk->mode = $mode;
-			$pk->onGround = $this->player->onGround;
-
-			$this->sendDataPacket($pk);
+			$this->sendDataPacket(MovePlayerPacket::simple(
+				$this->player->getId(),
+				$this->player->getOffsetPosition($pos),
+				$pitch,
+				$yaw,
+				$yaw, //TODO: head yaw
+				$mode,
+				$this->player->onGround,
+				0, //TODO: riding entity ID
+				0 //TODO: tick
+			));
 
 			if($this->handler instanceof InGamePacketHandler){
 				$this->handler->forceMoveSync = true;
@@ -921,7 +927,7 @@ class NetworkSession{
 					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
 					return;
 				}
-				if(!$status->equals(UsedChunkStatus::REQUESTED())){
+				if(!$status->equals(UsedChunkStatus::REQUESTED_SENDING())){
 					//TODO: make this an error
 					//this could be triggered due to the shitty way that chunk resends are handled
 					//right now - not because of the spammy re-requesting, but because the chunk status reverts
@@ -1036,6 +1042,10 @@ class NetworkSession{
 
 	public function onTitleDuration(int $fadeIn, int $stay, int $fadeOut) : void{
 		$this->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
+	}
+
+	public function onEmote(Player $from, string $emoteId) : void{
+		$this->sendDataPacket(EmotePacket::create($from->getId(), $emoteId, EmotePacket::FLAG_SERVER));
 	}
 
 	public function tick() : void{

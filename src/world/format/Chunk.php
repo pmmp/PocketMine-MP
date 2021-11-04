@@ -29,12 +29,10 @@ namespace pocketmine\world\format;
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Tile;
-use pocketmine\data\bedrock\BiomeIds;
-use function array_fill;
 use function array_map;
 
 class Chunk{
-	public const DIRTY_FLAG_TERRAIN = 1 << 0;
+	public const DIRTY_FLAG_BLOCKS = 1 << 0;
 	public const DIRTY_FLAG_BIOMES = 1 << 3;
 
 	public const MAX_SUBCHUNKS = 16;
@@ -69,7 +67,7 @@ class Chunk{
 	/**
 	 * @param SubChunk[] $subChunks
 	 */
-	public function __construct(array $subChunks = [], ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null){
+	public function __construct(array $subChunks, BiomeArray $biomeIds, bool $terrainPopulated){
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
 		foreach($this->subChunks as $y => $null){
@@ -77,8 +75,10 @@ class Chunk{
 		}
 
 		$val = ($this->subChunks->getSize() * SubChunk::EDGE_LENGTH);
-		$this->heightMap = $heightMap ?? new HeightArray(array_fill(0, 256, $val));
-		$this->biomeIds = $biomeIds ?? BiomeArray::fill(BiomeIds::OCEAN);
+		$this->heightMap = HeightArray::fill($val); //TODO: what about lazily initializing this?
+		$this->biomeIds = $biomeIds;
+
+		$this->terrainPopulated = $terrainPopulated;
 	}
 
 	/**
@@ -106,7 +106,7 @@ class Chunk{
 	 */
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
 		$this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->setFullBlock($x, $y & SubChunk::COORD_MASK, $z, $block);
-		$this->terrainDirtyFlags |= self::DIRTY_FLAG_TERRAIN;
+		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BLOCKS;
 	}
 
 	/**
@@ -186,7 +186,7 @@ class Chunk{
 
 	public function setPopulated(bool $value = true) : void{
 		$this->terrainPopulated = $value;
-		$this->terrainDirtyFlags |= self::DIRTY_FLAG_TERRAIN;
+		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BLOCKS;
 	}
 
 	public function addTile(Tile $tile) : void{
@@ -295,7 +295,7 @@ class Chunk{
 		}
 
 		$this->subChunks[$y] = $subChunk ?? new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, []);
-		$this->setTerrainDirtyFlag(self::DIRTY_FLAG_TERRAIN, true);
+		$this->setTerrainDirtyFlag(self::DIRTY_FLAG_BLOCKS, true);
 	}
 
 	/**

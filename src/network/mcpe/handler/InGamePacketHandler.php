@@ -59,6 +59,7 @@ use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
+use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
@@ -297,6 +298,7 @@ class InGamePacketHandler extends PacketHandler{
 				//all of the parts before we can execute it
 				return true;
 			}
+			$this->player->setUsingItem(false);
 			try{
 				$this->inventoryManager->onTransactionStart($this->craftingTransaction);
 				$this->craftingTransaction->execute();
@@ -332,6 +334,7 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			}
 
+			$this->player->setUsingItem(false);
 			$transaction = new InventoryTransaction($this->player, $actions);
 			$this->inventoryManager->onTransactionStart($transaction);
 			try{
@@ -886,6 +889,11 @@ class InGamePacketHandler extends PacketHandler{
 		 * action bound to it.
 		 * In addition, we use this handler to silence debug noise, since this packet is frequently sent by the client.
 		 */
+		return true;
+	}
+
+	public function handleEmote(EmotePacket $packet) : bool{
+		$this->player->emote($packet->getEmoteId());
 		return true;
 	}
 }

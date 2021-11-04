@@ -59,7 +59,7 @@ final class SurvivalBlockBreakHandler{
 	/** @var float */
 	private $breakProgress = 0;
 
-	private function __construct(Player $player, Vector3 $blockPos, Block $block, int $targetedFace, int $maxPlayerDistance, int $fxTickInterval = self::DEFAULT_FX_INTERVAL_TICKS){
+	public function __construct(Player $player, Vector3 $blockPos, Block $block, int $targetedFace, int $maxPlayerDistance, int $fxTickInterval = self::DEFAULT_FX_INTERVAL_TICKS){
 		$this->player = $player;
 		$this->blockPos = $blockPos;
 		$this->block = $block;
@@ -74,14 +74,6 @@ final class SurvivalBlockBreakHandler{
 				LevelEventPacket::create(LevelEvent::BLOCK_START_BREAK, (int) (65535 * $this->breakSpeed), $this->blockPos)
 			);
 		}
-	}
-
-	public static function createIfNecessary(Player $player, Vector3 $blockPos, Block $block, int $targetedFace, int $maxPlayerDistance, int $fxTickInterval = self::DEFAULT_FX_INTERVAL_TICKS) : ?self{
-		$breakInfo = $block->getBreakInfo();
-		if(!$breakInfo->breaksInstantly()){
-			return new self($player, $blockPos, $block, $targetedFace, $maxPlayerDistance, $fxTickInterval);
-		}
-		return null;
 	}
 
 	/**
@@ -101,8 +93,7 @@ final class SurvivalBlockBreakHandler{
 	}
 
 	public function update() : bool{
-		if(
-			$this->player->getPosition()->distanceSquared($this->blockPos->add(0.5, 0.5, 0.5)) > $this->maxPlayerDistance ** 2){
+		if($this->player->getPosition()->distanceSquared($this->blockPos->add(0.5, 0.5, 0.5)) > $this->maxPlayerDistance ** 2){
 			return false;
 		}
 
