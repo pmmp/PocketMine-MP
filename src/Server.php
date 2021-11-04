@@ -1504,8 +1504,8 @@ class Server{
 				}
 				@touch($stamp); //update file timestamp
 
-				$plugin = $dump->getData()["plugin"];
-				if(is_string($plugin)){
+				$plugin = $dump->getData()->plugin;
+				if($plugin !== ""){
 					$p = $this->pluginManager->getPlugin($plugin);
 					if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
 						$this->logger->debug("Not sending crashdump due to caused by non-phar plugin");
@@ -1513,7 +1513,7 @@ class Server{
 					}
 				}
 
-				if($dump->getData()["error"]["type"] === \ParseError::class){
+				if($dump->getData()->error["type"] === \ParseError::class){
 					$report = false;
 				}
 
