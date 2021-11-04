@@ -21,19 +21,18 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\crash;
 
 use Composer\InstalledVersions;
-use pocketmine\crash\CrashDumpData;
-use pocketmine\crash\CrashDumpDataGeneral;
-use pocketmine\crash\CrashDumpDataPluginEntry;
 use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\plugin\PluginBase;
 use pocketmine\plugin\PluginManager;
+use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use pocketmine\VersionInfo;
 use Webmozart\PathUtil\Path;
 use function base64_encode;
 use function date;

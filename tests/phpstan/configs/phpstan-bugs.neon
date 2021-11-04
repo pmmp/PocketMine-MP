@@ -1,11 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Property pocketmine\\\\crash\\\\CrashDumpData\\:\\:\\$extensions \\(array\\<string, string\\>\\) does not accept array\\<int\\|string, string\\>\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
 			message: "#^Instanceof between pocketmine\\\\block\\\\utils\\\\BannerPatternLayer and pocketmine\\\\block\\\\utils\\\\BannerPatternLayer will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/block/BaseBanner.php
@@ -24,6 +19,11 @@ parameters:
 			message: "#^Property pocketmine\\\\crafting\\\\CraftingManager\\:\\:\\$destructorCallbacks \\(pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\>\\|null\\) does not accept pocketmine\\\\utils\\\\ObjectSet\\<object\\>\\.$#"
 			count: 1
 			path: ../../../src/crafting/CraftingManager.php
+
+		-
+			message: "#^Property pocketmine\\\\crash\\\\CrashDumpData\\:\\:\\$extensions \\(array\\<string, string\\>\\) does not accept array\\<int\\|string, string\\>\\.$#"
+			count: 1
+			path: ../../../src/crash/CrashDump.php
 
 		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
