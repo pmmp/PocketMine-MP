@@ -21,16 +21,6 @@ parameters:
 			path: ../../../build/server-phar.php
 
 		-
-			message: "#^Cannot access offset \\(float\\|int\\) on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset string on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
 			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/CrashDump.php
@@ -69,11 +59,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$version1 of function version_compare expects string, string\\|false given\\.$#"
 			count: 3
 			path: ../../../src/PocketMine.php
-
-		-
-			message: "#^Cannot access offset 'type' on mixed\\.$#"
-			count: 1
-			path: ../../../src/Server.php
 
 		-
 			message: "#^Cannot cast mixed to string\\.$#"
