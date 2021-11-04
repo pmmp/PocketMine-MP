@@ -31,16 +31,6 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Parameter \\#1 \\$array of function array_values expects array, array given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#2 \\$array of function array_map expects array, array given\\.$#"
-			count: 3
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Dead catch \\- RuntimeException is never thrown in the try block\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginManager.php
