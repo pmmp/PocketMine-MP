@@ -46,7 +46,7 @@ class ActorEventPacket extends DataPacket{
 	public const FISH_HOOK_TEASE = 14;
 	public const SQUID_INK_CLOUD = 15;
 	public const ZOMBIE_VILLAGER_CURE = 16;
-
+	public const PLAY_AMBIENT_SOUND = 17;
 	public const RESPAWN = 18;
 	public const IRON_GOLEM_OFFER_FLOWER = 19;
 	public const IRON_GOLEM_WITHDRAW_FLOWER = 20;
@@ -69,14 +69,14 @@ class ActorEventPacket extends DataPacket{
 	public const ENDER_DRAGON_DEATH = 37;
 	public const DUST_PARTICLES = 38; //not sure what this is
 	public const ARROW_SHAKE = 39;
-
+	//unused: 40-56
 	public const EATING_ITEM = 57;
-
+	//unused: 58-59
 	public const BABY_ANIMAL_FEED = 60; //green particles, like bonemeal on crops
 	public const DEATH_SMOKE_CLOUD = 61;
 	public const COMPLETE_TRADE = 62;
 	public const REMOVE_LEASH = 63; //data 1 = cut leash
-
+	public const CARAVAN_UPDATED = 64;
 	public const CONSUME_TOTEM = 65;
 	public const PLAYER_CHECK_TREASURE_HUNTER_ACHIEVEMENT = 66; //mojang...
 	public const ENTITY_SPAWN = 67; //used for MinecraftEventing stuff, not needed
@@ -88,8 +88,7 @@ class ActorEventPacket extends DataPacket{
 	public const AGENT_SUMMON = 73;
 	public const CHARGED_CROSSBOW = 74;
 	public const FALL = 75;
-
-	//TODO: add more events
+	public const GROW_UP = 76;
 
 	/** @var int */
 	public $entityRuntimeId;
