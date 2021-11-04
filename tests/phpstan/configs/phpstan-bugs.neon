@@ -1,57 +1,7 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Cannot access offset 'base_version' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'build' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'composer_libraries' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'git' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'is_dev' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'os' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'php' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'php_os' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'protocol' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'uname' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'zend' on mixed\\.$#"
+			message: "#^Property pocketmine\\\\crash\\\\CrashDumpData\\:\\:\\$extensions \\(array\\<string, string\\>\\) does not accept array\\<int\\|string, string\\>\\.$#"
 			count: 1
 			path: ../../../src/CrashDump.php
 
