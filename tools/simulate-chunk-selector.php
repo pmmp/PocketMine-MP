@@ -57,15 +57,15 @@ function render(int $radius, int $baseX, int $baseZ, int $chunksPerStep, int $sc
 	$middleOffsetX = $scale * ($radius + $offsetX);
 	$middleOffsetZ = $scale * ($radius + $offsetZ);
 
+	$black = imagecolorallocate($image, 0, 0, 0);
+	$yellow = imagecolorallocate($image, 255, 255, 51);
+	$red = imagecolorallocate($image, 255, 0, 0);
+	if($black === false || $yellow === false || $red === false) throw new AssumptionFailedError();
+
 	$frame = 0;
 	$seen = [];
 	while($iterator->valid()){
 		$frame++;
-
-		$black = imagecolorallocate($image, 0, 0, 0);
-		$yellow = imagecolorallocate($image, 255, 255, 51);
-		$red = imagecolorallocate($image, 255, 0, 0);
-		if($black === false || $yellow === false || $red === false) throw new AssumptionFailedError();
 
 		for($i = 0; $i < $chunksPerStep; ++$i){
 			$chunkHash = $iterator->current();
