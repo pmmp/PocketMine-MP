@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dc8d53bdcd36e3a444e80154ef4d30f8",
+    "content-hash": "3ba8c55feb492abf46779012f322722b",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -227,12 +227,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockProtocol.git",
-                "reference": "59b5ce553226b6ad4a75c810244d82236ad541d8"
+                "reference": "0691160077814aa08c0d3e648a780d18b9c2c385"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/59b5ce553226b6ad4a75c810244d82236ad541d8",
-                "reference": "59b5ce553226b6ad4a75c810244d82236ad541d8",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/0691160077814aa08c0d3e648a780d18b9c2c385",
+                "reference": "0691160077814aa08c0d3e648a780d18b9c2c385",
                 "shasum": ""
             },
             "require": {
@@ -246,7 +246,7 @@
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.0.0",
+                "phpstan/phpstan": "1.0.2",
                 "phpstan/phpstan-phpunit": "^1.0.0",
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5"
@@ -270,7 +270,7 @@
             "support": {
                 "source": "https://github.com/NetherGamesMC/BedrockProtocol/tree/master"
             },
-            "time": "2021-11-02T17:08:12+00:00"
+            "time": "2021-11-05T19:52:21+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
@@ -1877,16 +1877,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.0.0",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "0d13a99513182e521271d46bde8f28caa4f84d97"
+                "reference": "e9e2a501102ba0b126b2f63a7f0a3b151056fe91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/0d13a99513182e521271d46bde8f28caa4f84d97",
-                "reference": "0d13a99513182e521271d46bde8f28caa4f84d97",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e9e2a501102ba0b126b2f63a7f0a3b151056fe91",
+                "reference": "e9e2a501102ba0b126b2f63a7f0a3b151056fe91",
                 "shasum": ""
             },
             "require": {
@@ -1917,7 +1917,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.0.0"
+                "source": "https://github.com/phpstan/phpstan/tree/1.0.2"
             },
             "funding": [
                 {
@@ -1937,7 +1937,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-01T06:38:20+00:00"
+            "time": "2021-11-03T16:09:51+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",

@@ -73,6 +73,7 @@ use pocketmine\event\player\PlayerToggleSprintEvent;
 use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
+use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -195,6 +196,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	protected array $usedChunks = [];
 	/**
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 */
+	private array $activeChunkGenerationRequests = [];
+	/**
 	 * @var true[] chunkHash => dummy
 	 * @phpstan-var array<int, true>
 	 */
@@ -291,6 +297,17 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 		$this->addDefaultWindows();
+
+		$this->inventory->getListeners()->add(new CallbackInventoryListener(
+			function(Inventory $unused, int $slot) : void{
+				if($slot === $this->inventory->getHeldItemIndex()){
+					$this->setUsingItem(false);
+				}
+			},
+			function() : void{
+				$this->setUsingItem(false);
+			}
+		));
 
 		$this->firstPlayed = $nbt->getLong("firstPlayed", $now = (int) (microtime(true) * 1000));
 		$this->lastPlayed = $nbt->getLong("lastPlayed", $now);
@@ -641,6 +658,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}
 			$this->getNetworkSession()->stopUsingChunk($x, $z);
 			unset($this->usedChunks[$index]);
+			unset($this->activeChunkGenerationRequests[$index]);
 		}
 		$world->unregisterChunkLoader($this->chunkLoader, $x, $z);
 		$world->unregisterChunkListener($this, $x, $z);
@@ -678,7 +696,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$count = 0;
 		$world = $this->getWorld();
 		foreach($this->loadQueue as $index => $distance){
-			if($count >= $this->chunksPerTick){
+			if($count >= $this->chunksPerTick || count($this->activeChunkGenerationRequests) >= $this->chunksPerTick){
 				break;
 			}
 
@@ -690,6 +708,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			++$count;
 
 			$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_GENERATION();
+			$this->activeChunkGenerationRequests[$index] = true;
 			unset($this->loadQueue[$index]);
 			$this->getWorld()->registerChunkLoader($this->chunkLoader, $X, $Z, true);
 			$this->getWorld()->registerChunkListener($this, $X, $Z);
@@ -705,6 +724,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 						//multiple callbacks for this player. In that case, only the first one matters.
 						return;
 					}
+					unset($this->activeChunkGenerationRequests[$index]);
 					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_SENDING();
 
 					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index) : void{
@@ -1176,16 +1196,18 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->lastLocation = $to;
 			$this->broadcastMovement();
 
-			$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
-			//TODO: check swimming (adds 0.015 exhaustion in MCPE)
-			if($this->isSprinting()){
-				$this->hungerManager->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
-			}else{
-				$this->hungerManager->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
-			}
+			$horizontalDistanceTravelled = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
+			if($horizontalDistanceTravelled > 0){
+				//TODO: check swimming (adds 0.015 exhaustion in MCPE)
+				if($this->isSprinting()){
+					$this->hungerManager->exhaust(0.1 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_SPRINTING);
+				}else{
+					$this->hungerManager->exhaust(0.01 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_WALKING);
+				}
 
-			if($this->nextChunkOrderRun > 20){
-				$this->nextChunkOrderRun = 20;
+				if($this->nextChunkOrderRun > 20){
+					$this->nextChunkOrderRun = 20;
+				}
 			}
 		}
 
