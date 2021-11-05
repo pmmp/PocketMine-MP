@@ -80,9 +80,8 @@ abstract class Crops extends Flowable{
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+				$item->pop();
 			}
-
-			$item->pop();
 
 			return true;
 		}
