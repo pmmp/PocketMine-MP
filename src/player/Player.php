@@ -196,6 +196,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	protected array $usedChunks = [];
 	/**
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 */
+	private array $activeChunkGenerationRequests = [];
+	/**
 	 * @var true[] chunkHash => dummy
 	 * @phpstan-var array<int, true>
 	 */
@@ -643,6 +648,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}
 			$this->getNetworkSession()->stopUsingChunk($x, $z);
 			unset($this->usedChunks[$index]);
+			unset($this->activeChunkGenerationRequests[$index]);
 		}
 		$world->unregisterChunkLoader($this->chunkLoader, $x, $z);
 		$world->unregisterChunkListener($this, $x, $z);
@@ -680,7 +686,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$count = 0;
 		$world = $this->getWorld();
 		foreach($this->loadQueue as $index => $distance){
-			if($count >= $this->chunksPerTick){
+			if($count >= $this->chunksPerTick || count($this->activeChunkGenerationRequests) >= $this->chunksPerTick){
 				break;
 			}
 
@@ -692,6 +698,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			++$count;
 
 			$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_GENERATION();
+			$this->activeChunkGenerationRequests[$index] = true;
 			unset($this->loadQueue[$index]);
 			$this->getWorld()->registerChunkLoader($this->chunkLoader, $X, $Z, true);
 			$this->getWorld()->registerChunkListener($this, $X, $Z);
@@ -707,6 +714,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 						//multiple callbacks for this player. In that case, only the first one matters.
 						return;
 					}
+					unset($this->activeChunkGenerationRequests[$index]);
 					$this->usedChunks[$index] = UsedChunkStatus::REQUESTED_SENDING();
 
 					$this->getNetworkSession()->startUsingChunk($X, $Z, function() use ($X, $Z, $index) : void{
