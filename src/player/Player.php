@@ -1186,16 +1186,18 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->lastLocation = $to;
 			$this->broadcastMovement();
 
-			$distance = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
-			//TODO: check swimming (adds 0.015 exhaustion in MCPE)
-			if($this->isSprinting()){
-				$this->hungerManager->exhaust(0.1 * $distance, PlayerExhaustEvent::CAUSE_SPRINTING);
-			}else{
-				$this->hungerManager->exhaust(0.01 * $distance, PlayerExhaustEvent::CAUSE_WALKING);
-			}
+			$horizontalDistanceTravelled = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
+			if($horizontalDistanceTravelled > 0){
+				//TODO: check swimming (adds 0.015 exhaustion in MCPE)
+				if($this->isSprinting()){
+					$this->hungerManager->exhaust(0.1 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_SPRINTING);
+				}else{
+					$this->hungerManager->exhaust(0.01 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_WALKING);
+				}
 
-			if($this->nextChunkOrderRun > 20){
-				$this->nextChunkOrderRun = 20;
+				if($this->nextChunkOrderRun > 20){
+					$this->nextChunkOrderRun = 20;
+				}
 			}
 		}
 
