@@ -172,7 +172,9 @@ class PluginManager{
 		$everyoneRoot = $permManager->getPermission(DefaultPermissions::ROOT_USER);
 		foreach($description->getPermissions() as $default => $perms){
 			foreach($perms as $perm){
-				$permManager->addPermission($perm);
+				if(!$permManager->addPermission($perm)){
+					continue; //TODO: this should be reported as an error and prevent the plugin from loading
+				}
 				switch($default){
 					case PermissionParser::DEFAULT_TRUE:
 						$everyoneRoot->addChild($perm->getName(), true);
