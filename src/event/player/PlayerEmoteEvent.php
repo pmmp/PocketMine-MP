@@ -21,20 +21,31 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\event\player;
 
-use function define;
-use function defined;
-use function dirname;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
+use pocketmine\player\Player;
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-if(defined('pocketmine\_CORE_CONSTANTS_INCLUDED')){
-	return;
+/**
+ * Called when a player uses an emote.
+ */
+class PlayerEmoteEvent extends PlayerEvent implements Cancellable{
+	use CancellableTrait;
+
+	public function __construct(
+		Player $player,
+		private string $emoteId
+	){
+		$this->player = $player;
+	}
+
+	public function getEmoteId() : string{
+		return $this->emoteId;
+	}
+
+	public function setEmoteId(string $emoteId) : void{
+		$this->emoteId = $emoteId;
+	}
+
 }
-define('pocketmine\_CORE_CONSTANTS_INCLUDED', true);
-
-define('pocketmine\PATH', dirname(__DIR__) . '/');
-define('pocketmine\RESOURCE_PATH', dirname(__DIR__) . '/resources/');
-define('pocketmine\BEDROCK_DATA_PATH', dirname(__DIR__) . '/vendor/pocketmine/bedrock-data/');
-define('pocketmine\LOCALE_DATA_PATH', dirname(__DIR__) . '/vendor/pocketmine/locale-data/');
-define('pocketmine\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__) . '/vendor/autoload.php');

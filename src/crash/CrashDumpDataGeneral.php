@@ -21,20 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine;
+namespace pocketmine\crash;
 
-use function define;
-use function defined;
-use function dirname;
+final class CrashDumpDataGeneral{
 
-// composer autoload doesn't use require_once and also pthreads can inherit things
-if(defined('pocketmine\_CORE_CONSTANTS_INCLUDED')){
-	return;
+	/**
+	 * @param string[] $composer_libraries
+	 * @phpstan-param array<string, string> $composer_libraries
+	 */
+	public function __construct(
+		public string $name,
+		public string $base_version,
+		public int $build,
+		public bool $is_dev,
+		public int $protocol,
+		public string $git,
+		public string $uname,
+		public string $php,
+		public string $zend,
+		public string $php_os,
+		public string $os,
+		public array $composer_libraries,
+	){}
 }
-define('pocketmine\_CORE_CONSTANTS_INCLUDED', true);
-
-define('pocketmine\PATH', dirname(__DIR__) . '/');
-define('pocketmine\RESOURCE_PATH', dirname(__DIR__) . '/resources/');
-define('pocketmine\BEDROCK_DATA_PATH', dirname(__DIR__) . '/vendor/pocketmine/bedrock-data/');
-define('pocketmine\LOCALE_DATA_PATH', dirname(__DIR__) . '/vendor/pocketmine/locale-data/');
-define('pocketmine\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__) . '/vendor/autoload.php');

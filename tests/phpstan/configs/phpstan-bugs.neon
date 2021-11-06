@@ -1,61 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Cannot access offset 'base_version' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'build' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'composer_libraries' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'git' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'is_dev' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'os' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'php' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'php_os' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'protocol' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'uname' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
-			message: "#^Cannot access offset 'zend' on mixed\\.$#"
-			count: 1
-			path: ../../../src/CrashDump.php
-
-		-
 			message: "#^Instanceof between pocketmine\\\\block\\\\utils\\\\BannerPatternLayer and pocketmine\\\\block\\\\utils\\\\BannerPatternLayer will always evaluate to true\\.$#"
 			count: 1
 			path: ../../../src/block/BaseBanner.php
@@ -76,19 +21,14 @@ parameters:
 			path: ../../../src/crafting/CraftingManager.php
 
 		-
+			message: "#^Property pocketmine\\\\crash\\\\CrashDumpData\\:\\:\\$extensions \\(array\\<string, string\\>\\) does not accept array\\<int\\|string, string\\>\\.$#"
+			count: 1
+			path: ../../../src/crash/CrashDump.php
+
+		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
-
-		-
-			message: "#^Parameter \\#1 \\$array of function array_values expects array, array given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
-			message: "#^Parameter \\#2 \\$array of function array_map expects array, array given\\.$#"
-			count: 3
-			path: ../../../src/plugin/PluginDescription.php
 
 		-
 			message: "#^Dead catch \\- RuntimeException is never thrown in the try block\\.$#"
