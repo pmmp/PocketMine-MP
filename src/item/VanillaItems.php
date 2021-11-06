@@ -341,6 +341,7 @@ use function assert;
  * @method static Potion THICK_POTION()
  * @method static SplashPotion THICK_SPLASH_POTION()
  * @method static Totem TOTEM()
+ * @method static Trident TRIDENT()
  * @method static Potion TURTLE_MASTER_POTION()
  * @method static SplashPotion TURTLE_MASTER_SPLASH_POTION()
  * @method static SpawnEgg VILLAGER_SPAWN_EGG()
@@ -708,6 +709,7 @@ final class VanillaItems{
 		self::register("thick_potion", $factory->get(373, 3));
 		self::register("thick_splash_potion", $factory->get(438, 3));
 		self::register("totem", $factory->get(450));
+		self::register("trident", $factory->get(455));
 		self::register("turtle_master_potion", $factory->get(373, 37));
 		self::register("turtle_master_splash_potion", $factory->get(438, 37));
 		self::register("villager_spawn_egg", $factory->get(383, 15));
