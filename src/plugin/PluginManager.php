@@ -168,13 +168,22 @@ class PluginManager{
 		}
 
 		$permManager = PermissionManager::getInstance();
+		foreach($description->getPermissions() as $permsGroup){
+			foreach($permsGroup as $perm){
+				if($permManager->getPermission($perm->getName()) !== null){
+					$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+						$description->getName(),
+						KnownTranslationFactory::pocketmine_plugin_duplicatePermissionError($perm->getName())
+					)));
+					return null;
+				}
+			}
+		}
 		$opRoot = $permManager->getPermission(DefaultPermissions::ROOT_OPERATOR);
 		$everyoneRoot = $permManager->getPermission(DefaultPermissions::ROOT_USER);
 		foreach($description->getPermissions() as $default => $perms){
 			foreach($perms as $perm){
-				if(!$permManager->addPermission($perm)){
-					continue; //TODO: this should be reported as an error and prevent the plugin from loading
-				}
+				$permManager->addPermission($perm);
 				switch($default){
 					case PermissionParser::DEFAULT_TRUE:
 						$everyoneRoot->addChild($perm->getName(), true);

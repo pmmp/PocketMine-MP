@@ -361,6 +361,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_PLUGIN_DISALLOWEDBYBLACKLIST = "pocketmine.plugin.disallowedByBlacklist";
 	public const POCKETMINE_PLUGIN_DISALLOWEDBYWHITELIST = "pocketmine.plugin.disallowedByWhitelist";
 	public const POCKETMINE_PLUGIN_DUPLICATEERROR = "pocketmine.plugin.duplicateError";
+	public const POCKETMINE_PLUGIN_DUPLICATEPERMISSIONERROR = "pocketmine.plugin.duplicatePermissionError";
 	public const POCKETMINE_PLUGIN_EMPTYEXTENSIONVERSIONCONSTRAINT = "pocketmine.plugin.emptyExtensionVersionConstraint";
 	public const POCKETMINE_PLUGIN_ENABLE = "pocketmine.plugin.enable";
 	public const POCKETMINE_PLUGIN_EXTENSIONNOTLOADED = "pocketmine.plugin.extensionNotLoaded";

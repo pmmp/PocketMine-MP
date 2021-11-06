@@ -1724,6 +1724,12 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function pocketmine_plugin_duplicatePermissionError(Translatable|string $permissionName) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_DUPLICATEPERMISSIONERROR, [
+			"permissionName" => $permissionName,
+		]);
+	}
+
 	public static function pocketmine_plugin_emptyExtensionVersionConstraint(Translatable|string $constraintIndex, Translatable|string $extensionName) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_EMPTYEXTENSIONVERSIONCONSTRAINT, [
 			"constraintIndex" => $constraintIndex,
