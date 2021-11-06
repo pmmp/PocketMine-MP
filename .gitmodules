@@ -1,6 +1,3 @@
-[submodule "resources/locale"]
-	path = resources/locale
-	url = https://github.com/pmmp/Language.git
 [submodule "tests/plugins/DevTools"]
 	path = tests/plugins/DevTools
 	url = https://github.com/pmmp/DevTools.git
