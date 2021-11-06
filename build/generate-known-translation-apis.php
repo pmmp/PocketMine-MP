@@ -172,7 +172,7 @@ HEADER;
 	echo "Done generating KnownTranslationFactory.\n";
 }
 
-$lang = parse_ini_file(Path::join(\pocketmine\RESOURCE_PATH, "locale", "eng.ini"), false, INI_SCANNER_RAW);
+$lang = parse_ini_file(Path::join(\pocketmine\LOCALE_DATA_PATH, "eng.ini"), false, INI_SCANNER_RAW);
 if($lang === false){
 	fwrite(STDERR, "Missing language files!\n");
 	exit(1);

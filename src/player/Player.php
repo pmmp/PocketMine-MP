@@ -695,8 +695,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$count = 0;
 		$world = $this->getWorld();
+
+		$limit = $this->chunksPerTick - count($this->activeChunkGenerationRequests);
 		foreach($this->loadQueue as $index => $distance){
-			if($count >= $this->chunksPerTick || count($this->activeChunkGenerationRequests) >= $this->chunksPerTick){
+			if($count >= $limit){
 				break;
 			}
 

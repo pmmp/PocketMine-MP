@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3ba8c55feb492abf46779012f322722b",
+    "content-hash": "661f91eef63d7fa08a0b55aab6d1c2f5",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -533,6 +533,29 @@
                 "source": "https://github.com/pmmp/ErrorHandler/tree/0.3.0"
             },
             "time": "2021-02-12T18:56:22+00:00"
+        },
+        {
+            "name": "pocketmine/locale-data",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/Language.git",
+                "reference": "7342b4eb593036c739e7f0c0ed95299ada69ff19"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/Language/zipball/7342b4eb593036c739e7f0c0ed95299ada69ff19",
+                "reference": "7342b4eb593036c739e7f0c0ed95299ada69ff19",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Language resources used by PocketMine-MP",
+            "support": {
+                "issues": "https://github.com/pmmp/Language/issues",
+                "source": "https://github.com/pmmp/Language/tree/1.0.3"
+            },
+            "time": "2021-11-06T00:27:03+00:00"
         },
         {
             "name": "pocketmine/log",
@@ -1483,16 +1506,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v4.13.0",
+            "version": "v4.13.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "50953a2691a922aa1769461637869a0a2faa3f53"
+                "reference": "63a79e8daa781cac14e5195e63ed8ae231dd10fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/50953a2691a922aa1769461637869a0a2faa3f53",
-                "reference": "50953a2691a922aa1769461637869a0a2faa3f53",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/63a79e8daa781cac14e5195e63ed8ae231dd10fd",
+                "reference": "63a79e8daa781cac14e5195e63ed8ae231dd10fd",
                 "shasum": ""
             },
             "require": {
@@ -1533,9 +1556,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v4.13.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.13.1"
             },
-            "time": "2021-09-20T12:20:58+00:00"
+            "time": "2021-11-03T20:52:16+00:00"
         },
         {
             "name": "phar-io/manifest",
