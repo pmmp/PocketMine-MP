@@ -158,14 +158,14 @@ final class EntityFactory{
 		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
 
 		$this->register(Trident::class, function(World $world, CompoundTag $nbt) : Trident{
-			$itemTag = $nbt->getCompoundTag("item");
+			$itemTag = $nbt->getCompoundTag("Trident");
 			if($itemTag === null){
-				throw new \UnexpectedValueException("Expected \"item\" NBT tag not found");
+				throw new \UnexpectedValueException("Expected \"Trident\" NBT tag not found");
 			}
 
 			$item = Item::nbtDeserialize($itemTag);
 			if($item->isNull()){
-				throw new \UnexpectedValueException("Item is invalid");
+				throw new \UnexpectedValueException("Trident item is invalid");
 			}
 			return new Trident(EntityDataHelper::parseLocation($nbt, $world), $item, null, $nbt);
 		}, ['Trident', 'ThrownTrident', 'minecraft:trident'], EntityLegacyIds::TRIDENT);
