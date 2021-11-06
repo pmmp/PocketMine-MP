@@ -35,6 +35,6 @@ define('pocketmine\_CORE_CONSTANTS_INCLUDED', true);
 
 define('pocketmine\PATH', dirname(__DIR__) . '/');
 define('pocketmine\RESOURCE_PATH', dirname(__DIR__) . '/resources/');
-define('pocketmine\BEDROCK_DATA_PATH', dirname(__DIR__) . '/vendor/pocketmine/bedrock-data/');
+define('pocketmine\BEDROCK_DATA_PATH', dirname(__DIR__) . '/vendor/nethergamesmc/bedrock-data/');
 define('pocketmine\LOCALE_DATA_PATH', dirname(__DIR__) . '/vendor/pocketmine/locale-data/');
 define('pocketmine\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__) . '/vendor/autoload.php');
