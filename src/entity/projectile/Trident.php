@@ -34,6 +34,8 @@ use pocketmine\math\RayTraceResult;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\player\Player;
 use pocketmine\world\sound\TridentHitSound;
 use pocketmine\world\sound\TridentHitGroundSound;
@@ -82,7 +84,7 @@ class Trident extends Projectile{
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
-		$nbt->setTag("item", $this->item->nbtSerialize());
+		$nbt->setTag("Trident", $this->item->nbtSerialize());
 		$nbt->setByte(self::TAG_PICKUP, $this->pickupMode);
 		$nbt->setByte("canHitEntity", $this->canHitEntity ? 1 : 0);
 		return $nbt;
@@ -181,5 +183,11 @@ class Trident extends Projectile{
 		}
 
 		$this->flagForDespawn();
+	}
+
+	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
+		parent::syncNetworkData($properties);
+
+		$properties->setGenericFlag(EntityMetadataFlags::ENCHANTED, $this->item->hasEnchantments());
 	}
 }
