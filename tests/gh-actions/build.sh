@@ -56,17 +56,7 @@ leveldb=@60763a09bf5c7a10376d16e25b078b99a35c5c37 \
 chunkutils2=@0.3.1 \
 morton=@0.1.2 \
 igbinary=3.2.1 \
+crypto=0.3.2 \
 " PHP_BUILD_ZTS_ENABLE=on PHP_BUILD_CONFIGURE_OPTS='--with-gmp' ./bin/php-build "$VERSION" "$INSTALL_DIR" || exit 1
-
-rm -rf crypto
-git clone --recursive https://github.com/bukka/php-crypto.git crypto
-cd crypto
-git checkout -qf c8867aa944fa5227eaea9d11a6ce282e64c15af9
-git submodule update --init --recursive
-"$INSTALL_DIR/bin/phpize"
-./configure --with-php-config="$INSTALL_DIR/bin/php-config"
-make -j8 install
-echo "extension=crypto.so" >> "$INSTALL_DIR/etc/conf.d/crypto.ini"
-cd ..
 
 rm "$INSTALL_DIR/etc/conf.d/xdebug.ini" || true
