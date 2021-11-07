@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\handler;
 use pocketmine\block\BaseSign;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\utils\SignText;
-use pocketmine\crafting\CraftingGrid;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerEditBookEvent;
@@ -309,14 +308,6 @@ class InGamePacketHandler extends PacketHandler{
 				foreach($this->craftingTransaction->getInventories() as $inventory){
 					$this->inventoryManager->syncContents($inventory);
 				}
-				/*
-				 * TODO: HACK!
-				 * we can't resend the contents of the crafting window, so we force the client to close it instead.
-				 * So people don't whine about messy desync issues when someone cancels CraftItemEvent, or when a crafting
-				 * transaction goes wrong.
-				 */
-				$this->session->sendDataPacket(ContainerClosePacket::create(InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID, true));
-
 				return false;
 			}finally{
 				$this->craftingTransaction = null;
@@ -380,18 +371,6 @@ class InGamePacketHandler extends PacketHandler{
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
 				if(!$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos)){
 					$this->onFailedBlockAction($vBlockPos, $data->getFace());
-				}elseif(
-					!array_key_exists($windowId = InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID, $this->openHardcodedWindows) &&
-					$this->player->getCraftingGrid()->getGridWidth() === CraftingGrid::SIZE_BIG
-				){
-					//TODO: HACK! crafting grid doesn't fit very well into the current PM container system, so this hack
-					//allows it to carry on working approximately the same way as it did in 1.14
-					$this->openHardcodedWindows[$windowId] = true;
-					$this->session->sendDataPacket(ContainerOpenPacket::blockInv(
-						InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID,
-						WindowTypes::WORKBENCH,
-						$blockPos
-					));
 				}
 				return true;
 			case UseItemTransactionData::ACTION_BREAK_BLOCK:

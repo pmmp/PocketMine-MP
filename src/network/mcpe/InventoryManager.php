@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe;
 use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\BlockInventory;
 use pocketmine\block\inventory\BrewingStandInventory;
+use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
@@ -67,7 +68,6 @@ class InventoryManager{
 	//effect on the behaviour of inventory transactions I don't currently plan to integrate these into the main system.
 	private const RESERVED_WINDOW_ID_RANGE_START = ContainerIds::LAST - 10;
 	private const RESERVED_WINDOW_ID_RANGE_END = ContainerIds::LAST;
-	public const HARDCODED_CRAFTING_GRID_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 1;
 	public const HARDCODED_INVENTORY_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 2;
 
 	/** @var Player */
@@ -178,6 +178,7 @@ class InventoryManager{
 				$inv instanceof BrewingStandInventory => WindowTypes::BREWING_STAND,
 				$inv instanceof AnvilInventory => WindowTypes::ANVIL,
 				$inv instanceof HopperInventory => WindowTypes::HOPPER,
+				$inv instanceof CraftingTableInventory => WindowTypes::WORKBENCH,
 				default => WindowTypes::CONTAINER
 			};
 			return [ContainerOpenPacket::blockInv($id, $windowType, $blockPosition)];

@@ -75,6 +75,7 @@ use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
+use pocketmine\inventory\PlayerCraftingInventory;
 use pocketmine\inventory\PlayerCursorInventory;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
@@ -182,7 +183,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/** @var Inventory[] */
 	protected array $permanentWindows = [];
 	protected PlayerCursorInventory $cursorInventory;
-	protected CraftingGrid $craftingGrid;
+	protected PlayerCraftingInventory $craftingGrid;
 
 	protected int $messageCounter = 2;
 
@@ -2301,7 +2302,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	protected function addDefaultWindows() : void{
 		$this->cursorInventory = new PlayerCursorInventory($this);
-		$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
+		$this->craftingGrid = new PlayerCraftingInventory($this);
 
 		$this->addPermanentInventories($this->inventory, $this->armorInventory, $this->cursorInventory, $this->offHandInventory);
 
@@ -2314,10 +2315,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function getCraftingGrid() : CraftingGrid{
 		return $this->craftingGrid;
-	}
-
-	public function setCraftingGrid(CraftingGrid $grid) : void{
-		$this->craftingGrid = $grid;
 	}
 
 	/**
@@ -2362,10 +2359,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}catch(TransactionValidationException $e){
 				throw new AssumptionFailedError("This server-generated transaction should never be invalid", 0, $e);
 			}
-		}
-
-		if($this->craftingGrid->getGridWidth() > CraftingGrid::SIZE_SMALL){
-			$this->craftingGrid = new CraftingGrid($this, CraftingGrid::SIZE_SMALL);
 		}
 	}
 
