@@ -21,24 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\inventory;
 
-use pocketmine\block\inventory\CraftingTableInventory;
-use pocketmine\item\Item;
-use pocketmine\math\Vector3;
+use pocketmine\crafting\CraftingGrid;
 use pocketmine\player\Player;
 
-class CraftingTable extends Opaque{
+final class PlayerCraftingInventory extends CraftingGrid{
 
-	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($player instanceof Player){
-			$player->setCurrentWindow(new CraftingTableInventory($this->position));
-		}
-
-		return true;
+	public function __construct(private Player $holder){
+		parent::__construct(CraftingGrid::SIZE_SMALL);
 	}
 
-	public function getFuelTime() : int{
-		return 300;
-	}
+	public function getHolder() : Player{ return $this->holder; }
 }
