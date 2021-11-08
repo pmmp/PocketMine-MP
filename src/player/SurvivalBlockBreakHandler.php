@@ -28,6 +28,7 @@ use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 use pocketmine\world\particle\BlockPunchParticle;
 use pocketmine\world\sound\BlockPunchSound;
 use function abs;
@@ -58,7 +59,7 @@ final class SurvivalBlockBreakHandler{
 	/** @var float */
 	private $breakProgress = 0;
 
-	private function __construct(Player $player, Vector3 $blockPos, Block $block, int $targetedFace, int $maxPlayerDistance, int $fxTickInterval = self::DEFAULT_FX_INTERVAL_TICKS){
+	public function __construct(Player $player, Vector3 $blockPos, Block $block, int $targetedFace, int $maxPlayerDistance, int $fxTickInterval = self::DEFAULT_FX_INTERVAL_TICKS){
 		$this->player = $player;
 		$this->blockPos = $blockPos;
 		$this->block = $block;
@@ -70,17 +71,9 @@ final class SurvivalBlockBreakHandler{
 		if($this->breakSpeed > 0){
 			$this->player->getWorld()->broadcastPacketToViewers(
 				$this->blockPos,
-				LevelEventPacket::create(LevelEventPacket::EVENT_BLOCK_START_BREAK, (int) (65535 * $this->breakSpeed), $this->blockPos)
+				LevelEventPacket::create(LevelEvent::BLOCK_START_BREAK, (int) (65535 * $this->breakSpeed), $this->blockPos)
 			);
 		}
-	}
-
-	public static function createIfNecessary(Player $player, Vector3 $blockPos, Block $block, int $targetedFace, int $maxPlayerDistance, int $fxTickInterval = self::DEFAULT_FX_INTERVAL_TICKS) : ?self{
-		$breakInfo = $block->getBreakInfo();
-		if(!$breakInfo->breaksInstantly()){
-			return new self($player, $blockPos, $block, $targetedFace, $maxPlayerDistance, $fxTickInterval);
-		}
-		return null;
 	}
 
 	/**
@@ -100,8 +93,7 @@ final class SurvivalBlockBreakHandler{
 	}
 
 	public function update() : bool{
-		if(
-			$this->player->getPosition()->distanceSquared($this->blockPos->add(0.5, 0.5, 0.5)) > $this->maxPlayerDistance ** 2){
+		if($this->player->getPosition()->distanceSquared($this->blockPos->add(0.5, 0.5, 0.5)) > $this->maxPlayerDistance ** 2){
 			return false;
 		}
 
@@ -147,7 +139,7 @@ final class SurvivalBlockBreakHandler{
 		if($this->player->getWorld()->isInLoadedTerrain($this->blockPos)){
 			$this->player->getWorld()->broadcastPacketToViewers(
 				$this->blockPos,
-				LevelEventPacket::create(LevelEventPacket::EVENT_BLOCK_STOP_BREAK, 0, $this->blockPos)
+				LevelEventPacket::create(LevelEvent::BLOCK_STOP_BREAK, 0, $this->blockPos)
 			);
 		}
 	}

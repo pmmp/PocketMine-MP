@@ -16,17 +16,11 @@ jobs:
         php: [8.0.11]
 
     steps:
-      - uses: actions/checkout@v2 #needed for build.sh
-      - name: Check for PHP build cache
-        id: php-build-cache
-        uses: actions/cache@v2
+      - name: Build and prepare PHP cache
+        uses: pmmp/setup-php-action@e232f72a4330a07aae8418e8aa56b64efcdda636
         with:
-          path: "./bin"
-          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
-
-      - name: Compile PHP
-        if: steps.php-build-cache.outputs.cache-hit != 'true'
-        run: ./tests/gh-actions/build.sh "${{ matrix.php }}"
+          php-version: ${{ matrix.php }}
+          install-path: "./bin"
 
   phpstan:
     name: PHPStan analysis
@@ -42,23 +36,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Restore PHP build cache
-        id: php-build-cache
-        uses: actions/cache@v2
+      - name: Setup PHP
+        uses: pmmp/setup-php-action@e232f72a4330a07aae8418e8aa56b64efcdda636
         with:
-          path: "./bin"
-          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
-
-      - name: Kill build on PHP build cache miss (should never happen)
-        if: steps.php-build-cache.outputs.cache-hit != 'true'
-        run: exit 1
-
-      - name: Install cached PHP's dependencies
-        if: steps.php-build-cache.outputs.cache-hit == 'true'
-        run: ./tests/gh-actions/install-dependencies.sh
-
-      - name: Prefix PHP to PATH
-        run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
+          php-version: ${{ matrix.php }}
+          install-path: "./bin"
 
       - name: Install Composer
         run: curl -sS https://getcomposer.org/installer | php
@@ -91,26 +73,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: pmmp/setup-php-action@e232f72a4330a07aae8418e8aa56b64efcdda636
         with:
-          submodules: true
-
-      - name: Restore PHP build cache
-        id: php-build-cache
-        uses: actions/cache@v2
-        with:
-          path: "./bin"
-          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
-
-      - name: Kill build on PHP build cache miss (should never happen)
-        if: steps.php-build-cache.outputs.cache-hit != 'true'
-        run: exit 1
-
-      - name: Install cached PHP's dependencies
-        if: steps.php-build-cache.outputs.cache-hit == 'true'
-        run: ./tests/gh-actions/install-dependencies.sh
-
-      - name: Prefix PHP to PATH
-        run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
+          php-version: ${{ matrix.php }}
+          install-path: "./bin"
 
       - name: Install Composer
         run: curl -sS https://getcomposer.org/installer | php
@@ -146,23 +114,11 @@ jobs:
         with:
           submodules: true
 
-      - name: Restore PHP build cache
-        id: php-build-cache
-        uses: actions/cache@v2
+      - name: Setup PHP
+        uses: pmmp/setup-php-action@e232f72a4330a07aae8418e8aa56b64efcdda636
         with:
-          path: "./bin"
-          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
-
-      - name: Kill build on PHP build cache miss (should never happen)
-        if: steps.php-build-cache.outputs.cache-hit != 'true'
-        run: exit 1
-
-      - name: Install cached PHP's dependencies
-        if: steps.php-build-cache.outputs.cache-hit == 'true'
-        run: ./tests/gh-actions/install-dependencies.sh
-
-      - name: Prefix PHP to PATH
-        run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
+          php-version: ${{ matrix.php }}
+          install-path: "./bin"
 
       - name: Install Composer
         run: curl -sS https://getcomposer.org/installer | php
@@ -195,26 +151,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Setup PHP
+        uses: pmmp/setup-php-action@e232f72a4330a07aae8418e8aa56b64efcdda636
         with:
-          submodules: true
-
-      - name: Restore PHP build cache
-        id: php-build-cache
-        uses: actions/cache@v2
-        with:
-          path: "./bin"
-          key: "php-build-generic-${{ matrix.php }}-${{ matrix.image }}-${{ hashFiles('./tests/gh-actions/build.sh') }}"
-
-      - name: Kill build on PHP build cache miss (should never happen)
-        if: steps.php-build-cache.outputs.cache-hit != 'true'
-        run: exit 1
-
-      - name: Install cached PHP's dependencies
-        if: steps.php-build-cache.outputs.cache-hit == 'true'
-        run: ./tests/gh-actions/install-dependencies.sh
-
-      - name: Prefix PHP to PATH
-        run: echo "$(pwd)/bin/php7/bin" >> $GITHUB_PATH
+          php-version: ${{ matrix.php }}
+          install-path: "./bin"
 
       - name: Install Composer
         run: curl -sS https://getcomposer.org/installer | php
@@ -238,11 +180,10 @@ jobs:
       - name: Regenerate KnownTranslation APIs
         run: php build/generate-known-translation-apis.php
 
-      - name: Run git diff
-        run: git diff
-
-      - name: Fail job if changes were made
-        run: git diff --quiet
+      - name: Verify code is unchanged
+        run: |
+          git diff
+          git diff --quiet
 
   codestyle:
     name: Code Style checks
@@ -254,10 +195,10 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Setup PHP and tools
-        uses: shivammathur/setup-php@2.9.0
+        uses: shivammathur/setup-php@2.15.0
         with:
           php-version: 8.0
-          tools: php-cs-fixer
+          tools: php-cs-fixer:3.2
 
       - name: Run PHP-CS-Fixer
         run: php-cs-fixer fix --dry-run --diff

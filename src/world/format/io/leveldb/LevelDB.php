@@ -25,6 +25,7 @@ namespace pocketmine\world\format\io\leveldb;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
@@ -265,7 +266,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			case 3: //MCPE 1.0
 				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
 
-				for($y = 0; $y < Chunk::MAX_SUBCHUNKS; ++$y){
+				for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
 					if(($data = $this->db->get($index . self::TAG_SUBCHUNK_PREFIX . chr($y))) === false){
 						continue;
 					}
@@ -404,20 +405,22 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			}
 		}
 
-		$chunk = new Chunk(
-			$subChunks,
-			$biomeArray
-		);
-
-		//TODO: tile ticks, biome states (?)
-
 		$finalisationChr = $this->db->get($index . self::TAG_STATE_FINALISATION);
 		if($finalisationChr !== false){
 			$finalisation = ord($finalisationChr);
-			$chunk->setPopulated($finalisation === self::FINALISATION_DONE);
+			$terrainPopulated = $finalisation === self::FINALISATION_DONE;
 		}else{ //older versions didn't have this tag
-			$chunk->setPopulated();
+			$terrainPopulated = true;
 		}
+
+		//TODO: tile ticks, biome states (?)
+
+		$chunk = new Chunk(
+			$subChunks,
+			$biomeArray ?? BiomeArray::fill(BiomeIds::OCEAN), //TODO: maybe missing biomes should be an error?
+			$terrainPopulated
+		);
+
 		if($hasBeenUpgraded){
 			$chunk->setTerrainDirty(); //trigger rewriting chunk to disk if it was converted from an older format
 		}
@@ -433,7 +436,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$write->put($index . self::TAG_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
 
 		$chunk = $chunkData->getChunk();
-		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN)){
+		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_BLOCKS)){
 			$subChunks = $chunk->getSubChunks();
 			foreach($subChunks as $y => $subChunk){
 				$key = $index . self::TAG_SUBCHUNK_PREFIX . chr($y);

@@ -53,6 +53,8 @@ use function get_loaded_extensions;
 use function getenv;
 use function gettype;
 use function implode;
+use function interface_exists;
+use function is_a;
 use function is_array;
 use function is_bool;
 use function is_int;
@@ -69,6 +71,7 @@ use function preg_grep;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
+use function shell_exec;
 use function spl_object_id;
 use function str_pad;
 use function str_split;
@@ -231,7 +234,7 @@ final class Utils{
 		}elseif($os === Utils::OS_ANDROID){
 			$machine .= @file_get_contents("/system/build.prop");
 		}elseif($os === Utils::OS_MACOS){
-			$machine .= `system_profiler SPHardwareDataType | grep UUID`;
+			$machine .= shell_exec("system_profiler SPHardwareDataType | grep UUID");
 		}
 		$data = $machine . PHP_MAXPATHLEN;
 		$data .= PHP_INT_MAX;
@@ -314,7 +317,7 @@ final class Utils{
 				break;
 			case Utils::OS_BSD:
 			case Utils::OS_MACOS:
-				$processors = (int) `sysctl -n hw.ncpu`;
+				$processors = (int) shell_exec("sysctl -n hw.ncpu");
 				break;
 			case Utils::OS_WINDOWS:
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
@@ -513,18 +516,20 @@ final class Utils{
 	 * @phpstan-param class-string $baseName
 	 */
 	public static function testValidInstance(string $className, string $baseName) : void{
+		$baseInterface = false;
 		if(!class_exists($baseName)){
-			throw new \InvalidArgumentException("Base class $baseName does not exist");
+			if(!interface_exists($baseName)){
+				throw new \InvalidArgumentException("Base class $baseName does not exist");
+			}
+			$baseInterface = true;
 		}
 		if(!class_exists($className)){
-			throw new \InvalidArgumentException("Class $className does not exist");
+			throw new \InvalidArgumentException("Class $className does not exist or is not a class");
 		}
-		$base = new \ReflectionClass($baseName);
+		if(!is_a($className, $baseName, true)){
+			throw new \InvalidArgumentException("Class $className does not " . ($baseInterface ? "implement" : "extend") . " $baseName");
+		}
 		$class = new \ReflectionClass($className);
-
-		if(!$class->isSubclassOf($baseName)){
-			throw new \InvalidArgumentException("Class $className does not " . ($base->isInterface() ? "implement" : "extend") . " " . $baseName);
-		}
 		if(!$class->isInstantiable()){
 			throw new \InvalidArgumentException("Class $className cannot be constructed");
 		}

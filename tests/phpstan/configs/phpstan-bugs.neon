@@ -6,16 +6,6 @@ parameters:
 			path: ../../../src/block/BaseBanner.php
 
 		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\block\\\\Block\\|null\\)\\: bool given\\.$#"
-			count: 1
-			path: ../../../src/block/BlockFactory.php
-
-		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\player\\\\Player\\)\\: bool given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/ListCommand.php
-
-		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
 			count: 2
 			path: ../../../src/console/ConsoleReader.php
@@ -26,24 +16,14 @@ parameters:
 			path: ../../../src/crafting/CraftingManager.php
 
 		-
-			message: "#^Parameter \\#2 \\$callback of function usort expects callable\\(mixed, mixed\\)\\: int, array\\('pocketmine\\\\\\\\crafting\\\\\\\\CraftingManager', 'sort'\\) given\\.$#"
-			count: 1
-			path: ../../../src/crafting/CraftingManager.php
-
-		-
 			message: "#^Property pocketmine\\\\crafting\\\\CraftingManager\\:\\:\\$destructorCallbacks \\(pocketmine\\\\utils\\\\ObjectSet\\<Closure\\(\\)\\: void\\>\\|null\\) does not accept pocketmine\\\\utils\\\\ObjectSet\\<object\\>\\.$#"
 			count: 1
 			path: ../../../src/crafting/CraftingManager.php
 
 		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\entity\\\\Attribute\\)\\: bool given\\.$#"
+			message: "#^Property pocketmine\\\\crash\\\\CrashDumpData\\:\\:\\$extensions \\(array\\<string, string\\>\\) does not accept array\\<int\\|string, string\\>\\.$#"
 			count: 1
-			path: ../../../src/entity/AttributeMap.php
-
-		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\item\\\\Item\\)\\: bool given\\.$#"
-			count: 1
-			path: ../../../src/entity/Human.php
+			path: ../../../src/crash/CrashDump.php
 
 		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
@@ -51,14 +31,9 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(string\\)\\: bool given\\.$#"
+			message: "#^Dead catch \\- RuntimeException is never thrown in the try block\\.$#"
 			count: 1
-			path: ../../../src/lang/Language.php
-
-		-
-			message: "#^Parameter \\#2 \\$callback of function usort expects callable\\(mixed, mixed\\)\\: int, Closure\\(pocketmine\\\\utils\\\\VersionString, pocketmine\\\\utils\\\\VersionString\\)\\: int given\\.$#"
-			count: 1
-			path: ../../../src/plugin/ApiVersion.php
+			path: ../../../src/plugin/PluginManager.php
 
 		-
 			message: "#^Parameter \\#1 \\$closure of static method pocketmine\\\\utils\\\\Utils\\:\\:getNiceClosureName\\(\\) expects Closure\\(\\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*\\)\\: mixed, Closure\\(TEvent of pocketmine\\\\event\\\\Event\\)\\: void given\\.$#"
@@ -71,22 +46,7 @@ parameters:
 			path: ../../../src/utils/Utils.php
 
 		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\entity\\\\Entity\\)\\: bool given\\.$#"
-			count: 2
-			path: ../../../src/world/World.php
-
-		-
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
 			count: 2
 			path: ../../../src/world/format/io/region/RegionLoader.php
-
-		-
-			message: "#^Parameter \\#2 \\$count of function array_fill expects int\\<0, max\\>, int given\\.$#"
-			count: 2
-			path: ../../../src/world/generator/noise/Noise.php
-
-		-
-			message: "#^Parameter \\#2 \\$callback of function array_filter expects \\(callable\\(mixed, mixed\\)\\: bool\\)\\|null, Closure\\(pocketmine\\\\world\\\\format\\\\io\\\\WorldProviderManagerEntry\\)\\: bool given\\.$#"
-			count: 1
-			path: ../../../tools/convert-world.php
 

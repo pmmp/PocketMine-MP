@@ -63,14 +63,16 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\UpdateBlockPacket;
 use pocketmine\player\Player;
+use pocketmine\promise\Promise;
+use pocketmine\promise\PromiseResolver;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
-use pocketmine\utils\Promise;
 use pocketmine\utils\ReversePriorityQueue;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\biome\BiomeRegistry;
@@ -247,13 +249,13 @@ class World implements ChunkManager{
 
 	/** @var bool[] */
 	private $activeChunkPopulationTasks = [];
-	/** @var bool[] */
+	/** @var ChunkLockId[] */
 	private $chunkLock = [];
 	/** @var int */
 	private $maxConcurrentChunkPopulationTasks = 2;
 	/**
-	 * @var Promise[] chunkHash => promise
-	 * @phpstan-var array<int, Promise<Chunk>>
+	 * @var PromiseResolver[] chunkHash => promise
+	 * @phpstan-var array<int, PromiseResolver<Chunk>>
 	 */
 	private array $chunkPopulationRequestMap = [];
 	/**
@@ -261,6 +263,12 @@ class World implements ChunkManager{
 	 * @phpstan-var \SplQueue<int>
 	 */
 	private \SplQueue $chunkPopulationRequestQueue;
+	/**
+	 * @var true[] chunkHash => dummy
+	 * @phpstan-var array<int, true>
+	 */
+	private array $chunkPopulationRequestQueueIndex = [];
+
 	/** @var bool[] */
 	private $generatorRegisteredWorkers = [];
 
@@ -323,7 +331,7 @@ class World implements ChunkManager{
 	private const BLOCKHASH_Y_OFFSET = self::BLOCKHASH_Y_PADDING - self::Y_MIN;
 	private const BLOCKHASH_Y_MASK = (1 << self::BLOCKHASH_Y_BITS) - 1;
 	private const BLOCKHASH_XZ_MASK = (1 << self::MORTON3D_BIT_SIZE) - 1;
-	private const BLOCKHASH_XZ_EXTRA_BITS = 6;
+	private const BLOCKHASH_XZ_EXTRA_BITS = (self::MORTON3D_BIT_SIZE - self::BLOCKHASH_Y_BITS) >> 1;
 	private const BLOCKHASH_XZ_EXTRA_MASK = (1 << self::BLOCKHASH_XZ_EXTRA_BITS) - 1;
 	private const BLOCKHASH_XZ_SIGN_SHIFT = 64 - self::MORTON3D_BIT_SIZE - self::BLOCKHASH_XZ_EXTRA_BITS;
 	private const BLOCKHASH_X_SHIFT = self::BLOCKHASH_Y_BITS;
@@ -514,7 +522,7 @@ class World implements ChunkManager{
 	 */
 	public function onUnload() : void{
 		if($this->unloaded){
-			throw new \InvalidStateException("Tried to close a world which is already closed");
+			throw new \LogicException("Tried to close a world which is already closed");
 		}
 
 		foreach($this->unloadCallbacks as $callback){
@@ -730,14 +738,9 @@ class World implements ChunkManager{
 	 * Unregisters a chunk listener from all chunks it is listening on in this World.
 	 */
 	public function unregisterChunkListenerFromAll(ChunkListener $listener) : void{
-		$id = spl_object_id($listener);
 		foreach($this->chunkListeners as $hash => $listeners){
-			if(isset($listeners[$id])){
-				unset($this->chunkListeners[$hash][$id]);
-				if(count($this->chunkListeners[$hash]) === 0){
-					unset($this->chunkListeners[$hash]);
-				}
-			}
+			World::getXZ($hash, $chunkX, $chunkZ);
+			$this->unregisterChunkListener($listener, $chunkX, $chunkZ);
 		}
 	}
 
@@ -773,7 +776,7 @@ class World implements ChunkManager{
 	 */
 	public function doTick(int $currentTick) : void{
 		if($this->unloaded){
-			throw new \InvalidStateException("Attempted to tick a world which has been closed");
+			throw new \LogicException("Attempted to tick a world which has been closed");
 		}
 
 		$this->timings->doTick->startTiming();
@@ -952,11 +955,17 @@ class World implements ChunkManager{
 			}
 
 			$fullBlock = $this->getBlockAt($b->x, $b->y, $b->z);
-			$packets[] = UpdateBlockPacket::create($b->x, $b->y, $b->z, RuntimeBlockMapping::getInstance()->toRuntimeId($fullBlock->getFullId()));
+			$blockPosition = BlockPosition::fromVector3($b);
+			$packets[] = UpdateBlockPacket::create(
+				$blockPosition,
+				RuntimeBlockMapping::getInstance()->toRuntimeId($fullBlock->getFullId()),
+				UpdateBlockPacket::FLAG_NETWORK,
+				UpdateBlockPacket::DATA_LAYER_NORMAL
+			);
 
 			$tile = $this->getTileAt($b->x, $b->y, $b->z);
 			if($tile instanceof Spawnable){
-				$packets[] = BlockActorDataPacket::create($b->x, $b->y, $b->z, $tile->getSerializedSpawnCompound());
+				$packets[] = BlockActorDataPacket::create($blockPosition, $tile->getSerializedSpawnCompound());
 			}
 		}
 
@@ -1405,7 +1414,6 @@ class World implements ChunkManager{
 
 	public function updateAllLight(int $x, int $y, int $z) : void{
 		if(($chunk = $this->getChunk($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE)) === null || $chunk->isLightPopulated() !== true){
-			$this->logger->debug("Skipped runtime light update of x=$x,y=$y,z=$z because the target area has not received base light calculation");
 			return;
 		}
 
@@ -1586,24 +1594,21 @@ class World implements ChunkManager{
 		}
 		$chunkX = $x >> Chunk::COORD_BIT_SIZE;
 		$chunkZ = $z >> Chunk::COORD_BIT_SIZE;
-		if($this->isChunkLocked($chunkX, $chunkZ)){
-			throw new WorldException("Terrain is locked for generation/population");
-		}
 		if($this->loadChunk($chunkX, $chunkZ) === null){ //current expected behaviour is to try to load the terrain synchronously
 			throw new WorldException("Cannot set a block in un-generated terrain");
 		}
 
 		$this->timings->setBlock->startTiming();
 
-		$oldBlock = $this->getBlockAt($x, $y, $z, true, false);
+		$this->unlockChunk($chunkX, $chunkZ, null);
 
 		$block = clone $block;
 
 		$block->position($this, $x, $y, $z);
 		$block->writeStateToWorld();
-		$pos = $block->getPosition();
+		$pos = new Vector3($x, $y, $z);
 
-		$chunkHash = World::chunkHash($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE);
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$relativeBlockHash = World::chunkBlockHash($x, $y, $z);
 
 		unset($this->blockCache[$chunkHash][$relativeBlockHash]);
@@ -1613,14 +1618,12 @@ class World implements ChunkManager{
 		}
 		$this->changedBlocks[$chunkHash][$relativeBlockHash] = $pos;
 
-		foreach($this->getChunkListeners($x >> Chunk::COORD_BIT_SIZE, $z >> Chunk::COORD_BIT_SIZE) as $listener){
+		foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
 			$listener->onBlockChanged($pos);
 		}
 
 		if($update){
-			if($oldBlock->getLightFilter() !== $block->getLightFilter() or $oldBlock->getLightLevel() !== $block->getLightLevel()){
-				$this->updateAllLight($x, $y, $z);
-			}
+			$this->updateAllLight($x, $y, $z);
 			$this->tryAddToNeighbourUpdateQueue($pos);
 			foreach($pos->sides() as $side){
 				$this->tryAddToNeighbourUpdateQueue($side);
@@ -2044,10 +2047,7 @@ class World implements ChunkManager{
 	public function setBiomeId(int $x, int $z, int $biomeId) : void{
 		$chunkX = $x >> Chunk::COORD_BIT_SIZE;
 		$chunkZ = $z >> Chunk::COORD_BIT_SIZE;
-		if($this->isChunkLocked($chunkX, $chunkZ)){
-			//the changes would be overwritten when the generation finishes
-			throw new WorldException("Chunk is currently locked for async generation/population");
-		}
+		$this->unlockChunk($chunkX, $chunkZ, null);
 		if(($chunk = $this->loadChunk($chunkX, $chunkZ)) !== null){
 			$chunk->setBiomeId($x & Chunk::COORD_MASK, $z & Chunk::COORD_MASK, $biomeId);
 		}else{
@@ -2084,120 +2084,99 @@ class World implements ChunkManager{
 	/**
 	 * Returns the chunks adjacent to the specified chunk.
 	 *
-	 * @return (Chunk|null)[]
+	 * @return Chunk[]|null[]
 	 */
 	public function getAdjacentChunks(int $x, int $z) : array{
 		$result = [];
-		for($xx = 0; $xx <= 2; ++$xx){
-			for($zz = 0; $zz <= 2; ++$zz){
-				$i = $zz * 3 + $xx;
-				if($i === 4){
+		for($xx = -1; $xx <= 1; ++$xx){
+			for($zz = -1; $zz <= 1; ++$zz){
+				if($xx === 0 && $zz === 0){
 					continue; //center chunk
 				}
-				$result[$i] = $this->loadChunk($x + $xx - 1, $z + $zz - 1);
+				$result[World::chunkHash($xx, $zz)] = $this->loadChunk($x + $xx, $z + $zz);
 			}
 		}
 
 		return $result;
 	}
 
-	public function lockChunk(int $chunkX, int $chunkZ) : void{
+	/**
+	 * Flags a chunk as locked, usually for async modification.
+	 *
+	 * This is an **advisory lock**. This means that the lock does **not** prevent the chunk from being modified on the
+	 * main thread, such as by setBlock() or setBiomeId(). However, you can use it to detect when such modifications
+	 * have taken place - unlockChunk() with the same lockID will fail and return false if this happens.
+	 *
+	 * This is used internally by the generation system to ensure that two PopulationTasks don't try to modify the same
+	 * chunk at the same time. Generation will respect these locks and won't try to do generation of chunks over which
+	 * a lock is held.
+	 *
+	 * WARNING: Be sure to release all locks once you're done with them, or you WILL have problems with terrain not
+	 * being generated.
+	 */
+	public function lockChunk(int $chunkX, int $chunkZ, ChunkLockId $lockId) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		if(isset($this->chunkLock[$chunkHash])){
 			throw new \InvalidArgumentException("Chunk $chunkX $chunkZ is already locked");
 		}
-		$this->chunkLock[$chunkHash] = true;
+		$this->chunkLock[$chunkHash] = $lockId;
 	}
 
-	public function unlockChunk(int $chunkX, int $chunkZ) : void{
-		unset($this->chunkLock[World::chunkHash($chunkX, $chunkZ)]);
+	/**
+	 * Unlocks a chunk previously locked by lockChunk().
+	 *
+	 * You must provide the same lockID as provided to lockChunk().
+	 * If a null lockID is given, any existing lock will be removed from the chunk, regardless of who owns it.
+	 *
+	 * Returns true if unlocking was successful, false otherwise.
+	 */
+	public function unlockChunk(int $chunkX, int $chunkZ, ?ChunkLockId $lockId) : bool{
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
+		if(isset($this->chunkLock[$chunkHash]) && ($lockId === null || $this->chunkLock[$chunkHash] === $lockId)){
+			unset($this->chunkLock[$chunkHash]);
+			return true;
+		}
+		return false;
 	}
 
+	/**
+	 * Returns whether anyone currently has a lock on the chunk at the given coordinates.
+	 * You should check this to make sure that population tasks aren't currently modifying chunks that you want to use
+	 * in async tasks.
+	 */
 	public function isChunkLocked(int $chunkX, int $chunkZ) : bool{
 		return isset($this->chunkLock[World::chunkHash($chunkX, $chunkZ)]);
 	}
 
-	private function drainPopulationRequestQueue() : void{
-		$failed = [];
-		while(count($this->activeChunkPopulationTasks) < $this->maxConcurrentChunkPopulationTasks && !$this->chunkPopulationRequestQueue->isEmpty()){
-			$nextChunkHash = $this->chunkPopulationRequestQueue->dequeue();
-			World::getXZ($nextChunkHash, $nextChunkX, $nextChunkZ);
-			if(isset($this->chunkPopulationRequestMap[$nextChunkHash])){
-				assert(!isset($this->activeChunkPopulationTasks[$nextChunkHash]), "Population for chunk $nextChunkX $nextChunkZ already running");
-				$this->orderChunkPopulation($nextChunkX, $nextChunkZ, null);
-				if(!isset($this->activeChunkPopulationTasks[$nextChunkHash])){
-					$failed[] = $nextChunkHash;
-				}
-			}
-		}
-
-		//these requests failed even though they weren't rate limited; we can't directly re-add them to the back of the
-		//queue because it would result in an infinite loop
-		foreach($failed as $hash){
-			$this->chunkPopulationRequestQueue->enqueue($hash);
-		}
-	}
-
-	public function generateChunkCallback(int $x, int $z, ?Chunk $chunk) : void{
-		Timings::$generationCallback->startTiming();
-		if(isset($this->chunkPopulationRequestMap[$index = World::chunkHash($x, $z)]) && isset($this->activeChunkPopulationTasks[$index])){
-			if($chunk === null){
-				throw new AssumptionFailedError("Primary chunk should never be NULL");
-			}
-			for($xx = -1; $xx <= 1; ++$xx){
-				for($zz = -1; $zz <= 1; ++$zz){
-					$this->unlockChunk($x + $xx, $z + $zz);
-				}
-			}
-
-			$oldChunk = $this->loadChunk($x, $z);
-			$this->setChunk($x, $z, $chunk, false);
-			if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
-				(new ChunkPopulateEvent($this, $x, $z, $chunk))->call();
-
-				foreach($this->getChunkListeners($x, $z) as $listener){
-					$listener->onChunkPopulated($x, $z, $chunk);
-				}
-			}
-			unset($this->activeChunkPopulationTasks[$index]);
-			$promise = $this->chunkPopulationRequestMap[$index];
-			unset($this->chunkPopulationRequestMap[$index]);
-			$promise->resolve($chunk);
-
-			$this->drainPopulationRequestQueue();
-		}elseif($this->isChunkLocked($x, $z)){
-			$this->unlockChunk($x, $z);
-			if($chunk !== null){
-				$this->setChunk($x, $z, $chunk, false);
-			}
-			$this->drainPopulationRequestQueue();
-		}elseif($chunk !== null){
-			$this->setChunk($x, $z, $chunk, false);
-		}
-		Timings::$generationCallback->stopTiming();
-	}
-
-	/**
-	 * @param bool       $deleteEntitiesAndTiles Whether to delete entities and tiles on the old chunk, or transfer them to the new one
-	 */
-	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk, bool $deleteEntitiesAndTiles = true) : void{
+	public function setChunk(int $chunkX, int $chunkZ, Chunk $chunk) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
 		$oldChunk = $this->loadChunk($chunkX, $chunkZ);
 		if($oldChunk !== null and $oldChunk !== $chunk){
-			if($deleteEntitiesAndTiles){
-				foreach($this->getChunkEntities($chunkX, $chunkZ) as $entity){
-					if(!($entity instanceof Player)){
-						$entity->close();
-					}
+			$deletedTiles = 0;
+			$transferredTiles = 0;
+			foreach($oldChunk->getTiles() as $oldTile){
+				$tilePosition = $oldTile->getPosition();
+				$localX = $tilePosition->getFloorX() & Chunk::COORD_MASK;
+				$localY = $tilePosition->getFloorY();
+				$localZ = $tilePosition->getFloorZ() & Chunk::COORD_MASK;
+
+				$newBlock = BlockFactory::getInstance()->fromFullBlock($chunk->getFullBlock($localX, $localY, $localZ));
+				$expectedTileClass = $newBlock->getIdInfo()->getTileClass();
+				if(
+					$expectedTileClass === null || //new block doesn't expect a tile
+					!($oldTile instanceof $expectedTileClass) || //new block expects a different tile
+					(($newTile = $chunk->getTile($localX, $localY, $localZ)) !== null && $newTile !== $oldTile) //new chunk already has a different tile
+				){
+					$oldTile->close();
+					$deletedTiles++;
+				}else{
+					$transferredTiles++;
+					$chunk->addTile($oldTile);
+					$oldChunk->removeTile($oldTile);
 				}
-				foreach($oldChunk->getTiles() as $tile){
-					$tile->close();
-				}
-			}else{
-				foreach($oldChunk->getTiles() as $tile){
-					$chunk->addTile($tile);
-					$oldChunk->removeTile($tile);
-				}
+			}
+			if($deletedTiles > 0 || $transferredTiles > 0){
+				$this->logger->debug("Replacement of chunk $chunkX $chunkZ caused deletion of $deletedTiles obsolete/conflicted tiles, and transfer of $transferredTiles");
 			}
 		}
 
@@ -2220,6 +2199,14 @@ class World implements ChunkManager{
 		}else{
 			foreach($this->getChunkListeners($chunkX, $chunkZ) as $listener){
 				$listener->onChunkChanged($chunkX, $chunkZ, $chunk);
+			}
+		}
+
+		for($cX = -1; $cX <= 1; ++$cX){
+			for($cZ = -1; $cZ <= 1; ++$cZ){
+				foreach($this->getChunkEntities($chunkX + $cX, $chunkZ + $cZ) as $entity){
+					$entity->onNearbyBlockChange();
+				}
 			}
 		}
 	}
@@ -2393,7 +2380,7 @@ class World implements ChunkManager{
 		if(isset($this->chunks[$hash = World::chunkHash($chunkX, $chunkZ)])){
 			$this->chunks[$hash]->addTile($tile);
 		}else{
-			throw new \InvalidStateException("Attempted to create tile " . get_class($tile) . " in unloaded chunk $chunkX $chunkZ");
+			throw new \InvalidArgumentException("Attempted to create tile " . get_class($tile) . " in unloaded chunk $chunkX $chunkZ");
 		}
 
 		//delegate tile ticking to the corresponding block
@@ -2430,8 +2417,6 @@ class World implements ChunkManager{
 	 * returned directly.
 	 *
 	 * @return Chunk|null the requested chunk, or null on failure.
-	 *
-	 * @throws \InvalidStateException
 	 */
 	public function loadChunk(int $x, int $z) : ?Chunk{
 		if(isset($this->chunks[$chunkHash = World::chunkHash($x, $z)])){
@@ -2480,6 +2465,7 @@ class World implements ChunkManager{
 	}
 
 	private function initChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{
+		$logger = new \PrefixedLogger($this->logger, "Loading chunk $chunkX $chunkZ");
 		if(count($chunkData->getEntityNBT()) !== 0){
 			$this->timings->syncChunkLoadEntities->startTiming();
 			$entityFactory = EntityFactory::getInstance();
@@ -2487,8 +2473,8 @@ class World implements ChunkManager{
 				try{
 					$entity = $entityFactory->createFromData($this, $nbt);
 				}catch(NbtDataException $e){
-					$this->getLogger()->error("Chunk $chunkX $chunkZ: Bad entity data at list position $k: " . $e->getMessage());
-					$this->getLogger()->logException($e);
+					$logger->error("Bad entity data at list position $k: " . $e->getMessage());
+					$logger->logException($e);
 					continue;
 				}
 				if($entity === null){
@@ -2499,7 +2485,7 @@ class World implements ChunkManager{
 					}elseif($saveIdTag instanceof IntTag){ //legacy MCPE format
 						$saveId = "legacy(" . $saveIdTag->getValue() . ")";
 					}
-					$this->getLogger()->warning("Chunk $chunkX $chunkZ: Deleted unknown entity type $saveId");
+					$logger->warning("Deleted unknown entity type $saveId");
 				}
 				//TODO: we can't prevent entities getting added to unloaded chunks if they were saved in the wrong place
 				//here, because entities currently add themselves to the world
@@ -2515,14 +2501,16 @@ class World implements ChunkManager{
 				try{
 					$tile = $tileFactory->createFromData($this, $nbt);
 				}catch(NbtDataException $e){
-					$this->getLogger()->error("Chunk $chunkX $chunkZ: Bad tile entity data at list position $k: " . $e->getMessage());
-					$this->getLogger()->logException($e);
+					$logger->error("Bad tile entity data at list position $k: " . $e->getMessage());
+					$logger->logException($e);
 					continue;
 				}
 				if($tile === null){
-					$this->getLogger()->warning("Chunk $chunkX $chunkZ: Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
+					$logger->warning("Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
 				}elseif(!$this->isChunkLoaded($tile->getPosition()->getFloorX() >> Chunk::COORD_BIT_SIZE, $tile->getPosition()->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
-					$this->logger->error("Chunk $chunkX $chunkZ: Found tile saved on wrong chunk - unable to fix due to correct chunk not loaded");
+					$logger->error("Found tile saved on wrong chunk - unable to fix due to correct chunk not loaded");
+				}elseif($this->getTile($tilePosition = $tile->getPosition()) !== null){
+					$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Another tile is already at that position");
 				}else{
 					$this->addTile($tile);
 				}
@@ -2751,22 +2739,80 @@ class World implements ChunkManager{
 		}
 	}
 
+	private function addChunkHashToPopulationRequestQueue(int $chunkHash) : void{
+		if(!isset($this->chunkPopulationRequestQueueIndex[$chunkHash])){
+			$this->chunkPopulationRequestQueue->enqueue($chunkHash);
+			$this->chunkPopulationRequestQueueIndex[$chunkHash] = true;
+		}
+	}
+
 	/**
 	 * @phpstan-return Promise<Chunk>
 	 */
 	private function enqueuePopulationRequest(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$this->chunkPopulationRequestQueue->enqueue($chunkHash);
-		$promise = $this->chunkPopulationRequestMap[$chunkHash] = new Promise();
+		$this->addChunkHashToPopulationRequestQueue($chunkHash);
+		$resolver = $this->chunkPopulationRequestMap[$chunkHash] = new PromiseResolver();
 		if($associatedChunkLoader === null){
 			$temporaryLoader = new class implements ChunkLoader{};
 			$this->registerChunkLoader($temporaryLoader, $chunkX, $chunkZ);
-			$promise->onCompletion(
+			$resolver->getPromise()->onCompletion(
 				fn() => $this->unregisterChunkLoader($temporaryLoader, $chunkX, $chunkZ),
 				static function() : void{}
 			);
 		}
-		return $promise;
+		return $resolver->getPromise();
+	}
+
+	private function drainPopulationRequestQueue() : void{
+		$failed = [];
+		while(count($this->activeChunkPopulationTasks) < $this->maxConcurrentChunkPopulationTasks && !$this->chunkPopulationRequestQueue->isEmpty()){
+			$nextChunkHash = $this->chunkPopulationRequestQueue->dequeue();
+			unset($this->chunkPopulationRequestQueueIndex[$nextChunkHash]);
+			World::getXZ($nextChunkHash, $nextChunkX, $nextChunkZ);
+			if(isset($this->chunkPopulationRequestMap[$nextChunkHash])){
+				assert(!isset($this->activeChunkPopulationTasks[$nextChunkHash]), "Population for chunk $nextChunkX $nextChunkZ already running");
+				if(
+					!$this->orderChunkPopulation($nextChunkX, $nextChunkZ, null)->isResolved() &&
+					!isset($this->activeChunkPopulationTasks[$nextChunkHash])
+				){
+					$failed[] = $nextChunkHash;
+				}
+			}
+		}
+
+		//these requests failed even though they weren't rate limited; we can't directly re-add them to the back of the
+		//queue because it would result in an infinite loop
+		foreach($failed as $hash){
+			$this->addChunkHashToPopulationRequestQueue($hash);
+		}
+	}
+
+	/**
+	 * Checks if a chunk needs to be populated, and whether it's ready to do so.
+	 * @return bool[]|PromiseResolver[]|null[]
+	 * @phpstan-return array{?PromiseResolver<Chunk>, bool}
+	 */
+	private function checkChunkPopulationPreconditions(int $chunkX, int $chunkZ) : array{
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
+		$resolver = $this->chunkPopulationRequestMap[$chunkHash] ?? null;
+		if($resolver !== null && isset($this->activeChunkPopulationTasks[$chunkHash])){
+			//generation is already running
+			return [$resolver, false];
+		}
+
+		$temporaryChunkLoader = new class implements ChunkLoader{};
+		$this->registerChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
+		$chunk = $this->loadChunk($chunkX, $chunkZ);
+		$this->unregisterChunkLoader($temporaryChunkLoader, $chunkX, $chunkZ);
+		if($chunk !== null && $chunk->isPopulated()){
+			//chunk is already populated; return a pre-resolved promise that will directly fire callbacks assigned
+			$resolver ??= new PromiseResolver();
+			unset($this->chunkPopulationRequestMap[$chunkHash]);
+			$resolver->resolve($chunk);
+			return [$resolver, false];
+		}
+		return [$resolver, true];
 	}
 
 	/**
@@ -2781,17 +2827,16 @@ class World implements ChunkManager{
 	 * @phpstan-return Promise<Chunk>
 	 */
 	public function requestChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
-		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-		$promise = $this->chunkPopulationRequestMap[$chunkHash] ?? null;
-		if($promise !== null && isset($this->activeChunkPopulationTasks[$chunkHash])){
-			//generation is already running
-			return $promise;
+		[$resolver, $proceedWithPopulation] = $this->checkChunkPopulationPreconditions($chunkX, $chunkZ);
+		if(!$proceedWithPopulation){
+			return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
 		}
+
 		if(count($this->activeChunkPopulationTasks) >= $this->maxConcurrentChunkPopulationTasks){
 			//too many chunks are already generating; delay resolution of the request until later
-			return $promise ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
+			return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
 		}
-		return $this->orderChunkPopulation($chunkX, $chunkZ, $associatedChunkLoader);
+		return $this->internalOrderChunkPopulation($chunkX, $chunkZ, $associatedChunkLoader, $resolver);
 	}
 
 	/**
@@ -2804,53 +2849,146 @@ class World implements ChunkManager{
 	 *
 	 * @phpstan-return Promise<Chunk>
 	 */
-	public function orderChunkPopulation(int $x, int $z, ?ChunkLoader $associatedChunkLoader) : Promise{
-		$index = World::chunkHash($x, $z);
-		$promise = $this->chunkPopulationRequestMap[$index] ?? null;
-		if($promise !== null && isset($this->activeChunkPopulationTasks[$index])){
-			//generation is already running
-			return $promise;
+	public function orderChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader) : Promise{
+		[$resolver, $proceedWithPopulation] = $this->checkChunkPopulationPreconditions($chunkX, $chunkZ);
+		if(!$proceedWithPopulation){
+			return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
 		}
+
+		return $this->internalOrderChunkPopulation($chunkX, $chunkZ, $associatedChunkLoader, $resolver);
+	}
+
+	/**
+	 * @phpstan-param PromiseResolver<Chunk>|null $resolver
+	 * @phpstan-return Promise<Chunk>
+	 */
+	private function internalOrderChunkPopulation(int $chunkX, int $chunkZ, ?ChunkLoader $associatedChunkLoader, ?PromiseResolver $resolver) : Promise{
+		$chunkHash = World::chunkHash($chunkX, $chunkZ);
+
+		Timings::$population->startTiming();
+
 		for($xx = -1; $xx <= 1; ++$xx){
 			for($zz = -1; $zz <= 1; ++$zz){
-				if($this->isChunkLocked($x + $xx, $z + $zz)){
+				if($this->isChunkLocked($chunkX + $xx, $chunkZ + $zz)){
 					//chunk is already in use by another generation request; queue the request for later
-					return $promise ?? $this->enqueuePopulationRequest($x, $z, $associatedChunkLoader);
+					return $resolver?->getPromise() ?? $this->enqueuePopulationRequest($chunkX, $chunkZ, $associatedChunkLoader);
 				}
 			}
 		}
 
-		$chunk = $this->loadChunk($x, $z);
-		if($chunk === null || !$chunk->isPopulated()){
-			Timings::$population->startTiming();
-
-			$this->activeChunkPopulationTasks[$index] = true;
-			if($promise === null){
-				$promise = new Promise();
-				$this->chunkPopulationRequestMap[$index] = $promise;
-			}
-
-			for($xx = -1; $xx <= 1; ++$xx){
-				for($zz = -1; $zz <= 1; ++$zz){
-					$this->lockChunk($x + $xx, $z + $zz);
-				}
-			}
-
-			$task = new PopulationTask($this, $x, $z, $chunk);
-			$workerId = $this->workerPool->selectWorker();
-			if(!isset($this->generatorRegisteredWorkers[$workerId])){
-				$this->registerGeneratorToWorker($workerId);
-			}
-			$this->workerPool->submitTaskToWorker($task, $workerId);
-
-			Timings::$population->stopTiming();
-			return $promise;
+		$this->activeChunkPopulationTasks[$chunkHash] = true;
+		if($resolver === null){
+			$resolver = new PromiseResolver();
+			$this->chunkPopulationRequestMap[$chunkHash] = $resolver;
 		}
 
-		//chunk is already populated; return a pre-resolved promise that will directly fire callbacks assigned
-		$result = new Promise();
-		$result->resolve($chunk);
-		return $result;
+		$chunkPopulationLockId = new ChunkLockId();
+
+		$temporaryChunkLoader = new class implements ChunkLoader{};
+		for($xx = -1; $xx <= 1; ++$xx){
+			for($zz = -1; $zz <= 1; ++$zz){
+				$this->lockChunk($chunkX + $xx, $chunkZ + $zz, $chunkPopulationLockId);
+				$this->registerChunkLoader($temporaryChunkLoader, $chunkX + $xx, $chunkZ + $zz);
+			}
+		}
+
+		$centerChunk = $this->loadChunk($chunkX, $chunkZ);
+		$adjacentChunks = $this->getAdjacentChunks($chunkX, $chunkZ);
+		$task = new PopulationTask(
+			$this->worldId,
+			$chunkX,
+			$chunkZ,
+			$centerChunk,
+			$adjacentChunks,
+			function(Chunk $centerChunk, array $adjacentChunks) use ($chunkPopulationLockId, $chunkX, $chunkZ, $temporaryChunkLoader) : void{
+				if(!$this->isLoaded()){
+					return;
+				}
+
+				$this->generateChunkCallback($chunkPopulationLockId, $chunkX, $chunkZ, $centerChunk, $adjacentChunks, $temporaryChunkLoader);
+			}
+		);
+		$workerId = $this->workerPool->selectWorker();
+		if(!isset($this->workerPool->getRunningWorkers()[$workerId]) && isset($this->generatorRegisteredWorkers[$workerId])){
+			$this->logger->debug("Selected worker $workerId previously had generator registered, but is now offline");
+			unset($this->generatorRegisteredWorkers[$workerId]);
+		}
+		if(!isset($this->generatorRegisteredWorkers[$workerId])){
+			$this->registerGeneratorToWorker($workerId);
+		}
+		$this->workerPool->submitTaskToWorker($task, $workerId);
+
+		Timings::$population->stopTiming();
+		return $resolver->getPromise();
+	}
+
+	/**
+	 * @param Chunk[] $adjacentChunks chunkHash => chunk
+	 * @phpstan-param array<int, Chunk> $adjacentChunks
+	 */
+	private function generateChunkCallback(ChunkLockId $chunkLockId, int $x, int $z, Chunk $chunk, array $adjacentChunks, ChunkLoader $temporaryChunkLoader) : void{
+		Timings::$generationCallback->startTiming();
+
+		$dirtyChunks = 0;
+		for($xx = -1; $xx <= 1; ++$xx){
+			for($zz = -1; $zz <= 1; ++$zz){
+				$this->unregisterChunkLoader($temporaryChunkLoader, $x + $xx, $z + $zz);
+				if(!$this->unlockChunk($x + $xx, $z + $zz, $chunkLockId)){
+					$dirtyChunks++;
+				}
+			}
+		}
+
+		$index = World::chunkHash($x, $z);
+		if(!isset($this->chunkPopulationRequestMap[$index])){
+			$this->logger->debug("Discarding population result for chunk x=$x,z=$z - promise was already broken");
+			unset($this->activeChunkPopulationTasks[$index]);
+		}elseif(isset($this->activeChunkPopulationTasks[$index])){
+			if($dirtyChunks === 0){
+				$oldChunk = $this->loadChunk($x, $z);
+				$this->setChunk($x, $z, $chunk);
+
+				foreach($adjacentChunks as $relativeChunkHash => $adjacentChunk){
+					World::getXZ($relativeChunkHash, $relativeX, $relativeZ);
+					if($relativeX < -1 || $relativeX > 1 || $relativeZ < -1 || $relativeZ > 1){
+						throw new AssumptionFailedError("Adjacent chunks should be in range -1 ... +1 coordinates");
+					}
+					$this->setChunk($x + $relativeX, $z + $relativeZ, $adjacentChunk);
+				}
+
+				if(($oldChunk === null or !$oldChunk->isPopulated()) and $chunk->isPopulated()){
+					(new ChunkPopulateEvent($this, $x, $z, $chunk))->call();
+
+					foreach($this->getChunkListeners($x, $z) as $listener){
+						$listener->onChunkPopulated($x, $z, $chunk);
+					}
+				}
+			}else{
+				$this->logger->debug("Discarding population result for chunk x=$x,z=$z - terrain was modified on the main thread before async population completed");
+			}
+
+			//This needs to be in this specific spot because user code might call back to orderChunkPopulation().
+			//If it does, and finds the promise, and doesn't find an active task associated with it, it will schedule
+			//another PopulationTask. We don't want that because we're here processing the results.
+			//We can't remove the promise from the array before setting the chunks in the world because that would lead
+			//to the same problem. Therefore, it's necessary that this code be split into two if/else, with this in the
+			//middle.
+			unset($this->activeChunkPopulationTasks[$index]);
+
+			if($dirtyChunks === 0){
+				$promise = $this->chunkPopulationRequestMap[$index];
+				unset($this->chunkPopulationRequestMap[$index]);
+				$promise->resolve($chunk);
+			}else{
+				//request failed, stick it back on the queue
+				//we didn't resolve the promise or touch it in any way, so any fake chunk loaders are still valid and
+				//don't need to be added a second time.
+				$this->addChunkHashToPopulationRequestQueue($index);
+			}
+
+			$this->drainPopulationRequestQueue();
+		}
+		Timings::$generationCallback->stopTiming();
 	}
 
 	public function doChunkGarbageCollection() : void{

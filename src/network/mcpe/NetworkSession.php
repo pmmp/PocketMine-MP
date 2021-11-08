@@ -62,6 +62,7 @@ use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
+use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEffectPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
@@ -88,6 +89,7 @@ use pocketmine\network\mcpe\protocol\SetTitlePacket;
 use pocketmine\network\mcpe\protocol\TakeItemActorPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\TransferPacket;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\command\CommandData;
 use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
 use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
@@ -347,6 +349,10 @@ class NetworkSession{
 
 		try{
 			foreach($stream->getPackets($this->packetPool, $this->packetSerializerContext, 500) as [$packet, $buffer]){
+				if($packet === null){
+					$this->logger->debug("Unknown packet: " . base64_encode($buffer));
+					throw new PacketHandlingException("Unknown packet received");
+				}
 				try{
 					$this->handleDataPacket($packet, $buffer);
 				}catch(PacketHandlingException $e){
@@ -446,6 +452,8 @@ class NetworkSession{
 		}
 	}
 
+	public function getPacketSerializerContext() : PacketSerializerContext{ return $this->packetSerializerContext; }
+
 	public function getBroadcaster() : PacketBroadcaster{ return $this->broadcaster; }
 
 	public function getCompressor() : Compressor{
@@ -529,8 +537,6 @@ class NetworkSession{
 
 	/**
 	 * Instructs the remote client to connect to a different server.
-	 *
-	 * @throws \UnsupportedOperationException
 	 */
 	public function transfer(string $ip, int $port, string $reason = "transfer") : void{
 		$this->tryDisconnect(function() use ($ip, $port, $reason) : void{
@@ -556,7 +562,7 @@ class NetworkSession{
 	 */
 	private function doServerDisconnect(string $reason, bool $notify = true) : void{
 		if($notify){
-			$this->sendDataPacket($reason === "" ? DisconnectPacket::silent() : DisconnectPacket::message($reason), true);
+			$this->sendDataPacket(DisconnectPacket::create($reason !== "" ? $reason : null), true);
 		}
 
 		$this->sender->close($notify ? $reason : "");
@@ -726,16 +732,17 @@ class NetworkSession{
 			$yaw = $yaw ?? $location->getYaw();
 			$pitch = $pitch ?? $location->getPitch();
 
-			$pk = new MovePlayerPacket();
-			$pk->entityRuntimeId = $this->player->getId();
-			$pk->position = $this->player->getOffsetPosition($pos);
-			$pk->pitch = $pitch;
-			$pk->headYaw = $yaw;
-			$pk->yaw = $yaw;
-			$pk->mode = $mode;
-			$pk->onGround = $this->player->onGround;
-
-			$this->sendDataPacket($pk);
+			$this->sendDataPacket(MovePlayerPacket::simple(
+				$this->player->getId(),
+				$this->player->getOffsetPosition($pos),
+				$pitch,
+				$yaw,
+				$yaw, //TODO: head yaw
+				$mode,
+				$this->player->onGround,
+				0, //TODO: riding entity ID
+				0 //TODO: tick
+			));
 
 			if($this->handler instanceof InGamePacketHandler){
 				$this->handler->forceMoveSync = true;
@@ -748,16 +755,17 @@ class NetworkSession{
 	}
 
 	public function syncViewAreaCenterPoint(Vector3 $newPos, int $viewDistance) : void{
-		$this->sendDataPacket(NetworkChunkPublisherUpdatePacket::create($newPos->getFloorX(), $newPos->getFloorY(), $newPos->getFloorZ(), $viewDistance * 16)); //blocks, not chunks >.>
+		$this->sendDataPacket(NetworkChunkPublisherUpdatePacket::create(BlockPosition::fromVector3($newPos), $viewDistance * 16)); //blocks, not chunks >.>
 	}
 
 	public function syncPlayerSpawnPoint(Position $newSpawn) : void{
-		[$x, $y, $z] = [$newSpawn->getFloorX(), $newSpawn->getFloorY(), $newSpawn->getFloorZ()];
-		$this->sendDataPacket(SetSpawnPositionPacket::playerSpawn($x, $y, $z, DimensionIds::OVERWORLD, $x, $y, $z));
+		$newSpawnBlockPosition = BlockPosition::fromVector3($newSpawn);
+		//TODO: respawn causing block position (bed, respawn anchor)
+		$this->sendDataPacket(SetSpawnPositionPacket::playerSpawn($newSpawnBlockPosition, DimensionIds::OVERWORLD, $newSpawnBlockPosition));
 	}
 
 	public function syncWorldSpawnPoint(Position $newSpawn) : void{
-		$this->sendDataPacket(SetSpawnPositionPacket::worldSpawn($newSpawn->getFloorX(), $newSpawn->getFloorY(), $newSpawn->getFloorZ(), DimensionIds::OVERWORLD));
+		$this->sendDataPacket(SetSpawnPositionPacket::worldSpawn(BlockPosition::fromVector3($newSpawn), DimensionIds::OVERWORLD));
 	}
 
 	public function syncGameMode(GameMode $mode, bool $isRollback = false) : void{
@@ -774,7 +782,15 @@ class NetworkSession{
 	 * TODO: make this less specialized
 	 */
 	public function syncAdventureSettings(Player $for) : void{
-		$pk = new AdventureSettingsPacket();
+		$isOp = $for->hasPermission(DefaultPermissions::ROOT_OPERATOR);
+		$pk = AdventureSettingsPacket::create(
+			0,
+			$isOp ? AdventureSettingsPacket::PERMISSION_OPERATOR : AdventureSettingsPacket::PERMISSION_NORMAL,
+			0,
+			$isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER,
+			0,
+			$for->getId()
+		);
 
 		$pk->setFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $for->isSpectator());
 		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->isSpectator());
@@ -784,11 +800,6 @@ class NetworkSession{
 		$pk->setFlag(AdventureSettingsPacket::FLYING, $for->isFlying());
 
 		//TODO: permission flags
-
-		$isOp = $for->hasPermission(DefaultPermissions::ROOT_OPERATOR);
-		$pk->commandPermission = ($isOp ? AdventureSettingsPacket::PERMISSION_OPERATOR : AdventureSettingsPacket::PERMISSION_NORMAL);
-		$pk->playerPermission = ($isOp ? PlayerPermissions::OPERATOR : PlayerPermissions::MEMBER);
-		$pk->entityUniqueId = $for->getId();
 
 		$this->sendDataPacket($pk);
 	}
@@ -826,9 +837,9 @@ class NetworkSession{
 	}
 
 	public function syncAvailableCommands() : void{
-		$pk = new AvailableCommandsPacket();
+		$commandData = [];
 		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
-			if(isset($pk->commandData[$command->getName()]) or $command->getName() === "help" or !$command->testPermissionSilent($this->player)){
+			if(isset($commandData[$command->getName()]) or $command->getName() === "help" or !$command->testPermissionSilent($this->player)){
 				continue;
 			}
 
@@ -855,10 +866,10 @@ class NetworkSession{
 				]
 			);
 
-			$pk->commandData[$command->getName()] = $data;
+			$commandData[$command->getName()] = $data;
 		}
 
-		$this->sendDataPacket($pk);
+		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, [], [], []));
 	}
 
 	public function onRawChatMessage(string $message) : void{
@@ -916,7 +927,7 @@ class NetworkSession{
 					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
 					return;
 				}
-				if(!$status->equals(UsedChunkStatus::REQUESTED())){
+				if(!$status->equals(UsedChunkStatus::REQUESTED_SENDING())){
 					//TODO: make this an error
 					//this could be triggered due to the shitty way that chunk resends are handled
 					//right now - not because of the spammy re-requesting, but because the chunk status reverts
@@ -966,12 +977,12 @@ class NetworkSession{
 	public function onMobMainHandItemChange(Human $mob) : void{
 		//TODO: we could send zero for slot here because remote players don't need to know which slot was selected
 		$inv = $mob->getInventory();
-		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItemInHand())), $inv->getHeldItemIndex(), ContainerIds::INVENTORY));
+		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItemInHand())), $inv->getHeldItemIndex(), $inv->getHeldItemIndex(), ContainerIds::INVENTORY));
 	}
 
 	public function onMobOffHandItemChange(Human $mob) : void{
 		$inv = $mob->getOffHandInventory();
-		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItem(0))), 0, ContainerIds::OFFHAND));
+		$this->sendDataPacket(MobEquipmentPacket::create($mob->getId(), ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($inv->getItem(0))), 0, 0, ContainerIds::OFFHAND));
 	}
 
 	public function onMobArmorChange(Living $mob) : void{
@@ -1031,6 +1042,10 @@ class NetworkSession{
 
 	public function onTitleDuration(int $fadeIn, int $stay, int $fadeOut) : void{
 		$this->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
+	}
+
+	public function onEmote(Player $from, string $emoteId) : void{
+		$this->sendDataPacket(EmotePacket::create($from->getId(), $emoteId, EmotePacket::FLAG_SERVER));
 	}
 
 	public function tick() : void{

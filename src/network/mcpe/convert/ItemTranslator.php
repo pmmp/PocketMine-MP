@@ -66,14 +66,14 @@ final class ItemTranslator{
 	private $complexNetToCoreMapping = [];
 
 	private static function make() : self{
-		$data = file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'vanilla', 'r16_to_current_item_map.json'));
+		$data = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'r16_to_current_item_map.json'));
 		if($data === false) throw new AssumptionFailedError("Missing required resource file");
 		$json = json_decode($data, true);
 		if(!is_array($json) or !isset($json["simple"], $json["complex"]) || !is_array($json["simple"]) || !is_array($json["complex"])){
 			throw new AssumptionFailedError("Invalid item table format");
 		}
 
-		$legacyStringToIntMapRaw = file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'vanilla', 'item_id_map.json'));
+		$legacyStringToIntMapRaw = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'item_id_map.json'));
 		if($legacyStringToIntMapRaw === false){
 			throw new AssumptionFailedError("Missing required resource file");
 		}
@@ -175,11 +175,12 @@ final class ItemTranslator{
 	/**
 	 * @return int[]
 	 * @phpstan-return array{int, int}
+	 * @throws TypeConversionException
 	 */
 	public function fromNetworkId(int $networkId, int $networkMeta, ?bool &$isComplexMapping = null) : array{
 		if(isset($this->complexNetToCoreMapping[$networkId])){
 			if($networkMeta !== 0){
-				throw new \UnexpectedValueException("Unexpected non-zero network meta on complex item mapping");
+				throw new TypeConversionException("Unexpected non-zero network meta on complex item mapping");
 			}
 			$isComplexMapping = true;
 			return $this->complexNetToCoreMapping[$networkId];
@@ -188,12 +189,13 @@ final class ItemTranslator{
 		if(isset($this->simpleNetToCoreMapping[$networkId])){
 			return [$this->simpleNetToCoreMapping[$networkId], $networkMeta];
 		}
-		throw new \UnexpectedValueException("Unmapped network ID/metadata combination $networkId:$networkMeta");
+		throw new TypeConversionException("Unmapped network ID/metadata combination $networkId:$networkMeta");
 	}
 
 	/**
 	 * @return int[]
 	 * @phpstan-return array{int, int}
+	 * @throws TypeConversionException
 	 */
 	public function fromNetworkIdWithWildcardHandling(int $networkId, int $networkMeta) : array{
 		$isComplexMapping = false;

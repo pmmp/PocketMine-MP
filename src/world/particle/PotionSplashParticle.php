@@ -26,6 +26,7 @@ namespace pocketmine\world\particle;
 use pocketmine\color\Color;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
 class PotionSplashParticle implements Particle{
 
@@ -50,6 +51,6 @@ class PotionSplashParticle implements Particle{
 	}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_SPLASH, $this->color->toARGB(), $pos)];
+		return [LevelEventPacket::create(LevelEvent::PARTICLE_SPLASH, $this->color->toARGB(), $pos)];
 	}
 }

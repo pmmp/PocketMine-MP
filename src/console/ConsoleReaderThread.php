@@ -39,6 +39,7 @@ use function stream_socket_accept;
 use function stream_socket_get_name;
 use function stream_socket_server;
 use function stream_socket_shutdown;
+use function trim;
 use const PHP_BINARY;
 use const STREAM_SHUT_RDWR;
 
@@ -113,7 +114,9 @@ final class ConsoleReaderThread extends Thread{
 					break;
 				}
 
-				$buffer[] = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", $command);
+				$command = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", trim($command)) ?? throw new AssumptionFailedError("This regex is assumed to be valid");
+				$command = preg_replace('/[[:cntrl:]]/', '', $command) ?? throw new AssumptionFailedError("This regex is assumed to be valid");
+				$buffer[] = $command;
 				if($notifier !== null){
 					$notifier->wakeupSleeper();
 				}

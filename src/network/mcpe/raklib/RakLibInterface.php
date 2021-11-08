@@ -32,10 +32,12 @@ use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\StandardPacketBroadcaster;
 use pocketmine\network\Network;
+use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\utils\Utils;
+use raklib\generic\SocketException;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
 use raklib\server\ipc\RakLibToUserThreadMessageReceiver;
@@ -120,7 +122,11 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			while($this->eventReceiver->handle($this));
 		});
 		$this->server->getLogger()->debug("Waiting for RakLib to start...");
-		$this->rakLib->startAndWait();
+		try{
+			$this->rakLib->startAndWait();
+		}catch(SocketException $e){
+			throw new NetworkInterfaceStartException($e->getMessage(), 0, $e);
+		}
 		$this->server->getLogger()->debug("RakLib booted successfully");
 	}
 
@@ -132,7 +138,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		if(!$this->rakLib->isRunning()){
 			$e = $this->rakLib->getCrashInfo();
 			if($e !== null){
-				throw new \RuntimeException("RakLib crashed: $e");
+				throw new \RuntimeException("RakLib crashed: " . $e->makePrettyMessage());
 			}
 			throw new \Exception("RakLib Thread crashed without crash information");
 		}

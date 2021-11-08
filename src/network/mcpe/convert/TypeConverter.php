@@ -24,9 +24,9 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\inventory\AnvilInventory;
+use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\LoomInventory;
-use pocketmine\crafting\CraftingGrid;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
@@ -290,11 +290,7 @@ class TypeConverter{
 					$pSlot = $action->inventorySlot;
 
 					$craftingGrid = $player->getCraftingGrid();
-					$mapped =
-						$this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING2X2_INPUT, $craftingGrid,
-							function(Inventory $i) : bool{ return $i instanceof CraftingGrid && $i->getGridWidth() === CraftingGrid::SIZE_SMALL; }) ??
-						$this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING3X3_INPUT, $craftingGrid,
-							function(Inventory $i) : bool{ return $i instanceof CraftingGrid && $i->getGridWidth() === CraftingGrid::SIZE_BIG; });
+					$mapped = $this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING2X2_INPUT, $craftingGrid, fn() => true);
 					if($mapped === null){
 						$current = $player->getCurrentWindow();
 						$mapped =
@@ -303,7 +299,9 @@ class TypeConverter{
 							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ENCHANTING_TABLE, $current,
 								function(Inventory $i) : bool{ return $i instanceof EnchantInventory; }) ??
 							$this->mapUIInventory($pSlot, UIInventorySlotOffset::LOOM, $current,
-								fn(Inventory $i) => $i instanceof LoomInventory);
+								fn(Inventory $i) => $i instanceof LoomInventory) ??
+							$this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING3X3_INPUT, $current,
+								fn(Inventory $i) => $i instanceof CraftingTableInventory);
 					}
 					if($mapped === null){
 						throw new TypeConversionException("Unmatched UI inventory slot offset $pSlot");

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
+use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
@@ -96,7 +97,7 @@ final class FastChunkSerializer{
 
 		$count = $stream->getByte();
 		for($subCount = 0; $subCount < $count; ++$subCount){
-			$y = $stream->getByte();
+			$y = Binary::signByte($stream->getByte());
 			$airBlockId = $stream->getInt();
 
 			/** @var PalettedBlockArray[] $layers */
@@ -115,10 +116,6 @@ final class FastChunkSerializer{
 
 		$biomeIds = new BiomeArray($stream->get(256));
 
-		$chunk = new Chunk($subChunks, $biomeIds);
-		$chunk->setPopulated($terrainPopulated);
-		$chunk->clearTerrainDirtyFlags();
-
-		return $chunk;
+		return new Chunk($subChunks, $biomeIds, $terrainPopulated);
 	}
 }

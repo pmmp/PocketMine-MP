@@ -26,7 +26,6 @@ namespace pocketmine\entity\effect;
 use pocketmine\color\Color;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\utils\RegistryTrait;
-use function assert;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -107,12 +106,6 @@ final class VanillaEffects{
 		//phpstan doesn't support generic traits yet :(
 		/** @var Effect[] $result */
 		$result = self::_registryGetAll();
-		return $result;
-	}
-
-	public static function fromString(string $name) : Effect{
-		$result = self::_registryFromString($name);
-		assert($result instanceof Effect);
 		return $result;
 	}
 }

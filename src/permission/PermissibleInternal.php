@@ -146,7 +146,7 @@ class PermissibleInternal implements Permissible{
 		foreach($this->rootPermissions as $name => $isGranted){
 			$perm = $permManager->getPermission($name);
 			if($perm === null){
-				throw new \InvalidStateException("Unregistered root permission $name");
+				throw new \LogicException("Unregistered root permission $name");
 			}
 			$this->permissions[$name] = new PermissionAttachmentInfo($name, null, $isGranted, null);
 			$permManager->subscribeToPermission($name, $this);

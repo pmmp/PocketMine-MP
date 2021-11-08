@@ -27,6 +27,7 @@ use pocketmine\entity\utils\ExperienceUtils;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\utils\Limits;
 use pocketmine\world\sound\XpCollectSound;
 use pocketmine\world\sound\XpLevelUpSound;
 use function array_rand;
@@ -151,6 +152,7 @@ class ExperienceManager{
 	 * @param bool $playSound Whether to play level-up and XP gained sounds.
 	 */
 	public function addXp(int $amount, bool $playSound = true) : bool{
+		$amount = min($amount, Limits::INT32_MAX - $this->totalXp);
 		$oldLevel = $this->getXpLevel();
 		$oldTotal = $this->getCurrentTotalXp();
 
@@ -223,8 +225,8 @@ class ExperienceManager{
 	 * score when they die. (TODO: add this when MCPE supports it)
 	 */
 	public function setLifetimeTotalXp(int $amount) : void{
-		if($amount < 0){
-			throw new \InvalidArgumentException("XP must be greater than 0");
+		if($amount < 0 || $amount > Limits::INT32_MAX){
+			throw new \InvalidArgumentException("XP must be greater than 0 and less than " . Limits::INT32_MAX);
 		}
 
 		$this->totalXp = $amount;

@@ -361,6 +361,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_PLUGIN_DISALLOWEDBYBLACKLIST = "pocketmine.plugin.disallowedByBlacklist";
 	public const POCKETMINE_PLUGIN_DISALLOWEDBYWHITELIST = "pocketmine.plugin.disallowedByWhitelist";
 	public const POCKETMINE_PLUGIN_DUPLICATEERROR = "pocketmine.plugin.duplicateError";
+	public const POCKETMINE_PLUGIN_DUPLICATEPERMISSIONERROR = "pocketmine.plugin.duplicatePermissionError";
 	public const POCKETMINE_PLUGIN_EMPTYEXTENSIONVERSIONCONSTRAINT = "pocketmine.plugin.emptyExtensionVersionConstraint";
 	public const POCKETMINE_PLUGIN_ENABLE = "pocketmine.plugin.enable";
 	public const POCKETMINE_PLUGIN_EXTENSIONNOTLOADED = "pocketmine.plugin.extensionNotLoaded";
@@ -401,6 +402,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_SERVER_INFO_EXTENDED = "pocketmine.server.info.extended";
 	public const POCKETMINE_SERVER_LICENSE = "pocketmine.server.license";
 	public const POCKETMINE_SERVER_NETWORKSTART = "pocketmine.server.networkStart";
+	public const POCKETMINE_SERVER_NETWORKSTARTFAILED = "pocketmine.server.networkStartFailed";
 	public const POCKETMINE_SERVER_QUERY_RUNNING = "pocketmine.server.query.running";
 	public const POCKETMINE_SERVER_START = "pocketmine.server.start";
 	public const POCKETMINE_SERVER_STARTFINISHED = "pocketmine.server.startFinished";
@@ -430,6 +432,7 @@ final class KnownTranslationKeys{
 	public const POTION_REGENERATION = "potion.regeneration";
 	public const POTION_RESISTANCE = "potion.resistance";
 	public const POTION_SATURATION = "potion.saturation";
+	public const POTION_SLOWFALLING = "potion.slowFalling";
 	public const POTION_WATERBREATHING = "potion.waterBreathing";
 	public const POTION_WEAKNESS = "potion.weakness";
 	public const POTION_WITHER = "potion.wither";

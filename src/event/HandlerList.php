@@ -47,7 +47,7 @@ class HandlerList{
 	 */
 	public function register(RegisteredListener $listener) : void{
 		if(isset($this->handlerSlots[$listener->getPriority()][spl_object_id($listener)])){
-			throw new \InvalidStateException("This listener is already registered to priority {$listener->getPriority()} of event {$this->class}");
+			throw new \InvalidArgumentException("This listener is already registered to priority {$listener->getPriority()} of event {$this->class}");
 		}
 		$this->handlerSlots[$listener->getPriority()][spl_object_id($listener)] = $listener;
 	}
