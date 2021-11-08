@@ -50,7 +50,6 @@ use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
-use function array_key_exists;
 
 class TypeConverter{
 	use SingletonTrait;
@@ -247,17 +246,6 @@ class TypeConverter{
 	}
 
 	/**
-	 * @param int[]                   $test
-	 * @phpstan-param array<int, int> $test
-	 */
-	protected function mapUIInventory(int $slot, array $test, bool $valid) : ?int{
-		if(array_key_exists($slot, $test) && $valid){
-			return $test[$slot];
-		}
-		return null;
-	}
-
-	/**
 	 * @throws TypeConversionException
 	 */
 	public function createInventoryAction(NetworkInventoryAction $action, Player $player, InventoryManager $inventoryManager) : ?InventoryAction{
@@ -284,18 +272,20 @@ class TypeConverter{
 					}
 					$pSlot = $action->inventorySlot;
 
-					$craftingGrid = $player->getCraftingGrid();
-					$slot = $this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING2X2_INPUT, true);
+					$slot = UIInventorySlotOffset::CRAFTING2X2_INPUT[$pSlot] ?? null;
 					if($slot !== null){
-						$window = $craftingGrid;
+						$window = $player->getCraftingGrid();
 					}elseif(($current = $player->getCurrentWindow()) !== null){
-						$slot =
-							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ANVIL, $current instanceof AnvilInventory) ??
-							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ENCHANTING_TABLE, $current instanceof EnchantInventory) ??
-							$this->mapUIInventory($pSlot, UIInventorySlotOffset::LOOM, $current instanceof LoomInventory) ??
-							$this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING3X3_INPUT, $current instanceof CraftingTableInventory);
-						if($slot !== null){
+						$slotMap = match(true){
+							$current instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
+							$current instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
+							$current instanceof LoomInventory => UIInventorySlotOffset::LOOM,
+							$current instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
+							default => null
+						};
+						if($slotMap !== null){
 							$window = $current;
+							$slot = $slotMap[$pSlot] ?? null;
 						}
 					}
 					if($slot === null){
