@@ -381,12 +381,6 @@ final class VanillaItems{
 		self::_registryRegister($name, $item);
 	}
 
-	public static function fromString(string $name) : Item{
-		$result = self::_registryFromString($name);
-		assert($result instanceof Item);
-		return $result;
-	}
-
 	/**
 	 * @return Item[]
 	 */

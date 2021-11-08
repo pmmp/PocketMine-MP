@@ -581,12 +581,6 @@ final class VanillaBlocks{
 		self::_registryRegister($name, $block);
 	}
 
-	public static function fromString(string $name) : Block{
-		$result = self::_registryFromString($name);
-		assert($result instanceof Block);
-		return $result;
-	}
-
 	/**
 	 * @return Block[]
 	 */

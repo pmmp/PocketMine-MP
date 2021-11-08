@@ -109,10 +109,4 @@ final class VanillaEffects{
 		$result = self::_registryGetAll();
 		return $result;
 	}
-
-	public static function fromString(string $name) : Effect{
-		$result = self::_registryFromString($name);
-		assert($result instanceof Effect);
-		return $result;
-	}
 }
