@@ -56,7 +56,6 @@ use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
-use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
@@ -92,12 +91,10 @@ use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
-use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\network\mcpe\protocol\types\PlayerAction;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
-use function array_key_exists;
 use function array_push;
 use function base64_encode;
 use function count;
@@ -136,15 +133,6 @@ class InGamePacketHandler extends PacketHandler{
 
 	/** @var bool */
 	public $forceMoveSync = false;
-
-	/**
-	 * TODO: HACK! This tracks GUIs for inventories that the server considers "always open" so that the client can't
-	 * open them twice. (1.16 hack)
-	 * @var true[]
-	 * @phpstan-var array<int, true>
-	 * @internal
-	 */
-	protected $openHardcodedWindows = [];
 
 	private InventoryManager $inventoryManager;
 
@@ -488,19 +476,8 @@ class InGamePacketHandler extends PacketHandler{
 		if($target === null){
 			return false;
 		}
-		if(
-			$packet->action === InteractPacket::ACTION_OPEN_INVENTORY && $target === $this->player &&
-			!array_key_exists($windowId = InventoryManager::HARDCODED_INVENTORY_WINDOW_ID, $this->openHardcodedWindows)
-		){
-			//TODO: HACK! this restores 1.14ish behaviour, but this should be able to be listened to and
-			//controlled by plugins. However, the player is always a subscriber to their own inventory so it
-			//doesn't integrate well with the regular container system right now.
-			$this->openHardcodedWindows[$windowId] = true;
-			$this->session->sendDataPacket(ContainerOpenPacket::entityInv(
-				InventoryManager::HARDCODED_INVENTORY_WINDOW_ID,
-				WindowTypes::INVENTORY,
-				$this->player->getId()
-			));
+		if($packet->action === InteractPacket::ACTION_OPEN_INVENTORY && $target === $this->player){
+			$this->inventoryManager->onClientOpenMainInventory();
 			return true;
 		}
 		return false; //TODO
@@ -595,13 +572,7 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
 		$this->player->doCloseInventory();
 
-		if(array_key_exists($packet->windowId, $this->openHardcodedWindows)){
-			unset($this->openHardcodedWindows[$packet->windowId]);
-		}else{
-			$this->inventoryManager->onClientRemoveWindow($packet->windowId);
-		}
-
-		$this->session->sendDataPacket(ContainerClosePacket::create($packet->windowId, false));
+		$this->inventoryManager->onClientRemoveWindow($packet->windowId);
 		return true;
 	}
 

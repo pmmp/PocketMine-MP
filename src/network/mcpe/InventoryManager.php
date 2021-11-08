@@ -67,8 +67,7 @@ class InventoryManager{
 	//these IDs are used for 1.16 to restore 1.14ish crafting & inventory behaviour; since they don't seem to have any
 	//effect on the behaviour of inventory transactions I don't currently plan to integrate these into the main system.
 	private const RESERVED_WINDOW_ID_RANGE_START = ContainerIds::LAST - 10;
-	private const RESERVED_WINDOW_ID_RANGE_END = ContainerIds::LAST;
-	public const HARDCODED_INVENTORY_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 2;
+	private const HARDCODED_INVENTORY_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 2;
 
 	/** @var Player */
 	private $player;
@@ -79,6 +78,15 @@ class InventoryManager{
 	private $windowMap = [];
 	/** @var int */
 	private $lastInventoryNetworkId = ContainerIds::FIRST;
+
+	/**
+	 * TODO: HACK! This tracks GUIs for inventories that the server considers "always open" so that the client can't
+	 * open them twice. (1.16 hack)
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 * @internal
+	 */
+	protected $openHardcodedWindows = [];
 
 	/**
 	 * @var Item[][]
@@ -186,6 +194,21 @@ class InventoryManager{
 		return null;
 	}
 
+	public function onClientOpenMainInventory() : void{
+		$id = self::HARDCODED_INVENTORY_WINDOW_ID;
+		if(!isset($this->openHardcodedWindows[$id])){
+			//TODO: HACK! this restores 1.14ish behaviour, but this should be able to be listened to and
+			//controlled by plugins. However, the player is always a subscriber to their own inventory so it
+			//doesn't integrate well with the regular container system right now.
+			$this->openHardcodedWindows[$id] = true;
+			$this->session->sendDataPacket(ContainerOpenPacket::entityInv(
+				InventoryManager::HARDCODED_INVENTORY_WINDOW_ID,
+				WindowTypes::INVENTORY,
+				$this->player->getId()
+			));
+		}
+	}
+
 	public function onCurrentWindowRemove() : void{
 		if(isset($this->windowMap[$this->lastInventoryNetworkId])){
 			$this->remove($this->lastInventoryNetworkId);
@@ -194,16 +217,18 @@ class InventoryManager{
 	}
 
 	public function onClientRemoveWindow(int $id) : void{
-		if($id >= self::RESERVED_WINDOW_ID_RANGE_START && $id <= self::RESERVED_WINDOW_ID_RANGE_END){
-			//TODO: HACK! crafting grid & main inventory currently use these fake IDs
-			return;
-		}
-		if($id === $this->lastInventoryNetworkId){
+		if(isset($this->openHardcodedWindows[$id])){
+			unset($this->openHardcodedWindows[$id]);
+		}elseif($id === $this->lastInventoryNetworkId){
 			$this->remove($id);
 			$this->player->removeCurrentWindow();
 		}else{
 			$this->session->getLogger()->debug("Attempted to close inventory with network ID $id, but current is $this->lastInventoryNetworkId");
 		}
+
+		//Always send this, even if no window matches. If we told the client to close a window, it will behave as if it
+		//initiated the close and expect an ack.
+		$this->session->sendDataPacket(ContainerClosePacket::create($id, false));
 	}
 
 	public function syncSlot(Inventory $inventory, int $slot) : void{
