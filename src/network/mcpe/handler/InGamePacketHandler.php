@@ -193,7 +193,7 @@ class InGamePacketHandler extends PacketHandler{
 			//TODO HACK: EATING_ITEM is sent back to the server when the server sends it for other players (1.14 bug, maybe earlier)
 			return $packet->actorRuntimeId === ActorEvent::EATING_ITEM;
 		}
-		$this->player->doCloseInventory();
+		$this->player->removeCurrentWindow();
 
 		switch($packet->eventId){
 			case ActorEvent::EATING_ITEM: //TODO: ignore this and handle it server-side
@@ -570,8 +570,6 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
-		$this->player->doCloseInventory();
-
 		$this->inventoryManager->onClientRemoveWindow($packet->windowId);
 		return true;
 	}
