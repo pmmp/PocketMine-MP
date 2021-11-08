@@ -3124,10 +3124,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->removeWindow($this->windowIndex[$packet->windowId]);
 			$this->closingWindowId = null;
 			//removeWindow handles sending the appropriate
-			return true;
+		}else{
+			/*
+			 * TODO: HACK!
+			 * If we told the client to remove a window on our own (e.g. a plugin called removeWindow()), our
+			 * first ContainerClose tricks the client into behaving as if it itself asked for the window to be closed.
+			 * This means that it will send us a ContainerClose of its own, which we must respond to the same way as if
+			 * the client closed the window by itself.
+			 * If we don't, the client will not be able to open any new windows.
+			 */
+			$pk = new ContainerClosePacket();
+			$pk->windowId = $packet->windowId;
+			$pk->server = false;
+			$this->sendDataPacket($pk);
 		}
 
-		return false;
+		return true;
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
