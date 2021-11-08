@@ -27,7 +27,6 @@ use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\LoomInventory;
-use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -248,17 +247,12 @@ class TypeConverter{
 	}
 
 	/**
-	 * @param int[] $test
+	 * @param int[]                   $test
 	 * @phpstan-param array<int, int> $test
-	 * @phpstan-param \Closure(Inventory) : bool $c
-	 * @phpstan-return array{int, Inventory}
 	 */
-	protected function mapUIInventory(int $slot, array $test, ?Inventory $inventory, \Closure $c) : ?array{
-		if($inventory === null){
-			return null;
-		}
-		if(array_key_exists($slot, $test) && $c($inventory)){
-			return [$test[$slot], $inventory];
+	protected function mapUIInventory(int $slot, array $test, bool $valid) : ?int{
+		if(array_key_exists($slot, $test) && $valid){
+			return $test[$slot];
 		}
 		return null;
 	}
@@ -283,6 +277,7 @@ class TypeConverter{
 		}
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
+				$window = null;
 				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){
 					if($action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
 						return null; //useless noise
@@ -290,23 +285,22 @@ class TypeConverter{
 					$pSlot = $action->inventorySlot;
 
 					$craftingGrid = $player->getCraftingGrid();
-					$mapped = $this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING2X2_INPUT, $craftingGrid, fn() => true);
-					if($mapped === null){
-						$current = $player->getCurrentWindow();
-						$mapped =
-							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ANVIL, $current,
-								function(Inventory $i) : bool{ return $i instanceof AnvilInventory; }) ??
-							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ENCHANTING_TABLE, $current,
-								function(Inventory $i) : bool{ return $i instanceof EnchantInventory; }) ??
-							$this->mapUIInventory($pSlot, UIInventorySlotOffset::LOOM, $current,
-								fn(Inventory $i) => $i instanceof LoomInventory) ??
-							$this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING3X3_INPUT, $current,
-								fn(Inventory $i) => $i instanceof CraftingTableInventory);
+					$slot = $this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING2X2_INPUT, true);
+					if($slot !== null){
+						$window = $craftingGrid;
+					}elseif(($current = $player->getCurrentWindow()) !== null){
+						$slot =
+							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ANVIL, $current instanceof AnvilInventory) ??
+							$this->mapUIInventory($pSlot, UIInventorySlotOffset::ENCHANTING_TABLE, $current instanceof EnchantInventory) ??
+							$this->mapUIInventory($pSlot, UIInventorySlotOffset::LOOM, $current instanceof LoomInventory) ??
+							$this->mapUIInventory($pSlot, UIInventorySlotOffset::CRAFTING3X3_INPUT, $current instanceof CraftingTableInventory);
+						if($slot !== null){
+							$window = $current;
+						}
 					}
-					if($mapped === null){
+					if($slot === null){
 						throw new TypeConversionException("Unmatched UI inventory slot offset $pSlot");
 					}
-					[$slot, $window] = $mapped;
 				}else{
 					$window = $inventoryManager->getWindow($action->windowId);
 					$slot = $action->inventorySlot;
