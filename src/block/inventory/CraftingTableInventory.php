@@ -24,23 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\block\inventory;
 
 use pocketmine\crafting\CraftingGrid;
-use pocketmine\player\Player;
+use pocketmine\inventory\TemporaryInventory;
 use pocketmine\world\Position;
 
-final class CraftingTableInventory extends CraftingGrid implements BlockInventory{
+final class CraftingTableInventory extends CraftingGrid implements BlockInventory, TemporaryInventory{
 	use BlockInventoryTrait;
 
 	public function __construct(Position $holder){
 		$this->holder = $holder;
 		parent::__construct(CraftingGrid::SIZE_BIG);
-	}
-
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
-
-		foreach($this->getContents() as $item){
-			$who->dropItem($item);
-		}
-		$this->clearAll();
 	}
 }

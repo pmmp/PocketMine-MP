@@ -77,6 +77,7 @@ use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCraftingInventory;
 use pocketmine\inventory\PlayerCursorInventory;
+use pocketmine\inventory\TemporaryInventory;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionBuilderInventory;
@@ -2322,8 +2323,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * inventory.
 	 */
 	public function doCloseInventory() : void{
-		/** @var Inventory[] $inventories */
 		$inventories = [$this->craftingGrid, $this->cursorInventory];
+		if($this->currentWindow instanceof TemporaryInventory){
+			$inventories[] = $this->currentWindow;
+		}
 
 		$transaction = new InventoryTransaction($this);
 		$mainInventoryTransactionBuilder = new TransactionBuilderInventory($this->inventory);

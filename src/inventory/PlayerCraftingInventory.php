@@ -26,7 +26,7 @@ namespace pocketmine\inventory;
 use pocketmine\crafting\CraftingGrid;
 use pocketmine\player\Player;
 
-final class PlayerCraftingInventory extends CraftingGrid{
+final class PlayerCraftingInventory extends CraftingGrid implements TemporaryInventory{
 
 	public function __construct(private Player $holder){
 		parent::__construct(CraftingGrid::SIZE_SMALL);
