@@ -275,16 +275,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "5.0.0+bedrock-1.17.40",
+            "version": "5.1.0+bedrock-1.17.40",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "67c0c15b4044cab2190501933912c3d02c5f63ab"
+                "reference": "5abbe5bc21d8a9152d46c26578bf5257526612f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/67c0c15b4044cab2190501933912c3d02c5f63ab",
-                "reference": "67c0c15b4044cab2190501933912c3d02c5f63ab",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/5abbe5bc21d8a9152d46c26578bf5257526612f9",
+                "reference": "5abbe5bc21d8a9152d46c26578bf5257526612f9",
                 "shasum": ""
             },
             "require": {
@@ -298,7 +298,7 @@
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.0.0",
+                "phpstan/phpstan": "1.1.1",
                 "phpstan/phpstan-phpunit": "^1.0.0",
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5"
@@ -316,9 +316,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/5.0.0+bedrock-1.17.40"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/5.1.0+bedrock-1.17.40"
             },
-            "time": "2021-11-02T01:27:05+00:00"
+            "time": "2021-11-08T16:26:25+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -533,16 +533,16 @@
         },
         {
             "name": "pocketmine/locale-data",
-            "version": "1.1.4",
+            "version": "1.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Language.git",
-                "reference": "549f27f593b200d8b11ca05ffcd5a73e02a0d9fb"
+                "reference": "216b49b87e20332f0b39d1717e1e2012a40074cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Language/zipball/549f27f593b200d8b11ca05ffcd5a73e02a0d9fb",
-                "reference": "549f27f593b200d8b11ca05ffcd5a73e02a0d9fb",
+                "url": "https://api.github.com/repos/pmmp/Language/zipball/216b49b87e20332f0b39d1717e1e2012a40074cc",
+                "reference": "216b49b87e20332f0b39d1717e1e2012a40074cc",
                 "shasum": ""
             },
             "type": "library",
@@ -550,9 +550,9 @@
             "description": "Language resources used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Language/issues",
-                "source": "https://github.com/pmmp/Language/tree/1.1.4"
+                "source": "https://github.com/pmmp/Language/tree/1.1.6"
             },
-            "time": "2021-11-06T17:02:22+00:00"
+            "time": "2021-11-07T14:30:46+00:00"
         },
         {
             "name": "pocketmine/log",
@@ -1370,6 +1370,7 @@
                 "issues": "https://github.com/webmozart/path-util/issues",
                 "source": "https://github.com/webmozart/path-util/tree/2.3.0"
             },
+            "abandoned": "symfony/filesystem",
             "time": "2015-12-17T08:42:14+00:00"
         }
     ],
