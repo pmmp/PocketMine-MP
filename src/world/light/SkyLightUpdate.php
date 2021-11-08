@@ -30,7 +30,6 @@ use pocketmine\world\format\SubChunk;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use pocketmine\world\World;
-use function count;
 use function max;
 
 class SkyLightUpdate extends LightUpdate{
