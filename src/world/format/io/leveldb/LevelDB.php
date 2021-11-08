@@ -266,7 +266,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			case 3: //MCPE 1.0
 				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
 
-				for($y = 0; $y < Chunk::MAX_SUBCHUNKS; ++$y){
+				for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
 					if(($data = $this->db->get($index . self::TAG_SUBCHUNK_PREFIX . chr($y))) === false){
 						continue;
 					}
