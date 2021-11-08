@@ -32,6 +32,7 @@ use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\World;
 use function array_shift;
 use function count;
 use function round;
@@ -111,7 +112,7 @@ class TeleportCommand extends VanillaCommand{
 				}
 
 				$x = $this->getRelativeDouble($base->x, $sender, $targetArgs[0]);
-				$y = $this->getRelativeDouble($base->y, $sender, $targetArgs[1], 0, 256);
+				$y = $this->getRelativeDouble($base->y, $sender, $targetArgs[1], World::Y_MIN, World::Y_MAX);
 				$z = $this->getRelativeDouble($base->z, $sender, $targetArgs[2]);
 				$targetLocation = new Location($x, $y, $z, $base->getWorld(), $yaw, $pitch);
 
