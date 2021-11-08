@@ -25,6 +25,7 @@ namespace pocketmine\entity\animation;
 
 use pocketmine\entity\object\ItemEntity;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
 final class ItemEntityStackSizeChangeAnimation implements Animation{
 
@@ -34,6 +35,6 @@ final class ItemEntityStackSizeChangeAnimation implements Animation{
 	){}
 
 	public function encode() : array{
-		return [ActorEventPacket::create($this->itemEntity->getId(), ActorEventPacket::ITEM_ENTITY_MERGE, $this->newStackSize)];
+		return [ActorEventPacket::create($this->itemEntity->getId(), ActorEvent::ITEM_ENTITY_MERGE, $this->newStackSize)];
 	}
 }
