@@ -321,6 +321,10 @@ class Server{
 		return $this->configGroup->getConfigInt("server-port", 19132);
 	}
 
+	public function getPortV6() : int{
+		return $this->configGroup->getConfigInt("server-portv6", 19133);
+	}
+
 	public function getViewDistance() : int{
 		return max(2, $this->configGroup->getConfigInt("view-distance", 8));
 	}
@@ -335,6 +339,11 @@ class Server{
 	public function getIp() : string{
 		$str = $this->configGroup->getConfigString("server-ip");
 		return $str !== "" ? $str : "0.0.0.0";
+	}
+
+	public function getIpV6() : string{
+		$str = $this->configGroup->getConfigString("server-ipv6");
+		return $str !== "" ? $str : "::";
 	}
 
 	public function getServerUniqueId() : UuidInterface{
@@ -784,6 +793,8 @@ class Server{
 				new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES, [
 					"motd" => VersionInfo::NAME . " Server",
 					"server-port" => 19132,
+					"server-portv6" => 19133,
+					"enable-ipv6" => true,
 					"white-list" => false,
 					"max-players" => 20,
 					"gamemode" => 0,
@@ -1114,25 +1125,42 @@ class Server{
 		return true;
 	}
 
-	private function startupPrepareNetworkInterfaces() : bool{
-		$useQuery = $this->configGroup->getConfigBool("enable-query", true);
-
+	private function startupPrepareConnectableNetworkInterfaces(string $ip, int $port, bool $ipV6, bool $useQuery) : bool{
+		$prettyIp = $ipV6 ? "[$ip]" : $ip;
 		try{
-			$rakLibRegistered = $this->network->registerInterface(new RakLibInterface($this));
+			$rakLibRegistered = $this->network->registerInterface(new RakLibInterface($this, $ip, $port, $ipV6));
 		}catch(NetworkInterfaceStartException $e){
 			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_networkStartFailed(
-				$this->getIp(),
-				(string) $this->getPort(),
+				$ip,
+				(string) $port,
 				$e->getMessage()
 			)));
 			return false;
 		}
-		if(!$rakLibRegistered && $useQuery){
-			//RakLib would normally handle the transport for Query packets
-			//if it's not registered we need to make sure Query still works
-			$this->network->registerInterface(new DedicatedQueryNetworkInterface($this->getIp(), $this->getPort(), new \PrefixedLogger($this->logger, "Dedicated Query Interface")));
+		$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_networkStart($prettyIp, (string) $port)));
+		if($useQuery){
+			if(!$rakLibRegistered){
+				//RakLib would normally handle the transport for Query packets
+				//if it's not registered we need to make sure Query still works
+				$this->network->registerInterface(new DedicatedQueryNetworkInterface($ip, $port, $ipV6, new \PrefixedLogger($this->logger, "Dedicated Query Interface")));
+			}
+			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_query_running($prettyIp, (string) $port)));
 		}
-		$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_networkStart($this->getIp(), (string) $this->getPort())));
+		return true;
+	}
+
+	private function startupPrepareNetworkInterfaces() : bool{
+		$useQuery = $this->configGroup->getConfigBool("enable-query", true);
+
+		if(
+			!$this->startupPrepareConnectableNetworkInterfaces($this->getIp(), $this->getPort(), false, $useQuery) ||
+			(
+				$this->configGroup->getConfigBool("enable-ipv6", true) &&
+				!$this->startupPrepareConnectableNetworkInterfaces($this->getIpV6(), $this->getPortV6(), true, $useQuery)
+			)
+		){
+			return false;
+		}
 
 		if($useQuery){
 			$this->network->registerRawPacketHandler(new QueryHandler($this));
