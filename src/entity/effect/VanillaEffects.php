@@ -26,7 +26,6 @@ namespace pocketmine\entity\effect;
 use pocketmine\color\Color;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\utils\RegistryTrait;
-use function assert;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
