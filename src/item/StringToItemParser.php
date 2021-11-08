@@ -30,10 +30,6 @@ use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\StringToTParser;
-use function array_keys;
-use function str_replace;
-use function strtolower;
-use function trim;
 
 /**
  * Handles parsing items from strings. This is used to interpret names from the /give command (and others).
