@@ -43,7 +43,7 @@ class Trident extends Tool implements Releasable{
 		$diff = $player->getItemUseDuration();
 		$p = $diff / 20;
 		$baseForce = min((($p ** 2) + $p * 2) / 3, 1) * 3;
-		if ($baseForce < 0.9 || $diff < 8) {
+		if($baseForce < 0.9 || $diff < 8){
 			return ItemUseResult::FAIL();
 		}
 
@@ -69,7 +69,7 @@ class Trident extends Tool implements Releasable{
 			$item->applyDamage(1);
 			$entity->setItem($item);
 			$this->pop();
-		} else {
+		}else{
 			$entity->setPickupMode(TridentEntity::PICKUP_NONE);
 		}
 		return ItemUseResult::SUCCESS();
@@ -81,5 +81,9 @@ class Trident extends Tool implements Releasable{
 
 	public function onAttackEntity(Entity $victim) : bool{
 		return $this->applyDamage(1);
+	}
+
+	public function canStartUsingItem(Player $player) : bool{
+		return true;
 	}
 }
