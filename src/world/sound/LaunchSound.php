@@ -25,6 +25,7 @@ namespace pocketmine\world\sound;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
 class LaunchSound implements Sound{
 
@@ -39,7 +40,7 @@ class LaunchSound implements Sound{
 		return $this->pitch;
 	}
 
-	public function encode(?Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_SHOOT, (int) ($this->pitch * 1000), $pos)];
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEvent::SOUND_SHOOT, (int) ($this->pitch * 1000), $pos)];
 	}
 }

@@ -24,14 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use LogLevel;
-use pocketmine\errorhandler\ErrorTypeToStringMap;
 use pocketmine\thread\Thread;
 use pocketmine\thread\Worker;
-use function get_class;
-use function is_int;
-use function preg_replace;
+use function implode;
 use function sprintf;
-use function trim;
 use const PHP_EOL;
 use const PTHREADS_INHERIT_NONE;
 
@@ -136,42 +132,9 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	 * @return void
 	 */
 	public function logException(\Throwable $e, $trace = null){
-		if($trace === null){
-			$trace = $e->getTrace();
-		}
-
-		$this->buffer(function() use ($e, $trace) : void{
-			$this->critical(self::printExceptionMessage($e));
-			foreach(Utils::printableTrace($trace) as $line){
-				$this->critical($line);
-			}
-			for($prev = $e->getPrevious(); $prev !== null; $prev = $prev->getPrevious()){
-				$this->critical("Previous: " . self::printExceptionMessage($prev));
-				foreach(Utils::printableTrace($prev->getTrace()) as $line){
-					$this->critical("  " . $line);
-				}
-			}
-		});
+		$this->critical(implode("\n", Utils::printableExceptionInfo($e, $trace)));
 
 		$this->syncFlushBuffer();
-	}
-
-	private static function printExceptionMessage(\Throwable $e) : string{
-		$errstr = preg_replace('/\s+/', ' ', trim($e->getMessage()));
-
-		$errno = $e->getCode();
-		if(is_int($errno)){
-			try{
-				$errno = ErrorTypeToStringMap::get($errno);
-			}catch(\InvalidArgumentException $ex){
-				//pass
-			}
-		}
-
-		$errfile = Filesystem::cleanPath($e->getFile());
-		$errline = $e->getLine();
-
-		return get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
 	}
 
 	public function log($level, $message){
@@ -244,12 +207,11 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 
 		$this->synchronized(function() use ($message, $level, $time) : void{
 			Terminal::writeLine($message);
+			$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
 
 			foreach($this->attachments as $attachment){
-				$attachment->call($level, $message);
+				$attachment->log($level, $message);
 			}
-
-			$this->logWriterThread->write($time->format("Y-m-d") . " " . TextFormat::clean($message) . PHP_EOL);
 		});
 	}
 

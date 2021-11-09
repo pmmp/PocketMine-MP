@@ -27,6 +27,8 @@ use pocketmine\entity\utils\ExperienceUtils;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Limits;
 use pocketmine\world\sound\XpCollectSound;
 use pocketmine\world\sound\XpLevelUpSound;
 use function array_rand;
@@ -34,6 +36,7 @@ use function ceil;
 use function count;
 use function max;
 use function min;
+use function sprintf;
 
 class ExperienceManager{
 
@@ -141,7 +144,12 @@ class ExperienceManager{
 	public function setCurrentTotalXp(int $amount) : bool{
 		$newLevel = ExperienceUtils::getLevelFromXp($amount);
 
-		return $this->setXpAndProgress((int) $newLevel, $newLevel - ((int) $newLevel));
+		$xpLevel = (int) $newLevel;
+		$xpProgress = $newLevel - (int) $newLevel;
+		if($xpProgress > 1.0){
+			throw new AssumptionFailedError(sprintf("newLevel - (int) newLevel should never be bigger than 1, but have %.53f (newLevel=%.53f)", $xpProgress, $newLevel));
+		}
+		return $this->setXpAndProgress($xpLevel, $xpProgress);
 	}
 
 	/**
@@ -151,6 +159,7 @@ class ExperienceManager{
 	 * @param bool $playSound Whether to play level-up and XP gained sounds.
 	 */
 	public function addXp(int $amount, bool $playSound = true) : bool{
+		$amount = min($amount, Limits::INT32_MAX - $this->totalXp);
 		$oldLevel = $this->getXpLevel();
 		$oldTotal = $this->getCurrentTotalXp();
 
@@ -223,8 +232,8 @@ class ExperienceManager{
 	 * score when they die. (TODO: add this when MCPE supports it)
 	 */
 	public function setLifetimeTotalXp(int $amount) : void{
-		if($amount < 0){
-			throw new \InvalidArgumentException("XP must be greater than 0");
+		if($amount < 0 || $amount > Limits::INT32_MAX){
+			throw new \InvalidArgumentException("XP must be greater than 0 and less than " . Limits::INT32_MAX);
 		}
 
 		$this->totalXp = $amount;

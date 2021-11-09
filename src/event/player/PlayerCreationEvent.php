@@ -26,6 +26,7 @@ namespace pocketmine\event\player;
 use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\player\Player;
+use pocketmine\utils\Utils;
 use function is_a;
 
 /**
@@ -96,10 +97,7 @@ class PlayerCreationEvent extends Event{
 	 * @phpstan-param class-string<Player> $class
 	 */
 	public function setPlayerClass($class) : void{
-		if(!is_a($class, $this->baseClass, true)){
-			throw new \RuntimeException("Class $class must extend " . $this->baseClass);
-		}
-
+		Utils::testValidInstance($class, $this->baseClass);
 		$this->playerClass = $class;
 	}
 }

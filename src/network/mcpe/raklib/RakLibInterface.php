@@ -32,11 +32,12 @@ use pocketmine\network\mcpe\protocol\PacketPool;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\StandardPacketBroadcaster;
 use pocketmine\network\Network;
+use pocketmine\network\NetworkInterfaceStartException;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
-use pocketmine\utils\Filesystem;
 use pocketmine\utils\Utils;
+use raklib\generic\SocketException;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
 use raklib\server\ipc\RakLibToUserThreadMessageReceiver;
@@ -51,7 +52,6 @@ use function mt_rand;
 use function random_bytes;
 use function rtrim;
 use function substr;
-use const PTHREADS_INHERIT_CONSTANTS;
 
 class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	/**
@@ -88,7 +88,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 	/** @var PacketBroadcaster */
 	private $broadcaster;
 
-	public function __construct(Server $server){
+	public function __construct(Server $server, string $ip, int $port, bool $ipV6){
 		$this->server = $server;
 		$this->rakServerId = mt_rand(0, PHP_INT_MAX);
 
@@ -101,7 +101,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			$this->server->getLogger(),
 			$mainToThreadBuffer,
 			$threadToMainBuffer,
-			new InternetAddress($this->server->getIp(), $this->server->getPort(), 4),
+			new InternetAddress($ip, $port, $ipV6 ? 6 : 4),
 			$this->rakServerId,
 			$this->server->getConfigGroup()->getPropertyInt("network.max-mtu-size", 1492),
 			self::MCPE_RAKNET_PROTOCOL_VERSION,
@@ -122,7 +122,11 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 			while($this->eventReceiver->handle($this));
 		});
 		$this->server->getLogger()->debug("Waiting for RakLib to start...");
-		$this->rakLib->startAndWait(PTHREADS_INHERIT_CONSTANTS); //HACK: MainLogger needs constants for exception logging
+		try{
+			$this->rakLib->startAndWait();
+		}catch(SocketException $e){
+			throw new NetworkInterfaceStartException($e->getMessage(), 0, $e);
+		}
 		$this->server->getLogger()->debug("RakLib booted successfully");
 	}
 
@@ -134,7 +138,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 		if(!$this->rakLib->isRunning()){
 			$e = $this->rakLib->getCrashInfo();
 			if($e !== null){
-				throw new \RuntimeException("RakLib crashed: $e");
+				throw new \RuntimeException("RakLib crashed: " . $e->makePrettyMessage());
 			}
 			throw new \Exception("RakLib Thread crashed without crash information");
 		}
@@ -193,10 +197,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 				$logger->error("Bad packet (error ID $errorId): " . $e->getMessage());
 
 				//intentionally doesn't use logException, we don't want spammy packet error traces to appear in release mode
-				$logger->debug("Origin: " . Filesystem::cleanPath($e->getFile()) . "(" . $e->getLine() . ")");
-				foreach(Utils::printableTrace($e->getTrace()) as $frame){
-					$logger->debug($frame);
-				}
+				$logger->debug(implode("\n", Utils::printableExceptionInfo($e)));
 				$session->disconnect("Packet processing error (Error ID: $errorId)");
 				$this->interface->blockAddress($address, 5);
 			}

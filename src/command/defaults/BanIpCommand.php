@@ -27,21 +27,20 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function array_shift;
 use function count;
 use function implode;
-use function preg_match;
+use function inet_pton;
 
 class BanIpCommand extends VanillaCommand{
 
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_BAN_IP_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_BANIP_USAGE
+			KnownTranslationFactory::pocketmine_command_ban_ip_description(),
+			KnownTranslationFactory::commands_banip_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_BAN_IP);
 	}
@@ -58,7 +57,7 @@ class BanIpCommand extends VanillaCommand{
 		$value = array_shift($args);
 		$reason = implode(" ", $args);
 
-		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $value)){
+		if(inet_pton($value) !== false){
 			$this->processIPBan($value, $sender, $reason);
 
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_banip_success($value));

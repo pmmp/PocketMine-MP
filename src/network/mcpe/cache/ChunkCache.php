@@ -36,9 +36,6 @@ use function strlen;
 
 /**
  * This class is used by the current MCPE protocol system to store cached chunk packets for fast resending.
- *
- * TODO: make MemoryManager aware of this so the cache can be destroyed when memory is low
- * TODO: this needs a hook for world unloading
  */
 class ChunkCache implements ChunkListener{
 	/** @var self[][] */
@@ -67,6 +64,19 @@ class ChunkCache implements ChunkListener{
 			self::$instances[$worldId][$compressorId] = new self($world, $compressor);
 		}
 		return self::$instances[$worldId][$compressorId];
+	}
+
+	public static function pruneCaches() : void{
+		foreach(self::$instances as $compressorMap){
+			foreach($compressorMap as $chunkCache){
+				foreach($chunkCache->caches as $chunkHash => $promise){
+					if($promise->hasResult()){
+						//Do not clear promises that are not yet fulfilled; they will have requesters waiting on them
+						unset($chunkCache->caches[$chunkHash]);
+					}
+				}
+			}
+		}
 	}
 
 	/** @var World */
@@ -193,7 +203,7 @@ class ChunkCache implements ChunkListener{
 	public function onBlockChanged(Vector3 $block) : void{
 		//FIXME: requesters will still receive this chunk after it's been dropped, but we can't mark this for a simple
 		//sync here because it can spam the worker pool
-		$this->destroy($block->getFloorX() >> 4, $block->getFloorZ() >> 4);
+		$this->destroy($block->getFloorX() >> Chunk::COORD_BIT_SIZE, $block->getFloorZ() >> Chunk::COORD_BIT_SIZE);
 	}
 
 	/**

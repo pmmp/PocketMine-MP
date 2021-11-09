@@ -56,6 +56,7 @@ use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\World;
@@ -645,7 +646,7 @@ abstract class Entity{
 
 		$this->checkBlockIntersections();
 
-		if($this->location->y <= -16 and $this->isAlive()){
+		if($this->location->y <= World::Y_MIN - 16 and $this->isAlive()){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10);
 			$this->attack($ev);
 			$hasUpdate = true;
@@ -691,10 +692,12 @@ abstract class Entity{
 			throw new \InvalidArgumentException("Fire ticks must be in range 0 ... " . 0x7fff . ", got $fireTicks");
 		}
 		$this->fireTicks = $fireTicks;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function extinguish() : void{
 		$this->fireTicks = 0;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function isFireProof() : bool{
@@ -988,7 +991,7 @@ abstract class Entity{
 
 	final public function scheduleUpdate() : void{
 		if($this->closed){
-			throw new \InvalidStateException("Cannot schedule update on garbage entity " . get_class($this));
+			throw new \LogicException("Cannot schedule update on garbage entity " . get_class($this));
 		}
 		$this->getWorld()->updateEntities[$this->id] = $this;
 	}
@@ -1193,9 +1196,9 @@ abstract class Entity{
 			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
 			$this->boundingBox->minY - $this->ySize,
 			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2,
+			$this->location->world,
 			$this->location->yaw,
-			$this->location->pitch,
-			$this->location->world
+			$this->location->pitch
 		);
 
 		$this->getWorld()->onEntityMoved($this);
@@ -1426,20 +1429,21 @@ abstract class Entity{
 	 * Called by spawnTo() to send whatever packets needed to spawn the entity to the client.
 	 */
 	protected function sendSpawnPacket(Player $player) : void{
-		$pk = new AddActorPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->type = static::getNetworkTypeId();
-		$pk->position = $this->location->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->yaw = $this->location->yaw;
-		$pk->headYaw = $this->location->yaw; //TODO
-		$pk->pitch = $this->location->pitch;
-		$pk->attributes = array_map(function(Attribute $attr) : NetworkAttribute{
-			return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
-		}, $this->attributeMap->getAll());
-		$pk->metadata = $this->getAllNetworkData();
-
-		$player->getNetworkSession()->sendDataPacket($pk);
+		$player->getNetworkSession()->sendDataPacket(AddActorPacket::create(
+			$this->getId(), //TODO: actor unique ID
+			$this->getId(),
+			static::getNetworkTypeId(),
+			$this->location->asVector3(),
+			$this->getMotion(),
+			$this->location->pitch,
+			$this->location->yaw,
+			$this->location->yaw, //TODO: head yaw
+			array_map(function(Attribute $attr) : NetworkAttribute{
+				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
+			}, $this->attributeMap->getAll()),
+			$this->getAllNetworkData(),
+			[] //TODO: entity links
+		));
 	}
 
 	public function spawnTo(Player $player) : void{
@@ -1447,7 +1451,7 @@ abstract class Entity{
 		//TODO: this will cause some visible lag during chunk resends; if the player uses a spawn egg in a chunk, the
 		//created entity won't be visible until after the resend arrives. However, this is better than possibly crashing
 		//the player by sending them entities too early.
-		if(!isset($this->hasSpawned[$id]) and $player->hasReceivedChunk($this->location->getFloorX() >> 4, $this->location->getFloorZ() >> 4)){
+		if(!isset($this->hasSpawned[$id]) and $player->getWorld() === $this->getWorld() and $player->hasReceivedChunk($this->location->getFloorX() >> Chunk::COORD_BIT_SIZE, $this->location->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
 			$this->hasSpawned[$id] = $player;
 
 			$this->sendSpawnPacket($player);

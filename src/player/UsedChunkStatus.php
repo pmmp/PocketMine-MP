@@ -32,7 +32,8 @@ use pocketmine\utils\EnumTrait;
  * @generate-registry-docblock
  *
  * @method static UsedChunkStatus NEEDED()
- * @method static UsedChunkStatus REQUESTED()
+ * @method static UsedChunkStatus REQUESTED_GENERATION()
+ * @method static UsedChunkStatus REQUESTED_SENDING()
  * @method static UsedChunkStatus SENT()
  */
 final class UsedChunkStatus{
@@ -41,7 +42,8 @@ final class UsedChunkStatus{
 	protected static function setup() : void{
 		self::registerAll(
 			new self("NEEDED"),
-			new self("REQUESTED"),
+			new self("REQUESTED_GENERATION"),
+			new self("REQUESTED_SENDING"),
 			new self("SENT")
 		);
 	}

@@ -34,6 +34,7 @@ namespace pocketmine {
 	use pocketmine\utils\Timezone;
 	use pocketmine\wizard\SetupWizard;
 	use Webmozart\PathUtil\Path;
+	use function defined;
 	use function extension_loaded;
 	use function phpversion;
 	use function preg_match;
@@ -116,8 +117,8 @@ namespace pocketmine {
 			if(substr_count($pthreads_version, ".") < 2){
 				$pthreads_version = "0.$pthreads_version";
 			}
-			if(version_compare($pthreads_version, "3.2.0") < 0){
-				$messages[] = "pthreads >= 3.2.0 is required, while you have $pthreads_version.";
+			if(version_compare($pthreads_version, "4.0.0") < 0 || version_compare($pthreads_version, "5.0.0") > 0){
+				$messages[] = "pthreads ^4.0.0 is required, while you have $pthreads_version.";
 			}
 		}
 
@@ -125,6 +126,9 @@ namespace pocketmine {
 			$leveldb_version = phpversion("leveldb");
 			if(version_compare($leveldb_version, "0.2.1") < 0){
 				$messages[] = "php-leveldb >= 0.2.1 is required, while you have $leveldb_version.";
+			}
+			if(!defined('LEVELDB_ZLIB_RAW_COMPRESSION')){
+				$messages[] = "Given version of php-leveldb doesn't support ZLIB_RAW compression (use https://github.com/pmmp/php-leveldb)";
 			}
 		}
 
@@ -140,6 +144,10 @@ namespace pocketmine {
 
 		if(extension_loaded("pocketmine")){
 			$messages[] = "The native PocketMine extension is no longer supported.";
+		}
+
+		if(!defined('AF_INET6')){
+			$messages[] = "IPv6 support is required, but your PHP binary was built without IPv6 support.";
 		}
 
 		return $messages;
@@ -214,20 +222,13 @@ JIT_WARNING
 		error_reporting(-1);
 		set_ini_entries();
 
-		$opts = getopt("", ["bootstrap:"]);
-		if(isset($opts["bootstrap"])){
-			$bootstrap = ($real = realpath($opts["bootstrap"])) !== false ? $real : $opts["bootstrap"];
-		}else{
-			$bootstrap = dirname(__FILE__, 2) . '/vendor/autoload.php';
-		}
-
-		if($bootstrap === false or !is_file($bootstrap)){
+		$bootstrap = dirname(__FILE__, 2) . '/vendor/autoload.php';
+		if(!is_file($bootstrap)){
 			critical_error("Composer autoloader not found at " . $bootstrap);
 			critical_error("Please install/update Composer dependencies or use provided builds.");
 			exit(1);
 		}
-		define('pocketmine\COMPOSER_AUTOLOADER_PATH', $bootstrap);
-		require_once(\pocketmine\COMPOSER_AUTOLOADER_PATH);
+		require_once($bootstrap);
 
 		$composerGitHash = InstalledVersions::getReference('pocketmine/pocketmine-mp');
 		if($composerGitHash !== null){
@@ -307,7 +308,7 @@ JIT_WARNING
 
 			if(ThreadManager::getInstance()->stopAll() > 0){
 				$logger->debug("Some threads could not be stopped, performing a force-kill");
-				Process::kill(Process::pid());
+				Process::kill(Process::pid(), true);
 			}
 		}while(false);
 

@@ -149,17 +149,17 @@ class Painting extends Entity{
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{
-		$pk = new AddPaintingPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = new Vector3(
-			($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
-			($this->boundingBox->minY + $this->boundingBox->maxY) / 2,
-			($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
-		);
-		$pk->direction = self::FACING_TO_DATA[$this->facing];
-		$pk->title = $this->motive->getName();
-
-		$player->getNetworkSession()->sendDataPacket($pk);
+		$player->getNetworkSession()->sendDataPacket(AddPaintingPacket::create(
+			$this->getId(), //TODO: entity unique ID
+			$this->getId(),
+			new Vector3(
+				($this->boundingBox->minX + $this->boundingBox->maxX) / 2,
+				($this->boundingBox->minY + $this->boundingBox->maxY) / 2,
+				($this->boundingBox->minZ + $this->boundingBox->maxZ) / 2
+			),
+			self::FACING_TO_DATA[$this->facing],
+			$this->motive->getName()
+		));
 	}
 
 	/**

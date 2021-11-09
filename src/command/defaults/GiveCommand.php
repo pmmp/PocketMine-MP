@@ -30,9 +30,9 @@ use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\item\StringToItemParser;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\nbt\JsonNbtParser;
 use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\NbtException;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function array_slice;
@@ -44,8 +44,8 @@ class GiveCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_DESCRIPTION,
-			KnownTranslationKeys::POCKETMINE_COMMAND_GIVE_USAGE
+			KnownTranslationFactory::pocketmine_command_give_description(),
+			KnownTranslationFactory::pocketmine_command_give_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_GIVE);
 	}
@@ -87,7 +87,12 @@ class GiveCommand extends VanillaCommand{
 				return true;
 			}
 
-			$item->setNamedTag($tags);
+			try{
+				$item->setNamedTag($tags);
+			}catch(NbtException $e){
+				$sender->sendMessage(KnownTranslationFactory::commands_give_tagError($e->getMessage()));
+				return true;
+			}
 		}
 
 		//TODO: overflow

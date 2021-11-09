@@ -30,7 +30,6 @@ use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\item\StringToItemParser;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
@@ -43,8 +42,8 @@ class ClearCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_CLEAR_DESCRIPTION,
-			KnownTranslationKeys::POCKETMINE_COMMAND_CLEAR_USAGE
+			KnownTranslationFactory::pocketmine_command_clear_description(),
+			KnownTranslationFactory::pocketmine_command_clear_usage()
 		);
 		$this->setPermission(implode(";", [DefaultPermissionNames::COMMAND_CLEAR_SELF, DefaultPermissionNames::COMMAND_CLEAR_OTHER]));
 	}

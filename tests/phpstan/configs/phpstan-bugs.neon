@@ -21,24 +21,24 @@ parameters:
 			path: ../../../src/crafting/CraftingManager.php
 
 		-
+			message: "#^Property pocketmine\\\\crash\\\\CrashDumpData\\:\\:\\$extensions \\(array\\<string, string\\>\\) does not accept array\\<int\\|string, string\\>\\.$#"
+			count: 1
+			path: ../../../src/crash/CrashDump.php
+
+		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Parameter \\#1 \\$ of closure expects TValue, TValue given\\.$#"
-			count: 2
-			path: ../../../src/utils/Promise.php
+			message: "#^Dead catch \\- RuntimeException is never thrown in the try block\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginManager.php
 
 		-
-			message: "#^Property pocketmine\\\\utils\\\\Promise\\<TValue\\>\\:\\:\\$result \\(TValue\\|null\\) does not accept TValue\\.$#"
+			message: "#^Parameter \\#1 \\$closure of static method pocketmine\\\\utils\\\\Utils\\:\\:getNiceClosureName\\(\\) expects Closure\\(\\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*, \\*NEVER\\*\\)\\: mixed, Closure\\(TEvent of pocketmine\\\\event\\\\Event\\)\\: void given\\.$#"
 			count: 1
-			path: ../../../src/utils/Promise.php
-
-		-
-			message: "#^Parameter \\#1 \\$ of closure expects TMemberType, TMemberType given\\.$#"
-			count: 1
-			path: ../../../src/utils/Utils.php
+			path: ../../../src/plugin/PluginManager.php
 
 		-
 			message: "#^Strict comparison using \\=\\=\\= between string and false will always evaluate to false\\.$#"
@@ -49,9 +49,4 @@ parameters:
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
 			count: 2
 			path: ../../../src/world/format/io/region/RegionLoader.php
-
-		-
-			message: "#^Parameter \\#2 \\$count of function array_fill expects int\\<0, max\\>, int given\\.$#"
-			count: 2
-			path: ../../../src/world/generator/noise/Noise.php
 

@@ -94,4 +94,18 @@ class BaseInventoryTest extends TestCase{
 		}
 		self::assertSame(100, $count);
 	}
+
+	public function testGetAddableItemQuantityStacking() : void{
+		$inventory = new SimpleInventory(1);
+		$inventory->addItem(VanillaItems::APPLE()->setCount(60));
+		self::assertSame(2, $inventory->getAddableItemQuantity(VanillaItems::APPLE()->setCount(2)));
+		self::assertSame(4, $inventory->getAddableItemQuantity(VanillaItems::APPLE()->setCount(6)));
+	}
+
+	public function testGetAddableItemQuantityEmptyStack() : void{
+		$inventory = new SimpleInventory(1);
+		$item = VanillaItems::APPLE();
+		$item->setCount($item->getMaxStackSize());
+		self::assertSame($item->getMaxStackSize(), $inventory->getAddableItemQuantity($item));
+	}
 }

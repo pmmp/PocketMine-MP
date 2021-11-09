@@ -24,11 +24,12 @@ declare(strict_types=1);
 namespace pocketmine\world\format;
 
 use PHPUnit\Framework\TestCase;
+use pocketmine\data\bedrock\BiomeIds;
 
 class ChunkTest extends TestCase{
 
 	public function testClone() : void{
-		$chunk = new Chunk();
+		$chunk = new Chunk([], BiomeArray::fill(BiomeIds::OCEAN), false);
 		$chunk->setFullBlock(0, 0, 0, 1);
 		$chunk->setBiomeId(0, 0, 1);
 		$chunk->setHeightMap(0, 0, 1);

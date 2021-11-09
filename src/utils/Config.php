@@ -25,6 +25,7 @@ namespace pocketmine\utils;
 
 use Webmozart\PathUtil\Path;
 use function array_change_key_case;
+use function array_fill_keys;
 use function array_keys;
 use function array_shift;
 use function count;
@@ -143,8 +144,7 @@ class Config{
 	 * @param mixed[] $default
 	 * @phpstan-param array<string, mixed> $default
 	 *
-	 * @throws \InvalidArgumentException if config type could not be auto-detected
-	 * @throws \InvalidStateException if config type is invalid
+	 * @throws \InvalidArgumentException if config type is invalid or could not be auto-detected
 	 */
 	private function load(string $file, int $type = Config::DETECT, array $default = []) : void{
 		$this->file = $file;
@@ -170,7 +170,7 @@ class Config{
 			$config = null;
 			switch($this->type){
 				case Config::PROPERTIES:
-					$config = $this->parseProperties($content);
+					$config = self::parseProperties($content);
 					break;
 				case Config::JSON:
 					$config = json_decode($content, true);
@@ -183,10 +183,10 @@ class Config{
 					$config = unserialize($content);
 					break;
 				case Config::ENUM:
-					$config = self::parseList($content);
+					$config = array_fill_keys(self::parseList($content), true);
 					break;
 				default:
-					throw new \InvalidStateException("Config type is unknown");
+					throw new \InvalidArgumentException("Invalid config type specified");
 			}
 			$this->config = is_array($config) ? $config : $default;
 			if($this->fillDefaults($default, $this->config) > 0){
@@ -204,14 +204,12 @@ class Config{
 
 	/**
 	 * Flushes the config to disk in the appropriate format.
-	 *
-	 * @throws \InvalidStateException if config type is not valid
 	 */
 	public function save() : void{
 		$content = null;
 		switch($this->type){
 			case Config::PROPERTIES:
-				$content = $this->writeProperties();
+				$content = self::writeProperties($this->config);
 				break;
 			case Config::JSON:
 				$content = json_encode($this->config, $this->jsonOptions);
@@ -223,10 +221,10 @@ class Config{
 				$content = serialize($this->config);
 				break;
 			case Config::ENUM:
-				$content = implode("\r\n", array_keys($this->config));
+				$content = self::writeList(array_keys($this->config));
 				break;
 			default:
-				throw new \InvalidStateException("Config type is unknown, has not been set or not detected");
+				throw new AssumptionFailedError("Config type is unknown, has not been set or not detected");
 		}
 
 		file_put_contents($this->file, $content);
@@ -509,28 +507,38 @@ class Config{
 	}
 
 	/**
-	 * @return true[]
-	 * @phpstan-return array<string, true>
+	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
-	private static function parseList(string $content) : array{
+	public static function parseList(string $content) : array{
 		$result = [];
 		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
-			if($v == ""){
+			if($v === ""){
 				continue;
 			}
-			$result[$v] = true;
+			$result[] = $v;
 		}
 		return $result;
 	}
 
-	private function writeProperties() : string{
+	/**
+	 * @param string[] $entries
+	 * @phpstan-param list<string> $entries
+	 */
+	public static function writeList(array $entries) : string{
+		return implode("\n", $entries);
+	}
+
+	/**
+	 * @param string[]|int[]|float[]|bool[] $config
+	 * @phpstan-param array<string, string|int|float|bool> $config
+	 */
+	public static function writeProperties(array $config) : string{
 		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
-		foreach($this->config as $k => $v){
+		foreach($config as $k => $v){
 			if(is_bool($v)){
 				$v = $v ? "on" : "off";
-			}elseif(is_array($v)){
-				$v = implode(";", $v);
 			}
 			$content .= $k . "=" . $v . "\r\n";
 		}
@@ -539,9 +547,10 @@ class Config{
 	}
 
 	/**
-	 * @return mixed[]
+	 * @return string[]|int[]|float[]|bool[]
+	 * @phpstan-return array<string, string|int|float|bool>
 	 */
-	private function parseProperties(string $content) : array{
+	public static function parseProperties(string $content) : array{
 		$result = [];
 		if(preg_match_all('/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
@@ -557,11 +566,15 @@ class Config{
 					case "no":
 						$v = false;
 						break;
+					default:
+						$v = match($v){
+							(string) ((int) $v) => (int) $v,
+							(string) ((float) $v) => (float) $v,
+							default => $v,
+						};
+						break;
 				}
-				if(isset($result[$k])){
-					\GlobalLogger::get()->debug("[Config] Repeated property " . $k . " on file " . $this->file);
-				}
-				$result[$k] = $v;
+				$result[(string) $k] = $v;
 			}
 		}
 

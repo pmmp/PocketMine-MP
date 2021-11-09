@@ -54,7 +54,7 @@ class BlockLightUpdate extends LightUpdate{
 
 	public function recalculateNode(int $x, int $y, int $z) : void{
 		if($this->subChunkExplorer->moveTo($x, $y, $z) !== SubChunkExplorerStatus::INVALID){
-			$block = $this->subChunkExplorer->currentSubChunk->getFullBlock($x & 0xf, $y & 0xf, $z & 0xf);
+			$block = $this->subChunkExplorer->currentSubChunk->getFullBlock($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
 			$this->setAndUpdateLight($x, $y, $z, max($this->lightEmitters[$block], $this->getHighestAdjacentLight($x, $y, $z) - $this->lightFilters[$block]));
 		}
 	}
@@ -72,7 +72,7 @@ class BlockLightUpdate extends LightUpdate{
 			foreach($subChunk->getBlockLayers() as $layer){
 				foreach($layer->getPalette() as $state){
 					if($this->lightEmitters[$state] > 0){
-						$lightSources += $this->scanForLightEmittingBlocks($subChunk, $chunkX << 4, $subChunkY << 4, $chunkZ << 4);
+						$lightSources += $this->scanForLightEmittingBlocks($subChunk, $chunkX << SubChunk::COORD_BIT_SIZE, $subChunkY << SubChunk::COORD_BIT_SIZE, $chunkZ << SubChunk::COORD_BIT_SIZE);
 						break 2;
 					}
 				}
@@ -84,9 +84,9 @@ class BlockLightUpdate extends LightUpdate{
 
 	private function scanForLightEmittingBlocks(SubChunk $subChunk, int $baseX, int $baseY, int $baseZ) : int{
 		$lightSources = 0;
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
-				for($y = 0; $y < 16; ++$y){
+		for($x = 0; $x < SubChunk::EDGE_LENGTH; ++$x){
+			for($z = 0; $z < SubChunk::EDGE_LENGTH; ++$z){
+				for($y = 0; $y < SubChunk::EDGE_LENGTH; ++$y){
 					$light = $this->lightEmitters[$subChunk->getFullBlock($x, $y, $z)];
 					if($light > 0){
 						$this->setAndUpdateLight(

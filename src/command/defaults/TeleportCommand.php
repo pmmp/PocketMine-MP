@@ -28,11 +28,11 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\Location;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\World;
 use function array_shift;
 use function count;
 use function round;
@@ -42,8 +42,8 @@ class TeleportCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_TP_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_TP_USAGE,
+			KnownTranslationFactory::pocketmine_command_tp_description(),
+			KnownTranslationFactory::commands_tp_usage(),
 			["teleport"]
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TELEPORT);
@@ -112,9 +112,9 @@ class TeleportCommand extends VanillaCommand{
 				}
 
 				$x = $this->getRelativeDouble($base->x, $sender, $targetArgs[0]);
-				$y = $this->getRelativeDouble($base->y, $sender, $targetArgs[1], 0, 256);
+				$y = $this->getRelativeDouble($base->y, $sender, $targetArgs[1], World::Y_MIN, World::Y_MAX);
 				$z = $this->getRelativeDouble($base->z, $sender, $targetArgs[2]);
-				$targetLocation = new Location($x, $y, $z, $yaw, $pitch, $base->getWorld());
+				$targetLocation = new Location($x, $y, $z, $base->getWorld(), $yaw, $pitch);
 
 				$subject->teleport($targetLocation);
 				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_tp_success_coordinates(

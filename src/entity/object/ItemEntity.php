@@ -206,14 +206,15 @@ class ItemEntity extends Entity{
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{
-		$pk = new AddItemActorPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->location->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->item = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getItem()));
-		$pk->metadata = $this->getAllNetworkData();
-
-		$player->getNetworkSession()->sendDataPacket($pk);
+		$player->getNetworkSession()->sendDataPacket(AddItemActorPacket::create(
+			$this->getId(), //TODO: entity unique ID
+			$this->getId(),
+			ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getItem())),
+			$this->location->asVector3(),
+			$this->getMotion(),
+			$this->getAllNetworkData(),
+			false //TODO: I have no idea what this is needed for, but right now we don't support fishing anyway
+		));
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
@@ -227,8 +228,8 @@ class ItemEntity extends Entity{
 
 		$item = $this->getItem();
 		$playerInventory = match(true){
-			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
-			$player->getInventory()->canAddItem($item) => $player->getInventory(),
+			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->getAddableItemQuantity($item) > 0 => $player->getOffHandInventory(),
+			$player->getInventory()->getAddableItemQuantity($item) > 0 => $player->getInventory(),
 			default => null
 		};
 
@@ -246,7 +247,12 @@ class ItemEntity extends Entity{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$ev->getInventory()?->addItem($ev->getItem());
+		$inventory = $ev->getInventory();
+		if($inventory !== null){
+			foreach($inventory->addItem($ev->getItem()) as $remains){
+				$this->getWorld()->dropItem($this->location, $remains, new Vector3(0, 0, 0));
+			}
+		}
 		$this->flagForDespawn();
 	}
 }

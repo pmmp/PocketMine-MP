@@ -40,4 +40,10 @@ final class Manifest{
 	public array $modules;
 
 	public ?ManifestMetadata $metadata = null;
+
+	/** @var string[] */
+	public ?array $capabilities = null;
+
+	/** @var ManifestDependencyEntry[] */
+	public ?array $dependencies = null;
 }

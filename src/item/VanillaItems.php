@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\utils\CloningRegistryTrait;
-use function assert;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -379,12 +378,6 @@ final class VanillaItems{
 
 	protected static function register(string $name, Item $item) : void{
 		self::_registryRegister($name, $item);
-	}
-
-	public static function fromString(string $name) : Item{
-		$result = self::_registryFromString($name);
-		assert($result instanceof Item);
-		return $result;
 	}
 
 	/**

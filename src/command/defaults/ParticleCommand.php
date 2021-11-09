@@ -30,7 +30,6 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\VanillaItems;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\math\Vector3;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
@@ -79,8 +78,8 @@ class ParticleCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_PARTICLE_DESCRIPTION,
-			KnownTranslationKeys::POCKETMINE_COMMAND_PARTICLE_USAGE
+			KnownTranslationFactory::pocketmine_command_particle_description(),
+			KnownTranslationFactory::pocketmine_command_particle_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_PARTICLE);
 	}

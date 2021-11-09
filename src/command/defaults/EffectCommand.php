@@ -26,9 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\entity\effect\EffectInstance;
-use pocketmine\entity\effect\VanillaEffects;
+use pocketmine\entity\effect\StringToEffectParser;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
@@ -40,8 +39,8 @@ class EffectCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_EFFECT_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_EFFECT_USAGE
+			KnownTranslationFactory::pocketmine_command_effect_description(),
+			KnownTranslationFactory::commands_effect_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_EFFECT);
 	}
@@ -70,9 +69,8 @@ class EffectCommand extends VanillaCommand{
 			return true;
 		}
 
-		try{
-			$effect = VanillaEffects::fromString($args[1]);
-		}catch(\InvalidArgumentException $e){
+		$effect = StringToEffectParser::getInstance()->parse($args[1]);
+		if($effect === null){
 			$sender->sendMessage(KnownTranslationFactory::commands_effect_notFound($args[1])->prefix(TextFormat::RED));
 			return true;
 		}

@@ -25,16 +25,14 @@ namespace pocketmine\plugin;
 
 use pocketmine\permission\Permission;
 use pocketmine\permission\PermissionParser;
+use pocketmine\permission\PermissionParserException;
 use function array_map;
 use function array_values;
 use function is_array;
-use function phpversion;
+use function is_string;
 use function preg_match;
 use function str_replace;
 use function stripos;
-use function strlen;
-use function substr;
-use function version_compare;
 use function yaml_parse;
 
 class PluginDescription{
@@ -42,53 +40,46 @@ class PluginDescription{
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private $map;
+	private array $map;
 
-	/** @var string */
-	private $name;
-	/** @var string */
-	private $main;
+	private string $name;
+	private string $main;
 	private string $srcNamespacePrefix = "";
 	/** @var string[] */
-	private $api;
+	private array $api;
 	/** @var int[] */
-	private $compatibleMcpeProtocols = [];
+	private array $compatibleMcpeProtocols = [];
 	/** @var string[] */
-	private $compatibleOperatingSystems = [];
+	private array $compatibleOperatingSystems = [];
 	/**
 	 * @var string[][]
 	 * @phpstan-var array<string, list<string>>
 	 */
-	private $extensions = [];
+	private array $extensions = [];
 	/** @var string[] */
-	private $depend = [];
+	private array $depend = [];
 	/** @var string[] */
-	private $softDepend = [];
+	private array $softDepend = [];
 	/** @var string[] */
-	private $loadBefore = [];
-	/** @var string */
-	private $version;
+	private array $loadBefore = [];
+	private string $version;
 	/**
-	 * @var mixed[][]
-	 * @phpstan-var array<string, array<string, mixed>>
+	 * @var PluginDescriptionCommandEntry[]
+	 * @phpstan-var array<string, PluginDescriptionCommandEntry>
 	 */
-	private $commands = [];
-	/** @var string */
-	private $description = "";
+	private array $commands = [];
+	private string $description = "";
 	/** @var string[] */
-	private $authors = [];
-	/** @var string */
-	private $website = "";
-	/** @var string */
-	private $prefix = "";
-	/** @var PluginEnableOrder */
-	private $order;
+	private array $authors = [];
+	private string $website = "";
+	private string $prefix = "";
+	private PluginEnableOrder $order;
 
 	/**
 	 * @var Permission[][]
 	 * @phpstan-var array<string, list<Permission>>
 	 */
-	private $permissions = [];
+	private array $permissions = [];
 
 	/**
 	 * @param string|mixed[] $yamlString
@@ -99,20 +90,20 @@ class PluginDescription{
 
 	/**
 	 * @param mixed[] $plugin
-	 * @throws PluginException
+	 * @throws PluginDescriptionParseException
 	 */
 	private function loadMap(array $plugin) : void{
 		$this->map = $plugin;
 
 		$this->name = $plugin["name"];
 		if(preg_match('/^[A-Za-z0-9 _.-]+$/', $this->name) === 0){
-			throw new PluginException("Invalid Plugin name");
+			throw new PluginDescriptionParseException("Invalid Plugin name");
 		}
 		$this->name = str_replace(" ", "_", $this->name);
 		$this->version = (string) $plugin["version"];
 		$this->main = $plugin["main"];
 		if(stripos($this->main, "pocketmine\\") === 0){
-			throw new PluginException("Invalid Plugin main, cannot start within the PocketMine namespace");
+			throw new PluginDescriptionParseException("Invalid Plugin main, cannot start within the PocketMine namespace");
 		}
 
 		$this->srcNamespacePrefix = $plugin["src-namespace-prefix"] ?? "";
@@ -122,7 +113,24 @@ class PluginDescription{
 		$this->compatibleOperatingSystems = array_map("\strval", (array) ($plugin["os"] ?? []));
 
 		if(isset($plugin["commands"]) and is_array($plugin["commands"])){
-			$this->commands = $plugin["commands"];
+			foreach($plugin["commands"] as $commandName => $commandData){
+				if(!is_string($commandName)){
+					throw new PluginDescriptionParseException("Invalid Plugin commands, key must be the name of the command");
+				}
+				if(!is_array($commandData)){
+					throw new PluginDescriptionParseException("Command $commandName has invalid properties");
+				}
+				if(!isset($commandData["permission"]) || !is_string($commandData["permission"])){
+					throw new PluginDescriptionParseException("Command $commandName does not have a valid permission set");
+				}
+				$this->commands[$commandName] = new PluginDescriptionCommandEntry(
+					$commandData["description"] ?? null,
+					$commandData["usage"] ?? null,
+					$commandData["aliases"] ?? [],
+					$commandData["permission"],
+					$commandData["permission-message"] ?? null
+				);
+			}
 		}
 
 		if(isset($plugin["depend"])){
@@ -153,7 +161,7 @@ class PluginDescription{
 		if(isset($plugin["load"])){
 			$order = PluginEnableOrder::fromString($plugin["load"]);
 			if($order === null){
-				throw new PluginException("Invalid Plugin \"load\"");
+				throw new PluginDescriptionParseException("Invalid Plugin \"load\"");
 			}
 			$this->order = $order;
 		}else{
@@ -175,7 +183,11 @@ class PluginDescription{
 		}
 
 		if(isset($plugin["permissions"])){
-			$this->permissions = PermissionParser::loadPermissions($plugin["permissions"]);
+			try{
+				$this->permissions = PermissionParser::loadPermissions($plugin["permissions"]);
+			}catch(PermissionParserException $e){
+				throw new PluginDescriptionParseException("Invalid Plugin \"permissions\": " . $e->getMessage(), 0, $e);
+			}
 		}
 	}
 
@@ -216,8 +228,8 @@ class PluginDescription{
 	}
 
 	/**
-	 * @return mixed[][]
-	 * @phpstan-return array<string, array<string, mixed>>
+	 * @return PluginDescriptionCommandEntry[]
+	 * @phpstan-return array<string, PluginDescriptionCommandEntry>
 	 */
 	public function getCommands() : array{
 		return $this->commands;
@@ -229,40 +241,6 @@ class PluginDescription{
 	 */
 	public function getRequiredExtensions() : array{
 		return $this->extensions;
-	}
-
-	/**
-	 * Checks if the current PHP runtime has the extensions required by the plugin.
-	 *
-	 * @throws PluginException if there are required extensions missing or have incompatible version, or if the version constraint cannot be parsed
-	 */
-	public function checkRequiredExtensions() : void{
-		foreach($this->extensions as $name => $versionConstrs){
-			$gotVersion = phpversion($name);
-			if($gotVersion === false){
-				throw new PluginException("Required extension $name not loaded");
-			}
-
-			foreach($versionConstrs as $constr){ // versionConstrs_loop
-				if($constr === "*"){
-					continue;
-				}
-				if($constr === ""){
-					throw new PluginException("One of the extension version constraints of $name is empty. Consider quoting the version string in plugin.yml");
-				}
-				foreach(["<=", "le", "<>", "!=", "ne", "<", "lt", "==", "=", "eq", ">=", "ge", ">", "gt"] as $comparator){
-					// warning: the > character should be quoted in YAML
-					if(substr($constr, 0, strlen($comparator)) === $comparator){
-						$version = substr($constr, strlen($comparator));
-						if(!version_compare($gotVersion, $version, $comparator)){
-							throw new PluginException("Required extension $name has an incompatible version ($gotVersion not $constr)");
-						}
-						continue 2; // versionConstrs_loop
-					}
-				}
-				throw new PluginException("Error parsing version constraint: $constr");
-			}
-		}
 	}
 
 	/**

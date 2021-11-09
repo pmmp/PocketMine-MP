@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\data\bedrock\LegacyItemIdToStringIdMap;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
@@ -65,21 +66,18 @@ final class ItemTranslator{
 	private $complexNetToCoreMapping = [];
 
 	private static function make() : self{
-		$data = file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'vanilla', 'r16_to_current_item_map.json'));
+		$data = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'r16_to_current_item_map.json'));
 		if($data === false) throw new AssumptionFailedError("Missing required resource file");
 		$json = json_decode($data, true);
 		if(!is_array($json) or !isset($json["simple"], $json["complex"]) || !is_array($json["simple"]) || !is_array($json["complex"])){
 			throw new AssumptionFailedError("Invalid item table format");
 		}
 
-		$legacyStringToIntMapRaw = file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'vanilla', 'item_id_map.json'));
+		$legacyStringToIntMapRaw = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'item_id_map.json'));
 		if($legacyStringToIntMapRaw === false){
 			throw new AssumptionFailedError("Missing required resource file");
 		}
-		$legacyStringToIntMap = json_decode($legacyStringToIntMapRaw, true);
-		if(!is_array($legacyStringToIntMap)){
-			throw new AssumptionFailedError("Invalid mapping table format");
-		}
+		$legacyStringToIntMap = LegacyItemIdToStringIdMap::getInstance();
 
 		/** @phpstan-var array<string, int> $simpleMappings */
 		$simpleMappings = [];
@@ -87,13 +85,14 @@ final class ItemTranslator{
 			if(!is_string($oldId) || !is_string($newId)){
 				throw new AssumptionFailedError("Invalid item table format");
 			}
-			if(!isset($legacyStringToIntMap[$oldId])){
+			$intId = $legacyStringToIntMap->stringToLegacy($oldId);
+			if($intId === null){
 				//new item without a fixed legacy ID - we can't handle this right now
 				continue;
 			}
-			$simpleMappings[$newId] = $legacyStringToIntMap[$oldId];
+			$simpleMappings[$newId] = $intId;
 		}
-		foreach($legacyStringToIntMap as $stringId => $intId){
+		foreach($legacyStringToIntMap->getStringToLegacyMap() as $stringId => $intId){
 			if(isset($simpleMappings[$stringId])){
 				throw new \UnexpectedValueException("Old ID $stringId collides with new ID");
 			}
@@ -110,7 +109,12 @@ final class ItemTranslator{
 				if(!is_numeric($meta) || !is_string($newId)){
 					throw new AssumptionFailedError("Invalid item table format");
 				}
-				$complexMappings[$newId] = [$legacyStringToIntMap[$oldId], (int) $meta];
+				$intId = $legacyStringToIntMap->stringToLegacy($oldId);
+				if($intId === null){
+					//new item without a fixed legacy ID - we can't handle this right now
+					continue;
+				}
+				$complexMappings[$newId] = [$intId, (int) $meta];
 			}
 		}
 
@@ -142,10 +146,10 @@ final class ItemTranslator{
 	}
 
 	/**
-	 * @return int[]
-	 * @phpstan-return array{int, int}
+	 * @return int[]|null
+	 * @phpstan-return array{int, int}|null
 	 */
-	public function toNetworkId(int $internalId, int $internalMeta) : array{
+	public function toNetworkIdQuiet(int $internalId, int $internalMeta) : ?array{
 		if($internalMeta === -1){
 			$internalMeta = 0x7fff;
 		}
@@ -156,17 +160,27 @@ final class ItemTranslator{
 			return [$this->simpleCoreToNetMapping[$internalId], $internalMeta];
 		}
 
-		throw new \InvalidArgumentException("Unmapped ID/metadata combination $internalId:$internalMeta");
+		return null;
 	}
 
 	/**
 	 * @return int[]
 	 * @phpstan-return array{int, int}
 	 */
+	public function toNetworkId(int $internalId, int $internalMeta) : array{
+		return $this->toNetworkIdQuiet($internalId, $internalMeta) ??
+			throw new \InvalidArgumentException("Unmapped ID/metadata combination $internalId:$internalMeta");
+	}
+
+	/**
+	 * @return int[]
+	 * @phpstan-return array{int, int}
+	 * @throws TypeConversionException
+	 */
 	public function fromNetworkId(int $networkId, int $networkMeta, ?bool &$isComplexMapping = null) : array{
 		if(isset($this->complexNetToCoreMapping[$networkId])){
 			if($networkMeta !== 0){
-				throw new \UnexpectedValueException("Unexpected non-zero network meta on complex item mapping");
+				throw new TypeConversionException("Unexpected non-zero network meta on complex item mapping");
 			}
 			$isComplexMapping = true;
 			return $this->complexNetToCoreMapping[$networkId];
@@ -175,12 +189,13 @@ final class ItemTranslator{
 		if(isset($this->simpleNetToCoreMapping[$networkId])){
 			return [$this->simpleNetToCoreMapping[$networkId], $networkMeta];
 		}
-		throw new \UnexpectedValueException("Unmapped network ID/metadata combination $networkId:$networkMeta");
+		throw new TypeConversionException("Unmapped network ID/metadata combination $networkId:$networkMeta");
 	}
 
 	/**
 	 * @return int[]
 	 * @phpstan-return array{int, int}
+	 * @throws TypeConversionException
 	 */
 	public function fromNetworkIdWithWildcardHandling(int $networkId, int $networkMeta) : array{
 		$isComplexMapping = false;

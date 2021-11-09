@@ -37,7 +37,7 @@ final class CreativeInventory{
 	private $creative = [];
 
 	private function __construct(){
-		$creativeItems = json_decode(file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "vanilla", "creativeitems.json")), true);
+		$creativeItems = json_decode(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "creativeitems.json")), true);
 
 		foreach($creativeItems as $data){
 			$item = Item::jsonDeserialize($data);

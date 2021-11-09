@@ -39,7 +39,7 @@ final class GlobalItemTypeDictionary{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$data = file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'vanilla', 'required_item_list.json'));
+		$data = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list.json'));
 		if($data === false) throw new AssumptionFailedError("Missing required resource file");
 		$table = json_decode($data, true);
 		if(!is_array($table)){

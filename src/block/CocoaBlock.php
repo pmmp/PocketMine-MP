@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\TreeType;
+use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -94,10 +95,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->age < 2 and $item instanceof Fertilizer){
-			$this->age++;
-			$this->position->getWorld()->setBlock($this->position, $this);
-
+		if($item instanceof Fertilizer && $this->grow()){
 			$item->pop();
 
 			return true;
@@ -117,10 +115,23 @@ class CocoaBlock extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < 2 and mt_rand(1, 5) === 1){
-			$this->age++;
-			$this->position->getWorld()->setBlock($this->position, $this);
+		if(mt_rand(1, 5) === 1){
+			$this->grow();
 		}
+	}
+
+	private function grow() : bool{
+		if($this->age < 2){
+			$block = clone $this;
+			$block->age++;
+			$ev = new BlockGrowEvent($this, $block);
+			$ev->call();
+			if(!$ev->isCancelled()){
+				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

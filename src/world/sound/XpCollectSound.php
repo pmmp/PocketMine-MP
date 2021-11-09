@@ -25,10 +25,11 @@ namespace pocketmine\world\sound;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
 class XpCollectSound implements Sound{
 
-	public function encode(?Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_SOUND_ORB, 0, $pos)];
+	public function encode(Vector3 $pos) : array{
+		return [LevelEventPacket::create(LevelEvent::SOUND_ORB, 0, $pos)];
 	}
 }

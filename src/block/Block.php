@@ -40,6 +40,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\World;
 use function assert;
@@ -142,7 +143,7 @@ class Block{
 	}
 
 	public function writeStateToWorld() : void{
-		$this->position->getWorld()->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & 0xf, $this->position->y, $this->position->z & 0xf, $this->getFullId());
+		$this->position->getWorld()->getOrLoadChunkAtPosition($this->position)->setFullBlock($this->position->x & Chunk::COORD_MASK, $this->position->y, $this->position->z & Chunk::COORD_MASK, $this->getFullId());
 
 		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $this->position->getWorld()->getTile($this->position);
@@ -178,7 +179,7 @@ class Block{
 	 * Returns whether the given block has the same type and properties as this block.
 	 */
 	public function isSameState(Block $other) : bool{
-		return $this->isSameType($other) and $this->writeStateToMeta() === $other->writeStateToMeta();
+		return $this->getFullId() === $other->getFullId();
 	}
 
 	/**
@@ -492,7 +493,7 @@ class Block{
 			return $this->position->getWorld()->getBlock($this->position->getSide($side, $step));
 		}
 
-		throw new \InvalidStateException("Block does not have a valid world");
+		throw new \LogicException("Block does not have a valid world");
 	}
 
 	/**
@@ -576,7 +577,7 @@ class Block{
 	final public function getCollisionBoxes() : array{
 		if($this->collisionBoxes === null){
 			$this->collisionBoxes = $this->recalculateCollisionBoxes();
-			$extraOffset = $this->getPositionOffset();
+			$extraOffset = $this->getModelPositionOffset();
 			$offset = $extraOffset !== null ? $this->position->addVector($extraOffset) : $this->position;
 			foreach($this->collisionBoxes as $bb){
 				$bb->offset($offset->x, $offset->y, $offset->z);
@@ -587,10 +588,10 @@ class Block{
 	}
 
 	/**
-	 * Returns an additional fractional vector to shift the block's effective position by based on the current position.
+	 * Returns an additional fractional vector to shift the block model's position by based on the current position.
 	 * Used to randomize position of things like bamboo canes and tall grass.
 	 */
-	public function getPositionOffset() : ?Vector3{
+	public function getModelPositionOffset() : ?Vector3{
 		return null;
 	}
 

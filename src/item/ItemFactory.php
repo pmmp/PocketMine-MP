@@ -41,6 +41,7 @@ use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
@@ -432,6 +433,10 @@ class ItemFactory{
 		$this->list[self::getListOffset($identifier->getId(), $identifier->getMeta())] = clone $item;
 	}
 
+	private static function itemToBlockId(int $id) : int{
+		return $id < 0 ? 255 - $id : $id;
+	}
+
 	/**
 	 * @deprecated This method should ONLY be used for deserializing data, e.g. from a config or database. For all other
 	 * purposes, use VanillaItems.
@@ -440,6 +445,7 @@ class ItemFactory{
 	 * Deserializes an item from the provided legacy ID, legacy meta, count and NBT.
 	 *
 	 * @throws \InvalidArgumentException
+	 * @throws NbtException
 	 */
 	public function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
 		/** @var Item|null $item */
@@ -456,7 +462,7 @@ class ItemFactory{
 				}
 			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
 				//TODO: do not assume that item IDs and block IDs are the same or related
-				$item = new ItemBlock(new ItemIdentifier($id, $meta), BlockFactory::getInstance()->get($id < 0 ? 255 - $id : $id, $meta & 0xf));
+				$item = new ItemBlock(new ItemIdentifier($id, $meta), BlockFactory::getInstance()->get(self::itemToBlockId($id), $meta & 0xf));
 			}
 		}
 
@@ -481,7 +487,7 @@ class ItemFactory{
 	 */
 	public function isRegistered(int $id, int $variant = 0) : bool{
 		if($id < 256){
-			return BlockFactory::getInstance()->isRegistered($id);
+			return BlockFactory::getInstance()->isRegistered(self::itemToBlockId($id));
 		}
 
 		return isset($this->list[self::getListOffset($id, $variant)]);

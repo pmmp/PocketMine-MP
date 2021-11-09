@@ -59,10 +59,10 @@ final class EntityDataHelper{
 		if($pos === null and $optional){
 			return new Vector3(0, 0, 0);
 		}
-		if(!($pos instanceof ListTag) or $pos->getTagType() !== NBT::TAG_Double){
-			throw new \UnexpectedValueException("'$tagName' should be a List<Double>");
+		if(!($pos instanceof ListTag) or ($pos->getTagType() !== NBT::TAG_Double && $pos->getTagType() !== NBT::TAG_Float)){
+			throw new \UnexpectedValueException("'$tagName' should be a List<Double> or List<Float>");
 		}
-		/** @var DoubleTag[] $values */
+		/** @var DoubleTag[]|FloatTag[] $values */
 		$values = $pos->getValue();
 		if(count($values) !== 3){
 			throw new \UnexpectedValueException("Expected exactly 3 entries in '$tagName' tag");

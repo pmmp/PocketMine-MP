@@ -26,7 +26,6 @@ namespace pocketmine\network\mcpe\handler;
 use pocketmine\block\BaseSign;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\utils\SignText;
-use pocketmine\crafting\CraftingGrid;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerEditBookEvent;
@@ -42,6 +41,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
+use pocketmine\network\mcpe\convert\TypeConversionException;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
@@ -56,8 +56,8 @@ use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
-use pocketmine\network\mcpe\protocol\ContainerOpenPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
+use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
@@ -82,6 +82,7 @@ use pocketmine\network\mcpe\protocol\ShowCreditsPacket;
 use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
+use pocketmine\network\mcpe\protocol\types\ActorEvent;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
@@ -90,11 +91,10 @@ use pocketmine\network\mcpe\protocol\types\inventory\ReleaseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
-use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
+use pocketmine\network\mcpe\protocol\types\PlayerAction;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
-use function array_key_exists;
 use function array_push;
 use function base64_encode;
 use function count;
@@ -134,15 +134,6 @@ class InGamePacketHandler extends PacketHandler{
 	/** @var bool */
 	public $forceMoveSync = false;
 
-	/**
-	 * TODO: HACK! This tracks GUIs for inventories that the server considers "always open" so that the client can't
-	 * open them twice. (1.16 hack)
-	 * @var true[]
-	 * @phpstan-var array<int, true>
-	 * @internal
-	 */
-	protected $openHardcodedWindows = [];
-
 	private InventoryManager $inventoryManager;
 
 	public function __construct(Player $player, NetworkSession $session, InventoryManager $inventoryManager){
@@ -177,7 +168,7 @@ class InGamePacketHandler extends PacketHandler{
 		$this->player->setRotation($yaw, $pitch);
 
 		$curPos = $this->player->getLocation();
-		$newPos = $packet->position->subtract(0, 1.62, 0);
+		$newPos = $packet->position->round(4)->subtract(0, 1.62, 0);
 
 		if($this->forceMoveSync and $newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
 			$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
@@ -198,14 +189,14 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleActorEvent(ActorEventPacket $packet) : bool{
-		if($packet->entityRuntimeId !== $this->player->getId()){
+		if($packet->actorRuntimeId !== $this->player->getId()){
 			//TODO HACK: EATING_ITEM is sent back to the server when the server sends it for other players (1.14 bug, maybe earlier)
-			return $packet->event === ActorEventPacket::EATING_ITEM;
+			return $packet->actorRuntimeId === ActorEvent::EATING_ITEM;
 		}
-		$this->player->doCloseInventory();
+		$this->player->removeCurrentWindow();
 
-		switch($packet->event){
-			case ActorEventPacket::EATING_ITEM: //TODO: ignore this and handle it server-side
+		switch($packet->eventId){
+			case ActorEvent::EATING_ITEM: //TODO: ignore this and handle it server-side
 				$item = $this->player->getInventory()->getItemInHand();
 				if($item->isNull()){
 					return false;
@@ -271,8 +262,8 @@ class InGamePacketHandler extends PacketHandler{
 				if($action !== null){
 					$actions[] = $action;
 				}
-			}catch(\UnexpectedValueException $e){
-				$this->session->getLogger()->debug("Unhandled inventory action: " . $e->getMessage());
+			}catch(TypeConversionException $e){
+				$this->session->getLogger()->debug("Error unpacking inventory action: " . $e->getMessage());
 				return false;
 			}
 		}
@@ -294,6 +285,7 @@ class InGamePacketHandler extends PacketHandler{
 				//all of the parts before we can execute it
 				return true;
 			}
+			$this->player->setUsingItem(false);
 			try{
 				$this->inventoryManager->onTransactionStart($this->craftingTransaction);
 				$this->craftingTransaction->execute();
@@ -304,14 +296,6 @@ class InGamePacketHandler extends PacketHandler{
 				foreach($this->craftingTransaction->getInventories() as $inventory){
 					$this->inventoryManager->syncContents($inventory);
 				}
-				/*
-				 * TODO: HACK!
-				 * we can't resend the contents of the crafting window, so we force the client to close it instead.
-				 * So people don't whine about messy desync issues when someone cancels CraftItemEvent, or when a crafting
-				 * transaction goes wrong.
-				 */
-				$this->session->sendDataPacket(ContainerClosePacket::create(InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID, true));
-
 				return false;
 			}finally{
 				$this->craftingTransaction = null;
@@ -329,6 +313,7 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			}
 
+			$this->player->setUsingItem(false);
 			$transaction = new InventoryTransaction($this->player, $actions);
 			$this->inventoryManager->onTransactionStart($transaction);
 			try{
@@ -355,12 +340,12 @@ class InGamePacketHandler extends PacketHandler{
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
 				//TODO: start hack for client spam bug
-				$clickPos = $data->getClickPos();
+				$clickPos = $data->getClickPosition();
 				$spamBug = ($this->lastRightClickData !== null and
 					microtime(true) - $this->lastRightClickTime < 0.1 and //100ms
-					$this->lastRightClickData->getPlayerPos()->distanceSquared($data->getPlayerPos()) < 0.00001 and
-					$this->lastRightClickData->getBlockPos()->equals($data->getBlockPos()) and
-					$this->lastRightClickData->getClickPos()->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
+					$this->lastRightClickData->getPlayerPosition()->distanceSquared($data->getPlayerPosition()) < 0.00001 and
+					$this->lastRightClickData->getBlockPosition()->equals($data->getBlockPosition()) and
+					$this->lastRightClickData->getClickPosition()->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
 				);
 				//get rid of continued spam if the player clicks and holds right-click
 				$this->lastRightClickData = $data;
@@ -370,27 +355,17 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				//TODO: end hack for client spam bug
 
-				$blockPos = $data->getBlockPos();
-				if(!$this->player->interactBlock($blockPos, $data->getFace(), $clickPos)){
-					$this->onFailedBlockAction($blockPos, $data->getFace());
-				}elseif(
-					!array_key_exists($windowId = InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID, $this->openHardcodedWindows) &&
-					$this->player->getCraftingGrid()->getGridWidth() === CraftingGrid::SIZE_BIG
-				){
-					//TODO: HACK! crafting grid doesn't fit very well into the current PM container system, so this hack
-					//allows it to carry on working approximately the same way as it did in 1.14
-					$this->openHardcodedWindows[$windowId] = true;
-					$this->session->sendDataPacket(ContainerOpenPacket::blockInvVec3(
-						InventoryManager::HARDCODED_CRAFTING_GRID_WINDOW_ID,
-						WindowTypes::WORKBENCH,
-						$blockPos
-					));
+				$blockPos = $data->getBlockPosition();
+				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
+				if(!$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos)){
+					$this->onFailedBlockAction($vBlockPos, $data->getFace());
 				}
 				return true;
 			case UseItemTransactionData::ACTION_BREAK_BLOCK:
-				$blockPos = $data->getBlockPos();
-				if(!$this->player->breakBlock($blockPos)){
-					$this->onFailedBlockAction($blockPos, null);
+				$blockPos = $data->getBlockPosition();
+				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
+				if(!$this->player->breakBlock($vBlockPos)){
+					$this->onFailedBlockAction($vBlockPos, null);
 				}
 				return true;
 			case UseItemTransactionData::ACTION_CLICK_AIR:
@@ -431,7 +406,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	private function handleUseItemOnEntityTransaction(UseItemOnEntityTransactionData $data) : bool{
-		$target = $this->player->getWorld()->getEntity($data->getEntityRuntimeId());
+		$target = $this->player->getWorld()->getEntity($data->getActorRuntimeId());
 		if($target === null){
 			return false;
 		}
@@ -441,7 +416,7 @@ class InGamePacketHandler extends PacketHandler{
 		//TODO: use transactiondata for rollbacks here
 		switch($data->getActionType()){
 			case UseItemOnEntityTransactionData::ACTION_INTERACT:
-				if(!$this->player->interactEntity($target, $data->getClickPos())){
+				if(!$this->player->interactEntity($target, $data->getClickPosition())){
 					$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 				}
 				return true;
@@ -497,30 +472,19 @@ class InGamePacketHandler extends PacketHandler{
 			//TODO: implement handling for this where it matters
 			return true;
 		}
-		$target = $this->player->getWorld()->getEntity($packet->target);
+		$target = $this->player->getWorld()->getEntity($packet->targetActorRuntimeId);
 		if($target === null){
 			return false;
 		}
-		if(
-			$packet->action === InteractPacket::ACTION_OPEN_INVENTORY && $target === $this->player &&
-			!array_key_exists($windowId = InventoryManager::HARDCODED_INVENTORY_WINDOW_ID, $this->openHardcodedWindows)
-		){
-			//TODO: HACK! this restores 1.14ish behaviour, but this should be able to be listened to and
-			//controlled by plugins. However, the player is always a subscriber to their own inventory so it
-			//doesn't integrate well with the regular container system right now.
-			$this->openHardcodedWindows[$windowId] = true;
-			$this->session->sendDataPacket(ContainerOpenPacket::entityInv(
-				InventoryManager::HARDCODED_INVENTORY_WINDOW_ID,
-				WindowTypes::INVENTORY,
-				$this->player->getId()
-			));
+		if($packet->action === InteractPacket::ACTION_OPEN_INVENTORY && $target === $this->player){
+			$this->inventoryManager->onClientOpenMainInventory();
 			return true;
 		}
 		return false; //TODO
 	}
 
 	public function handleBlockPickRequest(BlockPickRequestPacket $packet) : bool{
-		return $this->player->pickBlock(new Vector3($packet->blockX, $packet->blockY, $packet->blockZ), $packet->addUserData);
+		return $this->player->pickBlock(new Vector3($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ()), $packet->addUserData);
 	}
 
 	public function handleActorPickRequest(ActorPickRequestPacket $packet) : bool{
@@ -528,75 +492,75 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
-		$pos = new Vector3($packet->x, $packet->y, $packet->z);
+		$pos = new Vector3($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ());
 
 		switch($packet->action){
-			case PlayerActionPacket::ACTION_START_BREAK:
+			case PlayerAction::START_BREAK:
 				if(!$this->player->attackBlock($pos, $packet->face)){
 					$this->onFailedBlockAction($pos, $packet->face);
 				}
 
 				break;
 
-			case PlayerActionPacket::ACTION_ABORT_BREAK:
-			case PlayerActionPacket::ACTION_STOP_BREAK:
+			case PlayerAction::ABORT_BREAK:
+			case PlayerAction::STOP_BREAK:
 				$this->player->stopBreakBlock($pos);
 				break;
-			case PlayerActionPacket::ACTION_START_SLEEPING:
+			case PlayerAction::START_SLEEPING:
 				//unused
 				break;
-			case PlayerActionPacket::ACTION_STOP_SLEEPING:
+			case PlayerAction::STOP_SLEEPING:
 				$this->player->stopSleep();
 				break;
-			case PlayerActionPacket::ACTION_JUMP:
+			case PlayerAction::JUMP:
 				$this->player->jump();
 				return true;
-			case PlayerActionPacket::ACTION_START_SPRINT:
+			case PlayerAction::START_SPRINT:
 				if(!$this->player->toggleSprint(true)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerActionPacket::ACTION_STOP_SPRINT:
+			case PlayerAction::STOP_SPRINT:
 				if(!$this->player->toggleSprint(false)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerActionPacket::ACTION_START_SNEAK:
+			case PlayerAction::START_SNEAK:
 				if(!$this->player->toggleSneak(true)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerActionPacket::ACTION_STOP_SNEAK:
+			case PlayerAction::STOP_SNEAK:
 				if(!$this->player->toggleSneak(false)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerActionPacket::ACTION_START_GLIDE:
+			case PlayerAction::ACTION_START_GLIDE:
 				if(!$this->player->toggleGlide(true)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerActionPacket::ACTION_STOP_GLIDE:
+			case PlayerAction::ACTION_STOP_GLIDE:
 				if(!$this->player->toggleGlide(false)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerActionPacket::ACTION_CRACK_BREAK:
+			case PlayerAction::CRACK_BREAK:
 				$this->player->continueBreakBlock($pos, $packet->face);
 				break;
-			case PlayerActionPacket::ACTION_START_SWIMMING:
+			case PlayerAction::ACTION_START_SWIMMING:
 				if(!$this->player->toggleSwim(true)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerActionPacket::ACTION_STOP_SWIMMING:
+			case PlayerAction::ACTION_STOP_SWIMMING:
 				if(!$this->player->toggleSwim(false)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerActionPacket::ACTION_INTERACT_BLOCK: //TODO: ignored (for now)
+			case PlayerAction::INTERACT_BLOCK: //TODO: ignored (for now)
 				break;
-			case PlayerActionPacket::ACTION_CREATIVE_PLAYER_DESTROY_BLOCK:
+			case PlayerAction::CREATIVE_PLAYER_DESTROY_BLOCK:
 				//TODO: do we need to handle this?
 				break;
 			default:
@@ -618,15 +582,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleContainerClose(ContainerClosePacket $packet) : bool{
-		$this->player->doCloseInventory();
-
-		if(array_key_exists($packet->windowId, $this->openHardcodedWindows)){
-			unset($this->openHardcodedWindows[$packet->windowId]);
-		}else{
-			$this->inventoryManager->onClientRemoveWindow($packet->windowId);
-		}
-
-		$this->session->sendDataPacket(ContainerClosePacket::create($packet->windowId, false));
+		$this->inventoryManager->onClientRemoveWindow($packet->windowId);
 		return true;
 	}
 
@@ -639,7 +595,7 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
-		if($packet->entityUniqueId !== $this->player->getId()){
+		if($packet->targetActorUniqueId !== $this->player->getId()){
 			return false; //TODO: operators can change other people's permissions using this
 		}
 
@@ -659,13 +615,13 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleBlockActorData(BlockActorDataPacket $packet) : bool{
-		$pos = new Vector3($packet->x, $packet->y, $packet->z);
+		$pos = new Vector3($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ());
 		if($pos->distanceSquared($this->player->getLocation()) > 10000){
 			return false;
 		}
 
 		$block = $this->player->getLocation()->getWorld()->getBlock($pos);
-		$nbt = $packet->namedtag->getRoot();
+		$nbt = $packet->nbt->getRoot();
 		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
 
 		if($block instanceof BaseSign){
@@ -689,7 +645,7 @@ class InGamePacketHandler extends PacketHandler{
 				return true;
 			}
 
-			$this->session->getLogger()->debug("Invalid sign update data: " . base64_encode($packet->namedtag->getEncodedNbt()));
+			$this->session->getLogger()->debug("Invalid sign update data: " . base64_encode($packet->nbt->getEncodedNbt()));
 		}
 
 		return false;
@@ -723,9 +679,10 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
-		$block = $this->player->getWorld()->getBlockAt($packet->x, $packet->y, $packet->z);
+		$blockPosition = $packet->blockPosition;
+		$block = $this->player->getWorld()->getBlockAt($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
 		if($block instanceof ItemFrame and $block->getFramedItem() !== null){
-			return $this->player->attackBlock(new Vector3($packet->x, $packet->y, $packet->z), $block->getFacing());
+			return $this->player->attackBlock(new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ()), $block->getFacing());
 		}
 		return false;
 	}
@@ -892,6 +849,11 @@ class InGamePacketHandler extends PacketHandler{
 		 * action bound to it.
 		 * In addition, we use this handler to silence debug noise, since this packet is frequently sent by the client.
 		 */
+		return true;
+	}
+
+	public function handleEmote(EmotePacket $packet) : bool{
+		$this->player->emote($packet->getEmoteId());
 		return true;
 	}
 }

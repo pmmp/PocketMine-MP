@@ -26,9 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\enchantment\EnchantmentInstance;
-use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\item\enchantment\StringToEnchantmentParser;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -38,8 +37,8 @@ class EnchantCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_ENCHANT_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_ENCHANT_USAGE
+			KnownTranslationFactory::pocketmine_command_enchant_description(),
+			KnownTranslationFactory::commands_enchant_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_ENCHANT);
 	}
@@ -67,9 +66,8 @@ class EnchantCommand extends VanillaCommand{
 			return true;
 		}
 
-		try{
-			$enchantment = VanillaEnchantments::fromString($args[1]);
-		}catch(\InvalidArgumentException $e){
+		$enchantment = StringToEnchantmentParser::getInstance()->parse($args[1]);
+		if($enchantment === null){
 			$sender->sendMessage(KnownTranslationFactory::commands_enchant_notFound($args[1]));
 			return true;
 		}

@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\utils\CloningRegistryTrait;
-use function assert;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -300,6 +299,7 @@ use function assert;
  * @method static Farmland FARMLAND()
  * @method static TallGrass FERN()
  * @method static Fire FIRE()
+ * @method static FletchingTable FLETCHING_TABLE()
  * @method static FlowerPot FLOWER_POT()
  * @method static FrostedIce FROSTED_ICE()
  * @method static Furnace FURNACE()
@@ -578,12 +578,6 @@ final class VanillaBlocks{
 
 	protected static function register(string $name, Block $block) : void{
 		self::_registryRegister($name, $block);
-	}
-
-	public static function fromString(string $name) : Block{
-		$result = self::_registryFromString($name);
-		assert($result instanceof Block);
-		return $result;
 	}
 
 	/**
@@ -866,6 +860,7 @@ final class VanillaBlocks{
 		self::register("farmland", $factory->get(60, 0));
 		self::register("fern", $factory->get(31, 2));
 		self::register("fire", $factory->get(51, 0));
+		self::register("fletching_table", $factory->get(456, 0));
 		self::register("flower_pot", $factory->get(140, 0));
 		self::register("frosted_ice", $factory->get(207, 0));
 		self::register("furnace", $factory->get(61, 2));

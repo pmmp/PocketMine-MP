@@ -23,9 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\handler;
 
+use pocketmine\network\mcpe\InventoryManager;
 use pocketmine\network\mcpe\NetworkSession;
+use pocketmine\network\mcpe\protocol\ContainerClosePacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
+use pocketmine\network\mcpe\protocol\types\PlayerAction;
 use pocketmine\player\Player;
 
 class DeathPacketHandler extends PacketHandler{
@@ -34,10 +37,12 @@ class DeathPacketHandler extends PacketHandler{
 	private $player;
 	/** @var NetworkSession */
 	private $session;
+	private InventoryManager $inventoryManager;
 
-	public function __construct(Player $player, NetworkSession $session){
+	public function __construct(Player $player, NetworkSession $session, InventoryManager $inventoryManager){
 		$this->player = $player;
 		$this->session = $session;
+		$this->inventoryManager = $inventoryManager;
 	}
 
 	public function setUp() : void{
@@ -49,12 +54,17 @@ class DeathPacketHandler extends PacketHandler{
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
-		if($packet->action === PlayerActionPacket::ACTION_RESPAWN){
+		if($packet->action === PlayerAction::RESPAWN){
 			$this->player->respawn();
 			return true;
 		}
 
 		return false;
+	}
+
+	public function handleContainerClose(ContainerClosePacket $packet) : bool{
+		$this->inventoryManager->onClientRemoveWindow($packet->windowId);
+		return true;
 	}
 
 	public function handleRespawn(RespawnPacket $packet) : bool{

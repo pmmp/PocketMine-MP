@@ -28,6 +28,3 @@ if(!defined('LEVELDB_ZLIB_RAW_COMPRESSION')){
 if(!extension_loaded('libdeflate')){
 	function libdeflate_deflate_compress(string $data, int $level = 6) : string{}
 }
-
-//TODO: these need to be defined properly or removed
-define('pocketmine\COMPOSER_AUTOLOADER_PATH', dirname(__DIR__, 2) . '/vendor/autoload.php');

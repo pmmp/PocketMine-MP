@@ -27,7 +27,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
@@ -39,8 +38,8 @@ class GamemodeCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_GAMEMODE_DESCRIPTION,
-			KnownTranslationKeys::COMMANDS_GAMEMODE_USAGE
+			KnownTranslationFactory::pocketmine_command_gamemode_description(),
+			KnownTranslationFactory::commands_gamemode_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_GAMEMODE);
 	}
@@ -56,7 +55,7 @@ class GamemodeCommand extends VanillaCommand{
 
 		$gameMode = GameMode::fromString($args[0]);
 		if($gameMode === null){
-			$sender->sendMessage("Unknown game mode");
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gamemode_unknown($args[0]));
 			return true;
 		}
 
@@ -75,7 +74,7 @@ class GamemodeCommand extends VanillaCommand{
 
 		$target->setGamemode($gameMode);
 		if(!$gameMode->equals($target->getGamemode())){
-			$sender->sendMessage("Game mode change for " . $target->getName() . " failed!");
+			$sender->sendMessage(KnownTranslationFactory::pocketmine_command_gamemode_failure($target->getName()));
 		}else{
 			if($target === $sender){
 				Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_gamemode_success_self($gameMode->getTranslatableName()));

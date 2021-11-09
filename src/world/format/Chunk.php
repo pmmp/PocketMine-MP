@@ -29,15 +29,19 @@ namespace pocketmine\world\format;
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Tile;
-use pocketmine\data\bedrock\BiomeIds;
-use function array_fill;
 use function array_map;
 
 class Chunk{
-	public const DIRTY_FLAG_TERRAIN = 1 << 0;
+	public const DIRTY_FLAG_BLOCKS = 1 << 0;
 	public const DIRTY_FLAG_BIOMES = 1 << 3;
 
-	public const MAX_SUBCHUNKS = 16;
+	public const MIN_SUBCHUNK_INDEX = 0;
+	public const MAX_SUBCHUNK_INDEX = 15;
+	public const MAX_SUBCHUNKS = self::MAX_SUBCHUNK_INDEX - self::MIN_SUBCHUNK_INDEX + 1;
+
+	public const EDGE_LENGTH = SubChunk::EDGE_LENGTH;
+	public const COORD_BIT_SIZE = SubChunk::COORD_BIT_SIZE;
+	public const COORD_MASK = SubChunk::COORD_MASK;
 
 	/** @var int */
 	private $terrainDirtyFlags = 0;
@@ -65,16 +69,18 @@ class Chunk{
 	/**
 	 * @param SubChunk[] $subChunks
 	 */
-	public function __construct(array $subChunks = [], ?BiomeArray $biomeIds = null, ?HeightArray $heightMap = null){
+	public function __construct(array $subChunks, BiomeArray $biomeIds, bool $terrainPopulated){
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
 		foreach($this->subChunks as $y => $null){
-			$this->subChunks[$y] = $subChunks[$y] ?? new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, []);
+			$this->subChunks[$y] = $subChunks[$y + self::MIN_SUBCHUNK_INDEX] ?? new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, []);
 		}
 
-		$val = ($this->subChunks->getSize() * 16);
-		$this->heightMap = $heightMap ?? new HeightArray(array_fill(0, 256, $val));
-		$this->biomeIds = $biomeIds ?? BiomeArray::fill(BiomeIds::OCEAN);
+		$val = (self::MAX_SUBCHUNK_INDEX + 1) * SubChunk::EDGE_LENGTH;
+		$this->heightMap = HeightArray::fill($val); //TODO: what about lazily initializing this?
+		$this->biomeIds = $biomeIds;
+
+		$this->terrainPopulated = $terrainPopulated;
 	}
 
 	/**
@@ -94,15 +100,15 @@ class Chunk{
 	 * @return int bitmap, (id << 4) | meta
 	 */
 	public function getFullBlock(int $x, int $y, int $z) : int{
-		return $this->getSubChunk($y >> 4)->getFullBlock($x, $y & 0x0f, $z);
+		return $this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->getFullBlock($x, $y & SubChunk::COORD_MASK, $z);
 	}
 
 	/**
 	 * Sets the blockstate at the given coordinate by internal ID.
 	 */
 	public function setFullBlock(int $x, int $y, int $z, int $block) : void{
-		$this->getSubChunk($y >> 4)->setFullBlock($x, $y & 0xf, $z, $block);
-		$this->terrainDirtyFlags |= self::DIRTY_FLAG_TERRAIN;
+		$this->getSubChunk($y >> SubChunk::COORD_BIT_SIZE)->setFullBlock($x, $y & SubChunk::COORD_MASK, $z, $block);
+		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BLOCKS;
 	}
 
 	/**
@@ -114,10 +120,10 @@ class Chunk{
 	 * @return int|null 0-255, or null if there are no blocks in the column
 	 */
 	public function getHighestBlockAt(int $x, int $z) : ?int{
-		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
+		for($y = self::MAX_SUBCHUNK_INDEX; $y >= self::MIN_SUBCHUNK_INDEX; --$y){
 			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z);
 			if($height !== null){
-				return $height | ($y << 4);
+				return $height | ($y << SubChunk::COORD_BIT_SIZE);
 			}
 		}
 
@@ -182,7 +188,7 @@ class Chunk{
 
 	public function setPopulated(bool $value = true) : void{
 		$this->terrainPopulated = $value;
-		$this->terrainDirtyFlags |= self::DIRTY_FLAG_TERRAIN;
+		$this->terrainDirtyFlags |= self::DIRTY_FLAG_BLOCKS;
 	}
 
 	public function addTile(Tile $tile) : void{
@@ -276,30 +282,34 @@ class Chunk{
 	}
 
 	public function getSubChunk(int $y) : SubChunk{
-		if($y < 0 || $y >= $this->subChunks->getSize()){
+		if($y < self::MIN_SUBCHUNK_INDEX || $y > self::MAX_SUBCHUNK_INDEX){
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
-		return $this->subChunks[$y];
+		return $this->subChunks[$y - self::MIN_SUBCHUNK_INDEX];
 	}
 
 	/**
 	 * Sets a subchunk in the chunk index
 	 */
 	public function setSubChunk(int $y, ?SubChunk $subChunk) : void{
-		if($y < 0 or $y >= $this->subChunks->getSize()){
+		if($y < self::MIN_SUBCHUNK_INDEX or $y > self::MAX_SUBCHUNK_INDEX){
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
 
-		$this->subChunks[$y] = $subChunk ?? new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, []);
-		$this->setTerrainDirtyFlag(self::DIRTY_FLAG_TERRAIN, true);
+		$this->subChunks[$y - self::MIN_SUBCHUNK_INDEX] = $subChunk ?? new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, []);
+		$this->setTerrainDirtyFlag(self::DIRTY_FLAG_BLOCKS, true);
 	}
 
 	/**
-	 * @return \SplFixedArray|SubChunk[]
-	 * @phpstan-return \SplFixedArray<SubChunk>
+	 * @return SubChunk[]
+	 * @phpstan-return array<int, SubChunk>
 	 */
-	public function getSubChunks() : \SplFixedArray{
-		return $this->subChunks;
+	public function getSubChunks() : array{
+		$result = [];
+		foreach($this->subChunks as $yOffset => $subChunk){
+			$result[$yOffset + self::MIN_SUBCHUNK_INDEX] = $subChunk;
+		}
+		return $result;
 	}
 
 	/**
@@ -328,6 +338,8 @@ class Chunk{
 	 * @param int $z 0-15
 	 */
 	public static function blockHash(int $x, int $y, int $z) : int{
-		return ($y << 8) | (($z & 0x0f) << 4) | ($x & 0x0f);
+		return ($y << (2 * SubChunk::COORD_BIT_SIZE)) |
+			(($z & SubChunk::COORD_MASK) << SubChunk::COORD_BIT_SIZE) |
+			($x & SubChunk::COORD_MASK);
 	}
 }

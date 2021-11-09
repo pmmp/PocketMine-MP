@@ -27,7 +27,6 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
-use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\scheduler\BulkCurlTask;
@@ -60,8 +59,8 @@ class TimingsCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_DESCRIPTION,
-			KnownTranslationKeys::POCKETMINE_COMMAND_TIMINGS_USAGE
+			KnownTranslationFactory::pocketmine_command_timings_description(),
+			KnownTranslationFactory::pocketmine_command_timings_usage()
 		);
 		$this->setPermission(DefaultPermissionNames::COMMAND_TIMINGS);
 	}

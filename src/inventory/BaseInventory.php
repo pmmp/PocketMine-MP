@@ -169,6 +169,10 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function canAddItem(Item $item) : bool{
+		return $this->getAddableItemQuantity($item) === $item->getCount();
+	}
+
+	public function getAddableItemQuantity(Item $item) : int{
 		$count = $item->getCount();
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
 			$slot = $this->getItem($i);
@@ -181,11 +185,11 @@ abstract class BaseInventory implements Inventory{
 			}
 
 			if($count <= 0){
-				return true;
+				return $item->getCount();
 			}
 		}
 
-		return false;
+		return $item->getCount() - $count;
 	}
 
 	public function addItem(Item ...$slots) : array{

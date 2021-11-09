@@ -26,6 +26,7 @@ namespace pocketmine\network\mcpe;
 use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\BlockInventory;
 use pocketmine\block\inventory\BrewingStandInventory;
+use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
@@ -45,6 +46,7 @@ use pocketmine\network\mcpe\protocol\CreativeContentPacket;
 use pocketmine\network\mcpe\protocol\InventoryContentPacket;
 use pocketmine\network\mcpe\protocol\InventorySlotPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
@@ -65,9 +67,7 @@ class InventoryManager{
 	//these IDs are used for 1.16 to restore 1.14ish crafting & inventory behaviour; since they don't seem to have any
 	//effect on the behaviour of inventory transactions I don't currently plan to integrate these into the main system.
 	private const RESERVED_WINDOW_ID_RANGE_START = ContainerIds::LAST - 10;
-	private const RESERVED_WINDOW_ID_RANGE_END = ContainerIds::LAST;
-	public const HARDCODED_CRAFTING_GRID_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 1;
-	public const HARDCODED_INVENTORY_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 2;
+	private const HARDCODED_INVENTORY_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 2;
 
 	/** @var Player */
 	private $player;
@@ -78,6 +78,15 @@ class InventoryManager{
 	private $windowMap = [];
 	/** @var int */
 	private $lastInventoryNetworkId = ContainerIds::FIRST;
+
+	/**
+	 * TODO: HACK! This tracks GUIs for inventories that the server considers "always open" so that the client can't
+	 * open them twice. (1.16 hack)
+	 * @var true[]
+	 * @phpstan-var array<int, true>
+	 * @internal
+	 */
+	protected $openHardcodedWindows = [];
 
 	/**
 	 * @var Item[][]
@@ -150,7 +159,7 @@ class InventoryManager{
 				return;
 			}
 		}
-		throw new \UnsupportedOperationException("Unsupported inventory type");
+		throw new \LogicException("Unsupported inventory type");
 	}
 
 	/** @phpstan-return ObjectSet<ContainerOpenClosure> */
@@ -164,29 +173,40 @@ class InventoryManager{
 		//TODO: we should be using some kind of tagging system to identify the types. Instanceof is flaky especially
 		//if the class isn't final, not to mention being inflexible.
 		if($inv instanceof BlockInventory){
-			switch(true){
-				case $inv instanceof LoomInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::LOOM, $inv->getHolder())];
-				case $inv instanceof FurnaceInventory:
-					return match($inv->getFurnaceType()->id()){
-						FurnaceType::FURNACE()->id() => [ContainerOpenPacket::blockInvVec3($id, WindowTypes::FURNACE, $inv->getHolder())],
-						FurnaceType::BLAST_FURNACE()->id() => [ContainerOpenPacket::blockInvVec3($id, WindowTypes::BLAST_FURNACE, $inv->getHolder())],
-						FurnaceType::SMOKER()->id() => [ContainerOpenPacket::blockInvVec3($id, WindowTypes::SMOKER, $inv->getHolder())],
+			$blockPosition = BlockPosition::fromVector3($inv->getHolder());
+			$windowType = match(true){
+				$inv instanceof LoomInventory => WindowTypes::LOOM,
+				$inv instanceof FurnaceInventory => match($inv->getFurnaceType()->id()){
+						FurnaceType::FURNACE()->id() => WindowTypes::FURNACE,
+						FurnaceType::BLAST_FURNACE()->id() => WindowTypes::BLAST_FURNACE,
+						FurnaceType::SMOKER()->id() => WindowTypes::SMOKER,
 						default => throw new AssumptionFailedError("Unreachable")
-					};
-				case $inv instanceof EnchantInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::ENCHANTMENT, $inv->getHolder())];
-				case $inv instanceof BrewingStandInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::BREWING_STAND, $inv->getHolder())];
-				case $inv instanceof AnvilInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::ANVIL, $inv->getHolder())];
-				case $inv instanceof HopperInventory:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::HOPPER, $inv->getHolder())];
-				default:
-					return [ContainerOpenPacket::blockInvVec3($id, WindowTypes::CONTAINER, $inv->getHolder())];
-			}
+					},
+				$inv instanceof EnchantInventory => WindowTypes::ENCHANTMENT,
+				$inv instanceof BrewingStandInventory => WindowTypes::BREWING_STAND,
+				$inv instanceof AnvilInventory => WindowTypes::ANVIL,
+				$inv instanceof HopperInventory => WindowTypes::HOPPER,
+				$inv instanceof CraftingTableInventory => WindowTypes::WORKBENCH,
+				default => WindowTypes::CONTAINER
+			};
+			return [ContainerOpenPacket::blockInv($id, $windowType, $blockPosition)];
 		}
 		return null;
+	}
+
+	public function onClientOpenMainInventory() : void{
+		$id = self::HARDCODED_INVENTORY_WINDOW_ID;
+		if(!isset($this->openHardcodedWindows[$id])){
+			//TODO: HACK! this restores 1.14ish behaviour, but this should be able to be listened to and
+			//controlled by plugins. However, the player is always a subscriber to their own inventory so it
+			//doesn't integrate well with the regular container system right now.
+			$this->openHardcodedWindows[$id] = true;
+			$this->session->sendDataPacket(ContainerOpenPacket::entityInv(
+				InventoryManager::HARDCODED_INVENTORY_WINDOW_ID,
+				WindowTypes::INVENTORY,
+				$this->player->getId()
+			));
+		}
 	}
 
 	public function onCurrentWindowRemove() : void{
@@ -197,16 +217,18 @@ class InventoryManager{
 	}
 
 	public function onClientRemoveWindow(int $id) : void{
-		if($id >= self::RESERVED_WINDOW_ID_RANGE_START && $id <= self::RESERVED_WINDOW_ID_RANGE_END){
-			//TODO: HACK! crafting grid & main inventory currently use these fake IDs
-			return;
-		}
-		if($id === $this->lastInventoryNetworkId){
+		if(isset($this->openHardcodedWindows[$id])){
+			unset($this->openHardcodedWindows[$id]);
+		}elseif($id === $this->lastInventoryNetworkId){
 			$this->remove($id);
 			$this->player->removeCurrentWindow();
 		}else{
 			$this->session->getLogger()->debug("Attempted to close inventory with network ID $id, but current is $this->lastInventoryNetworkId");
 		}
+
+		//Always send this, even if no window matches. If we told the client to close a window, it will behave as if it
+		//initiated the close and expect an ack.
+		$this->session->sendDataPacket(ContainerClosePacket::create($id, false));
 	}
 
 	public function syncSlot(Inventory $inventory, int $slot) : void{
@@ -278,6 +300,7 @@ class InventoryManager{
 			$this->session->sendDataPacket(MobEquipmentPacket::create(
 				$this->player->getId(),
 				ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->player->getInventory()->getItemInHand())),
+				$selected,
 				$selected,
 				ContainerIds::INVENTORY
 			));
