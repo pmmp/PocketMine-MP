@@ -535,12 +535,12 @@ class InGamePacketHandler extends PacketHandler{
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerAction::ACTION_START_GLIDE:
+			case PlayerAction::START_GLIDE:
 				if(!$this->player->toggleGlide(true)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerAction::ACTION_STOP_GLIDE:
+			case PlayerAction::STOP_GLIDE:
 				if(!$this->player->toggleGlide(false)){
 					$this->player->sendData([$this->player]);
 				}
@@ -548,12 +548,12 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::CRACK_BREAK:
 				$this->player->continueBreakBlock($pos, $packet->face);
 				break;
-			case PlayerAction::ACTION_START_SWIMMING:
+			case PlayerAction::START_SWIMMING:
 				if(!$this->player->toggleSwim(true)){
 					$this->player->sendData([$this->player]);
 				}
 				return true;
-			case PlayerAction::ACTION_STOP_SWIMMING:
+			case PlayerAction::STOP_SWIMMING:
 				if(!$this->player->toggleSwim(false)){
 					$this->player->sendData([$this->player]);
 				}
