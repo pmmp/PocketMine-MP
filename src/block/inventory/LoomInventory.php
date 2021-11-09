@@ -25,7 +25,6 @@ namespace pocketmine\block\inventory;
 
 use pocketmine\inventory\SimpleInventory;
 use pocketmine\inventory\TemporaryInventory;
-use pocketmine\player\Player;
 use pocketmine\world\Position;
 
 final class LoomInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
