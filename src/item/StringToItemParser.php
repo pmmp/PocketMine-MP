@@ -29,24 +29,15 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\SingletonTrait;
-use function array_keys;
-use function str_replace;
-use function strtolower;
-use function trim;
+use pocketmine\utils\StringToTParser;
 
 /**
  * Handles parsing items from strings. This is used to interpret names from the /give command (and others).
- * Custom aliases may be registered.
- * Note that the aliases should be user-friendly, i.e. easily readable and writable.
+ *
+ * @phpstan-extends StringToTParser<Item>
  */
-final class StringToItemParser{
+final class StringToItemParser extends StringToTParser{
 	use SingletonTrait;
-
-	/**
-	 * @var \Closure[]
-	 * @phpstan-var array<string, \Closure(string $input) : Item>
-	 */
-	private array $callbackMap = [];
 
 	private static function make() : self{
 		$result = new self;
@@ -1325,41 +1316,12 @@ final class StringToItemParser{
 		return $result;
 	}
 
-	/** @phpstan-param \Closure(string $input) : Item $callback */
-	public function register(string $alias, \Closure $callback) : void{
-		$key = $this->reprocess($alias);
-		if(isset($this->callbackMap[$key])){
-			throw new \InvalidArgumentException("Alias \"$key\" is already registered");
-		}
-		$this->callbackMap[$key] = $callback;
-	}
-
 	/** @phpstan-param \Closure(string $input) : Block $callback */
 	public function registerBlock(string $alias, \Closure $callback) : void{
 		$this->register($alias, fn(string $input) => $callback($input)->asItem());
 	}
 
-	/** @phpstan-param \Closure(string $input) : Item $callback */
-	public function override(string $alias, \Closure $callback) : void{
-		$this->callbackMap[$this->reprocess($alias)] = $callback;
-	}
-
-	/** Tries to parse the specified string into an item. */
 	public function parse(string $input) : ?Item{
-		$key = $this->reprocess($input);
-		if(isset($this->callbackMap[$key])){
-			return ($this->callbackMap[$key])($input);
-		}
-
-		return null;
-	}
-
-	protected function reprocess(string $input) : string{
-		return strtolower(str_replace([" ", "minecraft:"], ["_", ""], trim($input)));
-	}
-
-	/** @return string[] */
-	public function getKnownAliases() : array{
-		return array_keys($this->callbackMap);
+		return parent::parse($input);
 	}
 }

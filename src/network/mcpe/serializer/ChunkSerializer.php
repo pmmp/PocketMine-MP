@@ -49,8 +49,8 @@ final class ChunkSerializer{
 	 * Chunks are sent in a stack, so every chunk below the top non-empty one must be sent.
 	 */
 	public static function getSubChunkCount(Chunk $chunk) : int{
-		for($count = count($chunk->getSubChunks()); $count > 0; --$count){
-			if($chunk->getSubChunk($count - 1)->isEmptyFast()){
+		for($y = Chunk::MAX_SUBCHUNK_INDEX, $count = count($chunk->getSubChunks()); $y >= Chunk::MIN_SUBCHUNK_INDEX; --$y, --$count){
+			if($chunk->getSubChunk($y)->isEmptyFast()){
 				continue;
 			}
 			return $count;
@@ -62,7 +62,7 @@ final class ChunkSerializer{
 	public static function serializeFullChunk(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, int $mappingProtocol, ?string $tiles = null) : string{
 		$stream = PacketSerializer::encoder($encoderContext);
 		$subChunkCount = self::getSubChunkCount($chunk);
-		for($y = 0; $y < $subChunkCount; ++$y){
+		for($y = Chunk::MIN_SUBCHUNK_INDEX, $writtenCount = 0; $writtenCount < $subChunkCount; ++$y, ++$writtenCount){
 			self::serializeSubChunk($chunk->getSubChunk($y), $blockMapper, $stream, $mappingProtocol, false);
 		}
 		$stream->put($chunk->getBiomeIdArray());

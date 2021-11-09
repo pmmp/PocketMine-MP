@@ -21,20 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\inventory;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\inventory\TemporaryInventory;
-use pocketmine\world\Position;
+interface TemporaryInventory extends Inventory{
 
-class AnvilInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
-	use BlockInventoryTrait;
-
-	public const SLOT_INPUT = 0;
-	public const SLOT_MATERIAL = 1;
-
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(2);
-	}
 }

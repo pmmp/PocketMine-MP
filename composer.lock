@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "661f91eef63d7fa08a0b55aab6d1c2f5",
+    "content-hash": "aad395ba8be947fae9184229b61f67f1",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -227,12 +227,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockProtocol.git",
-                "reference": "0691160077814aa08c0d3e648a780d18b9c2c385"
+                "reference": "e8a3977aba2af97f9bc7143d799fd87661a6eeac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/0691160077814aa08c0d3e648a780d18b9c2c385",
-                "reference": "0691160077814aa08c0d3e648a780d18b9c2c385",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/e8a3977aba2af97f9bc7143d799fd87661a6eeac",
+                "reference": "e8a3977aba2af97f9bc7143d799fd87661a6eeac",
                 "shasum": ""
             },
             "require": {
@@ -246,7 +246,7 @@
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.0.2",
+                "phpstan/phpstan": "1.1.1",
                 "phpstan/phpstan-phpunit": "^1.0.0",
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5"
@@ -270,7 +270,7 @@
             "support": {
                 "source": "https://github.com/NetherGamesMC/BedrockProtocol/tree/master"
             },
-            "time": "2021-11-05T19:52:21+00:00"
+            "time": "2021-11-09T17:20:05+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
@@ -536,16 +536,16 @@
         },
         {
             "name": "pocketmine/locale-data",
-            "version": "1.0.3",
+            "version": "1.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Language.git",
-                "reference": "7342b4eb593036c739e7f0c0ed95299ada69ff19"
+                "reference": "216b49b87e20332f0b39d1717e1e2012a40074cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Language/zipball/7342b4eb593036c739e7f0c0ed95299ada69ff19",
-                "reference": "7342b4eb593036c739e7f0c0ed95299ada69ff19",
+                "url": "https://api.github.com/repos/pmmp/Language/zipball/216b49b87e20332f0b39d1717e1e2012a40074cc",
+                "reference": "216b49b87e20332f0b39d1717e1e2012a40074cc",
                 "shasum": ""
             },
             "type": "library",
@@ -553,9 +553,9 @@
             "description": "Language resources used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Language/issues",
-                "source": "https://github.com/pmmp/Language/tree/1.0.3"
+                "source": "https://github.com/pmmp/Language/tree/1.1.6"
             },
-            "time": "2021-11-06T00:27:03+00:00"
+            "time": "2021-11-07T14:30:46+00:00"
         },
         {
             "name": "pocketmine/log",
@@ -1373,6 +1373,7 @@
                 "issues": "https://github.com/webmozart/path-util/issues",
                 "source": "https://github.com/webmozart/path-util/tree/2.3.0"
             },
+            "abandoned": "symfony/filesystem",
             "time": "2015-12-17T08:42:14+00:00"
         }
     ],
@@ -1900,16 +1901,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.0.2",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "e9e2a501102ba0b126b2f63a7f0a3b151056fe91"
+                "reference": "cb317029197236c571c1b9305b8dd12850d8d85c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e9e2a501102ba0b126b2f63a7f0a3b151056fe91",
-                "reference": "e9e2a501102ba0b126b2f63a7f0a3b151056fe91",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/cb317029197236c571c1b9305b8dd12850d8d85c",
+                "reference": "cb317029197236c571c1b9305b8dd12850d8d85c",
                 "shasum": ""
             },
             "require": {
@@ -1940,7 +1941,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.0.2"
+                "source": "https://github.com/phpstan/phpstan/tree/1.1.1"
             },
             "funding": [
                 {
@@ -1960,7 +1961,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-03T16:09:51+00:00"
+            "time": "2021-11-06T22:46:47+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",

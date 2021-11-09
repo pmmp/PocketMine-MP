@@ -21,20 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\inventory;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\inventory\TemporaryInventory;
-use pocketmine\world\Position;
+use pocketmine\crafting\CraftingGrid;
+use pocketmine\player\Player;
 
-class AnvilInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
-	use BlockInventoryTrait;
+final class PlayerCraftingInventory extends CraftingGrid implements TemporaryInventory{
 
-	public const SLOT_INPUT = 0;
-	public const SLOT_MATERIAL = 1;
-
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(2);
+	public function __construct(private Player $holder){
+		parent::__construct(CraftingGrid::SIZE_SMALL);
 	}
+
+	public function getHolder() : Player{ return $this->holder; }
 }
