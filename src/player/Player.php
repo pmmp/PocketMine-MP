@@ -1791,7 +1791,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				}
 			}
 		}
-  }
+	}
 
 	/**
 	 * Drops an item on the ground in front of the player.
