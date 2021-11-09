@@ -141,6 +141,7 @@ class Trident extends Projectile{
 			throw new \InvalidArgumentException("Trident must have a count of at least 1");
 		}
 		$this->item = clone $item;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function getPickupMode() : int{
@@ -161,6 +162,8 @@ class Trident extends Projectile{
 
 	private function pickup(Player $player) : void{
 		$item = $this->getItem();
+		$shouldDespawn = false;
+
 		$playerInventory = match(true){
 			$player->getInventory()->getAddableItemQuantity($item) > 0 => $player->getInventory(),
 			default => null
@@ -172,6 +175,7 @@ class Trident extends Projectile{
 		}
 		if($this->pickupMode === self::PICKUP_NONE or ($this->pickupMode === self::PICKUP_CREATIVE and !$player->isCreative())){
 			$ev->cancel();
+			$shouldDespawn = true;
 		}
 
 		$ev->call();
@@ -180,9 +184,12 @@ class Trident extends Projectile{
 				$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 			}
 			$ev->getInventory()?->addItem($ev->getItem());
+			$shouldDespawn = true;
 		}
 
-		$this->flagForDespawn();
+		if($shouldDespawn){
+			$this->flagForDespawn();
+		}
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
