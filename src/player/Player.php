@@ -232,8 +232,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	private bool $respawnLocked = false;
 
 	//TODO: Abilities
+	protected bool $worldImmutable = false;
+	protected bool $noPvP = false;
 	protected bool $autoJump = true;
 	protected bool $allowFlight = false;
+	protected bool $noClip = false;
 	protected bool $flying = false;
 
 	protected ?int $lineHeight = null;
@@ -385,6 +388,24 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return $this->lastPlayed - $this->firstPlayed > 1; // microtime(true) - microtime(true) may have less than one millisecond difference
 	}
 
+	public function setWorldImmutable(bool $value) : void{
+		$this->worldImmutable = $value;
+		$this->getNetworkSession()->syncAdventureSettings($this);
+	}
+
+	public function isWorldImmutable() : bool{
+		return $this->worldImmutable;
+	}
+
+	public function setNoPvP(bool $value) : void{
+		$this->noPvP = $value;
+		$this->getNetworkSession()->syncAdventureSettings($this);
+	}
+
+	public function getNoPvP() : bool{
+		return $this->noPvP;
+	}
+
 	public function setAllowFlight(bool $value) : void{
 		$this->allowFlight = $value;
 		$this->getNetworkSession()->syncAdventureSettings($this);
@@ -392,6 +413,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function getAllowFlight() : bool{
 		return $this->allowFlight;
+	}
+
+	public function setNoClip(bool $value) : void{
+		$this->noClip = $value;
+		$this->getNetworkSession()->syncAdventureSettings($this);
+	}
+
+	public function canNoClip() : bool{
+		return $this->noClip;
 	}
 
 	public function setFlying(bool $value) : void{
@@ -969,6 +999,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->hungerManager->setEnabled($this->isSurvival());
 
 		if($this->isSpectator()){
+			$this->setWorldImmutable(true);
+			$this->setNoPvP(true);
+			$this->setNoClip(true);
 			$this->setFlying(true);
 			$this->setSilent();
 			$this->onGround = false;
