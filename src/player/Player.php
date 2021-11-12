@@ -979,8 +979,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->hungerManager->setEnabled($this->isSurvival());
 
 		if($this->isSpectator()){
-			$this->setHasBlockCollision(false);
 			$this->setFlying(true);
+			$this->setHasBlockCollision(false);
 			$this->setSilent();
 			$this->onGround = false;
 
