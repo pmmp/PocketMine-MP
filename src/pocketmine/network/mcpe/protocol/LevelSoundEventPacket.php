@@ -182,7 +182,7 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_IMITATE_ELDER_GUARDIAN = 148;
 	public const SOUND_IMITATE_ENDER_DRAGON = 149;
 	public const SOUND_IMITATE_ENDERMAN = 150;
-
+	public const SOUND_IMITATE_ENDERMITE = 151;
 	public const SOUND_IMITATE_EVOCATION_ILLAGER = 152;
 	public const SOUND_IMITATE_GHAST = 153;
 	public const SOUND_IMITATE_HUSK = 154;
@@ -226,7 +226,10 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_LT_REACTION_BLEACH = 192;
 	public const SOUND_LT_REACTION_EPASTE = 193;
 	public const SOUND_LT_REACTION_EPASTE2 = 194;
-
+	public const SOUND_LT_REACTION_GLOW_STICK = 195;
+	public const SOUND_LT_REACTION_GLOW_STICK_2 = 196;
+	public const SOUND_LT_REACTION_LUMINOL = 197;
+	public const SOUND_LT_REACTION_SALT = 198;
 	public const SOUND_LT_REACTION_FERTILIZER = 199;
 	public const SOUND_LT_REACTION_FIREBALL = 200;
 	public const SOUND_LT_REACTION_MGSALT = 201;
@@ -250,7 +253,7 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_HURT_BABY = 219;
 	public const SOUND_DEATH_BABY = 220;
 	public const SOUND_STEP_BABY = 221;
-
+	public const SOUND_SPAWN_BABY = 222;
 	public const SOUND_BORN = 223;
 	public const SOUND_BLOCK_TURTLE_EGG_BREAK = 224;
 	public const SOUND_BLOCK_TURTLE_EGG_CRACK = 225;
@@ -356,9 +359,50 @@ class LevelSoundEventPacket extends DataPacket{
 	public const SOUND_AMBIENT_NETHER_WASTES_ADDITIONS = 325;
 	public const SOUND_AMBIENT_BASALT_DELTAS_ADDITIONS = 326;
 	public const SOUND_AMBIENT_CRIMSON_FOREST_ADDITIONS = 327;
-	public const SOUND_BUCKET_FILL_POWDER_SNOW = 328;
-	public const SOUND_BUCKET_EMPTY_POWDER_SNOW = 329;
-	public const SOUND_UNDEFINED = 330;
+	public const SOUND_SCULK_SENSOR_POWER_ON = 328;
+	public const SOUND_SCULK_SENSOR_POWER_OFF = 329;
+	public const SOUND_BUCKET_FILL_POWDER_SNOW = 330;
+	public const SOUND_BUCKET_EMPTY_POWDER_SNOW = 331;
+	public const SOUND_POINTED_DRIPSTONE_CAULDRON_DRIP_WATER = 332;
+	public const SOUND_POINTED_DRIPSTONE_CAULDRON_DRIP_LAVA = 333;
+	public const SOUND_POINTED_DRIPSTONE_DRIP_WATER = 334;
+	public const SOUND_POINTED_DRIPSTONE_DRIP_LAVA = 335;
+	public const SOUND_CAVE_VINES_PICK_BERRIES = 336;
+	public const SOUND_BIG_DRIPLEAF_TILT_DOWN = 337;
+	public const SOUND_BIG_DRIPLEAF_TILT_UP = 338;
+	public const SOUND_COPPER_WAX_ON = 339;
+	public const SOUND_COPPER_WAX_OFF = 340;
+	public const SOUND_SCRAPE = 341;
+	public const SOUND_PLAYER_HURT_DROWN = 342;
+	public const SOUND_PLAYER_HURT_ON_FIRE = 343;
+	public const SOUND_PLAYER_HURT_FREEZE = 344;
+	public const SOUND_USE_SPYGLASS = 345;
+	public const SOUND_STOP_USING_SPYGLASS = 346;
+	public const SOUND_AMETHYST_BLOCK_CHIME = 347;
+	public const SOUND_AMBIENT_SCREAMER = 348;
+	public const SOUND_HURT_SCREAMER = 349;
+	public const SOUND_DEATH_SCREAMER = 350;
+	public const SOUND_MILK_SCREAMER = 351;
+	public const SOUND_JUMP_TO_BLOCK = 352;
+	public const SOUND_PRE_RAM = 353;
+	public const SOUND_PRE_RAM_SCREAMER = 354;
+	public const SOUND_RAM_IMPACT = 355;
+	public const SOUND_RAM_IMPACT_SCREAMER = 356;
+	public const SOUND_SQUID_INK_SQUIRT = 357;
+	public const SOUND_GLOW_SQUID_INK_SQUIRT = 358;
+	public const SOUND_CONVERT_TO_STRAY = 359;
+	public const SOUND_CAKE_ADD_CANDLE = 360;
+	public const SOUND_EXTINGUISH_CANDLE = 361;
+	public const SOUND_AMBIENT_CANDLE = 362;
+	public const SOUND_BLOCK_CLICK = 363;
+	public const SOUND_BLOCK_CLICK_FAIL = 364;
+	public const SOUND_SCULK_CATALYST_BLOOM = 365;
+	public const SOUND_SCULK_SHRIEKER_SHRIEK = 366;
+	public const SOUND_WARDEN_NEARBY_CLOSE = 367;
+	public const SOUND_WARDEN_NEARBY_CLOSER = 368;
+	public const SOUND_WARDEN_NEARBY_CLOSEST = 369;
+	public const SOUND_WARDEN_SLIGHTLY_ANGRY = 370;
+	public const SOUND_UNDEFINED = 371;
 
 	/** @var int */
 	public $sound;
