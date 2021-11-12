@@ -234,7 +234,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	//TODO: Abilities
 	protected bool $autoJump = true;
 	protected bool $allowFlight = false;
-	protected bool $blockCollision = false;
+	protected bool $blockCollision = true;
 	protected bool $flying = false;
 
 	protected ?int $lineHeight = null;
@@ -979,7 +979,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->hungerManager->setEnabled($this->isSurvival());
 
 		if($this->isSpectator()){
-			$this->setHasBlockCollision(true);
+			$this->setHasBlockCollision(false);
 			$this->setFlying(true);
 			$this->setSilent();
 			$this->onGround = false;
