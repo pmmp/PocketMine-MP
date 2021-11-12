@@ -793,8 +793,8 @@ class NetworkSession{
 			$for->getId()
 		);
 
-		$pk->setFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $for->isWorldImmutable());
-		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->getNoPvP());
+		$pk->setFlag(AdventureSettingsPacket::WORLD_IMMUTABLE, $for->isSpectator());
+		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->isSpectator());
 		$pk->setFlag(AdventureSettingsPacket::AUTO_JUMP, $for->hasAutoJump());
 		$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $for->getAllowFlight());
 		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, $for->canNoClip());
