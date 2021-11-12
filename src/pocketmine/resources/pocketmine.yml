@@ -108,7 +108,7 @@ player:
     allow-movement-cheats: true
 
 level-settings:
-  #The default format that levels will use when created
+  #The default format that worlds will use when created
   default-format: pmanvil
 
 chunk-sending:
@@ -176,7 +176,7 @@ aliases:
   #savestop: [save-all, stop]
 
 worlds:
-  #These settings will override the generator set in server.properties and allows loading multiple levels
+  #These settings will override the generator set in server.properties and allows loading multiple worlds
   #Example:
   #world:
   # seed: 404

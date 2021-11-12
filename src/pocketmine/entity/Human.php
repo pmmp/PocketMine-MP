@@ -57,6 +57,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\network\mcpe\protocol\types\SkinAdapterSingleton;
 use pocketmine\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\UUID;
 use function array_filter;
 use function array_merge;
@@ -69,6 +70,7 @@ use function max;
 use function min;
 use function mt_rand;
 use function random_int;
+use function sprintf;
 use function strlen;
 use const INT32_MAX;
 use const INT32_MIN;
@@ -393,7 +395,12 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function setCurrentTotalXp(int $amount) : bool{
 		$newLevel = ExperienceUtils::getLevelFromXp($amount);
 
-		return $this->setXpAndProgress((int) $newLevel, $newLevel - ((int) $newLevel));
+		$xpLevel = (int) $newLevel;
+		$xpProgress = $newLevel - (int) $newLevel;
+		if($xpProgress > 1.0){
+			throw new AssumptionFailedError(sprintf("newLevel - (int) newLevel should never be bigger than 1, but have %.53f (newLevel=%.53f)", $xpProgress, $newLevel));
+		}
+		return $this->setXpAndProgress($xpLevel, $xpProgress);
 	}
 
 	/**
