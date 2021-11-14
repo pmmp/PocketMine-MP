@@ -31,6 +31,7 @@ use pocketmine\math\Vector3;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\World;
 use function count;
 
 class SetWorldSpawnCommand extends VanillaCommand{
@@ -69,7 +70,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 			}
 			$pos = (new Vector3(
 				$this->getRelativeDouble($base->x, $sender, $args[0]),
-				$this->getRelativeDouble($base->y, $sender, $args[1], 0, 256),
+				$this->getRelativeDouble($base->y, $sender, $args[1], World::Y_MIN, World::Y_MAX),
 				$this->getRelativeDouble($base->z, $sender, $args[2]),
 			))->floor();
 		}else{
