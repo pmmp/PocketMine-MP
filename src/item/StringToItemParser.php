@@ -214,6 +214,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("dark_oak_sign", fn() => VanillaBlocks::DARK_OAK_SIGN());
 		$result->registerBlock("dark_oak_slab", fn() => VanillaBlocks::DARK_OAK_SLAB());
 		$result->registerBlock("dark_oak_stairs", fn() => VanillaBlocks::DARK_OAK_STAIRS());
+		$result->registerBlock("dark_oak_standing_sign", fn() => VanillaBlocks::DARK_OAK_SIGN());
 		$result->registerBlock("dark_oak_trapdoor", fn() => VanillaBlocks::DARK_OAK_TRAPDOOR());
 		$result->registerBlock("dark_oak_wall_sign", fn() => VanillaBlocks::DARK_OAK_WALL_SIGN());
 		$result->registerBlock("dark_oak_wood", fn() => VanillaBlocks::DARK_OAK_WOOD());
@@ -609,6 +610,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("jungle_trapdoor", fn() => VanillaBlocks::JUNGLE_TRAPDOOR());
 		$result->registerBlock("jungle_wall_sign", fn() => VanillaBlocks::JUNGLE_WALL_SIGN());
 		$result->registerBlock("jungle_wood", fn() => VanillaBlocks::JUNGLE_WOOD());
+		$result->registerBlock("jungle_wood_stairs", fn() => VanillaBlocks::JUNGLE_STAIRS());
+		$result->registerBlock("jungle_wooden_stairs", fn() => VanillaBlocks::JUNGLE_STAIRS());
 		$result->registerBlock("lab_table", fn() => VanillaBlocks::LAB_TABLE());
 		$result->registerBlock("ladder", fn() => VanillaBlocks::LADDER());
 		$result->registerBlock("lantern", fn() => VanillaBlocks::LANTERN());
@@ -695,6 +698,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("oak_sign", fn() => VanillaBlocks::OAK_SIGN());
 		$result->registerBlock("oak_slab", fn() => VanillaBlocks::OAK_SLAB());
 		$result->registerBlock("oak_stairs", fn() => VanillaBlocks::OAK_STAIRS());
+		$result->registerBlock("oak_standing_sign", fn() => VanillaBlocks::OAK_SIGN());
 		$result->registerBlock("oak_trapdoor", fn() => VanillaBlocks::OAK_TRAPDOOR());
 		$result->registerBlock("oak_wall_sign", fn() => VanillaBlocks::OAK_WALL_SIGN());
 		$result->registerBlock("oak_wood", fn() => VanillaBlocks::OAK_WOOD());
