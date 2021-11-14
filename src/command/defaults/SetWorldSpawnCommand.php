@@ -32,7 +32,6 @@ use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function count;
-use function round;
 
 class SetWorldSpawnCommand extends VanillaCommand{
 
@@ -69,7 +68,7 @@ class SetWorldSpawnCommand extends VanillaCommand{
 
 		$world->setSpawnLocation($pos);
 
-		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_setworldspawn_success((string) round($pos->x, 2), (string) round($pos->y, 2), (string) round($pos->z, 2)));
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_setworldspawn_success((string) $pos->x, (string) $pos->y, (string) $pos->z));
 
 		return true;
 	}
