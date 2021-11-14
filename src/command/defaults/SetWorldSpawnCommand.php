@@ -60,8 +60,18 @@ class SetWorldSpawnCommand extends VanillaCommand{
 				return true;
 			}
 		}elseif(count($args) === 3){
-			$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
-			$pos = new Vector3($this->getInteger($sender, $args[0]), $this->getInteger($sender, $args[1]), $this->getInteger($sender, $args[2]));
+			if($sender instanceof Player){
+				$base = $sender->getPosition();
+				$world = $base->getWorld();
+			}else{
+				$base = new Vector3(0.0, 0.0, 0.0);
+				$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
+			}
+			$pos = (new Vector3(
+				$this->getRelativeDouble($base->x, $sender, $args[0]),
+				$this->getRelativeDouble($base->y, $sender, $args[1], 0, 256),
+				$this->getRelativeDouble($base->z, $sender, $args[2]),
+			))->floor();
 		}else{
 			throw new InvalidCommandSyntaxException();
 		}
