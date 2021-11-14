@@ -158,6 +158,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("chemical_heat", fn() => VanillaBlocks::CHEMICAL_HEAT());
 		$result->registerBlock("chemistry_table", fn() => VanillaBlocks::COMPOUND_CREATOR());
 		$result->registerBlock("chest", fn() => VanillaBlocks::CHEST());
+		$result->registerBlock("chipped_anvil", fn() => VanillaBlocks::ANVIL()->setDamage(1));
 		$result->registerBlock("chiseled_quartz", fn() => VanillaBlocks::CHISELED_QUARTZ());
 		$result->registerBlock("chiseled_red_sandstone", fn() => VanillaBlocks::CHISELED_RED_SANDSTONE());
 		$result->registerBlock("chiseled_sandstone", fn() => VanillaBlocks::CHISELED_SANDSTONE());
@@ -165,6 +166,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("clay_block", fn() => VanillaBlocks::CLAY());
 		$result->registerBlock("coal_block", fn() => VanillaBlocks::COAL());
 		$result->registerBlock("coal_ore", fn() => VanillaBlocks::COAL_ORE());
+		$result->registerBlock("coarse_dirt", fn() => VanillaBlocks::DIRT()->setCoarse(true));
 		$result->registerBlock("cobble", fn() => VanillaBlocks::COBBLESTONE());
 		$result->registerBlock("cobble_stairs", fn() => VanillaBlocks::COBBLESTONE_STAIRS());
 		$result->registerBlock("cobble_wall", fn() => VanillaBlocks::COBBLESTONE_WALL());
@@ -200,6 +202,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("cut_sandstone", fn() => VanillaBlocks::CUT_SANDSTONE());
 		$result->registerBlock("cut_sandstone_slab", fn() => VanillaBlocks::CUT_SANDSTONE_SLAB());
 		$result->registerBlock("cyan_glazed_terracotta", fn() => VanillaBlocks::CYAN_GLAZED_TERRACOTTA());
+		$result->registerBlock("damaged_anvil", fn() => VanillaBlocks::ANVIL()->setDamage(2));
 		$result->registerBlock("dandelion", fn() => VanillaBlocks::DANDELION());
 		$result->registerBlock("dark_oak_button", fn() => VanillaBlocks::DARK_OAK_BUTTON());
 		$result->registerBlock("dark_oak_door", fn() => VanillaBlocks::DARK_OAK_DOOR());
