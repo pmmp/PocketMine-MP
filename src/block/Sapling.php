@@ -86,7 +86,8 @@ class Sapling extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
+		$down = $this->getSide(Facing::DOWN);
+		if($down->getId() !== BlockLegacyIds::GRASS and $down->getId() !== BlockLegacyIds::DIRT and $down->getId() !== BlockLegacyIds::FARMLAND){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
