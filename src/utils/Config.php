@@ -425,7 +425,7 @@ class Config{
 	public function set($k, $v = true) : void{
 		$this->config[$k] = $v;
 		$this->changed = true;
-		foreach($this->nestedCache as $nestedKey => $nvalue){
+		foreach(Utils::stringifyKeys($this->nestedCache) as $nestedKey => $nvalue){
 			if(substr($nestedKey, 0, strlen($k) + 1) === ($k . ".")){
 				unset($this->nestedCache[$nestedKey]);
 			}
@@ -487,7 +487,7 @@ class Config{
 	 */
 	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;
-		foreach($default as $k => $v){
+		foreach(Utils::stringifyKeys($default) as $k => $v){
 			if(is_array($v)){
 				if(!isset($data[$k]) or !is_array($data[$k])){
 					$data[$k] = [];
@@ -536,7 +536,7 @@ class Config{
 	 */
 	public static function writeProperties(array $config) : string{
 		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
-		foreach($config as $k => $v){
+		foreach(Utils::stringifyKeys($config) as $k => $v){
 			if(is_bool($v)){
 				$v = $v ? "on" : "off";
 			}

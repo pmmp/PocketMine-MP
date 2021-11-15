@@ -123,9 +123,7 @@ class SendUsageTask extends AsyncTask{
 				];
 
 				//This anonymizes the user ids so they cannot be reversed to the original
-				foreach($playerList as $k => $v){
-					$playerList[$k] = md5($v);
-				}
+				$playerList = array_map('md5', $playerList);
 
 				$players = array_map(function(Player $p) : string{ return md5($p->getUniqueId()->getBytes()); }, $server->getOnlinePlayers());
 

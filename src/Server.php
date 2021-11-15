@@ -1201,7 +1201,7 @@ class Server{
 	 * Unsubscribes from all broadcast channels.
 	 */
 	public function unsubscribeFromAllBroadcastChannels(CommandSender $subscriber) : void{
-		foreach($this->broadcastSubscribers as $channelId => $recipients){
+		foreach(Utils::stringifyKeys($this->broadcastSubscribers) as $channelId => $recipients){
 			$this->unsubscribeFromBroadcastChannel($channelId, $subscriber);
 		}
 	}

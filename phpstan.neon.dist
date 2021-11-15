@@ -13,6 +13,7 @@ includes:
 
 rules:
 	- pocketmine\phpstan\rules\DisallowEnumComparisonRule
+	- pocketmine\phpstan\rules\UnsafeForeachArrayOfStringRule
 #	- pocketmine\phpstan\rules\ThreadedSupportedTypesRule
 
 parameters:

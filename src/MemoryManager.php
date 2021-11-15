@@ -368,7 +368,7 @@ class MemoryManager{
 				'_SESSION' => true
 			];
 
-			foreach($GLOBALS as $varName => $value){
+			foreach(Utils::stringifyKeys($GLOBALS) as $varName => $value){
 				if(isset($ignoredGlobals[$varName])){
 					continue;
 				}

@@ -233,7 +233,7 @@ final class QueryInfo{
 			$query .= $key . "\x00" . $value . "\x00";
 		}
 
-		foreach($this->extraData as $key => $value){
+		foreach(Utils::stringifyKeys($this->extraData) as $key => $value){
 			$query .= $key . "\x00" . $value . "\x00";
 		}
 

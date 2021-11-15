@@ -105,7 +105,7 @@ final class GeneratorManager{
 	 */
 	public function getGeneratorName(string $class) : string{
 		Utils::testValidInstance($class, Generator::class);
-		foreach($this->list as $name => $c){
+		foreach(Utils::stringifyKeys($this->list) as $name => $c){
 			if($c->getGeneratorClass() === $class){
 				return $name;
 			}
