@@ -30,6 +30,11 @@ use pocketmine\command\utils\CommandException;
 use pocketmine\console\ConsoleCommandSender;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\command\CommandData;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
+use pocketmine\network\mcpe\protocol\types\PlayerPermissions;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -73,6 +78,8 @@ abstract class Command{
 	/** @var TimingsHandler|null */
 	public $timings = null;
 
+	private CommandData $data;
+
 	/**
 	 * @param string[] $aliases
 	 */
@@ -82,6 +89,7 @@ abstract class Command{
 		$this->setDescription($description);
 		$this->usageMessage = $usageMessage ?? ("/" . $name);
 		$this->setAliases($aliases);
+		$this->data = $this->craftNetwork();
 	}
 
 	/**
@@ -250,5 +258,34 @@ abstract class Command{
 
 	public function __toString() : string{
 		return $this->name;
+	}
+
+	public function craftNetwork() : CommandData{
+		$lname = strtolower($this->name);
+		$aliases = $this->aliases;
+		$aliasObj = null;
+		if(count($aliases) > 0){
+			if(!in_array($lname, $aliases, true)){
+				//work around a client bug which makes the original name not show when aliases are used
+				$aliases[] = $lname;
+			}
+			$aliasObj = new CommandEnum(ucfirst($this->name) . "Aliases", array_values($aliases));
+		}
+
+		$description = $this->description;
+		return new CommandData(
+			$lname,
+			$description instanceof Translatable ? Server::getInstance()->getLanguage()->translate($description) : $description,
+			0,
+			PlayerPermissions::VISITOR,
+			$aliasObj,
+			[
+				[CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, 0, true)]
+			]
+		);
+	}
+
+	public function getData() : CommandData{
+		return $this->data;
 	}
 }

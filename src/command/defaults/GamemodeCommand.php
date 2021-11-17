@@ -27,6 +27,10 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\command\CommandData;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\GameMode;
 use pocketmine\player\Player;
@@ -85,5 +89,22 @@ class GamemodeCommand extends VanillaCommand{
 		}
 
 		return true;
+	}
+
+	public function craftNetwork() : CommandData{
+		$data = parent::craftNetwork();
+		$data->overloads = [
+			[
+				CommandParameter::enum("gameMode", new CommandEnum("gameMode", [
+					"creative", "survival", "adventure"
+				]), 0, false),
+				CommandParameter::standard("player", AvailableCommandsPacket::ARG_TYPE_TARGET)
+			],
+			[
+				CommandParameter::standard("gameMode", AvailableCommandsPacket::ARG_TYPE_INT, 0, false),
+				CommandParameter::standard("player", AvailableCommandsPacket::ARG_TYPE_TARGET)
+			]
+		];
+		return $data;
 	}
 }

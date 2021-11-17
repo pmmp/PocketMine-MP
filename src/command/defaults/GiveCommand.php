@@ -33,6 +33,10 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\nbt\JsonNbtParser;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\NbtException;
+use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
+use pocketmine\network\mcpe\protocol\types\command\CommandData;
+use pocketmine\network\mcpe\protocol\types\command\CommandEnum;
+use pocketmine\network\mcpe\protocol\types\command\CommandParameter;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\utils\TextFormat;
 use function array_slice;
@@ -104,5 +108,18 @@ class GiveCommand extends VanillaCommand{
 			$player->getName()
 		));
 		return true;
+	}
+
+	public function craftNetwork() : CommandData{
+		$data = parent::craftNetwork();
+		$data->overloads = [
+			[
+				CommandParameter::standard("player", AvailableCommandsPacket::ARG_TYPE_TARGET, 0, false),
+				CommandParameter::enum("itemName", new CommandEnum("Item", []), 0, false),
+				CommandParameter::standard("amount", AvailableCommandsPacket::ARG_TYPE_INT),
+				CommandParameter::standard("components", AvailableCommandsPacket::ARG_TYPE_JSON)
+			]
+		];
+		return $data;
 	}
 }

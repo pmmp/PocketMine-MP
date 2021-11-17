@@ -844,30 +844,7 @@ class NetworkSession{
 				continue;
 			}
 
-			$lname = strtolower($command->getName());
-			$aliases = $command->getAliases();
-			$aliasObj = null;
-			if(count($aliases) > 0){
-				if(!in_array($lname, $aliases, true)){
-					//work around a client bug which makes the original name not show when aliases are used
-					$aliases[] = $lname;
-				}
-				$aliasObj = new CommandEnum(ucfirst($command->getName()) . "Aliases", array_values($aliases));
-			}
-
-			$description = $command->getDescription();
-			$data = new CommandData(
-				$lname, //TODO: commands containing uppercase letters in the name crash 1.9.0 client
-				$description instanceof Translatable ? $this->player->getLanguage()->translate($description) : $description,
-				0,
-				0,
-				$aliasObj,
-				[
-					[CommandParameter::standard("args", AvailableCommandsPacket::ARG_TYPE_RAWTEXT, 0, true)]
-				]
-			);
-
-			$commandData[$command->getName()] = $data;
+			$commandData[$command->getName()] = $command->getData();
 		}
 
 		$this->sendDataPacket(AvailableCommandsPacket::create($commandData, [], [], []));
