@@ -42,9 +42,7 @@ use function file;
 use function file_exists;
 use function file_get_contents;
 use function fopen;
-use function fwrite;
 use function get_loaded_extensions;
-use function implode;
 use function is_dir;
 use function is_resource;
 use function json_encode;
@@ -69,7 +67,6 @@ use function zend_version;
 use function zlib_encode;
 use const FILE_IGNORE_NEW_LINES;
 use const JSON_UNESCAPED_SLASHES;
-use const PHP_EOL;
 use const PHP_OS;
 use const PHP_VERSION;
 use const SORT_STRING;
@@ -84,14 +81,12 @@ class CrashDump{
 	 */
 	private const FORMAT_VERSION = 4;
 
-	private const PLUGIN_INVOLVEMENT_NONE = "none";
-	private const PLUGIN_INVOLVEMENT_DIRECT = "direct";
-	private const PLUGIN_INVOLVEMENT_INDIRECT = "indirect";
+	public const PLUGIN_INVOLVEMENT_NONE = "none";
+	public const PLUGIN_INVOLVEMENT_DIRECT = "direct";
+	public const PLUGIN_INVOLVEMENT_INDIRECT = "indirect";
 
 	/** @var Server */
 	private $server;
-	/** @var resource */
-	private $fp;
 	/** @var float */
 	private $time;
 	private CrashDumpData $data;
@@ -112,26 +107,27 @@ class CrashDump{
 			mkdir($crashPath);
 		}
 		$this->path = Path::join($crashPath, date("D_M_j-H.i.s-T_Y", (int) $this->time) . ".log");
-		$fp = @fopen($this->path, "wb");
-		if(!is_resource($fp)){
-			throw new \RuntimeException("Could not create Crash Dump");
-		}
-		$this->fp = $fp;
+
 		$this->data = new CrashDumpData();
 		$this->data->format_version = self::FORMAT_VERSION;
 		$this->data->time = $this->time;
 		$this->data->uptime = $this->time - $this->server->getStartTime();
-		$this->addLine($this->server->getName() . " Crash Dump " . date("D M j H:i:s T Y", (int) $this->time));
-		$this->addLine();
+
 		$this->baseCrash();
 		$this->generalData();
 		$this->pluginsData();
 
 		$this->extraData();
 
-		$this->encodeData();
+		$fp = @fopen($this->path, "wb");
+		if(!is_resource($fp)){
+			throw new \RuntimeException("Could not create Crash Dump");
+		}
+		$writer = new CrashDumpRenderer($fp, $this->data);
+		$writer->renderHumanReadable();
+		$this->encodeData($writer);
 
-		fclose($this->fp);
+		fclose($fp);
 	}
 
 	public function getPath() : string{
@@ -146,11 +142,11 @@ class CrashDump{
 		return $this->data;
 	}
 
-	private function encodeData() : void{
-		$this->addLine();
-		$this->addLine("----------------------REPORT THE DATA BELOW THIS LINE-----------------------");
-		$this->addLine();
-		$this->addLine("===BEGIN CRASH DUMP===");
+	private function encodeData(CrashDumpRenderer $renderer) : void{
+		$renderer->addLine();
+		$renderer->addLine("----------------------REPORT THE DATA BELOW THIS LINE-----------------------");
+		$renderer->addLine();
+		$renderer->addLine("===BEGIN CRASH DUMP===");
 		$json = json_encode($this->data, JSON_UNESCAPED_SLASHES);
 		if($json === false){
 			throw new \RuntimeException("Failed to encode crashdump JSON: " . json_last_error_msg());
@@ -159,16 +155,14 @@ class CrashDump{
 		if($zlibEncoded === false) throw new AssumptionFailedError("ZLIB compression failed");
 		$this->encodedData = $zlibEncoded;
 		foreach(str_split(base64_encode($this->encodedData), 76) as $line){
-			$this->addLine($line);
+			$renderer->addLine($line);
 		}
-		$this->addLine("===END CRASH DUMP===");
+		$renderer->addLine("===END CRASH DUMP===");
 	}
 
 	private function pluginsData() : void{
 		if($this->pluginManager !== null){
 			$plugins = $this->pluginManager->getPlugins();
-			$this->addLine();
-			$this->addLine("Loaded plugins:");
 			ksort($plugins, SORT_STRING);
 			foreach($plugins as $p){
 				$d = $p->getDescription();
@@ -184,7 +178,6 @@ class CrashDump{
 					load: mb_strtoupper($d->getOrder()->name()),
 					website: $d->getWebsite()
 				);
-				$this->addLine($d->getName() . " " . $d->getVersion() . " by " . implode(", ", $d->getAuthors()) . " for API(s) " . implode(", ", $d->getCompatibleApis()));
 			}
 		}
 	}
@@ -250,10 +243,6 @@ class CrashDump{
 		$this->data->error = $error;
 		unset($this->data->error["fullFile"]);
 		unset($this->data->error["trace"]);
-		$this->addLine("Error: " . $error["message"]);
-		$this->addLine("File: " . $error["file"]);
-		$this->addLine("Line: " . $error["line"]);
-		$this->addLine("Type: " . $error["type"]);
 
 		$this->data->plugin_involvement = self::PLUGIN_INVOLVEMENT_NONE;
 		if(!$this->determinePluginFromFile($error["fullFile"], true)){ //fatal errors won't leave any stack trace
@@ -267,36 +256,24 @@ class CrashDump{
 			}
 		}
 
-		$this->addLine();
-		$this->addLine("Code:");
-
 		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-code", true) and file_exists($error["fullFile"])){
 			$file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
 			if($file !== false){
 				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 and isset($file[$l]); ++$l){
-					$this->addLine("[" . ($l + 1) . "] " . $file[$l]);
 					$this->data->code[$l + 1] = $file[$l];
 				}
 			}
 		}
 
-		$this->addLine();
-		$this->addLine("Backtrace:");
-		foreach(($this->data->trace = Utils::printableTrace($error["trace"])) as $line){
-			$this->addLine($line);
-		}
-		$this->addLine();
+		$this->data->trace = Utils::printableTrace($error["trace"]);
 	}
 
 	private function determinePluginFromFile(string $filePath, bool $crashFrame) : bool{
 		$frameCleanPath = Filesystem::cleanPath($filePath);
 		if(strpos($frameCleanPath, Filesystem::CLEAN_PATH_SRC_PREFIX) !== 0){
-			$this->addLine();
 			if($crashFrame){
-				$this->addLine("THIS CRASH WAS CAUSED BY A PLUGIN");
 				$this->data->plugin_involvement = self::PLUGIN_INVOLVEMENT_DIRECT;
 			}else{
-				$this->addLine("A PLUGIN WAS INVOLVED IN THIS CRASH");
 				$this->data->plugin_involvement = self::PLUGIN_INVOLVEMENT_INDIRECT;
 			}
 
@@ -308,7 +285,6 @@ class CrashDump{
 					$filePath = Filesystem::cleanPath($file->getValue($plugin));
 					if(strpos($frameCleanPath, $filePath) === 0){
 						$this->data->plugin = $plugin->getName();
-						$this->addLine("BAD PLUGIN: " . $plugin->getDescription()->getFullName());
 						break;
 					}
 				}
@@ -319,7 +295,6 @@ class CrashDump{
 	}
 
 	private function generalData() : void{
-		$version = VersionInfo::VERSION();
 		$composerLibraries = [];
 		foreach(InstalledVersions::getInstalledPackages() as $package){
 			$composerLibraries[$package] = sprintf(
@@ -343,29 +318,5 @@ class CrashDump{
 			os: Utils::getOS(),
 			composer_libraries: $composerLibraries,
 		);
-		$this->addLine($this->server->getName() . " version: " . $version->getFullVersion(true) . " [Protocol " . ProtocolInfo::CURRENT_PROTOCOL . "]");
-		$this->addLine("Git commit: " . VersionInfo::GIT_HASH());
-		$this->addLine("uname -a: " . php_uname("a"));
-		$this->addLine("PHP Version: " . phpversion());
-		$this->addLine("Zend version: " . zend_version());
-		$this->addLine("OS: " . PHP_OS . ", " . Utils::getOS());
-		$this->addLine("Composer libraries: ");
-		foreach(Utils::stringifyKeys($composerLibraries) as $library => $libraryVersion){
-			$this->addLine("- $library $libraryVersion");
-		}
-	}
-
-	/**
-	 * @param string $line
-	 */
-	public function addLine($line = "") : void{
-		fwrite($this->fp, $line . PHP_EOL);
-	}
-
-	/**
-	 * @param string $str
-	 */
-	public function add($str) : void{
-		fwrite($this->fp, $str);
 	}
 }
