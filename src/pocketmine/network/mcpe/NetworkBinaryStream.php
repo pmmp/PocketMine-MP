@@ -786,8 +786,8 @@ class NetworkBinaryStream extends BinaryStream{
 		$result->lastTouchedByPlayerID = $this->getEntityUniqueId();
 		$result->rotation = $this->getByte();
 		$result->mirror = $this->getByte();
-		$result->integrityValue = $this->getFloat();
-		$result->integritySeed = $this->getInt();
+		$result->integrityValue = $this->getLFloat();
+		$result->integritySeed = $this->getLInt();
 		$result->pivot = $this->getVector3();
 
 		return $result;
@@ -805,8 +805,8 @@ class NetworkBinaryStream extends BinaryStream{
 		$this->putEntityUniqueId($structureSettings->lastTouchedByPlayerID);
 		$this->putByte($structureSettings->rotation);
 		$this->putByte($structureSettings->mirror);
-		$this->putFloat($structureSettings->integrityValue);
-		$this->putInt($structureSettings->integritySeed);
+		$this->putLFloat($structureSettings->integrityValue);
+		$this->putLInt($structureSettings->integritySeed);
 		$this->putVector3($structureSettings->pivot);
 	}
 
