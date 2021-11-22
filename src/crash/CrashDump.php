@@ -64,6 +64,7 @@ use const JSON_UNESCAPED_SLASHES;
 use const PHP_OS;
 use const PHP_VERSION;
 use const SORT_STRING;
+use const ZLIB_ENCODING_DEFLATE;
 
 class CrashDump{
 
@@ -102,6 +103,14 @@ class CrashDump{
 		$this->pluginsData();
 
 		$this->extraData();
+
+		$json = json_encode($this->data, JSON_UNESCAPED_SLASHES);
+		if($json === false){
+			throw new \RuntimeException("Failed to encode crashdump JSON: " . json_last_error_msg());
+		}
+		$zlibEncoded = zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9);
+		if($zlibEncoded === false) throw new AssumptionFailedError("ZLIB compression failed");
+		$this->encodedData = $zlibEncoded;
 	}
 
 	public function getEncodedData() : string{
@@ -117,13 +126,6 @@ class CrashDump{
 		$renderer->addLine("----------------------REPORT THE DATA BELOW THIS LINE-----------------------");
 		$renderer->addLine();
 		$renderer->addLine("===BEGIN CRASH DUMP===");
-		$json = json_encode($this->data, JSON_UNESCAPED_SLASHES);
-		if($json === false){
-			throw new \RuntimeException("Failed to encode crashdump JSON: " . json_last_error_msg());
-		}
-		$zlibEncoded = zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9);
-		if($zlibEncoded === false) throw new AssumptionFailedError("ZLIB compression failed");
-		$this->encodedData = $zlibEncoded;
 		foreach(str_split(base64_encode($this->encodedData), 76) as $line){
 			$renderer->addLine($line);
 		}
