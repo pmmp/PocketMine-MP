@@ -35,23 +35,17 @@ use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use Webmozart\PathUtil\Path;
 use function base64_encode;
-use function date;
 use function error_get_last;
-use function fclose;
 use function file;
 use function file_exists;
 use function file_get_contents;
-use function fopen;
 use function get_loaded_extensions;
-use function is_dir;
-use function is_resource;
 use function json_encode;
 use function json_last_error_msg;
 use function ksort;
 use function max;
 use function mb_strtoupper;
 use function microtime;
-use function mkdir;
 use function ob_end_clean;
 use function ob_get_contents;
 use function ob_start;
@@ -87,51 +81,27 @@ class CrashDump{
 
 	/** @var Server */
 	private $server;
-	/** @var float */
-	private $time;
 	private CrashDumpData $data;
 	/** @var string */
 	private $encodedData;
-	/** @var string */
-	private $path;
 
 	private ?PluginManager $pluginManager;
 
 	public function __construct(Server $server, ?PluginManager $pluginManager){
-		$this->time = microtime(true);
+		$now = microtime(true);
 		$this->server = $server;
 		$this->pluginManager = $pluginManager;
 
-		$crashPath = Path::join($this->server->getDataPath(), "crashdumps");
-		if(!is_dir($crashPath)){
-			mkdir($crashPath);
-		}
-		$this->path = Path::join($crashPath, date("D_M_j-H.i.s-T_Y", (int) $this->time) . ".log");
-
 		$this->data = new CrashDumpData();
 		$this->data->format_version = self::FORMAT_VERSION;
-		$this->data->time = $this->time;
-		$this->data->uptime = $this->time - $this->server->getStartTime();
+		$this->data->time = $now;
+		$this->data->uptime = $now - $this->server->getStartTime();
 
 		$this->baseCrash();
 		$this->generalData();
 		$this->pluginsData();
 
 		$this->extraData();
-
-		$fp = @fopen($this->path, "wb");
-		if(!is_resource($fp)){
-			throw new \RuntimeException("Could not create Crash Dump");
-		}
-		$writer = new CrashDumpRenderer($fp, $this->data);
-		$writer->renderHumanReadable();
-		$this->encodeData($writer);
-
-		fclose($fp);
-	}
-
-	public function getPath() : string{
-		return $this->path;
 	}
 
 	public function getEncodedData() : string{
@@ -142,7 +112,7 @@ class CrashDump{
 		return $this->data;
 	}
 
-	private function encodeData(CrashDumpRenderer $renderer) : void{
+	public function encodeData(CrashDumpRenderer $renderer) : void{
 		$renderer->addLine();
 		$renderer->addLine("----------------------REPORT THE DATA BELOW THIS LINE-----------------------");
 		$renderer->addLine();
