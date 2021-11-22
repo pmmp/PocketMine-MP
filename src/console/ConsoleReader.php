@@ -25,6 +25,7 @@ namespace pocketmine\console;
 
 use pocketmine\utils\AssumptionFailedError;
 use function fclose;
+use function fgets;
 use function fopen;
 use function stream_select;
 use function trim;
