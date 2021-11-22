@@ -116,6 +116,9 @@ final class ConsoleReaderThread extends Thread{
 
 				$command = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", trim($command)) ?? throw new AssumptionFailedError("This regex is assumed to be valid");
 				$command = preg_replace('/[[:cntrl:]]/', '', $command) ?? throw new AssumptionFailedError("This regex is assumed to be valid");
+				if($command === ""){
+					continue;
+				}
 				$buffer[] = $command;
 				if($notifier !== null){
 					$notifier->wakeupSleeper();
