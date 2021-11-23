@@ -51,7 +51,7 @@ trait LegacyAnvilChunkTrait{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function deserializeChunk(string $data) : ChunkData{
+	protected function deserializeChunk(string $data) : ?ChunkData{
 		$decompressed = @zlib_decode($data);
 		if($decompressed === false){
 			throw new CorruptedChunkException("Failed to decompress chunk NBT");

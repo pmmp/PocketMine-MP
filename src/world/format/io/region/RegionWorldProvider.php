@@ -146,7 +146,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	abstract protected function deserializeChunk(string $data) : ChunkData;
+	abstract protected function deserializeChunk(string $data) : ?ChunkData;
 
 	/**
 	 * @return CompoundTag[]
