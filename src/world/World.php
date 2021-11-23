@@ -36,6 +36,7 @@ use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
@@ -57,7 +58,6 @@ use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
@@ -2472,7 +2472,7 @@ class World implements ChunkManager{
 			foreach($chunkData->getEntityNBT() as $k => $nbt){
 				try{
 					$entity = $entityFactory->createFromData($this, $nbt);
-				}catch(NbtDataException $e){
+				}catch(SavedDataLoadingException $e){
 					$logger->error("Bad entity data at list position $k: " . $e->getMessage());
 					$logger->logException($e);
 					continue;
@@ -2500,7 +2500,7 @@ class World implements ChunkManager{
 			foreach($chunkData->getTileNBT() as $k => $nbt){
 				try{
 					$tile = $tileFactory->createFromData($this, $nbt);
-				}catch(NbtDataException $e){
+				}catch(SavedDataLoadingException $e){
 					$logger->error("Bad tile entity data at list position $k: " . $e->getMessage());
 					$logger->logException($e);
 					continue;
