@@ -74,10 +74,6 @@ final class ItemTranslator{
 			throw new AssumptionFailedError("Invalid item table format");
 		}
 
-		$legacyStringToIntMapRaw = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'item_id_map.json'));
-		if($legacyStringToIntMapRaw === false){
-			throw new AssumptionFailedError("Missing required resource file");
-		}
 		$legacyStringToIntMap = LegacyItemIdToStringIdMap::getInstance();
 
 		/** @phpstan-var array<string, int> $simpleMappings */
