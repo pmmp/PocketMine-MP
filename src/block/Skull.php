@@ -124,12 +124,13 @@ class Skull extends Flowable{
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
+		$collisionBox = AxisAlignedBB::one()->contract(0.25, 0, 0.25)->trim(Facing::UP, 0.5);
 		return match ($this->facing) {
-			Facing::NORTH => [AxisAlignedBB::one()->contract(0.25, 0.25, 0.0)->trim(Facing::NORTH, 0.5)],
-			Facing::SOUTH => [AxisAlignedBB::one()->contract(0.25, 0.25, 0.0)->trim(Facing::SOUTH, 0.5)],
-			Facing::WEST => [AxisAlignedBB::one()->contract(0.0, 0.25, 0.25)->trim(Facing::WEST, 0.5)],
-			Facing::EAST => [AxisAlignedBB::one()->contract(0.0, 0.25, 0.25)->trim(Facing::EAST, 0.5)],
-			default => [AxisAlignedBB::one()->contract(0.25, 0, 0.25)->trim(Facing::UP, 0.5)]
+			Facing::NORTH => [$collisionBox->offset(0, 0.25, 0.25)],
+			Facing::SOUTH => [$collisionBox->offset(0, 0.25, -0.25)],
+			Facing::WEST => [$collisionBox->offset(0.25, 0.25, 0)],
+			Facing::EAST => [$collisionBox->offset(-0.25, 0.25, 0)],
+			default => [$collisionBox]
 		};
 	}
 
