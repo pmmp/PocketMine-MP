@@ -33,3 +33,6 @@ define('pocketmine\GIT_COMMIT', str_repeat('00', 20));
 define('pocketmine\PLUGIN_PATH', '');
 define('pocketmine\START_TIME', microtime(true));
 define('pocketmine\VERSION', '9.9.9');
+
+//opcache breaks PHPStan when dynamic reflection is used - see https://github.com/phpstan/phpstan-src/pull/801#issuecomment-978431013
+ini_set('opcache.enable', 'off');
