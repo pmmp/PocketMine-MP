@@ -124,8 +124,14 @@ class Skull extends Flowable{
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
-		//TODO: different bounds depending on attached face
-		return [AxisAlignedBB::one()->contract(0.25, 0, 0.25)->trim(Facing::UP, 0.5)];
+		$collisionBox = AxisAlignedBB::one()->contract(0.25, 0, 0.25)->trim(Facing::UP, 0.5);
+		return match($this->facing){
+			Facing::NORTH => [$collisionBox->offset(0, 0.25, 0.25)],
+			Facing::SOUTH => [$collisionBox->offset(0, 0.25, -0.25)],
+			Facing::WEST => [$collisionBox->offset(0.25, 0.25, 0)],
+			Facing::EAST => [$collisionBox->offset(-0.25, 0.25, 0)],
+			default => [$collisionBox]
+		};
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
