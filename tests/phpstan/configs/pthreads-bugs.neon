@@ -1,7 +1,0 @@
-parameters:
-	ignoreErrors:
-		-
-			message: "#^Variable \\$GLOBALS in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: ../../../src/pocketmine/MemoryManager.php
-
