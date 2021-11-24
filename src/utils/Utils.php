@@ -506,7 +506,7 @@ final class Utils{
 		if($rawDocComment === false){ //usually empty doc comment, but this is safer and statically analysable
 			return [];
 		}
-		preg_match_all('/(*ANYCRLF)^[\t ]*(?:\* )?@([a-zA-Z]+)(?:[\t ]+(.+?))?[\t ]*$/m', $rawDocComment, $matches);
+		preg_match_all('/(*ANYCRLF)^[\t ]*(?:\* )?@([a-zA-Z\-]+)(?:[\t ]+(.+?))?[\t ]*$/m', $rawDocComment, $matches);
 
 		return array_combine($matches[1], $matches[2]);
 	}
