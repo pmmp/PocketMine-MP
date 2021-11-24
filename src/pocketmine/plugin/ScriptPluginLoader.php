@@ -64,8 +64,12 @@ class ScriptPluginLoader implements PluginLoader{
 
 		$insideHeader = false;
 		foreach($content as $line){
-			if(!$insideHeader and strpos($line, "/**") !== false){
-				$insideHeader = true;
+			if(!$insideHeader){
+				if(strpos($line, "/**") !== false){
+					$insideHeader = true;
+				}else{
+					continue;
+				}
 			}
 
 			if(preg_match("/^[ \t]+\\*[ \t]+@([a-zA-Z]+)([ \t]+(.*))?$/", $line, $matches) > 0){
@@ -79,7 +83,7 @@ class ScriptPluginLoader implements PluginLoader{
 				$data[$key] = $content;
 			}
 
-			if($insideHeader and strpos($line, "*/") !== false){
+			if(strpos($line, "*/") !== false){
 				break;
 			}
 		}
