@@ -23,13 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use pocketmine\utils\Utils;
+use function count;
 use function file;
+use function implode;
 use function is_file;
-use function preg_match;
 use function strlen;
 use function strpos;
 use function substr;
-use function trim;
 use const FILE_IGNORE_NEW_LINES;
 use const FILE_SKIP_EMPTY_LINES;
 
@@ -60,30 +61,27 @@ class ScriptPluginLoader implements PluginLoader{
 			return null;
 		}
 
-		$data = [];
-
 		$insideHeader = false;
+
+		$docCommentLines = [];
 		foreach($content as $line){
-			if(!$insideHeader and strpos($line, "/**") !== false){
-				$insideHeader = true;
-			}
-
-			if(preg_match("/^[ \t]+\\*[ \t]+@([a-zA-Z]+)([ \t]+(.*))?$/", $line, $matches) > 0){
-				$key = $matches[1];
-				$content = trim($matches[3] ?? "");
-
-				if($key === "notscript"){
-					return null;
+			if(!$insideHeader){
+				if(strpos($line, "/**") !== false){
+					$insideHeader = true;
+				}else{
+					continue;
 				}
-
-				$data[$key] = $content;
 			}
 
-			if($insideHeader and strpos($line, "*/") !== false){
+			$docCommentLines[] = $line;
+
+			if(strpos($line, "*/") !== false){
 				break;
 			}
 		}
-		if($insideHeader){
+
+		$data = Utils::parseDocComment(implode("\n", $docCommentLines));
+		if(count($data) !== 0){
 			return new PluginDescription($data);
 		}
 
