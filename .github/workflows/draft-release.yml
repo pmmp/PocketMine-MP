@@ -38,7 +38,7 @@ jobs:
       - name: Calculate build number
         id: build-number
         run: |
-          BUILD_NUMBER=2000+$GITHUB_RUN_NUMBER #to stay above jenkins
+          BUILD_NUMBER=$((2000+$GITHUB_RUN_NUMBER)) #to stay above jenkins
           echo "Build number: $BUILD_NUMBER"
           echo ::set-output name=BUILD_NUMBER::$BUILD_NUMBER
 
