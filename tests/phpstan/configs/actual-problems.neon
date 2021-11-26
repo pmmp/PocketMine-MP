@@ -496,6 +496,11 @@ parameters:
 			path: ../../../src/pocketmine/PocketMine.php
 
 		-
+			message: "#^Cannot access offset 'build' on mixed\\.$#"
+			count: 3
+			path: ../../../src/pocketmine/PocketMine.php
+
+		-
 			message: "#^Cannot access offset 'git' on mixed\\.$#"
 			count: 2
 			path: ../../../src/pocketmine/PocketMine.php
