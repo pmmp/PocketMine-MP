@@ -466,16 +466,6 @@ parameters:
 			path: ../../../src/command/SimpleCommandMap.php
 
 		-
-			message: "#^Only booleans are allowed in an if condition, int\\|false given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanIpCommand.php
-
-		-
-			message: "#^Only booleans are allowed in an if condition, int\\|false given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/PardonIpCommand.php
-
-		-
 			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/ParticleCommand.php
@@ -514,11 +504,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$stream of function stream_get_contents expects resource, resource\\|false given\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/TimingsCommand.php
-
-		-
-			message: "#^Property pocketmine\\\\console\\\\ConsoleReader\\:\\:\\$stdin \\(resource\\) does not accept resource\\|false\\.$#"
-			count: 1
-			path: ../../../src/console/ConsoleReader.php
 
 		-
 			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
@@ -1448,11 +1433,6 @@ parameters:
 		-
 			message: "#^Cannot call method getSubChunk\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 2
-			path: ../../../src/world/light/SkyLightUpdate.php
-
-		-
-			message: "#^Cannot call method getSubChunks\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-

@@ -163,7 +163,8 @@ final class Filesystem{
 		$result = str_replace([DIRECTORY_SEPARATOR, ".php", "phar://"], ["/", "", ""], $path);
 
 		//remove relative paths
-		foreach(self::$cleanedPaths as $cleanPath => $replacement){
+		//this should probably never have integer keys, but it's safer than making PHPStan ignore it
+		foreach(Utils::stringifyKeys(self::$cleanedPaths) as $cleanPath => $replacement){
 			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
 			if(strpos($result, $cleanPath) === 0){
 				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");

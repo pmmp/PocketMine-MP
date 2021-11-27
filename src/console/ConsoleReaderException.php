@@ -21,15 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\console;
 
-use pocketmine\item\Item;
+final class ConsoleReaderException extends \RuntimeException{
 
-class Podzol extends Opaque{
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaBlocks::DIRT()->asItem()
-		];
-	}
 }

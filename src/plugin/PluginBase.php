@@ -32,6 +32,7 @@ use pocketmine\scheduler\TaskScheduler;
 use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Config;
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function count;
 use function dirname;
@@ -162,9 +163,9 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	private function registerYamlCommands() : void{
 		$pluginCmds = [];
 
-		foreach($this->getDescription()->getCommands() as $key => $data){
+		foreach(Utils::stringifyKeys($this->getDescription()->getCommands()) as $key => $data){
 			if(strpos($key, ":") !== false){
-				$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_commandError($key, $this->getDescription()->getFullName())));
+				$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_commandError($key, $this->getDescription()->getFullName(), ":")));
 				continue;
 			}
 
@@ -180,7 +181,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			$aliasList = [];
 			foreach($data->getAliases() as $alias){
 				if(strpos($alias, ":") !== false){
-					$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_aliasError($alias, $this->getDescription()->getFullName())));
+					$this->logger->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_aliasError($alias, $this->getDescription()->getFullName(), ":")));
 					continue;
 				}
 				$aliasList[] = $alias;

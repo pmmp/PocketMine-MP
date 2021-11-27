@@ -28,3 +28,6 @@ if(!defined('LEVELDB_ZLIB_RAW_COMPRESSION')){
 if(!extension_loaded('libdeflate')){
 	function libdeflate_deflate_compress(string $data, int $level = 6) : string{}
 }
+
+//opcache breaks PHPStan when dynamic reflection is used - see https://github.com/phpstan/phpstan-src/pull/801#issuecomment-978431013
+ini_set('opcache.enable', 'off');

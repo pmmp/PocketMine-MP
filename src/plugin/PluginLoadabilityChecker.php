@@ -76,7 +76,7 @@ final class PluginLoadabilityChecker{
 			}
 		}
 
-		foreach($description->getRequiredExtensions() as $extensionName => $versionConstrs){
+		foreach(Utils::stringifyKeys($description->getRequiredExtensions()) as $extensionName => $versionConstrs){
 			$gotVersion = phpversion($extensionName);
 			if($gotVersion === false){
 				return KnownTranslationFactory::pocketmine_plugin_extensionNotLoaded($extensionName);

@@ -23,15 +23,15 @@ declare(strict_types=1);
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-if(count($argv) !== 4){
-	fwrite(STDERR, "required args: <git hash> <tag name> <github repo (owner/name)>");
+if(count($argv) !== 5){
+	fwrite(STDERR, "required args: <git hash> <tag name> <github repo (owner/name)> <build number>");
 	exit(1);
 }
 
 echo json_encode([
 	"php_version" => sprintf("%d.%d", PHP_MAJOR_VERSION, PHP_MINOR_VERSION),
 	"base_version" => \pocketmine\VersionInfo::BASE_VERSION,
-	"build" => \pocketmine\VersionInfo::BUILD_NUMBER,
+	"build" => (int) $argv[4],
 	"is_dev" => \pocketmine\VersionInfo::IS_DEVELOPMENT_BUILD,
 	"channel" => \pocketmine\VersionInfo::BUILD_CHANNEL,
 	"git_commit" => $argv[1],

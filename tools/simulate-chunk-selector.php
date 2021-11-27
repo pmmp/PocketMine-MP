@@ -6,6 +6,7 @@ namespace pocketmine\tools\simulate_chunk_selector;
 
 use pocketmine\player\ChunkSelector;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
 use Webmozart\PathUtil\Path;
@@ -115,7 +116,7 @@ if(count(getopt("", ["help"])) !== 0){
 	exit(0);
 }
 
-foreach(getopt("", ["radius:", "baseX:", "baseZ:", "scale:", "chunksPerStep:"]) as $name => $value){
+foreach(Utils::stringifyKeys(getopt("", ["radius:", "baseX:", "baseZ:", "scale:", "chunksPerStep:"])) as $name => $value){
 	if(!is_string($value) || (string) ((int) $value) !== $value){
 		fwrite(STDERR, "Value for --$name must be an integer\n");
 		exit(1);
@@ -136,7 +137,7 @@ if($radius === null){
 }
 
 $outputDirectory = null;
-foreach(getopt("", ["output:"]) as $name => $value){
+foreach(Utils::stringifyKeys(getopt("", ["output:"])) as $name => $value){
 	assert($name === "output");
 	if(!is_string($value)){
 		fwrite(STDERR, "Value for --$name must be a string\n");

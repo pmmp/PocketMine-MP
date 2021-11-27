@@ -36,6 +36,7 @@ use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
@@ -58,7 +59,6 @@ use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
@@ -2535,13 +2535,34 @@ class World implements ChunkManager{
 
 	private function initChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{
 		$logger = new \PrefixedLogger($this->logger, "Loading chunk $chunkX $chunkZ");
+
+		$this->timings->syncChunkLoadFixInvalidBlocks->startTiming();
+		$blockFactory = BlockFactory::getInstance();
+		$invalidBlocks = 0;
+		foreach($chunkData->getChunk()->getSubChunks() as $subChunk){
+			foreach($subChunk->getBlockLayers() as $blockLayer){
+				foreach($blockLayer->getPalette() as $blockStateId){
+					$mappedStateId = $blockFactory->getMappedStateId($blockStateId);
+					if($mappedStateId !== $blockStateId){
+						$blockLayer->replaceAll($blockStateId, $mappedStateId);
+						$invalidBlocks++;
+					}
+				}
+			}
+		}
+		if($invalidBlocks > 0){
+			$logger->debug("Fixed $invalidBlocks invalid blockstates");
+			$chunkData->getChunk()->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BLOCKS, true);
+		}
+		$this->timings->syncChunkLoadFixInvalidBlocks->stopTiming();
+
 		if(count($chunkData->getEntityNBT()) !== 0){
 			$this->timings->syncChunkLoadEntities->startTiming();
 			$entityFactory = EntityFactory::getInstance();
 			foreach($chunkData->getEntityNBT() as $k => $nbt){
 				try{
 					$entity = $entityFactory->createFromData($this, $nbt);
-				}catch(NbtDataException $e){
+				}catch(SavedDataLoadingException $e){
 					$logger->error("Bad entity data at list position $k: " . $e->getMessage());
 					$logger->logException($e);
 					continue;
@@ -2569,7 +2590,7 @@ class World implements ChunkManager{
 			foreach($chunkData->getTileNBT() as $k => $nbt){
 				try{
 					$tile = $tileFactory->createFromData($this, $nbt);
-				}catch(NbtDataException $e){
+				}catch(SavedDataLoadingException $e){
 					$logger->error("Bad tile entity data at list position $k: " . $e->getMessage());
 					$logger->logException($e);
 					continue;

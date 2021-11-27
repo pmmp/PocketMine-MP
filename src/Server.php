@@ -35,6 +35,7 @@ use pocketmine\console\ConsoleReaderThread;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\crash\CrashDump;
+use pocketmine\crash\CrashDumpRenderer;
 use pocketmine\data\java\GameModeIdMap;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\Location;
@@ -121,13 +122,18 @@ use function base64_encode;
 use function cli_set_process_title;
 use function copy;
 use function count;
+use function date;
+use function fclose;
 use function file_exists;
 use function file_get_contents;
 use function file_put_contents;
 use function filemtime;
+use function fopen;
 use function get_class;
 use function ini_set;
 use function is_array;
+use function is_dir;
+use function is_resource;
 use function is_string;
 use function json_decode;
 use function max;
@@ -1201,7 +1207,7 @@ class Server{
 	 * Unsubscribes from all broadcast channels.
 	 */
 	public function unsubscribeFromAllBroadcastChannels(CommandSender $subscriber) : void{
-		foreach($this->broadcastSubscribers as $channelId => $recipients){
+		foreach(Utils::stringifyKeys($this->broadcastSubscribers) as $channelId => $recipients){
 			$this->unsubscribeFromBroadcastChannel($channelId, $subscriber);
 		}
 	}
@@ -1505,6 +1511,25 @@ class Server{
 		$this->crashDump();
 	}
 
+	private function writeCrashDumpFile(CrashDump $dump) : string{
+		$crashFolder = Path::join($this->getDataPath(), "crashdumps");
+		if(!is_dir($crashFolder)){
+			mkdir($crashFolder);
+		}
+		$crashDumpPath = Path::join($crashFolder, date("D_M_j-H.i.s-T_Y", (int) $dump->getData()->time) . ".log");
+
+		$fp = @fopen($crashDumpPath, "wb");
+		if(!is_resource($fp)){
+			throw new \RuntimeException("Unable to open new file to generate crashdump");
+		}
+		$writer = new CrashDumpRenderer($fp, $dump->getData());
+		$writer->renderHumanReadable();
+		$dump->encodeData($writer);
+
+		fclose($fp);
+		return $crashDumpPath;
+	}
+
 	public function crashDump() : void{
 		while(@ob_end_flush()){}
 		if(!$this->isRunning){
@@ -1521,7 +1546,9 @@ class Server{
 			$this->logger->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_crash_create()));
 			$dump = new CrashDump($this, $this->pluginManager ?? null);
 
-			$this->logger->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_crash_submit($dump->getPath())));
+			$crashDumpPath = $this->writeCrashDumpFile($dump);
+
+			$this->logger->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_crash_submit($crashDumpPath)));
 
 			if($this->configGroup->getPropertyBool("auto-report.enabled", true)){
 				$report = true;
