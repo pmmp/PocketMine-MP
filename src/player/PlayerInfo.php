@@ -32,53 +32,65 @@ use Ramsey\Uuid\UuidInterface;
  */
 class PlayerInfo{
 
-	/** @var string */
-	private $username;
-	/** @var UuidInterface */
-	private $uuid;
-	/** @var Skin */
-	private $skin;
-	/** @var string */
-	private $locale;
-	/**
-	 * @var mixed[]
-	 * @phpstan-var array<string, mixed>
-	 */
-	private $extraData;
+    public const DEVICEOS_ANDROID = 1;
+    public const DEVICEOS_IOS = 2;
+    public const DEVICEOS_OSX = 3;
+    public const DEVICEOS_FIREOS = 4;
+    public const DEVICEOS_GEARVR = 5;
+    public const DEVICEOS_HOLOLENS = 6;
+    public const DEVICEOS_WIN10 = 7;
+    public const DEVICEOS_WIN32 = 8;
+    public const DEVICEOS_DEDICATED = 9;
+    public const DEVICEOS_ORBIS = 10;
+    public const DEVICEOS_NX = 11;
 
-	/**
-	 * @param mixed[] $extraData
-	 * @phpstan-param array<string, mixed> $extraData
-	 */
-	public function __construct(string $username, UuidInterface $uuid, Skin $skin, string $locale, array $extraData = []){
-		$this->username = TextFormat::clean($username);
-		$this->uuid = $uuid;
-		$this->skin = $skin;
-		$this->locale = $locale;
-		$this->extraData = $extraData;
-	}
+    /** @var string */
+    private $username;
+    /** @var UuidInterface */
+    private $uuid;
+    /** @var Skin */
+    private $skin;
+    /** @var string */
+    private $locale;
+    /**
+     * @var mixed[]
+     * @phpstan-var array<string, mixed>
+     */
+    private $extraData;
 
-	public function getUsername() : string{
-		return $this->username;
-	}
+    /**
+     * @param mixed[] $extraData
+     * @phpstan-param array<string, mixed> $extraData
+     */
+    public function __construct(string $username, UuidInterface $uuid, Skin $skin, string $locale, array $extraData = []){
+        $this->username = TextFormat::clean($username);
+        $this->uuid = $uuid;
+        $this->skin = $skin;
+        $this->locale = $locale;
+        $this->extraData = $extraData;
+    }
 
-	public function getUuid() : UuidInterface{
-		return $this->uuid;
-	}
+    public function getUsername() : string{
+        return $this->username;
+    }
 
-	public function getSkin() : Skin{
-		return $this->skin;
-	}
+    public function getUuid() : UuidInterface{
+        return $this->uuid;
+    }
 
-	public function getLocale() : string{
-		return $this->locale;
-	}
+    public function getSkin() : Skin{
+        return $this->skin;
+    }
 
-	/**
-	 * @return mixed[]
-	 * @phpstan-return array<string, mixed>
-	 */
-	public function getExtraData() : array{
-		return $this->extraData;
-	}
+    public function getLocale() : string{
+        return $this->locale;
+    }
+
+    /**
+     * @return mixed[]
+     * @phpstan-return array<string, mixed>
+     */
+    public function getExtraData() : array{
+        return $this->extraData;
+    }
 }
