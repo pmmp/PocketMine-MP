@@ -45,6 +45,7 @@ class WorldTimings{
 
 	public TimingsHandler $syncChunkLoad;
 	public TimingsHandler $syncChunkLoadData;
+	public TimingsHandler $syncChunkLoadFixInvalidBlocks;
 	public TimingsHandler $syncChunkLoadEntities;
 	public TimingsHandler $syncChunkLoadTileEntities;
 	public TimingsHandler $syncChunkSave;
@@ -69,6 +70,7 @@ class WorldTimings{
 
 		$this->syncChunkLoad = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Chunk Load", Timings::$worldLoad);
 		$this->syncChunkLoadData = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Chunk Load - Data");
+		$this->syncChunkLoadFixInvalidBlocks = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Chunk Load - Fix Invalid Blocks");
 		$this->syncChunkLoadEntities = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Chunk Load - Entities");
 		$this->syncChunkLoadTileEntities = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Chunk Load - TileEntities");
 		$this->syncChunkSave = new TimingsHandler(Timings::INCLUDED_BY_OTHER_TIMINGS_PREFIX . $name . "Chunk Save", Timings::$worldSave);

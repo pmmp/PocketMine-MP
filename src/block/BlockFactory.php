@@ -79,6 +79,12 @@ class BlockFactory{
 	 * @var \SplFixedArray|int[]
 	 * @phpstan-var \SplFixedArray<int>
 	 */
+	private \SplFixedArray $mappedStateIds;
+
+	/**
+	 * @var \SplFixedArray|int[]
+	 * @phpstan-var \SplFixedArray<int>
+	 */
 	public $light;
 	/**
 	 * @var \SplFixedArray|int[]
@@ -98,6 +104,7 @@ class BlockFactory{
 
 	public function __construct(){
 		$this->fullList = new \SplFixedArray(1024 << Block::INTERNAL_METADATA_BITS);
+		$this->mappedStateIds = new \SplFixedArray(1024 << Block::INTERNAL_METADATA_BITS);
 
 		$this->light = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 0));
 		$this->lightFilter = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 1));
@@ -948,6 +955,7 @@ class BlockFactory{
 
 	private function fillStaticArrays(int $index, Block $block) : void{
 		$this->fullList[$index] = $block;
+		$this->mappedStateIds[$index] = $block->getFullId();
 		$this->light[$index] = $block->getLightLevel();
 		$this->lightFilter[$index] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
 		$this->blocksDirectSkyLight[$index] = $block->blocksDirectSkyLight();
@@ -996,5 +1004,13 @@ class BlockFactory{
 	 */
 	public function getAllKnownStates() : array{
 		return array_filter($this->fullList->toArray(), function(?Block $v) : bool{ return $v !== null; });
+	}
+
+	/**
+	 * Returns the ID of the state mapped to the given state ID.
+	 * Used to correct invalid blockstates found in loaded chunks.
+	 */
+	public function getMappedStateId(int $fullState) : int{
+		return $this->mappedStateIds[$fullState] ?? $fullState;
 	}
 }
