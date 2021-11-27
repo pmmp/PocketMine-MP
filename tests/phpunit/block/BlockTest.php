@@ -107,7 +107,6 @@ class BlockTest extends TestCase{
 	public function blockGetProvider() : array{
 		return [
 			[BlockLegacyIds::STONE, 5],
-			[BlockLegacyIds::STONE, 15],
 			[BlockLegacyIds::GOLD_BLOCK, 0],
 			[BlockLegacyIds::WOODEN_PLANKS, 5],
 			[BlockLegacyIds::SAND, 0],
