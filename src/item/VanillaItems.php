@@ -368,6 +368,17 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Dye YELLOW_DYE()
  * @method static Skull ZOMBIE_HEAD()
  * @method static SpawnEgg ZOMBIE_SPAWN_EGG()
+ * @method static Item NETHERITE_INGOT()
+ * @method static Item NETHERITE_SCRAP()
+ * @method static Axe NETHERITE_AXE()
+ * @method static Armor NETHERITE_BOOTS()
+ * @method static Armor NETHERITE_CHESTPLATE()
+ * @method static Armor NETHERITE_HELMET()
+ * @method static Hoe NETHERITE_HOE()
+ * @method static Armor NETHERITE_LEGGINGS()
+ * @method static Pickaxe NETHERITE_PICKAXE()
+ * @method static Shovel NETHERITE_SHOVEL()
+ * @method static Sword NETHERITE_SWORD()
  */
 final class VanillaItems{
 	use CloningRegistryTrait;
@@ -729,5 +740,16 @@ final class VanillaItems{
 		self::register("yellow_dye", $factory->get(351, 11));
 		self::register("zombie_head", $factory->get(397, 2));
 		self::register("zombie_spawn_egg", $factory->get(383, 32));
+		self::register("netherite_ingot", $factory->get(742));
+		self::register("netherite_scrap", $factory->get(752));
+		self::register("netherite_axe", $factory->get(746));
+		self::register("netherite_boots", $factory->get(751));
+		self::register("netherite_chestplate", $factory->get(749));
+		self::register("netherite_helmet", $factory->get(748));
+		self::register("netherite_hoe", $factory->get(747));
+		self::register("netherite_leggings", $factory->get(750));
+		self::register("netherite_pickaxe", $factory->get(745));
+		self::register("netherite_shovel", $factory->get(744));
+		self::register("netherite_sword", $factory->get(743));
 	}
 }
