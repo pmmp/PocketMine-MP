@@ -31,6 +31,7 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
+ * @method static ToolTier NETHERITE()
  * @method static ToolTier DIAMOND()
  * @method static ToolTier GOLD()
  * @method static ToolTier IRON()
@@ -44,11 +45,12 @@ final class ToolTier{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("wood", 1, 60, 5, 2),
-			new self("gold", 2, 33, 5, 12),
-			new self("stone", 3, 132, 6, 4),
-			new self("iron", 4, 251, 7, 6),
-			new self("diamond", 5, 1562, 8, 8)
+			new self("wood", 1, 60, 4, 2),
+			new self("gold", 2, 33, 4, 12),
+			new self("stone", 3, 132, 5, 4),
+			new self("iron", 4, 251, 6, 6),
+			new self("diamond", 5, 1562, 7, 8),
+			new self("netherite", 5, 2032, 8, 10)
 		);
 	}
 
