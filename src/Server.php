@@ -1150,10 +1150,8 @@ class Server{
 			if(!$rakLibRegistered){
 				//RakLib would normally handle the transport for Query packets
 				//if it's not registered we need to make sure Query still works
-				$queryRegistered = $this->network->registerInterface(new DedicatedQueryNetworkInterface($ip, $port, $ipV6, new \PrefixedLogger($this->logger, "Dedicated Query Interface")));
-				if($queryRegistered){
-					$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_query_running($prettyIp, (string) $port)));
-				}
+				$this->network->registerInterface(new DedicatedQueryNetworkInterface($ip, $port, $ipV6, new \PrefixedLogger($this->logger, "Dedicated Query Interface")));
+				$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_query_running($prettyIp, (string) $port)));
 			}
 		}
 		return true;
