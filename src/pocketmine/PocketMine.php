@@ -74,6 +74,7 @@ namespace pocketmine {
 		}
 
 		$extensions = [
+			"chunkutils2" => "PocketMine ChunkUtils v2",
 			"curl" => "cURL",
 			"ctype" => "ctype",
 			"date" => "Date",
@@ -113,6 +114,16 @@ namespace pocketmine {
 			if(version_compare($leveldb_version, "0.2.1") < 0){
 				$messages[] = "php-leveldb >= 0.2.1 is required, while you have $leveldb_version.";
 			}
+		}
+
+		$chunkutils2_version = phpversion("chunkutils2");
+		$wantedVersionLock = "0.3";
+		$wantedVersionMin = "$wantedVersionLock.0";
+		if($chunkutils2_version !== false && (
+				version_compare($chunkutils2_version, $wantedVersionMin) < 0 ||
+				preg_match("/^" . preg_quote($wantedVersionLock, "/") . "\.\d+(?:-dev)?$/", $chunkutils2_version) === 0 //lock in at ^0.2, optionally at a patch release
+			)){
+			$messages[] = "chunkutils2 ^$wantedVersionMin is required, while you have $chunkutils2_version.";
 		}
 
 		if(extension_loaded("pocketmine")){

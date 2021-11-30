@@ -39,8 +39,9 @@ class SubChunkPacket extends DataPacket{
 	private string $data;
 	private int $requestResult;
 	private ?SubChunkPacketHeightMapInfo $heightMapData = null;
+	private ?int $usedBlobHash = null;
 
-	public static function create(int $dimension, int $subChunkX, int $subChunkY, int $subChunkZ, string $data, int $requestResult, ?SubChunkPacketHeightMapInfo $heightMapData) : self{
+	public static function create(int $dimension, int $subChunkX, int $subChunkY, int $subChunkZ, string $data, int $requestResult, ?SubChunkPacketHeightMapInfo $heightMapData, ?int $usedBlobHash) : self{
 		$result = new self;
 		$result->dimension = $dimension;
 		$result->subChunkX = $subChunkX;
@@ -49,6 +50,7 @@ class SubChunkPacket extends DataPacket{
 		$result->data = $data;
 		$result->requestResult = $requestResult;
 		$result->heightMapData = $heightMapData;
+		$result->usedBlobHash = $usedBlobHash;
 		return $result;
 	}
 
@@ -66,6 +68,8 @@ class SubChunkPacket extends DataPacket{
 
 	public function getHeightMapData() : ?SubChunkPacketHeightMapInfo{ return $this->heightMapData; }
 
+	public function getUsedBlobHash() : ?int{ return $this->usedBlobHash; }
+
 	protected function decodePayload() : void{
 		$this->dimension = $this->getVarInt();
 		$this->subChunkX = $this->getVarInt();
@@ -81,6 +85,7 @@ class SubChunkPacket extends DataPacket{
 			SubChunkPacketHeightMapType::ALL_TOO_LOW => SubChunkPacketHeightMapInfo::allTooLow(),
 			default => throw new \UnexpectedValueException("Unknown heightmap data type $heightMapDataType")
 		};
+		$this->usedBlobHash = $this->getBool() ? $this->getLLong() : null;
 	}
 
 	protected function encodePayload() : void{
@@ -100,6 +105,11 @@ class SubChunkPacket extends DataPacket{
 			$heightMapData = $this->heightMapData; //avoid PHPStan purity issue
 			$this->putByte(SubChunkPacketHeightMapType::DATA);
 			$heightMapData->write($this);
+		}
+		$usedBlobHash = $this->usedBlobHash;
+		$this->putBool($usedBlobHash !== null);
+		if($usedBlobHash !== null){
+			$this->putLLong($usedBlobHash);
 		}
 	}
 

@@ -182,6 +182,8 @@ class StartGamePacket extends DataPacket{
 	/** @var string */
 	public $serverSoftwareVersion;
 
+	public int $blockPaletteChecksum;
+
 	protected function decodePayload(){
 		$this->entityUniqueId = $this->getEntityUniqueId();
 		$this->entityRuntimeId = $this->getEntityRuntimeId();
@@ -265,6 +267,7 @@ class StartGamePacket extends DataPacket{
 		$this->multiplayerCorrelationId = $this->getString();
 		$this->enableNewInventorySystem = $this->getBool();
 		$this->serverSoftwareVersion = $this->getString();
+		$this->blockPaletteChecksum = $this->getLLong();
 	}
 
 	protected function encodePayload(){
@@ -346,6 +349,7 @@ class StartGamePacket extends DataPacket{
 		$this->putString($this->multiplayerCorrelationId);
 		$this->putBool($this->enableNewInventorySystem);
 		$this->putString($this->serverSoftwareVersion);
+		$this->putLLong($this->blockPaletteChecksum);
 	}
 
 	public function handle(NetworkSession $session) : bool{
