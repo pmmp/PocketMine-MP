@@ -846,7 +846,7 @@ class Chunk{
 	/**
 	 * Serializes the chunk for sending to players
 	 */
-	public function networkSerialize() : string{
+	public function networkSerialize(?string $networkSerializedTiles) : string{
 		$result = "";
 		$subChunkCount = $this->getSubChunkSendCount();
 
@@ -866,6 +866,17 @@ class Chunk{
 		$result .= chr(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
 
+		$result .= $networkSerializedTiles ?? $this->networkSerializeTiles();
+
+		return $result;
+	}
+
+	/**
+	 * Serializes all tiles in network format for chunk sending. This is necessary because fastSerialize() doesn't
+	 * include tiles; they have to be encoded on the main thread.
+	 */
+	public function networkSerializeTiles() : string{
+		$result = "";
 		foreach($this->tiles as $tile){
 			if($tile instanceof Spawnable){
 				$result .= $tile->getSerializedSpawnCompound();
