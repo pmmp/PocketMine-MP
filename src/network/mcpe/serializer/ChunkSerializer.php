@@ -25,7 +25,7 @@ namespace pocketmine\network\mcpe\serializer;
 
 use pocketmine\block\tile\Spawnable;
 use pocketmine\data\bedrock\BiomeIds;
-use pocketmine\data\bedrock\LegacyBiomeIdToStringMap;
+use pocketmine\data\bedrock\LegacyBiomeIdToStringIdMap;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
@@ -135,7 +135,7 @@ final class ChunkSerializer{
 	}
 
 	private static function serializeBiomesAsPalette(Chunk $chunk) : string{
-		$biomeIdMap = LegacyBiomeIdToStringMap::getInstance();
+		$biomeIdMap = LegacyBiomeIdToStringIdMap::getInstance();
 		$biomePalette = new PalettedBlockArray($chunk->getBiomeId(0, 0));
 		for($x = 0; $x < 16; ++$x){
 			for($z = 0; $z < 16; ++$z){
