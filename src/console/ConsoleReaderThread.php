@@ -31,6 +31,7 @@ use function base64_encode;
 use function fgets;
 use function fopen;
 use function preg_replace;
+use function proc_close;
 use function proc_open;
 use function proc_terminate;
 use function sprintf;
@@ -130,6 +131,7 @@ final class ConsoleReaderThread extends Thread{
 		//gets stuck in a blocking fgets() read because stream_select() is a hunk of junk (hence the separate process in
 		//the first place).
 		proc_terminate($sub);
+		proc_close($sub);
 		stream_socket_shutdown($client, STREAM_SHUT_RDWR);
 	}
 

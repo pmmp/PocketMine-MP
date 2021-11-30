@@ -1413,6 +1413,9 @@ class Server{
 			echo "\x1b]0;\x07";
 		}
 
+		if($this->isRunning){
+			$this->logger->emergency("Forcing server shutdown");
+		}
 		try{
 			if(!$this->isRunning()){
 				$this->sendUsage(SendUsageTask::TYPE_CLOSE);
