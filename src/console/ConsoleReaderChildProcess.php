@@ -45,14 +45,7 @@ if($socket === false){
 }
 $consoleReader = new ConsoleReader();
 while(!feof($socket)){
-	try{
-		$line = $consoleReader->readLine();
-	}catch(ConsoleReaderException $e){
-		//Encountered unexpected EOF. This might be because the user did something stupid, or because the parent process
-		//has died. In either case, commit suicide. If the parent process is still alive, it will start a new console
-		//reader.
-		break;
-	}
+	$line = $consoleReader->readLine();
 	if(@fwrite($socket, ($line ?? "") . "\n") === false){
 		//Always send even if there's no line, to check if the parent is alive
 		//If the parent process was terminated forcibly, it won't close the connection properly, so feof() will return
