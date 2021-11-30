@@ -66,10 +66,12 @@ final class ChunkSerializer{
 	public static function serializeFullChunk(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, int $mappingProtocol, ?string $tiles = null) : string{
 		$stream = PacketSerializer::encoder($encoderContext);
 
-		//TODO: HACK! fill in fake subchunks to make up for the new negative space client-side
-		for($y = 0; $y < self::LOWER_PADDING_SIZE; $y++){
-			$stream->putByte(8); //subchunk version 8
-			$stream->putByte(0); //0 layers - client will treat this as all-air
+		if($mappingProtocol >= ProtocolInfo::PROTOCOL_1_18_0){
+			//TODO: HACK! fill in fake subchunks to make up for the new negative space client-side
+			for($y = 0; $y < self::LOWER_PADDING_SIZE; $y++){
+				$stream->putByte(8); //subchunk version 8
+				$stream->putByte(0); //0 layers - client will treat this as all-air
+			}
 		}
 
 		$subChunkCount = self::getSubChunkCount($chunk);
@@ -77,9 +79,13 @@ final class ChunkSerializer{
 			self::serializeSubChunk($chunk->getSubChunk($y), $blockMapper, $stream, $mappingProtocol, false);
 		}
 
-		//TODO: right now we don't support 3D natively, so we just 3Dify our 2D biomes so they fill the column
-		$encodedBiomePalette = self::serializeBiomesAsPalette($chunk);
-		$stream->put(str_repeat($encodedBiomePalette, 25));
+		if($mappingProtocol >= ProtocolInfo::PROTOCOL_1_18_0){
+			//TODO: right now we don't support 3D natively, so we just 3Dify our 2D biomes so they fill the column
+			$encodedBiomePalette = self::serializeBiomesAsPalette($chunk);
+			$stream->put(str_repeat($encodedBiomePalette, 25));
+		}else{
+			$stream->put($chunk->getBiomeIdArray());
+		}
 
 		$stream->putByte(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.

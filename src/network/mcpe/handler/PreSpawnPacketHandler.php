@@ -103,6 +103,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 			false,
 			 "NetherGames v4.0",
 			[],
+			0,
 			GlobalItemTypeDictionary::getInstance()->getDictionary($dictionaryProtocol)->getEntries()
 		));
 

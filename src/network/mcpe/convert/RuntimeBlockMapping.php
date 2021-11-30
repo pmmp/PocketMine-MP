@@ -53,6 +53,7 @@ final class RuntimeBlockMapping{
 	private function __construct(){
 		$paths = [
 			ProtocolInfo::CURRENT_PROTOCOL => "",
+			ProtocolInfo::PROTOCOL_1_17_40 => "",
 			ProtocolInfo::PROTOCOL_1_17_30 => "-1.17.30",
 			ProtocolInfo::PROTOCOL_1_17_10 => "-1.17.10",
 			ProtocolInfo::PROTOCOL_1_17_0 => "-1.17.0",
@@ -101,6 +102,10 @@ final class RuntimeBlockMapping{
 
 		if($protocolId <= ProtocolInfo::PROTOCOL_1_17_30){
 			return ProtocolInfo::PROTOCOL_1_17_30;
+		}
+
+		if($protocolId <= ProtocolInfo::PROTOCOL_1_17_40){
+			return ProtocolInfo::PROTOCOL_1_17_40;
 		}
 
 		return ProtocolInfo::CURRENT_PROTOCOL;
