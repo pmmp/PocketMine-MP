@@ -506,6 +506,11 @@ parameters:
 			path: ../../../src/command/defaults/TimingsCommand.php
 
 		-
+			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
+			count: 2
+			path: ../../../src/console/ConsoleReader.php
+
+		-
 			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/crafting/CraftingManagerFromDataHelper.php

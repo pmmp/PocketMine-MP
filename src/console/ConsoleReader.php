@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\console;
 
+use pocketmine\utils\AssumptionFailedError;
 use function fclose;
 use function fgets;
 use function fopen;
@@ -44,7 +45,9 @@ final class ConsoleReader{
 			fclose($this->stdin);
 		}
 
-		$this->stdin = fopen("php://stdin", "r");
+		$stdin = fopen("php://stdin", "r");
+		if($stdin === false) throw new AssumptionFailedError("Opening stdin should never fail");
+		$this->stdin = $stdin;
 	}
 
 	/**
