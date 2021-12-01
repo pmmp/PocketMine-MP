@@ -1764,9 +1764,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$event->call();
 			if(!$event->isCancelled()){
 				$emoteId = $event->getEmoteId();
-				foreach($this->getViewers() as $player){
-					$player->getNetworkSession()->onEmote($this, $emoteId);
-				}
+				parent::emote($emoteId);
 			}
 		}
 	}
