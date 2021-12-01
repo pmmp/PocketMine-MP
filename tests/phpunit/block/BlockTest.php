@@ -24,29 +24,35 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use PHPUnit\Framework\TestCase;
+use function file_get_contents;
+use function is_array;
+use function json_decode;
 
 class BlockTest extends TestCase{
 
+	/** @var BlockFactory */
+	private $blockFactory;
+
 	public function setUp() : void{
-		BlockFactory::init();
+		$this->blockFactory = new BlockFactory();
 	}
 
 	/**
 	 * Test registering a block which would overwrite another block, without forcing it
 	 */
 	public function testAccidentalOverrideBlock() : void{
-		$block = new MyCustomBlock();
-		$this->expectException(\RuntimeException::class);
-		BlockFactory::registerBlock($block);
+		$block = new MyCustomBlock(new BlockIdentifier(BlockLegacyIds::COBBLESTONE, 0), "Cobblestone", BlockBreakInfo::instant());
+		$this->expectException(\InvalidArgumentException::class);
+		$this->blockFactory->register($block);
 	}
 
 	/**
 	 * Test registering a block deliberately overwriting another block works as expected
 	 */
 	public function testDeliberateOverrideBlock() : void{
-		$block = new MyCustomBlock();
-		BlockFactory::registerBlock($block, true);
-		self::assertInstanceOf(MyCustomBlock::class, BlockFactory::get($block->getId()));
+		$block = new MyCustomBlock(new BlockIdentifier(BlockLegacyIds::COBBLESTONE, 0), "Cobblestone", BlockBreakInfo::instant());
+		$this->blockFactory->register($block, true);
+		self::assertInstanceOf(MyCustomBlock::class, $this->blockFactory->get($block->getId(), 0));
 	}
 
 	/**
@@ -54,10 +60,10 @@ class BlockTest extends TestCase{
 	 */
 	public function testRegisterNewBlock() : void{
 		for($i = 0; $i < 256; ++$i){
-			if(!BlockFactory::isRegistered($i)){
-				$b = new StrangeNewBlock($i);
-				BlockFactory::registerBlock($b);
-				self::assertInstanceOf(StrangeNewBlock::class, BlockFactory::get($b->getId()));
+			if(!$this->blockFactory->isRegistered($i)){
+				$b = new StrangeNewBlock(new BlockIdentifier($i, 0), "Strange New Block", BlockBreakInfo::instant());
+				$this->blockFactory->register($b);
+				self::assertInstanceOf(StrangeNewBlock::class, $this->blockFactory->get($b->getId(), 0));
 				return;
 			}
 		}
@@ -70,7 +76,7 @@ class BlockTest extends TestCase{
 	 */
 	public function testRegisterIdTooLarge() : void{
 		self::expectException(\RuntimeException::class);
-		BlockFactory::registerBlock(new OutOfBoundsBlock(25555));
+		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(25555, 0), "Out Of Bounds Block", BlockBreakInfo::instant()));
 	}
 
 	/**
@@ -78,7 +84,7 @@ class BlockTest extends TestCase{
 	 */
 	public function testRegisterIdTooSmall() : void{
 		self::expectException(\RuntimeException::class);
-		BlockFactory::registerBlock(new OutOfBoundsBlock(-1));
+		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(-1, 0), "Out Of Bounds Block", BlockBreakInfo::instant()));
 	}
 
 	/**
@@ -88,8 +94,8 @@ class BlockTest extends TestCase{
 	 */
 	public function testBlockFactoryClone() : void{
 		for($i = 0; $i < 256; ++$i){
-			$b1 = BlockFactory::get($i);
-			$b2 = BlockFactory::get($i);
+			$b1 = $this->blockFactory->get($i, 0);
+			$b2 = $this->blockFactory->get($i, 0);
 			self::assertNotSame($b1, $b2);
 		}
 	}
@@ -100,11 +106,11 @@ class BlockTest extends TestCase{
 	 */
 	public function blockGetProvider() : array{
 		return [
-			[Block::STONE, Stone::ANDESITE],
-			[Block::STONE, 15],
-			[Block::GOLD_BLOCK, 5],
-			[Block::WOODEN_PLANKS, Planks::DARK_OAK],
-			[Block::SAND, 0]
+			[BlockLegacyIds::STONE, 5],
+			[BlockLegacyIds::GOLD_BLOCK, 0],
+			[BlockLegacyIds::WOODEN_PLANKS, 5],
+			[BlockLegacyIds::SAND, 0],
+			[BlockLegacyIds::GOLD_BLOCK, 0]
 		];
 	}
 
@@ -112,19 +118,16 @@ class BlockTest extends TestCase{
 	 * @dataProvider blockGetProvider
 	 */
 	public function testBlockGet(int $id, int $meta) : void{
-		$block = BlockFactory::get($id, $meta);
+		$block = $this->blockFactory->get($id, $meta);
 
 		self::assertEquals($id, $block->getId());
-		self::assertEquals($meta, $block->getDamage());
+		self::assertEquals($meta, $block->getMeta());
 	}
 
-	/**
-	 * Test that all blocks have correctly set names
-	 */
-	public function testBlockNames() : void{
-		for($id = 0; $id < 256; ++$id){
-			$b = BlockFactory::get($id);
-			self::assertTrue($b instanceof UnknownBlock or $b->getName() !== "Unknown", "Block with ID $id does not have a valid name");
+	public function testBlockIds() : void{
+		for($i = 0; $i < 256; ++$i){
+			$b = $this->blockFactory->get($i, 0);
+			self::assertContains($i, $b->getIdInfo()->getAllBlockIds());
 		}
 	}
 
@@ -133,10 +136,38 @@ class BlockTest extends TestCase{
 	 * (like freezes) when doing light population.
 	 */
 	public function testLightFiltersValid() : void{
-		foreach(BlockFactory::$lightFilter as $id => $value){
+		foreach($this->blockFactory->lightFilter as $id => $value){
 			self::assertNotNull($value, "Light filter value missing for $id");
 			self::assertLessThanOrEqual(15, $value, "Light filter value for $id is larger than the expected 15");
 			self::assertGreaterThan(0, $value, "Light filter value for $id must be larger than 0");
+		}
+	}
+
+	public function testConsistency() : void{
+		$list = json_decode(file_get_contents(__DIR__ . '/block_factory_consistency_check.json'), true);
+		if(!is_array($list)){
+			throw new \pocketmine\utils\AssumptionFailedError("Old table should be array{knownStates: array<string, string>, remaps: array<string, int>}");
+		}
+		$knownStates = $list["knownStates"];
+		$remaps = $list["remaps"];
+
+		$states = $this->blockFactory->getAllKnownStates();
+		foreach($states as $k => $state){
+			if($state->getFullId() !== $k){
+				self::assertArrayHasKey($k, $remaps, "New remap of state $k (" . $state->getName() . ") - consistency check may need regenerating");
+				self::assertSame($state->getFullId(), $remaps[$k], "Mismatched full IDs of remapped state $k");
+			}else{
+				self::assertArrayHasKey($k, $knownStates, "New block state $k (" . $state->getName() . ") - consistency check may need regenerating");
+				self::assertSame($knownStates[$k], $state->getName());
+			}
+		}
+		foreach($knownStates as $k => $name){
+			self::assertArrayHasKey($k, $states, "Missing previously-known block state $k ($name)");
+			self::assertSame($name, $states[$k]->getName());
+		}
+		foreach($remaps as $origin => $destination){
+			self::assertArrayHasKey($origin, $states, "Missing previously-remapped state $origin");
+			self::assertSame($destination, $states[$origin]->getFullId());
 		}
 	}
 }

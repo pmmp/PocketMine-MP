@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\build\make_release;
 
+use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
+use pocketmine\VersionInfo;
 use function array_keys;
 use function array_map;
 use function dirname;
@@ -40,8 +42,6 @@ use function sprintf;
 use function str_pad;
 use function strlen;
 use function system;
-use const pocketmine\BASE_VERSION;
-use const pocketmine\BUILD_CHANNEL;
 use const STDERR;
 use const STDIN;
 use const STDOUT;
@@ -77,7 +77,7 @@ const ACCEPTED_OPTS = [
 
 function main() : void{
 	$filteredOpts = [];
-	foreach(getopt("", ["current:", "next:", "channel:", "help"]) as $optName => $optValue){
+	foreach(Utils::stringifyKeys(getopt("", ["current:", "next:", "channel:", "help"])) as $optName => $optValue){
 		if($optName === "help"){
 			fwrite(STDOUT, "Options:\n");
 
@@ -97,7 +97,7 @@ function main() : void{
 	if(isset($filteredOpts["current"])){
 		$currentVer = new VersionString($filteredOpts["current"]);
 	}else{
-		$currentVer = new VersionString(BASE_VERSION);
+		$currentVer = new VersionString(VersionInfo::BASE_VERSION);
 	}
 	if(isset($filteredOpts["next"])){
 		$nextVer = new VersionString($filteredOpts["next"]);
@@ -109,7 +109,7 @@ function main() : void{
 			$currentVer->getPatch() + 1
 		));
 	}
-	$channel = $filteredOpts["channel"] ?? BUILD_CHANNEL;
+	$channel = $filteredOpts["channel"] ?? VersionInfo::BUILD_CHANNEL;
 
 	echo "About to tag version $currentVer. Next version will be $nextVer.\n";
 	echo "$currentVer will be published on release channel \"$channel\".\n";
@@ -121,7 +121,7 @@ function main() : void{
 		echo "error: no changelog changes detected; aborting\n";
 		exit(1);
 	}
-	$versionInfoPath = dirname(__DIR__) . '/src/pocketmine/VersionInfo.php';
+	$versionInfoPath = dirname(__DIR__) . '/src/VersionInfo.php';
 	replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false, $channel);
 	system('git commit -m "Release ' . $currentVer->getBaseVersion() . '" --include "' . $versionInfoPath . '"');
 	system('git tag ' . $currentVer->getBaseVersion());

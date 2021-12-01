@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-class StrangeNewBlock extends Solid{
-	public function getName() : string{
-		return "Strange New Block";
-	}
+class StrangeNewBlock extends Opaque{
+
 }

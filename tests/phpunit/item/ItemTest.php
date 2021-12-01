@@ -24,23 +24,23 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use PHPUnit\Framework\TestCase;
-use pocketmine\block\BlockFactory;
-use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\EnchantmentInstance;
+use pocketmine\item\enchantment\VanillaEnchantments;
 
 class ItemTest extends TestCase{
 
+	/** @var Item */
+	private $item;
+
 	public function setUp() : void{
-		BlockFactory::init();
-		ItemFactory::init();
-		Enchantment::init();
+		$this->item = ItemFactory::getInstance()->get(ItemIds::DIAMOND_SWORD);
 	}
 
 	/**
 	 * Test for issue #1145 (items aren't considered equal after NBT serializing and deserializing
 	 */
 	public function testItemEquals() : void{
-		$item = ItemFactory::get(Item::STONE)->setCustomName("HI");
+		$item = ItemFactory::getInstance()->get(ItemIds::STONE)->setCustomName("HI");
 		$item2 = Item::nbtDeserialize($item->nbtSerialize());
 		self::assertTrue($item2->equals($item));
 		self::assertTrue($item->equals($item2));
@@ -50,53 +50,99 @@ class ItemTest extends TestCase{
 	 * Test that same items without NBT are considered equal
 	 */
 	public function testItemEqualsNoNbt() : void{
-		$item1 = ItemFactory::get(Item::DIAMOND_SWORD);
+		$item1 = ItemFactory::getInstance()->get(ItemIds::DIAMOND_SWORD);
 		$item2 = clone $item1;
 		self::assertTrue($item1->equals($item2));
 	}
 
 	/**
-	 * Tests that blocks are considered to be valid registered items
+	 * Tests whether items retain their display properties
+	 * after being deserialized
 	 */
-	public function testItemBlockRegistered() : void{
-		for($id = 0; $id < 256; ++$id){
-			self::assertEquals(BlockFactory::isRegistered($id), ItemFactory::isRegistered($id));
+	public function testItemPersistsDisplayProperties() : void{
+		$lore = ["Line A", "Line B"];
+		$name = "HI";
+		$item = ItemFactory::getInstance()->get(ItemIds::DIAMOND_SWORD);
+		$item->setCustomName($name);
+		$item->setLore($lore);
+		$item = Item::nbtDeserialize($item->nbtSerialize());
+		self::assertTrue($item->getCustomName() === $name);
+		self::assertTrue($item->getLore() === $lore);
+	}
+
+	public function testHasEnchantment() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::EFFICIENCY(), 5));
+		self::assertTrue($this->item->hasEnchantment(VanillaEnchantments::EFFICIENCY()));
+		self::assertTrue($this->item->hasEnchantment(VanillaEnchantments::EFFICIENCY(), 5));
+	}
+
+	public function testHasEnchantments() : void{
+		self::assertFalse($this->item->hasEnchantments());
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::FIRE_ASPECT()));
+		self::assertTrue($this->item->hasEnchantments());
+	}
+
+	public function testGetEnchantmentLevel() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::EFFICIENCY(), 5));
+		self::assertSame(5, $this->item->getEnchantmentLevel(VanillaEnchantments::EFFICIENCY()));
+	}
+
+	public function testGetEnchantments() : void{
+		/** @var EnchantmentInstance[] $enchantments */
+		$enchantments = [
+			new EnchantmentInstance(VanillaEnchantments::EFFICIENCY(), 5),
+			new EnchantmentInstance(VanillaEnchantments::SHARPNESS(), 1)
+		];
+		foreach($enchantments as $enchantment){
+			$this->item->addEnchantment($enchantment);
 		}
+		foreach($this->item->getEnchantments() as $enchantment){
+			foreach($enchantments as $k => $applied){
+				if($enchantment->getType() === $applied->getType() and $enchantment->getLevel() === $applied->getLevel()){
+					unset($enchantments[$k]);
+					continue 2;
+				}
+			}
+			self::fail("Unknown extra enchantment found");
+		}
+		self::assertEmpty($enchantments, "Expected all enchantments to be present");
+	}
+
+	public function testOverwriteEnchantment() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS()));
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS(), 5));
+		self::assertSame(5, $this->item->getEnchantmentLevel(VanillaEnchantments::SHARPNESS()));
+	}
+
+	public function testRemoveAllEnchantments() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::FIRE_ASPECT()));
+		self::assertCount(1, $this->item->getEnchantments());
+		$this->item->removeEnchantments();
+		self::assertEmpty($this->item->getEnchantments());
+	}
+
+	public function testRemoveEnchantment() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::KNOCKBACK()));
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS()));
+		self::assertCount(2, $this->item->getEnchantments());
+		$this->item->removeEnchantment(VanillaEnchantments::SHARPNESS());
+		self::assertFalse($this->item->hasEnchantment(VanillaEnchantments::SHARPNESS()));
+	}
+
+	public function testRemoveEnchantmentLevel() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::FIRE_ASPECT(), 2));
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::UNBREAKING()));
+		self::assertCount(2, $this->item->getEnchantments());
+		$this->item->removeEnchantment(VanillaEnchantments::FIRE_ASPECT(), 2);
+		self::assertFalse($this->item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT()));
 	}
 
 	/**
 	 * Tests that when all enchantments are removed from an item, the "ench" tag is removed as well
 	 */
-	public function testEnchantmentRemoval() : void{
-		$item = ItemFactory::get(Item::DIAMOND_SWORD);
-		$item->addEnchantment(new EnchantmentInstance(Enchantment::getEnchantment(Enchantment::SHARPNESS)));
-		$item->removeEnchantment(Enchantment::SHARPNESS);
-		self::assertNull($item->getNamedTag()->getTag(Item::TAG_ENCH));
-	}
-
-	/**
-	 * @return mixed[][]
-	 * @phpstan-return list<array{string,int,int}>
-	 */
-	public function itemFromStringProvider() : array{
-		return [
-			["dye:4", ItemIds::DYE, 4],
-			["351", ItemIds::DYE, 0],
-			["351:4", ItemIds::DYE, 4],
-			["stone:3", ItemIds::STONE, 3],
-			["minecraft:string", ItemIds::STRING, 0],
-			["diamond_pickaxe", ItemIds::DIAMOND_PICKAXE, 0],
-			["diamond_pickaxe:5", ItemIds::DIAMOND_PICKAXE, 5]
-		];
-	}
-
-	/**
-	 * @dataProvider itemFromStringProvider
-	 */
-	public function testFromStringSingle(string $string, int $id, int $meta) : void{
-		$item = ItemFactory::fromStringSingle($string);
-
-		self::assertEquals($id, $item->getId());
-		self::assertEquals($meta, $item->getDamage());
+	public function testRemoveAllEnchantmentsNBT() : void{
+		$this->item->addEnchantment(new EnchantmentInstance(VanillaEnchantments::SHARPNESS(), 1));
+		$this->item->removeEnchantment(VanillaEnchantments::SHARPNESS());
+		self::assertNull($this->item->getNamedTag()->getTag(Item::TAG_ENCH));
 	}
 }

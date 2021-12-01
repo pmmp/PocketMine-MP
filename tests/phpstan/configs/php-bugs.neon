@@ -1,7 +1,7 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\StupidJsonDecodeTest\\:\\:\\$stupidJsonDecodeFunc \\(Closure\\(string, bool\\)\\: mixed\\) does not accept Closure\\|null\\.$#"
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\handler\\\\StupidJsonDecodeTest\\:\\:\\$stupidJsonDecodeFunc \\(Closure\\(string, bool\\)\\: mixed\\) does not accept Closure\\|null\\.$#"
 			count: 1
-			path: ../../phpunit/network/mcpe/StupidJsonDecodeTest.php
+			path: ../../phpunit/network/mcpe/handler/StupidJsonDecodeTest.php
 

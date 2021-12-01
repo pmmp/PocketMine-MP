@@ -139,8 +139,8 @@ jobs:
       - name: Run integration tests
         run: ./tests/travis.sh -t4
 
-  preprocessor:
-    name: Preprocessor tests
+  codegen:
+    name: Generated Code consistency checks
     needs: build-php
     runs-on: ${{ matrix.image }}
     strategy:
@@ -151,8 +151,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          submodules: true
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@e232f72a4330a07aae8418e8aa56b64efcdda636
@@ -176,37 +174,16 @@ jobs:
       - name: Install Composer dependencies
         run: php composer.phar install --no-dev --prefer-dist --no-interaction
 
-      - name: Run preprocessor
+      - name: Regenerate registry annotations
+        run: php build/generate-registry-annotations.php src
+
+      - name: Regenerate KnownTranslation APIs
+        run: php build/generate-known-translation-apis.php
+
+      - name: Verify code is unchanged
         run: |
-          PM_PREPROCESSOR_PATH="$GITHUB_WORKSPACE/build/preprocessor"
-          php "$PM_PREPROCESSOR_PATH/PreProcessor.php" --path=src --multisize || (echo "Preprocessor exited with code $?" && exit 1)
-
-          #dump the diff of preprocessor replacements to a patch in case it has bugs
-          git diff > preprocessor_diff.patch
-
-          VENDOR_PM="$GITHUB_WORKSPACE/vendor"
-          VENDOR_PM_BACKUP="$GITHUB_WORKSPACE/vendor-before-preprocess"
-          cp -r "$VENDOR_PM" "$VENDOR_PM_BACKUP"
-          for f in $(ls $VENDOR_PM/pocketmine); do
-            echo "Processing directory \"$f\"..."
-            php "$PM_PREPROCESSOR_PATH/PreProcessor.php" --path="$VENDOR_PM/pocketmine/$f/src" --multisize || (echo "Preprocessor exited with code $?" && exit 1)
-            echo "Checking for changes in \"$f\"..."
-            DIFF=$(git diff --no-index "$VENDOR_PM_BACKUP/pocketmine/$f" "$VENDOR_PM/pocketmine/$f" || true)
-            if [ "$DIFF" != "" ]; then
-              PATCH="$GITHUB_WORKSPACE/preprocessor_diff_$f.patch"
-              echo "$DIFF" > "$PATCH"
-              echo "Generated patch file \"$PATCH\""
-            else
-              echo "No diff generated for \"$f\" (preprocessor made no changes)"
-            fi
-          done
-
-      - name: Upload preprocessor diffs
-        uses: actions/upload-artifact@v2
-        if: always()
-        with:
-          name: preprocessor_diffs_${{ matrix.php }}_${{ matrix.image }}
-          path: ${{ github.workspace }}/preprocessor_diff*.patch
+          git diff
+          git diff --quiet
 
   codestyle:
     name: Code Style checks

@@ -1,0 +1,19 @@
+<?php
+
+//possible bug in phpstan requires this to be defined here
+class JsonMapper_Exception extends \Exception{}
+
+class JsonMapper{
+
+	/**
+	 * @template TModel of object
+	 *
+	 * @param mixed[]|object $json
+	 * @param TModel $object
+	 *
+	 * @return TModel
+	 *
+	 * @throws JsonMapper_Exception
+	 */
+	public function map($json, object $object) : object{}
+}
