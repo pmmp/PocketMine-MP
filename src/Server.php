@@ -1143,7 +1143,9 @@ class Server{
 			)));
 			return false;
 		}
-		$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_networkStart($prettyIp, (string) $port)));
+		if($rakLibRegistered){
+			$this->logger->info($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_networkStart($prettyIp, (string) $port)));
+		}
 		if($useQuery){
 			if(!$rakLibRegistered){
 				//RakLib would normally handle the transport for Query packets
