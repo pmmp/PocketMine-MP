@@ -36,6 +36,10 @@ class SplashPotion extends ProjectileItem{
 		parent::__construct($identifier, $name);
 		$this->potionType = $potionType;
 	}
+	
+	public function getPotionType(): PotionType{
+		return $this->potionType;
+	}
 
 	public function getMaxStackSize() : int{
 		return 1;
