@@ -53,6 +53,7 @@ use function yaml_parse;
 use const CASE_LOWER;
 use const JSON_BIGINT_AS_STRING;
 use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * Config Class for simple config manipulation of multiple formats.
@@ -212,7 +213,7 @@ class Config{
 				$content = self::writeProperties($this->config);
 				break;
 			case Config::JSON:
-				$content = json_encode($this->config, $this->jsonOptions);
+				$content = json_encode($this->config, $this->jsonOptions | JSON_THROW_ON_ERROR);
 				break;
 			case Config::YAML:
 				$content = yaml_emit($this->config, YAML_UTF8_ENCODING);
