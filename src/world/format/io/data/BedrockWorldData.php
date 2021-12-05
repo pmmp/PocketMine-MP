@@ -31,6 +31,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Binary;
+use pocketmine\utils\Filesystem;
 use pocketmine\utils\Limits;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
@@ -165,7 +166,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 
 		$nbt = new LittleEndianNbtSerializer();
 		$buffer = $nbt->write(new TreeRoot($this->compoundTag));
-		file_put_contents($this->dataPath, Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
+		Filesystem::safeFilePutContents($this->dataPath, Binary::writeLInt(self::CURRENT_STORAGE_VERSION) . Binary::writeLInt(strlen($buffer)) . $buffer);
 	}
 
 	public function getDifficulty() : int{

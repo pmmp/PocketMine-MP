@@ -33,7 +33,6 @@ use function date;
 use function explode;
 use function file_exists;
 use function file_get_contents;
-use function file_put_contents;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -53,6 +52,7 @@ use function yaml_parse;
 use const CASE_LOWER;
 use const JSON_BIGINT_AS_STRING;
 use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * Config Class for simple config manipulation of multiple formats.
@@ -212,7 +212,7 @@ class Config{
 				$content = self::writeProperties($this->config);
 				break;
 			case Config::JSON:
-				$content = json_encode($this->config, $this->jsonOptions);
+				$content = json_encode($this->config, $this->jsonOptions | JSON_THROW_ON_ERROR);
 				break;
 			case Config::YAML:
 				$content = yaml_emit($this->config, YAML_UTF8_ENCODING);
@@ -227,7 +227,7 @@ class Config{
 				throw new AssumptionFailedError("Config type is unknown, has not been set or not detected");
 		}
 
-		file_put_contents($this->file, $content);
+		Filesystem::safeFilePutContents($this->file, $content);
 
 		$this->changed = false;
 	}
