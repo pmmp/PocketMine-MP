@@ -27,6 +27,7 @@ use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\event\block\BlockBurnEvent;
+use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -172,14 +173,27 @@ class Fire extends Flowable{
 			if(!$ev->isCancelled()){
 				$block->onIncinerate();
 
+				$spreadedFire = false;
 				if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
 					$fire = clone $this;
 					$fire->age = min(15, $fire->age + (mt_rand(0, 4) >> 2));
-					$this->position->getWorld()->setBlock($block->position, $fire);
-				}else{
+					$spreadedFire = $this->spreadBlock($block, $fire);
+				}
+				if(!$spreadedFire){
 					$this->position->getWorld()->setBlock($block->position, VanillaBlocks::AIR());
 				}
 			}
 		}
+	}
+
+	private function spreadBlock(Block $block, Block $newState) : bool{
+		$ev = new BlockSpreadEvent($block, $this, $newState);
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$block->position->getWorld()->setBlock($block->position, $ev->getNewState());
+			return true;
+		}
+
+		return false;
 	}
 }
