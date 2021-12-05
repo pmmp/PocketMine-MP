@@ -537,8 +537,12 @@ class Server{
 		if(!$ev->isCancelled()){
 			Timings::$syncPlayerDataSave->time(function() use ($name, $ev) : void{
 				$nbt = new BigEndianNbtSerializer();
+				$contents = zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP);
+				if($contents === false){
+					throw new AssumptionFailedError("zlib_encode() failed unexpectedly");
+				}
 				try{
-					Filesystem::safeFilePutContents($this->getPlayerDataPath($name), zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP));
+					Filesystem::safeFilePutContents($this->getPlayerDataPath($name), $contents);
 				}catch(\RuntimeException | \ErrorException $e){
 					$this->logger->critical($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_data_saveError($name, $e->getMessage())));
 					$this->logger->logException($e);
