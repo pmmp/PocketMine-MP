@@ -538,8 +538,8 @@ class Server{
 			Timings::$syncPlayerDataSave->time(function() use ($name, $ev) : void{
 				$nbt = new BigEndianNbtSerializer();
 				try{
-					file_put_contents($this->getPlayerDataPath($name), zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP));
-				}catch(\ErrorException $e){
+					Filesystem::safeFilePutContents($this->getPlayerDataPath($name), zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP));
+				}catch(\RuntimeException | \ErrorException $e){
 					$this->logger->critical($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_data_saveError($name, $e->getMessage())));
 					$this->logger->logException($e);
 				}

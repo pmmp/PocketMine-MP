@@ -29,6 +29,8 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
+use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Filesystem;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
@@ -111,7 +113,10 @@ class JavaWorldData extends BaseNbtWorldData{
 	public function save() : void{
 		$nbt = new BigEndianNbtSerializer();
 		$buffer = zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag("Data", $this->compoundTag))), ZLIB_ENCODING_GZIP);
-		file_put_contents($this->dataPath, $buffer);
+		if($buffer === false){
+			throw new AssumptionFailedError("zlib_encode() failed unexpectedly");
+		}
+		Filesystem::safeFilePutContents($this->dataPath, $buffer);
 	}
 
 	public function getDifficulty() : int{

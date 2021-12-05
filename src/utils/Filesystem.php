@@ -26,9 +26,11 @@ namespace pocketmine\utils;
 use Webmozart\PathUtil\Path;
 use function copy;
 use function dirname;
+use function disk_free_space;
 use function fclose;
 use function fflush;
 use function file_exists;
+use function file_put_contents;
 use function flock;
 use function fopen;
 use function ftruncate;
@@ -40,6 +42,7 @@ use function ltrim;
 use function mkdir;
 use function preg_match;
 use function realpath;
+use function rename;
 use function rmdir;
 use function rtrim;
 use function scandir;
@@ -219,6 +222,55 @@ final class Filesystem{
 			fclose(self::$lockFileHandles[$lockFilePath]);
 			unset(self::$lockFileHandles[$lockFilePath]);
 			@unlink($lockFilePath);
+		}
+	}
+
+	/**
+	 * Wrapper around file_put_contents() which writes to a temporary file before overwriting the original. If the disk
+	 * is full, writing to the temporary file will fail before the original file is modified, leaving it untouched.
+	 *
+	 * This is necessary because file_put_contents() destroys the data currently in the file if it fails to write the
+	 * new contents.
+	 *
+	 * @param resource|null $context Context to pass to file_put_contents
+	 */
+	public static function safeFilePutContents(string $fileName, string $contents, int $flags = 0, $context = null) : void{
+		$directory = dirname($fileName);
+		if(!is_dir($directory)){
+			throw new \RuntimeException("Target directory path does not exist or is not a directory");
+		}
+		if(is_dir($fileName)){
+			throw new \RuntimeException("Target file path already exists and is not a file");
+		}
+
+		$counter = 0;
+		do{
+			//we don't care about overwriting any preexisting tmpfile but we can't write if a directory is already here
+			$temporaryFileName = $fileName . ".$counter.tmp";
+			$counter++;
+		}while(is_dir($temporaryFileName));
+
+		$writeTemporaryFileResult = $context !== null ?
+			file_put_contents($temporaryFileName, $contents, $flags, $context) :
+			file_put_contents($temporaryFileName, $contents, $flags);
+
+		if($writeTemporaryFileResult !== strlen($contents)){
+			$context !== null ?
+				@unlink($temporaryFileName, $context) :
+				@unlink($temporaryFileName);
+			$diskSpace = disk_free_space($directory);
+			if($diskSpace !== false && $diskSpace < strlen($contents)){
+				throw new \RuntimeException("Failed to write to temporary file $temporaryFileName (out of free disk space)");
+			}
+			throw new \RuntimeException("Failed to write to temporary file $temporaryFileName (possibly out of free disk space)");
+		}
+
+		$renameTemporaryFileResult = $context !== null ?
+			rename($temporaryFileName, $fileName, $context) :
+			rename($temporaryFileName, $fileName);
+
+		if(!$renameTemporaryFileResult){
+			throw new \RuntimeException("Failed to move temporary file contents into target file");
 		}
 	}
 }
