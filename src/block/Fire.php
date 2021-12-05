@@ -33,6 +33,8 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
+use function intdiv;
+use function max;
 use function min;
 use function mt_rand;
 
@@ -139,7 +141,7 @@ class Fire extends Flowable{
 
 		if($canSpread){
 			$this->burnBlocksAround();
-			//TODO: fire spread
+			$this->spreadFire();
 		}
 	}
 
@@ -184,6 +186,50 @@ class Fire extends Flowable{
 				}
 				if(!$spreadedFire){
 					$this->position->getWorld()->setBlock($block->position, VanillaBlocks::AIR());
+				}
+			}
+		}
+	}
+
+	private function spreadFire() : void{
+		$world = $this->position->getWorld();
+		$difficulty7 = $world->getDifficulty() * 7;
+		$age30 = $this->age + 30;
+
+		for($y = -1; $y <= 4; ++$y){
+			//Higher blocks have a lower chance of catching fire
+			$randomBound = 100 + ($y > 1 ? ($y - 1) * 100 : 0);
+
+			for($z = -1; $z <= 1; ++$z){
+				for($x = -1; $x <= 1; ++$x){
+					if($x === 0 and $y === 0 and $z === 0){
+						continue;
+					}
+
+					$block = $world->getBlockAt($this->position->x + $x, $this->position->y + $y, $this->position->z + $z);
+					if($block->getId() !== BlockLegacyIds::AIR){
+						continue;
+					}
+
+					//TODO: fire can't spread if it's raining in any horizontally adjacent block, or the current one
+
+					$encouragement = 0;
+					foreach($block->getAllSides() as $blockSide){
+						$encouragement = max($encouragement, $blockSide->getFlameEncouragement());
+					}
+
+					if($encouragement <= 0){
+						continue;
+					}
+
+					$maxChance = intdiv($encouragement + 40 + $difficulty7, $age30);
+					//TODO: max chance is lowered by half in humid biomes
+
+					if($maxChance > 0 and mt_rand(0, $randomBound - 1) <= $maxChance){
+						$new = clone $this;
+						$new->age = min(15, $this->age + (mt_rand(0, 4) >> 2));
+						$this->spreadBlock($block, $new);
+					}
 				}
 			}
 		}
