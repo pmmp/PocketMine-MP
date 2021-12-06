@@ -23,11 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\object;
 
+use pocketmine\entity\animation\ItemEntityStackSizeChangeAnimation;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityItemPickupEvent;
 use pocketmine\event\entity\ItemDespawnEvent;
+use pocketmine\event\entity\ItemMergeEvent;
 use pocketmine\event\entity\ItemSpawnEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -43,6 +45,7 @@ class ItemEntity extends Entity{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::ITEM; }
 
+	public const MERGE_CHECK_PERIOD = 2; //0.1 seconds
 	public const DEFAULT_DESPAWN_DELAY = 6000; //5 minutes
 	public const NEVER_DESPAWN = -1;
 	public const MAX_DESPAWN_DELAY = 32767 + self::DEFAULT_DESPAWN_DELAY; //max value storable by mojang NBT :(
@@ -105,6 +108,27 @@ class ItemEntity extends Entity{
 			if($this->pickupDelay < 0){
 				$this->pickupDelay = 0;
 			}
+			if($this->hasMovementUpdate() and $this->despawnDelay % self::MERGE_CHECK_PERIOD === 0){
+				$mergeable = [$this]; //in case the merge target ends up not being this
+				$mergeTarget = $this;
+				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
+					if(!$entity instanceof ItemEntity or $entity->isFlaggedForDespawn()){
+						continue;
+					}
+
+					if($entity->isMergeable($this)){
+						$mergeable[] = $entity;
+						if($entity->item->getCount() > $mergeTarget->item->getCount()){
+							$mergeTarget = $entity;
+						}
+					}
+				}
+				foreach($mergeable as $itemEntity){
+					if($itemEntity !== $mergeTarget){
+						$itemEntity->tryMergeInto($mergeTarget);
+					}
+				}
+			}
 
 			$this->despawnDelay -= $tickDiff;
 			if($this->despawnDelay <= 0){
@@ -120,6 +144,37 @@ class ItemEntity extends Entity{
 		}
 
 		return $hasUpdate;
+	}
+
+	/**
+	 * Returns whether this item entity can merge with the given one.
+	 */
+	public function isMergeable(ItemEntity $entity) : bool{
+		$item = $entity->item;
+		return $entity !== $this && $entity->pickupDelay !== self::NEVER_DESPAWN and $item->canStackWith($this->item) and $item->getCount() + $this->item->getCount() <= $item->getMaxStackSize();
+	}
+
+	/**
+	 * Attempts to merge this item entity into the given item entity. Returns true if it was successful.
+	 */
+	public function tryMergeInto(ItemEntity $consumer) : bool{
+		if(!$this->isMergeable($consumer)){
+			return false;
+		}
+
+		$ev = new ItemMergeEvent($this, $consumer);
+		$ev->call();
+
+		if($ev->isCancelled()){
+			return false;
+		}
+
+		$consumer->setStackSize($consumer->item->getCount() + $this->item->getCount());
+		$this->flagForDespawn();
+		$consumer->pickupDelay = max($consumer->pickupDelay, $this->pickupDelay);
+		$consumer->despawnDelay = max($consumer->despawnDelay, $this->despawnDelay);
+
+		return true;
 	}
 
 	protected function tryChangeMovement() : void{
@@ -215,6 +270,14 @@ class ItemEntity extends Entity{
 			$this->getAllNetworkData(),
 			false //TODO: I have no idea what this is needed for, but right now we don't support fishing anyway
 		));
+	}
+
+	public function setStackSize(int $newCount) : void{
+		if($newCount <= 0){
+			throw new \InvalidArgumentException("Stack size must be at least 1");
+		}
+		$this->item->setCount($newCount);
+		$this->broadcastAnimation(new ItemEntityStackSizeChangeAnimation($this, $newCount));
 	}
 
 	public function getOffsetPosition(Vector3 $vector3) : Vector3{
