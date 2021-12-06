@@ -172,7 +172,7 @@ class ClearCommand extends VanillaCommand{
 	protected function countItems(array $inventories, ?Item $target) : int{
 		$count = 0;
 		foreach($inventories as $inventory){
-			$contents = $target instanceof Item ? $inventory->all($target) : $inventory->getContents();
+			$contents = $target !== null ? $inventory->all($target) : $inventory->getContents();
 			foreach($contents as $item){
 				$count += $item->getCount();
 			}
