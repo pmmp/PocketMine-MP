@@ -805,6 +805,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("skull_block", fn() => VanillaBlocks::MOB_HEAD());
 		$result->registerBlock("slab", fn() => VanillaBlocks::SMOOTH_STONE_SLAB());
 		$result->registerBlock("slabs", fn() => VanillaBlocks::SMOOTH_STONE_SLAB());
+		$result->registerBlock("slime", fn() => VanillaBlocks::SLIME());
+		$result->registerBlock("slime_block", fn() => VanillaBlocks::SLIME());
 		$result->registerBlock("smoker", fn() => VanillaBlocks::SMOKER());
 		$result->registerBlock("smooth_quartz", fn() => VanillaBlocks::SMOOTH_QUARTZ());
 		$result->registerBlock("smooth_quartz_slab", fn() => VanillaBlocks::SMOOTH_QUARTZ_SLAB());
