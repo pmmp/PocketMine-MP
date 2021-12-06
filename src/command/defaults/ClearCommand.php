@@ -105,7 +105,7 @@ class ClearCommand extends VanillaCommand{
 
 		// Checking player's inventory for all the items matching the criteria
 		if($targetItem !== null and $maxCount === 0){
-			$count =  $this->countItems($inventories, $targetItem);
+			$count = $this->countItems($inventories, $targetItem);
 			if($count > 0){
 				$sender->sendMessage(KnownTranslationFactory::commands_clear_testing($target->getName(), (string) $count));
 			}else{
@@ -119,29 +119,29 @@ class ClearCommand extends VanillaCommand{
 		if($targetItem === null){
 			// Clear all items from the inventories
 			$clearedCount += $this->countItems($inventories, null);
-			foreach($inventories as $inventory) {
+			foreach($inventories as $inventory){
 				$inventory->clearAll();
 			}
 		}else{
 			// Clear the item from target's inventory irrelevant of the count
 			if($maxCount === -1){
 				$clearedCount += $this->countItems($inventories, $targetItem);
-				foreach($inventories as $inventory) {
+				foreach($inventories as $inventory){
 					$inventory->remove($targetItem);
 				}
 			}else{
 				// Clear the item from target's inventory up to maxCount
-				foreach($inventories as $inventory) {
+				foreach($inventories as $inventory){
 					// Break if we've cleared enough items
 					if($maxCount === 0){
 						break;
 					}
 
-					if(count($inventory->getContents()) === 0) {
+					if(count($inventory->getContents()) === 0){
 						continue;
 					}
 
-					foreach($inventory->all($targetItem) as $index => $item) {
+					foreach($inventory->all($targetItem) as $index => $item){
 						// The count to reduce from the item and max count
 						$reductionCount = min($item->getCount(), $maxCount);
 						$item->pop($reductionCount);
@@ -171,9 +171,9 @@ class ClearCommand extends VanillaCommand{
 	 */
 	protected function countItems(array $inventories, ?Item $target) : int{
 		$count = 0;
-		foreach($inventories as $inventory) {
+		foreach($inventories as $inventory){
 			$contents = $target instanceof Item ? $inventory->all($target) : $inventory->getContents();
-			foreach($contents as $item) {
+			foreach($contents as $item){
 				$count += $item->getCount();
 			}
 		}
