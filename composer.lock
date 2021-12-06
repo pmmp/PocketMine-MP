@@ -322,16 +322,16 @@
         },
         {
             "name": "pocketmine/binaryutils",
-            "version": "0.2.2",
+            "version": "0.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BinaryUtils.git",
-                "reference": "f883e1cf9099ed6a757a10a2f75b3333eeb2cdf9"
+                "reference": "dc94786fc6c30012b1892f548dbb8a8c9c0a8cd9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/f883e1cf9099ed6a757a10a2f75b3333eeb2cdf9",
-                "reference": "f883e1cf9099ed6a757a10a2f75b3333eeb2cdf9",
+                "url": "https://api.github.com/repos/pmmp/BinaryUtils/zipball/dc94786fc6c30012b1892f548dbb8a8c9c0a8cd9",
+                "reference": "dc94786fc6c30012b1892f548dbb8a8c9c0a8cd9",
                 "shasum": ""
             },
             "require": {
@@ -340,8 +340,10 @@
             },
             "require-dev": {
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.99",
-                "phpstan/phpstan-strict-rules": "^0.12.4"
+                "phpstan/phpstan": "1.2.0",
+                "phpstan/phpstan-phpunit": "^1.0",
+                "phpstan/phpstan-strict-rules": "^1.0.0",
+                "phpunit/phpunit": "^9.5"
             },
             "type": "library",
             "autoload": {
@@ -356,9 +358,9 @@
             "description": "Classes and methods for conveniently handling binary data",
             "support": {
                 "issues": "https://github.com/pmmp/BinaryUtils/issues",
-                "source": "https://github.com/pmmp/BinaryUtils/tree/0.2.2"
+                "source": "https://github.com/pmmp/BinaryUtils/tree/0.2.3"
             },
-            "time": "2021-10-22T19:54:16+00:00"
+            "time": "2021-12-04T20:56:05+00:00"
         },
         {
             "name": "pocketmine/callback-validator",
