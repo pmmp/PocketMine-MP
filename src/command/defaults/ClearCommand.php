@@ -26,6 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\inventory\SimpleInventory;
+use pocketmine\item\Item;
 use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\item\LegacyStringToItemParserException;
 use pocketmine\item\StringToItemParser;
@@ -33,7 +35,6 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
-use function array_merge;
 use function count;
 use function implode;
 
@@ -57,7 +58,6 @@ class ClearCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$target = null;
 		if(isset($args[0])){
 			$target = $sender->getServer()->getPlayerByPrefix($args[0]);
 			if($target === null){
@@ -77,14 +77,14 @@ class ClearCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$item = null;
+		$targetItem = null;
 		$maxCount = -1;
 		if(isset($args[1])){
 			try{
-				$item = StringToItemParser::getInstance()->parse($args[1]) ?? LegacyStringToItemParser::getInstance()->parse($args[1]);
+				$targetItem = StringToItemParser::getInstance()->parse($args[1]) ?? LegacyStringToItemParser::getInstance()->parse($args[1]);
 
 				if(isset($args[2])){
-					$item->setCount($maxCount = $this->getInteger($sender, $args[2], 0));
+					$targetItem->setCount($maxCount = $this->getInteger($sender, $args[2], -1));
 				}
 			}catch(LegacyStringToItemParserException $e){
 				//vanilla checks this at argument parsing layer, can't come up with a better alternative
@@ -93,13 +93,18 @@ class ClearCommand extends VanillaCommand{
 			}
 		}
 
-		//checking players inventory for all the items matching the criteria
-		if($item !== null and $maxCount === 0){
-			$count = 0;
-			$contents = array_merge($target->getInventory()->all($item), $target->getArmorInventory()->all($item));
-			foreach($contents as $content){
-				$count += $content->getCount();
-			}
+		/**
+		 * @var SimpleInventory[] $inventories - This is the order that vanilla would clear items in.
+		 */
+		$inventories = [
+			$target->getInventory(),
+			$target->getCursorInventory(),
+			$target->getArmorInventory()
+		];
+
+		// Checking player's inventory for all the items matching the criteria
+		if($targetItem !== null and $maxCount === 0){
+			$count = array_reduce($inventories, static fn(int $carry, SimpleInventory $inventory) => $carry + $this->countItems($inventory, $targetItem), 0);
 
 			if($count > 0){
 				$sender->sendMessage(KnownTranslationFactory::commands_clear_testing($target->getName(), (string) $count));
@@ -110,61 +115,48 @@ class ClearCommand extends VanillaCommand{
 			return true;
 		}
 
-		$cleared = 0;
-
-		//clear everything from the targets inventory
-		if($item === null){
-			$contents = array_merge($target->getInventory()->getContents(), $target->getArmorInventory()->getContents());
-			foreach($contents as $content){
-				$cleared += $content->getCount();
+		$clearedCount = 0;
+		if($targetItem === null){
+			// Clear everything from the target's inventory
+			foreach($inventories as $inventory) {
+				$clearedCount += $this->countItems($inventory, null);
+				$inventory->clearAll();
 			}
-
-			$target->getInventory()->clearAll();
-			$target->getArmorInventory()->clearAll();
-			//TODO: should the cursor inv be cleared?
 		}else{
-			//clear the item from targets inventory irrelevant of the count
+			// Clear the item from target's inventory irrelevant of the count
 			if($maxCount === -1){
-				if(($slot = $target->getArmorInventory()->first($item)) !== -1){
-					$cleared++;
-					$target->getArmorInventory()->clear($slot);
-				}
-
-				foreach($target->getInventory()->all($item) as $index => $i){
-					$cleared += $i->getCount();
-					$target->getInventory()->clear($index);
+				foreach($inventories as $inventory) {
+					$clearedCount += $this->countItems($inventory, $targetItem);
+					$inventory->remove($targetItem);
 				}
 			}else{
-				//clear only the given amount of that particular item from targets inventory
-				if(($slot = $target->getArmorInventory()->first($item)) !== -1){
-					$cleared++;
-					$maxCount--;
-					$target->getArmorInventory()->clear($slot);
-				}
+				// Clear the item from target's inventory up to the count
+				$inventoryIndex = 0;
+				while($maxCount > 0 && $inventoryIndex < count($inventories)){
+					$inventory = $inventories[$inventoryIndex];
+					// Move onto next inventory from prioritization list if empty
+					if(count($inventory->getContents()) === 0){
+						$inventoryIndex++;
+						continue;
+					}
+					foreach($inventory->all($targetItem) as $index => $item) {
+						$count = min($item->getCount(), $maxCount);
+						$item->pop($count);
+						$clearedCount += $count;
+						$inventory->setItem($index, $item);
 
-				if($maxCount > 0){
-					foreach($target->getInventory()->all($item) as $index => $i){
-						if($i->getCount() >= $maxCount){
-							$i->pop($maxCount);
-							$cleared += $maxCount;
-							$target->getInventory()->setItem($index, $i);
-							break;
-						}
-
+						$maxCount -= $count;
 						if($maxCount <= 0){
 							break;
 						}
-
-						$cleared += $i->getCount();
-						$maxCount -= $i->getCount();
-						$target->getInventory()->clear($index);
 					}
+					$inventoryIndex++;
 				}
 			}
 		}
 
-		if($cleared > 0){
-			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_clear_success($target->getName(), (string) $cleared));
+		if($clearedCount > 0){
+			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_clear_success($target->getName(), (string) $clearedCount));
 		}else{
 			$sender->sendMessage(KnownTranslationFactory::commands_clear_failure_no_items($target->getName())->prefix(TextFormat::RED));
 		}
