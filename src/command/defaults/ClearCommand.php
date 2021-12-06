@@ -120,16 +120,16 @@ class ClearCommand extends VanillaCommand{
 		if($targetItem === null){
 			// Clear all items from the inventories
 			foreach($inventories as $inventory) {
-				$clearedCount += $this->countItems([$inventory], null);
 				$inventory->clearAll();
 			}
+			$clearedCount += $this->countItems($inventories, null);
 		}else{
 			// Clear the item from target's inventory irrelevant of the count
 			if($maxCount === -1){
 				foreach($inventories as $inventory) {
-					$clearedCount += $this->countItems([$inventory], $targetItem);
 					$inventory->remove($targetItem);
 				}
+				$clearedCount += $this->countItems($inventories, $targetItem);
 			}else{
 				// Clear the item from target's inventory up to maxCount
 				foreach($inventories as $inventory) {
