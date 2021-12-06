@@ -96,7 +96,7 @@ class ClearCommand extends VanillaCommand{
 		}
 
 		/**
-		 * @var SimpleInventory[] $inventories - This is the order that vanilla would clear items in.
+		 * @var Inventory[] $inventories - This is the order that vanilla would clear items in.
 		 */
 		$inventories = [
 			$target->getInventory(),
@@ -106,8 +106,7 @@ class ClearCommand extends VanillaCommand{
 
 		// Checking player's inventory for all the items matching the criteria
 		if($targetItem !== null and $maxCount === 0){
-			$count = array_reduce($inventories, fn(int $carry, SimpleInventory $inventory) => $carry + $this->countItems($inventory, $targetItem), 0);
-
+			$count = array_reduce($inventories, fn(int $carry, Inventory $inventory) => $carry + $this->countItems($inventory, $targetItem), 0);
 			if($count > 0){
 				$sender->sendMessage(KnownTranslationFactory::commands_clear_testing($target->getName(), (string) $count));
 			}else{
@@ -119,7 +118,7 @@ class ClearCommand extends VanillaCommand{
 
 		$clearedCount = 0;
 		if($targetItem === null){
-			// Clear everything from the target's inventory
+			// Clear all items from the inventories
 			foreach($inventories as $inventory) {
 				$clearedCount += $this->countItems($inventory, null);
 				$inventory->clearAll();
@@ -132,27 +131,29 @@ class ClearCommand extends VanillaCommand{
 					$inventory->remove($targetItem);
 				}
 			}else{
-				// Clear the item from target's inventory up to the count
-				$inventoryIndex = 0;
-				while($maxCount > 0 && $inventoryIndex < count($inventories)){
-					$inventory = $inventories[$inventoryIndex];
-					// Move onto next inventory from prioritization list if empty
-					if(count($inventory->getContents()) === 0){
-						$inventoryIndex++;
+				// Clear the item from target's inventory up to maxCount
+				foreach($inventories as $inventory) {
+					// Break if we've cleared enough items
+					if($maxCount === 0){
+						break;
+					}
+
+					if(count($inventory->getContents()) === 0) {
 						continue;
 					}
+
 					foreach($inventory->all($targetItem) as $index => $item) {
-						$count = min($item->getCount(), $maxCount);
-						$item->pop($count);
-						$clearedCount += $count;
+						// The count to reduce from the item and max count
+						$reductionCount = min($item->getCount(), $maxCount);
+						$item->pop($reductionCount);
+						$clearedCount += $reductionCount;
 						$inventory->setItem($index, $item);
 
-						$maxCount -= $count;
+						$maxCount -= $reductionCount;
 						if($maxCount <= 0){
-							break;
+							break 2;
 						}
 					}
-					$inventoryIndex++;
 				}
 			}
 		}
