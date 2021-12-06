@@ -132,11 +132,6 @@ class ClearCommand extends VanillaCommand{
 			}else{
 				// Clear the item from target's inventory up to maxCount
 				foreach($inventories as $inventory){
-					// Break if we've cleared enough items
-					if($maxCount === 0){
-						break;
-					}
-
 					foreach($inventory->all($targetItem) as $index => $item){
 						// The count to reduce from the item and max count
 						$reductionCount = min($item->getCount(), $maxCount);
