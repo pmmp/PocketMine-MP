@@ -137,10 +137,6 @@ class ClearCommand extends VanillaCommand{
 						break;
 					}
 
-					if(count($inventory->getContents()) === 0){
-						continue;
-					}
-
 					foreach($inventory->all($targetItem) as $index => $item){
 						// The count to reduce from the item and max count
 						$reductionCount = min($item->getCount(), $maxCount);
