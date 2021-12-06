@@ -104,7 +104,7 @@ class ClearCommand extends VanillaCommand{
 
 		// Checking player's inventory for all the items matching the criteria
 		if($targetItem !== null and $maxCount === 0){
-			$count = array_reduce($inventories, static fn(int $carry, SimpleInventory $inventory) => $carry + $this->countItems($inventory, $targetItem), 0);
+			$count = array_reduce($inventories, fn(int $carry, SimpleInventory $inventory) => $carry + $this->countItems($inventory, $targetItem), 0);
 
 			if($count > 0){
 				$sender->sendMessage(KnownTranslationFactory::commands_clear_testing($target->getName(), (string) $count));
@@ -164,7 +164,7 @@ class ClearCommand extends VanillaCommand{
 		return true;
 	}
 
-	protected function countItems(SimpleInventory $inventory, ?Item $target): int {
+	protected static function countItems(SimpleInventory $inventory, ?Item $target): int {
 		return array_reduce(
 			$target instanceof Item ? $inventory->all($target) : $inventory->getContents(),
 			static fn(int $carry, Item $item): int => $carry + $item->getCount(),
