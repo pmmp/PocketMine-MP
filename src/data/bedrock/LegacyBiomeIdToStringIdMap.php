@@ -21,15 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\data\bedrock;
 
-use pocketmine\item\Item;
+use pocketmine\utils\SingletonTrait;
+use Webmozart\PathUtil\Path;
 
-class Podzol extends Opaque{
+final class LegacyBiomeIdToStringIdMap extends LegacyToStringBidirectionalIdMap{
+	use SingletonTrait;
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaBlocks::DIRT()->asItem()
-		];
+	public function __construct(){
+		parent::__construct(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'biome_id_map.json'));
 	}
 }

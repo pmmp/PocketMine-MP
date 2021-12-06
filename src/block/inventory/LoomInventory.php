@@ -24,10 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\block\inventory;
 
 use pocketmine\inventory\SimpleInventory;
-use pocketmine\player\Player;
+use pocketmine\inventory\TemporaryInventory;
 use pocketmine\world\Position;
 
-final class LoomInventory extends SimpleInventory implements BlockInventory{
+final class LoomInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
 	use BlockInventoryTrait;
 
 	public const SLOT_BANNER = 0;
@@ -37,14 +37,5 @@ final class LoomInventory extends SimpleInventory implements BlockInventory{
 	public function __construct(Position $holder, int $size = 3){
 		$this->holder = $holder;
 		parent::__construct($size);
-	}
-
-	public function onClose(Player $who) : void{
-		parent::onClose($who);
-
-		foreach($this->getContents() as $item){
-			$who->dropItem($item);
-		}
-		$this->clearAll();
 	}
 }

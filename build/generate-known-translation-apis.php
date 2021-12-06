@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\build\generate_known_translation_apis;
 
 use pocketmine\lang\Translatable;
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function array_map;
 use function count;
@@ -100,7 +101,7 @@ final class KnownTranslationKeys{
 HEADER;
 
 	ksort($languageDefinitions, SORT_STRING);
-	foreach($languageDefinitions as $k => $_){
+	foreach(Utils::stringifyKeys($languageDefinitions) as $k => $_){
 		echo "\tpublic const ";
 		echo constantify($k);
 		echo " = \"" . $k . "\";\n";
@@ -135,7 +136,7 @@ HEADER;
 	$parameterRegex = '/{%(.+?)}/';
 
 	$translationContainerClass = (new \ReflectionClass(Translatable::class))->getShortName();
-	foreach($languageDefinitions as $key => $value){
+	foreach(Utils::stringifyKeys($languageDefinitions) as $key => $value){
 		$parameters = [];
 		if(preg_match_all($parameterRegex, $value, $matches) > 0){
 			foreach($matches[1] as $parameterName){

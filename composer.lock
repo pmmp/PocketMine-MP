@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6de5c66b7a0f693fd30c701b0d0db3d1",
+    "content-hash": "b515e7eebbf12a6251d2df817ce56dbc",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -249,16 +249,16 @@
         },
         {
             "name": "pocketmine/bedrock-data",
-            "version": "1.4.0+bedrock-1.17.40",
+            "version": "1.5.0+bedrock-1.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "f29b7be8fa3046d2ee4c6421485b97b3f5b07774"
+                "reference": "482c679aa5ed0b81c088c2b1ff0b8110a94c8a6c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/f29b7be8fa3046d2ee4c6421485b97b3f5b07774",
-                "reference": "f29b7be8fa3046d2ee4c6421485b97b3f5b07774",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/482c679aa5ed0b81c088c2b1ff0b8110a94c8a6c",
+                "reference": "482c679aa5ed0b81c088c2b1ff0b8110a94c8a6c",
                 "shasum": ""
             },
             "type": "library",
@@ -269,22 +269,22 @@
             "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockData/issues",
-                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.17.40"
+                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.18.0"
             },
-            "time": "2021-10-19T16:55:41+00:00"
+            "time": "2021-11-30T18:30:46+00:00"
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "5.1.0+bedrock-1.17.40",
+            "version": "7.0.0+bedrock-1.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "5abbe5bc21d8a9152d46c26578bf5257526612f9"
+                "reference": "040a883a4abb8c9b93114d5278cb5fecc635da82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/5abbe5bc21d8a9152d46c26578bf5257526612f9",
-                "reference": "5abbe5bc21d8a9152d46c26578bf5257526612f9",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/040a883a4abb8c9b93114d5278cb5fecc635da82",
+                "reference": "040a883a4abb8c9b93114d5278cb5fecc635da82",
                 "shasum": ""
             },
             "require": {
@@ -298,7 +298,7 @@
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.1.1",
+                "phpstan/phpstan": "1.2.0",
                 "phpstan/phpstan-phpunit": "^1.0.0",
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5"
@@ -316,9 +316,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/5.1.0+bedrock-1.17.40"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/7.0.0+bedrock-1.18.0"
             },
-            "time": "2021-11-08T16:26:25+00:00"
+            "time": "2021-11-30T19:02:41+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -533,16 +533,16 @@
         },
         {
             "name": "pocketmine/locale-data",
-            "version": "1.1.6",
+            "version": "2.0.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Language.git",
-                "reference": "216b49b87e20332f0b39d1717e1e2012a40074cc"
+                "reference": "a6e4eb22587e0014f6d658732cf633262723f8d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Language/zipball/216b49b87e20332f0b39d1717e1e2012a40074cc",
-                "reference": "216b49b87e20332f0b39d1717e1e2012a40074cc",
+                "url": "https://api.github.com/repos/pmmp/Language/zipball/a6e4eb22587e0014f6d658732cf633262723f8d3",
+                "reference": "a6e4eb22587e0014f6d658732cf633262723f8d3",
                 "shasum": ""
             },
             "type": "library",
@@ -550,9 +550,9 @@
             "description": "Language resources used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Language/issues",
-                "source": "https://github.com/pmmp/Language/tree/1.1.6"
+                "source": "https://github.com/pmmp/Language/tree/2.0.20"
             },
-            "time": "2021-11-07T14:30:46+00:00"
+            "time": "2021-11-25T20:56:12+00:00"
         },
         {
             "name": "pocketmine/log",
@@ -1898,16 +1898,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.0.2",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "e9e2a501102ba0b126b2f63a7f0a3b151056fe91"
+                "reference": "cbe085f9fdead5b6d62e4c022ca52dc9427a10ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e9e2a501102ba0b126b2f63a7f0a3b151056fe91",
-                "reference": "e9e2a501102ba0b126b2f63a7f0a3b151056fe91",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/cbe085f9fdead5b6d62e4c022ca52dc9427a10ee",
+                "reference": "cbe085f9fdead5b6d62e4c022ca52dc9427a10ee",
                 "shasum": ""
             },
             "require": {
@@ -1923,7 +1923,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.0-dev"
+                    "dev-master": "1.2-dev"
                 }
             },
             "autoload": {
@@ -1938,7 +1938,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.0.2"
+                "source": "https://github.com/phpstan/phpstan/tree/1.2.0"
             },
             "funding": [
                 {
@@ -1958,7 +1958,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-11-03T16:09:51+00:00"
+            "time": "2021-11-18T14:09:01+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -2017,21 +2017,21 @@
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "7f50eb112f37fda2ef956813d3f1e9b1e69d7940"
+                "reference": "e12d55f74a8cca18c6e684c6450767e055ba7717"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/7f50eb112f37fda2ef956813d3f1e9b1e69d7940",
-                "reference": "7f50eb112f37fda2ef956813d3f1e9b1e69d7940",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/e12d55f74a8cca18c6e684c6450767e055ba7717",
+                "reference": "e12d55f74a8cca18c6e684c6450767e055ba7717",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.1 || ^8.0",
-                "phpstan/phpstan": "^1.0"
+                "phpstan/phpstan": "^1.2.0"
             },
             "require-dev": {
                 "nikic/php-parser": "^4.13.0",
@@ -2062,22 +2062,22 @@
             "description": "Extra strict and opinionated rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-strict-rules/issues",
-                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/1.0.0"
+                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/1.1.0"
             },
-            "time": "2021-10-11T06:57:58+00:00"
+            "time": "2021-11-18T09:30:29+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
-            "version": "9.2.8",
+            "version": "9.2.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "cf04e88a2e3c56fc1a65488afd493325b4c1bc3e"
+                "reference": "f301eb1453c9e7a1bc912ee8b0ea9db22c60223b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/cf04e88a2e3c56fc1a65488afd493325b4c1bc3e",
-                "reference": "cf04e88a2e3c56fc1a65488afd493325b4c1bc3e",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/f301eb1453c9e7a1bc912ee8b0ea9db22c60223b",
+                "reference": "f301eb1453c9e7a1bc912ee8b0ea9db22c60223b",
                 "shasum": ""
             },
             "require": {
@@ -2133,7 +2133,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.8"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/9.2.9"
             },
             "funding": [
                 {
@@ -2141,7 +2141,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-10-30T08:01:38+00:00"
+            "time": "2021-11-19T15:21:02+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -2916,16 +2916,16 @@
         },
         {
             "name": "sebastian/exporter",
-            "version": "4.0.3",
+            "version": "4.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/exporter.git",
-                "reference": "d89cc98761b8cb5a1a235a6b703ae50d34080e65"
+                "reference": "65e8b7db476c5dd267e65eea9cab77584d3cfff9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/exporter/zipball/d89cc98761b8cb5a1a235a6b703ae50d34080e65",
-                "reference": "d89cc98761b8cb5a1a235a6b703ae50d34080e65",
+                "url": "https://api.github.com/repos/sebastianbergmann/exporter/zipball/65e8b7db476c5dd267e65eea9cab77584d3cfff9",
+                "reference": "65e8b7db476c5dd267e65eea9cab77584d3cfff9",
                 "shasum": ""
             },
             "require": {
@@ -2974,14 +2974,14 @@
                 }
             ],
             "description": "Provides the functionality to export PHP variables for visualization",
-            "homepage": "http://www.github.com/sebastianbergmann/exporter",
+            "homepage": "https://www.github.com/sebastianbergmann/exporter",
             "keywords": [
                 "export",
                 "exporter"
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/exporter/issues",
-                "source": "https://github.com/sebastianbergmann/exporter/tree/4.0.3"
+                "source": "https://github.com/sebastianbergmann/exporter/tree/4.0.4"
             },
             "funding": [
                 {
@@ -2989,7 +2989,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-09-28T05:24:23+00:00"
+            "time": "2021-11-11T14:18:36+00:00"
         },
         {
             "name": "sebastian/global-state",
@@ -3510,7 +3510,7 @@
     "platform": {
         "php": "^8.0",
         "php-64bit": "*",
-        "ext-chunkutils2": "^0.3.0",
+        "ext-chunkutils2": "^0.3.1",
         "ext-crypto": "^0.3.1",
         "ext-ctype": "*",
         "ext-curl": "*",

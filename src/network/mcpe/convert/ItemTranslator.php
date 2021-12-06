@@ -27,6 +27,7 @@ use pocketmine\data\bedrock\LegacyItemIdToStringIdMap;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function array_key_exists;
 use function file_get_contents;
@@ -73,10 +74,6 @@ final class ItemTranslator{
 			throw new AssumptionFailedError("Invalid item table format");
 		}
 
-		$legacyStringToIntMapRaw = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'item_id_map.json'));
-		if($legacyStringToIntMapRaw === false){
-			throw new AssumptionFailedError("Missing required resource file");
-		}
 		$legacyStringToIntMap = LegacyItemIdToStringIdMap::getInstance();
 
 		/** @phpstan-var array<string, int> $simpleMappings */
@@ -92,7 +89,7 @@ final class ItemTranslator{
 			}
 			$simpleMappings[$newId] = $intId;
 		}
-		foreach($legacyStringToIntMap->getStringToLegacyMap() as $stringId => $intId){
+		foreach(Utils::stringifyKeys($legacyStringToIntMap->getStringToLegacyMap()) as $stringId => $intId){
 			if(isset($simpleMappings[$stringId])){
 				throw new \UnexpectedValueException("Old ID $stringId collides with new ID");
 			}

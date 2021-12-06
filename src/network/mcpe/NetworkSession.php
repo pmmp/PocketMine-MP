@@ -111,6 +111,7 @@ use pocketmine\player\UsedChunkStatus;
 use pocketmine\player\XboxLivePlayerInfo;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
@@ -714,7 +715,7 @@ class NetworkSession{
 
 	public function onServerDeath() : void{
 		if($this->handler instanceof InGamePacketHandler){ //TODO: this is a bad fix for pre-spawn death, this shouldn't be reachable at all at this stage :(
-			$this->setHandler(new DeathPacketHandler($this->player, $this));
+			$this->setHandler(new DeathPacketHandler($this->player, $this, $this->invManager ?? throw new AssumptionFailedError()));
 		}
 	}
 
@@ -796,7 +797,7 @@ class NetworkSession{
 		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->isSpectator());
 		$pk->setFlag(AdventureSettingsPacket::AUTO_JUMP, $for->hasAutoJump());
 		$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $for->getAllowFlight());
-		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, $for->isSpectator());
+		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, !$for->hasBlockCollision());
 		$pk->setFlag(AdventureSettingsPacket::FLYING, $for->isFlying());
 
 		//TODO: permission flags

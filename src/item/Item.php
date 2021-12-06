@@ -31,6 +31,7 @@ use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\math\Vector3;
@@ -671,6 +672,8 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Deserializes an Item from an NBT CompoundTag
+	 * @throws NbtException
+	 * @throws SavedDataLoadingException
 	 */
 	public static function nbtDeserialize(CompoundTag $tag) : Item{
 		if($tag->getTag("id") === null or $tag->getTag("Count") === null){
@@ -692,7 +695,7 @@ class Item implements \JsonSerializable{
 			}
 			$item->setCount($count);
 		}else{
-			throw new \InvalidArgumentException("Item CompoundTag ID must be an instance of StringTag or ShortTag, " . get_class($idTag) . " given");
+			throw new SavedDataLoadingException("Item CompoundTag ID must be an instance of StringTag or ShortTag, " . get_class($idTag) . " given");
 		}
 
 		$itemNBT = $tag->getCompoundTag("tag");

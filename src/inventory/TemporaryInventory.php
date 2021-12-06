@@ -21,15 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\inventory;
 
-use pocketmine\item\Item;
+interface TemporaryInventory extends Inventory{
 
-class Podzol extends Opaque{
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaBlocks::DIRT()->asItem()
-		];
-	}
 }

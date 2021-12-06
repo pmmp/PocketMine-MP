@@ -77,6 +77,7 @@ use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\PlayerCraftingInventory;
 use pocketmine\inventory\PlayerCursorInventory;
+use pocketmine\inventory\TemporaryInventory;
 use pocketmine\inventory\transaction\action\DropItemAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\inventory\transaction\TransactionBuilderInventory;
@@ -233,6 +234,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	//TODO: Abilities
 	protected bool $autoJump = true;
 	protected bool $allowFlight = false;
+	protected bool $blockCollision = true;
 	protected bool $flying = false;
 
 	protected ?int $lineHeight = null;
@@ -391,6 +393,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function getAllowFlight() : bool{
 		return $this->allowFlight;
+	}
+
+	public function setHasBlockCollision(bool $value) : void{
+		$this->blockCollision = $value;
+		$this->getNetworkSession()->syncAdventureSettings($this);
+	}
+
+	public function hasBlockCollision() : bool{
+		return $this->blockCollision;
 	}
 
 	public function setFlying(bool $value) : void{
@@ -969,6 +980,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		if($this->isSpectator()){
 			$this->setFlying(true);
+			$this->setHasBlockCollision(false);
 			$this->setSilent();
 			$this->onGround = false;
 
@@ -979,6 +991,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			if($this->isSurvival()){
 				$this->setFlying(false);
 			}
+			$this->setHasBlockCollision(true);
 			$this->setSilent(false);
 			$this->checkGroundState(0, 0, 0, 0, 0, 0);
 		}
@@ -1315,7 +1328,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * as a command.
 	 */
 	public function chat(string $message) : bool{
-		$this->doCloseInventory();
+		$this->removeCurrentWindow();
 
 		$message = TextFormat::clean($message, false);
 		foreach(explode("\n", $message) as $messagePart){
@@ -1571,7 +1584,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @return bool if the block was successfully broken, false if a rollback needs to take place.
 	 */
 	public function breakBlock(Vector3 $pos) : bool{
-		$this->doCloseInventory();
+		$this->removeCurrentWindow();
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 7)){
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
@@ -1990,7 +2003,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		//prevent the player receiving their own disconnect message
 		$this->server->unsubscribeFromAllBroadcastChannels($this);
 
-		$this->doCloseInventory();
+		$this->removeCurrentWindow();
 
 		$ev = new PlayerQuitEvent($this, $quitMessage ?? $this->getLeaveMessage(), $reason);
 		$ev->call();
@@ -2103,7 +2116,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function onDeath() : void{
 		//Crafting grid must always be evacuated even if keep-inventory is true. This dumps the contents into the
 		//main inventory and drops the rest on the ground.
-		$this->doCloseInventory();
+		$this->removeCurrentWindow();
 
 		$ev = new PlayerDeathEvent($this, $this->getDrops(), $this->getXpDropAmount(), null);
 		$ev->call();
@@ -2321,9 +2334,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * @internal Called to clean up crafting grid and cursor inventory when it is detected that the player closed their
 	 * inventory.
 	 */
-	public function doCloseInventory() : void{
-		/** @var Inventory[] $inventories */
+	private function doCloseInventory() : void{
 		$inventories = [$this->craftingGrid, $this->cursorInventory];
+		if($this->currentWindow instanceof TemporaryInventory){
+			$inventories[] = $this->currentWindow;
+		}
 
 		$transaction = new InventoryTransaction($this);
 		$mainInventoryTransactionBuilder = new TransactionBuilderInventory($this->inventory);
@@ -2396,6 +2411,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function removeCurrentWindow() : void{
+		$this->doCloseInventory();
 		if($this->currentWindow !== null){
 			(new InventoryCloseEvent($this->currentWindow, $this))->call();
 

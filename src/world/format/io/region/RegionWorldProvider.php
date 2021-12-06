@@ -146,7 +146,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	abstract protected function deserializeChunk(string $data) : ChunkData;
+	abstract protected function deserializeChunk(string $data) : ?ChunkData;
 
 	/**
 	 * @return CompoundTag[]
@@ -173,6 +173,9 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	protected static function readFixedSizeByteArray(CompoundTag $chunk, string $tagName, int $length) : string{
 		$tag = $chunk->getTag($tagName);
 		if(!($tag instanceof ByteArrayTag)){
+			if($tag === null){
+				throw new CorruptedChunkException("'$tagName' key is missing from chunk NBT");
+			}
 			throw new CorruptedChunkException("Expected TAG_ByteArray for '$tagName'");
 		}
 		$data = $tag->getValue();

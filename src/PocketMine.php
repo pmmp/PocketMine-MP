@@ -34,6 +34,7 @@ namespace pocketmine {
 	use pocketmine\utils\Timezone;
 	use pocketmine\wizard\SetupWizard;
 	use Webmozart\PathUtil\Path;
+	use function defined;
 	use function extension_loaded;
 	use function phpversion;
 	use function preg_match;
@@ -143,6 +144,10 @@ namespace pocketmine {
 
 		if(extension_loaded("pocketmine")){
 			$messages[] = "The native PocketMine extension is no longer supported.";
+		}
+
+		if(!defined('AF_INET6')){
+			$messages[] = "IPv6 support is required, but your PHP binary was built without IPv6 support.";
 		}
 
 		return $messages;

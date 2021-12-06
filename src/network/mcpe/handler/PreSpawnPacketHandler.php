@@ -104,6 +104,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 			false,
 			sprintf("%s %s", VersionInfo::NAME, VersionInfo::VERSION()->getFullVersion(true)),
 			[],
+			0,
 			GlobalItemTypeDictionary::getInstance()->getDictionary()->getEntries()
 		));
 
