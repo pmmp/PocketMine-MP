@@ -643,16 +643,16 @@
         },
         {
             "name": "pocketmine/math",
-            "version": "0.4.0",
+            "version": "0.4.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Math.git",
-                "reference": "6d64e2555bd2e95ed024574f75d1cefc135c89fc"
+                "reference": "aacc3759a508a69dfa5bc4dfa770ab733c5c94bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Math/zipball/6d64e2555bd2e95ed024574f75d1cefc135c89fc",
-                "reference": "6d64e2555bd2e95ed024574f75d1cefc135c89fc",
+                "url": "https://api.github.com/repos/pmmp/Math/zipball/aacc3759a508a69dfa5bc4dfa770ab733c5c94bf",
+                "reference": "aacc3759a508a69dfa5bc4dfa770ab733c5c94bf",
                 "shasum": ""
             },
             "require": {
@@ -660,10 +660,10 @@
                 "php-64bit": "*"
             },
             "require-dev": {
-                "irstea/phpunit-shim": "^8.5 || ^9.5",
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.99",
-                "phpstan/phpstan-strict-rules": "^0.12.4"
+                "phpstan/phpstan": "1.2.0",
+                "phpstan/phpstan-strict-rules": "^1.0",
+                "phpunit/phpunit": "^8.5 || ^9.5"
             },
             "type": "library",
             "autoload": {
@@ -678,22 +678,22 @@
             "description": "PHP library containing math related code used in PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Math/issues",
-                "source": "https://github.com/pmmp/Math/tree/0.4.0"
+                "source": "https://github.com/pmmp/Math/tree/0.4.2"
             },
-            "time": "2021-10-29T20:33:10+00:00"
+            "time": "2021-12-05T01:15:17+00:00"
         },
         {
             "name": "pocketmine/nbt",
-            "version": "0.3.0",
+            "version": "0.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "98c4a04b55a915e18f83d3b0c9beb24a71abcd31"
+                "reference": "f43db89b8216b772407cdcedd90147db8eef34bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/98c4a04b55a915e18f83d3b0c9beb24a71abcd31",
-                "reference": "98c4a04b55a915e18f83d3b0c9beb24a71abcd31",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/f43db89b8216b772407cdcedd90147db8eef34bc",
+                "reference": "f43db89b8216b772407cdcedd90147db8eef34bc",
                 "shasum": ""
             },
             "require": {
@@ -704,7 +704,7 @@
             "require-dev": {
                 "irstea/phpunit-shim": "^9.5",
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.85",
+                "phpstan/phpstan": "0.12.99",
                 "phpstan/phpstan-strict-rules": "^0.12.4"
             },
             "type": "library",
@@ -720,9 +720,9 @@
             "description": "PHP library for working with Named Binary Tags",
             "support": {
                 "issues": "https://github.com/pmmp/NBT/issues",
-                "source": "https://github.com/pmmp/NBT/tree/0.3.0"
+                "source": "https://github.com/pmmp/NBT/tree/0.3.1"
             },
-            "time": "2021-05-18T15:46:33+00:00"
+            "time": "2021-12-06T16:19:10+00:00"
         },
         {
             "name": "pocketmine/raklib",
