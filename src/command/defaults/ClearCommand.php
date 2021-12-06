@@ -35,7 +35,6 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
-use function array_reduce;
 use function count;
 use function implode;
 use function min;
