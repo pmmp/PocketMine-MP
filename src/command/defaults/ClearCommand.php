@@ -166,7 +166,7 @@ class ClearCommand extends VanillaCommand{
 		return true;
 	}
 
-	protected static function countItems(SimpleInventory $inventory, ?Item $target): int {
+	protected function countItems(SimpleInventory $inventory, ?Item $target): int {
 		return array_reduce(
 			$target instanceof Item ? $inventory->all($target) : $inventory->getContents(),
 			static fn(int $carry, Item $item): int => $carry + $item->getCount(),
