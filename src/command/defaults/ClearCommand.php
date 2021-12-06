@@ -168,9 +168,6 @@ class ClearCommand extends VanillaCommand{
 
 	/**
 	 * @param Inventory[] $inventories
-	 * @param Item|null $target
-	 *
-	 * @return int
 	 */
 	protected function countItems(array $inventories, ?Item $target) : int{
 		$count = 0;
