@@ -138,16 +138,7 @@ class Fire extends Flowable{
 		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
 
 		if($canSpread){
-			//TODO: raise upper bound for chance in humid biomes
-
-			foreach($this->getHorizontalSides() as $side){
-				$this->burnBlock($side, 300);
-			}
-
-			//vanilla uses a 250 upper bound here, but I don't think they intended to increase the chance of incineration
-			$this->burnBlock($this->getSide(Facing::UP), 350);
-			$this->burnBlock($this->getSide(Facing::DOWN), 350);
-
+			$this->burnBlocksAround();
 			//TODO: fire spread
 		}
 	}
@@ -164,6 +155,18 @@ class Fire extends Flowable{
 		}
 
 		return false;
+	}
+
+	private function burnBlocksAround() : void{
+		//TODO: raise upper bound for chance in humid biomes
+
+		foreach($this->getHorizontalSides() as $side){
+			$this->burnBlock($side, 300);
+		}
+
+		//vanilla uses a 250 upper bound here, but I don't think they intended to increase the chance of incineration
+		$this->burnBlock($this->getSide(Facing::UP), 350);
+		$this->burnBlock($this->getSide(Facing::DOWN), 350);
 	}
 
 	private function burnBlock(Block $block, int $chanceBound) : void{
