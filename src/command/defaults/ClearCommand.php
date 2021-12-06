@@ -106,7 +106,7 @@ class ClearCommand extends VanillaCommand{
 
 		// Checking player's inventory for all the items matching the criteria
 		if($targetItem !== null and $maxCount === 0){
-			$count = array_reduce($inventories, fn(int $carry, Inventory $inventory) => $carry + $this->countItems($inventory, $targetItem), 0);
+			$count =  $this->countItems($inventories, $targetItem);
 			if($count > 0){
 				$sender->sendMessage(KnownTranslationFactory::commands_clear_testing($target->getName(), (string) $count));
 			}else{
@@ -120,14 +120,14 @@ class ClearCommand extends VanillaCommand{
 		if($targetItem === null){
 			// Clear all items from the inventories
 			foreach($inventories as $inventory) {
-				$clearedCount += $this->countItems($inventory, null);
+				$clearedCount += $this->countItems([$inventory], null);
 				$inventory->clearAll();
 			}
 		}else{
 			// Clear the item from target's inventory irrelevant of the count
 			if($maxCount === -1){
 				foreach($inventories as $inventory) {
-					$clearedCount += $this->countItems($inventory, $targetItem);
+					$clearedCount += $this->countItems([$inventory], $targetItem);
 					$inventory->remove($targetItem);
 				}
 			}else{
@@ -167,11 +167,19 @@ class ClearCommand extends VanillaCommand{
 		return true;
 	}
 
-	protected function countItems(Inventory $inventory, ?Item $target) : int{
+	/**
+	 * @param Inventory[] $inventories
+	 * @param Item|null $target
+	 *
+	 * @return int
+	 */
+	protected function countItems(array $inventories, ?Item $target) : int{
 		$count = 0;
-		$contents = $target instanceof Item ? $inventory->all($target) : $inventory->getContents();
-		foreach($contents as $item) {
-			$count += $item->getCount();
+		foreach($inventories as $inventory) {
+			$contents = $target instanceof Item ? $inventory->all($target) : $inventory->getContents();
+			foreach($contents as $item) {
+				$count += $item->getCount();
+			}
 		}
 		return $count;
 	}
