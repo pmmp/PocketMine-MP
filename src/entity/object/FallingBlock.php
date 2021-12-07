@@ -26,6 +26,7 @@ namespace pocketmine\entity\object;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\Fallable;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
@@ -71,7 +72,7 @@ class FallingBlock extends Entity{
 		}
 
 		if($blockId === 0){
-			throw new \UnexpectedValueException("Missing block info from NBT");
+			throw new SavedDataLoadingException("Missing block info from NBT");
 		}
 
 		$damage = $nbt->getByte("Data", 0);
