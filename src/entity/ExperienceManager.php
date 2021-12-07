@@ -51,6 +51,9 @@ class ExperienceManager{
 	/** @var int */
 	private $totalXp = 0;
 
+	/** @var bool */
+	private $attractsLocked = true;
+
 	/** @var int */
 	private $xpCooldown = 0;
 
@@ -298,5 +301,13 @@ class ExperienceManager{
 		if($this->xpCooldown > 0){
 			$this->xpCooldown = max(0, $this->xpCooldown - $tickDiff);
 		}
+	}
+
+	public function isAttractsLocked(): bool{
+		return $this->attractsLocked;
+	}
+
+	public function setAttractsLocked(bool $v = true): void{
+		$this->attractsLocked = $v;
 	}
 }

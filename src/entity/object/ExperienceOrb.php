@@ -145,7 +145,7 @@ class ExperienceOrb extends Entity{
 		}
 
 		$entity = $this->getWorld()->getEntity($this->targetPlayerRuntimeId);
-		if($entity instanceof Human){
+		if($entity instanceof Human && !$entity->getXpManager()->isAttractsLocked()){
 			return $entity;
 		}
 
@@ -153,7 +153,11 @@ class ExperienceOrb extends Entity{
 	}
 
 	public function setTargetPlayer(?Human $player) : void{
-		$this->targetPlayerRuntimeId = $player !== null ? $player->getId() : null;
+		if(($player instanceof Human && !$player->getXpManager()->isAttractsLocked()) or $player === null){
+			$this->targetPlayerRuntimeId = $player !== null ? $player->getId() : null;
+		}else{
+			$this->targetPlayerRuntimeId = null;
+		}
 	}
 
 	protected function entityBaseTick(int $tickDiff = 1) : bool{
@@ -174,7 +178,7 @@ class ExperienceOrb extends Entity{
 			if($currentTarget === null){
 				$newTarget = $this->getWorld()->getNearestEntity($this->location, self::MAX_TARGET_DISTANCE, Human::class);
 
-				if($newTarget instanceof Human and !($newTarget instanceof Player and $newTarget->isSpectator())){
+				if($newTarget instanceof Human and !($newTarget instanceof Player and $newTarget->isSpectator()) and !$newTarget->getXpManager()->isAttractsLocked()){
 					$currentTarget = $newTarget;
 				}
 			}
