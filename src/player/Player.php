@@ -236,7 +236,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected bool $allowFlight = false;
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
-	protected bool $noClip = false;
 
 	protected ?int $lineHeight = null;
 	protected string $locale = "en_US";
@@ -415,15 +414,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function isFlying() : bool{
 		return $this->flying;
-	}
-
-	public function setNoClip(bool $value) : void{
-		$this->noClip = $value;
-		$this->getNetworkSession()->syncAdventureSettings($this);
-	}
-
-	public function canNoClip() : bool{
-		return $this->noClip;
 	}
 
 	public function setAutoJump(bool $value) : void{
