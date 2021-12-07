@@ -52,9 +52,9 @@ use pocketmine\event\world\ChunkUnloadEvent;
 use pocketmine\event\world\SpawnChangeEvent;
 use pocketmine\event\world\WorldSaveEvent;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
+use pocketmine\item\VanillaItems;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
@@ -1687,7 +1687,7 @@ class World implements ChunkManager{
 		$affectedBlocks = $target->getAffectedBlocks();
 
 		if($item === null){
-			$item = ItemFactory::air();
+			$item = VanillaItems::AIR();
 		}
 
 		$drops = [];

@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 use pocketmine\utils\ObjectSet;
 use function array_slice;
@@ -89,7 +89,7 @@ abstract class BaseInventory implements Inventory{
 
 	public function setItem(int $index, Item $item) : void{
 		if($item->isNull()){
-			$item = ItemFactory::air();
+			$item = VanillaItems::AIR();
 		}else{
 			$item = clone $item;
 		}
@@ -290,7 +290,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function clear(int $index) : void{
-		$this->setItem($index, ItemFactory::air());
+		$this->setItem($index, VanillaItems::AIR());
 	}
 
 	public function clearAll() : void{
