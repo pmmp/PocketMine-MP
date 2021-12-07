@@ -52,7 +52,7 @@ class ExperienceManager{
 	private $totalXp = 0;
 
 	/** @var bool */
-	private $attractsLocked = true;
+	private $attractsLocked = false;
 
 	/** @var int */
 	private $xpCooldown = 0;
