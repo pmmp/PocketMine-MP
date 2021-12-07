@@ -1564,7 +1564,7 @@ class Server{
 
 				$stamp = Path::join($this->getDataPath(), "crashdumps", ".last_crash");
 				$crashInterval = 120; //2 minutes
-				if(file_exists($stamp) and !($report = (filemtime($stamp) + $crashInterval < time()))){
+				if(($lastReportTime = @filemtime($stamp)) !== false and !($report = ($lastReportTime + $crashInterval < time()))){
 					$this->logger->debug("Not sending crashdump due to last crash less than $crashInterval seconds ago");
 				}
 				@touch($stamp); //update file timestamp
