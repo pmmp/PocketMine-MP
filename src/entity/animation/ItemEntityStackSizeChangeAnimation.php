@@ -21,29 +21,20 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\entity\animation;
 
-use pocketmine\entity\Living;
-use pocketmine\player\Player;
+use pocketmine\entity\object\ItemEntity;
+use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
-abstract class Food extends Item implements FoodSourceItem{
-	public function requiresHunger() : bool{
-		return true;
-	}
+final class ItemEntityStackSizeChangeAnimation implements Animation{
 
-	public function getResidue() : Item{
-		return VanillaItems::AIR();
-	}
+	public function __construct(
+		private ItemEntity $itemEntity,
+		private int $newStackSize
+	){}
 
-	public function getAdditionalEffects() : array{
-		return [];
-	}
-
-	public function onConsume(Living $consumer) : void{
-
-	}
-
-	public function canStartUsingItem(Player $player) : bool{
-		return !$this->requiresHunger() || $player->getHungerManager()->isHungry();
+	public function encode() : array{
+		return [ActorEventPacket::create($this->itemEntity->getId(), ActorEvent::ITEM_ENTITY_MERGE, $this->newStackSize)];
 	}
 }

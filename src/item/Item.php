@@ -691,7 +691,7 @@ class Item implements \JsonSerializable{
 				$item = LegacyStringToItemParser::getInstance()->parse($idTag->getValue() . ":$meta");
 			}catch(LegacyStringToItemParserException $e){
 				//TODO: improve error handling
-				return ItemFactory::air();
+				return VanillaItems::AIR();
 			}
 			$item->setCount($count);
 		}else{

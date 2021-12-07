@@ -26,7 +26,7 @@ namespace pocketmine\inventory\transaction\action;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 
 /**
@@ -36,7 +36,7 @@ use pocketmine\player\Player;
 class CreateItemAction extends InventoryAction{
 
 	public function __construct(Item $sourceItem){
-		parent::__construct($sourceItem, ItemFactory::air());
+		parent::__construct($sourceItem, VanillaItems::AIR());
 	}
 
 	public function validate(Player $source) : void{

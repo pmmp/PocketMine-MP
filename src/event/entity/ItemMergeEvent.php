@@ -21,29 +21,32 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\event\entity;
 
-use pocketmine\entity\Living;
-use pocketmine\player\Player;
+use pocketmine\entity\object\ItemEntity;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 
-abstract class Food extends Item implements FoodSourceItem{
-	public function requiresHunger() : bool{
-		return true;
+/**
+ * Called when an item entity tries to merge into another item entity.
+ *
+ * @phpstan-extends EntityEvent<ItemEntity>
+ */
+class ItemMergeEvent extends EntityEvent implements Cancellable{
+	use CancellableTrait;
+
+	public function __construct(
+		ItemEntity $entity,
+		protected ItemEntity $target
+	){
+		$this->entity = $entity;
 	}
 
-	public function getResidue() : Item{
-		return VanillaItems::AIR();
+	/**
+	 * Returns the merge destination.
+	 */
+	public function getTarget() : ItemEntity{
+		return $this->target;
 	}
 
-	public function getAdditionalEffects() : array{
-		return [];
-	}
-
-	public function onConsume(Living $consumer) : void{
-
-	}
-
-	public function canStartUsingItem(Player $player) : bool{
-		return !$this->requiresHunger() || $player->getHungerManager()->isHungry();
-	}
 }
