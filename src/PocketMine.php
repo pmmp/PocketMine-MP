@@ -112,8 +112,7 @@ namespace pocketmine {
 			}
 		}
 
-		if(extension_loaded("pthreads")){
-			$pthreads_version = phpversion("pthreads");
+		if(($pthreads_version = phpversion("pthreads")) !== false){
 			if(substr_count($pthreads_version, ".") < 2){
 				$pthreads_version = "0.$pthreads_version";
 			}
@@ -122,8 +121,7 @@ namespace pocketmine {
 			}
 		}
 
-		if(extension_loaded("leveldb")){
-			$leveldb_version = phpversion("leveldb");
+		if(($leveldb_version = phpversion("leveldb")) !== false){
 			if(version_compare($leveldb_version, "0.2.1") < 0){
 				$messages[] = "php-leveldb >= 0.2.1 is required, while you have $leveldb_version.";
 			}
