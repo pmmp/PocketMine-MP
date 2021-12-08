@@ -52,7 +52,7 @@ class ExperienceManager{
 	private $totalXp = 0;
 
 	/** @var bool */
-	private $attractsLocked = false;
+	private $canAttractXpOrbs = true;
 
 	/** @var int */
 	private $xpCooldown = 0;
@@ -303,11 +303,11 @@ class ExperienceManager{
 		}
 	}
 
-	public function isAttractsLocked(): bool{
+	public function canAttractXpOrbs(): bool{
 		return $this->attractsLocked;
 	}
 
-	public function setAttractsLocked(bool $v = true): void{
+	public function setCanAttractXpOrbs(bool $v = true): void{
 		$this->attractsLocked = $v;
 	}
 }
