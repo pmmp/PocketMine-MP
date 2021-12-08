@@ -201,12 +201,7 @@ class AutoUpdater{
 	 * Returns the channel used for update checking (stable, beta, dev)
 	 */
 	public function getChannel() : string{
-		$channel = strtolower($this->server->getProperty("auto-updater.preferred-channel", "stable"));
-		if($channel !== "stable" and $channel !== "beta" and $channel !== "alpha" and $channel !== "development"){
-			$channel = "stable";
-		}
-
-		return $channel;
+		return strtolower($this->server->getProperty("auto-updater.preferred-channel", "stable"));
 	}
 
 	/**
