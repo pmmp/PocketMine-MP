@@ -164,8 +164,7 @@ class CrashDump{
 		$extensions = [];
 		foreach(get_loaded_extensions() as $ext){
 			$version = phpversion($ext);
-			if($version === false) throw new AssumptionFailedError();
-			$extensions[$ext] = $version;
+			$extensions[$ext] = $version !== false ? $version : "**UNKNOWN**";
 		}
 		$this->data->extensions = $extensions;
 
