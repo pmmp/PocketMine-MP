@@ -192,6 +192,8 @@ class AutoUpdater{
 
 		if($currentVersion->compare($newVersion) > 0 and ($currentVersion->getFullVersion() !== $newVersion->getFullVersion() or $currentVersion->getBuild() > 0)){
 			$this->newVersion = $newVersion;
+		}else{
+			$this->server->getLogger()->debug("[AutoUpdater] API reported version is an older version or the same version (" . $newVersion->getFullVersion() . "), not showing notification");
 		}
 	}
 
