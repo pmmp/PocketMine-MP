@@ -153,6 +153,8 @@ class UpdateChecker{
 
 		if($currentVersion->getBuild() > 0 && $currentVersion->compare($newVersion) > 0){
 			$this->updateInfo = $updateInfo;
+		}else{
+			$this->logger->debug("API reported version is an older version or the same version (" . $newVersion->getFullVersion() . "), not showing notification");
 		}
 	}
 
@@ -160,12 +162,7 @@ class UpdateChecker{
 	 * Returns the channel used for update checking (stable, beta, dev)
 	 */
 	public function getChannel() : string{
-		$channel = strtolower($this->server->getConfigGroup()->getPropertyString("auto-updater.preferred-channel", "stable"));
-		if($channel !== "stable" and $channel !== "beta" and $channel !== "alpha" and $channel !== "development"){
-			$channel = "stable";
-		}
-
-		return $channel;
+		return strtolower($this->server->getConfigGroup()->getPropertyString("auto-updater.preferred-channel", "stable"));
 	}
 
 	/**
