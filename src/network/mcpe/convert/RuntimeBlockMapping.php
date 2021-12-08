@@ -30,8 +30,8 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function file_get_contents;
 
@@ -49,11 +49,11 @@ final class RuntimeBlockMapping{
 	private $bedrockKnownStates;
 
 	private function __construct(){
-		$canonicalBlockStatesFile = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"));
-		if($canonicalBlockStatesFile === false){
-			throw new AssumptionFailedError("Missing required resource file");
-		}
-		$stream = PacketSerializer::decoder($canonicalBlockStatesFile, 0, new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary()));
+		$stream = PacketSerializer::decoder(
+			Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt")), "Missing required resource file"),
+			0,
+			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
+		);
 		$list = [];
 		while(!$stream->feof()){
 			$list[] = $stream->getNbtCompoundRoot();
@@ -67,7 +67,11 @@ final class RuntimeBlockMapping{
 		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
-		$legacyStateMapReader = PacketSerializer::decoder(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map.bin")), 0, new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary()));
+		$legacyStateMapReader = PacketSerializer::decoder(
+			Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map.bin")), "Missing required resource file"),
+			0,
+			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
+		);
 		$nbtReader = new NetworkNbtSerializer();
 		while(!$legacyStateMapReader->feof()){
 			$id = $legacyStateMapReader->getString();

@@ -32,14 +32,16 @@ namespace pocketmine {
 	use pocketmine\utils\ServerKiller;
 	use pocketmine\utils\Terminal;
 	use pocketmine\utils\Timezone;
+	use pocketmine\utils\Utils;
 	use pocketmine\wizard\SetupWizard;
 	use Webmozart\PathUtil\Path;
 	use function defined;
 	use function extension_loaded;
+	use function getcwd;
 	use function phpversion;
 	use function preg_match;
 	use function preg_quote;
-	use function strpos;
+	use function realpath;
 	use function version_compare;
 
 	require_once __DIR__ . '/VersionInfo.php';
@@ -249,8 +251,9 @@ JIT_WARNING
 
 		$opts = getopt("", ["data:", "plugins:", "no-wizard", "enable-ansi", "disable-ansi"]);
 
-		$dataPath = isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR;
-		$pluginPath = isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : realpath(getcwd()) . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR;
+		$cwd = Utils::assumeNotFalse(realpath(Utils::assumeNotFalse(getcwd())));
+		$dataPath = isset($opts["data"]) ? $opts["data"] . DIRECTORY_SEPARATOR : $cwd . DIRECTORY_SEPARATOR;
+		$pluginPath = isset($opts["plugins"]) ? $opts["plugins"] . DIRECTORY_SEPARATOR : $cwd . DIRECTORY_SEPARATOR . "plugins" . DIRECTORY_SEPARATOR;
 		Filesystem::addCleanedPath($pluginPath, Filesystem::CLEAN_PATH_PLUGINS_PREFIX);
 
 		if(!file_exists($dataPath)){

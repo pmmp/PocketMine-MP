@@ -237,8 +237,7 @@ class PluginManager{
 			$files = iterator_to_array(new \FilesystemIterator($path, \FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS));
 			shuffle($files); //this prevents plugins implicitly relying on the filesystem name order when they should be using dependency properties
 		}elseif(is_file($path)){
-			$realPath = realpath($path);
-			if($realPath === false) throw new AssumptionFailedError("realpath() should not return false on an accessible, existing file");
+			$realPath = Utils::assumeNotFalse(realpath($path), "realpath() should not return false on an accessible, existing file");
 			$files = [$realPath];
 		}else{
 			return;

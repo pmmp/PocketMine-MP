@@ -28,7 +28,6 @@ use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\scheduler\DumpWorkerMemoryTask;
 use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\timings\Timings;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Process;
 use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
@@ -292,8 +291,7 @@ class MemoryManager{
 	 * @param mixed   $startingObject
 	 */
 	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
-		$hardLimit = ini_get('memory_limit');
-		if($hardLimit === false) throw new AssumptionFailedError("memory_limit INI directive should always exist");
+		$hardLimit = Utils::assumeNotFalse(ini_get('memory_limit'), "memory_limit INI directive should always exist");
 		ini_set('memory_limit', '-1');
 		gc_disable();
 
@@ -301,7 +299,7 @@ class MemoryManager{
 			mkdir($outputFolder, 0777, true);
 		}
 
-		$obData = fopen(Path::join($outputFolder, "objects.js"), "wb+");
+		$obData = Utils::assumeNotFalse(fopen(Path::join($outputFolder, "objects.js"), "wb+"));
 
 		$objects = [];
 

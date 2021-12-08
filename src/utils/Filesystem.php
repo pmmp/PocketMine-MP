@@ -79,8 +79,7 @@ final class Filesystem{
 
 	public static function recursiveUnlink(string $dir) : void{
 		if(is_dir($dir)){
-			$objects = scandir($dir, SCANDIR_SORT_NONE);
-			if($objects === false) throw new AssumptionFailedError("scandir() shouldn't return false when is_dir() returns true");
+			$objects = Utils::assumeNotFalse(scandir($dir, SCANDIR_SORT_NONE), "scandir() shouldn't return false when is_dir() returns true");
 			foreach($objects as $object){
 				if($object !== "." and $object !== ".."){
 					$fullObject = Path::join($dir, $object);
@@ -127,8 +126,7 @@ final class Filesystem{
 				}
 				mkdir($destination); //TODO: access permissions?
 			}
-			$objects = scandir($origin, SCANDIR_SORT_NONE);
-			if($objects === false) throw new AssumptionFailedError("scandir() shouldn't return false when is_dir() returns true");
+			$objects = Utils::assumeNotFalse(scandir($origin, SCANDIR_SORT_NONE));
 			foreach($objects as $object){
 				if($object === "." || $object === ".."){
 					continue;
@@ -193,7 +191,7 @@ final class Filesystem{
 			//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the
 			//other server wrote its PID and released exclusive lock before we get our lock
 			flock($resource, LOCK_SH);
-			$pid = stream_get_contents($resource);
+			$pid = Utils::assumeNotFalse(stream_get_contents($resource), "This is a known valid file resource, at worst we should receive an empty string");
 			if(preg_match('/^\d+$/', $pid) === 1){
 				return (int) $pid;
 			}

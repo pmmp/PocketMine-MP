@@ -55,8 +55,8 @@ declare(strict_types=1);
  */
 namespace pocketmine\network\upnp;
 
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Internet;
+use pocketmine\utils\Utils;
 use function count;
 use function libxml_use_internal_errors;
 use function parse_url;
@@ -99,13 +99,8 @@ class UPnP{
 	 * @throws UPnPException
 	 */
 	public static function getServiceUrl() : string{
-		$socket = @socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-		if($socket === false){
-			throw new AssumptionFailedError("Socket error: " . trim(socket_strerror(socket_last_error())));
-		}
-		if(!@socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, ["sec" => 3, "usec" => 0])){
-			throw new AssumptionFailedError("Socket error: " . trim(socket_strerror(socket_last_error($socket))));
-		}
+		$socket = Utils::assumeNotFalse(@socket_create(AF_INET, SOCK_DGRAM, SOL_UDP), fn() => "Socket error: " . trim(socket_strerror(socket_last_error())));
+		Utils::assumeNotFalse(@socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, ["sec" => 3, "usec" => 0]), "Socket error: " . trim(socket_strerror(socket_last_error($socket))));
 		$contents =
 			"M-SEARCH * HTTP/1.1\r\n" .
 			"MX: 2\r\n" .
@@ -171,17 +166,14 @@ class UPnP{
 		}
 		libxml_use_internal_errors($defaultInternalError);
 		$root->registerXPathNamespace("upnp", "urn:schemas-upnp-org:device-1-0");
-		$xpathResult = $root->xpath(
+		$xpathResult = Utils::assumeNotFalse($root->xpath(
 			'//upnp:device[upnp:deviceType="urn:schemas-upnp-org:device:InternetGatewayDevice:1"]' .
 			'/upnp:deviceList/upnp:device[upnp:deviceType="urn:schemas-upnp-org:device:WANDevice:1"]' .
 			'/upnp:deviceList/upnp:device[upnp:deviceType="urn:schemas-upnp-org:device:WANConnectionDevice:1"]' .
 			'/upnp:serviceList/upnp:service[upnp:serviceType="urn:schemas-upnp-org:service:WANIPConnection:1"]' .
 			'/upnp:controlURL'
-		);
-		if($xpathResult === false){
-			//this should be an array of 0 if there is no matching elements; false indicates a problem with the query itself
-			throw new AssumptionFailedError("xpath query should not error here");
-		}
+		), "xpath query is borked");
+
 		if(count($xpathResult) === 0){
 			throw new UPnPException("Your router does not support portforwarding");
 		}

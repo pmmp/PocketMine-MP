@@ -105,9 +105,7 @@ class CrashDump{
 		$this->extraData();
 
 		$json = json_encode($this->data, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
-		$zlibEncoded = zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9);
-		if($zlibEncoded === false) throw new AssumptionFailedError("ZLIB compression failed");
-		$this->encodedData = $zlibEncoded;
+		$this->encodedData = Utils::assumeNotFalse(zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9), "ZLIB compression failed");
 	}
 
 	public function getEncodedData() : string{

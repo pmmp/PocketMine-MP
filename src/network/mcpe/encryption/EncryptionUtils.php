@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\encryption;
 
 use pocketmine\network\mcpe\JwtUtils;
+use pocketmine\utils\Utils;
 use function base64_encode;
 use function bin2hex;
 use function gmp_init;
@@ -49,7 +50,7 @@ final class EncryptionUtils{
 	}
 
 	public static function generateKey(\GMP $secret, string $salt) : string{
-		return openssl_digest($salt . hex2bin(str_pad(gmp_strval($secret, 16), 96, "0", STR_PAD_LEFT)), 'sha256', true);
+		return Utils::assumeNotFalse(openssl_digest($salt . hex2bin(str_pad(gmp_strval($secret, 16), 96, "0", STR_PAD_LEFT)), 'sha256', true));
 	}
 
 	public static function generateServerHandshakeJwt(\OpenSSLAsymmetricKey $serverPriv, string $salt) : string{
