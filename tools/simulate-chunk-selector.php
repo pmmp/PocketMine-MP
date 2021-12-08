@@ -153,6 +153,5 @@ if($outputDirectory === null){
 }
 $image = newImage($scale, $radius);
 
-$black = Utils::assumeNotFalse(imagecolorallocate($image, 0, 0, 0));
 $green = Utils::assumeNotFalse(imagecolorallocate($image, 0, 220, 0));
 render($radius, $baseX, $baseZ, $nChunksPerStep, $scale, $image, $green, 0, 0, $outputDirectory);
