@@ -105,6 +105,11 @@ jobs:
 
             Please see the [changelogs](/changelogs/${{ steps.get-pm-version.outputs.PM_VERSION_SHORT }}.md#${{ steps.get-pm-version.outputs.PM_VERSION_MD }}) for details.
 
+            ## WARNING
+
+            The 3.x line of releases is now OBSOLETE. It will be discontinued after **March 1st, 2022**.
+            Please prepare to upgrade to 4.0 or newer before that date.
+
       - name: Upload preprocessor diffs
         uses: actions/upload-artifact@v2
         if: always()
