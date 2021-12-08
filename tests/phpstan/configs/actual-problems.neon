@@ -41,27 +41,12 @@ parameters:
 			path: ../../../src/PocketMine.php
 
 		-
-			message: "#^Parameter \\#1 \\$haystack of function substr_count expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/PocketMine.php
-
-		-
 			message: "#^Parameter \\#1 \\$path of function realpath expects string, string\\|false given\\.$#"
 			count: 2
 			path: ../../../src/PocketMine.php
 
 		-
-			message: "#^Parameter \\#1 \\$version1 of function version_compare expects string, string\\|false given\\.$#"
-			count: 3
-			path: ../../../src/PocketMine.php
-
-		-
 			message: "#^Cannot cast mixed to string\\.$#"
-			count: 1
-			path: ../../../src/Server.php
-
-		-
-			message: "#^Only numeric types are allowed in \\+, int\\|false given on the left side\\.$#"
 			count: 1
 			path: ../../../src/Server.php
 
@@ -544,11 +529,6 @@ parameters:
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/entity/Living.php
-
-		-
-			message: "#^Property pocketmine\\\\entity\\\\Skin\\:\\:\\$geometryData \\(string\\) does not accept string\\|false\\.$#"
-			count: 1
-			path: ../../../src/entity/Skin.php
 
 		-
 			message: "#^Parameter \\#2 \\$x of method pocketmine\\\\block\\\\Block\\:\\:position\\(\\) expects int, float\\|int given\\.$#"

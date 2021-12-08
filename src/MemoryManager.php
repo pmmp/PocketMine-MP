@@ -65,6 +65,7 @@ use function sprintf;
 use function strlen;
 use function substr;
 use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use const SORT_NUMERIC;
 
@@ -349,7 +350,7 @@ class MemoryManager{
 			}
 		}
 
-		file_put_contents(Path::join($outputFolder, "staticProperties.js"), json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, "staticProperties.js"), json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 		$logger->info("Wrote $staticCount static properties");
 
 		$globalVariables = [];
@@ -376,7 +377,7 @@ class MemoryManager{
 			$globalVariables[$varName] = self::continueDump($value, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 		}
 
-		file_put_contents(Path::join($outputFolder, "globalVariables.js"), json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, "globalVariables.js"), json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 		$logger->info("Wrote $globalCount global variables");
 
 		foreach(get_defined_functions()["user"] as $function){
@@ -391,7 +392,7 @@ class MemoryManager{
 				$functionStaticVarsCount += count($vars);
 			}
 		}
-		file_put_contents(Path::join($outputFolder, 'functionStaticVars.js'), json_encode($functionStaticVars, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, 'functionStaticVars.js'), json_encode($functionStaticVars, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 		$logger->info("Wrote $functionStaticVarsCount function static variables");
 
 		$data = self::continueDump($startingObject, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
@@ -454,7 +455,7 @@ class MemoryManager{
 					}
 				}
 
-				fwrite($obData, json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
+				fwrite($obData, json_encode($info, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . "\n");
 			}
 
 		}while($continue);
@@ -463,11 +464,11 @@ class MemoryManager{
 
 		fclose($obData);
 
-		file_put_contents(Path::join($outputFolder, "serverEntry.js"), json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-		file_put_contents(Path::join($outputFolder, "referenceCounts.js"), json_encode($refCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, "serverEntry.js"), json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
+		file_put_contents(Path::join($outputFolder, "referenceCounts.js"), json_encode($refCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 
 		arsort($instanceCounts, SORT_NUMERIC);
-		file_put_contents(Path::join($outputFolder, "instanceCounts.js"), json_encode($instanceCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, "instanceCounts.js"), json_encode($instanceCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 
 		$logger->info("Finished!");
 

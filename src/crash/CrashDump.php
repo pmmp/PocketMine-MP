@@ -41,7 +41,6 @@ use function file_exists;
 use function file_get_contents;
 use function get_loaded_extensions;
 use function json_encode;
-use function json_last_error_msg;
 use function ksort;
 use function max;
 use function mb_strtoupper;
@@ -60,6 +59,7 @@ use function substr;
 use function zend_version;
 use function zlib_encode;
 use const FILE_IGNORE_NEW_LINES;
+use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use const PHP_OS;
 use const PHP_VERSION;
@@ -104,10 +104,7 @@ class CrashDump{
 
 		$this->extraData();
 
-		$json = json_encode($this->data, JSON_UNESCAPED_SLASHES);
-		if($json === false){
-			throw new \RuntimeException("Failed to encode crashdump JSON: " . json_last_error_msg());
-		}
+		$json = json_encode($this->data, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
 		$zlibEncoded = zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9);
 		if($zlibEncoded === false) throw new AssumptionFailedError("ZLIB compression failed");
 		$this->encodedData = $zlibEncoded;
