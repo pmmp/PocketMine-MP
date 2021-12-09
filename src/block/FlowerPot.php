@@ -114,6 +114,10 @@ class FlowerPot extends Flowable{
 		}elseif(!$this->canAddPlant($plant)){
 			return false;
 		}else{
+			if($plant instanceof BambooSapling){
+				//Hack to convert bamboosapling to bamboo block (different id)
+				$plant = VanillaBlocks::BAMBOO();
+			}
 			$this->setPlant($plant);
 			$item->pop();
 		}
@@ -168,7 +172,8 @@ class FlowerPot extends Flowable{
 			case $block instanceof RedMushroom:
 			case $block instanceof BrownMushroom:
 			case $block instanceof Sapling:
-			//TODO: bamboo, roots, azaleas, 
+			case $block instanceof BambooSapling:
+			//TODO: roots, azaleas 
 				return true;
 				break;
 			case $block instanceof TallGrass:
