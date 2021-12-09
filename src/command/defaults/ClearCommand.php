@@ -100,7 +100,8 @@ class ClearCommand extends VanillaCommand{
 		$inventories = [
 			$target->getInventory(),
 			$target->getCursorInventory(),
-			$target->getArmorInventory()
+			$target->getArmorInventory(),
+			$target->getOffHandInventory()
 		];
 
 		// Checking player's inventory for all the items matching the criteria
