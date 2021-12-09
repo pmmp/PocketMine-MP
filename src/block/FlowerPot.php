@@ -162,7 +162,6 @@ class FlowerPot extends Flowable{
 			case BlockLegacyIds::SEA_LANTERN:
 				//TODO: piston, dropper
 				return true;
-				break;
 		}
 		return !$down->isTransparent();
 	}
@@ -181,10 +180,8 @@ class FlowerPot extends Flowable{
 			case $block instanceof BambooSapling:
 			//TODO: roots, azaleas, fungus
 				return true;
-				break;
 			case $block instanceof TallGrass:
 				return $block->getIdInfo()->getVariant() === BlockLegacyMetadata::TALLGRASS_FERN;
-				break;
 		}
 		return false;
 	}
