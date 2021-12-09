@@ -139,14 +139,16 @@ class FlowerPot extends Flowable{
 		return $this->plant !== null ? $this->plant->asItem() : parent::getPickedItem($addUserData);
 	}
 
+	/**
+	 * Checks the viability of the support to place the flower pot
+	 */
 	protected function isValidSupport(Block $down): bool{
 		if($down instanceof Slab && ($down->getSlabType()->equals(SlabType::TOP()) || $down->getSlabType()->equals(SlabType::DOUBLE()))){
 			return true;
 		}elseif($down instanceof Stair && $down->isUpsideDown()){
 			return true;
 		}
-		//TODO: piston, dropper
-		switch ($down->getId()) {
+		switch($down->getId()){
 			case BlockLegacyIds::BEACON:
 			case BlockLegacyIds::GLASS:
 			case BlockLegacyIds::FARMLAND:
@@ -158,14 +160,18 @@ class FlowerPot extends Flowable{
 			case BlockLegacyIds::STONE_WALL:
 			case BlockLegacyIds::STONE_WALL:
 			case BlockLegacyIds::SEA_LANTERN:
+				//TODO: piston, dropper
 				return true;
 				break;
 		}
 		return !$down->isTransparent();
 	}
 
+	/**
+	 * Checks the viability of the item to be put in the flower pot
+	 */
 	protected function canBePlacedInFlowerPot(Block $block): bool{
-		switch (true) {
+		switch(true){
 			case $block instanceof Cactus:
 			case $block instanceof DeadBush:
 			case $block instanceof Flower:
@@ -173,7 +179,7 @@ class FlowerPot extends Flowable{
 			case $block instanceof BrownMushroom:
 			case $block instanceof Sapling:
 			case $block instanceof BambooSapling:
-			//TODO: roots, azaleas 
+			//TODO: roots, azaleas, fungus
 				return true;
 				break;
 			case $block instanceof TallGrass:
