@@ -68,9 +68,9 @@ use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
-use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
+use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
@@ -150,17 +150,17 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
-	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
-		$rawPos = $packet->position;
-		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $packet->yaw, $packet->headYaw, $packet->pitch] as $float){
+	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
+		$rawPos = $packet->getPosition();
+		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $packet->getYaw(), $packet->getHeadYaw(), $packet->getPitch()] as $float){
 			if(is_infinite($float) || is_nan($float)){
 				$this->session->getLogger()->debug("Invalid movement received, contains NAN/INF components");
 				return false;
 			}
 		}
 
-		$yaw = fmod($packet->yaw, 360);
-		$pitch = fmod($packet->pitch, 360);
+		$yaw = fmod($packet->getYaw(), 360);
+		$pitch = fmod($packet->getPitch(), 360);
 		if($yaw < 0){
 			$yaw += 360;
 		}
@@ -168,7 +168,7 @@ class InGamePacketHandler extends PacketHandler{
 		$this->player->setRotation($yaw, $pitch);
 
 		$curPos = $this->player->getLocation();
-		$newPos = $packet->position->round(4)->subtract(0, 1.62, 0);
+		$newPos = $rawPos->round(4)->subtract(0, 1.62, 0);
 
 		if($this->forceMoveSync and $newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
 			$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
@@ -179,6 +179,7 @@ class InGamePacketHandler extends PacketHandler{
 		// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
 		$this->forceMoveSync = false;
 
+		//TODO: this packet has WAYYYYY more useful information that we're not using
 		$this->player->handleMovement($newPos);
 
 		return true;
