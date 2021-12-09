@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
+use pocketmine\block\utils\SlabType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -82,14 +83,7 @@ class FlowerPot extends Flowable{
 			return false;
 		}
 
-		return
-			$block instanceof Cactus or
-			$block instanceof DeadBush or
-			$block instanceof Flower or
-			$block instanceof RedMushroom or
-			$block instanceof Sapling or
-			($block instanceof TallGrass and $block->getIdInfo()->getVariant() === BlockLegacyMetadata::TALLGRASS_FERN); //TODO: clean up
-		//TODO: bamboo
+		return $this->canBePlacedInFlowerPot($block);
 	}
 
 	/**
@@ -100,7 +94,7 @@ class FlowerPot extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
+		if(!$this->isValidSupport($this->getSide(Facing::DOWN))){
 			return false;
 		}
 
@@ -108,19 +102,21 @@ class FlowerPot extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
+		if(!$this->isValidSupport($this->getSide(Facing::DOWN))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$plant = $item->getBlock();
-		if(!$this->canAddPlant($plant)){
+		if(!$this->canBePlacedInFlowerPot($plant)){
+			$this->setPlant(null);
+		}elseif(!$this->canAddPlant($plant)){
 			return false;
+		}else{
+			$this->setPlant($plant);
+			$item->pop();
 		}
-
-		$this->setPlant($plant);
-		$item->pop();
 		$this->position->getWorld()->setBlock($this->position, $this);
 
 		return true;
@@ -137,5 +133,48 @@ class FlowerPot extends Flowable{
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		return $this->plant !== null ? $this->plant->asItem() : parent::getPickedItem($addUserData);
+	}
+
+	protected function isValidSupport(Block $down): bool{
+		if($down instanceof Slab && ($down->getSlabType()->equals(SlabType::TOP()) || $down->getSlabType()->equals(SlabType::DOUBLE()))){
+			return true;
+		}elseif($down instanceof Stair && $down->isUpsideDown()){
+			return true;
+		}
+		//TODO: piston, dropper
+		switch ($down->getId()) {
+			case BlockLegacyIds::BEACON:
+			case BlockLegacyIds::GLASS:
+			case BlockLegacyIds::FARMLAND:
+			case BlockLegacyIds::GLOWSTONE:
+			case BlockLegacyIds::GRASS_PATH:
+			case BlockLegacyIds::HARD_STAINED_GLASS:
+			case BlockLegacyIds::HOPPER_BLOCK:
+			case BlockLegacyIds::FENCE:
+			case BlockLegacyIds::STONE_WALL:
+			case BlockLegacyIds::STONE_WALL:
+			case BlockLegacyIds::SEA_LANTERN:
+				return true;
+				break;
+		}
+		return !$down->isTransparent();
+	}
+
+	protected function canBePlacedInFlowerPot(Block $block): bool{
+		switch (true) {
+			case $block instanceof Cactus:
+			case $block instanceof DeadBush:
+			case $block instanceof Flower:
+			case $block instanceof RedMushroom:
+			case $block instanceof BrownMushroom:
+			case $block instanceof Sapling:
+			//TODO: bamboo, roots, azaleas, 
+				return true;
+				break;
+			case $block instanceof TallGrass:
+				return $block->getIdInfo()->getVariant() === BlockLegacyMetadata::TALLGRASS_FERN;
+				break;
+		}
+		return false;
 	}
 }
