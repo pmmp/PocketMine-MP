@@ -123,24 +123,24 @@
         },
         {
             "name": "fgrosse/phpasn1",
-            "version": "v2.3.0",
+            "version": "v2.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fgrosse/PHPASN1.git",
-                "reference": "20299033c35f4300eb656e7e8e88cf52d1d6694e"
+                "reference": "6edcecb4df8b6881e79080d5e363dc8b90d4558c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fgrosse/PHPASN1/zipball/20299033c35f4300eb656e7e8e88cf52d1d6694e",
-                "reference": "20299033c35f4300eb656e7e8e88cf52d1d6694e",
+                "url": "https://api.github.com/repos/fgrosse/PHPASN1/zipball/6edcecb4df8b6881e79080d5e363dc8b90d4558c",
+                "reference": "6edcecb4df8b6881e79080d5e363dc8b90d4558c",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.0.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~6.3",
-                "satooshi/php-coveralls": "~2.0"
+                "php-coveralls/php-coveralls": "~2.0",
+                "phpunit/phpunit": "^6.3 | ^7.0"
             },
             "suggest": {
                 "ext-bcmath": "BCmath is the fallback extension for big integer calculations",
@@ -192,9 +192,9 @@
             ],
             "support": {
                 "issues": "https://github.com/fgrosse/PHPASN1/issues",
-                "source": "https://github.com/fgrosse/PHPASN1/tree/v2.3.0"
+                "source": "https://github.com/fgrosse/PHPASN1/tree/v2.3.1"
             },
-            "time": "2021-04-24T19:01:55+00:00"
+            "time": "2021-12-09T20:59:31+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
