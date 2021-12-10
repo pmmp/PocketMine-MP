@@ -87,7 +87,7 @@ final class ConsoleReaderThread extends Thread{
 		//Windows sucks, and likes to corrupt UTF-8 file paths when they travel to the subprocess, so we base64 encode
 		//the path to avoid the problem. This is an abysmally shitty hack, but here we are :(
 		$sub = proc_open(
-			[PHP_BINARY, '-r', sprintf('require base64_decode("%s", true);', base64_encode(Path::join(__DIR__, 'ConsoleReaderChildProcess.php'))), $address],
+			[PHP_BINARY, '-dopcache.enable_cli=0', '-r', sprintf('require base64_decode("%s", true);', base64_encode(Path::join(__DIR__, 'ConsoleReaderChildProcess.php'))), $address],
 			[
 				2 => fopen("php://stderr", "w"),
 			],
