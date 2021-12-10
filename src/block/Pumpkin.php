@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\BlockToolType;
 use pocketmine\item\Item;
 use pocketmine\item\Shears;
 use pocketmine\item\VanillaItems;
