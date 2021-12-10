@@ -447,24 +447,26 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function setXpAndProgress(?int $level, ?float $progress) : bool{
+		$newLevel = $level;
+		$newProgress = $progress;
 		if(!$this->justCreated){
-			$ev = new PlayerExperienceChangeEvent($this, $this->getXpLevel(), $this->getXpProgress(), $level, $progress);
+			$ev = new PlayerExperienceChangeEvent($this, $this->getXpLevel(), $this->getXpProgress(), $newLevel, $newProgress);
 			$ev->call();
 
 			if($ev->isCancelled()){
 				return false;
 			}
 
-			$level = $ev->getNewLevel();
-			$progress = $ev->getNewProgress();
+			$newLevel = $ev->getNewLevel();
+			$newProgress = $ev->getNewProgress();
 		}
 
-		if($level !== null){
-			$this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($level);
+		if($newLevel !== null){
+			$this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($newLevel);
 		}
 
-		if($progress !== null){
-			$this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue($progress);
+		if($newProgress !== null){
+			$this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue($newProgress);
 		}
 
 		return true;
