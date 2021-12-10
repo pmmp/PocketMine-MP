@@ -27,7 +27,6 @@ use pocketmine\entity\utils\ExperienceUtils;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\world\sound\XpCollectSound;
 use pocketmine\world\sound\XpLevelUpSound;
@@ -36,7 +35,6 @@ use function ceil;
 use function count;
 use function max;
 use function min;
-use function sprintf;
 
 class ExperienceManager{
 
@@ -146,9 +144,6 @@ class ExperienceManager{
 
 		$xpLevel = (int) $newLevel;
 		$xpProgress = $newLevel - (int) $newLevel;
-		if($xpProgress > 1.0){
-			throw new AssumptionFailedError(sprintf("newLevel - (int) newLevel should never be bigger than 1, but have %.53f (newLevel=%.53f)", $xpProgress, $newLevel));
-		}
 		return $this->setXpAndProgress($xpLevel, $xpProgress);
 	}
 

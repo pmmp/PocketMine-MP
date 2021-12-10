@@ -213,6 +213,8 @@ JIT_WARNING
 			}
 			critical_error("PHP binary used: " . $binary);
 			critical_error("Loaded php.ini: " . (($file = php_ini_loaded_file()) !== false ? $file : "none"));
+			$phprc = getenv("PHPRC");
+			critical_error("Value of PHPRC environment variable: " . ($phprc === false ? "" : $phprc));
 			critical_error("Please recompile PHP with the needed configuration, or refer to the installation instructions at http://pmmp.rtfd.io/en/rtfd/installation.html.");
 			echo PHP_EOL;
 			exit(1);
