@@ -445,7 +445,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Slab PRISMARINE_SLAB()
  * @method static Stair PRISMARINE_STAIRS()
  * @method static Wall PRISMARINE_WALL()
- * @method static Opaque PUMPKIN()
+ * @method static Pumpkin PUMPKIN()
  * @method static PumpkinStem PUMPKIN_STEM()
  * @method static GlazedTerracotta PURPLE_GLAZED_TERRACOTTA()
  * @method static Torch PURPLE_TORCH()
