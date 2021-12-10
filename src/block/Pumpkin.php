@@ -29,6 +29,7 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use function in_array;
 
 class Pumpkin extends Opaque{
 
