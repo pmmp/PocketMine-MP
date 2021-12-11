@@ -164,7 +164,7 @@ LICENSE;
 		do{
 			$gamemode = (int) $this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), (string) GameModeIdMap::getInstance()->toId(GameMode::SURVIVAL()));
 		}while($gamemode < 0 or $gamemode > 3);
-		$config->set("gamemode", $gamemode);
+		$config->set("gamemode", GameModeIdMap::getInstance()->fromId($gamemode)->name());
 
 		$config->set("max-players", (int) $this->getInput($this->lang->translate(KnownTranslationFactory::max_players()), (string) self::DEFAULT_PLAYERS));
 
