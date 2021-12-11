@@ -95,6 +95,8 @@ function generate_known_translation_keys(array $languageDefinitions) : void{
 /**
  * This class contains constants for all the translations known to PocketMine-MP as per the used version of pmmp/Language.
  * This class is generated automatically, do NOT modify it by hand.
+ *
+ * @internal
  */
 final class KnownTranslationKeys{
 
@@ -127,6 +129,8 @@ function generate_known_translation_factory(array $languageDefinitions) : void{
  * This class contains factory methods for all the translations known to PocketMine-MP as per the used version of
  * pmmp/Language.
  * This class is generated automatically, do NOT modify it by hand.
+ *
+ * @internal
  */
 final class KnownTranslationFactory{
 
