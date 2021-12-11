@@ -244,10 +244,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_ENCHANT_USAGE, []);
 	}
 
-	public static function commands_gamemode_success_other(Translatable|string $param1, Translatable|string $param0) : Translatable{
+	public static function commands_gamemode_success_other(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_GAMEMODE_SUCCESS_OTHER, [
-			1 => $param1,
 			0 => $param0,
+			1 => $param1,
 		]);
 	}
 

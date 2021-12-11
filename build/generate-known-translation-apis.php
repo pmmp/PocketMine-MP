@@ -41,6 +41,7 @@ use function preg_match_all;
 use function str_replace;
 use function strtoupper;
 use const INI_SCANNER_RAW;
+use const SORT_NUMERIC;
 use const SORT_STRING;
 use const STDERR;
 
@@ -142,14 +143,19 @@ HEADER;
 	$translationContainerClass = (new \ReflectionClass(Translatable::class))->getShortName();
 	foreach(Utils::stringifyKeys($languageDefinitions) as $key => $value){
 		$parameters = [];
+		$allParametersPositional = true;
 		if(preg_match_all($parameterRegex, $value, $matches) > 0){
 			foreach($matches[1] as $parameterName){
 				if(is_numeric($parameterName)){
 					$parameters[$parameterName] = "param$parameterName";
 				}else{
 					$parameters[$parameterName] = $parameterName;
+					$allParametersPositional = false;
 				}
 			}
+		}
+		if($allParametersPositional){
+			ksort($parameters, SORT_NUMERIC);
 		}
 		echo "\tpublic static function " .
 			functionify($key) .
