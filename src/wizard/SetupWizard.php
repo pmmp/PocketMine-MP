@@ -162,9 +162,11 @@ LICENSE;
 		$this->message($this->lang->translate(KnownTranslationFactory::gamemode_info()));
 
 		do{
-			$gamemode = (int) $this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), (string) GameModeIdMap::getInstance()->toId(GameMode::SURVIVAL()));
-		}while($gamemode < 0 or $gamemode > 3);
-		$config->set("gamemode", GameModeIdMap::getInstance()->fromId($gamemode)->name());
+			$gamemodeInt = (int) $this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), (string) GameModeIdMap::getInstance()->toId(GameMode::SURVIVAL()));
+		}while($gamemodeInt < 0 or $gamemodeInt > 3);
+		/** @var GameMode $gamemode */
+		$gamemode = GameModeIdMap::getInstance()->fromId($gamemodeInt);
+		$config->set("gamemode", $gamemode->name());
 
 		$config->set("max-players", (int) $this->getInput($this->lang->translate(KnownTranslationFactory::max_players()), (string) self::DEFAULT_PLAYERS));
 
