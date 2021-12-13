@@ -325,6 +325,9 @@ class MemoryManager{
 				if(!$property->isPublic()){
 					$property->setAccessible(true);
 				}
+				if(!$property->isInitialized()){
+					continue;
+				}
 
 				$staticCount++;
 				$staticProperties[$className][$property->getName()] = self::continueDump($property->getValue(), $objects, $refCounts, 0, $maxNesting, $maxStringSize);
@@ -447,6 +450,9 @@ class MemoryManager{
 							}
 							if(!$property->isPublic()){
 								$property->setAccessible(true);
+							}
+							if(!$property->isInitialized($object)){
+								continue;
 							}
 
 							$info["properties"][$name] = self::continueDump($property->getValue($object), $objects, $refCounts, 0, $maxNesting, $maxStringSize);
