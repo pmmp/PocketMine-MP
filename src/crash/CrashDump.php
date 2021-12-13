@@ -79,6 +79,7 @@ class CrashDump{
 	public const PLUGIN_INVOLVEMENT_NONE = "none";
 	public const PLUGIN_INVOLVEMENT_DIRECT = "direct";
 	public const PLUGIN_INVOLVEMENT_INDIRECT = "indirect";
+	public const PLUGIN_INVOLVEMENT_BLAME = "blame";
 
 	/** @var Server */
 	private $server;
@@ -217,7 +218,16 @@ class CrashDump{
 		unset($this->data->error["trace"]);
 
 		$this->data->plugin_involvement = self::PLUGIN_INVOLVEMENT_NONE;
-		if(!$this->determinePluginFromFile($error["fullFile"], true)){ //fatal errors won't leave any stack trace
+
+		//the error file being BlamePluginCallProxy would indicate a bug in BlamePluginCallProxy itself
+		//we only expect the previous frames to contain it somewhere
+		$blamePluginCallProxyPath = Filesystem::cleanPath(BlamePluginCallProxy::FILE);
+		if(BlamePluginCallProxy::$blamedPlugin !== null && $error["file"] !== $blamePluginCallProxyPath){
+			//we could check for BlamePluginCallProxy in the trace, but the original trace is typically not available
+			//during fatal errors, which are more likely than someone misusing BlamePluginCallProxy.
+			$this->data->plugin_involvement = self::PLUGIN_INVOLVEMENT_BLAME;
+			$this->data->plugin = BlamePluginCallProxy::$blamedPlugin;
+		}elseif(!$this->determinePluginFromFile($error["fullFile"], true)){ //fatal errors won't leave any stack trace
 			foreach($error["trace"] as $frame){
 				if(!isset($frame["file"])){
 					continue; //PHP core

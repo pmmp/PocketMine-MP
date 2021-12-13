@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
+use pocketmine\crash\BlamePluginCallProxy;
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
 use pocketmine\event\EventPriority;
@@ -207,11 +208,14 @@ class PluginManager{
 			}
 		}
 
-		/**
-		 * @var Plugin $plugin
-		 * @see Plugin::__construct()
-		 */
-		$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed, new DiskResourceProvider($prefixed . "/resources/"));
+		$plugin = BlamePluginCallProxy::call($description->getName(), function() use ($mainClass, $loader, $description, $dataFolder, $prefixed) : Plugin{
+			/**
+			 * @var Plugin $plugin
+			 * @see Plugin::__construct()
+			 */
+			$plugin = new $mainClass($loader, $this->server, $description, $dataFolder, $prefixed, new DiskResourceProvider($prefixed . "/resources/"));
+			return $plugin;
+		});
 		$this->plugins[$plugin->getDescription()->getName()] = $plugin;
 
 		return $plugin;

@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\crash;
 
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
 use function count;
@@ -52,9 +53,9 @@ final class CrashDumpRenderer{
 		if($this->data->plugin_involvement !== CrashDump::PLUGIN_INVOLVEMENT_NONE){
 			$this->addLine();
 			$this->addLine(match($this->data->plugin_involvement){
-				CrashDump::PLUGIN_INVOLVEMENT_DIRECT => "THIS CRASH WAS CAUSED BY A PLUGIN",
+				CrashDump::PLUGIN_INVOLVEMENT_BLAME, CrashDump::PLUGIN_INVOLVEMENT_DIRECT => "THIS CRASH WAS CAUSED BY A PLUGIN",
 				CrashDump::PLUGIN_INVOLVEMENT_INDIRECT => "A PLUGIN WAS INVOLVED IN THIS CRASH",
-				default => "Unknown plugin involvement!"
+				default => throw new AssumptionFailedError()
 			});
 		}
 		if($this->data->plugin !== ""){
