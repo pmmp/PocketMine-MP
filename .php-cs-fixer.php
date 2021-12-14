@@ -68,6 +68,9 @@ return (new PhpCsFixer\Config)
 		],
 		'phpdoc_trim' => true,
 		'phpdoc_trim_consecutive_blank_line_separation' => true,
+		'return_type_declaration' => [
+			'space_before' => 'one'
+		],
 		'single_import_per_statement' => true,
 		'strict_param' => true,
 	])
