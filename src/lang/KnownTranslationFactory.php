@@ -27,6 +27,8 @@ namespace pocketmine\lang;
  * This class contains factory methods for all the translations known to PocketMine-MP as per the used version of
  * pmmp/Language.
  * This class is generated automatically, do NOT modify it by hand.
+ *
+ * @internal
  */
 final class KnownTranslationFactory{
 	public static function ability_flight() : Translatable{
@@ -242,10 +244,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_ENCHANT_USAGE, []);
 	}
 
-	public static function commands_gamemode_success_other(Translatable|string $param1, Translatable|string $param0) : Translatable{
+	public static function commands_gamemode_success_other(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_GAMEMODE_SUCCESS_OTHER, [
-			1 => $param1,
 			0 => $param0,
+			1 => $param1,
 		]);
 	}
 
@@ -913,6 +915,12 @@ final class KnownTranslationFactory{
 
 	public static function gamemode_info() : Translatable{
 		return new Translatable(KnownTranslationKeys::GAMEMODE_INFO, []);
+	}
+
+	public static function gamemode_options(Translatable|string $param0) : Translatable{
+		return new Translatable(KnownTranslationKeys::GAMEMODE_OPTIONS, [
+			0 => $param0,
+		]);
 	}
 
 	public static function invalid_port() : Translatable{
