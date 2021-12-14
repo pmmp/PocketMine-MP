@@ -18,6 +18,9 @@ return (new PhpCsFixer\Config)
 		'array_syntax' => [
 			'syntax' => 'short'
 		],
+		'binary_operator_spaces' => [
+			'default' => 'single_space'
+		],
 		'blank_line_after_namespace' => true,
 		'blank_line_after_opening_tag' => true,
 		'blank_line_before_statement' => [
@@ -73,6 +76,7 @@ return (new PhpCsFixer\Config)
 		],
 		'single_import_per_statement' => true,
 		'strict_param' => true,
+		'unary_operator_spaces' => true,
 	])
 	->setFinder($finder)
 	->setIndent("\t")
