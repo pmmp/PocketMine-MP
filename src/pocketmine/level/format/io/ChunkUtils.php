@@ -81,7 +81,7 @@ if(!extension_loaded('pocketmine_chunkutils')){
 							}else{
 								$i1 = ord($array[$j]);
 								$i2 = ord($array[$j80]);
-								$result[$i]        = chr(($i2 << 4) | ($i1 & 0x0f));
+								$result[$i] = chr(($i2 << 4) | ($i1 & 0x0f));
 								$result[$i | 0x80] = chr(($i1 >> 4) | ($i2 & 0xf0));
 							}
 							$i++;

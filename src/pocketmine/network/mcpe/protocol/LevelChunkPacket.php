@@ -106,7 +106,7 @@ class LevelChunkPacket extends DataPacket/* implements ClientboundPacket*/{
 		$this->subChunkCount = $this->getUnsignedVarInt();
 		$this->cacheEnabled = $this->getBool();
 		if($this->cacheEnabled){
-			for($i =  0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
+			for($i = 0, $count = $this->getUnsignedVarInt(); $i < $count; ++$i){
 				$this->usedBlobHashes[] = $this->getLLong();
 			}
 		}
