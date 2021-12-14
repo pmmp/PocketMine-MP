@@ -36,7 +36,6 @@ use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\crash\CrashDump;
 use pocketmine\crash\CrashDumpRenderer;
-use pocketmine\data\java\GameModeIdMap;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\Location;
 use pocketmine\event\HandlerListManager;
@@ -357,7 +356,7 @@ class Server{
 	}
 
 	public function getGamemode() : GameMode{
-		return GameModeIdMap::getInstance()->fromId($this->configGroup->getConfigInt("gamemode", 0)) ?? GameMode::SURVIVAL();
+		return GameMode::fromString($this->configGroup->getConfigString("gamemode", GameMode::SURVIVAL()->name())) ?? GameMode::SURVIVAL();
 	}
 
 	public function getForceGamemode() : bool{
@@ -804,7 +803,7 @@ class Server{
 					"enable-ipv6" => true,
 					"white-list" => false,
 					"max-players" => 20,
-					"gamemode" => 0,
+					"gamemode" => GameMode::SURVIVAL()->name(),
 					"force-gamemode" => false,
 					"hardcore" => false,
 					"pvp" => true,
