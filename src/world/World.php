@@ -1693,11 +1693,15 @@ class World implements ChunkManager{
 		$drops = [];
 		if($player === null or $player->hasFiniteResources()){
 			$drops = array_merge(...array_map(fn(Block $block) => $block->getDrops($item), $affectedBlocks));
+		}elseif($player->isCreative()){
+			$drops = array_merge(...array_map(fn(Block $block) => $block->getCreativeDrops(), $affectedBlocks));
 		}
 
 		$xpDrop = 0;
 		if($player !== null and $player->hasFiniteResources()){
 			$xpDrop = array_sum(array_map(fn(Block $block) => $block->getXpDropForTool($item), $affectedBlocks));
+		}elseif($player === null || $player->isCreative()){
+			$xpDrop = array_sum(array_map(fn(Block $block) => $block->getCreativeXpDrop(), $affectedBlocks));
 		}
 
 		if($player !== null){
