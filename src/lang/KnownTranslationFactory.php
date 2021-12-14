@@ -917,6 +917,12 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::GAMEMODE_INFO, []);
 	}
 
+	public static function gamemode_options(Translatable|string $param0) : Translatable{
+		return new Translatable(KnownTranslationKeys::GAMEMODE_OPTIONS, [
+			0 => $param0,
+		]);
+	}
+
 	public static function invalid_port() : Translatable{
 		return new Translatable(KnownTranslationKeys::INVALID_PORT, []);
 	}

@@ -203,6 +203,7 @@ final class KnownTranslationKeys{
 	public const GAMEMODE_SPECTATOR = "gameMode.spectator";
 	public const GAMEMODE_SURVIVAL = "gameMode.survival";
 	public const GAMEMODE_INFO = "gamemode_info";
+	public const GAMEMODE_OPTIONS = "gamemode_options";
 	public const INVALID_PORT = "invalid_port";
 	public const IP_CONFIRM = "ip_confirm";
 	public const IP_GET = "ip_get";
