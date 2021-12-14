@@ -161,9 +161,9 @@ LICENSE;
 
 		$this->message($this->lang->translate(KnownTranslationFactory::gamemode_info()));
 
+		$selection = "[" . implode(", ", array_map(static fn(GameMode $gameMode): string => $gameMode->name(), GameMode::getAll())) . "]";
 		do{
-			$gamemodeInput = (int) $this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), (string) GameModeIdMap::getInstance()->toId(GameMode::SURVIVAL()));
-			$gamemode = GameModeIdMap::getInstance()->fromId($gamemodeInput);
+			$gamemode = GameMode::fromString($this->getInput($this->lang->translate(KnownTranslationFactory::gamemode_options($selection)), GameMode::SURVIVAL()->name()));
 		}while($gamemode === null);
 		$config->set("gamemode", $gamemode->name());
 
