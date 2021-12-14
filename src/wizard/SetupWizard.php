@@ -27,7 +27,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\wizard;
 
-use pocketmine\data\java\GameModeIdMap;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
@@ -39,6 +38,7 @@ use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use Webmozart\PathUtil\Path;
 use function fgets;
+use function implode;
 use function sleep;
 use function strtolower;
 use function trim;
