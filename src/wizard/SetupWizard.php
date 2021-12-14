@@ -159,8 +159,6 @@ LICENSE;
 		}while(true);
 		$config->set("server-port", $port);
 
-		$this->message($this->lang->translate(KnownTranslationFactory::gamemode_info()));
-
 		$selection = "[" . implode(", ", array_map(static fn(GameMode $gameMode): string => $gameMode->name(), GameMode::getAll())) . "]";
 		do{
 			$gamemode = GameMode::fromString($this->getInput($this->lang->translate(KnownTranslationFactory::gamemode_options($selection)), GameMode::SURVIVAL()->name()));
