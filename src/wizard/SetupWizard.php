@@ -37,6 +37,7 @@ use pocketmine\utils\InternetException;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use Webmozart\PathUtil\Path;
+use function array_map;
 use function fgets;
 use function implode;
 use function sleep;
