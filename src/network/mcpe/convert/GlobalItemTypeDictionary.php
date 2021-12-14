@@ -29,6 +29,7 @@ use pocketmine\network\mcpe\protocol\types\ItemTypeEntry;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function file_get_contents;
 use function is_array;
@@ -53,8 +54,7 @@ final class GlobalItemTypeDictionary{
 		$dictionaries = [];
 
 		foreach ($paths as $protocolId => $path){
-			$data = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list' . $path . '.json'));
-			if($data === false) throw new AssumptionFailedError("Missing required resource file");
+			$data = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list' . $path . '.json')), "Missing required resource file");
 			$table = json_decode($data, true);
 			if(!is_array($table)){
 				throw new AssumptionFailedError("Invalid item list format");

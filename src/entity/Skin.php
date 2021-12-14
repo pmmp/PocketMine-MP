@@ -29,6 +29,7 @@ use function in_array;
 use function json_encode;
 use function json_last_error_msg;
 use function strlen;
+use const JSON_THROW_ON_ERROR;
 
 final class Skin{
 	public const ACCEPTED_SKIN_SIZES = [
@@ -73,7 +74,7 @@ final class Skin{
 			 * Not only that, they are pretty-printed.
 			 * TODO: find out what model crap can be safely dropped from the packet (unless it gets fixed first)
 			 */
-			$geometryData = json_encode($decodedGeometry);
+			$geometryData = json_encode($decodedGeometry, JSON_THROW_ON_ERROR);
 		}
 
 		$this->skinId = $skinId;

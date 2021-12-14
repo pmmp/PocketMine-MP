@@ -34,6 +34,7 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function file_get_contents;
 
@@ -62,11 +63,11 @@ final class RuntimeBlockMapping{
 		];
 
 		foreach($paths as $mappingProtocol => $path){
-			$canonicalBlockStatesFile = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states" . $path . ".nbt"));
-			if($canonicalBlockStatesFile === false){
-				throw new AssumptionFailedError("Missing required resource file");
-			}
-			$stream = PacketSerializer::decoder($canonicalBlockStatesFile, 0, new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol))));
+			$stream = PacketSerializer::decoder(
+				Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states" . $path . ".nbt")), "Missing required resource file"),
+				0,
+				new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol)))
+			);
 			$list = [];
 			while(!$stream->feof()){
 				$list[] = $stream->getNbtCompoundRoot();
@@ -136,7 +137,11 @@ final class RuntimeBlockMapping{
 		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
-		$legacyStateMapReader = PacketSerializer::decoder(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map" . $path . ".bin")), 0, new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol))));
+		$legacyStateMapReader = PacketSerializer::decoder(
+			Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map" . $path . ".bin")), "Missing required resource file"),
+			0,
+			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary(GlobalItemTypeDictionary::getDictionaryProtocol($mappingProtocol)))
+		);
 		$nbtReader = new NetworkNbtSerializer();
 		while(!$legacyStateMapReader->feof()){
 			$id = $legacyStateMapReader->getString();

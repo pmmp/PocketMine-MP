@@ -542,10 +542,7 @@ class Server{
 		if(!$ev->isCancelled()){
 			Timings::$syncPlayerDataSave->time(function() use ($name, $ev) : void{
 				$nbt = new BigEndianNbtSerializer();
-				$contents = zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP);
-				if($contents === false){
-					throw new AssumptionFailedError("zlib_encode() failed unexpectedly");
-				}
+				$contents = Utils::assumeNotFalse(zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP), "zlib_encode() failed unexpectedly");
 				try{
 					Filesystem::safeFilePutContents($this->getPlayerDataPath($name), $contents);
 				}catch(\RuntimeException | \ErrorException $e){
@@ -796,7 +793,7 @@ class Server{
 			$this->logger->info("Loading server configuration");
 			$pocketmineYmlPath = Path::join($this->dataPath, "pocketmine.yml");
 			if(!file_exists($pocketmineYmlPath)){
-				$content = file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "pocketmine.yml"));
+				$content = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, "pocketmine.yml")), "Missing required resource file");
 				if(VersionInfo::IS_DEVELOPMENT_BUILD){
 					$content = str_replace("preferred-channel: stable", "preferred-channel: beta", $content);
 				}
@@ -1570,7 +1567,8 @@ class Server{
 
 				$stamp = Path::join($this->getDataPath(), "crashdumps", ".last_crash");
 				$crashInterval = 120; //2 minutes
-				if(file_exists($stamp) and !($report = (filemtime($stamp) + $crashInterval < time()))){
+				if(($lastReportTime = @filemtime($stamp)) !== false and $lastReportTime + $crashInterval >= time()){
+					$report = false;
 					$this->logger->debug("Not sending crashdump due to last crash less than $crashInterval seconds ago");
 				}
 				@touch($stamp); //update file timestamp
