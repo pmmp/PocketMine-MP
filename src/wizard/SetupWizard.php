@@ -27,6 +27,7 @@ declare(strict_types=1);
  */
 namespace pocketmine\wizard;
 
+use pocketmine\data\java\GameModeIdMap;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
@@ -37,9 +38,7 @@ use pocketmine\utils\InternetException;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use Webmozart\PathUtil\Path;
-use function array_map;
 use function fgets;
-use function implode;
 use function sleep;
 use function strtolower;
 use function trim;
@@ -160,9 +159,10 @@ LICENSE;
 		}while(true);
 		$config->set("server-port", $port);
 
-		$this->message($this->lang->translate(KnownTranslationFactory::gamemode_options(implode(", ", array_map(fn(GameMode $gameMode) => $gameMode->name(), GameMode::getAll())))));
+		$this->message($this->lang->translate(KnownTranslationFactory::gamemode_info()));
+
 		do{
-			$gamemode = GameMode::fromString($this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), GameMode::SURVIVAL()->name()));
+			$gamemode = GameModeIdMap::getInstance()->fromId((int) $this->getInput($this->lang->translate(KnownTranslationFactory::default_gamemode()), (string) GameModeIdMap::getInstance()->toId(GameMode::SURVIVAL())));
 		}while($gamemode === null);
 		$config->set("gamemode", $gamemode->name());
 
