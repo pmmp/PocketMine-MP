@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use pocketmine\block\tile\ShulkerBox as TileShulkerBox;
 use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
@@ -109,7 +108,7 @@ class ShulkerBox extends Opaque{
 		$shulker = $this->position->getWorld()->getTile($this->position);
 		if($shulker instanceof TileShulkerBox){
 			$empty = true;
-			for ($i=0; $i < $shulker->getInventory()->getSize() && $empty; $i++) { 
+			for($i=0; $i < $shulker->getInventory()->getSize() && $empty; $i++) { 
 				if($shulker->getInventory()->getItem($i)->getId() != 0){
 					$empty = false;
 				}
