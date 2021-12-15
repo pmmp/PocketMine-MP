@@ -107,13 +107,7 @@ class ShulkerBox extends Opaque{
 	public function getCreativeDrops(): array{
 		$shulker = $this->position->getWorld()->getTile($this->position);
 		if($shulker instanceof TileShulkerBox){
-			$empty = true;
-			for($i=0; $i < $shulker->getInventory()->getSize() && $empty; $i++) { 
-				if($shulker->getInventory()->getItem($i)->getId() != 0){
-					$empty = false;
-				}
-			}
-			if(!$empty){
+			if(count($shulker->getInventory()->getContents()) > 0){
 				$drop = $this->asItem();
 				$this->addDataFromTile($shulker, $drop);
 				return [$drop];
