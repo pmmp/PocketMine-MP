@@ -642,11 +642,4 @@ class Block{
 	public function getCreativeDrops(): array{
 		return [];
 	}
-
-	/**
-	 * Return xp dropped by the block when it is broken by a player in gamemode creative
-	 */
-	public function getCreativeXpDrop(): int{
-		return 0;
-	}
 }
