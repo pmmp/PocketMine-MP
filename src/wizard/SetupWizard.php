@@ -174,6 +174,8 @@ LICENSE;
 
 		$config->set("max-players", (int) $this->getInput($this->lang->translate(KnownTranslationFactory::max_players()), (string) self::DEFAULT_PLAYERS));
 
+		$config->set("view-distance", (int) $this->getInput($this->lang->translate(KnownTranslationFactory::view_distance()), (string) Server::DEFAULT_MAX_VIEW_DISTANCE));
+
 		$config->save();
 	}
 
