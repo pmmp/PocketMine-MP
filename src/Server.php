@@ -181,7 +181,7 @@ class Server{
 	public const DEFAULT_MAX_PLAYERS = 20;
 	public const DEFAULT_PORT_IPV4 = 19132;
 	public const DEFAULT_PORT_IPV6 = 19133;
-	public const DEFAULT_MAX_VIEW_DISTANCE = 8;
+	public const DEFAULT_MAX_VIEW_DISTANCE = 16;
 
 	private static ?Server $instance = null;
 
