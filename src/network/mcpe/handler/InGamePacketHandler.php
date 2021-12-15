@@ -37,6 +37,7 @@ use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WrittenBook;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
@@ -83,6 +84,7 @@ use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\types\ActorEvent;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
@@ -92,6 +94,8 @@ use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\PlayerAction;
+use pocketmine\network\mcpe\protocol\types\PlayerBlockActionStopBreak;
+use pocketmine\network\mcpe\protocol\types\PlayerBlockActionWithBlockInfo;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
@@ -182,7 +186,32 @@ class InGamePacketHandler extends PacketHandler{
 		//TODO: this packet has WAYYYYY more useful information that we're not using
 		$this->player->handleMovement($newPos);
 
-		return true;
+		$packetHandled = true;
+
+		$useItemTransaction = $packet->getItemInteractionData();
+		if($useItemTransaction !== null && !$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
+			$packetHandled = false;
+			$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
+		}
+
+		$blockActions = $packet->getBlockActions();
+		if($blockActions !== null){
+			foreach($blockActions as $k => $blockAction){
+				$actionHandled = false;
+				if($blockAction instanceof PlayerBlockActionStopBreak){
+					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), new BlockPosition(0, 0, 0), Facing::DOWN);
+				}elseif($blockAction instanceof PlayerBlockActionWithBlockInfo){
+					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), $blockAction->getBlockPosition(), $blockAction->getFace());
+				}
+
+				if(!$actionHandled){
+					$packetHandled = false;
+					$this->session->getLogger()->debug("Unhandled player block action at offset $k in PlayerAuthInputPacket");
+				}
+			}
+		}
+
+		return $packetHandled;
 	}
 
 	public function handleLevelSoundEventPacketV1(LevelSoundEventPacketV1 $packet) : bool{
@@ -493,12 +522,16 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
-		$pos = new Vector3($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ());
+		return $this->handlePlayerActionFromData($packet->action, $packet->blockPosition, $packet->face);
+	}
 
-		switch($packet->action){
+	private function handlePlayerActionFromData(int $action, BlockPosition $blockPosition, int $face) : bool{
+		$pos = new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
+
+		switch($action){
 			case PlayerAction::START_BREAK:
-				if(!$this->player->attackBlock($pos, $packet->face)){
-					$this->onFailedBlockAction($pos, $packet->face);
+				if(!$this->player->attackBlock($pos, $face)){
+					$this->onFailedBlockAction($pos, $face);
 				}
 
 				break;
@@ -540,7 +573,7 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::STOP_GLIDE:
 				break; //TODO
 			case PlayerAction::CRACK_BREAK:
-				$this->player->continueBreakBlock($pos, $packet->face);
+				$this->player->continueBreakBlock($pos, $face);
 				break;
 			case PlayerAction::START_SWIMMING:
 				break; //TODO
@@ -553,7 +586,7 @@ class InGamePacketHandler extends PacketHandler{
 				//TODO: do we need to handle this?
 				break;
 			default:
-				$this->session->getLogger()->debug("Unhandled/unknown player action type " . $packet->action);
+				$this->session->getLogger()->debug("Unhandled/unknown player action type " . $action);
 				return false;
 		}
 
