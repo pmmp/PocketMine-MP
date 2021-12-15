@@ -104,7 +104,7 @@ class ShulkerBox extends Opaque{
 		return true;
 	}
 
-	public function getCreativeDrops(): array{
+	public function getCreativeDrops() : array{
 		$shulker = $this->position->getWorld()->getTile($this->position);
 		if($shulker instanceof TileShulkerBox){
 			if(count($shulker->getInventory()->getContents()) > 0){
