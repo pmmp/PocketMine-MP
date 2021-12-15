@@ -109,7 +109,7 @@ class ShulkerBox extends Opaque{
 		if($shulker instanceof TileShulkerBox){
 			$empty = true;
 			for($i=0; $i < $shulker->getInventory()->getSize() && $empty; $i++) { 
-				if($shulker->getInventory()->getItem($i)->getId() != 0){
+				if(!$shulker->getInventory()->getItem($i)->isNull()){
 					$empty = false;
 				}
 			}
