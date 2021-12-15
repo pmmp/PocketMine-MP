@@ -32,6 +32,7 @@ use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\player\GameMode;
+use pocketmine\Server;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
@@ -46,9 +47,9 @@ use const PHP_EOL;
 use const STDIN;
 
 class SetupWizard{
-	public const DEFAULT_NAME = VersionInfo::NAME . " Server";
-	public const DEFAULT_PORT = 19132;
-	public const DEFAULT_PLAYERS = 20;
+	public const DEFAULT_NAME = Server::DEFAULT_SERVER_NAME;
+	public const DEFAULT_PORT = Server::DEFAULT_PORT_IPV4;
+	public const DEFAULT_PLAYERS = Server::DEFAULT_MAX_PLAYERS;
 
 	/** @var Language */
 	private $lang;
