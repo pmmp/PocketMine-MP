@@ -30,6 +30,7 @@ use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
 use function array_intersect;
 use function count;
+use function extension_loaded;
 use function implode;
 use function in_array;
 use function phpversion;
@@ -77,9 +78,13 @@ final class PluginLoadabilityChecker{
 		}
 
 		foreach(Utils::stringifyKeys($description->getRequiredExtensions()) as $extensionName => $versionConstrs){
+			if(!extension_loaded($extensionName)){
+				return KnownTranslationFactory::pocketmine_plugin_extensionNotLoaded($extensionName);
+			}
 			$gotVersion = phpversion($extensionName);
 			if($gotVersion === false){
-				return KnownTranslationFactory::pocketmine_plugin_extensionNotLoaded($extensionName);
+				//extensions may set NULL as the extension version, in which case phpversion() may return false
+				$gotVersion = "**UNKNOWN**";
 			}
 
 			foreach($versionConstrs as $k => $constr){ // versionConstrs_loop

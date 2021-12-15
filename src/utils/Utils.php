@@ -592,4 +592,17 @@ final class Utils{
 			throw new \InvalidArgumentException("Text must be valid UTF-8");
 		}
 	}
+
+	/**
+	 * @phpstan-template TValue
+	 * @phpstan-param TValue|false $value
+	 * @phpstan-param string|\Closure() : string $context
+	 * @phpstan-return TValue
+	 */
+	public static function assumeNotFalse(mixed $value, \Closure|string $context = "This should never be false") : mixed{
+		if($value === false){
+			throw new AssumptionFailedError("Assumption failure: " . (is_string($context) ? $context : $context()) . " (THIS IS A BUG)");
+		}
+		return $value;
+	}
 }

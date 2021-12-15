@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function array_filter;
 use function array_map;
@@ -123,7 +124,7 @@ class Language{
 	protected static function loadLang(string $path, string $languageCode) : array{
 		$file = Path::join($path, $languageCode . ".ini");
 		if(file_exists($file)){
-			return array_map('\stripcslashes', parse_ini_file($file, false, INI_SCANNER_RAW));
+			return array_map('\stripcslashes', Utils::assumeNotFalse(parse_ini_file($file, false, INI_SCANNER_RAW), "Missing or inaccessible required resource files"));
 		}
 
 		throw new LanguageNotFoundException("Language \"$languageCode\" not found");

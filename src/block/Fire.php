@@ -27,6 +27,7 @@ use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\entity\Entity;
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\event\block\BlockBurnEvent;
+use pocketmine\event\block\BlockSpreadEvent;
 use pocketmine\event\entity\EntityCombustByBlockEvent;
 use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
@@ -137,16 +138,7 @@ class Fire extends Flowable{
 		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
 
 		if($canSpread){
-			//TODO: raise upper bound for chance in humid biomes
-
-			foreach($this->getHorizontalSides() as $side){
-				$this->burnBlock($side, 300);
-			}
-
-			//vanilla uses a 250 upper bound here, but I don't think they intended to increase the chance of incineration
-			$this->burnBlock($this->getSide(Facing::UP), 350);
-			$this->burnBlock($this->getSide(Facing::DOWN), 350);
-
+			$this->burnBlocksAround();
 			//TODO: fire spread
 		}
 	}
@@ -165,6 +157,18 @@ class Fire extends Flowable{
 		return false;
 	}
 
+	private function burnBlocksAround() : void{
+		//TODO: raise upper bound for chance in humid biomes
+
+		foreach($this->getHorizontalSides() as $side){
+			$this->burnBlock($side, 300);
+		}
+
+		//vanilla uses a 250 upper bound here, but I don't think they intended to increase the chance of incineration
+		$this->burnBlock($this->getSide(Facing::UP), 350);
+		$this->burnBlock($this->getSide(Facing::DOWN), 350);
+	}
+
 	private function burnBlock(Block $block, int $chanceBound) : void{
 		if(mt_rand(0, $chanceBound) < $block->getFlammability()){
 			$ev = new BlockBurnEvent($block, $this);
@@ -172,14 +176,27 @@ class Fire extends Flowable{
 			if(!$ev->isCancelled()){
 				$block->onIncinerate();
 
+				$spreadedFire = false;
 				if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
 					$fire = clone $this;
 					$fire->age = min(15, $fire->age + (mt_rand(0, 4) >> 2));
-					$this->position->getWorld()->setBlock($block->position, $fire);
-				}else{
+					$spreadedFire = $this->spreadBlock($block, $fire);
+				}
+				if(!$spreadedFire){
 					$this->position->getWorld()->setBlock($block->position, VanillaBlocks::AIR());
 				}
 			}
 		}
+	}
+
+	private function spreadBlock(Block $block, Block $newState) : bool{
+		$ev = new BlockSpreadEvent($block, $this, $newState);
+		$ev->call();
+		if(!$ev->isCancelled()){
+			$block->position->getWorld()->setBlock($block->position, $ev->getNewState());
+			return true;
+		}
+
+		return false;
 	}
 }

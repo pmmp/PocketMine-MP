@@ -23,8 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\compression;
 
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
 use function function_exists;
 use function libdeflate_deflate_compress;
 use function strlen;
@@ -75,9 +75,7 @@ final class ZlibCompressor implements Compressor{
 	}
 
 	private static function zlib_encode(string $data, int $level) : string{
-		$result = zlib_encode($data, ZLIB_ENCODING_RAW, $level);
-		if($result === false) throw new AssumptionFailedError("ZLIB compression failed");
-		return $result;
+		return Utils::assumeNotFalse(zlib_encode($data, ZLIB_ENCODING_RAW, $level), "ZLIB compression failed");
 	}
 
 	public function compress(string $payload) : string{
