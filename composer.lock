@@ -275,16 +275,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "7.0.0+bedrock-1.18.0",
+            "version": "7.1.0+bedrock-1.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "040a883a4abb8c9b93114d5278cb5fecc635da82"
+                "reference": "42f2a00634c17c346fd98c05b2daf29d1fbf5805"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/040a883a4abb8c9b93114d5278cb5fecc635da82",
-                "reference": "040a883a4abb8c9b93114d5278cb5fecc635da82",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/42f2a00634c17c346fd98c05b2daf29d1fbf5805",
+                "reference": "42f2a00634c17c346fd98c05b2daf29d1fbf5805",
                 "shasum": ""
             },
             "require": {
@@ -316,9 +316,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/7.0.0+bedrock-1.18.0"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/7.1.0+bedrock-1.18.0"
             },
-            "time": "2021-11-30T19:02:41+00:00"
+            "time": "2021-12-15T03:07:05+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -535,16 +535,16 @@
         },
         {
             "name": "pocketmine/locale-data",
-            "version": "2.1.25",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Language.git",
-                "reference": "0c810aaa24baffcccd57ca5bca16ca8f346c483c"
+                "reference": "dc88ad618a482e55b7c9fec162257efa62a67d6f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Language/zipball/0c810aaa24baffcccd57ca5bca16ca8f346c483c",
-                "reference": "0c810aaa24baffcccd57ca5bca16ca8f346c483c",
+                "url": "https://api.github.com/repos/pmmp/Language/zipball/dc88ad618a482e55b7c9fec162257efa62a67d6f",
+                "reference": "dc88ad618a482e55b7c9fec162257efa62a67d6f",
                 "shasum": ""
             },
             "type": "library",
@@ -552,9 +552,9 @@
             "description": "Language resources used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Language/issues",
-                "source": "https://github.com/pmmp/Language/tree/2.1.25"
+                "source": "https://github.com/pmmp/Language/tree/2.2.0"
             },
-            "time": "2021-12-14T00:29:11+00:00"
+            "time": "2021-12-15T02:01:24+00:00"
         },
         {
             "name": "pocketmine/log",
