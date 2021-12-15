@@ -2131,6 +2131,14 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::SERVER_PORT, []);
 	}
 
+	public static function server_port_v4() : Translatable{
+		return new Translatable(KnownTranslationKeys::SERVER_PORT_V4, []);
+	}
+
+	public static function server_port_v6() : Translatable{
+		return new Translatable(KnownTranslationKeys::SERVER_PORT_V6, []);
+	}
+
 	public static function server_properties() : Translatable{
 		return new Translatable(KnownTranslationKeys::SERVER_PROPERTIES, []);
 	}
@@ -2153,6 +2161,10 @@ final class KnownTranslationFactory{
 
 	public static function tile_bed_tooFar() : Translatable{
 		return new Translatable(KnownTranslationKeys::TILE_BED_TOOFAR, []);
+	}
+
+	public static function view_distance() : Translatable{
+		return new Translatable(KnownTranslationKeys::VIEW_DISTANCE, []);
 	}
 
 	public static function welcome_to_pocketmine(Translatable|string $param0) : Translatable{
