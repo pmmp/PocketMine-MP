@@ -1700,8 +1700,6 @@ class World implements ChunkManager{
 		$xpDrop = 0;
 		if($player !== null and $player->hasFiniteResources()){
 			$xpDrop = array_sum(array_map(fn(Block $block) => $block->getXpDropForTool($item), $affectedBlocks));
-		}elseif($player === null || $player->isCreative()){
-			$xpDrop = array_sum(array_map(fn(Block $block) => $block->getCreativeXpDrop(), $affectedBlocks));
 		}
 
 		if($player !== null){
