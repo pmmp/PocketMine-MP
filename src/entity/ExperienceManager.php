@@ -298,11 +298,11 @@ class ExperienceManager{
 		}
 	}
 
-	public function canAttractXpOrbs(): bool{
+	public function canAttractXpOrbs() : bool{
 		return $this->canAttractXpOrbs;
 	}
 
-	public function setCanAttractXpOrbs(bool $v = true): void{
+	public function setCanAttractXpOrbs(bool $v = true) : void{
 		$this->canAttractXpOrbs = $v;
 	}
 }
