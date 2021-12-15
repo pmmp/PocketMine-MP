@@ -31,6 +31,7 @@ use pocketmine\data\java\GameModeIdMap;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Language;
 use pocketmine\lang\LanguageNotFoundException;
+use pocketmine\lang\Translatable;
 use pocketmine\player\GameMode;
 use pocketmine\Server;
 use pocketmine\utils\Config;
@@ -141,6 +142,18 @@ LICENSE;
 		$this->message($this->lang->translate(KnownTranslationFactory::server_properties()));
 	}
 
+	private function askPort(Translatable $prompt, int $default) : int{
+		while(true){
+			$port = (int) $this->getInput($this->lang->translate($prompt), (string) $default);
+			if($port <= 0 or $port > 65535){
+				$this->error($this->lang->translate(KnownTranslationFactory::invalid_port()));
+				continue;
+			}
+
+			return $port;
+		}
+	}
+
 	private function generateBaseConfig() : void{
 		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
 
@@ -149,16 +162,8 @@ LICENSE;
 
 		$this->message($this->lang->translate(KnownTranslationFactory::port_warning()));
 
-		do{
-			$port = (int) $this->getInput($this->lang->translate(KnownTranslationFactory::server_port()), (string) self::DEFAULT_PORT);
-			if($port <= 0 or $port > 65535){
-				$this->error($this->lang->translate(KnownTranslationFactory::invalid_port()));
-				continue;
-			}
-
-			break;
-		}while(true);
-		$config->set("server-port", $port);
+		$config->set("server-port", $this->askPort(KnownTranslationFactory::server_port_v4(), Server::DEFAULT_PORT_IPV4));
+		$config->set("server-portv6", $this->askPort(KnownTranslationFactory::server_port_v6(), Server::DEFAULT_PORT_IPV6));
 
 		$this->message($this->lang->translate(KnownTranslationFactory::gamemode_info()));
 
