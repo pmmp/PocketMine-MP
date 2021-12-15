@@ -181,7 +181,7 @@ class Server{
 	public const DEFAULT_MAX_PLAYERS = 20;
 	public const DEFAULT_PORT_IPV4 = 19132;
 	public const DEFAULT_PORT_IPV6 = 19133;
-	public const DEFAULT_VIEW_DISTANCE = 8;
+	public const DEFAULT_MAX_VIEW_DISTANCE = 8;
 
 	private static ?Server $instance = null;
 
@@ -337,7 +337,7 @@ class Server{
 	}
 
 	public function getViewDistance() : int{
-		return max(2, $this->configGroup->getConfigInt("view-distance", self::DEFAULT_VIEW_DISTANCE));
+		return max(2, $this->configGroup->getConfigInt("view-distance", self::DEFAULT_MAX_VIEW_DISTANCE));
 	}
 
 	/**
@@ -820,7 +820,7 @@ class Server{
 					"level-type" => "DEFAULT",
 					"enable-query" => true,
 					"auto-save" => true,
-					"view-distance" => self::DEFAULT_VIEW_DISTANCE,
+					"view-distance" => self::DEFAULT_MAX_VIEW_DISTANCE,
 					"xbox-auth" => true,
 					"language" => "eng"
 				])
