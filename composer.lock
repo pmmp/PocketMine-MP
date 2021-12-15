@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2cf34f1d30c90d6a72f9e5ef2ab047fe",
+    "content-hash": "33668c5c2b5bb24519b3849f93a0d5ff",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -227,12 +227,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockProtocol.git",
-                "reference": "92f6bb09cbcbe8b67d6555397a4d80ced2e9c1b1"
+                "reference": "f3082b8102e892cdce352d77de0bfdb48b4cfcd3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/92f6bb09cbcbe8b67d6555397a4d80ced2e9c1b1",
-                "reference": "92f6bb09cbcbe8b67d6555397a4d80ced2e9c1b1",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/f3082b8102e892cdce352d77de0bfdb48b4cfcd3",
+                "reference": "f3082b8102e892cdce352d77de0bfdb48b4cfcd3",
                 "shasum": ""
             },
             "require": {
@@ -270,7 +270,7 @@
             "support": {
                 "source": "https://github.com/NetherGamesMC/BedrockProtocol/tree/master"
             },
-            "time": "2021-12-14T08:05:34+00:00"
+            "time": "2021-12-15T16:55:16+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
@@ -538,16 +538,16 @@
         },
         {
             "name": "pocketmine/locale-data",
-            "version": "2.1.25",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Language.git",
-                "reference": "0c810aaa24baffcccd57ca5bca16ca8f346c483c"
+                "reference": "dc88ad618a482e55b7c9fec162257efa62a67d6f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Language/zipball/0c810aaa24baffcccd57ca5bca16ca8f346c483c",
-                "reference": "0c810aaa24baffcccd57ca5bca16ca8f346c483c",
+                "url": "https://api.github.com/repos/pmmp/Language/zipball/dc88ad618a482e55b7c9fec162257efa62a67d6f",
+                "reference": "dc88ad618a482e55b7c9fec162257efa62a67d6f",
                 "shasum": ""
             },
             "type": "library",
@@ -555,9 +555,9 @@
             "description": "Language resources used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Language/issues",
-                "source": "https://github.com/pmmp/Language/tree/2.1.25"
+                "source": "https://github.com/pmmp/Language/tree/2.2.0"
             },
-            "time": "2021-12-14T00:29:11+00:00"
+            "time": "2021-12-15T02:01:24+00:00"
         },
         {
             "name": "pocketmine/log",

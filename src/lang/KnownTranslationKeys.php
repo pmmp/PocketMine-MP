@@ -443,12 +443,15 @@ final class KnownTranslationKeys{
 	public const QUERY_WARNING1 = "query_warning1";
 	public const QUERY_WARNING2 = "query_warning2";
 	public const SERVER_PORT = "server_port";
+	public const SERVER_PORT_V4 = "server_port_v4";
+	public const SERVER_PORT_V6 = "server_port_v6";
 	public const SERVER_PROPERTIES = "server_properties";
 	public const SETTING_UP_SERVER_NOW = "setting_up_server_now";
 	public const SKIP_INSTALLER = "skip_installer";
 	public const TILE_BED_NOSLEEP = "tile.bed.noSleep";
 	public const TILE_BED_OCCUPIED = "tile.bed.occupied";
 	public const TILE_BED_TOOFAR = "tile.bed.tooFar";
+	public const VIEW_DISTANCE = "view_distance";
 	public const WELCOME_TO_POCKETMINE = "welcome_to_pocketmine";
 	public const WHITELIST_ENABLE = "whitelist_enable";
 	public const WHITELIST_INFO = "whitelist_info";

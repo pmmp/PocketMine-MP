@@ -36,7 +36,6 @@ use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\CraftingManagerFromDataHelper;
 use pocketmine\crash\CrashDump;
 use pocketmine\crash\CrashDumpRenderer;
-use pocketmine\data\java\GameModeIdMap;
 use pocketmine\entity\EntityDataHelper;
 use pocketmine\entity\Location;
 use pocketmine\event\HandlerListManager;
@@ -177,6 +176,12 @@ class Server{
 
 	public const BROADCAST_CHANNEL_ADMINISTRATIVE = "pocketmine.broadcast.admin";
 	public const BROADCAST_CHANNEL_USERS = "pocketmine.broadcast.user";
+
+	public const DEFAULT_SERVER_NAME = VersionInfo::NAME . " Server";
+	public const DEFAULT_MAX_PLAYERS = 20;
+	public const DEFAULT_PORT_IPV4 = 19132;
+	public const DEFAULT_PORT_IPV6 = 19133;
+	public const DEFAULT_MAX_VIEW_DISTANCE = 16;
 
 	private static ?Server $instance = null;
 
@@ -329,15 +334,15 @@ class Server{
 	}
 
 	public function getPort() : int{
-		return $this->configGroup->getConfigInt("server-port", 19132);
+		return $this->configGroup->getConfigInt("server-port", self::DEFAULT_PORT_IPV4);
 	}
 
 	public function getPortV6() : int{
-		return $this->configGroup->getConfigInt("server-portv6", 19133);
+		return $this->configGroup->getConfigInt("server-portv6", self::DEFAULT_PORT_IPV6);
 	}
 
 	public function getViewDistance() : int{
-		return max(2, $this->configGroup->getConfigInt("view-distance", 8));
+		return max(2, $this->configGroup->getConfigInt("view-distance", self::DEFAULT_MAX_VIEW_DISTANCE));
 	}
 
 	/**
@@ -362,7 +367,7 @@ class Server{
 	}
 
 	public function getGamemode() : GameMode{
-		return GameModeIdMap::getInstance()->fromId($this->configGroup->getConfigInt("gamemode", 0)) ?? GameMode::SURVIVAL();
+		return GameMode::fromString($this->configGroup->getConfigString("gamemode", GameMode::SURVIVAL()->name())) ?? GameMode::SURVIVAL();
 	}
 
 	public function getForceGamemode() : bool{
@@ -385,7 +390,7 @@ class Server{
 	}
 
 	public function getMotd() : string{
-		return $this->configGroup->getConfigString("motd", VersionInfo::NAME . " Server");
+		return $this->configGroup->getConfigString("motd", self::DEFAULT_SERVER_NAME);
 	}
 
 	public function getLoader() : \DynamicClassLoader{
@@ -696,7 +701,13 @@ class Server{
 	}
 
 	public function removeOp(string $name) : void{
-		$this->operators->remove(strtolower($name));
+		$lowercaseName = strtolower($name);
+		foreach($this->operators->getAll() as $operatorName => $_){
+			$operatorName = (string) $operatorName;
+			if($lowercaseName === strtolower($operatorName)){
+				$this->operators->remove($operatorName);
+			}
+		}
 
 		if(($player = $this->getPlayerExact($name)) !== null){
 			$player->unsetBasePermission(DefaultPermissions::ROOT_OPERATOR);
@@ -803,13 +814,13 @@ class Server{
 			$this->configGroup = new ServerConfigGroup(
 				new Config($pocketmineYmlPath, Config::YAML, []),
 				new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES, [
-					"motd" => VersionInfo::NAME . " Server",
-					"server-port" => 19132,
-					"server-portv6" => 19133,
+					"motd" => self::DEFAULT_SERVER_NAME,
+					"server-port" => self::DEFAULT_PORT_IPV4,
+					"server-portv6" => self::DEFAULT_PORT_IPV6,
 					"enable-ipv6" => true,
 					"white-list" => false,
-					"max-players" => 20,
-					"gamemode" => 0,
+					"max-players" => self::DEFAULT_MAX_PLAYERS,
+					"gamemode" => GameMode::SURVIVAL()->name(),
 					"force-gamemode" => false,
 					"hardcore" => false,
 					"pvp" => true,
@@ -820,7 +831,7 @@ class Server{
 					"level-type" => "DEFAULT",
 					"enable-query" => true,
 					"auto-save" => true,
-					"view-distance" => 8,
+					"view-distance" => self::DEFAULT_MAX_VIEW_DISTANCE,
 					"xbox-auth" => true,
 					"language" => "eng"
 				])
@@ -917,7 +928,7 @@ class Server{
 			$this->banByIP = new BanList($bannedIpsTxt);
 			$this->banByIP->load();
 
-			$this->maxPlayers = $this->configGroup->getConfigInt("max-players", 20);
+			$this->maxPlayers = $this->configGroup->getConfigInt("max-players", self::DEFAULT_MAX_PLAYERS);
 
 			$this->onlineMode = $this->configGroup->getConfigBool("xbox-auth", true);
 			if($this->onlineMode){
