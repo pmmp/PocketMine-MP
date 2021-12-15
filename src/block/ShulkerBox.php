@@ -29,6 +29,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function count;
 
 class ShulkerBox extends Opaque{
 	use AnyFacingTrait;
