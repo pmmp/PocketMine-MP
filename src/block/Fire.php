@@ -195,8 +195,8 @@ class Fire extends Flowable{
 
 	private function spreadFire() : void{
 		$world = $this->position->getWorld();
-		$difficulty7 = $world->getDifficulty() * 7;
-		$age30 = $this->age + 30;
+		$difficultyChanceIncrease = $world->getDifficulty() * 7;
+		$ageDivisor = $this->age + 30;
 
 		for($y = -1; $y <= 4; ++$y){
 			$targetY = $y + (int) $this->position->y;
@@ -238,7 +238,7 @@ class Fire extends Flowable{
 						continue;
 					}
 
-					$maxChance = intdiv($encouragement + 40 + $difficulty7, $age30);
+					$maxChance = intdiv($encouragement + 40 + $difficultyChanceIncrease, $ageDivisor);
 					//TODO: max chance is lowered by half in humid biomes
 
 					if($maxChance > 0 and mt_rand(0, $randomBound - 1) <= $maxChance){
