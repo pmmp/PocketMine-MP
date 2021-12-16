@@ -34,6 +34,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\World;
 use function intdiv;
 use function max;
 use function min;
@@ -198,19 +199,28 @@ class Fire extends Flowable{
 		$age30 = $this->age + 30;
 
 		for($y = -1; $y <= 4; ++$y){
+			$targetY = $y + (int) $this->position->y;
+			if($targetY < World::Y_MIN || $targetY >= World::Y_MAX){
+				continue;
+			}
 			//Higher blocks have a lower chance of catching fire
 			$randomBound = 100 + ($y > 1 ? ($y - 1) * 100 : 0);
 
 			for($z = -1; $z <= 1; ++$z){
+				$targetZ = $z + (int) $this->position->z;
 				for($x = -1; $x <= 1; ++$x){
 					if($x === 0 and $y === 0 and $z === 0){
 						continue;
 					}
-
-					if(!$world->isChunkLoaded(($this->position->x + $x) >> Chunk::COORD_BIT_SIZE, ($this->position->z + $z) >> Chunk::COORD_BIT_SIZE)){
+					$targetX = $x + (int) $this->position->x;
+					if(!$world->isInWorld($targetX, $targetY, $targetZ)){
 						continue;
 					}
-					$block = $world->getBlockAt($this->position->x + $x, $this->position->y + $y, $this->position->z + $z);
+
+					if(!$world->isChunkLoaded($targetX >> Chunk::COORD_BIT_SIZE, $targetZ >> Chunk::COORD_BIT_SIZE)){
+						continue;
+					}
+					$block = $world->getBlockAt($targetX, $targetY, $targetZ);
 					if($block->getId() !== BlockLegacyIds::AIR){
 						continue;
 					}
@@ -218,8 +228,10 @@ class Fire extends Flowable{
 					//TODO: fire can't spread if it's raining in any horizontally adjacent block, or the current one
 
 					$encouragement = 0;
-					foreach($block->getAllSides() as $blockSide){
-						$encouragement = max($encouragement, $blockSide->getFlameEncouragement());
+					foreach($block->position->sides() as $vector3){
+						if($world->isInWorld($vector3->x, $vector3->y, $vector3->z)){
+							$encouragement = max($encouragement, $world->getBlockAt($vector3->x, $vector3->y, $vector3->z)->getFlameEncouragement());
+						}
 					}
 
 					if($encouragement <= 0){
