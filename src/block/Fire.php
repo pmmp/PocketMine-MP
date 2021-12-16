@@ -33,6 +33,10 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
+use pocketmine\world\format\Chunk;
+use pocketmine\world\World;
+use function intdiv;
+use function max;
 use function min;
 use function mt_rand;
 
@@ -139,7 +143,7 @@ class Fire extends Flowable{
 
 		if($canSpread){
 			$this->burnBlocksAround();
-			//TODO: fire spread
+			$this->spreadFire();
 		}
 	}
 
@@ -184,6 +188,64 @@ class Fire extends Flowable{
 				}
 				if(!$spreadedFire){
 					$this->position->getWorld()->setBlock($block->position, VanillaBlocks::AIR());
+				}
+			}
+		}
+	}
+
+	private function spreadFire() : void{
+		$world = $this->position->getWorld();
+		$difficultyChanceIncrease = $world->getDifficulty() * 7;
+		$ageDivisor = $this->age + 30;
+
+		for($y = -1; $y <= 4; ++$y){
+			$targetY = $y + (int) $this->position->y;
+			if($targetY < World::Y_MIN || $targetY >= World::Y_MAX){
+				continue;
+			}
+			//Higher blocks have a lower chance of catching fire
+			$randomBound = 100 + ($y > 1 ? ($y - 1) * 100 : 0);
+
+			for($z = -1; $z <= 1; ++$z){
+				$targetZ = $z + (int) $this->position->z;
+				for($x = -1; $x <= 1; ++$x){
+					if($x === 0 and $y === 0 and $z === 0){
+						continue;
+					}
+					$targetX = $x + (int) $this->position->x;
+					if(!$world->isInWorld($targetX, $targetY, $targetZ)){
+						continue;
+					}
+
+					if(!$world->isChunkLoaded($targetX >> Chunk::COORD_BIT_SIZE, $targetZ >> Chunk::COORD_BIT_SIZE)){
+						continue;
+					}
+					$block = $world->getBlockAt($targetX, $targetY, $targetZ);
+					if($block->getId() !== BlockLegacyIds::AIR){
+						continue;
+					}
+
+					//TODO: fire can't spread if it's raining in any horizontally adjacent block, or the current one
+
+					$encouragement = 0;
+					foreach($block->position->sides() as $vector3){
+						if($world->isInWorld($vector3->x, $vector3->y, $vector3->z)){
+							$encouragement = max($encouragement, $world->getBlockAt($vector3->x, $vector3->y, $vector3->z)->getFlameEncouragement());
+						}
+					}
+
+					if($encouragement <= 0){
+						continue;
+					}
+
+					$maxChance = intdiv($encouragement + 40 + $difficultyChanceIncrease, $ageDivisor);
+					//TODO: max chance is lowered by half in humid biomes
+
+					if($maxChance > 0 and mt_rand(0, $randomBound - 1) <= $maxChance){
+						$new = clone $this;
+						$new->age = min(15, $this->age + (mt_rand(0, 4) >> 2));
+						$this->spreadBlock($block, $new);
+					}
 				}
 			}
 		}
