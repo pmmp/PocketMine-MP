@@ -37,16 +37,10 @@ use const STR_PAD_LEFT;
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 function newImage(int $scale, int $radius) : \GdImage{
-	$image = imagecreatetruecolor($scale * $radius * 2, $scale * $radius * 2);
-	if($image === false){
-		throw new AssumptionFailedError();
-	}
+	$image = Utils::assumeNotFalse(imagecreatetruecolor($scale * $radius * 2, $scale * $radius * 2));
 	imagesavealpha($image, true);
 
-	$black = imagecolorallocate($image, 0, 0, 0);
-	if($black === false){
-		throw new AssumptionFailedError();
-	}
+	$black = Utils::assumeNotFalse(imagecolorallocate($image, 0, 0, 0));
 	imagefill($image, 0, 0, $black);
 	return $image;
 }
@@ -58,10 +52,9 @@ function render(int $radius, int $baseX, int $baseZ, int $chunksPerStep, int $sc
 	$middleOffsetX = $scale * ($radius + $offsetX);
 	$middleOffsetZ = $scale * ($radius + $offsetZ);
 
-	$black = imagecolorallocate($image, 0, 0, 0);
-	$yellow = imagecolorallocate($image, 255, 255, 51);
-	$red = imagecolorallocate($image, 255, 0, 0);
-	if($black === false || $yellow === false || $red === false) throw new AssumptionFailedError();
+	$black = Utils::assumeNotFalse(imagecolorallocate($image, 0, 0, 0));
+	$yellow = Utils::assumeNotFalse(imagecolorallocate($image, 255, 255, 51));
+	$red = Utils::assumeNotFalse(imagecolorallocate($image, 255, 0, 0));
 
 	$frame = 0;
 	$seen = [];
@@ -152,11 +145,7 @@ foreach(Utils::stringifyKeys(getopt("", ["output:"])) as $name => $value){
 		fwrite(STDERR, "Output directory $value is not empty\n");
 		exit(1);
 	}
-	$realPath = realpath($value);
-	if($realPath === false){
-		throw new AssumptionFailedError();
-	}
-	$outputDirectory = $realPath;
+	$outputDirectory = Utils::assumeNotFalse(realpath($value), "We just created this directory, we should be able to get its realpath");
 }
 if($outputDirectory === null){
 	fwrite(STDERR, "Please specify an output directory using --output\n");
@@ -164,9 +153,5 @@ if($outputDirectory === null){
 }
 $image = newImage($scale, $radius);
 
-$black = imagecolorallocate($image, 0, 0, 0);
-$green = imagecolorallocate($image, 0, 220, 0);
-if($black === false || $green === false){
-	throw new AssumptionFailedError();
-}
+$green = Utils::assumeNotFalse(imagecolorallocate($image, 0, 220, 0));
 render($radius, $baseX, $baseZ, $nChunksPerStep, $scale, $image, $green, 0, 0, $outputDirectory);

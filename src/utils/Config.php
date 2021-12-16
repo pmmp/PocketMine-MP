@@ -341,14 +341,14 @@ class Config{
 			$this->config[$base] = [];
 		}
 
-		$base =& $this->config[$base];
+		$base = &$this->config[$base];
 
 		while(count($vars) > 0){
 			$baseKey = array_shift($vars);
 			if(!isset($base[$baseKey])){
 				$base[$baseKey] = [];
 			}
-			$base =& $base[$baseKey];
+			$base = &$base[$baseKey];
 		}
 
 		$base = $value;
@@ -393,14 +393,14 @@ class Config{
 
 		$vars = explode(".", $key);
 
-		$currentNode =& $this->config;
+		$currentNode = &$this->config;
 		while(count($vars) > 0){
 			$nodeName = array_shift($vars);
 			if(isset($currentNode[$nodeName])){
 				if(count($vars) === 0){ //final node
 					unset($currentNode[$nodeName]);
 				}elseif(is_array($currentNode[$nodeName])){
-					$currentNode =& $currentNode[$nodeName];
+					$currentNode = &$currentNode[$nodeName];
 				}
 			}else{
 				break;

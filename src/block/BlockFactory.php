@@ -291,7 +291,7 @@ class BlockFactory{
 		$this->registerAllMeta(new Stair(new BID(Ids::PRISMARINE_STAIRS, 0), "Prismarine Stairs", $prismarineBreakInfo));
 
 		$pumpkinBreakInfo = new BlockBreakInfo(1.0, BlockToolType::AXE);
-		$this->registerAllMeta($pumpkin = new Opaque(new BID(Ids::PUMPKIN, 0), "Pumpkin", $pumpkinBreakInfo));
+		$this->registerAllMeta(new Pumpkin(new BID(Ids::PUMPKIN, 0), "Pumpkin", $pumpkinBreakInfo));
 		$this->registerAllMeta(new CarvedPumpkin(new BID(Ids::CARVED_PUMPKIN, 0), "Carved Pumpkin", $pumpkinBreakInfo));
 		$this->registerAllMeta(new LitPumpkin(new BID(Ids::JACK_O_LANTERN, 0), "Jack o'Lantern", $pumpkinBreakInfo));
 

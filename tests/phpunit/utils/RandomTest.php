@@ -21,29 +21,23 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\utils;
 
-use pocketmine\entity\Living;
-use pocketmine\player\Player;
+use PHPUnit\Framework\TestCase;
 
-abstract class Food extends Item implements FoodSourceItem{
-	public function requiresHunger() : bool{
-		return true;
-	}
+class RandomTest extends TestCase{
 
-	public function getResidue() : Item{
-		return VanillaItems::AIR();
-	}
+	public function testNextSignedIntReturnsSignedInts() : void{
+		//use a known seed which should definitely produce negatives
+		$random = new Random(0);
+		$negatives = false;
 
-	public function getAdditionalEffects() : array{
-		return [];
-	}
-
-	public function onConsume(Living $consumer) : void{
-
-	}
-
-	public function canStartUsingItem(Player $player) : bool{
-		return !$this->requiresHunger() || $player->getHungerManager()->isHungry();
+		for($i = 0; $i < 100; ++$i){
+			if($random->nextSignedInt() < 0){
+				$negatives = true;
+				break;
+			}
+		}
+		self::assertTrue($negatives);
 	}
 }

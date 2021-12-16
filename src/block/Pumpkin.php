@@ -21,30 +21,25 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\inventory\transaction\action;
+namespace pocketmine\block;
 
-use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
+use pocketmine\item\Shears;
 use pocketmine\item\VanillaItems;
+use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use function in_array;
 
-/**
- * This action type shows up when a creative player puts an item into the creative inventory menu to destroy it.
- * The output is the item destroyed. You can think of this action type like setting an item into /dev/null
- */
-class DestroyItemAction extends InventoryAction{
+class Pumpkin extends Opaque{
 
-	public function __construct(Item $targetItem){
-		parent::__construct(VanillaItems::AIR(), $targetItem);
-	}
-
-	public function validate(Player $source) : void{
-		if($source->hasFiniteResources()){
-			throw new TransactionValidationException("Player has finite resources, cannot destroy items");
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($item instanceof Shears and in_array($face, Facing::HORIZONTAL, true)){
+			$item->applyDamage(1);
+			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::CARVED_PUMPKIN()->setFacing($face));
+			$this->position->getWorld()->dropItem($this->position->add(0.5, 0.5, 0.5), VanillaItems::PUMPKIN_SEEDS()->setCount(1));
+			return true;
 		}
-	}
-
-	public function execute(Player $source) : void{
-		//NOOP
+		return false;
 	}
 }

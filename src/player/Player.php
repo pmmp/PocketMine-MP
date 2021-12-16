@@ -234,6 +234,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	//TODO: Abilities
 	protected bool $autoJump = true;
 	protected bool $allowFlight = false;
+	protected bool $blockCollision = true;
 	protected bool $flying = false;
 
 	protected ?int $lineHeight = null;
@@ -392,6 +393,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function getAllowFlight() : bool{
 		return $this->allowFlight;
+	}
+
+	public function setHasBlockCollision(bool $value) : void{
+		$this->blockCollision = $value;
+		$this->getNetworkSession()->syncAdventureSettings($this);
+	}
+
+	public function hasBlockCollision() : bool{
+		return $this->blockCollision;
 	}
 
 	public function setFlying(bool $value) : void{
@@ -970,6 +980,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		if($this->isSpectator()){
 			$this->setFlying(true);
+			$this->setHasBlockCollision(false);
 			$this->setSilent();
 			$this->onGround = false;
 
@@ -980,6 +991,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			if($this->isSurvival()){
 				$this->setFlying(false);
 			}
+			$this->setHasBlockCollision(true);
 			$this->setSilent(false);
 			$this->checkGroundState(0, 0, 0, 0, 0, 0);
 		}
@@ -1667,13 +1679,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$entity->attack($ev);
+		$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 
 		$soundPos = $entity->getPosition()->add(0, $entity->size->getHeight() / 2, 0);
 		if($ev->isCancelled()){
 			$this->getWorld()->addSound($soundPos, new EntityAttackNoDamageSound());
 			return false;
 		}
-		$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 		$this->getWorld()->addSound($soundPos, new EntityAttackSound());
 
 		if($ev->getModifier(EntityDamageEvent::MODIFIER_CRITICAL) > 0 and $entity instanceof Living){

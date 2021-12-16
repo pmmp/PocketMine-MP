@@ -206,7 +206,7 @@ class SimpleCommandMap implements CommandMap{
 		foreach($matches[0] as $k => $_){
 			for($i = 1; $i <= 2; ++$i){
 				if($matches[$i][$k] !== ""){
-					$args[$k] = stripslashes($matches[$i][$k]);
+					$args[$k] = $i === 1 ? stripslashes($matches[$i][$k]) : $matches[$i][$k];
 					break;
 				}
 			}
