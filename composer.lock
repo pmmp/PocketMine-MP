@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c6ea83d1ae49200c45ab58fcff2ae1ac",
+    "content-hash": "eff9aac3494dbd6798ed7bb62f962ae9",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -684,16 +684,16 @@
         },
         {
             "name": "pocketmine/nbt",
-            "version": "0.3.1",
+            "version": "0.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/NBT.git",
-                "reference": "f43db89b8216b772407cdcedd90147db8eef34bc"
+                "reference": "3e0d9ef6b6c5fb45e3745a121296e75631b3eefe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/NBT/zipball/f43db89b8216b772407cdcedd90147db8eef34bc",
-                "reference": "f43db89b8216b772407cdcedd90147db8eef34bc",
+                "url": "https://api.github.com/repos/pmmp/NBT/zipball/3e0d9ef6b6c5fb45e3745a121296e75631b3eefe",
+                "reference": "3e0d9ef6b6c5fb45e3745a121296e75631b3eefe",
                 "shasum": ""
             },
             "require": {
@@ -702,10 +702,10 @@
                 "pocketmine/binaryutils": "^0.2.0"
             },
             "require-dev": {
-                "irstea/phpunit-shim": "^9.5",
                 "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "0.12.99",
-                "phpstan/phpstan-strict-rules": "^0.12.4"
+                "phpstan/phpstan": "1.2.0",
+                "phpstan/phpstan-strict-rules": "^1.0",
+                "phpunit/phpunit": "^9.5"
             },
             "type": "library",
             "autoload": {
@@ -720,9 +720,9 @@
             "description": "PHP library for working with Named Binary Tags",
             "support": {
                 "issues": "https://github.com/pmmp/NBT/issues",
-                "source": "https://github.com/pmmp/NBT/tree/0.3.1"
+                "source": "https://github.com/pmmp/NBT/tree/0.3.2"
             },
-            "time": "2021-12-06T16:19:10+00:00"
+            "time": "2021-12-16T01:02:37+00:00"
         },
         {
             "name": "pocketmine/raklib",
