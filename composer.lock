@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7e9247927fa23baf3e899811c8119f95",
+    "content-hash": "26900975826bbd13b76b2a97405d1c33",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -497,23 +497,23 @@
         },
         {
             "name": "pocketmine/errorhandler",
-            "version": "0.3.0",
+            "version": "0.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ErrorHandler.git",
-                "reference": "ec742b209e8056bbe855069c4eff94c9734ea19b"
+                "reference": "5bb9e2b66551ef7383da85165b7e8a7cc9aa162a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ErrorHandler/zipball/ec742b209e8056bbe855069c4eff94c9734ea19b",
-                "reference": "ec742b209e8056bbe855069c4eff94c9734ea19b",
+                "url": "https://api.github.com/repos/pmmp/ErrorHandler/zipball/5bb9e2b66551ef7383da85165b7e8a7cc9aa162a",
+                "reference": "5bb9e2b66551ef7383da85165b7e8a7cc9aa162a",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2 || ^8.0"
             },
             "require-dev": {
-                "phpstan/phpstan": "0.12.75",
+                "phpstan/phpstan": "0.12.99",
                 "phpstan/phpstan-strict-rules": "^0.12.2"
             },
             "type": "library",
@@ -529,9 +529,9 @@
             "description": "Utilities to handle nasty PHP E_* errors in a usable way",
             "support": {
                 "issues": "https://github.com/pmmp/ErrorHandler/issues",
-                "source": "https://github.com/pmmp/ErrorHandler/tree/0.3.0"
+                "source": "https://github.com/pmmp/ErrorHandler/tree/0.4.0"
             },
-            "time": "2021-02-12T18:56:22+00:00"
+            "time": "2021-12-16T18:13:42+00:00"
         },
         {
             "name": "pocketmine/locale-data",
