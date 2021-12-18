@@ -255,9 +255,10 @@ abstract class Living extends Entity{
 		$size = $this->getInitialSizeInfo();
 		if($this->isSwimming() || $this->isGliding()){
 			$width = $size->getWidth();
-			$this->setSize((new EntitySizeInfo($width, $width, $width / 2))->scale($this->getScale()));
+			//we don't actually know an appropriate eye height for a swimming mob, but 2/3 should be good enough.
+			$this->setSize((new EntitySizeInfo($width, $width, $width * 2 / 3))->scale($this->getScale()));
 		}else{
-			$this->setSize($this->getInitialSizeInfo()->scale($this->getScale()));
+			$this->setSize($size->scale($this->getScale()));
 		}
 	}
 
