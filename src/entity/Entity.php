@@ -1589,8 +1589,8 @@ abstract class Entity{
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		$properties->setByte(EntityMetadataProperties::ALWAYS_SHOW_NAMETAG, $this->alwaysShowNameTag ? 1 : 0);
-		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->size->getHeight());
-		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->size->getWidth());
+		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->size->getHeight() / $this->scale);
+		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->size->getWidth() / $this->scale);
 		$properties->setFloat(EntityMetadataProperties::SCALE, $this->scale);
 		$properties->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
 		$properties->setLong(EntityMetadataProperties::OWNER_EID, $this->ownerId ?? -1);
