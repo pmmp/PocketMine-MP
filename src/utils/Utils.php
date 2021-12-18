@@ -506,7 +506,7 @@ final class Utils{
 		if($rawDocComment === false){ //usually empty doc comment, but this is safer and statically analysable
 			return [];
 		}
-		preg_match_all('/(*ANYCRLF)^[\t ]*(?:\* )?@([a-zA-Z]+)(?:[\t ]+(.+?))?[\t ]*$/m', $rawDocComment, $matches);
+		preg_match_all('/(*ANYCRLF)^[\t ]*(?:\* )?@([a-zA-Z\-]+)(?:[\t ]+(.+?))?[\t ]*$/m', $rawDocComment, $matches);
 
 		return array_combine($matches[1], $matches[2]);
 	}
@@ -568,6 +568,22 @@ final class Utils{
 			}catch(\TypeError $e){
 				throw new \TypeError("Incorrect type of element at \"$k\": " . $e->getMessage(), 0, $e);
 			}
+		}
+	}
+
+	/**
+	 * Generator which forces array keys to string during iteration.
+	 * This is necessary because PHP has an anti-feature where it casts numeric string keys to integers, leading to
+	 * various crashes.
+	 *
+	 * @phpstan-template TKeyType of string
+	 * @phpstan-template TValueType
+	 * @phpstan-param array<TKeyType, TValueType> $array
+	 * @phpstan-return \Generator<TKeyType, TValueType, void, void>
+	 */
+	public static function stringifyKeys(array $array) : \Generator{
+		foreach($array as $key => $value){ // @phpstan-ignore-line - this is where we fix the stupid bullshit with array keys :)
+			yield (string) $key => $value;
 		}
 	}
 

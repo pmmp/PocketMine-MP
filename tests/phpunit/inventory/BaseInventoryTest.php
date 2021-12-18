@@ -25,16 +25,14 @@ namespace pocketmine\inventory;
 
 use PHPUnit\Framework\TestCase;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
 use pocketmine\item\VanillaItems;
 
 class BaseInventoryTest extends TestCase{
 
 	public function testAddItemDifferentUserData() : void{
 		$inv = new SimpleInventory(1);
-		$item1 = ItemFactory::getInstance()->get(ItemIds::ARROW, 0, 1);
-		$item2 = ItemFactory::getInstance()->get(ItemIds::ARROW, 0, 1)->setCustomName("TEST");
+		$item1 = VanillaItems::ARROW()->setCount(1);
+		$item2 = VanillaItems::ARROW()->setCount(1)->setCustomName("TEST");
 
 		$inv->addItem(clone $item1);
 		self::assertFalse($inv->canAddItem($item2), "Item WITHOUT userdata should not stack with item WITH userdata");

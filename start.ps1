@@ -11,8 +11,13 @@ if($php -ne ""){
 }elseif(Test-Path "bin\php\php.exe"){
 	$env:PHPRC = ""
 	$binary = "bin\php\php.exe"
-}else{
+}elseif((Get-Command php -ErrorAction SilentlyContinue)){
 	$binary = "php"
+}else{
+	echo "Couldn't find a PHP binary in system PATH or $pwd\bin\php"
+	echo "Please refer to the installation instructions at https://doc.pmmp.io/en/rtfd/installation.html"
+	pause
+	exit 1
 }
 
 if($file -eq ""){

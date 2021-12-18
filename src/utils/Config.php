@@ -33,7 +33,6 @@ use function date;
 use function explode;
 use function file_exists;
 use function file_get_contents;
-use function file_put_contents;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -53,6 +52,7 @@ use function yaml_parse;
 use const CASE_LOWER;
 use const JSON_BIGINT_AS_STRING;
 use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * Config Class for simple config manipulation of multiple formats.
@@ -212,7 +212,7 @@ class Config{
 				$content = self::writeProperties($this->config);
 				break;
 			case Config::JSON:
-				$content = json_encode($this->config, $this->jsonOptions);
+				$content = json_encode($this->config, $this->jsonOptions | JSON_THROW_ON_ERROR);
 				break;
 			case Config::YAML:
 				$content = yaml_emit($this->config, YAML_UTF8_ENCODING);
@@ -227,7 +227,7 @@ class Config{
 				throw new AssumptionFailedError("Config type is unknown, has not been set or not detected");
 		}
 
-		file_put_contents($this->file, $content);
+		Filesystem::safeFilePutContents($this->file, $content);
 
 		$this->changed = false;
 	}
@@ -341,14 +341,14 @@ class Config{
 			$this->config[$base] = [];
 		}
 
-		$base =& $this->config[$base];
+		$base = &$this->config[$base];
 
 		while(count($vars) > 0){
 			$baseKey = array_shift($vars);
 			if(!isset($base[$baseKey])){
 				$base[$baseKey] = [];
 			}
-			$base =& $base[$baseKey];
+			$base = &$base[$baseKey];
 		}
 
 		$base = $value;
@@ -393,14 +393,14 @@ class Config{
 
 		$vars = explode(".", $key);
 
-		$currentNode =& $this->config;
+		$currentNode = &$this->config;
 		while(count($vars) > 0){
 			$nodeName = array_shift($vars);
 			if(isset($currentNode[$nodeName])){
 				if(count($vars) === 0){ //final node
 					unset($currentNode[$nodeName]);
 				}elseif(is_array($currentNode[$nodeName])){
-					$currentNode =& $currentNode[$nodeName];
+					$currentNode = &$currentNode[$nodeName];
 				}
 			}else{
 				break;
@@ -425,7 +425,7 @@ class Config{
 	public function set($k, $v = true) : void{
 		$this->config[$k] = $v;
 		$this->changed = true;
-		foreach($this->nestedCache as $nestedKey => $nvalue){
+		foreach(Utils::stringifyKeys($this->nestedCache) as $nestedKey => $nvalue){
 			if(substr($nestedKey, 0, strlen($k) + 1) === ($k . ".")){
 				unset($this->nestedCache[$nestedKey]);
 			}
@@ -487,7 +487,7 @@ class Config{
 	 */
 	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;
-		foreach($default as $k => $v){
+		foreach(Utils::stringifyKeys($default) as $k => $v){
 			if(is_array($v)){
 				if(!isset($data[$k]) or !is_array($data[$k])){
 					$data[$k] = [];
@@ -536,7 +536,7 @@ class Config{
 	 */
 	public static function writeProperties(array $config) : string{
 		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
-		foreach($config as $k => $v){
+		foreach(Utils::stringifyKeys($config) as $k => $v){
 			if(is_bool($v)){
 				$v = $v ? "on" : "off";
 			}

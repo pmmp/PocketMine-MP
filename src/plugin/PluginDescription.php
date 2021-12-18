@@ -28,6 +28,7 @@ use pocketmine\permission\PermissionParser;
 use pocketmine\permission\PermissionParserException;
 use function array_map;
 use function array_values;
+use function get_debug_type;
 use function is_array;
 use function is_string;
 use function preg_match;
@@ -85,7 +86,18 @@ class PluginDescription{
 	 * @param string|mixed[] $yamlString
 	 */
 	public function __construct($yamlString){
-		$this->loadMap(!is_array($yamlString) ? yaml_parse($yamlString) : $yamlString);
+		if(is_string($yamlString)){
+			$map = yaml_parse($yamlString);
+			if($map === false){
+				throw new PluginDescriptionParseException("YAML parsing error in plugin manifest");
+			}
+			if(!is_array($map)){
+				throw new PluginDescriptionParseException("Invalid structure of plugin manifest, expected array but have " . get_debug_type($map));
+			}
+		}else{
+			$map = $yamlString;
+		}
+		$this->loadMap($map);
 	}
 
 	/**

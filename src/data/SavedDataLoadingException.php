@@ -21,15 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\data;
 
-use pocketmine\item\Item;
+final class SavedDataLoadingException extends \RuntimeException{
 
-class Podzol extends Opaque{
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [
-			VanillaBlocks::DIRT()->asItem()
-		];
-	}
 }

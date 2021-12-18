@@ -27,6 +27,8 @@ namespace pocketmine\lang;
  * This class contains factory methods for all the translations known to PocketMine-MP as per the used version of
  * pmmp/Language.
  * This class is generated automatically, do NOT modify it by hand.
+ *
+ * @internal
  */
 final class KnownTranslationFactory{
 	public static function ability_flight() : Translatable{
@@ -242,10 +244,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::COMMANDS_ENCHANT_USAGE, []);
 	}
 
-	public static function commands_gamemode_success_other(Translatable|string $param1, Translatable|string $param0) : Translatable{
+	public static function commands_gamemode_success_other(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::COMMANDS_GAMEMODE_SUCCESS_OTHER, [
-			1 => $param1,
 			0 => $param0,
+			1 => $param1,
 		]);
 	}
 
@@ -913,6 +915,12 @@ final class KnownTranslationFactory{
 
 	public static function gamemode_info() : Translatable{
 		return new Translatable(KnownTranslationKeys::GAMEMODE_INFO, []);
+	}
+
+	public static function gamemode_options(Translatable|string $param0) : Translatable{
+		return new Translatable(KnownTranslationKeys::GAMEMODE_OPTIONS, [
+			0 => $param0,
+		]);
 	}
 
 	public static function invalid_port() : Translatable{
@@ -1666,10 +1674,11 @@ final class KnownTranslationFactory{
 		]);
 	}
 
-	public static function pocketmine_plugin_aliasError(Translatable|string $param0, Translatable|string $param1) : Translatable{
+	public static function pocketmine_plugin_aliasError(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_ALIASERROR, [
 			0 => $param0,
 			1 => $param1,
+			2 => $param2,
 		]);
 	}
 
@@ -1689,10 +1698,11 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_CIRCULARDEPENDENCY, []);
 	}
 
-	public static function pocketmine_plugin_commandError(Translatable|string $param0, Translatable|string $param1) : Translatable{
+	public static function pocketmine_plugin_commandError(Translatable|string $param0, Translatable|string $param1, Translatable|string $param2) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_COMMANDERROR, [
 			0 => $param0,
 			1 => $param1,
+			2 => $param2,
 		]);
 	}
 
@@ -2121,6 +2131,14 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::SERVER_PORT, []);
 	}
 
+	public static function server_port_v4() : Translatable{
+		return new Translatable(KnownTranslationKeys::SERVER_PORT_V4, []);
+	}
+
+	public static function server_port_v6() : Translatable{
+		return new Translatable(KnownTranslationKeys::SERVER_PORT_V6, []);
+	}
+
 	public static function server_properties() : Translatable{
 		return new Translatable(KnownTranslationKeys::SERVER_PROPERTIES, []);
 	}
@@ -2143,6 +2161,10 @@ final class KnownTranslationFactory{
 
 	public static function tile_bed_tooFar() : Translatable{
 		return new Translatable(KnownTranslationKeys::TILE_BED_TOOFAR, []);
+	}
+
+	public static function view_distance() : Translatable{
+		return new Translatable(KnownTranslationKeys::VIEW_DISTANCE, []);
 	}
 
 	public static function welcome_to_pocketmine(Translatable|string $param0) : Translatable{

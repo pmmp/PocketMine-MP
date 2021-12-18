@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\animation\TotemUseAnimation;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
@@ -104,12 +105,12 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * @throws InvalidSkinException
-	 * @throws \UnexpectedValueException
+	 * @throws SavedDataLoadingException
 	 */
 	public static function parseSkinNBT(CompoundTag $nbt) : Skin{
 		$skinTag = $nbt->getCompoundTag("Skin");
 		if($skinTag === null){
-			throw new \UnexpectedValueException("Missing skin data");
+			throw new SavedDataLoadingException("Missing skin data");
 		}
 		return new Skin( //this throws if the skin is invalid
 			$skinTag->getString("Name"),

@@ -29,6 +29,7 @@ use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Binary;
@@ -157,6 +158,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		BedrockWorldData::generate($path, $name, $options);
 	}
 
+	/**
+	 * @throws CorruptedChunkException
+	 */
 	protected function deserializePaletted(BinaryStream $stream) : PalettedBlockArray{
 		$bitsPerBlock = $stream->getByte() >> 1;
 
@@ -169,18 +173,18 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$palette = [];
 		$idMap = LegacyBlockIdToStringIdMap::getInstance();
 		for($i = 0, $paletteSize = $stream->getLInt(); $i < $paletteSize; ++$i){
-			$offset = $stream->getOffset();
-			$tag = $nbt->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
-			$stream->setOffset($offset);
+			try{
+				$offset = $stream->getOffset();
 
-			$id = $idMap->stringToLegacy($tag->getString("name")) ?? BlockLegacyIds::INFO_UPDATE;
-			$data = $tag->getShort("val");
-			if($id === BlockLegacyIds::AIR){
-				//TODO: quick and dirty hack for artifacts left behind by broken world editors
-				//we really need a proper state fixer, but this is a pressing issue.
-				$data = 0;
+				$tag = $nbt->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
+				$stream->setOffset($offset);
+
+				$id = $idMap->stringToLegacy($tag->getString("name")) ?? BlockLegacyIds::INFO_UPDATE;
+				$data = $tag->getShort("val");
+				$palette[] = ($id << Block::INTERNAL_METADATA_BITS) | $data;
+			}catch(NbtException $e){
+				throw new CorruptedChunkException("Invalid blockstate NBT at offset $i in paletted storage: " . $e->getMessage(), 0, $e);
 			}
-			$palette[] = ($id << Block::INTERNAL_METADATA_BITS) | $data;
 		}
 
 		//TODO: exceptions

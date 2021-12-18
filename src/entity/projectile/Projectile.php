@@ -166,7 +166,7 @@ abstract class Projectile extends Entity{
 		return $this->blockHit === null and parent::hasMovementUpdate();
 	}
 
-	public function move(float $dx, float $dy, float $dz) : void{
+	protected function move(float $dx, float $dy, float $dz) : void{
 		$this->blocksAround = null;
 
 		Timings::$entityMove->startTiming();

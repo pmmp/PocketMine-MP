@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\build\make_release;
 
+use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
 use function array_keys;
@@ -76,7 +77,7 @@ const ACCEPTED_OPTS = [
 
 function main() : void{
 	$filteredOpts = [];
-	foreach(getopt("", ["current:", "next:", "channel:", "help"]) as $optName => $optValue){
+	foreach(Utils::stringifyKeys(getopt("", ["current:", "next:", "channel:", "help"])) as $optName => $optValue){
 		if($optName === "help"){
 			fwrite(STDOUT, "Options:\n");
 
