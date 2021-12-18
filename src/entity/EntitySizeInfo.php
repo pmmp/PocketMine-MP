@@ -52,12 +52,4 @@ final class EntitySizeInfo{
 			$this->eyeHeight * $newScale
 		);
 	}
-
-	public function multiply(float $height, float $width, float $eyeHeight) : self{
-		return new self(
-			$this->height * $height,
-			$this->width * $width,
-			$this->eyeHeight * $eyeHeight
-		);
-	}
 }

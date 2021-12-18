@@ -112,10 +112,14 @@ abstract class Living extends Entity{
 	/** @var Attribute */
 	protected $moveSpeedAttr;
 
-	protected bool $sprinting = false;
-	protected bool $sneaking = false;
-	protected bool $gliding = false;
-	protected bool $swimming = false;
+	/** @var bool */
+	protected $sprinting = false;
+	/** @var bool */
+	protected $sneaking = false;
+	/** @var bool */
+	protected $gliding = false;
+	/** @var bool */
+	protected $swimming = false;
 
 	abstract public function getName() : string;
 
@@ -211,7 +215,6 @@ abstract class Living extends Entity{
 	public function setSneaking(bool $value = true) : void{
 		$this->sneaking = $value;
 		$this->networkPropertiesDirty = true;
-		$this->recalculateSize();
 	}
 
 	public function isSprinting() : bool{
@@ -226,7 +229,6 @@ abstract class Living extends Entity{
 			$this->setMovementSpeed($value ? ($moveSpeed * 1.3) : ($moveSpeed / 1.3));
 			$this->moveSpeedAttr->markSynchronized(false); //TODO: reevaluate this hack
 		}
-		$this->recalculateSize();
 	}
 
 	public function isGliding() : bool{
@@ -249,14 +251,13 @@ abstract class Living extends Entity{
 		$this->recalculateSize();
 	}
 
-	public function recalculateSize() : void{
+	private function recalculateSize() : void{
 		$size = $this->getInitialSizeInfo();
 		if($this->isSwimming() || $this->isGliding()){
-			$this->setSize((new EntitySizeInfo($size->getWidth(), $size->getWidth(), $size->getHeight() - $size->getEyeHeight()))->scale($this->getScale()));
-		}elseif($this->isSneaking()){
-			$this->setSize($size->multiply(11 / 12, 1, 11 / 12)->scale($this->getScale()));
+			$width = $size->getWidth();
+			$this->setSize((new EntitySizeInfo($width, $width, $width / 2))->scale($this->getScale()));
 		}else{
-			$this->resetSize();
+			$this->setSize($this->getInitialSizeInfo()->scale($this->getScale()));
 		}
 	}
 
