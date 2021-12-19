@@ -201,7 +201,14 @@ class InGamePacketHandler extends PacketHandler{
 		if($sprinting !== null){
 			$this->player->toggleSprint($sprinting);
 		}
-		//TODO: swimming, gliding
+		$swimming = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
+		if($swimming !== null){
+			$this->player->toggleSwim($swimming);
+		}
+		$gliding = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
+		if($gliding !== null){
+			$this->player->toggleGlide($gliding);
+		}
 
 		//TODO: this packet has WAYYYYY more useful information that we're not using
 		$this->player->handleMovement($newPos);
