@@ -27,8 +27,8 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 
 /**
- * Called when ice melts due to the light level being too high
+ * Called when a block melts due to the light level being too high
  */
-class IceMeltEvent extends BlockEvent implements Cancellable{
-	use CancellableTrait;
+class BlockMeltEvent extends BaseBlockChangeEvent{
+
 }
