@@ -132,7 +132,7 @@ final class GlobalItemTypeDictionary{
 	/**
 	 * @return  ItemTypeDictionary[] $dictionaries
 	 */
-	public function getDictionaries(): array{ return $this->dictionaries; }
+	public function getDictionaries() : array{ return $this->dictionaries; }
 
 	public function getDictionary(int $dictionaryId = ProtocolInfo::CURRENT_PROTOCOL) : ItemTypeDictionary{ return $this->dictionaries[$dictionaryId] ?? $this->dictionaries[ProtocolInfo::CURRENT_PROTOCOL]; }
 }
