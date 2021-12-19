@@ -23,9 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\event\block;
 
-use pocketmine\event\Cancellable;
-use pocketmine\event\CancellableTrait;
-
 /**
  * Called when a block melts due to the light level being too high
  */
