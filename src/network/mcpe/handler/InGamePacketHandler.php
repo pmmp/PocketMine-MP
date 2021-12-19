@@ -94,6 +94,7 @@ use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\PlayerAction;
+use pocketmine\network\mcpe\protocol\types\PlayerAuthInputFlags;
 use pocketmine\network\mcpe\protocol\types\PlayerBlockActionStopBreak;
 use pocketmine\network\mcpe\protocol\types\PlayerBlockActionWithBlockInfo;
 use pocketmine\network\PacketHandlingException;
@@ -154,6 +155,15 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
+	private function resolveOnOffInputFlags(PlayerAuthInputPacket $packet, int $startFlag, int $stopFlag) : ?bool{
+		$enabled = $packet->hasFlag($startFlag);
+		if($enabled !== $packet->hasFlag($stopFlag)){
+			return $enabled;
+		}
+		//neither flag was set, or both were set
+		return null;
+	}
+
 	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
 		$rawPos = $packet->getPosition();
 		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $packet->getYaw(), $packet->getHeadYaw(), $packet->getPitch()] as $float){
@@ -182,6 +192,16 @@ class InGamePacketHandler extends PacketHandler{
 
 		// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
 		$this->forceMoveSync = false;
+
+		$sneaking = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SNEAKING, PlayerAuthInputFlags::STOP_SNEAKING);
+		if($sneaking !== null){
+			$this->player->toggleSneak($sneaking);
+		}
+		$sprinting = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
+		if($sprinting !== null){
+			$this->player->toggleSprint($sprinting);
+		}
+		//TODO: swimming, gliding
 
 		//TODO: this packet has WAYYYYY more useful information that we're not using
 		$this->player->handleMovement($newPos);
