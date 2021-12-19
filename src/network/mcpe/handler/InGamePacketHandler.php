@@ -590,16 +590,28 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				return true;
 			case PlayerAction::START_GLIDE:
+				if(!$this->player->toggleGlide(true)){
+					$this->player->sendData([$this->player]);
+				}
+				return true;
 			case PlayerAction::STOP_GLIDE:
-				break; //TODO
+				if(!$this->player->toggleGlide(false)){
+					$this->player->sendData([$this->player]);
+				}
+				return true;
 			case PlayerAction::CRACK_BREAK:
 				$this->player->continueBreakBlock($pos, $face);
 				break;
 			case PlayerAction::START_SWIMMING:
-				break; //TODO
+				if(!$this->player->toggleSwim(true)){
+					$this->player->sendData([$this->player]);
+				}
+				return true;
 			case PlayerAction::STOP_SWIMMING:
-				//TODO: handle this when it doesn't spam every damn tick (yet another spam bug!!)
-				break;
+				if(!$this->player->toggleSwim(false)){
+					$this->player->sendData([$this->player]);
+				}
+				return true;
 			case PlayerAction::INTERACT_BLOCK: //TODO: ignored (for now)
 				break;
 			case PlayerAction::CREATIVE_PLAYER_DESTROY_BLOCK:

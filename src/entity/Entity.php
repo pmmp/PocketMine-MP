@@ -304,12 +304,8 @@ abstract class Entity{
 		if($value <= 0){
 			throw new \InvalidArgumentException("Scale must be greater than 0");
 		}
-		$this->size = $this->getInitialSizeInfo()->scale($value);
-
 		$this->scale = $value;
-
-		$this->recalculateBoundingBox();
-		$this->networkPropertiesDirty = true;
+		$this->setSize($this->getInitialSizeInfo()->scale($value));
 	}
 
 	public function getBoundingBox() : AxisAlignedBB{
@@ -327,6 +323,16 @@ abstract class Entity{
 			$this->location->y + $this->size->getHeight() + $this->ySize,
 			$this->location->z + $halfWidth
 		);
+	}
+
+	public function getSize() : EntitySizeInfo{
+		return $this->size;
+	}
+
+	protected function setSize(EntitySizeInfo $size) : void{
+		$this->size = $size;
+		$this->recalculateBoundingBox();
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function isImmobile() : bool{
