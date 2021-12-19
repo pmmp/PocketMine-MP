@@ -33,7 +33,6 @@ use function base64_decode;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 use function openssl_error_string;
-use function openssl_free_key;
 use function time;
 
 class ProcessLoginTask extends AsyncTask{
@@ -157,8 +156,6 @@ class ProcessLoginTask extends AsyncTask{
 		}catch(JwtException $e){
 			throw new VerifyLoginException($e->getMessage(), 0, $e);
 		}
-
-		@openssl_free_key($signingKeyOpenSSL);
 
 		if($headers->x5u === self::MOJANG_ROOT_PUBLIC_KEY){
 			$this->authenticated = true; //we're signed into xbox live
