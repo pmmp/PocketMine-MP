@@ -132,7 +132,7 @@ abstract class Terminal{
 			self::$COLOR_DARK_AQUA = $colors >= 256 ? $setaf(37) : $setaf(6);
 			self::$COLOR_DARK_RED = $colors >= 256 ? $setaf(124) : $setaf(1);
 			self::$COLOR_PURPLE = $colors >= 256 ? $setaf(127) : $setaf(5);
-			self::$COLOR_ORANGE = $colors >= 256 ? $setaf(214) : $setaf(3);
+			self::$COLOR_GOLD = $colors >= 256 ? $setaf(214) : $setaf(3);
 			self::$COLOR_GRAY = $colors >= 256 ? $setaf(145) : $setaf(7);
 			self::$COLOR_DARK_GRAY = $colors >= 256 ? $setaf(59) : $setaf(8);
 			self::$COLOR_BLUE = $colors >= 256 ? $setaf(63) : $setaf(12);
