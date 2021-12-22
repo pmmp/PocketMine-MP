@@ -48,7 +48,7 @@ abstract class Terminal{
 	public static string $COLOR_DARK_AQUA = "";
 	public static string $COLOR_DARK_RED = "";
 	public static string $COLOR_PURPLE = "";
-	public static string $COLOR_GOLD = "";
+	public static string $COLOR_ORANGE = "";
 	public static string $COLOR_GRAY = "";
 	public static string $COLOR_DARK_GRAY = "";
 	public static string $COLOR_BLUE = "";
@@ -100,7 +100,7 @@ abstract class Terminal{
 		self::$COLOR_DARK_AQUA = $color(37);
 		self::$COLOR_DARK_RED = $color(124);
 		self::$COLOR_PURPLE = $color(127);
-		self::$COLOR_GOLD = $color(214);
+		self::$COLOR_ORANGE = $color(214);
 		self::$COLOR_GRAY = $color(145);
 		self::$COLOR_DARK_GRAY = $color(59);
 		self::$COLOR_BLUE = $color(63);
@@ -132,7 +132,7 @@ abstract class Terminal{
 			self::$COLOR_DARK_AQUA = $colors >= 256 ? $setaf(37) : $setaf(6);
 			self::$COLOR_DARK_RED = $colors >= 256 ? $setaf(124) : $setaf(1);
 			self::$COLOR_PURPLE = $colors >= 256 ? $setaf(127) : $setaf(5);
-			self::$COLOR_GOLD = $colors >= 256 ? $setaf(214) : $setaf(3);
+			self::$COLOR_ORANGE = $colors >= 256 ? $setaf(214) : $setaf(3);
 			self::$COLOR_GRAY = $colors >= 256 ? $setaf(145) : $setaf(7);
 			self::$COLOR_DARK_GRAY = $colors >= 256 ? $setaf(59) : $setaf(8);
 			self::$COLOR_BLUE = $colors >= 256 ? $setaf(63) : $setaf(12);
@@ -146,7 +146,7 @@ abstract class Terminal{
 			self::$COLOR_BLACK = self::$COLOR_DARK_GRAY = $setaf(0);
 			self::$COLOR_RED = self::$COLOR_DARK_RED = $setaf(1);
 			self::$COLOR_GREEN = self::$COLOR_DARK_GREEN = $setaf(2);
-			self::$COLOR_YELLOW = self::$COLOR_GOLD = $setaf(3);
+			self::$COLOR_YELLOW = self::$COLOR_ORANGE = $setaf(3);
 			self::$COLOR_BLUE = self::$COLOR_DARK_BLUE = $setaf(4);
 			self::$COLOR_LIGHT_PURPLE = self::$COLOR_PURPLE = $setaf(5);
 			self::$COLOR_AQUA = self::$COLOR_DARK_AQUA = $setaf(6);
@@ -200,7 +200,7 @@ abstract class Terminal{
 				TextFormat::DARK_AQUA => Terminal::$COLOR_DARK_AQUA,
 				TextFormat::DARK_RED => Terminal::$COLOR_DARK_RED,
 				TextFormat::DARK_PURPLE => Terminal::$COLOR_PURPLE,
-				TextFormat::GOLD => Terminal::$COLOR_GOLD,
+				TextFormat::ORANGE => Terminal::$COLOR_ORANGE,
 				TextFormat::GRAY => Terminal::$COLOR_GRAY,
 				TextFormat::DARK_GRAY => Terminal::$COLOR_DARK_GRAY,
 				TextFormat::BLUE => Terminal::$COLOR_BLUE,
@@ -210,6 +210,7 @@ abstract class Terminal{
 				TextFormat::LIGHT_PURPLE => Terminal::$COLOR_LIGHT_PURPLE,
 				TextFormat::YELLOW => Terminal::$COLOR_YELLOW,
 				TextFormat::WHITE => Terminal::$COLOR_WHITE,
+				TextFormat::GOLD => Terminal::$COLOR_YELLOW,
 				default => $token,
 			};
 		}
