@@ -146,7 +146,7 @@ abstract class Terminal{
 			self::$COLOR_BLACK = self::$COLOR_DARK_GRAY = $setaf(0);
 			self::$COLOR_RED = self::$COLOR_DARK_RED = $setaf(1);
 			self::$COLOR_GREEN = self::$COLOR_DARK_GREEN = $setaf(2);
-			self::$COLOR_YELLOW = self::$COLOR_ORANGE = $setaf(3);
+			self::$COLOR_YELLOW = self::$COLOR_GOLD = $setaf(3);
 			self::$COLOR_BLUE = self::$COLOR_DARK_BLUE = $setaf(4);
 			self::$COLOR_LIGHT_PURPLE = self::$COLOR_PURPLE = $setaf(5);
 			self::$COLOR_AQUA = self::$COLOR_DARK_AQUA = $setaf(6);
@@ -200,7 +200,7 @@ abstract class Terminal{
 				TextFormat::DARK_AQUA => Terminal::$COLOR_DARK_AQUA,
 				TextFormat::DARK_RED => Terminal::$COLOR_DARK_RED,
 				TextFormat::DARK_PURPLE => Terminal::$COLOR_PURPLE,
-				TextFormat::GOLD => Terminal::$COLOR_ORANGE,
+				TextFormat::GOLD => Terminal::$COLOR_GOLD,
 				TextFormat::GRAY => Terminal::$COLOR_GRAY,
 				TextFormat::DARK_GRAY => Terminal::$COLOR_DARK_GRAY,
 				TextFormat::BLUE => Terminal::$COLOR_BLUE,
