@@ -48,7 +48,7 @@ abstract class Terminal{
 	public static string $COLOR_DARK_AQUA = "";
 	public static string $COLOR_DARK_RED = "";
 	public static string $COLOR_PURPLE = "";
-	public static string $COLOR_ORANGE = "";
+	public static string $COLOR_GOLD = "";
 	public static string $COLOR_GRAY = "";
 	public static string $COLOR_DARK_GRAY = "";
 	public static string $COLOR_BLUE = "";
@@ -100,7 +100,7 @@ abstract class Terminal{
 		self::$COLOR_DARK_AQUA = $color(37);
 		self::$COLOR_DARK_RED = $color(124);
 		self::$COLOR_PURPLE = $color(127);
-		self::$COLOR_ORANGE = $color(214);
+		self::$COLOR_GOLD = $color(214);
 		self::$COLOR_GRAY = $color(145);
 		self::$COLOR_DARK_GRAY = $color(59);
 		self::$COLOR_BLUE = $color(63);
@@ -200,7 +200,7 @@ abstract class Terminal{
 				TextFormat::DARK_AQUA => Terminal::$COLOR_DARK_AQUA,
 				TextFormat::DARK_RED => Terminal::$COLOR_DARK_RED,
 				TextFormat::DARK_PURPLE => Terminal::$COLOR_PURPLE,
-				TextFormat::ORANGE => Terminal::$COLOR_ORANGE,
+				TextFormat::GOLD => Terminal::$COLOR_ORANGE,
 				TextFormat::GRAY => Terminal::$COLOR_GRAY,
 				TextFormat::DARK_GRAY => Terminal::$COLOR_DARK_GRAY,
 				TextFormat::BLUE => Terminal::$COLOR_BLUE,
@@ -210,7 +210,7 @@ abstract class Terminal{
 				TextFormat::LIGHT_PURPLE => Terminal::$COLOR_LIGHT_PURPLE,
 				TextFormat::YELLOW => Terminal::$COLOR_YELLOW,
 				TextFormat::WHITE => Terminal::$COLOR_WHITE,
-				TextFormat::GOLD => Terminal::$COLOR_YELLOW,
+				TextFormat::MINECOIN_GOLD => Terminal::$COLOR_YELLOW,
 				default => $token,
 			};
 		}
