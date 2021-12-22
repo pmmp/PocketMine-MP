@@ -52,7 +52,7 @@ abstract class TextFormat{
 	public const DARK_AQUA = TextFormat::ESCAPE . "3";
 	public const DARK_RED = TextFormat::ESCAPE . "4";
 	public const DARK_PURPLE = TextFormat::ESCAPE . "5";
-	public const GOLD = TextFormat::ESCAPE . "6";
+	public const ORANGE = TextFormat::ESCAPE . "6";
 	public const GRAY = TextFormat::ESCAPE . "7";
 	public const DARK_GRAY = TextFormat::ESCAPE . "8";
 	public const BLUE = TextFormat::ESCAPE . "9";
@@ -62,6 +62,7 @@ abstract class TextFormat{
 	public const LIGHT_PURPLE = TextFormat::ESCAPE . "d";
 	public const YELLOW = TextFormat::ESCAPE . "e";
 	public const WHITE = TextFormat::ESCAPE . "f";
+	public const GOLD = TextFormat::ESCAPE . "g";
 
 	public const COLORS = [
 		self::BLACK => self::BLACK,
@@ -70,7 +71,7 @@ abstract class TextFormat{
 		self::DARK_AQUA => self::DARK_AQUA,
 		self::DARK_RED => self::DARK_RED,
 		self::DARK_PURPLE => self::DARK_PURPLE,
-		self::GOLD => self::GOLD,
+		self::ORANGE => self::ORANGE,
 		self::GRAY => self::GRAY,
 		self::DARK_GRAY => self::DARK_GRAY,
 		self::BLUE => self::BLUE,
@@ -80,6 +81,7 @@ abstract class TextFormat{
 		self::LIGHT_PURPLE => self::LIGHT_PURPLE,
 		self::YELLOW => self::YELLOW,
 		self::WHITE => self::WHITE,
+		self::GOLD => self::GOLD,
 	];
 
 	public const OBFUSCATED = TextFormat::ESCAPE . "k";
@@ -153,7 +155,7 @@ abstract class TextFormat{
 	 * @param string $placeholder default "&"
 	 */
 	public static function colorize(string $string, string $placeholder = "&") : string{
-		return self::preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-fk-or])/u', TextFormat::ESCAPE . '$1', $string);
+		return self::preg_replace('/' . preg_quote($placeholder, "/") . '([0-9a-gk-or])/u', TextFormat::ESCAPE . '$1', $string);
 	}
 
 	/**
@@ -214,7 +216,7 @@ abstract class TextFormat{
 					$newString .= "<span style=color:#A0A>";
 					++$tokens;
 					break;
-				case TextFormat::GOLD:
+				case TextFormat::ORANGE:
 					$newString .= "<span style=color:#FA0>";
 					++$tokens;
 					break;
@@ -252,6 +254,10 @@ abstract class TextFormat{
 					break;
 				case TextFormat::WHITE:
 					$newString .= "<span style=color:#FFF>";
+					++$tokens;
+					break;
+				case TextFormat::GOLD:
+					$newString .= "<span style=color:#dd0>";
 					++$tokens;
 					break;
 				default:
