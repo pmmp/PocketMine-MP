@@ -213,7 +213,7 @@ abstract class Terminal{
 				TextFormat::LIGHT_PURPLE => Terminal::$COLOR_LIGHT_PURPLE,
 				TextFormat::YELLOW => Terminal::$COLOR_YELLOW,
 				TextFormat::WHITE => Terminal::$COLOR_WHITE,
-				TextFormat::MINECOIN_GOLD => Terminal::$COLOR_YELLOW,
+				TextFormat::MINECOIN_GOLD => Terminal::$COLOR_MINECOIN_GOLD,
 				default => $token,
 			};
 		}
