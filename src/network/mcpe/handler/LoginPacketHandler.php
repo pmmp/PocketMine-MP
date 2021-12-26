@@ -115,7 +115,7 @@ class LoginPacketHandler extends PacketHandler{
 		$uuid = Uuid::fromString($extraData->identity);
 		if($extraData->XUID !== ""){
 			$playerInfo = new XboxLivePlayerInfo(
-				$extraData->XUID,
+				$clientData->Waterdog_XUID,
 				$extraData->displayName,
 				$uuid,
 				$skin,
@@ -135,7 +135,7 @@ class LoginPacketHandler extends PacketHandler{
 
 		$ev = new PlayerPreLoginEvent(
 			$playerInfo,
-			$this->session->getIp(),
+			$clientData->Waterdog_IP,
 			$this->session->getPort(),
 			$this->server->requiresAuthentication()
 		);
