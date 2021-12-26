@@ -104,7 +104,7 @@ class SnowLayer extends Flowable implements Fallable{
 			$ev = new BlockMeltEvent($this, VanillaBlocks::AIR());
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState(), false);
+				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
 			}
 		}
 	}

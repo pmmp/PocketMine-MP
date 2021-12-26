@@ -55,7 +55,7 @@ class Ice extends Transparent{
 			$ev = new BlockMeltEvent($this, VanillaBlocks::WATER());
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->position->getWorld()->setBlock($this->position, $ev->getNewState(), false);
+				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
 			}
 		}
 	}
