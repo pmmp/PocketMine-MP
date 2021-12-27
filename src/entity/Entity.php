@@ -1157,9 +1157,9 @@ abstract class Entity{
 		$countFiltered = count($blocks);
 		if($countFiltered === 0){
 			return false;
-		}elseif(!$submerged && $countFiltered > 0){
+		}elseif(!$submerged){
 			return true;
-		}elseif($submerged && $countFiltered === count($collisionBlocks)){
+		}elseif($countFiltered === count($collisionBlocks)){
 			return true;
 		}
 		return false;
