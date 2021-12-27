@@ -68,8 +68,10 @@ use pocketmine\event\player\PlayerMoveEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerToggleFlightEvent;
+use pocketmine\event\player\PlayerToggleGlideEvent;
 use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
+use pocketmine\event\player\PlayerToggleSwimEvent;
 use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
@@ -134,6 +136,7 @@ use function floor;
 use function get_class;
 use function is_int;
 use function max;
+use function mb_strlen;
 use function microtime;
 use function min;
 use function preg_match;
@@ -156,6 +159,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	private const MOVES_PER_TICK = 2;
 	private const MOVE_BACKLOG_SIZE = 100 * self::MOVES_PER_TICK; //100 ticks backlog (5 seconds)
+
+	/** Max length of a chat message (UTF-8 codepoints, not bytes) */
+	private const MAX_CHAT_CHAR_LENGTH = 512;
+	private const MAX_REACH_DISTANCE_CREATIVE = 13;
+	private const MAX_REACH_DISTANCE_SURVIVAL = 7;
+	private const MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
 
 	/**
 	 * Validates the given username.
@@ -1332,7 +1341,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$message = TextFormat::clean($message, false);
 		foreach(explode("\n", $message) as $messagePart){
-			if(trim($messagePart) !== "" and strlen($messagePart) <= 255 and $this->messageCounter-- > 0){
+			if(trim($messagePart) !== "" and mb_strlen($messagePart, 'UTF-8') <= self::MAX_CHAT_CHAR_LENGTH and $this->messageCounter-- > 0){
 				if(strpos($messagePart, './') === 0){
 					$messagePart = substr($messagePart, 1);
 				}
@@ -1586,7 +1595,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function breakBlock(Vector3 $pos) : bool{
 		$this->removeCurrentWindow();
 
-		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 7)){
+		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? self::MAX_REACH_DISTANCE_CREATIVE : self::MAX_REACH_DISTANCE_SURVIVAL)){
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 			$this->stopBreakBlock($pos);
 			$item = $this->inventory->getItemInHand();
@@ -1616,7 +1625,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function interactBlock(Vector3 $pos, int $face, Vector3 $clickOffset) : bool{
 		$this->setUsingItem(false);
 
-		if($this->canInteract($pos->add(0.5, 0.5, 0.5), 13)){
+		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? self::MAX_REACH_DISTANCE_CREATIVE : self::MAX_REACH_DISTANCE_SURVIVAL)){
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
 			$oldItem = clone $item;
@@ -1655,7 +1664,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$oldItem = clone $heldItem;
 
 		$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
-		if(!$this->canInteract($entity->getLocation(), 8)){
+		if(!$this->canInteract($entity->getLocation(), self::MAX_REACH_DISTANCE_ENTITY_INTERACTION)){
 			$this->logger->debug("Cancelled attack of entity " . $entity->getId() . " due to not currently being interactable");
 			$ev->cancel();
 		}elseif($this->isSpectator() or ($entity instanceof Player and !$this->server->getConfigGroup()->getConfigBool("pvp"))){
@@ -1722,7 +1731,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function interactEntity(Entity $entity, Vector3 $clickPos) : bool{
 		$ev = new PlayerEntityInteractEvent($this, $entity, $clickPos);
 
-		if(!$this->canInteract($entity->getLocation(), 8)){
+		if(!$this->canInteract($entity->getLocation(), self::MAX_REACH_DISTANCE_ENTITY_INTERACTION)){
 			$this->logger->debug("Cancelled interaction with entity " . $entity->getId() . " due to not currently being interactable");
 			$ev->cancel();
 		}
@@ -1767,6 +1776,26 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		//don't use setFlying() here, to avoid feedback loops - TODO: get rid of this hack
 		$this->flying = $fly;
 		$this->resetFallDistance();
+		return true;
+	}
+
+	public function toggleGlide(bool $glide) : bool{
+		$ev = new PlayerToggleGlideEvent($this, $glide);
+		$ev->call();
+		if($ev->isCancelled()){
+			return false;
+		}
+		$this->setGliding($glide);
+		return true;
+	}
+
+	public function toggleSwim(bool $swimming) : bool{
+		$ev = new PlayerToggleSwimEvent($this, $swimming);
+		$ev->call();
+		if($ev->isCancelled()){
+			return false;
+		}
+		$this->setSwimming($swimming);
 		return true;
 	}
 

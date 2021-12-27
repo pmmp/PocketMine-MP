@@ -309,12 +309,8 @@ abstract class Entity{
 		if($value <= 0){
 			throw new \InvalidArgumentException("Scale must be greater than 0");
 		}
-		$this->size = $this->getInitialSizeInfo()->scale($value);
-
 		$this->scale = $value;
-
-		$this->recalculateBoundingBox();
-		$this->networkPropertiesDirty = true;
+		$this->setSize($this->getInitialSizeInfo()->scale($value));
 	}
 
 	public function getBoundingBox() : AxisAlignedBB{
@@ -332,6 +328,16 @@ abstract class Entity{
 			$this->location->y + $this->size->getHeight() + $this->ySize,
 			$this->location->z + $halfWidth
 		);
+	}
+
+	public function getSize() : EntitySizeInfo{
+		return $this->size;
+	}
+
+	protected function setSize(EntitySizeInfo $size) : void{
+		$this->size = $size;
+		$this->recalculateBoundingBox();
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function isImmobile() : bool{
@@ -1616,8 +1622,8 @@ abstract class Entity{
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		$properties->setByte(EntityMetadataProperties::ALWAYS_SHOW_NAMETAG, $this->alwaysShowNameTag ? 1 : 0);
-		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->size->getHeight());
-		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->size->getWidth());
+		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->size->getHeight() / $this->scale);
+		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->size->getWidth() / $this->scale);
 		$properties->setFloat(EntityMetadataProperties::SCALE, $this->scale);
 		$properties->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
 		$properties->setLong(EntityMetadataProperties::OWNER_EID, $this->ownerId ?? -1);

@@ -40,7 +40,7 @@
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/classloader": "^0.2.0",
       "pocketmine/color": "^0.2.0",
-      "pocketmine/errorhandler": "^0.3.0",
+      "pocketmine/errorhandler": "^0.4.0",
       "pocketmine/locale-data": "^2.2.0",
       "pocketmine/log": "^0.4.0",
       "pocketmine/log-pthreads": "^0.4.0",
