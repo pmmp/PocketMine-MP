@@ -134,6 +134,7 @@ use function floor;
 use function get_class;
 use function is_int;
 use function max;
+use function mb_strlen;
 use function microtime;
 use function min;
 use function preg_match;
@@ -1320,7 +1321,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$message = TextFormat::clean($message, false);
 		foreach(explode("\n", $message) as $messagePart){
-			if(trim($messagePart) !== "" and strlen($messagePart) <= 255 and $this->messageCounter-- > 0){
+			if(trim($messagePart) !== "" and mb_strlen($messagePart, 'UTF-8') <= 512 and $this->messageCounter-- > 0){
 				if(strpos($messagePart, './') === 0){
 					$messagePart = substr($messagePart, 1);
 				}
