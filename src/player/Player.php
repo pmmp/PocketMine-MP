@@ -128,6 +128,7 @@ use pocketmine\world\ChunkListenerNoOpTrait;
 use pocketmine\world\ChunkLoader;
 use pocketmine\world\ChunkTicker;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\particle\LavaParticle;
 use pocketmine\world\Position;
 use pocketmine\world\sound\EntityAttackNoDamageSound;
 use pocketmine\world\sound\EntityAttackSound;
@@ -158,6 +159,7 @@ use function strlen;
 use function strtolower;
 use function substr;
 use function trim;
+use function var_dump;
 use const M_PI;
 use const M_SQRT3;
 use const PHP_INT_MAX;
@@ -1357,11 +1359,18 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 			$horizontalDistanceTravelled = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
 			if($horizontalDistanceTravelled > 0){
-				//TODO: check for swimming
-				if($this->isSprinting()){
-					$this->hungerManager->exhaust(0.01 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_SPRINTING);
+				if($this->isSwimming()){
+					if($this->isUnderwater()){
+						$this->hungerManager->exhaust(0.015 * $from->distance($to), PlayerExhaustEvent::CAUSE_SWIMMING);
+					}else{
+						$this->hungerManager->exhaust(0.015 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_SWIMMING);
+					}
 				}else{
-					$this->hungerManager->exhaust(0.0, PlayerExhaustEvent::CAUSE_WALKING);
+					if($this->isSprinting()){
+						$this->hungerManager->exhaust(0.1 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_SPRINTING);
+					}else{
+						$this->hungerManager->exhaust(0.01 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_WALKING);
+					}
 				}
 
 				if($this->nextChunkOrderRun > 20){
