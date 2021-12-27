@@ -145,7 +145,7 @@ class Bed extends Transparent{
 			$isNight = ($time >= World::TIME_NIGHT and $time < World::TIME_SUNRISE);
 
 			if(!$isNight){
-				$player->sendMessage(KnownTranslationFactory::tile_bed_tooFar()->prefix(TextFormat::GRAY));
+				$player->sendMessage(KnownTranslationFactory::tile_bed_noSleep()->prefix(TextFormat::GRAY));
 
 				return true;
 			}
