@@ -160,6 +160,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	private const MOVES_PER_TICK = 2;
 	private const MOVE_BACKLOG_SIZE = 100 * self::MOVES_PER_TICK; //100 ticks backlog (5 seconds)
 
+	/** Max length of a chat message (UTF-8 codepoints, not bytes) */
+	private const MAX_CHAT_CHAR_LENGTH = 512;
+
 	/**
 	 * Validates the given username.
 	 */
@@ -1335,7 +1338,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$message = TextFormat::clean($message, false);
 		foreach(explode("\n", $message) as $messagePart){
-			if(trim($messagePart) !== "" and mb_strlen($messagePart, 'UTF-8') <= 512 and $this->messageCounter-- > 0){
+			if(trim($messagePart) !== "" and mb_strlen($messagePart, 'UTF-8') <= self::MAX_CHAT_CHAR_LENGTH and $this->messageCounter-- > 0){
 				if(strpos($messagePart, './') === 0){
 					$messagePart = substr($messagePart, 1);
 				}
