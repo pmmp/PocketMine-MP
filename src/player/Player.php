@@ -162,6 +162,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/** Max length of a chat message (UTF-8 codepoints, not bytes) */
 	private const MAX_CHAT_CHAR_LENGTH = 512;
+	private const MAX_REACH_DISTANCE_CREATIVE = 13;
+	private const MAX_REACH_DISTANCE_SURVIVAL = 7;
+	private const MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
 
 	/**
 	 * Validates the given username.
@@ -1592,7 +1595,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function breakBlock(Vector3 $pos) : bool{
 		$this->removeCurrentWindow();
 
-		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? 13 : 7)){
+		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? self::MAX_REACH_DISTANCE_CREATIVE : self::MAX_REACH_DISTANCE_SURVIVAL)){
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 			$this->stopBreakBlock($pos);
 			$item = $this->inventory->getItemInHand();
@@ -1622,7 +1625,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function interactBlock(Vector3 $pos, int $face, Vector3 $clickOffset) : bool{
 		$this->setUsingItem(false);
 
-		if($this->canInteract($pos->add(0.5, 0.5, 0.5), 13)){
+		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? self::MAX_REACH_DISTANCE_CREATIVE : self::MAX_REACH_DISTANCE_SURVIVAL)){
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());
 			$item = $this->inventory->getItemInHand(); //this is a copy of the real item
 			$oldItem = clone $item;
@@ -1661,7 +1664,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$oldItem = clone $heldItem;
 
 		$ev = new EntityDamageByEntityEvent($this, $entity, EntityDamageEvent::CAUSE_ENTITY_ATTACK, $heldItem->getAttackPoints());
-		if(!$this->canInteract($entity->getLocation(), 8)){
+		if(!$this->canInteract($entity->getLocation(), self::MAX_REACH_DISTANCE_ENTITY_INTERACTION)){
 			$this->logger->debug("Cancelled attack of entity " . $entity->getId() . " due to not currently being interactable");
 			$ev->cancel();
 		}elseif($this->isSpectator() or ($entity instanceof Player and !$this->server->getConfigGroup()->getConfigBool("pvp"))){
@@ -1726,7 +1729,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function interactEntity(Entity $entity, Vector3 $clickPos) : bool{
 		$ev = new PlayerEntityInteractEvent($this, $entity, $clickPos);
 
-		if(!$this->canInteract($entity->getLocation(), 8)){
+		if(!$this->canInteract($entity->getLocation(), self::MAX_REACH_DISTANCE_ENTITY_INTERACTION)){
 			$this->logger->debug("Cancelled interaction with entity " . $entity->getId() . " due to not currently being interactable");
 			$ev->cancel();
 		}
