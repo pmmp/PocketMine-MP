@@ -130,7 +130,7 @@ abstract class TextFormat{
 	 * @return string[]
 	 */
 	public static function tokenize(string $string) : array{
-		$result = preg_split("/(" . TextFormat::ESCAPE . "[0-9a-fg-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+		$result = preg_split("/(" . TextFormat::ESCAPE . "[0-9a-gk-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 		if($result === false) throw self::makePcreError();
 		return $result;
 	}
