@@ -130,7 +130,7 @@ abstract class TextFormat{
 	 * @return string[]
 	 */
 	public static function tokenize(string $string) : array{
-		$result = preg_split("/(" . TextFormat::ESCAPE . "[0-9a-fk-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+		$result = preg_split("/(" . TextFormat::ESCAPE . "[0-9a-fg-or])/u", $string, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 		if($result === false) throw self::makePcreError();
 		return $result;
 	}
@@ -144,7 +144,7 @@ abstract class TextFormat{
 		$string = mb_scrub($string, 'UTF-8');
 		$string = self::preg_replace("/[\x{E000}-\x{F8FF}]/u", "", $string); //remove unicode private-use-area characters (they might break the console)
 		if($removeFormat){
-			$string = str_replace(TextFormat::ESCAPE, "", self::preg_replace("/" . TextFormat::ESCAPE . "[0-9a-fk-or]/u", "", $string));
+			$string = str_replace(TextFormat::ESCAPE, "", self::preg_replace("/" . TextFormat::ESCAPE . "[0-9a-fg-or]/u", "", $string));
 		}
 		return str_replace("\x1b", "", self::preg_replace("/\x1b[\\(\\][[0-9;\\[\\(]+[Bm]/u", "", $string));
 	}
