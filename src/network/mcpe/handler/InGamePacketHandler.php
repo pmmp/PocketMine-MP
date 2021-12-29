@@ -576,49 +576,9 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::JUMP:
 				$this->player->jump();
 				return true;
-			case PlayerAction::START_SPRINT:
-				if(!$this->player->toggleSprint(true)){
-					$this->player->sendData([$this->player]);
-				}
-				return true;
-			case PlayerAction::STOP_SPRINT:
-				if(!$this->player->toggleSprint(false)){
-					$this->player->sendData([$this->player]);
-				}
-				return true;
-			case PlayerAction::START_SNEAK:
-				if(!$this->player->toggleSneak(true)){
-					$this->player->sendData([$this->player]);
-				}
-				return true;
-			case PlayerAction::STOP_SNEAK:
-				if(!$this->player->toggleSneak(false)){
-					$this->player->sendData([$this->player]);
-				}
-				return true;
-			case PlayerAction::START_GLIDE:
-				if(!$this->player->toggleGlide(true)){
-					$this->player->sendData([$this->player]);
-				}
-				return true;
-			case PlayerAction::STOP_GLIDE:
-				if(!$this->player->toggleGlide(false)){
-					$this->player->sendData([$this->player]);
-				}
-				return true;
 			case PlayerAction::CRACK_BREAK:
 				$this->player->continueBreakBlock($pos, $face);
 				break;
-			case PlayerAction::START_SWIMMING:
-				if(!$this->player->toggleSwim(true)){
-					$this->player->sendData([$this->player]);
-				}
-				return true;
-			case PlayerAction::STOP_SWIMMING:
-				if(!$this->player->toggleSwim(false)){
-					$this->player->sendData([$this->player]);
-				}
-				return true;
 			case PlayerAction::INTERACT_BLOCK: //TODO: ignored (for now)
 				break;
 			case PlayerAction::CREATIVE_PLAYER_DESTROY_BLOCK:
