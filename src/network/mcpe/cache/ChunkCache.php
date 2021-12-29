@@ -136,10 +136,12 @@ class ChunkCache implements ChunkListener{
 					$mappingProtocol,
 					$this->caches[$chunkHash][$mappingProtocol],
 					$this->compressor,
-					function() use ($chunkX, $chunkZ, $mappingProtocol) : void{
+					function() use ($chunkHash, $chunkX, $chunkZ, $mappingProtocol) : void{
 						$this->world->getLogger()->error("Failed preparing chunk $chunkX $chunkZ, retrying");
 
-						$this->restartPendingRequest($chunkX, $chunkZ, $mappingProtocol);
+						if(isset($this->caches[$chunkHash])){
+							$this->restartPendingRequest($chunkX, $chunkZ, $mappingProtocol);
+						}
 					}
 				)
 			);
