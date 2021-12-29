@@ -1743,6 +1743,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function toggleSprint(bool $sprint) : bool{
+		if($sprint === $this->sprinting){
+			return true;
+		}
 		$ev = new PlayerToggleSprintEvent($this, $sprint);
 		$ev->call();
 		if($ev->isCancelled()){
@@ -1753,6 +1756,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function toggleSneak(bool $sneak) : bool{
+		if($sneak === $this->sneaking){
+			return true;
+		}
 		$ev = new PlayerToggleSneakEvent($this, $sneak);
 		$ev->call();
 		if($ev->isCancelled()){
@@ -1763,6 +1769,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function toggleFlight(bool $fly) : bool{
+		if($fly === $this->flying){
+			return true;
+		}
 		$ev = new PlayerToggleFlightEvent($this, $fly);
 		if(!$this->allowFlight){
 			$ev->cancel();
@@ -1778,6 +1787,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function toggleGlide(bool $glide) : bool{
+		if($glide === $this->gliding){
+			return true;
+		}
 		$ev = new PlayerToggleGlideEvent($this, $glide);
 		$ev->call();
 		if($ev->isCancelled()){
@@ -1788,6 +1800,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function toggleSwim(bool $swimming) : bool{
+		if($swimming === $this->swimming){
+			return true;
+		}
 		$ev = new PlayerToggleSwimEvent($this, $swimming);
 		$ev->call();
 		if($ev->isCancelled()){
