@@ -76,6 +76,7 @@ use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\RequestChunkRadiusPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\SetActorMotionPacket;
@@ -574,6 +575,11 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::STOP_SLEEPING:
 				$this->player->stopSleep();
 				break;
+			case PlayerAction::JUMP:
+				if($this->session->getProtocolId() === ProtocolInfo::PROTOCOL_1_16_100){
+					$this->player->jump();
+				}
+				return true;
 			case PlayerAction::CRACK_BREAK:
 				$this->player->continueBreakBlock($pos, $face);
 				break;

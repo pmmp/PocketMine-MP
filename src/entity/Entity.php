@@ -1600,24 +1600,24 @@ abstract class Entity{
 	 * @return MetadataProperty[]
 	 * @phpstan-return array<int, MetadataProperty>
 	 */
-	final protected function getDirtyNetworkData(int $protocolId) : array{
+	final protected function getDirtyNetworkData(int $metadataProtocol) : array{
 		if($this->networkPropertiesDirty){
 			$this->syncNetworkData($this->networkProperties);
 			$this->networkPropertiesDirty = false;
 		}
-		return $this->networkProperties->getDirty($protocolId);
+		return $this->networkProperties->getDirty($metadataProtocol);
 	}
 
 	/**
 	 * @return MetadataProperty[]
 	 * @phpstan-return array<int, MetadataProperty>
 	 */
-	final protected function getAllNetworkData(int $protocolId) : array{
+	final protected function getAllNetworkData(int $metadataProtocol) : array{
 		if($this->networkPropertiesDirty){
 			$this->syncNetworkData($this->networkProperties);
 			$this->networkPropertiesDirty = false;
 		}
-		return $this->networkProperties->getAll($protocolId);
+		return $this->networkProperties->getAll($metadataProtocol);
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
