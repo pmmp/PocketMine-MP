@@ -206,6 +206,10 @@ class InGamePacketHandler extends PacketHandler{
 			$this->player->sendData([$this->player]);
 		}
 
+		if($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)){
+			$this->player->jump();
+		}
+
 		//TODO: this packet has WAYYYYY more useful information that we're not using
 		$this->player->handleMovement($newPos);
 
@@ -569,9 +573,6 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::STOP_SLEEPING:
 				$this->player->stopSleep();
 				break;
-			case PlayerAction::JUMP:
-				$this->player->jump();
-				return true;
 			case PlayerAction::CRACK_BREAK:
 				$this->player->continueBreakBlock($pos, $face);
 				break;
