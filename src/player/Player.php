@@ -1779,9 +1779,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($ev->isCancelled()){
 			return false;
 		}
-		//don't use setFlying() here, to avoid feedback loops - TODO: get rid of this hack
-		$this->flying = $fly;
-		$this->resetFallDistance();
+		$this->setFlying($fly);
 		return true;
 	}
 
