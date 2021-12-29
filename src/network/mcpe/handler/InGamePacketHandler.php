@@ -194,20 +194,16 @@ class InGamePacketHandler extends PacketHandler{
 		$this->forceMoveSync = false;
 
 		$sneaking = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SNEAKING, PlayerAuthInputFlags::STOP_SNEAKING);
-		if($sneaking !== null){
-			$this->player->toggleSneak($sneaking);
-		}
 		$sprinting = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
-		if($sprinting !== null){
-			$this->player->toggleSprint($sprinting);
-		}
 		$swimming = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
-		if($swimming !== null){
-			$this->player->toggleSwim($swimming);
-		}
 		$gliding = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
-		if($gliding !== null){
-			$this->player->toggleGlide($gliding);
+		$mismatch =
+			($sneaking !== null && !$this->player->toggleSneak($sneaking)) |
+			($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
+			($swimming !== null && !$this->player->toggleSwim($swimming)) |
+			($gliding !== null && !$this->player->toggleGlide($gliding));
+		if((bool) $mismatch){
+			$this->player->sendData([$this->player]);
 		}
 
 		//TODO: this packet has WAYYYYY more useful information that we're not using
