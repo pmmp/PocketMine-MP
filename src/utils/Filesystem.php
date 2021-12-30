@@ -265,12 +265,33 @@ final class Filesystem{
 			throw new \RuntimeException("Failed to write to temporary file $temporaryFileName (possibly out of free disk space)");
 		}
 
+		//TODO: the @ prevents us receiving the actual error message, but right now it's necessary since we can't assume
+		//that the error handler has been set :(
 		$renameTemporaryFileResult = $context !== null ?
-			rename($temporaryFileName, $fileName, $context) :
-			rename($temporaryFileName, $fileName);
-
+			@rename($temporaryFileName, $fileName, $context) :
+			@rename($temporaryFileName, $fileName);
 		if(!$renameTemporaryFileResult){
-			throw new \RuntimeException("Failed to move temporary file contents into target file");
+			/*
+			 * The following code works around a bug in Windows where rename() will periodically decide to give us a
+			 * spurious "Access is denied (code: 5)" error. As far as I could determine, the fault comes from Windows
+			 * itself, but since I couldn't reliably reproduce the issue it's very hard to debug.
+			 *
+			 * The following code can be used to test. Usually it will fail anywhere before 100,000 iterations.
+			 *
+			 * for($i = 0; $i < 10_000_000; ++$i){
+			 *     file_put_contents('ops.txt.0.tmp', 'some data ' . $i, 0);
+			 *     if(!rename('ops.txt.0.tmp', 'ops.txt')){
+			 *         throw new \Error("something weird happened");
+			 *     }
+			 * }
+			 */
+			$copyTemporaryFileResult = $context !== null ?
+				copy($temporaryFileName, $fileName, $context) :
+				copy($temporaryFileName, $fileName);
+			if(!$copyTemporaryFileResult){
+				throw new \RuntimeException("Failed to move temporary file contents into target file");
+			}
+			@unlink($temporaryFileName);
 		}
 	}
 }
