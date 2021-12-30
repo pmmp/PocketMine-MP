@@ -59,10 +59,6 @@ class TeleportCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		switch(count($args)){
 			case 1: // /tp targetPlayer
 			case 3: // /tp x y z

@@ -47,10 +47,6 @@ final class PluginCommand extends Command implements PluginOwned{
 			return false;
 		}
 
-		if(!$this->testPermission($sender)){
-			return false;
-		}
-
 		$success = $this->executor->onCommand($sender, $this, $commandLabel, $args);
 
 		if(!$success and $this->usageMessage !== ""){

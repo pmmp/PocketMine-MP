@@ -47,10 +47,6 @@ class PluginsCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		$list = array_map(function(Plugin $plugin) : string{
 			return ($plugin->isEnabled() ? TextFormat::GREEN : TextFormat::RED) . $plugin->getDescription()->getFullName();
 		}, $sender->getServer()->getPluginManager()->getPlugins());

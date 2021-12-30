@@ -39,10 +39,6 @@ class SaveOffCommand extends VanillaCommand{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-		if(!$this->testPermission($sender)){
-			return true;
-		}
-
 		$sender->getServer()->getWorldManager()->setAutoSave(false);
 
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_save_disabled());
