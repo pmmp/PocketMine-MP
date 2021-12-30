@@ -144,7 +144,7 @@ abstract class Terminal{
 			self::$COLOR_LIGHT_PURPLE = $colors >= 256 ? $setaf(207) : $setaf(13);
 			self::$COLOR_YELLOW = $colors >= 256 ? $setaf(227) : $setaf(11);
 			self::$COLOR_WHITE = $colors >= 256 ? $setaf(231) : $setaf(15);
-			self::$COLOR_MINECOIN_GOLD = $colors >= 256 ? $setaf(226) : $setaf(11);
+			self::$COLOR_MINECOIN_GOLD = $colors >= 256 ? $setaf(184) : $setaf(11);
 		}else{
 			self::$COLOR_BLACK = self::$COLOR_DARK_GRAY = $setaf(0);
 			self::$COLOR_RED = self::$COLOR_DARK_RED = $setaf(1);
