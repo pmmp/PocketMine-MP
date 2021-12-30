@@ -111,7 +111,7 @@ abstract class Terminal{
 		self::$COLOR_LIGHT_PURPLE = $color(207);
 		self::$COLOR_YELLOW = $color(227);
 		self::$COLOR_WHITE = $color(231);
-		self::$COLOR_MINECOIN_GOLD = $color(226);
+		self::$COLOR_MINECOIN_GOLD = $color(184);
 	}
 
 	protected static function getEscapeCodes() : void{
