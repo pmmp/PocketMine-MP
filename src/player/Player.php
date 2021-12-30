@@ -1081,6 +1081,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$bb->minY = $this->location->y - 0.2;
 			$bb->maxY = $this->location->y + 0.2;
 
+			//we're already at the new position at this point; check if there are blocks we might have landed on between
+			//the old and new positions (running down stairs necessitates this)
+			$bb = $bb->addCoord(-$dx, -$dy, -$dz);
+
 			$this->onGround = $this->isCollided = count($this->getWorld()->getCollisionBlocks($bb, true)) > 0;
 		}
 	}
