@@ -71,10 +71,10 @@ class SimpleInventory extends BaseInventory{
 
 	protected function internalSetContents(array $items) : void{
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			if(!isset($items[$i])){
-				$this->clear($i);
+			if(!isset($items[$i]) || $items[$i]->isNull()){
+				$this->slots[$i] = null;
 			}else{
-				$this->setItem($i, $items[$i]);
+				$this->slots[$i] = clone $items[$i];
 			}
 		}
 	}
