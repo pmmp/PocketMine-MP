@@ -544,6 +544,8 @@ class BlockFactory{
 			}
 		}));
 
+        $this->register(new Opaque(new BID(595, 0), "Block of Copper", new BlockBreakInfo(3, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel(), 6)));
+
 		//TODO: in the future these won't all have the same hardness; they only do now because of the old metadata crap
 		$wallBreakInfo = new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
 		$this->registerAllMeta(
