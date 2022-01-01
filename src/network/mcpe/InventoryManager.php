@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe;
 
 use pocketmine\block\inventory\AnvilInventory;
+use pocketmine\block\inventory\BeaconInventory;
 use pocketmine\block\inventory\BlockInventory;
 use pocketmine\block\inventory\BrewingStandInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
@@ -185,6 +186,7 @@ class InventoryManager{
 				$inv instanceof EnchantInventory => WindowTypes::ENCHANTMENT,
 				$inv instanceof BrewingStandInventory => WindowTypes::BREWING_STAND,
 				$inv instanceof AnvilInventory => WindowTypes::ANVIL,
+				$inv instanceof BeaconInventory => WindowTypes::BEACON,
 				$inv instanceof HopperInventory => WindowTypes::HOPPER,
 				$inv instanceof CraftingTableInventory => WindowTypes::WORKBENCH,
 				default => WindowTypes::CONTAINER

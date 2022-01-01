@@ -27,6 +27,7 @@ use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\LoomInventory;
+use pocketmine\inventory\transaction\action\BeaconAction;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -271,6 +272,10 @@ class TypeConverter{
 						return null; //useless noise
 					}
 					$pSlot = $action->inventorySlot;
+
+					if($pSlot === UIInventorySlotOffset::BEACON_PAYMENT){
+						return new BeaconAction($old, $new);
+					}
 
 					$slot = UIInventorySlotOffset::CRAFTING2X2_INPUT[$pSlot] ?? null;
 					if($slot !== null){

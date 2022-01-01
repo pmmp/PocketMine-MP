@@ -24,7 +24,9 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\BaseSign;
+use pocketmine\block\Beacon;
 use pocketmine\block\ItemFrame;
+use pocketmine\block\tile\Beacon as TileBeacon;
 use pocketmine\block\utils\SignText;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\InvalidSkinException;
@@ -611,7 +613,6 @@ class InGamePacketHandler extends PacketHandler{
 		$block = $this->player->getLocation()->getWorld()->getBlock($pos);
 		$nbt = $packet->nbt->getRoot();
 		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
-
 		if($block instanceof BaseSign){
 			if(($textBlobTag = $nbt->getTag("Text")) instanceof StringTag){
 				try{
@@ -634,6 +635,17 @@ class InGamePacketHandler extends PacketHandler{
 			}
 
 			$this->session->getLogger()->debug("Invalid sign update data: " . base64_encode($packet->nbt->getEncodedNbt()));
+		}elseif ($block instanceof Beacon) {
+			$id = $nbt->getTag("id");
+			if($id instanceof StringTag && $id->getValue() === "Beacon"){
+				$beaconTile = $this->player->getWorld()->getTileAt($nbt->getInt("x"), $nbt->getInt("y"), $nbt->getInt("z"));
+				if($beaconTile instanceof TileBeacon){
+					$beaconTile->setPrimaryEffect($nbt->getInt("primary"));
+					$beaconTile->setSecondaryEffect($nbt->getInt("secondary"));
+					$beaconTile->getPosition()->getWorld()->scheduleDelayedBlockUpdate($beaconTile->getPosition(), 20);
+				}
+				return true;
+			}
 		}
 
 		return false;
