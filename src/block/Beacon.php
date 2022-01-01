@@ -27,6 +27,7 @@ use InvalidArgumentException;
 use pocketmine\block\inventory\BeaconInventory;
 use pocketmine\block\tile\Beacon as TileBeacon;
 use pocketmine\data\bedrock\EffectIdMap;
+use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
@@ -75,12 +76,18 @@ final class Beacon extends Transparent{
 			foreach($this->position->getWorld()->getPlayers() as $player){
 				if($player->getPosition()->distance($this->position) <= $radius){
 					if($primaryE === $secondaryE){
-						$player->getEffects()->add(new EffectInstance(EffectIdMap::getInstance()->fromId($secondaryE), $effectDuration * 20, 1));
+						$effect = EffectIdMap::getInstance()->fromId($secondaryE);
+						if($effect instanceof Effect){
+							$player->getEffects()->add(new EffectInstance($effect, $effectDuration * 20, 1));
+						}
 						break;
 					}
-					foreach([$primaryE, $secondaryE] as $enchantment){
-						if($enchantment !== 0){
-							$player->getEffects()->add(new EffectInstance(EffectIdMap::getInstance()->fromId($enchantment), $effectDuration * 20));
+					foreach([$primaryE, $secondaryE] as $effectId){
+						if($effectId !== 0){
+							$effect = EffectIdMap::getInstance()->fromId($effectId);
+							if($effect instanceof Effect){
+								$player->getEffects()->add(new EffectInstance($effect, $effectDuration * 20, 0));
+							}
 						}
 					}
 				}
