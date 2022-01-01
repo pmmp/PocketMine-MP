@@ -1081,6 +1081,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$bb->minY = $this->location->y - 0.2;
 			$bb->maxY = $this->location->y + 0.2;
 
+			//we're already at the new position at this point; check if there are blocks we might have landed on between
+			//the old and new positions (running down stairs necessitates this)
+			$bb = $bb->addCoord(-$dx, -$dy, -$dz);
+
 			$this->onGround = $this->isCollided = count($this->getWorld()->getCollisionBlocks($bb, true)) > 0;
 		}
 	}
@@ -1321,7 +1325,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$message = TextFormat::clean($message, false);
 		foreach(explode("\n", $message) as $messagePart){
-			if(trim($messagePart) !== "" and mb_strlen($messagePart, 'UTF-8') <= 512 and $this->messageCounter-- > 0){
+			if(trim($messagePart) !== "" and strlen($messagePart) <= 512 * 4 and mb_strlen($messagePart, 'UTF-8') <= 512 and $this->messageCounter-- > 0){
 				if(strpos($messagePart, './') === 0){
 					$messagePart = substr($messagePart, 1);
 				}
