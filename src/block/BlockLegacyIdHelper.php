@@ -279,6 +279,6 @@ final class BlockLegacyIdHelper{
 		if($id === null){
 			throw new \InvalidArgumentException("Stone slab type should be 1, 2, 3 or 4");
 		}
-		return new BIDFlattened($id[0], [$id[1]], $meta);
+		return new BlockIdentifierFlattened($id[0], [$id[1]], $meta);
 	}
 }
