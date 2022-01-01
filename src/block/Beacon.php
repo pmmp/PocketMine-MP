@@ -52,6 +52,8 @@ final class Beacon extends Transparent{
 		if(!$tile instanceof TileBeacon){
 			return;
 		}
+		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20 * 3);
+
 		$primaryE = $tile->getPrimaryEffect();
 		$secondaryE = $tile->getSecondaryEffect();
 
@@ -84,7 +86,6 @@ final class Beacon extends Transparent{
 				}
 			}
 		}
-		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20 * 3);
 	}
 
 	public function isBeaconLevelValid(int $level) : bool{
