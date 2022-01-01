@@ -162,6 +162,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	/** Max length of a chat message (UTF-8 codepoints, not bytes) */
 	private const MAX_CHAT_CHAR_LENGTH = 512;
+	/**
+	 * Max length of a chat message in bytes. This is a theoretical maximum (if every character was 4 bytes).
+	 * Since mb_strlen() is O(n), it gets very slow with large messages. Checking byte length with strlen() is O(1) and
+	 * is a useful heuristic to filter out oversized messages.
+	 */
+	private const MAX_CHAT_BYTE_LENGTH = self::MAX_CHAT_CHAR_LENGTH * 4;
 	private const MAX_REACH_DISTANCE_CREATIVE = 13;
 	private const MAX_REACH_DISTANCE_SURVIVAL = 7;
 	private const MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
@@ -1107,6 +1113,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$bb->minY = $this->location->y - 0.2;
 			$bb->maxY = $this->location->y + 0.2;
 
+			//we're already at the new position at this point; check if there are blocks we might have landed on between
+			//the old and new positions (running down stairs necessitates this)
+			$bb = $bb->addCoord(-$dx, -$dy, -$dz);
+
 			$this->onGround = $this->isCollided = count($this->getWorld()->getCollisionBlocks($bb, true)) > 0;
 		}
 	}
@@ -1347,7 +1357,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$message = TextFormat::clean($message, false);
 		foreach(explode("\n", $message) as $messagePart){
-			if(trim($messagePart) !== "" and mb_strlen($messagePart, 'UTF-8') <= self::MAX_CHAT_CHAR_LENGTH and $this->messageCounter-- > 0){
+			if(trim($messagePart) !== "" and strlen($messagePart) <= self::MAX_CHAT_BYTE_LENGTH and mb_strlen($messagePart, 'UTF-8') <= self::MAX_CHAT_CHAR_LENGTH and $this->messageCounter-- > 0){
 				if(strpos($messagePart, './') === 0){
 					$messagePart = substr($messagePart, 1);
 				}
