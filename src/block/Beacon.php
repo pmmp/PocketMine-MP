@@ -75,7 +75,7 @@ final class Beacon extends Transparent{
 			foreach($this->position->getWorld()->getPlayers() as $player){
 				if($player->getPosition()->distance($this->position) <= $radius){
 					if($primaryE === $secondaryE){
-						$player->getEffects()->add(new EffectInstance(EffectIdMap::getInstance()->fromId($secondaryE), $effectDuration * 20, 2));
+						$player->getEffects()->add(new EffectInstance(EffectIdMap::getInstance()->fromId($secondaryE), $effectDuration * 20, 1));
 						break;
 					}
 					foreach([$primaryE, $secondaryE] as $enchantment){
