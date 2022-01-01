@@ -217,6 +217,19 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->uuid = Uuid::uuid3(Uuid::NIL, ((string) $this->getId()) . $this->skin->getSkinData() . $this->getNameTag());
 	}
 
+	/**
+	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
+	 */
+	private static function populateInventoryFromListTag(Inventory $inventory, array $items) : void{
+		$listeners = $inventory->getListeners()->toArray();
+		$inventory->getListeners()->clear();
+
+		$inventory->setContents($items);
+
+		$inventory->getListeners()->add(...$listeners);
+	}
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
@@ -247,10 +260,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$inventoryTag = $nbt->getListTag("Inventory");
 		if($inventoryTag !== null){
-			$armorListeners = $this->armorInventory->getListeners()->toArray();
-			$this->armorInventory->getListeners()->clear();
-			$inventoryListeners = $this->inventory->getListeners()->toArray();
-			$this->inventory->getListeners()->clear();
+			$inventoryItems = [];
+			$armorInventoryItems = [];
 
 			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
@@ -258,14 +269,14 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 				if($slot >= 0 and $slot < 9){ //Hotbar
 					//Old hotbar saving stuff, ignore it
 				}elseif($slot >= 100 and $slot < 104){ //Armor
-					$this->armorInventory->setItem($slot - 100, Item::nbtDeserialize($item));
+					$armorInventoryItems[$slot - 100] = Item::nbtDeserialize($item);
 				}elseif($slot >= 9 and $slot < $this->inventory->getSize() + 9){
-					$this->inventory->setItem($slot - 9, Item::nbtDeserialize($item));
+					$inventoryItems[$slot - 9] = Item::nbtDeserialize($item);
 				}
 			}
 
-			$this->armorInventory->getListeners()->add(...$armorListeners);
-			$this->inventory->getListeners()->add(...$inventoryListeners);
+			self::populateInventoryFromListTag($this->inventory, $inventoryItems);
+			self::populateInventoryFromListTag($this->armorInventory, $armorInventoryItems);
 		}
 		$offHand = $nbt->getCompoundTag("OffHandItem");
 		if($offHand !== null){
@@ -279,10 +290,13 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$enderChestInventoryTag = $nbt->getListTag("EnderChestInventory");
 		if($enderChestInventoryTag !== null){
+			$enderChestInventoryItems = [];
+
 			/** @var CompoundTag $item */
 			foreach($enderChestInventoryTag as $i => $item){
-				$this->enderInventory->setItem($item->getByte("Slot"), Item::nbtDeserialize($item));
+				$enderChestInventoryItems[$item->getByte("Slot")] = Item::nbtDeserialize($item);
 			}
+			self::populateInventoryFromListTag($this->enderInventory, $enderChestInventoryItems);
 		}
 
 		$this->inventory->setHeldItemIndex($nbt->getInt("SelectedInventorySlot", 0));
