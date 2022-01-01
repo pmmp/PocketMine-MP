@@ -31,6 +31,8 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
+ * @method static TreeType WARPED()
+ * @method static TreeType CRIMSON()
  * @method static TreeType ACACIA()
  * @method static TreeType BIRCH()
  * @method static TreeType DARK_OAK()
@@ -54,7 +56,9 @@ final class TreeType{
 			new TreeType("birch", "Birch", 2),
 			new TreeType("jungle", "Jungle", 3),
 			new TreeType("acacia", "Acacia", 4),
-			new TreeType("dark_oak", "Dark Oak", 5)
+			new TreeType("dark_oak", "Dark Oak", 5),
+			new TreeType("warped", "Warped", 6),
+			new TreeType("crimson", "Crimson", 7)
 		);
 	}
 
