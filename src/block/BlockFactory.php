@@ -461,9 +461,9 @@ class BlockFactory{
 		$fences = [];
 		$leaves = [];
 		$allSidedLogs = [];
-		foreach(TreeType::getAll() as $treeType){
-			$magicNumber = $treeType->getMagicNumber();
-			$name = $treeType->getDisplayName();
+		foreach(TreeType::getAll() as $treeType) {
+            $magicNumber = $treeType->getMagicNumber();
+            $name = $treeType->getDisplayName();
 
             if ($magicNumber <= 5) {
 
@@ -482,20 +482,19 @@ class BlockFactory{
                 $allSidedLogs[] = $wood;
                 $allSidedLogs[] = new Wood(new BID(Ids::WOOD, $magicNumber | BlockLegacyMetadata::WOOD_FLAG_STRIPPED), "Stripped $name Wood", $logBreakInfo, $treeType, true);
 
+                $this->registerAllMeta(new Log(BlockLegacyIdHelper::getStrippedLogIdentifier($treeType), "Stripped " . $name . " Log", $logBreakInfo, $treeType, true));
+                $this->registerAllMeta(new FenceGate(BlockLegacyIdHelper::getWoodenFenceIdentifier($treeType), $name . " Fence Gate", $planksBreakInfo));
+                $this->registerAllMeta(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($treeType), $name . " Stairs", $planksBreakInfo));
+                $this->registerAllMeta(new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($treeType), $name . " Door", $woodenDoorBreakInfo));
+
+                $this->registerAllMeta(new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($treeType), $name . " Button", $woodenButtonBreakInfo));
+                $this->registerAllMeta(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($treeType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo));
+                $this->registerAllMeta(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($treeType), $name . " Trapdoor", $woodenDoorBreakInfo));
+
+                $this->registerAllMeta(new FloorSign(BlockLegacyIdHelper::getWoodenFloorSignIdentifier($treeType), $name . " Sign", $signBreakInfo));
+                $this->registerAllMeta(new WallSign(BlockLegacyIdHelper::getWoodenWallSignIdentifier($treeType), $name . " Wall Sign", $signBreakInfo));
             }
-
-			$this->registerAllMeta(new Log(BlockLegacyIdHelper::getStrippedLogIdentifier($treeType), "Stripped " . $name . " Log", $logBreakInfo, $treeType, true));
-			$this->registerAllMeta(new FenceGate(BlockLegacyIdHelper::getWoodenFenceIdentifier($treeType), $name . " Fence Gate", $planksBreakInfo));
-			$this->registerAllMeta(new WoodenStairs(BlockLegacyIdHelper::getWoodenStairsIdentifier($treeType), $name . " Stairs", $planksBreakInfo));
-			$this->registerAllMeta(new WoodenDoor(BlockLegacyIdHelper::getWoodenDoorIdentifier($treeType), $name . " Door", $woodenDoorBreakInfo));
-
-			$this->registerAllMeta(new WoodenButton(BlockLegacyIdHelper::getWoodenButtonIdentifier($treeType), $name . " Button", $woodenButtonBreakInfo));
-			$this->registerAllMeta(new WoodenPressurePlate(BlockLegacyIdHelper::getWoodenPressurePlateIdentifier($treeType), $name . " Pressure Plate", $woodenPressurePlateBreakInfo));
-			$this->registerAllMeta(new WoodenTrapdoor(BlockLegacyIdHelper::getWoodenTrapdoorIdentifier($treeType), $name . " Trapdoor", $woodenDoorBreakInfo));
-
-			$this->registerAllMeta(new FloorSign(BlockLegacyIdHelper::getWoodenFloorSignIdentifier($treeType), $name . " Sign", $signBreakInfo));
-			$this->registerAllMeta(new WallSign(BlockLegacyIdHelper::getWoodenWallSignIdentifier($treeType), $name . " Wall Sign", $signBreakInfo));
-		}
+        }
 		$this->registerAllMeta(...$planks);
 		$this->registerAllMeta(...$saplings);
 		$this->registerAllMeta(...$fences);
