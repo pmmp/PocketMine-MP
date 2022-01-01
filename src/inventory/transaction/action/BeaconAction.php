@@ -29,11 +29,13 @@ use pocketmine\player\Player;
 
 class BeaconAction extends InventoryAction{
 
-	public function execute(Player $source) : void{ }
+	public function execute(Player $source) : void{
+		//Noop
+	}
 
-    public function validate(Player $source) : void{
-        if(!$source->getCurrentWindow() instanceof BeaconInventory){
-            throw new TransactionValidationException($source->getName() . " has no beacon inventory open");
-        }
-    }
+	public function validate(Player $source) : void{
+		if(!$source->getCurrentWindow() instanceof BeaconInventory){
+			throw new TransactionValidationException($source->getName() . " has no beacon inventory open");
+		}
+	}
 }
