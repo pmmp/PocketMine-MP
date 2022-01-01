@@ -636,6 +636,7 @@ class InGamePacketHandler extends PacketHandler{
 		$block = $this->player->getLocation()->getWorld()->getBlock($pos);
 		$nbt = $packet->nbt->getRoot();
 		if(!($nbt instanceof CompoundTag)) throw new AssumptionFailedError("PHPStan should ensure this is a CompoundTag"); //for phpstorm's benefit
+
 		if($block instanceof BaseSign){
 			if(($textBlobTag = $nbt->getTag("Text")) instanceof StringTag){
 				try{
@@ -658,7 +659,7 @@ class InGamePacketHandler extends PacketHandler{
 			}
 
 			$this->session->getLogger()->debug("Invalid sign update data: " . base64_encode($packet->nbt->getEncodedNbt()));
-		}elseif ($block instanceof Beacon) {
+		}elseif($block instanceof Beacon){
 			$id = $nbt->getTag("id");
 			if($id instanceof StringTag && $id->getValue() === "Beacon"){
 				$beaconTile = $this->player->getWorld()->getTileAt($nbt->getInt("x"), $nbt->getInt("y"), $nbt->getInt("z"));
