@@ -1325,7 +1325,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$message = TextFormat::clean($message, false);
 		foreach(explode("\n", $message) as $messagePart){
-			if(trim($messagePart) !== "" and mb_strlen($messagePart, 'UTF-8') <= 512 and $this->messageCounter-- > 0){
+			if(trim($messagePart) !== "" and strlen($messagePart) <= 512 * 4 and mb_strlen($messagePart, 'UTF-8') <= 512 and $this->messageCounter-- > 0){
 				if(strpos($messagePart, './') === 0){
 					$messagePart = substr($messagePart, 1);
 				}
