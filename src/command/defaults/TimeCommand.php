@@ -29,6 +29,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\World;
 use function count;
 use function implode;
@@ -59,6 +60,9 @@ class TimeCommand extends VanillaCommand{
 		}
 
 		$world = $sender instanceof Player ? $sender->getWorld() : $sender->getServer()->getWorldManager()->getDefaultWorld();
+		if($world === null){
+			throw new AssumptionFailedError("Default world should always be loaded");
+		}
 
 		if($args[0] === "start"){
 			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_START)){
