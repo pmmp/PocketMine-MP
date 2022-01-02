@@ -58,32 +58,25 @@ class TimeCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
+		$world = $sender instanceof Player ? $sender->getWorld() : $sender->getServer()->getWorldManager()->getDefaultWorld();
+
 		if($args[0] === "start"){
 			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_START)){
 				return true;
 			}
-			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
-				$world->startTime();
-			}
+			$world->startTime();
 			Command::broadcastCommandMessage($sender, "Restarted the time");
 			return true;
 		}elseif($args[0] === "stop"){
 			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_STOP)){
 				return true;
 			}
-			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
-				$world->stopTime();
-			}
+			$world->stopTime();
 			Command::broadcastCommandMessage($sender, "Stopped the time");
 			return true;
 		}elseif($args[0] === "query"){
 			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_QUERY)){
 				return true;
-			}
-			if($sender instanceof Player){
-				$world = $sender->getWorld();
-			}else{
-				$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
 			}
 			$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_time_query((string) $world->getTime())));
 			return true;
@@ -98,33 +91,17 @@ class TimeCommand extends VanillaCommand{
 				return true;
 			}
 
-			switch($args[1]){
-				case "day":
-					$value = World::TIME_DAY;
-					break;
-				case "noon":
-					$value = World::TIME_NOON;
-					break;
-				case "sunset":
-					$value = World::TIME_SUNSET;
-					break;
-				case "night":
-					$value = World::TIME_NIGHT;
-					break;
-				case "midnight":
-					$value = World::TIME_MIDNIGHT;
-					break;
-				case "sunrise":
-					$value = World::TIME_SUNRISE;
-					break;
-				default:
-					$value = $this->getInteger($sender, $args[1], 0);
-					break;
-			}
+			$value = match ($args[1]) {
+				"day" => World::TIME_DAY,
+				"noon" => World::TIME_NOON,
+				"sunset" => World::TIME_SUNSET,
+				"night" => World::TIME_NIGHT,
+				"midnight" => World::TIME_MIDNIGHT,
+				"sunrise" => World::TIME_SUNRISE,
+				default => $this->getInteger($sender, $args[1], 0),
+			};
 
-			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
-				$world->setTime($value);
-			}
+			$world->setTime($value);
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_time_set((string) $value));
 		}elseif($args[0] === "add"){
 			if(!$this->testPermission($sender, DefaultPermissionNames::COMMAND_TIME_ADD)){
@@ -132,9 +109,7 @@ class TimeCommand extends VanillaCommand{
 			}
 
 			$value = $this->getInteger($sender, $args[1], 0);
-			foreach($sender->getServer()->getWorldManager()->getWorlds() as $world){
-				$world->setTime($world->getTime() + $value);
-			}
+			$world->setTime($world->getTime() + $value);
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_time_added((string) $value));
 		}else{
 			throw new InvalidCommandSyntaxException();
