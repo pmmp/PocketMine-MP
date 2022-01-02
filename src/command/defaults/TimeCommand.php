@@ -91,7 +91,7 @@ class TimeCommand extends VanillaCommand{
 				return true;
 			}
 
-			$value = match ($args[1]) {
+			$value = match($args[1]){
 				"day" => World::TIME_DAY,
 				"noon" => World::TIME_NOON,
 				"sunset" => World::TIME_SUNSET,
