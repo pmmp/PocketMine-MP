@@ -161,9 +161,7 @@ class ItemFrame extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::DOWN or $face === Facing::UP or !$blockClicked->isSolid()){
-			return false;
-		}
+		if (!$blockClicked->isSolid()) return false;
 
 		$this->facing = $face;
 
