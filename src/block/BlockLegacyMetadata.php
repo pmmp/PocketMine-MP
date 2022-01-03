@@ -91,6 +91,8 @@ final class BlockLegacyMetadata{
 	public const CORAL_VARIANT_FIRE = 3;
 	public const CORAL_VARIANT_HORN = 4;
 
+	public const CAMPFIRE_FLAG_EXTINGUISHED = 0x04;
+
 	public const DIRT_FLAG_COARSE = 0x1;
 
 	public const DOOR_FLAG_TOP = 0x08;

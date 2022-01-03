@@ -32,6 +32,7 @@ use pocketmine\utils\EnumTrait;
  * @generate-registry-docblock
  *
  * @method static FurnaceType BLAST_FURNACE()
+ * @method static FurnaceType CAMPFIRE()
  * @method static FurnaceType FURNACE()
  * @method static FurnaceType SMOKER()
  */
@@ -45,6 +46,7 @@ final class FurnaceType{
 			new self("furnace", 200),
 			new self("blast_furnace", 100),
 			new self("smoker", 100),
+			new self("campfire", 600),
 		);
 	}
 

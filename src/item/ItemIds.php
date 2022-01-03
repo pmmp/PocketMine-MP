@@ -733,4 +733,6 @@ final class ItemIds{
 
 	public const SHIELD = 513;
 
+	public const CAMPFIRE_ITEM = 720;
+
 }

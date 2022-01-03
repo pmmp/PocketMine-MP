@@ -65,7 +65,7 @@ final class CraftingManagerFromDataHelper{
 				"furnace" => FurnaceType::FURNACE(),
 				"blast_furnace" => FurnaceType::BLAST_FURNACE(),
 				"smoker" => FurnaceType::SMOKER(),
-				//TODO: campfire
+				"campfire" => FurnaceType::CAMPFIRE(),
 				default => null
 			};
 			if($furnaceType === null){
