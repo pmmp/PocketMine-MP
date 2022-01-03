@@ -373,7 +373,7 @@ class InGamePacketHandler extends PacketHandler{
 				if($this->player->isUsingItem()){
 					if(!$this->player->consumeHeldItem()){
 						$hungerAttr = $this->player->getAttributeMap()->get(Attribute::HUNGER) ?? throw new AssumptionFailedError();
-						$this->session->syncAttributes($this->player, [$hungerAttr]);
+						$hungerAttr->markSynchronized(false);
 						$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 					}
 					return true;
