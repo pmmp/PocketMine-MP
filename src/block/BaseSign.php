@@ -37,8 +37,6 @@ use function assert;
 use function strlen;
 
 abstract class BaseSign extends Transparent{
-	//TODO: conditionally useless properties, find a way to fix
-
 	protected SignText $text;
 	protected ?int $editorEntityRuntimeId = null;
 
