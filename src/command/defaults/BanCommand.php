@@ -56,9 +56,9 @@ class BanCommand extends VanillaCommand{
 		$name = array_shift($args);
 		$reason = implode(" ", $args);
 
-		$sender->getServer()->getNameBans()->addBan($name, $reason, null, $sender->getName());
+		$sender->getServer()->getPlayerManager()->getNameBans()->addBan($name, $reason, null, $sender->getName());
 
-		if(($player = $sender->getServer()->getPlayerExact($name)) instanceof Player){
+		if(($player = $sender->getServer()->getPlayerManager()->getPlayerExact($name)) instanceof Player){
 			$player->kick($reason !== "" ? "Banned by admin. Reason: " . $reason : "Banned by admin.");
 		}
 

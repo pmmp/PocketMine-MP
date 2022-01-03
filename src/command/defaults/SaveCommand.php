@@ -48,7 +48,7 @@ class SaveCommand extends VanillaCommand{
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_save_start());
 		$start = microtime(true);
 
-		foreach($sender->getServer()->getOnlinePlayers() as $player){
+		foreach($sender->getServer()->getPlayerManager()->getOnlinePlayers() as $player){
 			$player->save();
 		}
 

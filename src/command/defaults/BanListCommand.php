@@ -54,14 +54,14 @@ class BanListCommand extends VanillaCommand{
 		if(isset($args[0])){
 			$args[0] = strtolower($args[0]);
 			if($args[0] === "ips"){
-				$list = $sender->getServer()->getIPBans();
+				$list = $sender->getServer()->getPlayerManager()->getIPBans();
 			}elseif($args[0] === "players"){
-				$list = $sender->getServer()->getNameBans();
+				$list = $sender->getServer()->getPlayerManager()->getNameBans();
 			}else{
 				throw new InvalidCommandSyntaxException();
 			}
 		}else{
-			$list = $sender->getServer()->getNameBans();
+			$list = $sender->getServer()->getPlayerManager()->getNameBans();
 			$args[0] = "players";
 		}
 

@@ -123,7 +123,7 @@ class PreSpawnPacketHandler extends PacketHandler{
 		$this->inventoryManager->syncSelectedHotbarSlot();
 		$this->session->sendDataPacket(CraftingDataCache::getInstance()->getCache($this->server->getCraftingManager()));
 
-		$this->session->syncPlayerList($this->server->getOnlinePlayers());
+		$this->session->syncPlayerList($this->server->getPlayerManager()->getOnlinePlayers());
 	}
 
 	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{

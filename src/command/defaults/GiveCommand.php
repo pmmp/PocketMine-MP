@@ -59,7 +59,7 @@ class GiveCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$player = $sender->getServer()->getPlayerByPrefix($args[0]);
+		$player = $sender->getServer()->getPlayerManager()->getPlayerByPrefix($args[0]);
 		if($player === null){
 			$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 			return true;

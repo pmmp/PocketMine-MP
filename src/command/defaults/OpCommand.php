@@ -58,8 +58,8 @@ class OpCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$sender->getServer()->addOp($name);
-		if(($player = $sender->getServer()->getPlayerExact($name)) !== null){
+		$sender->getServer()->getPlayerManager()->addOp($name);
+		if(($player = $sender->getServer()->getPlayerManager()->getPlayerExact($name)) !== null){
 			$player->sendMessage(KnownTranslationFactory::commands_op_message()->prefix(TextFormat::GRAY));
 		}
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_op_success($name));

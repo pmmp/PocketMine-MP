@@ -51,7 +51,7 @@ class PardonCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$sender->getServer()->getNameBans()->remove($args[0]);
+		$sender->getServer()->getPlayerManager()->getNameBans()->remove($args[0]);
 
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_unban_success($args[0]));
 

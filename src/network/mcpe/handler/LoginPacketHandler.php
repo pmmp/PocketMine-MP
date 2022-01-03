@@ -142,10 +142,10 @@ class LoginPacketHandler extends PacketHandler{
 		if($this->server->getNetwork()->getConnectionCount() > $this->server->getMaxPlayers()){
 			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_FULL, KnownTranslationKeys::DISCONNECTIONSCREEN_SERVERFULL);
 		}
-		if(!$this->server->isWhitelisted($playerInfo->getUsername())){
+		if(!$this->server->getPlayerManager()->isWhitelisted($playerInfo->getUsername())){
 			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_SERVER_WHITELISTED, "Server is whitelisted");
 		}
-		if($this->server->getNameBans()->isBanned($playerInfo->getUsername()) or $this->server->getIPBans()->isBanned($this->session->getIp())){
+		if($this->server->getPlayerManager()->getNameBans()->isBanned($playerInfo->getUsername()) or $this->server->getPlayerManager()->getIPBans()->isBanned($this->session->getIp())){
 			$ev->setKickReason(PlayerPreLoginEvent::KICK_REASON_BANNED, "You are banned");
 		}
 

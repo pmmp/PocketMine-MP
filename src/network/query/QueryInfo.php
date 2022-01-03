@@ -80,7 +80,7 @@ final class QueryInfo{
 		$this->serverName = $server->getMotd();
 		$this->listPlugins = $server->getConfigGroup()->getPropertyBool("settings.query-plugins", true);
 		$this->plugins = $server->getPluginManager()->getPlugins();
-		$this->players = $server->getOnlinePlayers();
+		$this->players = $server->getPlayerManager()->getOnlinePlayers();
 
 		$this->gametype = ($server->getGamemode()->equals(GameMode::SURVIVAL()) || $server->getGamemode()->equals(GameMode::ADVENTURE())) ? "SMP" : "CMP";
 		$this->version = $server->getVersion();

@@ -62,7 +62,7 @@ class BanIpCommand extends VanillaCommand{
 
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_banip_success($value));
 		}else{
-			if(($player = $sender->getServer()->getPlayerByPrefix($value)) instanceof Player){
+			if(($player = $sender->getServer()->getPlayerManager()->getPlayerByPrefix($value)) instanceof Player){
 				$ip = $player->getNetworkSession()->getIp();
 				$this->processIPBan($ip, $sender, $reason);
 
@@ -78,9 +78,9 @@ class BanIpCommand extends VanillaCommand{
 	}
 
 	private function processIPBan(string $ip, CommandSender $sender, string $reason) : void{
-		$sender->getServer()->getIPBans()->addBan($ip, $reason, null, $sender->getName());
+		$sender->getServer()->getPlayerManager()->getIPBans()->addBan($ip, $reason, null, $sender->getName());
 
-		foreach($sender->getServer()->getOnlinePlayers() as $player){
+		foreach($sender->getServer()->getPlayerManager()->getOnlinePlayers() as $player){
 			if($player->getNetworkSession()->getIp() === $ip){
 				$player->kick("Banned by admin. Reason: " . ($reason !== "" ? $reason : "IP banned."));
 			}

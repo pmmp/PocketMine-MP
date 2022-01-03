@@ -271,7 +271,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->xuid = $this->playerInfo instanceof XboxLivePlayerInfo ? $this->playerInfo->getXuid() : "";
 
 		$rootPermissions = [DefaultPermissions::ROOT_USER => true];
-		if($this->server->isOp($this->username)){
+		if($this->server->getPlayerManager()->isOp($this->username)){
 			$rootPermissions[DefaultPermissions::ROOT_OPERATOR] = true;
 		}
 		$this->perm = new PermissibleBase($rootPermissions);
@@ -549,7 +549,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$this->setSkin($ev->getNewSkin());
-		$this->sendSkin($this->server->getOnlinePlayers());
+		$this->sendSkin($this->server->getPlayerManager()->getOnlinePlayers());
 		return true;
 	}
 
@@ -559,7 +559,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * If null is given, will additionally send the skin to the player itself as well as its viewers.
 	 */
 	public function sendSkin(?array $targets = null) : void{
-		parent::sendSkin($targets ?? $this->server->getOnlinePlayers());
+		parent::sendSkin($targets ?? $this->server->getPlayerManager()->getOnlinePlayers());
 	}
 
 	/**
@@ -2011,9 +2011,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->blockBreakHandler = null;
 		$this->despawnFromAll();
 
-		$this->server->removeOnlinePlayer($this);
+		$this->server->getPlayerManager()->removeOnlinePlayer($this);
 
-		foreach($this->server->getOnlinePlayers() as $player){
+		foreach($this->server->getPlayerManager()->getOnlinePlayers() as $player){
 			if(!$player->canSee($this)){
 				$player->showPlayer($this);
 			}
@@ -2103,7 +2103,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 * Handles player data saving
 	 */
 	public function save() : void{
-		$this->server->saveOfflinePlayerData($this->username, $this->getSaveData());
+		$this->server->getPlayerManager()->saveOfflinePlayerData($this->username, $this->getSaveData());
 	}
 
 	protected function onDeath() : void{
@@ -2151,7 +2151,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function respawn() : void{
 		if($this->server->isHardcore()){
 			if($this->kick("You have been banned because you died in hardcore mode")){ //this allows plugins to prevent the ban by cancelling PlayerKickEvent
-				$this->server->getNameBans()->addBan($this->getName(), "Died in hardcore mode");
+				$this->server->getPlayerManager()->getNameBans()->addBan($this->getName(), "Died in hardcore mode");
 			}
 			return;
 		}

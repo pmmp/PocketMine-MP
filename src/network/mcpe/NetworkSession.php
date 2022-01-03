@@ -225,7 +225,7 @@ class NetworkSession{
 	}
 
 	protected function createPlayer() : void{
-		$this->server->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData)->onCompletion(
+		$this->server->getPlayerManager()->createPlayer($this, $this->info, $this->authenticated, $this->cachedOfflinePlayerData)->onCompletion(
 			\Closure::fromCallable([$this, 'onPlayerCreated']),
 			fn() => $this->disconnect("Player creation failed") //TODO: this should never actually occur... right?
 		);
@@ -237,7 +237,7 @@ class NetworkSession{
 			return;
 		}
 		$this->player = $player;
-		if(!$this->server->addOnlinePlayer($player)){
+		if(!$this->server->getPlayerManager()->addOnlinePlayer($player)){
 			return;
 		}
 
@@ -650,7 +650,7 @@ class NetworkSession{
 
 		//TODO: make player data loading async
 		//TODO: we shouldn't be loading player data here at all, but right now we don't have any choice :(
-		$this->cachedOfflinePlayerData = $this->server->getOfflinePlayerData($this->info->getUsername());
+		$this->cachedOfflinePlayerData = $this->server->getPlayerManager()->getOfflinePlayerData($this->info->getUsername());
 		if($checkXUID){
 			$recordedXUID = $this->cachedOfflinePlayerData !== null ? $this->cachedOfflinePlayerData->getTag("LastKnownXUID") : null;
 			if(!($recordedXUID instanceof StringTag)){

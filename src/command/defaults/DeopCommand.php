@@ -58,8 +58,8 @@ class DeopCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$sender->getServer()->removeOp($name);
-		if(($player = $sender->getServer()->getPlayerExact($name)) !== null){
+		$sender->getServer()->getPlayerManager()->removeOp($name);
+		if(($player = $sender->getServer()->getPlayerManager()->getPlayerExact($name)) !== null){
 			$player->sendMessage(KnownTranslationFactory::commands_deop_message()->prefix(TextFormat::GRAY));
 		}
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_deop_success($name));

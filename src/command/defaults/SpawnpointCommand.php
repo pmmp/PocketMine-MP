@@ -62,7 +62,7 @@ class SpawnpointCommand extends VanillaCommand{
 				return true;
 			}
 		}else{
-			$target = $sender->getServer()->getPlayerByPrefix($args[0]);
+			$target = $sender->getServer()->getPlayerManager()->getPlayerByPrefix($args[0]);
 			if($target === null){
 				$sender->sendMessage(KnownTranslationFactory::commands_generic_player_notFound()->prefix(TextFormat::RED));
 
