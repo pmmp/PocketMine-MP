@@ -95,15 +95,29 @@ class TimeCommand extends VanillaCommand{
 				return true;
 			}
 
-			$value = match($args[1]){
-				"day" => World::TIME_DAY,
-				"noon" => World::TIME_NOON,
-				"sunset" => World::TIME_SUNSET,
-				"night" => World::TIME_NIGHT,
-				"midnight" => World::TIME_MIDNIGHT,
-				"sunrise" => World::TIME_SUNRISE,
-				default => $this->getInteger($sender, $args[1], 0),
-			};
+			switch($args[1]){
+				case "day":
+					$value = World::TIME_DAY;
+					break;
+				case "noon":
+					$value = World::TIME_NOON;
+					break;
+				case "sunset":
+					$value = World::TIME_SUNSET;
+					break;
+				case "night":
+					$value = World::TIME_NIGHT;
+					break;
+				case "midnight":
+					$value = World::TIME_MIDNIGHT;
+					break;
+				case "sunrise":
+					$value = World::TIME_SUNRISE;
+					break;
+				default:
+					$value = $this->getInteger($sender, $args[1], 0);
+					break;
+			}
 
 			$world->setTime($value);
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_time_set((string) $value));
