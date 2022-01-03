@@ -638,7 +638,7 @@ class Server{
 	 * Returns an online player with the given name (case insensitive), or null if not found.
 	 */
 	public function getPlayerExact(string $name) : ?Player{
-		return $this->playerListByUsername[$name] ?? null;
+		return $this->playerListByUsername[strtolower($name)] ?? null;
 	}
 
 	/**
