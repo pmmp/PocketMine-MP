@@ -76,9 +76,7 @@ class Sapling extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item instanceof Fertilizer){
-			$this->grow($player);
-
+		if($item instanceof Fertilizer && $this->grow($player)){
 			$item->pop();
 
 			return true;
@@ -108,19 +106,20 @@ class Sapling extends Flowable{
 		}
 	}
 
-	private function grow(?Player $player) : void{
+	private function grow(?Player $player) : bool{
 		$random = new Random(mt_rand());
 		$tree = TreeFactory::get($random, $this->treeType);
 		$transaction = $tree?->getBlockTransaction($this->position->getWorld(), $this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ(), $random);
 		if($transaction === null){
-			return;
+			return false;
 		}
 
 		$ev = new StructureGrowEvent($this, $transaction, $player);
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$transaction->apply();
+			return $transaction->apply();
 		}
+		return false;
 	}
 
 	public function getFuelTime() : int{

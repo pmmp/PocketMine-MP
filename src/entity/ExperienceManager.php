@@ -142,7 +142,9 @@ class ExperienceManager{
 	public function setCurrentTotalXp(int $amount) : bool{
 		$newLevel = ExperienceUtils::getLevelFromXp($amount);
 
-		return $this->setXpAndProgress((int) $newLevel, $newLevel - ((int) $newLevel));
+		$xpLevel = (int) $newLevel;
+		$xpProgress = $newLevel - (int) $newLevel;
+		return $this->setXpAndProgress($xpLevel, $xpProgress);
 	}
 
 	/**

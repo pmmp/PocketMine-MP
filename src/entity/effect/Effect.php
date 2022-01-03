@@ -38,12 +38,14 @@ class Effect{
 	 * @param Translatable|string $name Translation key used for effect name
 	 * @param Color               $color Color of bubbles given by this effect
 	 * @param bool                $bad Whether the effect is harmful
+	 * @param int                 $defaultDuration
 	 * @param bool                $hasBubbles Whether the effect has potion bubbles. Some do not (e.g. Instant Damage has its own particles instead of bubbles)
 	 */
 	public function __construct(
 		protected Translatable|string $name,
 		protected Color $color,
 		protected bool $bad = false,
+		private int $defaultDuration = 600,
 		protected bool $hasBubbles = true
 	){}
 
@@ -73,7 +75,7 @@ class Effect{
 	 * Returns the default duration (in ticks) this effect will apply for if a duration is not specified.
 	 */
 	public function getDefaultDuration() : int{
-		return 600;
+		return $this->defaultDuration;
 	}
 
 	/**

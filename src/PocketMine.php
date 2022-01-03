@@ -34,6 +34,7 @@ namespace pocketmine {
 	use pocketmine\utils\Timezone;
 	use pocketmine\wizard\SetupWizard;
 	use Webmozart\PathUtil\Path;
+	use function defined;
 	use function extension_loaded;
 	use function phpversion;
 	use function preg_match;
@@ -145,6 +146,10 @@ namespace pocketmine {
 			$messages[] = "The native PocketMine extension is no longer supported.";
 		}
 
+		if(!defined('AF_INET6')){
+			$messages[] = "IPv6 support is required, but your PHP binary was built without IPv6 support.";
+		}
+
 		return $messages;
 	}
 
@@ -208,6 +213,8 @@ JIT_WARNING
 			}
 			critical_error("PHP binary used: " . $binary);
 			critical_error("Loaded php.ini: " . (($file = php_ini_loaded_file()) !== false ? $file : "none"));
+			$phprc = getenv("PHPRC");
+			critical_error("Value of PHPRC environment variable: " . ($phprc === false ? "" : $phprc));
 			critical_error("Please recompile PHP with the needed configuration, or refer to the installation instructions at http://pmmp.rtfd.io/en/rtfd/installation.html.");
 			echo PHP_EOL;
 			exit(1);

@@ -68,7 +68,7 @@ class SubChunkExplorer{
 		if($this->currentSubChunk === null or $this->currentY !== $newChunkY){
 			$this->currentY = $newChunkY;
 
-			if($this->currentY < 0 or $this->currentY >= $this->currentChunk->getHeight()){
+			if($this->currentY < Chunk::MIN_SUBCHUNK_INDEX or $this->currentY > Chunk::MAX_SUBCHUNK_INDEX){
 				$this->currentSubChunk = null;
 				return SubChunkExplorerStatus::INVALID;
 			}

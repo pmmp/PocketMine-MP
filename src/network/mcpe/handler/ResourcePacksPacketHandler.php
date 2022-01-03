@@ -117,7 +117,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 						$pack->getPackSize(),
 						$pack->getSha256(),
 						false,
-						ResourcePackType::ADDON //TODO: this might be an addon (not behaviour pack), needed to properly support client-side custom items
+						ResourcePackType::RESOURCES //TODO: this might be an addon (not behaviour pack), needed to properly support client-side custom items
 					));
 				}
 				$this->session->getLogger()->debug("Player requested download of " . count($packet->packIds) . " resource packs");

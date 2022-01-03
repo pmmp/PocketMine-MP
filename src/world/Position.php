@@ -98,7 +98,7 @@ class Position extends Vector3{
 	}
 
 	public function __toString(){
-		return "Position(level=" . ($this->isValid() ? $this->getWorld()->getDisplayName() : "null") . ",x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
+		return "Position(world=" . ($this->isValid() ? $this->getWorld()->getDisplayName() : "null") . ",x=" . $this->x . ",y=" . $this->y . ",z=" . $this->z . ")";
 	}
 
 	public function equals(Vector3 $v) : bool{

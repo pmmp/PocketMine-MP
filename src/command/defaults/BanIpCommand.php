@@ -32,7 +32,7 @@ use pocketmine\player\Player;
 use function array_shift;
 use function count;
 use function implode;
-use function preg_match;
+use function inet_pton;
 
 class BanIpCommand extends VanillaCommand{
 
@@ -57,7 +57,7 @@ class BanIpCommand extends VanillaCommand{
 		$value = array_shift($args);
 		$reason = implode(" ", $args);
 
-		if(preg_match("/^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$/", $value)){
+		if(inet_pton($value) !== false){
 			$this->processIPBan($value, $sender, $reason);
 
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_banip_success($value));

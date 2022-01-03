@@ -68,7 +68,7 @@ class ItemEntity extends Entity{
 		if($item->isNull()){
 			throw new \InvalidArgumentException("Item entity must have a non-air item with a count of at least 1");
 		}
-		$this->item = $item;
+		$this->item = clone $item;
 		parent::__construct($location, $nbt);
 	}
 

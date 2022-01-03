@@ -27,7 +27,6 @@ declare(strict_types=1);
  */
 namespace pocketmine\network\query;
 
-use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\network\AdvancedNetworkInterface;
 use pocketmine\network\RawPacketHandler;
 use pocketmine\Server;
@@ -57,8 +56,6 @@ class QueryHandler implements RawPacketHandler{
 	public function __construct(Server $server){
 		$this->server = $server;
 		$this->logger = new \PrefixedLogger($this->server->getLogger(), "Query Handler");
-		$addr = $this->server->getIp();
-		$port = $this->server->getPort();
 
 		/*
 		The Query protocol is built on top of the existing Minecraft PE UDP network stack.
@@ -71,7 +68,6 @@ class QueryHandler implements RawPacketHandler{
 
 		$this->regenerateToken();
 		$this->lastToken = $this->token;
-		$this->logger->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_query_running($addr, (string) $port)));
 	}
 
 	public function getPattern() : string{

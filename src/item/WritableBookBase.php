@@ -31,6 +31,7 @@ use function array_push;
 use function array_slice;
 use function array_values;
 use function count;
+use function mb_scrub;
 
 abstract class WritableBookBase extends Item{
 	public const TAG_PAGES = "pages"; //TAG_List<TAG_Compound>
@@ -168,12 +169,12 @@ abstract class WritableBookBase extends Item{
 			if($pages->getTagType() === NBT::TAG_Compound){ //PE format
 				/** @var CompoundTag $page */
 				foreach($pages as $page){
-					$this->pages[] = new WritableBookPage($page->getString(self::TAG_PAGE_TEXT), $page->getString(self::TAG_PAGE_PHOTONAME, ""));
+					$this->pages[] = new WritableBookPage(mb_scrub($page->getString(self::TAG_PAGE_TEXT), 'UTF-8'), $page->getString(self::TAG_PAGE_PHOTONAME, ""));
 				}
 			}elseif($pages->getTagType() === NBT::TAG_String){ //PC format
 				/** @var StringTag $page */
 				foreach($pages as $page){
-					$this->pages[] = new WritableBookPage($page->getValue());
+					$this->pages[] = new WritableBookPage(mb_scrub($page->getValue(), 'UTF-8'));
 				}
 			}
 		}

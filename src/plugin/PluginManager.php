@@ -168,9 +168,20 @@ class PluginManager{
 		}
 
 		$permManager = PermissionManager::getInstance();
+		foreach($description->getPermissions() as $permsGroup){
+			foreach($permsGroup as $perm){
+				if($permManager->getPermission($perm->getName()) !== null){
+					$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+						$description->getName(),
+						KnownTranslationFactory::pocketmine_plugin_duplicatePermissionError($perm->getName())
+					)));
+					return null;
+				}
+			}
+		}
 		$opRoot = $permManager->getPermission(DefaultPermissions::ROOT_OPERATOR);
 		$everyoneRoot = $permManager->getPermission(DefaultPermissions::ROOT_USER);
-		foreach($description->getPermissions() as $default => $perms){
+		foreach(Utils::stringifyKeys($description->getPermissions()) as $default => $perms){
 			foreach($perms as $perm){
 				$permManager->addPermission($perm);
 				switch($default){
@@ -334,7 +345,7 @@ class PluginManager{
 
 		while(count($triage->plugins) > 0){
 			$loadedThisLoop = 0;
-			foreach($triage->plugins as $name => $entry){
+			foreach(Utils::stringifyKeys($triage->plugins) as $name => $entry){
 				$this->checkDepsForTriage($name, "hard", $triage->dependencies, $loadedPlugins, $triage);
 				$this->checkDepsForTriage($name, "soft", $triage->softDependencies, $loadedPlugins, $triage);
 
@@ -366,7 +377,7 @@ class PluginManager{
 				//No plugins loaded :(
 
 				//check for skippable soft dependencies first, in case the dependents could resolve hard dependencies
-				foreach($triage->plugins as $name => $file){
+				foreach(Utils::stringifyKeys($triage->plugins) as $name => $file){
 					if(isset($triage->softDependencies[$name]) && !isset($triage->dependencies[$name])){
 						foreach($triage->softDependencies[$name] as $k => $dependency){
 							if($this->getPlugin($dependency) === null && !array_key_exists($dependency, $triage->plugins)){
@@ -381,7 +392,7 @@ class PluginManager{
 					}
 				}
 
-				foreach($triage->plugins as $name => $file){
+				foreach(Utils::stringifyKeys($triage->plugins) as $name => $file){
 					if(isset($triage->dependencies[$name])){
 						$unknownDependencies = [];
 
@@ -404,7 +415,7 @@ class PluginManager{
 					}
 				}
 
-				foreach($triage->plugins as $name => $file){
+				foreach(Utils::stringifyKeys($triage->plugins) as $name => $file){
 					$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, KnownTranslationFactory::pocketmine_plugin_circularDependency())));
 				}
 				break;

@@ -635,7 +635,7 @@ abstract class Entity{
 
 		$this->checkBlockIntersections();
 
-		if($this->location->y <= -16 and $this->isAlive()){
+		if($this->location->y <= World::Y_MIN - 16 and $this->isAlive()){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10);
 			$this->attack($ev);
 			$hasUpdate = true;
@@ -832,10 +832,10 @@ abstract class Entity{
 		$diffZ = $z - $floorZ;
 
 		if($world->getBlockAt($floorX, $floorY, $floorZ)->isSolid()){
-			$westNonSolid  = !$world->getBlockAt($floorX - 1, $floorY, $floorZ)->isSolid();
-			$eastNonSolid  = !$world->getBlockAt($floorX + 1, $floorY, $floorZ)->isSolid();
-			$downNonSolid  = !$world->getBlockAt($floorX, $floorY - 1, $floorZ)->isSolid();
-			$upNonSolid    = !$world->getBlockAt($floorX, $floorY + 1, $floorZ)->isSolid();
+			$westNonSolid = !$world->getBlockAt($floorX - 1, $floorY, $floorZ)->isSolid();
+			$eastNonSolid = !$world->getBlockAt($floorX + 1, $floorY, $floorZ)->isSolid();
+			$downNonSolid = !$world->getBlockAt($floorX, $floorY - 1, $floorZ)->isSolid();
+			$upNonSolid = !$world->getBlockAt($floorX, $floorY + 1, $floorZ)->isSolid();
 			$northNonSolid = !$world->getBlockAt($floorX, $floorY, $floorZ - 1)->isSolid();
 			$southNonSolid = !$world->getBlockAt($floorX, $floorY, $floorZ + 1)->isSolid();
 
@@ -1589,8 +1589,8 @@ abstract class Entity{
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{
 		$properties->setByte(EntityMetadataProperties::ALWAYS_SHOW_NAMETAG, $this->alwaysShowNameTag ? 1 : 0);
-		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->size->getHeight());
-		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->size->getWidth());
+		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_HEIGHT, $this->size->getHeight() / $this->scale);
+		$properties->setFloat(EntityMetadataProperties::BOUNDING_BOX_WIDTH, $this->size->getWidth() / $this->scale);
 		$properties->setFloat(EntityMetadataProperties::SCALE, $this->scale);
 		$properties->setLong(EntityMetadataProperties::LEAD_HOLDER_EID, -1);
 		$properties->setLong(EntityMetadataProperties::OWNER_EID, $this->ownerId ?? -1);
@@ -1599,7 +1599,7 @@ abstract class Entity{
 		$properties->setString(EntityMetadataProperties::SCORE_TAG, $this->scoreTag);
 		$properties->setByte(EntityMetadataProperties::COLOR, 0);
 
-		$properties->setGenericFlag(EntityMetadataFlags::AFFECTED_BY_GRAVITY, true);
+		$properties->setGenericFlag(EntityMetadataFlags::AFFECTED_BY_GRAVITY, $this->gravityEnabled);
 		$properties->setGenericFlag(EntityMetadataFlags::CAN_CLIMB, $this->canClimb);
 		$properties->setGenericFlag(EntityMetadataFlags::CAN_SHOW_NAMETAG, $this->nameTagVisible);
 		$properties->setGenericFlag(EntityMetadataFlags::HAS_COLLISION, true);

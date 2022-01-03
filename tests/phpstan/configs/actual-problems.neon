@@ -466,16 +466,6 @@ parameters:
 			path: ../../../src/command/SimpleCommandMap.php
 
 		-
-			message: "#^Only booleans are allowed in an if condition, int\\|false given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/BanIpCommand.php
-
-		-
-			message: "#^Only booleans are allowed in an if condition, int\\|false given\\.$#"
-			count: 1
-			path: ../../../src/command/defaults/PardonIpCommand.php
-
-		-
 			message: "#^Cannot call method addParticle\\(\\) on pocketmine\\\\world\\\\World\\|null\\.$#"
 			count: 1
 			path: ../../../src/command/defaults/ParticleCommand.php
@@ -516,8 +506,8 @@ parameters:
 			path: ../../../src/command/defaults/TimingsCommand.php
 
 		-
-			message: "#^Property pocketmine\\\\console\\\\ConsoleReader\\:\\:\\$stdin \\(resource\\) does not accept resource\\|false\\.$#"
-			count: 1
+			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
+			count: 2
 			path: ../../../src/console/ConsoleReader.php
 
 		-
@@ -609,11 +599,6 @@ parameters:
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
-
-		-
-			message: "#^Property pocketmine\\\\event\\\\entity\\\\EntityShootBowEvent\\:\\:\\$projectile \\(pocketmine\\\\entity\\\\projectile\\\\Projectile\\) does not accept pocketmine\\\\entity\\\\Entity\\.$#"
-			count: 1
-			path: ../../../src/event/entity/EntityShootBowEvent.php
 
 		-
 			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
@@ -1448,11 +1433,6 @@ parameters:
 		-
 			message: "#^Cannot call method getSubChunk\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
 			count: 2
-			path: ../../../src/world/light/SkyLightUpdate.php
-
-		-
-			message: "#^Cannot call method getSubChunks\\(\\) on pocketmine\\\\world\\\\format\\\\Chunk\\|null\\.$#"
-			count: 1
 			path: ../../../src/world/light/SkyLightUpdate.php
 
 		-

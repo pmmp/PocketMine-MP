@@ -14,13 +14,12 @@ Because PocketMine-MP requires several non-standard PHP extensions and configura
 If you use a custom binary, you'll need to replace `composer` usages in this guide with `path/to/your/php path/to/your/composer.phar`.
 
 ## Setting up environment
-1. `git clone --recursive https://github.com/pmmp/PocketMine-MP.git`
+1. `git clone https://github.com/pmmp/PocketMine-MP.git`
 2. `composer install`
 
 ## Checking out a different branch to build
 1. `git checkout <branch to checkout>`
-2. `git submodule update --init`
-3. Re-run `composer install` to synchronize dependencies.
+2. Re-run `composer install` to synchronize dependencies.
 
 ## Optimizing for release builds
 1. Add the flags `--no-dev --classmap-authoritative` to your `composer install` command. This will reduce build size and improve autoloading speed.

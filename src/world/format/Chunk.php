@@ -35,7 +35,9 @@ class Chunk{
 	public const DIRTY_FLAG_BLOCKS = 1 << 0;
 	public const DIRTY_FLAG_BIOMES = 1 << 3;
 
-	public const MAX_SUBCHUNKS = 16;
+	public const MIN_SUBCHUNK_INDEX = 0;
+	public const MAX_SUBCHUNK_INDEX = 15;
+	public const MAX_SUBCHUNKS = self::MAX_SUBCHUNK_INDEX - self::MIN_SUBCHUNK_INDEX + 1;
 
 	public const EDGE_LENGTH = SubChunk::EDGE_LENGTH;
 	public const COORD_BIT_SIZE = SubChunk::COORD_BIT_SIZE;
@@ -71,10 +73,10 @@ class Chunk{
 		$this->subChunks = new \SplFixedArray(Chunk::MAX_SUBCHUNKS);
 
 		foreach($this->subChunks as $y => $null){
-			$this->subChunks[$y] = $subChunks[$y] ?? new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, []);
+			$this->subChunks[$y] = $subChunks[$y + self::MIN_SUBCHUNK_INDEX] ?? new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, []);
 		}
 
-		$val = ($this->subChunks->getSize() * SubChunk::EDGE_LENGTH);
+		$val = (self::MAX_SUBCHUNK_INDEX + 1) * SubChunk::EDGE_LENGTH;
 		$this->heightMap = HeightArray::fill($val); //TODO: what about lazily initializing this?
 		$this->biomeIds = $biomeIds;
 
@@ -118,7 +120,7 @@ class Chunk{
 	 * @return int|null 0-255, or null if there are no blocks in the column
 	 */
 	public function getHighestBlockAt(int $x, int $z) : ?int{
-		for($y = $this->subChunks->count() - 1; $y >= 0; --$y){
+		for($y = self::MAX_SUBCHUNK_INDEX; $y >= self::MIN_SUBCHUNK_INDEX; --$y){
 			$height = $this->getSubChunk($y)->getHighestBlockAt($x, $z);
 			if($height !== null){
 				return $height | ($y << SubChunk::COORD_BIT_SIZE);
@@ -280,21 +282,21 @@ class Chunk{
 	}
 
 	public function getSubChunk(int $y) : SubChunk{
-		if($y < 0 || $y >= $this->subChunks->getSize()){
+		if($y < self::MIN_SUBCHUNK_INDEX || $y > self::MAX_SUBCHUNK_INDEX){
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
-		return $this->subChunks[$y];
+		return $this->subChunks[$y - self::MIN_SUBCHUNK_INDEX];
 	}
 
 	/**
 	 * Sets a subchunk in the chunk index
 	 */
 	public function setSubChunk(int $y, ?SubChunk $subChunk) : void{
-		if($y < 0 or $y >= $this->subChunks->getSize()){
+		if($y < self::MIN_SUBCHUNK_INDEX or $y > self::MAX_SUBCHUNK_INDEX){
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
 
-		$this->subChunks[$y] = $subChunk ?? new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, []);
+		$this->subChunks[$y - self::MIN_SUBCHUNK_INDEX] = $subChunk ?? new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, []);
 		$this->setTerrainDirtyFlag(self::DIRTY_FLAG_BLOCKS, true);
 	}
 
@@ -303,7 +305,11 @@ class Chunk{
 	 * @phpstan-return array<int, SubChunk>
 	 */
 	public function getSubChunks() : array{
-		return $this->subChunks->toArray();
+		$result = [];
+		foreach($this->subChunks as $yOffset => $subChunk){
+			$result[$yOffset + self::MIN_SUBCHUNK_INDEX] = $subChunk;
+		}
+		return $result;
 	}
 
 	/**

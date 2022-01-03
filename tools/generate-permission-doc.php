@@ -26,6 +26,7 @@ namespace pocketmine\generate_permission_doc;
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use Webmozart\PathUtil\Path;
 use function count;
@@ -90,7 +91,7 @@ foreach($permissions as $permission){
 	fwrite($doc, "|:-----|:----:|\n");
 	$children = $permission->getChildren();
 	ksort($children, SORT_STRING);
-	foreach($children as $childName => $isGranted){
+	foreach(Utils::stringifyKeys($children) as $childName => $isGranted){
 		fwrite($doc, "| `$childName` | " . ($isGranted ? "Granted" : "Denied") . " |\n");
 	}
 	fwrite($doc, "\n");

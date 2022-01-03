@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use pocketmine\utils\Utils;
 use function is_bool;
 use function strtolower;
 
@@ -83,7 +84,7 @@ class PermissionParser{
 	 */
 	public static function loadPermissions(array $data, string $default = self::DEFAULT_FALSE) : array{
 		$result = [];
-		foreach($data as $name => $entry){
+		foreach(Utils::stringifyKeys($data) as $name => $entry){
 			$desc = null;
 			if(isset($entry["default"])){
 				$default = PermissionParser::defaultFromString($entry["default"]);

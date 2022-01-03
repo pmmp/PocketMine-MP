@@ -36,6 +36,7 @@ use pocketmine\block\tile\TileFactory;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\BiomeIds;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntityFactory;
 use pocketmine\entity\Location;
@@ -57,7 +58,6 @@ use pocketmine\item\LegacyStringToItemParser;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
@@ -331,7 +331,7 @@ class World implements ChunkManager{
 	private const BLOCKHASH_Y_OFFSET = self::BLOCKHASH_Y_PADDING - self::Y_MIN;
 	private const BLOCKHASH_Y_MASK = (1 << self::BLOCKHASH_Y_BITS) - 1;
 	private const BLOCKHASH_XZ_MASK = (1 << self::MORTON3D_BIT_SIZE) - 1;
-	private const BLOCKHASH_XZ_EXTRA_BITS = 6;
+	private const BLOCKHASH_XZ_EXTRA_BITS = (self::MORTON3D_BIT_SIZE - self::BLOCKHASH_Y_BITS) >> 1;
 	private const BLOCKHASH_XZ_EXTRA_MASK = (1 << self::BLOCKHASH_XZ_EXTRA_BITS) - 1;
 	private const BLOCKHASH_XZ_SIGN_SHIFT = 64 - self::MORTON3D_BIT_SIZE - self::BLOCKHASH_XZ_EXTRA_BITS;
 	private const BLOCKHASH_X_SHIFT = self::BLOCKHASH_Y_BITS;
@@ -2373,6 +2373,9 @@ class World implements ChunkManager{
 		if(!$pos->isValid() || $pos->getWorld() !== $this){
 			throw new \InvalidArgumentException("Invalid Tile world");
 		}
+		if(!$this->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ())){
+			throw new \InvalidArgumentException("Tile position is outside the world bounds");
+		}
 
 		$chunkX = $pos->getFloorX() >> Chunk::COORD_BIT_SIZE;
 		$chunkZ = $pos->getFloorZ() >> Chunk::COORD_BIT_SIZE;
@@ -2466,13 +2469,34 @@ class World implements ChunkManager{
 
 	private function initChunk(int $chunkX, int $chunkZ, ChunkData $chunkData) : void{
 		$logger = new \PrefixedLogger($this->logger, "Loading chunk $chunkX $chunkZ");
+
+		$this->timings->syncChunkLoadFixInvalidBlocks->startTiming();
+		$blockFactory = BlockFactory::getInstance();
+		$invalidBlocks = 0;
+		foreach($chunkData->getChunk()->getSubChunks() as $subChunk){
+			foreach($subChunk->getBlockLayers() as $blockLayer){
+				foreach($blockLayer->getPalette() as $blockStateId){
+					$mappedStateId = $blockFactory->getMappedStateId($blockStateId);
+					if($mappedStateId !== $blockStateId){
+						$blockLayer->replaceAll($blockStateId, $mappedStateId);
+						$invalidBlocks++;
+					}
+				}
+			}
+		}
+		if($invalidBlocks > 0){
+			$logger->debug("Fixed $invalidBlocks invalid blockstates");
+			$chunkData->getChunk()->setTerrainDirtyFlag(Chunk::DIRTY_FLAG_BLOCKS, true);
+		}
+		$this->timings->syncChunkLoadFixInvalidBlocks->stopTiming();
+
 		if(count($chunkData->getEntityNBT()) !== 0){
 			$this->timings->syncChunkLoadEntities->startTiming();
 			$entityFactory = EntityFactory::getInstance();
 			foreach($chunkData->getEntityNBT() as $k => $nbt){
 				try{
 					$entity = $entityFactory->createFromData($this, $nbt);
-				}catch(NbtDataException $e){
+				}catch(SavedDataLoadingException $e){
 					$logger->error("Bad entity data at list position $k: " . $e->getMessage());
 					$logger->logException($e);
 					continue;
@@ -2500,16 +2524,22 @@ class World implements ChunkManager{
 			foreach($chunkData->getTileNBT() as $k => $nbt){
 				try{
 					$tile = $tileFactory->createFromData($this, $nbt);
-				}catch(NbtDataException $e){
+				}catch(SavedDataLoadingException $e){
 					$logger->error("Bad tile entity data at list position $k: " . $e->getMessage());
 					$logger->logException($e);
 					continue;
 				}
 				if($tile === null){
 					$logger->warning("Deleted unknown tile entity type " . $nbt->getString("id", "<unknown>"));
-				}elseif(!$this->isChunkLoaded($tile->getPosition()->getFloorX() >> Chunk::COORD_BIT_SIZE, $tile->getPosition()->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
+					continue;
+				}
+
+				$tilePosition = $tile->getPosition();
+				if(!$this->isChunkLoaded($tilePosition->getFloorX() >> Chunk::COORD_BIT_SIZE, $tilePosition->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
 					$logger->error("Found tile saved on wrong chunk - unable to fix due to correct chunk not loaded");
-				}elseif($this->getTile($tilePosition = $tile->getPosition()) !== null){
+				}elseif(!$this->isInWorld($tilePosition->getFloorX(), $tilePosition->getFloorY(), $tilePosition->getFloorZ())){
+					$logger->error("Cannot add tile with position outside the world bounds: x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z");
+				}elseif($this->getTile($tilePosition) !== null){
 					$logger->error("Cannot add tile at x=$tilePosition->x,y=$tilePosition->y,z=$tilePosition->z: Another tile is already at that position");
 				}else{
 					$this->addTile($tile);

@@ -34,8 +34,8 @@ class PoisonEffect extends Effect{
 	/** @var bool */
 	private $fatal;
 
-	public function __construct(Translatable|string $name, Color $color, bool $isBad = false, bool $hasBubbles = true, bool $fatal = false){
-		parent::__construct($name, $color, $isBad, $hasBubbles);
+	public function __construct(Translatable|string $name, Color $color, bool $isBad = false, int $defaultDuration = 600, bool $hasBubbles = true, bool $fatal = false){
+		parent::__construct($name, $color, $isBad, $defaultDuration, $hasBubbles);
 		$this->fatal = $fatal;
 	}
 

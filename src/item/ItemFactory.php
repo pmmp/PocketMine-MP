@@ -252,6 +252,7 @@ class ItemFactory{
 		$this->register(new Steak(new ItemIdentifier(ItemIds::STEAK, 0), "Steak"));
 		$this->register(new Stick(new ItemIdentifier(ItemIds::STICK, 0), "Stick"));
 		$this->register(new StringItem(new ItemIdentifier(ItemIds::STRING, 0), "String"));
+		$this->register(new SweetBerries(new ItemIdentifier(ItemIds::SWEET_BERRIES, 0), "Sweet Berries"));
 		$this->register(new Totem(new ItemIdentifier(ItemIds::TOTEM, 0), "Totem of Undying"));
 		$this->register(new Trident(new ItemIdentifier(ItemIds::TRIDENT, 0), "Trident"));
 		$this->register(new WheatSeeds(new ItemIdentifier(ItemIds::WHEAT_SEEDS, 0), "Wheat Seeds"));
@@ -328,7 +329,6 @@ class ItemFactory{
 		//TODO: minecraft:shield
 		//TODO: minecraft:sparkler
 		//TODO: minecraft:spawn_egg
-		$this->register(new SweetBerries(new ItemIdentifier(ItemIds::SWEET_BERRIES, 0), "Sweet Berries"));
 		//TODO: minecraft:tnt_minecart
 		//TODO: minecraft:turtle_helmet
 		//endregion

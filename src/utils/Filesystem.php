@@ -26,9 +26,11 @@ namespace pocketmine\utils;
 use Webmozart\PathUtil\Path;
 use function copy;
 use function dirname;
+use function disk_free_space;
 use function fclose;
 use function fflush;
 use function file_exists;
+use function file_put_contents;
 use function flock;
 use function fopen;
 use function ftruncate;
@@ -40,6 +42,7 @@ use function ltrim;
 use function mkdir;
 use function preg_match;
 use function realpath;
+use function rename;
 use function rmdir;
 use function rtrim;
 use function scandir;
@@ -163,7 +166,8 @@ final class Filesystem{
 		$result = str_replace([DIRECTORY_SEPARATOR, ".php", "phar://"], ["/", "", ""], $path);
 
 		//remove relative paths
-		foreach(self::$cleanedPaths as $cleanPath => $replacement){
+		//this should probably never have integer keys, but it's safer than making PHPStan ignore it
+		foreach(Utils::stringifyKeys(self::$cleanedPaths) as $cleanPath => $replacement){
 			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
 			if(strpos($result, $cleanPath) === 0){
 				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");
@@ -218,6 +222,76 @@ final class Filesystem{
 			fclose(self::$lockFileHandles[$lockFilePath]);
 			unset(self::$lockFileHandles[$lockFilePath]);
 			@unlink($lockFilePath);
+		}
+	}
+
+	/**
+	 * Wrapper around file_put_contents() which writes to a temporary file before overwriting the original. If the disk
+	 * is full, writing to the temporary file will fail before the original file is modified, leaving it untouched.
+	 *
+	 * This is necessary because file_put_contents() destroys the data currently in the file if it fails to write the
+	 * new contents.
+	 *
+	 * @param resource|null $context Context to pass to file_put_contents
+	 */
+	public static function safeFilePutContents(string $fileName, string $contents, int $flags = 0, $context = null) : void{
+		$directory = dirname($fileName);
+		if(!is_dir($directory)){
+			throw new \RuntimeException("Target directory path does not exist or is not a directory");
+		}
+		if(is_dir($fileName)){
+			throw new \RuntimeException("Target file path already exists and is not a file");
+		}
+
+		$counter = 0;
+		do{
+			//we don't care about overwriting any preexisting tmpfile but we can't write if a directory is already here
+			$temporaryFileName = $fileName . ".$counter.tmp";
+			$counter++;
+		}while(is_dir($temporaryFileName));
+
+		$writeTemporaryFileResult = $context !== null ?
+			file_put_contents($temporaryFileName, $contents, $flags, $context) :
+			file_put_contents($temporaryFileName, $contents, $flags);
+
+		if($writeTemporaryFileResult !== strlen($contents)){
+			$context !== null ?
+				@unlink($temporaryFileName, $context) :
+				@unlink($temporaryFileName);
+			$diskSpace = disk_free_space($directory);
+			if($diskSpace !== false && $diskSpace < strlen($contents)){
+				throw new \RuntimeException("Failed to write to temporary file $temporaryFileName (out of free disk space)");
+			}
+			throw new \RuntimeException("Failed to write to temporary file $temporaryFileName (possibly out of free disk space)");
+		}
+
+		//TODO: the @ prevents us receiving the actual error message, but right now it's necessary since we can't assume
+		//that the error handler has been set :(
+		$renameTemporaryFileResult = $context !== null ?
+			@rename($temporaryFileName, $fileName, $context) :
+			@rename($temporaryFileName, $fileName);
+		if(!$renameTemporaryFileResult){
+			/*
+			 * The following code works around a bug in Windows where rename() will periodically decide to give us a
+			 * spurious "Access is denied (code: 5)" error. As far as I could determine, the fault comes from Windows
+			 * itself, but since I couldn't reliably reproduce the issue it's very hard to debug.
+			 *
+			 * The following code can be used to test. Usually it will fail anywhere before 100,000 iterations.
+			 *
+			 * for($i = 0; $i < 10_000_000; ++$i){
+			 *     file_put_contents('ops.txt.0.tmp', 'some data ' . $i, 0);
+			 *     if(!rename('ops.txt.0.tmp', 'ops.txt')){
+			 *         throw new \Error("something weird happened");
+			 *     }
+			 * }
+			 */
+			$copyTemporaryFileResult = $context !== null ?
+				copy($temporaryFileName, $fileName, $context) :
+				copy($temporaryFileName, $fileName);
+			if(!$copyTemporaryFileResult){
+				throw new \RuntimeException("Failed to move temporary file contents into target file");
+			}
+			@unlink($temporaryFileName);
 		}
 	}
 }

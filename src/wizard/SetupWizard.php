@@ -35,6 +35,7 @@ use pocketmine\player\GameMode;
 use pocketmine\utils\Config;
 use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
+use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use Webmozart\PathUtil\Path;
 use function fgets;
@@ -69,7 +70,7 @@ class SetupWizard{
 		}
 
 		$this->message("Please select a language");
-		foreach($langs as $short => $native){
+		foreach(Utils::stringifyKeys($langs) as $short => $native){
 			$this->writeLine(" $native => $short");
 		}
 

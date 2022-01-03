@@ -30,7 +30,6 @@ use pocketmine\world\format\SubChunk;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use pocketmine\world\World;
-use function count;
 use function max;
 
 class SkyLightUpdate extends LightUpdate{
@@ -115,11 +114,10 @@ class SkyLightUpdate extends LightUpdate{
 		//have to avoid filling full light for any subchunk that contains a heightmap Y coordinate
 		$highestHeightMapPlusOne = max($chunk->getHeightMapArray()) + 1;
 		$lowestClearSubChunk = ($highestHeightMapPlusOne >> SubChunk::COORD_BIT_SIZE) + (($highestHeightMapPlusOne & SubChunk::COORD_MASK) !== 0 ? 1 : 0);
-		$chunkHeight = count($chunk->getSubChunks());
-		for($y = 0; $y < $lowestClearSubChunk && $y < $chunkHeight; $y++){
+		for($y = Chunk::MIN_SUBCHUNK_INDEX; $y < $lowestClearSubChunk && $y <= Chunk::MAX_SUBCHUNK_INDEX; $y++){
 			$chunk->getSubChunk($y)->setBlockSkyLightArray(LightArray::fill(0));
 		}
-		for($y = $lowestClearSubChunk, $yMax = $chunkHeight; $y < $yMax; $y++){
+		for($y = $lowestClearSubChunk; $y <= Chunk::MAX_SUBCHUNK_INDEX; $y++){
 			$chunk->getSubChunk($y)->setBlockSkyLightArray(LightArray::fill(15));
 		}
 
@@ -130,7 +128,7 @@ class SkyLightUpdate extends LightUpdate{
 		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
 			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
 				$currentHeight = $chunk->getHeightMap($x, $z);
-				$maxAdjacentHeight = 0;
+				$maxAdjacentHeight = World::Y_MIN;
 				if($x !== 0){
 					$maxAdjacentHeight = max($maxAdjacentHeight, $chunk->getHeightMap($x - 1, $z));
 				}
@@ -174,21 +172,21 @@ class SkyLightUpdate extends LightUpdate{
 	 * @phpstan-param \SplFixedArray<bool> $directSkyLightBlockers
 	 */
 	private static function recalculateHeightMap(Chunk $chunk, \SplFixedArray $directSkyLightBlockers) : HeightArray{
-		$maxSubChunkY = count($chunk->getSubChunks()) - 1;
-		for(; $maxSubChunkY >= 0; $maxSubChunkY--){
+		$maxSubChunkY = Chunk::MAX_SUBCHUNK_INDEX;
+		for(; $maxSubChunkY >= Chunk::MIN_SUBCHUNK_INDEX; $maxSubChunkY--){
 			if(!$chunk->getSubChunk($maxSubChunkY)->isEmptyFast()){
 				break;
 			}
 		}
 		$result = HeightArray::fill(World::Y_MIN);
-		if($maxSubChunkY === -1){ //whole column is definitely empty
+		if($maxSubChunkY < Chunk::MIN_SUBCHUNK_INDEX){ //whole column is definitely empty
 			return $result;
 		}
 
 		for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
 			for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
 				$y = null;
-				for($subChunkY = $maxSubChunkY; $subChunkY >= 0; $subChunkY--){
+				for($subChunkY = $maxSubChunkY; $subChunkY >= Chunk::MIN_SUBCHUNK_INDEX; $subChunkY--){
 					$subHighestBlockY = $chunk->getSubChunk($subChunkY)->getHighestBlockAt($x, $z);
 					if($subHighestBlockY !== null){
 						$y = ($subChunkY * SubChunk::EDGE_LENGTH) + $subHighestBlockY;

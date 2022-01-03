@@ -90,6 +90,12 @@ class UtilsTest extends TestCase{
 		self::assertCount(0, $tags);
 	}
 
+	public function testParseDocCommentWithTagsContainingHyphens() : void{
+		$tags = Utils::parseDocComment("/** @phpstan-return list<string> */");
+		self::assertArrayHasKey("phpstan-return", $tags);
+		self::assertEquals("list<string>", $tags["phpstan-return"]);
+	}
+
 	public function testNamespacedNiceClosureName() : void{
 		//be careful with this test. The closure has to be declared on the same line as the assertion.
 		self::assertSame('closure@' . Filesystem::cleanPath(__FILE__) . '#L' . __LINE__, Utils::getNiceClosureName(function() : void{}));

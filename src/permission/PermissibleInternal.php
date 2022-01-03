@@ -27,6 +27,7 @@ use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginException;
 use pocketmine\timings\Timings;
 use pocketmine\utils\ObjectSet;
+use pocketmine\utils\Utils;
 use function count;
 use function spl_object_id;
 
@@ -143,7 +144,7 @@ class PermissibleInternal implements Permissible{
 		$oldPermissions = $this->permissions;
 		$this->permissions = [];
 
-		foreach($this->rootPermissions as $name => $isGranted){
+		foreach(Utils::stringifyKeys($this->rootPermissions) as $name => $isGranted){
 			$perm = $permManager->getPermission($name);
 			if($perm === null){
 				throw new \LogicException("Unregistered root permission $name");
@@ -187,11 +188,12 @@ class PermissibleInternal implements Permissible{
 	}
 
 	/**
-	 * @param bool[]                    $children
+	 * @param bool[] $children
+	 * @phpstan-param array<string, bool> $children
 	 */
 	private function calculateChildPermissions(array $children, bool $invert, ?PermissionAttachment $attachment, ?PermissionAttachmentInfo $parent) : void{
 		$permManager = PermissionManager::getInstance();
-		foreach($children as $name => $v){
+		foreach(Utils::stringifyKeys($children) as $name => $v){
 			$perm = $permManager->getPermission($name);
 			$value = ($v xor $invert);
 			$this->permissions[$name] = new PermissionAttachmentInfo($name, $attachment, $value, $parent);
