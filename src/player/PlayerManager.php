@@ -47,7 +47,13 @@ use pocketmine\utils\TextFormat;
 use pocketmine\world\format\Chunk;
 use Ramsey\Uuid\UuidInterface;
 use Webmozart\PathUtil\Path;
+use function stripos;
+use function strlen;
 use function strtolower;
+use function zlib_decode;
+use function zlib_encode;
+use const PHP_INT_MAX;
+use const ZLIB_ENCODING_GZIP;
 
 class PlayerManager{
 
