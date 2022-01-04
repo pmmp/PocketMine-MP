@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "062bc955bd66aeadf881e9c5f911c976",
+    "content-hash": "f36ef3313b3427f7439eff2fad714993",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -227,12 +227,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockProtocol.git",
-                "reference": "305209164709948987019753965ebe4c05c7ff36"
+                "reference": "2aaf6f9dd1ca787019bb6b3fa8db6b927d30c44b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/305209164709948987019753965ebe4c05c7ff36",
-                "reference": "305209164709948987019753965ebe4c05c7ff36",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/2aaf6f9dd1ca787019bb6b3fa8db6b927d30c44b",
+                "reference": "2aaf6f9dd1ca787019bb6b3fa8db6b927d30c44b",
                 "shasum": ""
             },
             "require": {
@@ -246,7 +246,7 @@
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.2.0",
+                "phpstan/phpstan": "1.3.0",
                 "phpstan/phpstan-phpunit": "^1.0.0",
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5"
@@ -270,7 +270,7 @@
             "support": {
                 "source": "https://github.com/NetherGamesMC/BedrockProtocol/tree/master"
             },
-            "time": "2021-12-19T13:30:07+00:00"
+            "time": "2022-01-04T21:09:21+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
