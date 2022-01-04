@@ -661,6 +661,7 @@ final class VanillaBlocks{
 		self::register("brown_mushroom_block", $factory->get(99, 0));
 		self::register("cactus", $factory->get(81, 0));
 		self::register("cake", $factory->get(92, 0));
+		self::register("campfire", $factory->get(464, 0));
 		self::register("carpet", $factory->get(171, 0));
 		self::register("carrots", $factory->get(141, 0));
 		self::register("carved_pumpkin", $factory->get(410, 0));
@@ -693,7 +694,6 @@ final class VanillaBlocks{
 		self::register("cut_sandstone", $factory->get(24, 2));
 		self::register("cut_sandstone_slab", $factory->get(421, 3));
 		self::register("cyan_glazed_terracotta", $factory->get(229, 2));
-		self::register("campfire", $factory->get(464, 0));
 		self::register("dandelion", $factory->get(37, 0));
 		self::register("dark_oak_button", $factory->get(397, 0));
 		self::register("dark_oak_door", $factory->get(197, 0));
