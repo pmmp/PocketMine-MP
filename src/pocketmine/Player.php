@@ -218,7 +218,6 @@ use function round;
 use function spl_object_hash;
 use function sprintf;
 use function sqrt;
-use function str_repeat;
 use function strlen;
 use function strpos;
 use function strtolower;
