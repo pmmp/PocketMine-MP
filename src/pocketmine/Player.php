@@ -210,6 +210,7 @@ use function json_encode;
 use function json_last_error_msg;
 use function lcg_value;
 use function max;
+use function mb_strlen;
 use function microtime;
 use function min;
 use function preg_match;
@@ -217,6 +218,7 @@ use function round;
 use function spl_object_hash;
 use function sprintf;
 use function sqrt;
+use function str_repeat;
 use function strlen;
 use function strpos;
 use function strtolower;
@@ -3265,6 +3267,24 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return true;
 	}
 
+	/**
+	 * @throws \UnexpectedValueException
+	 */
+	private function checkBookText(string $string, string $fieldName, int $softLimit, int $hardLimit, bool &$cancel) : string{
+		if(strlen($string) > $hardLimit){
+			throw new \UnexpectedValueException(sprintf("Book %s must be at most %d bytes, but have %d bytes", $fieldName, $hardLimit, strlen($string)));
+		}
+
+		$result = TextFormat::clean($string, false);
+		//strlen() is O(1), mb_strlen() is O(n)
+		if(strlen($result) > $softLimit * 4 || mb_strlen($result, 'UTF-8') > $softLimit){
+			$cancel = true;
+			$this->server->getLogger()->debug(sprintf("Cancelled book edit by %s due to %s exceeded soft limit of %d chars", $this->getName(), $fieldName, $softLimit));
+		}
+
+		return $result;
+	}
+
 	public function handleBookEdit(BookEditPacket $packet) : bool{
 		/** @var WritableBook $oldBook */
 		$oldBook = $this->inventory->getItem($packet->inventorySlot);
@@ -3274,10 +3294,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$newBook = clone $oldBook;
 		$modifiedPages = [];
-
+		$cancel = false;
 		switch($packet->type){
 			case BookEditPacket::TYPE_REPLACE_PAGE:
-				$newBook->setPageText($packet->pageNumber, $packet->text);
+				$text = self::checkBookText($packet->text, "page text", 256, 0x7fff, $cancel);
+				$newBook->setPageText($packet->pageNumber, $text);
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_ADD_PAGE:
@@ -3286,7 +3307,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					//TODO: the client can send insert-before actions on trailing client-side pages which cause odd behaviour on the server
 					return false;
 				}
-				$newBook->insertPage($packet->pageNumber, $packet->text);
+				$text = self::checkBookText($packet->text, "page text", 256, 0x7fff, $cancel);
+				$newBook->insertPage($packet->pageNumber, $text);
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_DELETE_PAGE:
@@ -3305,17 +3327,36 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$modifiedPages = [$packet->pageNumber, $packet->secondaryPageNumber];
 				break;
 			case BookEditPacket::TYPE_SIGN_BOOK:
+				$title = self::checkBookText($packet->title, "title", 16, 0x7fff, $cancel);
+				//this one doesn't have a limit in vanilla, so we have to improvise
+				$author = self::checkBookText($packet->author, "author", 256, 0x7fff, $cancel);
+
 				/** @var WrittenBook $newBook */
 				$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
-				$newBook->setAuthor($packet->author);
-				$newBook->setTitle($packet->title);
+				$newBook->setAuthor($author);
+				$newBook->setTitle($title);
 				$newBook->setGeneration(WrittenBook::GENERATION_ORIGINAL);
 				break;
 			default:
 				return false;
 		}
 
+		/*
+		 * Plugins may have created books with more than 50 pages; we allow plugins to do this, but not players.
+		 * Don't allow the page count to grow past 50, but allow deleting, swapping or altering text of existing pages.
+		 */
+		$oldPageCount = count($oldBook->getPages());
+		$newPageCount = count($newBook->getPages());
+		if(($newPageCount > $oldPageCount && $newPageCount > 50)){
+			$this->server->getLogger()->debug("Cancelled book edit by " . $this->getName() . " due to adding too many pages (new page count would be $newPageCount)");
+			$cancel = true;
+		}
+
 		$event = new PlayerEditBookEvent($this, $oldBook, $newBook, $packet->type, $modifiedPages);
+		if($cancel){
+			$event->setCancelled();
+		}
+
 		$event->call();
 		if($event->isCancelled()){
 			return true;
