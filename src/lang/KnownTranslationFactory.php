@@ -1974,6 +1974,26 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function pocketmine_server_obsolete_warning1(Translatable|string $param0, Translatable|string $param1) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_OBSOLETE_WARNING1, [
+			0 => $param0,
+			1 => $param1,
+		]);
+	}
+
+	public static function pocketmine_server_obsolete_warning2(Translatable|string $param0, Translatable|string $param1) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_OBSOLETE_WARNING2, [
+			0 => $param0,
+			1 => $param1,
+		]);
+	}
+
+	public static function pocketmine_server_obsolete_warning3(Translatable|string $param0) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_OBSOLETE_WARNING3, [
+			0 => $param0,
+		]);
+	}
+
 	public static function pocketmine_server_query_running(Translatable|string $param0, Translatable|string $param1) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_SERVER_QUERY_RUNNING, [
 			0 => $param0,
