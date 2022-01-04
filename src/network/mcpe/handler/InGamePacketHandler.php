@@ -37,6 +37,7 @@ use pocketmine\inventory\transaction\TransactionException;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
+use pocketmine\item\WritableBookPage;
 use pocketmine\item\WrittenBook;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -103,6 +104,8 @@ use pocketmine\network\mcpe\protocol\types\PlayerBlockActionWithBlockInfo;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Limits;
+use pocketmine\utils\TextFormat;
 use function array_push;
 use function base64_encode;
 use function count;
@@ -114,8 +117,10 @@ use function json_decode;
 use function json_encode;
 use function json_last_error_msg;
 use function max;
+use function mb_strlen;
 use function microtime;
 use function preg_match;
+use function sprintf;
 use function strlen;
 use function strpos;
 use function substr;
@@ -748,6 +753,24 @@ class InGamePacketHandler extends PacketHandler{
 		return false; //TODO
 	}
 
+	/**
+	 * @throws PacketHandlingException
+	 */
+	private function checkBookText(string $string, string $fieldName, int $softLimit, int $hardLimit, bool &$cancel) : string{
+		if(strlen($string) > $hardLimit){
+			throw new PacketHandlingException(sprintf("Book %s must be at most %d bytes, but have %d bytes", $fieldName, $hardLimit, strlen($string)));
+		}
+
+		$result = TextFormat::clean($string, false);
+		//strlen() is O(1), mb_strlen() is O(n)
+		if(strlen($result) > $softLimit * 4 || mb_strlen($result, 'UTF-8') > $softLimit){
+			$cancel = true;
+			$this->session->getLogger()->debug("Cancelled book edit due to $fieldName exceeded soft limit of $softLimit chars");
+		}
+
+		return $result;
+	}
+
 	public function handleBookEdit(BookEditPacket $packet) : bool{
 		//TODO: break this up into book API things
 		$oldBook = $this->player->getInventory()->getItem($packet->inventorySlot);
@@ -757,10 +780,11 @@ class InGamePacketHandler extends PacketHandler{
 
 		$newBook = clone $oldBook;
 		$modifiedPages = [];
-
+		$cancel = false;
 		switch($packet->type){
 			case BookEditPacket::TYPE_REPLACE_PAGE:
-				$newBook->setPageText($packet->pageNumber, $packet->text);
+				$text = self::checkBookText($packet->text, "page text", 256, WritableBookPage::PAGE_LENGTH_HARD_LIMIT_BYTES, $cancel);
+				$newBook->setPageText($packet->pageNumber, $text);
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_ADD_PAGE:
@@ -769,7 +793,8 @@ class InGamePacketHandler extends PacketHandler{
 					//TODO: the client can send insert-before actions on trailing client-side pages which cause odd behaviour on the server
 					return false;
 				}
-				$newBook->insertPage($packet->pageNumber, $packet->text);
+				$text = self::checkBookText($packet->text, "page text", 256, WritableBookPage::PAGE_LENGTH_HARD_LIMIT_BYTES, $cancel);
+				$newBook->insertPage($packet->pageNumber, $text);
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_DELETE_PAGE:
@@ -788,11 +813,14 @@ class InGamePacketHandler extends PacketHandler{
 				$modifiedPages = [$packet->pageNumber, $packet->secondaryPageNumber];
 				break;
 			case BookEditPacket::TYPE_SIGN_BOOK:
-				/** @var WrittenBook $newBook */
+				$title = self::checkBookText($packet->title, "title", 16, Limits::INT16_MAX, $cancel);
+				//this one doesn't have a limit in vanilla, so we have to improvise
+				$author = self::checkBookText($packet->author, "author", 256, Limits::INT16_MAX, $cancel);
+
 				$newBook = VanillaItems::WRITTEN_BOOK()
 					->setPages($oldBook->getPages())
-					->setAuthor($packet->author)
-					->setTitle($packet->title)
+					->setAuthor($author)
+					->setTitle($title)
 					->setGeneration(WrittenBook::GENERATION_ORIGINAL);
 				break;
 			default:
@@ -808,7 +836,23 @@ class InGamePacketHandler extends PacketHandler{
 			BookEditPacket::TYPE_SIGN_BOOK => PlayerEditBookEvent::ACTION_SIGN_BOOK,
 			default => throw new AssumptionFailedError("We already filtered unknown types in the switch above")
 		};
+
+		/*
+		 * Plugins may have created books with more than 50 pages; we allow plugins to do this, but not players.
+		 * Don't allow the page count to grow past 50, but allow deleting, swapping or altering text of existing pages.
+		 */
+		$oldPageCount = count($oldBook->getPages());
+		$newPageCount = count($newBook->getPages());
+		if(($newPageCount > $oldPageCount && $newPageCount > 50)){
+			$this->session->getLogger()->debug("Cancelled book edit due to adding too many pages (new page count would be $newPageCount)");
+			$cancel = true;
+		}
+
 		$event = new PlayerEditBookEvent($this->player, $oldBook, $newBook, $action, $modifiedPages);
+		if($cancel){
+			$event->cancel();
+		}
+
 		$event->call();
 		if($event->isCancelled()){
 			return true;
