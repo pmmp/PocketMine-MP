@@ -27,6 +27,7 @@ use pocketmine\block\BaseSign;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\utils\SignText;
 use pocketmine\entity\animation\ConsumingItemAnimation;
+use pocketmine\entity\Attribute;
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\inventory\transaction\action\InventoryAction;
@@ -428,6 +429,8 @@ class InGamePacketHandler extends PacketHandler{
 			case UseItemTransactionData::ACTION_CLICK_AIR:
 				if($this->player->isUsingItem()){
 					if(!$this->player->consumeHeldItem()){
+						$hungerAttr = $this->player->getAttributeMap()->get(Attribute::HUNGER) ?? throw new AssumptionFailedError();
+						$hungerAttr->markSynchronized(false);
 						$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 					}
 					return true;
@@ -789,7 +792,16 @@ class InGamePacketHandler extends PacketHandler{
 				return false;
 		}
 
-		$event = new PlayerEditBookEvent($this->player, $oldBook, $newBook, $packet->type, $modifiedPages);
+		//for redundancy, in case of protocol changes, we don't want to pass these directly
+		$action = match($packet->type){
+			BookEditPacket::TYPE_REPLACE_PAGE => PlayerEditBookEvent::ACTION_REPLACE_PAGE,
+			BookEditPacket::TYPE_ADD_PAGE => PlayerEditBookEvent::ACTION_ADD_PAGE,
+			BookEditPacket::TYPE_DELETE_PAGE => PlayerEditBookEvent::ACTION_DELETE_PAGE,
+			BookEditPacket::TYPE_SWAP_PAGES => PlayerEditBookEvent::ACTION_SWAP_PAGES,
+			BookEditPacket::TYPE_SIGN_BOOK => PlayerEditBookEvent::ACTION_SIGN_BOOK,
+			default => throw new AssumptionFailedError("We already filtered unknown types in the switch above")
+		};
+		$event = new PlayerEditBookEvent($this->player, $oldBook, $newBook, $action, $modifiedPages);
 		$event->call();
 		if($event->isCancelled()){
 			return true;
