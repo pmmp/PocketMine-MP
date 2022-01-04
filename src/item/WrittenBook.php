@@ -24,7 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\nbt\tag\CompoundTag;
+use pocketmine\utils\Limits;
 use pocketmine\utils\Utils;
+use function sprintf;
+use function strlen;
 
 class WrittenBook extends WritableBookBase{
 
@@ -85,6 +88,9 @@ class WrittenBook extends WritableBookBase{
 	 * @return $this
 	 */
 	public function setAuthor(string $authorName) : self{
+		if(strlen($authorName) > Limits::INT16_MAX){
+			throw new \InvalidArgumentException(sprintf("Author must be at most %d bytes, but have %d bytes", Limits::INT16_MAX, strlen($authorName)));
+		}
 		Utils::checkUTF8($authorName);
 		$this->author = $authorName;
 		return $this;
@@ -103,6 +109,9 @@ class WrittenBook extends WritableBookBase{
 	 * @return $this
 	 */
 	public function setTitle(string $title) : self{
+		if(strlen($title) > Limits::INT16_MAX){
+			throw new \InvalidArgumentException(sprintf("Title must be at most %d bytes, but have %d bytes", Limits::INT16_MAX, strlen($title)));
+		}
 		Utils::checkUTF8($title);
 		$this->title = $title;
 		return $this;
