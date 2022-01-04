@@ -666,7 +666,6 @@ final class VanillaBlocks{
 		self::register("carved_pumpkin", $factory->get(410, 0));
 		self::register("chemical_heat", $factory->get(192, 0));
 		self::register("chest", $factory->get(54, 2));
-		self::register("campfire", $factory->get(464, 0));
 		self::register("chiseled_quartz", $factory->get(155, 1));
 		self::register("chiseled_red_sandstone", $factory->get(179, 1));
 		self::register("chiseled_sandstone", $factory->get(24, 1));
@@ -694,6 +693,7 @@ final class VanillaBlocks{
 		self::register("cut_sandstone", $factory->get(24, 2));
 		self::register("cut_sandstone_slab", $factory->get(421, 3));
 		self::register("cyan_glazed_terracotta", $factory->get(229, 2));
+		self::register("campfire", $factory->get(464, 0));
 		self::register("dandelion", $factory->get(37, 0));
 		self::register("dark_oak_button", $factory->get(397, 0));
 		self::register("dark_oak_door", $factory->get(197, 0));
