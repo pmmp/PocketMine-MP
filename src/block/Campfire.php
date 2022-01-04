@@ -181,7 +181,7 @@ class Campfire extends Transparent{
 					if($tile->getItemTime($slot) >= $tile->getFurnaceType()->getCookDurationTicks()){
 						$tile->setItem(ItemFactory::air(), $slot);
 						$tile->setSlotTime($slot, 0);
-						$this->position->world->setBlock($this->position, $this);
+						$this->position->getWorld()->setBlock($this->position, $this);
 						$result = ($item = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($tile->getFurnaceType())->match($item)) instanceof FurnaceRecipe ? $item->getResult() : ItemFactory::air();
 						$this->position->getWorld()->dropItem($this->position->add(0, 1, 0), $result);
 					}
