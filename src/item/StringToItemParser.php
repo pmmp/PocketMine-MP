@@ -1124,7 +1124,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("iron_shovel", fn() => VanillaItems::IRON_SHOVEL());
 		$result->register("iron_sword", fn() => VanillaItems::IRON_SWORD());
 		$result->register("jungle_boat", fn() => VanillaItems::JUNGLE_BOAT());
-		$result->register("kelp", fn() => VanillaItems::KELP());
+		$result->register("kelp", fn() => VanillaBlocks::KELP()->asItem());
 		$result->register("lapis_lazuli", fn() => VanillaItems::LAPIS_LAZULI());
 		$result->register("lava_bucket", fn() => VanillaItems::LAVA_BUCKET());
 		$result->register("leaping_potion", fn() => VanillaItems::LEAPING_POTION());
