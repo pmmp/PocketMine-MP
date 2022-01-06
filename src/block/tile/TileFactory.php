@@ -73,6 +73,7 @@ final class TileFactory{
 		$this->register(Sign::class, ["Sign", "minecraft:sign"]);
 		$this->register(Smoker::class, ["Smoker", "minecraft:smoker"]);
 		$this->register(Skull::class, ["Skull", "minecraft:skull"]);
+		$this->register(Lectern::class, ["Lectern", "minecraft:lectern"]);
 
 		//TODO: Campfire
 		//TODO: Cauldron
@@ -85,7 +86,6 @@ final class TileFactory{
 		//TODO: EndGateway
 		//TODO: EndPortal
 		//TODO: JigsawBlock
-		//TODO: Lectern
 		//TODO: MovingBlock
 		//TODO: NetherReactor
 		//TODO: PistonArm

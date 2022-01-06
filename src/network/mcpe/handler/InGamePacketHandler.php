@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\BaseSign;
 use pocketmine\block\ItemFrame;
+use pocketmine\block\Lectern;
 use pocketmine\block\utils\SignText;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\InvalidSkinException;
@@ -36,6 +37,7 @@ use pocketmine\inventory\transaction\TransactionException;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
+use pocketmine\item\WritableBookBase;
 use pocketmine\item\WrittenBook;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -63,6 +65,7 @@ use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
+use pocketmine\network\mcpe\protocol\LecternUpdatePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
@@ -100,6 +103,7 @@ use pocketmine\network\mcpe\protocol\types\PlayerBlockActionWithBlockInfo;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\world\format\Chunk;
 use function array_push;
 use function base64_encode;
 use function count;
@@ -829,7 +833,8 @@ class InGamePacketHandler extends PacketHandler{
 						$inQuotes = true;
 					}else{
 						$backslashes = 0;
-						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
+						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){
+						}
 						if(($backslashes % 2) === 0){ //unescaped quote
 							$inQuotes = false;
 						}
@@ -854,6 +859,29 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleLabTable(LabTablePacket $packet) : bool{
 		return false; //TODO
+	}
+
+	public function handleLecternUpdate(LecternUpdatePacket $packet) : bool{
+		//Drop book is handled on server side with an interact event.
+		//Total pages is gathered from book.
+		$pos = $packet->blockPosition;
+		$chunkX = $pos->getX() >> Chunk::COORD_BIT_SIZE;
+		$chunkZ = $pos->getZ() >> Chunk::COORD_BIT_SIZE;
+		$world = $this->player->getWorld();
+		if(!$world->isChunkLoaded($chunkX, $chunkZ) || !$world->isChunkGenerated($chunkX, $chunkZ) || $world->isChunkLocked($chunkX, $chunkZ)){
+			return false;
+		}
+		$lectern = $world->getBlockAt($pos->getX(), $pos->getY(), $pos->getZ());
+		if($lectern instanceof Lectern){
+			if($this->player->getPosition()->distance($lectern->getPosition()) <= 15){
+				$book = $lectern->getBook();
+				if($book instanceof WritableBookBase && count($book->getPages()) == $packet->totalPages && $packet->page >= 0 && $packet->page <= $packet->totalPages){
+					$world->setBlock($lectern->getPosition(), $lectern->setViewedPage($packet->page));
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{

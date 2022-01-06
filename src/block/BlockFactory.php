@@ -43,6 +43,7 @@ use pocketmine\block\tile\FlowerPot as TileFlowerPot;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\tile\Jukebox as TileJukebox;
+use pocketmine\block\tile\Lectern as TileLectern;
 use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\NormalFurnace as TileNormalFurnace;
 use pocketmine\block\tile\Note as TileNote;
@@ -255,6 +256,7 @@ class BlockFactory{
 		$this->registerAllMeta(new Lava(new BIDFlattened(Ids::FLOWING_LAVA, [Ids::STILL_LAVA], 0), "Lava", BlockBreakInfo::indestructible(500.0)));
 		$this->registerAllMeta(new Lever(new BID(Ids::LEVER, 0), "Lever", new BlockBreakInfo(0.5)));
 		$this->registerAllMeta(new Loom(new BID(Ids::LOOM, 0), "Loom", new BlockBreakInfo(2.5, BlockToolType::AXE)));
+		$this->registerAllMeta(new Lectern(new BID(Ids::LECTERN, 0, ItemIds::LECTERN, TileLectern::class), "Lectern", new BlockBreakInfo(2.5, BlockToolType::AXE)));
 		$this->registerAllMeta(new Magma(new BID(Ids::MAGMA, 0), "Magma Block", new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->registerAllMeta(new Melon(new BID(Ids::MELON_BLOCK, 0), "Melon Block", new BlockBreakInfo(1.0, BlockToolType::AXE)));
 		$this->registerAllMeta(new MelonStem(new BID(Ids::MELON_STEM, 0, ItemIds::MELON_SEEDS), "Melon Stem", BlockBreakInfo::instant()));
@@ -612,7 +614,6 @@ class BlockFactory{
 		//TODO: minecraft:jigsaw
 		//TODO: minecraft:kelp
 		//TODO: minecraft:lava_cauldron
-		//TODO: minecraft:lectern
 		//TODO: minecraft:movingBlock
 		//TODO: minecraft:observer
 		//TODO: minecraft:piston
