@@ -34,12 +34,12 @@ use function fwrite;
 use function implode;
 use function is_numeric;
 use function ksort;
+use function mb_strtoupper;
 use function ob_get_clean;
 use function ob_start;
 use function parse_ini_file;
 use function preg_match_all;
 use function str_replace;
-use function strtoupper;
 use const INI_SCANNER_RAW;
 use const SORT_NUMERIC;
 use const SORT_STRING;
@@ -48,7 +48,7 @@ use const STDERR;
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 function constantify(string $permissionName) : string{
-	return strtoupper(str_replace([".", "-"], "_", $permissionName));
+	return mb_strtoupper(str_replace([".", "-"], "_", $permissionName));
 }
 
 function functionify(string $permissionName) : string{
