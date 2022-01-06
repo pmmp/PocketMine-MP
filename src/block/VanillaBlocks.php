@@ -725,7 +725,6 @@ final class VanillaBlocks{
 		self::register("double_tallgrass", $factory->get(175, 2));
 		self::register("dragon_egg", $factory->get(122, 0));
 		self::register("dried_kelp", $factory->get(394, 0));
-		self::register("kelp", $factory->get(393, 0));
 		self::register("dyed_shulker_box", $factory->get(218, 0));
 		self::register("element_actinium", $factory->get(355, 0));
 		self::register("element_aluminum", $factory->get(279, 0));
@@ -919,6 +918,7 @@ final class VanillaBlocks{
 		self::register("jungle_trapdoor", $factory->get(403, 0));
 		self::register("jungle_wall_sign", $factory->get(444, 2));
 		self::register("jungle_wood", $factory->get(467, 3));
+		self::register("kelp", $factory->get(393, 0));
 		self::register("lab_table", $factory->get(238, 12));
 		self::register("ladder", $factory->get(65, 2));
 		self::register("lantern", $factory->get(463, 0));

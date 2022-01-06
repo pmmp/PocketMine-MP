@@ -495,7 +495,6 @@ final class VanillaItems{
 		self::register("dragon_breath", $factory->get(437));
 		self::register("dragon_head", $factory->get(397, 5));
 		self::register("dried_kelp", $factory->get(464));
-		self::register("kelp", $factory->get(335));
 		self::register("egg", $factory->get(344));
 		self::register("emerald", $factory->get(388));
 		self::register("enchanted_golden_apple", $factory->get(466));
@@ -550,6 +549,7 @@ final class VanillaItems{
 		self::register("iron_shovel", $factory->get(256));
 		self::register("iron_sword", $factory->get(267));
 		self::register("jungle_boat", $factory->get(333, 3));
+		self::register("kelp", $factory->get(335));
 		self::register("lapis_lazuli", $factory->get(351, 4));
 		self::register("lava_bucket", $factory->get(325, 10));
 		self::register("leaping_potion", $factory->get(373, 9));
