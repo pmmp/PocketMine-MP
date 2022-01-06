@@ -28,7 +28,7 @@ use function fgets;
 use function fopen;
 use function fwrite;
 use function is_resource;
-use function strtolower;
+use function mb_strtolower;
 use function trim;
 
 class BanList{
@@ -57,7 +57,7 @@ class BanList{
 	public function getEntry(string $name) : ?BanEntry{
 		$this->removeExpired();
 
-		return $this->list[strtolower($name)] ?? null;
+		return $this->list[mb_strtolower($name)] ?? null;
 	}
 
 	/**
@@ -70,7 +70,7 @@ class BanList{
 	}
 
 	public function isBanned(string $name) : bool{
-		$name = strtolower($name);
+		$name = mb_strtolower($name);
 		if(!$this->isEnabled()){
 			return false;
 		}else{
@@ -98,7 +98,7 @@ class BanList{
 	}
 
 	public function remove(string $name) : void{
-		$name = strtolower($name);
+		$name = mb_strtolower($name);
 		if(isset($this->list[$name])){
 			unset($this->list[$name]);
 			$this->save();

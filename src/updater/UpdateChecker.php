@@ -28,7 +28,7 @@ use pocketmine\Server;
 use pocketmine\utils\VersionString;
 use pocketmine\VersionInfo;
 use function date;
-use function strtolower;
+use function mb_strtolower;
 use function ucfirst;
 
 class UpdateChecker{
@@ -162,7 +162,7 @@ class UpdateChecker{
 	 * Returns the channel used for update checking (stable, beta, dev)
 	 */
 	public function getChannel() : string{
-		return strtolower($this->server->getConfigGroup()->getPropertyString("auto-updater.preferred-channel", "stable"));
+		return mb_strtolower($this->server->getConfigGroup()->getPropertyString("auto-updater.preferred-channel", "stable"));
 	}
 
 	/**

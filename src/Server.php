@@ -137,6 +137,7 @@ use function is_resource;
 use function is_string;
 use function json_decode;
 use function max;
+use function mb_strtolower;
 use function microtime;
 use function min;
 use function mkdir;
@@ -154,7 +155,6 @@ use function str_replace;
 use function stripos;
 use function strlen;
 use function strrpos;
-use function strtolower;
 use function strval;
 use function time;
 use function touch;
@@ -470,7 +470,7 @@ class Server{
 	 * @return OfflinePlayer|Player
 	 */
 	public function getOfflinePlayer(string $name){
-		$name = strtolower($name);
+		$name = mb_strtolower($name);
 		$result = $this->getPlayerExact($name);
 
 		if($result === null){
@@ -481,7 +481,7 @@ class Server{
 	}
 
 	private function getPlayerDataPath(string $username) : string{
-		return Path::join($this->getDataPath(), 'players', strtolower($username) . '.dat');
+		return Path::join($this->getDataPath(), 'players', mb_strtolower($username) . '.dat');
 	}
 
 	/**
@@ -499,7 +499,7 @@ class Server{
 
 	public function getOfflinePlayerData(string $name) : ?CompoundTag{
 		return Timings::$syncPlayerDataLoad->time(function() use ($name) : ?CompoundTag{
-			$name = strtolower($name);
+			$name = mb_strtolower($name);
 			$path = $this->getPlayerDataPath($name);
 
 			if(file_exists($path)){
@@ -614,7 +614,7 @@ class Server{
 	 */
 	public function getPlayerByPrefix(string $name) : ?Player{
 		$found = null;
-		$name = strtolower($name);
+		$name = mb_strtolower($name);
 		$delta = PHP_INT_MAX;
 		foreach($this->getOnlinePlayers() as $player){
 			if(stripos($player->getName(), $name) === 0){
@@ -636,9 +636,9 @@ class Server{
 	 * Returns an online player with the given name (case insensitive), or null if not found.
 	 */
 	public function getPlayerExact(string $name) : ?Player{
-		$name = strtolower($name);
+		$name = mb_strtolower($name);
 		foreach($this->getOnlinePlayers() as $player){
-			if(strtolower($player->getName()) === $name){
+			if(mb_strtolower($player->getName()) === $name){
 				return $player;
 			}
 		}
@@ -685,7 +685,7 @@ class Server{
 	}
 
 	public function addOp(string $name) : void{
-		$this->operators->set(strtolower($name), true);
+		$this->operators->set(mb_strtolower($name), true);
 
 		if(($player = $this->getPlayerExact($name)) !== null){
 			$player->setBasePermission(DefaultPermissions::ROOT_OPERATOR, true);
@@ -694,10 +694,10 @@ class Server{
 	}
 
 	public function removeOp(string $name) : void{
-		$lowercaseName = strtolower($name);
+		$lowercaseName = mb_strtolower($name);
 		foreach($this->operators->getAll() as $operatorName => $_){
 			$operatorName = (string) $operatorName;
-			if($lowercaseName === strtolower($operatorName)){
+			if($lowercaseName === mb_strtolower($operatorName)){
 				$this->operators->remove($operatorName);
 			}
 		}
@@ -709,12 +709,12 @@ class Server{
 	}
 
 	public function addWhitelist(string $name) : void{
-		$this->whitelist->set(strtolower($name), true);
+		$this->whitelist->set(mb_strtolower($name), true);
 		$this->whitelist->save();
 	}
 
 	public function removeWhitelist(string $name) : void{
-		$this->whitelist->remove(strtolower($name));
+		$this->whitelist->remove(mb_strtolower($name));
 		$this->whitelist->save();
 	}
 

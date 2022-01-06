@@ -31,8 +31,8 @@ use pocketmine\permission\DefaultPermissionNames;
 use function array_map;
 use function count;
 use function implode;
+use function mb_strtolower;
 use function sort;
-use function strtolower;
 use const SORT_STRING;
 
 class BanListCommand extends VanillaCommand{
@@ -52,7 +52,7 @@ class BanListCommand extends VanillaCommand{
 		}
 
 		if(isset($args[0])){
-			$args[0] = strtolower($args[0]);
+			$args[0] = mb_strtolower($args[0]);
 			if($args[0] === "ips"){
 				$list = $sender->getServer()->getIPBans();
 			}elseif($args[0] === "players"){

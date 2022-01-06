@@ -125,8 +125,8 @@ use function get_class;
 use function in_array;
 use function json_encode;
 use function json_last_error_msg;
+use function mb_strtolower;
 use function strlen;
-use function strtolower;
 use function substr;
 use function time;
 use function ucfirst;
@@ -844,7 +844,7 @@ class NetworkSession{
 				continue;
 			}
 
-			$lname = strtolower($command->getName());
+			$lname = mb_strtolower($command->getName());
 			$aliases = $command->getAliases();
 			$aliasObj = null;
 			if(count($aliases) > 0){

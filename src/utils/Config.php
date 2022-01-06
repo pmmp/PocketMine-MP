@@ -38,12 +38,12 @@ use function is_array;
 use function is_bool;
 use function json_decode;
 use function json_encode;
+use function mb_strtolower;
 use function preg_match_all;
 use function preg_replace;
 use function serialize;
 use function str_replace;
 use function strlen;
-use function strtolower;
 use function substr;
 use function trim;
 use function unserialize;
@@ -151,7 +151,7 @@ class Config{
 
 		$this->type = $type;
 		if($this->type === Config::DETECT){
-			$extension = strtolower(Path::getExtension($this->file));
+			$extension = mb_strtolower(Path::getExtension($this->file));
 			if(isset(Config::$formats[$extension])){
 				$this->type = Config::$formats[$extension];
 			}else{
@@ -447,7 +447,7 @@ class Config{
 	 */
 	public function exists($k, bool $lowercase = false) : bool{
 		if($lowercase){
-			$k = strtolower($k); //Convert requested  key to lower
+			$k = mb_strtolower($k); //Convert requested  key to lower
 			$array = array_change_key_case($this->config, CASE_LOWER); //Change all keys in array to lower
 			return isset($array[$k]); //Find $k in modified array
 		}else{
@@ -555,7 +555,7 @@ class Config{
 		if(preg_match_all('/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
 				$v = trim($matches[2][$i]);
-				switch(strtolower($v)){
+				switch(mb_strtolower($v)){
 					case "on":
 					case "true":
 					case "yes":

@@ -34,6 +34,7 @@ use function curl_setopt_array;
 use function explode;
 use function is_int;
 use function is_string;
+use function mb_strtolower;
 use function preg_match;
 use function socket_close;
 use function socket_connect;
@@ -42,7 +43,6 @@ use function socket_getsockname;
 use function socket_last_error;
 use function socket_strerror;
 use function strip_tags;
-use function strtolower;
 use function substr;
 use function trim;
 use const AF_INET;
@@ -230,7 +230,7 @@ class Internet{
 				foreach(explode("\r\n", $rawHeaderGroup) as $line){
 					$nameValue = explode(":", $line, 2);
 					if(isset($nameValue[1])){
-						$headerGroup[trim(strtolower($nameValue[0]))] = trim($nameValue[1]);
+						$headerGroup[trim(mb_strtolower($nameValue[0]))] = trim($nameValue[1]);
 					}
 				}
 				$headers[] = $headerGroup;

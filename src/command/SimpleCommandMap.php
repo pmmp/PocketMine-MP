@@ -72,11 +72,11 @@ use function array_shift;
 use function count;
 use function explode;
 use function implode;
+use function mb_strtolower;
 use function preg_match_all;
 use function strcasecmp;
 use function stripslashes;
 use function strpos;
-use function strtolower;
 use function trim;
 
 class SimpleCommandMap implements CommandMap{
@@ -148,7 +148,7 @@ class SimpleCommandMap implements CommandMap{
 			$label = $command->getName();
 		}
 		$label = trim($label);
-		$fallbackPrefix = strtolower(trim($fallbackPrefix));
+		$fallbackPrefix = mb_strtolower(trim($fallbackPrefix));
 
 		$registered = $this->registerAlias($command, false, $fallbackPrefix, $label);
 
@@ -288,9 +288,9 @@ class SimpleCommandMap implements CommandMap{
 
 			//These registered commands have absolute priority
 			if(count($targets) > 0){
-				$this->knownCommands[strtolower($alias)] = new FormattedCommandAlias(strtolower($alias), $targets);
+				$this->knownCommands[mb_strtolower($alias)] = new FormattedCommandAlias(mb_strtolower($alias), $targets);
 			}else{
-				unset($this->knownCommands[strtolower($alias)]);
+				unset($this->knownCommands[mb_strtolower($alias)]);
 			}
 
 		}

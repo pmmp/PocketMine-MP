@@ -31,8 +31,8 @@ use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use function count;
 use function implode;
+use function mb_strtolower;
 use function sort;
-use function strtolower;
 use const SORT_STRING;
 
 class WhitelistCommand extends VanillaCommand{
@@ -59,7 +59,7 @@ class WhitelistCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 1){
-			switch(strtolower($args[0])){
+			switch(mb_strtolower($args[0])){
 				case "reload":
 					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_RELOAD)){
 						$sender->getServer()->getWhitelisted()->reload();
@@ -106,7 +106,7 @@ class WhitelistCommand extends VanillaCommand{
 			if(!Player::isValidUserName($args[1])){
 				throw new InvalidCommandSyntaxException();
 			}
-			switch(strtolower($args[0])){
+			switch(mb_strtolower($args[0])){
 				case "add":
 					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_ADD)){
 						$sender->getServer()->addWhitelist($args[1]);

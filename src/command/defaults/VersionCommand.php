@@ -34,10 +34,10 @@ use pocketmine\VersionInfo;
 use function count;
 use function function_exists;
 use function implode;
+use function mb_strtolower;
 use function opcache_get_status;
 use function sprintf;
 use function stripos;
-use function strtolower;
 use const PHP_VERSION;
 
 class VersionCommand extends VanillaCommand{
@@ -100,7 +100,7 @@ class VersionCommand extends VanillaCommand{
 			}
 
 			$found = false;
-			$pluginName = strtolower($pluginName);
+			$pluginName = mb_strtolower($pluginName);
 			foreach($sender->getServer()->getPluginManager()->getPlugins() as $plugin){
 				if(stripos($plugin->getName(), $pluginName) !== false){
 					$this->describeToSender($plugin, $sender);

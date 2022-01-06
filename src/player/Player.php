@@ -135,6 +135,7 @@ use function get_class;
 use function is_int;
 use function max;
 use function mb_strlen;
+use function mb_strtolower;
 use function microtime;
 use function min;
 use function preg_match;
@@ -142,7 +143,6 @@ use function spl_object_id;
 use function sqrt;
 use function strlen;
 use function strpos;
-use function strtolower;
 use function substr;
 use function trim;
 use const M_PI;
@@ -166,7 +166,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return false;
 		}
 
-		$lname = strtolower($name);
+		$lname = mb_strtolower($name);
 		$len = strlen($name);
 		return $lname !== "rcon" and $lname !== "console" and $len >= 1 and $len <= 16 and preg_match("/[^A-Za-z0-9_ ]/", $name) === 0;
 	}

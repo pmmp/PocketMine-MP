@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\plugin;
 
 use pocketmine\utils\EnumTrait;
-use function mb_strtolower;
+use function _mb_strtolower;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -57,13 +57,13 @@ final class PluginEnableOrder{
 	protected static function register(self $member) : void{
 		self::Enum_register($member);
 		foreach($member->getAliases() as $alias){
-			self::$aliasMap[mb_strtolower($alias)] = $member;
+			self::$aliasMap[_mb_strtolower($alias)] = $member;
 		}
 	}
 
 	public static function fromString(string $name) : ?self{
 		self::checkInit();
-		return self::$aliasMap[mb_strtolower($name)] ?? null;
+		return self::$aliasMap[_mb_strtolower($name)] ?? null;
 	}
 
 	/**

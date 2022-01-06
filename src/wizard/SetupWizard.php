@@ -39,8 +39,8 @@ use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use Webmozart\PathUtil\Path;
 use function fgets;
+use function mb_strtolower;
 use function sleep;
-use function strtolower;
 use function trim;
 use const PHP_EOL;
 use const STDIN;
@@ -75,7 +75,7 @@ class SetupWizard{
 		}
 
 		do{
-			$lang = strtolower($this->getInput("Language", "eng"));
+			$lang = mb_strtolower($this->getInput("Language", "eng"));
 			if(!isset($langs[$lang])){
 				$this->error("Couldn't find the language");
 				$lang = null;
@@ -95,7 +95,7 @@ class SetupWizard{
 		$config->set("language", $lang);
 		$config->save();
 
-		if(strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::skip_installer()), "n", "y/N")) === "y"){
+		if(mb_strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::skip_installer()), "n", "y/N")) === "y"){
 			$this->printIpDetails();
 			return true;
 		}
@@ -124,7 +124,7 @@ class SetupWizard{
 
 LICENSE;
 		$this->writeLine();
-		if(strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::accept_license()), "n", "y/N")) !== "y"){
+		if(mb_strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::accept_license()), "n", "y/N")) !== "y"){
 			$this->error($this->lang->translate(KnownTranslationFactory::you_have_to_accept_the_license(VersionInfo::NAME)));
 			sleep(5);
 
@@ -174,7 +174,7 @@ LICENSE;
 	private function generateUserFiles() : void{
 		$this->message($this->lang->translate(KnownTranslationFactory::op_info()));
 
-		$op = strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::op_who()), ""));
+		$op = mb_strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::op_who()), ""));
 		if($op === ""){
 			$this->error($this->lang->translate(KnownTranslationFactory::op_warning()));
 		}else{
@@ -186,7 +186,7 @@ LICENSE;
 		$this->message($this->lang->translate(KnownTranslationFactory::whitelist_info()));
 
 		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
-		if(strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::whitelist_enable()), "n", "y/N")) === "y"){
+		if(mb_strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::whitelist_enable()), "n", "y/N")) === "y"){
 			$this->error($this->lang->translate(KnownTranslationFactory::whitelist_warning()));
 			$config->set("white-list", true);
 		}else{
@@ -199,7 +199,7 @@ LICENSE;
 		$config = new Config(Path::join($this->dataPath, "server.properties"), Config::PROPERTIES);
 		$this->error($this->lang->translate(KnownTranslationFactory::query_warning1()));
 		$this->error($this->lang->translate(KnownTranslationFactory::query_warning2()));
-		if(strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::query_disable()), "n", "y/N")) === "y"){
+		if(mb_strtolower($this->getInput($this->lang->translate(KnownTranslationFactory::query_disable()), "n", "y/N")) === "y"){
 			$config->set("enable-query", false);
 		}else{
 			$config->set("enable-query", true);

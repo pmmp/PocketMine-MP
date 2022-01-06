@@ -29,7 +29,7 @@ use function getopt;
 use function is_bool;
 use function is_int;
 use function is_string;
-use function strtolower;
+use function mb_strtolower;
 
 final class ServerConfigGroup{
 
@@ -119,7 +119,7 @@ final class ServerConfigGroup{
 			return $value !== 0;
 		}
 		if(is_string($value)){
-			switch(strtolower($value)){
+			switch(mb_strtolower($value)){
 				case "on":
 				case "true":
 				case "1":

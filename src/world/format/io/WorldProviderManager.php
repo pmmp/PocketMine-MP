@@ -28,7 +28,7 @@ use pocketmine\world\format\io\leveldb\LevelDB;
 use pocketmine\world\format\io\region\Anvil;
 use pocketmine\world\format\io\region\McRegion;
 use pocketmine\world\format\io\region\PMAnvil;
-use function strtolower;
+use function mb_strtolower;
 use function trim;
 
 final class WorldProviderManager{
@@ -62,7 +62,7 @@ final class WorldProviderManager{
 	}
 
 	public function addProvider(WorldProviderManagerEntry $providerEntry, string $name, bool $overwrite = false) : void{
-		$name = strtolower($name);
+		$name = mb_strtolower($name);
 		if(!$overwrite and isset($this->providers[$name])){
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
@@ -98,6 +98,6 @@ final class WorldProviderManager{
 	 * Returns a WorldProvider by name, or null if not found
 	 */
 	public function getProviderByName(string $name) : ?WorldProviderManagerEntry{
-		return $this->providers[trim(strtolower($name))] ?? null;
+		return $this->providers[trim(mb_strtolower($name))] ?? null;
 	}
 }

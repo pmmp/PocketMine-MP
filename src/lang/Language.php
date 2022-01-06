@@ -29,13 +29,13 @@ use function array_map;
 use function explode;
 use function file_exists;
 use function is_dir;
+use function mb_strtolower;
 use function ord;
 use function parse_ini_file;
 use function scandir;
 use function str_replace;
 use function strlen;
 use function strpos;
-use function strtolower;
 use function substr;
 use const INI_SCANNER_RAW;
 use const SCANDIR_SORT_NONE;
@@ -98,7 +98,7 @@ class Language{
 	 * @throws LanguageNotFoundException
 	 */
 	public function __construct(string $lang, ?string $path = null, string $fallback = self::FALLBACK_LANGUAGE){
-		$this->langName = strtolower($lang);
+		$this->langName = mb_strtolower($lang);
 
 		if($path === null){
 			$path = \pocketmine\LOCALE_DATA_PATH;

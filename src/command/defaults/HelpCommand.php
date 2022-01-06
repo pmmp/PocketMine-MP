@@ -36,8 +36,8 @@ use function explode;
 use function implode;
 use function is_numeric;
 use function ksort;
+use function mb_strtolower;
 use function min;
-use function strtolower;
 use const SORT_FLAG_CASE;
 use const SORT_NATURAL;
 
@@ -100,7 +100,7 @@ class HelpCommand extends VanillaCommand{
 
 			return true;
 		}else{
-			if(($cmd = $sender->getServer()->getCommandMap()->getCommand(strtolower($commandName))) instanceof Command){
+			if(($cmd = $sender->getServer()->getCommandMap()->getCommand(mb_strtolower($commandName))) instanceof Command){
 				if($cmd->testPermissionSilent($sender)){
 					$lang = $sender->getLanguage();
 					$description = $cmd->getDescription();

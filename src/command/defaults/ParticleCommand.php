@@ -68,10 +68,10 @@ use pocketmine\world\World;
 use function count;
 use function explode;
 use function max;
+use function mb_strtolower;
 use function microtime;
 use function mt_rand;
 use function strpos;
-use function strtolower;
 
 class ParticleCommand extends VanillaCommand{
 
@@ -106,7 +106,7 @@ class ParticleCommand extends VanillaCommand{
 			$pos = new Vector3((float) $args[1], (float) $args[2], (float) $args[3]);
 		}
 
-		$name = strtolower($args[0]);
+		$name = mb_strtolower($args[0]);
 
 		$xd = (float) $args[4];
 		$yd = (float) $args[5];

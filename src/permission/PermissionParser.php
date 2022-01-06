@@ -25,7 +25,7 @@ namespace pocketmine\permission;
 
 use pocketmine\utils\Utils;
 use function is_bool;
-use function strtolower;
+use function mb_strtolower;
 
 class PermissionParser{
 
@@ -66,7 +66,7 @@ class PermissionParser{
 				return "false";
 			}
 		}
-		$lower = strtolower($value);
+		$lower = mb_strtolower($value);
 		if(isset(self::DEFAULT_STRING_MAP[$lower])){
 			return self::DEFAULT_STRING_MAP[$lower];
 		}

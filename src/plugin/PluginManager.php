@@ -58,12 +58,12 @@ use function is_file;
 use function is_string;
 use function is_subclass_of;
 use function iterator_to_array;
+use function mb_strtolower;
 use function mkdir;
 use function realpath;
 use function shuffle;
 use function sprintf;
 use function strpos;
-use function strtolower;
 
 /**
  * Manages all the plugins
@@ -551,7 +551,7 @@ class PluginManager{
 						$eventClass
 					));
 				}
-				switch(strtolower($tags[ListenerMethodTags::HANDLE_CANCELLED])){
+				switch(mb_strtolower($tags[ListenerMethodTags::HANDLE_CANCELLED])){
 					case "true":
 					case "":
 						$handleCancelled = true;

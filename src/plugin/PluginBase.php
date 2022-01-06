@@ -39,11 +39,11 @@ use function dirname;
 use function fclose;
 use function file_exists;
 use function fopen;
+use function mb_strtolower;
 use function mkdir;
 use function rtrim;
 use function stream_copy_to_stream;
 use function strpos;
-use function strtolower;
 use function trim;
 
 abstract class PluginBase implements Plugin, CommandExecutor{
@@ -210,7 +210,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	public function getCommand(string $name){
 		$command = $this->getServer()->getPluginCommand($name);
 		if($command === null or $command->getOwningPlugin() !== $this){
-			$command = $this->getServer()->getPluginCommand(strtolower($this->description->getName()) . ":" . $name);
+			$command = $this->getServer()->getPluginCommand(mb_strtolower($this->description->getName()) . ":" . $name);
 		}
 
 		if($command instanceof PluginOwned and $command->getOwningPlugin() === $this){

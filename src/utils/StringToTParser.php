@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use function array_keys;
+use function mb_strtolower;
 use function str_replace;
-use function strtolower;
 use function trim;
 
 /**
@@ -72,7 +72,7 @@ abstract class StringToTParser{
 	}
 
 	protected function reprocess(string $input) : string{
-		return strtolower(str_replace([" ", "minecraft:"], ["_", ""], trim($input)));
+		return mb_strtolower(str_replace([" ", "minecraft:"], ["_", ""], trim($input)));
 	}
 
 	/** @return string[]|int[] */

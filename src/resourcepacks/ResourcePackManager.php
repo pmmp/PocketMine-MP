@@ -35,8 +35,8 @@ use function is_dir;
 use function is_float;
 use function is_int;
 use function is_string;
+use function mb_strtolower;
 use function mkdir;
-use function strtolower;
 use const DIRECTORY_SEPARATOR;
 
 class ResourcePackManager{
@@ -109,7 +109,7 @@ class ResourcePackManager{
 
 				if($newPack instanceof ResourcePack){
 					$this->resourcePacks[] = $newPack;
-					$this->uuidList[strtolower($newPack->getPackId())] = $newPack;
+					$this->uuidList[mb_strtolower($newPack->getPackId())] = $newPack;
 				}else{
 					throw new ResourcePackException("Format not recognized");
 				}
@@ -147,7 +147,7 @@ class ResourcePackManager{
 	 * Returns the resource pack matching the specified UUID string, or null if the ID was not recognized.
 	 */
 	public function getPackById(string $id) : ?ResourcePack{
-		return $this->uuidList[strtolower($id)] ?? null;
+		return $this->uuidList[mb_strtolower($id)] ?? null;
 	}
 
 	/**

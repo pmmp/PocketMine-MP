@@ -44,9 +44,9 @@ use function fwrite;
 use function http_build_query;
 use function is_array;
 use function json_decode;
+use function mb_strtolower;
 use function mkdir;
 use function stream_get_contents;
-use function strtolower;
 use const CURLOPT_AUTOREFERER;
 use const CURLOPT_FOLLOWLOCATION;
 use const CURLOPT_HTTPHEADER;
@@ -74,7 +74,7 @@ class TimingsCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$mode = strtolower($args[0]);
+		$mode = mb_strtolower($args[0]);
 
 		if($mode === "on"){
 			if(TimingsHandler::isEnabled()){

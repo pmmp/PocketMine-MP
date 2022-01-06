@@ -36,15 +36,15 @@ use function fopen;
 use function fwrite;
 use function getcwd;
 use function ksort;
+use function mb_strtolower;
 use function str_replace;
-use function strtolower;
 use const SORT_STRING;
 use const STDERR;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 function markdownify(string $name) : string{
-	return str_replace(['.', '`', ' '], ['', '', '-'], strtolower($name));
+	return str_replace(['.', '`', ' '], ['', '', '-'], mb_strtolower($name));
 }
 DefaultPermissions::registerCorePermissions();
 

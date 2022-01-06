@@ -111,6 +111,7 @@ use function is_a;
 use function is_object;
 use function lcg_value;
 use function max;
+use function mb_strtolower;
 use function microtime;
 use function min;
 use function morton2d_decode;
@@ -119,7 +120,6 @@ use function morton3d_decode;
 use function morton3d_encode;
 use function mt_rand;
 use function spl_object_id;
-use function strtolower;
 use function trim;
 use const M_PI;
 use const PHP_INT_MAX;
@@ -377,7 +377,7 @@ class World implements ChunkManager{
 	}
 
 	public static function getDifficultyFromString(string $str) : int{
-		switch(strtolower(trim($str))){
+		switch(mb_strtolower(trim($str))){
 			case "0":
 			case "peaceful":
 			case "p":

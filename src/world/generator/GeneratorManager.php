@@ -28,7 +28,7 @@ use pocketmine\utils\Utils;
 use pocketmine\world\generator\hell\Nether;
 use pocketmine\world\generator\normal\Normal;
 use function array_keys;
-use function strtolower;
+use function mb_strtolower;
 
 final class GeneratorManager{
 	use SingletonTrait;
@@ -72,7 +72,7 @@ final class GeneratorManager{
 	public function addGenerator(string $class, string $name, \Closure $presetValidator, bool $overwrite = false) : void{
 		Utils::testValidInstance($class, Generator::class);
 
-		$name = strtolower($name);
+		$name = mb_strtolower($name);
 		if(!$overwrite and isset($this->list[$name])){
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
@@ -93,7 +93,7 @@ final class GeneratorManager{
 	 * Returns the generator entry of a registered Generator matching the given name, or null if not found.
 	 */
 	public function getGenerator(string $name) : ?GeneratorManagerEntry{
-		return $this->list[strtolower($name)] ?? null;
+		return $this->list[mb_strtolower($name)] ?? null;
 	}
 
 	/**

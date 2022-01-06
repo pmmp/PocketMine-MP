@@ -26,7 +26,7 @@ namespace pocketmine\player;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\utils\EnumTrait;
-use function mb_strtolower;
+use function _mb_strtolower;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -60,13 +60,13 @@ final class GameMode{
 	protected static function register(self $member) : void{
 		self::Enum_register($member);
 		foreach($member->getAliases() as $alias){
-			self::$aliasMap[mb_strtolower($alias)] = $member;
+			self::$aliasMap[_mb_strtolower($alias)] = $member;
 		}
 	}
 
 	public static function fromString(string $str) : ?self{
 		self::checkInit();
-		return self::$aliasMap[mb_strtolower($str)] ?? null;
+		return self::$aliasMap[_mb_strtolower($str)] ?? null;
 	}
 
 	/** @var string */

@@ -28,8 +28,8 @@ use function array_shift;
 use function count;
 use function explode;
 use function implode;
+use function mb_strtolower;
 use function strlen;
-use function strtolower;
 use function trim;
 
 class BanEntry{
@@ -48,7 +48,7 @@ class BanEntry{
 	private $reason = "Banned by an operator.";
 
 	public function __construct(string $name){
-		$this->name = strtolower($name);
+		$this->name = mb_strtolower($name);
 		/** @noinspection PhpUnhandledExceptionInspection */
 		$this->creationDate = new \DateTime();
 	}
@@ -169,7 +169,7 @@ class BanEntry{
 		}
 		if(count($parts) > 0){
 			$expire = trim(array_shift($parts));
-			if($expire !== "" and strtolower($expire) !== "forever"){
+			if($expire !== "" and mb_strtolower($expire) !== "forever"){
 				$entry->setExpires(self::parseDate($expire));
 			}
 		}

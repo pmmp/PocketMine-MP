@@ -32,8 +32,8 @@ use function is_array;
 use function is_int;
 use function is_numeric;
 use function json_decode;
+use function mb_strtolower;
 use function str_replace;
-use function strtolower;
 use function trim;
 
 /**
@@ -113,8 +113,8 @@ final class LegacyStringToItemParser{
 			throw new LegacyStringToItemParserException("Unable to parse \"" . $b[1] . "\" from \"" . $input . "\" as a valid meta value");
 		}
 
-		if(isset($this->map[strtolower($b[0])])){
-			$item = $this->itemFactory->get($this->map[strtolower($b[0])], $meta);
+		if(isset($this->map[mb_strtolower($b[0])])){
+			$item = $this->itemFactory->get($this->map[mb_strtolower($b[0])], $meta);
 		}else{
 			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
 		}
