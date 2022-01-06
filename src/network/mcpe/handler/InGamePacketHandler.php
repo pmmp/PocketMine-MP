@@ -833,8 +833,7 @@ class InGamePacketHandler extends PacketHandler{
 						$inQuotes = true;
 					}else{
 						$backslashes = 0;
-						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){
-						}
+						for(; $backslashes < $i && $raw[$i - $backslashes - 1] === "\\"; ++$backslashes){}
 						if(($backslashes % 2) === 0){ //unescaped quote
 							$inQuotes = false;
 						}
