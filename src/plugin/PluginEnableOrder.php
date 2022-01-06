@@ -57,13 +57,13 @@ final class PluginEnableOrder{
 	protected static function register(self $member) : void{
 		self::Enum_register($member);
 		foreach($member->getAliases() as $alias){
-			self::$aliasMap[_mb_strtolower($alias)] = $member;
+			self::$aliasMap[mb_strtolower($alias)] = $member;
 		}
 	}
 
 	public static function fromString(string $name) : ?self{
 		self::checkInit();
-		return self::$aliasMap[_mb_strtolower($name)] ?? null;
+		return self::$aliasMap[mb_strtolower($name)] ?? null;
 	}
 
 	/**
