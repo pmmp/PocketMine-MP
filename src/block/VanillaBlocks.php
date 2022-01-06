@@ -163,6 +163,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static DoubleTallGrass DOUBLE_TALLGRASS()
  * @method static DragonEgg DRAGON_EGG()
  * @method static DriedKelp DRIED_KELP()
+ * @method static Kelp KELP()
  * @method static DyedShulkerBox DYED_SHULKER_BOX()
  * @method static Element ELEMENT_ACTINIUM()
  * @method static Element ELEMENT_ALUMINUM()
@@ -724,6 +725,7 @@ final class VanillaBlocks{
 		self::register("double_tallgrass", $factory->get(175, 2));
 		self::register("dragon_egg", $factory->get(122, 0));
 		self::register("dried_kelp", $factory->get(394, 0));
+		self::register("kelp", $factory->get(393, 0));
 		self::register("dyed_shulker_box", $factory->get(218, 0));
 		self::register("element_actinium", $factory->get(355, 0));
 		self::register("element_aluminum", $factory->get(279, 0));
