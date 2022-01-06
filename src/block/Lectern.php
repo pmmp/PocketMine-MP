@@ -84,13 +84,15 @@ class Lectern extends Transparent{
 	}
 
 	public function getBook() : ?WritableBookBase{
-		return clone $this->book;
+		return $this->book instanceof WritableBookBase ? clone $this->book : $this->book;
 	}
 
 	/** @return $this */
 	public function setBook(?WritableBookBase $book) : self{
-		$book = clone $book;
-		$book->setCount(1);
+		if($book instanceof WritableBookBase){
+			$book = clone $book;
+			$book->setCount(1);
+		}
 		$this->book = $book;
 		$this->viewedPage = 0;
 		return $this;
@@ -98,11 +100,8 @@ class Lectern extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->book === null && $item instanceof WritableBookBase){
-			$book = clone $item;
-			$book->setCount(1);
-			$this->book = $book;
+			$this->position->getWorld()->setBlock($this->position, $this->setBook($item));
 			$item->pop();
-			$this->position->getWorld()->setBlock($this->position, $this);
 			return true;
 		}
 		return false;
