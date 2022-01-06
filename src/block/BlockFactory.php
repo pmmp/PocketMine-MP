@@ -611,7 +611,6 @@ class BlockFactory{
 		//TODO: minecraft:end_portal
 		//TODO: minecraft:grindstone
 		//TODO: minecraft:jigsaw
-		//TODO: minecraft:kelp
 		//TODO: minecraft:lava_cauldron
 		//TODO: minecraft:lectern
 		//TODO: minecraft:movingBlock
