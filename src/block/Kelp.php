@@ -38,7 +38,7 @@ class Kelp extends Transparent{
 	protected int $age = 0;
 
     public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null): bool{
-        if($this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
+        if($this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN)) && $blockReplace instanceof Water){
             $this->setAge(mt_rand(0, 24));
             return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
         }
@@ -114,14 +114,16 @@ class Kelp extends Transparent{
     }
 
     private function grow(Kelp $block) : bool{
-        if($block->getAge() < 25){
+		$up = $block->getSide(Facing::UP);
+        if($block->getAge() < 25 && $up instanceof Water){
             $ev = new BlockGrowEvent($block, VanillaBlocks::KELP()->setAge($block->getAge() + 1));
             $ev->call();
             if($ev->isCancelled()){
                 return false;
             }
-            $this->position->getWorld()->setBlock($block->position->add(0, 1, 0), $ev->getNewState());
-        }
-		return true;
+            $this->position->getWorld()->setBlock($up->position, $ev->getNewState());
+			return true;
+		}
+		return false;
     }
 }
