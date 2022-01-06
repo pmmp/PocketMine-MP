@@ -67,13 +67,13 @@ final class TileFactory{
 		$this->register(Hopper::class, ["Hopper", "minecraft:hopper"]);
 		$this->register(ItemFrame::class, ["ItemFrame"]); //this is an entity in PC
 		$this->register(Jukebox::class, ["Jukebox", "RecordPlayer", "minecraft:jukebox"]);
+		$this->register(Lectern::class, ["Lectern", "minecraft:lectern"]);
 		$this->register(MonsterSpawner::class, ["MobSpawner", "minecraft:mob_spawner"]);
 		$this->register(Note::class, ["Music", "minecraft:noteblock"]);
 		$this->register(ShulkerBox::class, ["ShulkerBox", "minecraft:shulker_box"]);
 		$this->register(Sign::class, ["Sign", "minecraft:sign"]);
 		$this->register(Smoker::class, ["Smoker", "minecraft:smoker"]);
 		$this->register(Skull::class, ["Skull", "minecraft:skull"]);
-		$this->register(Lectern::class, ["Lectern", "minecraft:lectern"]);
 
 		//TODO: Campfire
 		//TODO: Cauldron

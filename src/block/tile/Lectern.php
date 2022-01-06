@@ -24,11 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\item\Item;
-use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBookBase;
-use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\world\World;
 use function count;
 
 /**
@@ -42,25 +39,23 @@ class Lectern extends Spawnable{
 	public const TAG_BOOK = "book";
 
 	private int $viewedPage = 0;
-	private Item $book;
-
-	public function __construct(World $world, Vector3 $pos){
-		$this->book = VanillaItems::AIR();
-		parent::__construct($world, $pos);
-	}
+	private ?WritableBookBase $book = null;
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		$this->viewedPage = $nbt->getInt(self::TAG_PAGE, 0);
 		if(($itemTag = $nbt->getCompoundTag(self::TAG_BOOK)) !== null){
-			$this->book = Item::nbtDeserialize($itemTag);
+			$book = Item::nbtDeserialize($itemTag);
+			if($book instanceof WritableBookBase){
+				$this->book = $book;
+			}
 		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_HAS_BOOK, !$this->book->isNull() ? 1 : 0);
-		$nbt->setTag(self::TAG_BOOK, $this->book->nbtSerialize());
+		$nbt->setByte(self::TAG_HAS_BOOK, $this->book !== null && !$this->book->isNull() ? 1 : 0);
 		$nbt->setInt(self::TAG_PAGE, $this->viewedPage);
-		if($this->book instanceof WritableBookBase){
+		if($this->book !== null){
+			$nbt->setTag(self::TAG_BOOK, $this->book->nbtSerialize());
 			$nbt->setInt(self::TAG_TOTAL_PAGES, count($this->book->getPages()));
 		}
 	}
@@ -74,21 +69,18 @@ class Lectern extends Spawnable{
 	}
 
 	public function getBook() : ?WritableBookBase{
-		return $this->book instanceof WritableBookBase && !$this->book->isNull() ? $this->book : null;
+		return $this->book !== null && !$this->book->isNull() ? $this->book : null;
 	}
 
 	public function setBook(?WritableBookBase $book) : void{
-		if(!$book instanceof WritableBookBase or $book->isNull()){
-			$book = VanillaItems::AIR();
-		}
 		$this->book = $book;
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_HAS_BOOK, !$this->book->isNull() ? 1 : 0);
+		$nbt->setByte(self::TAG_HAS_BOOK, $this->book !== null && !$this->book->isNull() ? 1 : 0);
 		$nbt->setInt(self::TAG_PAGE, $this->viewedPage);
-		$nbt->setTag(self::TAG_BOOK, $this->book->nbtSerialize());
-		if($this->book instanceof WritableBookBase){
+		if($this->book !== null){
+			$nbt->setTag(self::TAG_BOOK, $this->book->nbtSerialize());
 			$nbt->setInt(self::TAG_TOTAL_PAGES, count($this->book->getPages()));
 		}
 	}

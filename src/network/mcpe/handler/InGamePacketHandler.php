@@ -37,7 +37,6 @@ use pocketmine\inventory\transaction\TransactionException;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
-use pocketmine\item\WritableBookBase;
 use pocketmine\item\WrittenBook;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -867,17 +866,15 @@ class InGamePacketHandler extends PacketHandler{
 		$chunkX = $pos->getX() >> Chunk::COORD_BIT_SIZE;
 		$chunkZ = $pos->getZ() >> Chunk::COORD_BIT_SIZE;
 		$world = $this->player->getWorld();
-		if(!$world->isChunkLoaded($chunkX, $chunkZ) || !$world->isChunkGenerated($chunkX, $chunkZ) || $world->isChunkLocked($chunkX, $chunkZ)){
+		if(!$world->isChunkLoaded($chunkX, $chunkZ) || $world->isChunkLocked($chunkX, $chunkZ)){
 			return false;
 		}
 		$lectern = $world->getBlockAt($pos->getX(), $pos->getY(), $pos->getZ());
-		if($lectern instanceof Lectern){
-			if($this->player->getPosition()->distance($lectern->getPosition()) <= 15){
-				$book = $lectern->getBook();
-				if($book instanceof WritableBookBase && count($book->getPages()) == $packet->totalPages && $packet->page >= 0 && $packet->page <= $packet->totalPages){
-					$world->setBlock($lectern->getPosition(), $lectern->setViewedPage($packet->page));
-					return true;
-				}
+		if($lectern instanceof Lectern && $this->player->canInteract($lectern->getPosition(), 15)){
+			$book = $lectern->getBook();
+			if($book !== null && count($book->getPages()) === $packet->totalPages && $packet->page >= 0 && $packet->page < $packet->totalPages){
+				$world->setBlock($lectern->getPosition(), $lectern->setViewedPage($packet->page));
+				return true;
 			}
 		}
 		return false;
