@@ -133,7 +133,6 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Item DRAGON_BREATH()
  * @method static Skull DRAGON_HEAD()
  * @method static DriedKelp DRIED_KELP()
- * @method static ItemBlock KELP()
  * @method static Egg EGG()
  * @method static Item EMERALD()
  * @method static GoldenAppleEnchanted ENCHANTED_GOLDEN_APPLE()

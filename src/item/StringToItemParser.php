@@ -615,7 +615,6 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("jungle_wood", fn() => VanillaBlocks::JUNGLE_WOOD());
 		$result->registerBlock("jungle_wood_stairs", fn() => VanillaBlocks::JUNGLE_STAIRS());
 		$result->registerBlock("jungle_wooden_stairs", fn() => VanillaBlocks::JUNGLE_STAIRS());
-		$result->registerBlock("kelp_block", fn() => VanillaBlocks::KELP());
 		$result->registerBlock("lab_table", fn() => VanillaBlocks::LAB_TABLE());
 		$result->registerBlock("ladder", fn() => VanillaBlocks::LADDER());
 		$result->registerBlock("lantern", fn() => VanillaBlocks::LANTERN());
