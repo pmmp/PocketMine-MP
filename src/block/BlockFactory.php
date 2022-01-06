@@ -176,7 +176,7 @@ class BlockFactory{
 		);
 		$this->registerAllMeta(new DragonEgg(new BID(Ids::DRAGON_EGG, 0), "Dragon Egg", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->registerAllMeta(new DriedKelp(new BID(Ids::DRIED_KELP_BLOCK, 0), "Dried Kelp Block", new BlockBreakInfo(0.5, BlockToolType::NONE, 0, 12.5)));
-		$this->registerAllMeta(new Kelp(new BID(Ids::KELP, 0), "Kelp", BlockBreakInfo::instant()));
+		$this->registerAllMeta(new Kelp(new BID(Ids::KELP, 0, ItemIds::KELP), "Kelp", BlockBreakInfo::instant()));
 		$this->registerAllMeta(new Opaque(new BID(Ids::EMERALD_BLOCK, 0), "Emerald Block", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
 		$this->registerAllMeta(new EmeraldOre(new BID(Ids::EMERALD_ORE, 0), "Emerald Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
 		$this->registerAllMeta(new EnchantingTable(new BID(Ids::ENCHANTING_TABLE, 0, null, TileEnchantingTable::class), "Enchanting Table", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0)));

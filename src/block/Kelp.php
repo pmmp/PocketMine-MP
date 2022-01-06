@@ -130,11 +130,4 @@ class Kelp extends Transparent{
 		}
 		return false;
 	}
-
-	public function asItem() : Item{
-		return ItemFactory::getInstance()->get(
-			ItemIds::KELP,
-			0
-		);
-	}
 }
