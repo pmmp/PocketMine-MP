@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\event\block\BlockGrowEvent;
+use pocketmine\item\Fertilizer;
 use pocketmine\world\BlockTransaction;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
@@ -76,16 +77,17 @@ class Kelp extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-	    $highestKelp = $this->position->getWorld()->getBlockAt($this->position->x, $this->getHighestKelp(), $this->position->z);
+	    $highestKelp = $this->position->getWorld()->getBlockAt($this->position->getFloorX(), $this->getHighestKelp(), $this->position->getFloorZ());
 		$up = $highestKelp->getSide(Facing::UP);
         if($up instanceof Water && $highestKelp instanceof Kelp && mt_rand(1, 100) <= 14){
 			$this->grow($highestKelp);
 		}
 	}
-
+    
     public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item instanceof Fertilizer || $item instanceof ItemBamboo){
-			if($this->grow($player)){
+		if($item instanceof Fertilizer){
+			$highest = $this->position->getWorld()->getBlockAt($this->position->getFloorX(), $this->getHighestKelp(), $this->position->getFloorZ());
+			if($highest instanceof Kelp && $this->grow($highest)){
 				$item->pop();
 				return true;
 			}
@@ -95,16 +97,15 @@ class Kelp extends Transparent{
 
     private function getHighestKelp(): int{
         for ($y=$this->position->getFloorY()+1; $y <= $this->position->getWorld()->getMaxY(); $y++) {
-			$up = $this->position->getWorld()->getBlockAt($this->position->x, $y, $this->position->z);
+			$up = $this->position->getWorld()->getBlockAt($this->position->getFloorX(), $y, $this->position->getFloorZ());
             if($up instanceof Water){
 				return $y - 1;
             }
         }
-		return $this->position->y;
+		return $this->position->getFloorY();
     }
 
     private function grow(Kelp $block) : bool{
-		$up = $block->getSide(Facing::UP);
         if($block->getAge() < 25){
 			$newState = VanillaBlocks::KELP()->setAge($block->getAge() + 1);
             $ev = new BlockGrowEvent($block, $newState);
