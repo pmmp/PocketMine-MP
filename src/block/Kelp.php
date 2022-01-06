@@ -38,7 +38,6 @@ class Kelp extends Transparent{
 
     public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null): bool{
 		$this->setAge(mt_rand(0, 24));
-		var_dump("ok");
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
     }
 
@@ -77,28 +76,44 @@ class Kelp extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-	    $block = $this->position->getWorld()->getBlockAt($this->position->x, $this->getHighestKelp(), $this->position->z);
-		$down = $block->getSide(Facing::DOWN);
-        if($block instanceof Water && $down instanceof Kelp && mt_rand(1, 100) <= 14){
-            if($down->getAge() < 25 && $block->getSide(Facing::UP) instanceof Water){
-				$newState = VanillaBlocks::KELP()->setAge($down->getAge() + 1);
-				$ev = new BlockGrowEvent($block, $newState);
-				$ev->call();
-				if($ev->isCancelled()){
-					return;
-                }
-				$this->position->getWorld()->setBlock($block->position, $ev->getNewState());
+	    $highestKelp = $this->position->getWorld()->getBlockAt($this->position->x, $this->getHighestKelp(), $this->position->z);
+		$up = $highestKelp->getSide(Facing::UP);
+        if($up instanceof Water && $highestKelp instanceof Kelp && mt_rand(1, 100) <= 14){
+			$this->grow($highestKelp);
+		}
+	}
+
+    public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($item instanceof Fertilizer || $item instanceof ItemBamboo){
+			if($this->grow($player)){
+				$item->pop();
+				return true;
 			}
 		}
+		return false;
 	}
 
     private function getHighestKelp(): int{
         for ($y=$this->position->getFloorY()+1; $y <= $this->position->getWorld()->getMaxY(); $y++) {
 			$up = $this->position->getWorld()->getBlockAt($this->position->x, $y, $this->position->z);
             if($up instanceof Water){
-				return $y;
+				return $y - 1;
             }
         }
 		return $this->position->y;
+    }
+
+    private function grow(Kelp $block) : bool{
+		$up = $block->getSide(Facing::UP);
+        if($block->getAge() < 25){
+			$newState = VanillaBlocks::KELP()->setAge($block->getAge() + 1);
+            $ev = new BlockGrowEvent($block, $newState);
+            $ev->call();
+            if($ev->isCancelled()){
+                return false;
+            }
+            $this->position->getWorld()->setBlock($block->position->add(0, 1, 0), $ev->getNewState());
+        }
+		return true;
     }
 }
