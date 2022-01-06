@@ -45,14 +45,14 @@ class Lectern extends Spawnable{
 		$this->viewedPage = $nbt->getInt(self::TAG_PAGE, 0);
 		if(($itemTag = $nbt->getCompoundTag(self::TAG_BOOK)) !== null){
 			$book = Item::nbtDeserialize($itemTag);
-			if($book instanceof WritableBookBase){
+			if($book instanceof WritableBookBase && !$book->isNull()){
 				$this->book = $book;
 			}
 		}
 	}
 
 	protected function writeSaveData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_HAS_BOOK, $this->book !== null && !$this->book->isNull() ? 1 : 0);
+		$nbt->setByte(self::TAG_HAS_BOOK, $this->book !== null ? 1 : 0);
 		$nbt->setInt(self::TAG_PAGE, $this->viewedPage);
 		if($this->book !== null){
 			$nbt->setTag(self::TAG_BOOK, $this->book->nbtSerialize());
@@ -69,15 +69,15 @@ class Lectern extends Spawnable{
 	}
 
 	public function getBook() : ?WritableBookBase{
-		return $this->book !== null && !$this->book->isNull() ? $this->book : null;
+		return $this->book !== null ? clone $this->book : null;
 	}
 
 	public function setBook(?WritableBookBase $book) : void{
-		$this->book = $book;
+		$this->book = $book !== null && !$book->isNull() ? clone $book : null;
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		$nbt->setByte(self::TAG_HAS_BOOK, $this->book !== null && !$this->book->isNull() ? 1 : 0);
+		$nbt->setByte(self::TAG_HAS_BOOK, $this->book !== null ? 1 : 0);
 		$nbt->setInt(self::TAG_PAGE, $this->viewedPage);
 		if($this->book !== null){
 			$nbt->setTag(self::TAG_BOOK, $this->book->nbtSerialize());
