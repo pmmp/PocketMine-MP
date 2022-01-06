@@ -38,8 +38,11 @@ class Kelp extends Transparent{
 	protected int $age = 0;
 
     public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null): bool{
-		$this->setAge(mt_rand(0, 24));
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+        if($this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
+            $this->setAge(mt_rand(0, 24));
+            return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+        }
+		return false;
     }
 
 	protected function writeStateToMeta() : int{
@@ -65,9 +68,16 @@ class Kelp extends Transparent{
 		return $this;
 	}
 
+    private function canBeSupportedBy(Block $block) : bool{
+		return
+			($block->isSolid() &&
+            !$block instanceof Magma &&
+            !$block instanceof SoulSand) ||
+            $block instanceof Kelp;
+	}
+
 	public function onNearbyBlockChange() : void{
-		$down = $this->getSide(Facing::DOWN);
-		if(!$down->isSolid() && !$down->isSameType($this)){
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -78,8 +88,7 @@ class Kelp extends Transparent{
 
 	public function onRandomTick() : void{
 	    $highestKelp = $this->position->getWorld()->getBlockAt($this->position->getFloorX(), $this->getHighestKelp(), $this->position->getFloorZ());
-		$up = $highestKelp->getSide(Facing::UP);
-        if($up instanceof Water && $highestKelp instanceof Kelp && mt_rand(1, 100) <= 14){
+        if($highestKelp->getSide(Facing::UP) instanceof Water && $highestKelp instanceof Kelp && mt_rand(1, 100) <= 14){
 			$this->grow($highestKelp);
 		}
 	}
@@ -97,8 +106,7 @@ class Kelp extends Transparent{
 
     private function getHighestKelp(): int{
         for ($y=$this->position->getFloorY()+1; $y <= $this->position->getWorld()->getMaxY(); $y++) {
-			$up = $this->position->getWorld()->getBlockAt($this->position->getFloorX(), $y, $this->position->getFloorZ());
-            if($up instanceof Water){
+            if($this->position->getWorld()->getBlockAt($this->position->getFloorX(), $y, $this->position->getFloorZ()) instanceof Water){
 				return $y - 1;
             }
         }
@@ -107,8 +115,7 @@ class Kelp extends Transparent{
 
     private function grow(Kelp $block) : bool{
         if($block->getAge() < 25){
-			$newState = VanillaBlocks::KELP()->setAge($block->getAge() + 1);
-            $ev = new BlockGrowEvent($block, $newState);
+            $ev = new BlockGrowEvent($block, VanillaBlocks::KELP()->setAge($block->getAge() + 1));
             $ev->call();
             if($ev->isCancelled()){
                 return false;
