@@ -74,6 +74,7 @@ return (new PhpCsFixer\Config)
 		'return_type_declaration' => [
 			'space_before' => 'one'
 		],
+		'single_blank_line_at_eof' => true,
 		'single_import_per_statement' => true,
 		'strict_param' => true,
 		'unary_operator_spaces' => true,
