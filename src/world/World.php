@@ -71,6 +71,7 @@ use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\Server;
+use pocketmine\ServerConfigGroup;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
@@ -454,6 +455,23 @@ class World implements ChunkManager{
 		$this->tickedBlocksPerSubchunkPerTick = $cfg->getPropertyInt("chunk-ticking.blocks-per-subchunk-per-tick", self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK);
 		$this->maxConcurrentChunkPopulationTasks = $cfg->getPropertyInt("chunk-generation.population-queue-size", 2);
 
+		$this->initRandomTickBlocksFromConfig($cfg);
+
+		$this->timings = new WorldTimings($this);
+
+		$this->workerPool->addWorkerStartHook($workerStartHook = function(int $workerId) : void{
+			if(array_key_exists($workerId, $this->generatorRegisteredWorkers)){
+				$this->logger->debug("Worker $workerId with previously registered generator restarted, flagging as unregistered");
+				unset($this->generatorRegisteredWorkers[$workerId]);
+			}
+		});
+		$workerPool = $this->workerPool;
+		$this->addOnUnloadCallback(static function() use ($workerPool, $workerStartHook) : void{
+			$workerPool->removeWorkerStartHook($workerStartHook);
+		});
+	}
+
+	private function initRandomTickBlocksFromConfig(ServerConfigGroup $cfg) : void{
 		$dontTickBlocks = [];
 		$parser = StringToItemParser::getInstance();
 		foreach($cfg->getProperty("chunk-ticking.disable-block-ticking", []) as $name){
@@ -479,19 +497,6 @@ class World implements ChunkManager{
 				$this->randomTickBlocks[$state->getFullId()] = true;
 			}
 		}
-
-		$this->timings = new WorldTimings($this);
-
-		$this->workerPool->addWorkerStartHook($workerStartHook = function(int $workerId) : void{
-			if(array_key_exists($workerId, $this->generatorRegisteredWorkers)){
-				$this->logger->debug("Worker $workerId with previously registered generator restarted, flagging as unregistered");
-				unset($this->generatorRegisteredWorkers[$workerId]);
-			}
-		});
-		$workerPool = $this->workerPool;
-		$this->addOnUnloadCallback(static function() use ($workerPool, $workerStartHook) : void{
-			$workerPool->removeWorkerStartHook($workerStartHook);
-		});
 	}
 
 	public function getTickRateTime() : float{
