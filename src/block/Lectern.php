@@ -89,11 +89,7 @@ class Lectern extends Transparent{
 
 	/** @return $this */
 	public function setBook(?WritableBookBase $book) : self{
-		if($book !== null){
-			$book = clone $book;
-			$book->setCount(1);
-		}
-		$this->book = $book;
+		$this->book = $book !== null && !$book->isNull() ? (clone $book)->setCount(1) : null;
 		$this->viewedPage = 0;
 		return $this;
 	}
@@ -108,7 +104,7 @@ class Lectern extends Transparent{
 	}
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
-		if($this->book !== null && !$this->book->isNull()){
+		if($this->book !== null){
 			$this->position->getWorld()->dropItem($this->position->up(), $this->book);
 			$this->position->getWorld()->setBlock($this->position, $this->setBook(null));
 		}
