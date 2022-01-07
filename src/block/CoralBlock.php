@@ -24,15 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\CoralType;
+use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
 use function mt_rand;
 
 final class CoralBlock extends Opaque{
-
-	private CoralType $coralType;
-	private bool $dead = false;
+	use CoralTypeTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->coralType = CoralType::TUBE();
@@ -58,22 +57,6 @@ final class CoralBlock extends Opaque{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	public function getCoralType() : CoralType{ return $this->coralType; }
-
-	/** @return $this */
-	public function setCoralType(CoralType $coralType) : self{
-		$this->coralType = $coralType;
-		return $this;
-	}
-
-	public function isDead() : bool{ return $this->dead; }
-
-	/** @return $this */
-	public function setDead(bool $dead) : self{
-		$this->dead = $dead;
-		return $this;
 	}
 
 	public function onNearbyBlockChange() : void{
