@@ -96,7 +96,6 @@ class ItemFactory{
 		$this->register(new CookedSalmon(new ItemIdentifier(ItemIds::COOKED_SALMON, 0), "Cooked Salmon"));
 		$this->register(new Cookie(new ItemIdentifier(ItemIds::COOKIE, 0), "Cookie"));
 		$this->register(new DriedKelp(new ItemIdentifier(ItemIds::DRIED_KELP, 0), "Dried Kelp"));
-		$this->register(new ItemBlock(new ItemIdentifier(ItemIds::KELP, 0), VanillaBlocks::KELP()));
 		$this->register(new Egg(new ItemIdentifier(ItemIds::EGG, 0), "Egg"));
 		$this->register(new EnderPearl(new ItemIdentifier(ItemIds::ENDER_PEARL, 0), "Ender Pearl"));
 		$this->register(new ExperienceBottle(new ItemIdentifier(ItemIds::EXPERIENCE_BOTTLE, 0), "Bottle o' Enchanting"));
@@ -195,6 +194,7 @@ class ItemFactory{
 		$this->register(new ItemBlock(new ItemIdentifier(ItemIds::IRON_DOOR, 0), VanillaBlocks::IRON_DOOR()));
 		$this->register(new ItemBlock(new ItemIdentifier(ItemIds::ITEM_FRAME, 0), VanillaBlocks::ITEM_FRAME()));
 		$this->register(new ItemBlock(new ItemIdentifier(ItemIds::JUNGLE_DOOR, 0), VanillaBlocks::JUNGLE_DOOR()));
+		$this->register(new ItemBlock(new ItemIdentifier(ItemIds::KELP, 0), VanillaBlocks::KELP()));
 		$this->register(new ItemBlock(new ItemIdentifier(ItemIds::NETHER_WART, 0), VanillaBlocks::NETHER_WART()));
 		$this->register(new ItemBlock(new ItemIdentifier(ItemIds::OAK_DOOR, 0), VanillaBlocks::OAK_DOOR()));
 		$this->register(new ItemBlock(new ItemIdentifier(ItemIds::REPEATER, 0), VanillaBlocks::REDSTONE_REPEATER()));
