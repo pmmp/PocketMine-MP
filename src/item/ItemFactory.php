@@ -316,7 +316,6 @@ class ItemFactory{
 		//TODO: minecraft:horsearmoriron
 		//TODO: minecraft:horsearmorleather
 		//TODO: minecraft:ice_bomb
-		//TODO: minecraft:kelp
 		//TODO: minecraft:lead
 		//TODO: minecraft:lingering_potion
 		//TODO: minecraft:map
