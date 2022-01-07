@@ -791,11 +791,6 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Parameter \\#1 \\$plugin of method pocketmine\\\\plugin\\\\PluginDescription\\:\\:loadMap\\(\\) expects array, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
@@ -847,11 +842,6 @@ parameters:
 
 		-
 			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getSha256\\(\\) should return string but returns string\\|false\\.$#"
-			count: 1
-			path: ../../../src/resourcepacks/ZippedResourcePack.php
-
-		-
-			message: "#^Parameter \\#2 \\$code of class pocketmine\\\\resourcepacks\\\\ResourcePackException constructor expects int, mixed given\\.$#"
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
@@ -977,11 +967,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/Utils.php
-
-		-
-			message: "#^Part \\$errno \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
 			count: 1
 			path: ../../../src/utils/Utils.php
 
