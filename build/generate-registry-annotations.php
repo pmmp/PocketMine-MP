@@ -116,4 +116,3 @@ foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($argv[1],
 		echo "No changes made to file $file\n";
 	}
 }
-
