@@ -187,6 +187,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Shovel IRON_SHOVEL()
  * @method static Sword IRON_SWORD()
  * @method static Boat JUNGLE_BOAT()
+ * @method static ItemBlock KELP()
  * @method static Item LAPIS_LAZULI()
  * @method static LiquidBucket LAVA_BUCKET()
  * @method static Potion LEAPING_POTION()

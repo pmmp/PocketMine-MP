@@ -615,6 +615,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("jungle_wood", fn() => VanillaBlocks::JUNGLE_WOOD());
 		$result->registerBlock("jungle_wood_stairs", fn() => VanillaBlocks::JUNGLE_STAIRS());
 		$result->registerBlock("jungle_wooden_stairs", fn() => VanillaBlocks::JUNGLE_STAIRS());
+		$result->registerBlock("kelp", fn() => VanillaBlocks::KELP());
 		$result->registerBlock("lab_table", fn() => VanillaBlocks::LAB_TABLE());
 		$result->registerBlock("ladder", fn() => VanillaBlocks::LADDER());
 		$result->registerBlock("lantern", fn() => VanillaBlocks::LANTERN());
@@ -1124,7 +1125,6 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("iron_shovel", fn() => VanillaItems::IRON_SHOVEL());
 		$result->register("iron_sword", fn() => VanillaItems::IRON_SWORD());
 		$result->register("jungle_boat", fn() => VanillaItems::JUNGLE_BOAT());
-		$result->register("kelp", fn() => VanillaBlocks::KELP()->asItem());
 		$result->register("lapis_lazuli", fn() => VanillaItems::LAPIS_LAZULI());
 		$result->register("lava_bucket", fn() => VanillaItems::LAVA_BUCKET());
 		$result->register("leaping_potion", fn() => VanillaItems::LEAPING_POTION());
