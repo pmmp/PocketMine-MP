@@ -1041,6 +1041,11 @@ parameters:
 			path: ../../../src/world/Explosion.php
 
 		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../../src/world/World.php
+
+		-
 			message: "#^Cannot access offset 'data' on array\\{priority\\: int, data\\: pocketmine\\\\math\\\\Vector3\\}\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
@@ -1051,7 +1056,7 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#1 \\$keys of function array_fill_keys expects array, mixed given\\.$#"
+			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
 
