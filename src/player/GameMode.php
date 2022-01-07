@@ -26,7 +26,7 @@ namespace pocketmine\player;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\Translatable;
 use pocketmine\utils\EnumTrait;
-use function _mb_strtolower;
+use function mb_strtolower;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
