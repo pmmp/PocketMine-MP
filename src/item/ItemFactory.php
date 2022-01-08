@@ -97,6 +97,7 @@ class ItemFactory{
 		$this->register(new Cookie(new ItemIdentifier(ItemIds::COOKIE, 0), "Cookie"));
 		$this->register(new DriedKelp(new ItemIdentifier(ItemIds::DRIED_KELP, 0), "Dried Kelp"));
 		$this->register(new Egg(new ItemIdentifier(ItemIds::EGG, 0), "Egg"));
+		$this->register(new EndCrystal(new ItemIdentifier(ItemIds::END_CRYSTAL, 0), "End Crystal"));
 		$this->register(new EnderPearl(new ItemIdentifier(ItemIds::ENDER_PEARL, 0), "Ender Pearl"));
 		$this->register(new ExperienceBottle(new ItemIdentifier(ItemIds::EXPERIENCE_BOTTLE, 0), "Bottle o' Enchanting"));
 		$this->register(new Fertilizer(new ItemIdentifier(ItemIds::DYE, 15), "Bone Meal"));
@@ -303,7 +304,6 @@ class ItemFactory{
 		//TODO: minecraft:elytra
 		//TODO: minecraft:emptyMap
 		//TODO: minecraft:enchanted_book
-		//TODO: minecraft:end_crystal
 		//TODO: minecraft:ender_eye
 		//TODO: minecraft:fireball
 		//TODO: minecraft:fireworks
