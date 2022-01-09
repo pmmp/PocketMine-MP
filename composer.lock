@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "934b70469f9dcb4c9697f69e6c4a9ec5",
+    "content-hash": "292d4bf59374d46e1ae84272f0abd522",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -497,24 +497,25 @@
         },
         {
             "name": "pocketmine/errorhandler",
-            "version": "0.4.0",
+            "version": "0.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/ErrorHandler.git",
-                "reference": "5bb9e2b66551ef7383da85165b7e8a7cc9aa162a"
+                "reference": "dae214a04348b911e8219ebf125ff1c5589cc878"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/ErrorHandler/zipball/5bb9e2b66551ef7383da85165b7e8a7cc9aa162a",
-                "reference": "5bb9e2b66551ef7383da85165b7e8a7cc9aa162a",
+                "url": "https://api.github.com/repos/pmmp/ErrorHandler/zipball/dae214a04348b911e8219ebf125ff1c5589cc878",
+                "reference": "dae214a04348b911e8219ebf125ff1c5589cc878",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.2 || ^8.0"
+                "php": "^8.0"
             },
             "require-dev": {
                 "phpstan/phpstan": "0.12.99",
-                "phpstan/phpstan-strict-rules": "^0.12.2"
+                "phpstan/phpstan-strict-rules": "^0.12.2",
+                "phpunit/phpunit": "^9.5"
             },
             "type": "library",
             "autoload": {
@@ -529,9 +530,9 @@
             "description": "Utilities to handle nasty PHP E_* errors in a usable way",
             "support": {
                 "issues": "https://github.com/pmmp/ErrorHandler/issues",
-                "source": "https://github.com/pmmp/ErrorHandler/tree/0.4.0"
+                "source": "https://github.com/pmmp/ErrorHandler/tree/0.6.0"
             },
-            "time": "2021-12-16T18:13:42+00:00"
+            "time": "2022-01-08T21:05:46+00:00"
         },
         {
             "name": "pocketmine/locale-data",
