@@ -545,7 +545,7 @@ class Server{
 				$contents = Utils::assumeNotFalse(zlib_encode($nbt->write(new TreeRoot($ev->getSaveData())), ZLIB_ENCODING_GZIP), "zlib_encode() failed unexpectedly");
 				try{
 					Filesystem::safeFilePutContents($this->getPlayerDataPath($name), $contents);
-				}catch(\RuntimeException | \ErrorException $e){
+				}catch(\RuntimeException $e){
 					$this->logger->critical($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_data_saveError($name, $e->getMessage())));
 					$this->logger->logException($e);
 				}

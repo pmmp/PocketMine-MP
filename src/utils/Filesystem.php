@@ -27,7 +27,6 @@ use pocketmine\errorhandler\ErrorToExceptionHandler;
 use Webmozart\PathUtil\Path;
 use function copy;
 use function dirname;
-use function disk_free_space;
 use function fclose;
 use function fflush;
 use function file_exists;
@@ -236,6 +235,8 @@ final class Filesystem{
 	 * new contents.
 	 *
 	 * @param resource|null $context Context to pass to file_put_contents
+	 *
+	 * @throws \RuntimeException if the operation failed for any reason
 	 */
 	public static function safeFilePutContents(string $fileName, string $contents, int $flags = 0, $context = null) : void{
 		$directory = dirname($fileName);
@@ -253,19 +254,16 @@ final class Filesystem{
 			$counter++;
 		}while(is_dir($temporaryFileName));
 
-		$writeTemporaryFileResult = $context !== null ?
-			file_put_contents($temporaryFileName, $contents, $flags, $context) :
-			file_put_contents($temporaryFileName, $contents, $flags);
-
-		if($writeTemporaryFileResult !== strlen($contents)){
+		try{
+			ErrorToExceptionHandler::trap(fn() => $context !== null ?
+				file_put_contents($temporaryFileName, $contents, $flags, $context) :
+				file_put_contents($temporaryFileName, $contents, $flags)
+			);
+		}catch(\ErrorException $filePutContentsException){
 			$context !== null ?
 				@unlink($temporaryFileName, $context) :
 				@unlink($temporaryFileName);
-			$diskSpace = disk_free_space($directory);
-			if($diskSpace !== false && $diskSpace < strlen($contents)){
-				throw new \RuntimeException("Failed to write to temporary file $temporaryFileName (out of free disk space)");
-			}
-			throw new \RuntimeException("Failed to write to temporary file $temporaryFileName (possibly out of free disk space)");
+			throw new \RuntimeException("Failed to write to temporary file $temporaryFileName: " . $filePutContentsException->getMessage(), 0, $filePutContentsException);
 		}
 
 		$renameTemporaryFileResult = $context !== null ?
