@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use pocketmine\errorhandler\ErrorToExceptionHandler;
 use Webmozart\PathUtil\Path;
 use function copy;
 use function dirname;
@@ -111,8 +112,12 @@ final class Filesystem{
 				//if the parent dir doesn't exist, the user most likely made a mistake
 				throw new \RuntimeException("The parent directory of $destination does not exist, or is not a directory");
 			}
-			if(!@mkdir($destination) && !is_dir($destination)){
-				throw new \RuntimeException("Failed to create output directory $destination (permission denied?)");
+			try{
+				ErrorToExceptionHandler::trap(fn() => mkdir($destination));
+			}catch(\ErrorException $e){
+				if(!is_dir($destination)){
+					throw new \RuntimeException("Failed to create output directory $destination: " . $e->getMessage());
+				}
 			}
 		}
 		self::recursiveCopyInternal($origin, $destination);
@@ -263,8 +268,6 @@ final class Filesystem{
 			throw new \RuntimeException("Failed to write to temporary file $temporaryFileName (possibly out of free disk space)");
 		}
 
-		//TODO: the @ prevents us receiving the actual error message, but right now it's necessary since we can't assume
-		//that the error handler has been set :(
 		$renameTemporaryFileResult = $context !== null ?
 			@rename($temporaryFileName, $fileName, $context) :
 			@rename($temporaryFileName, $fileName);
@@ -283,11 +286,13 @@ final class Filesystem{
 			 *     }
 			 * }
 			 */
-			$copyTemporaryFileResult = $context !== null ?
-				copy($temporaryFileName, $fileName, $context) :
-				copy($temporaryFileName, $fileName);
-			if(!$copyTemporaryFileResult){
-				throw new \RuntimeException("Failed to move temporary file contents into target file");
+			try{
+				ErrorToExceptionHandler::trap(fn() => $context !== null ?
+					copy($temporaryFileName, $fileName, $context) :
+					copy($temporaryFileName, $fileName)
+				);
+			}catch(\ErrorException $copyException){
+				throw new \RuntimeException("Failed to move temporary file contents into target file: " . $copyException->getMessage(), 0, $copyException);
 			}
 			@unlink($temporaryFileName);
 		}
