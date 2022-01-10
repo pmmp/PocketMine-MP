@@ -115,14 +115,7 @@ class BlockFactory{
 		$this->registerAllMeta(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL, 0), "Activator Rail", $railBreakInfo));
 		$this->registerAllMeta(new Air(new BID(Ids::AIR, 0), "Air", BlockBreakInfo::indestructible(-1.0)));
 		$this->registerAllMeta(new Anvil(new BID(Ids::ANVIL, 0), "Anvil", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0)));
-		$this->registerAllMeta(new Bamboo(new BID(Ids::BAMBOO, 0), "Bamboo", new class(2.0 /* 1.0 in PC */, BlockToolType::AXE) extends BlockBreakInfo{
-			public function getBreakTime(Item $item) : float{
-				if($item->getBlockToolType()){
-					return 0.0;
-				}
-				return parent::getBreakTime($item);
-			}
-		}));
+		$this->registerAllMeta(new Bamboo(new BID(Ids::BAMBOO, 0), "Bamboo", new BlockBreakInfo(2.0 /* 1.0 in PC */, BlockToolType::AXE)));
 		$this->registerAllMeta(new BambooSapling(new BID(Ids::BAMBOO_SAPLING, 0), "Bamboo Sapling", BlockBreakInfo::instant()));
 
 		$bannerBreakInfo = new BlockBreakInfo(1.0, BlockToolType::AXE);
@@ -265,7 +258,7 @@ class BlockFactory{
 		$this->registerAllMeta(new Magma(new BID(Ids::MAGMA, 0), "Magma Block", new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->registerAllMeta(new Melon(new BID(Ids::MELON_BLOCK, 0), "Melon Block", new BlockBreakInfo(1.0, BlockToolType::AXE)));
 		$this->registerAllMeta(new MelonStem(new BID(Ids::MELON_STEM, 0, ItemIds::MELON_SEEDS), "Melon Stem", BlockBreakInfo::instant()));
-		$this->registerAllMeta(new MonsterSpawner(new BID(Ids::MOB_SPAWNER, 0, null, TileMonsterSpawner::class), "Monster Spawner", new BlockBreakInfo(0.75, BlockToolType::PICKAXE)));
+		$this->registerAllMeta(new MonsterSpawner(new BID(Ids::MOB_SPAWNER, 0, null, TileMonsterSpawner::class), "Monster Spawner", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->registerAllMeta(new Mycelium(new BID(Ids::MYCELIUM, 0), "Mycelium", new BlockBreakInfo(0.6, BlockToolType::SHOVEL)));
 
 		$netherBrickBreakInfo = new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
@@ -456,15 +449,7 @@ class BlockFactory{
 		$this->registerAllMeta(new Wheat(new BID(Ids::WHEAT_BLOCK, 0), "Wheat Block", BlockBreakInfo::instant()));
 
 		$planksBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE, 0, 15.0);
-		$leavesBreakInfo = new class(0.2, BlockToolType::HOE) extends BlockBreakInfo{
-				public function getBreakTime(Item $item) : float{
-					return match($item->getBlockToolType()){
-						BlockToolType::SWORD => 0.2,
-						BlockToolType::SHEARS => 0.0,
-						default => parent::getBreakTime($item),
-					};
-				}
-			};
+		$leavesBreakInfo = new BlockBreakInfo(0.2, BlockToolType::SHEARS);
 		$signBreakInfo = new BlockBreakInfo(1.0, BlockToolType::AXE);
 		$logBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE);
 		$woodenDoorBreakInfo = new BlockBreakInfo(3.0, BlockToolType::AXE, 0, 15.0);
