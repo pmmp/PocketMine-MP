@@ -117,7 +117,7 @@ class BlockFactory{
 		$this->registerAllMeta(new Anvil(new BID(Ids::ANVIL, 0), "Anvil", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0)));
 		$this->registerAllMeta(new Bamboo(new BID(Ids::BAMBOO, 0), "Bamboo", new class(2.0 /* 1.0 in PC */, BlockToolType::AXE) extends BlockBreakInfo{
 			public function getBreakTime(Item $item) : float{
-				if($item->getBlockToolType()){
+				if($item->getBlockToolType() === BlockToolType::SWORD){
 					return 0.0;
 				}
 				return parent::getBreakTime($item);
