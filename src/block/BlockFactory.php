@@ -277,7 +277,7 @@ class BlockFactory{
 		$this->registerAllMeta(new NetherPortal(new BID(Ids::PORTAL, 0), "Nether Portal", BlockBreakInfo::indestructible(0.0)));
 		$this->registerAllMeta(new NetherQuartzOre(new BID(Ids::NETHER_QUARTZ_ORE, 0), "Nether Quartz Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->registerAllMeta(new NetherReactor(new BID(Ids::NETHERREACTOR, 0), "Nether Reactor Core", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
-		$this->registerAllMeta(new Opaque(new BID(Ids::NETHER_WART_BLOCK, 0), "Nether Wart Block", new BlockBreakInfo(1.0)));
+		$this->registerAllMeta(new Opaque(new BID(Ids::NETHER_WART_BLOCK, 0), "Nether Wart Block", new BlockBreakInfo(1.0, BlockToolType::HOE)));
 		$this->registerAllMeta(new NetherWartPlant(new BID(Ids::NETHER_WART_PLANT, 0, ItemIds::NETHER_WART), "Nether Wart", BlockBreakInfo::instant()));
 		$this->registerAllMeta(new Netherrack(new BID(Ids::NETHERRACK, 0), "Netherrack", new BlockBreakInfo(0.4, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->registerAllMeta(new Note(new BID(Ids::NOTEBLOCK, 0, null, TileNote::class), "Note Block", new BlockBreakInfo(0.8, BlockToolType::AXE)));
@@ -448,7 +448,7 @@ class BlockFactory{
 		$this->registerAllMeta(new UnderwaterTorch(new BID(Ids::UNDERWATER_TORCH, 0), "Underwater Torch", BlockBreakInfo::instant()));
 		$this->registerAllMeta(new Vine(new BID(Ids::VINE, 0), "Vines", new BlockBreakInfo(0.2, BlockToolType::AXE)));
 		$this->registerAllMeta(new Water(new BIDFlattened(Ids::FLOWING_WATER, [Ids::STILL_WATER], 0), "Water", BlockBreakInfo::indestructible(500.0)));
-		$this->registerAllMeta(new WaterLily(new BID(Ids::LILY_PAD, 0), "Lily Pad", new BlockBreakInfo(0.6)));
+		$this->registerAllMeta(new WaterLily(new BID(Ids::LILY_PAD, 0), "Lily Pad", BlockBreakInfo::instant()));
 
 		$weightedPressurePlateBreakInfo = new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
 		$this->registerAllMeta(new WeightedPressurePlateHeavy(new BID(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, 0), "Weighted Pressure Plate Heavy", $weightedPressurePlateBreakInfo));
