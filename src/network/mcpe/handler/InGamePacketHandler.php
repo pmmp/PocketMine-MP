@@ -583,11 +583,6 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::STOP_SLEEPING:
 				$this->player->stopSleep();
 				break;
-			case PlayerAction::JUMP:
-				if($this->session->getProtocolId() === ProtocolInfo::PROTOCOL_1_16_100){
-					$this->player->jump();
-				}
-				return true;
 			case PlayerAction::CRACK_BREAK:
 				$this->player->continueBreakBlock($pos, $face);
 				break;

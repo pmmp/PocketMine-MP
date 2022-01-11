@@ -636,17 +636,9 @@ abstract class Entity{
 			}
 		}
 
-		$changedProperties = $this->getDirtyNetworkData(ProtocolInfo::CURRENT_PROTOCOL);
+		$changedProperties = $this->getDirtyNetworkData();
 		if(count($changedProperties) > 0){
-			$targets = $this->getViewers();
-			if($this instanceof Player){
-				$targets[] = $this;
-			}
-
-			foreach(EntityMetadataCollection::sortByProtocol($targets) as $protocolId => $players){
-				/** @phpstan-ignore-next-line */
-				$this->sendData($players, $protocolId === ProtocolInfo::CURRENT_PROTOCOL ? $changedProperties : $this->getDirtyNetworkData($protocolId));
-			}
+			$this->sendData(null, $changedProperties);
 			$this->networkProperties->clearDirtyProperties();
 		}
 
@@ -1459,7 +1451,7 @@ abstract class Entity{
 			array_map(function(Attribute $attr) : NetworkAttribute{
 				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
 			}, $this->attributeMap->getAll()),
-			$this->getAllNetworkData($player->getNetworkSession()->getProtocolId()),
+			$this->getAllNetworkData(),
 			[] //TODO: entity links
 		));
 	}
@@ -1585,19 +1577,10 @@ abstract class Entity{
 	 */
 	public function sendData(?array $targets, ?array $data = null) : void{
 		$targets = $targets ?? $this->hasSpawned;
+		$data = $data ?? $this->getAllNetworkData();
 
-		if($data === null){
-			foreach(EntityMetadataCollection::sortByProtocol($targets) as $protocolId => $players){
-				$data = $this->getAllNetworkData($protocolId);
-
-				foreach($players as $p){
-					$p->getNetworkSession()->syncActorData($this, $data);
-				}
-			}
-		}else{
-			foreach($targets as $p){
-				$p->getNetworkSession()->syncActorData($this, $data);
-			}
+		foreach($targets as $p){
+			$p->getNetworkSession()->syncActorData($this, $data);
 		}
 	}
 
@@ -1609,24 +1592,24 @@ abstract class Entity{
 	 * @return MetadataProperty[]
 	 * @phpstan-return array<int, MetadataProperty>
 	 */
-	final protected function getDirtyNetworkData(int $metadataProtocol) : array{
+	final protected function getDirtyNetworkData() : array{
 		if($this->networkPropertiesDirty){
 			$this->syncNetworkData($this->networkProperties);
 			$this->networkPropertiesDirty = false;
 		}
-		return $this->networkProperties->getDirty($metadataProtocol);
+		return $this->networkProperties->getDirty();
 	}
 
 	/**
 	 * @return MetadataProperty[]
 	 * @phpstan-return array<int, MetadataProperty>
 	 */
-	final protected function getAllNetworkData(int $metadataProtocol) : array{
+	final protected function getAllNetworkData() : array{
 		if($this->networkPropertiesDirty){
 			$this->syncNetworkData($this->networkProperties);
 			$this->networkPropertiesDirty = false;
 		}
-		return $this->networkProperties->getAll($metadataProtocol);
+		return $this->networkProperties->getAll();
 	}
 
 	protected function syncNetworkData(EntityMetadataCollection $properties) : void{

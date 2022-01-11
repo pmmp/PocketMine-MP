@@ -267,7 +267,7 @@ class ItemEntity extends Entity{
 			ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($player->getNetworkSession()->getProtocolId(), $this->getItem())),
 			$this->location->asVector3(),
 			$this->getMotion(),
-			$this->getAllNetworkData($player->getNetworkSession()->getProtocolId()),
+			$this->getAllNetworkData(),
 			false //TODO: I have no idea what this is needed for, but right now we don't support fishing anyway
 		));
 	}

@@ -689,11 +689,7 @@ class NetworkSession{
 				}
 				$this->sendDataPacket(ServerToClientHandshakePacket::create($handshakeJwt), true); //make sure this gets sent before encryption is enabled
 
-				if($this->getProtocolId() >= ProtocolInfo::PROTOCOL_1_16_220){
-					$this->cipher = EncryptionContext::fakeGCM($encryptionKey);
-				}else{
-					$this->cipher = EncryptionContext::cfb8($encryptionKey);
-				}
+				$this->cipher = EncryptionContext::fakeGCM($encryptionKey);
 
 				$this->setHandler(new HandshakePacketHandler(function() : void{
 					$this->onServerLoginSuccess();

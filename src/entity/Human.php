@@ -473,7 +473,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$this->location->yaw,
 			$this->location->yaw, //TODO: head yaw
 			ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($player->getNetworkSession()->getProtocolId(), $this->getInventory()->getItemInHand())),
-			$this->getAllNetworkData($player->getNetworkSession()->getProtocolId()),
+			$this->getAllNetworkData(),
 			AdventureSettingsPacket::create(0, 0, 0, 0, 0, $this->getId()), //TODO
 			[], //TODO: entity links
 			"", //device ID (we intentionally don't send this - secvuln)
