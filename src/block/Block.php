@@ -166,13 +166,21 @@ class Block{
 	}
 
 	/**
-	 * Returns whether the given block has an equivalent type to this one. This compares base legacy ID and variant.
+	 * Returns a type ID that identifies this type of block. This does not include information like facing, colour,
+	 * powered/unpowered, etc.
+	 */
+	public function getTypeId() : int{
+		return ($this->idInfo->getBlockId() << Block::INTERNAL_METADATA_BITS) | $this->idInfo->getVariant();
+	}
+
+	/**
+	 * Returns whether the given block has an equivalent type to this one. This compares the type IDs.
 	 *
 	 * Note: This ignores additional IDs used to represent additional states. This means that, for example, a lit
 	 * furnace and unlit furnace are considered the same type.
 	 */
 	public function isSameType(Block $other) : bool{
-		return $this->idInfo->getBlockId() === $other->idInfo->getBlockId() and $this->idInfo->getVariant() === $other->idInfo->getVariant();
+		return $this->getTypeId() === $other->getTypeId();
 	}
 
 	/**

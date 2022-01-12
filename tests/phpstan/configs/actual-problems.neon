@@ -791,11 +791,6 @@ parameters:
 			path: ../../../src/plugin/PluginDescription.php
 
 		-
-			message: "#^Parameter \\#1 \\$plugin of method pocketmine\\\\plugin\\\\PluginDescription\\:\\:loadMap\\(\\) expects array, mixed given\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginDescription.php
-
-		-
 			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginDescription.php
@@ -847,11 +842,6 @@ parameters:
 
 		-
 			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getSha256\\(\\) should return string but returns string\\|false\\.$#"
-			count: 1
-			path: ../../../src/resourcepacks/ZippedResourcePack.php
-
-		-
-			message: "#^Parameter \\#2 \\$code of class pocketmine\\\\resourcepacks\\\\ResourcePackException constructor expects int, mixed given\\.$#"
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
@@ -981,11 +971,6 @@ parameters:
 			path: ../../../src/utils/Utils.php
 
 		-
-			message: "#^Part \\$errno \\(mixed\\) of encapsed string cannot be cast to string\\.$#"
-			count: 1
-			path: ../../../src/utils/Utils.php
-
-		-
 			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/Explosion.php
@@ -1041,6 +1026,11 @@ parameters:
 			path: ../../../src/world/Explosion.php
 
 		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../../src/world/World.php
+
+		-
 			message: "#^Cannot access offset 'data' on array\\{priority\\: int, data\\: pocketmine\\\\math\\\\Vector3\\}\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
@@ -1051,7 +1041,7 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#1 \\$keys of function array_fill_keys expects array, mixed given\\.$#"
+			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
 

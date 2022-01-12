@@ -21,8 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data;
+namespace pocketmine\block\utils;
 
-final class SavedDataLoadingException extends \RuntimeException{
+trait CoralTypeTrait{
 
+	protected CoralType $coralType;
+	protected bool $dead = false;
+
+	public function getCoralType() : CoralType{ return $this->coralType; }
+
+	/** @return $this */
+	public function setCoralType(CoralType $coralType) : self{
+		$this->coralType = $coralType;
+		return $this;
+	}
+
+	public function isDead() : bool{ return $this->dead; }
+
+	/** @return $this */
+	public function setDead(bool $dead) : self{
+		$this->dead = $dead;
+		return $this;
+	}
 }
