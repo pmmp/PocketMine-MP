@@ -109,6 +109,7 @@ use function base64_encode;
 use function count;
 use function fmod;
 use function implode;
+use function in_array;
 use function is_infinite;
 use function is_nan;
 use function json_decode;
@@ -418,6 +419,8 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				//TODO: end hack for client spam bug
 
+				self::validateFacing($data->getFace());
+
 				$blockPos = $data->getBlockPosition();
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
 				if(!$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos)){
@@ -447,6 +450,15 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		return false;
+	}
+
+	/**
+	 * @throws PacketHandlingException
+	 */
+	private static function validateFacing(int $facing) : void{
+		if(!in_array($facing, Facing::ALL, true)){
+			throw new PacketHandlingException("Invalid facing value $facing");
+		}
 	}
 
 	/**
@@ -565,6 +577,7 @@ class InGamePacketHandler extends PacketHandler{
 
 		switch($action){
 			case PlayerAction::START_BREAK:
+				self::validateFacing($face);
 				if(!$this->player->attackBlock($pos, $face)){
 					$this->onFailedBlockAction($pos, $face);
 				}
@@ -582,6 +595,7 @@ class InGamePacketHandler extends PacketHandler{
 				$this->player->stopSleep();
 				break;
 			case PlayerAction::CRACK_BREAK:
+				self::validateFacing($face);
 				$this->player->continueBreakBlock($pos, $face);
 				break;
 			case PlayerAction::INTERACT_BLOCK: //TODO: ignored (for now)

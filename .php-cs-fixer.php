@@ -36,6 +36,7 @@ return (new PhpCsFixer\Config)
 		],
 		'declare_strict_types' => true,
 		'elseif' => true,
+		'fully_qualified_strict_types' => true,
 		'global_namespace_import' => [
 			'import_constants' => true,
 			'import_functions' => true,
