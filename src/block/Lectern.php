@@ -29,6 +29,8 @@ use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\item\Item;
 use pocketmine\item\WritableBookBase;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
@@ -71,6 +73,10 @@ class Lectern extends Transparent{
 
 	public function getFlammability() : int{
 		return 30;
+	}
+
+	protected function recalculateCollisionBoxes() : array{
+		return [AxisAlignedBB::one()->trim(Facing::UP, 0.1)];
 	}
 
 	public function getViewedPage() : int{
