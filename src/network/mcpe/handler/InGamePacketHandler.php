@@ -945,14 +945,10 @@ class InGamePacketHandler extends PacketHandler{
 
 		$lectern = $world->getBlockAt($pos->getX(), $pos->getY(), $pos->getZ());
 		if($lectern instanceof Lectern && $this->player->canInteract($lectern->getPosition(), 15)){
-			if($lectern->getViewedPage() === $packet->page){
-				return true;
+			if(!$lectern->onPageTurn($packet->page)){
+				$this->onFailedBlockAction($lectern->getPosition(), null);
 			}
-			$book = $lectern->getBook();
-			if($book !== null && count($book->getPages()) === $packet->totalPages && $packet->page >= 0 && $packet->page < $packet->totalPages){
-				$world->setBlock($lectern->getPosition(), $lectern->setViewedPage($packet->page));
-				return true;
-			}
+			return true;
 		}
 
 		return false;

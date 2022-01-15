@@ -40,13 +40,15 @@ class Lectern extends Transparent{
 
 	protected int $viewedPage = 0;
 	protected ?WritableBookBase $book = null;
+	protected bool $producingSignal = false;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta);
+		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
+		$this->producingSignal = ($stateMeta & BlockLegacyMetadata::LECTERN_FLAG_POWERED) !== 0;
 	}
 
 	public function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing);
+		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->producingSignal ? BlockLegacyMetadata::LECTERN_FLAG_POWERED : 0);
 	}
 
 	public function readStateFromWorld() : void{
@@ -68,7 +70,7 @@ class Lectern extends Transparent{
 	}
 
 	public function getStateBitmask() : int{
-		return 0b11;
+		return 0b111;
 	}
 
 	public function getFlammability() : int{
@@ -86,6 +88,14 @@ class Lectern extends Transparent{
 
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 0.1)];
+	}
+
+	public function isProducingSignal() : bool{ return $this->producingSignal; }
+
+	/** @return $this */
+	public function setProducingSignal(bool $producingSignal) : self{
+		$this->producingSignal = $producingSignal;
+		return $this;
 	}
 
 	public function getViewedPage() : int{
@@ -123,5 +133,31 @@ class Lectern extends Transparent{
 			$this->position->getWorld()->setBlock($this->position, $this->setBook(null));
 		}
 		return false;
+	}
+
+	public function onPageTurn(int $newPage) : bool{
+		if($newPage === $this->viewedPage){
+			return true;
+		}
+		if($this->book === null || $newPage >= count($this->book->getPages()) || $newPage < 0){
+			return false;
+		}
+
+		$this->viewedPage = $newPage;
+		if(!$this->producingSignal){
+			$this->producingSignal = true;
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+		}
+
+		$this->position->getWorld()->setBlock($this->position, $this);
+
+		return true;
+	}
+
+	public function onScheduledUpdate() : void{
+		if($this->producingSignal){
+			$this->producingSignal = false;
+			$this->position->getWorld()->setBlock($this->position, $this);
+		}
 	}
 }
