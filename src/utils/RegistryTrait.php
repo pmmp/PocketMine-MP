@@ -37,11 +37,11 @@ trait RegistryTrait{
 	 * @throws \InvalidArgumentException
 	 */
 	private static function _registryRegister(string $name, object $member) : void{
-		$name = mb_strtoupper($name);
-		if(isset(self::$members[$name])){
-			throw new \InvalidArgumentException("\"$name\" is already reserved");
+		$upperName = mb_strtoupper($name);
+		if(isset(self::$members[$upperName])){
+			throw new \InvalidArgumentException("\"$upperName\" is already reserved");
 		}
-		self::$members[mb_strtoupper($name)] = $member;
+		self::$members[$upperName] = $member;
 	}
 
 	/**
@@ -68,11 +68,11 @@ trait RegistryTrait{
 	 */
 	private static function _registryFromString(string $name) : object{
 		self::checkInit();
-		$name = mb_strtoupper($name);
-		if(!isset(self::$members[$name])){
-			throw new \InvalidArgumentException("No such registry member: " . self::class . "::" . $name);
+		$upperName = mb_strtoupper($name);
+		if(!isset(self::$members[$upperName])){
+			throw new \InvalidArgumentException("No such registry member: " . self::class . "::" . $upperName);
 		}
-		return self::preprocessMember(self::$members[$name]);
+		return self::preprocessMember(self::$members[$upperName]);
 	}
 
 	protected static function preprocessMember(object $member) : object{

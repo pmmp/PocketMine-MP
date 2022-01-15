@@ -54,6 +54,7 @@ use pocketmine\event\world\WorldSaveEvent;
 use pocketmine\item\Item;
 use pocketmine\item\ItemUseResult;
 use pocketmine\item\LegacyStringToItemParser;
+use pocketmine\item\StringToItemParser;
 use pocketmine\item\VanillaItems;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\AxisAlignedBB;
@@ -70,6 +71,7 @@ use pocketmine\promise\Promise;
 use pocketmine\promise\PromiseResolver;
 use pocketmine\scheduler\AsyncPool;
 use pocketmine\Server;
+use pocketmine\ServerConfigGroup;
 use pocketmine\timings\Timings;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
@@ -95,7 +97,6 @@ use pocketmine\world\sound\BlockPlaceSound;
 use pocketmine\world\sound\Sound;
 use pocketmine\world\utils\SubChunkExplorer;
 use function abs;
-use function array_fill_keys;
 use function array_filter;
 use function array_key_exists;
 use function array_map;
@@ -118,6 +119,7 @@ use function morton2d_encode;
 use function morton3d_decode;
 use function morton3d_encode;
 use function mt_rand;
+use function preg_match;
 use function spl_object_id;
 use function strtolower;
 use function trim;
@@ -453,13 +455,7 @@ class World implements ChunkManager{
 		$this->tickedBlocksPerSubchunkPerTick = $cfg->getPropertyInt("chunk-ticking.blocks-per-subchunk-per-tick", self::DEFAULT_TICKED_BLOCKS_PER_SUBCHUNK_PER_TICK);
 		$this->maxConcurrentChunkPopulationTasks = $cfg->getPropertyInt("chunk-generation.population-queue-size", 2);
 
-		$dontTickBlocks = array_fill_keys($cfg->getProperty("chunk-ticking.disable-block-ticking", []), true);
-
-		foreach(BlockFactory::getInstance()->getAllKnownStates() as $state){
-			if(!isset($dontTickBlocks[$state->getId()]) and $state->ticksRandomly()){
-				$this->randomTickBlocks[$state->getFullId()] = true;
-			}
-		}
+		$this->initRandomTickBlocksFromConfig($cfg);
 
 		$this->timings = new WorldTimings($this);
 
@@ -473,6 +469,34 @@ class World implements ChunkManager{
 		$this->addOnUnloadCallback(static function() use ($workerPool, $workerStartHook) : void{
 			$workerPool->removeWorkerStartHook($workerStartHook);
 		});
+	}
+
+	private function initRandomTickBlocksFromConfig(ServerConfigGroup $cfg) : void{
+		$dontTickBlocks = [];
+		$parser = StringToItemParser::getInstance();
+		foreach($cfg->getProperty("chunk-ticking.disable-block-ticking", []) as $name){
+			$name = (string) $name;
+			$item = $parser->parse($name);
+			if($item !== null){
+				$block = $item->getBlock();
+			}elseif(preg_match("/^-?\d+$/", $name) === 1){
+				$block = BlockFactory::getInstance()->get((int) $name, 0);
+			}else{
+				//TODO: we probably ought to log an error here
+				continue;
+			}
+
+			if($block->getId() !== BlockLegacyIds::AIR){
+				$dontTickBlocks[$block->getTypeId()] = $name;
+			}
+		}
+
+		foreach(BlockFactory::getInstance()->getAllKnownStates() as $state){
+			$dontTickName = $dontTickBlocks[$state->getTypeId()] ?? null;
+			if($dontTickName === null && !$state->ticksRandomly()){
+				$this->randomTickBlocks[$state->getFullId()] = true;
+			}
+		}
 	}
 
 	public function getTickRateTime() : float{
@@ -2258,6 +2282,11 @@ class World implements ChunkManager{
 		$previousSpawn = $this->getSpawnLocation();
 		$this->provider->getWorldData()->setSpawn($pos);
 		(new SpawnChangeEvent($this, $previousSpawn))->call();
+
+		$location = Position::fromObject($pos, $this);
+		foreach($this->players as $player){
+			$player->getNetworkSession()->syncWorldSpawnPoint($location);
+		}
 	}
 
 	/**
