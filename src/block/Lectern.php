@@ -75,6 +75,15 @@ class Lectern extends Transparent{
 		return 30;
 	}
 
+	public function getDrops(Item $item) : array{
+		$drops = parent::getDrops($item);
+		if($this->book !== null){
+			$drops[] = clone $this->book;
+		}
+
+		return $drops;
+	}
+
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 0.1)];
 	}
