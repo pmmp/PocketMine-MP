@@ -930,8 +930,11 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleLecternUpdate(LecternUpdatePacket $packet) : bool{
-		//Drop book is handled on server side with an interact event.
-		//Total pages is gathered from book.
+		if($packet->dropBook){
+			//Drop book is handled with an interact event on use item transaction
+			return true;
+		}
+
 		$pos = $packet->blockPosition;
 		$chunkX = $pos->getX() >> Chunk::COORD_BIT_SIZE;
 		$chunkZ = $pos->getZ() >> Chunk::COORD_BIT_SIZE;
