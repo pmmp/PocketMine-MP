@@ -113,9 +113,8 @@ class Lectern extends Transparent{
 		if($this->book === null && $item instanceof WritableBookBase){
 			$this->position->getWorld()->setBlock($this->position, $this->setBook($item));
 			$item->pop();
-			return true;
 		}
-		return false;
+		return true;
 	}
 
 	public function onAttack(Item $item, int $face, ?Player $player = null) : bool{
