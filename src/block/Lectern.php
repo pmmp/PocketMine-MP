@@ -33,6 +33,7 @@ use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\LecternPlaceBookSound;
 
 class Lectern extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
@@ -122,6 +123,7 @@ class Lectern extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->book === null && $item instanceof WritableBookBase){
 			$this->position->getWorld()->setBlock($this->position, $this->setBook($item));
+			$this->position->getWorld()->addSound($this->position, new LecternPlaceBookSound());
 			$item->pop();
 		}
 		return true;
