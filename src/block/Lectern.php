@@ -34,6 +34,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\sound\LecternPlaceBookSound;
+use function count;
 
 class Lectern extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
