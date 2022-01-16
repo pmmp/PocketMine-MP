@@ -66,7 +66,9 @@ class Composter extends Transparent{
 
 	protected function recalculateCollisionBoxes() : array{
 		$boxes = [$this->getSideCollisionBox(Facing::DOWN)];
-		foreach (Facing::HORIZONTAL as $side) $boxes[] = $this->getSideCollisionBox($side);
+		foreach (Facing::HORIZONTAL as $side) {
+			$boxes[] = $this->getSideCollisionBox($side);
+		}
 		return $boxes;
 	}
 

@@ -602,7 +602,6 @@ class BlockFactory{
 		//TODO: minecraft:chorus_flower
 		//TODO: minecraft:chorus_plant
 		//TODO: minecraft:command_block
-		//TODO: minecraft:composter
 		//TODO: minecraft:conduit
 		//TODO: minecraft:dispenser
 		//TODO: minecraft:dropper

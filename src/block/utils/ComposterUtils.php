@@ -45,7 +45,10 @@ use pocketmine\item\WheatSeeds;
 use function count;
 
 class ComposterUtils {
-	/** @param mixed[] $list */
+	/**
+	 * @var mixed[]
+	 * @phpstan-var array<int, int>
+	 */
 	private static array $list = [];
 
 	public function __construct() {
