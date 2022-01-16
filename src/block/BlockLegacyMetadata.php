@@ -142,6 +142,8 @@ final class BlockLegacyMetadata{
 	public const LEAVES_FLAG_NO_DECAY = 0x04;
 	public const LEAVES_FLAG_CHECK_DECAY = 0x08;
 
+	public const LECTERN_FLAG_POWERED = 0x04;
+
 	public const LEVER_FLAG_POWERED = 0x08;
 
 	public const LIQUID_FLAG_FALLING = 0x08;

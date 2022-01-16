@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\BaseSign;
 use pocketmine\block\ItemFrame;
+use pocketmine\block\Lectern;
 use pocketmine\block\utils\SignText;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\Attribute;
@@ -66,6 +67,7 @@ use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
+use pocketmine\network\mcpe\protocol\LecternUpdatePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
@@ -105,11 +107,13 @@ use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\format\Chunk;
 use function array_push;
 use function base64_encode;
 use function count;
 use function fmod;
 use function implode;
+use function in_array;
 use function is_infinite;
 use function is_nan;
 use function json_decode;
@@ -419,6 +423,8 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				//TODO: end hack for client spam bug
 
+				self::validateFacing($data->getFace());
+
 				$blockPos = $data->getBlockPosition();
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
 				if(!$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos)){
@@ -448,6 +454,15 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		return false;
+	}
+
+	/**
+	 * @throws PacketHandlingException
+	 */
+	private static function validateFacing(int $facing) : void{
+		if(!in_array($facing, Facing::ALL, true)){
+			throw new PacketHandlingException("Invalid facing value $facing");
+		}
 	}
 
 	/**
@@ -566,6 +581,7 @@ class InGamePacketHandler extends PacketHandler{
 
 		switch($action){
 			case PlayerAction::START_BREAK:
+				self::validateFacing($face);
 				if(!$this->player->attackBlock($pos, $face)){
 					$this->onFailedBlockAction($pos, $face);
 				}
@@ -583,6 +599,7 @@ class InGamePacketHandler extends PacketHandler{
 				$this->player->stopSleep();
 				break;
 			case PlayerAction::CRACK_BREAK:
+				self::validateFacing($face);
 				$this->player->continueBreakBlock($pos, $face);
 				break;
 			case PlayerAction::INTERACT_BLOCK: //TODO: ignored (for now)
@@ -911,6 +928,31 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleLabTable(LabTablePacket $packet) : bool{
 		return false; //TODO
+	}
+
+	public function handleLecternUpdate(LecternUpdatePacket $packet) : bool{
+		if($packet->dropBook){
+			//Drop book is handled with an interact event on use item transaction
+			return true;
+		}
+
+		$pos = $packet->blockPosition;
+		$chunkX = $pos->getX() >> Chunk::COORD_BIT_SIZE;
+		$chunkZ = $pos->getZ() >> Chunk::COORD_BIT_SIZE;
+		$world = $this->player->getWorld();
+		if(!$world->isChunkLoaded($chunkX, $chunkZ) || $world->isChunkLocked($chunkX, $chunkZ)){
+			return false;
+		}
+
+		$lectern = $world->getBlockAt($pos->getX(), $pos->getY(), $pos->getZ());
+		if($lectern instanceof Lectern && $this->player->canInteract($lectern->getPosition(), 15)){
+			if(!$lectern->onPageTurn($packet->page)){
+				$this->onFailedBlockAction($lectern->getPosition(), null);
+			}
+			return true;
+		}
+
+		return false;
 	}
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{
