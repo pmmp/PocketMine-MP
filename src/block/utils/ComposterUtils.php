@@ -50,10 +50,10 @@ class ComposterUtils {
 	private static array $list = [];
 
 	public function __construct() {
-		self::registDefault();
+		self::registryDefault();
 	}
 
-	public static function registDefault() : void{
+	public static function registryDefault() : void{
 		// region 30% percentage compost
 		self::register(new BeetrootSeeds(new ItemIdentifier(ItemIds::BEETROOT_SEEDS, 0), "Beetroot Seeds"));
 		self::register(new DriedKelp(new ItemIdentifier(ItemIds::DRIED_KELP, 0), "Dried Kelp"));
@@ -238,14 +238,14 @@ class ComposterUtils {
 
 	public static function isCompostable(Item $item) : bool{
 		if (count(self::$list) === 0) {
-			self::registDefault();
+			self::registryDefault();
 		}
 		return !$item->isNull() && isset(self::$list[self::getListOffset($item->getId(), $item->getMeta())]);
 	}
 
 	public static function getPercentage(Item $item) : int{
 		if (count(self::$list) === 0) {
-			self::registDefault();
+			self::registryDefault();
 		}
 		return self::$list[self::getListOffset($item->getId(), $item->getMeta())] ?? 0;
 	}
