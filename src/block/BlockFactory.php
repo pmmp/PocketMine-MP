@@ -457,13 +457,13 @@ class BlockFactory{
 
 		$planksBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE, 0, 15.0);
 		$leavesBreakInfo = new class(0.2, BlockToolType::HOE) extends BlockBreakInfo{
-				public function getBreakTime(Item $item) : float{
-					if($item->getBlockToolType() === BlockToolType::SHEARS){
-						return 0.0;
-					}
-					return parent::getBreakTime($item);
+			public function getBreakTime(Item $item) : float{
+				if($item->getBlockToolType() === BlockToolType::SHEARS){
+					return 0.0;
 				}
-			};
+				return parent::getBreakTime($item);
+			}
+		};
 		$signBreakInfo = new BlockBreakInfo(1.0, BlockToolType::AXE);
 		$logBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE);
 		$woodenDoorBreakInfo = new BlockBreakInfo(3.0, BlockToolType::AXE, 0, 15.0);
