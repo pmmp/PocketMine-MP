@@ -1490,6 +1490,11 @@ class Server{
 				$this->getName(),
 				(\pocketmine\IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET
 			]));
+
+			$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.obsolete.warning1", ["3.x", "4.0"]));
+			$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.obsolete.warning2", ["3.x", "2022-03-01"]));
+			$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.obsolete.warning3", ["https://github.com/pmmp/PocketMine-MP/issues/4701"]));
+
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.license", [$this->getName()]));
 
 			Timings::init();
