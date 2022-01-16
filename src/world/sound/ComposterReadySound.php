@@ -29,7 +29,7 @@ use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 class ComposterReadySound implements Sound{
 
-    public function encode(Vector3 $pos): array{
-        return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BLOCK_COMPOSTER_READY, $pos, false)];
-    }
+	public function encode(Vector3 $pos): array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BLOCK_COMPOSTER_READY, $pos, false)];
+	}
 }
