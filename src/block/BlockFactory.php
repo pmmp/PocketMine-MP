@@ -388,6 +388,7 @@ class BlockFactory{
 		$this->registerAllMeta(new Stair(new BID(Ids::MOSSY_STONE_BRICK_STAIRS, 0), "Mossy Stone Brick Stairs", $stoneBreakInfo));
 		$this->registerAllMeta(new StoneButton(new BID(Ids::STONE_BUTTON, 0), "Stone Button", new BlockBreakInfo(0.5, BlockToolType::PICKAXE)));
 		$this->registerAllMeta(new StonePressurePlate(new BID(Ids::STONE_PRESSURE_PLATE, 0), "Stone Pressure Plate", new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->registerAllMeta(new StoneCutterBlock(new BID(Ids::STONECUTTER_BLOCK, 0, ItemIds::STONECUTTER_BLOCK), "Stonecutter Block", new BlockBreakInfo(3.5, BlockToolType::PICKAXE)));
 
 		//TODO: in the future this won't be the same for all the types
 		$stoneSlabBreakInfo = new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
@@ -623,7 +624,6 @@ class BlockFactory{
 		//TODO: minecraft:seagrass
 		//TODO: minecraft:smithing_table
 		//TODO: minecraft:sticky_piston
-		//TODO: minecraft:stonecutter_block
 		//TODO: minecraft:structure_block
 		//TODO: minecraft:turtle_egg
 		//endregion

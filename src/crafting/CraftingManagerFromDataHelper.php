@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\protocol\types\recipe\CraftingRecipeBlockName;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use function array_map;
@@ -43,13 +44,18 @@ final class CraftingManagerFromDataHelper{
 		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
 
 		foreach($recipes["shapeless"] as $recipe){
-			if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
+			$blockType = match($recipe["block"]){
+				"crafting_table" => CraftingRecipeBlockName::CRAFTING_TABLE,
+				"stonecutter" => CraftingRecipeBlockName::STONECUTTER,
+				//TODO: Cartography Table
+				default => null
+			};
+			if($blockType === null){
 				continue;
 			}
 			$result->registerShapelessRecipe(new ShapelessRecipe(
 				array_map($itemDeserializerFunc, $recipe["input"]),
-				array_map($itemDeserializerFunc, $recipe["output"])
-			));
+				array_map($itemDeserializerFunc, $recipe["output"]), $blockType));
 		}
 		foreach($recipes["shaped"] as $recipe){
 			if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
@@ -62,7 +68,7 @@ final class CraftingManagerFromDataHelper{
 			));
 		}
 		foreach($recipes["smelting"] as $recipe){
-			$furnaceType = match ($recipe["block"]){
+			$furnaceType = match($recipe["block"]){
 				"furnace" => FurnaceType::FURNACE(),
 				"blast_furnace" => FurnaceType::BLAST_FURNACE(),
 				"smoker" => FurnaceType::SMOKER(),
@@ -73,8 +79,8 @@ final class CraftingManagerFromDataHelper{
 				continue;
 			}
 			$result->getFurnaceRecipeManager($furnaceType)->register(new FurnaceRecipe(
-				Item::jsonDeserialize($recipe["output"]),
-				Item::jsonDeserialize($recipe["input"]))
+					Item::jsonDeserialize($recipe["output"]),
+					Item::jsonDeserialize($recipe["input"]))
 			);
 		}
 

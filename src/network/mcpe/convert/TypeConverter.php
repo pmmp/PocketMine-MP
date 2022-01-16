@@ -27,6 +27,7 @@ use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\LoomInventory;
+use pocketmine\block\inventory\StoneCutterInventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -280,6 +281,7 @@ class TypeConverter{
 							$current instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
 							$current instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
 							$current instanceof LoomInventory => UIInventorySlotOffset::LOOM,
+							$current instanceof StoneCutterInventory => [UIInventorySlotOffset::STONE_CUTTER_INPUT => StoneCutterInventory::SLOT_INPUT],
 							$current instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
 							default => null
 						};

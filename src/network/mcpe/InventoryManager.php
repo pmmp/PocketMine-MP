@@ -31,6 +31,7 @@ use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
 use pocketmine\block\inventory\LoomInventory;
+use pocketmine\block\inventory\StoneCutterInventory;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
@@ -187,6 +188,7 @@ class InventoryManager{
 				$inv instanceof AnvilInventory => WindowTypes::ANVIL,
 				$inv instanceof HopperInventory => WindowTypes::HOPPER,
 				$inv instanceof CraftingTableInventory => WindowTypes::WORKBENCH,
+				$inv instanceof StoneCutterInventory => WindowTypes::STONECUTTER,
 				default => WindowTypes::CONTAINER
 			};
 			return [ContainerOpenPacket::blockInv($id, $windowType, $blockPosition)];

@@ -88,7 +88,7 @@ final class CraftingDataCache{
 						return $converter->coreItemStackToNet($item);
 					}, $recipe->getResults()),
 					$nullUUID,
-					CraftingRecipeBlockName::CRAFTING_TABLE,
+					$recipe->getBlockType(),
 					50,
 					$counter
 				);
