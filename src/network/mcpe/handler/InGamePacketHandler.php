@@ -73,6 +73,7 @@ use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
+use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
 use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
@@ -172,6 +173,12 @@ class InGamePacketHandler extends PacketHandler{
 		}
 		//neither flag was set, or both were set
 		return null;
+	}
+
+	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
+		//The client sends this every time it lands on the ground, even when using PlayerAuthInputPacket.
+		//Silence the debug spam that this causes.
+		return true;
 	}
 
 	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
