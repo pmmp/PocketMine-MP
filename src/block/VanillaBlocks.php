@@ -117,6 +117,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Wall COBBLESTONE_WALL()
  * @method static Cobweb COBWEB()
  * @method static CocoaBlock COCOA_POD()
+ * @method static Composter COMPOSTER()
  * @method static ChemistryTable COMPOUND_CREATOR()
  * @method static Concrete CONCRETE()
  * @method static ConcretePowder CONCRETE_POWDER()
@@ -678,6 +679,7 @@ final class VanillaBlocks{
 		self::register("cobblestone_wall", $factory->get(139, 0));
 		self::register("cobweb", $factory->get(30, 0));
 		self::register("cocoa_pod", $factory->get(127, 0));
+		self::register("composter", $factory->get(468, 0));
 		self::register("compound_creator", $factory->get(238, 0));
 		self::register("concrete", $factory->get(236, 0));
 		self::register("concrete_powder", $factory->get(237, 0));
