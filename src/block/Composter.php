@@ -40,14 +40,12 @@ use pocketmine\world\sound\ComposterEmptySound;
 use pocketmine\world\sound\ComposterFillSound;
 use pocketmine\world\sound\ComposterFillSuccessSound;
 use pocketmine\world\sound\ComposterReadySound;
-use function deg2rad;
+use function abs;
 use function mt_rand;
-use function sin;
 
 class Composter extends Transparent{
 	public const CROP_GROWTH_EMITTER_PARTICLE = "minecraft:crop_growth_emitter";
 
-	/** @var int */
 	protected int $composter_fill_level = 0;
 
 	protected function writeStateToMeta() : int{
@@ -73,7 +71,7 @@ class Composter extends Transparent{
 	}
 
 	protected function getSideCollisionBox(int $face = Facing::NORTH) : AxisAlignedBB{
-		$empty = abs(15 - 2 * $this->composter_fill_level) - ($this->composter_fill_level === 0);
+		$empty = abs(15 - 2 * $this->composter_fill_level) - (int) ($this->composter_fill_level === 0);
 		return ($face === Facing::DOWN || $face === Facing::UP) ? AxisAlignedBB::one()->contract(2 / 16, 0, 2 / 16)->trim(Facing::UP, $empty / 16) : AxisAlignedBB::one()->trim(Facing::opposite($face), 14 / 16);
 	}
 
@@ -118,7 +116,7 @@ class Composter extends Transparent{
 		}
 	}
 
-	protected function spawnParticleEffect() {
+	protected function spawnParticleEffect() : void{
 		$packet = SpawnParticleEffectPacket::create(
 			DimensionIds::OVERWORLD,
 			-1,
@@ -128,12 +126,6 @@ class Composter extends Transparent{
 		foreach ($this->position->getWorld()->getViewersForPosition($this->position) as $player) {
 			$player->getNetworkSession()->sendDataPacket($packet);
 		}
-		/*
-		* No packet method:
-		 for ($i = 1, $i <= mt_rand(12, 18); $i++) {
-			$this->position->getWorld()->addParticle($this->position->add(0.5 - sin(deg2rad(mt_rand(-45, 45))) / 2, 0.5 + mt_rand(-1, 10) / 16, 0.5 - sin(deg2rad(mt_rand(-45, 45))) / 2), new \pocketmine\world\particle\HappyVillagerParticle());
-		 }
-	   */
 	}
 
 	/**

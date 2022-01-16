@@ -44,7 +44,9 @@ use pocketmine\item\SweetBerries;
 use pocketmine\item\WheatSeeds;
 
 class ComposterUtils {
-	/** @var array $list[] */
+	/**
+	 * @param array<int, int> $list
+	 */
 	private static array $list = [];
 
 	public function __construct() {
@@ -235,20 +237,20 @@ class ComposterUtils {
 	}
 
 	public static function isCompostable(Item $item) : bool{
-		if (empty(self::$list)) {
+		if (count(self::$list) === 0) {
 			self::registDefault();
 		}
 		return !$item->isNull() && isset(self::$list[self::getListOffset($item->getId(), $item->getMeta())]);
 	}
 
 	public static function getPercentage(Item $item) : int{
-		if (empty(self::$list)) {
+		if (count(self::$list) === 0) {
 			self::registDefault();
 		}
 		return self::$list[self::getListOffset($item->getId(), $item->getMeta())] ?? 0;
 	}
 
-	public static function getListOffset(int $id, int $variant = 0) {
+	public static function getListOffset(int $id, int $variant = 0) : int{
 		if($id < -0x8000 or $id > 0x7fff){
 			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
 		}
