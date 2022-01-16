@@ -166,6 +166,12 @@ class InGamePacketHandler extends PacketHandler{
 		return false;
 	}
 
+	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
+		//The client sends this every time it lands on the ground, even when using PlayerAuthInputPacket.
+		//Silence the debug spam that this causes.
+		return true;
+	}
+
 	private function resolveOnOffInputFlags(PlayerAuthInputPacket $packet, int $startFlag, int $stopFlag) : ?bool{
 		$enabled = $packet->hasFlag($startFlag);
 		if($enabled !== $packet->hasFlag($stopFlag)){
@@ -173,12 +179,6 @@ class InGamePacketHandler extends PacketHandler{
 		}
 		//neither flag was set, or both were set
 		return null;
-	}
-
-	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
-		//The client sends this every time it lands on the ground, even when using PlayerAuthInputPacket.
-		//Silence the debug spam that this causes.
-		return true;
 	}
 
 	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
