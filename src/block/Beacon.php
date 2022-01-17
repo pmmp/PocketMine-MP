@@ -81,10 +81,7 @@ final class Beacon extends Transparent{
 		return $this->primaryEffect;
 	}
 
-	/**
-	 * @return $this
-	 * @throws \InvalidArgumentException
-	 */
+	/** @return $this */
 	public function setPrimaryEffect(int $primaryEffect) : self{
 		if(!isset(self::ALLOWED_PRIMARY_EFFECTS[$primaryEffect])){
 			throw new \InvalidArgumentException("Effect ID \"$primaryEffect\" is not allowed in the primary effect");
@@ -97,10 +94,7 @@ final class Beacon extends Transparent{
 		return $this->secondaryEffect;
 	}
 
-	/**
-	 * @return $this
-	 * @throws \InvalidArgumentException
-	 */
+	/** @return $this */
 	public function setSecondaryEffect(int $secondaryEffect) : self{
 		if(!isset(self::ALLOWED_PRIMARY_EFFECTS[$secondaryEffect]) || !isset(self::ALLOWED_SECONDARY_EFFECTS[$secondaryEffect])){
 			throw new \InvalidArgumentException("Effect ID \"$secondaryEffect\" is not allowed in the secondary effect");
