@@ -32,7 +32,7 @@ if(defined('pocketmine\_VERSION_INFO_INCLUDED')){
 }
 const _VERSION_INFO_INCLUDED = true;
 
-const NAME = "PocketMine-MP";
+const NAME = "DctxGames";
 const BASE_VERSION = "3.26.6";
 const IS_DEVELOPMENT_BUILD = true;
 const BUILD_CHANNEL = "pm3";
