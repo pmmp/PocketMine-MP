@@ -24,10 +24,10 @@ namespace pocketmine\network\mcpe\convert;
 
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\inventory\AnvilInventory;
+use pocketmine\block\inventory\BeaconInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\LoomInventory;
-use pocketmine\inventory\transaction\action\BeaconAction;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -273,16 +273,13 @@ class TypeConverter{
 					}
 					$pSlot = $action->inventorySlot;
 
-					if($pSlot === UIInventorySlotOffset::BEACON_PAYMENT){
-						return new BeaconAction($old, $new);
-					}
-
 					$slot = UIInventorySlotOffset::CRAFTING2X2_INPUT[$pSlot] ?? null;
 					if($slot !== null){
 						$window = $player->getCraftingGrid();
 					}elseif(($current = $player->getCurrentWindow()) !== null){
 						$slotMap = match(true){
 							$current instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
+							$current instanceof BeaconInventory => UIInventorySlotOffset::BEACON_PAYMENT,
 							$current instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
 							$current instanceof LoomInventory => UIInventorySlotOffset::LOOM,
 							$current instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
@@ -290,7 +287,11 @@ class TypeConverter{
 						};
 						if($slotMap !== null){
 							$window = $current;
-							$slot = $slotMap[$pSlot] ?? null;
+							if($window instanceof BeaconInventory){
+								$slot = BeaconInventory::SLOT_INPUT;
+							}else{
+								$slot = $slotMap[$pSlot] ?? null;
+							}
 						}
 					}
 					if($slot === null){
