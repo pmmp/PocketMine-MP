@@ -27,14 +27,87 @@ use InvalidArgumentException;
 use pocketmine\block\inventory\BeaconInventory;
 use pocketmine\block\tile\Beacon as TileBeacon;
 use pocketmine\data\bedrock\EffectIdMap;
+use pocketmine\data\bedrock\EffectIds;
 use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use function in_array;
 
 final class Beacon extends Transparent{
+	private const ALLOWED_BLOCK_IDS = [
+		BlockLegacyIds::IRON_BLOCK => true,
+		BlockLegacyIds::GOLD_BLOCK => true,
+		BlockLegacyIds::DIAMOND_BLOCK => true,
+		BlockLegacyIds::EMERALD_BLOCK => true
+		//TODO netherite block
+	];
+
+	private const ALLOWED_PRIMARY_EFFECTS = [
+		EffectIds::HASTE => true,
+		EffectIds::JUMP_BOOST => true,
+		EffectIds::RESISTANCE => true,
+		EffectIds::SPEED => true,
+		EffectIds::STRENGTH => true
+	];
+
+	private const ALLOWED_SECONDARY_EFFECTS = [
+		EffectIds::REGENERATION => true
+	];
+
+	private int $primaryEffect;
+	private int $secondaryEffect;
+
+	public function readStateFromWorld() : void{
+		parent::readStateFromWorld();
+		$tile = $this->position->getWorld()->getTile($this->position);
+		if($tile instanceof TileBeacon){
+			$this->primaryEffect = $tile->getPrimaryEffect();
+			$this->secondaryEffect = $tile->getSecondaryEffect();
+		}
+	}
+
+	public function writeStateToWorld() : void{
+		parent::writeStateToWorld();
+		$tile = $this->position->getWorld()->getTile($this->position);
+		if($tile instanceof TileBeacon){
+			$tile->setPrimaryEffect($this->primaryEffect);
+			$tile->setSecondaryEffect($this->secondaryEffect);
+		}
+	}
+
+	public function getPrimaryEffect() : int{
+		return $this->primaryEffect;
+	}
+
+	/**
+	 * @return $this
+	 * @throws \InvalidArgumentException
+	 */
+	public function setPrimaryEffect(int $primaryEffect) : self{
+		if(!isset(self::ALLOWED_PRIMARY_EFFECTS[$primaryEffect])){
+			throw new \InvalidArgumentException("Effect ID \"$primaryEffect\" is not allowed in the primary effect");
+		}
+		$this->primaryEffect = $primaryEffect;
+		return $this;
+	}
+
+	public function getSecondaryEffect() : int{
+		return $this->secondaryEffect;
+	}
+
+	/**
+	 * @return $this
+	 * @throws \InvalidArgumentException
+	 */
+	public function setSecondaryEffect(int $secondaryEffect) : self{
+		if(!isset(self::ALLOWED_PRIMARY_EFFECTS[$secondaryEffect]) || !isset(self::ALLOWED_SECONDARY_EFFECTS[$secondaryEffect])){
+			throw new \InvalidArgumentException("Effect ID \"$secondaryEffect\" is not allowed in the secondary effect");
+		}
+		$this->secondaryEffect = $secondaryEffect;
+		return $this;
+	}
 
 	public function getLightLevel() : int{
 		return 15;
@@ -49,16 +122,16 @@ final class Beacon extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		$tile = $this->position->getWorld()->getTile($this->position);
-		if(!$tile instanceof TileBeacon){
-			return;
-		}
 		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20 * 3);
 
-		$primaryE = $tile->getPrimaryEffect();
-		$secondaryE = $tile->getSecondaryEffect();
+		if(!$this->viewSky()){
+			return;
+		}
 
-		if($primaryE === 0 && $secondaryE === 0 || !$this->viewSky()){
+		$effectIdMap = EffectIdMap::getInstance();
+		$primaryE = $effectIdMap->fromId($this->primaryEffect);
+		$secondaryE = $effectIdMap->fromId($this->secondaryEffect);
+		if($primaryE === null && $secondaryE === null){
 			return;
 		}
 
@@ -73,20 +146,23 @@ final class Beacon extends Transparent{
 			$radius = (10 * $beaconLevel) + 10;
 			$effectDuration = 9 + (2 * $beaconLevel);
 
-			foreach($this->position->getWorld()->getPlayers() as $player){
-				if($player->getPosition()->distance($this->position) <= $radius){
-					if($primaryE === $secondaryE){
-						$effect = EffectIdMap::getInstance()->fromId($secondaryE);
-						if($effect instanceof Effect){
-							$player->getEffects()->add(new EffectInstance($effect, $effectDuration * 20, 1));
-						}
-						break;
+			$world = $this->position->getWorld();
+			$aabb = (new AxisAlignedBB(0, 0, 0, 1, $world->getMaxY(), 1))->offset($this->position->x, 0, $this->position->z)->expand($radius, 0, $radius);
+			if($primaryE === $secondaryE){
+				if($secondaryE === null){
+					return;
+				}
+				foreach($world->getNearbyEntities($aabb) as $entity){
+					if($entity instanceof Player){
+						$entity->getEffects()->add(new EffectInstance($secondaryE, $effectDuration * 20, 1));
 					}
-					foreach([$primaryE, $secondaryE] as $effectId){
-						if($effectId !== 0){
-							$effect = EffectIdMap::getInstance()->fromId($effectId);
+				}
+			}else{
+				foreach($world->getNearbyEntities($aabb) as $entity){
+					if($entity instanceof Player){
+						foreach([$primaryE, $secondaryE] as $effect){
 							if($effect instanceof Effect){
-								$player->getEffects()->add(new EffectInstance($effect, $effectDuration * 20, 0));
+								$entity->getEffects()->add(new EffectInstance($effect, $effectDuration * 20, 0));
 							}
 						}
 					}
@@ -100,17 +176,12 @@ final class Beacon extends Transparent{
 			throw new InvalidArgumentException("Beacon level must be in range 1-4, $level given");
 		}
 
+		$world = $this->position->getWorld();
+		$pos = $this->position->subtract(0, $level, 0);
 		for($x = -$level; $x <= $level; $x++){
 			for($z = -$level; $z <= $level; $z++){
-				$block = $this->position->getWorld()->getBlock($this->position->add($x, 0, $z)->subtract(0, $level, 0));
-				$allowedBlockId = [
-					BlockLegacyIds::IRON_BLOCK,
-					BlockLegacyIds::GOLD_BLOCK,
-					BlockLegacyIds::DIAMOND_BLOCK,
-					BlockLegacyIds::EMERALD_BLOCK
-					//TODO netherite block
-				];
-				if(!in_array($block->getId(), $allowedBlockId, true)){
+				$block = $world->getBlock($pos->add($x, 0, $z));
+				if(!isset(self::ALLOWED_BLOCK_IDS[$block->getId()])){
 					return false;
 				}
 			}
@@ -119,8 +190,11 @@ final class Beacon extends Transparent{
 	}
 
 	public function viewSky() : bool{
-		for($y = 0; $y <= $this->position->getWorld()->getMaxY() - $this->position->getFloorY(); $y++){
-			$block = $this->position->getWorld()->getBlock($this->position->add(0, $y, 0));
+		$world = $this->position->getWorld();
+		$maxY = $world->getMaxY();
+		$block = $this;
+		for($y = 0; $y <= $maxY; $y++){
+			$block = $world->getBlock($block->position->up());
 			if(!$block instanceof Transparent && !$block instanceof Bedrock){
 				return false;
 			}
