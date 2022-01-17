@@ -27,13 +27,14 @@ use InvalidArgumentException;
 use pocketmine\block\inventory\BeaconInventory;
 use pocketmine\block\tile\Beacon as TileBeacon;
 use pocketmine\data\bedrock\EffectIdMap;
-use pocketmine\data\bedrock\EffectIds;
 use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use function array_merge;
 
 final class Beacon extends Transparent{
 	private const ALLOWED_BLOCK_IDS = [
@@ -44,20 +45,8 @@ final class Beacon extends Transparent{
 		//TODO netherite block
 	];
 
-	private const ALLOWED_PRIMARY_EFFECTS = [
-		EffectIds::HASTE => true,
-		EffectIds::JUMP_BOOST => true,
-		EffectIds::RESISTANCE => true,
-		EffectIds::SPEED => true,
-		EffectIds::STRENGTH => true
-	];
-
-	private const ALLOWED_SECONDARY_EFFECTS = [
-		EffectIds::REGENERATION => true
-	];
-
-	private int $primaryEffect;
-	private int $secondaryEffect;
+	private int $primaryEffect = 0;
+	private int $secondaryEffect = 0;
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
@@ -83,9 +72,6 @@ final class Beacon extends Transparent{
 
 	/** @return $this */
 	public function setPrimaryEffect(int $primaryEffect) : self{
-		if(!isset(self::ALLOWED_PRIMARY_EFFECTS[$primaryEffect])){
-			throw new \InvalidArgumentException("Effect ID \"$primaryEffect\" is not allowed in the primary effect");
-		}
 		$this->primaryEffect = $primaryEffect;
 		return $this;
 	}
@@ -96,9 +82,6 @@ final class Beacon extends Transparent{
 
 	/** @return $this */
 	public function setSecondaryEffect(int $secondaryEffect) : self{
-		if(!isset(self::ALLOWED_PRIMARY_EFFECTS[$secondaryEffect]) || !isset(self::ALLOWED_SECONDARY_EFFECTS[$secondaryEffect])){
-			throw new \InvalidArgumentException("Effect ID \"$secondaryEffect\" is not allowed in the secondary effect");
-		}
 		$this->secondaryEffect = $secondaryEffect;
 		return $this;
 	}
@@ -194,5 +177,23 @@ final class Beacon extends Transparent{
 			}
 		}
 		return true;
+	}
+
+	/** @return Effect[] */
+	public function getVanillaPrimaryEffect() : array{
+		return [
+			VanillaEffects::HASTE(),
+			VanillaEffects::JUMP_BOOST(),
+			VanillaEffects::RESISTANCE(),
+			VanillaEffects::SPEED(),
+			VanillaEffects::STRENGTH()
+		];
+	}
+
+	/** @return Effect[] */
+	public function getVanillaSecondaryEffect() : array {
+		return array_merge([
+			VanillaEffects::REGENERATION()
+		], $this->getVanillaSecondaryEffect());
 	}
 }
