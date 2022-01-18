@@ -671,7 +671,7 @@ class InGamePacketHandler extends PacketHandler{
 				throw new PacketHandlingException("Invalid input $itemId");
 			}
 
-			if($block->getBeaconLevel() > 0){
+			if($block->getBeaconLevel() > 0 && $block->viewSky()){
 				$allowedEffects = $block->getAllowedEffect($block->getBeaconLevel());
 				$primaryEffect = EffectIdMap::getInstance()->fromId($nbt->getInt("primary", 0));
 				if($primaryEffect !== null && in_array($primaryEffect, $allowedEffects, true)){
