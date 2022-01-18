@@ -279,7 +279,6 @@ class TypeConverter{
 					}elseif(($current = $player->getCurrentWindow()) !== null){
 						$slotMap = match(true){
 							$current instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
-							$current instanceof BeaconInventory => UIInventorySlotOffset::BEACON_PAYMENT,
 							$current instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
 							$current instanceof LoomInventory => UIInventorySlotOffset::LOOM,
 							$current instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
@@ -287,11 +286,10 @@ class TypeConverter{
 						};
 						if($slotMap !== null){
 							$window = $current;
-							if($window instanceof BeaconInventory){
-								$slot = BeaconInventory::SLOT_INPUT;
-							}else{
-								$slot = $slotMap[$pSlot] ?? null;
-							}
+							$slot = $slotMap[$pSlot] ?? null;
+						}elseif($current instanceof BeaconInventory){
+							$window = $current;
+							$slot = BeaconInventory::SLOT_INPUT;
 						}
 					}
 					if($slot === null){
