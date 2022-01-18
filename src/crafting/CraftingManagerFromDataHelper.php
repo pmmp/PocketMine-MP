@@ -33,9 +33,8 @@ use function json_decode;
 final class CraftingManagerFromDataHelper{
 
 	/**
-	 * @phpstan-var array<int, string>
-	 * @return CraftingManager
 	 * @var string[]
+	 * @phpstan-var array<int, string>
 	 */
 	public static function make(array $filePaths) : CraftingManager{
 		$result = new CraftingManager();
@@ -83,11 +82,13 @@ final class CraftingManagerFromDataHelper{
 				);
 			}
 
-			foreach($recipes["composter"] as $recipe){
-				$result->getCompostRecipeManager()->register(new CompostRecipe(
-					Item::jsonDeserialize($recipe["compost"]),
-					$recipe["percentage"]
-				));
+			if (isset($recipes["composter"])) {
+				foreach($recipes["composter"] as $recipe){
+					$result->getCompostRecipeManager()->register(new CompostRecipe(
+						Item::jsonDeserialize($recipe["compost"]),
+						$recipe["percentage"]
+					));
+				}
 			}
 		}
 		return $result;
