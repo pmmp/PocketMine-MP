@@ -25,8 +25,10 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\BaseSign;
 use pocketmine\block\Beacon;
+use pocketmine\block\inventory\BeaconInventory;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\utils\SignText;
+use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\InvalidSkinException;
@@ -659,12 +661,22 @@ class InGamePacketHandler extends PacketHandler{
 
 			$this->session->getLogger()->debug("Invalid sign update data: " . base64_encode($packet->nbt->getEncodedNbt()));
 		}elseif($block instanceof Beacon){
-			try{
-				$block->setPrimaryEffect($nbt->getInt("primary", 0));
-				$block->setSecondaryEffect($nbt->getInt("secondary", 0));
-			}catch(\InvalidArgumentException $e){
-				throw PacketHandlingException::wrap($e);
+			$inventory = $this->player->getCurrentWindow();
+			if(!($inventory instanceof BeaconInventory)){
+				return false;
 			}
+			$itemId = $inventory->getInput()->getId();
+			if(!isset(Beacon::ALLOWED_ITEM_IDS[$itemId])){
+				throw new PacketHandlingException("Invalid input $itemId");
+			}
+			$effectIdMap = EffectIdMap::getInstance();
+			$primaryEffectId = $nbt->getInt("primary", 0);
+			$primaryEffect = $effectIdMap->fromId($primaryEffectId);
+			if($primaryEffect === null){
+				throw new PacketHandlingException("Invalid primary effect $primaryEffectId");
+			}
+			$block->setPrimaryEffect($primaryEffect);
+			$block->setSecondaryEffect($effectIdMap->fromId($nbt->getInt("secondary", 0)));
 			$world = $block->getPosition()->getWorld();
 			$world->setBlock($pos, $block);
 			$world->scheduleDelayedBlockUpdate($pos, 20);
