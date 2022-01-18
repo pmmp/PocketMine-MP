@@ -669,17 +669,20 @@ class InGamePacketHandler extends PacketHandler{
 			if(!isset(Beacon::ALLOWED_ITEM_IDS[$itemId])){
 				throw new PacketHandlingException("Invalid input $itemId");
 			}
-			$effectIdMap = EffectIdMap::getInstance();
-			$primaryEffectId = $nbt->getInt("primary", 0);
-			$primaryEffect = $effectIdMap->fromId($primaryEffectId);
-			if($primaryEffect === null){
-				throw new PacketHandlingException("Invalid primary effect $primaryEffectId");
+			if($block->getBeaconLevel() > 0){
+				$allowedEffect = $block->getAllowedEffect($block->getBeaconLevel());
+				$primaryEffect = EffectIdMap::getInstance()->fromId($nbt->getInt("primary", 0));
+				if($primaryEffect !== null && in_array($primaryEffect, $allowedEffect, true)){
+					$block->setPrimaryEffect($primaryEffect);
+					$secondaryEffect = EffectIdMap::getInstance()->fromId($nbt->getInt("secondary", 0));
+					if($secondaryEffect !== null && in_array($secondaryEffect, $allowedEffect, true)){
+						$block->setSecondaryEffect($secondaryEffect);
+					}
+					$world = $block->getPosition()->getWorld();
+					$world->setBlock($pos, $block);
+					$world->scheduleDelayedBlockUpdate($pos, 20);
+				}
 			}
-			$block->setPrimaryEffect($primaryEffect);
-			$block->setSecondaryEffect($effectIdMap->fromId($nbt->getInt("secondary", 0)));
-			$world = $block->getPosition()->getWorld();
-			$world->setBlock($pos, $block);
-			$world->scheduleDelayedBlockUpdate($pos, 20);
 			return true;
 		}
 

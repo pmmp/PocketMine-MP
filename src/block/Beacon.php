@@ -29,10 +29,12 @@ use pocketmine\block\tile\Beacon as TileBeacon;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
+use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use function array_merge;
 
 final class Beacon extends Transparent{
 	public const ALLOWED_ITEM_IDS = [
@@ -40,6 +42,7 @@ final class Beacon extends Transparent{
 		ItemIds::GOLD_INGOT => true,
 		ItemIds::DIAMOND => true,
 		ItemIds::EMERALD => true
+		//TODO: netherite ingot
 	];
 
 	private const ALLOWED_BLOCK_IDS = [
@@ -62,6 +65,7 @@ final class Beacon extends Transparent{
 			$this->primaryEffect = EffectIdMap::getInstance()->fromId($tile->getPrimaryEffect());
 			$this->secondaryEffect = EffectIdMap::getInstance()->fromId($tile->getSecondaryEffect());
 		}
+
 	}
 
 	public function writeStateToWorld() : void{
@@ -75,6 +79,17 @@ final class Beacon extends Transparent{
 				$tile->setSecondaryEffect(EffectIdMap::getInstance()->toId($this->secondaryEffect));
 			}
 		}
+	}
+
+	public function getBeaconLevel() : int {
+		$beaconLevel = 0;
+		for($i = 1; $i <= 4; $i++){
+			if(!$this->isBeaconLevelValid($i)){
+				break;
+			}
+			$beaconLevel++;
+		}
+		return $beaconLevel;
 	}
 
 	public function getPrimaryEffect() : Effect{
@@ -116,13 +131,7 @@ final class Beacon extends Transparent{
 			return;
 		}
 
-		$beaconLevel = 0;
-		for($i = 1; $i <= 4; $i++){
-			if(!$this->isBeaconLevelValid($i)){
-				break;
-			}
-			$beaconLevel++;
-		}
+		$beaconLevel = $this->getBeaconLevel();
 		if($beaconLevel > 0){
 			$radius = (10 * $beaconLevel) + 10;
 			$effectDuration = 9 + (2 * $beaconLevel);
@@ -185,5 +194,37 @@ final class Beacon extends Transparent{
 			}
 		}
 		return true;
+	}
+
+	/** @return Effect[][] */
+	public function getLevelEffect() : array {
+		return [
+			1 => [
+				VanillaEffects::HASTE(),
+				VanillaEffects::SPEED()
+			],
+			2 => [
+				VanillaEffects::RESISTANCE(),
+				VanillaEffects::JUMP_BOOST()
+			],
+			3 => [
+				VanillaEffects::STRENGTH()
+			],
+			4 => [
+				VanillaEffects::REGENERATION()
+			]
+		];
+	}
+
+	public function getAllowedEffect(int $beaconLevel) : array {
+		if($beaconLevel < 1 || $beaconLevel > 4){
+			throw new InvalidArgumentException("Beacon level must be in range 1-4, $beaconLevel given");
+		}
+		$levelEffects = $this->getLevelEffect();
+		$allowed = [];
+		for ($i = 1; $i <= $beaconLevel; $i++) {
+			$allowed = array_merge($levelEffects[$i], $allowed);
+		}
+		return $allowed;
 	}
 }
