@@ -37,11 +37,11 @@ trait RegistryTrait{
 	 * @throws \InvalidArgumentException
 	 */
 	private static function _registryRegister(string $name, object $member) : void{
-		$name = mb_strtoupper($name);
+		$name = mb_strtoupper($name, "US-ASCII");
 		if(isset(self::$members[$name])){
 			throw new \InvalidArgumentException("\"$name\" is already reserved");
 		}
-		self::$members[mb_strtoupper($name)] = $member;
+		self::$members[mb_strtoupper($name, "US-ASCII")] = $member;
 	}
 
 	/**
@@ -68,7 +68,7 @@ trait RegistryTrait{
 	 */
 	private static function _registryFromString(string $name) : object{
 		self::checkInit();
-		$name = mb_strtoupper($name);
+		$name = mb_strtoupper($name, "US-ASCII");
 		if(!isset(self::$members[$name])){
 			throw new \InvalidArgumentException("No such registry member: " . self::class . "::" . $name);
 		}

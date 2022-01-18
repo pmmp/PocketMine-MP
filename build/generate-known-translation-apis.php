@@ -48,7 +48,7 @@ use const STDERR;
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 function constantify(string $permissionName) : string{
-	return mb_strtoupper(str_replace([".", "-"], "_", $permissionName));
+	return mb_strtoupper(str_replace([".", "-"], "_", $permissionName), "US-ASCII");
 }
 
 function functionify(string $permissionName) : string{

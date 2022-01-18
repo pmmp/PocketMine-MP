@@ -68,7 +68,7 @@ function generateMethodAnnotations(string $namespaceName, array $members) : stri
 		}else{
 			$typehint = '\\' . $reflect->getName();
 		}
-		$accessor = mb_strtoupper($name);
+		$accessor = mb_strtoupper($name, "US-ASCII");
 		$memberLines[$accessor] = sprintf($lineTmpl, $accessor, $typehint);
 	}
 	ksort($memberLines, SORT_STRING);

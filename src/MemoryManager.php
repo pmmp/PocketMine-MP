@@ -115,7 +115,7 @@ class MemoryManager{
 			if($m <= 0){
 				$defaultMemory = 0;
 			}else{
-				switch(mb_strtoupper($matches[2])){
+				switch(mb_strtoupper($matches[2], "US-ASCII")){
 					case "K":
 						$defaultMemory = intdiv($m, 1024);
 						break;

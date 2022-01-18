@@ -89,7 +89,7 @@ final class EventPriority{
 			"HIGH" => self::HIGH,
 			"HIGHEST" => self::HIGHEST,
 			"MONITOR" => self::MONITOR
-		][mb_strtoupper($name)] ?? null;
+		][mb_strtoupper($name, "US-ASCII")] ?? null;
 		if($value !== null){
 			return $value;
 		}
