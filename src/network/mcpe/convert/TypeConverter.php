@@ -325,6 +325,7 @@ class TypeConverter{
 				switch($action->windowId){
 					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT:
 					case NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
+					case -10:
 						return null;
 				}
 
