@@ -92,12 +92,12 @@ final class Beacon extends Transparent{
 		return $beaconLevel;
 	}
 
-	public function getPrimaryEffect() : Effect{
+	public function getPrimaryEffect() : ?Effect{
 		return $this->primaryEffect;
 	}
 
 	/** @return $this */
-	public function setPrimaryEffect(Effect $primaryEffect) : self{
+	public function setPrimaryEffect(?Effect $primaryEffect) : self{
 		$this->primaryEffect = $primaryEffect;
 		return $this;
 	}
@@ -216,6 +216,7 @@ final class Beacon extends Transparent{
 		];
 	}
 
+	/** @return Effect[] */
 	public function getAllowedEffect(int $beaconLevel) : array {
 		if($beaconLevel < 1 || $beaconLevel > 4){
 			throw new InvalidArgumentException("Beacon level must be in range 1-4, $beaconLevel given");
