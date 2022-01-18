@@ -230,7 +230,7 @@ class Internet{
 				foreach(explode("\r\n", $rawHeaderGroup) as $line){
 					$nameValue = explode(":", $line, 2);
 					if(isset($nameValue[1])){
-						$headerGroup[trim(mb_strtolower($nameValue[0]))] = trim($nameValue[1]);
+						$headerGroup[trim(mb_strtolower($nameValue[0], "US-ASCII"))] = trim($nameValue[1]);
 					}
 				}
 				$headers[] = $headerGroup;

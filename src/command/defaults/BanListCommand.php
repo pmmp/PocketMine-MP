@@ -52,7 +52,7 @@ class BanListCommand extends VanillaCommand{
 		}
 
 		if(isset($args[0])){
-			$args[0] = mb_strtolower($args[0]);
+			$args[0] = mb_strtolower($args[0], "US-ASCII");
 			if($args[0] === "ips"){
 				$list = $sender->getServer()->getIPBans();
 			}elseif($args[0] === "players"){

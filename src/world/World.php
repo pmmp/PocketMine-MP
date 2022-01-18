@@ -377,7 +377,7 @@ class World implements ChunkManager{
 	}
 
 	public static function getDifficultyFromString(string $str) : int{
-		switch(mb_strtolower(trim($str))){
+		switch(mb_strtolower(trim($str), "US-ASCII")){
 			case "0":
 			case "peaceful":
 			case "p":

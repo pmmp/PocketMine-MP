@@ -113,8 +113,8 @@ final class LegacyStringToItemParser{
 			throw new LegacyStringToItemParserException("Unable to parse \"" . $b[1] . "\" from \"" . $input . "\" as a valid meta value");
 		}
 
-		if(isset($this->map[mb_strtolower($b[0])])){
-			$item = $this->itemFactory->get($this->map[mb_strtolower($b[0])], $meta);
+		if(isset($this->map[mb_strtolower($b[0], "US-ASCII")])){
+			$item = $this->itemFactory->get($this->map[mb_strtolower($b[0], "US-ASCII")], $meta);
 		}else{
 			throw new LegacyStringToItemParserException("Unable to resolve \"" . $input . "\" to a valid item");
 		}

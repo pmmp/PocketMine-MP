@@ -551,7 +551,7 @@ class PluginManager{
 						$eventClass
 					));
 				}
-				switch(mb_strtolower($tags[ListenerMethodTags::HANDLE_CANCELLED])){
+				switch(mb_strtolower($tags[ListenerMethodTags::HANDLE_CANCELLED], "US-ASCII")){
 					case "true":
 					case "":
 						$handleCancelled = true;

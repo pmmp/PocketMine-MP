@@ -59,7 +59,7 @@ class WhitelistCommand extends VanillaCommand{
 		}
 
 		if(count($args) === 1){
-			switch(mb_strtolower($args[0])){
+			switch(mb_strtolower($args[0], "US-ASCII")){
 				case "reload":
 					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_RELOAD)){
 						$sender->getServer()->getWhitelisted()->reload();
@@ -106,7 +106,7 @@ class WhitelistCommand extends VanillaCommand{
 			if(!Player::isValidUserName($args[1])){
 				throw new InvalidCommandSyntaxException();
 			}
-			switch(mb_strtolower($args[0])){
+			switch(mb_strtolower($args[0], "US-ASCII")){
 				case "add":
 					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_ADD)){
 						$sender->getServer()->addWhitelist($args[1]);

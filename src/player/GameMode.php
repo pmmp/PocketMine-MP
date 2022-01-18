@@ -60,13 +60,13 @@ final class GameMode{
 	protected static function register(self $member) : void{
 		self::Enum_register($member);
 		foreach($member->getAliases() as $alias){
-			self::$aliasMap[mb_strtolower($alias)] = $member;
+			self::$aliasMap[mb_strtolower($alias, "US-ASCII")] = $member;
 		}
 	}
 
 	public static function fromString(string $str) : ?self{
 		self::checkInit();
-		return self::$aliasMap[mb_strtolower($str)] ?? null;
+		return self::$aliasMap[mb_strtolower($str, "US-ASCII")] ?? null;
 	}
 
 	/** @var string */

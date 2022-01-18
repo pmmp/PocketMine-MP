@@ -98,7 +98,7 @@ class Language{
 	 * @throws LanguageNotFoundException
 	 */
 	public function __construct(string $lang, ?string $path = null, string $fallback = self::FALLBACK_LANGUAGE){
-		$this->langName = mb_strtolower($lang);
+		$this->langName = mb_strtolower($lang, "US-ASCII");
 
 		if($path === null){
 			$path = \pocketmine\LOCALE_DATA_PATH;

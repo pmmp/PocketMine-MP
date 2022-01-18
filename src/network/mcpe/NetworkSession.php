@@ -844,7 +844,7 @@ class NetworkSession{
 				continue;
 			}
 
-			$lname = mb_strtolower($command->getName());
+			$lname = mb_strtolower($command->getName(), "US-ASCII");
 			$aliases = $command->getAliases();
 			$aliasObj = null;
 			if(count($aliases) > 0){

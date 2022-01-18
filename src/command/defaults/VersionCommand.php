@@ -100,7 +100,7 @@ class VersionCommand extends VanillaCommand{
 			}
 
 			$found = false;
-			$pluginName = mb_strtolower($pluginName);
+			$pluginName = mb_strtolower($pluginName, "US-ASCII");
 			foreach($sender->getServer()->getPluginManager()->getPlugins() as $plugin){
 				if(stripos($plugin->getName(), $pluginName) !== false){
 					$this->describeToSender($plugin, $sender);

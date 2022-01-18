@@ -74,7 +74,7 @@ class TimingsCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$mode = mb_strtolower($args[0]);
+		$mode = mb_strtolower($args[0], "US-ASCII");
 
 		if($mode === "on"){
 			if(TimingsHandler::isEnabled()){

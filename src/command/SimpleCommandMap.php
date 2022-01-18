@@ -148,7 +148,7 @@ class SimpleCommandMap implements CommandMap{
 			$label = $command->getName();
 		}
 		$label = trim($label);
-		$fallbackPrefix = mb_strtolower(trim($fallbackPrefix));
+		$fallbackPrefix = mb_strtolower(trim($fallbackPrefix), "US-ASCII");
 
 		$registered = $this->registerAlias($command, false, $fallbackPrefix, $label);
 
@@ -288,9 +288,9 @@ class SimpleCommandMap implements CommandMap{
 
 			//These registered commands have absolute priority
 			if(count($targets) > 0){
-				$this->knownCommands[mb_strtolower($alias)] = new FormattedCommandAlias(mb_strtolower($alias), $targets);
+				$this->knownCommands[mb_strtolower($alias, "US-ASCII")] = new FormattedCommandAlias(mb_strtolower($alias), $targets);
 			}else{
-				unset($this->knownCommands[mb_strtolower($alias)]);
+				unset($this->knownCommands[mb_strtolower($alias, "US-ASCII")]);
 			}
 
 		}

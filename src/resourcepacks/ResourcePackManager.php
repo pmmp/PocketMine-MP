@@ -109,7 +109,7 @@ class ResourcePackManager{
 
 				if($newPack instanceof ResourcePack){
 					$this->resourcePacks[] = $newPack;
-					$this->uuidList[mb_strtolower($newPack->getPackId())] = $newPack;
+					$this->uuidList[mb_strtolower($newPack->getPackId(), "US-ASCII")] = $newPack;
 				}else{
 					throw new ResourcePackException("Format not recognized");
 				}
@@ -147,7 +147,7 @@ class ResourcePackManager{
 	 * Returns the resource pack matching the specified UUID string, or null if the ID was not recognized.
 	 */
 	public function getPackById(string $id) : ?ResourcePack{
-		return $this->uuidList[mb_strtolower($id)] ?? null;
+		return $this->uuidList[mb_strtolower($id, "US-ASCII")] ?? null;
 	}
 
 	/**

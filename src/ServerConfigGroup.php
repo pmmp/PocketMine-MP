@@ -119,7 +119,7 @@ final class ServerConfigGroup{
 			return $value !== 0;
 		}
 		if(is_string($value)){
-			switch(mb_strtolower($value)){
+			switch(mb_strtolower($value, "US-ASCII")){
 				case "on":
 				case "true":
 				case "1":

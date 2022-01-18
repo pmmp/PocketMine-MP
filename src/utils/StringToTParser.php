@@ -72,7 +72,7 @@ abstract class StringToTParser{
 	}
 
 	protected function reprocess(string $input) : string{
-		return mb_strtolower(str_replace([" ", "minecraft:"], ["_", ""], trim($input)));
+		return mb_strtolower(str_replace([" ", "minecraft:"], ["_", ""], trim($input)), "US-ASCII");
 	}
 
 	/** @return string[]|int[] */

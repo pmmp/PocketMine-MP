@@ -72,7 +72,7 @@ final class GeneratorManager{
 	public function addGenerator(string $class, string $name, \Closure $presetValidator, bool $overwrite = false) : void{
 		Utils::testValidInstance($class, Generator::class);
 
-		$name = mb_strtolower($name);
+		$name = mb_strtolower($name, "US-ASCII");
 		if(!$overwrite and isset($this->list[$name])){
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
@@ -93,7 +93,7 @@ final class GeneratorManager{
 	 * Returns the generator entry of a registered Generator matching the given name, or null if not found.
 	 */
 	public function getGenerator(string $name) : ?GeneratorManagerEntry{
-		return $this->list[mb_strtolower($name)] ?? null;
+		return $this->list[mb_strtolower($name, "US-ASCII")] ?? null;
 	}
 
 	/**

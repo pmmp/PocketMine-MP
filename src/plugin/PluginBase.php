@@ -210,7 +210,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	public function getCommand(string $name){
 		$command = $this->getServer()->getPluginCommand($name);
 		if($command === null or $command->getOwningPlugin() !== $this){
-			$command = $this->getServer()->getPluginCommand(mb_strtolower($this->description->getName()) . ":" . $name);
+			$command = $this->getServer()->getPluginCommand(mb_strtolower($this->description->getName(), "US-ASCII") . ":" . $name);
 		}
 
 		if($command instanceof PluginOwned and $command->getOwningPlugin() === $this){

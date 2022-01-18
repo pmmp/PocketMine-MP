@@ -151,7 +151,7 @@ class Config{
 
 		$this->type = $type;
 		if($this->type === Config::DETECT){
-			$extension = mb_strtolower(Path::getExtension($this->file));
+			$extension = mb_strtolower(Path::getExtension($this->file), "US-ASCII");
 			if(isset(Config::$formats[$extension])){
 				$this->type = Config::$formats[$extension];
 			}else{
@@ -447,7 +447,7 @@ class Config{
 	 */
 	public function exists($k, bool $lowercase = false) : bool{
 		if($lowercase){
-			$k = mb_strtolower($k); //Convert requested  key to lower
+			$k = mb_strtolower($k, "US-ASCII"); //Convert requested  key to lower
 			$array = array_change_key_case($this->config, CASE_LOWER); //Change all keys in array to lower
 			return isset($array[$k]); //Find $k in modified array
 		}else{
@@ -555,7 +555,7 @@ class Config{
 		if(preg_match_all('/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
 				$v = trim($matches[2][$i]);
-				switch(mb_strtolower($v)){
+				switch(mb_strtolower($v, "US-ASCII")){
 					case "on":
 					case "true":
 					case "yes":

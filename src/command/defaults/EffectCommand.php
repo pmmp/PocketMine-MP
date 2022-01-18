@@ -62,7 +62,7 @@ class EffectCommand extends VanillaCommand{
 		}
 		$effectManager = $player->getEffects();
 
-		if(mb_strtolower($args[1]) === "clear"){
+		if(mb_strtolower($args[1], "US-ASCII") === "clear"){
 			$effectManager->clear();
 
 			$sender->sendMessage(KnownTranslationFactory::commands_effect_success_removed_all($player->getDisplayName()));
@@ -95,7 +95,7 @@ class EffectCommand extends VanillaCommand{
 
 		$visible = true;
 		if(count($args) >= 5){
-			$v = mb_strtolower($args[4]);
+			$v = mb_strtolower($args[4], "US-ASCII");
 			if($v === "on" or $v === "true" or $v === "t" or $v === "1"){
 				$visible = false;
 			}

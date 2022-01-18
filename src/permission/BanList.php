@@ -57,7 +57,7 @@ class BanList{
 	public function getEntry(string $name) : ?BanEntry{
 		$this->removeExpired();
 
-		return $this->list[mb_strtolower($name)] ?? null;
+		return $this->list[mb_strtolower($name, "US-ASCII")] ?? null;
 	}
 
 	/**
@@ -70,7 +70,7 @@ class BanList{
 	}
 
 	public function isBanned(string $name) : bool{
-		$name = mb_strtolower($name);
+		$name = mb_strtolower($name, "US-ASCII");
 		if(!$this->isEnabled()){
 			return false;
 		}else{
@@ -98,7 +98,7 @@ class BanList{
 	}
 
 	public function remove(string $name) : void{
-		$name = mb_strtolower($name);
+		$name = mb_strtolower($name, "US-ASCII");
 		if(isset($this->list[$name])){
 			unset($this->list[$name]);
 			$this->save();

@@ -48,7 +48,7 @@ class BanEntry{
 	private $reason = "Banned by an operator.";
 
 	public function __construct(string $name){
-		$this->name = mb_strtolower($name);
+		$this->name = mb_strtolower($name, "US-ASCII");
 		/** @noinspection PhpUnhandledExceptionInspection */
 		$this->creationDate = new \DateTime();
 	}
@@ -169,7 +169,7 @@ class BanEntry{
 		}
 		if(count($parts) > 0){
 			$expire = trim(array_shift($parts));
-			if($expire !== "" and mb_strtolower($expire) !== "forever"){
+			if($expire !== "" and mb_strtolower($expire, "US-ASCII") !== "forever"){
 				$entry->setExpires(self::parseDate($expire));
 			}
 		}

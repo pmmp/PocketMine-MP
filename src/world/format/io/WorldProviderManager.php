@@ -62,7 +62,7 @@ final class WorldProviderManager{
 	}
 
 	public function addProvider(WorldProviderManagerEntry $providerEntry, string $name, bool $overwrite = false) : void{
-		$name = mb_strtolower($name);
+		$name = mb_strtolower($name, "US-ASCII");
 		if(!$overwrite and isset($this->providers[$name])){
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
@@ -98,6 +98,6 @@ final class WorldProviderManager{
 	 * Returns a WorldProvider by name, or null if not found
 	 */
 	public function getProviderByName(string $name) : ?WorldProviderManagerEntry{
-		return $this->providers[trim(mb_strtolower($name))] ?? null;
+		return $this->providers[trim(mb_strtolower($name, "US-ASCII"))] ?? null;
 	}
 }

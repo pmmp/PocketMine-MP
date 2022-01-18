@@ -44,7 +44,7 @@ use const STDERR;
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 function markdownify(string $name) : string{
-	return str_replace(['.', '`', ' '], ['', '', '-'], mb_strtolower($name));
+	return str_replace(['.', '`', ' '], ['', '', '-'], mb_strtolower($name, "US-ASCII"));
 }
 DefaultPermissions::registerCorePermissions();
 

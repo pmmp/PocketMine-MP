@@ -66,7 +66,7 @@ class PermissionParser{
 				return "false";
 			}
 		}
-		$lower = mb_strtolower($value);
+		$lower = mb_strtolower($value, "US-ASCII");
 		if(isset(self::DEFAULT_STRING_MAP[$lower])){
 			return self::DEFAULT_STRING_MAP[$lower];
 		}

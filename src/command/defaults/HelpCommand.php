@@ -100,7 +100,7 @@ class HelpCommand extends VanillaCommand{
 
 			return true;
 		}else{
-			if(($cmd = $sender->getServer()->getCommandMap()->getCommand(mb_strtolower($commandName))) instanceof Command){
+			if(($cmd = $sender->getServer()->getCommandMap()->getCommand(mb_strtolower($commandName, "US-ASCII"))) instanceof Command){
 				if($cmd->testPermissionSilent($sender)){
 					$lang = $sender->getLanguage();
 					$description = $cmd->getDescription();

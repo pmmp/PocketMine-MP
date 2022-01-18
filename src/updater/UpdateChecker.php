@@ -162,7 +162,7 @@ class UpdateChecker{
 	 * Returns the channel used for update checking (stable, beta, dev)
 	 */
 	public function getChannel() : string{
-		return mb_strtolower($this->server->getConfigGroup()->getPropertyString("auto-updater.preferred-channel", "stable"));
+		return mb_strtolower($this->server->getConfigGroup()->getPropertyString("auto-updater.preferred-channel", "stable"), "US-ASCII");
 	}
 
 	/**
