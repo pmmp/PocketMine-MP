@@ -30,10 +30,7 @@ final class CompostRecipeManager{
 	/** @var CompostRecipe[] */
 	protected array $compostRecipes = [];
 
-	/**
-	 * @var ObjectSet
-	 * @phpstan-var ObjectSet<\Closure(FurnaceRecipe) : void>
-	 */
+	/** @phpstan-var ObjectSet<\Closure(FurnaceRecipe) : void> */
 	private ObjectSet $recipeRegisteredCallbacks;
 
 	public function __construct(){

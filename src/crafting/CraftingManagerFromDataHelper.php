@@ -24,9 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
-use pocketmine\Server;
 use pocketmine\utils\AssumptionFailedError;
-use ReflectionClass;
 use function array_map;
 use function file_get_contents;
 use function is_array;

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\crafting\CompostRecipe;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
@@ -35,7 +36,6 @@ use pocketmine\world\sound\ComposterEmptySound;
 use pocketmine\world\sound\ComposterFillSound;
 use pocketmine\world\sound\ComposterFillSuccessSound;
 use pocketmine\world\sound\ComposterReadySound;
-use pocketmine\crafting\CompostRecipe;
 use function max;
 use function mt_rand;
 
@@ -60,8 +60,8 @@ class Composter extends Transparent{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		$empty_offset = (max(1, 15 - 2 * $this->fill_level) - (int) ($this->fill_level === 0))/16;
-		$boxes = [AxisAlignedBB::one()->contract(2/16, 0, 2/16)->trim(Facing::UP, $empty_offset)];
+		$empty_layer = (max(1, 15 - 2 * $this->fill_level) - (int) ($this->fill_level === 0)) / 16;
+		$boxes = [AxisAlignedBB::one()->contract(2 / 16, 0, 2 / 16)->trim(Facing::UP, $empty_layer)];
 
 		foreach (Facing::HORIZONTAL as $side) {
 			$boxes[] = AxisAlignedBB::one()->trim(Facing::opposite($side), 14 / 16);
@@ -81,9 +81,6 @@ class Composter extends Transparent{
 		return $this->fill_level;
 	}
 
-	/**
-	 * @throws \Exception
-	 */
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if (($player instanceof Player) && $this->compost(clone $item)) {
 			$item->pop();
@@ -91,9 +88,6 @@ class Composter extends Transparent{
 		return true;
 	}
 
-	/**
-	 * @throws \Exception
-	 */
 	public function compost(Item $item) : bool{
 		if ($this->fill_level >= 8) {
 			$this->position->getWorld()->dropItem(
@@ -107,28 +101,26 @@ class Composter extends Transparent{
 
 			$this->fill_level = 0;
 			$this->position->getWorld()->setBlock($this->position->add(0.5, 0.5, 0.5), $this);
+		}
+		$compost = $this->position->getWorld()->getServer()->getCraftingManager()->getCompostRecipeManager()->match($item);
+		if ($compost instanceof CompostRecipe) {
 			return false;
-		} else {
-			$compost = $this->position->getWorld()->getServer()->getCraftingManager()->getCompostRecipeManager()->match($item);
-			if ($compost instanceof CompostRecipe) {
-				return false;
-			}
-			$this->position->getWorld()->addParticle($this->position->add(0.5, 0.5, 0.5), new CropGrowthEmitterParticle());
+		}
+		$this->position->getWorld()->addParticle($this->position->add(0.5, 0.5, 0.5), new CropGrowthEmitterParticle());
 
-			if (mt_rand(1, 100) <= $compost->getPercentage()) {
-				++$this->fill_level;
-				if ($this->fill_level === 8) {
-					$this->position->getWorld()->addSound($this->position, new ComposterReadySound());
-				} else {
-					$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
-				}
+		if (mt_rand(1, 100) <= $compost->getPercentage()) {
+			++$this->fill_level;
+			if ($this->fill_level === 8) {
+				$this->position->getWorld()->addSound($this->position, new ComposterReadySound());
 			} else {
-				$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
-				return true;
+				$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
 			}
-			$this->position->getWorld()->setBlock($this->position, $this);
+		} else {
+			$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
 			return true;
 		}
+		$this->position->getWorld()->setBlock($this->position, $this);
+		return true;
 	}
 
 	public function getDrops(Item $item) : array{

@@ -30,12 +30,11 @@ class CompostRecipe{
 	/** @var Item */
 	private $compost;
 
-	/** @var int */
-	private int $pecentage;
+	private int $percentage;
 
 	public function __construct(Item $compost, $percentage){
 		$this->compost = $compost;
-		$this->pecentage = $percentage;
+		$this->percentage = $percentage;
 	}
 
 	public function getCompost() : Item{
@@ -43,6 +42,6 @@ class CompostRecipe{
 	}
 
 	public function getPercentage() : int{
-		return $this->pecentage;
+		return $this->percentage;
 	}
 }
