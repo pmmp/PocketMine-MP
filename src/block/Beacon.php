@@ -26,7 +26,6 @@ namespace pocketmine\block;
 use InvalidArgumentException;
 use pocketmine\block\inventory\BeaconInventory;
 use pocketmine\block\tile\Beacon as TileBeacon;
-use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
@@ -51,20 +50,17 @@ final class Beacon extends Transparent{
 		//TODO netherite block
 	];
 
-	private Effect $primaryEffect;
-	private ?Effect $secondaryEffect;
+	/** @var null|Effect */
+	private $primaryEffect;
+	/** @var null|Effect */
+	private $secondaryEffect;
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBeacon){
 			$effectIdMap = EffectIdMap::getInstance();
-			$primaryEffectId = $tile->getPrimaryEffect();
-			$primaryEffect = $effectIdMap->fromId($primaryEffectId);
-			if($primaryEffect === null){
-				throw new InvalidBlockStateException("Invalid primary effect $primaryEffectId");
-			}
-			$this->primaryEffect = $primaryEffect;
+			$this->primaryEffect = $effectIdMap->fromId($tile->getPrimaryEffect());
 			$this->secondaryEffect = $effectIdMap->fromId($tile->getSecondaryEffect());
 		}
 	}
@@ -74,7 +70,9 @@ final class Beacon extends Transparent{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBeacon){
 			$effectIdMap = EffectIdMap::getInstance();
-			$tile->setPrimaryEffect($effectIdMap->toId($this->primaryEffect));
+			if($this->primaryEffect instanceof Effect){
+				$tile->setPrimaryEffect($effectIdMap->toId($this->primaryEffect));
+			}
 			if($this->secondaryEffect instanceof Effect){
 				$tile->setSecondaryEffect($effectIdMap->toId($this->secondaryEffect));
 			}
@@ -136,11 +134,16 @@ final class Beacon extends Transparent{
 			if($this->primaryEffect === $this->secondaryEffect){
 				foreach($world->getNearbyEntities($aabb) as $entity){
 					if($entity instanceof Player){
-						$entity->getEffects()->add(new EffectInstance($this->primaryEffect, $effectDuration * 20, 1));
+						if($this->primaryEffect !== null){
+							$entity->getEffects()->add(new EffectInstance($this->primaryEffect, $effectDuration * 20, 1));
+						}
 					}
 				}
 			}else{
-				$effects = [$this->primaryEffect];
+				$effects = [];
+				if($this->primaryEffect !== null){
+					$effects[] = $this->primaryEffect;
+				}
 				if($this->secondaryEffect !== null){
 					$effects[] = $this->secondaryEffect;
 				}
