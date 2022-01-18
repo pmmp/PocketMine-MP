@@ -128,12 +128,12 @@ final class Beacon extends Transparent{
 	public function onScheduledUpdate() : void{
 		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20 * 3);
 
-		if(!$this->viewSky()){
-			return;
-		}
-
 		$beaconLevel = $this->getBeaconLevel();
 		if($beaconLevel > 0){
+			if(!$this->viewSky()){
+				return;
+			}
+
 			$radius = (10 * $beaconLevel) + 10;
 			$effectDuration = 9 + (2 * $beaconLevel);
 
