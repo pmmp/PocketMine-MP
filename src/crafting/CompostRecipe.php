@@ -32,7 +32,7 @@ class CompostRecipe{
 
 	private int $percentage;
 
-	public function __construct(Item $compost, $percentage){
+	public function __construct(Item $compost, int $percentage){
 		$this->compost = $compost;
 		$this->percentage = $percentage;
 	}

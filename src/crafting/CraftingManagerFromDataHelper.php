@@ -32,6 +32,11 @@ use function json_decode;
 
 final class CraftingManagerFromDataHelper{
 
+	/**
+	 * @phpstan-var array<int, string>
+	 * @return CraftingManager
+	 * @var string[]
+	 */
 	public static function make(array $filePaths) : CraftingManager{
 		$result = new CraftingManager();
 		foreach ($filePaths as $filePath) {

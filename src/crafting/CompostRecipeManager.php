@@ -60,6 +60,6 @@ final class CompostRecipeManager{
 	}
 
 	public function match(Item $item) : ?CompostRecipe{
-		return $this->compostRecipes[$item->getId() . ":" . $compost->getMeta()] ?? $this->compostRecipes[$compost->getId() . ":?"] ?? null;
+		return $this->compostRecipes[$item->getId() . ":" . $item->getMeta()] ?? $this->compostRecipes[$item->getId() . ":?"] ?? null;
 	}
 }

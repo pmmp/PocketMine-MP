@@ -45,7 +45,7 @@ class CraftingManager{
 	 */
 	protected $furnaceRecipeManagers;
 
-	/** @var CompostRecipe */
+	/** @var CompostRecipeManager */
 	protected $compostRecipeManager;
 
 	/**

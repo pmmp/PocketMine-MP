@@ -21,14 +21,13 @@
 
 declare(strict_types=1);
 
+namespace pocketmine\world\particle;
+
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\SpawnParticleEffectPacket;
 use pocketmine\network\mcpe\protocol\types\DimensionIds;
 
-namespace pocketmine\world\particle;
-
-class CropGrowthEmitterParticle implements \pocketmine\world\particle\Particle
-{
+class CropGrowthEmitterParticle implements Particle{
 
 	public const CROP_GROWTH_EMITTER_PARTICLE_ID = "minecraft:crop_growth_emitter";
 
