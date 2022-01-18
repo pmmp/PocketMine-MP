@@ -33,15 +33,15 @@ use function json_decode;
 final class CraftingManagerFromDataHelper{
 
 	/**
-	 * @var string[]
-	 * @phpstan-var array<int, string>
+	 * @param array $filePaths
+	 * @return CraftingManager
 	 */
 	public static function make(array $filePaths) : CraftingManager{
 		$result = new CraftingManager();
 		foreach ($filePaths as $filePath) {
 			$recipes = json_decode(file_get_contents($filePath), true);
 			if(!is_array($recipes)){
-				throw new AssumptionFailedError("recipes.json root should contain a map of recipe types");
+				throw new AssumptionFailedError(basename($filePath) . " root should contain a map of recipe types");
 			}
 
 			$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
