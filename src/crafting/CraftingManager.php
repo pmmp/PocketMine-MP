@@ -45,6 +45,9 @@ class CraftingManager{
 	 */
 	protected $furnaceRecipeManagers;
 
+	/** @var CompostRecipe */
+	protected $compostRecipeManager;
+
 	/**
 	 * @var ObjectSet
 	 * @phpstan-var ObjectSet<\Closure() : void>
@@ -56,6 +59,7 @@ class CraftingManager{
 		foreach(FurnaceType::getAll() as $furnaceType){
 			$this->furnaceRecipeManagers[$furnaceType->id()] = new FurnaceRecipeManager();
 		}
+		$this->compostRecipeManager = new CompostRecipeManager();
 
 		$recipeRegisteredCallbacks = $this->recipeRegisteredCallbacks;
 		foreach($this->furnaceRecipeManagers as $furnaceRecipeManager){
@@ -138,6 +142,10 @@ class CraftingManager{
 
 	public function getFurnaceRecipeManager(FurnaceType $furnaceType) : FurnaceRecipeManager{
 		return $this->furnaceRecipeManagers[$furnaceType->id()];
+	}
+
+	public function getCompostRecipeManager() : CompostRecipeManager{
+		return $this->compostRecipeManager;
 	}
 
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{

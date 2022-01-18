@@ -960,7 +960,7 @@ class Server{
 
 			$this->commandMap = new SimpleCommandMap($this);
 
-			$this->craftingManager = CraftingManagerFromDataHelper::make(Path::join(\pocketmine\BEDROCK_DATA_PATH, "recipes.json"));
+			$this->craftingManager = CraftingManagerFromDataHelper::make([Path::join(\pocketmine\BEDROCK_DATA_PATH, "recipes.json"), Path::join(\pocketmine\BEDROCK_DATA_PATH, "composts.json")]);
 
 			$this->resourceManager = new ResourcePackManager(Path::join($this->getDataPath(), "resource_packs"), $this->logger);
 

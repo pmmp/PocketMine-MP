@@ -107,4 +107,8 @@ class Position extends Vector3{
 		}
 		return parent::equals($v);
 	}
+
+    public function add(float $param, float $param1, float $param2)
+    {
+    }
 }
