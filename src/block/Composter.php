@@ -93,7 +93,7 @@ class Composter extends Transparent{
 	 * @throws \Exception
 	 */
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if ($player instanceof Player && !$player->isSneaking()) {
+		if ($player instanceof Player) {
 			if ($this->compost($player, clone $item)) {
 				$item->pop();
 			}
