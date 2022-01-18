@@ -39,6 +39,7 @@ use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
 use pocketmine\item\WritableBookPage;
 use pocketmine\item\WrittenBook;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
@@ -104,6 +105,7 @@ use function base64_encode;
 use function count;
 use function fmod;
 use function implode;
+use function in_array;
 use function is_infinite;
 use function is_nan;
 use function json_decode;
@@ -361,6 +363,8 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				//TODO: end hack for client spam bug
 
+				self::validateFacing($data->getFace());
+
 				$blockPos = $data->getBlockPosition();
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
 				if(!$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos)){
@@ -390,6 +394,15 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		return false;
+	}
+
+	/**
+	 * @throws PacketHandlingException
+	 */
+	private static function validateFacing(int $facing) : void{
+		if(!in_array($facing, Facing::ALL, true)){
+			throw new PacketHandlingException("Invalid facing value $facing");
+		}
 	}
 
 	/**
@@ -504,6 +517,7 @@ class InGamePacketHandler extends PacketHandler{
 
 		switch($packet->action){
 			case PlayerAction::START_BREAK:
+				self::validateFacing($packet->face);
 				if(!$this->player->attackBlock($pos, $packet->face)){
 					$this->onFailedBlockAction($pos, $packet->face);
 				}
@@ -547,6 +561,7 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::STOP_GLIDE:
 				break; //TODO
 			case PlayerAction::CRACK_BREAK:
+				self::validateFacing($packet->face);
 				$this->player->continueBreakBlock($pos, $packet->face);
 				break;
 			case PlayerAction::START_SWIMMING:

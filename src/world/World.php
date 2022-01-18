@@ -755,8 +755,6 @@ class World implements ChunkManager{
 
 	/**
 	 * @internal
-	 *
-	 * @param Player ...$targets If empty, will send to all players in the world.
 	 */
 	public function sendTime(Player ...$targets) : void{
 		if(count($targets) === 0){
