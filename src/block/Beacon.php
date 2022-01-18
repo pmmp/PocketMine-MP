@@ -35,9 +35,12 @@ use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function array_merge;
-use function count;
 
 final class Beacon extends Transparent{
+
+	public const MIN_LEVEL_BEACON = 1;
+	public const MAX_LEVEL_BEACON = 4;
+
 	public const ALLOWED_ITEM_IDS = [
 		ItemIds::IRON_INGOT => true,
 		ItemIds::GOLD_INGOT => true,
@@ -84,7 +87,7 @@ final class Beacon extends Transparent{
 
 	public function getBeaconLevel() : int {
 		$beaconLevel = 0;
-		for($i = 1; $i <= 4; $i++){
+		for($i = self::MIN_LEVEL_BEACON; $i <= self::MAX_LEVEL_BEACON; $i++){
 			if(!$this->isBeaconLevelValid($i)){
 				break;
 			}
@@ -128,8 +131,10 @@ final class Beacon extends Transparent{
 	public function onScheduledUpdate() : void{
 		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20 * 3);
 
-		$beaconLevel = $this->getBeaconLevel();
-		if($beaconLevel > 0){
+		if($this->primaryEffect === null){
+			return;
+		}
+		if(($beaconLevel = $this->getBeaconLevel()) >= self::MIN_LEVEL_BEACON){
 			if(!$this->viewSky()){
 				return;
 			}
@@ -139,22 +144,16 @@ final class Beacon extends Transparent{
 
 			$world = $this->position->getWorld();
 			$aabb = $this->getCollisionBoxes()[0]->expandedCopy($radius, $radius, $radius)->addCoord(0, $world->getMaxY(), 0);
-			if($this->primaryEffect === $this->secondaryEffect && $this->primaryEffect !== null){
+			if($this->primaryEffect === $this->secondaryEffect){
 				foreach($world->getNearbyEntities($aabb) as $entity){
 					if($entity instanceof Player){
 						$entity->getEffects()->add(new EffectInstance($this->primaryEffect, $effectDuration * 20, 1));
 					}
 				}
 			}else{
-				$effects = [];
-				if($this->primaryEffect !== null){
-					$effects[] = $this->primaryEffect;
-				}
+				$effects = [$this->primaryEffect];
 				if($this->secondaryEffect !== null){
 					$effects[] = $this->secondaryEffect;
-				}
-				if(count($effects) === 0){
-					return;
 				}
 				foreach($world->getNearbyEntities($aabb) as $entity){
 					if($entity instanceof Player){
@@ -168,8 +167,8 @@ final class Beacon extends Transparent{
 	}
 
 	public function isBeaconLevelValid(int $level) : bool{
-		if($level < 1 || $level > 4){
-			throw new InvalidArgumentException("Beacon level must be in range 1-4, $level given");
+		if($level < self::MIN_LEVEL_BEACON || $level > self::MAX_LEVEL_BEACON){
+			throw new InvalidArgumentException("Beacon level must be in range " . self::MIN_LEVEL_BEACON . "-" . self::MAX_LEVEL_BEACON . ", $level given");
 		}
 
 		$world = $this->position->getWorld();
@@ -201,18 +200,18 @@ final class Beacon extends Transparent{
 	/** @return Effect[][] */
 	public function getLevelEffect() : array {
 		return [
-			1 => [
+			self::MIN_LEVEL_BEACON => [
 				VanillaEffects::HASTE(),
 				VanillaEffects::SPEED()
 			],
-			2 => [
+			self::MIN_LEVEL_BEACON + 1 => [
 				VanillaEffects::RESISTANCE(),
 				VanillaEffects::JUMP_BOOST()
 			],
-			3 => [
+			self::MIN_LEVEL_BEACON + 2 => [
 				VanillaEffects::STRENGTH()
 			],
-			4 => [
+			self::MIN_LEVEL_BEACON + 3 => [
 				VanillaEffects::REGENERATION()
 			]
 		];
@@ -220,12 +219,12 @@ final class Beacon extends Transparent{
 
 	/** @return Effect[] */
 	public function getAllowedEffect(int $beaconLevel) : array {
-		if($beaconLevel < 1 || $beaconLevel > 4){
-			throw new InvalidArgumentException("Beacon level must be in range 1-4, $beaconLevel given");
+		if($beaconLevel < self::MIN_LEVEL_BEACON || $beaconLevel > self::MAX_LEVEL_BEACON){
+			throw new InvalidArgumentException("Beacon level must be in range " . self::MIN_LEVEL_BEACON . "-" . self::MAX_LEVEL_BEACON . ", $beaconLevel given");
 		}
 		$levelEffects = $this->getLevelEffect();
 		$allowed = [];
-		for ($i = 1; $i <= $beaconLevel; $i++) {
+		for ($i = self::MIN_LEVEL_BEACON; $i <= $beaconLevel; $i++) {
 			$allowed = array_merge($levelEffects[$i], $allowed);
 		}
 		return $allowed;
