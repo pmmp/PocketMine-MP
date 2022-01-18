@@ -59,9 +59,8 @@ final class Beacon extends Transparent{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBeacon){
-			$effectIdMap = EffectIdMap::getInstance();
-			$this->primaryEffect = $effectIdMap->fromId($tile->getPrimaryEffect());
-			$this->secondaryEffect = $effectIdMap->fromId($tile->getSecondaryEffect());
+			$this->primaryEffect = EffectIdMap::getInstance()->fromId($tile->getPrimaryEffect());
+			$this->secondaryEffect = EffectIdMap::getInstance()->fromId($tile->getSecondaryEffect());
 		}
 	}
 
@@ -69,12 +68,11 @@ final class Beacon extends Transparent{
 		parent::writeStateToWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBeacon){
-			$effectIdMap = EffectIdMap::getInstance();
 			if($this->primaryEffect instanceof Effect){
-				$tile->setPrimaryEffect($effectIdMap->toId($this->primaryEffect));
+				$tile->setPrimaryEffect(EffectIdMap::getInstance()->toId($this->primaryEffect));
 			}
 			if($this->secondaryEffect instanceof Effect){
-				$tile->setSecondaryEffect($effectIdMap->toId($this->secondaryEffect));
+				$tile->setSecondaryEffect(EffectIdMap::getInstance()->toId($this->secondaryEffect));
 			}
 		}
 	}
