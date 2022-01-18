@@ -26,6 +26,7 @@ namespace pocketmine\crafting;
 use pocketmine\item\Item;
 use pocketmine\utils\AssumptionFailedError;
 use function array_map;
+use function basename;
 use function file_get_contents;
 use function is_array;
 use function json_decode;
