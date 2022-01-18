@@ -164,6 +164,7 @@ class BlockFactory{
 
 		$this->registerAllMeta(new Cobweb(new BID(Ids::COBWEB, 0), "Cobweb", new BlockBreakInfo(4.0, BlockToolType::SWORD | BlockToolType::SHEARS, 1)));
 		$this->registerAllMeta(new CocoaBlock(new BID(Ids::COCOA, 0), "Cocoa Block", new BlockBreakInfo(0.2, BlockToolType::AXE, 0, 15.0)));
+		$this->registerAllMeta(new Composter(new BID(Ids::COMPOSTER, 0), "Composter", new BlockBreakInfo(2, BlockToolType::AXE)));
 		$this->registerAllMeta(new CoralBlock(new BID(Ids::CORAL_BLOCK, 0), "Coral Block", new BlockBreakInfo(7.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->registerAllMeta(new CraftingTable(new BID(Ids::CRAFTING_TABLE, 0), "Crafting Table", new BlockBreakInfo(2.5, BlockToolType::AXE)));
 		$this->registerAllMeta(new DaylightSensor(new BIDFlattened(Ids::DAYLIGHT_DETECTOR, [Ids::DAYLIGHT_DETECTOR_INVERTED], 0, null, TileDaylightSensor::class), "Daylight Sensor", new BlockBreakInfo(0.2, BlockToolType::AXE)));
