@@ -103,7 +103,7 @@ class Composter extends Transparent{
 			$this->position->getWorld()->setBlock($this->position->add(0.5, 0.5, 0.5), $this);
 		}
 		$compost = $this->position->getWorld()->getServer()->getCraftingManager()->getCompostRecipeManager()->match($item);
-		if ($compost instanceof CompostRecipe) {
+		if (!$compost instanceof CompostRecipe) {
 			return false;
 		}
 		$this->position->getWorld()->addParticle($this->position->add(0.5, 0.5, 0.5), new CropGrowthEmitterParticle());

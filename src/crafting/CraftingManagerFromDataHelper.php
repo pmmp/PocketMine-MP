@@ -32,10 +32,6 @@ use function json_decode;
 
 final class CraftingManagerFromDataHelper{
 
-	/**
-	 * @param array $filePaths
-	 * @return CraftingManager
-	 */
 	public static function make(array $filePaths) : CraftingManager{
 		$result = new CraftingManager();
 		foreach ($filePaths as $filePath) {
