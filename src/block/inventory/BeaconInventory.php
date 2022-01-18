@@ -41,4 +41,8 @@ class BeaconInventory extends SimpleInventory implements BlockInventory, Tempora
 	public function getInput() : Item{
 		return $this->getItem(self::SLOT_INPUT);
 	}
+
+	public function setInput(Item $item) : void{
+		$this->setItem(self::SLOT_INPUT, $item);
+	}
 }

@@ -684,7 +684,7 @@ class InGamePacketHandler extends PacketHandler{
 					if(!$event->isCancelled()){
 						$event->setPrimaryEffect($event->getPrimaryEffect());
 						$event->setSecondaryEffect($event->getSecondaryEffect());
-						$inventory->getInput()->pop();
+						$inventory->setInput($inventory->getInput()->pop());
 						$world = $block->getPosition()->getWorld();
 						$world->setBlock($pos, $block);
 						$world->scheduleDelayedBlockUpdate($pos, 20);
