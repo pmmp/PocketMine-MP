@@ -35,6 +35,7 @@ use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function array_merge;
+use function count;
 
 final class Beacon extends Transparent{
 	public const ALLOWED_ITEM_IDS = [
@@ -151,6 +152,9 @@ final class Beacon extends Transparent{
 				}
 				if($this->secondaryEffect !== null){
 					$effects[] = $this->secondaryEffect;
+				}
+				if(count($effects) === 0){
+					return;
 				}
 				foreach($world->getNearbyEntities($aabb) as $entity){
 					if($entity instanceof Player){
