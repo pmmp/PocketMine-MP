@@ -32,6 +32,7 @@ use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\InvalidSkinException;
+use pocketmine\event\block\BeaconActivateEvent;
 use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
@@ -669,21 +670,28 @@ class InGamePacketHandler extends PacketHandler{
 			if(!isset(Beacon::ALLOWED_ITEM_IDS[$itemId])){
 				throw new PacketHandlingException("Invalid input $itemId");
 			}
+
 			if($block->getBeaconLevel() > 0){
-				$allowedEffect = $block->getAllowedEffect($block->getBeaconLevel());
+				$allowedEffects = $block->getAllowedEffect($block->getBeaconLevel());
 				$primaryEffect = EffectIdMap::getInstance()->fromId($nbt->getInt("primary", 0));
-				if($primaryEffect !== null && in_array($primaryEffect, $allowedEffect, true)){
-					$block->setPrimaryEffect($primaryEffect);
+				if($primaryEffect !== null && in_array($primaryEffect, $allowedEffects, true)){
+					$event = new BeaconActivateEvent($block, $primaryEffect);
 					$secondaryEffect = EffectIdMap::getInstance()->fromId($nbt->getInt("secondary", 0));
-					if($secondaryEffect !== null && in_array($secondaryEffect, $allowedEffect, true)){
-						$block->setSecondaryEffect($secondaryEffect);
+					if($secondaryEffect !== null && in_array($secondaryEffect, $allowedEffects, true)){
+						$event->setSecondaryEffect($secondaryEffect);
 					}
-					$world = $block->getPosition()->getWorld();
-					$world->setBlock($pos, $block);
-					$world->scheduleDelayedBlockUpdate($pos, 20);
+					$event->call();
+					if(!$event->isCancelled()){
+						$event->setPrimaryEffect($event->getPrimaryEffect());
+						$event->setSecondaryEffect($event->getSecondaryEffect());
+						$inventory->getInput()->pop();
+						$world = $block->getPosition()->getWorld();
+						$world->setBlock($pos, $block);
+						$world->scheduleDelayedBlockUpdate($pos, 20);
+						return true;
+					}
 				}
 			}
-			return true;
 		}
 
 		return false;
