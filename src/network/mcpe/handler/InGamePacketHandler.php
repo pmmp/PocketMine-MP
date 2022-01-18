@@ -25,12 +25,12 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\BaseSign;
 use pocketmine\block\Beacon;
+use pocketmine\block\inventory\BeaconInventory;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\utils\SignText;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\Attribute;
-use pocketmine\entity\effect\Effect;
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\inventory\transaction\action\InventoryAction;
@@ -661,28 +661,26 @@ class InGamePacketHandler extends PacketHandler{
 
 			$this->session->getLogger()->debug("Invalid sign update data: " . base64_encode($packet->nbt->getEncodedNbt()));
 		}elseif($block instanceof Beacon){
-			$primaryId = $nbt->getInt("primary", 0);
-			$primaryEffect = EffectIdMap::getInstance()->fromId($primaryId);
-			if($primaryEffect instanceof Effect){
-				if(in_array($primaryEffect, $block->getVanillaPrimaryEffect(), true)){
-					$block->setPrimaryEffect($primaryId);
-				}else{
-					throw new PacketHandlingException("Effect ID \"$primaryId\" is not allowed in the primary effect");
-				}
-				$secondaryId = $nbt->getInt("secondary", 0);
-				$secondaryEffect = EffectIdMap::getInstance()->fromId($secondaryId);
-				if($secondaryEffect instanceof Effect){
-					if(in_array($secondaryEffect, $block->getVanillaSecondaryEffect(), true)){
-						$block->setSecondaryEffect($secondaryId);
-					}else{
-						throw new PacketHandlingException("Effect ID \"$secondaryId\" is not allowed in the secondary effect");
-					}
-				}
-				$world = $block->getPosition()->getWorld();
-				$world->setBlock($pos, $block);
-				$world->scheduleDelayedBlockUpdate($pos, 20);
-				return true;
+			$inventory = $this->player->getCurrentWindow();
+			if(!($inventory instanceof BeaconInventory)){
+				return false;
 			}
+			$itemId = $inventory->getInput()->getId();
+			if(!isset(Beacon::ALLOWED_ITEM_IDS[$itemId])){
+				throw new PacketHandlingException("Invalid input $itemId");
+			}
+			$effectIdMap = EffectIdMap::getInstance();
+			$primaryEffectId = $nbt->getInt("primary", 0);
+			$primaryEffect = $effectIdMap->fromId($primaryEffectId);
+			if($primaryEffect === null){
+				throw new PacketHandlingException("Invalid primary effect $primaryEffectId");
+			}
+			$block->setPrimaryEffect($primaryEffect);
+			$block->setSecondaryEffect($effectIdMap->fromId($nbt->getInt("secondary", 0)));
+			$world = $block->getPosition()->getWorld();
+			$world->setBlock($pos, $block);
+			$world->scheduleDelayedBlockUpdate($pos, 20);
+			return true;
 		}
 
 		return false;

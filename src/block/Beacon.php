@@ -26,17 +26,23 @@ namespace pocketmine\block;
 use InvalidArgumentException;
 use pocketmine\block\inventory\BeaconInventory;
 use pocketmine\block\tile\Beacon as TileBeacon;
+use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\effect\Effect;
 use pocketmine\entity\effect\EffectInstance;
-use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\item\Item;
-use pocketmine\math\AxisAlignedBB;
+use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use function array_merge;
 
 final class Beacon extends Transparent{
+	public const ALLOWED_ITEM_IDS = [
+		ItemIds::IRON_INGOT => true,
+		ItemIds::GOLD_INGOT => true,
+		ItemIds::DIAMOND => true,
+		ItemIds::EMERALD => true
+	];
+
 	private const ALLOWED_BLOCK_IDS = [
 		BlockLegacyIds::IRON_BLOCK => true,
 		BlockLegacyIds::GOLD_BLOCK => true,
@@ -45,15 +51,21 @@ final class Beacon extends Transparent{
 		//TODO netherite block
 	];
 
-	private int $primaryEffect = 0;
-	private int $secondaryEffect = 0;
+	private Effect $primaryEffect;
+	private ?Effect $secondaryEffect;
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBeacon){
-			$this->primaryEffect = $tile->getPrimaryEffect();
-			$this->secondaryEffect = $tile->getSecondaryEffect();
+			$effectIdMap = EffectIdMap::getInstance();
+			$primaryEffectId = $tile->getPrimaryEffect();
+			$primaryEffect = $effectIdMap->fromId($primaryEffectId);
+			if($primaryEffect === null){
+				throw new InvalidBlockStateException("Invalid primary effect $primaryEffectId");
+			}
+			$this->primaryEffect = $primaryEffect;
+			$this->secondaryEffect = $effectIdMap->fromId($tile->getSecondaryEffect());
 		}
 	}
 
@@ -61,27 +73,30 @@ final class Beacon extends Transparent{
 		parent::writeStateToWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBeacon){
-			$tile->setPrimaryEffect($this->primaryEffect);
-			$tile->setSecondaryEffect($this->secondaryEffect);
+			$effectIdMap = EffectIdMap::getInstance();
+			$tile->setPrimaryEffect($effectIdMap->toId($this->primaryEffect));
+			if($this->secondaryEffect instanceof Effect){
+				$tile->setSecondaryEffect($effectIdMap->toId($this->secondaryEffect));
+			}
 		}
 	}
 
-	public function getPrimaryEffect() : int{
+	public function getPrimaryEffect() : Effect{
 		return $this->primaryEffect;
 	}
 
 	/** @return $this */
-	public function setPrimaryEffect(int $primaryEffect) : self{
+	public function setPrimaryEffect(Effect $primaryEffect) : self{
 		$this->primaryEffect = $primaryEffect;
 		return $this;
 	}
 
-	public function getSecondaryEffect() : int{
+	public function getSecondaryEffect() : ?Effect{
 		return $this->secondaryEffect;
 	}
 
 	/** @return $this */
-	public function setSecondaryEffect(int $secondaryEffect) : self{
+	public function setSecondaryEffect(?Effect $secondaryEffect) : self{
 		$this->secondaryEffect = $secondaryEffect;
 		return $this;
 	}
@@ -105,13 +120,6 @@ final class Beacon extends Transparent{
 			return;
 		}
 
-		$effectIdMap = EffectIdMap::getInstance();
-		$primaryE = $effectIdMap->fromId($this->primaryEffect);
-		$secondaryE = $effectIdMap->fromId($this->secondaryEffect);
-		if($primaryE === null && $secondaryE === null){
-			return;
-		}
-
 		$beaconLevel = 0;
 		for($i = 1; $i <= 4; $i++){
 			if(!$this->isBeaconLevelValid($i)){
@@ -124,23 +132,22 @@ final class Beacon extends Transparent{
 			$effectDuration = 9 + (2 * $beaconLevel);
 
 			$world = $this->position->getWorld();
-			$aabb = (new AxisAlignedBB(0, 0, 0, 1, $world->getMaxY(), 1))->offset($this->position->x, 0, $this->position->z)->expand($radius, 0, $radius);
-			if($primaryE === $secondaryE){
-				if($secondaryE === null){
-					return;
-				}
+			$aabb = $this->getCollisionBoxes()[0]->expandedCopy($radius, $radius, $radius)->addCoord(0, $world->getMaxY(), 0);
+			if($this->primaryEffect === $this->secondaryEffect){
 				foreach($world->getNearbyEntities($aabb) as $entity){
 					if($entity instanceof Player){
-						$entity->getEffects()->add(new EffectInstance($secondaryE, $effectDuration * 20, 1));
+						$entity->getEffects()->add(new EffectInstance($this->primaryEffect, $effectDuration * 20, 1));
 					}
 				}
 			}else{
+				$effects = [$this->primaryEffect];
+				if($this->secondaryEffect !== null){
+					$effects[] = $this->secondaryEffect;
+				}
 				foreach($world->getNearbyEntities($aabb) as $entity){
 					if($entity instanceof Player){
-						foreach([$primaryE, $secondaryE] as $effect){
-							if($effect instanceof Effect){
-								$entity->getEffects()->add(new EffectInstance($effect, $effectDuration * 20, 0));
-							}
+						foreach($effects as $effect){
+							$entity->getEffects()->add(new EffectInstance($effect, $effectDuration * 20, 0));
 						}
 					}
 				}
@@ -177,23 +184,5 @@ final class Beacon extends Transparent{
 			}
 		}
 		return true;
-	}
-
-	/** @return Effect[] */
-	public function getVanillaPrimaryEffect() : array{
-		return [
-			VanillaEffects::HASTE(),
-			VanillaEffects::JUMP_BOOST(),
-			VanillaEffects::RESISTANCE(),
-			VanillaEffects::SPEED(),
-			VanillaEffects::STRENGTH()
-		];
-	}
-
-	/** @return Effect[] */
-	public function getVanillaSecondaryEffect() : array {
-		return array_merge([
-			VanillaEffects::REGENERATION()
-		], $this->getVanillaSecondaryEffect());
 	}
 }
