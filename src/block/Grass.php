@@ -33,6 +33,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use pocketmine\world\generator\object\TallGrass as TallGrassObject;
+use pocketmine\world\sound\ItemUseOnBlockSound;
 use function mt_rand;
 
 class Grass extends Opaque{
@@ -97,12 +98,16 @@ class Grass extends Opaque{
 			return true;
 		}elseif($item instanceof Hoe){
 			$item->applyDamage(1);
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::FARMLAND());
+			$newBlock = VanillaBlocks::FARMLAND();
+			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
+			$this->position->getWorld()->setBlock($this->position, $newBlock);
 
 			return true;
 		}elseif($item instanceof Shovel and $this->getSide(Facing::UP)->getId() === BlockLegacyIds::AIR){
 			$item->applyDamage(1);
-			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::GRASS_PATH());
+			$newBlock = VanillaBlocks::GRASS_PATH();
+			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
+			$this->position->getWorld()->setBlock($this->position, $newBlock);
 
 			return true;
 		}
