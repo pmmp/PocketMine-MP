@@ -49,6 +49,9 @@ class ExperienceManager{
 	/** @var int */
 	private $totalXp = 0;
 
+	/** @var bool */
+	private $canAttractXpOrbs = true;
+
 	/** @var int */
 	private $xpCooldown = 0;
 
@@ -293,5 +296,13 @@ class ExperienceManager{
 		if($this->xpCooldown > 0){
 			$this->xpCooldown = max(0, $this->xpCooldown - $tickDiff);
 		}
+	}
+
+	public function canAttractXpOrbs() : bool{
+		return $this->canAttractXpOrbs;
+	}
+
+	public function setCanAttractXpOrbs(bool $v = true) : void{
+		$this->canAttractXpOrbs = $v;
 	}
 }

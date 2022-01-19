@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\tools\ping_server;
 
-use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use raklib\protocol\MessageIdentifiers;
 use raklib\protocol\PacketSerializer;
 use raklib\protocol\UnconnectedPing;
@@ -137,8 +137,7 @@ if(count($argv) > 2){
 	$port = $portRaw === "" ? 19132 : (int) $portRaw;
 }
 
-$sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-if($sock === false) throw new AssumptionFailedError();
+$sock = Utils::assumeNotFalse(socket_create(AF_INET, SOCK_DGRAM, SOL_UDP));
 
 socket_bind($sock, "0.0.0.0");
 socket_getsockname($sock, $bindAddr, $bindPort);

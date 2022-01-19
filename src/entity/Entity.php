@@ -304,12 +304,8 @@ abstract class Entity{
 		if($value <= 0){
 			throw new \InvalidArgumentException("Scale must be greater than 0");
 		}
-		$this->size = $this->getInitialSizeInfo()->scale($value);
-
 		$this->scale = $value;
-
-		$this->recalculateBoundingBox();
-		$this->networkPropertiesDirty = true;
+		$this->setSize($this->getInitialSizeInfo()->scale($value));
 	}
 
 	public function getBoundingBox() : AxisAlignedBB{
@@ -327,6 +323,16 @@ abstract class Entity{
 			$this->location->y + $this->size->getHeight() + $this->ySize,
 			$this->location->z + $halfWidth
 		);
+	}
+
+	public function getSize() : EntitySizeInfo{
+		return $this->size;
+	}
+
+	protected function setSize(EntitySizeInfo $size) : void{
+		$this->size = $size;
+		$this->recalculateBoundingBox();
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function isImmobile() : bool{
@@ -1214,31 +1220,40 @@ abstract class Entity{
 	}
 
 	/**
+	 * Yields all the blocks whose full-cube areas are intersected by the entity's AABB.
+	 *
+	 * @phpstan-return \Generator<int, Block, void, void>
+	 */
+	protected function getBlocksIntersected(float $inset) : \Generator{
+		$minX = (int) floor($this->boundingBox->minX + $inset);
+		$minY = (int) floor($this->boundingBox->minY + $inset);
+		$minZ = (int) floor($this->boundingBox->minZ + $inset);
+		$maxX = (int) floor($this->boundingBox->maxX - $inset);
+		$maxY = (int) floor($this->boundingBox->maxY - $inset);
+		$maxZ = (int) floor($this->boundingBox->maxZ - $inset);
+
+		$world = $this->getWorld();
+
+		for($z = $minZ; $z <= $maxZ; ++$z){
+			for($x = $minX; $x <= $maxX; ++$x){
+				for($y = $minY; $y <= $maxY; ++$y){
+					yield $world->getBlockAt($x, $y, $z);
+				}
+			}
+		}
+	}
+
+	/**
 	 * @return Block[]
 	 */
 	protected function getBlocksAroundWithEntityInsideActions() : array{
 		if($this->blocksAround === null){
-			$inset = 0.001; //Offset against floating-point errors
-
-			$minX = (int) floor($this->boundingBox->minX + $inset);
-			$minY = (int) floor($this->boundingBox->minY + $inset);
-			$minZ = (int) floor($this->boundingBox->minZ + $inset);
-			$maxX = (int) floor($this->boundingBox->maxX - $inset);
-			$maxY = (int) floor($this->boundingBox->maxY - $inset);
-			$maxZ = (int) floor($this->boundingBox->maxZ - $inset);
-
 			$this->blocksAround = [];
 
-			$world = $this->getWorld();
-
-			for($z = $minZ; $z <= $maxZ; ++$z){
-				for($x = $minX; $x <= $maxX; ++$x){
-					for($y = $minY; $y <= $maxY; ++$y){
-						$block = $world->getBlockAt($x, $y, $z);
-						if($block->hasEntityCollision()){
-							$this->blocksAround[] = $block;
-						}
-					}
+			$inset = 0.001; //Offset against floating-point errors
+			foreach($this->getBlocksIntersected($inset) as $block){
+				if($block->hasEntityCollision()){
+					$this->blocksAround[] = $block;
 				}
 			}
 		}

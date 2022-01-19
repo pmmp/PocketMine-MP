@@ -478,6 +478,10 @@ class ItemFactory{
 		return $item;
 	}
 
+	/**
+	 * @deprecated
+	 * @see VanillaItems::AIR()
+	 */
 	public static function air() : Item{
 		return self::getInstance()->get(ItemIds::AIR, 0, 0);
 	}

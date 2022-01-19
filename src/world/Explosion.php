@@ -32,7 +32,7 @@ use pocketmine\event\entity\EntityDamageByBlockEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityExplodeEvent;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Vector3;
 use pocketmine\world\format\SubChunk;
@@ -208,7 +208,7 @@ class Explosion{
 			}
 		}
 
-		$air = ItemFactory::air();
+		$air = VanillaItems::AIR();
 		$airBlock = VanillaBlocks::AIR();
 
 		foreach($this->affectedBlocks as $block){

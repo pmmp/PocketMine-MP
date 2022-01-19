@@ -68,7 +68,7 @@ class VersionString{
 	}
 
 	public function getNumber() : int{
-		return (($this->major << 9) | ($this->minor << 5) | $this->patch);
+		return (($this->major * 1_000_000) + ($this->minor * 1_000) + $this->patch);
 	}
 
 	public function getBaseVersion() : string{

@@ -124,12 +124,12 @@ use function count;
 use function get_class;
 use function in_array;
 use function json_encode;
-use function json_last_error_msg;
 use function strlen;
 use function strtolower;
 use function substr;
 use function time;
 use function ucfirst;
+use const JSON_THROW_ON_ERROR;
 
 class NetworkSession{
 	private \PrefixedLogger $logger;
@@ -797,7 +797,7 @@ class NetworkSession{
 		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->isSpectator());
 		$pk->setFlag(AdventureSettingsPacket::AUTO_JUMP, $for->hasAutoJump());
 		$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $for->getAllowFlight());
-		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, $for->isSpectator());
+		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, !$for->hasBlockCollision());
 		$pk->setFlag(AdventureSettingsPacket::FLYING, $for->isFlying());
 
 		//TODO: permission flags
@@ -900,11 +900,7 @@ class NetworkSession{
 	}
 
 	public function onFormSent(int $id, Form $form) : bool{
-		$formData = json_encode($form);
-		if($formData === false){
-			throw new \InvalidArgumentException("Failed to encode form JSON: " . json_last_error_msg());
-		}
-		return $this->sendDataPacket(ModalFormRequestPacket::create($id, $formData));
+		return $this->sendDataPacket(ModalFormRequestPacket::create($id, json_encode($form, JSON_THROW_ON_ERROR)));
 	}
 
 	/**

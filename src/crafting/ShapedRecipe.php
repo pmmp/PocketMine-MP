@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\utils\Utils;
 use function array_values;
 use function count;
@@ -155,7 +155,7 @@ class ShapedRecipe implements CraftingRecipe{
 
 	public function getIngredient(int $x, int $y) : Item{
 		$exists = $this->ingredientList[$this->shape[$y][$x]] ?? null;
-		return $exists !== null ? clone $exists : ItemFactory::air();
+		return $exists !== null ? clone $exists : VanillaItems::AIR();
 	}
 
 	/**

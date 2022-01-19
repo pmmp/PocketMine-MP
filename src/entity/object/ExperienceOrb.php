@@ -166,7 +166,7 @@ class ExperienceOrb extends Entity{
 		}
 
 		$currentTarget = $this->getTargetPlayer();
-		if($currentTarget !== null and (!$currentTarget->isAlive() or $currentTarget->location->distanceSquared($this->location) > self::MAX_TARGET_DISTANCE ** 2)){
+		if($currentTarget !== null and (!$currentTarget->isAlive() or !$currentTarget->getXpManager()->canAttractXpOrbs() or $currentTarget->location->distanceSquared($this->location) > self::MAX_TARGET_DISTANCE ** 2)){
 			$currentTarget = null;
 		}
 
@@ -174,7 +174,7 @@ class ExperienceOrb extends Entity{
 			if($currentTarget === null){
 				$newTarget = $this->getWorld()->getNearestEntity($this->location, self::MAX_TARGET_DISTANCE, Human::class);
 
-				if($newTarget instanceof Human and !($newTarget instanceof Player and $newTarget->isSpectator())){
+				if($newTarget instanceof Human and !($newTarget instanceof Player and $newTarget->isSpectator()) and $newTarget->getXpManager()->canAttractXpOrbs()){
 					$currentTarget = $newTarget;
 				}
 			}

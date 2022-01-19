@@ -34,6 +34,7 @@ use pocketmine\scheduler\BulkCurlTaskOperation;
 use pocketmine\timings\TimingsHandler;
 use pocketmine\utils\InternetException;
 use pocketmine\utils\InternetRequestResult;
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function count;
 use function fclose;
@@ -105,7 +106,7 @@ class TimingsCommand extends VanillaCommand{
 		}elseif($mode === "merged" or $mode === "report" or $paste){
 			$timings = "";
 			if($paste){
-				$fileTimings = fopen("php://temp", "r+b");
+				$fileTimings = Utils::assumeNotFalse(fopen("php://temp", "r+b"), "Opening php://temp should never fail");
 			}else{
 				$index = 0;
 				$timingFolder = Path::join($sender->getServer()->getDataPath(), "timings");

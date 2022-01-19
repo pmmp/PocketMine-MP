@@ -116,6 +116,10 @@ abstract class Living extends Entity{
 	protected $sprinting = false;
 	/** @var bool */
 	protected $sneaking = false;
+	/** @var bool */
+	protected $gliding = false;
+	/** @var bool */
+	protected $swimming = false;
 
 	abstract public function getName() : string;
 
@@ -224,6 +228,37 @@ abstract class Living extends Entity{
 			$moveSpeed = $this->getMovementSpeed();
 			$this->setMovementSpeed($value ? ($moveSpeed * 1.3) : ($moveSpeed / 1.3));
 			$this->moveSpeedAttr->markSynchronized(false); //TODO: reevaluate this hack
+		}
+	}
+
+	public function isGliding() : bool{
+		return $this->gliding;
+	}
+
+	public function setGliding(bool $value = true) : void{
+		$this->gliding = $value;
+		$this->networkPropertiesDirty = true;
+		$this->recalculateSize();
+	}
+
+	public function isSwimming() : bool{
+		return $this->swimming;
+	}
+
+	public function setSwimming(bool $value = true) : void{
+		$this->swimming = $value;
+		$this->networkPropertiesDirty = true;
+		$this->recalculateSize();
+	}
+
+	private function recalculateSize() : void{
+		$size = $this->getInitialSizeInfo();
+		if($this->isSwimming() || $this->isGliding()){
+			$width = $size->getWidth();
+			//we don't actually know an appropriate eye height for a swimming mob, but 2/3 should be good enough.
+			$this->setSize((new EntitySizeInfo($width, $width, $width * 2 / 3))->scale($this->getScale()));
+		}else{
+			$this->setSize($size->scale($this->getScale()));
 		}
 	}
 
@@ -800,6 +835,8 @@ abstract class Living extends Entity{
 		$properties->setGenericFlag(EntityMetadataFlags::BREATHING, $this->breathing);
 		$properties->setGenericFlag(EntityMetadataFlags::SNEAKING, $this->sneaking);
 		$properties->setGenericFlag(EntityMetadataFlags::SPRINTING, $this->sprinting);
+		$properties->setGenericFlag(EntityMetadataFlags::GLIDING, $this->gliding);
+		$properties->setGenericFlag(EntityMetadataFlags::SWIMMING, $this->swimming);
 	}
 
 	protected function onDispose() : void{

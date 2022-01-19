@@ -50,7 +50,7 @@ use const STR_PAD_LEFT;
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 function replaceVersion(string $versionInfoPath, string $newVersion, bool $isDev, string $channel) : void{
-	$versionInfo = file_get_contents($versionInfoPath);
+	$versionInfo = Utils::assumeNotFalse(file_get_contents($versionInfoPath), $versionInfoPath . " should always exist");
 	$versionInfo = preg_replace(
 		$pattern = '/^([\t ]*public )?const BASE_VERSION = "(\d+)\.(\d+)\.(\d+)(?:-(.*))?";$/m',
 		'$1const BASE_VERSION = "' . $newVersion . '";',
