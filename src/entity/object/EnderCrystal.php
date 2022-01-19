@@ -26,7 +26,6 @@ namespace pocketmine\entity\object;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Explosive;
-use pocketmine\entity\Location;
 use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\ExplosionPrimeEvent;
 use pocketmine\nbt\tag\CompoundTag;
@@ -40,17 +39,12 @@ class EnderCrystal extends Entity implements Explosive{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::ENDER_CRYSTAL; }
 
-	public const TAG_SHOWBASE = "ShowBottom"; //TAG_Byte
+	private const TAG_SHOWBASE = "ShowBottom"; //TAG_Byte
 
 	protected $gravity = 0.0;
 	protected $drag = 0.0;
 
 	protected bool $showBase = false;
-
-	public function __construct(Location $location, ?CompoundTag $nbt = null, bool $showBase = false){
-		parent::__construct($location, $nbt);
-		$this->setShowBase($showBase);
-	}
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.98, 0.98); }
 
@@ -64,7 +58,11 @@ class EnderCrystal extends Entity implements Explosive{
 	}
 
 	public function attack(EntityDamageEvent $source) : void{
-		if($source->getCause() !== EntityDamageEvent::CAUSE_FIRE && $source->getCause() !== EntityDamageEvent::CAUSE_FIRE_TICK){
+		if(
+			$source->getCause() !== EntityDamageEvent::CAUSE_FIRE &&
+			$source->getCause() !== EntityDamageEvent::CAUSE_FIRE_TICK &&
+		    $source->getCause() !== EntityDamageEvent::CAUSE_LAVA
+		){
 			parent::attack($source);
 			if(!$this->isFlaggedForDespawn() && !$source->isCancelled()){
 				$this->flagForDespawn();
@@ -73,14 +71,14 @@ class EnderCrystal extends Entity implements Explosive{
 		}
 	}
 
-	public function updateMovement(bool $teleport = false) : void{
-		//NOOP
+	public function isFireProof() : bool{
+		return true;
 	}
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
-		$this->showBase = $nbt->getByte(self::TAG_SHOWBASE, 0) === 1;
+		$this->setShowBase($nbt->getByte(self::TAG_SHOWBASE, 0) === 1);
 	}
 
 	public function saveNBT() : CompoundTag{

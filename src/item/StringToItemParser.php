@@ -1063,6 +1063,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("emerald", fn() => VanillaItems::EMERALD());
 		$result->register("enchanted_golden_apple", fn() => VanillaItems::ENCHANTED_GOLDEN_APPLE());
 		$result->register("enchanting_bottle", fn() => VanillaItems::EXPERIENCE_BOTTLE());
+		$result->register("end_crystal", fn() => VanillaItems::END_CRYSTAL());
 		$result->register("ender_pearl", fn() => VanillaItems::ENDER_PEARL());
 		$result->register("experience_bottle", fn() => VanillaItems::EXPERIENCE_BOTTLE());
 		$result->register("feather", fn() => VanillaItems::FEATHER());

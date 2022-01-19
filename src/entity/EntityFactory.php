@@ -90,7 +90,7 @@ final class EntityFactory{
 		}, ['Egg', 'minecraft:egg'], EntityLegacyIds::EGG);
 
 		$this->register(EnderCrystal::class, function(World $world, CompoundTag $nbt) : EnderCrystal{
-			return new EnderCrystal(EntityDataHelper::parseLocation($nbt, $world), $nbt, $nbt->getByte(EnderCrystal::TAG_SHOWBASE, 0) === 1);
+			return new EnderCrystal(EntityDataHelper::parseLocation($nbt, $world), $nbt);
 		}, ['EnderCrystal', 'minecraft:ender_crystal'], EntityLegacyIds::ENDER_CRYSTAL);
 
 		$this->register(EnderPearl::class, function(World $world, CompoundTag $nbt) : EnderPearl{
