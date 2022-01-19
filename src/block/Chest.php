@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\event\block\ChestPairEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -47,17 +48,21 @@ class Chest extends Transparent{
 	public function onPostPlace() : void{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileChest){
-			foreach([
-				Facing::rotateY($this->facing, true),
-				Facing::rotateY($this->facing, false)
-			] as $side){
+			foreach([false, true] as $clockwise){
+				$side = Facing::rotateY($this->facing, $clockwise);
 				$c = $this->getSide($side);
 				if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
-					$pair = $this->position->getWorld()->getTile($c->position);
+					$world = $this->position->getWorld();
+					$pair = $world->getTile($c->position);
 					if($pair instanceof TileChest and !$pair->isPaired()){
-						$pair->pairWith($tile);
-						$tile->pairWith($pair);
-						break;
+						[$left, $right] = $clockwise ? [$c, $this] : [$this, $c];
+						$ev = new ChestPairEvent($left, $right);
+						$ev->call();
+						if(!$ev->isCancelled() && $world->getBlock($this->position)->isSameType($this) && $world->getBlock($c->position)->isSameType($c)){
+							$pair->pairWith($tile);
+							$tile->pairWith($pair);
+							break;
+						}
 					}
 				}
 			}
