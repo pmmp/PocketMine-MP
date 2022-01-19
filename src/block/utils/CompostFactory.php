@@ -129,7 +129,7 @@ class CompostFactory{
 		$this->register(VanillaItems::PUMPKIN_PIE(), 100);
 	}
 
-	private function registerFlowers(): void{
+	private function registerFlowers() : void{
 		$this->register(VanillaBlocks::DANDELION()->asItem(), 50);
 
 		$this->register(VanillaBlocks::POPPY()->asItem(), 50);
@@ -150,7 +150,7 @@ class CompostFactory{
 		$this->register(VanillaBlocks::PEONY()->asItem(), 65);
 	}
 
-	private function registerMushroomBlocks(): void{
+	private function registerMushroomBlocks() : void{
 		foreach ([VanillaBlocks::BROWN_MUSHROOM_BLOCK(), VanillaBlocks::RED_MUSHROOM_BLOCK()] as $block) {
 			foreach (
 				[
