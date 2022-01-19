@@ -34,6 +34,7 @@ use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeTraverser;
 use PHPStan\Type\VerbosityLevel;
+use pocketmine\utils\Utils;
 use function sprintf;
 
 /**
@@ -77,11 +78,12 @@ final class UnsafeForeachArrayOfStringRule implements Rule{
 			return $type;
 		});
 		if($hasCastableKeyTypes && !$expectsIntKeyTypes){
+			$func = \Closure::fromCallable([Utils::class, 'stringifyKeys']);
 			return [
 				RuleErrorBuilder::message(sprintf(
 					"Unsafe foreach on array with key type %s (they might be casted to int).",
 					$iterableType->getIterableKeyType()->describe(VerbosityLevel::value())
-				))->tip("Use Utils::foreachWithStringKeys() for a safe Generator-based iterator.")->build()
+				))->tip(sprintf("Use %s() for a safe Generator-based iterator.", Utils::getNiceClosureName($func)))->build()
 			];
 		}
 		return [];
