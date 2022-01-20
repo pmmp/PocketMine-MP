@@ -99,7 +99,7 @@ class Fire extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::DOWN)->isSolid() and !$this->hasAdjacentFlammableBlocks()){
+		if(!$this->getSide(Facing::DOWN)->isSolid() && !$this->hasAdjacentFlammableBlocks()){
 			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 		}else{
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
@@ -114,7 +114,7 @@ class Fire extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 
 		$result = null;
-		if($this->age < 15 and mt_rand(0, 2) === 0){
+		if($this->age < 15 && mt_rand(0, 2) === 0){
 			$this->age++;
 			$result = $this;
 		}
@@ -123,13 +123,13 @@ class Fire extends Flowable{
 		if(!$down->burnsForever()){
 			//TODO: check rain
 			if($this->age === 15){
-				if(!$down->isFlammable() and mt_rand(0, 3) === 3){ //1/4 chance to extinguish
+				if(!$down->isFlammable() && mt_rand(0, 3) === 3){ //1/4 chance to extinguish
 					$canSpread = false;
 					$result = VanillaBlocks::AIR();
 				}
 			}elseif(!$this->hasAdjacentFlammableBlocks()){
 				$canSpread = false;
-				if(!$down->isSolid() or $this->age > 3){
+				if(!$down->isSolid() || $this->age > 3){
 					$result = VanillaBlocks::AIR();
 				}
 			}
@@ -209,7 +209,7 @@ class Fire extends Flowable{
 			for($z = -1; $z <= 1; ++$z){
 				$targetZ = $z + (int) $this->position->z;
 				for($x = -1; $x <= 1; ++$x){
-					if($x === 0 and $y === 0 and $z === 0){
+					if($x === 0 && $y === 0 && $z === 0){
 						continue;
 					}
 					$targetX = $x + (int) $this->position->x;
@@ -241,7 +241,7 @@ class Fire extends Flowable{
 					$maxChance = intdiv($encouragement + 40 + $difficultyChanceIncrease, $ageDivisor);
 					//TODO: max chance is lowered by half in humid biomes
 
-					if($maxChance > 0 and mt_rand(0, $randomBound - 1) <= $maxChance){
+					if($maxChance > 0 && mt_rand(0, $randomBound - 1) <= $maxChance){
 						$new = clone $this;
 						$new->age = min(15, $this->age + (mt_rand(0, 4) >> 2));
 						$this->spreadBlock($block, $new);

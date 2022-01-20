@@ -73,7 +73,7 @@ class ItemFrame extends Spawnable{
 	}
 
 	public function setItem(?Item $item) : void{
-		if($item !== null and !$item->isNull()){
+		if($item !== null && !$item->isNull()){
 			$this->item = clone $item;
 		}else{
 			$this->item = VanillaItems::AIR();

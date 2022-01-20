@@ -974,7 +974,7 @@ class BlockFactory{
 		}
 
 		foreach($block->getIdInfo()->getAllBlockIds() as $id){
-			if(!$override and $this->isRegistered($id, $variant)){
+			if(!$override && $this->isRegistered($id, $variant)){
 				throw new \InvalidArgumentException("Block registration $id:$variant conflicts with an existing block");
 			}
 
@@ -983,7 +983,7 @@ class BlockFactory{
 					continue;
 				}
 
-				if(!$override and $this->isRegistered($id, $m)){
+				if(!$override && $this->isRegistered($id, $m)){
 					throw new \InvalidArgumentException("Block registration " . get_class($block) . " has states which conflict with other blocks");
 				}
 
@@ -1036,7 +1036,7 @@ class BlockFactory{
 	 * Deserializes a block from the provided legacy ID and legacy meta.
 	 */
 	public function get(int $id, int $meta) : Block{
-		if($meta < 0 or $meta >= (1 << Block::INTERNAL_METADATA_BITS)){
+		if($meta < 0 || $meta >= (1 << Block::INTERNAL_METADATA_BITS)){
 			throw new \InvalidArgumentException("Block meta value $meta is out of bounds");
 		}
 
@@ -1062,7 +1062,7 @@ class BlockFactory{
 	 */
 	public function isRegistered(int $id, int $meta = 0) : bool{
 		$b = $this->fullList[($id << Block::INTERNAL_METADATA_BITS) | $meta];
-		return $b !== null and !($b instanceof UnknownBlock);
+		return $b !== null && !($b instanceof UnknownBlock);
 	}
 
 	/**

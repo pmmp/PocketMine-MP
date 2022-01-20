@@ -51,10 +51,10 @@ class Chest extends Transparent{
 			foreach([false, true] as $clockwise){
 				$side = Facing::rotateY($this->facing, $clockwise);
 				$c = $this->getSide($side);
-				if($c instanceof Chest and $c->isSameType($this) and $c->facing === $this->facing){
+				if($c instanceof Chest && $c->isSameType($this) && $c->facing === $this->facing){
 					$world = $this->position->getWorld();
 					$pair = $world->getTile($c->position);
-					if($pair instanceof TileChest and !$pair->isPaired()){
+					if($pair instanceof TileChest && !$pair->isPaired()){
 						[$left, $right] = $clockwise ? [$c, $this] : [$this, $c];
 						$ev = new ChestPairEvent($left, $right);
 						$ev->call();
@@ -75,8 +75,8 @@ class Chest extends Transparent{
 			$chest = $this->position->getWorld()->getTile($this->position);
 			if($chest instanceof TileChest){
 				if(
-					!$this->getSide(Facing::UP)->isTransparent() or
-					(($pair = $chest->getPair()) !== null and !$pair->getBlock()->getSide(Facing::UP)->isTransparent()) or
+					!$this->getSide(Facing::UP)->isTransparent() ||
+					(($pair = $chest->getPair()) !== null && !$pair->getBlock()->getSide(Facing::UP)->isTransparent()) ||
 					!$chest->canOpenWith($item->getCustomName())
 				){
 					return true;

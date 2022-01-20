@@ -54,7 +54,7 @@ class Grass extends Opaque{
 
 	public function onRandomTick() : void{
 		$lightAbove = $this->position->getWorld()->getFullLightAt($this->position->x, $this->position->y + 1, $this->position->z);
-		if($lightAbove < 4 and $this->position->getWorld()->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z)->getLightFilter() >= 2){
+		if($lightAbove < 4 && $this->position->getWorld()->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z)->getLightFilter() >= 2){
 			//grass dies
 			$ev = new BlockSpreadEvent($this, $this, VanillaBlocks::DIRT());
 			$ev->call();
@@ -70,9 +70,9 @@ class Grass extends Opaque{
 
 				$b = $this->position->getWorld()->getBlockAt($x, $y, $z);
 				if(
-					!($b instanceof Dirt) or
-					$b->isCoarse() or
-					$this->position->getWorld()->getFullLightAt($x, $y + 1, $z) < 4 or
+					!($b instanceof Dirt) ||
+					$b->isCoarse() ||
+					$this->position->getWorld()->getFullLightAt($x, $y + 1, $z) < 4 ||
 					$this->position->getWorld()->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
 				){
 					continue;
@@ -103,7 +103,7 @@ class Grass extends Opaque{
 			$this->position->getWorld()->setBlock($this->position, $newBlock);
 
 			return true;
-		}elseif($item instanceof Shovel and $this->getSide(Facing::UP)->getId() === BlockLegacyIds::AIR){
+		}elseif($item instanceof Shovel && $this->getSide(Facing::UP)->getId() === BlockLegacyIds::AIR){
 			$item->applyDamage(1);
 			$newBlock = VanillaBlocks::GRASS_PATH();
 			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));

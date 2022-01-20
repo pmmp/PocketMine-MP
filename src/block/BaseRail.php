@@ -101,7 +101,7 @@ abstract class BaseRail extends Flowable{
 			}
 
 			if(
-				$other instanceof BaseRail and
+				$other instanceof BaseRail &&
 				in_array($otherConnection, $other->getCurrentShapeConnections(), true)
 			){
 				$connections[] = $connection;
@@ -179,7 +179,7 @@ abstract class BaseRail extends Flowable{
 					$otherSide |= RailConnectionInfo::FLAG_ASCEND;
 				}
 
-				if(!($other instanceof BaseRail) or count($otherConnections = $other->getConnectedDirections()) >= 2){
+				if(!($other instanceof BaseRail) || count($otherConnections = $other->getConnectedDirections()) >= 2){
 					//we can only connect to a rail that has less than 2 connections
 					continue;
 				}
@@ -224,7 +224,7 @@ abstract class BaseRail extends Flowable{
 			$this->position->getWorld()->useBreakOn($this->position);
 		}else{
 			foreach($this->getCurrentShapeConnections() as $connection){
-				if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0 and $this->getSide($connection & ~RailConnectionInfo::FLAG_ASCEND)->isTransparent()){
+				if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0 && $this->getSide($connection & ~RailConnectionInfo::FLAG_ASCEND)->isTransparent()){
 					$this->position->getWorld()->useBreakOn($this->position);
 					break;
 				}
