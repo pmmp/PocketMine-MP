@@ -808,14 +808,17 @@ abstract class Living extends Entity{
 	public function lookAt(Vector3 $target) : void{
 		$horizontal = sqrt(($target->x - $this->location->x) ** 2 + ($target->z - $this->location->z) ** 2);
 		$vertical = $target->y - ($this->location->y + $this->getEyeHeight());
-		$this->location->pitch = -atan2($vertical, $horizontal) / M_PI * 180; //negative is up, positive is down
+		$pitch = -atan2($vertical, $horizontal) / M_PI * 180; //negative is up, positive is down
 
 		$xDist = $target->x - $this->location->x;
 		$zDist = $target->z - $this->location->z;
-		$this->location->yaw = atan2($zDist, $xDist) / M_PI * 180 - 90;
-		if($this->location->yaw < 0){
-			$this->location->yaw += 360.0;
+
+		$yaw = atan2($zDist, $xDist) / M_PI * 180 - 90;
+		if($yaw < 0){
+			$yaw += 360.0;
 		}
+
+		$this->setRotation($yaw, $pitch);
 	}
 
 	protected function sendSpawnPacket(Player $player) : void{

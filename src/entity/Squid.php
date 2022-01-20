@@ -113,8 +113,10 @@ class Squid extends WaterAnimal{
 			}
 
 			$f = sqrt(($this->motion->x ** 2) + ($this->motion->z ** 2));
-			$this->location->yaw = (-atan2($this->motion->x, $this->motion->z) * 180 / M_PI);
-			$this->location->pitch = (-atan2($f, $this->motion->y) * 180 / M_PI);
+			$this->setRotation(
+				-atan2($this->motion->x, $this->motion->z) * 180 / M_PI,
+				-atan2($f, $this->motion->y) * 180 / M_PI
+			);
 		}
 
 		return $hasUpdate;
