@@ -854,7 +854,7 @@ class World implements ChunkManager{
 		//Update entities that need update
 		Timings::$tickEntity->startTiming();
 		foreach($this->updateEntities as $id => $entity){
-			if($entity->isClosed() or !$entity->onUpdate($currentTick)){
+			if($entity->isClosed() or $entity->isFlaggedForDespawn() or !$entity->onUpdate($currentTick)){
 				unset($this->updateEntities[$id]);
 			}
 			if($entity->isFlaggedForDespawn()){
