@@ -68,7 +68,7 @@ final class CraftingManagerFromDataHelper{
 			));
 		}
 		foreach($recipes["smelting"] as $recipe){
-			$furnaceType = match($recipe["block"]){
+			$furnaceType = match ($recipe["block"]){
 				"furnace" => FurnaceType::FURNACE(),
 				"blast_furnace" => FurnaceType::BLAST_FURNACE(),
 				"smoker" => FurnaceType::SMOKER(),
