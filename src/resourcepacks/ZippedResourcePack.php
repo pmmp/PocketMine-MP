@@ -76,7 +76,7 @@ class ZippedResourcePack implements ResourcePack{
 			for($i = 0; $i < $archive->numFiles; ++$i){
 				$name = Utils::assumeNotFalse($archive->getNameIndex($i), "This index should be valid");
 				if(
-					($manifestPath === null or strlen($name) < strlen($manifestPath)) and
+					($manifestPath === null || strlen($name) < strlen($manifestPath)) &&
 					preg_match('#.*/manifest.json$#', $name) === 1
 				){
 					$manifestPath = $name;
@@ -146,7 +146,7 @@ class ZippedResourcePack implements ResourcePack{
 	}
 
 	public function getSha256(bool $cached = true) : string{
-		if($this->sha256 === null or !$cached){
+		if($this->sha256 === null || !$cached){
 			$this->sha256 = hash_file("sha256", $this->path, true);
 		}
 		return $this->sha256;
