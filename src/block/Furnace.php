@@ -173,9 +173,9 @@ class Furnace extends Opaque{
 	}
 
 	public function onScheduledUpdate() : void{
-		$furnace = $this->position->getWorld()->getTile($this->position);
-		if($furnace instanceof TileFurnace && !$furnace->isClosed()){
-			$inventory = $furnace->getInventory();
+		$tile = $this->position->getWorld()->getTile($this->position);
+		if($tile instanceof TileFurnace && !$tile->isClosed()){
+			$inventory = $tile->getInventory();
 
 			$prevCookTime = $this->cookTime;
 			$prevRemainingFuelTime = $this->remainingFuelTime;
@@ -185,7 +185,7 @@ class Furnace extends Opaque{
 			$raw = $inventory->getSmelting();
 			$product = $inventory->getResult();
 
-			$furnaceType = $furnace->getFurnaceType();
+			$furnaceType = $tile->getFurnaceType();
 			$smelt = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($furnaceType)->match($raw);
 			$canSmelt = ($smelt instanceof FurnaceRecipe and $raw->getCount() > 0 and (($smelt->getResult()->equals($product) and $product->getCount() < $product->getMaxStackSize()) or $product->isNull()));
 
@@ -202,7 +202,7 @@ class Furnace extends Opaque{
 					if($this->cookTime >= $furnaceType->getCookDurationTicks()){
 						$product = $smelt->getResult()->setCount($product->getCount() + 1);
 
-						$ev = new FurnaceSmeltEvent($furnace, $raw, $product);
+						$ev = new FurnaceSmeltEvent($tile, $raw, $product);
 						$ev->call();
 
 						if(!$ev->isCancelled()){
