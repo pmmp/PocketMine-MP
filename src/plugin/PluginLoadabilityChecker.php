@@ -47,7 +47,7 @@ final class PluginLoadabilityChecker{
 
 	public function check(PluginDescription $description) : Translatable|null{
 		$name = $description->getName();
-		if(stripos($name, "pocketmine") !== false or stripos($name, "minecraft") !== false or stripos($name, "mojang") !== false){
+		if(stripos($name, "pocketmine") !== false || stripos($name, "minecraft") !== false || stripos($name, "mojang") !== false){
 			return KnownTranslationFactory::pocketmine_plugin_restrictedName();
 		}
 
@@ -66,7 +66,7 @@ final class PluginLoadabilityChecker{
 			return KnownTranslationFactory::pocketmine_plugin_ambiguousMinAPI(implode(", ", $ambiguousVersions));
 		}
 
-		if(count($description->getCompatibleOperatingSystems()) > 0 and !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
+		if(count($description->getCompatibleOperatingSystems()) > 0 && !in_array(Utils::getOS(), $description->getCompatibleOperatingSystems(), true)) {
 			return KnownTranslationFactory::pocketmine_plugin_incompatibleOS(implode(", ", $description->getCompatibleOperatingSystems()));
 		}
 
