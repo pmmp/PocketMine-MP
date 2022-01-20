@@ -44,7 +44,7 @@ final class CraftingManagerFromDataHelper{
 		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
 
 		foreach($recipes["shapeless"] as $recipe){
-			$blockType = match($recipe["block"]){
+			$blockType = match ($recipe["block"]){
 				"crafting_table" => CraftingBlockType::CRAFTING_TABLE(),
 				"stonecutter" => CraftingBlockType::STONECUTTER(),
 				//TODO: Cartography Table
@@ -79,8 +79,8 @@ final class CraftingManagerFromDataHelper{
 				continue;
 			}
 			$result->getFurnaceRecipeManager($furnaceType)->register(new FurnaceRecipe(
-					Item::jsonDeserialize($recipe["output"]),
-					Item::jsonDeserialize($recipe["input"]))
+				Item::jsonDeserialize($recipe["output"]),
+				Item::jsonDeserialize($recipe["input"]))
 			);
 		}
 
