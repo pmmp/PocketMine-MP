@@ -81,7 +81,7 @@ final class Filesystem{
 		if(is_dir($dir)){
 			$objects = Utils::assumeNotFalse(scandir($dir, SCANDIR_SORT_NONE), "scandir() shouldn't return false when is_dir() returns true");
 			foreach($objects as $object){
-				if($object !== "." and $object !== ".."){
+				if($object !== "." && $object !== ".."){
 					$fullObject = Path::join($dir, $object);
 					if(is_dir($fullObject)){
 						self::recursiveUnlink($fullObject);
