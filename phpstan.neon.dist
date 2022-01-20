@@ -12,6 +12,8 @@ includes:
 
 rules:
 	- pocketmine\phpstan\rules\DisallowEnumComparisonRule
+	- pocketmine\phpstan\rules\DisallowLogicalAndOperatorRule
+	- pocketmine\phpstan\rules\DisallowLogicalOrOperatorRule
 	- pocketmine\phpstan\rules\UnsafeForeachArrayOfStringRule
 #	- pocketmine\phpstan\rules\ThreadedSupportedTypesRule
 
