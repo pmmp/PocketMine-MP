@@ -163,7 +163,7 @@ class AsyncPool{
 	 * Submits an AsyncTask to an arbitrary worker.
 	 */
 	public function submitTaskToWorker(AsyncTask $task, int $worker) : void{
-		if($worker < 0 or $worker >= $this->size){
+		if($worker < 0 || $worker >= $this->size){
 			throw new \InvalidArgumentException("Invalid worker $worker");
 		}
 		if($task->isSubmitted()){
@@ -197,7 +197,7 @@ class AsyncPool{
 				}
 			}
 		}
-		if($worker === null or ($minUsage > 0 and count($this->workers) < $this->size)){
+		if($worker === null || ($minUsage > 0 && count($this->workers) < $this->size)){
 			//select a worker to start on the fly
 			for($i = 0; $i < $this->size; ++$i){
 				if(!isset($this->workers[$i])){
@@ -297,7 +297,7 @@ class AsyncPool{
 		$ret = 0;
 		$time = time();
 		foreach($this->taskQueues as $i => $queue){
-			if((!isset($this->workerLastUsed[$i]) or $this->workerLastUsed[$i] + 300 < $time) and $queue->isEmpty()){
+			if((!isset($this->workerLastUsed[$i]) || $this->workerLastUsed[$i] + 300 < $time) && $queue->isEmpty()){
 				$this->workers[$i]->quit();
 				$this->eventLoop->removeNotifier($this->workers[$i]->getNotifier());
 				unset($this->workers[$i], $this->taskQueues[$i], $this->workerLastUsed[$i]);

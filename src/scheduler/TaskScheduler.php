@@ -150,6 +150,6 @@ class TaskScheduler{
 	}
 
 	private function isReady(int $currentTick) : bool{
-		return !$this->queue->isEmpty() and $this->queue->current()->getNextRun() <= $currentTick;
+		return !$this->queue->isEmpty() && $this->queue->current()->getNextRun() <= $currentTick;
 	}
 }
