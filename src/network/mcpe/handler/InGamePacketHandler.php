@@ -201,7 +201,7 @@ class InGamePacketHandler extends PacketHandler{
 		$curPos = $this->player->getLocation();
 		$newPos = $rawPos->round(4)->subtract(0, 1.62, 0);
 
-		if($this->forceMoveSync and $newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+		if($this->forceMoveSync && $newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
 			$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
 			//Still getting movements from before teleport, ignore them
 			return false;
@@ -316,11 +316,11 @@ class InGamePacketHandler extends PacketHandler{
 		foreach($data->getActions() as $networkInventoryAction){
 			if(
 				(
-					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO and (
-						$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT or
+					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO && (
+						$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT ||
 						$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
 					)
-				) or (
+				) || (
 					$this->craftingTransaction !== null &&
 					!$networkInventoryAction->oldItem->getItemStack()->equals($networkInventoryAction->newItem->getItemStack()) &&
 					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER &&
@@ -415,10 +415,10 @@ class InGamePacketHandler extends PacketHandler{
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
 				//TODO: start hack for client spam bug
 				$clickPos = $data->getClickPosition();
-				$spamBug = ($this->lastRightClickData !== null and
-					microtime(true) - $this->lastRightClickTime < 0.1 and //100ms
-					$this->lastRightClickData->getPlayerPosition()->distanceSquared($data->getPlayerPosition()) < 0.00001 and
-					$this->lastRightClickData->getBlockPosition()->equals($data->getBlockPosition()) and
+				$spamBug = ($this->lastRightClickData !== null &&
+					microtime(true) - $this->lastRightClickTime < 0.1 && //100ms
+					$this->lastRightClickData->getPlayerPosition()->distanceSquared($data->getPlayerPosition()) < 0.00001 &&
+					$this->lastRightClickData->getBlockPosition()->equals($data->getBlockPosition()) &&
 					$this->lastRightClickData->getClickPosition()->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
 				);
 				//get rid of continued spam if the player clicks and holds right-click
@@ -731,7 +731,7 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
 		$blockPosition = $packet->blockPosition;
 		$block = $this->player->getWorld()->getBlockAt($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
-		if($block instanceof ItemFrame and $block->getFramedItem() !== null){
+		if($block instanceof ItemFrame && $block->getFramedItem() !== null){
 			return $this->player->attackBlock(new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ()), $block->getFacing());
 		}
 		return false;
@@ -822,7 +822,7 @@ class InGamePacketHandler extends PacketHandler{
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_SWAP_PAGES:
-				if(!$newBook->pageExists($packet->pageNumber) or !$newBook->pageExists($packet->secondaryPageNumber)){
+				if(!$newBook->pageExists($packet->pageNumber) || !$newBook->pageExists($packet->secondaryPageNumber)){
 					//the client will create pages on its own without telling us until it tries to switch them
 					$newBook->addPage(max($packet->pageNumber, $packet->secondaryPageNumber));
 				}
@@ -897,7 +897,7 @@ class InGamePacketHandler extends PacketHandler{
 			$newParts = [];
 			$inQuotes = false;
 			for($i = 0, $len = strlen($raw); $i <= $len; ++$i){
-				if($i === $len or ($raw[$i] === "," and !$inQuotes)){
+				if($i === $len || ($raw[$i] === "," && !$inQuotes)){
 					$part = substr($raw, $lastComma + 1, $i - ($lastComma + 1));
 					if(trim($part) === ""){ //regular parts will have quotes or something else that makes them non-empty
 						$part = '""';

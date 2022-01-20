@@ -180,7 +180,7 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	public function onPacketReceive(int $sessionId, string $packet) : void{
 		if(isset($this->sessions[$sessionId])){
-			if($packet === "" or $packet[0] !== self::MCPE_RAKNET_PACKET_ID){
+			if($packet === "" || $packet[0] !== self::MCPE_RAKNET_PACKET_ID){
 				$this->sessions[$sessionId]->getLogger()->debug("Non-FE packet received: " . base64_encode($packet));
 				return;
 			}

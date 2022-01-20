@@ -156,7 +156,7 @@ class TypeConverter{
 		}else{
 			[$id, $meta] = $idMeta;
 
-			if($itemStack instanceof Durable and $itemStack->getDamage() > 0){
+			if($itemStack instanceof Durable && $itemStack->getDamage() > 0){
 				if($nbt !== null){
 					if(($existing = $nbt->getTag(self::DAMAGE_TAG)) !== null){
 						$nbt->removeTag(self::DAMAGE_TAG);
@@ -266,7 +266,7 @@ class TypeConverter{
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
 				$window = null;
-				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){
+				if($action->windowId === ContainerIds::UI && $action->inventorySlot > 0){
 					if($action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
 						return null; //useless noise
 					}
