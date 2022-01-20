@@ -134,7 +134,7 @@ abstract class LightUpdate{
 
 				if($this->subChunkExplorer->moveTo($cx, $cy, $cz) !== SubChunkExplorerStatus::INVALID){
 					$this->computeRemoveLight($cx, $cy, $cz, $oldAdjacentLight, $context);
-				}elseif($this->getEffectiveLight($cx, $cy, $cz) > 0 and !isset($context->spreadVisited[$index = World::blockHash($cx, $cy, $cz)])){
+				}elseif($this->getEffectiveLight($cx, $cy, $cz) > 0 && !isset($context->spreadVisited[$index = World::blockHash($cx, $cy, $cz)])){
 					$context->spreadVisited[$index] = true;
 					$context->spreadQueue->enqueue([$cx, $cy, $cz]);
 				}
@@ -173,7 +173,7 @@ abstract class LightUpdate{
 		$lz = $z & SubChunk::COORD_MASK;
 		$current = $lightArray->get($lx, $ly, $lz);
 
-		if($current !== 0 and $current < $oldAdjacentLevel){
+		if($current !== 0 && $current < $oldAdjacentLevel){
 			$lightArray->set($lx, $ly, $lz, 0);
 
 			if(!isset($context->removalVisited[$index = World::blockHash($x, $y, $z)])){
@@ -201,7 +201,7 @@ abstract class LightUpdate{
 		if($current < $potentialLight){
 			$lightArray->set($lx, $ly, $lz, $potentialLight);
 
-			if(!isset($context->spreadVisited[$index = World::blockHash($x, $y, $z)]) and $potentialLight > 1){
+			if(!isset($context->spreadVisited[$index = World::blockHash($x, $y, $z)]) && $potentialLight > 1){
 				$context->spreadVisited[$index] = true;
 				$context->spreadQueue->enqueue([$x, $y, $z]);
 			}
