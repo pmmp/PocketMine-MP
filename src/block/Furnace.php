@@ -23,7 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\tile\BlastFurnace;
 use pocketmine\block\tile\Furnace as TileFurnace;
+use pocketmine\block\tile\Smoker;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
 use pocketmine\crafting\FurnaceRecipe;
@@ -33,7 +35,12 @@ use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\player\Player;
+use pocketmine\world\sound\BlastFurnaceFireCrackleSound;
+use pocketmine\world\sound\FurnaceLitSound;
+use pocketmine\world\sound\SmokerSmokeSound;
+
 use function array_map;
+use function mt_rand;
 
 class Furnace extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
@@ -220,6 +227,9 @@ class Furnace extends Opaque{
 					$this->cookTime = 0;
 					$this->position->getWorld()->setBlock($this->position, $this);
 				}
+				if(mt_rand(1, 100) < 5){
+					$this->fireCrackle();
+				}
 				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
 			}else{
 				$this->onStopSmelting();
@@ -240,6 +250,17 @@ class Furnace extends Opaque{
 					$v->syncData($inventory, ContainerSetDataPacket::PROPERTY_FURNACE_MAX_FUEL_TIME, $this->maxFuelTime);
 				}
 			}
+		}
+	}
+
+	public function fireCrackle() : void{
+		$tile = $this->position->getWorld()->getTile($this->position);
+		if($tile instanceof BlastFurnace){
+			$this->position->getWorld()->addSound($this->position, new BlastFurnaceFireCrackleSound);
+		}elseif ($tile instanceof Smoker) {
+			$this->position->getWorld()->addSound($this->position, new SmokerSmokeSound);
+		}else{
+			$this->position->getWorld()->addSound($this->position, new FurnaceLitSound);
 		}
 	}
 }
