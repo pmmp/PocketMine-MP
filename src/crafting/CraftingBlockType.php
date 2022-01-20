@@ -21,19 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block\inventory;
+namespace pocketmine\crafting;
 
-use pocketmine\inventory\SimpleInventory;
-use pocketmine\inventory\TemporaryInventory;
-use pocketmine\world\Position;
+use pocketmine\utils\EnumTrait;
 
-class StonecutterInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
-	use BlockInventoryTrait;
+/**
+ * This doc-block is generated automatically, do not modify it manually.
+ * This must be regenerated whenever registry members are added, removed or changed.
+ * @see build/generate-registry-annotations.php
+ * @generate-registry-docblock
+ *
+ * @method static CraftingBlockType CRAFTING_TABLE()
+ * @method static CraftingBlockType STONECUTTER()
+ */
+final class CraftingBlockType{
+	use EnumTrait;
 
-	public const SLOT_INPUT = 0;
-
-	public function __construct(Position $holder){
-		$this->holder = $holder;
-		parent::__construct(1);
+	protected static function setup() : void{
+		self::registerAll(
+			new self("crafting_table"),
+			new self("stonecutter")
+		);
 	}
 }

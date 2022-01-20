@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\inventory\StoneCutterInventory;
+use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
@@ -33,7 +33,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
-class StoneCutterBlock extends Transparent{
+class Stonecutter extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
 	use HorizontalFacingTrait;
 
@@ -51,7 +51,7 @@ class StoneCutterBlock extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			$player->setCurrentWindow(new StoneCutterInventory($this->position));
+			$player->setCurrentWindow(new StonecutterInventory($this->position));
 		}
 		return true;
 	}

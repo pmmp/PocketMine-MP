@@ -33,14 +33,14 @@ class ShapelessRecipe implements CraftingRecipe{
 	private $ingredients = [];
 	/** @var Item[] */
 	private $results;
-	private string $blockType;
+	private CraftingBlockType $blockType;
 
 	/**
 	 * @param Item[] $ingredients No more than 9 total. This applies to sum of item stack counts, not count of array.
 	 * @param Item[] $results List of result items created by this recipe.
 	 */
-	public function __construct(array $ingredients, array $results, string $blockType = CraftingRecipeBlockName::CRAFTING_TABLE){
-		$this->blockType = $blockType;
+	public function __construct(array $ingredients, array $results, ?CraftingBlockType $blockType = null){
+		$this->blockType = $blockType ?? CraftingBlockType::CRAFTING_TABLE();
 		foreach($ingredients as $item){
 			//Ensure they get split up properly
 			if(count($this->ingredients) + $item->getCount() > 9){
@@ -66,7 +66,7 @@ class ShapelessRecipe implements CraftingRecipe{
 		return $this->getResults();
 	}
 
-	public function getBlockType() : string{
+	public function getBlockType() : CraftingBlockType{
 		return $this->blockType;
 	}
 
