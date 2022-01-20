@@ -105,7 +105,7 @@ final class SurvivalBlockBreakHandler{
 
 		$this->breakProgress += $this->breakSpeed;
 
-		if(($this->fxTicker++ % $this->fxTickInterval) === 0 and $this->breakProgress < 1){
+		if(($this->fxTicker++ % $this->fxTickInterval) === 0 && $this->breakProgress < 1){
 			$this->player->getWorld()->addParticle($this->blockPos, new BlockPunchParticle($this->block, $this->targetedFace));
 			$this->player->getWorld()->addSound($this->blockPos, new BlockPunchSound($this->block));
 			$this->player->broadcastAnimation(new ArmSwingAnimation($this->player), $this->player->getViewers());
