@@ -99,7 +99,7 @@ class Furnace extends Opaque{
 	}
 
 	/** @return $this */
-	public function setRemainingFuelTime(int $time) : self {
+	public function setRemainingFuelTime(int $time) : self{
 		$this->remainingFuelTime = $time;
 		return $this;
 	}
@@ -109,7 +109,7 @@ class Furnace extends Opaque{
 	}
 
 	/** @return $this */
-	public function setMaxFuelTime(int $time) : self {
+	public function setMaxFuelTime(int $time) : self{
 		$this->maxFuelTime = $time;
 		return $this;
 	}
@@ -119,7 +119,7 @@ class Furnace extends Opaque{
 	}
 
 	/** @return $this */
-	public function setCookTime(int $time) : self {
+	public function setCookTime(int $time) : self{
 		$this->cookTime = $time;
 		return $this;
 	}

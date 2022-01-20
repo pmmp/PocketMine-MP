@@ -114,7 +114,7 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		return $this->getInventory();
 	}
 
-	public function setRemainingFuelTime(int $time) : void {
+	public function setRemainingFuelTime(int $time) : void{
 		$this->remainingFuelTime = $time;
 	}
 
@@ -122,7 +122,7 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		return $this->remainingFuelTime;
 	}
 
-	public function setMaxFuelTime(int $time) : void {
+	public function setMaxFuelTime(int $time) : void{
 		$this->maxFuelTime = $time;
 	}
 
@@ -130,7 +130,7 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		return $this->maxFuelTime;
 	}
 
-	public function setCookTime(int $time) : void {
+	public function setCookTime(int $time) : void{
 		$this->cookTime = $time;
 	}
 
