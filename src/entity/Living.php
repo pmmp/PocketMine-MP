@@ -187,7 +187,7 @@ abstract class Living extends Entity{
 		$wasAlive = $this->isAlive();
 		parent::setHealth($amount);
 		$this->healthAttr->setValue(ceil($this->getHealth()), true);
-		if($this->isAlive() and !$wasAlive){
+		if($this->isAlive() && !$wasAlive){
 			$this->broadcastAnimation(new RespawnAnimation($this));
 		}
 	}
@@ -407,7 +407,7 @@ abstract class Living extends Entity{
 	 * to effects or armour.
 	 */
 	public function applyDamageModifiers(EntityDamageEvent $source) : void{
-		if($this->lastDamageCause !== null and $this->attackTime > 0){
+		if($this->lastDamageCause !== null && $this->attackTime > 0){
 			if($this->lastDamageCause->getBaseDamage() >= $source->getBaseDamage()){
 				$source->cancel();
 			}
@@ -419,7 +419,7 @@ abstract class Living extends Entity{
 		}
 
 		$cause = $source->getCause();
-		if(($resistance = $this->effectManager->get(VanillaEffects::RESISTANCE())) !== null and $cause !== EntityDamageEvent::CAUSE_VOID and $cause !== EntityDamageEvent::CAUSE_SUICIDE){
+		if(($resistance = $this->effectManager->get(VanillaEffects::RESISTANCE())) !== null && $cause !== EntityDamageEvent::CAUSE_VOID && $cause !== EntityDamageEvent::CAUSE_SUICIDE){
 			$source->setModifier(-$source->getFinalDamage() * min(1, 0.2 * $resistance->getEffectLevel()), EntityDamageEvent::MODIFIER_RESISTANCE);
 		}
 
@@ -443,10 +443,10 @@ abstract class Living extends Entity{
 		$this->setAbsorption(max(0, $this->getAbsorption() + $source->getModifier(EntityDamageEvent::MODIFIER_ABSORPTION)));
 		$this->damageArmor($source->getBaseDamage());
 
-		if($source instanceof EntityDamageByEntityEvent and ($attacker = $source->getDamager()) !== null){
+		if($source instanceof EntityDamageByEntityEvent && ($attacker = $source->getDamager()) !== null){
 			$damage = 0;
 			foreach($this->armorInventory->getContents() as $k => $item){
-				if($item instanceof Armor and ($thornsLevel = $item->getEnchantmentLevel(VanillaEnchantments::THORNS())) > 0){
+				if($item instanceof Armor && ($thornsLevel = $item->getEnchantmentLevel(VanillaEnchantments::THORNS())) > 0){
 					if(mt_rand(0, 99) < $thornsLevel * 15){
 						$this->damageItem($item, 3);
 						$damage += ($thornsLevel > 10 ? $thornsLevel - 10 : 1 + mt_rand(0, 3));
@@ -493,10 +493,10 @@ abstract class Living extends Entity{
 			$source->cancel();
 		}
 
-		if($this->effectManager->has(VanillaEffects::FIRE_RESISTANCE()) and (
+		if($this->effectManager->has(VanillaEffects::FIRE_RESISTANCE()) && (
 				$source->getCause() === EntityDamageEvent::CAUSE_FIRE
-				or $source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK
-				or $source->getCause() === EntityDamageEvent::CAUSE_LAVA
+				|| $source->getCause() === EntityDamageEvent::CAUSE_FIRE_TICK
+				|| $source->getCause() === EntityDamageEvent::CAUSE_LAVA
 			)
 		){
 			$source->cancel();
@@ -504,8 +504,8 @@ abstract class Living extends Entity{
 
 		$this->applyDamageModifiers($source);
 
-		if($source instanceof EntityDamageByEntityEvent and (
-			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION or
+		if($source instanceof EntityDamageByEntityEvent && (
+			$source->getCause() === EntityDamageEvent::CAUSE_BLOCK_EXPLOSION ||
 			$source->getCause() === EntityDamageEvent::CAUSE_ENTITY_EXPLOSION)
 		){
 			//TODO: knockback should not just apply for entity damage sources
@@ -642,7 +642,7 @@ abstract class Living extends Entity{
 		if(!$this->canBreathe()){
 			$this->setBreathing(false);
 
-			if(($respirationLevel = $this->armorInventory->getHelmet()->getEnchantmentLevel(VanillaEnchantments::RESPIRATION())) <= 0 or
+			if(($respirationLevel = $this->armorInventory->getHelmet()->getEnchantmentLevel(VanillaEnchantments::RESPIRATION())) <= 0 ||
 				lcg_value() <= (1 / ($respirationLevel + 1))
 			){
 				$ticks -= $tickDiff;
@@ -672,7 +672,7 @@ abstract class Living extends Entity{
 	 * Returns whether the entity can currently breathe.
 	 */
 	public function canBreathe() : bool{
-		return $this->effectManager->has(VanillaEffects::WATER_BREATHING()) or $this->effectManager->has(VanillaEffects::CONDUIT_POWER()) or !$this->isUnderwater();
+		return $this->effectManager->has(VanillaEffects::WATER_BREATHING()) || $this->effectManager->has(VanillaEffects::CONDUIT_POWER()) || !$this->isUnderwater();
 	}
 
 	/**
@@ -767,7 +767,7 @@ abstract class Living extends Entity{
 			$block = $this->getWorld()->getBlockAt($vector3->x, $vector3->y, $vector3->z);
 			$blocks[$nextIndex++] = $block;
 
-			if($maxLength !== 0 and count($blocks) > $maxLength){
+			if($maxLength !== 0 && count($blocks) > $maxLength){
 				array_shift($blocks);
 				--$nextIndex;
 			}

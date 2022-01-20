@@ -47,7 +47,7 @@ class PoisonEffect extends Effect{
 	}
 
 	public function applyEffect(Living $entity, EffectInstance $instance, float $potency = 1.0, ?Entity $source = null) : void{
-		if($entity->getHealth() > 1 or $this->fatal){
+		if($entity->getHealth() > 1 || $this->fatal){
 			$ev = new EntityDamageEvent($entity, EntityDamageEvent::CAUSE_MAGIC, 1);
 			$entity->attack($ev);
 		}
