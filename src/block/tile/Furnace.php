@@ -23,21 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
-use pocketmine\block\Furnace as BlockFurnace;
 use pocketmine\block\inventory\FurnaceInventory;
-use pocketmine\crafting\FurnaceRecipe;
 use pocketmine\crafting\FurnaceType;
-use pocketmine\event\inventory\FurnaceBurnEvent;
-use pocketmine\event\inventory\FurnaceSmeltEvent;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
-use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
-use pocketmine\player\Player;
 use pocketmine\world\World;
-use function array_map;
 use function max;
 
 abstract class Furnace extends Spawnable implements Container, Nameable{
@@ -122,114 +114,29 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		return $this->getInventory();
 	}
 
-	protected function checkFuel(Item $fuel) : void{
-		$ev = new FurnaceBurnEvent($this, $fuel, $fuel->getFuelTime());
-		$ev->call();
-		if($ev->isCancelled()){
-			return;
-		}
-
-		$this->maxFuelTime = $this->remainingFuelTime = $ev->getBurnTime();
-		$this->onStartSmelting();
-
-		if($this->remainingFuelTime > 0 and $ev->isBurning()){
-			$this->inventory->setFuel($fuel->getFuelResidue());
-		}
+	public function setRemainingFuelTime(int $time) : void {
+		$this->remainingFuelTime = $time;
 	}
 
-	protected function onStartSmelting() : void{
-		$block = $this->getBlock();
-		if($block instanceof BlockFurnace and !$block->isLit()){
-			$block->setLit(true);
-			$this->position->getWorld()->setBlock($block->getPosition(), $block);
-		}
+	public function getRemainingFuelTime() : int{
+		return $this->remainingFuelTime;
 	}
 
-	protected function onStopSmelting() : void{
-		$block = $this->getBlock();
-		if($block instanceof BlockFurnace and $block->isLit()){
-			$block->setLit(false);
-			$this->position->getWorld()->setBlock($block->getPosition(), $block);
-		}
+	public function setMaxFuelTime(int $time) : void {
+		$this->maxFuelTime = $time;
+	}
+
+	public function getMaxFuelTime() : int{
+		return $this->maxFuelTime;
+	}
+
+	public function setCookTime(int $time) : void {
+		$this->cookTime = $time;
+	}
+
+	public function getCookTime() : int{
+		return $this->cookTime;
 	}
 
 	abstract public function getFurnaceType() : FurnaceType;
-
-	public function onUpdate() : bool{
-		//TODO: move this to Block
-		if($this->closed){
-			return false;
-		}
-
-		$this->timings->startTiming();
-
-		$prevCookTime = $this->cookTime;
-		$prevRemainingFuelTime = $this->remainingFuelTime;
-		$prevMaxFuelTime = $this->maxFuelTime;
-
-		$ret = false;
-
-		$fuel = $this->inventory->getFuel();
-		$raw = $this->inventory->getSmelting();
-		$product = $this->inventory->getResult();
-
-		$furnaceType = $this->getFurnaceType();
-		$smelt = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($furnaceType)->match($raw);
-		$canSmelt = ($smelt instanceof FurnaceRecipe and $raw->getCount() > 0 and (($smelt->getResult()->equals($product) and $product->getCount() < $product->getMaxStackSize()) or $product->isNull()));
-
-		if($this->remainingFuelTime <= 0 and $canSmelt and $fuel->getFuelTime() > 0 and $fuel->getCount() > 0){
-			$this->checkFuel($fuel);
-		}
-
-		if($this->remainingFuelTime > 0){
-			--$this->remainingFuelTime;
-
-			if($smelt instanceof FurnaceRecipe and $canSmelt){
-				++$this->cookTime;
-
-				if($this->cookTime >= $furnaceType->getCookDurationTicks()){
-					$product = $smelt->getResult()->setCount($product->getCount() + 1);
-
-					$ev = new FurnaceSmeltEvent($this, $raw, $product);
-					$ev->call();
-
-					if(!$ev->isCancelled()){
-						$this->inventory->setResult($ev->getResult());
-						$raw->pop();
-						$this->inventory->setSmelting($raw);
-					}
-
-					$this->cookTime -= $furnaceType->getCookDurationTicks();
-				}
-			}elseif($this->remainingFuelTime <= 0){
-				$this->remainingFuelTime = $this->cookTime = $this->maxFuelTime = 0;
-			}else{
-				$this->cookTime = 0;
-			}
-			$ret = true;
-		}else{
-			$this->onStopSmelting();
-			$this->remainingFuelTime = $this->cookTime = $this->maxFuelTime = 0;
-		}
-
-		$viewers = array_map(fn(Player $p) => $p->getNetworkSession()->getInvManager(), $this->inventory->getViewers());
-		foreach($viewers as $v){
-			if($v === null){
-				continue;
-			}
-			if($prevCookTime !== $this->cookTime){
-				$v->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_SMELT_PROGRESS, $this->cookTime);
-			}
-			if($prevRemainingFuelTime !== $this->remainingFuelTime){
-				$v->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_REMAINING_FUEL_TIME, $this->remainingFuelTime);
-			}
-			if($prevMaxFuelTime !== $this->maxFuelTime){
-				$v->syncData($this->inventory, ContainerSetDataPacket::PROPERTY_FURNACE_MAX_FUEL_TIME, $this->maxFuelTime);
-			}
-		}
-
-		$this->timings->stopTiming();
-
-		return $ret;
-	}
 }
