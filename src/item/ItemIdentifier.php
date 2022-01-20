@@ -31,7 +31,7 @@ final class ItemIdentifier{
 	private $meta;
 
 	public function __construct(int $id, int $meta){
-		if($id < -0x8000 or $id > 0x7fff){ //signed short range
+		if($id < -0x8000 || $id > 0x7fff){ //signed short range
 			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
 		}
 		$this->id = $id;

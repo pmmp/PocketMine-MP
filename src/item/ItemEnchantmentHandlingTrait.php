@@ -42,7 +42,7 @@ trait ItemEnchantmentHandlingTrait{
 
 	public function hasEnchantment(Enchantment $enchantment, int $level = -1) : bool{
 		$id = spl_object_id($enchantment);
-		return isset($this->enchantments[$id]) and ($level === -1 or $this->enchantments[$id]->getLevel() === $level);
+		return isset($this->enchantments[$id]) && ($level === -1 || $this->enchantments[$id]->getLevel() === $level);
 	}
 
 	public function getEnchantment(Enchantment $enchantment) : ?EnchantmentInstance{
@@ -54,7 +54,7 @@ trait ItemEnchantmentHandlingTrait{
 	 */
 	public function removeEnchantment(Enchantment $enchantment, int $level = -1) : self{
 		$instance = $this->getEnchantment($enchantment);
-		if($instance !== null and ($level === -1 or $instance->getLevel() === $level)){
+		if($instance !== null && ($level === -1 || $instance->getLevel() === $level)){
 			unset($this->enchantments[spl_object_id($enchantment)]);
 		}
 
