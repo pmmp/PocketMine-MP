@@ -1,0 +1,1522 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../build/generate-registry-annotations.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 6
+			path: ../../../src/MemoryManager.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/MemoryManager.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/PocketMine.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 10
+			path: ../../../src/Server.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 5
+			path: ../../../src/Server.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/Anvil.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Bamboo.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 3
+			path: ../../../src/block/BaseBanner.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/block/BaseRail.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/BaseRail.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 6
+			path: ../../../src/block/Bed.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 4
+			path: ../../../src/block/Block.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/Block.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/BlockBreakInfo.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/BlockBreakInfo.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 3
+			path: ../../../src/block/BlockFactory.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/BlockFactory.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/BrewingStand.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Cactus.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/Cactus.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 4
+			path: ../../../src/block/Chest.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/Chest.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/CocoaBlock.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/block/Crops.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Dirt.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 3
+			path: ../../../src/block/Door.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/Door.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 4
+			path: ../../../src/block/DoublePlant.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/DoublePlant.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/DoubleTallGrass.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/DragonEgg.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/block/EndRod.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/EnderChest.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Fence.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 4
+			path: ../../../src/block/Fence.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/FenceGate.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/FenceGate.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 6
+			path: ../../../src/block/Fire.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/Fire.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/Flower.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/FlowerPot.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 6
+			path: ../../../src/block/FlowerPot.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 3
+			path: ../../../src/block/FrostedIce.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/FrostedIce.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/block/Furnace.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/block/Grass.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/block/Grass.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/Gravel.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Ice.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/Ice.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/ItemFrame.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/block/ItemFrame.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Ladder.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Lantern.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/Lantern.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 4
+			path: ../../../src/block/Leaves.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/Leaves.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 9
+			path: ../../../src/block/Liquid.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 6
+			path: ../../../src/block/Liquid.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Magma.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/NetherPortal.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/NetherWartPlant.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/Note.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Pumpkin.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/RedstoneComparator.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/Sand.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Sapling.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/Sapling.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/block/SeaPickle.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/SeaPickle.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/ShulkerBox.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Skull.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 9
+			path: ../../../src/block/Slab.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 5
+			path: ../../../src/block/Slab.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/block/SnowLayer.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/block/SnowLayer.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 3
+			path: ../../../src/block/Stair.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/block/Stair.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Stem.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/Stem.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Sugarcane.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/block/Sugarcane.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/SweetBerryBush.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/TNT.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/TNT.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/TallGrass.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/block/Thin.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 5
+			path: ../../../src/block/Torch.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/block/Torch.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Trapdoor.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/Trapdoor.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/Vine.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/Vine.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 8
+			path: ../../../src/block/Wall.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/block/Wall.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/block/inventory/BarrelInventory.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/block/inventory/ChestInventory.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/block/inventory/DoubleChestInventory.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/inventory/EnderChestInventory.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/block/inventory/ShulkerBoxInventory.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/tile/Barrel.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/tile/BrewingStand.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 7
+			path: ../../../src/block/tile/Chest.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/block/tile/Chest.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/tile/FlowerPot.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/tile/FlowerPot.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 10
+			path: ../../../src/block/tile/Furnace.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/block/tile/Furnace.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/tile/Hopper.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/tile/ItemFrame.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/tile/Note.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/tile/Note.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/tile/ShulkerBox.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/block/tile/Skull.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/utils/BlockDataSerializer.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/utils/MinimumCostFlowCalculator.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/block/utils/SignText.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/command/Command.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/command/Command.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 6
+			path: ../../../src/command/FormattedCommandAlias.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/command/PluginCommand.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/command/SimpleCommandMap.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/command/SimpleCommandMap.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/command/defaults/ClearCommand.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/command/defaults/EffectCommand.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/command/defaults/ListCommand.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/command/defaults/ParticleCommand.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/command/defaults/TimingsCommand.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/console/ConsoleCommandSender.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/crafting/CraftingGrid.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/crafting/ShapedRecipe.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 5
+			path: ../../../src/crafting/ShapedRecipe.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/crafting/ShapelessRecipe.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/crash/CrashDump.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/data/bedrock/LegacyToStringBidirectionalIdMap.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/entity/Attribute.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 4
+			path: ../../../src/entity/Attribute.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/entity/AttributeMap.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 29
+			path: ../../../src/entity/Entity.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 19
+			path: ../../../src/entity/Entity.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/entity/EntityDataHelper.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/entity/EntityDataHelper.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 3
+			path: ../../../src/entity/ExperienceManager.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 6
+			path: ../../../src/entity/Human.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 4
+			path: ../../../src/entity/HungerManager.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/entity/HungerManager.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 9
+			path: ../../../src/entity/Living.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 6
+			path: ../../../src/entity/Living.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/entity/Location.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/entity/Skin.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/entity/Squid.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/entity/Villager.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/entity/effect/EffectInstance.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 3
+			path: ../../../src/entity/effect/EffectManager.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/entity/effect/EffectManager.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/entity/effect/PoisonEffect.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 5
+			path: ../../../src/entity/object/ExperienceOrb.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/entity/object/ExperienceOrb.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/entity/object/FallingBlock.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/entity/object/FallingBlock.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 7
+			path: ../../../src/entity/object/ItemEntity.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/entity/object/ItemEntity.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/entity/object/Painting.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/entity/object/Painting.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/entity/object/PrimedTNT.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 3
+			path: ../../../src/entity/projectile/Arrow.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/entity/projectile/Arrow.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 7
+			path: ../../../src/entity/projectile/Projectile.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 3
+			path: ../../../src/entity/projectile/SplashPotion.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/event/HandlerList.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/event/HandlerList.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/event/HandlerListManager.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/event/RegisteredListener.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 4
+			path: ../../../src/inventory/BaseInventory.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/inventory/BaseInventory.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/inventory/PlayerInventory.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/inventory/transaction/CraftingTransaction.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/item/Armor.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/item/Bow.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/item/Bow.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/item/Bucket.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/item/ChorusFruit.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/item/ChorusFruit.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/item/Durable.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 7
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 6
+			path: ../../../src/item/Item.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/item/ItemFactory.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/item/ItemFactory.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/item/ItemIdentifier.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/item/WrittenBook.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/item/enchantment/ProtectionEnchantment.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 5
+			path: ../../../src/lang/Language.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 7
+			path: ../../../src/lang/Language.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/network/Network.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/InventoryManager.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/InventoryManager.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 6
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 5
+			path: ../../../src/network/mcpe/NetworkSession.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/network/mcpe/auth/ProcessLoginTask.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/cache/ChunkCache.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/compression/ZlibCompressor.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/convert/ItemTranslator.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/network/mcpe/convert/TypeConverter.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 8
+			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 4
+			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/handler/LoginPacketHandler.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/handler/ResourcePacksPacketHandler.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/raklib/RakLibInterface.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/raklib/RakLibServer.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/network/query/QueryHandler.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/network/query/QueryInfo.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/permission/BanEntry.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/permission/PermissibleInternal.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/player/OfflinePlayer.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 51
+			path: ../../../src/player/Player.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 15
+			path: ../../../src/player/Player.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/player/SurvivalBlockBreakHandler.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/plugin/ApiVersion.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/plugin/PharPluginLoader.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/plugin/PluginBase.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginBase.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginDescription.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/plugin/PluginLoadabilityChecker.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/plugin/PluginLoadabilityChecker.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 4
+			path: ../../../src/plugin/PluginManager.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/plugin/PluginManager.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/plugin/ScriptPluginLoader.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/resourcepacks/ZippedResourcePack.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/resourcepacks/ZippedResourcePack.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/scheduler/AsyncPool.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/scheduler/AsyncPool.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/scheduler/AsyncTask.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/scheduler/AsyncTask.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/scheduler/Task.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/scheduler/TaskScheduler.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/thread/ThreadManager.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/updater/UpdateCheckTask.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/updater/UpdateChecker.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/utils/Config.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/utils/Config.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/utils/Filesystem.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/utils/Git.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/utils/Git.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 5
+			path: ../../../src/utils/Internet.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/utils/MainLogger.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/utils/MainLogger.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/utils/Process.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/utils/Terminal.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 9
+			path: ../../../src/utils/Timezone.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/utils/Utils.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 5
+			path: ../../../src/utils/Utils.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/utils/VersionString.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 2
+			path: ../../../src/wizard/SetupWizard.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 5
+			path: ../../../src/world/Explosion.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 3
+			path: ../../../src/world/Position.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 5
+			path: ../../../src/world/SimpleChunkManager.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 30
+			path: ../../../src/world/World.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 17
+			path: ../../../src/world/World.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 5
+			path: ../../../src/world/WorldManager.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/world/WorldManager.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 4
+			path: ../../../src/world/format/BiomeArray.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/world/format/Chunk.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/world/format/Chunk.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/world/format/HeightArray.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/world/format/io/WorldProviderManager.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 5
+			path: ../../../src/world/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/world/format/io/leveldb/LevelDB.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/world/format/io/region/RegionGarbageMap.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/world/format/io/region/RegionLoader.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 5
+			path: ../../../src/world/format/io/region/RegionLoader.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/world/format/io/region/RegionLocationTableEntry.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/world/format/io/region/RegionLocationTableEntry.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/world/format/io/region/RegionWorldProvider.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/world/generator/Flat.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/world/generator/GeneratorManager.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/world/generator/hell/Nether.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 3
+			path: ../../../src/world/generator/noise/Noise.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/world/generator/normal/Normal.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/world/generator/object/Ore.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/world/generator/object/SpruceTree.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/world/generator/object/TallGrass.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../../../src/world/generator/object/Tree.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 4
+			path: ../../../src/world/generator/object/Tree.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 3
+			path: ../../../src/world/generator/populator/GroundCover.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 5
+			path: ../../../src/world/generator/populator/TallGrass.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/world/generator/populator/TallGrass.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../src/world/generator/populator/Tree.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/world/generator/populator/Tree.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 3
+			path: ../../../src/world/light/LightUpdate.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/world/particle/DragonEggTeleportParticle.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../src/world/sound/NoteSound.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 4
+			path: ../../../src/world/utils/SubChunkExplorer.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../tools/compact-regions.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../tools/compact-regions.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../../tools/convert-world.php
+
+		-
+			message: "#^Use of the \"or\" operator is discouraged\\. Use \\|\\| instead\\.$#"
+			count: 1
+			path: ../../../tools/convert-world.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 3
+			path: ../../../tools/ping-server.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../phpunit/item/ItemTest.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../phpunit/scheduler/AsyncPoolTest.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 1
+			path: ../../plugins/TesterPlugin/src/Test.php
+
+		-
+			message: "#^Use of the \"and\" operator is discouraged\\. Use && instead\\.$#"
+			count: 2
+			path: ../rules/DisallowEnumComparisonRule.php
+

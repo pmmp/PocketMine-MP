@@ -1,5 +1,6 @@
 includes:
 	- tests/phpstan/configs/actual-problems.neon
+	- tests/phpstan/configs/and-or-logical.neon
 	- tests/phpstan/configs/gc-hacks.neon
 	- tests/phpstan/configs/impossible-generics.neon
 	- tests/phpstan/configs/php-bugs.neon
