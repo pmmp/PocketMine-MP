@@ -53,7 +53,7 @@ final class PluginCommand extends Command implements PluginOwned{
 
 		$success = $this->executor->onCommand($sender, $this, $commandLabel, $args);
 
-		if(!$success and $this->usageMessage !== ""){
+		if(!$success && $this->usageMessage !== ""){
 			throw new InvalidCommandSyntaxException();
 		}
 

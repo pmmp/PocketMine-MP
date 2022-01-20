@@ -103,7 +103,7 @@ class TimingsCommand extends VanillaCommand{
 		if($mode === "reset"){
 			TimingsHandler::reload();
 			Command::broadcastCommandMessage($sender, KnownTranslationFactory::pocketmine_command_timings_reset());
-		}elseif($mode === "merged" or $mode === "report" or $paste){
+		}elseif($mode === "merged" || $mode === "report" || $paste){
 			$timings = "";
 			if($paste){
 				$fileTimings = Utils::assumeNotFalse(fopen("php://temp", "r+b"), "Opening php://temp should never fail");
@@ -154,7 +154,7 @@ class TimingsCommand extends VanillaCommand{
 					)],
 					function(array $results) use ($sender, $host) : void{
 						/** @phpstan-var array<InternetRequestResult|InternetException> $results */
-						if($sender instanceof Player and !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
+						if($sender instanceof Player && !$sender->isOnline()){ // TODO replace with a more generic API method for checking availability of CommandSender
 							return;
 						}
 						$result = $results[0];

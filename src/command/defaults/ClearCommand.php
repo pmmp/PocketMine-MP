@@ -105,7 +105,7 @@ class ClearCommand extends VanillaCommand{
 		];
 
 		// Checking player's inventory for all the items matching the criteria
-		if($targetItem !== null and $maxCount === 0){
+		if($targetItem !== null && $maxCount === 0){
 			$count = $this->countItems($inventories, $targetItem);
 			if($count > 0){
 				$sender->sendMessage(KnownTranslationFactory::commands_clear_testing($target->getName(), (string) $count));
