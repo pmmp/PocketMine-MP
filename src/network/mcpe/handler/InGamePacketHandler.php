@@ -30,6 +30,7 @@ use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\Attribute;
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerEditBookEvent;
+use pocketmine\event\player\PlayerViewDistanceChangeEvent;
 use pocketmine\inventory\transaction\action\InventoryAction;
 use pocketmine\inventory\transaction\CraftingTransaction;
 use pocketmine\inventory\transaction\InventoryTransaction;
@@ -685,6 +686,13 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleRequestChunkRadius(RequestChunkRadiusPacket $packet) : bool{
+		if($this->player->getViewDistance() !== $packet->radius){
+			$ev = new PlayerViewDistanceChangeEvent($this->player, $packet->radius);
+			$ev->call();
+			if($ev->isCancelled()){
+				return true;
+			}
+		}
 		$this->player->setViewDistance($packet->radius);
 
 		return true;
