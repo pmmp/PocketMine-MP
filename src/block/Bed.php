@@ -120,7 +120,7 @@ class Bed extends Transparent{
 
 	public function getOtherHalf() : ?Bed{
 		$other = $this->getSide($this->getOtherHalfSide());
-		if($other instanceof Bed and $other->head !== $this->head and $other->facing === $this->facing){
+		if($other instanceof Bed && $other->head !== $this->head && $other->facing === $this->facing){
 			return $other;
 		}
 
@@ -135,14 +135,14 @@ class Bed extends Transparent{
 				$player->sendMessage(TextFormat::GRAY . "This bed is incomplete");
 
 				return true;
-			}elseif($playerPos->distanceSquared($this->position) > 4 and $playerPos->distanceSquared($other->position) > 4){
+			}elseif($playerPos->distanceSquared($this->position) > 4 && $playerPos->distanceSquared($other->position) > 4){
 				$player->sendMessage(KnownTranslationFactory::tile_bed_tooFar()->prefix(TextFormat::GRAY));
 				return true;
 			}
 
 			$time = $this->position->getWorld()->getTimeOfDay();
 
-			$isNight = ($time >= World::TIME_NIGHT and $time < World::TIME_SUNRISE);
+			$isNight = ($time >= World::TIME_NIGHT && $time < World::TIME_SUNRISE);
 
 			if(!$isNight){
 				$player->sendMessage(KnownTranslationFactory::tile_bed_noSleep()->prefix(TextFormat::GRAY));
@@ -166,7 +166,7 @@ class Bed extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(($other = $this->getOtherHalf()) !== null and $other->occupied !== $this->occupied){
+		if(($other = $this->getOtherHalf()) !== null && $other->occupied !== $this->occupied){
 			$this->occupied = $other->occupied;
 			$this->position->getWorld()->setBlock($this->position, $this);
 		}
@@ -186,7 +186,7 @@ class Bed extends Transparent{
 			$this->facing = $player !== null ? $player->getHorizontalFacing() : Facing::NORTH;
 
 			$next = $this->getSide($this->getOtherHalfSide());
-			if($next->canBeReplaced() and !$next->getSide(Facing::DOWN)->isTransparent()){
+			if($next->canBeReplaced() && !$next->getSide(Facing::DOWN)->isTransparent()){
 				$nextState = clone $this;
 				$nextState->head = true;
 				$tx->addBlock($blockReplace->position, $this)->addBlock($next->position, $nextState);

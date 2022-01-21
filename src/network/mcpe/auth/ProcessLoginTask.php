@@ -174,11 +174,11 @@ class ProcessLoginTask extends AsyncTask{
 		}
 
 		$time = time();
-		if(isset($claims->nbf) and $claims->nbf > $time + self::CLOCK_DRIFT_MAX){
+		if(isset($claims->nbf) && $claims->nbf > $time + self::CLOCK_DRIFT_MAX){
 			throw new VerifyLoginException(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_TOOEARLY);
 		}
 
-		if(isset($claims->exp) and $claims->exp < $time - self::CLOCK_DRIFT_MAX){
+		if(isset($claims->exp) && $claims->exp < $time - self::CLOCK_DRIFT_MAX){
 			throw new VerifyLoginException(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_TOOLATE);
 		}
 

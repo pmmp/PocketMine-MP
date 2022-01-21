@@ -60,7 +60,7 @@ final class ZlibCompressor implements Compressor{
 	}
 
 	public function willCompress(string $data) : bool{
-		return $this->threshold > -1 and strlen($data) >= $this->threshold;
+		return $this->threshold > -1 && strlen($data) >= $this->threshold;
 	}
 
 	/**

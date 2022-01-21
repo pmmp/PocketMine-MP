@@ -47,7 +47,7 @@ class DisallowEnumComparisonRule implements Rule{
 	}
 
 	public function processNode(Node $node, Scope $scope) : array{
-		if(!($node instanceof Identical) and !($node instanceof NotIdentical)){
+		if(!($node instanceof Identical) && !($node instanceof NotIdentical)){
 			return [];
 		}
 
@@ -81,7 +81,7 @@ class DisallowEnumComparisonRule implements Rule{
 				continue;
 			}
 			$class = $containedType->getClassReflection();
-			if($class !== null and $class->hasTraitUse(EnumTrait::class)){
+			if($class !== null && $class->hasTraitUse(EnumTrait::class)){
 				return true;
 			}
 		}

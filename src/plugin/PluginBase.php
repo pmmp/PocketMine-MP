@@ -209,11 +209,11 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 	 */
 	public function getCommand(string $name){
 		$command = $this->getServer()->getPluginCommand($name);
-		if($command === null or $command->getOwningPlugin() !== $this){
+		if($command === null || $command->getOwningPlugin() !== $this){
 			$command = $this->getServer()->getPluginCommand(strtolower($this->description->getName()) . ":" . $name);
 		}
 
-		if($command instanceof PluginOwned and $command->getOwningPlugin() === $this){
+		if($command instanceof PluginOwned && $command->getOwningPlugin() === $this){
 			return $command;
 		}else{
 			return null;
@@ -254,7 +254,7 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 			mkdir(dirname($out), 0755, true);
 		}
 
-		if(file_exists($out) and !$replace){
+		if(file_exists($out) && !$replace){
 			return false;
 		}
 

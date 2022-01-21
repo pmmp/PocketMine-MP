@@ -179,9 +179,8 @@ class ChunkCache implements ChunkListener{
 	 */
 	private function restartPendingRequest(int $chunkX, int $chunkZ, int $mappingProtocol) : void{
 		$chunkHash = World::chunkHash($chunkX, $chunkZ);
-
 		$existing = $this->caches[$chunkHash][$mappingProtocol] ?? null;
-		if($existing === null or $existing->hasResult()){
+		if($existing === null || $existing->hasResult()){
 			throw new \InvalidArgumentException("Restart can only be applied to unresolved promises");
 		}
 		$existing->cancel();

@@ -63,7 +63,7 @@ class FrostedIce extends Ice{
 	}
 
 	public function onRandomTick() : void{
-		if((!$this->checkAdjacentBlocks(4) or mt_rand(0, 2) === 0) and
+		if((!$this->checkAdjacentBlocks(4) || mt_rand(0, 2) === 0) &&
 			$this->position->getWorld()->getHighestAdjacentFullLightAt($this->position->x, $this->position->y, $this->position->z) >= 12 - $this->age){
 			if($this->tryMelt()){
 				foreach($this->getAllSides() as $block){
@@ -85,11 +85,11 @@ class FrostedIce extends Ice{
 		$found = 0;
 		for($x = -1; $x <= 1; ++$x){
 			for($z = -1; $z <= 1; ++$z){
-				if($x === 0 and $z === 0){
+				if($x === 0 && $z === 0){
 					continue;
 				}
 				if(
-					$this->position->getWorld()->getBlockAt($this->position->x + $x, $this->position->y, $this->position->z + $z) instanceof FrostedIce and
+					$this->position->getWorld()->getBlockAt($this->position->x + $x, $this->position->y, $this->position->z + $z) instanceof FrostedIce &&
 					++$found >= $requirement
 				){
 					return true;

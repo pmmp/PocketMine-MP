@@ -28,6 +28,7 @@ use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\ItemUseOnBlockSound;
 
 class Dirt extends Opaque{
 
@@ -58,9 +59,12 @@ class Dirt extends Opaque{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::UP and $item instanceof Hoe){
+		if($face === Facing::UP && $item instanceof Hoe){
 			$item->applyDamage(1);
-			$this->position->getWorld()->setBlock($this->position, $this->coarse ? VanillaBlocks::DIRT() : VanillaBlocks::FARMLAND());
+
+			$newBlock = $this->coarse ? VanillaBlocks::DIRT() : VanillaBlocks::FARMLAND();
+			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
+			$this->position->getWorld()->setBlock($this->position, $newBlock);
 
 			return true;
 		}

@@ -34,7 +34,7 @@ class Note extends Tile{
 	private $pitch = 0;
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		if(($pitch = $nbt->getByte("note", $this->pitch)) > BlockNote::MIN_PITCH and $pitch <= BlockNote::MAX_PITCH){
+		if(($pitch = $nbt->getByte("note", $this->pitch)) > BlockNote::MIN_PITCH && $pitch <= BlockNote::MAX_PITCH){
 			$this->pitch = $pitch;
 		}
 	}
@@ -48,7 +48,7 @@ class Note extends Tile{
 	}
 
 	public function setPitch(int $pitch) : void{
-		if($pitch < BlockNote::MIN_PITCH or $pitch > BlockNote::MAX_PITCH){
+		if($pitch < BlockNote::MIN_PITCH || $pitch > BlockNote::MAX_PITCH){
 			throw new \InvalidArgumentException("Pitch must be in range " . BlockNote::MIN_PITCH . " - " . BlockNote::MAX_PITCH);
 		}
 		$this->pitch = $pitch;

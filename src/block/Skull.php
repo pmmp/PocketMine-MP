@@ -140,7 +140,7 @@ class Skull extends Flowable{
 		}
 
 		$this->facing = $face;
-		if($player !== null and $face === Facing::UP){
+		if($player !== null && $face === Facing::UP){
 			$this->rotation = ((int) floor(($player->getLocation()->getYaw() * 16 / 360) + 0.5)) & 0xf;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);

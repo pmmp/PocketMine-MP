@@ -119,8 +119,8 @@ class BlockBreakInfo{
 			return false;
 		}
 
-		return $this->toolType === BlockToolType::NONE or $this->toolHarvestLevel === 0 or (
-				($this->toolType & $tool->getBlockToolType()) !== 0 and $tool->getBlockToolHarvestLevel() >= $this->toolHarvestLevel);
+		return $this->toolType === BlockToolType::NONE || $this->toolHarvestLevel === 0 || (
+				($this->toolType & $tool->getBlockToolType()) !== 0 && $tool->getBlockToolHarvestLevel() >= $this->toolHarvestLevel);
 	}
 
 	/**

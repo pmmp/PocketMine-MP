@@ -222,10 +222,10 @@ class CrashDump{
 			}
 		}
 
-		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-code", true) and file_exists($error["fullFile"])){
+		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-code", true) && file_exists($error["fullFile"])){
 			$file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
 			if($file !== false){
-				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 and isset($file[$l]); ++$l){
+				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 && isset($file[$l]); ++$l){
 					$this->data->code[$l + 1] = $file[$l];
 				}
 			}

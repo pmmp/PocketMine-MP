@@ -21,28 +21,22 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\event\block;
 
-final class ItemIdentifier{
+use pocketmine\block\Chest;
+use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
+use pocketmine\event\Event;
 
-	/** @var int */
-	private $id;
-	/** @var int */
-	private $meta;
+final class ChestPairEvent extends Event implements Cancellable{
+	use CancellableTrait;
 
-	public function __construct(int $id, int $meta){
-		if($id < -0x8000 || $id > 0x7fff){ //signed short range
-			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
-		}
-		$this->id = $id;
-		$this->meta = $meta !== -1 ? $meta & 0x7FFF : -1;
-	}
+	public function __construct(
+		private Chest $left,
+		private Chest $right
+	){}
 
-	public function getId() : int{
-		return $this->id;
-	}
+	public function getLeft() : Chest{ return $this->left; }
 
-	public function getMeta() : int{
-		return $this->meta;
-	}
+	public function getRight() : Chest{ return $this->right; }
 }

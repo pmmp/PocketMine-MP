@@ -197,8 +197,8 @@ class Chunk{
 		}
 
 		$pos = $tile->getPosition();
-		if(isset($this->tiles[$index = Chunk::blockHash($pos->x, $pos->y, $pos->z)]) and $this->tiles[$index] !== $tile){
-			$this->tiles[$index]->close();
+		if(isset($this->tiles[$index = Chunk::blockHash($pos->x, $pos->y, $pos->z)]) && $this->tiles[$index] !== $tile){
+			$this->tiles[$index]->close(); // close the previous tile
 		}
 		$this->tiles[$index] = $tile;
 	}
@@ -292,7 +292,7 @@ class Chunk{
 	 * Sets a subchunk in the chunk index
 	 */
 	public function setSubChunk(int $y, ?SubChunk $subChunk) : void{
-		if($y < self::MIN_SUBCHUNK_INDEX or $y > self::MAX_SUBCHUNK_INDEX){
+		if($y < self::MIN_SUBCHUNK_INDEX || $y > self::MAX_SUBCHUNK_INDEX){
 			throw new \InvalidArgumentException("Invalid subchunk Y coordinate $y");
 		}
 

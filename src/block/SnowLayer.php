@@ -78,7 +78,7 @@ class SnowLayer extends Flowable implements Fallable{
 	}
 
 	private function canBeSupportedBy(Block $b) : bool{
-		return $b->isSolid() or ($b instanceof SnowLayer and $b->isSameType($this) and $b->layers === 8);
+		return $b->isSolid() || ($b instanceof SnowLayer && $b->isSameType($this) && $b->layers === 8);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{

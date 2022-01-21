@@ -135,7 +135,7 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < self::STAGE_MATURE and mt_rand(0, 2) === 1){
+		if($this->age < self::STAGE_MATURE && mt_rand(0, 2) === 1){
 			$block = clone $this;
 			++$block->age;
 			$ev = new BlockGrowEvent($this, $block);

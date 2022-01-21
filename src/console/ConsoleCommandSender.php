@@ -78,7 +78,7 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	public function setScreenLineHeight(?int $height) : void{
-		if($height !== null and $height < 1){
+		if($height !== null && $height < 1){
 			throw new \InvalidArgumentException("Line height must be at least 1");
 		}
 		$this->lineHeight = $height;

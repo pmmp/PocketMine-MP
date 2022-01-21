@@ -86,7 +86,7 @@ class TNT extends Opaque{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item instanceof FlintSteel or $item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT())){
+		if($item instanceof FlintSteel || $item->hasEnchantment(VanillaEnchantments::FIRE_ASPECT())){
 			if($item instanceof Durable){
 				$item->applyDamage(1);
 			}
@@ -102,7 +102,7 @@ class TNT extends Opaque{
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
-		if($entity instanceof Arrow and $entity->isOnFire()){
+		if($entity instanceof Arrow && $entity->isOnFire()){
 			$this->ignite();
 			return false;
 		}

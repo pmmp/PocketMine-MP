@@ -54,7 +54,7 @@ class AsyncPoolTest extends TestCase{
 	public function testTaskLeak() : void{
 		$start = microtime(true);
 		$this->pool->submitTask(new LeakTestAsyncTask());
-		while(!LeakTestAsyncTask::$destroyed and microtime(true) < $start + 30){
+		while(!LeakTestAsyncTask::$destroyed && microtime(true) < $start + 30){
 			usleep(50 * 1000);
 			$this->pool->collectTasks();
 		}

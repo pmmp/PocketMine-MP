@@ -93,7 +93,7 @@ abstract class AsyncTask extends \Threaded{
 	}
 
 	public function isCrashed() : bool{
-		return $this->crashed or $this->isTerminated();
+		return $this->crashed || $this->isTerminated();
 	}
 
 	/**
@@ -101,7 +101,7 @@ abstract class AsyncTask extends \Threaded{
 	 * because it is not true prior to task execution.
 	 */
 	public function isFinished() : bool{
-		return $this->finished or $this->isCrashed();
+		return $this->finished || $this->isCrashed();
 	}
 
 	public function hasResult() : bool{
@@ -236,7 +236,7 @@ abstract class AsyncTask extends \Threaded{
 	 */
 	protected function fetchLocal(string $key){
 		$id = spl_object_id($this);
-		if(self::$threadLocalStorage === null or !isset(self::$threadLocalStorage[$id][$key])){
+		if(self::$threadLocalStorage === null || !isset(self::$threadLocalStorage[$id][$key])){
 			throw new \InvalidArgumentException("No matching thread-local data found on this thread");
 		}
 
@@ -245,7 +245,7 @@ abstract class AsyncTask extends \Threaded{
 
 	final public function __destruct(){
 		$this->reallyDestruct();
-		if(self::$threadLocalStorage !== null and isset(self::$threadLocalStorage[$h = spl_object_id($this)])){
+		if(self::$threadLocalStorage !== null && isset(self::$threadLocalStorage[$h = spl_object_id($this)])){
 			unset(self::$threadLocalStorage[$h]);
 			if(self::$threadLocalStorage->count() === 0){
 				self::$threadLocalStorage = null;

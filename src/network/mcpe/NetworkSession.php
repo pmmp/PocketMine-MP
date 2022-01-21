@@ -411,7 +411,7 @@ class NetworkSession{
 
 			$ev = new DataPacketReceiveEvent($this, $packet);
 			$ev->call();
-			if(!$ev->isCancelled() and ($this->handler === null or !$packet->handle($this->handler))){
+			if(!$ev->isCancelled() && ($this->handler === null || !$packet->handle($this->handler))){
 				$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
 			}
 		}finally{
@@ -421,7 +421,7 @@ class NetworkSession{
 
 	public function sendDataPacket(ClientboundPacket $packet, bool $immediate = false) : bool{
 		//Basic safety restriction. TODO: improve this
-		if(!$this->loggedIn and !$packet->canBeSentBeforeLogin()){
+		if(!$this->loggedIn && !$packet->canBeSentBeforeLogin()){
 			throw new \InvalidArgumentException("Attempted to send " . get_class($packet) . " to " . $this->getDisplayName() . " too early");
 		}
 
@@ -492,7 +492,7 @@ class NetworkSession{
 		}else{
 			$this->compressedQueue->enqueue($payload);
 			$payload->onResolve(function(CompressBatchPromise $payload) : void{
-				if($this->connected and $this->compressedQueue->bottom() === $payload){
+				if($this->connected && $this->compressedQueue->bottom() === $payload){
 					$this->compressedQueue->dequeue(); //result unused
 					$this->sendEncoded($payload->getResult());
 
@@ -526,7 +526,7 @@ class NetworkSession{
 	 * @phpstan-param \Closure() : void $func
 	 */
 	private function tryDisconnect(\Closure $func, string $reason) : void{
-		if($this->connected and !$this->disconnectGuard){
+		if($this->connected && !$this->disconnectGuard){
 			$this->disconnectGuard = true;
 			$func();
 			$this->disconnectGuard = false;
@@ -608,7 +608,7 @@ class NetworkSession{
 			return;
 		}
 		if($error === null){
-			if($authenticated and !($this->info instanceof XboxLivePlayerInfo)){
+			if($authenticated && !($this->info instanceof XboxLivePlayerInfo)){
 				$error = "Expected XUID but none found";
 			}elseif($clientPubKey === null){
 				$error = "Missing client public key"; //failsafe
@@ -655,7 +655,7 @@ class NetworkSession{
 				continue;
 			}
 			$info = $existingSession->getPlayerInfo();
-			if($info !== null and ($info->getUsername() === $this->info->getUsername() or $info->getUuid()->equals($this->info->getUuid()))){
+			if($info !== null && ($info->getUsername() === $this->info->getUsername() || $info->getUuid()->equals($this->info->getUuid()))){
 				if($kickForXUIDMismatch($info instanceof XboxLivePlayerInfo ? $info->getXuid() : "")){
 					return;
 				}
@@ -862,7 +862,7 @@ class NetworkSession{
 	public function syncAvailableCommands() : void{
 		$commandData = [];
 		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
-			if(isset($commandData[$command->getName()]) or $command->getName() === "help" or !$command->testPermissionSilent($this->player)){
+			if(isset($commandData[$command->getName()]) || $command->getName() === "help" || !$command->testPermissionSilent($this->player)){
 				continue;
 			}
 
@@ -942,7 +942,7 @@ class NetworkSession{
 					return;
 				}
 				$currentWorld = $this->player->getLocation()->getWorld();
-				if($world !== $currentWorld or ($status = $this->player->getUsedChunkStatus($chunkX, $chunkZ)) === null){
+				if($world !== $currentWorld || ($status = $this->player->getUsedChunkStatus($chunkX, $chunkZ)) === null){
 					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
 					return;
 				}

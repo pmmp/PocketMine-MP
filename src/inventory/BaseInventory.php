@@ -146,7 +146,7 @@ abstract class BaseInventory implements Inventory{
 		$checkTags = $exact || $item->hasNamedTag();
 
 		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage, $checkTags) and ($i->getCount() === $count or (!$exact and $i->getCount() > $count))){
+			if($item->equals($i, $checkDamage, $checkTags) && ($i->getCount() === $count || (!$exact && $i->getCount() > $count))){
 				return $index;
 			}
 		}
@@ -224,7 +224,7 @@ abstract class BaseInventory implements Inventory{
 				$emptySlots[] = $i;
 			}
 
-			if($slot->canStackWith($item) and $item->getCount() < $item->getMaxStackSize()){
+			if($slot->canStackWith($item) && $item->getCount() < $item->getMaxStackSize()){
 				$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
 				if($amount > 0){
 					$slot->setCount($slot->getCount() - $amount);
@@ -367,7 +367,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function slotExists(int $slot) : bool{
-		return $slot >= 0 and $slot < $this->getSize();
+		return $slot >= 0 && $slot < $this->getSize();
 	}
 
 	public function getListeners() : ObjectSet{

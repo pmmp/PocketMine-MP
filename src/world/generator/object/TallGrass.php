@@ -47,7 +47,7 @@ class TallGrass{
 		for($c = 0; $c < $count; ++$c){
 			$x = $random->nextRange($pos->x - $radius, $pos->x + $radius);
 			$z = $random->nextRange($pos->z - $radius, $pos->z + $radius);
-			if($world->getBlockAt($x, $pos->y + 1, $z)->getId() === BlockLegacyIds::AIR and $world->getBlockAt($x, $pos->y, $z)->getId() === BlockLegacyIds::GRASS){
+			if($world->getBlockAt($x, $pos->y + 1, $z)->getId() === BlockLegacyIds::AIR && $world->getBlockAt($x, $pos->y, $z)->getId() === BlockLegacyIds::GRASS){
 				$world->setBlockAt($x, $pos->y + 1, $z, $arr[$random->nextRange(0, $arrC)]);
 			}
 		}

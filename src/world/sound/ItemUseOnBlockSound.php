@@ -21,28 +21,28 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\world\sound;
 
-final class ItemIdentifier{
+use pocketmine\block\Block;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-	/** @var int */
-	private $id;
-	/** @var int */
-	private $meta;
+final class ItemUseOnBlockSound implements Sound{
 
-	public function __construct(int $id, int $meta){
-		if($id < -0x8000 || $id > 0x7fff){ //signed short range
-			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
-		}
-		$this->id = $id;
-		$this->meta = $meta !== -1 ? $meta & 0x7FFF : -1;
-	}
+	public function __construct(
+		private Block $block
+	){}
 
-	public function getId() : int{
-		return $this->id;
-	}
+	public function getBlock() : Block{ return $this->block; }
 
-	public function getMeta() : int{
-		return $this->meta;
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(
+			LevelSoundEvent::ITEM_USE_ON,
+			$pos,
+			false,
+			RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId())
+		)];
 	}
 }

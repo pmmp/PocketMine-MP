@@ -168,14 +168,14 @@ class MemoryManager{
 	}
 
 	public function canUseChunkCache() : bool{
-		return !$this->lowMemory or !$this->lowMemDisableChunkCache;
+		return !$this->lowMemory || !$this->lowMemDisableChunkCache;
 	}
 
 	/**
 	 * Returns the allowed chunk radius based on the current memory usage.
 	 */
 	public function getViewDistance(int $distance) : int{
-		return ($this->lowMemory and $this->lowMemChunkRadiusOverride > 0) ? min($this->lowMemChunkRadiusOverride, $distance) : $distance;
+		return ($this->lowMemory && $this->lowMemChunkRadiusOverride > 0) ? min($this->lowMemChunkRadiusOverride, $distance) : $distance;
 	}
 
 	/**
@@ -214,18 +214,18 @@ class MemoryManager{
 	public function check() : void{
 		Timings::$memoryManager->startTiming();
 
-		if(($this->memoryLimit > 0 or $this->globalMemoryLimit > 0) and ++$this->checkTicker >= $this->checkRate){
+		if(($this->memoryLimit > 0 || $this->globalMemoryLimit > 0) && ++$this->checkTicker >= $this->checkRate){
 			$this->checkTicker = 0;
 			$memory = Process::getAdvancedMemoryUsage();
 			$trigger = false;
-			if($this->memoryLimit > 0 and $memory[0] > $this->memoryLimit){
+			if($this->memoryLimit > 0 && $memory[0] > $this->memoryLimit){
 				$trigger = 0;
-			}elseif($this->globalMemoryLimit > 0 and $memory[1] > $this->globalMemoryLimit){
+			}elseif($this->globalMemoryLimit > 0 && $memory[1] > $this->globalMemoryLimit){
 				$trigger = 1;
 			}
 
 			if($trigger !== false){
-				if($this->lowMemory and $this->continuousTrigger){
+				if($this->lowMemory && $this->continuousTrigger){
 					if(++$this->continuousTriggerTicker >= $this->continuousTriggerRate){
 						$this->continuousTriggerTicker = 0;
 						$this->trigger($memory[$trigger], $this->memoryLimit, $trigger > 0, ++$this->continuousTriggerCount);
@@ -240,7 +240,7 @@ class MemoryManager{
 			}
 		}
 
-		if($this->garbageCollectionPeriod > 0 and ++$this->garbageCollectionTicker >= $this->garbageCollectionPeriod){
+		if($this->garbageCollectionPeriod > 0 && ++$this->garbageCollectionTicker >= $this->garbageCollectionPeriod){
 			$this->garbageCollectionTicker = 0;
 			$this->triggerGarbageCollector();
 		}
@@ -317,7 +317,7 @@ class MemoryManager{
 			$reflection = new \ReflectionClass($className);
 			$staticProperties[$className] = [];
 			foreach($reflection->getProperties() as $property){
-				if(!$property->isStatic() or $property->getDeclaringClass()->getName() !== $className){
+				if(!$property->isStatic() || $property->getDeclaringClass()->getName() !== $className){
 					continue;
 				}
 
