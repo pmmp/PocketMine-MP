@@ -880,7 +880,7 @@ class InGamePacketHandler extends PacketHandler{
 
 			$fixed = "[" . implode(",", $newParts) . "]";
 			if(($ret = json_decode($fixed, $assoc)) === null){
-				throw new \InvalidArgumentException("Failed to fix JSON: " . json_last_error_msg() . "(original: $json, modified: $fixed)");
+				throw new PacketHandlingException("Failed to fix JSON: " . json_last_error_msg() . "(original: $json, modified: $fixed)");
 			}
 
 			return $ret;
