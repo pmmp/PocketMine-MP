@@ -96,7 +96,9 @@ class Furnace extends Opaque{
 		return $this->lit;
 	}
 
-	/** @return $this */
+	/**
+	 * @return $this
+	 */
 	public function setLit(bool $lit = true) : self{
 		$this->lit = $lit;
 		return $this;
