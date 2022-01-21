@@ -51,12 +51,9 @@ class Furnace extends Opaque{
 	protected BlockIdentifierFlattened $idInfoFlattened;
 
 	protected bool $lit = false; //this is set based on the blockID
-	/** @var int */
-	private $remainingFuelTime = 0;
-	/** @var int */
-	private $cookTime = 0;
-	/** @var int */
-	private $maxFuelTime = 0;
+	private int $remainingFuelTime = 0;
+	private int $cookTime = 0;
+	private int $maxFuelTime = 0;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->idInfoFlattened = $idInfo;
