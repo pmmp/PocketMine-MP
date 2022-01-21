@@ -110,7 +110,6 @@ use function is_infinite;
 use function is_nan;
 use function json_decode;
 use function json_encode;
-use function json_last_error_msg;
 use function max;
 use function mb_strlen;
 use function microtime;
@@ -120,6 +119,7 @@ use function strlen;
 use function strpos;
 use function substr;
 use function trim;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * This handler handles packets related to general gameplay.
@@ -879,14 +879,18 @@ class InGamePacketHandler extends PacketHandler{
 			}
 
 			$fixed = "[" . implode(",", $newParts) . "]";
-			if(($ret = json_decode($fixed, $assoc)) === null){
-				throw new PacketHandlingException("Failed to fix JSON: " . json_last_error_msg() . "(original: $json, modified: $fixed)");
+			try{
+				return json_decode($fixed, $assoc, flags: JSON_THROW_ON_ERROR);
+			}catch(\JsonException $e){
+				throw PacketHandlingException::wrap($e, "Failed to fix JSON (original: $json, modified: $fixed)");
 			}
-
-			return $ret;
 		}
 
-		return json_decode($json, $assoc);
+		try{
+			return json_decode($json, $assoc, flags: JSON_THROW_ON_ERROR);
+		}catch(\JsonException $e){
+			throw PacketHandlingException::wrap($e);
+		}
 	}
 
 	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
