@@ -21,11 +21,6 @@ parameters:
 			path: ../../../src/entity/projectile/Projectile.php
 
 		-
-			message: "#^Dead catch \\- JsonException is never thrown in the try block\\.$#"
-			count: 2
-			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
-
-		-
 			message: "#^Dead catch \\- RuntimeException is never thrown in the try block\\.$#"
 			count: 1
 			path: ../../../src/plugin/PluginManager.php
