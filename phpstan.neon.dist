@@ -39,6 +39,7 @@ parameters:
 	stubFiles:
 		- tests/phpstan/stubs/chunkutils.stub
 		- tests/phpstan/stubs/leveldb.stub
+		- tests/phpstan/stubs/phpasn1.stub
 		- tests/phpstan/stubs/pthreads.stub
 	reportUnmatchedIgnoredErrors: false #no other way to silence platform-specific non-warnings
 	staticReflectionClassNamePatterns:

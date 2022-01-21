@@ -3411,6 +3411,16 @@ parameters:
 			path: ../../../src/pocketmine/network/mcpe/convert/RuntimeBlockMapping.php
 
 		-
+			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\encryption\\\\EncryptionUtils\\:\\:generateKey\\(\\) should return string but returns string\\|false\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/encryption/EncryptionUtils.php
+
+		-
+			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\encryption\\\\PrepareEncryptionTask\\:\\:\\$serverPrivateKey \\(string\\) does not accept string\\|null\\.$#"
+			count: 1
+			path: ../../../src/pocketmine/network/mcpe/encryption/PrepareEncryptionTask.php
+
+		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\protocol\\\\AddActorPacket\\:\\:\\$metadata \\(array\\<int, array\\{int, mixed\\}\\>\\) does not accept array\\<int, mixed\\>\\.$#"
 			count: 1
 			path: ../../../src/pocketmine/network/mcpe/protocol/AddActorPacket.php
