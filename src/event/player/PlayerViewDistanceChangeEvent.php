@@ -23,28 +23,26 @@ declare(strict_types=1);
 
 namespace pocketmine\event\player;
 
-use pocketmine\event\Cancellable;
-use pocketmine\event\CancellableTrait;
 use pocketmine\player\Player;
 
 /**
  * Called when a player requests a different viewing distance than the current one.
  */
-class PlayerViewDistanceChangeEvent extends PlayerEvent implements Cancellable{
-	use CancellableTrait;
-
+class PlayerViewDistanceChangeEvent extends PlayerEvent{
 	protected int $radius;
+	protected int $oldRadius;
 
-	public function __construct(Player $player, int $radius){
+	public function __construct(Player $player, int $radius, int $oldRadius){
 		$this->player = $player;
 		$this->radius = $radius;
-	}
-
-	public function setRadius(int $radius) : void{
-		$this->radius = $radius;
+		$this->oldRadius = $oldRadius;
 	}
 
 	public function getRadius() : int{
 		return $this->radius;
+	}
+
+	public function getOldRadius() : int{
+		return $this->oldRadius;
 	}
 }
