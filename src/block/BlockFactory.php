@@ -115,7 +115,14 @@ class BlockFactory{
 		$this->registerAllMeta(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL, 0), "Activator Rail", $railBreakInfo));
 		$this->registerAllMeta(new Air(new BID(Ids::AIR, 0), "Air", BlockBreakInfo::indestructible(-1.0)));
 		$this->registerAllMeta(new Anvil(new BID(Ids::ANVIL, 0), "Anvil", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 6000.0)));
-		$this->registerAllMeta(new Bamboo(new BID(Ids::BAMBOO, 0), "Bamboo", new BlockBreakInfo(2.0 /* 1.0 in PC */, BlockToolType::AXE)));
+		$this->registerAllMeta(new Bamboo(new BID(Ids::BAMBOO, 0), "Bamboo", new class(2.0 /* 1.0 in PC */, BlockToolType::AXE) extends BlockBreakInfo{
+			public function getBreakTime(Item $item) : float{
+				if($item->getBlockToolType() === BlockToolType::SWORD){
+					return 0.0;
+				}
+				return parent::getBreakTime($item);
+			}
+		}));
 		$this->registerAllMeta(new BambooSapling(new BID(Ids::BAMBOO_SAPLING, 0), "Bamboo Sapling", BlockBreakInfo::instant()));
 
 		$bannerBreakInfo = new BlockBreakInfo(1.0, BlockToolType::AXE);
@@ -270,7 +277,7 @@ class BlockFactory{
 		$this->registerAllMeta(new NetherPortal(new BID(Ids::PORTAL, 0), "Nether Portal", BlockBreakInfo::indestructible(0.0)));
 		$this->registerAllMeta(new NetherQuartzOre(new BID(Ids::NETHER_QUARTZ_ORE, 0), "Nether Quartz Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->registerAllMeta(new NetherReactor(new BID(Ids::NETHERREACTOR, 0), "Nether Reactor Core", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
-		$this->registerAllMeta(new Opaque(new BID(Ids::NETHER_WART_BLOCK, 0), "Nether Wart Block", new BlockBreakInfo(1.0)));
+		$this->registerAllMeta(new Opaque(new BID(Ids::NETHER_WART_BLOCK, 0), "Nether Wart Block", new BlockBreakInfo(1.0, BlockToolType::HOE)));
 		$this->registerAllMeta(new NetherWartPlant(new BID(Ids::NETHER_WART_PLANT, 0, ItemIds::NETHER_WART), "Nether Wart", BlockBreakInfo::instant()));
 		$this->registerAllMeta(new Netherrack(new BID(Ids::NETHERRACK, 0), "Netherrack", new BlockBreakInfo(0.4, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->registerAllMeta(new Note(new BID(Ids::NOTEBLOCK, 0, null, TileNote::class), "Note Block", new BlockBreakInfo(0.8, BlockToolType::AXE)));
@@ -365,7 +372,7 @@ class BlockFactory{
 			$crackedStoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_CRACKED), "Cracked Stone Bricks", $stoneBreakInfo),
 			$chiseledStoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_CHISELED), "Chiseled Stone Bricks", $stoneBreakInfo)
 		);
-		$infestedStoneBreakInfo = new BlockBreakInfo(0.75);
+		$infestedStoneBreakInfo = new BlockBreakInfo(0.75, BlockToolType::PICKAXE);
 		$this->registerAllMeta(
 			new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE), "Infested Stone", $infestedStoneBreakInfo, $stone),
 			new InfestedStone(new BID(Ids::MONSTER_EGG, Meta::INFESTED_STONE_BRICK), "Infested Stone Brick", $infestedStoneBreakInfo, $stoneBrick),
@@ -441,7 +448,7 @@ class BlockFactory{
 		$this->registerAllMeta(new UnderwaterTorch(new BID(Ids::UNDERWATER_TORCH, 0), "Underwater Torch", BlockBreakInfo::instant()));
 		$this->registerAllMeta(new Vine(new BID(Ids::VINE, 0), "Vines", new BlockBreakInfo(0.2, BlockToolType::AXE)));
 		$this->registerAllMeta(new Water(new BIDFlattened(Ids::FLOWING_WATER, [Ids::STILL_WATER], 0), "Water", BlockBreakInfo::indestructible(500.0)));
-		$this->registerAllMeta(new WaterLily(new BID(Ids::LILY_PAD, 0), "Lily Pad", new BlockBreakInfo(0.6)));
+		$this->registerAllMeta(new WaterLily(new BID(Ids::LILY_PAD, 0), "Lily Pad", BlockBreakInfo::instant()));
 
 		$weightedPressurePlateBreakInfo = new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel());
 		$this->registerAllMeta(new WeightedPressurePlateHeavy(new BID(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, 0), "Weighted Pressure Plate Heavy", $weightedPressurePlateBreakInfo));
@@ -449,7 +456,14 @@ class BlockFactory{
 		$this->registerAllMeta(new Wheat(new BID(Ids::WHEAT_BLOCK, 0), "Wheat Block", BlockBreakInfo::instant()));
 
 		$planksBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE, 0, 15.0);
-		$leavesBreakInfo = new BlockBreakInfo(0.2, BlockToolType::SHEARS);
+		$leavesBreakInfo = new class(0.2, BlockToolType::HOE) extends BlockBreakInfo{
+			public function getBreakTime(Item $item) : float{
+				if($item->getBlockToolType() === BlockToolType::SHEARS){
+					return 0.0;
+				}
+				return parent::getBreakTime($item);
+			}
+		};
 		$signBreakInfo = new BlockBreakInfo(1.0, BlockToolType::AXE);
 		$logBreakInfo = new BlockBreakInfo(2.0, BlockToolType::AXE);
 		$woodenDoorBreakInfo = new BlockBreakInfo(3.0, BlockToolType::AXE, 0, 15.0);
