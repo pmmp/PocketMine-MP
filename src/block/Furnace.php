@@ -257,7 +257,7 @@ class Furnace extends Opaque{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof BlastFurnace){
 			$this->position->getWorld()->addSound($this->position, new BlastFurnaceFireCrackleSound);
-		}elseif ($tile instanceof Smoker) {
+		}elseif($tile instanceof Smoker){
 			$this->position->getWorld()->addSound($this->position, new SmokerSmokeSound);
 		}else{
 			$this->position->getWorld()->addSound($this->position, new FurnaceLitSound);
