@@ -45,6 +45,7 @@ use function get_class;
 use function implode;
 use function rtrim;
 use function spl_object_hash;
+use function substr;
 use function unserialize;
 use const PTHREADS_INHERIT_CONSTANTS;
 
@@ -54,6 +55,8 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	 * communicate. It's important that we check this to avoid catastrophes.
 	 */
 	private const MCPE_RAKNET_PROTOCOL_VERSION = 10;
+
+	private const MCPE_RAKNET_PACKET_ID = "\xfe";
 
 	/** @var Server */
 	private $server;
@@ -163,9 +166,18 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			//get this now for blocking in case the player was closed before the exception was raised
 			$player = $this->players[$identifier];
 			$address = $player->getAddress();
+
 			try{
 				if($packet->buffer !== ""){
-					$pk = new BatchPacket($packet->buffer);
+					if($packet->buffer[0] !== self::MCPE_RAKNET_PACKET_ID){
+						throw new \UnexpectedValueException("Unexpected non-FE packet");
+					}
+
+					$cipher = $player->getCipher();
+					$buffer = substr($packet->buffer, 1);
+					$buffer = $cipher !== null ? $cipher->decrypt($buffer) : $buffer;
+
+					$pk = new BatchPacket(self::MCPE_RAKNET_PACKET_ID . $buffer);
 					$player->handleDataPacket($pk);
 				}
 			}catch(\Throwable $e){
@@ -245,17 +257,21 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			}
 
 			if($packet instanceof BatchPacket){
+				$cipher = $player->getCipher();
+				$rawBuffer = substr($packet->buffer, 1);
+				$buffer = self::MCPE_RAKNET_PACKET_ID . ($cipher !== null ? $cipher->encrypt($rawBuffer) : $rawBuffer);
+
 				if($needACK){
 					$pk = new EncapsulatedPacket();
 					$pk->identifierACK = $this->identifiersACK[$identifier]++;
-					$pk->buffer = $packet->buffer;
+					$pk->buffer = $buffer;
 					$pk->reliability = PacketReliability::RELIABLE_ORDERED;
 					$pk->orderChannel = 0;
 				}else{
 					if(!isset($packet->__encapsulatedPacket)){
 						$packet->__encapsulatedPacket = new CachedEncapsulatedPacket;
 						$packet->__encapsulatedPacket->identifierACK = null;
-						$packet->__encapsulatedPacket->buffer = $packet->buffer;
+						$packet->__encapsulatedPacket->buffer = $buffer;
 						$packet->__encapsulatedPacket->reliability = PacketReliability::RELIABLE_ORDERED;
 						$packet->__encapsulatedPacket->orderChannel = 0;
 					}
