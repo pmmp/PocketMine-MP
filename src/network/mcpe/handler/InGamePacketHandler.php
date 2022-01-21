@@ -125,6 +125,7 @@ use const JSON_THROW_ON_ERROR;
  * This handler handles packets related to general gameplay.
  */
 class InGamePacketHandler extends PacketHandler{
+	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
 
 	/** @var Player */
 	private $player;
@@ -880,14 +881,14 @@ class InGamePacketHandler extends PacketHandler{
 
 			$fixed = "[" . implode(",", $newParts) . "]";
 			try{
-				return json_decode($fixed, $assoc, flags: JSON_THROW_ON_ERROR);
+				return json_decode($fixed, $assoc, self::MAX_FORM_RESPONSE_DEPTH, JSON_THROW_ON_ERROR);
 			}catch(\JsonException $e){
 				throw PacketHandlingException::wrap($e, "Failed to fix JSON (original: $json, modified: $fixed)");
 			}
 		}
 
 		try{
-			return json_decode($json, $assoc, flags: JSON_THROW_ON_ERROR);
+			return json_decode($json, $assoc, self::MAX_FORM_RESPONSE_DEPTH, JSON_THROW_ON_ERROR);
 		}catch(\JsonException $e){
 			throw PacketHandlingException::wrap($e);
 		}
