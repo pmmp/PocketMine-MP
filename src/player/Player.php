@@ -1812,16 +1812,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		return true;
 	}
 
-	public function toggleSwim(bool $swimming) : bool{
-		if($swimming === $this->swimming){
+	public function toggleSwim(bool $swim) : bool{
+		if($swim === $this->swimming){
 			return true;
 		}
-		$ev = new PlayerToggleSwimEvent($this, $swimming);
+		$ev = new PlayerToggleSwimEvent($this, $swim);
 		$ev->call();
 		if($ev->isCancelled()){
 			return false;
 		}
-		$this->setSwimming($swimming);
+		$this->setSwimming($swim);
 		return true;
 	}
 
