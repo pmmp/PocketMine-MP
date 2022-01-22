@@ -35,6 +35,7 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\player\Player;
+use pocketmine\world\sound\PotionFinishBrewingSound;
 use pocketmine\world\World;
 use function array_map;
 use function count;
@@ -199,6 +200,7 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 				--$this->brewTime;
 
 				if($this->brewTime <= 0){
+					$anythingBrewed = false;
 					foreach($recipes as $slot => $recipe){
 						$input = $this->inventory->getItem($slot);
 						$output = $recipe->getResultFor($input);
@@ -213,6 +215,11 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 						}
 
 						$this->inventory->setItem($slot, $ev->getResult());
+						$anythingBrewed = true;
+					}
+
+					if($anythingBrewed){
+						$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new PotionFinishBrewingSound());
 					}
 
 					$ingredient->pop();
