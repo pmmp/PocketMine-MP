@@ -46,14 +46,14 @@ class BrewingFuelUseEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * Returns how many brewing "steps" could be made with the fuel, one "step" takes 400 ticks
+	 * Returns how many times the fuel can be used for potion brewing before it runs out.
 	 */
 	public function getFuelTime() : int{
 		return $this->fuelTime;
 	}
 
 	/**
-	 * Sets how many brewing "steps" could be made with the fuel, one "step" takes 400 ticks
+	 * Sets how many times the fuel can be used for potion brewing before it runs out.
 	 */
 	public function setFuelTime(int $fuelTime) : void{
 		$this->fuelTime = $fuelTime;
