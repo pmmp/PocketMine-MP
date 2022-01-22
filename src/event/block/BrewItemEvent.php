@@ -47,7 +47,7 @@ class BrewItemEvent extends BlockEvent implements Cancellable{
 	}
 
 	/**
-	 * Returns slot of the item, which is being brewed
+	 * Returns which slot of the brewing stand's inventory the potion is in.
 	 */
 	public function getSlot() : int{
 		return $this->slot;
