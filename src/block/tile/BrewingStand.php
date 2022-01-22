@@ -46,7 +46,7 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 	}
 	use ContainerTrait;
 
-	public const BREW_TIME = 400; // Brew time in ticks
+	public const BREW_TIME_TICKS = 400; // Brew time in ticks
 
 	private const TAG_BREW_TIME = "BrewTime"; //TAG_Short
 	private const TAG_BREW_TIME_PE = "CookTime"; //TAG_Short
@@ -193,7 +193,7 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 		if($this->remainingFuelTime > 0){
 			if($canBrew){
 				if($this->brewTime === 0){
-					$this->brewTime = self::BREW_TIME;
+					$this->brewTime = self::BREW_TIME_TICKS;
 					--$this->remainingFuelTime;
 				}
 
