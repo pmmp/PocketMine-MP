@@ -478,8 +478,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function setViewDistance(int $distance) : void{
-		$oldViewDistance = $this->viewDistance;
-		$this->viewDistance = $this->server->getAllowedViewDistance($distance);
+		$newViewDistance = $this->server->getAllowedViewDistance($distance);
+
+		if($newViewDistance !== $this->viewDistance){
+			$ev = new PlayerViewDistanceChangeEvent($this, $this->viewDistance, $newViewDistance);
+			$ev->call();
+		}
+
+		$this->viewDistance = $newViewDistance;
 
 		$this->spawnThreshold = (int) (min($this->viewDistance, $this->server->getConfigGroup()->getPropertyInt("chunk-sending.spawn-radius", 4)) ** 2 * M_PI);
 
@@ -487,10 +493,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->getNetworkSession()->syncViewAreaRadius($this->viewDistance);
 
-		if($this->viewDistance !== $oldViewDistance){
-			$ev = new PlayerViewDistanceChangeEvent($this, $oldViewDistance, $this->viewDistance);
-			$ev->call();
-		}
 
 		$this->logger->debug("Setting view distance to " . $this->viewDistance . " (requested " . $distance . ")");
 	}
