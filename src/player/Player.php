@@ -488,7 +488,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->getNetworkSession()->syncViewAreaRadius($this->viewDistance);
 
 		if($this->viewDistance !== $oldViewDistance){
-			$ev = new PlayerViewDistanceChangeEvent($this, $this->viewDistance, $oldViewDistance);
+			$ev = new PlayerViewDistanceChangeEvent($this, $oldViewDistance, $this->viewDistance);
 			$ev->call();
 		}
 

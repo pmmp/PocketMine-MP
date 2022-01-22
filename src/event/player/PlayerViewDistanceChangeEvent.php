@@ -32,10 +32,10 @@ class PlayerViewDistanceChangeEvent extends PlayerEvent{
 	protected int $newRadius;
 	protected int $oldRadius;
 
-	public function __construct(Player $player, int $newRadius, int $oldRadius){
+	public function __construct(Player $player, int $oldRadius, int $newRadius){
 		$this->player = $player;
-		$this->newRadius = $newRadius;
 		$this->oldRadius = $oldRadius;
+		$this->newRadius = $newRadius;
 	}
 
 	public function getNewRadius() : int{
