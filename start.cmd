@@ -2,11 +2,24 @@
 TITLE PocketMine-MP server software for Minecraft: Bedrock Edition
 cd /d %~dp0
 
+set PHP_BINARY=
+
+where /q php.exe
+if %ERRORLEVEL%==0 (
+	set PHP_BINARY=php
+)
+
 if exist bin\php\php.exe (
+	rem always use the local PHP binary if it exists
 	set PHPRC=""
 	set PHP_BINARY=bin\php\php.exe
-) else (
-	set PHP_BINARY=php
+)
+
+if "%PHP_BINARY%"=="" (
+	echo Couldn't find a PHP binary in system PATH or "%~dp0bin\php"
+	echo Please refer to the installation instructions at https://doc.pmmp.io/en/rtfd/installation.html
+	pause
+	exit 1
 )
 
 if exist PocketMine-MP.phar (

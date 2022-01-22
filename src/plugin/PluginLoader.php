@@ -40,6 +40,7 @@ interface PluginLoader{
 
 	/**
 	 * Gets the PluginDescription from the file
+	 * @throws PluginDescriptionParseException
 	 */
 	public function getPluginDescription(string $file) : ?PluginDescription;
 

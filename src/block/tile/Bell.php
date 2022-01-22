@@ -27,6 +27,7 @@ use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\math\Facing;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\BlockActorDataPacket;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 
 final class Bell extends Spawnable{
@@ -81,6 +82,6 @@ final class Bell extends Spawnable{
 		$nbt->setByte(self::TAG_RINGING, 1);
 		$nbt->setInt(self::TAG_DIRECTION, BlockDataSerializer::writeLegacyHorizontalFacing($bellHitFace));
 		$nbt->setInt(self::TAG_TICKS, 0);
-		return BlockActorDataPacket::create($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ(), new CacheableNbt($nbt));
+		return BlockActorDataPacket::create(BlockPosition::fromVector3($this->position), new CacheableNbt($nbt));
 	}
 }

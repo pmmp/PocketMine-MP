@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\scheduler;
 
+use DaveRandom\CallbackValidator\CallbackType;
+use DaveRandom\CallbackValidator\ReturnType;
 use pocketmine\utils\Utils;
 
 /**
@@ -49,7 +51,7 @@ class ClosureTask extends Task{
 	 * @phpstan-param \Closure() : void $closure
 	 */
 	public function __construct(\Closure $closure){
-		Utils::validateCallableSignature(function() : void{}, $closure);
+		Utils::validateCallableSignature(new CallbackType(new ReturnType()), $closure);
 		$this->closure = $closure;
 	}
 

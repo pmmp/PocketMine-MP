@@ -29,7 +29,6 @@ use pocketmine\utils\AssumptionFailedError;
 use function igbinary_serialize;
 use function igbinary_unserialize;
 use function openssl_error_string;
-use function openssl_free_key;
 use function openssl_pkey_get_details;
 use function openssl_pkey_new;
 use function random_bytes;
@@ -78,9 +77,6 @@ class PrepareEncryptionTask extends AsyncTask{
 		$salt = random_bytes(16);
 		$this->aesKey = EncryptionUtils::generateKey($sharedSecret, $salt);
 		$this->handshakeJwt = EncryptionUtils::generateServerHandshakeJwt($serverPriv, $salt);
-
-		@openssl_free_key($serverPriv);
-		@openssl_free_key($clientPub);
 	}
 
 	public function onCompletion() : void{

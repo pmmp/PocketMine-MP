@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\player;
 
 use pocketmine\world\World;
+use const M_SQRT2;
 
 //TODO: turn this into an interface?
 final class ChunkSelector{
@@ -33,34 +34,44 @@ final class ChunkSelector{
 	 * @phpstan-return \Generator<int, int, void, void>
 	 */
 	public function selectChunks(int $radius, int $centerX, int $centerZ) : \Generator{
-		$radiusSquared = $radius ** 2;
+		for($subRadius = 0; $subRadius < $radius; $subRadius++){
+			$subRadiusSquared = $subRadius ** 2;
+			$nextSubRadiusSquared = ($subRadius + 1) ** 2;
+			$minX = (int) ($subRadius / M_SQRT2);
 
-		for($x = 0; $x < $radius; ++$x){
-			for($z = 0; $z <= $x; ++$z){
-				if(($x ** 2 + $z ** 2) > $radiusSquared){
-					break; //skip to next band
-				}
+			$lastZ = 0;
 
-				//If the chunk is in the radius, others at the same offsets in different quadrants are also guaranteed to be.
+			for($x = $subRadius; $x >= $minX; --$x){
+				for($z = $lastZ; $z <= $x; ++$z){
+					$distanceSquared = ($x ** 2 + $z ** 2);
+					if($distanceSquared < $subRadiusSquared){
+						continue;
+					}elseif($distanceSquared >= $nextSubRadiusSquared){
+						break; //skip to next X
+					}
 
-				/* Top right quadrant */
-				yield World::chunkHash($centerX + $x, $centerZ + $z);
-				/* Top left quadrant */
-				yield World::chunkHash($centerX - $x - 1, $centerZ + $z);
-				/* Bottom right quadrant */
-				yield World::chunkHash($centerX + $x, $centerZ - $z - 1);
-				/* Bottom left quadrant */
-				yield World::chunkHash($centerX - $x - 1, $centerZ - $z - 1);
+					$lastZ = $z;
+					//If the chunk is in the radius, others at the same offsets in different quadrants are also guaranteed to be.
 
-				if($x !== $z){
-					/* Top right quadrant mirror */
-					yield World::chunkHash($centerX + $z, $centerZ + $x);
-					/* Top left quadrant mirror */
-					yield World::chunkHash($centerX - $z - 1, $centerZ + $x);
-					/* Bottom right quadrant mirror */
-					yield World::chunkHash($centerX + $z, $centerZ - $x - 1);
-					/* Bottom left quadrant mirror */
-					yield World::chunkHash($centerX - $z - 1, $centerZ - $x - 1);
+					/* Top right quadrant */
+					yield World::chunkHash($centerX + $x, $centerZ + $z);
+					/* Top left quadrant */
+					yield World::chunkHash($centerX - $x - 1, $centerZ + $z);
+					/* Bottom right quadrant */
+					yield World::chunkHash($centerX + $x, $centerZ - $z - 1);
+					/* Bottom left quadrant */
+					yield World::chunkHash($centerX - $x - 1, $centerZ - $z - 1);
+
+					if($x !== $z){
+						/* Top right quadrant mirror */
+						yield World::chunkHash($centerX + $z, $centerZ + $x);
+						/* Top left quadrant mirror */
+						yield World::chunkHash($centerX - $z - 1, $centerZ + $x);
+						/* Bottom right quadrant mirror */
+						yield World::chunkHash($centerX + $z, $centerZ - $x - 1);
+						/* Bottom left quadrant mirror */
+						yield World::chunkHash($centerX - $z - 1, $centerZ - $x - 1);
+					}
 				}
 			}
 		}

@@ -31,12 +31,14 @@ use pocketmine\block\BlockBreakInfo;
 use pocketmine\block\BlockToolType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\EnchantmentIdMap;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\item\enchantment\EnchantmentInstance;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NBT;
 use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\ShortTag;
@@ -240,6 +242,7 @@ class Item implements \JsonSerializable{
 	 * Sets the Item's NBT from the supplied CompoundTag object.
 	 *
 	 * @return $this
+	 * @throws NbtException
 	 */
 	public function setNamedTag(CompoundTag $tag) : Item{
 		if($tag->getCount() === 0){
@@ -255,6 +258,7 @@ class Item implements \JsonSerializable{
 	/**
 	 * Removes the Item's NBT.
 	 * @return $this
+	 * @throws NbtException
 	 */
 	public function clearNamedTag() : Item{
 		$this->nbt = new CompoundTag();
@@ -262,6 +266,9 @@ class Item implements \JsonSerializable{
 		return $this;
 	}
 
+	/**
+	 * @throws NbtException
+	 */
 	protected function deserializeCompoundTag(CompoundTag $tag) : void{
 		$this->customName = "";
 		$this->lore = [];
@@ -270,7 +277,7 @@ class Item implements \JsonSerializable{
 		if($display !== null){
 			$this->customName = $display->getString(self::TAG_DISPLAY_NAME, $this->customName);
 			$lore = $display->getListTag(self::TAG_DISPLAY_LORE);
-			if($lore !== null and $lore->getTagType() === NBT::TAG_String){
+			if($lore !== null && $lore->getTagType() === NBT::TAG_String){
 				/** @var StringTag $t */
 				foreach($lore as $t){
 					$this->lore[] = $t->getValue();
@@ -280,7 +287,7 @@ class Item implements \JsonSerializable{
 
 		$this->removeEnchantments();
 		$enchantments = $tag->getListTag(self::TAG_ENCH);
-		if($enchantments !== null and $enchantments->getTagType() === NBT::TAG_Compound){
+		if($enchantments !== null && $enchantments->getTagType() === NBT::TAG_Compound){
 			/** @var CompoundTag $enchantment */
 			foreach($enchantments as $enchantment){
 				$magicNumber = $enchantment->getShort("id", -1);
@@ -405,7 +412,7 @@ class Item implements \JsonSerializable{
 	}
 
 	public function isNull() : bool{
-		return $this->count <= 0 or $this->getId() === ItemIds::AIR;
+		return $this->count <= 0 || $this->getId() === ItemIds::AIR;
 	}
 
 	/**
@@ -561,9 +568,9 @@ class Item implements \JsonSerializable{
 	 * @param bool $checkCompound Whether to verify that the items' NBT match.
 	 */
 	final public function equals(Item $item, bool $checkDamage = true, bool $checkCompound = true) : bool{
-		return $this->getId() === $item->getId() and
-			(!$checkDamage or $this->getMeta() === $item->getMeta()) and
-			(!$checkCompound or $this->getNamedTag()->equals($item->getNamedTag()));
+		return $this->getId() === $item->getId() &&
+			(!$checkDamage || $this->getMeta() === $item->getMeta()) &&
+			(!$checkCompound || $this->getNamedTag()->equals($item->getNamedTag()));
 	}
 
 	/**
@@ -577,7 +584,7 @@ class Item implements \JsonSerializable{
 	 * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
 	 */
 	final public function equalsExact(Item $other) : bool{
-		return $this->equals($other, true, true) and $this->count === $other->count;
+		return $this->equals($other, true, true) && $this->count === $other->count;
 	}
 
 	final public function __toString() : string{
@@ -665,9 +672,11 @@ class Item implements \JsonSerializable{
 
 	/**
 	 * Deserializes an Item from an NBT CompoundTag
+	 * @throws NbtException
+	 * @throws SavedDataLoadingException
 	 */
 	public static function nbtDeserialize(CompoundTag $tag) : Item{
-		if($tag->getTag("id") === null or $tag->getTag("Count") === null){
+		if($tag->getTag("id") === null || $tag->getTag("Count") === null){
 			return ItemFactory::getInstance()->get(0);
 		}
 
@@ -682,11 +691,11 @@ class Item implements \JsonSerializable{
 				$item = LegacyStringToItemParser::getInstance()->parse($idTag->getValue() . ":$meta");
 			}catch(LegacyStringToItemParserException $e){
 				//TODO: improve error handling
-				return ItemFactory::air();
+				return VanillaItems::AIR();
 			}
 			$item->setCount($count);
 		}else{
-			throw new \InvalidArgumentException("Item CompoundTag ID must be an instance of StringTag or ShortTag, " . get_class($idTag) . " given");
+			throw new SavedDataLoadingException("Item CompoundTag ID must be an instance of StringTag or ShortTag, " . get_class($idTag) . " given");
 		}
 
 		$itemNBT = $tag->getCompoundTag("tag");

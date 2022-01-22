@@ -32,6 +32,7 @@ use function curl_getinfo;
 use function curl_init;
 use function curl_setopt_array;
 use function explode;
+use function is_int;
 use function is_string;
 use function preg_match;
 use function socket_close;
@@ -79,7 +80,7 @@ class Internet{
 	public static function getIP(bool $force = false){
 		if(!self::$online){
 			return false;
-		}elseif(self::$ip !== false and !$force){
+		}elseif(self::$ip !== false && !$force){
 			return self::$ip;
 		}
 
@@ -89,22 +90,22 @@ class Internet{
 		}
 
 		$ip = self::getURL("http://checkip.dyndns.org/");
-		if($ip !== null and preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', trim(strip_tags($ip->getBody())), $matches) > 0){
+		if($ip !== null && preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', trim(strip_tags($ip->getBody())), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://www.checkip.org/");
-		if($ip !== null and preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip->getBody(), $matches) > 0){
+		if($ip !== null && preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip->getBody(), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://checkmyip.org/");
-		if($ip !== null and preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip->getBody(), $matches) > 0){
+		if($ip !== null && preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip->getBody(), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://ifconfig.me/ip");
-		if($ip !== null and ($addr = trim($ip->getBody())) != ""){
+		if($ip !== null && ($addr = trim($ip->getBody())) != ""){
 			return self::$ip = $addr;
 		}
 
@@ -218,8 +219,8 @@ class Internet{
 				throw new InternetException(curl_error($ch));
 			}
 			if(!is_string($raw)) throw new AssumptionFailedError("curl_exec() should return string|false when CURLOPT_RETURNTRANSFER is set");
-			/** @var int $httpCode */
 			$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+			if(!is_int($httpCode)) throw new AssumptionFailedError("curl_getinfo(CURLINFO_HTTP_CODE) always returns int");
 			$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 			$rawHeaders = substr($raw, 0, $headerSize);
 			$body = substr($raw, $headerSize);

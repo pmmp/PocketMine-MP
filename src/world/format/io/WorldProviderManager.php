@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io;
 
+use pocketmine\utils\Utils;
 use pocketmine\world\format\io\leveldb\LevelDB;
 use pocketmine\world\format\io\region\Anvil;
 use pocketmine\world\format\io\region\McRegion;
@@ -62,7 +63,7 @@ final class WorldProviderManager{
 
 	public function addProvider(WorldProviderManagerEntry $providerEntry, string $name, bool $overwrite = false) : void{
 		$name = strtolower($name);
-		if(!$overwrite and isset($this->providers[$name])){
+		if(!$overwrite && isset($this->providers[$name])){
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
 
@@ -77,7 +78,7 @@ final class WorldProviderManager{
 	 */
 	public function getMatchingProviders(string $path) : array{
 		$result = [];
-		foreach($this->providers as $alias => $providerEntry){
+		foreach(Utils::stringifyKeys($this->providers) as $alias => $providerEntry){
 			if($providerEntry->isValid($path)){
 				$result[$alias] = $providerEntry;
 			}

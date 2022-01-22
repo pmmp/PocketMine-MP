@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Living;
+use pocketmine\player\Player;
 
 class Potion extends Item implements ConsumableItem{
 
@@ -51,5 +52,9 @@ class Potion extends Item implements ConsumableItem{
 
 	public function getResidue() : Item{
 		return VanillaItems::GLASS_BOTTLE();
+	}
+
+	public function canStartUsingItem(Player $player) : bool{
+		return true;
 	}
 }

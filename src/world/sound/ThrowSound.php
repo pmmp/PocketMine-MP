@@ -25,10 +25,11 @@ namespace pocketmine\world\sound;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 class ThrowSound implements Sound{
 
-	public function encode(?Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_THROW, $pos, -1, "minecraft:player")];
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::create(LevelSoundEvent::THROW, $pos, -1, "minecraft:player", false, false)];
 	}
 }

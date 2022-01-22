@@ -26,6 +26,7 @@ namespace pocketmine\entity\object;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 use pocketmine\block\utils\Fallable;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
@@ -71,7 +72,7 @@ class FallingBlock extends Entity{
 		}
 
 		if($blockId === 0){
-			throw new \UnexpectedValueException("Missing block info from NBT");
+			throw new SavedDataLoadingException("Missing block info from NBT");
 		}
 
 		$damage = $nbt->getByte("Data", 0);
@@ -111,11 +112,11 @@ class FallingBlock extends Entity{
 				$blockTarget = $this->block->tickFalling();
 			}
 
-			if($this->onGround or $blockTarget !== null){
+			if($this->onGround || $blockTarget !== null){
 				$this->flagForDespawn();
 
 				$block = $world->getBlock($pos);
-				if(!$block->canBeReplaced() or !$world->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ()) or ($this->onGround and abs($this->location->y - $this->location->getFloorY()) > 0.001)){
+				if(!$block->canBeReplaced() || !$world->isInWorld($pos->getFloorX(), $pos->getFloorY(), $pos->getFloorZ()) || ($this->onGround && abs($this->location->y - $this->location->getFloorY()) > 0.001)){
 					//FIXME: anvils are supposed to destroy torches
 					$world->dropItem($this->location, $this->block->asItem());
 				}else{

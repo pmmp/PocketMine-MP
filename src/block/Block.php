@@ -148,14 +148,14 @@ class Block{
 		$tileType = $this->idInfo->getTileClass();
 		$oldTile = $this->position->getWorld()->getTile($this->position);
 		if($oldTile !== null){
-			if($tileType === null or !($oldTile instanceof $tileType)){
+			if($tileType === null || !($oldTile instanceof $tileType)){
 				$oldTile->close();
 				$oldTile = null;
 			}elseif($oldTile instanceof Spawnable){
 				$oldTile->setDirty(); //destroy old network cache
 			}
 		}
-		if($oldTile === null and $tileType !== null){
+		if($oldTile === null && $tileType !== null){
 			/**
 			 * @var Tile $tile
 			 * @see Tile::__construct()
@@ -166,20 +166,28 @@ class Block{
 	}
 
 	/**
-	 * Returns whether the given block has an equivalent type to this one. This compares base legacy ID and variant.
+	 * Returns a type ID that identifies this type of block. This does not include information like facing, colour,
+	 * powered/unpowered, etc.
+	 */
+	public function getTypeId() : int{
+		return ($this->idInfo->getBlockId() << Block::INTERNAL_METADATA_BITS) | $this->idInfo->getVariant();
+	}
+
+	/**
+	 * Returns whether the given block has an equivalent type to this one. This compares the type IDs.
 	 *
 	 * Note: This ignores additional IDs used to represent additional states. This means that, for example, a lit
 	 * furnace and unlit furnace are considered the same type.
 	 */
 	public function isSameType(Block $other) : bool{
-		return $this->idInfo->getBlockId() === $other->idInfo->getBlockId() and $this->idInfo->getVariant() === $other->idInfo->getVariant();
+		return $this->getTypeId() === $other->getTypeId();
 	}
 
 	/**
 	 * Returns whether the given block has the same type and properties as this block.
 	 */
 	public function isSameState(Block $other) : bool{
-		return $this->isSameType($other) and $this->writeStateToMeta() === $other->writeStateToMeta();
+		return $this->getFullId() === $other->getFullId();
 	}
 
 	/**
@@ -353,7 +361,7 @@ class Block{
 	 */
 	public function getDrops(Item $item) : array{
 		if($this->breakInfo->isToolCompatible($item)){
-			if($this->isAffectedBySilkTouch() and $item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
+			if($this->isAffectedBySilkTouch() && $item->hasEnchantment(VanillaEnchantments::SILK_TOUCH())){
 				return $this->getSilkTouchDrops($item);
 			}
 
@@ -394,7 +402,7 @@ class Block{
 	 * Returns how much XP will be dropped by breaking this block with the given item.
 	 */
 	public function getXpDropForTool(Item $item) : int{
-		if($item->hasEnchantment(VanillaEnchantments::SILK_TOUCH()) or !$this->breakInfo->isToolCompatible($item)){
+		if($item->hasEnchantment(VanillaEnchantments::SILK_TOUCH()) || !$this->breakInfo->isToolCompatible($item)){
 			return 0;
 		}
 
@@ -493,7 +501,7 @@ class Block{
 			return $this->position->getWorld()->getBlock($this->position->getSide($side, $step));
 		}
 
-		throw new \InvalidStateException("Block does not have a valid world");
+		throw new \LogicException("Block does not have a valid world");
 	}
 
 	/**
@@ -577,7 +585,7 @@ class Block{
 	final public function getCollisionBoxes() : array{
 		if($this->collisionBoxes === null){
 			$this->collisionBoxes = $this->recalculateCollisionBoxes();
-			$extraOffset = $this->getPositionOffset();
+			$extraOffset = $this->getModelPositionOffset();
 			$offset = $extraOffset !== null ? $this->position->addVector($extraOffset) : $this->position;
 			foreach($this->collisionBoxes as $bb){
 				$bb->offset($offset->x, $offset->y, $offset->z);
@@ -588,10 +596,10 @@ class Block{
 	}
 
 	/**
-	 * Returns an additional fractional vector to shift the block's effective position by based on the current position.
+	 * Returns an additional fractional vector to shift the block model's position by based on the current position.
 	 * Used to randomize position of things like bamboo canes and tall grass.
 	 */
-	public function getPositionOffset() : ?Vector3{
+	public function getModelPositionOffset() : ?Vector3{
 		return null;
 	}
 
@@ -605,7 +613,7 @@ class Block{
 	public function isFullCube() : bool{
 		$bb = $this->getCollisionBoxes();
 
-		return count($bb) === 1 and $bb[0]->getAverageEdgeLength() >= 1 and $bb[0]->isCube();
+		return count($bb) === 1 && $bb[0]->getAverageEdgeLength() >= 1 && $bb[0]->isCube();
 	}
 
 	public function calculateIntercept(Vector3 $pos1, Vector3 $pos2) : ?RayTraceResult{

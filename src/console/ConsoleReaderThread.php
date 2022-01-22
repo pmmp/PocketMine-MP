@@ -26,11 +26,13 @@ namespace pocketmine\console;
 use pocketmine\snooze\SleeperNotifier;
 use pocketmine\thread\Thread;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function base64_encode;
 use function fgets;
 use function fopen;
 use function preg_replace;
+use function proc_close;
 use function proc_open;
 use function proc_terminate;
 use function sprintf;
@@ -39,6 +41,7 @@ use function stream_socket_accept;
 use function stream_socket_get_name;
 use function stream_socket_server;
 use function stream_socket_shutdown;
+use function trim;
 use const PHP_BINARY;
 use const STREAM_SHUT_RDWR;
 
@@ -79,21 +82,18 @@ final class ConsoleReaderThread extends Thread{
 		if($server === false){
 			throw new \RuntimeException("Failed to open console reader socket server");
 		}
-		$address = stream_socket_get_name($server, false);
-		if($address === false) throw new AssumptionFailedError("stream_socket_get_name() shouldn't return false here");
+		$address = Utils::assumeNotFalse(stream_socket_get_name($server, false), "stream_socket_get_name() shouldn't return false here");
 
 		//Windows sucks, and likes to corrupt UTF-8 file paths when they travel to the subprocess, so we base64 encode
 		//the path to avoid the problem. This is an abysmally shitty hack, but here we are :(
-		$sub = proc_open(
-			[PHP_BINARY, '-r', sprintf('require base64_decode("%s", true);', base64_encode(Path::join(__DIR__, 'ConsoleReaderChildProcess.php'))), $address],
+		$sub = Utils::assumeNotFalse(proc_open(
+			[PHP_BINARY, '-dopcache.enable_cli=0', '-r', sprintf('require base64_decode("%s", true);', base64_encode(Path::join(__DIR__, 'ConsoleReaderChildProcess.php'))), $address],
 			[
 				2 => fopen("php://stderr", "w"),
 			],
 			$pipes
-		);
-		if($sub === false){
-			throw new AssumptionFailedError("Something has gone horribly wrong");
-		}
+		), "Something has gone horribly wrong");
+
 		$client = stream_socket_accept($server, 15);
 		if($client === false){
 			throw new AssumptionFailedError("stream_socket_accept() returned false");
@@ -113,7 +113,12 @@ final class ConsoleReaderThread extends Thread{
 					break;
 				}
 
-				$buffer[] = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", $command);
+				$command = preg_replace("#\\x1b\\x5b([^\\x1b]*\\x7e|[\\x40-\\x50])#", "", trim($command)) ?? throw new AssumptionFailedError("This regex is assumed to be valid");
+				$command = preg_replace('/[[:cntrl:]]/', '', $command) ?? throw new AssumptionFailedError("This regex is assumed to be valid");
+				if($command === ""){
+					continue;
+				}
+				$buffer[] = $command;
 				if($notifier !== null){
 					$notifier->wakeupSleeper();
 				}
@@ -124,6 +129,7 @@ final class ConsoleReaderThread extends Thread{
 		//gets stuck in a blocking fgets() read because stream_select() is a hunk of junk (hence the separate process in
 		//the first place).
 		proc_terminate($sub);
+		proc_close($sub);
 		stream_socket_shutdown($client, STREAM_SHUT_RDWR);
 	}
 

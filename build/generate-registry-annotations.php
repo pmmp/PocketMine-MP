@@ -58,7 +58,7 @@ function generateMethodAnnotations(string $namespaceName, array $members) : stri
 	$memberLines = [];
 	foreach($members as $name => $member){
 		$reflect = new \ReflectionClass($member);
-		while($reflect !== false and $reflect->isAnonymous()){
+		while($reflect !== false && $reflect->isAnonymous()){
 			$reflect = $reflect->getParentClass();
 		}
 		if($reflect === false){
@@ -91,7 +91,7 @@ foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($argv[1],
 		throw new \RuntimeException("Failed to get contents of $file");
 	}
 
-	if(preg_match("/^namespace (.+);$/m", $contents, $matches) !== 1 || preg_match('/^((final|abstract)\s+)?class /m', $contents) !== 1){
+	if(preg_match("/(*ANYCRLF)^namespace (.+);$/m", $contents, $matches) !== 1 || preg_match('/(*ANYCRLF)^((final|abstract)\s+)?class /m', $contents) !== 1){
 		continue;
 	}
 	$shortClassName = basename($file, ".php");
@@ -101,7 +101,7 @@ foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($argv[1],
 	}
 	$reflect = new \ReflectionClass($className);
 	$docComment = $reflect->getDocComment();
-	if($docComment === false || preg_match("/^\s*\*\s*@generate-registry-docblock$/m", $docComment) !== 1){
+	if($docComment === false || preg_match("/(*ANYCRLF)^\s*\*\s*@generate-registry-docblock$/m", $docComment) !== 1){
 		continue;
 	}
 	echo "Found registry in $file\n";
@@ -116,4 +116,3 @@ foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($argv[1],
 		echo "No changes made to file $file\n";
 	}
 }
-

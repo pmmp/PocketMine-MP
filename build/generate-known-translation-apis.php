@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\build\generate_known_translation_apis;
 
 use pocketmine\lang\Translatable;
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function array_map;
 use function count;
@@ -40,6 +41,7 @@ use function preg_match_all;
 use function str_replace;
 use function strtoupper;
 use const INI_SCANNER_RAW;
+use const SORT_NUMERIC;
 use const SORT_STRING;
 use const STDERR;
 
@@ -94,13 +96,15 @@ function generate_known_translation_keys(array $languageDefinitions) : void{
 /**
  * This class contains constants for all the translations known to PocketMine-MP as per the used version of pmmp/Language.
  * This class is generated automatically, do NOT modify it by hand.
+ *
+ * @internal
  */
 final class KnownTranslationKeys{
 
 HEADER;
 
 	ksort($languageDefinitions, SORT_STRING);
-	foreach($languageDefinitions as $k => $_){
+	foreach(Utils::stringifyKeys($languageDefinitions) as $k => $_){
 		echo "\tpublic const ";
 		echo constantify($k);
 		echo " = \"" . $k . "\";\n";
@@ -126,6 +130,8 @@ function generate_known_translation_factory(array $languageDefinitions) : void{
  * This class contains factory methods for all the translations known to PocketMine-MP as per the used version of
  * pmmp/Language.
  * This class is generated automatically, do NOT modify it by hand.
+ *
+ * @internal
  */
 final class KnownTranslationFactory{
 
@@ -135,16 +141,21 @@ HEADER;
 	$parameterRegex = '/{%(.+?)}/';
 
 	$translationContainerClass = (new \ReflectionClass(Translatable::class))->getShortName();
-	foreach($languageDefinitions as $key => $value){
+	foreach(Utils::stringifyKeys($languageDefinitions) as $key => $value){
 		$parameters = [];
+		$allParametersPositional = true;
 		if(preg_match_all($parameterRegex, $value, $matches) > 0){
 			foreach($matches[1] as $parameterName){
 				if(is_numeric($parameterName)){
 					$parameters[$parameterName] = "param$parameterName";
 				}else{
 					$parameters[$parameterName] = $parameterName;
+					$allParametersPositional = false;
 				}
 			}
+		}
+		if($allParametersPositional){
+			ksort($parameters, SORT_NUMERIC);
 		}
 		echo "\tpublic static function " .
 			functionify($key) .
@@ -172,7 +183,7 @@ HEADER;
 	echo "Done generating KnownTranslationFactory.\n";
 }
 
-$lang = parse_ini_file(Path::join(\pocketmine\RESOURCE_PATH, "locale", "eng.ini"), false, INI_SCANNER_RAW);
+$lang = parse_ini_file(Path::join(\pocketmine\LOCALE_DATA_PATH, "eng.ini"), false, INI_SCANNER_RAW);
 if($lang === false){
 	fwrite(STDERR, "Missing language files!\n");
 	exit(1);

@@ -53,7 +53,7 @@ abstract class Stem extends Crops{
 
 				$side = $this->getSide(Facing::HORIZONTAL[array_rand(Facing::HORIZONTAL)]);
 				$d = $side->getSide(Facing::DOWN);
-				if($side->getId() === BlockLegacyIds::AIR and ($d->getId() === BlockLegacyIds::FARMLAND or $d->getId() === BlockLegacyIds::GRASS or $d->getId() === BlockLegacyIds::DIRT)){
+				if($side->getId() === BlockLegacyIds::AIR && ($d->getId() === BlockLegacyIds::FARMLAND || $d->getId() === BlockLegacyIds::GRASS || $d->getId() === BlockLegacyIds::DIRT)){
 					$ev = new BlockGrowEvent($side, $grow);
 					$ev->call();
 					if(!$ev->isCancelled()){

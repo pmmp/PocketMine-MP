@@ -99,9 +99,9 @@ class SweetBerryBush extends Flowable{
 
 			if(!$ev->isCancelled()){
 				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+				$item->pop();
 			}
 
-			$item->pop();
 		}elseif(($dropAmount = $this->getBerryDropAmount()) > 0){
 			$this->position->getWorld()->setBlock($this->position, $this->setAge(self::STAGE_BUSH_NO_BERRIES));
 			$this->position->getWorld()->dropItem($this->position, $this->asItem()->setCount($dropAmount));
@@ -135,7 +135,7 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < self::STAGE_MATURE and mt_rand(0, 2) === 1){
+		if($this->age < self::STAGE_MATURE && mt_rand(0, 2) === 1){
 			$block = clone $this;
 			++$block->age;
 			$ev = new BlockGrowEvent($this, $block);

@@ -25,6 +25,7 @@ namespace pocketmine\world\particle;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 
 class MobSpawnParticle implements Particle{
 	/** @var int */
@@ -39,6 +40,6 @@ class MobSpawnParticle implements Particle{
 	}
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_SPAWN, ($this->width & 0xff) | (($this->height & 0xff) << 8), $pos)];
+		return [LevelEventPacket::create(LevelEvent::PARTICLE_SPAWN, ($this->width & 0xff) | (($this->height & 0xff) << 8), $pos)];
 	}
 }

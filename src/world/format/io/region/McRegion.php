@@ -25,9 +25,11 @@ namespace pocketmine\world\format\io\region;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteArrayTag;
+use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
@@ -44,7 +46,7 @@ class McRegion extends RegionWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function deserializeChunk(string $data) : ChunkData{
+	protected function deserializeChunk(string $data) : ?ChunkData{
 		$decompressed = @zlib_decode($data);
 		if($decompressed === false){
 			throw new CorruptedChunkException("Failed to decompress chunk NBT");
@@ -60,6 +62,14 @@ class McRegion extends RegionWorldProvider{
 			throw new CorruptedChunkException("'Level' key is missing from chunk NBT");
 		}
 
+		$legacyGeneratedTag = $chunk->getTag("TerrainGenerated");
+		if($legacyGeneratedTag instanceof ByteTag && $legacyGeneratedTag->getValue() === 0){
+			//In legacy PM before 3.0, PM used to save MCRegion chunks even when they weren't generated. In these cases
+			//(we'll see them in old worlds), some of the tags which we expect to always be present, will be missing.
+			//If TerrainGenerated (PM-specific tag from the olden days) is false, toss the chunk data and don't bother
+			//trying to read it.
+			return null;
+		}
 		$subChunks = [];
 		$fullIds = self::readFixedSizeByteArray($chunk, "Blocks", 32768);
 		$fullData = self::readFixedSizeByteArray($chunk, "Data", 16384);
@@ -80,12 +90,16 @@ class McRegion extends RegionWorldProvider{
 			$biomeIds = $makeBiomeArray(ChunkUtils::convertBiomeColors($biomeColorsTag->getValue())); //Convert back to original format
 		}elseif(($biomesTag = $chunk->getTag("Biomes")) instanceof ByteArrayTag){
 			$biomeIds = $makeBiomeArray($biomesTag->getValue());
+		}else{
+			$biomeIds = BiomeArray::fill(BiomeIds::OCEAN);
 		}
 
-		$result = new Chunk($subChunks, $biomeIds);
-		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
 		return new ChunkData(
-			$result,
+			new Chunk(
+				$subChunks,
+				$biomeIds,
+				$chunk->getByte("TerrainPopulated", 0) !== 0
+			),
 			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
 			($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
 		);

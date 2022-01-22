@@ -26,6 +26,7 @@ namespace pocketmine\world\sound;
 use pocketmine\entity\Entity;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 /**
  * Played when an entity hits ground after falling a long distance (damage).
@@ -40,13 +41,14 @@ class EntityLongFallSound implements Sound{
 		$this->entity = $entity;
 	}
 
-	public function encode(?Vector3 $pos) : array{
+	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::create(
-			LevelSoundEventPacket::SOUND_FALL_BIG,
+			LevelSoundEvent::FALL_BIG,
 			$pos,
 			-1,
-			$this->entity::getNetworkTypeId()
-			//TODO: is isBaby relevant here?
+			$this->entity::getNetworkTypeId(),
+			false, //TODO: is isBaby relevant here?
+			false
 		)];
 	}
 }

@@ -10,8 +10,3 @@ parameters:
 			count: 1
 			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
 
-		-
-			message: "#^Call to function is_array\\(\\) with array\\<string, mixed\\> will always evaluate to true\\.$#"
-			count: 1
-			path: ../../../src/plugin/PluginBase.php
-

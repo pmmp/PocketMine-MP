@@ -23,12 +23,14 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use pocketmine\errorhandler\ErrorToExceptionHandler;
 use Webmozart\PathUtil\Path;
 use function copy;
 use function dirname;
 use function fclose;
 use function fflush;
 use function file_exists;
+use function file_put_contents;
 use function flock;
 use function fopen;
 use function ftruncate;
@@ -40,6 +42,7 @@ use function ltrim;
 use function mkdir;
 use function preg_match;
 use function realpath;
+use function rename;
 use function rmdir;
 use function rtrim;
 use function scandir;
@@ -76,10 +79,9 @@ final class Filesystem{
 
 	public static function recursiveUnlink(string $dir) : void{
 		if(is_dir($dir)){
-			$objects = scandir($dir, SCANDIR_SORT_NONE);
-			if($objects === false) throw new AssumptionFailedError("scandir() shouldn't return false when is_dir() returns true");
+			$objects = Utils::assumeNotFalse(scandir($dir, SCANDIR_SORT_NONE), "scandir() shouldn't return false when is_dir() returns true");
 			foreach($objects as $object){
-				if($object !== "." and $object !== ".."){
+				if($object !== "." && $object !== ".."){
 					$fullObject = Path::join($dir, $object);
 					if(is_dir($fullObject)){
 						self::recursiveUnlink($fullObject);
@@ -109,8 +111,12 @@ final class Filesystem{
 				//if the parent dir doesn't exist, the user most likely made a mistake
 				throw new \RuntimeException("The parent directory of $destination does not exist, or is not a directory");
 			}
-			if(!@mkdir($destination) && !is_dir($destination)){
-				throw new \RuntimeException("Failed to create output directory $destination (permission denied?)");
+			try{
+				ErrorToExceptionHandler::trap(fn() => mkdir($destination));
+			}catch(\ErrorException $e){
+				if(!is_dir($destination)){
+					throw new \RuntimeException("Failed to create output directory $destination: " . $e->getMessage());
+				}
 			}
 		}
 		self::recursiveCopyInternal($origin, $destination);
@@ -124,8 +130,7 @@ final class Filesystem{
 				}
 				mkdir($destination); //TODO: access permissions?
 			}
-			$objects = scandir($origin, SCANDIR_SORT_NONE);
-			if($objects === false) throw new AssumptionFailedError("scandir() shouldn't return false when is_dir() returns true");
+			$objects = Utils::assumeNotFalse(scandir($origin, SCANDIR_SORT_NONE));
 			foreach($objects as $object){
 				if($object === "." || $object === ".."){
 					continue;
@@ -163,7 +168,8 @@ final class Filesystem{
 		$result = str_replace([DIRECTORY_SEPARATOR, ".php", "phar://"], ["/", "", ""], $path);
 
 		//remove relative paths
-		foreach(self::$cleanedPaths as $cleanPath => $replacement){
+		//this should probably never have integer keys, but it's safer than making PHPStan ignore it
+		foreach(Utils::stringifyKeys(self::$cleanedPaths) as $cleanPath => $replacement){
 			$cleanPath = rtrim(str_replace([DIRECTORY_SEPARATOR, "phar://"], ["/", ""], $cleanPath), "/");
 			if(strpos($result, $cleanPath) === 0){
 				$result = ltrim(str_replace($cleanPath, $replacement, $result), "/");
@@ -189,7 +195,7 @@ final class Filesystem{
 			//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the
 			//other server wrote its PID and released exclusive lock before we get our lock
 			flock($resource, LOCK_SH);
-			$pid = stream_get_contents($resource);
+			$pid = Utils::assumeNotFalse(stream_get_contents($resource), "This is a known valid file resource, at worst we should receive an empty string");
 			if(preg_match('/^\d+$/', $pid) === 1){
 				return (int) $pid;
 			}
@@ -218,6 +224,75 @@ final class Filesystem{
 			fclose(self::$lockFileHandles[$lockFilePath]);
 			unset(self::$lockFileHandles[$lockFilePath]);
 			@unlink($lockFilePath);
+		}
+	}
+
+	/**
+	 * Wrapper around file_put_contents() which writes to a temporary file before overwriting the original. If the disk
+	 * is full, writing to the temporary file will fail before the original file is modified, leaving it untouched.
+	 *
+	 * This is necessary because file_put_contents() destroys the data currently in the file if it fails to write the
+	 * new contents.
+	 *
+	 * @param resource|null $context Context to pass to file_put_contents
+	 *
+	 * @throws \RuntimeException if the operation failed for any reason
+	 */
+	public static function safeFilePutContents(string $fileName, string $contents, int $flags = 0, $context = null) : void{
+		$directory = dirname($fileName);
+		if(!is_dir($directory)){
+			throw new \RuntimeException("Target directory path does not exist or is not a directory");
+		}
+		if(is_dir($fileName)){
+			throw new \RuntimeException("Target file path already exists and is not a file");
+		}
+
+		$counter = 0;
+		do{
+			//we don't care about overwriting any preexisting tmpfile but we can't write if a directory is already here
+			$temporaryFileName = $fileName . ".$counter.tmp";
+			$counter++;
+		}while(is_dir($temporaryFileName));
+
+		try{
+			ErrorToExceptionHandler::trap(fn() => $context !== null ?
+				file_put_contents($temporaryFileName, $contents, $flags, $context) :
+				file_put_contents($temporaryFileName, $contents, $flags)
+			);
+		}catch(\ErrorException $filePutContentsException){
+			$context !== null ?
+				@unlink($temporaryFileName, $context) :
+				@unlink($temporaryFileName);
+			throw new \RuntimeException("Failed to write to temporary file $temporaryFileName: " . $filePutContentsException->getMessage(), 0, $filePutContentsException);
+		}
+
+		$renameTemporaryFileResult = $context !== null ?
+			@rename($temporaryFileName, $fileName, $context) :
+			@rename($temporaryFileName, $fileName);
+		if(!$renameTemporaryFileResult){
+			/*
+			 * The following code works around a bug in Windows where rename() will periodically decide to give us a
+			 * spurious "Access is denied (code: 5)" error. As far as I could determine, the fault comes from Windows
+			 * itself, but since I couldn't reliably reproduce the issue it's very hard to debug.
+			 *
+			 * The following code can be used to test. Usually it will fail anywhere before 100,000 iterations.
+			 *
+			 * for($i = 0; $i < 10_000_000; ++$i){
+			 *     file_put_contents('ops.txt.0.tmp', 'some data ' . $i, 0);
+			 *     if(!rename('ops.txt.0.tmp', 'ops.txt')){
+			 *         throw new \Error("something weird happened");
+			 *     }
+			 * }
+			 */
+			try{
+				ErrorToExceptionHandler::trap(fn() => $context !== null ?
+					copy($temporaryFileName, $fileName, $context) :
+					copy($temporaryFileName, $fileName)
+				);
+			}catch(\ErrorException $copyException){
+				throw new \RuntimeException("Failed to move temporary file contents into target file: " . $copyException->getMessage(), 0, $copyException);
+			}
+			@unlink($temporaryFileName);
 		}
 	}
 }

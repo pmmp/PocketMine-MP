@@ -18,6 +18,9 @@ return (new PhpCsFixer\Config)
 		'array_syntax' => [
 			'syntax' => 'short'
 		],
+		'binary_operator_spaces' => [
+			'default' => 'single_space'
+		],
 		'blank_line_after_namespace' => true,
 		'blank_line_after_opening_tag' => true,
 		'blank_line_before_statement' => [
@@ -33,12 +36,14 @@ return (new PhpCsFixer\Config)
 		],
 		'declare_strict_types' => true,
 		'elseif' => true,
+		'fully_qualified_strict_types' => true,
 		'global_namespace_import' => [
 			'import_constants' => true,
 			'import_functions' => true,
 			'import_classes' => null,
 		],
 		'indentation_type' => true,
+		'logical_operators' => true,
 		'native_function_invocation' => [
 			'scope' => 'namespaced',
 			'include' => ['@all'],
@@ -61,10 +66,20 @@ return (new PhpCsFixer\Config)
 			],
 			'sort_algorithm' => 'alpha'
 		],
+		'phpdoc_line_span' => [
+			'property' => 'single',
+			'method' => null,
+			'const' => null
+		],
 		'phpdoc_trim' => true,
 		'phpdoc_trim_consecutive_blank_line_separation' => true,
+		'return_type_declaration' => [
+			'space_before' => 'one'
+		],
+		'single_blank_line_at_eof' => true,
 		'single_import_per_statement' => true,
 		'strict_param' => true,
+		'unary_operator_spaces' => true,
 	])
 	->setFinder($finder)
 	->setIndent("\t")

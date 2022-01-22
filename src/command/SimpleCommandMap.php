@@ -67,6 +67,7 @@ use pocketmine\command\defaults\WhitelistCommand;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 use function array_shift;
 use function count;
 use function explode;
@@ -182,11 +183,11 @@ class SimpleCommandMap implements CommandMap{
 
 	private function registerAlias(Command $command, bool $isAlias, string $fallbackPrefix, string $label) : bool{
 		$this->knownCommands[$fallbackPrefix . ":" . $label] = $command;
-		if(($command instanceof VanillaCommand or $isAlias) and isset($this->knownCommands[$label])){
+		if(($command instanceof VanillaCommand || $isAlias) && isset($this->knownCommands[$label])){
 			return false;
 		}
 
-		if(isset($this->knownCommands[$label]) and $this->knownCommands[$label]->getLabel() === $label){
+		if(isset($this->knownCommands[$label]) && $this->knownCommands[$label]->getLabel() === $label){
 			return false;
 		}
 
@@ -205,31 +206,28 @@ class SimpleCommandMap implements CommandMap{
 		foreach($matches[0] as $k => $_){
 			for($i = 1; $i <= 2; ++$i){
 				if($matches[$i][$k] !== ""){
-					$args[$k] = stripslashes($matches[$i][$k]);
+					$args[$k] = $i === 1 ? stripslashes($matches[$i][$k]) : $matches[$i][$k];
 					break;
 				}
 			}
 		}
+
 		$sentCommandLabel = array_shift($args);
-		if($sentCommandLabel === null){
-			return false;
-		}
-		$target = $this->getCommand($sentCommandLabel);
-		if($target === null){
-			return false;
-		}
+		if($sentCommandLabel !== null && ($target = $this->getCommand($sentCommandLabel)) !== null){
+			$target->timings->startTiming();
 
-		$target->timings->startTiming();
-
-		try{
-			$target->execute($sender, $sentCommandLabel, $args);
-		}catch(InvalidCommandSyntaxException $e){
-			$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
-		}finally{
-			$target->timings->stopTiming();
+			try{
+				$target->execute($sender, $sentCommandLabel, $args);
+			}catch(InvalidCommandSyntaxException $e){
+				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
+			}finally{
+				$target->timings->stopTiming();
+			}
+			return true;
 		}
 
-		return true;
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound($sentCommandLabel ?? "", "/help")->prefix(TextFormat::RED));
+		return false;
 	}
 
 	public function clearCommands() : void{

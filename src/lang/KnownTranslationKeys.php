@@ -26,6 +26,8 @@ namespace pocketmine\lang;
 /**
  * This class contains constants for all the translations known to PocketMine-MP as per the used version of pmmp/Language.
  * This class is generated automatically, do NOT modify it by hand.
+ *
+ * @internal
  */
 final class KnownTranslationKeys{
 	public const ABILITY_FLIGHT = "ability.flight";
@@ -128,6 +130,7 @@ final class KnownTranslationKeys{
 	public const COMMANDS_WHITELIST_REMOVE_SUCCESS = "commands.whitelist.remove.success";
 	public const COMMANDS_WHITELIST_REMOVE_USAGE = "commands.whitelist.remove.usage";
 	public const COMMANDS_WHITELIST_USAGE = "commands.whitelist.usage";
+	public const DEATH_ATTACK_ANVIL = "death.attack.anvil";
 	public const DEATH_ATTACK_ARROW = "death.attack.arrow";
 	public const DEATH_ATTACK_ARROW_ITEM = "death.attack.arrow.item";
 	public const DEATH_ATTACK_CACTUS = "death.attack.cactus";
@@ -200,6 +203,7 @@ final class KnownTranslationKeys{
 	public const GAMEMODE_SPECTATOR = "gameMode.spectator";
 	public const GAMEMODE_SURVIVAL = "gameMode.survival";
 	public const GAMEMODE_INFO = "gamemode_info";
+	public const GAMEMODE_OPTIONS = "gamemode_options";
 	public const INVALID_PORT = "invalid_port";
 	public const IP_CONFIRM = "ip_confirm";
 	public const IP_GET = "ip_get";
@@ -243,8 +247,12 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_DIFFICULTY_DESCRIPTION = "pocketmine.command.difficulty.description";
 	public const POCKETMINE_COMMAND_EFFECT_DESCRIPTION = "pocketmine.command.effect.description";
 	public const POCKETMINE_COMMAND_ENCHANT_DESCRIPTION = "pocketmine.command.enchant.description";
+	public const POCKETMINE_COMMAND_ERROR_PERMISSION = "pocketmine.command.error.permission";
+	public const POCKETMINE_COMMAND_ERROR_PLAYERNOTFOUND = "pocketmine.command.error.playerNotFound";
 	public const POCKETMINE_COMMAND_EXCEPTION = "pocketmine.command.exception";
 	public const POCKETMINE_COMMAND_GAMEMODE_DESCRIPTION = "pocketmine.command.gamemode.description";
+	public const POCKETMINE_COMMAND_GAMEMODE_FAILURE = "pocketmine.command.gamemode.failure";
+	public const POCKETMINE_COMMAND_GAMEMODE_UNKNOWN = "pocketmine.command.gamemode.unknown";
 	public const POCKETMINE_COMMAND_GC_CHUNKS = "pocketmine.command.gc.chunks";
 	public const POCKETMINE_COMMAND_GC_CYCLES = "pocketmine.command.gc.cycles";
 	public const POCKETMINE_COMMAND_GC_DESCRIPTION = "pocketmine.command.gc.description";
@@ -254,11 +262,15 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_GIVE_DESCRIPTION = "pocketmine.command.give.description";
 	public const POCKETMINE_COMMAND_GIVE_USAGE = "pocketmine.command.give.usage";
 	public const POCKETMINE_COMMAND_HELP_DESCRIPTION = "pocketmine.command.help.description";
+	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_DESCRIPTION = "pocketmine.command.help.specificCommand.description";
+	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_HEADER = "pocketmine.command.help.specificCommand.header";
+	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_USAGE = "pocketmine.command.help.specificCommand.usage";
 	public const POCKETMINE_COMMAND_KICK_DESCRIPTION = "pocketmine.command.kick.description";
 	public const POCKETMINE_COMMAND_KILL_DESCRIPTION = "pocketmine.command.kill.description";
 	public const POCKETMINE_COMMAND_KILL_USAGE = "pocketmine.command.kill.usage";
 	public const POCKETMINE_COMMAND_LIST_DESCRIPTION = "pocketmine.command.list.description";
 	public const POCKETMINE_COMMAND_ME_DESCRIPTION = "pocketmine.command.me.description";
+	public const POCKETMINE_COMMAND_NOTFOUND = "pocketmine.command.notFound";
 	public const POCKETMINE_COMMAND_OP_DESCRIPTION = "pocketmine.command.op.description";
 	public const POCKETMINE_COMMAND_PARTICLE_DESCRIPTION = "pocketmine.command.particle.description";
 	public const POCKETMINE_COMMAND_PARTICLE_USAGE = "pocketmine.command.particle.usage";
@@ -324,33 +336,51 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_LEVEL_AMBIGUOUSFORMAT = "pocketmine.level.ambiguousFormat";
 	public const POCKETMINE_LEVEL_BACKGROUNDGENERATION = "pocketmine.level.backgroundGeneration";
 	public const POCKETMINE_LEVEL_BADDEFAULTFORMAT = "pocketmine.level.badDefaultFormat";
+	public const POCKETMINE_LEVEL_CONVERSION_FINISH = "pocketmine.level.conversion.finish";
+	public const POCKETMINE_LEVEL_CONVERSION_START = "pocketmine.level.conversion.start";
+	public const POCKETMINE_LEVEL_CORRUPTED = "pocketmine.level.corrupted";
 	public const POCKETMINE_LEVEL_DEFAULTERROR = "pocketmine.level.defaultError";
 	public const POCKETMINE_LEVEL_GENERATIONERROR = "pocketmine.level.generationError";
+	public const POCKETMINE_LEVEL_INVALIDGENERATOROPTIONS = "pocketmine.level.invalidGeneratorOptions";
 	public const POCKETMINE_LEVEL_LOADERROR = "pocketmine.level.loadError";
 	public const POCKETMINE_LEVEL_NOTFOUND = "pocketmine.level.notFound";
 	public const POCKETMINE_LEVEL_PREPARING = "pocketmine.level.preparing";
+	public const POCKETMINE_LEVEL_SPAWNTERRAINGENERATIONPROGRESS = "pocketmine.level.spawnTerrainGenerationProgress";
 	public const POCKETMINE_LEVEL_UNKNOWNFORMAT = "pocketmine.level.unknownFormat";
+	public const POCKETMINE_LEVEL_UNKNOWNGENERATOR = "pocketmine.level.unknownGenerator";
 	public const POCKETMINE_LEVEL_UNLOADING = "pocketmine.level.unloading";
+	public const POCKETMINE_LEVEL_UNSUPPORTEDFORMAT = "pocketmine.level.unsupportedFormat";
 	public const POCKETMINE_PLAYER_INVALIDENTITY = "pocketmine.player.invalidEntity";
 	public const POCKETMINE_PLAYER_INVALIDMOVE = "pocketmine.player.invalidMove";
 	public const POCKETMINE_PLAYER_LOGIN = "pocketmine.player.logIn";
 	public const POCKETMINE_PLAYER_LOGOUT = "pocketmine.player.logOut";
 	public const POCKETMINE_PLUGIN_ALIASERROR = "pocketmine.plugin.aliasError";
 	public const POCKETMINE_PLUGIN_AMBIGUOUSMINAPI = "pocketmine.plugin.ambiguousMinAPI";
+	public const POCKETMINE_PLUGIN_BADDATAFOLDER = "pocketmine.plugin.badDataFolder";
 	public const POCKETMINE_PLUGIN_CIRCULARDEPENDENCY = "pocketmine.plugin.circularDependency";
 	public const POCKETMINE_PLUGIN_COMMANDERROR = "pocketmine.plugin.commandError";
 	public const POCKETMINE_PLUGIN_DEPRECATEDEVENT = "pocketmine.plugin.deprecatedEvent";
 	public const POCKETMINE_PLUGIN_DISABLE = "pocketmine.plugin.disable";
+	public const POCKETMINE_PLUGIN_DISALLOWEDBYBLACKLIST = "pocketmine.plugin.disallowedByBlacklist";
+	public const POCKETMINE_PLUGIN_DISALLOWEDBYWHITELIST = "pocketmine.plugin.disallowedByWhitelist";
 	public const POCKETMINE_PLUGIN_DUPLICATEERROR = "pocketmine.plugin.duplicateError";
+	public const POCKETMINE_PLUGIN_DUPLICATEPERMISSIONERROR = "pocketmine.plugin.duplicatePermissionError";
+	public const POCKETMINE_PLUGIN_EMPTYEXTENSIONVERSIONCONSTRAINT = "pocketmine.plugin.emptyExtensionVersionConstraint";
 	public const POCKETMINE_PLUGIN_ENABLE = "pocketmine.plugin.enable";
-	public const POCKETMINE_PLUGIN_FILEERROR = "pocketmine.plugin.fileError";
+	public const POCKETMINE_PLUGIN_EXTENSIONNOTLOADED = "pocketmine.plugin.extensionNotLoaded";
 	public const POCKETMINE_PLUGIN_GENERICLOADERROR = "pocketmine.plugin.genericLoadError";
 	public const POCKETMINE_PLUGIN_INCOMPATIBLEAPI = "pocketmine.plugin.incompatibleAPI";
+	public const POCKETMINE_PLUGIN_INCOMPATIBLEEXTENSIONVERSION = "pocketmine.plugin.incompatibleExtensionVersion";
 	public const POCKETMINE_PLUGIN_INCOMPATIBLEOS = "pocketmine.plugin.incompatibleOS";
 	public const POCKETMINE_PLUGIN_INCOMPATIBLEPHPVERSION = "pocketmine.plugin.incompatiblePhpVersion";
 	public const POCKETMINE_PLUGIN_INCOMPATIBLEPROTOCOL = "pocketmine.plugin.incompatibleProtocol";
+	public const POCKETMINE_PLUGIN_INVALIDAPI = "pocketmine.plugin.invalidAPI";
+	public const POCKETMINE_PLUGIN_INVALIDEXTENSIONVERSIONCONSTRAINT = "pocketmine.plugin.invalidExtensionVersionConstraint";
+	public const POCKETMINE_PLUGIN_INVALIDMANIFEST = "pocketmine.plugin.invalidManifest";
 	public const POCKETMINE_PLUGIN_LOAD = "pocketmine.plugin.load";
 	public const POCKETMINE_PLUGIN_LOADERROR = "pocketmine.plugin.loadError";
+	public const POCKETMINE_PLUGIN_MAINCLASSNOTFOUND = "pocketmine.plugin.mainClassNotFound";
+	public const POCKETMINE_PLUGIN_MAINCLASSWRONGTYPE = "pocketmine.plugin.mainClassWrongType";
 	public const POCKETMINE_PLUGIN_RESTRICTEDNAME = "pocketmine.plugin.restrictedName";
 	public const POCKETMINE_PLUGIN_SPACESDISCOURAGED = "pocketmine.plugin.spacesDiscouraged";
 	public const POCKETMINE_PLUGIN_UNKNOWNDEPENDENCY = "pocketmine.plugin.unknownDependency";
@@ -375,6 +405,10 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_SERVER_INFO_EXTENDED = "pocketmine.server.info.extended";
 	public const POCKETMINE_SERVER_LICENSE = "pocketmine.server.license";
 	public const POCKETMINE_SERVER_NETWORKSTART = "pocketmine.server.networkStart";
+	public const POCKETMINE_SERVER_NETWORKSTARTFAILED = "pocketmine.server.networkStartFailed";
+	public const POCKETMINE_SERVER_OBSOLETE_WARNING1 = "pocketmine.server.obsolete.warning1";
+	public const POCKETMINE_SERVER_OBSOLETE_WARNING2 = "pocketmine.server.obsolete.warning2";
+	public const POCKETMINE_SERVER_OBSOLETE_WARNING3 = "pocketmine.server.obsolete.warning3";
 	public const POCKETMINE_SERVER_QUERY_RUNNING = "pocketmine.server.query.running";
 	public const POCKETMINE_SERVER_START = "pocketmine.server.start";
 	public const POCKETMINE_SERVER_STARTFINISHED = "pocketmine.server.startFinished";
@@ -404,6 +438,7 @@ final class KnownTranslationKeys{
 	public const POTION_REGENERATION = "potion.regeneration";
 	public const POTION_RESISTANCE = "potion.resistance";
 	public const POTION_SATURATION = "potion.saturation";
+	public const POTION_SLOWFALLING = "potion.slowFalling";
 	public const POTION_WATERBREATHING = "potion.waterBreathing";
 	public const POTION_WEAKNESS = "potion.weakness";
 	public const POTION_WITHER = "potion.wither";
@@ -411,12 +446,15 @@ final class KnownTranslationKeys{
 	public const QUERY_WARNING1 = "query_warning1";
 	public const QUERY_WARNING2 = "query_warning2";
 	public const SERVER_PORT = "server_port";
+	public const SERVER_PORT_V4 = "server_port_v4";
+	public const SERVER_PORT_V6 = "server_port_v6";
 	public const SERVER_PROPERTIES = "server_properties";
 	public const SETTING_UP_SERVER_NOW = "setting_up_server_now";
 	public const SKIP_INSTALLER = "skip_installer";
 	public const TILE_BED_NOSLEEP = "tile.bed.noSleep";
 	public const TILE_BED_OCCUPIED = "tile.bed.occupied";
 	public const TILE_BED_TOOFAR = "tile.bed.tooFar";
+	public const VIEW_DISTANCE = "view_distance";
 	public const WELCOME_TO_POCKETMINE = "welcome_to_pocketmine";
 	public const WHITELIST_ENABLE = "whitelist_enable";
 	public const WHITELIST_INFO = "whitelist_info";

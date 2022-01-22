@@ -25,9 +25,11 @@ namespace pocketmine\world\format\io\leveldb;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\LittleEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\utils\Binary;
@@ -142,7 +144,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	public static function isValid(string $path) : bool{
-		return file_exists(Path::join($path, "level.dat")) and is_dir(Path::join($path, "db"));
+		return file_exists(Path::join($path, "level.dat")) && is_dir(Path::join($path, "db"));
 	}
 
 	public static function generate(string $path, string $name, WorldCreationOptions $options) : void{
@@ -156,6 +158,9 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		BedrockWorldData::generate($path, $name, $options);
 	}
 
+	/**
+	 * @throws CorruptedChunkException
+	 */
 	protected function deserializePaletted(BinaryStream $stream) : PalettedBlockArray{
 		$bitsPerBlock = $stream->getByte() >> 1;
 
@@ -168,18 +173,18 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$palette = [];
 		$idMap = LegacyBlockIdToStringIdMap::getInstance();
 		for($i = 0, $paletteSize = $stream->getLInt(); $i < $paletteSize; ++$i){
-			$offset = $stream->getOffset();
-			$tag = $nbt->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
-			$stream->setOffset($offset);
+			try{
+				$offset = $stream->getOffset();
 
-			$id = $idMap->stringToLegacy($tag->getString("name")) ?? BlockLegacyIds::INFO_UPDATE;
-			$data = $tag->getShort("val");
-			if($id === BlockLegacyIds::AIR){
-				//TODO: quick and dirty hack for artifacts left behind by broken world editors
-				//we really need a proper state fixer, but this is a pressing issue.
-				$data = 0;
+				$tag = $nbt->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
+				$stream->setOffset($offset);
+
+				$id = $idMap->stringToLegacy($tag->getString("name")) ?? BlockLegacyIds::INFO_UPDATE;
+				$data = $tag->getShort("val");
+				$palette[] = ($id << Block::INTERNAL_METADATA_BITS) | $data;
+			}catch(NbtException $e){
+				throw new CorruptedChunkException("Invalid blockstate NBT at offset $i in paletted storage: " . $e->getMessage(), 0, $e);
 			}
-			$palette[] = ($id << Block::INTERNAL_METADATA_BITS) | $data;
 		}
 
 		//TODO: exceptions
@@ -202,7 +207,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	 * @return PalettedBlockArray[]
 	 */
 	protected function deserializeLegacyExtraData(string $index, int $chunkVersion) : array{
-		if(($extraRawData = $this->db->get($index . self::TAG_BLOCK_EXTRA_DATA)) === false or $extraRawData === ""){
+		if(($extraRawData = $this->db->get($index . self::TAG_BLOCK_EXTRA_DATA)) === false || $extraRawData === ""){
 			return [];
 		}
 
@@ -265,7 +270,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			case 3: //MCPE 1.0
 				$convertedLegacyExtraData = $this->deserializeLegacyExtraData($index, $chunkVersion);
 
-				for($y = 0; $y < Chunk::MAX_SUBCHUNKS; ++$y){
+				for($y = Chunk::MIN_SUBCHUNK_INDEX; $y <= Chunk::MAX_SUBCHUNK_INDEX; ++$y){
 					if(($data = $this->db->get($index . self::TAG_SUBCHUNK_PREFIX . chr($y))) === false){
 						continue;
 					}
@@ -386,7 +391,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		/** @var CompoundTag[] $entities */
 		$entities = [];
-		if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false and $entityData !== ""){
+		if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false && $entityData !== ""){
 			try{
 				$entities = array_map(fn(TreeRoot $root) => $root->mustGetCompoundTag(), $nbt->readMultiple($entityData));
 			}catch(NbtDataException $e){
@@ -396,7 +401,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		/** @var CompoundTag[] $tiles */
 		$tiles = [];
-		if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false and $tileData !== ""){
+		if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false && $tileData !== ""){
 			try{
 				$tiles = array_map(fn(TreeRoot $root) => $root->mustGetCompoundTag(), $nbt->readMultiple($tileData));
 			}catch(NbtDataException $e){
@@ -404,20 +409,22 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			}
 		}
 
-		$chunk = new Chunk(
-			$subChunks,
-			$biomeArray
-		);
-
-		//TODO: tile ticks, biome states (?)
-
 		$finalisationChr = $this->db->get($index . self::TAG_STATE_FINALISATION);
 		if($finalisationChr !== false){
 			$finalisation = ord($finalisationChr);
-			$chunk->setPopulated($finalisation === self::FINALISATION_DONE);
+			$terrainPopulated = $finalisation === self::FINALISATION_DONE;
 		}else{ //older versions didn't have this tag
-			$chunk->setPopulated();
+			$terrainPopulated = true;
 		}
+
+		//TODO: tile ticks, biome states (?)
+
+		$chunk = new Chunk(
+			$subChunks,
+			$biomeArray ?? BiomeArray::fill(BiomeIds::OCEAN), //TODO: maybe missing biomes should be an error?
+			$terrainPopulated
+		);
+
 		if($hasBeenUpgraded){
 			$chunk->setTerrainDirty(); //trigger rewriting chunk to disk if it was converted from an older format
 		}
@@ -433,7 +440,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$write->put($index . self::TAG_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
 
 		$chunk = $chunkData->getChunk();
-		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_TERRAIN)){
+		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_BLOCKS)){
 			$subChunks = $chunk->getSubChunks();
 			foreach($subChunks as $y => $subChunk){
 				$key = $index . self::TAG_SUBCHUNK_PREFIX . chr($y);
@@ -520,7 +527,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 	public function getAllChunks(bool $skipCorrupted = false, ?\Logger $logger = null) : \Generator{
 		foreach($this->db->getIterator() as $key => $_){
-			if(strlen($key) === 9 and substr($key, -1) === self::TAG_VERSION){
+			if(strlen($key) === 9 && substr($key, -1) === self::TAG_VERSION){
 				$chunkX = Binary::readLInt(substr($key, 0, 4));
 				$chunkZ = Binary::readLInt(substr($key, 4, 4));
 				try{
@@ -542,7 +549,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	public function calculateChunkCount() : int{
 		$count = 0;
 		foreach($this->db->getIterator() as $key => $_){
-			if(strlen($key) === 9 and substr($key, -1) === self::TAG_VERSION){
+			if(strlen($key) === 9 && substr($key, -1) === self::TAG_VERSION){
 				$count++;
 			}
 		}

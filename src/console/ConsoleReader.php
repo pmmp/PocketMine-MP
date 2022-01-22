@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\console;
 
+use pocketmine\utils\Utils;
 use function fclose;
 use function fgets;
 use function fopen;
@@ -44,7 +45,7 @@ final class ConsoleReader{
 			fclose($this->stdin);
 		}
 
-		$this->stdin = fopen("php://stdin", "r");
+		$this->stdin = Utils::assumeNotFalse(fopen("php://stdin", "r"), "Opening stdin should never fail");
 	}
 
 	/**
@@ -60,11 +61,10 @@ final class ConsoleReader{
 		if(($count = stream_select($r, $w, $e, 0, 200000)) === 0){ //nothing changed in 200000 microseconds
 			return null;
 		}elseif($count === false){ //stream error
-			$this->initStdin();
+			return null;
 		}
 
 		if(($raw = fgets($this->stdin)) === false){ //broken pipe or EOF
-			$this->initStdin();
 			usleep(200000); //prevent CPU waste if it's end of pipe
 			return null; //loop back round
 		}

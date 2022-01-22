@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\entity\Living;
+use pocketmine\player\Player;
 
 class MilkBucket extends Item implements ConsumableItem{
 
@@ -41,5 +42,9 @@ class MilkBucket extends Item implements ConsumableItem{
 
 	public function onConsume(Living $consumer) : void{
 		$consumer->getEffects()->clear();
+	}
+
+	public function canStartUsingItem(Player $player) : bool{
+		return true;
 	}
 }

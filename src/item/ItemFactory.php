@@ -41,6 +41,7 @@ use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
@@ -251,6 +252,7 @@ class ItemFactory{
 		$this->register(new Steak(new ItemIdentifier(ItemIds::STEAK, 0), "Steak"));
 		$this->register(new Stick(new ItemIdentifier(ItemIds::STICK, 0), "Stick"));
 		$this->register(new StringItem(new ItemIdentifier(ItemIds::STRING, 0), "String"));
+		$this->register(new SweetBerries(new ItemIdentifier(ItemIds::SWEET_BERRIES, 0), "Sweet Berries"));
 		$this->register(new Totem(new ItemIdentifier(ItemIds::TOTEM, 0), "Totem of Undying"));
 		$this->register(new WheatSeeds(new ItemIdentifier(ItemIds::WHEAT_SEEDS, 0), "Wheat Seeds"));
 		$this->register(new WritableBook(new ItemIdentifier(ItemIds::WRITABLE_BOOK, 0), "Book & Quill"));
@@ -326,7 +328,6 @@ class ItemFactory{
 		//TODO: minecraft:shield
 		//TODO: minecraft:sparkler
 		//TODO: minecraft:spawn_egg
-		$this->register(new SweetBerries(new ItemIdentifier(ItemIds::SWEET_BERRIES, 0), "Sweet Berries"));
 		//TODO: minecraft:tnt_minecart
 		//TODO: minecraft:trident
 		//TODO: minecraft:turtle_helmet
@@ -417,7 +418,7 @@ class ItemFactory{
 		$id = $item->getId();
 		$variant = $item->getMeta();
 
-		if(!$override and $this->isRegistered($id, $variant)){
+		if(!$override && $this->isRegistered($id, $variant)){
 			throw new \RuntimeException("Trying to overwrite an already registered item");
 		}
 
@@ -444,6 +445,7 @@ class ItemFactory{
 	 * Deserializes an item from the provided legacy ID, legacy meta, count and NBT.
 	 *
 	 * @throws \InvalidArgumentException
+	 * @throws NbtException
 	 */
 	public function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
 		/** @var Item|null $item */
@@ -451,7 +453,7 @@ class ItemFactory{
 		if($meta !== -1){
 			if(isset($this->list[$offset = self::getListOffset($id, $meta)])){
 				$item = clone $this->list[$offset];
-			}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) and $this->list[$zero] instanceof Durable){
+			}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) && $this->list[$zero] instanceof Durable){
 				if($meta <= $this->list[$zero]->getMaxDurability()){
 					$item = clone $this->list[$zero];
 					$item->setDamage($meta);
@@ -476,6 +478,10 @@ class ItemFactory{
 		return $item;
 	}
 
+	/**
+	 * @deprecated
+	 * @see VanillaItems::AIR()
+	 */
 	public static function air() : Item{
 		return self::getInstance()->get(ItemIds::AIR, 0, 0);
 	}
@@ -492,7 +498,7 @@ class ItemFactory{
 	}
 
 	private static function getListOffset(int $id, int $variant) : int{
-		if($id < -0x8000 or $id > 0x7fff){
+		if($id < -0x8000 || $id > 0x7fff){
 			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
 		}
 		return (($id & 0xffff) << 16) | ($variant & 0xffff);

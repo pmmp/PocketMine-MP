@@ -31,8 +31,8 @@ use pocketmine\math\Vector3;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\World;
 use function count;
-use function round;
 
 class SetWorldSpawnCommand extends VanillaCommand{
 
@@ -54,22 +54,32 @@ class SetWorldSpawnCommand extends VanillaCommand{
 			if($sender instanceof Player){
 				$location = $sender->getPosition();
 				$world = $location->getWorld();
-				$pos = $location->asVector3()->round();
+				$pos = $location->asVector3()->floor();
 			}else{
 				$sender->sendMessage(TextFormat::RED . "You can only perform this command as a player");
 
 				return true;
 			}
 		}elseif(count($args) === 3){
-			$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
-			$pos = new Vector3($this->getInteger($sender, $args[0]), $this->getInteger($sender, $args[1]), $this->getInteger($sender, $args[2]));
+			if($sender instanceof Player){
+				$base = $sender->getPosition();
+				$world = $base->getWorld();
+			}else{
+				$base = new Vector3(0.0, 0.0, 0.0);
+				$world = $sender->getServer()->getWorldManager()->getDefaultWorld();
+			}
+			$pos = (new Vector3(
+				$this->getRelativeDouble($base->x, $sender, $args[0]),
+				$this->getRelativeDouble($base->y, $sender, $args[1], World::Y_MIN, World::Y_MAX),
+				$this->getRelativeDouble($base->z, $sender, $args[2]),
+			))->floor();
 		}else{
 			throw new InvalidCommandSyntaxException();
 		}
 
 		$world->setSpawnLocation($pos);
 
-		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_setworldspawn_success((string) round($pos->x, 2), (string) round($pos->y, 2), (string) round($pos->z, 2)));
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_setworldspawn_success((string) $pos->x, (string) $pos->y, (string) $pos->z));
 
 		return true;
 	}

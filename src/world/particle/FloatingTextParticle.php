@@ -28,8 +28,10 @@ use pocketmine\entity\Skin;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\RemoveActorPacket;
+use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataFlags;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\FloatMetadataProperty;
@@ -96,22 +98,31 @@ class FloatingTextParticle implements Particle{
 
 			$p[] = PlayerListPacket::add([PlayerListEntry::createAdditionEntry($uuid, $this->entityId, $name, SkinAdapterSingleton::get()->toSkinData(new Skin("Standard_Custom", str_repeat("\x00", 8192))))]);
 
-			$pk = new AddPlayerPacket();
-			$pk->uuid = $uuid;
-			$pk->username = $name;
-			$pk->entityRuntimeId = $this->entityId;
-			$pk->position = $pos; //TODO: check offset
-			$pk->item = ItemStackWrapper::legacy(ItemStack::null());
-
-			$flags = (
+			$actorFlags = (
 				1 << EntityMetadataFlags::IMMOBILE
 			);
-			$pk->metadata = [
-				EntityMetadataProperties::FLAGS => new LongMetadataProperty($flags),
+			$actorMetadata = [
+				EntityMetadataProperties::FLAGS => new LongMetadataProperty($actorFlags),
 				EntityMetadataProperties::SCALE => new FloatMetadataProperty(0.01) //zero causes problems on debug builds
 			];
-
-			$p[] = $pk;
+			$p[] = AddPlayerPacket::create(
+				$uuid,
+				$name,
+				$this->entityId, //TODO: actor unique ID
+				$this->entityId,
+				"",
+				$pos, //TODO: check offset
+				null,
+				0,
+				0,
+				0,
+				ItemStackWrapper::legacy(ItemStack::null()),
+				$actorMetadata,
+				AdventureSettingsPacket::create(0, 0, 0, 0, 0, $this->entityId),
+				[],
+				"",
+				DeviceOS::UNKNOWN
+			);
 
 			$p[] = PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($uuid)]);
 		}

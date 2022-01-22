@@ -74,15 +74,14 @@ final class CraftingDataCache{
 	 */
 	private function buildCraftingDataCache(CraftingManager $manager) : CraftingDataPacket{
 		Timings::$craftingDataCacheRebuild->startTiming();
-		$pk = new CraftingDataPacket();
-		$pk->cleanRecipes = true;
 
 		$counter = 0;
 		$nullUUID = Uuid::fromString(Uuid::NIL);
 		$converter = TypeConverter::getInstance();
+		$recipesWithTypeIds = [];
 		foreach($manager->getShapelessRecipes() as $list){
 			foreach($list as $recipe){
-				$pk->entries[] = new ProtocolShapelessRecipe(
+				$recipesWithTypeIds[] = new ProtocolShapelessRecipe(
 					CraftingDataPacket::ENTRY_SHAPELESS,
 					Binary::writeInt(++$counter),
 					array_map(function(Item $item) use ($converter) : RecipeIngredient{
@@ -107,7 +106,7 @@ final class CraftingDataCache{
 						$inputs[$row][$column] = $converter->coreItemStackToRecipeIngredient($recipe->getIngredient($column, $row));
 					}
 				}
-				$pk->entries[] = $r = new ProtocolShapedRecipe(
+				$recipesWithTypeIds[] = $r = new ProtocolShapedRecipe(
 					CraftingDataPacket::ENTRY_SHAPED,
 					Binary::writeInt(++$counter),
 					$inputs,
@@ -131,7 +130,7 @@ final class CraftingDataCache{
 			};
 			foreach($manager->getFurnaceRecipeManager($furnaceType)->getAll() as $recipe){
 				$input = $converter->coreItemStackToNet($recipe->getInput());
-				$pk->entries[] = new ProtocolFurnaceRecipe(
+				$recipesWithTypeIds[] = new ProtocolFurnaceRecipe(
 					CraftingDataPacket::ENTRY_FURNACE_DATA,
 					$input->getId(),
 					$input->getMeta(),
@@ -172,6 +171,6 @@ final class CraftingDataCache{
 		}
 
 		Timings::$craftingDataCacheRebuild->stopTiming();
-		return $pk;
+		return CraftingDataPacket::create($recipesWithTypeIds, [], [], [], true);
 	}
 }

@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\utils\CloningRegistryTrait;
-use function assert;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -300,6 +299,7 @@ use function assert;
  * @method static Farmland FARMLAND()
  * @method static TallGrass FERN()
  * @method static Fire FIRE()
+ * @method static FletchingTable FLETCHING_TABLE()
  * @method static FlowerPot FLOWER_POT()
  * @method static FrostedIce FROSTED_ICE()
  * @method static Furnace FURNACE()
@@ -363,6 +363,7 @@ use function assert;
  * @method static LapisOre LAPIS_LAZULI_ORE()
  * @method static DoubleTallGrass LARGE_FERN()
  * @method static Lava LAVA()
+ * @method static Lectern LECTERN()
  * @method static Opaque LEGACY_STONECUTTER()
  * @method static Lever LEVER()
  * @method static GlazedTerracotta LIGHT_BLUE_GLAZED_TERRACOTTA()
@@ -445,7 +446,7 @@ use function assert;
  * @method static Slab PRISMARINE_SLAB()
  * @method static Stair PRISMARINE_STAIRS()
  * @method static Wall PRISMARINE_WALL()
- * @method static Opaque PUMPKIN()
+ * @method static Pumpkin PUMPKIN()
  * @method static PumpkinStem PUMPKIN_STEM()
  * @method static GlazedTerracotta PURPLE_GLAZED_TERRACOTTA()
  * @method static Torch PURPLE_TORCH()
@@ -578,12 +579,6 @@ final class VanillaBlocks{
 
 	protected static function register(string $name, Block $block) : void{
 		self::_registryRegister($name, $block);
-	}
-
-	public static function fromString(string $name) : Block{
-		$result = self::_registryFromString($name);
-		assert($result instanceof Block);
-		return $result;
 	}
 
 	/**
@@ -866,6 +861,7 @@ final class VanillaBlocks{
 		self::register("farmland", $factory->get(60, 0));
 		self::register("fern", $factory->get(31, 2));
 		self::register("fire", $factory->get(51, 0));
+		self::register("fletching_table", $factory->get(456, 0));
 		self::register("flower_pot", $factory->get(140, 0));
 		self::register("frosted_ice", $factory->get(207, 0));
 		self::register("furnace", $factory->get(61, 2));
@@ -929,6 +925,7 @@ final class VanillaBlocks{
 		self::register("lapis_lazuli_ore", $factory->get(21, 0));
 		self::register("large_fern", $factory->get(175, 3));
 		self::register("lava", $factory->get(10, 0));
+		self::register("lectern", $factory->get(449, 0));
 		self::register("legacy_stonecutter", $factory->get(245, 0));
 		self::register("lever", $factory->get(69, 0));
 		self::register("light_blue_glazed_terracotta", $factory->get(223, 2));

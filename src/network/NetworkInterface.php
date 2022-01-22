@@ -33,6 +33,7 @@ interface NetworkInterface{
 
 	/**
 	 * Performs actions needed to start the interface after it is registered.
+	 * @throws NetworkInterfaceStartException
 	 */
 	public function start() : void;
 

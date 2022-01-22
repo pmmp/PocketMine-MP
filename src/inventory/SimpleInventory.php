@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 
 /**
  * This class provides a complete implementation of a regular inventory.
@@ -49,7 +49,7 @@ class SimpleInventory extends BaseInventory{
 	}
 
 	public function getItem(int $index) : Item{
-		return $this->slots[$index] !== null ? clone $this->slots[$index] : ItemFactory::air();
+		return $this->slots[$index] !== null ? clone $this->slots[$index] : VanillaItems::AIR();
 	}
 
 	/**
@@ -62,7 +62,7 @@ class SimpleInventory extends BaseInventory{
 			if($slot !== null){
 				$contents[$i] = clone $slot;
 			}elseif($includeEmpty){
-				$contents[$i] = ItemFactory::air();
+				$contents[$i] = VanillaItems::AIR();
 			}
 		}
 
@@ -71,10 +71,10 @@ class SimpleInventory extends BaseInventory{
 
 	protected function internalSetContents(array $items) : void{
 		for($i = 0, $size = $this->getSize(); $i < $size; ++$i){
-			if(!isset($items[$i])){
-				$this->clear($i);
+			if(!isset($items[$i]) || $items[$i]->isNull()){
+				$this->slots[$i] = null;
 			}else{
-				$this->setItem($i, $items[$i]);
+				$this->slots[$i] = clone $items[$i];
 			}
 		}
 	}

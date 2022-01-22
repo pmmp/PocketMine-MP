@@ -95,7 +95,7 @@ final class RegionGarbageMap{
 			/** @var int|null $prevIndex */
 			$prevIndex = null;
 			foreach($this->entries as $k => $entry){
-				if($prevIndex !== null and $this->entries[$prevIndex]->getLastSector() + 1 === $entry->getFirstSector()){
+				if($prevIndex !== null && $this->entries[$prevIndex]->getLastSector() + 1 === $entry->getFirstSector()){
 					//this SHOULD overwrite the previous index and not appear at the end
 					$this->entries[$prevIndex] = new RegionLocationTableEntry(
 						$this->entries[$prevIndex]->getFirstSector(),

@@ -26,6 +26,9 @@ namespace pocketmine\block;
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\utils\BrewingStandSlot;
 use pocketmine\item\Item;
+use pocketmine\math\Axis;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function array_key_exists;
@@ -67,6 +70,19 @@ class BrewingStand extends Transparent{
 		return 0b111;
 	}
 
+	protected function recalculateCollisionBoxes() : array{
+		return [
+			//bottom slab part - in PC this is also inset on X/Z by 1/16, but Bedrock sucks
+			AxisAlignedBB::one()->trim(Facing::UP, 7 / 8),
+
+			//center post
+			AxisAlignedBB::one()
+				->squash(Axis::X, 7 / 16)
+				->squash(Axis::Z, 7 / 16)
+				->trim(Facing::UP, 1 / 8)
+		];
+	}
+
 	public function hasSlot(BrewingStandSlot $slot) : bool{
 		return array_key_exists($slot->id(), $this->slots);
 	}
@@ -100,7 +116,7 @@ class BrewingStand extends Transparent{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
 			$stand = $this->position->getWorld()->getTile($this->position);
-			if($stand instanceof TileBrewingStand and $stand->canOpenWith($item->getCustomName())){
+			if($stand instanceof TileBrewingStand && $stand->canOpenWith($item->getCustomName())){
 				$player->setCurrentWindow($stand->getInventory());
 			}
 		}

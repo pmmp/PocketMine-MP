@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use DaveRandom\CallbackValidator\CallbackType;
+use pocketmine\errorhandler\ErrorTypeToStringMap;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function array_combine;
@@ -46,13 +47,17 @@ use function file;
 use function file_exists;
 use function file_get_contents;
 use function function_exists;
+use function get_class;
 use function get_current_user;
 use function get_loaded_extensions;
 use function getenv;
 use function gettype;
 use function implode;
+use function interface_exists;
+use function is_a;
 use function is_array;
 use function is_bool;
+use function is_int;
 use function is_object;
 use function is_string;
 use function mb_check_encoding;
@@ -66,6 +71,7 @@ use function preg_grep;
 use function preg_match;
 use function preg_match_all;
 use function preg_replace;
+use function shell_exec;
 use function spl_object_id;
 use function str_pad;
 use function str_split;
@@ -183,7 +189,7 @@ final class Utils{
 	 * @param string $extra optional, additional data to identify the machine
 	 */
 	public static function getMachineUniqueId(string $extra = "") : UuidInterface{
-		if(self::$serverUniqueId !== null and $extra === ""){
+		if(self::$serverUniqueId !== null && $extra === ""){
 			return self::$serverUniqueId;
 		}
 
@@ -228,7 +234,7 @@ final class Utils{
 		}elseif($os === Utils::OS_ANDROID){
 			$machine .= @file_get_contents("/system/build.prop");
 		}elseif($os === Utils::OS_MACOS){
-			$machine .= `system_profiler SPHardwareDataType | grep UUID`;
+			$machine .= shell_exec("system_profiler SPHardwareDataType | grep UUID");
 		}
 		$data = $machine . PHP_MAXPATHLEN;
 		$data .= PHP_INT_MAX;
@@ -259,7 +265,7 @@ final class Utils{
 	 * Other => other
 	 */
 	public static function getOS(bool $recalculate = false) : string{
-		if(self::$os === null or $recalculate){
+		if(self::$os === null || $recalculate){
 			$uname = php_uname("s");
 			if(stripos($uname, "Darwin") !== false){
 				if(strpos(php_uname("m"), "iP") === 0){
@@ -267,7 +273,7 @@ final class Utils{
 				}else{
 					self::$os = self::OS_MACOS;
 				}
-			}elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
+			}elseif(stripos($uname, "Win") !== false || $uname === "Msys"){
 				self::$os = self::OS_WINDOWS;
 			}elseif(stripos($uname, "Linux") !== false){
 				if(@file_exists("/system/build.prop")){
@@ -275,7 +281,7 @@ final class Utils{
 				}else{
 					self::$os = self::OS_LINUX;
 				}
-			}elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
+			}elseif(stripos($uname, "BSD") !== false || $uname === "DragonFly"){
 				self::$os = self::OS_BSD;
 			}else{
 				self::$os = self::OS_UNKNOWN;
@@ -288,7 +294,7 @@ final class Utils{
 	public static function getCoreCount(bool $recalculate = false) : int{
 		static $processors = 0;
 
-		if($processors > 0 and !$recalculate){
+		if($processors > 0 && !$recalculate){
 			return $processors;
 		}else{
 			$processors = 0;
@@ -311,7 +317,7 @@ final class Utils{
 				break;
 			case Utils::OS_BSD:
 			case Utils::OS_MACOS:
-				$processors = (int) `sysctl -n hw.ncpu`;
+				$processors = (int) shell_exec("sysctl -n hw.ncpu");
 				break;
 			case Utils::OS_WINDOWS:
 				$processors = (int) getenv("NUMBER_OF_PROCESSORS");
@@ -384,6 +390,49 @@ final class Utils{
 		return -1;
 	}
 
+	private static function printableExceptionMessage(\Throwable $e) : string{
+		$errstr = preg_replace('/\s+/', ' ', trim($e->getMessage()));
+
+		$errno = $e->getCode();
+		if(is_int($errno)){
+			try{
+				$errno = ErrorTypeToStringMap::get($errno);
+			}catch(\InvalidArgumentException $ex){
+				//pass
+			}
+		}
+
+		$errfile = Filesystem::cleanPath($e->getFile());
+		$errline = $e->getLine();
+
+		return get_class($e) . ": \"$errstr\" ($errno) in \"$errfile\" at line $errline";
+	}
+
+	/**
+	 * @param mixed[] $trace
+	 * @return string[]
+	 */
+	public static function printableExceptionInfo(\Throwable $e, $trace = null) : array{
+		if($trace === null){
+			$trace = $e->getTrace();
+		}
+
+		$lines = [self::printableExceptionMessage($e)];
+		$lines[] = "--- Stack trace ---";
+		foreach(Utils::printableTrace($trace) as $line){
+			$lines[] = "  " . $line;
+		}
+		for($prev = $e->getPrevious(); $prev !== null; $prev = $prev->getPrevious()){
+			$lines[] = "--- Previous ---";
+			$lines[] = self::printableExceptionMessage($prev);
+			foreach(Utils::printableTrace($prev->getTrace()) as $line){
+				$lines[] = "  " . $line;
+			}
+		}
+		$lines[] = "--- End of exception information ---";
+		return $lines;
+	}
+
 	/**
 	 * @param mixed[][] $trace
 	 * @phpstan-param list<array<string, mixed>> $trace
@@ -394,7 +443,7 @@ final class Utils{
 		$messages = [];
 		for($i = 0; isset($trace[$i]); ++$i){
 			$params = "";
-			if(isset($trace[$i]["args"]) or isset($trace[$i]["params"])){
+			if(isset($trace[$i]["args"]) || isset($trace[$i]["params"])){
 				if(isset($trace[$i]["args"])){
 					$args = $trace[$i]["args"];
 				}else{
@@ -417,7 +466,7 @@ final class Utils{
 					return gettype($value) . " " . Utils::printable((string) $value);
 				}, $args));
 			}
-			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
+			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" || $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
 		}
 		return $messages;
 	}
@@ -454,10 +503,7 @@ final class Utils{
 	 */
 	public static function parseDocComment(string $docComment) : array{
 		$rawDocComment = substr($docComment, 3, -2); //remove the opening and closing markers
-		if($rawDocComment === false){ //usually empty doc comment, but this is safer and statically analysable
-			return [];
-		}
-		preg_match_all('/(*ANYCRLF)^[\t ]*(?:\* )?@([a-zA-Z]+)(?:[\t ]+(.+?))?[\t ]*$/m', $rawDocComment, $matches);
+		preg_match_all('/(*ANYCRLF)^[\t ]*(?:\* )?@([a-zA-Z\-]+)(?:[\t ]+(.+?))?[\t ]*$/m', $rawDocComment, $matches);
 
 		return array_combine($matches[1], $matches[2]);
 	}
@@ -467,18 +513,20 @@ final class Utils{
 	 * @phpstan-param class-string $baseName
 	 */
 	public static function testValidInstance(string $className, string $baseName) : void{
+		$baseInterface = false;
 		if(!class_exists($baseName)){
-			throw new \InvalidArgumentException("Base class $baseName does not exist");
+			if(!interface_exists($baseName)){
+				throw new \InvalidArgumentException("Base class $baseName does not exist");
+			}
+			$baseInterface = true;
 		}
 		if(!class_exists($className)){
-			throw new \InvalidArgumentException("Class $className does not exist");
+			throw new \InvalidArgumentException("Class $className does not exist or is not a class");
 		}
-		$base = new \ReflectionClass($baseName);
+		if(!is_a($className, $baseName, true)){
+			throw new \InvalidArgumentException("Class $className does not " . ($baseInterface ? "implement" : "extend") . " $baseName");
+		}
 		$class = new \ReflectionClass($className);
-
-		if(!$class->isSubclassOf($baseName)){
-			throw new \InvalidArgumentException("Class $className does not " . ($base->isInterface() ? "implement" : "extend") . " " . $baseName);
-		}
 		if(!$class->isInstantiable()){
 			throw new \InvalidArgumentException("Class $className cannot be constructed");
 		}
@@ -488,17 +536,20 @@ final class Utils{
 	 * Verifies that the given callable is compatible with the desired signature. Throws a TypeError if they are
 	 * incompatible.
 	 *
-	 * @param callable $signature Dummy callable with the required parameters and return type
-	 * @param callable $subject Callable to check the signature of
-	 * @phpstan-param anyCallable $signature
-	 * @phpstan-param anyCallable $subject
+	 * @param callable|CallbackType $signature Dummy callable with the required parameters and return type
+	 * @param callable              $subject Callable to check the signature of
+	 * @phpstan-param anyCallable|CallbackType $signature
+	 * @phpstan-param anyCallable              $subject
 	 *
 	 * @throws \DaveRandom\CallbackValidator\InvalidCallbackException
 	 * @throws \TypeError
 	 */
-	public static function validateCallableSignature(callable $signature, callable $subject) : void{
-		if(!($sigType = CallbackType::createFromCallable($signature))->isSatisfiedBy($subject)){
-			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($subject) . "` must be compatible with `" . $sigType . "`");
+	public static function validateCallableSignature(callable|CallbackType $signature, callable $subject) : void{
+		if(!($signature instanceof CallbackType)){
+			$signature = CallbackType::createFromCallable($signature);
+		}
+		if(!$signature->isSatisfiedBy($subject)){
+			throw new \TypeError("Declaration of callable `" . CallbackType::createFromCallable($subject) . "` must be compatible with `" . $signature . "`");
 		}
 	}
 
@@ -517,9 +568,38 @@ final class Utils{
 		}
 	}
 
+	/**
+	 * Generator which forces array keys to string during iteration.
+	 * This is necessary because PHP has an anti-feature where it casts numeric string keys to integers, leading to
+	 * various crashes.
+	 *
+	 * @phpstan-template TKeyType of string
+	 * @phpstan-template TValueType
+	 * @phpstan-param array<TKeyType, TValueType> $array
+	 * @phpstan-return \Generator<TKeyType, TValueType, void, void>
+	 */
+	public static function stringifyKeys(array $array) : \Generator{
+		foreach($array as $key => $value){ // @phpstan-ignore-line - this is where we fix the stupid bullshit with array keys :)
+			yield (string) $key => $value;
+		}
+	}
+
 	public static function checkUTF8(string $string) : void{
 		if(!mb_check_encoding($string, 'UTF-8')){
 			throw new \InvalidArgumentException("Text must be valid UTF-8");
 		}
+	}
+
+	/**
+	 * @phpstan-template TValue
+	 * @phpstan-param TValue|false $value
+	 * @phpstan-param string|\Closure() : string $context
+	 * @phpstan-return TValue
+	 */
+	public static function assumeNotFalse(mixed $value, \Closure|string $context = "This should never be false") : mixed{
+		if($value === false){
+			throw new AssumptionFailedError("Assumption failure: " . (is_string($context) ? $context : $context()) . " (THIS IS A BUG)");
+		}
+		return $value;
 	}
 }

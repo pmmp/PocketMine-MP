@@ -94,8 +94,7 @@ class Cake extends Transparent implements FoodSource{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			$player->consumeObject($this);
-			return true;
+			return $player->consumeObject($this);
 		}
 
 		return false;

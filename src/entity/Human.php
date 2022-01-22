@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\animation\TotemUseAnimation;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
@@ -47,8 +48,10 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
+use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
@@ -102,12 +105,12 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * @throws InvalidSkinException
-	 * @throws \UnexpectedValueException
+	 * @throws SavedDataLoadingException
 	 */
 	public static function parseSkinNBT(CompoundTag $nbt) : Skin{
 		$skinTag = $nbt->getCompoundTag("Skin");
 		if($skinTag === null){
-			throw new \UnexpectedValueException("Missing skin data");
+			throw new SavedDataLoadingException("Missing skin data");
 		}
 		return new Skin( //this throws if the skin is invalid
 			$skinTag->getString("Name"),
@@ -145,7 +148,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	 */
 	public function sendSkin(?array $targets = null) : void{
 		$this->server->broadcastPackets($targets ?? $this->hasSpawned, [
-			PlayerSkinPacket::create($this->getUniqueId(), SkinAdapterSingleton::get()->toSkinData($this->skin))
+			PlayerSkinPacket::create($this->getUniqueId(), "", "", SkinAdapterSingleton::get()->toSkinData($this->skin))
 		]);
 	}
 
@@ -163,7 +166,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	public function consumeObject(Consumable $consumable) : bool{
-		if($consumable instanceof FoodSource && $consumable->requiresHunger() and !$this->hungerManager->isHungry()){
+		if($consumable instanceof FoodSource && $consumable->requiresHunger() && !$this->hungerManager->isHungry()){
 			return false;
 		}
 
@@ -214,6 +217,19 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->uuid = Uuid::uuid3(Uuid::NIL, ((string) $this->getId()) . $this->skin->getSkinData() . $this->getNameTag());
 	}
 
+	/**
+	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
+	 */
+	private static function populateInventoryFromListTag(Inventory $inventory, array $items) : void{
+		$listeners = $inventory->getListeners()->toArray();
+		$inventory->getListeners()->clear();
+
+		$inventory->setContents($items);
+
+		$inventory->getListeners()->add(...$listeners);
+	}
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
@@ -244,25 +260,23 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$inventoryTag = $nbt->getListTag("Inventory");
 		if($inventoryTag !== null){
-			$armorListeners = $this->armorInventory->getListeners()->toArray();
-			$this->armorInventory->getListeners()->clear();
-			$inventoryListeners = $this->inventory->getListeners()->toArray();
-			$this->inventory->getListeners()->clear();
+			$inventoryItems = [];
+			$armorInventoryItems = [];
 
 			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
 				$slot = $item->getByte("Slot");
-				if($slot >= 0 and $slot < 9){ //Hotbar
+				if($slot >= 0 && $slot < 9){ //Hotbar
 					//Old hotbar saving stuff, ignore it
-				}elseif($slot >= 100 and $slot < 104){ //Armor
-					$this->armorInventory->setItem($slot - 100, Item::nbtDeserialize($item));
-				}elseif($slot >= 9 and $slot < $this->inventory->getSize() + 9){
-					$this->inventory->setItem($slot - 9, Item::nbtDeserialize($item));
+				}elseif($slot >= 100 && $slot < 104){ //Armor
+					$armorInventoryItems[$slot - 100] = Item::nbtDeserialize($item);
+				}elseif($slot >= 9 && $slot < $this->inventory->getSize() + 9){
+					$inventoryItems[$slot - 9] = Item::nbtDeserialize($item);
 				}
 			}
 
-			$this->armorInventory->getListeners()->add(...$armorListeners);
-			$this->inventory->getListeners()->add(...$inventoryListeners);
+			self::populateInventoryFromListTag($this->inventory, $inventoryItems);
+			self::populateInventoryFromListTag($this->armorInventory, $armorInventoryItems);
 		}
 		$offHand = $nbt->getCompoundTag("OffHandItem");
 		if($offHand !== null){
@@ -276,10 +290,13 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 		$enderChestInventoryTag = $nbt->getListTag("EnderChestInventory");
 		if($enderChestInventoryTag !== null){
+			$enderChestInventoryItems = [];
+
 			/** @var CompoundTag $item */
 			foreach($enderChestInventoryTag as $i => $item){
-				$this->enderInventory->setItem($item->getByte("Slot"), Item::nbtDeserialize($item));
+				$enderChestInventoryItems[$item->getByte("Slot")] = Item::nbtDeserialize($item);
 			}
+			self::populateInventoryFromListTag($this->enderInventory, $enderChestInventoryItems);
 		}
 
 		$this->inventory->setHeldItemIndex($nbt->getInt("SelectedInventorySlot", 0));
@@ -323,8 +340,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		parent::applyDamageModifiers($source);
 
 		$type = $source->getCause();
-		if($type !== EntityDamageEvent::CAUSE_SUICIDE and $type !== EntityDamageEvent::CAUSE_VOID
-			and ($this->inventory->getItemInHand() instanceof Totem || $this->offHandInventory->getItem(0) instanceof Totem)){
+		if($type !== EntityDamageEvent::CAUSE_SUICIDE && $type !== EntityDamageEvent::CAUSE_VOID
+			&& ($this->inventory->getItemInHand() instanceof Totem || $this->offHandInventory->getItem(0) instanceof Totem)){
 
 			$compensation = $this->getHealth() - $source->getFinalDamage() - 1;
 			if($compensation < 0){
@@ -444,17 +461,24 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), SkinAdapterSingleton::get()->toSkinData($this->skin))]));
 		}
 
-		$pk = new AddPlayerPacket();
-		$pk->uuid = $this->getUniqueId();
-		$pk->username = $this->getName();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->location->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->yaw = $this->location->yaw;
-		$pk->pitch = $this->location->pitch;
-		$pk->item = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getInventory()->getItemInHand()));
-		$pk->metadata = $this->getAllNetworkData();
-		$player->getNetworkSession()->sendDataPacket($pk);
+		$player->getNetworkSession()->sendDataPacket(AddPlayerPacket::create(
+			$this->getUniqueId(),
+			$this->getName(),
+			$this->getId(), //TODO: actor unique ID
+			$this->getId(),
+			"",
+			$this->location->asVector3(),
+			$this->getMotion(),
+			$this->location->pitch,
+			$this->location->yaw,
+			$this->location->yaw, //TODO: head yaw
+			ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getInventory()->getItemInHand())),
+			$this->getAllNetworkData(),
+			AdventureSettingsPacket::create(0, 0, 0, 0, 0, $this->getId()), //TODO
+			[], //TODO: entity links
+			"", //device ID (we intentionally don't send this - secvuln)
+			DeviceOS::UNKNOWN //we intentionally don't send this (secvuln)
+		));
 
 		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
 		$this->sendData([$player], [EntityMetadataProperties::NAMETAG => new StringMetadataProperty($this->getNameTag())]);

@@ -57,7 +57,7 @@ class Villager extends Living implements Ageable{
 		/** @var int $profession */
 		$profession = $nbt->getInt("Profession", self::PROFESSION_FARMER);
 
-		if($profession > 4 or $profession < 0){
+		if($profession > 4 || $profession < 0){
 			$profession = self::PROFESSION_FARMER;
 		}
 

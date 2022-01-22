@@ -50,7 +50,7 @@ final class HeightArray{
 	}
 
 	private static function idx(int $x, int $z) : int{
-		if($x < 0 or $x >= 16 or $z < 0 or $z >= 16){
+		if($x < 0 || $x >= 16 || $z < 0 || $z >= 16){
 			throw new \InvalidArgumentException("x and z must be in the range 0-15");
 		}
 		return ($z << 4) | $x;

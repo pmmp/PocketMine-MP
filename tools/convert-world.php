@@ -59,7 +59,7 @@ if($inputPath === false){
 	exit(1);
 }
 $backupPath = realpath($args["backup"]);
-if($backupPath === false || (!@mkdir($backupPath, 0777, true) and !is_dir($backupPath)) or !is_writable($backupPath)){
+if($backupPath === false || (!@mkdir($backupPath, 0777, true) && !is_dir($backupPath)) || !is_writable($backupPath)){
 	fwrite(STDERR, "Backup file path " . $args["backup"] . " is not writable (permission error or doesn't exist), aborting" . PHP_EOL);
 	exit(1);
 }
