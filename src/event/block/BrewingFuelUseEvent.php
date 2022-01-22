@@ -56,6 +56,9 @@ class BrewingFuelUseEvent extends BlockEvent implements Cancellable{
 	 * Sets how many times the fuel can be used for potion brewing before it runs out.
 	 */
 	public function setFuelTime(int $fuelTime) : void{
+		if($fuelTime <= 0){
+			throw new \InvalidArgumentException("Fuel time must be positive");
+		}
 		$this->fuelTime = $fuelTime;
 	}
 }
