@@ -261,22 +261,11 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 				$rawBuffer = substr($packet->buffer, 1);
 				$buffer = self::MCPE_RAKNET_PACKET_ID . ($cipher !== null ? $cipher->encrypt($rawBuffer) : $rawBuffer);
 
-				if($needACK){
-					$pk = new EncapsulatedPacket();
-					$pk->identifierACK = $this->identifiersACK[$identifier]++;
-					$pk->buffer = $buffer;
-					$pk->reliability = PacketReliability::RELIABLE_ORDERED;
-					$pk->orderChannel = 0;
-				}else{
-					if(!isset($packet->__encapsulatedPacket)){
-						$packet->__encapsulatedPacket = new CachedEncapsulatedPacket;
-						$packet->__encapsulatedPacket->identifierACK = null;
-						$packet->__encapsulatedPacket->buffer = $buffer;
-						$packet->__encapsulatedPacket->reliability = PacketReliability::RELIABLE_ORDERED;
-						$packet->__encapsulatedPacket->orderChannel = 0;
-					}
-					$pk = $packet->__encapsulatedPacket;
-				}
+				$pk = new EncapsulatedPacket();
+				$pk->identifierACK = $needACK ? $this->identifiersACK[$identifier]++ : null;
+				$pk->buffer = $buffer;
+				$pk->reliability = PacketReliability::RELIABLE_ORDERED;
+				$pk->orderChannel = 0;
 
 				$this->interface->sendEncapsulated($identifier, $pk, ($needACK ? RakLib::FLAG_NEED_ACK : 0) | ($immediate ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
 				return $pk->identifierACK;
