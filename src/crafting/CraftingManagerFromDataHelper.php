@@ -54,7 +54,9 @@ final class CraftingManagerFromDataHelper{
 			}
 			$result->registerShapelessRecipe(new ShapelessRecipe(
 				array_map($itemDeserializerFunc, $recipe["input"]),
-				array_map($itemDeserializerFunc, $recipe["output"]), $blockType));
+				array_map($itemDeserializerFunc, $recipe["output"]),
+				$blockType
+			));
 		}
 		foreach($recipes["shaped"] as $recipe){
 			if($recipe["block"] !== "crafting_table"){ //TODO: filter others out for now to avoid breaking economics
