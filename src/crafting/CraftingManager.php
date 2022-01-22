@@ -154,6 +154,7 @@ class CraftingManager{
 
 	/**
 	 * @return PotionTypeRecipe[][]
+	 * @phpstan-return array<string, array<string, PotionTypeRecipe>>
 	 */
 	public function getPotionTypeRecipes() : array{
 		return $this->potionTypeRecipes;
@@ -161,6 +162,7 @@ class CraftingManager{
 
 	/**
 	 * @return PotionContainerChangeRecipe[][]
+	 * @phpstan-return array<int, array<string, PotionContainerChangeRecipe>>
 	 */
 	public function getPotionContainerChangeRecipes() : array{
 		return $this->potionContainerChangeRecipes;
