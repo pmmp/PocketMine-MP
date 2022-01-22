@@ -185,7 +185,7 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 		$recipes = $this->getBrewableRecipes();
 		$canBrew = count($recipes) !== 0;
 
-		if($this->remainingFuelTime <= 0 and $canBrew){
+		if($this->remainingFuelTime <= 0 && $canBrew){
 			$this->checkFuel($fuel);
 		}
 
