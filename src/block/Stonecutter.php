@@ -38,15 +38,15 @@ class Stonecutter extends Transparent{
 	use HorizontalFacingTrait;
 
 	public function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing);
+		return BlockDataSerializer::writeHorizontalFacing($this->facing);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta);
+		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta);
 	}
 
 	public function getStateBitmask() : int{
-		return 0b11;
+		return 0b111;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -57,6 +57,6 @@ class Stonecutter extends Transparent{
 	}
 
 	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()->trim(Facing::UP, 0.5)];
+		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 16)];
 	}
 }
