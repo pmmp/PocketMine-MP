@@ -29,17 +29,17 @@ use pocketmine\player\Player;
  * Called when a player requests a different viewing distance than the current one.
  */
 class PlayerViewDistanceChangeEvent extends PlayerEvent{
-	protected int $radius;
+	protected int $newRadius;
 	protected int $oldRadius;
 
-	public function __construct(Player $player, int $radius, int $oldRadius){
+	public function __construct(Player $player, int $newRadius, int $oldRadius){
 		$this->player = $player;
-		$this->radius = $radius;
+		$this->newRadius = $newRadius;
 		$this->oldRadius = $oldRadius;
 	}
 
-	public function getRadius() : int{
-		return $this->radius;
+	public function getNewRadius() : int{
+		return $this->newRadius;
 	}
 
 	public function getOldRadius() : int{
