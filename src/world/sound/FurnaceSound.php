@@ -27,9 +27,9 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-final class BlastFurnaceFireCrackleSound implements Sound{
+final class FurnaceSound implements Sound{
 
 	public function encode(Vector3 $pos) : array{
-		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BLOCK_BLASTFURNACE_FIRE_CRACKLE, $pos, false)];
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BLOCK_FURNACE_LIT, $pos, false)];
 	}
 }

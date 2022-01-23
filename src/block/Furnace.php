@@ -30,9 +30,10 @@ use pocketmine\crafting\FurnaceType;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
-use pocketmine\world\sound\BlastFurnaceFireCrackleSound;
-use pocketmine\world\sound\FurnaceLitSound;
-use pocketmine\world\sound\SmokerSmokeSound;
+use pocketmine\world\sound\BlastFurnaceSound;
+use pocketmine\world\sound\FurnaceSound;
+use pocketmine\world\sound\SmokerSound;
+
 use function mt_rand;
 
 class Furnace extends Opaque{
@@ -91,11 +92,11 @@ class Furnace extends Opaque{
 		if($furnace instanceof TileFurnace && $furnace->onUpdate()){
 			if(mt_rand(1, 100) < 5){
 				if($furnace->getFurnaceType()->equals(FurnaceType::BLAST_FURNACE())){
-					$this->position->getWorld()->addSound($this->position, new BlastFurnaceFireCrackleSound);
+					$this->position->getWorld()->addSound($this->position, new BlastFurnaceSound);
 				}elseif($furnace->getFurnaceType()->equals(FurnaceType::SMOKER())){
-					$this->position->getWorld()->addSound($this->position, new SmokerSmokeSound);
+					$this->position->getWorld()->addSound($this->position, new SmokerSound);
 				}elseif($furnace->getFurnaceType()->equals(FurnaceType::FURNACE())){
-					$this->position->getWorld()->addSound($this->position, new FurnaceLitSound);
+					$this->position->getWorld()->addSound($this->position, new FurnaceSound);
 				}
 			}
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
