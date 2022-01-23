@@ -115,9 +115,7 @@ class Torch extends Flowable{
 				return true;
 			}
 		}elseif($block instanceof Trapdoor){
-			if($face === Facing::UP && $block->isTop() && !$block->isOpen()){
-				return true;
-			}
+			return false;
 		}elseif($block instanceof Fence || $block instanceof Wall){
 			if($face === Facing::UP){
 				return true;
