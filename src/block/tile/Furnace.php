@@ -36,9 +36,13 @@ use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\player\Player;
+use pocketmine\world\sound\BlastFurnaceFireCrackleSound;
+use pocketmine\world\sound\FurnaceLitSound;
+use pocketmine\world\sound\SmokerSmokeSound;
 use pocketmine\world\World;
 use function array_map;
 use function max;
+use function mt_rand;
 
 abstract class Furnace extends Spawnable implements Container, Nameable{
 	use NameableTrait;
@@ -207,6 +211,9 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 				$this->cookTime = 0;
 			}
 			$ret = true;
+			if(mt_rand(1, 100) < 5){
+				$this->fireCrackle();
+			}
 		}else{
 			$this->onStopSmelting();
 			$this->remainingFuelTime = $this->cookTime = $this->maxFuelTime = 0;
@@ -231,5 +238,16 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		$this->timings->stopTiming();
 
 		return $ret;
+	}
+
+	public function fireCrackle() : void{
+		$tile = $this->position->getWorld()->getTile($this->position);
+		if($tile instanceof BlastFurnace){
+			$this->position->getWorld()->addSound($this->position, new BlastFurnaceFireCrackleSound);
+		}elseif($tile instanceof Smoker){
+			$this->position->getWorld()->addSound($this->position, new SmokerSmokeSound);
+		}elseif($tile instanceof NormalFurnace){
+			$this->position->getWorld()->addSound($this->position, new FurnaceLitSound);
+		}
 	}
 }
