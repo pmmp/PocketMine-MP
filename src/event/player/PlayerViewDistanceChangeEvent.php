@@ -39,15 +39,15 @@ class PlayerViewDistanceChangeEvent extends PlayerEvent{
 	}
 
 	/**
-	 * Returns an int corresponding to the number of chunks forming the new view distance
+	 * Returns the new view radius, measured in chunks.
 	 */
 	public function getNewDistance() : int{
 		return $this->newDistance;
 	}
 
 	/**
-	 * Returns an int corresponding to the number of chunks forming the previous view distance, before change
-	 * If the player connects to the server, it will return -1
+	 * Returns the old view radius, measured in chunks.
+	 * A value of -1 means that the player has just connected and did not have a view distance before this event.
 	 */
 	public function getOldDistance() : int{
 		return $this->oldDistance;
