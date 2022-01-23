@@ -39,6 +39,9 @@ class Cobweb extends Flowable{
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
+		if($item->getBlockToolType() === BlockToolType::SHEARS){
+			return [$this->asItem()];
+		}
 		return [
 			VanillaItems::STRING()
 		];
