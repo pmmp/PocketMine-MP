@@ -293,7 +293,7 @@ class Chunk{
 		$this->terrainDirtyFlags = 0;
 	}
 
-	public function getDimensionId(): int{
+	public function getDimensionId() : int{
 		return $this->dimensionId;
 	}
 
@@ -302,7 +302,7 @@ class Chunk{
 	 *
 	 * @return void
 	 */
-	public function setDimensionId(int $dimension): void{
+	public function setDimensionId(int $dimension) : void{
 		$this->dimensionId = $dimension;
 	}
 
