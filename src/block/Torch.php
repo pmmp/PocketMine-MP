@@ -100,7 +100,6 @@ class Torch extends Flowable{
 	private function isValidSupport(Block $block, int $face) : bool{
 		//TODO: dirt path/land
 		//TODO: side composter
-		//TODO: trapdoor top closed
 		//TODO: ice
 		if($block instanceof Stair){
 			if($face === Facing::UP && $block->isUpsideDown()){
@@ -121,6 +120,11 @@ class Torch extends Flowable{
 			}else{
 				return false;
 			}
+		}elseif($block instanceof Trapdoor){
+			if($face === Facing::UP && $block->isTop() && !$block->isOpen()){
+				return true;
+			}
+			return false;
 		}
 		if($face === Facing::UP && (
 			$block instanceof Fence ||
