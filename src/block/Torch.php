@@ -30,6 +30,7 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function in_array;
 
 class Torch extends Flowable{
 
@@ -100,7 +101,6 @@ class Torch extends Flowable{
 		//TODO: dirt path/land
 		//TODO: side composter
 		//TODO: trapdoor top closed
-		//TODO: slabs top, slabs double
 		//TODO: ice
 		if($block instanceof Stair){
 			if($face === Facing::UP && $block->isUpsideDown()){
@@ -110,13 +110,21 @@ class Torch extends Flowable{
 			}else{
 				return false;
 			}
+		}elseif($block instanceof Slab){
+			if($face === Facing::UP && (
+				$block->getSlabType()->equals(SlabType::TOP()) ||
+				$block->getSlabType()->equals(SlabType::DOUBLE())
+			)){
+				return true;
+			}elseif(in_array($face, Facing::HORIZONTAL, true) && $block->getSlabType()->equals(SlabType::DOUBLE())){
+				return true;
+			}else{
+				return false;
+			}
 		}
 		if($face === Facing::UP && (
 			$block instanceof Fence ||
-			$block instanceof Wall ||
-			($block instanceof Slab && (
-				$block->getSlabType()->equals(SlabType::TOP()) ||
-				$block->getSlabType()->equals(SlabType::DOUBLE())))
+			$block instanceof Wall
 		)){
 			return true;
 		}
