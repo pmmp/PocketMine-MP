@@ -91,7 +91,7 @@ class Chunk{
 		$this->dimensionId = match($biomeIds->get(0, 0)) {
 			BiomeIds::HELL => DimensionIds::NETHER,
 			BiomeIds::THE_END => DimensionIds::THE_END,
-		    default => DimensionIds::OVERWORLD
+			default => DimensionIds::OVERWORLD
 		};
 	}
 
@@ -298,9 +298,7 @@ class Chunk{
 	}
 
 	/**
-	 * @param int $dimension (@see DimensionIds)
-	 *
-	 * @return void
+	 * @see DimensionIds
 	 */
 	public function setDimensionId(int $dimension) : void{
 		$this->dimensionId = $dimension;
