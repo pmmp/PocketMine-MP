@@ -74,7 +74,7 @@ class TallGrass extends Flowable{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
 			$item->pop();
-			$blockAbove = $this->getPosition()->getWorld()->getBlockAt((int)$this->position->x, (int)$this->position->y + 1, (int)$this->position->z);
+			$blockAbove = $this->position->getWorld()->getBlock($this->position->up());
 
 			if($blockAbove->getId() === BlockLegacyIds::AIR){
 				$doubleBlock = match ($this->getMeta()) {
