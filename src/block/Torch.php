@@ -118,11 +118,10 @@ class Torch extends Flowable{
 			if($face === Facing::UP && $block->isTop() && !$block->isOpen()){
 				return true;
 			}
-		}elseif($face === Facing::UP && (
-			$block instanceof Fence ||
-			$block instanceof Wall
-		)){
-			return true;
+		}elseif($block instanceof Fence || $block instanceof Wall){
+			if($face === Facing::UP){
+				return true;
+			}
 		}elseif($block->isSolid() ||
 				($block instanceof Farmland ||
 				$block instanceof GrassPath ||
