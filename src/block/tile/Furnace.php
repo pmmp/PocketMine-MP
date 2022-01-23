@@ -212,7 +212,13 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 			}
 			$ret = true;
 			if(mt_rand(1, 100) < 5){
-				$this->fireCrackle();
+				if($this instanceof BlastFurnace){
+					$this->position->getWorld()->addSound($this->position, new BlastFurnaceFireCrackleSound);
+				}elseif($this instanceof Smoker){
+					$this->position->getWorld()->addSound($this->position, new SmokerSmokeSound);
+				}elseif($this instanceof NormalFurnace){
+					$this->position->getWorld()->addSound($this->position, new FurnaceLitSound);
+				}
 			}
 		}else{
 			$this->onStopSmelting();
@@ -238,16 +244,5 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		$this->timings->stopTiming();
 
 		return $ret;
-	}
-
-	public function fireCrackle() : void{
-		$tile = $this->position->getWorld()->getTile($this->position);
-		if($tile instanceof BlastFurnace){
-			$this->position->getWorld()->addSound($this->position, new BlastFurnaceFireCrackleSound);
-		}elseif($tile instanceof Smoker){
-			$this->position->getWorld()->addSound($this->position, new SmokerSmokeSound);
-		}elseif($tile instanceof NormalFurnace){
-			$this->position->getWorld()->addSound($this->position, new FurnaceLitSound);
-		}
 	}
 }
