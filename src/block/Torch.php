@@ -99,35 +99,40 @@ class Torch extends Flowable{
 
 	private function isValidSupport(Block $block, int $face) : bool{
 		//TODO: side of composter
-		if($block instanceof Stair){
-			if($face === Facing::UP && $block->isUpsideDown()){
+		if($block instanceof Stair && (
+			$face === Facing::UP && $block->isUpsideDown() ||
+			$face === $block->getFacing()
+		)){
 				return true;
-			}elseif($face === $block->getFacing()){
-				return true;
-			}
-		}elseif($block instanceof Slab){
-			if($face === Facing::UP && (
-				$block->getSlabType()->equals(SlabType::TOP()) ||
-				$block->getSlabType()->equals(SlabType::DOUBLE())
-			)){
-				return true;
-			}elseif(in_array($face, Facing::HORIZONTAL, true) && $block->getSlabType()->equals(SlabType::DOUBLE())){
-				return true;
-			}
-		}elseif($block instanceof Trapdoor){
-			if($face === Facing::UP && $block->isTop() && !$block->isOpen()){
-				return true;
-			}
-		}elseif($face === Facing::UP && (
-			$block instanceof Fence ||
-			$block instanceof Wall
+		}elseif($block instanceof Slab && (
+			$face === Facing::UP && (
+					$block->getSlabType()->equals(SlabType::TOP()) ||
+					$block->getSlabType()->equals(SlabType::DOUBLE())
+				) ||
+			in_array($face, Facing::HORIZONTAL, true) && $block->getSlabType()->equals(SlabType::DOUBLE())
 		)){
 			return true;
+		}elseif($block instanceof Trapdoor &&
+			$face === Facing::UP &&
+			$block->isTop() &&
+			!$block->isOpen()
+		){
+			return true;
+		}elseif($face === Facing::UP &&
+			(
+				$block instanceof Fence ||
+				$block instanceof Wall
+			)
+		){
+			return true;
 		}elseif($block->isSolid() ||
-				($block instanceof Farmland ||
+			(
+				$block instanceof Farmland ||
 				$block instanceof GrassPath ||
 				$block instanceof Ice ||
-				$block->getId() === BlockLegacyIds::BARRIER)){
+				$block->getId() === BlockLegacyIds::BARRIER
+			)
+		){
 			return true;
 		}
 		return false;
