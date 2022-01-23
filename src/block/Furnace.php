@@ -26,9 +26,14 @@ namespace pocketmine\block;
 use pocketmine\block\tile\Furnace as TileFurnace;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\crafting\FurnaceType;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\BlastFurnaceFireCrackleSound;
+use pocketmine\world\sound\FurnaceLitSound;
+use pocketmine\world\sound\SmokerSmokeSound;
+use function mt_rand;
 
 class Furnace extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
@@ -84,6 +89,15 @@ class Furnace extends Opaque{
 	public function onScheduledUpdate() : void{
 		$furnace = $this->position->getWorld()->getTile($this->position);
 		if($furnace instanceof TileFurnace && $furnace->onUpdate()){
+			if(mt_rand(1, 100) < 5){
+				if($furnace->getFurnaceType()->equals(FurnaceType::BLAST_FURNACE())){
+					$this->position->getWorld()->addSound($this->position, new BlastFurnaceFireCrackleSound);
+				}elseif($furnace->getFurnaceType()->equals(FurnaceType::SMOKER())){
+					$this->position->getWorld()->addSound($this->position, new SmokerSmokeSound);
+				}elseif($furnace->getFurnaceType()->equals(FurnaceType::FURNACE())){
+					$this->position->getWorld()->addSound($this->position, new FurnaceLitSound);
+				}
+			}
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
 		}
 	}
