@@ -755,8 +755,6 @@ class World implements ChunkManager{
 
 	/**
 	 * @internal
-	 *
-	 * @param Player ...$targets If empty, will send to all players in the world.
 	 */
 	public function sendTime(Player ...$targets) : void{
 		if(count($targets) === 0){
@@ -856,7 +854,7 @@ class World implements ChunkManager{
 		//Update entities that need update
 		Timings::$tickEntity->startTiming();
 		foreach($this->updateEntities as $id => $entity){
-			if($entity->isClosed() or !$entity->onUpdate($currentTick)){
+			if($entity->isClosed() or $entity->isFlaggedForDespawn() or !$entity->onUpdate($currentTick)){
 				unset($this->updateEntities[$id]);
 			}
 			if($entity->isFlaggedForDespawn()){
@@ -2258,6 +2256,11 @@ class World implements ChunkManager{
 		$previousSpawn = $this->getSpawnLocation();
 		$this->provider->getWorldData()->setSpawn($pos);
 		(new SpawnChangeEvent($this, $previousSpawn))->call();
+
+		$location = Position::fromObject($pos, $this);
+		foreach($this->players as $player){
+			$player->getNetworkSession()->syncWorldSpawnPoint($location);
+		}
 	}
 
 	/**

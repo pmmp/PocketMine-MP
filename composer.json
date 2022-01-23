@@ -34,14 +34,14 @@
       "adhocore/json-comment": "^1.1",
       "fgrosse/phpasn1": "^2.3",
       "netresearch/jsonmapper": "^4.0",
-      "pocketmine/bedrock-data": "^1.5.0+bedrock-1.18.0",
-      "pocketmine/bedrock-protocol": "^7.0.0+bedrock-1.18.0",
+      "pocketmine/bedrock-data": "~1.5.0+bedrock-1.18.0",
+      "pocketmine/bedrock-protocol": "~7.1.0+bedrock-1.18.0",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
       "pocketmine/classloader": "^0.2.0",
       "pocketmine/color": "^0.2.0",
       "pocketmine/errorhandler": "^0.3.0",
-      "pocketmine/locale-data": "^2.1.0",
+      "pocketmine/locale-data": "~2.3.0",
       "pocketmine/log": "^0.4.0",
       "pocketmine/log-pthreads": "^0.4.0",
       "pocketmine/math": "^0.4.0",
@@ -53,7 +53,7 @@
       "webmozart/path-util": "^2.3"
    },
    "require-dev": {
-      "phpstan/phpstan": "1.2.0",
+      "phpstan/phpstan": "1.3.3",
       "phpstan/phpstan-phpunit": "^1.0.0",
       "phpstan/phpstan-strict-rules": "^1.0.0",
       "phpunit/phpunit": "^9.2"

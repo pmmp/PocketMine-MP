@@ -27,6 +27,7 @@ use pocketmine\block\BaseSign;
 use pocketmine\block\ItemFrame;
 use pocketmine\block\utils\SignText;
 use pocketmine\entity\animation\ConsumingItemAnimation;
+use pocketmine\entity\Attribute;
 use pocketmine\entity\InvalidSkinException;
 use pocketmine\event\player\PlayerEditBookEvent;
 use pocketmine\inventory\transaction\action\InventoryAction;
@@ -36,7 +37,9 @@ use pocketmine\inventory\transaction\TransactionException;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\VanillaItems;
 use pocketmine\item\WritableBook;
+use pocketmine\item\WritableBookPage;
 use pocketmine\item\WrittenBook;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\StringTag;
@@ -95,28 +98,34 @@ use pocketmine\network\mcpe\protocol\types\PlayerAction;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Limits;
+use pocketmine\utils\TextFormat;
 use function array_push;
 use function base64_encode;
 use function count;
 use function fmod;
 use function implode;
+use function in_array;
 use function is_infinite;
 use function is_nan;
 use function json_decode;
 use function json_encode;
-use function json_last_error_msg;
 use function max;
+use function mb_strlen;
 use function microtime;
 use function preg_match;
+use function sprintf;
 use function strlen;
 use function strpos;
 use function substr;
 use function trim;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * This handler handles packets related to general gameplay.
  */
 class InGamePacketHandler extends PacketHandler{
+	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
 
 	/** @var Player */
 	private $player;
@@ -355,6 +364,8 @@ class InGamePacketHandler extends PacketHandler{
 				}
 				//TODO: end hack for client spam bug
 
+				self::validateFacing($data->getFace());
+
 				$blockPos = $data->getBlockPosition();
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
 				if(!$this->player->interactBlock($vBlockPos, $data->getFace(), $clickPos)){
@@ -371,6 +382,8 @@ class InGamePacketHandler extends PacketHandler{
 			case UseItemTransactionData::ACTION_CLICK_AIR:
 				if($this->player->isUsingItem()){
 					if(!$this->player->consumeHeldItem()){
+						$hungerAttr = $this->player->getAttributeMap()->get(Attribute::HUNGER) ?? throw new AssumptionFailedError();
+						$hungerAttr->markSynchronized(false);
 						$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 					}
 					return true;
@@ -382,6 +395,15 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		return false;
+	}
+
+	/**
+	 * @throws PacketHandlingException
+	 */
+	private static function validateFacing(int $facing) : void{
+		if(!in_array($facing, Facing::ALL, true)){
+			throw new PacketHandlingException("Invalid facing value $facing");
+		}
 	}
 
 	/**
@@ -496,6 +518,7 @@ class InGamePacketHandler extends PacketHandler{
 
 		switch($packet->action){
 			case PlayerAction::START_BREAK:
+				self::validateFacing($packet->face);
 				if(!$this->player->attackBlock($pos, $packet->face)){
 					$this->onFailedBlockAction($pos, $packet->face);
 				}
@@ -539,6 +562,7 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::STOP_GLIDE:
 				break; //TODO
 			case PlayerAction::CRACK_BREAK:
+				self::validateFacing($packet->face);
 				$this->player->continueBreakBlock($pos, $packet->face);
 				break;
 			case PlayerAction::START_SWIMMING:
@@ -708,6 +732,24 @@ class InGamePacketHandler extends PacketHandler{
 		return false; //TODO
 	}
 
+	/**
+	 * @throws PacketHandlingException
+	 */
+	private function checkBookText(string $string, string $fieldName, int $softLimit, int $hardLimit, bool &$cancel) : string{
+		if(strlen($string) > $hardLimit){
+			throw new PacketHandlingException(sprintf("Book %s must be at most %d bytes, but have %d bytes", $fieldName, $hardLimit, strlen($string)));
+		}
+
+		$result = TextFormat::clean($string, false);
+		//strlen() is O(1), mb_strlen() is O(n)
+		if(strlen($result) > $softLimit * 4 || mb_strlen($result, 'UTF-8') > $softLimit){
+			$cancel = true;
+			$this->session->getLogger()->debug("Cancelled book edit due to $fieldName exceeded soft limit of $softLimit chars");
+		}
+
+		return $result;
+	}
+
 	public function handleBookEdit(BookEditPacket $packet) : bool{
 		//TODO: break this up into book API things
 		$oldBook = $this->player->getInventory()->getItem($packet->inventorySlot);
@@ -717,10 +759,11 @@ class InGamePacketHandler extends PacketHandler{
 
 		$newBook = clone $oldBook;
 		$modifiedPages = [];
-
+		$cancel = false;
 		switch($packet->type){
 			case BookEditPacket::TYPE_REPLACE_PAGE:
-				$newBook->setPageText($packet->pageNumber, $packet->text);
+				$text = self::checkBookText($packet->text, "page text", 256, WritableBookPage::PAGE_LENGTH_HARD_LIMIT_BYTES, $cancel);
+				$newBook->setPageText($packet->pageNumber, $text);
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_ADD_PAGE:
@@ -729,7 +772,8 @@ class InGamePacketHandler extends PacketHandler{
 					//TODO: the client can send insert-before actions on trailing client-side pages which cause odd behaviour on the server
 					return false;
 				}
-				$newBook->insertPage($packet->pageNumber, $packet->text);
+				$text = self::checkBookText($packet->text, "page text", 256, WritableBookPage::PAGE_LENGTH_HARD_LIMIT_BYTES, $cancel);
+				$newBook->insertPage($packet->pageNumber, $text);
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_DELETE_PAGE:
@@ -748,18 +792,46 @@ class InGamePacketHandler extends PacketHandler{
 				$modifiedPages = [$packet->pageNumber, $packet->secondaryPageNumber];
 				break;
 			case BookEditPacket::TYPE_SIGN_BOOK:
-				/** @var WrittenBook $newBook */
+				$title = self::checkBookText($packet->title, "title", 16, Limits::INT16_MAX, $cancel);
+				//this one doesn't have a limit in vanilla, so we have to improvise
+				$author = self::checkBookText($packet->author, "author", 256, Limits::INT16_MAX, $cancel);
+
 				$newBook = VanillaItems::WRITTEN_BOOK()
 					->setPages($oldBook->getPages())
-					->setAuthor($packet->author)
-					->setTitle($packet->title)
+					->setAuthor($author)
+					->setTitle($title)
 					->setGeneration(WrittenBook::GENERATION_ORIGINAL);
 				break;
 			default:
 				return false;
 		}
 
-		$event = new PlayerEditBookEvent($this->player, $oldBook, $newBook, $packet->type, $modifiedPages);
+		//for redundancy, in case of protocol changes, we don't want to pass these directly
+		$action = match($packet->type){
+			BookEditPacket::TYPE_REPLACE_PAGE => PlayerEditBookEvent::ACTION_REPLACE_PAGE,
+			BookEditPacket::TYPE_ADD_PAGE => PlayerEditBookEvent::ACTION_ADD_PAGE,
+			BookEditPacket::TYPE_DELETE_PAGE => PlayerEditBookEvent::ACTION_DELETE_PAGE,
+			BookEditPacket::TYPE_SWAP_PAGES => PlayerEditBookEvent::ACTION_SWAP_PAGES,
+			BookEditPacket::TYPE_SIGN_BOOK => PlayerEditBookEvent::ACTION_SIGN_BOOK,
+			default => throw new AssumptionFailedError("We already filtered unknown types in the switch above")
+		};
+
+		/*
+		 * Plugins may have created books with more than 50 pages; we allow plugins to do this, but not players.
+		 * Don't allow the page count to grow past 50, but allow deleting, swapping or altering text of existing pages.
+		 */
+		$oldPageCount = count($oldBook->getPages());
+		$newPageCount = count($newBook->getPages());
+		if(($newPageCount > $oldPageCount && $newPageCount > 50)){
+			$this->session->getLogger()->debug("Cancelled book edit due to adding too many pages (new page count would be $newPageCount)");
+			$cancel = true;
+		}
+
+		$event = new PlayerEditBookEvent($this->player, $oldBook, $newBook, $action, $modifiedPages);
+		if($cancel){
+			$event->cancel();
+		}
+
 		$event->call();
 		if($event->isCancelled()){
 			return true;
@@ -808,14 +880,18 @@ class InGamePacketHandler extends PacketHandler{
 			}
 
 			$fixed = "[" . implode(",", $newParts) . "]";
-			if(($ret = json_decode($fixed, $assoc)) === null){
-				throw new \InvalidArgumentException("Failed to fix JSON: " . json_last_error_msg() . "(original: $json, modified: $fixed)");
+			try{
+				return json_decode($fixed, $assoc, self::MAX_FORM_RESPONSE_DEPTH, JSON_THROW_ON_ERROR);
+			}catch(\JsonException $e){
+				throw PacketHandlingException::wrap($e, "Failed to fix JSON (original: $json, modified: $fixed)");
 			}
-
-			return $ret;
 		}
 
-		return json_decode($json, $assoc);
+		try{
+			return json_decode($json, $assoc, self::MAX_FORM_RESPONSE_DEPTH, JSON_THROW_ON_ERROR);
+		}catch(\JsonException $e){
+			throw PacketHandlingException::wrap($e);
+		}
 	}
 
 	public function handleServerSettingsRequest(ServerSettingsRequestPacket $packet) : bool{
