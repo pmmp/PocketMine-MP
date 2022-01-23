@@ -82,7 +82,7 @@ class TallGrass extends Flowable{
 					BlockLegacyMetadata::TALLGRASS_FERN => VanillaBlocks::LARGE_FERN(),
 				};
 				$this->position->getWorld()->setBlock($this->position, $doubleBlock, true);
-				$this->position->getWorld()->setBlock($this->getSide(Facing::UP)->getPosition(), $doubleBlock->setTop(true), true);
+				$this->position->getWorld()->setBlock($this->position->up(), $doubleBlock->setTop(true), true);
 			}
 			return true;
 		}
