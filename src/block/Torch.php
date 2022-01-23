@@ -64,10 +64,9 @@ class Torch extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$below = $this->getSide(Facing::DOWN);
-		$face = Facing::opposite($this->facing);
+		$support = $this->getSide(Facing::opposite($this->facing));
 
-		if(!$this->isValidSupport($below, $face)){
+		if(!$this->isValidSupport($support, $this->facing)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -102,19 +101,29 @@ class Torch extends Flowable{
 		//TODO: side composter
 		//TODO: trapdoor top closed
 		//TODO: slabs top, slabs double
-		//TODO: stairs
 		//TODO: ice
+		if($block instanceof Stair){
+			if($face === Facing::UP && $block->isUpsideDown()){
+				return true;
+			}elseif($face === $block->getFacing()){
+				return true;
+			}else{
+				return false;
+			}
+		}
 		if($face === Facing::UP && (
 			$block instanceof Fence ||
 			$block instanceof Wall ||
 			($block instanceof Slab && (
 				$block->getSlabType()->equals(SlabType::TOP()) ||
-				$block->getSlabType()->equals(SlabType::DOUBLE()))) ||
-			($block instanceof Stair && $block->isUpsideDown())
+				$block->getSlabType()->equals(SlabType::DOUBLE())))
 		)){
 			return true;
 		}
-		if($block->isSolid()){
+		if($block->isSolid() || (
+			$block instanceof Farmland ||
+			$block instanceof GrassPath
+		)){
 			return true;
 		}
 		return false;
