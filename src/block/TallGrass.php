@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
@@ -39,7 +40,7 @@ class TallGrass extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN)->getId();
-		if($down === BlockLegacyIds::GRASS or $down === BlockLegacyIds::DIRT){
+		if($down === BlockLegacyIds::GRASS || $down === BlockLegacyIds::DIRT){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -47,7 +48,7 @@ class TallGrass extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){ //Replace with common break method
+		if($this->getSide(Facing::DOWN)->isTransparent()){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -68,5 +69,24 @@ class TallGrass extends Flowable{
 
 	public function getFlammability() : int{
 		return 100;
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($item instanceof Fertilizer){
+			$item->pop();
+			$blockAbove = $this->getPosition()->getWorld()->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z);
+
+			if($blockAbove->getId() === BlockLegacyIds::AIR){
+				$doubleBlock = match ($this->getMeta()) {
+					BlockLegacyMetadata::TALLGRASS_NORMAL => VanillaBlocks::DOUBLE_TALLGRASS(),
+					BlockLegacyMetadata::TALLGRASS_FERN => VanillaBlocks::LARGE_FERN(),
+				};
+				$this->position->getWorld()->setBlock($this->position, $doubleBlock, true);
+				$this->position->getWorld()->setBlock($this->getSide(Facing::UP)->getPosition(), $doubleBlock->setTop(true), true);
+			}
+			return true;
+		}
+
+		return false;
 	}
 }
