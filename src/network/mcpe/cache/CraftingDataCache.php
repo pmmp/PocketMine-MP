@@ -23,9 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\cache;
 
-use pocketmine\crafting\CraftingBlockType;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\FurnaceType;
+use pocketmine\crafting\ShapelessRecipeType;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
@@ -79,9 +79,9 @@ final class CraftingDataCache{
 		$recipesWithTypeIds = [];
 		foreach($manager->getShapelessRecipes() as $list){
 			foreach($list as $recipe){
-				$typeTag = match($recipe->getBlockType()->id()){
-					CraftingBlockType::CRAFTING_TABLE()->id() => CraftingRecipeBlockName::CRAFTING_TABLE,
-					CraftingBlockType::STONECUTTER()->id() => CraftingRecipeBlockName::STONECUTTER,
+				$typeTag = match($recipe->getRecipeType()->id()){
+					ShapelessRecipeType::CRAFTING()->id() => CraftingRecipeBlockName::CRAFTING_TABLE,
+					ShapelessRecipeType::STONECUTTER()->id() => CraftingRecipeBlockName::STONECUTTER,
 					default => throw new AssumptionFailedError("Unreachable"),
 				};
 				$recipesWithTypeIds[] = new ProtocolShapelessRecipe(

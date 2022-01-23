@@ -31,15 +31,15 @@ use pocketmine\utils\EnumTrait;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
- * @method static CraftingBlockType CRAFTING_TABLE()
- * @method static CraftingBlockType STONECUTTER()
+ * @method static ShapelessRecipeType CRAFTING()
+ * @method static ShapelessRecipeType STONECUTTER()
  */
-final class CraftingBlockType{
+final class ShapelessRecipeType{
 	use EnumTrait;
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("crafting_table"),
+			new self("crafting"),
 			new self("stonecutter")
 		);
 	}

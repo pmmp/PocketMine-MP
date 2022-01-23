@@ -43,19 +43,19 @@ final class CraftingManagerFromDataHelper{
 		$itemDeserializerFunc = \Closure::fromCallable([Item::class, 'jsonDeserialize']);
 
 		foreach($recipes["shapeless"] as $recipe){
-			$blockType = match ($recipe["block"]){
-				"crafting_table" => CraftingBlockType::CRAFTING_TABLE(),
-				"stonecutter" => CraftingBlockType::STONECUTTER(),
+			$recipeType = match ($recipe["block"]){
+				"crafting_table" => ShapelessRecipeType::CRAFTING(),
+				"stonecutter" => ShapelessRecipeType::STONECUTTER(),
 				//TODO: Cartography Table
 				default => null
 			};
-			if($blockType === null){
+			if($recipeType === null){
 				continue;
 			}
 			$result->registerShapelessRecipe(new ShapelessRecipe(
 				array_map($itemDeserializerFunc, $recipe["input"]),
 				array_map($itemDeserializerFunc, $recipe["output"]),
-				$blockType
+				$recipeType
 			));
 		}
 		foreach($recipes["shaped"] as $recipe){
