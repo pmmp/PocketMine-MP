@@ -29,6 +29,8 @@ namespace pocketmine\world\format;
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\tile\Tile;
+use pocketmine\data\bedrock\BiomeIds;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use function array_map;
 
 class Chunk{
@@ -66,6 +68,9 @@ class Chunk{
 	/** @var BiomeArray */
 	protected $biomeIds;
 
+	/** @var int */
+	protected $dimensionId;
+
 	/**
 	 * @param SubChunk[] $subChunks
 	 */
@@ -81,6 +86,13 @@ class Chunk{
 		$this->biomeIds = $biomeIds;
 
 		$this->terrainPopulated = $terrainPopulated;
+
+		// TODO: Hack! There's no way to cleanly do this without diverging from pmmp too much, so this is the best workaround for that
+		$this->dimensionId = match($biomeIds->get(0, 0)) {
+			BiomeIds::HELL => DimensionIds::NETHER,
+			BiomeIds::THE_END => DimensionIds::THE_END,
+		    default => DimensionIds::OVERWORLD
+		};
 	}
 
 	/**
@@ -279,6 +291,19 @@ class Chunk{
 
 	public function clearTerrainDirtyFlags() : void{
 		$this->terrainDirtyFlags = 0;
+	}
+
+	public function getDimensionId(): int{
+		return $this->dimensionId;
+	}
+
+	/**
+	 * @param int $dimension (@see DimensionIds)
+	 *
+	 * @return void
+	 */
+	public function setDimensionId(int $dimension): void{
+		$this->dimensionId = $dimension;
 	}
 
 	public function getSubChunk(int $y) : SubChunk{

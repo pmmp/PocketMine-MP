@@ -32,6 +32,7 @@ use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
+use pocketmine\network\mcpe\protocol\types\DimensionIds;
 use pocketmine\utils\Binary;
 use pocketmine\utils\BinaryStream;
 use pocketmine\world\format\Chunk;
@@ -66,7 +67,7 @@ final class ChunkSerializer{
 	public static function serializeFullChunk(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, int $mappingProtocol, ?string $tiles = null) : string{
 		$stream = PacketSerializer::encoder($encoderContext);
 
-		if($mappingProtocol >= ProtocolInfo::PROTOCOL_1_18_0){
+		if($mappingProtocol >= ProtocolInfo::PROTOCOL_1_18_0 && $chunk->getDimensionId() === DimensionIds::OVERWORLD){
 			//TODO: HACK! fill in fake subchunks to make up for the new negative space client-side
 			for($y = 0; $y < self::LOWER_PADDING_SIZE; $y++){
 				$stream->putByte(8); //subchunk version 8
