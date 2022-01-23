@@ -493,7 +493,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$this->getNetworkSession()->syncViewAreaRadius($this->viewDistance);
 
-
 		$this->logger->debug("Setting view distance to " . $this->viewDistance . " (requested " . $distance . ")");
 	}
 
