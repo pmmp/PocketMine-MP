@@ -363,6 +363,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static LapisOre LAPIS_LAZULI_ORE()
  * @method static DoubleTallGrass LARGE_FERN()
  * @method static Lava LAVA()
+ * @method static Lectern LECTERN()
  * @method static Opaque LEGACY_STONECUTTER()
  * @method static Lever LEVER()
  * @method static GlazedTerracotta LIGHT_BLUE_GLAZED_TERRACOTTA()
@@ -445,7 +446,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Slab PRISMARINE_SLAB()
  * @method static Stair PRISMARINE_STAIRS()
  * @method static Wall PRISMARINE_WALL()
- * @method static Opaque PUMPKIN()
+ * @method static Pumpkin PUMPKIN()
  * @method static PumpkinStem PUMPKIN_STEM()
  * @method static GlazedTerracotta PURPLE_GLAZED_TERRACOTTA()
  * @method static Torch PURPLE_TORCH()
@@ -924,6 +925,7 @@ final class VanillaBlocks{
 		self::register("lapis_lazuli_ore", $factory->get(21, 0));
 		self::register("large_fern", $factory->get(175, 3));
 		self::register("lava", $factory->get(10, 0));
+		self::register("lectern", $factory->get(449, 0));
 		self::register("legacy_stonecutter", $factory->get(245, 0));
 		self::register("lever", $factory->get(69, 0));
 		self::register("light_blue_glazed_terracotta", $factory->get(223, 2));

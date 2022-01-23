@@ -28,7 +28,6 @@ use pocketmine\network\mcpe\cache\ChunkCache;
 use pocketmine\scheduler\DumpWorkerMemoryTask;
 use pocketmine\scheduler\GarbageCollectionTask;
 use pocketmine\timings\Timings;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Process;
 use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
@@ -65,6 +64,7 @@ use function sprintf;
 use function strlen;
 use function substr;
 use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use const SORT_NUMERIC;
 
@@ -168,14 +168,14 @@ class MemoryManager{
 	}
 
 	public function canUseChunkCache() : bool{
-		return !$this->lowMemory or !$this->lowMemDisableChunkCache;
+		return !$this->lowMemory || !$this->lowMemDisableChunkCache;
 	}
 
 	/**
 	 * Returns the allowed chunk radius based on the current memory usage.
 	 */
 	public function getViewDistance(int $distance) : int{
-		return ($this->lowMemory and $this->lowMemChunkRadiusOverride > 0) ? min($this->lowMemChunkRadiusOverride, $distance) : $distance;
+		return ($this->lowMemory && $this->lowMemChunkRadiusOverride > 0) ? min($this->lowMemChunkRadiusOverride, $distance) : $distance;
 	}
 
 	/**
@@ -214,18 +214,18 @@ class MemoryManager{
 	public function check() : void{
 		Timings::$memoryManager->startTiming();
 
-		if(($this->memoryLimit > 0 or $this->globalMemoryLimit > 0) and ++$this->checkTicker >= $this->checkRate){
+		if(($this->memoryLimit > 0 || $this->globalMemoryLimit > 0) && ++$this->checkTicker >= $this->checkRate){
 			$this->checkTicker = 0;
 			$memory = Process::getAdvancedMemoryUsage();
 			$trigger = false;
-			if($this->memoryLimit > 0 and $memory[0] > $this->memoryLimit){
+			if($this->memoryLimit > 0 && $memory[0] > $this->memoryLimit){
 				$trigger = 0;
-			}elseif($this->globalMemoryLimit > 0 and $memory[1] > $this->globalMemoryLimit){
+			}elseif($this->globalMemoryLimit > 0 && $memory[1] > $this->globalMemoryLimit){
 				$trigger = 1;
 			}
 
 			if($trigger !== false){
-				if($this->lowMemory and $this->continuousTrigger){
+				if($this->lowMemory && $this->continuousTrigger){
 					if(++$this->continuousTriggerTicker >= $this->continuousTriggerRate){
 						$this->continuousTriggerTicker = 0;
 						$this->trigger($memory[$trigger], $this->memoryLimit, $trigger > 0, ++$this->continuousTriggerCount);
@@ -240,7 +240,7 @@ class MemoryManager{
 			}
 		}
 
-		if($this->garbageCollectionPeriod > 0 and ++$this->garbageCollectionTicker >= $this->garbageCollectionPeriod){
+		if($this->garbageCollectionPeriod > 0 && ++$this->garbageCollectionTicker >= $this->garbageCollectionPeriod){
 			$this->garbageCollectionTicker = 0;
 			$this->triggerGarbageCollector();
 		}
@@ -291,8 +291,7 @@ class MemoryManager{
 	 * @param mixed   $startingObject
 	 */
 	public static function dumpMemory($startingObject, string $outputFolder, int $maxNesting, int $maxStringSize, \Logger $logger) : void{
-		$hardLimit = ini_get('memory_limit');
-		if($hardLimit === false) throw new AssumptionFailedError("memory_limit INI directive should always exist");
+		$hardLimit = Utils::assumeNotFalse(ini_get('memory_limit'), "memory_limit INI directive should always exist");
 		ini_set('memory_limit', '-1');
 		gc_disable();
 
@@ -300,7 +299,7 @@ class MemoryManager{
 			mkdir($outputFolder, 0777, true);
 		}
 
-		$obData = fopen(Path::join($outputFolder, "objects.js"), "wb+");
+		$obData = Utils::assumeNotFalse(fopen(Path::join($outputFolder, "objects.js"), "wb+"));
 
 		$objects = [];
 
@@ -318,7 +317,7 @@ class MemoryManager{
 			$reflection = new \ReflectionClass($className);
 			$staticProperties[$className] = [];
 			foreach($reflection->getProperties() as $property){
-				if(!$property->isStatic() or $property->getDeclaringClass()->getName() !== $className){
+				if(!$property->isStatic() || $property->getDeclaringClass()->getName() !== $className){
 					continue;
 				}
 
@@ -352,7 +351,7 @@ class MemoryManager{
 			}
 		}
 
-		file_put_contents(Path::join($outputFolder, "staticProperties.js"), json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, "staticProperties.js"), json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 		$logger->info("Wrote $staticCount static properties");
 
 		$globalVariables = [];
@@ -379,7 +378,7 @@ class MemoryManager{
 			$globalVariables[$varName] = self::continueDump($value, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 		}
 
-		file_put_contents(Path::join($outputFolder, "globalVariables.js"), json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, "globalVariables.js"), json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 		$logger->info("Wrote $globalCount global variables");
 
 		foreach(get_defined_functions()["user"] as $function){
@@ -394,7 +393,7 @@ class MemoryManager{
 				$functionStaticVarsCount += count($vars);
 			}
 		}
-		file_put_contents(Path::join($outputFolder, 'functionStaticVars.js'), json_encode($functionStaticVars, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, 'functionStaticVars.js'), json_encode($functionStaticVars, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 		$logger->info("Wrote $functionStaticVarsCount function static variables");
 
 		$data = self::continueDump($startingObject, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
@@ -460,7 +459,7 @@ class MemoryManager{
 					}
 				}
 
-				fwrite($obData, json_encode($info, JSON_UNESCAPED_SLASHES) . "\n");
+				fwrite($obData, json_encode($info, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . "\n");
 			}
 
 		}while($continue);
@@ -469,11 +468,11 @@ class MemoryManager{
 
 		fclose($obData);
 
-		file_put_contents(Path::join($outputFolder, "serverEntry.js"), json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-		file_put_contents(Path::join($outputFolder, "referenceCounts.js"), json_encode($refCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, "serverEntry.js"), json_encode($data, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
+		file_put_contents(Path::join($outputFolder, "referenceCounts.js"), json_encode($refCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 
 		arsort($instanceCounts, SORT_NUMERIC);
-		file_put_contents(Path::join($outputFolder, "instanceCounts.js"), json_encode($instanceCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		file_put_contents(Path::join($outputFolder, "instanceCounts.js"), json_encode($instanceCounts, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR));
 
 		$logger->info("Finished!");
 

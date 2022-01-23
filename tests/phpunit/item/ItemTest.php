@@ -99,7 +99,7 @@ class ItemTest extends TestCase{
 		}
 		foreach($this->item->getEnchantments() as $enchantment){
 			foreach($enchantments as $k => $applied){
-				if($enchantment->getType() === $applied->getType() and $enchantment->getLevel() === $applied->getLevel()){
+				if($enchantment->getType() === $applied->getType() && $enchantment->getLevel() === $applied->getLevel()){
 					unset($enchantments[$k]);
 					continue 2;
 				}

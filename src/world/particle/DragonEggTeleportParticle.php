@@ -44,7 +44,7 @@ class DragonEggTeleportParticle implements Particle{
 	}
 
 	private static function boundOrThrow(int $v) : int{
-		if($v < -255 or $v > 255){
+		if($v < -255 || $v > 255){
 			throw new \InvalidArgumentException("Value must be between -255 and 255");
 		}
 		return $v;

@@ -49,6 +49,9 @@ class ExperienceManager{
 	/** @var int */
 	private $totalXp = 0;
 
+	/** @var bool */
+	private $canAttractXpOrbs = true;
+
 	/** @var int */
 	private $xpCooldown = 0;
 
@@ -249,14 +252,14 @@ class ExperienceManager{
 		/** @var Durable[] $equipment */
 		$equipment = [];
 
-		if(($item = $this->entity->getInventory()->getItemInHand()) instanceof Durable and $item->hasEnchantment(VanillaEnchantments::MENDING())){
+		if(($item = $this->entity->getInventory()->getItemInHand()) instanceof Durable && $item->hasEnchantment(VanillaEnchantments::MENDING())){
 			$equipment[$mainHandIndex] = $item;
 		}
-		if(($item = $this->entity->getOffHandInventory()->getItem(0)) instanceof Durable and $item->hasEnchantment(VanillaEnchantments::MENDING())){
+		if(($item = $this->entity->getOffHandInventory()->getItem(0)) instanceof Durable && $item->hasEnchantment(VanillaEnchantments::MENDING())){
 			$equipment[$offHandIndex] = $item;
 		}
 		foreach($this->entity->getArmorInventory()->getContents() as $k => $armorItem){
-			if($armorItem instanceof Durable and $armorItem->hasEnchantment(VanillaEnchantments::MENDING())){
+			if($armorItem instanceof Durable && $armorItem->hasEnchantment(VanillaEnchantments::MENDING())){
 				$equipment[$k] = $armorItem;
 			}
 		}
@@ -293,5 +296,13 @@ class ExperienceManager{
 		if($this->xpCooldown > 0){
 			$this->xpCooldown = max(0, $this->xpCooldown - $tickDiff);
 		}
+	}
+
+	public function canAttractXpOrbs() : bool{
+		return $this->canAttractXpOrbs;
+	}
+
+	public function setCanAttractXpOrbs(bool $v = true) : void{
+		$this->canAttractXpOrbs = $v;
 	}
 }

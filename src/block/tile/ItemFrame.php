@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block\tile;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\world\World;
@@ -46,7 +46,7 @@ class ItemFrame extends Spawnable{
 	private $itemDropChance = 1.0;
 
 	public function __construct(World $world, Vector3 $pos){
-		$this->item = ItemFactory::air();
+		$this->item = VanillaItems::AIR();
 		parent::__construct($world, $pos);
 	}
 
@@ -73,10 +73,10 @@ class ItemFrame extends Spawnable{
 	}
 
 	public function setItem(?Item $item) : void{
-		if($item !== null and !$item->isNull()){
+		if($item !== null && !$item->isNull()){
 			$this->item = clone $item;
 		}else{
-			$this->item = ItemFactory::air();
+			$this->item = VanillaItems::AIR();
 		}
 	}
 

@@ -37,7 +37,7 @@ class Wall extends Transparent{
 
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);
-			if($block instanceof static or $block instanceof FenceGate or ($block->isSolid() and !$block->isTransparent())){
+			if($block instanceof static || $block instanceof FenceGate || ($block->isSolid() && !$block->isTransparent())){
 				$this->connections[$facing] = $facing;
 			}else{
 				unset($this->connections[$facing]);
@@ -57,10 +57,10 @@ class Wall extends Transparent{
 
 		$inset = 0.25;
 		if(
-			!$this->up and //if there is a block on top, it stays as a post
+			!$this->up && //if there is a block on top, it stays as a post
 			(
-				($north and $south and !$west and !$east) or
-				(!$north and !$south and $west and $east)
+				($north && $south && !$west && !$east) ||
+				(!$north && !$south && $west && $east)
 			)
 		){
 			//If connected to two sides on the same axis but not any others, AND there is not a block on top, there is no post and the wall is thinner

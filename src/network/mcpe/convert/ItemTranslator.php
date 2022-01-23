@@ -67,10 +67,9 @@ final class ItemTranslator{
 	private $complexNetToCoreMapping = [];
 
 	private static function make() : self{
-		$data = file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'r16_to_current_item_map.json'));
-		if($data === false) throw new AssumptionFailedError("Missing required resource file");
+		$data = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'r16_to_current_item_map.json')), "Missing required resource file");
 		$json = json_decode($data, true);
-		if(!is_array($json) or !isset($json["simple"], $json["complex"]) || !is_array($json["simple"]) || !is_array($json["complex"])){
+		if(!is_array($json) || !isset($json["simple"], $json["complex"]) || !is_array($json["simple"]) || !is_array($json["complex"])){
 			throw new AssumptionFailedError("Invalid item table format");
 		}
 

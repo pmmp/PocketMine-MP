@@ -79,7 +79,7 @@ class NetherWartPlant extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < 3 and mt_rand(0, 10) === 0){ //Still growing
+		if($this->age < 3 && mt_rand(0, 10) === 0){ //Still growing
 			$block = clone $this;
 			$block->age++;
 			$ev = new BlockGrowEvent($this, $block);

@@ -173,7 +173,7 @@ class Normal extends Generator{
 
 						$weight = $this->gaussian->kernel[$sx + $this->gaussian->smoothSize][$sz + $this->gaussian->smoothSize];
 
-						if($sx === 0 and $sz === 0){
+						if($sx === 0 && $sz === 0){
 							$adjacent = $biome;
 						}else{
 							$index = World::chunkHash($absoluteX + $sx, $absoluteZ + $sz);

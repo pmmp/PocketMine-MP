@@ -189,7 +189,7 @@ final class Utils{
 	 * @param string $extra optional, additional data to identify the machine
 	 */
 	public static function getMachineUniqueId(string $extra = "") : UuidInterface{
-		if(self::$serverUniqueId !== null and $extra === ""){
+		if(self::$serverUniqueId !== null && $extra === ""){
 			return self::$serverUniqueId;
 		}
 
@@ -265,7 +265,7 @@ final class Utils{
 	 * Other => other
 	 */
 	public static function getOS(bool $recalculate = false) : string{
-		if(self::$os === null or $recalculate){
+		if(self::$os === null || $recalculate){
 			$uname = php_uname("s");
 			if(stripos($uname, "Darwin") !== false){
 				if(strpos(php_uname("m"), "iP") === 0){
@@ -273,7 +273,7 @@ final class Utils{
 				}else{
 					self::$os = self::OS_MACOS;
 				}
-			}elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
+			}elseif(stripos($uname, "Win") !== false || $uname === "Msys"){
 				self::$os = self::OS_WINDOWS;
 			}elseif(stripos($uname, "Linux") !== false){
 				if(@file_exists("/system/build.prop")){
@@ -281,7 +281,7 @@ final class Utils{
 				}else{
 					self::$os = self::OS_LINUX;
 				}
-			}elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
+			}elseif(stripos($uname, "BSD") !== false || $uname === "DragonFly"){
 				self::$os = self::OS_BSD;
 			}else{
 				self::$os = self::OS_UNKNOWN;
@@ -294,7 +294,7 @@ final class Utils{
 	public static function getCoreCount(bool $recalculate = false) : int{
 		static $processors = 0;
 
-		if($processors > 0 and !$recalculate){
+		if($processors > 0 && !$recalculate){
 			return $processors;
 		}else{
 			$processors = 0;
@@ -443,7 +443,7 @@ final class Utils{
 		$messages = [];
 		for($i = 0; isset($trace[$i]); ++$i){
 			$params = "";
-			if(isset($trace[$i]["args"]) or isset($trace[$i]["params"])){
+			if(isset($trace[$i]["args"]) || isset($trace[$i]["params"])){
 				if(isset($trace[$i]["args"])){
 					$args = $trace[$i]["args"];
 				}else{
@@ -466,7 +466,7 @@ final class Utils{
 					return gettype($value) . " " . Utils::printable((string) $value);
 				}, $args));
 			}
-			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
+			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" || $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
 		}
 		return $messages;
 	}
@@ -588,5 +588,18 @@ final class Utils{
 		if(!mb_check_encoding($string, 'UTF-8')){
 			throw new \InvalidArgumentException("Text must be valid UTF-8");
 		}
+	}
+
+	/**
+	 * @phpstan-template TValue
+	 * @phpstan-param TValue|false $value
+	 * @phpstan-param string|\Closure() : string $context
+	 * @phpstan-return TValue
+	 */
+	public static function assumeNotFalse(mixed $value, \Closure|string $context = "This should never be false") : mixed{
+		if($value === false){
+			throw new AssumptionFailedError("Assumption failure: " . (is_string($context) ? $context : $context()) . " (THIS IS A BUG)");
+		}
+		return $value;
 	}
 }

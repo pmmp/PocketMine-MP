@@ -45,7 +45,7 @@ class ThreadManager extends \Volatile{
 	 * @param Worker|Thread $thread
 	 */
 	public function add($thread) : void{
-		if($thread instanceof Thread or $thread instanceof Worker){
+		if($thread instanceof Thread || $thread instanceof Worker){
 			$this[spl_object_id($thread)] = $thread;
 		}
 	}
@@ -54,7 +54,7 @@ class ThreadManager extends \Volatile{
 	 * @param Worker|Thread $thread
 	 */
 	public function remove($thread) : void{
-		if($thread instanceof Thread or $thread instanceof Worker){
+		if($thread instanceof Thread || $thread instanceof Worker){
 			unset($this[spl_object_id($thread)]);
 		}
 	}

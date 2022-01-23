@@ -86,7 +86,7 @@ class Nether extends Generator{
 				$chunk->setBiomeId($x, $z, BiomeIds::HELL);
 
 				for($y = 0; $y < 128; ++$y){
-					if($y === 0 or $y === 127){
+					if($y === 0 || $y === 127){
 						$chunk->setFullBlock($x, $y, $z, $bedrock);
 						continue;
 					}

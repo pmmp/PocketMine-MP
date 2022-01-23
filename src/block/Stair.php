@@ -96,9 +96,9 @@ class Stair extends Transparent{
 			->trim(Facing::opposite($topStepFace), 0.5)
 			->trim(Facing::opposite($this->facing), 0.5);
 
-		if($this->shape->equals(StairShape::OUTER_LEFT()) or $this->shape->equals(StairShape::OUTER_RIGHT())){
+		if($this->shape->equals(StairShape::OUTER_LEFT()) || $this->shape->equals(StairShape::OUTER_RIGHT())){
 			$topStep->trim(Facing::rotateY($this->facing, $this->shape->equals(StairShape::OUTER_LEFT())), 0.5);
-		}elseif($this->shape->equals(StairShape::INNER_LEFT()) or $this->shape->equals(StairShape::INNER_RIGHT())){
+		}elseif($this->shape->equals(StairShape::INNER_LEFT()) || $this->shape->equals(StairShape::INNER_RIGHT())){
 			//add an extra cube
 			$bbs[] = AxisAlignedBB::one()
 				->trim(Facing::opposite($topStepFace), 0.5)
@@ -114,8 +114,8 @@ class Stair extends Transparent{
 	private function getPossibleCornerFacing(bool $oppositeFacing) : ?int{
 		$side = $this->getSide($oppositeFacing ? Facing::opposite($this->facing) : $this->facing);
 		return (
-			$side instanceof Stair and
-			$side->upsideDown === $this->upsideDown and
+			$side instanceof Stair &&
+			$side->upsideDown === $this->upsideDown &&
 			Facing::axis($side->facing) !== Facing::axis($this->facing) //perpendicular
 		) ? $side->facing : null;
 	}
@@ -124,7 +124,7 @@ class Stair extends Transparent{
 		if($player !== null){
 			$this->facing = $player->getHorizontalFacing();
 		}
-		$this->upsideDown = (($clickVector->y > 0.5 and $face !== Facing::UP) or $face === Facing::DOWN);
+		$this->upsideDown = (($clickVector->y > 0.5 && $face !== Facing::UP) || $face === Facing::DOWN);
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
