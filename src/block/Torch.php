@@ -98,16 +98,12 @@ class Torch extends Flowable{
 	}
 
 	private function isValidSupport(Block $block, int $face) : bool{
-		//TODO: dirt path/land
-		//TODO: side composter
-		//TODO: ice
+		//TODO: side of composter
 		if($block instanceof Stair){
 			if($face === Facing::UP && $block->isUpsideDown()){
 				return true;
 			}elseif($face === $block->getFacing()){
 				return true;
-			}else{
-				return false;
 			}
 		}elseif($block instanceof Slab){
 			if($face === Facing::UP && (
@@ -117,25 +113,21 @@ class Torch extends Flowable{
 				return true;
 			}elseif(in_array($face, Facing::HORIZONTAL, true) && $block->getSlabType()->equals(SlabType::DOUBLE())){
 				return true;
-			}else{
-				return false;
 			}
 		}elseif($block instanceof Trapdoor){
 			if($face === Facing::UP && $block->isTop() && !$block->isOpen()){
 				return true;
 			}
-			return false;
-		}
-		if($face === Facing::UP && (
+		}elseif($face === Facing::UP && (
 			$block instanceof Fence ||
 			$block instanceof Wall
 		)){
 			return true;
-		}
-		if($block->isSolid() || (
-			$block instanceof Farmland ||
-			$block instanceof GrassPath
-		)){
+		}elseif($block->isSolid() ||
+				($block instanceof Farmland ||
+				$block instanceof GrassPath ||
+				$block instanceof Ice ||
+				$block->getId() === BlockLegacyIds::BARRIER)){
 			return true;
 		}
 		return false;
