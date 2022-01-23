@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\SlabType;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -72,10 +73,10 @@ class Torch extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockClicked->canBeReplaced() && !$blockClicked->getSide(Facing::DOWN)->isTransparent()){
+		if($blockClicked->canBeReplaced() && !$this->isValidSupport($blockClicked->getSide(Facing::DOWN), Facing::UP)){
 			$this->facing = Facing::UP;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($face !== Facing::DOWN && (!$blockClicked->isTransparent() || ($face === Facing::UP && ($blockClicked->getId() === BlockLegacyIds::FENCE || $blockClicked->getId() === BlockLegacyIds::COBBLESTONE_WALL)))){
+		}elseif($face !== Facing::DOWN && $this->isValidSupport($blockClicked, $face)){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}else{
@@ -87,11 +88,34 @@ class Torch extends Flowable{
 				Facing::DOWN
 			] as $side){
 				$block = $this->getSide($side);
-				if(!$block->isTransparent()){
+				if($this->isValidSupport($block, Facing::opposite($side))){
 					$this->facing = Facing::opposite($side);
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				}
 			}
+		}
+		return false;
+	}
+
+	private function isValidSupport(Block $block, int $face) : bool{
+		//TODO: dirt path/land
+		//TODO: side composter
+		//TODO: trapdoor top closed
+		//TODO: slabs top, slabs double
+		//TODO: stairs
+		//TODO: ice
+		if($face === Facing::UP && (
+			$block instanceof Fence ||
+			$block instanceof Wall ||
+			($block instanceof Slab && (
+				$block->getSlabType()->equals(SlabType::TOP()) ||
+				$block->getSlabType()->equals(SlabType::DOUBLE()))) ||
+			($block instanceof Stair && $block->isUpsideDown())
+		)){
+			return true;
+		}
+		if($block->isSolid()){
+			return true;
 		}
 		return false;
 	}
