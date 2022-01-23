@@ -67,7 +67,7 @@ class Torch extends Flowable{
 		$below = $this->getSide(Facing::DOWN);
 		$face = Facing::opposite($this->facing);
 
-		if($this->getSide($face)->isTransparent() && !($face === Facing::DOWN && ($below->getId() === BlockLegacyIds::FENCE || $below->getId() === BlockLegacyIds::COBBLESTONE_WALL))){
+		if(!$this->isValidSupport($below, $face)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
