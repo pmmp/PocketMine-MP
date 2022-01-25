@@ -62,14 +62,20 @@ class WhitelistCommand extends VanillaCommand{
 			switch(strtolower($args[0])){
 				case "reload":
 					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_RELOAD)){
-						$sender->getServer()->getWhitelisted()->reload();
+						$server = $sender->getServer();
+						$server->getWhitelisted()->reload();
+						if($server->hasWhitelist()){
+							$this->kickNonWhitelistedPlayers($server);
+						}
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_reloaded());
 					}
 
 					return true;
 				case "on":
 					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_ENABLE)){
-						$sender->getServer()->getConfigGroup()->setConfigBool("white-list", true);
+						$server = $sender->getServer();
+						$server->getConfigGroup()->setConfigBool("white-list", true);
+						$this->kickNonWhitelistedPlayers($server);
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_enabled());
 					}
 
@@ -116,7 +122,11 @@ class WhitelistCommand extends VanillaCommand{
 					return true;
 				case "remove":
 					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_REMOVE)){
-						$sender->getServer()->removeWhitelist($args[1]);
+						$server = $sender->getServer();
+						$server->removeWhitelist($args[1]);
+						if($server->hasWhitelist()){
+							$server->getPlayerExact($args[1])?->kick("Server whitelisted.");
+						}
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_remove_success($args[1]));
 					}
 
@@ -125,5 +135,13 @@ class WhitelistCommand extends VanillaCommand{
 		}
 
 		throw new InvalidCommandSyntaxException();
+	}
+
+	private function kickNonWhitelistedPlayers(Server $server) : void{
+		foreach($server->getOnlinePlayers() as $player){
+			if(!$server->isWhitelisted($player)){
+				$player->kick("Server whitelisted.");
+			}
+		}
 	}
 }
