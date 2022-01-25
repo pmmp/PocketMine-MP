@@ -29,6 +29,7 @@ use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
+use pocketmine\Server;
 use function count;
 use function implode;
 use function sort;
