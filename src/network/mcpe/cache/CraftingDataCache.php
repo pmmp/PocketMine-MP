@@ -79,7 +79,7 @@ final class CraftingDataCache{
 		$recipesWithTypeIds = [];
 		foreach($manager->getShapelessRecipes() as $list){
 			foreach($list as $recipe){
-				$typeTag = match($recipe->getRecipeType()->id()){
+				$typeTag = match($recipe->getType()->id()){
 					ShapelessRecipeType::CRAFTING()->id() => CraftingRecipeBlockName::CRAFTING_TABLE,
 					ShapelessRecipeType::STONECUTTER()->id() => CraftingRecipeBlockName::STONECUTTER,
 					default => throw new AssumptionFailedError("Unreachable"),

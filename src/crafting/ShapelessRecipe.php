@@ -32,14 +32,15 @@ class ShapelessRecipe implements CraftingRecipe{
 	private $ingredients = [];
 	/** @var Item[] */
 	private $results;
-	private ShapelessRecipeType $recipeType;
+	private ShapelessRecipeType $type;
 
 	/**
 	 * @param Item[] $ingredients No more than 9 total. This applies to sum of item stack counts, not count of array.
 	 * @param Item[] $results List of result items created by this recipe.
+	 * TODO: we'll want to make the type parameter mandatory in PM5
 	 */
-	public function __construct(array $ingredients, array $results, ?ShapelessRecipeType $recipeType = null){
-		$this->recipeType = $recipeType ?? ShapelessRecipeType::CRAFTING();
+	public function __construct(array $ingredients, array $results, ?ShapelessRecipeType $type = null){
+		$this->type = $type ?? ShapelessRecipeType::CRAFTING();
 		foreach($ingredients as $item){
 			//Ensure they get split up properly
 			if(count($this->ingredients) + $item->getCount() > 9){
@@ -65,8 +66,8 @@ class ShapelessRecipe implements CraftingRecipe{
 		return $this->getResults();
 	}
 
-	public function getRecipeType() : ShapelessRecipeType{
-		return $this->recipeType;
+	public function getType() : ShapelessRecipeType{
+		return $this->type;
 	}
 
 	/**
