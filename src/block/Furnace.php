@@ -30,6 +30,7 @@ use pocketmine\crafting\FurnaceType;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\world\sound\BlastFurnaceSound;
 use pocketmine\world\sound\FurnaceSound;
 use pocketmine\world\sound\SmokerSound;
@@ -89,14 +90,13 @@ class Furnace extends Opaque{
 	public function onScheduledUpdate() : void{
 		$furnace = $this->position->getWorld()->getTile($this->position);
 		if($furnace instanceof TileFurnace && $furnace->onUpdate()){
-			if(mt_rand(1, 100) < 5){
-				if($furnace->getFurnaceType()->equals(FurnaceType::BLAST_FURNACE())){
-					$this->position->getWorld()->addSound($this->position, new BlastFurnaceSound);
-				}elseif($furnace->getFurnaceType()->equals(FurnaceType::SMOKER())){
-					$this->position->getWorld()->addSound($this->position, new SmokerSound);
-				}elseif($furnace->getFurnaceType()->equals(FurnaceType::FURNACE())){
-					$this->position->getWorld()->addSound($this->position, new FurnaceSound);
-				}
+			if(mt_rand(1, 60) === 1){ //in vanilla this is between 1 and 5 seconds; try to average about 3
+				$this->position->getWorld()->addSound($this->position, match($furnace->getFurnaceType()->id()){
+					FurnaceType::FURNACE()->id() => new FurnaceSound(),
+					FurnaceType::BLAST_FURNACE()->id() => new BlastFurnaceSound(),
+					FurnaceType::SMOKER()->id() => new SmokerSound(),
+					default => throw new AssumptionFailedError("Unreachable")
+				});
 			}
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
 		}
