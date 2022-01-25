@@ -33,7 +33,6 @@ use pocketmine\player\Player;
 use pocketmine\world\sound\BlastFurnaceSound;
 use pocketmine\world\sound\FurnaceSound;
 use pocketmine\world\sound\SmokerSound;
-
 use function mt_rand;
 
 class Furnace extends Opaque{
