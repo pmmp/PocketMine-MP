@@ -140,7 +140,7 @@ class WhitelistCommand extends VanillaCommand{
 
 	private function kickNonWhitelistedPlayers(Server $server) : void{
 		foreach($server->getOnlinePlayers() as $player){
-			if(!$server->isWhitelisted($player)){
+			if(!$server->isWhitelisted($player->getName())){
 				$player->kick("Server whitelisted.");
 			}
 		}
