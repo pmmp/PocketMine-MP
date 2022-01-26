@@ -279,12 +279,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/MiezeMC/BedrockProtocol.git",
-                "reference": "75b6e938343756f34f12715cc8509c79d9f5f6f7"
+                "reference": "618205c32c1ce532918e1c554445c4c151c8612b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MiezeMC/BedrockProtocol/zipball/75b6e938343756f34f12715cc8509c79d9f5f6f7",
-                "reference": "75b6e938343756f34f12715cc8509c79d9f5f6f7",
+                "url": "https://api.github.com/repos/MiezeMC/BedrockProtocol/zipball/618205c32c1ce532918e1c554445c4c151c8612b",
+                "reference": "618205c32c1ce532918e1c554445c4c151c8612b",
                 "shasum": ""
             },
             "require": {
