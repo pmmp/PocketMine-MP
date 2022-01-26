@@ -398,35 +398,42 @@ class BlockFactory{
 
 		//TODO: in the future this won't be the same for all the types
 		$stoneSlabBreakInfo = new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_BRICK), "Brick", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_COBBLESTONE), "Cobblestone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_FAKE_WOODEN), "Fake Wooden", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_NETHER_BRICK), "Nether Brick", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_QUARTZ), "Quartz", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_SANDSTONE), "Sandstone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_SMOOTH_STONE), "Smooth Stone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_STONE_BRICK), "Stone Brick", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_DARK_PRISMARINE), "Dark Prismarine", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_MOSSY_COBBLESTONE), "Mossy Cobblestone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_PRISMARINE), "Prismarine", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_PRISMARINE_BRICKS), "Prismarine Bricks", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_PURPUR), "Purpur", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_RED_NETHER_BRICK), "Red Nether Brick", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_RED_SANDSTONE), "Red Sandstone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_SMOOTH_SANDSTONE), "Smooth Sandstone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_ANDESITE), "Andesite", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_DIORITE), "Diorite", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_END_STONE_BRICK), "End Stone Brick", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_GRANITE), "Granite", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_POLISHED_ANDESITE), "Polished Andesite", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_POLISHED_DIORITE), "Polished Diorite", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_POLISHED_GRANITE), "Polished Granite", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_SMOOTH_RED_SANDSTONE), "Smooth Red Sandstone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_CUT_RED_SANDSTONE), "Cut Red Sandstone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_CUT_SANDSTONE), "Cut Sandstone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_MOSSY_STONE_BRICK), "Mossy Stone Brick", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_SMOOTH_QUARTZ), "Smooth Quartz", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_STONE), "Stone", $stoneSlabBreakInfo));
+
+		$getStoneSlabId = static fn(int $stoneSlabId, int $meta) => BlockLegacyIdHelper::getStoneSlabIdentifier($stoneSlabId, $meta);
+		foreach([
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_BRICK), "Brick", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_COBBLESTONE), "Cobblestone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_FAKE_WOODEN), "Fake Wooden", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_NETHER_BRICK), "Nether Brick", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_QUARTZ), "Quartz", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_SANDSTONE), "Sandstone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_SMOOTH_STONE), "Smooth Stone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_STONE_BRICK), "Stone Brick", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_DARK_PRISMARINE), "Dark Prismarine", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_MOSSY_COBBLESTONE), "Mossy Cobblestone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_PRISMARINE), "Prismarine", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_PRISMARINE_BRICKS), "Prismarine Bricks", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_PURPUR), "Purpur", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_RED_NETHER_BRICK), "Red Nether Brick", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_RED_SANDSTONE), "Red Sandstone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_SMOOTH_SANDSTONE), "Smooth Sandstone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_ANDESITE), "Andesite", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_DIORITE), "Diorite", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_END_STONE_BRICK), "End Stone Brick", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_GRANITE), "Granite", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_POLISHED_ANDESITE), "Polished Andesite", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_POLISHED_DIORITE), "Polished Diorite", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_POLISHED_GRANITE), "Polished Granite", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_SMOOTH_RED_SANDSTONE), "Smooth Red Sandstone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(4, Meta::STONE_SLAB4_CUT_RED_SANDSTONE), "Cut Red Sandstone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(4, Meta::STONE_SLAB4_CUT_SANDSTONE), "Cut Sandstone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(4, Meta::STONE_SLAB4_MOSSY_STONE_BRICK), "Mossy Stone Brick", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(4, Meta::STONE_SLAB4_SMOOTH_QUARTZ), "Smooth Quartz", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(4, Meta::STONE_SLAB4_STONE), "Stone", $stoneSlabBreakInfo),
+		] as $slabType){
+			$this->registerSlabWithDoubleHighBitsRemapping($slabType);
+		}
+
 		$this->registerAllMeta(new Opaque(new BID(Ids::STONECUTTER, 0), "Stonecutter", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->registerAllMeta(new Sugarcane(new BID(Ids::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane", BlockBreakInfo::instant()));
 		$this->registerAllMeta(new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH, 0, ItemIds::SWEET_BERRIES), "Sweet Berry Bush", BlockBreakInfo::instant()));
