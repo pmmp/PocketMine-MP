@@ -29,6 +29,7 @@ use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
 use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use function mt_rand;
 
 class Furnace extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
@@ -84,6 +85,9 @@ class Furnace extends Opaque{
 	public function onScheduledUpdate() : void{
 		$furnace = $this->position->getWorld()->getTile($this->position);
 		if($furnace instanceof TileFurnace && $furnace->onUpdate()){
+			if(mt_rand(1, 60) === 1){ //in vanilla this is between 1 and 5 seconds; try to average about 3
+				$this->position->getWorld()->addSound($this->position, $furnace->getFurnaceType()->getCookSound());
+			}
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
 		}
 	}

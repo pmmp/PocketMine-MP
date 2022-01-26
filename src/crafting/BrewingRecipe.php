@@ -21,24 +21,10 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\crafting;
 
-use pocketmine\block\utils\PillarRotationInMetadataTrait;
-use pocketmine\entity\Entity;
+use pocketmine\item\Item;
 
-class HayBale extends Opaque{
-	use PillarRotationInMetadataTrait;
-
-	public function getFlameEncouragement() : int{
-		return 60;
-	}
-
-	public function getFlammability() : int{
-		return 20;
-	}
-
-	public function onEntityLand(Entity $entity) : ?float{
-		$entity->fallDistance *= 0.2;
-		return null;
-	}
+interface BrewingRecipe{
+	public function getResultFor(Item $input) : ?Item;
 }

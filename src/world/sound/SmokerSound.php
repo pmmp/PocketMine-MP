@@ -21,24 +21,15 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\world\sound;
 
-use pocketmine\block\utils\PillarRotationInMetadataTrait;
-use pocketmine\entity\Entity;
+use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-class HayBale extends Opaque{
-	use PillarRotationInMetadataTrait;
+final class SmokerSound implements Sound{
 
-	public function getFlameEncouragement() : int{
-		return 60;
-	}
-
-	public function getFlammability() : int{
-		return 20;
-	}
-
-	public function onEntityLand(Entity $entity) : ?float{
-		$entity->fallDistance *= 0.2;
-		return null;
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::BLOCK_SMOKER_SMOKE, $pos, false)];
 	}
 }

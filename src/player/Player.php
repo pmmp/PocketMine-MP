@@ -73,6 +73,7 @@ use pocketmine\event\player\PlayerToggleSneakEvent;
 use pocketmine\event\player\PlayerToggleSprintEvent;
 use pocketmine\event\player\PlayerToggleSwimEvent;
 use pocketmine\event\player\PlayerTransferEvent;
+use pocketmine\event\player\PlayerViewDistanceChangeEvent;
 use pocketmine\form\Form;
 use pocketmine\form\FormValidationException;
 use pocketmine\inventory\CallbackInventoryListener;
@@ -507,7 +508,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function setViewDistance(int $distance) : void{
-		$this->viewDistance = $this->server->getAllowedViewDistance($distance);
+		$newViewDistance = $this->server->getAllowedViewDistance($distance);
+
+		if($newViewDistance !== $this->viewDistance){
+			$ev = new PlayerViewDistanceChangeEvent($this, $this->viewDistance, $newViewDistance);
+			$ev->call();
+		}
+
+		$this->viewDistance = $newViewDistance;
 
 		$this->spawnThreshold = (int) (min($this->viewDistance, $this->server->getConfigGroup()->getPropertyInt("chunk-sending.spawn-radius", 4)) ** 2 * M_PI);
 

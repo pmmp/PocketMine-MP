@@ -21,24 +21,34 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\crafting;
 
-use pocketmine\block\utils\PillarRotationInMetadataTrait;
-use pocketmine\entity\Entity;
+use pocketmine\item\Item;
+use pocketmine\item\ItemFactory;
 
-class HayBale extends Opaque{
-	use PillarRotationInMetadataTrait;
+class PotionContainerChangeRecipe implements BrewingRecipe{
 
-	public function getFlameEncouragement() : int{
-		return 60;
+	public function __construct(
+		private int $inputItemId,
+		private Item $ingredient,
+		private int $outputItemId
+	){
+		$this->ingredient = clone $ingredient;
 	}
 
-	public function getFlammability() : int{
-		return 20;
+	public function getInputItemId() : int{
+		return $this->inputItemId;
 	}
 
-	public function onEntityLand(Entity $entity) : ?float{
-		$entity->fallDistance *= 0.2;
-		return null;
+	public function getIngredient() : Item{
+		return clone $this->ingredient;
+	}
+
+	public function getOutputItemId() : int{
+		return $this->outputItemId;
+	}
+
+	public function getResultFor(Item $input) : ?Item{
+		return $input->getId() === $this->getInputItemId() ? ItemFactory::getInstance()->get($this->getOutputItemId(), $input->getMeta()) : null;
 	}
 }

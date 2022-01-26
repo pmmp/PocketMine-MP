@@ -24,6 +24,10 @@ declare(strict_types=1);
 namespace pocketmine\crafting;
 
 use pocketmine\utils\EnumTrait;
+use pocketmine\world\sound\BlastFurnaceSound;
+use pocketmine\world\sound\FurnaceSound;
+use pocketmine\world\sound\SmokerSound;
+use pocketmine\world\sound\Sound;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -42,15 +46,17 @@ final class FurnaceType{
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("furnace", 200),
-			new self("blast_furnace", 100),
-			new self("smoker", 100),
+			new self("furnace", 200, new FurnaceSound()),
+			new self("blast_furnace", 100, new BlastFurnaceSound()),
+			new self("smoker", 100, new SmokerSound()),
 		);
 	}
 
-	private function __construct(string $enumName, private int $cookDurationTicks){
+	private function __construct(string $enumName, private int $cookDurationTicks, private Sound $cookSound){
 		$this->Enum___construct($enumName);
 	}
 
 	public function getCookDurationTicks() : int{ return $this->cookDurationTicks; }
+
+	public function getCookSound() : Sound{ return $this->cookSound; }
 }

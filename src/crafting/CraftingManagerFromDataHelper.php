@@ -77,6 +77,20 @@ final class CraftingManagerFromDataHelper{
 				Item::jsonDeserialize($recipe["input"]))
 			);
 		}
+		foreach($recipes["potion_type"] as $recipe){
+			$result->registerPotionTypeRecipe(new PotionTypeRecipe(
+				Item::jsonDeserialize($recipe["input"]),
+				Item::jsonDeserialize($recipe["ingredient"]),
+				Item::jsonDeserialize($recipe["output"])
+			));
+		}
+		foreach($recipes["potion_container_change"] as $recipe){
+			$result->registerPotionContainerChangeRecipe(new PotionContainerChangeRecipe(
+				$recipe["input_item_id"],
+				Item::jsonDeserialize($recipe["ingredient"]),
+				$recipe["output_item_id"]
+			));
+		}
 
 		return $result;
 	}
