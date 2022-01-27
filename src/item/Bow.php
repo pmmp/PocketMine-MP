@@ -52,7 +52,7 @@ class Bow extends Tool implements Releasable{
 			default => null
 		};
 
-		if($player->hasFiniteResources() and $inventory === null){
+		if($player->hasFiniteResources() && $inventory === null){
 			return ItemUseResult::FAIL();
 		}
 
@@ -85,7 +85,7 @@ class Bow extends Tool implements Releasable{
 		}
 		$ev = new EntityShootBowEvent($player, $this, $entity, $baseForce * 3);
 
-		if($baseForce < 0.1 or $diff < 5 or $player->isSpectator()){
+		if($baseForce < 0.1 || $diff < 5 || $player->isSpectator()){
 			$ev->cancel();
 		}
 
@@ -122,5 +122,9 @@ class Bow extends Tool implements Releasable{
 		}
 
 		return ItemUseResult::SUCCESS();
+	}
+
+	public function canStartUsingItem(Player $player) : bool{
+		return !$player->hasFiniteResources() || $player->getOffHandInventory()->contains($arrow = VanillaItems::ARROW()) || $player->getInventory()->contains($arrow);
 	}
 }

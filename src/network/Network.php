@@ -91,6 +91,9 @@ class Network{
 		$this->sessionManager->tick();
 	}
 
+	/**
+	 * @throws NetworkInterfaceStartException
+	 */
 	public function registerInterface(NetworkInterface $interface) : bool{
 		$ev = new NetworkInterfaceRegisterEvent($interface);
 		$ev->call();
@@ -188,7 +191,7 @@ class Network{
 	}
 
 	public function processRawPacket(AdvancedNetworkInterface $interface, string $address, int $port, string $packet) : void{
-		if(isset($this->bannedIps[$address]) and time() < $this->bannedIps[$address]){
+		if(isset($this->bannedIps[$address]) && time() < $this->bannedIps[$address]){
 			$this->logger->debug("Dropped raw packet from banned address $address $port");
 			return;
 		}

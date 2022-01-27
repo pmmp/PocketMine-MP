@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\permission;
 
+use pocketmine\utils\Utils;
 use function is_bool;
 use function strtolower;
 
@@ -55,7 +56,7 @@ class PermissionParser{
 	/**
 	 * @param bool|string $value
 	 *
-	 * @throws \InvalidArgumentException
+	 * @throws PermissionParserException
 	 */
 	public static function defaultFromString($value) : string{
 		if(is_bool($value)){
@@ -70,7 +71,7 @@ class PermissionParser{
 			return self::DEFAULT_STRING_MAP[$lower];
 		}
 
-		throw new \InvalidArgumentException("Unknown permission default name \"$value\"");
+		throw new PermissionParserException("Unknown permission default name \"$value\"");
 	}
 
 	/**
@@ -79,17 +80,18 @@ class PermissionParser{
 	 *
 	 * @return Permission[][]
 	 * @phpstan-return array<string, list<Permission>>
+	 * @throws PermissionParserException
 	 */
 	public static function loadPermissions(array $data, string $default = self::DEFAULT_FALSE) : array{
 		$result = [];
-		foreach($data as $name => $entry){
+		foreach(Utils::stringifyKeys($data) as $name => $entry){
 			$desc = null;
 			if(isset($entry["default"])){
 				$default = PermissionParser::defaultFromString($entry["default"]);
 			}
 
 			if(isset($entry["children"])){
-				throw new \InvalidArgumentException("Nested permission declarations are no longer supported. Declare each permission separately.");
+				throw new PermissionParserException("Nested permission declarations are no longer supported. Declare each permission separately.");
 			}
 
 			if(isset($entry["description"])){

@@ -29,24 +29,15 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\SingletonTrait;
-use function array_keys;
-use function str_replace;
-use function strtolower;
-use function trim;
+use pocketmine\utils\StringToTParser;
 
 /**
  * Handles parsing items from strings. This is used to interpret names from the /give command (and others).
- * Custom aliases may be registered.
- * Note that the aliases should be user-friendly, i.e. easily readable and writable.
+ *
+ * @phpstan-extends StringToTParser<Item>
  */
-final class StringToItemParser{
+final class StringToItemParser extends StringToTParser{
 	use SingletonTrait;
-
-	/**
-	 * @var \Closure[]
-	 * @phpstan-var array<string, \Closure(string $input) : Item>
-	 */
-	private array $callbackMap = [];
 
 	private static function make() : self{
 		$result = new self;
@@ -106,7 +97,7 @@ final class StringToItemParser{
 		$result->registerBlock("anvil", fn() => VanillaBlocks::ANVIL());
 		$result->registerBlock("ateupd_block", fn() => VanillaBlocks::INFO_UPDATE2());
 		$result->registerBlock("azure_bluet", fn() => VanillaBlocks::AZURE_BLUET());
-		$result->registerBlock("bamboo", fn() => VanillaBlocks::BAMBOO_SAPLING());
+		$result->registerBlock("bamboo", fn() => VanillaBlocks::BAMBOO());
 		$result->registerBlock("bamboo_sapling", fn() => VanillaBlocks::BAMBOO_SAPLING());
 		$result->registerBlock("banner", fn() => VanillaBlocks::BANNER());
 		$result->registerBlock("barrel", fn() => VanillaBlocks::BARREL());
@@ -167,6 +158,7 @@ final class StringToItemParser{
 		$result->registerBlock("chemical_heat", fn() => VanillaBlocks::CHEMICAL_HEAT());
 		$result->registerBlock("chemistry_table", fn() => VanillaBlocks::COMPOUND_CREATOR());
 		$result->registerBlock("chest", fn() => VanillaBlocks::CHEST());
+		$result->registerBlock("chipped_anvil", fn() => VanillaBlocks::ANVIL()->setDamage(1));
 		$result->registerBlock("chiseled_quartz", fn() => VanillaBlocks::CHISELED_QUARTZ());
 		$result->registerBlock("chiseled_red_sandstone", fn() => VanillaBlocks::CHISELED_RED_SANDSTONE());
 		$result->registerBlock("chiseled_sandstone", fn() => VanillaBlocks::CHISELED_SANDSTONE());
@@ -174,6 +166,7 @@ final class StringToItemParser{
 		$result->registerBlock("clay_block", fn() => VanillaBlocks::CLAY());
 		$result->registerBlock("coal_block", fn() => VanillaBlocks::COAL());
 		$result->registerBlock("coal_ore", fn() => VanillaBlocks::COAL_ORE());
+		$result->registerBlock("coarse_dirt", fn() => VanillaBlocks::DIRT()->setCoarse(true));
 		$result->registerBlock("cobble", fn() => VanillaBlocks::COBBLESTONE());
 		$result->registerBlock("cobble_stairs", fn() => VanillaBlocks::COBBLESTONE_STAIRS());
 		$result->registerBlock("cobble_wall", fn() => VanillaBlocks::COBBLESTONE_WALL());
@@ -209,6 +202,7 @@ final class StringToItemParser{
 		$result->registerBlock("cut_sandstone", fn() => VanillaBlocks::CUT_SANDSTONE());
 		$result->registerBlock("cut_sandstone_slab", fn() => VanillaBlocks::CUT_SANDSTONE_SLAB());
 		$result->registerBlock("cyan_glazed_terracotta", fn() => VanillaBlocks::CYAN_GLAZED_TERRACOTTA());
+		$result->registerBlock("damaged_anvil", fn() => VanillaBlocks::ANVIL()->setDamage(2));
 		$result->registerBlock("dandelion", fn() => VanillaBlocks::DANDELION());
 		$result->registerBlock("dark_oak_button", fn() => VanillaBlocks::DARK_OAK_BUTTON());
 		$result->registerBlock("dark_oak_door", fn() => VanillaBlocks::DARK_OAK_DOOR());
@@ -223,6 +217,7 @@ final class StringToItemParser{
 		$result->registerBlock("dark_oak_sign", fn() => VanillaBlocks::DARK_OAK_SIGN());
 		$result->registerBlock("dark_oak_slab", fn() => VanillaBlocks::DARK_OAK_SLAB());
 		$result->registerBlock("dark_oak_stairs", fn() => VanillaBlocks::DARK_OAK_STAIRS());
+		$result->registerBlock("dark_oak_standing_sign", fn() => VanillaBlocks::DARK_OAK_SIGN());
 		$result->registerBlock("dark_oak_trapdoor", fn() => VanillaBlocks::DARK_OAK_TRAPDOOR());
 		$result->registerBlock("dark_oak_wall_sign", fn() => VanillaBlocks::DARK_OAK_WALL_SIGN());
 		$result->registerBlock("dark_oak_wood", fn() => VanillaBlocks::DARK_OAK_WOOD());
@@ -530,6 +525,7 @@ final class StringToItemParser{
 		$result->registerBlock("fence_gate_spruce", fn() => VanillaBlocks::SPRUCE_FENCE_GATE());
 		$result->registerBlock("fern", fn() => VanillaBlocks::FERN());
 		$result->registerBlock("fire", fn() => VanillaBlocks::FIRE());
+		$result->registerBlock("fletching_table", fn() => VanillaBlocks::FLETCHING_TABLE());
 		$result->registerBlock("flower_pot", fn() => VanillaBlocks::FLOWER_POT());
 		$result->registerBlock("flower_pot_block", fn() => VanillaBlocks::FLOWER_POT());
 		$result->registerBlock("flowing_lava", fn() => VanillaBlocks::LAVA());
@@ -617,6 +613,8 @@ final class StringToItemParser{
 		$result->registerBlock("jungle_trapdoor", fn() => VanillaBlocks::JUNGLE_TRAPDOOR());
 		$result->registerBlock("jungle_wall_sign", fn() => VanillaBlocks::JUNGLE_WALL_SIGN());
 		$result->registerBlock("jungle_wood", fn() => VanillaBlocks::JUNGLE_WOOD());
+		$result->registerBlock("jungle_wood_stairs", fn() => VanillaBlocks::JUNGLE_STAIRS());
+		$result->registerBlock("jungle_wooden_stairs", fn() => VanillaBlocks::JUNGLE_STAIRS());
 		$result->registerBlock("lab_table", fn() => VanillaBlocks::LAB_TABLE());
 		$result->registerBlock("ladder", fn() => VanillaBlocks::LADDER());
 		$result->registerBlock("lantern", fn() => VanillaBlocks::LANTERN());
@@ -630,6 +628,7 @@ final class StringToItemParser{
 		$result->registerBlock("leave2", fn() => VanillaBlocks::ACACIA_LEAVES());
 		$result->registerBlock("leaves", fn() => VanillaBlocks::OAK_LEAVES());
 		$result->registerBlock("leaves2", fn() => VanillaBlocks::ACACIA_LEAVES());
+		$result->registerBlock("lectern", fn() => VanillaBlocks::LECTERN());
 		$result->registerBlock("legacy_stonecutter", fn() => VanillaBlocks::LEGACY_STONECUTTER());
 		$result->registerBlock("lever", fn() => VanillaBlocks::LEVER());
 		$result->registerBlock("light_blue_glazed_terracotta", fn() => VanillaBlocks::LIGHT_BLUE_GLAZED_TERRACOTTA());
@@ -703,6 +702,7 @@ final class StringToItemParser{
 		$result->registerBlock("oak_sign", fn() => VanillaBlocks::OAK_SIGN());
 		$result->registerBlock("oak_slab", fn() => VanillaBlocks::OAK_SLAB());
 		$result->registerBlock("oak_stairs", fn() => VanillaBlocks::OAK_STAIRS());
+		$result->registerBlock("oak_standing_sign", fn() => VanillaBlocks::OAK_SIGN());
 		$result->registerBlock("oak_trapdoor", fn() => VanillaBlocks::OAK_TRAPDOOR());
 		$result->registerBlock("oak_wall_sign", fn() => VanillaBlocks::OAK_WALL_SIGN());
 		$result->registerBlock("oak_wood", fn() => VanillaBlocks::OAK_WOOD());
@@ -799,13 +799,15 @@ final class StringToItemParser{
 		$result->registerBlock("sea_lantern", fn() => VanillaBlocks::SEA_LANTERN());
 		$result->registerBlock("sea_pickle", fn() => VanillaBlocks::SEA_PICKLE());
 		$result->registerBlock("sealantern", fn() => VanillaBlocks::SEA_LANTERN());
-		$result->registerBlock("shulker_box", fn() => VanillaBlocks::DYED_SHULKER_BOX());
+		$result->registerBlock("shulker_box", fn() => VanillaBlocks::SHULKER_BOX());
 		$result->registerBlock("sign", fn() => VanillaBlocks::OAK_SIGN());
 		$result->registerBlock("sign_post", fn() => VanillaBlocks::OAK_SIGN());
 		$result->registerBlock("silver_glazed_terracotta", fn() => VanillaBlocks::LIGHT_GRAY_GLAZED_TERRACOTTA());
 		$result->registerBlock("skull_block", fn() => VanillaBlocks::MOB_HEAD());
 		$result->registerBlock("slab", fn() => VanillaBlocks::SMOOTH_STONE_SLAB());
 		$result->registerBlock("slabs", fn() => VanillaBlocks::SMOOTH_STONE_SLAB());
+		$result->registerBlock("slime", fn() => VanillaBlocks::SLIME());
+		$result->registerBlock("slime_block", fn() => VanillaBlocks::SLIME());
 		$result->registerBlock("smoker", fn() => VanillaBlocks::SMOKER());
 		$result->registerBlock("smooth_quartz", fn() => VanillaBlocks::SMOOTH_QUARTZ());
 		$result->registerBlock("smooth_quartz_slab", fn() => VanillaBlocks::SMOOTH_QUARTZ_SLAB());
@@ -860,11 +862,11 @@ final class StringToItemParser{
 		$result->registerBlock("stone_bricks", fn() => VanillaBlocks::STONE_BRICKS());
 		$result->registerBlock("stone_button", fn() => VanillaBlocks::STONE_BUTTON());
 		$result->registerBlock("stone_pressure_plate", fn() => VanillaBlocks::STONE_PRESSURE_PLATE());
-		$result->registerBlock("stone_slab", fn() => VanillaBlocks::SMOOTH_STONE_SLAB());
+		$result->registerBlock("stone_slab", fn() => VanillaBlocks::STONE_SLAB());
 		$result->registerBlock("stone_slab2", fn() => VanillaBlocks::RED_SANDSTONE_SLAB());
 		$result->registerBlock("stone_slab3", fn() => VanillaBlocks::END_STONE_BRICK_SLAB());
 		$result->registerBlock("stone_slab4", fn() => VanillaBlocks::MOSSY_STONE_BRICK_SLAB());
-		$result->registerBlock("stone_stairs", fn() => VanillaBlocks::COBBLESTONE_STAIRS());
+		$result->registerBlock("stone_stairs", fn() => VanillaBlocks::STONE_STAIRS());
 		$result->registerBlock("stone_wall", fn() => VanillaBlocks::COBBLESTONE_WALL());
 		$result->registerBlock("stonebrick", fn() => VanillaBlocks::STONE_BRICKS());
 		$result->registerBlock("stonecutter", fn() => VanillaBlocks::LEGACY_STONECUTTER());
@@ -886,7 +888,7 @@ final class StringToItemParser{
 		$result->registerBlock("sugarcane_block", fn() => VanillaBlocks::SUGARCANE());
 		$result->registerBlock("sunflower", fn() => VanillaBlocks::SUNFLOWER());
 		$result->registerBlock("sweet_berry_bush", fn() => VanillaBlocks::SWEET_BERRY_BUSH());
-		$result->registerBlock("tall_grass", fn() => VanillaBlocks::FERN());
+		$result->registerBlock("tall_grass", fn() => VanillaBlocks::TALL_GRASS());
 		$result->registerBlock("tallgrass", fn() => VanillaBlocks::FERN());
 		$result->registerBlock("terracotta", fn() => VanillaBlocks::STAINED_CLAY());
 		$result->registerBlock("tnt", fn() => VanillaBlocks::TNT());
@@ -1324,41 +1326,12 @@ final class StringToItemParser{
 		return $result;
 	}
 
-	/** @phpstan-param \Closure(string $input) : Item $callback */
-	public function register(string $alias, \Closure $callback) : void{
-		$key = $this->reprocess($alias);
-		if(isset($this->callbackMap[$key])){
-			throw new \InvalidArgumentException("Alias \"$key\" is already registered");
-		}
-		$this->callbackMap[$key] = $callback;
-	}
-
 	/** @phpstan-param \Closure(string $input) : Block $callback */
 	public function registerBlock(string $alias, \Closure $callback) : void{
 		$this->register($alias, fn(string $input) => $callback($input)->asItem());
 	}
 
-	/** @phpstan-param \Closure(string $input) : Item $callback */
-	public function override(string $alias, \Closure $callback) : void{
-		$this->callbackMap[$this->reprocess($alias)] = $callback;
-	}
-
-	/** Tries to parse the specified string into an item. */
 	public function parse(string $input) : ?Item{
-		$key = $this->reprocess($input);
-		if(isset($this->callbackMap[$key])){
-			return ($this->callbackMap[$key])($input);
-		}
-
-		return null;
-	}
-
-	protected function reprocess(string $input) : string{
-		return strtolower(str_replace([" ", "minecraft:"], ["_", ""], trim($input)));
-	}
-
-	/** @return string[] */
-	public function getKnownAliases() : array{
-		return array_keys($this->callbackMap);
+		return parent::parse($input);
 	}
 }

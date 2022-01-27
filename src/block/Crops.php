@@ -69,7 +69,7 @@ abstract class Crops extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->age < 7 and $item instanceof Fertilizer){
+		if($this->age < 7 && $item instanceof Fertilizer){
 			$block = clone $this;
 			$block->age += mt_rand(2, 5);
 			if($block->age > 7){
@@ -80,9 +80,8 @@ abstract class Crops extends Flowable{
 			$ev->call();
 			if(!$ev->isCancelled()){
 				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+				$item->pop();
 			}
-
-			$item->pop();
 
 			return true;
 		}
@@ -101,7 +100,7 @@ abstract class Crops extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < 7 and mt_rand(0, 2) === 1){
+		if($this->age < 7 && mt_rand(0, 2) === 1){
 			$block = clone $this;
 			++$block->age;
 			$ev = new BlockGrowEvent($this, $block);

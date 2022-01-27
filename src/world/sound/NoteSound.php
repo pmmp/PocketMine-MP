@@ -25,6 +25,7 @@ namespace pocketmine\world\sound;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 class NoteSound implements Sound{
 
@@ -34,14 +35,14 @@ class NoteSound implements Sound{
 	private $note;
 
 	public function __construct(NoteInstrument $instrument, int $note){
-		if($note < 0 or $note > 255){
+		if($note < 0 || $note > 255){
 			throw new \InvalidArgumentException("Note $note is outside accepted range");
 		}
 		$this->instrument = $instrument;
 		$this->note = $note;
 	}
 
-	public function encode(?Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_NOTE, $pos, ($this->instrument->getMagicNumber() << 8) | $this->note)];
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::NOTE, $pos, false, ($this->instrument->getMagicNumber() << 8) | $this->note)];
 	}
 }

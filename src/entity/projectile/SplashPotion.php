@@ -99,14 +99,14 @@ class SplashPotion extends Throwable{
 		if($hasEffects){
 			if(!$this->willLinger()){
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(4.125, 2.125, 4.125), $this) as $entity){
-					if($entity instanceof Living and $entity->isAlive()){
+					if($entity instanceof Living && $entity->isAlive()){
 						$distanceSquared = $entity->getEyePos()->distanceSquared($this->location);
 						if($distanceSquared > 16){ //4 blocks
 							continue;
 						}
 
 						$distanceMultiplier = 1 - (sqrt($distanceSquared) / 4);
-						if($event instanceof ProjectileHitEntityEvent and $entity === $event->getEntityHit()){
+						if($event instanceof ProjectileHitEntityEvent && $entity === $event->getEntityHit()){
 							$distanceMultiplier = 1.0;
 						}
 
@@ -129,7 +129,7 @@ class SplashPotion extends Throwable{
 			}else{
 				//TODO: lingering potions
 			}
-		}elseif($event instanceof ProjectileHitBlockEvent and $this->getPotionType()->equals(PotionType::WATER())){
+		}elseif($event instanceof ProjectileHitBlockEvent && $this->getPotionType()->equals(PotionType::WATER())){
 			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
 
 			if($blockIn->getId() === BlockLegacyIds::FIRE){

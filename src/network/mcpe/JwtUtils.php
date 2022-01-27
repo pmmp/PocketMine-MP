@@ -27,6 +27,7 @@ use FG\ASN1\Exception\ParserException;
 use FG\ASN1\Universal\Integer;
 use FG\ASN1\Universal\Sequence;
 use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use function base64_decode;
 use function base64_encode;
 use function count;
@@ -185,11 +186,7 @@ final class JwtUtils{
 	}
 
 	public static function emitDerPublicKey(\OpenSSLAsymmetricKey $opensslKey) : string{
-		$details = openssl_pkey_get_details($opensslKey);
-		if($details === false){
-			throw new AssumptionFailedError("Failed to get details from OpenSSL key resource");
-		}
-
+		$details = Utils::assumeNotFalse(openssl_pkey_get_details($opensslKey), "Failed to get details from OpenSSL key resource");
 		/** @var string $pemKey */
 		$pemKey = $details['key'];
 		if(preg_match("@^-----BEGIN[A-Z\d ]+PUBLIC KEY-----\n([A-Za-z\d+/\n]+)\n-----END[A-Z\d ]+PUBLIC KEY-----\n$@", $pemKey, $matches) === 1){

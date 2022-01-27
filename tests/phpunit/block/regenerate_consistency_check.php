@@ -72,4 +72,5 @@ file_put_contents(__DIR__ . '/block_factory_consistency_check.json', json_encode
 		"knownStates" => $new,
 		"remaps" => $remaps
 	],
+	JSON_THROW_ON_ERROR
 ));

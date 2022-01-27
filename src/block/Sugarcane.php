@@ -48,7 +48,8 @@ class Sugarcane extends Flowable{
 		return 0b1111;
 	}
 
-	private function grow() : void{
+	private function grow() : bool{
+		$grew = false;
 		for($y = 1; $y < 3; ++$y){
 			if(!$this->position->getWorld()->isInWorld($this->position->x, $this->position->y + $y, $this->position->z)){
 				break;
@@ -61,12 +62,14 @@ class Sugarcane extends Flowable{
 					break;
 				}
 				$this->position->getWorld()->setBlock($b->position, $ev->getNewState());
+				$grew = true;
 			}else{
 				break;
 			}
 		}
 		$this->age = 0;
 		$this->position->getWorld()->setBlock($this->position, $this);
+		return $grew;
 	}
 
 	public function getAge() : int{ return $this->age; }
@@ -82,11 +85,9 @@ class Sugarcane extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
-			if(!$this->getSide(Facing::DOWN)->isSameType($this)){
-				$this->grow();
+			if(!$this->getSide(Facing::DOWN)->isSameType($this) && $this->grow()){
+				$item->pop();
 			}
-
-			$item->pop();
 
 			return true;
 		}
@@ -96,7 +97,7 @@ class Sugarcane extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->isTransparent() and !$down->isSameType($this)){
+		if($down->isTransparent() && !$down->isSameType($this)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -120,7 +121,7 @@ class Sugarcane extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->isSameType($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($down->getId() === BlockLegacyIds::GRASS or $down->getId() === BlockLegacyIds::DIRT or $down->getId() === BlockLegacyIds::SAND or $down->getId() === BlockLegacyIds::PODZOL){
+		}elseif($down->getId() === BlockLegacyIds::GRASS || $down->getId() === BlockLegacyIds::DIRT || $down->getId() === BlockLegacyIds::SAND || $down->getId() === BlockLegacyIds::PODZOL){
 			foreach(Facing::HORIZONTAL as $side){
 				if($down->getSide($side) instanceof Water){
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);

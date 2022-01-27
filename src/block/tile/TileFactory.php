@@ -23,8 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
@@ -66,6 +67,7 @@ final class TileFactory{
 		$this->register(Hopper::class, ["Hopper", "minecraft:hopper"]);
 		$this->register(ItemFrame::class, ["ItemFrame"]); //this is an entity in PC
 		$this->register(Jukebox::class, ["Jukebox", "RecordPlayer", "minecraft:jukebox"]);
+		$this->register(Lectern::class, ["Lectern", "minecraft:lectern"]);
 		$this->register(MonsterSpawner::class, ["MobSpawner", "minecraft:mob_spawner"]);
 		$this->register(Note::class, ["Music", "minecraft:noteblock"]);
 		$this->register(ShulkerBox::class, ["ShulkerBox", "minecraft:shulker_box"]);
@@ -84,7 +86,6 @@ final class TileFactory{
 		//TODO: EndGateway
 		//TODO: EndPortal
 		//TODO: JigsawBlock
-		//TODO: Lectern
 		//TODO: MovingBlock
 		//TODO: NetherReactor
 		//TODO: PistonArm
@@ -112,21 +113,25 @@ final class TileFactory{
 
 	/**
 	 * @internal
-	 * @throws NbtDataException
+	 * @throws SavedDataLoadingException
 	 */
 	public function createFromData(World $world, CompoundTag $nbt) : ?Tile{
-		$type = $nbt->getString(Tile::TAG_ID, "");
-		if(!isset($this->knownTiles[$type])){
-			return null;
+		try{
+			$type = $nbt->getString(Tile::TAG_ID, "");
+			if(!isset($this->knownTiles[$type])){
+				return null;
+			}
+			$class = $this->knownTiles[$type];
+			assert(is_a($class, Tile::class, true));
+			/**
+			 * @var Tile $tile
+			 * @see Tile::__construct()
+			 */
+			$tile = new $class($world, new Vector3($nbt->getInt(Tile::TAG_X), $nbt->getInt(Tile::TAG_Y), $nbt->getInt(Tile::TAG_Z)));
+			$tile->readSaveData($nbt);
+		}catch(NbtException $e){
+			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
 		}
-		$class = $this->knownTiles[$type];
-		assert(is_a($class, Tile::class, true));
-		/**
-		 * @var Tile $tile
-		 * @see Tile::__construct()
-		 */
-		$tile = new $class($world, new Vector3($nbt->getInt(Tile::TAG_X), $nbt->getInt(Tile::TAG_Y), $nbt->getInt(Tile::TAG_Z)));
-		$tile->readSaveData($nbt);
 
 		return $tile;
 	}

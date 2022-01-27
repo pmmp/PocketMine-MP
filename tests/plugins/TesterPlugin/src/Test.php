@@ -72,7 +72,7 @@ abstract class Test{
 	}
 
 	public function isTimedOut() : bool{
-		return !$this->isFinished() and time() - $this->timeout > $this->startTime;
+		return !$this->isFinished() && time() - $this->timeout > $this->startTime;
 	}
 
 	protected function setTimeout(int $timeout) : void{

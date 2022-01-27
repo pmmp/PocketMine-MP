@@ -57,7 +57,7 @@ class RedstoneComparator extends Flowable{
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
 		$this->isSubtractMode = ($stateMeta & BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_SUBTRACT) !== 0;
-		$this->powered = ($id === $this->idInfoFlattened->getSecondId() or ($stateMeta & BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_POWERED) !== 0);
+		$this->powered = ($id === $this->idInfoFlattened->getSecondId() || ($stateMeta & BlockLegacyMetadata::REDSTONE_COMPARATOR_FLAG_POWERED) !== 0);
 	}
 
 	public function writeStateToMeta() : int{

@@ -30,6 +30,7 @@ use pocketmine\block\BlockFactory;
 use pocketmine\data\bedrock\EntityLegacyIds;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\PotionTypeIds;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\entity\object\ItemEntity;
@@ -45,7 +46,7 @@ use pocketmine\entity\projectile\SplashPotion;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
-use pocketmine\nbt\NbtDataException;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\ByteTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -113,12 +114,12 @@ final class EntityFactory{
 		$this->register(ItemEntity::class, function(World $world, CompoundTag $nbt) : ItemEntity{
 			$itemTag = $nbt->getCompoundTag("Item");
 			if($itemTag === null){
-				throw new \UnexpectedValueException("Expected \"Item\" NBT tag not found");
+				throw new SavedDataLoadingException("Expected \"Item\" NBT tag not found");
 			}
 
 			$item = Item::nbtDeserialize($itemTag);
 			if($item->isNull()){
-				throw new \UnexpectedValueException("Item is invalid");
+				throw new SavedDataLoadingException("Item is invalid");
 			}
 			return new ItemEntity(EntityDataHelper::parseLocation($nbt, $world), $item, $nbt);
 		}, ['Item', 'minecraft:item'], EntityLegacyIds::ITEM);
@@ -126,7 +127,7 @@ final class EntityFactory{
 		$this->register(Painting::class, function(World $world, CompoundTag $nbt) : Painting{
 			$motive = PaintingMotive::getMotiveByName($nbt->getString("Motive"));
 			if($motive === null){
-				throw new \UnexpectedValueException("Unknown painting motive");
+				throw new SavedDataLoadingException("Unknown painting motive");
 			}
 			$blockIn = new Vector3($nbt->getInt("TileX"), $nbt->getInt("TileY"), $nbt->getInt("TileZ"));
 			if(($directionTag = $nbt->getTag("Direction")) instanceof ByteTag){
@@ -134,7 +135,7 @@ final class EntityFactory{
 			}elseif(($facingTag = $nbt->getTag("Facing")) instanceof ByteTag){
 				$facing = Painting::DATA_TO_FACING[$facingTag->getValue()] ?? Facing::NORTH;
 			}else{
-				throw new \UnexpectedValueException("Missing facing info");
+				throw new SavedDataLoadingException("Missing facing info");
 			}
 
 			return new Painting(EntityDataHelper::parseLocation($nbt, $world), $blockIn, $facing, $motive, $nbt);
@@ -151,7 +152,7 @@ final class EntityFactory{
 		$this->register(SplashPotion::class, function(World $world, CompoundTag $nbt) : SplashPotion{
 			$potionType = PotionTypeIdMap::getInstance()->fromId($nbt->getShort("PotionId", PotionTypeIds::WATER));
 			if($potionType === null){
-				throw new \UnexpectedValueException("No such potion type");
+				throw new SavedDataLoadingException("No such potion type");
 			}
 			return new SplashPotion(EntityDataHelper::parseLocation($nbt, $world), null, $potionType, $nbt);
 		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
@@ -222,25 +223,28 @@ final class EntityFactory{
 	/**
 	 * Creates an entity from data stored on a chunk.
 	 *
-	 * @throws \RuntimeException
-	 * @throws NbtDataException
+	 * @throws SavedDataLoadingException
 	 * @internal
 	 */
 	public function createFromData(World $world, CompoundTag $nbt) : ?Entity{
-		$saveId = $nbt->getTag("id") ?? $nbt->getTag("identifier");
-		$func = null;
-		if($saveId instanceof StringTag){
-			$func = $this->creationFuncs[$saveId->getValue()] ?? null;
-		}elseif($saveId instanceof IntTag){ //legacy MCPE format
-			$func = $this->creationFuncs[$saveId->getValue() & 0xff] ?? null;
-		}
-		if($func === null){
-			return null;
-		}
-		/** @var Entity $entity */
-		$entity = $func($world, $nbt);
+		try{
+			$saveId = $nbt->getTag("id") ?? $nbt->getTag("identifier");
+			$func = null;
+			if($saveId instanceof StringTag){
+				$func = $this->creationFuncs[$saveId->getValue()] ?? null;
+			}elseif($saveId instanceof IntTag){ //legacy MCPE format
+				$func = $this->creationFuncs[$saveId->getValue() & 0xff] ?? null;
+			}
+			if($func === null){
+				return null;
+			}
+			/** @var Entity $entity */
+			$entity = $func($world, $nbt);
 
-		return $entity;
+			return $entity;
+		}catch(NbtException $e){
+			throw new SavedDataLoadingException($e->getMessage(), 0, $e);
+		}
 	}
 
 	public function injectSaveId(string $class, CompoundTag $saveData) : void{

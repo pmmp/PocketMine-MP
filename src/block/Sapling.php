@@ -68,7 +68,7 @@ class Sapling extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() === BlockLegacyIds::GRASS or $down->getId() === BlockLegacyIds::DIRT or $down->getId() === BlockLegacyIds::FARMLAND){
+		if($down->getId() === BlockLegacyIds::GRASS || $down->getId() === BlockLegacyIds::DIRT || $down->getId() === BlockLegacyIds::FARMLAND){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -76,9 +76,7 @@ class Sapling extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item instanceof Fertilizer){
-			$this->grow();
-
+		if($item instanceof Fertilizer && $this->grow($player)){
 			$item->pop();
 
 			return true;
@@ -98,9 +96,9 @@ class Sapling extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->position->getWorld()->getFullLightAt($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) >= 8 and mt_rand(1, 7) === 1){
+		if($this->position->getWorld()->getFullLightAt($this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ()) >= 8 && mt_rand(1, 7) === 1){
 			if($this->ready){
-				$this->grow();
+				$this->grow(null);
 			}else{
 				$this->ready = true;
 				$this->position->getWorld()->setBlock($this->position, $this);
@@ -108,21 +106,20 @@ class Sapling extends Flowable{
 		}
 	}
 
-	private function grow() : void{
+	private function grow(?Player $player) : bool{
 		$random = new Random(mt_rand());
 		$tree = TreeFactory::get($random, $this->treeType);
 		$transaction = $tree?->getBlockTransaction($this->position->getWorld(), $this->position->getFloorX(), $this->position->getFloorY(), $this->position->getFloorZ(), $random);
 		if($transaction === null){
-			return;
+			return false;
 		}
 
-		$ev = new StructureGrowEvent($this, $transaction);
+		$ev = new StructureGrowEvent($this, $transaction, $player);
 		$ev->call();
-		if($ev->isCancelled()){
-			return;
+		if(!$ev->isCancelled()){
+			return $transaction->apply();
 		}
-
-		$transaction->apply();
+		return false;
 	}
 
 	public function getFuelTime() : int{

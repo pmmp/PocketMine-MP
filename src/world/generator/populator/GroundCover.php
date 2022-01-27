@@ -57,13 +57,13 @@ class GroundCover implements Populator{
 					}
 					$startY = min(127, $startY + $diffY);
 					$endY = $startY - count($cover);
-					for($y = $startY; $y > $endY and $y >= 0; --$y){
+					for($y = $startY; $y > $endY && $y >= 0; --$y){
 						$b = $cover[$startY - $y];
 						$id = $factory->fromFullBlock($chunk->getFullBlock($x, $y, $z));
-						if($id->getId() === BlockLegacyIds::AIR and $b->isSolid()){
+						if($id->getId() === BlockLegacyIds::AIR && $b->isSolid()){
 							break;
 						}
-						if($b->canBeFlowedInto() and $id instanceof Liquid){
+						if($b->canBeFlowedInto() && $id instanceof Liquid){
 							continue;
 						}
 

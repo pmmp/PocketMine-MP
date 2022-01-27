@@ -25,6 +25,7 @@ namespace pocketmine\network\upnp;
 
 use pocketmine\network\NetworkInterface;
 use pocketmine\utils\Internet;
+use pocketmine\utils\InternetException;
 
 final class UPnPNetworkInterface implements NetworkInterface{
 
@@ -50,12 +51,12 @@ final class UPnPNetworkInterface implements NetworkInterface{
 
 	public function start() : void{
 		$this->logger->info("Attempting to portforward...");
-		$this->serviceURL = UPnP::getServiceUrl();
 
 		try{
+			$this->serviceURL = UPnP::getServiceUrl();
 			UPnP::portForward($this->serviceURL, Internet::getInternalIP(), $this->port, $this->port);
 			$this->logger->info("Forwarded $this->ip:$this->port to external port $this->port");
-		}catch(UPnPException $e){
+		}catch(UPnPException | InternetException $e){
 			$this->logger->error("UPnP portforward failed: " . $e->getMessage());
 		}
 	}

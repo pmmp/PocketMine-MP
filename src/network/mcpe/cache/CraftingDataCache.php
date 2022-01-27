@@ -26,12 +26,15 @@ namespace pocketmine\network\mcpe\cache;
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\convert\ItemTranslator;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\CraftingDataPacket;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\recipe\CraftingRecipeBlockName;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipe as ProtocolFurnaceRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\FurnaceRecipeBlockName;
+use pocketmine\network\mcpe\protocol\types\recipe\PotionContainerChangeRecipe as ProtocolPotionContainerChangeRecipe;
+use pocketmine\network\mcpe\protocol\types\recipe\PotionTypeRecipe as ProtocolPotionTypeRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\RecipeIngredient;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapedRecipe as ProtocolShapedRecipe;
 use pocketmine\network\mcpe\protocol\types\recipe\ShapelessRecipe as ProtocolShapelessRecipe;
@@ -71,15 +74,14 @@ final class CraftingDataCache{
 	 */
 	private function buildCraftingDataCache(CraftingManager $manager) : CraftingDataPacket{
 		Timings::$craftingDataCacheRebuild->startTiming();
-		$pk = new CraftingDataPacket();
-		$pk->cleanRecipes = true;
 
 		$counter = 0;
 		$nullUUID = Uuid::fromString(Uuid::NIL);
 		$converter = TypeConverter::getInstance();
+		$recipesWithTypeIds = [];
 		foreach($manager->getShapelessRecipes() as $list){
 			foreach($list as $recipe){
-				$pk->entries[] = new ProtocolShapelessRecipe(
+				$recipesWithTypeIds[] = new ProtocolShapelessRecipe(
 					CraftingDataPacket::ENTRY_SHAPELESS,
 					Binary::writeInt(++$counter),
 					array_map(function(Item $item) use ($converter) : RecipeIngredient{
@@ -104,7 +106,7 @@ final class CraftingDataCache{
 						$inputs[$row][$column] = $converter->coreItemStackToRecipeIngredient($recipe->getIngredient($column, $row));
 					}
 				}
-				$pk->entries[] = $r = new ProtocolShapedRecipe(
+				$recipesWithTypeIds[] = $r = new ProtocolShapedRecipe(
 					CraftingDataPacket::ENTRY_SHAPED,
 					Binary::writeInt(++$counter),
 					$inputs,
@@ -128,7 +130,7 @@ final class CraftingDataCache{
 			};
 			foreach($manager->getFurnaceRecipeManager($furnaceType)->getAll() as $recipe){
 				$input = $converter->coreItemStackToNet($recipe->getInput());
-				$pk->entries[] = new ProtocolFurnaceRecipe(
+				$recipesWithTypeIds[] = new ProtocolFurnaceRecipe(
 					CraftingDataPacket::ENTRY_FURNACE_DATA,
 					$input->getId(),
 					$input->getMeta(),
@@ -138,7 +140,39 @@ final class CraftingDataCache{
 			}
 		}
 
+		$potionTypeRecipes = [];
+		foreach($manager->getPotionTypeRecipes() as $recipes){
+			foreach($recipes as $recipe){
+				$input = $converter->coreItemStackToNet($recipe->getInput());
+				$ingredient = $converter->coreItemStackToNet($recipe->getIngredient());
+				$output = $converter->coreItemStackToNet($recipe->getOutput());
+				$potionTypeRecipes[] = new ProtocolPotionTypeRecipe(
+					$input->getId(),
+					$input->getMeta(),
+					$ingredient->getId(),
+					$ingredient->getMeta(),
+					$output->getId(),
+					$output->getMeta()
+				);
+			}
+		}
+
+		$potionContainerChangeRecipes = [];
+		$itemTranslator = ItemTranslator::getInstance();
+		foreach($manager->getPotionContainerChangeRecipes() as $recipes){
+			foreach($recipes as $recipe){
+				$input = $itemTranslator->toNetworkId($recipe->getInputItemId(), 0);
+				$ingredient = $itemTranslator->toNetworkId($recipe->getIngredient()->getId(), 0);
+				$output = $itemTranslator->toNetworkId($recipe->getOutputItemId(), 0);
+				$potionContainerChangeRecipes[] = new ProtocolPotionContainerChangeRecipe(
+					$input[0],
+					$ingredient[0],
+					$output[0]
+				);
+			}
+		}
+
 		Timings::$craftingDataCacheRebuild->stopTiming();
-		return $pk;
+		return CraftingDataPacket::create($recipesWithTypeIds, $potionTypeRecipes, $potionContainerChangeRecipes, [], true);
 	}
 }

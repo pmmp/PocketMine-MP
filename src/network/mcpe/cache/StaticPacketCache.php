@@ -50,8 +50,8 @@ class StaticPacketCache{
 
 	private static function make() : self{
 		return new self(
-			BiomeDefinitionListPacket::create(self::loadCompoundFromFile(Path::join(\pocketmine\RESOURCE_PATH, 'vanilla', 'biome_definitions.nbt'))),
-			AvailableActorIdentifiersPacket::create(self::loadCompoundFromFile(Path::join(\pocketmine\RESOURCE_PATH, 'vanilla', 'entity_identifiers.nbt')))
+			BiomeDefinitionListPacket::create(self::loadCompoundFromFile(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'biome_definitions.nbt'))),
+			AvailableActorIdentifiersPacket::create(self::loadCompoundFromFile(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'entity_identifiers.nbt')))
 		);
 	}
 

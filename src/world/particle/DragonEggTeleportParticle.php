@@ -25,6 +25,7 @@ namespace pocketmine\world\particle;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelEvent;
 use function abs;
 
 class DragonEggTeleportParticle implements Particle{
@@ -43,7 +44,7 @@ class DragonEggTeleportParticle implements Particle{
 	}
 
 	private static function boundOrThrow(int $v) : int{
-		if($v < -255 or $v > 255){
+		if($v < -255 || $v > 255){
 			throw new \InvalidArgumentException("Value must be between -255 and 255");
 		}
 		return $v;
@@ -57,6 +58,6 @@ class DragonEggTeleportParticle implements Particle{
 			(abs($this->yDiff) << 8) |
 			abs($this->zDiff);
 
-		return [LevelEventPacket::create(LevelEventPacket::EVENT_PARTICLE_DRAGON_EGG_TELEPORT, $data, $pos)];
+		return [LevelEventPacket::create(LevelEvent::PARTICLE_DRAGON_EGG_TELEPORT, $data, $pos)];
 	}
 }

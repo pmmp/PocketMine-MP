@@ -29,10 +29,13 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\FloatTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
+use pocketmine\utils\Filesystem;
+use pocketmine\utils\Utils;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
+use Webmozart\PathUtil\Path;
 use function ceil;
 use function file_get_contents;
 use function file_put_contents;
@@ -68,7 +71,7 @@ class JavaWorldData extends BaseNbtWorldData{
 
 		$nbt = new BigEndianNbtSerializer();
 		$buffer = zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag("Data", $worldData))), ZLIB_ENCODING_GZIP);
-		file_put_contents($path . "level.dat", $buffer);
+		file_put_contents(Path::join($path, "level.dat"), $buffer);
 	}
 
 	protected function load() : CompoundTag{
@@ -109,8 +112,8 @@ class JavaWorldData extends BaseNbtWorldData{
 
 	public function save() : void{
 		$nbt = new BigEndianNbtSerializer();
-		$buffer = zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag("Data", $this->compoundTag))), ZLIB_ENCODING_GZIP);
-		file_put_contents($this->dataPath, $buffer);
+		$buffer = Utils::assumeNotFalse(zlib_encode($nbt->write(new TreeRoot(CompoundTag::create()->setTag("Data", $this->compoundTag))), ZLIB_ENCODING_GZIP));
+		Filesystem::safeFilePutContents($this->dataPath, $buffer);
 	}
 
 	public function getDifficulty() : int{

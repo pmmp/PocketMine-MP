@@ -27,6 +27,7 @@ use pocketmine\entity\utils\ExperienceUtils;
 use pocketmine\event\player\PlayerExperienceChangeEvent;
 use pocketmine\item\Durable;
 use pocketmine\item\enchantment\VanillaEnchantments;
+use pocketmine\utils\Limits;
 use pocketmine\world\sound\XpCollectSound;
 use pocketmine\world\sound\XpLevelUpSound;
 use function array_rand;
@@ -47,6 +48,9 @@ class ExperienceManager{
 
 	/** @var int */
 	private $totalXp = 0;
+
+	/** @var bool */
+	private $canAttractXpOrbs = true;
 
 	/** @var int */
 	private $xpCooldown = 0;
@@ -141,7 +145,9 @@ class ExperienceManager{
 	public function setCurrentTotalXp(int $amount) : bool{
 		$newLevel = ExperienceUtils::getLevelFromXp($amount);
 
-		return $this->setXpAndProgress((int) $newLevel, $newLevel - ((int) $newLevel));
+		$xpLevel = (int) $newLevel;
+		$xpProgress = $newLevel - (int) $newLevel;
+		return $this->setXpAndProgress($xpLevel, $xpProgress);
 	}
 
 	/**
@@ -151,6 +157,7 @@ class ExperienceManager{
 	 * @param bool $playSound Whether to play level-up and XP gained sounds.
 	 */
 	public function addXp(int $amount, bool $playSound = true) : bool{
+		$amount = min($amount, Limits::INT32_MAX - $this->totalXp);
 		$oldLevel = $this->getXpLevel();
 		$oldTotal = $this->getCurrentTotalXp();
 
@@ -223,8 +230,8 @@ class ExperienceManager{
 	 * score when they die. (TODO: add this when MCPE supports it)
 	 */
 	public function setLifetimeTotalXp(int $amount) : void{
-		if($amount < 0){
-			throw new \InvalidArgumentException("XP must be greater than 0");
+		if($amount < 0 || $amount > Limits::INT32_MAX){
+			throw new \InvalidArgumentException("XP must be greater than 0 and less than " . Limits::INT32_MAX);
 		}
 
 		$this->totalXp = $amount;
@@ -245,14 +252,14 @@ class ExperienceManager{
 		/** @var Durable[] $equipment */
 		$equipment = [];
 
-		if(($item = $this->entity->getInventory()->getItemInHand()) instanceof Durable and $item->hasEnchantment(VanillaEnchantments::MENDING())){
+		if(($item = $this->entity->getInventory()->getItemInHand()) instanceof Durable && $item->hasEnchantment(VanillaEnchantments::MENDING())){
 			$equipment[$mainHandIndex] = $item;
 		}
-		if(($item = $this->entity->getOffHandInventory()->getItem(0)) instanceof Durable and $item->hasEnchantment(VanillaEnchantments::MENDING())){
+		if(($item = $this->entity->getOffHandInventory()->getItem(0)) instanceof Durable && $item->hasEnchantment(VanillaEnchantments::MENDING())){
 			$equipment[$offHandIndex] = $item;
 		}
 		foreach($this->entity->getArmorInventory()->getContents() as $k => $armorItem){
-			if($armorItem instanceof Durable and $armorItem->hasEnchantment(VanillaEnchantments::MENDING())){
+			if($armorItem instanceof Durable && $armorItem->hasEnchantment(VanillaEnchantments::MENDING())){
 				$equipment[$k] = $armorItem;
 			}
 		}
@@ -289,5 +296,13 @@ class ExperienceManager{
 		if($this->xpCooldown > 0){
 			$this->xpCooldown = max(0, $this->xpCooldown - $tickDiff);
 		}
+	}
+
+	public function canAttractXpOrbs() : bool{
+		return $this->canAttractXpOrbs;
+	}
+
+	public function setCanAttractXpOrbs(bool $v = true) : void{
+		$this->canAttractXpOrbs = $v;
 	}
 }

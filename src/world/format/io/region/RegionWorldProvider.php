@@ -59,7 +59,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	abstract protected static function getPcWorldFormatVersion() : int;
 
 	public static function isValid(string $path) : bool{
-		if(file_exists(Path::join($path, "level.dat")) and is_dir($regionPath = Path::join($path, "region"))){
+		if(file_exists(Path::join($path, "level.dat")) && is_dir($regionPath = Path::join($path, "region"))){
 			foreach(scandir($regionPath, SCANDIR_SORT_NONE) as $file){
 				$extPos = strrpos($file, ".");
 				if($extPos !== false && substr($file, $extPos + 1) === static::getRegionFileExtension()){
@@ -146,7 +146,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	abstract protected function deserializeChunk(string $data) : ChunkData;
+	abstract protected function deserializeChunk(string $data) : ?ChunkData;
 
 	/**
 	 * @return CompoundTag[]
@@ -173,6 +173,9 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	protected static function readFixedSizeByteArray(CompoundTag $chunk, string $tagName, int $length) : string{
 		$tag = $chunk->getTag($tagName);
 		if(!($tag instanceof ByteArrayTag)){
+			if($tag === null){
+				throw new CorruptedChunkException("'$tagName' key is missing from chunk NBT");
+			}
 			throw new CorruptedChunkException("Expected TAG_ByteArray for '$tagName'");
 		}
 		$data = $tag->getValue();
@@ -188,7 +191,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	public function loadChunk(int $chunkX, int $chunkZ) : ?ChunkData{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		assert(is_int($regionX) and is_int($regionZ));
+		assert(is_int($regionX) && is_int($regionZ));
 
 		if(!file_exists($this->pathToRegion($regionX, $regionZ))){
 			return null;

@@ -81,9 +81,9 @@ class SimpleChunkManager implements ChunkManager{
 
 	public function isInWorld(int $x, int $y, int $z) : bool{
 		return (
-			$x <= Limits::INT32_MAX and $x >= Limits::INT32_MIN and
-			$y < $this->maxY and $y >= $this->minY and
-			$z <= Limits::INT32_MAX and $z >= Limits::INT32_MIN
+			$x <= Limits::INT32_MAX && $x >= Limits::INT32_MIN &&
+			$y < $this->maxY && $y >= $this->minY &&
+			$z <= Limits::INT32_MAX && $z >= Limits::INT32_MIN
 		);
 	}
 }

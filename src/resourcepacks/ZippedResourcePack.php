@@ -25,6 +25,7 @@ namespace pocketmine\resourcepacks;
 
 use Ahc\Json\Comment as CommentedJsonDecoder;
 use pocketmine\resourcepacks\json\Manifest;
+use pocketmine\utils\Utils;
 use function assert;
 use function fclose;
 use function feof;
@@ -73,9 +74,9 @@ class ZippedResourcePack implements ResourcePack{
 			$manifestPath = null;
 			$manifestIdx = null;
 			for($i = 0; $i < $archive->numFiles; ++$i){
-				$name = $archive->getNameIndex($i);
+				$name = Utils::assumeNotFalse($archive->getNameIndex($i), "This index should be valid");
 				if(
-					($manifestPath === null or strlen($name) < strlen($manifestPath)) and
+					($manifestPath === null || strlen($name) < strlen($manifestPath)) &&
 					preg_match('#.*/manifest.json$#', $name) === 1
 				){
 					$manifestPath = $name;
@@ -145,7 +146,7 @@ class ZippedResourcePack implements ResourcePack{
 	}
 
 	public function getSha256(bool $cached = true) : string{
-		if($this->sha256 === null or !$cached){
+		if($this->sha256 === null || !$cached){
 			$this->sha256 = hash_file("sha256", $this->path, true);
 		}
 		return $this->sha256;
@@ -156,6 +157,6 @@ class ZippedResourcePack implements ResourcePack{
 		if(feof($this->fileResource)){
 			throw new \InvalidArgumentException("Requested a resource pack chunk with invalid start offset");
 		}
-		return fread($this->fileResource, $length);
+		return Utils::assumeNotFalse(fread($this->fileResource, $length), "Already checked that we're not at EOF");
 	}
 }

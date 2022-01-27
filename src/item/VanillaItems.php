@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\utils\CloningRegistryTrait;
-use function assert;
 
 /**
  * This doc-block is generated automatically, do not modify it manually.
@@ -33,6 +32,7 @@ use function assert;
  * @generate-registry-docblock
  *
  * @method static Boat ACACIA_BOAT()
+ * @method static ItemBlock AIR()
  * @method static Apple APPLE()
  * @method static Arrow ARROW()
  * @method static Potion AWKWARD_POTION()
@@ -381,12 +381,6 @@ final class VanillaItems{
 		self::_registryRegister($name, $item);
 	}
 
-	public static function fromString(string $name) : Item{
-		$result = self::_registryFromString($name);
-		assert($result instanceof Item);
-		return $result;
-	}
-
 	/**
 	 * @return Item[]
 	 */
@@ -399,6 +393,8 @@ final class VanillaItems{
 
 	protected static function setup() : void{
 		$factory = ItemFactory::getInstance();
+		self::register("air", $factory->get(ItemIds::AIR, 0, 0));
+
 		self::register("acacia_boat", $factory->get(333, 4));
 		self::register("apple", $factory->get(260));
 		self::register("arrow", $factory->get(262));

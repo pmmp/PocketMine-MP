@@ -25,14 +25,15 @@ namespace pocketmine;
 
 use pocketmine\utils\Git;
 use pocketmine\utils\VersionString;
+use function is_array;
+use function is_int;
 use function str_repeat;
 
 final class VersionInfo{
 	public const NAME = "PocketMine-MP";
-	public const BASE_VERSION = "4.0.0-BETA4";
+	public const BASE_VERSION = "4.1.0-BETA3";
 	public const IS_DEVELOPMENT_BUILD = true;
-	public const BUILD_NUMBER = 0;
-	public const BUILD_CHANNEL = "";
+	public const BUILD_CHANNEL = "beta";
 
 	private function __construct(){
 		//NOOP
@@ -61,12 +62,29 @@ final class VersionInfo{
 		return self::$gitHash;
 	}
 
+	private static ?int $buildNumber = null;
+
+	public static function BUILD_NUMBER() : int{
+		if(self::$buildNumber === null){
+			self::$buildNumber = 0;
+			if(\Phar::running(true) !== ""){
+				$phar = new \Phar(\Phar::running(false));
+				$meta = $phar->getMetadata();
+				if(is_array($meta) && isset($meta["build"]) && is_int($meta["build"])){
+					self::$buildNumber = $meta["build"];
+				}
+			}
+		}
+
+		return self::$buildNumber;
+	}
+
 	/** @var VersionString|null */
 	private static $fullVersion = null;
 
 	public static function VERSION() : VersionString{
 		if(self::$fullVersion === null){
-			self::$fullVersion = new VersionString(self::BASE_VERSION, self::IS_DEVELOPMENT_BUILD, self::BUILD_NUMBER);
+			self::$fullVersion = new VersionString(self::BASE_VERSION, self::IS_DEVELOPMENT_BUILD, self::BUILD_NUMBER());
 		}
 		return self::$fullVersion;
 	}

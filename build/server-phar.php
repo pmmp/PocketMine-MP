@@ -134,12 +134,17 @@ function main() : void{
 		exit(1);
 	}
 
-	$opts = getopt("", ["out:", "git:"]);
+	$opts = getopt("", ["out:", "git:", "build:"]);
 	if(isset($opts["git"])){
 		$gitHash = $opts["git"];
 	}else{
 		$gitHash = Git::getRepositoryStatePretty(dirname(__DIR__));
 		echo "Git hash detected as $gitHash" . PHP_EOL;
+	}
+	if(isset($opts["build"])){
+		$build = (int) $opts["build"];
+	}else{
+		$build = 0;
 	}
 	foreach(buildPhar(
 		$opts["out"] ?? getcwd() . DIRECTORY_SEPARATOR . "PocketMine-MP.phar",
@@ -150,7 +155,8 @@ function main() : void{
 			'vendor'
 		],
 		[
-			'git' => $gitHash
+			'git' => $gitHash,
+			'build' => $build
 		],
 		<<<'STUB'
 <?php

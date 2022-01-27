@@ -7,7 +7,7 @@
    "require": {
       "php": "^8.0",
       "php-64bit": "*",
-      "ext-chunkutils2": "^0.3.0",
+      "ext-chunkutils2": "^0.3.1",
       "ext-crypto": "^0.3.1",
       "ext-ctype": "*",
       "ext-curl": "*",
@@ -22,7 +22,7 @@
       "ext-openssl": "*",
       "ext-pcre": "*",
       "ext-phar": "*",
-      "ext-pthreads": "~3.2.0",
+      "ext-pthreads": "^4.0",
       "ext-reflection": "*",
       "ext-simplexml": "*",
       "ext-sockets": "*",
@@ -34,28 +34,28 @@
       "adhocore/json-comment": "^1.1",
       "fgrosse/phpasn1": "^2.3",
       "netresearch/jsonmapper": "^4.0",
-      "pocketmine/bedrock-protocol": "2.0.0+bedrock1.17.30",
+      "pocketmine/bedrock-data": "~1.5.0+bedrock-1.18.0",
+      "pocketmine/bedrock-protocol": "~7.3.0+bedrock-1.18.0",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
-      "pocketmine/classloader": "dev-master",
+      "pocketmine/classloader": "^0.2.0",
       "pocketmine/color": "^0.2.0",
-      "pocketmine/errorhandler": "^0.3.0",
-      "pocketmine/log": "^0.3.0",
-      "pocketmine/log-pthreads": "^0.2.0",
-      "pocketmine/math": "^0.3.0",
-      "pocketmine/nbt": "^0.3.0",
-      "pocketmine/raklib": "^0.14.0",
+      "pocketmine/errorhandler": "^0.6.0",
+      "pocketmine/locale-data": "~2.4.2",
+      "pocketmine/log": "^0.4.0",
+      "pocketmine/log-pthreads": "^0.4.0",
+      "pocketmine/math": "^0.4.0",
+      "pocketmine/nbt": "^0.3.2",
+      "pocketmine/raklib": "^0.14.2",
       "pocketmine/raklib-ipc": "^0.1.0",
       "pocketmine/snooze": "^0.3.0",
-      "pocketmine/spl": "dev-master",
       "ramsey/uuid": "^4.1",
-      "respect/validation": "^2.0",
       "webmozart/path-util": "^2.3"
    },
    "require-dev": {
-      "phpstan/phpstan": "0.12.98",
-      "phpstan/phpstan-phpunit": "^0.12.6",
-      "phpstan/phpstan-strict-rules": "^0.12.2",
+      "phpstan/phpstan": "1.3.3",
+      "phpstan/phpstan-phpunit": "^1.0.0",
+      "phpstan/phpstan-strict-rules": "^1.0.0",
       "phpunit/phpunit": "^9.2"
    },
    "autoload": {
@@ -79,7 +79,7 @@
       "sort-packages": true
    },
    "scripts": {
-      "make-devtools": "@php -dphar.readonly=0 tests/plugins/DevTools/src/DevTools/ConsoleScript.php --make tests/plugins/DevTools --out plugins/DevTools.phar",
+      "make-devtools": "@php -dphar.readonly=0 tests/plugins/DevTools/src/ConsoleScript.php --make tests/plugins/DevTools --out plugins/DevTools.phar",
       "make-server": [
          "@composer install --no-dev --classmap-authoritative --ignore-platform-reqs",
          "@php -dphar.readonly=0 build/server-phar.php"

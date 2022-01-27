@@ -31,9 +31,9 @@ use function is_array;
 use function is_string;
 use function json_decode;
 use function json_encode;
-use function json_last_error_msg;
 use function random_bytes;
 use function str_repeat;
+use const JSON_THROW_ON_ERROR;
 
 class LegacySkinAdapter implements SkinAdapter{
 
@@ -44,14 +44,10 @@ class LegacySkinAdapter implements SkinAdapter{
 		if($geometryName === ""){
 			$geometryName = "geometry.humanoid.custom";
 		}
-		$resourcePatch = json_encode(["geometry" => ["default" => $geometryName]]);
-		if($resourcePatch === false){
-			throw new \RuntimeException("json_encode() failed: " . json_last_error_msg());
-		}
 		return new SkinData(
 			$skin->getSkinId(),
 			"", //TODO: playfab ID
-			$resourcePatch,
+			json_encode(["geometry" => ["default" => $geometryName]], JSON_THROW_ON_ERROR),
 			SkinImage::fromLegacy($skin->getSkinData()), [],
 			$capeImage,
 			$skin->getGeometryData()

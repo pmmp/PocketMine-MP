@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Tile;
+use pocketmine\utils\Utils;
 
 class BlockIdentifier{
 
@@ -40,6 +41,10 @@ class BlockIdentifier{
 		$this->blockId = $blockId;
 		$this->variant = $variant;
 		$this->itemId = $itemId;
+
+		if($tileClass !== null){
+			Utils::testValidInstance($tileClass, Tile::class);
+		}
 		$this->tileClass = $tileClass;
 	}
 

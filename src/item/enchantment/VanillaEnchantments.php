@@ -113,10 +113,4 @@ final class VanillaEnchantments{
 		$result = self::_registryGetAll();
 		return $result;
 	}
-
-	public static function fromString(string $name) : Enchantment{
-		/** @var Enchantment $result */
-		$result = self::_registryFromString($name);
-		return $result;
-	}
 }

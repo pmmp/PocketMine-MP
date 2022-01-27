@@ -25,6 +25,7 @@ namespace pocketmine\entity\animation;
 
 use pocketmine\entity\projectile\Arrow;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
+use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
 class ArrowShakeAnimation implements Animation{
 
@@ -40,7 +41,7 @@ class ArrowShakeAnimation implements Animation{
 
 	public function encode() : array{
 		return [
-			ActorEventPacket::create($this->arrow->getId(), ActorEventPacket::ARROW_SHAKE, $this->durationInTicks)
+			ActorEventPacket::create($this->arrow->getId(), ActorEvent::ARROW_SHAKE, $this->durationInTicks)
 		];
 	}
 }
