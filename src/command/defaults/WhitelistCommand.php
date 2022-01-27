@@ -125,7 +125,7 @@ class WhitelistCommand extends VanillaCommand{
 					if($this->testPermission($sender, DefaultPermissionNames::COMMAND_WHITELIST_REMOVE)){
 						$server = $sender->getServer();
 						$server->removeWhitelist($args[1]);
-						if($server->hasWhitelist()){
+						if(!$server->isWhitelisted($args[1])){
 							$server->getPlayerExact($args[1])?->kick("Server whitelisted.");
 						}
 						Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_whitelist_remove_success($args[1]));
