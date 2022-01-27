@@ -441,7 +441,7 @@ class PluginManager{
 				if($errorMessage !== ""){
 					$plugin->getLogger()->error($errorMessage);
 				}
-				$this->disablePlugin($this);
+				$this->disablePlugin($plugin);
 				return;
 			}
 
