@@ -703,6 +703,7 @@ final class BlockStateDeserializerR13{
 			return VanillaBlocks::FIRE()
 				->setAge($in->readBoundedInt(BlockStateNamesR13::AGE, 0, 15));
 		});
+		$this->mapVanilla("fletching_table", fn() => VanillaBlocks::FLETCHING_TABLE());
 		$this->mapVanilla("flower_pot", function() : Block{
 			//TODO: ignored update_bit (only useful on network to make the client actually render contents, not needed on disk)
 			return VanillaBlocks::FLOWER_POT();
@@ -819,6 +820,11 @@ final class BlockStateDeserializerR13{
 				})
 				->setNoDecay($in->readBool(BlockStateNamesR13::PERSISTENT_BIT))
 				->setCheckDecay($in->readBool(BlockStateNamesR13::UPDATE_BIT));
+		});
+		$this->mapVanilla("lectern", function(BlockStateReader $in) : Block{
+			return VanillaBlocks::LECTERN()
+				->setFacing($in->readLegacyHorizontalFacing())
+				->setProducingSignal($in->readBool(BlockStateNamesR13::POWERED_BIT));
 		});
 		$this->mapVanilla("lever", function(BlockStateReader $in) : Block{
 			return VanillaBlocks::LEVER()
@@ -1373,9 +1379,6 @@ final class BlockStateDeserializerR13{
 		//$this->mapVanilla("end_portal", function(BlockStateReader $in) : Block{
 			//TODO: un-implemented block
 		//});
-		//$this->mapVanilla("fletching_table", function(BlockStateReader $in) : Block{
-			//TODO: un-implemented block
-		//});
 		//$this->mapVanilla("grindstone", function(BlockStateReader $in) : Block{
 			/* TODO: parse properties
 			 * attachment (StringTag) = hanging, multiple, side, standing
@@ -1396,12 +1399,6 @@ final class BlockStateDeserializerR13{
 			/* TODO: parse properties
 			 * cauldron_liquid (StringTag) = lava, water
 			 * fill_level (IntTag) = 0, 1, 2, 3, 4, 5, 6
-			 */
-		//});
-		//$this->mapVanilla("lectern", function(BlockStateReader $in) : Block{
-			/* TODO: parse properties
-			 * direction (IntTag) = 0, 1, 2, 3
-			 * powered_bit (ByteTag) = 0, 1
 			 */
 		//});
 		//$this->mapVanilla("light_block", function(BlockStateReader $in) : Block{
