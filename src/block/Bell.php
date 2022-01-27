@@ -28,7 +28,12 @@ use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\InvalidBlockStateException;
+use pocketmine\entity\Entity;
+use pocketmine\entity\object\ExperienceOrb;
+use pocketmine\entity\object\ItemEntity;
+use pocketmine\entity\projectile\Projectile;
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -76,6 +81,78 @@ final class Bell extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
+	}
+
+	public function hasEntityCollision() : bool{
+		return true;
+	}
+
+	protected function recalculateCollisionBoxes() : array{
+		if($this->getAttachmentType()->equals(BellAttachmentType::FLOOR())){
+			return [
+				AxisAlignedBB::one()->squash(Facing::axis($this->facing), 4 / 16)->trim(Facing::UP, 3 / 16)
+			];
+		}
+		if($this->getAttachmentType()->equals(BellAttachmentType::CEILING())){
+			return [
+				AxisAlignedBB::one()->contract(4 / 16, 0, 4 / 16)->trim(Facing::DOWN, 4 / 16)
+			];
+		}
+
+		$box = AxisAlignedBB::one()
+			->squash(Facing::axis(Facing::rotateY($this->facing, true)), 4 / 16)
+			->trim(Facing::UP, 1 / 16)
+			->trim(Facing::DOWN, 4 / 16);
+
+		if($this->getAttachmentType()->equals(BellAttachmentType::ONE_WALL())){
+			return [
+				$box->trim($this->facing, 3 / 16)
+			];
+		}
+		if($this->getAttachmentType()->equals(BellAttachmentType::TWO_WALLS())){
+			return [
+				$box
+			];
+		}
+		return [];
+	}
+
+	public function onEntityInside(Entity $entity) : bool{
+		if (!$entity instanceof ItemEntity && !$entity instanceof Projectile){
+			return false;
+		}
+
+		if ($entity instanceof ExperienceOrb) return false;
+
+		$entityBoundingBox = $entity->getBoundingBox();
+
+		$entity_center = new Vector3(
+			($entityBoundingBox->maxX - $entityBoundingBox->minX) / 2,
+			($entityBoundingBox->maxY - $entityBoundingBox->minY) / 2,
+			($entityBoundingBox->maxZ - $entityBoundingBox->minZ) / 2
+		);
+
+		$boxes = count($this->getCollisionBoxes());
+
+		$x = 0;
+		$y = 0;
+		$z = 0;
+
+		foreach($this->getCollisionBoxes() as $collisionBox){
+			$x += ($collisionBox->maxX - $collisionBox->minX) / 2;
+			$y += ($collisionBox->maxY - $collisionBox->minY) / 2;
+			$z += ($collisionBox->maxZ - $collisionBox->minZ) / 2;
+		}
+
+		$blockPos = $this->position->addVector(new Vector3($x / $boxes, $y / $boxes, $z / $boxes));
+		$entity_motion = $entity->getOffsetPosition($entity->getPosition())->addVector($entity_center)->subtractVector($blockPos)->normalize()->multiply(0.375);
+		$entity_motion->y = max(0.15, $entity_motion->y);
+
+		$entity->setMotion($entity_motion);
+
+		$faceHit = Facing::opposite($entity->getHorizontalFacing());
+		$this->ring($faceHit);
+		return true;
 	}
 
 	public function getAttachmentType() : BellAttachmentType{ return $this->attachmentType; }
@@ -148,6 +225,12 @@ final class Bell extends Transparent{
 		}
 
 		return true;
+	}
+
+	public function getDrops(Item $item): array{
+		return [
+			VanillaBlocks::BELL()->asItem()
+		];
 	}
 
 	public function ring(int $faceHit) : void{
