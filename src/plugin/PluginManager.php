@@ -434,7 +434,16 @@ class PluginManager{
 			$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_enable($plugin->getDescription()->getFullName())));
 
 			$plugin->getScheduler()->setEnabled(true);
-			$plugin->onEnableStateChange(true);
+			try{
+				$plugin->onEnableStateChange(true);
+			}catch(PluginException $e){
+				$errorMessage = $e->getMessage();
+				if($errorMessage !== ""){
+					$plugin->getLogger()->error($errorMessage);
+				}
+				$this->disablePlugin($this);
+				return;
+			}
 
 			$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
 
