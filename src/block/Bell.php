@@ -29,6 +29,7 @@ use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\item\Item;
+use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -76,6 +77,36 @@ final class Bell extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b1111;
+	}
+
+	protected function recalculateCollisionBoxes() : array{
+		if($this->getAttachmentType()->equals(BellAttachmentType::FLOOR())){
+			return [
+				AxisAlignedBB::one()->squash(Facing::axis($this->facing), 4 / 16)->trim(Facing::UP, 3 / 16)
+			];
+		}
+		if($this->getAttachmentType()->equals(BellAttachmentType::CEILING())){
+			return [
+				AxisAlignedBB::one()->contract(4 / 16, 0, 4 / 16)->trim(Facing::DOWN, 4 / 16)
+			];
+		}
+
+		$box = AxisAlignedBB::one()
+			->squash(Facing::axis(Facing::rotateY($this->facing, true)), 4 / 16)
+			->trim(Facing::UP, 1 / 16)
+			->trim(Facing::DOWN, 4 / 16);
+
+		if($this->getAttachmentType()->equals(BellAttachmentType::ONE_WALL())){
+			return [
+				$box->trim($this->facing, 3 / 16)
+			];
+		}
+		if($this->getAttachmentType()->equals(BellAttachmentType::TWO_WALLS())){
+			return [
+				$box
+			];
+		}
+		return [];
 	}
 
 	public function getAttachmentType() : BellAttachmentType{ return $this->attachmentType; }
