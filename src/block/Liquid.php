@@ -83,6 +83,9 @@ abstract class Liquid extends Transparent{
 
 	/** @return $this */
 	public function setDecay(int $decay) : self{
+		if($decay < 0 || $decay > 7){
+			throw new \InvalidArgumentException("Decay must be in range 0-7");
+		}
 		$this->decay = $decay;
 		return $this;
 	}
