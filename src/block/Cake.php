@@ -35,6 +35,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Cake extends Transparent implements FoodSource{
+	public const MAX_BITES = 6;
 
 	protected int $bites = 0;
 
@@ -43,7 +44,7 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->bites = BlockDataSerializer::readBoundedInt("bites", $stateMeta, 0, 6);
+		$this->bites = BlockDataSerializer::readBoundedInt("bites", $stateMeta, 0, self::MAX_BITES);
 	}
 
 	public function getStateBitmask() : int{
@@ -66,8 +67,8 @@ class Cake extends Transparent implements FoodSource{
 
 	/** @return $this */
 	public function setBites(int $bites) : self{
-		if($bites < 0 || $bites > 6){
-			throw new \InvalidArgumentException("Bites must be in range 0-6");
+		if($bites < 0 || $bites > self::MAX_BITES){
+			throw new \InvalidArgumentException("Bites must be in range 0 ... " . self::MAX_BITES);
 		}
 		$this->bites = $bites;
 		return $this;
@@ -118,7 +119,7 @@ class Cake extends Transparent implements FoodSource{
 	public function getResidue(){
 		$clone = clone $this;
 		$clone->bites++;
-		if($clone->bites > 6){
+		if($clone->bites > self::MAX_BITES){
 			$clone = VanillaBlocks::AIR();
 		}
 		return $clone;
