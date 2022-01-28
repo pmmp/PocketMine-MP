@@ -160,7 +160,7 @@ class Bamboo extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		$below = $this->position->getWorld()->getBlock($this->position->down());
-		if(!$this->canBeSupportedBy($below) and !$below->isSameType($this)){
+		if(!$this->canBeSupportedBy($below) && !$below->isSameType($this)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

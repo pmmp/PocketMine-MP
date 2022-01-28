@@ -150,7 +150,7 @@ final class BlockDataSerializer{
 	}
 
 	public static function readBoundedInt(string $name, int $v, int $min, int $max) : int{
-		if($v < $min or $v > $max){
+		if($v < $min || $v > $max){
 			throw new InvalidBlockStateException("$name should be in range $min - $max, got $v");
 		}
 		return $v;

@@ -561,7 +561,7 @@ class Server{
 		$ev->call();
 		$class = $ev->getPlayerClass();
 
-		if($offlinePlayerData !== null and ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString("Level", ""))) !== null){
+		if($offlinePlayerData !== null && ($world = $this->worldManager->getWorldByName($offlinePlayerData->getString("Level", ""))) !== null){
 			$playerPos = EntityDataHelper::parseLocation($offlinePlayerData, $world);
 			$spawn = $playerPos->asVector3();
 		}else{
@@ -721,7 +721,7 @@ class Server{
 	}
 
 	public function isWhitelisted(string $name) : bool{
-		return !$this->hasWhitelist() or $this->operators->exists($name, true) or $this->whitelist->exists($name, true);
+		return !$this->hasWhitelist() || $this->operators->exists($name, true) || $this->whitelist->exists($name, true);
 	}
 
 	public function isOp(string $name) : bool{
@@ -895,7 +895,7 @@ class Server{
 			}
 
 			$netCompressionLevel = $this->configGroup->getPropertyInt("network.compression-level", 6);
-			if($netCompressionLevel < 1 or $netCompressionLevel > 9){
+			if($netCompressionLevel < 1 || $netCompressionLevel > 9){
 				$this->logger->warning("Invalid network compression level $netCompressionLevel set, setting to default 6");
 				$netCompressionLevel = 6;
 			}
@@ -912,7 +912,7 @@ class Server{
 
 			$bannedTxt = Path::join($this->dataPath, "banned.txt");
 			$bannedPlayersTxt = Path::join($this->dataPath, "banned-players.txt");
-			if(file_exists($bannedTxt) and !file_exists($bannedPlayersTxt)){
+			if(file_exists($bannedTxt) && !file_exists($bannedPlayersTxt)){
 				@rename($bannedTxt, $bannedPlayersTxt);
 			}
 			@touch($bannedPlayersTxt);
@@ -934,7 +934,7 @@ class Server{
 				$this->logger->warning($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_server_authProperty_disabled()));
 			}
 
-			if($this->configGroup->getConfigBool("hardcore", false) and $this->getDifficulty() < World::DIFFICULTY_HARD){
+			if($this->configGroup->getConfigBool("hardcore", false) && $this->getDifficulty() < World::DIFFICULTY_HARD){
 				$this->configGroup->setConfigInt("difficulty", World::DIFFICULTY_HARD);
 			}
 
@@ -984,7 +984,7 @@ class Server{
 
 			$providerManager = new WorldProviderManager();
 			if(
-				($format = $providerManager->getProviderByName($formatName = $this->configGroup->getPropertyString("level-settings.default-format", ""))) !== null and
+				($format = $providerManager->getProviderByName($formatName = $this->configGroup->getPropertyString("level-settings.default-format", ""))) !== null &&
 				$format instanceof WritableWorldProviderManagerEntry
 			){
 				$providerManager->setDefault($format);
@@ -1381,7 +1381,7 @@ class Server{
 
 	public function enablePlugins(PluginEnableOrder $type) : void{
 		foreach($this->pluginManager->getPlugins() as $plugin){
-			if(!$plugin->isEnabled() and $plugin->getDescription()->getOrder()->equals($type)){
+			if(!$plugin->isEnabled() && $plugin->getDescription()->getOrder()->equals($type)){
 				$this->pluginManager->enablePlugin($plugin);
 			}
 		}
@@ -1572,7 +1572,7 @@ class Server{
 
 				$stamp = Path::join($this->getDataPath(), "crashdumps", ".last_crash");
 				$crashInterval = 120; //2 minutes
-				if(($lastReportTime = @filemtime($stamp)) !== false and $lastReportTime + $crashInterval >= time()){
+				if(($lastReportTime = @filemtime($stamp)) !== false && $lastReportTime + $crashInterval >= time()){
 					$report = false;
 					$this->logger->debug("Not sending crashdump due to last crash less than $crashInterval seconds ago");
 				}
@@ -1581,7 +1581,7 @@ class Server{
 				$plugin = $dump->getData()->plugin;
 				if($plugin !== ""){
 					$p = $this->pluginManager->getPlugin($plugin);
-					if($p instanceof Plugin and !($p->getPluginLoader() instanceof PharPluginLoader)){
+					if($p instanceof Plugin && !($p->getPluginLoader() instanceof PharPluginLoader)){
 						$this->logger->debug("Not sending crashdump due to caused by non-phar plugin");
 						$report = false;
 					}
@@ -1591,7 +1591,7 @@ class Server{
 					$report = false;
 				}
 
-				if(strrpos(VersionInfo::GIT_HASH(), "-dirty") !== false or VersionInfo::GIT_HASH() === str_repeat("00", 20)){
+				if(strrpos(VersionInfo::GIT_HASH(), "-dirty") !== false || VersionInfo::GIT_HASH() === str_repeat("00", 20)){
 					$this->logger->debug("Not sending crashdump due to locally modified");
 					$report = false; //Don't send crashdumps for locally modified builds
 				}
@@ -1606,8 +1606,8 @@ class Server{
 						"reportPaste" => base64_encode($dump->getEncodedData())
 					], 10, [], $postUrlError);
 
-					if($reply !== null and ($data = json_decode($reply->getBody())) !== null){
-						if(isset($data->crashId) and isset($data->crashUrl)){
+					if($reply !== null && ($data = json_decode($reply->getBody())) !== null){
+						if(isset($data->crashId) && isset($data->crashUrl)){
 							$reportId = $data->crashId;
 							$reportUrl = $data->crashUrl;
 							$this->logger->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_crash_archive($reportUrl, (string) $reportId)));
@@ -1664,7 +1664,7 @@ class Server{
 	public function addOnlinePlayer(Player $player) : bool{
 		$ev = new PlayerLoginEvent($player, "Plugin reason");
 		$ev->call();
-		if($ev->isCancelled() or !$player->isConnected()){
+		if($ev->isCancelled() || !$player->isConnected()){
 			$player->disconnect($ev->getKickMessage());
 
 			return false;
@@ -1793,7 +1793,7 @@ class Server{
 			$this->network->getBandwidthTracker()->rotateAverageHistory();
 		}
 
-		if($this->sendUsageTicker > 0 and --$this->sendUsageTicker === 0){
+		if($this->sendUsageTicker > 0 && --$this->sendUsageTicker === 0){
 			$this->sendUsageTicker = 6000;
 			$this->sendUsage(SendUsageTask::TYPE_STATUS);
 		}

@@ -65,7 +65,7 @@ class WrittenBook extends WritableBookBase{
 	 * @return $this
 	 */
 	public function setGeneration(int $generation) : self{
-		if($generation < 0 or $generation > 3){
+		if($generation < 0 || $generation > 3){
 			throw new \InvalidArgumentException("Generation \"$generation\" is out of range");
 		}
 

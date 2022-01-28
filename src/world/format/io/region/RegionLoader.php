@@ -169,7 +169,7 @@ class RegionLoader{
 			}
 
 			$compression = $stream->getByte();
-			if($compression !== self::COMPRESSION_ZLIB and $compression !== self::COMPRESSION_GZIP){
+			if($compression !== self::COMPRESSION_ZLIB && $compression !== self::COMPRESSION_GZIP){
 				throw new CorruptedChunkException("Invalid compression type (got $compression, expected " . self::COMPRESSION_ZLIB . " or " . self::COMPRESSION_GZIP . ")");
 			}
 
@@ -192,7 +192,7 @@ class RegionLoader{
 
 		$endGarbage = $this->garbageTable->end();
 		$nextSector = $this->nextSector;
-		for(; $endGarbage !== null and $endGarbage->getLastSector() + 1 === $nextSector; $endGarbage = $this->garbageTable->end()){
+		for(; $endGarbage !== null && $endGarbage->getLastSector() + 1 === $nextSector; $endGarbage = $this->garbageTable->end()){
 			$nextSector = $endGarbage->getFirstSector();
 			$this->garbageTable->remove($endGarbage);
 		}
@@ -267,7 +267,7 @@ class RegionLoader{
 	 * @throws \InvalidArgumentException
 	 */
 	protected static function getChunkOffset(int $x, int $z) : int{
-		if($x < 0 or $x > 31 or $z < 0 or $z > 31){
+		if($x < 0 || $x > 31 || $z < 0 || $z > 31){
 			throw new \InvalidArgumentException("Invalid chunk position in region, expected x/z in range 0-31, got x=$x, z=$z");
 		}
 		return $x | ($z << 5);
@@ -298,7 +298,7 @@ class RegionLoader{
 		fseek($this->filePointer, 0);
 
 		$headerRaw = fread($this->filePointer, self::REGION_HEADER_LENGTH);
-		if($headerRaw === false or strlen($headerRaw) !== self::REGION_HEADER_LENGTH){
+		if($headerRaw === false || strlen($headerRaw) !== self::REGION_HEADER_LENGTH){
 			throw new CorruptedRegionException("Corrupted region header (unexpected end of file)");
 		}
 
@@ -311,7 +311,7 @@ class RegionLoader{
 			$sectorCount = $index & 0xff;
 			$timestamp = $data[$i + 1025];
 
-			if($offset === 0 or $sectorCount === 0){
+			if($offset === 0 || $sectorCount === 0){
 				$this->locationTable[$i] = null;
 			}elseif($offset >= self::FIRST_SECTOR){
 				$this->bumpNextFreeSector($this->locationTable[$i] = new RegionLocationTableEntry($offset, $sectorCount, $timestamp));

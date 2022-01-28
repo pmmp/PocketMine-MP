@@ -145,7 +145,7 @@ LICENSE;
 	private function askPort(Translatable $prompt, int $default) : int{
 		while(true){
 			$port = (int) $this->getInput($this->lang->translate($prompt), (string) $default);
-			if($port <= 0 or $port > 65535){
+			if($port <= 0 || $port > 65535){
 				$this->error($this->lang->translate(KnownTranslationFactory::invalid_port()));
 				continue;
 			}
@@ -264,7 +264,7 @@ LICENSE;
 	private function getInput(string $message, string $default = "", string $options = "") : string{
 		$message = "[?] " . $message;
 
-		if($options !== "" or $default !== ""){
+		if($options !== "" || $default !== ""){
 			$message .= " (" . ($options === "" ? $default : $options) . ")";
 		}
 		$message .= ": ";

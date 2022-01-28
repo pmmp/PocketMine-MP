@@ -53,7 +53,7 @@ final class ApiVersion{
 					continue;
 				}
 
-				if($version->getMinor() === $myVersion->getMinor() and $version->getPatch() > $myVersion->getPatch()){ //If the plugin requires bug fixes in patches, being backwards compatible
+				if($version->getMinor() === $myVersion->getMinor() && $version->getPatch() > $myVersion->getPatch()){ //If the plugin requires bug fixes in patches, being backwards compatible
 					continue;
 				}
 			}

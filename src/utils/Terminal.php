@@ -74,10 +74,10 @@ abstract class Terminal{
 		$stdout = fopen("php://stdout", "w");
 		if($stdout === false) throw new AssumptionFailedError("Opening php://stdout should never fail");
 		$result = (
-			stream_isatty($stdout) and //STDOUT isn't being piped
+			stream_isatty($stdout) && //STDOUT isn't being piped
 			(
-				getenv('TERM') !== false or //Console says it supports colours
-				(function_exists('sapi_windows_vt100_support') and sapi_windows_vt100_support($stdout)) //we're on windows and have vt100 support
+				getenv('TERM') !== false || //Console says it supports colours
+				(function_exists('sapi_windows_vt100_support') && sapi_windows_vt100_support($stdout)) //we're on windows and have vt100 support
 			)
 		);
 		fclose($stdout);

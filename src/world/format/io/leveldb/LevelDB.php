@@ -144,7 +144,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	public static function isValid(string $path) : bool{
-		return file_exists(Path::join($path, "level.dat")) and is_dir(Path::join($path, "db"));
+		return file_exists(Path::join($path, "level.dat")) && is_dir(Path::join($path, "db"));
 	}
 
 	public static function generate(string $path, string $name, WorldCreationOptions $options) : void{
@@ -207,7 +207,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	 * @return PalettedBlockArray[]
 	 */
 	protected function deserializeLegacyExtraData(string $index, int $chunkVersion) : array{
-		if(($extraRawData = $this->db->get($index . self::TAG_BLOCK_EXTRA_DATA)) === false or $extraRawData === ""){
+		if(($extraRawData = $this->db->get($index . self::TAG_BLOCK_EXTRA_DATA)) === false || $extraRawData === ""){
 			return [];
 		}
 
@@ -391,7 +391,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		/** @var CompoundTag[] $entities */
 		$entities = [];
-		if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false and $entityData !== ""){
+		if(($entityData = $this->db->get($index . self::TAG_ENTITY)) !== false && $entityData !== ""){
 			try{
 				$entities = array_map(fn(TreeRoot $root) => $root->mustGetCompoundTag(), $nbt->readMultiple($entityData));
 			}catch(NbtDataException $e){
@@ -401,7 +401,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 		/** @var CompoundTag[] $tiles */
 		$tiles = [];
-		if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false and $tileData !== ""){
+		if(($tileData = $this->db->get($index . self::TAG_BLOCK_ENTITY)) !== false && $tileData !== ""){
 			try{
 				$tiles = array_map(fn(TreeRoot $root) => $root->mustGetCompoundTag(), $nbt->readMultiple($tileData));
 			}catch(NbtDataException $e){
@@ -527,7 +527,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 	public function getAllChunks(bool $skipCorrupted = false, ?\Logger $logger = null) : \Generator{
 		foreach($this->db->getIterator() as $key => $_){
-			if(strlen($key) === 9 and substr($key, -1) === self::TAG_VERSION){
+			if(strlen($key) === 9 && substr($key, -1) === self::TAG_VERSION){
 				$chunkX = Binary::readLInt(substr($key, 0, 4));
 				$chunkZ = Binary::readLInt(substr($key, 4, 4));
 				try{
@@ -549,7 +549,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	public function calculateChunkCount() : int{
 		$count = 0;
 		foreach($this->db->getIterator() as $key => $_){
-			if(strlen($key) === 9 and substr($key, -1) === self::TAG_VERSION){
+			if(strlen($key) === 9 && substr($key, -1) === self::TAG_VERSION){
 				$count++;
 			}
 		}

@@ -182,7 +182,7 @@ class HungerManager{
 	}
 
 	public function tick(int $tickDiff = 1) : void{
-		if(!$this->entity->isAlive() or !$this->enabled){
+		if(!$this->entity->isAlive() || !$this->enabled){
 			return;
 		}
 		$food = $this->getFood();
@@ -194,12 +194,12 @@ class HungerManager{
 			$this->foodTickTimer = 0;
 		}
 
-		if($difficulty === World::DIFFICULTY_PEACEFUL and $this->foodTickTimer % 10 === 0){
+		if($difficulty === World::DIFFICULTY_PEACEFUL && $this->foodTickTimer % 10 === 0){
 			if($food < $this->getMaxFood()){
 				$this->addFood(1.0);
 				$food = $this->getFood();
 			}
-			if($this->foodTickTimer % 20 === 0 and $health < $this->entity->getMaxHealth()){
+			if($this->foodTickTimer % 20 === 0 && $health < $this->entity->getMaxHealth()){
 				$this->entity->heal(new EntityRegainHealthEvent($this->entity, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
 			}
 		}
@@ -211,7 +211,7 @@ class HungerManager{
 					$this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
 				}
 			}elseif($food <= 0){
-				if(($difficulty === World::DIFFICULTY_EASY and $health > 10) or ($difficulty === World::DIFFICULTY_NORMAL and $health > 1) or $difficulty === World::DIFFICULTY_HARD){
+				if(($difficulty === World::DIFFICULTY_EASY && $health > 10) || ($difficulty === World::DIFFICULTY_NORMAL && $health > 1) || $difficulty === World::DIFFICULTY_HARD){
 					$this->entity->attack(new EntityDamageEvent($this->entity, EntityDamageEvent::CAUSE_STARVATION, 1));
 				}
 			}

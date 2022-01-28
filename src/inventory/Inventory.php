@@ -52,8 +52,6 @@ interface Inventory{
 	 *
 	 * Returns the Items that did not fit.
 	 *
-	 * @param Item ...$slots
-	 *
 	 * @return Item[]
 	 */
 	public function addItem(Item ...$slots) : array;
@@ -71,8 +69,6 @@ interface Inventory{
 	/**
 	 * Removes the given Item from the inventory.
 	 * It will return the Items that couldn't be removed.
-	 *
-	 * @param Item ...$slots
 	 *
 	 * @return Item[]
 	 */
