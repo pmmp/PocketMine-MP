@@ -510,10 +510,7 @@ final class BlockStateDeserializer{
 			//TODO: intentionally ignored "deprecated" blockstate (useless)
 			return VanillaBlocks::HAY_BALE()->setAxis($in->readPillarAxis());
 		});
-		$this->map(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::WEIGHTED_PRESSURE_PLATE_HEAVY()
-				->setOutputSignalStrength($in->readBoundedInt(BlockStateNames::REDSTONE_SIGNAL, 0, 15));
-		});
+		$this->map(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, fn(BlockStateReader $in) => Helper::decodeWeightedPressurePlate(VanillaBlocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), $in));
 		$this->map(Ids::HOPPER, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::HOPPER()
 				->setFacing($in->readFacingWithoutUp())
@@ -589,10 +586,7 @@ final class BlockStateDeserializer{
 				});
 		});
 		$this->map(Ids::LIGHT_BLUE_GLAZED_TERRACOTTA, fn(BlockStateReader $in) => Helper::decodeGlazedTerracotta(VanillaBlocks::LIGHT_BLUE_GLAZED_TERRACOTTA(), $in));
-		$this->map(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::WEIGHTED_PRESSURE_PLATE_LIGHT()
-				->setOutputSignalStrength($in->readBoundedInt(BlockStateNames::REDSTONE_SIGNAL, 0, 15));
-		});
+		$this->map(Ids::LIGHT_WEIGHTED_PRESSURE_PLATE, fn(BlockStateReader $in) => Helper::decodeWeightedPressurePlate(VanillaBlocks::WEIGHTED_PRESSURE_PLATE_LIGHT(), $in));
 		$this->map(Ids::LIME_GLAZED_TERRACOTTA, fn(BlockStateReader $in) => Helper::decodeGlazedTerracotta(VanillaBlocks::LIME_GLAZED_TERRACOTTA(), $in));
 		$this->map(Ids::LIT_BLAST_FURNACE, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::BLAST_FURNACE()

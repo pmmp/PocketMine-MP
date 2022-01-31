@@ -46,6 +46,7 @@ use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Wall;
 use pocketmine\block\WallCoralFan;
 use pocketmine\block\WallSign;
+use pocketmine\block\WeightedPressurePlate;
 use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Axis;
@@ -207,6 +208,11 @@ final class BlockStateDeserializerHelper{
 	public static function decodeWallSign(WallSign $block, BlockStateReader $in) : WallSign{
 		return $block
 			->setFacing($in->readHorizontalFacing());
+	}
+
+	public static function decodeWeightedPressurePlate(WeightedPressurePlate $block, BlockStateReader $in) : WeightedPressurePlate{
+		return $block
+			->setOutputSignalStrength($in->readBoundedInt(BlockStateNames::REDSTONE_SIGNAL, 0, 15));
 	}
 
 	/** @throws BlockStateDeserializeException */
