@@ -63,15 +63,9 @@ final class BlockStateDeserializer{
 		$this->map(Ids::ACACIA_FENCE_GATE, fn(BlockStateReader $in) => Helper::decodeFenceGate(VanillaBlocks::ACACIA_FENCE_GATE(), $in));
 		$this->map(Ids::ACACIA_PRESSURE_PLATE, fn(BlockStateReader $in) => Helper::decodeSimplePressurePlate(VanillaBlocks::ACACIA_PRESSURE_PLATE(), $in));
 		$this->map(Ids::ACACIA_STAIRS, fn(BlockStateReader $in) => Helper::decodeStairs(VanillaBlocks::ACACIA_STAIRS(), $in));
-		$this->map(Ids::ACACIA_STANDING_SIGN, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::ACACIA_SIGN()
-				->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
-		});
+		$this->map(Ids::ACACIA_STANDING_SIGN, fn(BlockStateReader $in) => Helper::decodeFloorSign(VanillaBlocks::ACACIA_SIGN(), $in));
 		$this->map(Ids::ACACIA_TRAPDOOR, fn(BlockStateReader $in) => Helper::decodeTrapdoor(VanillaBlocks::ACACIA_TRAPDOOR(), $in));
-		$this->map(Ids::ACACIA_WALL_SIGN, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::ACACIA_WALL_SIGN()
-				->setFacing($in->readHorizontalFacing());
-		});
+		$this->map(Ids::ACACIA_WALL_SIGN, fn(BlockStateReader $in) => Helper::decodeWallSign(VanillaBlocks::ACACIA_WALL_SIGN(), $in));
 		$this->map(Ids::ACTIVATOR_RAIL, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::ACTIVATOR_RAIL()
 				->setPowered($in->readBool(BlockStateNames::RAIL_DATA_BIT))
@@ -138,15 +132,9 @@ final class BlockStateDeserializer{
 		$this->map(Ids::BIRCH_FENCE_GATE, fn(BlockStateReader $in) => Helper::decodeFenceGate(VanillaBlocks::BIRCH_FENCE_GATE(), $in));
 		$this->map(Ids::BIRCH_PRESSURE_PLATE, fn(BlockStateReader $in) => Helper::decodeSimplePressurePlate(VanillaBlocks::BIRCH_PRESSURE_PLATE(), $in));
 		$this->map(Ids::BIRCH_STAIRS, fn(BlockStateReader $in) => Helper::decodeStairs(VanillaBlocks::BIRCH_STAIRS(), $in));
-		$this->map(Ids::BIRCH_STANDING_SIGN, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::BIRCH_SIGN()
-				->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
-		});
+		$this->map(Ids::BIRCH_STANDING_SIGN, fn(BlockStateReader $in) => Helper::decodeFloorSign(VanillaBlocks::BIRCH_SIGN(), $in));
 		$this->map(Ids::BIRCH_TRAPDOOR, fn(BlockStateReader $in) => Helper::decodeTrapdoor(VanillaBlocks::BIRCH_TRAPDOOR(), $in));
-		$this->map(Ids::BIRCH_WALL_SIGN, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::BIRCH_WALL_SIGN()
-				->setFacing($in->readHorizontalFacing());
-		});
+		$this->map(Ids::BIRCH_WALL_SIGN, fn(BlockStateReader $in) => Helper::decodeWallSign(VanillaBlocks::BIRCH_WALL_SIGN(), $in));
 		$this->map(Ids::BLACK_GLAZED_TERRACOTTA, fn(BlockStateReader $in) => Helper::decodeGlazedTerracotta(VanillaBlocks::BLACK_GLAZED_TERRACOTTA(), $in));
 		$this->map(Ids::BLAST_FURNACE, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::BLAST_FURNACE()
@@ -240,26 +228,14 @@ final class BlockStateDeserializer{
 				->setCoralType($in->readCoralType())
 				->setDead($in->readBool(BlockStateNames::DEAD_BIT));
 		});
-		$this->map(Ids::CORAL_FAN, fn(BlockStateReader $in) => Helper::decodeFloorCoralFan($in)->setDead(false));
-		$this->map(Ids::CORAL_FAN_DEAD, fn(BlockStateReader $in) => Helper::decodeFloorCoralFan($in)->setDead(true));
-		$this->map(Ids::CORAL_FAN_HANG, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::WALL_CORAL_FAN()
-				->setCoralType($in->readBool(BlockStateNames::CORAL_HANG_TYPE_BIT) ? CoralType::BRAIN() : CoralType::TUBE())
-				->setDead($in->readBool(BlockStateNames::DEAD_BIT))
-				->setFacing($in->readCoralFacing());
-		});
-		$this->map(Ids::CORAL_FAN_HANG2, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::WALL_CORAL_FAN()
-				->setCoralType($in->readBool(BlockStateNames::CORAL_HANG_TYPE_BIT) ? CoralType::FIRE() : CoralType::BUBBLE())
-				->setDead($in->readBool(BlockStateNames::DEAD_BIT))
-				->setFacing($in->readCoralFacing());
-		});
-		$this->map(Ids::CORAL_FAN_HANG3, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::WALL_CORAL_FAN()
-				->setCoralType(CoralType::HORN())
-				->setDead($in->readBool(BlockStateNames::DEAD_BIT))
-				->setFacing($in->readCoralFacing());
-		});
+		$this->map(Ids::CORAL_FAN, fn(BlockStateReader $in) => Helper::decodeFloorCoralFan(VanillaBlocks::CORAL_FAN(), $in)->setDead(false));
+		$this->map(Ids::CORAL_FAN_DEAD, fn(BlockStateReader $in) => Helper::decodeFloorCoralFan(VanillaBlocks::CORAL_FAN(), $in)->setDead(true));
+		$this->map(Ids::CORAL_FAN_HANG, fn(BlockStateReader $in) => Helper::decodeWallCoralFan(VanillaBlocks::WALL_CORAL_FAN(), $in)
+				->setCoralType($in->readBool(BlockStateNames::CORAL_HANG_TYPE_BIT) ? CoralType::BRAIN() : CoralType::TUBE()));
+		$this->map(Ids::CORAL_FAN_HANG2, fn(BlockStateReader $in) => Helper::decodeWallCoralFan(VanillaBlocks::WALL_CORAL_FAN(), $in)
+				->setCoralType($in->readBool(BlockStateNames::CORAL_HANG_TYPE_BIT) ? CoralType::FIRE() : CoralType::BUBBLE()));
+		$this->map(Ids::CORAL_FAN_HANG3, fn(BlockStateReader $in) => Helper::decodeWallCoralFan(VanillaBlocks::WALL_CORAL_FAN(), $in)
+				->setCoralType(CoralType::HORN()));
 		$this->map(Ids::CRAFTING_TABLE, fn() => VanillaBlocks::CRAFTING_TABLE());
 		$this->map(Ids::CYAN_GLAZED_TERRACOTTA, fn(BlockStateReader $in) => Helper::decodeGlazedTerracotta(VanillaBlocks::CYAN_GLAZED_TERRACOTTA(), $in));
 		$this->map(Ids::DARK_OAK_BUTTON, fn(BlockStateReader $in) => Helper::decodeButton(VanillaBlocks::DARK_OAK_BUTTON(), $in));
@@ -269,24 +245,12 @@ final class BlockStateDeserializer{
 		$this->map(Ids::DARK_OAK_STAIRS, fn(BlockStateReader $in) => Helper::decodeStairs(VanillaBlocks::DARK_OAK_STAIRS(), $in));
 		$this->map(Ids::DARK_OAK_TRAPDOOR, fn(BlockStateReader $in) => Helper::decodeTrapdoor(VanillaBlocks::DARK_OAK_TRAPDOOR(), $in));
 		$this->map(Ids::DARK_PRISMARINE_STAIRS, fn(BlockStateReader $in) => Helper::decodeStairs(VanillaBlocks::DARK_PRISMARINE_STAIRS(), $in));
-		$this->map(Ids::DARKOAK_STANDING_SIGN, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::DARK_OAK_SIGN()
-				->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
-		});
-		$this->map(Ids::DARKOAK_WALL_SIGN, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::DARK_OAK_WALL_SIGN()
-				->setFacing($in->readHorizontalFacing());
-		});
-		$this->map(Ids::DAYLIGHT_DETECTOR, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::DAYLIGHT_SENSOR()
-				->setInverted(false)
-				->setOutputSignalStrength($in->readBoundedInt(BlockStateNames::REDSTONE_SIGNAL, 0, 15));
-		});
-		$this->map(Ids::DAYLIGHT_DETECTOR_INVERTED, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::DAYLIGHT_SENSOR()
-				->setInverted(true)
-				->setOutputSignalStrength($in->readBoundedInt(BlockStateNames::REDSTONE_SIGNAL, 0, 15));
-		});
+		$this->map(Ids::DARKOAK_STANDING_SIGN, fn(BlockStateReader $in) => Helper::decodeFloorSign(VanillaBlocks::DARK_OAK_SIGN(), $in));
+		$this->map(Ids::DARKOAK_WALL_SIGN, fn(BlockStateReader $in) => Helper::decodeWallSign(VanillaBlocks::DARK_OAK_WALL_SIGN(), $in));
+		$this->map(Ids::DAYLIGHT_DETECTOR, fn(BlockStateReader $in) => Helper::decodeDaylightSensor(VanillaBlocks::DAYLIGHT_SENSOR(), $in)
+				->setInverted(false));
+		$this->map(Ids::DAYLIGHT_DETECTOR_INVERTED, fn(BlockStateReader $in) => Helper::decodeDaylightSensor(VanillaBlocks::DAYLIGHT_SENSOR(), $in)
+				->setInverted(true));
 		$this->map(Ids::DEADBUSH, fn() => VanillaBlocks::DEAD_BUSH());
 		$this->map(Ids::DETECTOR_RAIL, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::DETECTOR_RAIL()
@@ -568,15 +532,9 @@ final class BlockStateDeserializer{
 		$this->map(Ids::JUNGLE_FENCE_GATE, fn(BlockStateReader $in) => Helper::decodeFenceGate(VanillaBlocks::JUNGLE_FENCE_GATE(), $in));
 		$this->map(Ids::JUNGLE_PRESSURE_PLATE, fn(BlockStateReader $in) => Helper::decodeSimplePressurePlate(VanillaBlocks::JUNGLE_PRESSURE_PLATE(), $in));
 		$this->map(Ids::JUNGLE_STAIRS, fn(BlockStateReader $in) => Helper::decodeStairs(VanillaBlocks::JUNGLE_STAIRS(), $in));
-		$this->map(Ids::JUNGLE_STANDING_SIGN, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::JUNGLE_SIGN()
-				->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
-		});
+		$this->map(Ids::JUNGLE_STANDING_SIGN, fn(BlockStateReader $in) => Helper::decodeFloorSign(VanillaBlocks::JUNGLE_SIGN(), $in));
 		$this->map(Ids::JUNGLE_TRAPDOOR, fn(BlockStateReader $in) => Helper::decodeTrapdoor(VanillaBlocks::JUNGLE_TRAPDOOR(), $in));
-		$this->map(Ids::JUNGLE_WALL_SIGN, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::JUNGLE_WALL_SIGN()
-				->setFacing($in->readHorizontalFacing());
-		});
+		$this->map(Ids::JUNGLE_WALL_SIGN, fn(BlockStateReader $in) => Helper::decodeWallSign(VanillaBlocks::JUNGLE_WALL_SIGN(), $in));
 		$this->map(Ids::LADDER, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::LADDER()
 				->setFacing($in->readHorizontalFacing());
@@ -916,15 +874,9 @@ final class BlockStateDeserializer{
 		$this->map(Ids::SPRUCE_FENCE_GATE, fn(BlockStateReader $in) => Helper::decodeFenceGate(VanillaBlocks::SPRUCE_FENCE_GATE(), $in));
 		$this->map(Ids::SPRUCE_PRESSURE_PLATE, fn(BlockStateReader $in) => Helper::decodeSimplePressurePlate(VanillaBlocks::SPRUCE_PRESSURE_PLATE(), $in));
 		$this->map(Ids::SPRUCE_STAIRS, fn(BlockStateReader $in) => Helper::decodeStairs(VanillaBlocks::SPRUCE_STAIRS(), $in));
-		$this->map(Ids::SPRUCE_STANDING_SIGN, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::SPRUCE_SIGN()
-				->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
-		});
+		$this->map(Ids::SPRUCE_STANDING_SIGN, fn(BlockStateReader $in) => Helper::decodeFloorSign(VanillaBlocks::SPRUCE_SIGN(), $in));
 		$this->map(Ids::SPRUCE_TRAPDOOR, fn(BlockStateReader $in) => Helper::decodeTrapdoor(VanillaBlocks::SPRUCE_TRAPDOOR(), $in));
-		$this->map(Ids::SPRUCE_WALL_SIGN, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::SPRUCE_WALL_SIGN()
-				->setFacing($in->readHorizontalFacing());
-		});
+		$this->map(Ids::SPRUCE_WALL_SIGN, fn(BlockStateReader $in) => Helper::decodeWallSign(VanillaBlocks::SPRUCE_WALL_SIGN(), $in));
 		$this->map(Ids::STAINED_GLASS, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::STAINED_GLASS()
 				->setColor($in->readColor());
@@ -941,10 +893,7 @@ final class BlockStateDeserializer{
 			return VanillaBlocks::BANNER()
 				->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
 		});
-		$this->map(Ids::STANDING_SIGN, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::OAK_SIGN()
-				->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
-		});
+		$this->map(Ids::STANDING_SIGN, fn(BlockStateReader $in) => Helper::decodeFloorSign(VanillaBlocks::OAK_SIGN(), $in));
 		$this->map(Ids::STONE, function(BlockStateReader $in) : Block{
 			return match($type = $in->readString(BlockStateNames::STONE_TYPE)){
 				StringValues::STONE_TYPE_ANDESITE => VanillaBlocks::ANDESITE(),
@@ -1065,10 +1014,7 @@ final class BlockStateDeserializer{
 			return VanillaBlocks::WALL_BANNER()
 				->setFacing($in->readHorizontalFacing());
 		});
-		$this->map(Ids::WALL_SIGN, function(BlockStateReader $in) : Block{
-			return VanillaBlocks::OAK_WALL_SIGN()
-				->setFacing($in->readHorizontalFacing());
-		});
+		$this->map(Ids::WALL_SIGN, fn(BlockStateReader $in) => Helper::decodeWallSign(VanillaBlocks::OAK_WALL_SIGN(), $in));
 		$this->map(Ids::WATER, fn(BlockStateReader $in) => Helper::decodeStillLiquid(VanillaBlocks::WATER(), $in));
 		$this->map(Ids::WATERLILY, fn() => VanillaBlocks::LILY_PAD());
 		$this->map(Ids::WEB, fn() => VanillaBlocks::COBWEB());

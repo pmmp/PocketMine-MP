@@ -27,9 +27,11 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyMetadata;
 use pocketmine\block\Button;
 use pocketmine\block\Crops;
+use pocketmine\block\DaylightSensor;
 use pocketmine\block\Door;
 use pocketmine\block\FenceGate;
 use pocketmine\block\FloorCoralFan;
+use pocketmine\block\FloorSign;
 use pocketmine\block\GlazedTerracotta;
 use pocketmine\block\Liquid;
 use pocketmine\block\RedMushroomBlock;
@@ -42,6 +44,8 @@ use pocketmine\block\Stem;
 use pocketmine\block\Trapdoor;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Wall;
+use pocketmine\block\WallCoralFan;
+use pocketmine\block\WallSign;
 use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Axis;
@@ -77,6 +81,12 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/** @throws BlockStateDeserializeException */
+	public static function decodeDaylightSensor(DaylightSensor $block, BlockStateReader $in) : DaylightSensor{
+		return $block
+			->setOutputSignalStrength($in->readBoundedInt(BlockStateNames::REDSTONE_SIGNAL, 0, 15));
+	}
+
+	/** @throws BlockStateDeserializeException */
 	public static function decodeDoor(Door $block, BlockStateReader $in) : Door{
 		//TODO: check if these need any special treatment to get the appropriate data to both halves of the door
 		return $block
@@ -95,14 +105,20 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/** @throws BlockStateDeserializeException */
-	public static function decodeFloorCoralFan(BlockStateReader $in) : FloorCoralFan{
-		return VanillaBlocks::CORAL_FAN()
+	public static function decodeFloorCoralFan(FloorCoralFan $block, BlockStateReader $in) : FloorCoralFan{
+		return $block
 			->setCoralType($in->readCoralType())
 			->setAxis(match($in->readBoundedInt(BlockStateNames::CORAL_FAN_DIRECTION, 0, 1)){
 				0 => Axis::X,
 				1 => Axis::Z,
 				default => throw new AssumptionFailedError("readBoundedInt() should have prevented this"),
 			});
+	}
+
+	/** @throws BlockStateDeserializeException */
+	public static function decodeFloorSign(FloorSign $block, BlockStateReader $in) : FloorSign{
+		return $block
+			->setRotation($in->readBoundedInt(BlockStateNames::GROUND_SIGN_DIRECTION, 0, 15));
 	}
 
 	/** @throws BlockStateDeserializeException */
@@ -178,6 +194,19 @@ final class BlockStateDeserializerHelper{
 	public static function decodeWall(Wall $block, BlockStateReader $in) : Wall{
 		//TODO: our walls don't support the full range of needed states yet
 		return $block;
+	}
+
+	/** @throws BlockStateDeserializeException */
+	public static function decodeWallCoralFan(WallCoralFan $block, BlockStateReader $in) : WallCoralFan{
+		return $block
+			->setDead($in->readBool(BlockStateNames::DEAD_BIT))
+			->setFacing($in->readCoralFacing());
+	}
+
+	/** @throws BlockStateDeserializeException */
+	public static function decodeWallSign(WallSign $block, BlockStateReader $in) : WallSign{
+		return $block
+			->setFacing($in->readHorizontalFacing());
 	}
 
 	/** @throws BlockStateDeserializeException */
