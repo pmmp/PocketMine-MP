@@ -22,10 +22,11 @@
 declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\blockstate;
+
 use pocketmine\block\Block;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\blockstate\BlockTypeNames as Ids;
-use pocketmine\nbt\tag\CompoundTag;
+use function get_class;
 
 final class BlockStateSerializer{
 	/**

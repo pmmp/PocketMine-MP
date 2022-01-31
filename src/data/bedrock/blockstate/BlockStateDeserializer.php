@@ -39,6 +39,7 @@ use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\nbt\tag\CompoundTag;
 use function array_key_exists;
+use function min;
 
 final class BlockStateDeserializer{
 
