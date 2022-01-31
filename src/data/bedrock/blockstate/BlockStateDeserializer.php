@@ -228,8 +228,10 @@ final class BlockStateDeserializer{
 				->setCoralType($in->readCoralType())
 				->setDead($in->readBool(BlockStateNames::DEAD_BIT));
 		});
-		$this->map(Ids::CORAL_FAN, fn(BlockStateReader $in) => Helper::decodeFloorCoralFan(VanillaBlocks::CORAL_FAN(), $in)->setDead(false));
-		$this->map(Ids::CORAL_FAN_DEAD, fn(BlockStateReader $in) => Helper::decodeFloorCoralFan(VanillaBlocks::CORAL_FAN(), $in)->setDead(true));
+		$this->map(Ids::CORAL_FAN, fn(BlockStateReader $in) => Helper::decodeFloorCoralFan(VanillaBlocks::CORAL_FAN(), $in)
+				->setDead(false));
+		$this->map(Ids::CORAL_FAN_DEAD, fn(BlockStateReader $in) => Helper::decodeFloorCoralFan(VanillaBlocks::CORAL_FAN(), $in)
+				->setDead(true));
 		$this->map(Ids::CORAL_FAN_HANG, fn(BlockStateReader $in) => Helper::decodeWallCoralFan(VanillaBlocks::WALL_CORAL_FAN(), $in)
 				->setCoralType($in->readBool(BlockStateNames::CORAL_HANG_TYPE_BIT) ? CoralType::BRAIN() : CoralType::TUBE()));
 		$this->map(Ids::CORAL_FAN_HANG2, fn(BlockStateReader $in) => Helper::decodeWallCoralFan(VanillaBlocks::WALL_CORAL_FAN(), $in)
