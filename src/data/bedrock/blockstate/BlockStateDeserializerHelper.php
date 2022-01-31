@@ -115,7 +115,7 @@ final class BlockStateDeserializerHelper{
 		$fluidHeightState = $in->readBoundedInt(BlockStateNames::LIQUID_DEPTH, 0, 15);
 		return $block
 			->setDecay($fluidHeightState & 0x7)
-			->setFalling(($fluidHeightState & 0x1) !== 0)
+			->setFalling(($fluidHeightState & 0x8) !== 0)
 			->setStill($still);
 	}
 
