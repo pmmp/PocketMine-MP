@@ -56,6 +56,7 @@ final class BlockStateDeserializer{
 		}
 		$this->deserializeFuncs[$id] = $c;
 	}
+
 	public function __construct(){
 		$this->map(Ids::ACACIA_BUTTON, fn(BlockStateReader $in) => Helper::decodeButton(VanillaBlocks::ACACIA_BUTTON(), $in));
 		$this->map(Ids::ACACIA_DOOR, fn(BlockStateReader $in) => Helper::decodeDoor(VanillaBlocks::ACACIA_DOOR(), $in));
