@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\blockstate;
 
-final class BlockStateStringValuesR13{
+final class BlockStateStringValues{
 
 	public const ATTACHMENT_HANGING = "hanging";
 	public const ATTACHMENT_MULTIPLE = "multiple";
@@ -37,7 +37,13 @@ final class BlockStateStringValuesR13{
 	public const BAMBOO_STALK_THICKNESS_THICK = "thick";
 	public const BAMBOO_STALK_THICKNESS_THIN = "thin";
 
+	public const BIG_DRIPLEAF_TILT_FULL_TILT = "full_tilt";
+	public const BIG_DRIPLEAF_TILT_NONE = "none";
+	public const BIG_DRIPLEAF_TILT_PARTIAL_TILT = "partial_tilt";
+	public const BIG_DRIPLEAF_TILT_UNSTABLE = "unstable";
+
 	public const CAULDRON_LIQUID_LAVA = "lava";
+	public const CAULDRON_LIQUID_POWDER_SNOW = "powder_snow";
 	public const CAULDRON_LIQUID_WATER = "water";
 
 	public const CHEMISTRY_TABLE_TYPE_COMPOUND_CREATOR = "compound_creator";
@@ -91,6 +97,12 @@ final class BlockStateStringValuesR13{
 	public const DOUBLE_PLANT_TYPE_ROSE = "rose";
 	public const DOUBLE_PLANT_TYPE_SUNFLOWER = "sunflower";
 	public const DOUBLE_PLANT_TYPE_SYRINGA = "syringa";
+
+	public const DRIPSTONE_THICKNESS_BASE = "base";
+	public const DRIPSTONE_THICKNESS_FRUSTUM = "frustum";
+	public const DRIPSTONE_THICKNESS_MERGE = "merge";
+	public const DRIPSTONE_THICKNESS_MIDDLE = "middle";
+	public const DRIPSTONE_THICKNESS_TIP = "tip";
 
 	public const FLOWER_TYPE_ALLIUM = "allium";
 	public const FLOWER_TYPE_CORNFLOWER = "cornflower";
@@ -258,6 +270,22 @@ final class BlockStateStringValuesR13{
 	public const WALL_BLOCK_TYPE_RED_SANDSTONE = "red_sandstone";
 	public const WALL_BLOCK_TYPE_SANDSTONE = "sandstone";
 	public const WALL_BLOCK_TYPE_STONE_BRICK = "stone_brick";
+
+	public const WALL_CONNECTION_TYPE_EAST_NONE = "none";
+	public const WALL_CONNECTION_TYPE_EAST_SHORT = "short";
+	public const WALL_CONNECTION_TYPE_EAST_TALL = "tall";
+
+	public const WALL_CONNECTION_TYPE_NORTH_NONE = "none";
+	public const WALL_CONNECTION_TYPE_NORTH_SHORT = "short";
+	public const WALL_CONNECTION_TYPE_NORTH_TALL = "tall";
+
+	public const WALL_CONNECTION_TYPE_SOUTH_NONE = "none";
+	public const WALL_CONNECTION_TYPE_SOUTH_SHORT = "short";
+	public const WALL_CONNECTION_TYPE_SOUTH_TALL = "tall";
+
+	public const WALL_CONNECTION_TYPE_WEST_NONE = "none";
+	public const WALL_CONNECTION_TYPE_WEST_SHORT = "short";
+	public const WALL_CONNECTION_TYPE_WEST_TALL = "tall";
 
 	public const WOOD_TYPE_ACACIA = "acacia";
 	public const WOOD_TYPE_BIRCH = "birch";

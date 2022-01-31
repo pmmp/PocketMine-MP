@@ -23,8 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\blockstate;
 
-final class BlockStateNamesR13{
+final class BlockStateNames{
 
+	public const ACTIVE = "active";
 	public const AGE = "age";
 	public const AGE_BIT = "age_bit";
 	public const ALLOW_UNDERWATER_BIT = "allow_underwater_bit";
@@ -32,12 +33,16 @@ final class BlockStateNamesR13{
 	public const ATTACHMENT = "attachment";
 	public const BAMBOO_LEAF_SIZE = "bamboo_leaf_size";
 	public const BAMBOO_STALK_THICKNESS = "bamboo_stalk_thickness";
+	public const BIG_DRIPLEAF_HEAD = "big_dripleaf_head";
+	public const BIG_DRIPLEAF_TILT = "big_dripleaf_tilt";
 	public const BITE_COUNTER = "bite_counter";
 	public const BLOCK_LIGHT_LEVEL = "block_light_level";
+	public const BLOOM = "bloom";
 	public const BREWING_STAND_SLOT_A_BIT = "brewing_stand_slot_a_bit";
 	public const BREWING_STAND_SLOT_B_BIT = "brewing_stand_slot_b_bit";
 	public const BREWING_STAND_SLOT_C_BIT = "brewing_stand_slot_c_bit";
 	public const BUTTON_PRESSED_BIT = "button_pressed_bit";
+	public const CANDLES = "candles";
 	public const CAULDRON_LIQUID = "cauldron_liquid";
 	public const CHEMISTRY_TABLE_TYPE = "chemistry_table_type";
 	public const CHISEL_TYPE = "chisel_type";
@@ -61,6 +66,7 @@ final class BlockStateNamesR13{
 	public const DOOR_HINGE_BIT = "door_hinge_bit";
 	public const DOUBLE_PLANT_TYPE = "double_plant_type";
 	public const DRAG_DOWN = "drag_down";
+	public const DRIPSTONE_THICKNESS = "dripstone_thickness";
 	public const END_PORTAL_EYE_BIT = "end_portal_eye_bit";
 	public const EXPLODE_BIT = "explode_bit";
 	public const EXTINGUISHED = "extinguished";
@@ -68,18 +74,24 @@ final class BlockStateNamesR13{
 	public const FILL_LEVEL = "fill_level";
 	public const FLOWER_TYPE = "flower_type";
 	public const GROUND_SIGN_DIRECTION = "ground_sign_direction";
+	public const GROWING_PLANT_AGE = "growing_plant_age";
 	public const GROWTH = "growth";
 	public const HANGING = "hanging";
 	public const HEAD_PIECE_BIT = "head_piece_bit";
 	public const HEIGHT = "height";
+	public const HONEY_LEVEL = "honey_level";
 	public const HUGE_MUSHROOM_BITS = "huge_mushroom_bits";
 	public const IN_WALL_BIT = "in_wall_bit";
 	public const INFINIBURN_BIT = "infiniburn_bit";
 	public const ITEM_FRAME_MAP_BIT = "item_frame_map_bit";
+	public const ITEM_FRAME_PHOTO_BIT = "item_frame_photo_bit";
+	public const KELP_AGE = "kelp_age";
 	public const LEVER_DIRECTION = "lever_direction";
 	public const LIQUID_DEPTH = "liquid_depth";
+	public const LIT = "lit";
 	public const MOISTURIZED_AMOUNT = "moisturized_amount";
 	public const MONSTER_EGG_STONE_TYPE = "monster_egg_stone_type";
+	public const MULTI_FACE_DIRECTION_BITS = "multi_face_direction_bits";
 	public const NEW_LEAF_TYPE = "new_leaf_type";
 	public const NEW_LOG_TYPE = "new_log_type";
 	public const NO_DROP_BIT = "no_drop_bit";
@@ -98,6 +110,8 @@ final class BlockStateNamesR13{
 	public const RAIL_DIRECTION = "rail_direction";
 	public const REDSTONE_SIGNAL = "redstone_signal";
 	public const REPEATER_DELAY = "repeater_delay";
+	public const RESPAWN_ANCHOR_CHARGE = "respawn_anchor_charge";
+	public const ROTATION = "rotation";
 	public const SAND_STONE_TYPE = "sand_stone_type";
 	public const SAND_TYPE = "sand_type";
 	public const SAPLING_TYPE = "sapling_type";
@@ -121,11 +135,18 @@ final class BlockStateNamesR13{
 	public const TORCH_FACING_DIRECTION = "torch_facing_direction";
 	public const TRIGGERED_BIT = "triggered_bit";
 	public const TURTLE_EGG_COUNT = "turtle_egg_count";
+	public const TWISTING_VINES_AGE = "twisting_vines_age";
 	public const UPDATE_BIT = "update_bit";
 	public const UPPER_BLOCK_BIT = "upper_block_bit";
 	public const UPSIDE_DOWN_BIT = "upside_down_bit";
 	public const VINE_DIRECTION_BITS = "vine_direction_bits";
 	public const WALL_BLOCK_TYPE = "wall_block_type";
+	public const WALL_CONNECTION_TYPE_EAST = "wall_connection_type_east";
+	public const WALL_CONNECTION_TYPE_NORTH = "wall_connection_type_north";
+	public const WALL_CONNECTION_TYPE_SOUTH = "wall_connection_type_south";
+	public const WALL_CONNECTION_TYPE_WEST = "wall_connection_type_west";
+	public const WALL_POST_BIT = "wall_post_bit";
+	public const WEEPING_VINES_AGE = "weeping_vines_age";
 	public const WEIRDO_DIRECTION = "weirdo_direction";
 	public const WOOD_TYPE = "wood_type";
 }

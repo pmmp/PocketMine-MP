@@ -27,7 +27,7 @@ use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
-use pocketmine\data\bedrock\blockstate\BlockStateStringValuesR13 as StringValues;
+use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\nbt\tag\ByteTag;
@@ -115,7 +115,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readFacingDirection() : int{
-		return $this->parseFacingValue($this->readInt(BlockStateNamesR13::FACING_DIRECTION), [
+		return $this->parseFacingValue($this->readInt(BlockStateNames::FACING_DIRECTION), [
 			0 => Facing::DOWN,
 			1 => Facing::UP,
 			2 => Facing::NORTH,
@@ -127,7 +127,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readHorizontalFacing() : int{
-		return $this->parseFacingValue($this->readInt(BlockStateNamesR13::FACING_DIRECTION), [
+		return $this->parseFacingValue($this->readInt(BlockStateNames::FACING_DIRECTION), [
 			0 => Facing::NORTH, //should be illegal, but 1.13 allows it
 			1 => Facing::NORTH, //also should be illegal
 			2 => Facing::NORTH,
@@ -139,7 +139,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readWeirdoHorizontalFacing() : int{
-		return $this->parseFacingValue($this->readInt(BlockStateNamesR13::WEIRDO_DIRECTION), [
+		return $this->parseFacingValue($this->readInt(BlockStateNames::WEIRDO_DIRECTION), [
 			0 => Facing::EAST,
 			1 => Facing::WEST,
 			2 => Facing::SOUTH,
@@ -149,7 +149,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readLegacyHorizontalFacing() : int{
-		return $this->parseFacingValue($this->readInt(BlockStateNamesR13::DIRECTION), [
+		return $this->parseFacingValue($this->readInt(BlockStateNames::DIRECTION), [
 			0 => Facing::SOUTH,
 			1 => Facing::WEST,
 			2 => Facing::NORTH,
@@ -160,7 +160,7 @@ final class BlockStateReader{
 	/** @throws BlockStateDeserializeException */
 	public function readColor() : DyeColor{
 		//	 * color (StringTag) = black, blue, brown, cyan, gray, green, light_blue, lime, magenta, orange, pink, purple, red, silver, white, yellow
-		return match($color = $this->readString(BlockStateNamesR13::COLOR)){
+		return match($color = $this->readString(BlockStateNames::COLOR)){
 			StringValues::COLOR_BLACK => DyeColor::BLACK(),
 			StringValues::COLOR_BLUE => DyeColor::BLUE(),
 			StringValues::COLOR_BROWN => DyeColor::BROWN(),
@@ -177,13 +177,13 @@ final class BlockStateReader{
 			StringValues::COLOR_SILVER => DyeColor::LIGHT_GRAY(),
 			StringValues::COLOR_WHITE => DyeColor::WHITE(),
 			StringValues::COLOR_YELLOW => DyeColor::YELLOW(),
-			default => throw $this->badValueException(BlockStateNamesR13::COLOR, $color),
+			default => throw $this->badValueException(BlockStateNames::COLOR, $color),
 		};
 	}
 
 	/** @throws BlockStateDeserializeException */
 	public function readCoralFacing() : int{
-		return $this->parseFacingValue($this->readInt(BlockStateNamesR13::CORAL_DIRECTION), [
+		return $this->parseFacingValue($this->readInt(BlockStateNames::CORAL_DIRECTION), [
 			0 => Facing::WEST,
 			1 => Facing::EAST,
 			2 => Facing::NORTH,
@@ -213,21 +213,21 @@ final class BlockStateReader{
 	 * @throws BlockStateDeserializeException
 	 */
 	public function readPillarAxis() : int{
-		$rawValue = $this->readString(BlockStateNamesR13::PILLAR_AXIS);
+		$rawValue = $this->readString(BlockStateNames::PILLAR_AXIS);
 		$value = [
 			StringValues::PILLAR_AXIS_X => Axis::X,
 			StringValues::PILLAR_AXIS_Y => Axis::Y,
 			StringValues::PILLAR_AXIS_Z => Axis::Z
 		][$rawValue] ?? null;
 		if($value === null){
-			throw $this->badValueException(BlockStateNamesR13::PILLAR_AXIS, $rawValue, "Invalid axis value");
+			throw $this->badValueException(BlockStateNames::PILLAR_AXIS, $rawValue, "Invalid axis value");
 		}
 		return $value;
 	}
 
 	/** @throws BlockStateDeserializeException */
 	public function readSlabPosition() : SlabType{
-		return $this->readBool(BlockStateNamesR13::TOP_SLOT_BIT) ? SlabType::TOP() : SlabType::BOTTOM();
+		return $this->readBool(BlockStateNames::TOP_SLOT_BIT) ? SlabType::TOP() : SlabType::BOTTOM();
 	}
 
 	/**
@@ -235,37 +235,37 @@ final class BlockStateReader{
 	 * @throws BlockStateDeserializeException
 	 */
 	public function readTorchFacing() : int{
-		return match($rawValue = $this->readString(BlockStateNamesR13::TORCH_FACING_DIRECTION)){
+		return match($rawValue = $this->readString(BlockStateNames::TORCH_FACING_DIRECTION)){
 			StringValues::TORCH_FACING_DIRECTION_EAST => Facing::EAST,
 			StringValues::TORCH_FACING_DIRECTION_NORTH => Facing::NORTH,
 			StringValues::TORCH_FACING_DIRECTION_SOUTH => Facing::SOUTH,
 			StringValues::TORCH_FACING_DIRECTION_TOP => Facing::UP,
 			StringValues::TORCH_FACING_DIRECTION_UNKNOWN => Facing::UP, //should be illegal, but 1.13 allows it
 			StringValues::TORCH_FACING_DIRECTION_WEST => Facing::WEST,
-			default => throw $this->badValueException(BlockStateNamesR13::TORCH_FACING_DIRECTION, $rawValue, "Invalid torch facing"),
+			default => throw $this->badValueException(BlockStateNames::TORCH_FACING_DIRECTION, $rawValue, "Invalid torch facing"),
 		};
 	}
 
 	/** @throws BlockStateDeserializeException */
 	public function readCoralType() : CoralType{
-		return match($type = $this->readString(BlockStateNamesR13::CORAL_COLOR)){
+		return match($type = $this->readString(BlockStateNames::CORAL_COLOR)){
 			StringValues::CORAL_COLOR_BLUE => CoralType::TUBE(),
 			StringValues::CORAL_COLOR_PINK => CoralType::BRAIN(),
 			StringValues::CORAL_COLOR_PURPLE => CoralType::BUBBLE(),
 			StringValues::CORAL_COLOR_RED => CoralType::FIRE(),
 			StringValues::CORAL_COLOR_YELLOW => CoralType::HORN(),
-			default => throw $this->badValueException(BlockStateNamesR13::CORAL_COLOR, $type),
+			default => throw $this->badValueException(BlockStateNames::CORAL_COLOR, $type),
 		};
 	}
 
 	/** @throws BlockStateDeserializeException */
 	public function readBellAttachmentType() : BellAttachmentType{
-		return match($type = $this->readString(BlockStateNamesR13::ATTACHMENT)){
+		return match($type = $this->readString(BlockStateNames::ATTACHMENT)){
 			StringValues::ATTACHMENT_HANGING => BellAttachmentType::CEILING(),
 			StringValues::ATTACHMENT_STANDING => BellAttachmentType::FLOOR(),
 			StringValues::ATTACHMENT_SIDE => BellAttachmentType::ONE_WALL(),
 			StringValues::ATTACHMENT_MULTIPLE => BellAttachmentType::TWO_WALLS(),
-			default => throw $this->badValueException(BlockStateNamesR13::ATTACHMENT, $type),
+			default => throw $this->badValueException(BlockStateNames::ATTACHMENT, $type),
 		};
 	}
 }
