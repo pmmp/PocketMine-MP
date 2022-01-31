@@ -27,7 +27,7 @@ use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
-use pocketmine\data\bedrock\blockstate\BlockStateValues as Values;
+use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\nbt\tag\CompoundTag;
@@ -110,22 +110,22 @@ final class BlockStateWriter{
 	/** @return $this */
 	public function writeColor(DyeColor $color) : self{
 		$this->writeString(BlockStateNames::COLOR, match($color->id()){
-			DyeColor::BLACK()->id() => Values::COLOR_BLACK,
-			DyeColor::BLUE()->id() => Values::COLOR_BLUE,
-			DyeColor::BROWN()->id() => Values::COLOR_BROWN,
-			DyeColor::CYAN()->id() => Values::COLOR_CYAN,
-			DyeColor::GRAY()->id() => Values::COLOR_GRAY,
-			DyeColor::GREEN()->id() => Values::COLOR_GREEN,
-			DyeColor::LIGHT_BLUE()->id() => Values::COLOR_LIGHT_BLUE,
-			DyeColor::LIGHT_GRAY()->id() => Values::COLOR_SILVER,
-			DyeColor::LIME()->id() => Values::COLOR_LIME,
-			DyeColor::MAGENTA()->id() => Values::COLOR_MAGENTA,
-			DyeColor::ORANGE()->id() => Values::COLOR_ORANGE,
-			DyeColor::PINK()->id() => Values::COLOR_PINK,
-			DyeColor::PURPLE()->id() => Values::COLOR_PURPLE,
-			DyeColor::RED()->id() => Values::COLOR_RED,
-			DyeColor::WHITE()->id() => Values::COLOR_WHITE,
-			DyeColor::YELLOW()->id() => Values::COLOR_YELLOW,
+			DyeColor::BLACK()->id() => StringValues::COLOR_BLACK,
+			DyeColor::BLUE()->id() => StringValues::COLOR_BLUE,
+			DyeColor::BROWN()->id() => StringValues::COLOR_BROWN,
+			DyeColor::CYAN()->id() => StringValues::COLOR_CYAN,
+			DyeColor::GRAY()->id() => StringValues::COLOR_GRAY,
+			DyeColor::GREEN()->id() => StringValues::COLOR_GREEN,
+			DyeColor::LIGHT_BLUE()->id() => StringValues::COLOR_LIGHT_BLUE,
+			DyeColor::LIGHT_GRAY()->id() => StringValues::COLOR_SILVER,
+			DyeColor::LIME()->id() => StringValues::COLOR_LIME,
+			DyeColor::MAGENTA()->id() => StringValues::COLOR_MAGENTA,
+			DyeColor::ORANGE()->id() => StringValues::COLOR_ORANGE,
+			DyeColor::PINK()->id() => StringValues::COLOR_PINK,
+			DyeColor::PURPLE()->id() => StringValues::COLOR_PURPLE,
+			DyeColor::RED()->id() => StringValues::COLOR_RED,
+			DyeColor::WHITE()->id() => StringValues::COLOR_WHITE,
+			DyeColor::YELLOW()->id() => StringValues::COLOR_YELLOW,
 			default => throw new BlockStateSerializeException("Invalid Color " . $color->name())
 		});
 		return $this;
@@ -164,9 +164,9 @@ final class BlockStateWriter{
 	/** @return $this */
 	public function writePillarAxis(int $axis) : self{
 		$this->writeString(BlockStateNames::PILLAR_AXIS, match($axis){
-			Axis::X => Values::PILLAR_AXIS_X,
-			Axis::Y => Values::PILLAR_AXIS_Y,
-			Axis::Z => Values::PILLAR_AXIS_Z,
+			Axis::X => StringValues::PILLAR_AXIS_X,
+			Axis::Y => StringValues::PILLAR_AXIS_Y,
+			Axis::Z => StringValues::PILLAR_AXIS_Z,
 			default => throw new BlockStateSerializeException("Invalid axis $axis")
 		});
 		return $this;
@@ -185,11 +185,11 @@ final class BlockStateWriter{
 	/** @return $this */
 	public function writeTorchFacing(int $facing) : self{
 		$this->writeString(BlockStateNames::TORCH_FACING_DIRECTION, match($facing){
-			Facing::UP => Values::TORCH_FACING_DIRECTION_TOP,
-			Facing::NORTH => Values::TORCH_FACING_DIRECTION_NORTH,
-			Facing::SOUTH => Values::TORCH_FACING_DIRECTION_SOUTH,
-			Facing::WEST => Values::TORCH_FACING_DIRECTION_WEST,
-			Facing::EAST => Values::TORCH_FACING_DIRECTION_EAST,
+			Facing::UP => StringValues::TORCH_FACING_DIRECTION_TOP,
+			Facing::NORTH => StringValues::TORCH_FACING_DIRECTION_NORTH,
+			Facing::SOUTH => StringValues::TORCH_FACING_DIRECTION_SOUTH,
+			Facing::WEST => StringValues::TORCH_FACING_DIRECTION_WEST,
+			Facing::EAST => StringValues::TORCH_FACING_DIRECTION_EAST,
 			default => throw new BlockStateSerializeException("Invalid Torch facing $facing")
 		});
 		return $this;
@@ -198,11 +198,11 @@ final class BlockStateWriter{
 	/** @return $this */
 	public function writeCoralType(CoralType $coralType) : self{
 		$this->writeString(BlockStateNames::CORAL_COLOR, match($coralType->id()){
-			CoralType::TUBE()->id() => Values::CORAL_COLOR_BLUE,
-			CoralType::BRAIN()->id() => Values::CORAL_COLOR_PINK,
-			CoralType::BUBBLE()->id() => Values::CORAL_COLOR_PURPLE,
-			CoralType::FIRE()->id() => Values::CORAL_COLOR_RED,
-			CoralType::HORN()->id() => Values::CORAL_COLOR_YELLOW,
+			CoralType::TUBE()->id() => StringValues::CORAL_COLOR_BLUE,
+			CoralType::BRAIN()->id() => StringValues::CORAL_COLOR_PINK,
+			CoralType::BUBBLE()->id() => StringValues::CORAL_COLOR_PURPLE,
+			CoralType::FIRE()->id() => StringValues::CORAL_COLOR_RED,
+			CoralType::HORN()->id() => StringValues::CORAL_COLOR_YELLOW,
 			default => throw new BlockStateSerializeException("Invalid Coral type " . $coralType->name())
 		});
 		return $this;
@@ -211,10 +211,10 @@ final class BlockStateWriter{
 	/** @return $this */
 	public function writeBellAttachmentType(BellAttachmentType $attachmentType) : self{
 		$this->writeString(BlockStateNames::ATTACHMENT, match($attachmentType->id()){
-			BellAttachmentType::FLOOR()->id() => Values::ATTACHMENT_STANDING,
-			BellAttachmentType::CEILING()->id() => Values::ATTACHMENT_HANGING,
-			BellAttachmentType::ONE_WALL()->id() => Values::ATTACHMENT_SIDE,
-			BellAttachmentType::TWO_WALLS()->id() => Values::ATTACHMENT_MULTIPLE,
+			BellAttachmentType::FLOOR()->id() => StringValues::ATTACHMENT_STANDING,
+			BellAttachmentType::CEILING()->id() => StringValues::ATTACHMENT_HANGING,
+			BellAttachmentType::ONE_WALL()->id() => StringValues::ATTACHMENT_SIDE,
+			BellAttachmentType::TWO_WALLS()->id() => StringValues::ATTACHMENT_MULTIPLE,
 			default => throw new BlockStateSerializeException("Invalid Bell attachment type " . $attachmentType->name())
 		});
 		return $this;

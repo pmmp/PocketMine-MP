@@ -27,7 +27,7 @@ use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
-use pocketmine\data\bedrock\blockstate\BlockStateValues as Values;
+use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\nbt\tag\ByteTag;
@@ -161,22 +161,22 @@ final class BlockStateReader{
 	public function readColor() : DyeColor{
 		//	 * color (StringTag) = black, blue, brown, cyan, gray, green, light_blue, lime, magenta, orange, pink, purple, red, silver, white, yellow
 		return match($color = $this->readString(BlockStateNames::COLOR)){
-			Values::COLOR_BLACK => DyeColor::BLACK(),
-			Values::COLOR_BLUE => DyeColor::BLUE(),
-			Values::COLOR_BROWN => DyeColor::BROWN(),
-			Values::COLOR_CYAN => DyeColor::CYAN(),
-			Values::COLOR_GRAY => DyeColor::GRAY(),
-			Values::COLOR_GREEN => DyeColor::GREEN(),
-			Values::COLOR_LIGHT_BLUE => DyeColor::LIGHT_BLUE(),
-			Values::COLOR_LIME => DyeColor::LIME(),
-			Values::COLOR_MAGENTA => DyeColor::MAGENTA(),
-			Values::COLOR_ORANGE => DyeColor::ORANGE(),
-			Values::COLOR_PINK => DyeColor::PINK(),
-			Values::COLOR_PURPLE => DyeColor::PURPLE(),
-			Values::COLOR_RED => DyeColor::RED(),
-			Values::COLOR_SILVER => DyeColor::LIGHT_GRAY(),
-			Values::COLOR_WHITE => DyeColor::WHITE(),
-			Values::COLOR_YELLOW => DyeColor::YELLOW(),
+			StringValues::COLOR_BLACK => DyeColor::BLACK(),
+			StringValues::COLOR_BLUE => DyeColor::BLUE(),
+			StringValues::COLOR_BROWN => DyeColor::BROWN(),
+			StringValues::COLOR_CYAN => DyeColor::CYAN(),
+			StringValues::COLOR_GRAY => DyeColor::GRAY(),
+			StringValues::COLOR_GREEN => DyeColor::GREEN(),
+			StringValues::COLOR_LIGHT_BLUE => DyeColor::LIGHT_BLUE(),
+			StringValues::COLOR_LIME => DyeColor::LIME(),
+			StringValues::COLOR_MAGENTA => DyeColor::MAGENTA(),
+			StringValues::COLOR_ORANGE => DyeColor::ORANGE(),
+			StringValues::COLOR_PINK => DyeColor::PINK(),
+			StringValues::COLOR_PURPLE => DyeColor::PURPLE(),
+			StringValues::COLOR_RED => DyeColor::RED(),
+			StringValues::COLOR_SILVER => DyeColor::LIGHT_GRAY(),
+			StringValues::COLOR_WHITE => DyeColor::WHITE(),
+			StringValues::COLOR_YELLOW => DyeColor::YELLOW(),
 			default => throw $this->badValueException(BlockStateNames::COLOR, $color),
 		};
 	}
@@ -215,9 +215,9 @@ final class BlockStateReader{
 	public function readPillarAxis() : int{
 		$rawValue = $this->readString(BlockStateNames::PILLAR_AXIS);
 		$value = [
-			Values::PILLAR_AXIS_X => Axis::X,
-			Values::PILLAR_AXIS_Y => Axis::Y,
-			Values::PILLAR_AXIS_Z => Axis::Z
+			StringValues::PILLAR_AXIS_X => Axis::X,
+			StringValues::PILLAR_AXIS_Y => Axis::Y,
+			StringValues::PILLAR_AXIS_Z => Axis::Z
 		][$rawValue] ?? null;
 		if($value === null){
 			throw $this->badValueException(BlockStateNames::PILLAR_AXIS, $rawValue, "Invalid axis value");
@@ -236,12 +236,12 @@ final class BlockStateReader{
 	 */
 	public function readTorchFacing() : int{
 		return match($rawValue = $this->readString(BlockStateNames::TORCH_FACING_DIRECTION)){
-			Values::TORCH_FACING_DIRECTION_EAST => Facing::EAST,
-			Values::TORCH_FACING_DIRECTION_NORTH => Facing::NORTH,
-			Values::TORCH_FACING_DIRECTION_SOUTH => Facing::SOUTH,
-			Values::TORCH_FACING_DIRECTION_TOP => Facing::UP,
-			Values::TORCH_FACING_DIRECTION_UNKNOWN => Facing::UP, //should be illegal, but 1.13 allows it
-			Values::TORCH_FACING_DIRECTION_WEST => Facing::WEST,
+			StringValues::TORCH_FACING_DIRECTION_EAST => Facing::EAST,
+			StringValues::TORCH_FACING_DIRECTION_NORTH => Facing::NORTH,
+			StringValues::TORCH_FACING_DIRECTION_SOUTH => Facing::SOUTH,
+			StringValues::TORCH_FACING_DIRECTION_TOP => Facing::UP,
+			StringValues::TORCH_FACING_DIRECTION_UNKNOWN => Facing::UP, //should be illegal, but 1.13 allows it
+			StringValues::TORCH_FACING_DIRECTION_WEST => Facing::WEST,
 			default => throw $this->badValueException(BlockStateNames::TORCH_FACING_DIRECTION, $rawValue, "Invalid torch facing"),
 		};
 	}
@@ -249,11 +249,11 @@ final class BlockStateReader{
 	/** @throws BlockStateDeserializeException */
 	public function readCoralType() : CoralType{
 		return match($type = $this->readString(BlockStateNames::CORAL_COLOR)){
-			Values::CORAL_COLOR_BLUE => CoralType::TUBE(),
-			Values::CORAL_COLOR_PINK => CoralType::BRAIN(),
-			Values::CORAL_COLOR_PURPLE => CoralType::BUBBLE(),
-			Values::CORAL_COLOR_RED => CoralType::FIRE(),
-			Values::CORAL_COLOR_YELLOW => CoralType::HORN(),
+			StringValues::CORAL_COLOR_BLUE => CoralType::TUBE(),
+			StringValues::CORAL_COLOR_PINK => CoralType::BRAIN(),
+			StringValues::CORAL_COLOR_PURPLE => CoralType::BUBBLE(),
+			StringValues::CORAL_COLOR_RED => CoralType::FIRE(),
+			StringValues::CORAL_COLOR_YELLOW => CoralType::HORN(),
 			default => throw $this->badValueException(BlockStateNames::CORAL_COLOR, $type),
 		};
 	}
@@ -261,10 +261,10 @@ final class BlockStateReader{
 	/** @throws BlockStateDeserializeException */
 	public function readBellAttachmentType() : BellAttachmentType{
 		return match($type = $this->readString(BlockStateNames::ATTACHMENT)){
-			Values::ATTACHMENT_HANGING => BellAttachmentType::CEILING(),
-			Values::ATTACHMENT_STANDING => BellAttachmentType::FLOOR(),
-			Values::ATTACHMENT_SIDE => BellAttachmentType::ONE_WALL(),
-			Values::ATTACHMENT_MULTIPLE => BellAttachmentType::TWO_WALLS(),
+			StringValues::ATTACHMENT_HANGING => BellAttachmentType::CEILING(),
+			StringValues::ATTACHMENT_STANDING => BellAttachmentType::FLOOR(),
+			StringValues::ATTACHMENT_SIDE => BellAttachmentType::ONE_WALL(),
+			StringValues::ATTACHMENT_MULTIPLE => BellAttachmentType::TWO_WALLS(),
 			default => throw $this->badValueException(BlockStateNames::ATTACHMENT, $type),
 		};
 	}

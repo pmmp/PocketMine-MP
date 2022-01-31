@@ -42,7 +42,7 @@ use pocketmine\block\Stem;
 use pocketmine\block\Trapdoor;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\block\Wall;
-use pocketmine\data\bedrock\blockstate\BlockStateValues as Values;
+use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -184,14 +184,14 @@ final class BlockStateDeserializerHelper{
 	public static function mapStoneSlab1Type(BlockStateReader $in) : Slab{
 		//* stone_slab_type (StringTag) = brick, cobblestone, nether_brick, quartz, sandstone, smooth_stone, stone_brick, wood
 		return match($type = $in->readString(BlockStateNames::STONE_SLAB_TYPE)){
-			Values::STONE_SLAB_TYPE_BRICK => VanillaBlocks::BRICK_SLAB(),
-			Values::STONE_SLAB_TYPE_COBBLESTONE => VanillaBlocks::COBBLESTONE_SLAB(),
-			Values::STONE_SLAB_TYPE_NETHER_BRICK => VanillaBlocks::NETHER_BRICK_SLAB(),
-			Values::STONE_SLAB_TYPE_QUARTZ => VanillaBlocks::QUARTZ_SLAB(),
-			Values::STONE_SLAB_TYPE_SANDSTONE => VanillaBlocks::SANDSTONE_SLAB(),
-			Values::STONE_SLAB_TYPE_SMOOTH_STONE => VanillaBlocks::SMOOTH_STONE_SLAB(),
-			Values::STONE_SLAB_TYPE_STONE_BRICK => VanillaBlocks::STONE_BRICK_SLAB(),
-			Values::STONE_SLAB_TYPE_WOOD => VanillaBlocks::FAKE_WOODEN_SLAB(),
+			StringValues::STONE_SLAB_TYPE_BRICK => VanillaBlocks::BRICK_SLAB(),
+			StringValues::STONE_SLAB_TYPE_COBBLESTONE => VanillaBlocks::COBBLESTONE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_NETHER_BRICK => VanillaBlocks::NETHER_BRICK_SLAB(),
+			StringValues::STONE_SLAB_TYPE_QUARTZ => VanillaBlocks::QUARTZ_SLAB(),
+			StringValues::STONE_SLAB_TYPE_SANDSTONE => VanillaBlocks::SANDSTONE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_SMOOTH_STONE => VanillaBlocks::SMOOTH_STONE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_STONE_BRICK => VanillaBlocks::STONE_BRICK_SLAB(),
+			StringValues::STONE_SLAB_TYPE_WOOD => VanillaBlocks::FAKE_WOODEN_SLAB(),
 			default => throw $in->badValueException(BlockStateNames::STONE_SLAB_TYPE, $type),
 		};
 	}
@@ -200,14 +200,14 @@ final class BlockStateDeserializerHelper{
 	public static function mapStoneSlab2Type(BlockStateReader $in) : Slab{
 		// * stone_slab_type_2 (StringTag) = mossy_cobblestone, prismarine_brick, prismarine_dark, prismarine_rough, purpur, red_nether_brick, red_sandstone, smooth_sandstone
 		return match($type = $in->readString(BlockStateNames::STONE_SLAB_TYPE_2)){
-			Values::STONE_SLAB_TYPE_2_MOSSY_COBBLESTONE => VanillaBlocks::MOSSY_COBBLESTONE_SLAB(),
-			Values::STONE_SLAB_TYPE_2_PRISMARINE_BRICK => VanillaBlocks::PRISMARINE_BRICKS_SLAB(),
-			Values::STONE_SLAB_TYPE_2_PRISMARINE_DARK => VanillaBlocks::DARK_PRISMARINE_SLAB(),
-			Values::STONE_SLAB_TYPE_2_PRISMARINE_ROUGH => VanillaBlocks::PRISMARINE_SLAB(),
-			Values::STONE_SLAB_TYPE_2_PURPUR => VanillaBlocks::PURPUR_SLAB(),
-			Values::STONE_SLAB_TYPE_2_RED_NETHER_BRICK => VanillaBlocks::RED_NETHER_BRICK_SLAB(),
-			Values::STONE_SLAB_TYPE_2_RED_SANDSTONE => VanillaBlocks::RED_SANDSTONE_SLAB(),
-			Values::STONE_SLAB_TYPE_2_SMOOTH_SANDSTONE => VanillaBlocks::SMOOTH_SANDSTONE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_2_MOSSY_COBBLESTONE => VanillaBlocks::MOSSY_COBBLESTONE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_2_PRISMARINE_BRICK => VanillaBlocks::PRISMARINE_BRICKS_SLAB(),
+			StringValues::STONE_SLAB_TYPE_2_PRISMARINE_DARK => VanillaBlocks::DARK_PRISMARINE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_2_PRISMARINE_ROUGH => VanillaBlocks::PRISMARINE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_2_PURPUR => VanillaBlocks::PURPUR_SLAB(),
+			StringValues::STONE_SLAB_TYPE_2_RED_NETHER_BRICK => VanillaBlocks::RED_NETHER_BRICK_SLAB(),
+			StringValues::STONE_SLAB_TYPE_2_RED_SANDSTONE => VanillaBlocks::RED_SANDSTONE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_2_SMOOTH_SANDSTONE => VanillaBlocks::SMOOTH_SANDSTONE_SLAB(),
 			default => throw $in->badValueException(BlockStateNames::STONE_SLAB_TYPE_2, $type),
 		};
 	}
@@ -216,14 +216,14 @@ final class BlockStateDeserializerHelper{
 	public static function mapStoneSlab3Type(BlockStateReader $in) : Slab{
 		// * stone_slab_type_3 (StringTag) = andesite, diorite, end_stone_brick, granite, polished_andesite, polished_diorite, polished_granite, smooth_red_sandstone
 		return match($type = $in->readString(BlockStateNames::STONE_SLAB_TYPE_3)){
-			Values::STONE_SLAB_TYPE_3_ANDESITE => VanillaBlocks::ANDESITE_SLAB(),
-			Values::STONE_SLAB_TYPE_3_DIORITE => VanillaBlocks::DIORITE_SLAB(),
-			Values::STONE_SLAB_TYPE_3_END_STONE_BRICK => VanillaBlocks::END_STONE_BRICK_SLAB(),
-			Values::STONE_SLAB_TYPE_3_GRANITE => VanillaBlocks::GRANITE_SLAB(),
-			Values::STONE_SLAB_TYPE_3_POLISHED_ANDESITE => VanillaBlocks::POLISHED_ANDESITE_SLAB(),
-			Values::STONE_SLAB_TYPE_3_POLISHED_DIORITE => VanillaBlocks::POLISHED_DIORITE_SLAB(),
-			Values::STONE_SLAB_TYPE_3_POLISHED_GRANITE => VanillaBlocks::POLISHED_GRANITE_SLAB(),
-			Values::STONE_SLAB_TYPE_3_SMOOTH_RED_SANDSTONE => VanillaBlocks::SMOOTH_RED_SANDSTONE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_3_ANDESITE => VanillaBlocks::ANDESITE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_3_DIORITE => VanillaBlocks::DIORITE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_3_END_STONE_BRICK => VanillaBlocks::END_STONE_BRICK_SLAB(),
+			StringValues::STONE_SLAB_TYPE_3_GRANITE => VanillaBlocks::GRANITE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_3_POLISHED_ANDESITE => VanillaBlocks::POLISHED_ANDESITE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_3_POLISHED_DIORITE => VanillaBlocks::POLISHED_DIORITE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_3_POLISHED_GRANITE => VanillaBlocks::POLISHED_GRANITE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_3_SMOOTH_RED_SANDSTONE => VanillaBlocks::SMOOTH_RED_SANDSTONE_SLAB(),
 			default => throw $in->badValueException(BlockStateNames::STONE_SLAB_TYPE_3, $type),
 		};
 	}
@@ -232,11 +232,11 @@ final class BlockStateDeserializerHelper{
 	public static function mapStoneSlab4Type(BlockStateReader $in) : Slab{
 		// * stone_slab_type_4 (StringTag) = cut_red_sandstone, cut_sandstone, mossy_stone_brick, smooth_quartz, stone
 		return match($type = $in->readString(BlockStateNames::STONE_SLAB_TYPE_4)){
-			Values::STONE_SLAB_TYPE_4_CUT_RED_SANDSTONE => VanillaBlocks::CUT_RED_SANDSTONE_SLAB(),
-			Values::STONE_SLAB_TYPE_4_CUT_SANDSTONE => VanillaBlocks::CUT_SANDSTONE_SLAB(),
-			Values::STONE_SLAB_TYPE_4_MOSSY_STONE_BRICK => VanillaBlocks::MOSSY_STONE_BRICK_SLAB(),
-			Values::STONE_SLAB_TYPE_4_SMOOTH_QUARTZ => VanillaBlocks::SMOOTH_QUARTZ_SLAB(),
-			Values::STONE_SLAB_TYPE_4_STONE => VanillaBlocks::STONE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_4_CUT_RED_SANDSTONE => VanillaBlocks::CUT_RED_SANDSTONE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_4_CUT_SANDSTONE => VanillaBlocks::CUT_SANDSTONE_SLAB(),
+			StringValues::STONE_SLAB_TYPE_4_MOSSY_STONE_BRICK => VanillaBlocks::MOSSY_STONE_BRICK_SLAB(),
+			StringValues::STONE_SLAB_TYPE_4_SMOOTH_QUARTZ => VanillaBlocks::SMOOTH_QUARTZ_SLAB(),
+			StringValues::STONE_SLAB_TYPE_4_STONE => VanillaBlocks::STONE_SLAB(),
 			default => throw $in->badValueException(BlockStateNames::STONE_SLAB_TYPE_4, $type),
 		};
 	}
@@ -245,12 +245,12 @@ final class BlockStateDeserializerHelper{
 	public static function mapWoodenSlabType(BlockStateReader $in) : Slab{
 		// * wood_type (StringTag) = acacia, birch, dark_oak, jungle, oak, spruce
 		return match($type = $in->readString(BlockStateNames::WOOD_TYPE)){
-			Values::WOOD_TYPE_ACACIA => VanillaBlocks::ACACIA_SLAB(),
-			Values::WOOD_TYPE_BIRCH => VanillaBlocks::BIRCH_SLAB(),
-			Values::WOOD_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_SLAB(),
-			Values::WOOD_TYPE_JUNGLE => VanillaBlocks::JUNGLE_SLAB(),
-			Values::WOOD_TYPE_OAK => VanillaBlocks::OAK_SLAB(),
-			Values::WOOD_TYPE_SPRUCE => VanillaBlocks::SPRUCE_SLAB(),
+			StringValues::WOOD_TYPE_ACACIA => VanillaBlocks::ACACIA_SLAB(),
+			StringValues::WOOD_TYPE_BIRCH => VanillaBlocks::BIRCH_SLAB(),
+			StringValues::WOOD_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_SLAB(),
+			StringValues::WOOD_TYPE_JUNGLE => VanillaBlocks::JUNGLE_SLAB(),
+			StringValues::WOOD_TYPE_OAK => VanillaBlocks::OAK_SLAB(),
+			StringValues::WOOD_TYPE_SPRUCE => VanillaBlocks::SPRUCE_SLAB(),
 			default => throw $in->badValueException(BlockStateNames::WOOD_TYPE, $type),
 		};
 	}

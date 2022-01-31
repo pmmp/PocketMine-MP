@@ -33,7 +33,7 @@ use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\data\bedrock\blockstate\BlockStateDeserializerHelper as Helper;
-use pocketmine\data\bedrock\blockstate\BlockStateValues as Values;
+use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\blockstate\BlockTypeNames as Ids;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -82,10 +82,10 @@ final class BlockStateDeserializer{
 		$this->map(Ids::ANVIL, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::ANVIL()
 				->setDamage(match($value = $in->readString(BlockStateNames::DAMAGE)){
-					Values::DAMAGE_UNDAMAGED => 0,
-					Values::DAMAGE_SLIGHTLY_DAMAGED => 1,
-					Values::DAMAGE_VERY_DAMAGED => 2,
-					Values::DAMAGE_BROKEN => 0,
+					StringValues::DAMAGE_UNDAMAGED => 0,
+					StringValues::DAMAGE_SLIGHTLY_DAMAGED => 1,
+					StringValues::DAMAGE_VERY_DAMAGED => 2,
+					StringValues::DAMAGE_BROKEN => 0,
 					default => throw $in->badValueException(BlockStateNames::DAMAGE, $value),
 				})
 				->setFacing($in->readLegacyHorizontalFacing());
@@ -93,15 +93,15 @@ final class BlockStateDeserializer{
 		$this->map(Ids::BAMBOO, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::BAMBOO()
 				->setLeafSize(match($value = $in->readString(BlockStateNames::BAMBOO_LEAF_SIZE)){
-					Values::BAMBOO_LEAF_SIZE_NO_LEAVES => Bamboo::NO_LEAVES,
-					Values::BAMBOO_LEAF_SIZE_SMALL_LEAVES => Bamboo::SMALL_LEAVES,
-					Values::BAMBOO_LEAF_SIZE_LARGE_LEAVES => Bamboo::LARGE_LEAVES,
+					StringValues::BAMBOO_LEAF_SIZE_NO_LEAVES => Bamboo::NO_LEAVES,
+					StringValues::BAMBOO_LEAF_SIZE_SMALL_LEAVES => Bamboo::SMALL_LEAVES,
+					StringValues::BAMBOO_LEAF_SIZE_LARGE_LEAVES => Bamboo::LARGE_LEAVES,
 					default => throw $in->badValueException(BlockStateNames::BAMBOO_LEAF_SIZE, $value),
 				})
 				->setReady($in->readBool(BlockStateNames::AGE_BIT))
 				->setThick(match($value = $in->readString(BlockStateNames::BAMBOO_STALK_THICKNESS)){
-					Values::BAMBOO_STALK_THICKNESS_THIN => false,
-					Values::BAMBOO_STALK_THICKNESS_THICK => true,
+					StringValues::BAMBOO_STALK_THICKNESS_THIN => false,
+					StringValues::BAMBOO_STALK_THICKNESS_THICK => true,
 					default => throw $in->badValueException(BlockStateNames::BAMBOO_STALK_THICKNESS, $value),
 				});
 		});
@@ -191,10 +191,10 @@ final class BlockStateDeserializer{
 		$this->map(Ids::CHEMICAL_HEAT, fn() => VanillaBlocks::CHEMICAL_HEAT());
 		$this->map(Ids::CHEMISTRY_TABLE, function(BlockStateReader $in) : Block{
 			return (match($type = $in->readString(BlockStateNames::CHEMISTRY_TABLE_TYPE)){
-				Values::CHEMISTRY_TABLE_TYPE_COMPOUND_CREATOR => VanillaBlocks::COMPOUND_CREATOR(),
-				Values::CHEMISTRY_TABLE_TYPE_ELEMENT_CONSTRUCTOR => VanillaBlocks::ELEMENT_CONSTRUCTOR(),
-				Values::CHEMISTRY_TABLE_TYPE_LAB_TABLE => VanillaBlocks::LAB_TABLE(),
-				Values::CHEMISTRY_TABLE_TYPE_MATERIAL_REDUCER => VanillaBlocks::MATERIAL_REDUCER(),
+				StringValues::CHEMISTRY_TABLE_TYPE_COMPOUND_CREATOR => VanillaBlocks::COMPOUND_CREATOR(),
+				StringValues::CHEMISTRY_TABLE_TYPE_ELEMENT_CONSTRUCTOR => VanillaBlocks::ELEMENT_CONSTRUCTOR(),
+				StringValues::CHEMISTRY_TABLE_TYPE_LAB_TABLE => VanillaBlocks::LAB_TABLE(),
+				StringValues::CHEMISTRY_TABLE_TYPE_MATERIAL_REDUCER => VanillaBlocks::MATERIAL_REDUCER(),
 				default => throw $in->badValueException(BlockStateNames::CHEMISTRY_TABLE_TYPE, $type),
 			})->setFacing($in->readLegacyHorizontalFacing());
 		});
@@ -240,8 +240,8 @@ final class BlockStateDeserializer{
 				->setCoralType($in->readCoralType())
 				->setDead($in->readBool(BlockStateNames::DEAD_BIT));
 		});
-		$this->map(Ids::CORAL_FAN, fn(BlockStateReader $in) => Helper::decodeFloorCoralFan(VanillaBlocks::CORAL_FAN(), $in)->setDead(false));
-		$this->map(Ids::CORAL_FAN_DEAD, fn(BlockStateReader $in) => Helper::decodeFloorCoralFan(VanillaBlocks::CORAL_FAN(), $in)->setDead(true));
+		$this->map(Ids::CORAL_FAN, fn(BlockStateReader $in) => Helper::decodeFloorCoralFan($in)->setDead(false));
+		$this->map(Ids::CORAL_FAN_DEAD, fn(BlockStateReader $in) => Helper::decodeFloorCoralFan($in)->setDead(true));
 		$this->map(Ids::CORAL_FAN_HANG, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::WALL_CORAL_FAN()
 				->setCoralType($in->readBool(BlockStateNames::CORAL_HANG_TYPE_BIT) ? CoralType::BRAIN() : CoralType::TUBE())
@@ -299,19 +299,19 @@ final class BlockStateDeserializer{
 		$this->map(Ids::DIRT, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::DIRT()
 				->setCoarse(match($value = $in->readString(BlockStateNames::DIRT_TYPE)){
-					Values::DIRT_TYPE_NORMAL => false,
-					Values::DIRT_TYPE_COARSE => true,
+					StringValues::DIRT_TYPE_NORMAL => false,
+					StringValues::DIRT_TYPE_COARSE => true,
 					default => throw $in->badValueException(BlockStateNames::DIRT_TYPE, $value),
 				});
 		});
 		$this->map(Ids::DOUBLE_PLANT, function(BlockStateReader $in) : Block{
 			return (match($type = $in->readString(BlockStateNames::DOUBLE_PLANT_TYPE)){
-				Values::DOUBLE_PLANT_TYPE_FERN => VanillaBlocks::LARGE_FERN(),
-				Values::DOUBLE_PLANT_TYPE_GRASS => VanillaBlocks::DOUBLE_TALLGRASS(),
-				Values::DOUBLE_PLANT_TYPE_PAEONIA => VanillaBlocks::PEONY(),
-				Values::DOUBLE_PLANT_TYPE_ROSE => VanillaBlocks::ROSE_BUSH(),
-				Values::DOUBLE_PLANT_TYPE_SUNFLOWER => VanillaBlocks::SUNFLOWER(),
-				Values::DOUBLE_PLANT_TYPE_SYRINGA => VanillaBlocks::LILAC(),
+				StringValues::DOUBLE_PLANT_TYPE_FERN => VanillaBlocks::LARGE_FERN(),
+				StringValues::DOUBLE_PLANT_TYPE_GRASS => VanillaBlocks::DOUBLE_TALLGRASS(),
+				StringValues::DOUBLE_PLANT_TYPE_PAEONIA => VanillaBlocks::PEONY(),
+				StringValues::DOUBLE_PLANT_TYPE_ROSE => VanillaBlocks::ROSE_BUSH(),
+				StringValues::DOUBLE_PLANT_TYPE_SUNFLOWER => VanillaBlocks::SUNFLOWER(),
+				StringValues::DOUBLE_PLANT_TYPE_SYRINGA => VanillaBlocks::LILAC(),
 				default => throw $in->badValueException(BlockStateNames::DOUBLE_PLANT_TYPE, $type),
 			})->setTop($in->readBool(BlockStateNames::UPPER_BLOCK_BIT));
 		});
@@ -476,12 +476,12 @@ final class BlockStateDeserializer{
 		});
 		$this->map(Ids::FENCE, function(BlockStateReader $in) : Block{
 			return match($woodName = $in->readString(BlockStateNames::WOOD_TYPE)){
-				Values::WOOD_TYPE_OAK => VanillaBlocks::OAK_FENCE(),
-				Values::WOOD_TYPE_SPRUCE => VanillaBlocks::SPRUCE_FENCE(),
-				Values::WOOD_TYPE_BIRCH => VanillaBlocks::BIRCH_FENCE(),
-				Values::WOOD_TYPE_JUNGLE => VanillaBlocks::JUNGLE_FENCE(),
-				Values::WOOD_TYPE_ACACIA => VanillaBlocks::ACACIA_FENCE(),
-				Values::WOOD_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_FENCE(),
+				StringValues::WOOD_TYPE_OAK => VanillaBlocks::OAK_FENCE(),
+				StringValues::WOOD_TYPE_SPRUCE => VanillaBlocks::SPRUCE_FENCE(),
+				StringValues::WOOD_TYPE_BIRCH => VanillaBlocks::BIRCH_FENCE(),
+				StringValues::WOOD_TYPE_JUNGLE => VanillaBlocks::JUNGLE_FENCE(),
+				StringValues::WOOD_TYPE_ACACIA => VanillaBlocks::ACACIA_FENCE(),
+				StringValues::WOOD_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_FENCE(),
 				default => throw $in->badValueException(BlockStateNames::WOOD_TYPE, $woodName),
 			};
 		});
@@ -590,10 +590,10 @@ final class BlockStateDeserializer{
 		$this->map(Ids::LAVA, fn(BlockStateReader $in) => Helper::decodeStillLiquid(VanillaBlocks::LAVA(), $in));
 		$this->map(Ids::LEAVES, function(BlockStateReader $in) : Block{
 			return (match($type = $in->readString(BlockStateNames::OLD_LEAF_TYPE)){
-					Values::OLD_LEAF_TYPE_BIRCH => VanillaBlocks::BIRCH_LEAVES(),
-					Values::OLD_LEAF_TYPE_JUNGLE => VanillaBlocks::JUNGLE_LEAVES(),
-					Values::OLD_LEAF_TYPE_OAK => VanillaBlocks::OAK_LEAVES(),
-					Values::OLD_LEAF_TYPE_SPRUCE => VanillaBlocks::SPRUCE_LEAVES(),
+					StringValues::OLD_LEAF_TYPE_BIRCH => VanillaBlocks::BIRCH_LEAVES(),
+					StringValues::OLD_LEAF_TYPE_JUNGLE => VanillaBlocks::JUNGLE_LEAVES(),
+					StringValues::OLD_LEAF_TYPE_OAK => VanillaBlocks::OAK_LEAVES(),
+					StringValues::OLD_LEAF_TYPE_SPRUCE => VanillaBlocks::SPRUCE_LEAVES(),
 					default => throw $in->badValueException(BlockStateNames::OLD_LEAF_TYPE, $type),
 				})
 				->setNoDecay($in->readBool(BlockStateNames::PERSISTENT_BIT))
@@ -601,8 +601,8 @@ final class BlockStateDeserializer{
 		});
 		$this->map(Ids::LEAVES2, function(BlockStateReader $in) : Block{
 			return (match($type = $in->readString(BlockStateNames::NEW_LEAF_TYPE)){
-					Values::NEW_LEAF_TYPE_ACACIA => VanillaBlocks::ACACIA_LEAVES(),
-					Values::NEW_LEAF_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_LEAVES(),
+					StringValues::NEW_LEAF_TYPE_ACACIA => VanillaBlocks::ACACIA_LEAVES(),
+					StringValues::NEW_LEAF_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_LEAVES(),
 					default => throw $in->badValueException(BlockStateNames::NEW_LEAF_TYPE, $type),
 				})
 				->setNoDecay($in->readBool(BlockStateNames::PERSISTENT_BIT))
@@ -617,14 +617,14 @@ final class BlockStateDeserializer{
 			return VanillaBlocks::LEVER()
 				->setActivated($in->readBool(BlockStateNames::OPEN_BIT))
 				->setFacing(match($value = $in->readString(BlockStateNames::LEVER_DIRECTION)){
-					Values::LEVER_DIRECTION_DOWN_NORTH_SOUTH => LeverFacing::DOWN_AXIS_Z(),
-					Values::LEVER_DIRECTION_DOWN_EAST_WEST => LeverFacing::DOWN_AXIS_X(),
-					Values::LEVER_DIRECTION_UP_NORTH_SOUTH => LeverFacing::UP_AXIS_Z(),
-					Values::LEVER_DIRECTION_UP_EAST_WEST => LeverFacing::UP_AXIS_X(),
-					Values::LEVER_DIRECTION_NORTH => LeverFacing::NORTH(),
-					Values::LEVER_DIRECTION_SOUTH => LeverFacing::SOUTH(),
-					Values::LEVER_DIRECTION_WEST => LeverFacing::WEST(),
-					Values::LEVER_DIRECTION_EAST => LeverFacing::EAST(),
+					StringValues::LEVER_DIRECTION_DOWN_NORTH_SOUTH => LeverFacing::DOWN_AXIS_Z(),
+					StringValues::LEVER_DIRECTION_DOWN_EAST_WEST => LeverFacing::DOWN_AXIS_X(),
+					StringValues::LEVER_DIRECTION_UP_NORTH_SOUTH => LeverFacing::UP_AXIS_Z(),
+					StringValues::LEVER_DIRECTION_UP_EAST_WEST => LeverFacing::UP_AXIS_X(),
+					StringValues::LEVER_DIRECTION_NORTH => LeverFacing::NORTH(),
+					StringValues::LEVER_DIRECTION_SOUTH => LeverFacing::SOUTH(),
+					StringValues::LEVER_DIRECTION_WEST => LeverFacing::WEST(),
+					StringValues::LEVER_DIRECTION_EAST => LeverFacing::EAST(),
 					default => throw $in->badValueException(BlockStateNames::LEVER_DIRECTION, $value),
 				});
 		});
@@ -663,18 +663,18 @@ final class BlockStateDeserializer{
 		});
 		$this->map(Ids::LOG, function(BlockStateReader $in) : Block{
 			return (match($type = $in->readString(BlockStateNames::OLD_LOG_TYPE)){
-					Values::OLD_LOG_TYPE_BIRCH => VanillaBlocks::BIRCH_LOG(),
-					Values::OLD_LOG_TYPE_JUNGLE => VanillaBlocks::JUNGLE_LOG(),
-					Values::OLD_LOG_TYPE_OAK => VanillaBlocks::OAK_LOG(),
-					Values::OLD_LOG_TYPE_SPRUCE => VanillaBlocks::SPRUCE_LOG(),
+					StringValues::OLD_LOG_TYPE_BIRCH => VanillaBlocks::BIRCH_LOG(),
+					StringValues::OLD_LOG_TYPE_JUNGLE => VanillaBlocks::JUNGLE_LOG(),
+					StringValues::OLD_LOG_TYPE_OAK => VanillaBlocks::OAK_LOG(),
+					StringValues::OLD_LOG_TYPE_SPRUCE => VanillaBlocks::SPRUCE_LOG(),
 					default => throw $in->badValueException(BlockStateNames::OLD_LOG_TYPE, $type),
 				})
 				->setAxis($in->readPillarAxis());
 		});
 		$this->map(Ids::LOG2, function(BlockStateReader $in) : Block{
 			return (match($type = $in->readString(BlockStateNames::NEW_LOG_TYPE)){
-					Values::NEW_LOG_TYPE_ACACIA => VanillaBlocks::ACACIA_LOG(),
-					Values::NEW_LOG_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_LOG(),
+					StringValues::NEW_LOG_TYPE_ACACIA => VanillaBlocks::ACACIA_LOG(),
+					StringValues::NEW_LOG_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_LOG(),
 					default => throw $in->badValueException(BlockStateNames::NEW_LOG_TYPE, $type),
 				})
 				->setAxis($in->readPillarAxis());
@@ -690,12 +690,12 @@ final class BlockStateDeserializer{
 		$this->map(Ids::MOB_SPAWNER, fn() => VanillaBlocks::MONSTER_SPAWNER());
 		$this->map(Ids::MONSTER_EGG, function(BlockStateReader $in) : Block{
 			return match($type = $in->readString(BlockStateNames::MONSTER_EGG_STONE_TYPE)){
-				Values::MONSTER_EGG_STONE_TYPE_CHISELED_STONE_BRICK => VanillaBlocks::INFESTED_CHISELED_STONE_BRICK(),
-				Values::MONSTER_EGG_STONE_TYPE_COBBLESTONE => VanillaBlocks::INFESTED_COBBLESTONE(),
-				Values::MONSTER_EGG_STONE_TYPE_CRACKED_STONE_BRICK => VanillaBlocks::INFESTED_CRACKED_STONE_BRICK(),
-				Values::MONSTER_EGG_STONE_TYPE_MOSSY_STONE_BRICK => VanillaBlocks::INFESTED_MOSSY_STONE_BRICK(),
-				Values::MONSTER_EGG_STONE_TYPE_STONE => VanillaBlocks::INFESTED_STONE(),
-				Values::MONSTER_EGG_STONE_TYPE_STONE_BRICK => VanillaBlocks::INFESTED_STONE_BRICK(),
+				StringValues::MONSTER_EGG_STONE_TYPE_CHISELED_STONE_BRICK => VanillaBlocks::INFESTED_CHISELED_STONE_BRICK(),
+				StringValues::MONSTER_EGG_STONE_TYPE_COBBLESTONE => VanillaBlocks::INFESTED_COBBLESTONE(),
+				StringValues::MONSTER_EGG_STONE_TYPE_CRACKED_STONE_BRICK => VanillaBlocks::INFESTED_CRACKED_STONE_BRICK(),
+				StringValues::MONSTER_EGG_STONE_TYPE_MOSSY_STONE_BRICK => VanillaBlocks::INFESTED_MOSSY_STONE_BRICK(),
+				StringValues::MONSTER_EGG_STONE_TYPE_STONE => VanillaBlocks::INFESTED_STONE(),
+				StringValues::MONSTER_EGG_STONE_TYPE_STONE_BRICK => VanillaBlocks::INFESTED_STONE_BRICK(),
 				default => throw $in->badValueException(BlockStateNames::MONSTER_EGG_STONE_TYPE, $type),
 			};
 		});
@@ -722,12 +722,12 @@ final class BlockStateDeserializer{
 		$this->map(Ids::PINK_GLAZED_TERRACOTTA, fn(BlockStateReader $in) => Helper::decodeGlazedTerracotta(VanillaBlocks::PINK_GLAZED_TERRACOTTA(), $in));
 		$this->map(Ids::PLANKS, function(BlockStateReader $in) : Block{
 			return match($woodName = $in->readString(BlockStateNames::WOOD_TYPE)){
-				Values::WOOD_TYPE_OAK => VanillaBlocks::OAK_PLANKS(),
-				Values::WOOD_TYPE_SPRUCE => VanillaBlocks::SPRUCE_PLANKS(),
-				Values::WOOD_TYPE_BIRCH => VanillaBlocks::BIRCH_PLANKS(),
-				Values::WOOD_TYPE_JUNGLE => VanillaBlocks::JUNGLE_PLANKS(),
-				Values::WOOD_TYPE_ACACIA => VanillaBlocks::ACACIA_PLANKS(),
-				Values::WOOD_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_PLANKS(),
+				StringValues::WOOD_TYPE_OAK => VanillaBlocks::OAK_PLANKS(),
+				StringValues::WOOD_TYPE_SPRUCE => VanillaBlocks::SPRUCE_PLANKS(),
+				StringValues::WOOD_TYPE_BIRCH => VanillaBlocks::BIRCH_PLANKS(),
+				StringValues::WOOD_TYPE_JUNGLE => VanillaBlocks::JUNGLE_PLANKS(),
+				StringValues::WOOD_TYPE_ACACIA => VanillaBlocks::ACACIA_PLANKS(),
+				StringValues::WOOD_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_PLANKS(),
 				default => throw $in->badValueException(BlockStateNames::WOOD_TYPE, $woodName),
 			};
 		});
@@ -738,9 +738,9 @@ final class BlockStateDeserializer{
 		$this->map(Ids::PORTAL, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::NETHER_PORTAL()
 				->setAxis(match($value = $in->readString(BlockStateNames::PORTAL_AXIS)){
-					Values::PORTAL_AXIS_UNKNOWN => Axis::X,
-					Values::PORTAL_AXIS_X => Axis::X,
-					Values::PORTAL_AXIS_Z => Axis::Z,
+					StringValues::PORTAL_AXIS_UNKNOWN => Axis::X,
+					StringValues::PORTAL_AXIS_X => Axis::X,
+					StringValues::PORTAL_AXIS_Z => Axis::Z,
 					default => throw $in->badValueException(BlockStateNames::PORTAL_AXIS, $value),
 				});
 		});
@@ -750,9 +750,9 @@ final class BlockStateDeserializer{
 				->setPowered(true));
 		$this->map(Ids::PRISMARINE, function(BlockStateReader $in) : Block{
 			return match($type = $in->readString(BlockStateNames::PRISMARINE_BLOCK_TYPE)){
-				Values::PRISMARINE_BLOCK_TYPE_BRICKS => VanillaBlocks::PRISMARINE_BRICKS(),
-				Values::PRISMARINE_BLOCK_TYPE_DARK => VanillaBlocks::DARK_PRISMARINE(),
-				Values::PRISMARINE_BLOCK_TYPE_DEFAULT => VanillaBlocks::PRISMARINE(),
+				StringValues::PRISMARINE_BLOCK_TYPE_BRICKS => VanillaBlocks::PRISMARINE_BRICKS(),
+				StringValues::PRISMARINE_BLOCK_TYPE_DARK => VanillaBlocks::DARK_PRISMARINE(),
+				StringValues::PRISMARINE_BLOCK_TYPE_DEFAULT => VanillaBlocks::PRISMARINE(),
 				default => throw $in->badValueException(BlockStateNames::PRISMARINE_BLOCK_TYPE, $type),
 			};
 		});
@@ -766,20 +766,20 @@ final class BlockStateDeserializer{
 		$this->map(Ids::PURPLE_GLAZED_TERRACOTTA, fn(BlockStateReader $in) => Helper::decodeGlazedTerracotta(VanillaBlocks::PURPLE_GLAZED_TERRACOTTA(), $in));
 		$this->map(Ids::PURPUR_BLOCK, function(BlockStateReader $in) : Block{
 			return match($type = $in->readString(BlockStateNames::CHISEL_TYPE)){
-				Values::CHISEL_TYPE_CHISELED, //TODO: bug in MCPE
-				Values::CHISEL_TYPE_SMOOTH, //TODO: bug in MCPE
-				Values::CHISEL_TYPE_DEFAULT => VanillaBlocks::PURPUR(), //TODO: axis intentionally ignored (useless)
-				Values::CHISEL_TYPE_LINES => VanillaBlocks::PURPUR_PILLAR()->setAxis($in->readPillarAxis()),
+				StringValues::CHISEL_TYPE_CHISELED, //TODO: bug in MCPE
+				StringValues::CHISEL_TYPE_SMOOTH, //TODO: bug in MCPE
+				StringValues::CHISEL_TYPE_DEFAULT => VanillaBlocks::PURPUR(), //TODO: axis intentionally ignored (useless)
+				StringValues::CHISEL_TYPE_LINES => VanillaBlocks::PURPUR_PILLAR()->setAxis($in->readPillarAxis()),
 				default => throw $in->badValueException(BlockStateNames::CHISEL_TYPE, $type),
 			};
 		});
 		$this->map(Ids::PURPUR_STAIRS, fn(BlockStateReader $in) => Helper::decodeStairs(VanillaBlocks::PURPUR_STAIRS(), $in));
 		$this->map(Ids::QUARTZ_BLOCK, function(BlockStateReader $in) : Block{
 			return match($type = $in->readString(BlockStateNames::CHISEL_TYPE)){
-				Values::CHISEL_TYPE_CHISELED => VanillaBlocks::CHISELED_QUARTZ()->setAxis($in->readPillarAxis()),
-				Values::CHISEL_TYPE_DEFAULT => VanillaBlocks::QUARTZ(), //TODO: axis intentionally ignored (useless)
-				Values::CHISEL_TYPE_LINES => VanillaBlocks::QUARTZ_PILLAR()->setAxis($in->readPillarAxis()),
-				Values::CHISEL_TYPE_SMOOTH => VanillaBlocks::SMOOTH_QUARTZ(), //TODO: axis intentionally ignored (useless)
+				StringValues::CHISEL_TYPE_CHISELED => VanillaBlocks::CHISELED_QUARTZ()->setAxis($in->readPillarAxis()),
+				StringValues::CHISEL_TYPE_DEFAULT => VanillaBlocks::QUARTZ(), //TODO: axis intentionally ignored (useless)
+				StringValues::CHISEL_TYPE_LINES => VanillaBlocks::QUARTZ_PILLAR()->setAxis($in->readPillarAxis()),
+				StringValues::CHISEL_TYPE_SMOOTH => VanillaBlocks::SMOOTH_QUARTZ(), //TODO: axis intentionally ignored (useless)
 				default => throw $in->badValueException(BlockStateNames::CHISEL_TYPE, $type),
 			};
 		});
@@ -791,17 +791,17 @@ final class BlockStateDeserializer{
 		});
 		$this->map(Ids::RED_FLOWER, function(BlockStateReader $in) : Block{
 			return match($type = $in->readString(BlockStateNames::FLOWER_TYPE)){
-				Values::FLOWER_TYPE_ALLIUM => VanillaBlocks::ALLIUM(),
-				Values::FLOWER_TYPE_CORNFLOWER => VanillaBlocks::CORNFLOWER(),
-				Values::FLOWER_TYPE_HOUSTONIA => VanillaBlocks::AZURE_BLUET(), //wtf ???
-				Values::FLOWER_TYPE_LILY_OF_THE_VALLEY => VanillaBlocks::LILY_OF_THE_VALLEY(),
-				Values::FLOWER_TYPE_ORCHID => VanillaBlocks::BLUE_ORCHID(),
-				Values::FLOWER_TYPE_OXEYE => VanillaBlocks::OXEYE_DAISY(),
-				Values::FLOWER_TYPE_POPPY => VanillaBlocks::POPPY(),
-				Values::FLOWER_TYPE_TULIP_ORANGE => VanillaBlocks::ORANGE_TULIP(),
-				Values::FLOWER_TYPE_TULIP_PINK => VanillaBlocks::PINK_TULIP(),
-				Values::FLOWER_TYPE_TULIP_RED => VanillaBlocks::RED_TULIP(),
-				Values::FLOWER_TYPE_TULIP_WHITE => VanillaBlocks::WHITE_TULIP(),
+				StringValues::FLOWER_TYPE_ALLIUM => VanillaBlocks::ALLIUM(),
+				StringValues::FLOWER_TYPE_CORNFLOWER => VanillaBlocks::CORNFLOWER(),
+				StringValues::FLOWER_TYPE_HOUSTONIA => VanillaBlocks::AZURE_BLUET(), //wtf ???
+				StringValues::FLOWER_TYPE_LILY_OF_THE_VALLEY => VanillaBlocks::LILY_OF_THE_VALLEY(),
+				StringValues::FLOWER_TYPE_ORCHID => VanillaBlocks::BLUE_ORCHID(),
+				StringValues::FLOWER_TYPE_OXEYE => VanillaBlocks::OXEYE_DAISY(),
+				StringValues::FLOWER_TYPE_POPPY => VanillaBlocks::POPPY(),
+				StringValues::FLOWER_TYPE_TULIP_ORANGE => VanillaBlocks::ORANGE_TULIP(),
+				StringValues::FLOWER_TYPE_TULIP_PINK => VanillaBlocks::PINK_TULIP(),
+				StringValues::FLOWER_TYPE_TULIP_RED => VanillaBlocks::RED_TULIP(),
+				StringValues::FLOWER_TYPE_TULIP_WHITE => VanillaBlocks::WHITE_TULIP(),
 				default => throw $in->badValueException(BlockStateNames::FLOWER_TYPE, $type),
 			};
 		});
@@ -812,10 +812,10 @@ final class BlockStateDeserializer{
 		$this->map(Ids::RED_NETHER_BRICK_STAIRS, fn(BlockStateReader $in) => Helper::decodeStairs(VanillaBlocks::RED_NETHER_BRICK_STAIRS(), $in));
 		$this->map(Ids::RED_SANDSTONE, function(BlockStateReader $in) : Block{
 			return match($type = $in->readString(BlockStateNames::SAND_STONE_TYPE)){
-				Values::SAND_STONE_TYPE_CUT => VanillaBlocks::CUT_RED_SANDSTONE(),
-				Values::SAND_STONE_TYPE_DEFAULT => VanillaBlocks::RED_SANDSTONE(),
-				Values::SAND_STONE_TYPE_HEIROGLYPHS => VanillaBlocks::CHISELED_RED_SANDSTONE(),
-				Values::SAND_STONE_TYPE_SMOOTH => VanillaBlocks::SMOOTH_RED_SANDSTONE(),
+				StringValues::SAND_STONE_TYPE_CUT => VanillaBlocks::CUT_RED_SANDSTONE(),
+				StringValues::SAND_STONE_TYPE_DEFAULT => VanillaBlocks::RED_SANDSTONE(),
+				StringValues::SAND_STONE_TYPE_HEIROGLYPHS => VanillaBlocks::CHISELED_RED_SANDSTONE(),
+				StringValues::SAND_STONE_TYPE_SMOOTH => VanillaBlocks::SMOOTH_RED_SANDSTONE(),
 				default => throw $in->badValueException(BlockStateNames::SAND_STONE_TYPE, $type),
 			};
 		});
@@ -845,29 +845,29 @@ final class BlockStateDeserializer{
 		$this->map(Ids::RESERVED6, fn() => VanillaBlocks::RESERVED6());
 		$this->map(Ids::SAND, function(BlockStateReader $in) : Block{
 			return match($value = $in->readString(BlockStateNames::SAND_TYPE)){
-				Values::SAND_TYPE_NORMAL => VanillaBlocks::SAND(),
-				Values::SAND_TYPE_RED => VanillaBlocks::RED_SAND(),
+				StringValues::SAND_TYPE_NORMAL => VanillaBlocks::SAND(),
+				StringValues::SAND_TYPE_RED => VanillaBlocks::RED_SAND(),
 				default => throw $in->badValueException(BlockStateNames::SAND_TYPE, $value),
 			};
 		});
 		$this->map(Ids::SANDSTONE, function(BlockStateReader $in) : Block{
 			return match($type = $in->readString(BlockStateNames::SAND_STONE_TYPE)){
-				Values::SAND_STONE_TYPE_CUT => VanillaBlocks::CUT_SANDSTONE(),
-				Values::SAND_STONE_TYPE_DEFAULT => VanillaBlocks::SANDSTONE(),
-				Values::SAND_STONE_TYPE_HEIROGLYPHS => VanillaBlocks::CHISELED_SANDSTONE(),
-				Values::SAND_STONE_TYPE_SMOOTH => VanillaBlocks::SMOOTH_SANDSTONE(),
+				StringValues::SAND_STONE_TYPE_CUT => VanillaBlocks::CUT_SANDSTONE(),
+				StringValues::SAND_STONE_TYPE_DEFAULT => VanillaBlocks::SANDSTONE(),
+				StringValues::SAND_STONE_TYPE_HEIROGLYPHS => VanillaBlocks::CHISELED_SANDSTONE(),
+				StringValues::SAND_STONE_TYPE_SMOOTH => VanillaBlocks::SMOOTH_SANDSTONE(),
 				default => throw $in->badValueException(BlockStateNames::SAND_STONE_TYPE, $type),
 			};
 		});
 		$this->map(Ids::SANDSTONE_STAIRS, fn(BlockStateReader $in) => Helper::decodeStairs(VanillaBlocks::SANDSTONE_STAIRS(), $in));
 		$this->map(Ids::SAPLING, function(BlockStateReader $in) : Block{
 			return (match($type = $in->readString(BlockStateNames::SAPLING_TYPE)){
-					Values::SAPLING_TYPE_ACACIA => VanillaBlocks::ACACIA_SAPLING(),
-					Values::SAPLING_TYPE_BIRCH => VanillaBlocks::BIRCH_SAPLING(),
-					Values::SAPLING_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_SAPLING(),
-					Values::SAPLING_TYPE_JUNGLE => VanillaBlocks::JUNGLE_SAPLING(),
-					Values::SAPLING_TYPE_OAK => VanillaBlocks::OAK_SAPLING(),
-					Values::SAPLING_TYPE_SPRUCE => VanillaBlocks::SPRUCE_SAPLING(),
+					StringValues::SAPLING_TYPE_ACACIA => VanillaBlocks::ACACIA_SAPLING(),
+					StringValues::SAPLING_TYPE_BIRCH => VanillaBlocks::BIRCH_SAPLING(),
+					StringValues::SAPLING_TYPE_DARK_OAK => VanillaBlocks::DARK_OAK_SAPLING(),
+					StringValues::SAPLING_TYPE_JUNGLE => VanillaBlocks::JUNGLE_SAPLING(),
+					StringValues::SAPLING_TYPE_OAK => VanillaBlocks::OAK_SAPLING(),
+					StringValues::SAPLING_TYPE_SPRUCE => VanillaBlocks::SPRUCE_SAPLING(),
 					default => throw $in->badValueException(BlockStateNames::SAPLING_TYPE, $type),
 				})
 				->setReady($in->readBool(BlockStateNames::AGE_BIT));
@@ -906,8 +906,8 @@ final class BlockStateDeserializer{
 		$this->map(Ids::SOUL_SAND, fn() => VanillaBlocks::SOUL_SAND());
 		$this->map(Ids::SPONGE, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::SPONGE()->setWet(match($type = $in->readString(BlockStateNames::SPONGE_TYPE)){
-				Values::SPONGE_TYPE_DRY => false,
-				Values::SPONGE_TYPE_WET => true,
+				StringValues::SPONGE_TYPE_DRY => false,
+				StringValues::SPONGE_TYPE_WET => true,
 				default => throw $in->badValueException(BlockStateNames::SPONGE_TYPE, $type),
 			});
 		});
@@ -947,13 +947,13 @@ final class BlockStateDeserializer{
 		});
 		$this->map(Ids::STONE, function(BlockStateReader $in) : Block{
 			return match($type = $in->readString(BlockStateNames::STONE_TYPE)){
-				Values::STONE_TYPE_ANDESITE => VanillaBlocks::ANDESITE(),
-				Values::STONE_TYPE_ANDESITE_SMOOTH => VanillaBlocks::POLISHED_ANDESITE(),
-				Values::STONE_TYPE_DIORITE => VanillaBlocks::DIORITE(),
-				Values::STONE_TYPE_DIORITE_SMOOTH => VanillaBlocks::POLISHED_DIORITE(),
-				Values::STONE_TYPE_GRANITE => VanillaBlocks::GRANITE(),
-				Values::STONE_TYPE_GRANITE_SMOOTH => VanillaBlocks::POLISHED_GRANITE(),
-				Values::STONE_TYPE_STONE => VanillaBlocks::STONE(),
+				StringValues::STONE_TYPE_ANDESITE => VanillaBlocks::ANDESITE(),
+				StringValues::STONE_TYPE_ANDESITE_SMOOTH => VanillaBlocks::POLISHED_ANDESITE(),
+				StringValues::STONE_TYPE_DIORITE => VanillaBlocks::DIORITE(),
+				StringValues::STONE_TYPE_DIORITE_SMOOTH => VanillaBlocks::POLISHED_DIORITE(),
+				StringValues::STONE_TYPE_GRANITE => VanillaBlocks::GRANITE(),
+				StringValues::STONE_TYPE_GRANITE_SMOOTH => VanillaBlocks::POLISHED_GRANITE(),
+				StringValues::STONE_TYPE_STONE => VanillaBlocks::STONE(),
 				default => throw $in->badValueException(BlockStateNames::STONE_TYPE, $type),
 			};
 		});
@@ -967,11 +967,11 @@ final class BlockStateDeserializer{
 		$this->map(Ids::STONE_STAIRS, fn(BlockStateReader $in) => Helper::decodeStairs(VanillaBlocks::COBBLESTONE_STAIRS(), $in));
 		$this->map(Ids::STONEBRICK, function(BlockStateReader $in) : Block{
 			return match($type = $in->readString(BlockStateNames::STONE_BRICK_TYPE)){
-				Values::STONE_BRICK_TYPE_SMOOTH, //TODO: bug in vanilla
-				Values::STONE_BRICK_TYPE_DEFAULT => VanillaBlocks::STONE_BRICKS(),
-				Values::STONE_BRICK_TYPE_CHISELED => VanillaBlocks::CHISELED_STONE_BRICKS(),
-				Values::STONE_BRICK_TYPE_CRACKED => VanillaBlocks::CRACKED_STONE_BRICKS(),
-				Values::STONE_BRICK_TYPE_MOSSY => VanillaBlocks::MOSSY_STONE_BRICKS(),
+				StringValues::STONE_BRICK_TYPE_SMOOTH, //TODO: bug in vanilla
+				StringValues::STONE_BRICK_TYPE_DEFAULT => VanillaBlocks::STONE_BRICKS(),
+				StringValues::STONE_BRICK_TYPE_CHISELED => VanillaBlocks::CHISELED_STONE_BRICKS(),
+				StringValues::STONE_BRICK_TYPE_CRACKED => VanillaBlocks::CRACKED_STONE_BRICKS(),
+				StringValues::STONE_BRICK_TYPE_MOSSY => VanillaBlocks::MOSSY_STONE_BRICKS(),
 				default => throw $in->badValueException(BlockStateNames::STONE_BRICK_TYPE, $type),
 			};
 		});
@@ -1008,8 +1008,8 @@ final class BlockStateDeserializer{
 		});
 		$this->map(Ids::TALLGRASS, function(BlockStateReader $in) : Block{
 			return match($type = $in->readString(BlockStateNames::TALL_GRASS_TYPE)){
-				Values::TALL_GRASS_TYPE_DEFAULT, Values::TALL_GRASS_TYPE_SNOW, Values::TALL_GRASS_TYPE_TALL => VanillaBlocks::TALL_GRASS(),
-				Values::TALL_GRASS_TYPE_FERN => VanillaBlocks::FERN(),
+				StringValues::TALL_GRASS_TYPE_DEFAULT, StringValues::TALL_GRASS_TYPE_SNOW, StringValues::TALL_GRASS_TYPE_TALL => VanillaBlocks::TALL_GRASS(),
+				StringValues::TALL_GRASS_TYPE_FERN => VanillaBlocks::FERN(),
 				default => throw $in->badValueException(BlockStateNames::TALL_GRASS_TYPE, $type),
 			};
 		});
@@ -1078,12 +1078,12 @@ final class BlockStateDeserializer{
 			//TODO: our impl doesn't support axis yet
 			$stripped = $in->readBool(BlockStateNames::STRIPPED_BIT);
 			return match($woodType = $in->readString(BlockStateNames::WOOD_TYPE)){
-				Values::WOOD_TYPE_ACACIA => $stripped ? VanillaBlocks::STRIPPED_ACACIA_WOOD() : VanillaBlocks::ACACIA_WOOD(),
-				Values::WOOD_TYPE_BIRCH => $stripped ? VanillaBlocks::STRIPPED_BIRCH_WOOD() : VanillaBlocks::BIRCH_WOOD(),
-				Values::WOOD_TYPE_DARK_OAK => $stripped ? VanillaBlocks::STRIPPED_DARK_OAK_WOOD() : VanillaBlocks::DARK_OAK_WOOD(),
-				Values::WOOD_TYPE_JUNGLE => $stripped ? VanillaBlocks::STRIPPED_JUNGLE_WOOD() : VanillaBlocks::JUNGLE_WOOD(),
-				Values::WOOD_TYPE_OAK => $stripped ? VanillaBlocks::STRIPPED_OAK_WOOD() : VanillaBlocks::OAK_WOOD(),
-				Values::WOOD_TYPE_SPRUCE => $stripped ? VanillaBlocks::STRIPPED_SPRUCE_WOOD() : VanillaBlocks::SPRUCE_WOOD(),
+				StringValues::WOOD_TYPE_ACACIA => $stripped ? VanillaBlocks::STRIPPED_ACACIA_WOOD() : VanillaBlocks::ACACIA_WOOD(),
+				StringValues::WOOD_TYPE_BIRCH => $stripped ? VanillaBlocks::STRIPPED_BIRCH_WOOD() : VanillaBlocks::BIRCH_WOOD(),
+				StringValues::WOOD_TYPE_DARK_OAK => $stripped ? VanillaBlocks::STRIPPED_DARK_OAK_WOOD() : VanillaBlocks::DARK_OAK_WOOD(),
+				StringValues::WOOD_TYPE_JUNGLE => $stripped ? VanillaBlocks::STRIPPED_JUNGLE_WOOD() : VanillaBlocks::JUNGLE_WOOD(),
+				StringValues::WOOD_TYPE_OAK => $stripped ? VanillaBlocks::STRIPPED_OAK_WOOD() : VanillaBlocks::OAK_WOOD(),
+				StringValues::WOOD_TYPE_SPRUCE => $stripped ? VanillaBlocks::STRIPPED_SPRUCE_WOOD() : VanillaBlocks::SPRUCE_WOOD(),
 				default => throw $in->badValueException(BlockStateNames::WOOD_TYPE, $woodType),
 			};
 		});
