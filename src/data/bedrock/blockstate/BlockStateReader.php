@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock\blockstate;
 
-use pocketmine\block\BlockLegacyMetadata;
 use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
