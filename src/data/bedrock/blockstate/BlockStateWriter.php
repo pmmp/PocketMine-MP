@@ -118,6 +118,20 @@ final class BlockStateWriter{
 		return $this;
 	}
 
+	/**
+	 * This is for trapdoors, because Mojang botched the conversion in 1.13
+	 * @return $this
+	 */
+	public function write5MinusHorizontalFacing(int $value) : self{
+		return $this->writeInt(BlockStateNames::DIRECTION, match($value){
+			Facing::EAST => 0,
+			Facing::WEST => 1,
+			Facing::SOUTH => 2,
+			Facing::NORTH => 3,
+			default => throw new BlockStateSerializeException("Invalid horizontal facing $value")
+		});
+	}
+
 	/** @return $this */
 	public function writeColor(DyeColor $color) : self{
 		$this->writeString(BlockStateNames::COLOR, match($color->id()){

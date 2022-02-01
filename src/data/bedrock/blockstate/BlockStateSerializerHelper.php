@@ -237,7 +237,7 @@ final class BlockStateSerializerHelper{
 
 	public static function encodeTrapdoor(Trapdoor $block, BlockStateWriter $out) : BlockStateWriter{
 		return $out
-			->writeLegacyHorizontalFacing($block->getFacing())
+			->write5MinusHorizontalFacing($block->getFacing())
 			->writeBool(BlockStateNames::UPSIDE_DOWN_BIT, $block->isTop())
 			->writeBool(BlockStateNames::OPEN_BIT, $block->isOpen());
 	}

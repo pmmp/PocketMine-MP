@@ -186,7 +186,7 @@ final class BlockStateDeserializerHelper{
 	/** @throws BlockStateDeserializeException */
 	public static function decodeTrapdoor(Trapdoor $block, BlockStateReader $in) : Trapdoor{
 		return $block
-			->setFacing($in->readLegacyHorizontalFacing())
+			->setFacing($in->read5MinusHorizontalFacing())
 			->setTop($in->readBool(BlockStateNames::UPSIDE_DOWN_BIT))
 			->setOpen($in->readBool(BlockStateNames::OPEN_BIT));
 	}

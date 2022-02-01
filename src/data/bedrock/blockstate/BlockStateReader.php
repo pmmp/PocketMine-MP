@@ -158,6 +158,19 @@ final class BlockStateReader{
 		]);
 	}
 
+	/**
+	 * This is for trapdoors, because Mojang botched the conversion in 1.13
+	 * @throws BlockStateDeserializeException
+	 */
+	public function read5MinusHorizontalFacing() : int{
+		return $this->parseFacingValue($this->readInt(BlockStateNames::DIRECTION), [
+			0 => Facing::EAST,
+			1 => Facing::WEST,
+			2 => Facing::SOUTH,
+			3 => Facing::NORTH
+		]);
+	}
+
 	/** @throws BlockStateDeserializeException */
 	public function readColor() : DyeColor{
 		//	 * color (StringTag) = black, blue, brown, cyan, gray, green, light_blue, lime, magenta, orange, pink, purple, red, silver, white, yellow
