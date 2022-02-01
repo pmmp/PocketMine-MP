@@ -25,7 +25,10 @@ namespace pocketmine\network\mcpe\serializer;
 
 use pocketmine\block\tile\Spawnable;
 use pocketmine\data\bedrock\BiomeIds;
+use pocketmine\data\bedrock\blockstate\BlockStateData;
+use pocketmine\data\bedrock\blockstate\BlockTypeNames;
 use pocketmine\data\bedrock\LegacyBiomeIdToStringIdMap;
+use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
@@ -97,6 +100,8 @@ final class ChunkSerializer{
 
 		$stream->putByte(count($layers));
 
+		$blockStateDictionary = $blockMapper->getBlockStateDictionary();
+
 		foreach($layers as $blocks){
 			$bitsPerBlock = $blocks->getBitsPerBlock();
 			$words = $blocks->getWordArray();
@@ -113,7 +118,13 @@ final class ChunkSerializer{
 			if($persistentBlockStates){
 				$nbtSerializer = new NetworkNbtSerializer();
 				foreach($palette as $p){
-					$stream->put($nbtSerializer->write(new TreeRoot($blockMapper->getBedrockKnownStates()[$blockMapper->toRuntimeId($p)])));
+					//TODO: introduce a binary cache for this
+					$state = $blockStateDictionary->getDataFromStateId($blockMapper->toRuntimeId($p));
+					if($state === null){
+						$state = $blockMapper->getFallbackStateData();
+					}
+
+					$stream->put($nbtSerializer->write(new TreeRoot($state->toNbt())));
 				}
 			}else{
 				foreach($palette as $p){
