@@ -27,6 +27,7 @@ use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SlabType;
+use pocketmine\block\utils\TreeType;
 use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -40,6 +41,10 @@ final class BlockStateWriter{
 		private string $id
 	){
 		$this->states = CompoundTag::create();
+	}
+
+	public static function create(string $id) : self{
+		return new self($id);
 	}
 
 	/** @return $this */
@@ -191,6 +196,20 @@ final class BlockStateWriter{
 			Facing::WEST => StringValues::TORCH_FACING_DIRECTION_WEST,
 			Facing::EAST => StringValues::TORCH_FACING_DIRECTION_EAST,
 			default => throw new BlockStateSerializeException("Invalid Torch facing $facing")
+		});
+		return $this;
+	}
+
+	/** @return $this */
+	public function writeTreeType(TreeType $treeType) : self{
+		$this->writeString(BlockStateNames::WOOD_TYPE, match($treeType->id()){
+			TreeType::OAK()->id() => StringValues::WOOD_TYPE_OAK,
+			TreeType::SPRUCE()->id() => StringValues::WOOD_TYPE_SPRUCE,
+			TreeType::BIRCH()->id() => StringValues::WOOD_TYPE_BIRCH,
+			TreeType::JUNGLE()->id() => StringValues::WOOD_TYPE_JUNGLE,
+			TreeType::ACACIA()->id() => StringValues::WOOD_TYPE_ACACIA,
+			TreeType::DARK_OAK()->id() => StringValues::WOOD_TYPE_DARK_OAK,
+			default => throw new BlockStateSerializeException("Invalid Tree type " . $treeType->name())
 		});
 		return $this;
 	}
