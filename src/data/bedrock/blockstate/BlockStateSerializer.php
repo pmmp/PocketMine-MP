@@ -242,22 +242,22 @@ final class BlockStateSerializer{
 			return Writer::create(Ids::ANVIL)
 				->writeLegacyHorizontalFacing($block->getFacing())
 				->writeString(BlockStateNames::DAMAGE, match($damage = $block->getDamage()){
-				0 => StringValues::DAMAGE_UNDAMAGED,
-				1 => StringValues::DAMAGE_SLIGHTLY_DAMAGED,
-				2 => StringValues::DAMAGE_VERY_DAMAGED,
-				default => throw new BlockStateSerializeException("Invalid Anvil damage {$damage}"),
-			});
+					0 => StringValues::DAMAGE_UNDAMAGED,
+					1 => StringValues::DAMAGE_SLIGHTLY_DAMAGED,
+					2 => StringValues::DAMAGE_VERY_DAMAGED,
+					default => throw new BlockStateSerializeException("Invalid Anvil damage {$damage}"),
+				});
 		});
 		$this->map(VanillaBlocks::AZURE_BLUET(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_HOUSTONIA));
 		$this->map(VanillaBlocks::BAMBOO(), function(Bamboo $block) : Writer{
 			return Writer::create(Ids::BAMBOO)
 				->writeBool(BlockStateNames::AGE_BIT, $block->isReady())
 				->writeString(BlockStateNames::BAMBOO_LEAF_SIZE, match($block->getLeafSize()){
-				Bamboo::NO_LEAVES => StringValues::BAMBOO_LEAF_SIZE_NO_LEAVES,
-				Bamboo::SMALL_LEAVES => StringValues::BAMBOO_LEAF_SIZE_SMALL_LEAVES,
-				Bamboo::LARGE_LEAVES => StringValues::BAMBOO_LEAF_SIZE_LARGE_LEAVES,
-				default => throw new BlockStateSerializeException("Invalid Bamboo leaf thickness " . $block->getLeafSize()),
-			})
+					Bamboo::NO_LEAVES => StringValues::BAMBOO_LEAF_SIZE_NO_LEAVES,
+					Bamboo::SMALL_LEAVES => StringValues::BAMBOO_LEAF_SIZE_SMALL_LEAVES,
+					Bamboo::LARGE_LEAVES => StringValues::BAMBOO_LEAF_SIZE_LARGE_LEAVES,
+					default => throw new BlockStateSerializeException("Invalid Bamboo leaf thickness " . $block->getLeafSize()),
+				})
 				->writeString(BlockStateNames::BAMBOO_STALK_THICKNESS, $block->isThick() ? StringValues::BAMBOO_STALK_THICKNESS_THICK : StringValues::BAMBOO_STALK_THICKNESS_THIN);
 		});
 		$this->map(VanillaBlocks::BAMBOO_SAPLING(), function(BambooSapling $block) : Writer{
@@ -400,10 +400,10 @@ final class BlockStateSerializer{
 			return Writer::create($block->isDead() ? Ids::CORAL_FAN_DEAD : Ids::CORAL_FAN)
 				->writeCoralType($block->getCoralType())
 				->writeInt(BlockStateNames::CORAL_FAN_DIRECTION, match($axis = $block->getAxis()){
-				Axis::X => 0,
-				Axis::Z => 1,
-				default => throw new BlockStateSerializeException("Invalid axis {$axis}"),
-			});
+					Axis::X => 0,
+					Axis::Z => 1,
+					default => throw new BlockStateSerializeException("Invalid axis {$axis}"),
+				});
 		});
 		$this->map(VanillaBlocks::CORNFLOWER(), fn() => Helper::encodeRedFlower(StringValues::FLOWER_TYPE_CORNFLOWER));
 		$this->map(VanillaBlocks::CRACKED_STONE_BRICKS(), fn() => Helper::encodeStoneBricks(StringValues::STONE_BRICK_TYPE_CRACKED));
@@ -722,16 +722,16 @@ final class BlockStateSerializer{
 			return Writer::create(Ids::LEVER)
 				->writeBool(BlockStateNames::OPEN_BIT, $block->isActivated())
 				->writeString(BlockStateNames::LEVER_DIRECTION, match($block->getFacing()->id()){
-				LeverFacing::DOWN_AXIS_Z()->id() => StringValues::LEVER_DIRECTION_DOWN_NORTH_SOUTH,
-				LeverFacing::DOWN_AXIS_X()->id() => StringValues::LEVER_DIRECTION_DOWN_EAST_WEST,
-				LeverFacing::UP_AXIS_Z()->id() => StringValues::LEVER_DIRECTION_UP_NORTH_SOUTH,
-				LeverFacing::UP_AXIS_X()->id() => StringValues::LEVER_DIRECTION_UP_EAST_WEST,
-				LeverFacing::NORTH()->id() => StringValues::LEVER_DIRECTION_NORTH,
-				LeverFacing::SOUTH()->id() => StringValues::LEVER_DIRECTION_SOUTH,
-				LeverFacing::WEST()->id() => StringValues::LEVER_DIRECTION_WEST,
-				LeverFacing::EAST()->id() => StringValues::LEVER_DIRECTION_EAST,
-				default => throw new BlockStateSerializeException("Invalid Lever facing " . $block->getFacing()->name()),
-			});
+					LeverFacing::DOWN_AXIS_Z()->id() => StringValues::LEVER_DIRECTION_DOWN_NORTH_SOUTH,
+					LeverFacing::DOWN_AXIS_X()->id() => StringValues::LEVER_DIRECTION_DOWN_EAST_WEST,
+					LeverFacing::UP_AXIS_Z()->id() => StringValues::LEVER_DIRECTION_UP_NORTH_SOUTH,
+					LeverFacing::UP_AXIS_X()->id() => StringValues::LEVER_DIRECTION_UP_EAST_WEST,
+					LeverFacing::NORTH()->id() => StringValues::LEVER_DIRECTION_NORTH,
+					LeverFacing::SOUTH()->id() => StringValues::LEVER_DIRECTION_SOUTH,
+					LeverFacing::WEST()->id() => StringValues::LEVER_DIRECTION_WEST,
+					LeverFacing::EAST()->id() => StringValues::LEVER_DIRECTION_EAST,
+					default => throw new BlockStateSerializeException("Invalid Lever facing " . $block->getFacing()->name()),
+				});
 		});
 		$this->map(VanillaBlocks::LIGHT_BLUE_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::LIGHT_BLUE_GLAZED_TERRACOTTA)));
 		$this->map(VanillaBlocks::LIGHT_GRAY_GLAZED_TERRACOTTA(), fn(GlazedTerracotta $block) => Helper::encodeGlazedTerracotta($block, new Writer(Ids::SILVER_GLAZED_TERRACOTTA)));
@@ -778,10 +778,10 @@ final class BlockStateSerializer{
 		$this->map(VanillaBlocks::NETHER_PORTAL(), function(NetherPortal $block) : Writer{
 			return Writer::create(Ids::PORTAL)
 				->writeString(BlockStateNames::PORTAL_AXIS, match($block->getAxis()){
-				Axis::X => StringValues::PORTAL_AXIS_X,
-				Axis::Z => StringValues::PORTAL_AXIS_Z,
-				default => throw new BlockStateSerializeException("Invalid Nether Portal axis " . $block->getAxis()),
-			});
+					Axis::X => StringValues::PORTAL_AXIS_X,
+					Axis::Z => StringValues::PORTAL_AXIS_Z,
+					default => throw new BlockStateSerializeException("Invalid Nether Portal axis " . $block->getAxis()),
+				});
 		});
 		$this->map(VanillaBlocks::NETHER_QUARTZ_ORE(), fn() => new Writer(Ids::QUARTZ_ORE));
 		$this->map(VanillaBlocks::NETHER_REACTOR_CORE(), fn() => new Writer(Ids::NETHERREACTOR));
