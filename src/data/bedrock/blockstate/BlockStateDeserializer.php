@@ -2499,9 +2499,7 @@ final class BlockStateDeserializer{
 	}
 
 	/** @throws BlockStateDeserializeException */
-	public function deserialize(CompoundTag $blockState) : Block{
-		$blockStateData = BlockStateData::fromNbt($blockState);
-
+	public function deserialize(BlockStateData $blockStateData) : Block{
 		$id = $blockStateData->getName();
 		if(!array_key_exists($id, $this->deserializeFuncs)){
 			throw new BlockStateDeserializeException("Unknown block ID \"$id\"");
