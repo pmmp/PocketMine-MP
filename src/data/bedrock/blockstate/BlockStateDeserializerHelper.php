@@ -216,6 +216,27 @@ final class BlockStateDeserializerHelper{
 	}
 
 	/** @throws BlockStateDeserializeException */
+	public static function mapLegacyWallType(BlockStateReader $in) : Wall{
+		return self::decodeWall(match($type = $in->readString(BlockStateNames::WALL_BLOCK_TYPE)){
+			StringValues::WALL_BLOCK_TYPE_ANDESITE => VanillaBlocks::ANDESITE_WALL(),
+			StringValues::WALL_BLOCK_TYPE_BRICK => VanillaBlocks::BRICK_WALL(),
+			StringValues::WALL_BLOCK_TYPE_COBBLESTONE => VanillaBlocks::COBBLESTONE_WALL(),
+			StringValues::WALL_BLOCK_TYPE_DIORITE => VanillaBlocks::DIORITE_WALL(),
+			StringValues::WALL_BLOCK_TYPE_END_BRICK => VanillaBlocks::END_STONE_BRICK_WALL(),
+			StringValues::WALL_BLOCK_TYPE_GRANITE => VanillaBlocks::GRANITE_WALL(),
+			StringValues::WALL_BLOCK_TYPE_MOSSY_COBBLESTONE => VanillaBlocks::MOSSY_COBBLESTONE_WALL(),
+			StringValues::WALL_BLOCK_TYPE_MOSSY_STONE_BRICK => VanillaBlocks::MOSSY_STONE_BRICK_WALL(),
+			StringValues::WALL_BLOCK_TYPE_NETHER_BRICK => VanillaBlocks::NETHER_BRICK_WALL(),
+			StringValues::WALL_BLOCK_TYPE_PRISMARINE => VanillaBlocks::PRISMARINE_WALL(),
+			StringValues::WALL_BLOCK_TYPE_RED_NETHER_BRICK => VanillaBlocks::RED_NETHER_BRICK_WALL(),
+			StringValues::WALL_BLOCK_TYPE_RED_SANDSTONE => VanillaBlocks::RED_SANDSTONE_WALL(),
+			StringValues::WALL_BLOCK_TYPE_SANDSTONE => VanillaBlocks::SANDSTONE_WALL(),
+			StringValues::WALL_BLOCK_TYPE_STONE_BRICK => VanillaBlocks::STONE_BRICK_WALL(),
+			default => throw $in->badValueException(BlockStateNames::WALL_BLOCK_TYPE, $type),
+		}, $in);
+	}
+
+	/** @throws BlockStateDeserializeException */
 	public static function mapStoneSlab1Type(BlockStateReader $in) : Slab{
 		//* stone_slab_type (StringTag) = brick, cobblestone, nether_brick, quartz, sandstone, smooth_stone, stone_brick, wood
 		return match($type = $in->readString(BlockStateNames::STONE_SLAB_TYPE)){

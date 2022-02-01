@@ -194,7 +194,7 @@ final class BlockStateDeserializer{
 		$this->map(Ids::COAL_BLOCK, fn() => VanillaBlocks::COAL());
 		$this->map(Ids::COAL_ORE, fn() => VanillaBlocks::COAL_ORE());
 		$this->map(Ids::COBBLESTONE, fn() => VanillaBlocks::COBBLESTONE());
-		$this->map(Ids::COBBLESTONE_WALL, fn(BlockStateReader $in) => Helper::decodeWall(VanillaBlocks::COBBLESTONE_WALL(), $in));
+		$this->map(Ids::COBBLESTONE_WALL, fn(BlockStateReader $in) => Helper::mapLegacyWallType($in));
 		$this->map(Ids::COCOA, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::COCOA_POD()
 				->setAge($in->readBoundedInt(BlockStateNames::AGE, 0, 2))
