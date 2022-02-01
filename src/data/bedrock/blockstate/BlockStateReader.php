@@ -241,13 +241,14 @@ final class BlockStateReader{
 	 * @throws BlockStateDeserializeException
 	 */
 	public function readTorchFacing() : int{
+		//TODO: horizontal directions are flipped (MCPE bug: https://bugs.mojang.com/browse/MCPE-152036)
 		return match($rawValue = $this->readString(BlockStateNames::TORCH_FACING_DIRECTION)){
-			StringValues::TORCH_FACING_DIRECTION_EAST => Facing::EAST,
-			StringValues::TORCH_FACING_DIRECTION_NORTH => Facing::NORTH,
-			StringValues::TORCH_FACING_DIRECTION_SOUTH => Facing::SOUTH,
+			StringValues::TORCH_FACING_DIRECTION_EAST => Facing::WEST,
+			StringValues::TORCH_FACING_DIRECTION_NORTH => Facing::SOUTH,
+			StringValues::TORCH_FACING_DIRECTION_SOUTH => Facing::NORTH,
 			StringValues::TORCH_FACING_DIRECTION_TOP => Facing::UP,
 			StringValues::TORCH_FACING_DIRECTION_UNKNOWN => Facing::UP, //should be illegal, but 1.13 allows it
-			StringValues::TORCH_FACING_DIRECTION_WEST => Facing::WEST,
+			StringValues::TORCH_FACING_DIRECTION_WEST => Facing::EAST,
 			default => throw $this->badValueException(BlockStateNames::TORCH_FACING_DIRECTION, $rawValue, "Invalid torch facing"),
 		};
 	}

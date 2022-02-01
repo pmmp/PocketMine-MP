@@ -195,12 +195,13 @@ final class BlockStateWriter{
 
 	/** @return $this */
 	public function writeTorchFacing(int $facing) : self{
+		//TODO: horizontal directions are flipped (MCPE bug: https://bugs.mojang.com/browse/MCPE-152036)
 		$this->writeString(BlockStateNames::TORCH_FACING_DIRECTION, match($facing){
 			Facing::UP => StringValues::TORCH_FACING_DIRECTION_TOP,
-			Facing::NORTH => StringValues::TORCH_FACING_DIRECTION_NORTH,
-			Facing::SOUTH => StringValues::TORCH_FACING_DIRECTION_SOUTH,
-			Facing::WEST => StringValues::TORCH_FACING_DIRECTION_WEST,
-			Facing::EAST => StringValues::TORCH_FACING_DIRECTION_EAST,
+			Facing::SOUTH => StringValues::TORCH_FACING_DIRECTION_NORTH,
+			Facing::NORTH => StringValues::TORCH_FACING_DIRECTION_SOUTH,
+			Facing::EAST => StringValues::TORCH_FACING_DIRECTION_WEST,
+			Facing::WEST => StringValues::TORCH_FACING_DIRECTION_EAST,
 			default => throw new BlockStateSerializeException("Invalid Torch facing $facing")
 		});
 		return $this;
