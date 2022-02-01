@@ -64,6 +64,10 @@ class Vine extends Flowable{
 	/** @return int[] */
 	public function getFaces() : array{ return $this->faces; }
 
+	public function hasFace(int $face) : bool{
+		return isset($this->faces[$face]);
+	}
+
 	/**
 	 * @param int[] $faces
 	 * @phpstan-param list<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST> $faces
