@@ -123,7 +123,7 @@ final class BlockStateReader{
 	/** @throws BlockStateDeserializeException */
 	public function readEndRodFacingDirection() : int{
 		$result = $this->readFacingDirection();
-		return Facing::axis($result) === Axis::Y ? Facing::opposite($result) : $result;
+		return Facing::axis($result) !== Axis::Y ? Facing::opposite($result) : $result;
 	}
 
 	/** @throws BlockStateDeserializeException */

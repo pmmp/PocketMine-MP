@@ -70,7 +70,7 @@ final class BlockStateSerializerHelper{
 	public static function encodeChemistryTable(ChemistryTable $block, string $chemistryTableType, BlockStateWriter $out) : BlockStateWriter{
 		return $out
 			->writeString(BlockStateNames::CHEMISTRY_TABLE_TYPE, $chemistryTableType)
-			->writeLegacyHorizontalFacing($block->getFacing());
+			->writeLegacyHorizontalFacing(Facing::opposite($block->getFacing()));
 	}
 
 	public static function encodeCrops(Crops $block, BlockStateWriter $out) : BlockStateWriter{

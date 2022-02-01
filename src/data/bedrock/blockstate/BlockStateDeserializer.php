@@ -151,8 +151,8 @@ final class BlockStateDeserializer{
 		$this->map(Ids::BREWING_STAND, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::BREWING_STAND()
 				->setSlot(BrewingStandSlot::EAST(), $in->readBool(BlockStateNames::BREWING_STAND_SLOT_A_BIT))
-				->setSlot(BrewingStandSlot::NORTHWEST(), $in->readBool(BlockStateNames::BREWING_STAND_SLOT_B_BIT))
-				->setSlot(BrewingStandSlot::SOUTHWEST(), $in->readBool(BlockStateNames::BREWING_STAND_SLOT_C_BIT));
+				->setSlot(BrewingStandSlot::SOUTHWEST(), $in->readBool(BlockStateNames::BREWING_STAND_SLOT_B_BIT))
+				->setSlot(BrewingStandSlot::NORTHWEST(), $in->readBool(BlockStateNames::BREWING_STAND_SLOT_C_BIT));
 		});
 		$this->map(Ids::BRICK_BLOCK, fn() => VanillaBlocks::BRICKS());
 		$this->map(Ids::BRICK_STAIRS, fn(BlockStateReader $in) => Helper::decodeStairs(VanillaBlocks::BRICK_STAIRS(), $in));
@@ -184,7 +184,7 @@ final class BlockStateDeserializer{
 				StringValues::CHEMISTRY_TABLE_TYPE_LAB_TABLE => VanillaBlocks::LAB_TABLE(),
 				StringValues::CHEMISTRY_TABLE_TYPE_MATERIAL_REDUCER => VanillaBlocks::MATERIAL_REDUCER(),
 				default => throw $in->badValueException(BlockStateNames::CHEMISTRY_TABLE_TYPE, $type),
-			})->setFacing($in->readLegacyHorizontalFacing());
+			})->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()));
 		});
 		$this->map(Ids::CHEST, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::CHEST()
@@ -198,7 +198,7 @@ final class BlockStateDeserializer{
 		$this->map(Ids::COCOA, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::COCOA_POD()
 				->setAge($in->readBoundedInt(BlockStateNames::AGE, 0, 2))
-				->setFacing($in->readLegacyHorizontalFacing());
+				->setFacing(Facing::opposite($in->readLegacyHorizontalFacing()));
 		});
 		$this->map(Ids::COLORED_TORCH_BP, function(BlockStateReader $in) : Block{
 			return $in->readBool(BlockStateNames::COLOR_BIT) ?

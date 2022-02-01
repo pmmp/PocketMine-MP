@@ -81,8 +81,8 @@ final class BlockStateWriter{
 
 	/** @return $this */
 	public function writeEndRodFacingDirection(int $value) : self{
-		//end rods are stupid in bedrock and have up/down the wrong way round
-		return $this->writeFacingDirection(Facing::axis($value) === Axis::Y ? Facing::opposite($value) : $value);
+		//end rods are stupid in bedrock and have everything except up/down the wrong way round
+		return $this->writeFacingDirection(Facing::axis($value) !== Axis::Y ? Facing::opposite($value) : $value);
 	}
 
 	/** @return $this */

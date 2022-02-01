@@ -327,8 +327,8 @@ final class BlockStateSerializer{
 		$this->map(VanillaBlocks::BREWING_STAND(), function(BrewingStand $block) : Writer{
 			return Writer::create(Ids::BREWING_STAND)
 				->writeBool(BlockStateNames::BREWING_STAND_SLOT_A_BIT, $block->hasSlot(BrewingStandSlot::EAST()))
-				->writeBool(BlockStateNames::BREWING_STAND_SLOT_B_BIT, $block->hasSlot(BrewingStandSlot::NORTHWEST()))
-				->writeBool(BlockStateNames::BREWING_STAND_SLOT_C_BIT, $block->hasSlot(BrewingStandSlot::SOUTHWEST()));
+				->writeBool(BlockStateNames::BREWING_STAND_SLOT_B_BIT, $block->hasSlot(BrewingStandSlot::SOUTHWEST()))
+				->writeBool(BlockStateNames::BREWING_STAND_SLOT_C_BIT, $block->hasSlot(BrewingStandSlot::NORTHWEST()));
 		});
 		$this->map(VanillaBlocks::BRICKS(), fn() => new Writer(Ids::BRICK_BLOCK));
 		$this->map(VanillaBlocks::BRICK_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_BRICK));
@@ -374,7 +374,7 @@ final class BlockStateSerializer{
 		$this->map(VanillaBlocks::COCOA_POD(), function(CocoaBlock $block) : Writer{
 			return Writer::create(Ids::COCOA)
 				->writeInt(BlockStateNames::AGE, $block->getAge())
-				->writeLegacyHorizontalFacing($block->getFacing());
+				->writeLegacyHorizontalFacing(Facing::opposite($block->getFacing()));
 		});
 		$this->map(VanillaBlocks::COMPOUND_CREATOR(), fn(ChemistryTable $block) => Helper::encodeChemistryTable($block, StringValues::CHEMISTRY_TABLE_TYPE_COMPOUND_CREATOR, new Writer(Ids::CHEMISTRY_TABLE)));
 		$this->map(VanillaBlocks::CONCRETE(), function(Concrete $block) : Writer{
