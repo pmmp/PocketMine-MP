@@ -31,7 +31,6 @@ use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\nbt\tag\ByteTag;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
@@ -39,13 +38,9 @@ use function get_class;
 
 final class BlockStateReader{
 
-	private CompoundTag $nbt;
-
-	public function __construct(CompoundTag $nbt){
-		$this->nbt = $nbt;
-	}
-
-	public function getNbt() : CompoundTag{ return $this->nbt; }
+	public function __construct(
+		private BlockStateData $data
+	){}
 
 	public function missingOrWrongTypeException(string $name, ?Tag $tag) : BlockStateDeserializeException{
 		return new BlockStateDeserializeException("Property \"$name\" " . ($tag !== null ? "has unexpected type " . get_class($tag) : "is missing"));
@@ -60,7 +55,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readBool(string $name) : bool{
-		$tag = $this->nbt->getTag($name);
+		$tag = $this->data->getStates()->getTag($name);
 		if($tag instanceof ByteTag){
 			switch($tag->getValue()){
 				case 0: return false;
@@ -73,7 +68,7 @@ final class BlockStateReader{
 
 	/** @throws BlockStateDeserializeException */
 	public function readInt(string $name) : int{
-		$tag = $this->nbt->getTag($name);
+		$tag = $this->data->getStates()->getTag($name);
 		if($tag instanceof IntTag){
 			return $tag->getValue();
 		}
@@ -92,7 +87,7 @@ final class BlockStateReader{
 	/** @throws BlockStateDeserializeException */
 	public function readString(string $name) : string{
 		//TODO: only allow a specific set of values (strings are primarily used for enums)
-		$tag = $this->nbt->getTag($name);
+		$tag = $this->data->getStates()->getTag($name);
 		if($tag instanceof StringTag){
 			return $tag->getValue();
 		}

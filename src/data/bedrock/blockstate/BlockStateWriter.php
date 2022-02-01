@@ -246,10 +246,7 @@ final class BlockStateWriter{
 		return $this;
 	}
 
-	public function writeBlockStateNbt() : CompoundTag{
-		//TODO: add `version` field
-		return CompoundTag::create()
-			->setString("name", $this->id)
-			->setTag("states", $this->states);
+	public function getBlockStateData() : BlockStateData{
+		return new BlockStateData($this->id, $this->states, BlockStateData::CURRENT_VERSION);
 	}
 }

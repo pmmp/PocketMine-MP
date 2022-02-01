@@ -143,7 +143,6 @@ use pocketmine\data\bedrock\blockstate\BlockStateWriter as Writer;
 use pocketmine\data\bedrock\blockstate\BlockTypeNames as Ids;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\AssumptionFailedError;
 use function class_parents;
 use function get_class;
@@ -175,7 +174,7 @@ final class BlockStateSerializer{
 	 * @phpstan-template TBlockType of Block
 	 * @phpstan-param TBlockType $blockState
 	 */
-	public function serialize(Block $blockState) : CompoundTag{
+	public function serialize(Block $blockState) : BlockStateData{
 		$typeId = $blockState->getTypeId();
 
 		$locatedSerializer = $this->serializers[$typeId][get_class($blockState)] ?? null;
@@ -204,7 +203,7 @@ final class BlockStateSerializer{
 
 		/** @var Writer $writer */
 		$writer = $serializer($blockState);
-		return $writer->writeBlockStateNbt();
+		return $writer->getBlockStateData();
 	}
 
 	public function __construct(){

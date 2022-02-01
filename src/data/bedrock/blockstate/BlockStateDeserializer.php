@@ -37,7 +37,6 @@ use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\blockstate\BlockTypeNames as Ids;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
-use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use function array_key_exists;
 use function min;
@@ -2501,20 +2500,12 @@ final class BlockStateDeserializer{
 
 	/** @throws BlockStateDeserializeException */
 	public function deserialize(CompoundTag $blockState) : Block{
-		try{
-			$id = $blockState->getString("name");
-			$states = $blockState->getCompoundTag("states");
-		}catch(NbtException $e){
-			throw new BlockStateDeserializeException("Error reading blockstate NBT: " . $e->getMessage(), 0, $e);
-		}
+		$blockStateData = BlockStateData::fromNbt($blockState);
 
-		if($states === null){
-			throw new BlockStateDeserializeException("\"states\" tag must always be present, even if it has no data");
-		}
-
+		$id = $blockStateData->getName();
 		if(!array_key_exists($id, $this->deserializeFuncs)){
 			throw new BlockStateDeserializeException("Unknown block ID \"$id\"");
 		}
-		return $this->deserializeFuncs[$id](new BlockStateReader($states));
+		return $this->deserializeFuncs[$id](new BlockStateReader($blockStateData));
 	}
 }
