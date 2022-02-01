@@ -37,7 +37,6 @@ use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\blockstate\BlockTypeNames as Ids;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
-use pocketmine\nbt\tag\CompoundTag;
 use function array_key_exists;
 use function min;
 
