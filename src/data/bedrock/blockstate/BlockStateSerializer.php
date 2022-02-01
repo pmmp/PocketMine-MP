@@ -595,9 +595,8 @@ final class BlockStateSerializer{
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
 		$this->map(VanillaBlocks::END_ROD(), function(EndRod $block) : Writer{
-			//TODO: not sure if this needs down/up to be flipped like legacy metadata?
 			return Writer::create(Ids::END_ROD)
-				->writeFacingDirection($block->getFacing());
+				->writeEndRodFacingDirection($block->getFacing());
 		});
 		$this->map(VanillaBlocks::END_STONE(), fn() => new Writer(Ids::END_STONE));
 		$this->map(VanillaBlocks::END_STONE_BRICKS(), fn() => new Writer(Ids::END_BRICKS));

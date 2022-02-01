@@ -126,6 +126,12 @@ final class BlockStateReader{
 	}
 
 	/** @throws BlockStateDeserializeException */
+	public function readEndRodFacingDirection() : int{
+		$result = $this->readFacingDirection();
+		return Facing::axis($result) === Axis::Y ? Facing::opposite($result) : $result;
+	}
+
+	/** @throws BlockStateDeserializeException */
 	public function readHorizontalFacing() : int{
 		return $this->parseFacingValue($this->readInt(BlockStateNames::FACING_DIRECTION), [
 			0 => Facing::NORTH, //should be illegal, but 1.13 allows it

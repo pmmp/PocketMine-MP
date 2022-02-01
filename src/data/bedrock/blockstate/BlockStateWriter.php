@@ -80,6 +80,12 @@ final class BlockStateWriter{
 	}
 
 	/** @return $this */
+	public function writeEndRodFacingDirection(int $value) : self{
+		//end rods are stupid in bedrock and have up/down the wrong way round
+		return $this->writeFacingDirection(Facing::axis($value) === Axis::Y ? Facing::opposite($value) : $value);
+	}
+
+	/** @return $this */
 	public function writeHorizontalFacing(int $value) : self{
 		if($value === Facing::UP || $value === Facing::DOWN){
 			throw new BlockStateSerializeException("Y-axis facing is not allowed");

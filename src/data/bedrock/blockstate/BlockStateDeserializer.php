@@ -430,7 +430,7 @@ final class BlockStateDeserializer{
 		});
 		$this->map(Ids::END_ROD, function(BlockStateReader $in) : Block{
 			return VanillaBlocks::END_ROD()
-				->setFacing($in->readFacingDirection());
+				->setFacing($in->readEndRodFacingDirection());
 		});
 		$this->map(Ids::END_STONE, fn() => VanillaBlocks::END_STONE());
 		$this->map(Ids::ENDER_CHEST, function(BlockStateReader $in) : Block{
