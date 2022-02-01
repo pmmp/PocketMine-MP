@@ -50,9 +50,7 @@ final class RuntimeBlockMapping{
 	 */
 	private array $networkIdCache = [];
 
-	/**
-	 * Used when a blockstate can't be correctly serialized (e.g. because it's unknown)
-	 */
+	/** Used when a blockstate can't be correctly serialized (e.g. because it's unknown) */
 	private BlockStateData $fallbackStateData;
 
 	private function __construct(){

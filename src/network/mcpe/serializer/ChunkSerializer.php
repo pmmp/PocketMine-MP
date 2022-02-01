@@ -25,10 +25,7 @@ namespace pocketmine\network\mcpe\serializer;
 
 use pocketmine\block\tile\Spawnable;
 use pocketmine\data\bedrock\BiomeIds;
-use pocketmine\data\bedrock\blockstate\BlockStateData;
-use pocketmine\data\bedrock\blockstate\BlockTypeNames;
 use pocketmine\data\bedrock\LegacyBiomeIdToStringIdMap;
-use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\TreeRoot;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
