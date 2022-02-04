@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate;
+namespace pocketmine\data\bedrock\blockstate\convert;
 
 use pocketmine\block\Bamboo;
 use pocketmine\block\Block;
@@ -32,9 +32,11 @@ use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\LeverFacing;
 use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks as Blocks;
-use pocketmine\data\bedrock\blockstate\BlockStateDeserializerHelper as Helper;
+use pocketmine\data\bedrock\blockstate\BlockStateData;
+use pocketmine\data\bedrock\blockstate\BlockStateDeserializeException;
+use pocketmine\data\bedrock\blockstate\convert\BlockStateDeserializerHelper as Helper;
 use pocketmine\data\bedrock\blockstate\BlockStateNames as StateNames;
-use pocketmine\data\bedrock\blockstate\BlockStateReader as Reader;
+use pocketmine\data\bedrock\blockstate\convert\BlockStateReader as Reader;
 use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\blockstate\BlockTypeNames as Ids;
 use pocketmine\math\Axis;

@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate;
+namespace pocketmine\data\bedrock\blockstate\convert;
 
 use pocketmine\block\ActivatorRail;
 use pocketmine\block\Anvil;
@@ -137,10 +137,12 @@ use pocketmine\block\WoodenPressurePlate;
 use pocketmine\block\WoodenStairs;
 use pocketmine\block\WoodenTrapdoor;
 use pocketmine\block\Wool;
+use pocketmine\data\bedrock\blockstate\BlockStateData;
 use pocketmine\data\bedrock\blockstate\BlockStateNames as StateNames;
-use pocketmine\data\bedrock\blockstate\BlockStateSerializerHelper as Helper;
+use pocketmine\data\bedrock\blockstate\BlockStateSerializeException;
+use pocketmine\data\bedrock\blockstate\convert\BlockStateSerializerHelper as Helper;
 use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
-use pocketmine\data\bedrock\blockstate\BlockStateWriter as Writer;
+use pocketmine\data\bedrock\blockstate\convert\BlockStateWriter as Writer;
 use pocketmine\data\bedrock\blockstate\BlockTypeNames as Ids;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -873,15 +875,15 @@ final class BlockStateSerializer{
 				->writeInt(StateNames::RAIL_DIRECTION, $block->getShape());
 		});
 		$this->map(Blocks::REDSTONE(), fn() => new Writer(Ids::REDSTONE_BLOCK));
-		$this->map(Blocks::REDSTONE_COMPARATOR(), function(RedstoneComparator $block) : BlockStateWriter{
-			return BlockStateWriter::create($block->isPowered() ? Ids::POWERED_COMPARATOR : Ids::UNPOWERED_COMPARATOR)
+		$this->map(Blocks::REDSTONE_COMPARATOR(), function(RedstoneComparator $block) : Writer{
+			return Writer::create($block->isPowered() ? Ids::POWERED_COMPARATOR : Ids::UNPOWERED_COMPARATOR)
 				->writeBool(StateNames::OUTPUT_LIT_BIT, $block->isPowered())
 				->writeBool(StateNames::OUTPUT_SUBTRACT_BIT, $block->isSubtractMode())
 				->writeLegacyHorizontalFacing($block->getFacing());
 		});
 		$this->map(Blocks::REDSTONE_LAMP(), fn(RedstoneLamp $block) => new Writer($block->isPowered() ? Ids::LIT_REDSTONE_LAMP : Ids::REDSTONE_LAMP));
 		$this->map(Blocks::REDSTONE_ORE(), fn(RedstoneOre $block) => new Writer($block->isLit() ? Ids::LIT_REDSTONE_ORE : Ids::REDSTONE_ORE));
-		$this->map(Blocks::REDSTONE_REPEATER(), function(RedstoneRepeater $block) : BlockStateWriter{
+		$this->map(Blocks::REDSTONE_REPEATER(), function(RedstoneRepeater $block) : Writer{
 			return Writer::create($block->isPowered() ? Ids::POWERED_REPEATER : Ids::UNPOWERED_REPEATER)
 				->writeLegacyHorizontalFacing($block->getFacing())
 				->writeInt(StateNames::REPEATER_DELAY, $block->getDelay() - 1);

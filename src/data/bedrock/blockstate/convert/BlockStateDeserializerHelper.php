@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\data\bedrock\blockstate;
+namespace pocketmine\data\bedrock\blockstate\convert;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyMetadata;
@@ -47,7 +47,10 @@ use pocketmine\block\Wall;
 use pocketmine\block\WallCoralFan;
 use pocketmine\block\WallSign;
 use pocketmine\block\WeightedPressurePlate;
+use pocketmine\data\bedrock\blockstate\BlockStateNames;
+use pocketmine\data\bedrock\blockstate\convert\BlockStateReader;
 use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
+use pocketmine\data\bedrock\blockstate\BlockStateDeserializeException;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
