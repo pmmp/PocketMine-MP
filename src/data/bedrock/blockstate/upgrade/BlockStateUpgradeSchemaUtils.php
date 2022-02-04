@@ -41,7 +41,6 @@ use function is_object;
 use function is_string;
 use function json_decode;
 use function ksort;
-use function var_dump;
 use const JSON_THROW_ON_ERROR;
 use const SORT_NUMERIC;
 
@@ -198,8 +197,6 @@ final class BlockStateUpgradeSchemaUtils{
 		foreach($iterator as $matches){
 			$filename = $matches[0];
 			$priority = (int) $matches[1];
-
-			var_dump($filename);
 
 			$fullPath = Path::join($path, $filename);
 
