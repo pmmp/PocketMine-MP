@@ -28,7 +28,6 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Utils;
 use function ksort;
-use const SORT_ASC;
 use const SORT_NUMERIC;
 
 final class BlockStateUpgrader{
@@ -40,8 +39,8 @@ final class BlockStateUpgrader{
 			throw new \InvalidArgumentException("Another schema already has this priority");
 		}
 		$this->upgradeSchemas[$schema->getVersionId()][$priority] = $schema;
-		ksort($this->upgradeSchemas, SORT_NUMERIC | SORT_ASC);
-		ksort($this->upgradeSchemas[$schema->getVersionId()], SORT_NUMERIC | SORT_ASC);
+		ksort($this->upgradeSchemas, SORT_NUMERIC);
+		ksort($this->upgradeSchemas[$schema->getVersionId()], SORT_NUMERIC);
 	}
 
 	public function upgrade(BlockStateData $blockStateData) : BlockStateData{
