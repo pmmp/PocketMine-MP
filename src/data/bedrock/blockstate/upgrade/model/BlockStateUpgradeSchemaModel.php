@@ -69,6 +69,9 @@ final class BlockStateUpgradeSchemaModel implements \JsonSerializable{
 	 */
 	public array $remappedPropertyValues;
 
+	/**
+	 * @return mixed[]
+	 */
 	public function jsonSerialize() : array{
 		$result = (array) $this;
 
