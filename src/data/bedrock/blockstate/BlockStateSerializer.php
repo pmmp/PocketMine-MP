@@ -157,6 +157,10 @@ final class BlockStateSerializer{
 	 */
 	private array $serializers = [];
 
+	public function __construct(){
+		$this->registerSerializers();
+	}
+
 	/**
 	 * @phpstan-template TBlockType of Block
 	 * @phpstan-param TBlockType $block
@@ -206,7 +210,7 @@ final class BlockStateSerializer{
 		return $writer->getBlockStateData();
 	}
 
-	public function __construct(){
+	private function registerSerializers() : void{
 		$this->map(VanillaBlocks::ACACIA_BUTTON(), fn(WoodenButton $block) => Helper::encodeButton($block, new Writer(Ids::ACACIA_BUTTON)));
 		$this->map(VanillaBlocks::ACACIA_DOOR(), fn(WoodenDoor $block) => Helper::encodeDoor($block, new Writer(Ids::ACACIA_DOOR)));
 		$this->map(VanillaBlocks::ACACIA_FENCE(), fn() => Writer::create(Ids::FENCE)
