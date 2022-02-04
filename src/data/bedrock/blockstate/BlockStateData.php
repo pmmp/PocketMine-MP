@@ -85,4 +85,11 @@ final class BlockStateData{
 			->setInt(self::TAG_VERSION, $this->version)
 			->setTag(self::TAG_STATES, $this->states);
 	}
+
+	public function equals(self $that) : bool{
+		return
+			$this->name === $that->name &&
+			$this->states->equals($that->states) &&
+			$this->version === $that->version;
+	}
 }
