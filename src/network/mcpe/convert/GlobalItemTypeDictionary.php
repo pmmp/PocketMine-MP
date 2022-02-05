@@ -42,7 +42,7 @@ final class GlobalItemTypeDictionary{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$paths = [
+		$protocolPaths = [
 			ProtocolInfo::CURRENT_PROTOCOL => "",
 			ProtocolInfo::PROTOCOL_1_17_40 => "-1.17.40",
 			ProtocolInfo::PROTOCOL_1_17_30 => "-1.17.30",
@@ -52,7 +52,7 @@ final class GlobalItemTypeDictionary{
 
 		$dictionaries = [];
 
-		foreach ($paths as $protocolId => $path){
+		foreach ($protocolPaths as $protocolId => $path){
 			$data = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'required_item_list' . $path . '.json')), "Missing required resource file");
 			$table = json_decode($data, true);
 			if(!is_array($table)){
@@ -84,23 +84,7 @@ final class GlobalItemTypeDictionary{
 	}
 
 	public static function getDictionaryProtocol(int $protocolId) : int{
-		if($protocolId === ProtocolInfo::PROTOCOL_1_17_0){
-			return ProtocolInfo::PROTOCOL_1_17_0;
-		}
-
-		if($protocolId <= ProtocolInfo::PROTOCOL_1_17_10){
-			return ProtocolInfo::PROTOCOL_1_17_10;
-		}
-
-		if($protocolId <= ProtocolInfo::PROTOCOL_1_17_30){
-			return ProtocolInfo::PROTOCOL_1_17_30;
-		}
-
-		if($protocolId <= ProtocolInfo::PROTOCOL_1_17_40){
-			return ProtocolInfo::PROTOCOL_1_17_40;
-		}
-
-		return ProtocolInfo::CURRENT_PROTOCOL;
+		return $protocolId;
 	}
 
 	/**
