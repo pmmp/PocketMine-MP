@@ -151,7 +151,7 @@ abstract class BaseBanner extends Transparent{
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		$result = $this->asItem();
-		if($result instanceof ItemBanner) {
+		if($result instanceof ItemBanner){
 			$result->setPatterns($this->patterns);
 			$result->setIllagerPattern($this->illagerPattern);
 		}
