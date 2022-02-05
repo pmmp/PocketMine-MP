@@ -180,10 +180,4 @@ final class Bell extends Transparent{
 			$this->position->getWorld()->broadcastPacketToViewers($this->position, $tile->createFakeUpdatePacket($faceHit));
 		}
 	}
-
-	public function getDrops(Item $item): array{
-		return [
-			VanillaBlocks::BELL()->asItem()
-		];
-	}
 }

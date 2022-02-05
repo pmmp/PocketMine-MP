@@ -135,7 +135,7 @@ class BlockFactory{
 		$this->registerAllMeta(new Bedrock(new BID(Ids::BEDROCK, 0), "Bedrock", BlockBreakInfo::indestructible()));
 
 		$this->registerAllMeta(new Beetroot(new BID(Ids::BEETROOT_BLOCK, 0), "Beetroot Block", BlockBreakInfo::instant()));
-		$this->registerAllMeta(new Bell(new BID(Ids::BELL, 0, null, TileBell::class), "Bell", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->registerAllMeta(new Bell(new BID(Ids::BELL, 0, null, TileBell::class), "Bell", new BlockBreakInfo(1.0, BlockToolType::PICKAXE)));
 		$this->registerAllMeta(new BlueIce(new BID(Ids::BLUE_ICE, 0), "Blue Ice", new BlockBreakInfo(2.8, BlockToolType::PICKAXE)));
 		$this->registerAllMeta(new BoneBlock(new BID(Ids::BONE_BLOCK, 0), "Bone Block", new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->registerAllMeta(new Bookshelf(new BID(Ids::BOOKSHELF, 0), "Bookshelf", new BlockBreakInfo(1.5, BlockToolType::AXE)));
