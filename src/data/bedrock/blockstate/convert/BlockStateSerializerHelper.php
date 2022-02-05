@@ -49,7 +49,6 @@ use pocketmine\block\WallSign;
 use pocketmine\block\Wood;
 use pocketmine\data\bedrock\blockstate\BlockStateNames;
 use pocketmine\data\bedrock\blockstate\BlockStateStringValues;
-use pocketmine\data\bedrock\blockstate\convert\BlockStateWriter;
 use pocketmine\data\bedrock\blockstate\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\MushroomBlockTypeIdMap;
 use pocketmine\math\Axis;
