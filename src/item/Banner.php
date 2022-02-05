@@ -95,7 +95,6 @@ class Banner extends ItemBlockWallOrFloor{
 
 	public function setIllagerPattern(bool $illagerPattern) : self{
 		$this->illagerPattern = $illagerPattern;
-		$this->color = DyeColor::WHITE(); // meta 15 matches vanilla
 		return $this;
 	}
 
