@@ -49,7 +49,7 @@ final class StringToItemParser extends StringToTParser{
 			$result->registerBlock($prefix("bed"), fn() => VanillaBlocks::BED()->setColor($color));
 			$result->registerBlock($prefix("carpet"), fn() => VanillaBlocks::CARPET()->setColor($color));
 			$result->registerBlock($prefix("concrete"), fn() => VanillaBlocks::CONCRETE()->setColor($color));
-			$result->registerBlock($prefix("concrete_powder"), fn() => VanillaBlocks::CONCRETE()->setColor($color));
+			$result->registerBlock($prefix("concrete_powder"), fn() => VanillaBlocks::CONCRETE_POWDER()->setColor($color));
 			$result->registerBlock($prefix("stained_clay"), fn() => VanillaBlocks::STAINED_CLAY()->setColor($color));
 			$result->registerBlock($prefix("stained_glass"), fn() => VanillaBlocks::STAINED_GLASS()->setColor($color));
 			$result->registerBlock($prefix("stained_glass_pane"), fn() => VanillaBlocks::STAINED_GLASS_PANE()->setColor($color));

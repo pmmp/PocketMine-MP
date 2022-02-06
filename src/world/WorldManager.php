@@ -153,16 +153,18 @@ class WorldManager{
 		}
 
 		$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_unloading($world->getDisplayName())));
-		try{
-			$safeSpawn = $this->defaultWorld !== null ? $this->defaultWorld->getSafeSpawn() : null;
-		}catch(WorldException $e){
-			$safeSpawn = null;
-		}
-		foreach($world->getPlayers() as $player){
-			if($world === $this->defaultWorld || $safeSpawn === null){
-				$player->disconnect("Forced default world unload");
-			}else{
-				$player->teleport($safeSpawn);
+		if(count($world->getPlayers()) !== 0){
+			try{
+				$safeSpawn = $this->defaultWorld !== null && $this->defaultWorld !== $world ? $this->defaultWorld->getSafeSpawn() : null;
+			}catch(WorldException $e){
+				$safeSpawn = null;
+			}
+			foreach($world->getPlayers() as $player){
+				if($safeSpawn === null){
+					$player->disconnect("Forced default world unload");
+				}else{
+					$player->teleport($safeSpawn);
+				}
 			}
 		}
 
