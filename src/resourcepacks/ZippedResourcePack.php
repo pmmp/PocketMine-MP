@@ -105,7 +105,7 @@ class ZippedResourcePack implements ResourcePack{
 		}
 
 		$mapper = new \JsonMapper();
-		$mapper->bExceptionOnUndefinedProperty = true;
+		// $mapper->bExceptionOnUndefinedProperty = true;
 		$mapper->bExceptionOnMissingData = true;
 
 		try{
