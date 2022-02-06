@@ -88,6 +88,7 @@ use function strlen;
 use function substr;
 use function sys_get_temp_dir;
 use function trim;
+use function version_compare;
 use function xdebug_get_function_stack;
 use const PHP_EOL;
 use const PHP_INT_MAX;
@@ -334,9 +335,9 @@ final class Utils{
 	 */
 	public static function arePhpVersionsCompatible(string $version, string $requiredVersion) : bool{
 		$requiredParts = explode(".", $requiredVersion);
-		return version_compare($requiredParts[0] . "." . $requiredParts[1], $version, "<=") and
-			version_compare($requiredVersion, $version, ">=") and
-			version_compare($requiredParts[0] . "." . ((int)$requiredParts[1] + 1), $version, ">");
+		return version_compare($requiredParts[0] . "." . $requiredParts[1], $version, "<=") &&
+			version_compare($requiredVersion, $version, ">=") &&
+			version_compare($requiredParts[0] . "." . ((int) $requiredParts[1] + 1), $version, ">");
 	}
 
 	/**

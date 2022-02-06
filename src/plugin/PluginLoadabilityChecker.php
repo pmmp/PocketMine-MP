@@ -28,6 +28,7 @@ use pocketmine\lang\Translatable;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Utils;
 use pocketmine\utils\VersionString;
+use function array_filter;
 use function array_intersect;
 use function count;
 use function extension_loaded;
@@ -73,7 +74,7 @@ final class PluginLoadabilityChecker{
 
 		$pluginPhpVersions = $description->getCompatiblePhpVersions();
 		$pluginCompatiblePhpVersions = array_filter($pluginPhpVersions, function(string $version) : bool{ return Utils::arePhpVersionsCompatible($version, PHP_VERSION); });
-		if(count($pluginPhpVersions) > 0 and count($pluginCompatiblePhpVersions) < 1){
+		if(count($pluginPhpVersions) > 0 && count($pluginCompatiblePhpVersions) < 1){
 			return KnownTranslationFactory::pocketmine_plugin_incompatiblePhpVersion(implode(", ", $pluginPhpVersions));
 		}
 
