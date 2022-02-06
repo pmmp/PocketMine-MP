@@ -44,6 +44,7 @@ class PluginDescription{
 	private const KEY_API = "api";
 	private const KEY_MCPE_PROTOCOL = "mcpe-protocol";
 	private const KEY_OS = "os";
+	private const KEY_PHP = "php";
 	private const KEY_DEPEND = "depend";
 	private const KEY_SOFTDEPEND = "softdepend";
 	private const KEY_LOADBEFORE = "loadbefore";
@@ -78,6 +79,8 @@ class PluginDescription{
 	private array $compatibleMcpeProtocols = [];
 	/** @var string[] */
 	private array $compatibleOperatingSystems = [];
+	/** @var string[] */
+	private array $compatiblePhpVersions = [];
 	/**
 	 * @var string[][]
 	 * @phpstan-var array<string, list<string>>
@@ -149,6 +152,7 @@ class PluginDescription{
 		$this->api = array_map("\strval", (array) ($plugin[self::KEY_API] ?? []));
 		$this->compatibleMcpeProtocols = array_map("\intval", (array) ($plugin[self::KEY_MCPE_PROTOCOL] ?? []));
 		$this->compatibleOperatingSystems = array_map("\strval", (array) ($plugin[self::KEY_OS] ?? []));
+		$this->compatiblePhpVersions = array_map("\strval", (array) ($plugin[self::KEY_PHP] ?? []));
 
 		if(isset($plugin[self::KEY_COMMANDS]) && is_array($plugin[self::KEY_COMMANDS])){
 			foreach($plugin[self::KEY_COMMANDS] as $commandName => $commandData){
@@ -252,6 +256,13 @@ class PluginDescription{
 	 */
 	public function getCompatibleOperatingSystems() : array{
 		return $this->compatibleOperatingSystems;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getCompatiblePhpVersions() : array{
+		return $this->compatiblePhpVersions;
 	}
 
 	/**

@@ -71,6 +71,12 @@ final class PluginLoadabilityChecker{
 			return KnownTranslationFactory::pocketmine_plugin_incompatibleOS(implode(", ", $description->getCompatibleOperatingSystems()));
 		}
 
+		$pluginPhpVersions = $description->getCompatiblePhpVersions();
+		$pluginCompatiblePhpVersions = array_filter($pluginPhpVersions, function(string $version) : bool{ return Utils::arePhpVersionsCompatible($version, PHP_VERSION); });
+		if(count($pluginPhpVersions) > 0 and count($pluginCompatiblePhpVersions) < 1){
+			return KnownTranslationFactory::pocketmine_plugin_incompatiblePhpVersion(implode(", ", $pluginPhpVersions));
+		}
+
 		if(count($pluginMcpeProtocols = $description->getCompatibleMcpeProtocols()) > 0){
 			$serverMcpeProtocols = [ProtocolInfo::CURRENT_PROTOCOL];
 			if(count(array_intersect($pluginMcpeProtocols, $serverMcpeProtocols)) === 0){
