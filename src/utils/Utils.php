@@ -333,10 +333,10 @@ final class Utils{
 	 * Returns whether the plugin PHP version specified is compatible with the server's PHP version.
 	 */
 	public static function arePhpVersionsCompatible(string $version, string $requiredVersion) : bool{
-		$serverParts = explode(".", $requiredVersion);
-		return version_compare($serverParts[0] . "." . $serverParts[1], $version, "<=") and
+		$requiredParts = explode(".", $requiredVersion);
+		return version_compare($requiredParts[0] . "." . $requiredParts[1], $version, "<=") and
 			version_compare($requiredVersion, $version, ">=") and
-			version_compare($serverParts[0] . "." . ((int)$requiredVersion[1] + 1), $version, ">");
+			version_compare($requiredParts[0] . "." . ((int)$requiredParts[1] + 1), $version, ">");
 	}
 
 	/**
