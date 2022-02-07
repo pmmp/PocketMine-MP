@@ -25,13 +25,8 @@ namespace pocketmine\data\bedrock\blockstate\upgrade;
 
 use pocketmine\data\bedrock\blockstate\BlockStateData;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
-use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\BinaryStream;
-use pocketmine\utils\SingletonTrait;
-use Webmozart\PathUtil\Path;
-use function file_get_contents;
-use const pocketmine\BEDROCK_DATA_PATH;
 
 /**
  * Handles translating legacy 1.12 block ID/meta into modern blockstates.
