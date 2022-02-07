@@ -35,7 +35,7 @@ abstract class Stem extends Crops{
 
 	public function onRandomTick() : void{
 		if(mt_rand(0, 2) === 1){
-			if($this->age < 7){
+			if($this->age < self::MAX_AGE){
 				$block = clone $this;
 				++$block->age;
 				$ev = new BlockGrowEvent($this, $block);
