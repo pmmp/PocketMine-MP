@@ -151,8 +151,13 @@ class BlockTest extends TestCase{
 		$knownStates = $list["knownStates"];
 		$remaps = $list["remaps"];
 
-		$states = $this->blockFactory->getAllKnownStates();
-		foreach($states as $k => $state){
+		$states = [];
+		for($k = 0; $k < 1024 << Block::INTERNAL_METADATA_BITS; $k++){
+			$state = $this->blockFactory->fromFullBlock($k);
+			if($state instanceof UnknownBlock){
+				continue;
+			}
+			$states[$k] = $state;
 			if($state->getFullId() !== $k){
 				self::assertArrayHasKey($k, $remaps, "New remap of state $k (" . $state->getName() . ") - consistency check may need regenerating");
 				self::assertSame($state->getFullId(), $remaps[$k], "Mismatched full IDs of remapped state $k");
