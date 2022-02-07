@@ -187,8 +187,11 @@ class InventoryManager{
 				$inv instanceof AnvilInventory => WindowTypes::ANVIL,
 				$inv instanceof HopperInventory => WindowTypes::HOPPER,
 				$inv instanceof CraftingTableInventory => WindowTypes::WORKBENCH,
-				default => WindowTypes::CONTAINER
+				default => null
 			};
+			if($windowType === null){
+				return null;
+			}
 			return [ContainerOpenPacket::blockInv($id, $windowType, $blockPosition)];
 		}
 		return null;
