@@ -44,7 +44,7 @@ class BlockStateUpgraderTest extends TestCase{
 	private BlockStateUpgrader $upgrader;
 
 	public function setUp() : void{
-		$this->upgrader = new BlockStateUpgrader();
+		$this->upgrader = new BlockStateUpgrader([]);
 	}
 
 	private function getNewSchema() : BlockStateUpgradeSchema{

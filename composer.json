@@ -34,7 +34,7 @@
       "adhocore/json-comment": "^1.1",
       "fgrosse/phpasn1": "^2.3",
       "netresearch/jsonmapper": "^4.0",
-      "pocketmine/bedrock-data": "~1.5.0+bedrock-1.18.0",
+      "pocketmine/bedrock-data": "dev-experimental/upgrade-tables",
       "pocketmine/bedrock-protocol": "~7.3.0+bedrock-1.18.0",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",

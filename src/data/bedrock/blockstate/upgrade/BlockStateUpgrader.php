@@ -34,6 +34,16 @@ final class BlockStateUpgrader{
 	/** @var BlockStateUpgradeSchema[][] */
 	private array $upgradeSchemas = [];
 
+	/**
+	 * @param BlockStateUpgradeSchema[] $upgradeSchemas
+	 * @phpstan-param array<int, BlockStateUpgradeSchema> $upgradeSchemas
+	 */
+	public function __construct(array $upgradeSchemas){
+		foreach($upgradeSchemas as $priority => $schema){
+			$this->addSchema($schema, $priority);
+		}
+	}
+
 	public function addSchema(BlockStateUpgradeSchema $schema, int $priority) : void{
 		if(isset($this->upgradeSchemas[$schema->getVersionId()][$priority])){
 			throw new \InvalidArgumentException("Another schema already has this priority");

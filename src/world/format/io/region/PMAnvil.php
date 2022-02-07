@@ -26,7 +26,6 @@ namespace pocketmine\world\format\io\region;
 use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\world\format\io\SubChunkConverter;
 use pocketmine\world\format\SubChunk;
 
 /**
@@ -37,7 +36,7 @@ class PMAnvil extends RegionWorldProvider{
 	use LegacyAnvilChunkTrait;
 
 	protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk{
-		return new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, [SubChunkConverter::convertSubChunkXZY(
+		return new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, [$this->palettizeLegacySubChunkXZY(
 			self::readFixedSizeByteArray($subChunk, "Blocks", 4096),
 			self::readFixedSizeByteArray($subChunk, "Data", 2048)
 		)]);

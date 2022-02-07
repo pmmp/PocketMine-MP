@@ -27,12 +27,11 @@ use pocketmine\data\bedrock\blockstate\BlockStateData;
 use pocketmine\data\bedrock\blockstate\BlockStateSerializeException;
 use pocketmine\data\bedrock\blockstate\BlockStateSerializer;
 use pocketmine\data\bedrock\blockstate\BlockTypeNames;
-use pocketmine\data\bedrock\blockstate\CachingBlockStateSerializer;
-use pocketmine\data\bedrock\blockstate\convert\BlockObjectToBlockStateSerializer;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
+use pocketmine\world\format\io\GlobalBlockStateHandlers;
 use Webmozart\PathUtil\Path;
 use function file_get_contents;
 
@@ -56,7 +55,7 @@ final class RuntimeBlockMapping{
 	private function __construct(){
 		$contents = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt")), "Missing required resource file");
 		$this->blockStateDictionary = BlockStateDictionary::loadFromString($contents);
-		$this->blockStateSerializer = new CachingBlockStateSerializer(new BlockObjectToBlockStateSerializer());
+		$this->blockStateSerializer = GlobalBlockStateHandlers::getSerializer();
 
 		$this->fallbackStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);
 	}

@@ -180,13 +180,13 @@ final class BlockStateUpgradeSchemaUtils{
 	 *
 	 * @return BlockStateUpgradeSchema[]
 	 */
-	public static function loadSchemas(string $path) : array{
+	public static function loadSchemas(string $path, int $currentVersion) : array{
 		$iterator = new \RegexIterator(
 			new \FilesystemIterator(
 				$path,
 				\FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
 			),
-			'/\/mapping_schema_(\d{4}).*\.json$/',
+			'/\/(\d{4}).*\.json$/',
 			\RegexIterator::GET_MATCH
 		);
 
@@ -209,7 +209,14 @@ final class BlockStateUpgradeSchemaUtils{
 			}
 			$model = $jsonMapper->map($json, new BlockStateUpgradeSchemaModel());
 
-			$result[$priority] = self::fromJsonModel($model);
+			$schema = self::fromJsonModel($model);
+			if($schema->getVersionId() > $currentVersion){
+				//this might be a beta schema which shouldn't be applicable
+				//TODO: why do we load the whole schema just to throw it away if it's too new? ...
+				continue;
+			}
+
+			$result[$priority] = $schema;
 		}
 
 		ksort($result, SORT_NUMERIC);

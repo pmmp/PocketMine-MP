@@ -38,7 +38,6 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
-use pocketmine\world\format\io\SubChunkConverter;
 use pocketmine\world\format\SubChunk;
 use function zlib_decode;
 
@@ -75,7 +74,7 @@ class McRegion extends RegionWorldProvider{
 		$fullData = self::readFixedSizeByteArray($chunk, "Data", 16384);
 
 		for($y = 0; $y < 8; ++$y){
-			$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, [SubChunkConverter::convertSubChunkFromLegacyColumn($fullIds, $fullData, $y)]);
+			$subChunks[$y] = new SubChunk(BlockLegacyIds::AIR << Block::INTERNAL_METADATA_BITS, [$this->palettizeLegacySubChunkFromColumn($fullIds, $fullData, $y)]);
 		}
 
 		$makeBiomeArray = function(string $biomeIds) : BiomeArray{
