@@ -73,7 +73,7 @@ final class RuntimeBlockMapping{
 		}catch(BlockStateSerializeException){
 			//TODO: this will swallow any error caused by invalid block properties; this is not ideal, but it should be
 			//covered by unit tests, so this is probably a safe assumption.
-			$blockStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);
+			$blockStateData = $this->fallbackStateData;
 		}
 
 		$networkId = $this->blockStateDictionary->lookupStateIdFromData($blockStateData);
