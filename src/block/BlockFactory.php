@@ -77,10 +77,16 @@ class BlockFactory{
 	private $fullList;
 
 	/**
-	 * @var \SplFixedArray|int[]
-	 * @phpstan-var \SplFixedArray<int>
+	 * @var int[]
+	 * @phpstan-var array<int, int>
 	 */
-	private \SplFixedArray $mappedStateIds;
+	private array $defaultStateIndexes = [];
+
+	/**
+	 * @var int[]
+	 * @phpstan-var array<int, int>
+	 */
+	private array $mappedStateIndexes = [];
 
 	/**
 	 * @var \SplFixedArray|int[]
@@ -105,7 +111,6 @@ class BlockFactory{
 
 	public function __construct(){
 		$this->fullList = new \SplFixedArray(1024 << Block::INTERNAL_METADATA_BITS);
-		$this->mappedStateIds = new \SplFixedArray(1024 << Block::INTERNAL_METADATA_BITS);
 
 		$this->light = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 0));
 		$this->lightFilter = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 1));
@@ -944,11 +949,7 @@ class BlockFactory{
 		}
 
 		foreach($ids as $id){
-			for($meta = 0; $meta < 1 << Block::INTERNAL_METADATA_BITS; ++$meta){
-				if(!$this->isRegistered($id, $meta)){
-					$this->remap($id, $meta, $default);
-				}
-			}
+			$this->defaultStateIndexes[$id] = $default->getFullId();
 		}
 	}
 
@@ -1027,8 +1028,12 @@ class BlockFactory{
 	}
 
 	private function fillStaticArrays(int $index, Block $block) : void{
-		$this->fullList[$index] = $block;
-		$this->mappedStateIds[$index] = $block->getFullId();
+		$fullId = $block->getFullId();
+		if($index !== $fullId){
+			$this->mappedStateIndexes[$index] = $fullId;
+		}else{
+			$this->fullList[$index] = $block;
+		}
 		$this->light[$index] = $block->getLightLevel();
 		$this->lightFilter[$index] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
 		$this->blocksDirectSkyLight[$index] = $block->blocksDirectSkyLight();
@@ -1051,8 +1056,10 @@ class BlockFactory{
 		if($index < 0 || $index >= $this->fullList->getSize()){
 			throw new \InvalidArgumentException("Block ID $id is out of bounds");
 		}
-		if($this->fullList[$index] !== null){
+		if($this->fullList[$index] !== null){ //hot
 			$block = clone $this->fullList[$index];
+		}elseif(($mappedIndex = $this->getMappedStateId($index)) !== $index && $this->fullList[$mappedIndex] !== null){ //cold
+			$block = clone $this->fullList[$mappedIndex];
 		}else{
 			$block = new UnknownBlock(new BID($id, $meta), BlockBreakInfo::instant());
 		}
@@ -1068,7 +1075,15 @@ class BlockFactory{
 	 * Returns whether a specified block state is already registered in the block factory.
 	 */
 	public function isRegistered(int $id, int $meta = 0) : bool{
-		$b = $this->fullList[($id << Block::INTERNAL_METADATA_BITS) | $meta];
+		$index = ($id << Block::INTERNAL_METADATA_BITS) | $meta;
+		$b = $this->fullList[$index];
+		if($b === null){
+			$mappedIndex = $this->mappedStateIndexes[$index] ?? $this->defaultStateIndexes[$id] ?? null;
+			if($mappedIndex === null){
+				return false;
+			}
+			$b = $this->fullList[$mappedIndex];
+		}
 		return $b !== null && !($b instanceof UnknownBlock);
 	}
 
@@ -1084,6 +1099,9 @@ class BlockFactory{
 	 * Used to correct invalid blockstates found in loaded chunks.
 	 */
 	public function getMappedStateId(int $fullState) : int{
-		return $this->mappedStateIds[$fullState] ?? $fullState;
+		if($this->fullList[$fullState] !== null){
+			return $fullState;
+		}
+		return $this->mappedStateIndexes[$fullState] ?? $this->defaultStateIndexes[$fullState >> Block::INTERNAL_METADATA_BITS] ?? $fullState;
 	}
 }
