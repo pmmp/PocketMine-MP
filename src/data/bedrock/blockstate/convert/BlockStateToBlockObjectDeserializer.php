@@ -34,6 +34,7 @@ use pocketmine\block\utils\SlabType;
 use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\blockstate\BlockStateData;
 use pocketmine\data\bedrock\blockstate\BlockStateDeserializeException;
+use pocketmine\data\bedrock\blockstate\BlockStateDeserializer;
 use pocketmine\data\bedrock\blockstate\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\blockstate\BlockTypeNames as Ids;
@@ -44,13 +45,21 @@ use pocketmine\math\Facing;
 use function array_key_exists;
 use function min;
 
-final class BlockStateDeserializer{
+final class BlockStateToBlockObjectDeserializer implements BlockStateDeserializer{
 
 	/**
 	 * @var \Closure[]
 	 * @phpstan-var array<string, \Closure(Reader $in) : Block>
 	 */
 	private array $deserializeFuncs = [];
+
+	public function __construct(){
+		$this->registerDeserializers();
+	}
+
+	public function deserialize(BlockStateData $stateData) : int{
+		return $this->deserializeBlock($stateData)->getFullId();
+	}
 
 	/** @phpstan-param \Closure(Reader) : Block $c */
 	private function map(string $id, \Closure $c) : void{
@@ -60,7 +69,7 @@ final class BlockStateDeserializer{
 		$this->deserializeFuncs[$id] = $c;
 	}
 
-	public function __construct(){
+	private function registerDeserializers() : void{
 		$this->map(Ids::ACACIA_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::ACACIA_BUTTON(), $in));
 		$this->map(Ids::ACACIA_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::ACACIA_DOOR(), $in));
 		$this->map(Ids::ACACIA_FENCE_GATE, fn(Reader $in) => Helper::decodeFenceGate(Blocks::ACACIA_FENCE_GATE(), $in));
@@ -2502,7 +2511,7 @@ final class BlockStateDeserializer{
 	}
 
 	/** @throws BlockStateDeserializeException */
-	public function deserialize(BlockStateData $blockStateData) : Block{
+	public function deserializeBlock(BlockStateData $blockStateData) : Block{
 		$id = $blockStateData->getName();
 		if(!array_key_exists($id, $this->deserializeFuncs)){
 			throw new BlockStateDeserializeException("Unknown block ID \"$id\"");

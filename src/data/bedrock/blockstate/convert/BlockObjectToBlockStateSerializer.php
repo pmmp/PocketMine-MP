@@ -32,6 +32,7 @@ use pocketmine\block\Bed;
 use pocketmine\block\Beetroot;
 use pocketmine\block\Bell;
 use pocketmine\block\Block;
+use pocketmine\block\BlockFactory;
 use pocketmine\block\BlockLegacyMetadata;
 use pocketmine\block\BoneBlock;
 use pocketmine\block\BrewingStand;
@@ -140,6 +141,7 @@ use pocketmine\block\Wool;
 use pocketmine\data\bedrock\blockstate\BlockStateData;
 use pocketmine\data\bedrock\blockstate\BlockStateNames as StateNames;
 use pocketmine\data\bedrock\blockstate\BlockStateSerializeException;
+use pocketmine\data\bedrock\blockstate\BlockStateSerializer;
 use pocketmine\data\bedrock\blockstate\BlockStateStringValues as StringValues;
 use pocketmine\data\bedrock\blockstate\BlockTypeNames as Ids;
 use pocketmine\data\bedrock\blockstate\convert\BlockStateSerializerHelper as Helper;
@@ -150,7 +152,7 @@ use pocketmine\utils\AssumptionFailedError;
 use function class_parents;
 use function get_class;
 
-final class BlockStateSerializer{
+final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 	/**
 	 * These callables actually accept Block, but for the sake of type completeness, it has to be never, since we can't
 	 * describe the bottom type of a type hierarchy only containing Block.
@@ -162,6 +164,11 @@ final class BlockStateSerializer{
 
 	public function __construct(){
 		$this->registerSerializers();
+	}
+
+	public function serialize(int $stateId) : BlockStateData{
+		//TODO: singleton usage not ideal
+		return $this->serializeBlock(BlockFactory::getInstance()->fromFullBlock($stateId));
 	}
 
 	/**
@@ -181,7 +188,7 @@ final class BlockStateSerializer{
 	 * @phpstan-template TBlockType of Block
 	 * @phpstan-param TBlockType $blockState
 	 */
-	public function serialize(Block $blockState) : BlockStateData{
+	public function serializeBlock(Block $blockState) : BlockStateData{
 		$typeId = $blockState->getTypeId();
 
 		$locatedSerializer = $this->serializers[$typeId][get_class($blockState)] ?? null;

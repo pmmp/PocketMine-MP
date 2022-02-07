@@ -24,27 +24,41 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\blockstate\upgrade;
 
 use pocketmine\data\bedrock\blockstate\BlockStateData;
+use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
+use pocketmine\errorhandler\ErrorToExceptionHandler;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\BinaryStream;
+use pocketmine\utils\SingletonTrait;
+use Webmozart\PathUtil\Path;
+use function file_get_contents;
+use const pocketmine\BEDROCK_DATA_PATH;
 
 /**
- * Interface to an upgrade schema describing how to convert 1.12 id+meta into modern blockstate NBT.
+ * Handles translating legacy 1.12 block ID/meta into modern blockstates.
  */
-final class LegacyIdMetaToBlockStateDataMap{
-
+final class LegacyBlockStateMapper{
 	/**
 	 * @param BlockStateData[][] $mappingTable
 	 * @phpstan-param array<string, array<int, BlockStateData>> $mappingTable
 	 */
 	public function __construct(
-		private array $mappingTable
+		private array $mappingTable,
+		private LegacyBlockIdToStringIdMap $legacyNumericIdMap
 	){}
 
-	public function getDataFromLegacyIdMeta(string $id, int $meta) : ?BlockStateData{
+	public function fromStringIdMeta(string $id, int $meta) : ?BlockStateData{
 		return $this->mappingTable[$id][$meta] ?? null;
 	}
 
-	public static function loadFromString(string $data) : self{
+	public function fromIntIdMeta(int $id, int $meta) : ?BlockStateData{
+		$stringId = $this->legacyNumericIdMap->legacyToString($id);
+		if($stringId === null){
+			return null;
+		}
+		return $this->fromStringIdMeta($stringId, $meta);
+	}
+
+	public static function loadFromString(string $data, LegacyBlockIdToStringIdMap $idMap) : self{
 		$mappingTable = [];
 
 		$legacyStateMapReader = new BinaryStream($data);
@@ -59,6 +73,6 @@ final class LegacyIdMetaToBlockStateDataMap{
 			$mappingTable[$id][$meta] = BlockStateData::fromNbt($state);
 		}
 
-		return new self($mappingTable);
+		return new self($mappingTable, $idMap);
 	}
 }
