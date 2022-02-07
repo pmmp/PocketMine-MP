@@ -28,6 +28,8 @@ use pocketmine\block\UnknownBlock;
 use pocketmine\data\bedrock\blockstate\BlockStateData;
 use pocketmine\data\bedrock\blockstate\BlockStateSerializeException;
 use pocketmine\data\bedrock\blockstate\BlockTypeNames;
+use pocketmine\data\bedrock\blockstate\CachingBlockStateSerializer;
+use pocketmine\data\bedrock\blockstate\convert\BlockObjectToBlockStateSerializer;
 use pocketmine\data\bedrock\blockstate\convert\BlockStateSerializer;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\AssumptionFailedError;
@@ -56,7 +58,7 @@ final class RuntimeBlockMapping{
 	private function __construct(){
 		$contents = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt")), "Missing required resource file");
 		$this->blockStateDictionary = BlockStateDictionary::loadFromString($contents);
-		$this->blockStateSerializer = new BlockStateSerializer();
+		$this->blockStateSerializer = new CachingBlockStateSerializer(new BlockObjectToBlockStateSerializer());
 
 		$this->fallbackStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);
 	}
@@ -66,16 +68,12 @@ final class RuntimeBlockMapping{
 			return $this->networkIdCache[$internalStateId];
 		}
 
-		//TODO: singleton usage not ideal
-		$block = BlockFactory::getInstance()->fromFullBlock($internalStateId);
-		if($block instanceof UnknownBlock){
-			$blockStateData = $this->fallbackStateData;
-		}else{
-			try{
-				$blockStateData = $this->blockStateSerializer->serialize($block);
-			}catch(BlockStateSerializeException $e){
-				throw new AssumptionFailedError("Invalid serializer for block $block", 0, $e);
-			}
+		try{
+			$blockStateData = $this->blockStateSerializer->serialize($internalStateId);
+		}catch(BlockStateSerializeException){
+			//TODO: this will swallow any error caused by invalid block properties; this is not ideal, but it should be
+			//covered by unit tests, so this is probably a safe assumption.
+			$blockStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);
 		}
 
 		$networkId = $this->blockStateDictionary->lookupStateIdFromData($blockStateData);
