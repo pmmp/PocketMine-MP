@@ -1,11 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../build/make-release.php
-
-		-
 			message: "#^Parameter \\#3 \\$subject of function preg_replace expects array\\|string, string\\|null given\\.$#"
 			count: 2
 			path: ../../../build/make-release.php
@@ -21,16 +16,6 @@ parameters:
 			path: ../../../build/server-phar.php
 
 		-
-			message: "#^Parameter \\#1 \\$stream of function fclose expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: ../../../src/MemoryManager.php
-
-		-
-			message: "#^Parameter \\#1 \\$stream of function fwrite expects resource, resource\\|false given\\.$#"
-			count: 1
-			path: ../../../src/MemoryManager.php
-
-		-
 			message: "#^Binary operation \"\\.\" between array\\<int, mixed\\>\\|string\\|false and '/'\\|'\\\\\\\\' results in an error\\.$#"
 			count: 2
 			path: ../../../src/PocketMine.php
@@ -41,27 +26,7 @@ parameters:
 			path: ../../../src/PocketMine.php
 
 		-
-			message: "#^Parameter \\#1 \\$haystack of function substr_count expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/PocketMine.php
-
-		-
-			message: "#^Parameter \\#1 \\$path of function realpath expects string, string\\|false given\\.$#"
-			count: 2
-			path: ../../../src/PocketMine.php
-
-		-
-			message: "#^Parameter \\#1 \\$version1 of function version_compare expects string, string\\|false given\\.$#"
-			count: 3
-			path: ../../../src/PocketMine.php
-
-		-
 			message: "#^Cannot cast mixed to string\\.$#"
-			count: 1
-			path: ../../../src/Server.php
-
-		-
-			message: "#^Only numeric types are allowed in \\+, int\\|false given on the left side\\.$#"
 			count: 1
 			path: ../../../src/Server.php
 
@@ -72,11 +37,6 @@ parameters:
 
 		-
 			message: "#^Parameter \\#1 \\$input of function yaml_parse expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/Server.php
-
-		-
-			message: "#^Parameter \\#3 \\$subject of function str_replace expects array\\|string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/Server.php
 
@@ -204,6 +164,36 @@ parameters:
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/Farmland.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Fire.php
+
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Fire.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Fire.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Fire.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Fire.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:isInWorld\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/Fire.php
 
 		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
@@ -511,19 +501,9 @@ parameters:
 			path: ../../../src/console/ConsoleReader.php
 
 		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/crafting/CraftingManagerFromDataHelper.php
-
-		-
 			message: "#^Parameter \\#1 \\$path of static method pocketmine\\\\utils\\\\Filesystem\\:\\:cleanPath\\(\\) expects string, mixed given\\.$#"
 			count: 1
 			path: ../../../src/crash/CrashDump.php
-
-		-
-			message: "#^Parameter \\#1 \\$json of function json_decode expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/data/bedrock/LegacyToStringBidirectionalIdMap.php
 
 		-
 			message: "#^Parameter \\#1 \\$index of method pocketmine\\\\inventory\\\\BaseInventory\\:\\:setItem\\(\\) expects int, int\\|string given\\.$#"
@@ -544,11 +524,6 @@ parameters:
 			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getBlockAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/entity/Living.php
-
-		-
-			message: "#^Property pocketmine\\\\entity\\\\Skin\\:\\:\\$geometryData \\(string\\) does not accept string\\|false\\.$#"
-			count: 1
-			path: ../../../src/entity/Skin.php
 
 		-
 			message: "#^Parameter \\#2 \\$x of method pocketmine\\\\block\\\\Block\\:\\:position\\(\\) expects int, float\\|int given\\.$#"
@@ -629,11 +604,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$buffer of method pocketmine\\\\nbt\\\\BaseNbtSerializer\\:\\:read\\(\\) expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/item/Item.php
-
-		-
-			message: "#^Parameter \\#2 \\$array of function array_map expects array, array\\|false given\\.$#"
-			count: 1
-			path: ../../../src/lang/Language.php
 
 		-
 			message: "#^Parameter \\#1 \\$result of method pocketmine\\\\network\\\\mcpe\\\\compression\\\\CompressBatchPromise\\:\\:resolve\\(\\) expects string, mixed given\\.$#"
@@ -751,16 +721,6 @@ parameters:
 			path: ../../../src/network/mcpe/compression/CompressBatchTask.php
 
 		-
-			message: "#^Parameter \\#1 \\$buffer of static method pocketmine\\\\network\\\\mcpe\\\\protocol\\\\serializer\\\\PacketSerializer\\:\\:decoder\\(\\) expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/convert/RuntimeBlockMapping.php
-
-		-
-			message: "#^Method pocketmine\\\\network\\\\mcpe\\\\encryption\\\\EncryptionUtils\\:\\:generateKey\\(\\) should return string but returns string\\|false\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/encryption/EncryptionUtils.php
-
-		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\encryption\\\\PrepareEncryptionTask\\:\\:\\$serverPrivateKey \\(string\\) does not accept string\\|null\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/encryption/PrepareEncryptionTask.php
@@ -876,11 +836,6 @@ parameters:
 			path: ../../../src/plugin/PluginManager.php
 
 		-
-			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackChunk\\(\\) should return string but returns string\\|false\\.$#"
-			count: 1
-			path: ../../../src/resourcepacks/ZippedResourcePack.php
-
-		-
 			message: "#^Method pocketmine\\\\resourcepacks\\\\ZippedResourcePack\\:\\:getPackSize\\(\\) should return int but returns int\\<0, max\\>\\|false\\.$#"
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
@@ -891,17 +846,7 @@ parameters:
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
 		-
-			message: "#^Parameter \\#1 \\$string of function strlen expects string, string\\|false given\\.$#"
-			count: 2
-			path: ../../../src/resourcepacks/ZippedResourcePack.php
-
-		-
 			message: "#^Parameter \\#2 \\$length of function fread expects int\\<0, max\\>, int given\\.$#"
-			count: 1
-			path: ../../../src/resourcepacks/ZippedResourcePack.php
-
-		-
-			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/resourcepacks/ZippedResourcePack.php
 
@@ -986,11 +931,6 @@ parameters:
 			path: ../../../src/utils/Config.php
 
 		-
-			message: "#^Parameter \\#2 \\$subject of function preg_match expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/utils/Filesystem.php
-
-		-
 			message: "#^Parameter \\#2 \\$offset of function substr expects int, mixed given\\.$#"
 			count: 1
 			path: ../../../src/utils/Internet.php
@@ -1001,22 +941,7 @@ parameters:
 			path: ../../../src/utils/Internet.php
 
 		-
-			message: "#^Parameter \\#1 \\$abbr of function timezone_name_from_abbr expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/utils/Timezone.php
-
-		-
-			message: "#^Parameter \\#1 \\$haystack of function strpos expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/utils/Timezone.php
-
-		-
 			message: "#^Parameter \\#1 \\$string of function trim expects string, string\\|false given\\.$#"
-			count: 1
-			path: ../../../src/utils/Timezone.php
-
-		-
-			message: "#^Parameter \\#1 \\$timezoneId of function date_default_timezone_set expects string, string\\|false given\\.$#"
 			count: 1
 			path: ../../../src/utils/Timezone.php
 
@@ -1101,6 +1026,11 @@ parameters:
 			path: ../../../src/world/Explosion.php
 
 		-
+			message: "#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\\.$#"
+			count: 1
+			path: ../../../src/world/World.php
+
+		-
 			message: "#^Cannot access offset 'data' on array\\{priority\\: int, data\\: pocketmine\\\\math\\\\Vector3\\}\\|int\\|pocketmine\\\\math\\\\Vector3\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
@@ -1111,7 +1041,7 @@ parameters:
 			path: ../../../src/world/World.php
 
 		-
-			message: "#^Parameter \\#1 \\$keys of function array_fill_keys expects array, mixed given\\.$#"
+			message: "#^Cannot cast mixed to string\\.$#"
 			count: 1
 			path: ../../../src/world/World.php
 

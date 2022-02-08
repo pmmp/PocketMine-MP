@@ -65,11 +65,11 @@ class HandlerList{
 	 * @param RegisteredListener|Listener|Plugin $object
 	 */
 	public function unregister($object) : void{
-		if($object instanceof Plugin or $object instanceof Listener){
+		if($object instanceof Plugin || $object instanceof Listener){
 			foreach($this->handlerSlots as $priority => $list){
 				foreach($list as $hash => $listener){
-					if(($object instanceof Plugin and $listener->getPlugin() === $object)
-						or ($object instanceof Listener and (new \ReflectionFunction($listener->getHandler()))->getClosureThis() === $object) //this doesn't even need to be a listener :D
+					if(($object instanceof Plugin && $listener->getPlugin() === $object)
+						|| ($object instanceof Listener && (new \ReflectionFunction($listener->getHandler()))->getClosureThis() === $object) //this doesn't even need to be a listener :D
 					){
 						unset($this->handlerSlots[$priority][$hash]);
 					}

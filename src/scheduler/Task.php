@@ -42,7 +42,7 @@ abstract class Task{
 	}
 
 	final public function setHandler(?TaskHandler $taskHandler) : void{
-		if($this->taskHandler === null or $taskHandler === null){
+		if($this->taskHandler === null || $taskHandler === null){
 			$this->taskHandler = $taskHandler;
 		}
 	}

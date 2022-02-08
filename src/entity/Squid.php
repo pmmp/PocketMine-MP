@@ -95,7 +95,7 @@ class Squid extends WaterAnimal{
 
 		if($this->isAlive()){
 
-			if($this->location->y > 62 and $this->swimDirection !== null){
+			if($this->location->y > 62 && $this->swimDirection !== null){
 				$this->swimDirection = $this->swimDirection->withComponents(null, -0.5, null);
 			}
 
@@ -113,8 +113,10 @@ class Squid extends WaterAnimal{
 			}
 
 			$f = sqrt(($this->motion->x ** 2) + ($this->motion->z ** 2));
-			$this->location->yaw = (-atan2($this->motion->x, $this->motion->z) * 180 / M_PI);
-			$this->location->pitch = (-atan2($f, $this->motion->y) * 180 / M_PI);
+			$this->setRotation(
+				-atan2($this->motion->x, $this->motion->z) * 180 / M_PI,
+				-atan2($f, $this->motion->y) * 180 / M_PI
+			);
 		}
 
 		return $hasUpdate;

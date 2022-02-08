@@ -46,7 +46,7 @@ final class EntityDataHelper{
 		$pos = self::parseVec3($nbt, "Pos", false);
 
 		$yawPitch = $nbt->getTag("Rotation");
-		if(!($yawPitch instanceof ListTag) or $yawPitch->getTagType() !== NBT::TAG_Float){
+		if(!($yawPitch instanceof ListTag) || $yawPitch->getTagType() !== NBT::TAG_Float){
 			throw new SavedDataLoadingException("'Rotation' should be a List<Float>");
 		}
 		/** @var FloatTag[] $values */
@@ -63,10 +63,10 @@ final class EntityDataHelper{
 	 */
 	public static function parseVec3(CompoundTag $nbt, string $tagName, bool $optional) : Vector3{
 		$pos = $nbt->getTag($tagName);
-		if($pos === null and $optional){
+		if($pos === null && $optional){
 			return new Vector3(0, 0, 0);
 		}
-		if(!($pos instanceof ListTag) or ($pos->getTagType() !== NBT::TAG_Double && $pos->getTagType() !== NBT::TAG_Float)){
+		if(!($pos instanceof ListTag) || ($pos->getTagType() !== NBT::TAG_Double && $pos->getTagType() !== NBT::TAG_Float)){
 			throw new SavedDataLoadingException("'$tagName' should be a List<Double> or List<Float>");
 		}
 		/** @var DoubleTag[]|FloatTag[] $values */

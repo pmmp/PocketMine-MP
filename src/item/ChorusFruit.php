@@ -61,7 +61,7 @@ class ChorusFruit extends Food{
 			$y = mt_rand($minY, $maxY);
 			$z = mt_rand($minZ, $maxZ);
 
-			while($y >= 0 and !$world->getBlockAt($x, $y, $z)->isSolid()){
+			while($y >= 0 && !$world->getBlockAt($x, $y, $z)->isSolid()){
 				$y--;
 			}
 			if($y < 0){
@@ -70,7 +70,7 @@ class ChorusFruit extends Food{
 
 			$blockUp = $world->getBlockAt($x, $y + 1, $z);
 			$blockUp2 = $world->getBlockAt($x, $y + 2, $z);
-			if($blockUp->isSolid() or $blockUp instanceof Liquid or $blockUp2->isSolid() or $blockUp2 instanceof Liquid){
+			if($blockUp->isSolid() || $blockUp instanceof Liquid || $blockUp2->isSolid() || $blockUp2 instanceof Liquid){
 				continue;
 			}
 

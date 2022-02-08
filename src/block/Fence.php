@@ -41,7 +41,7 @@ class Fence extends Transparent{
 
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);
-			if($block instanceof static or $block instanceof FenceGate or ($block->isSolid() and !$block->isTransparent())){
+			if($block instanceof static || $block instanceof FenceGate || ($block->isSolid() && !$block->isTransparent())){
 				$this->connections[$facing] = true;
 			}else{
 				unset($this->connections[$facing]);
@@ -61,7 +61,7 @@ class Fence extends Transparent{
 		$connectWest = isset($this->connections[Facing::WEST]);
 		$connectEast = isset($this->connections[Facing::EAST]);
 
-		if($connectWest or $connectEast){
+		if($connectWest || $connectEast){
 			//X axis (west/east)
 			$bbs[] = AxisAlignedBB::one()
 				->squash(Axis::Z, $inset)
@@ -73,7 +73,7 @@ class Fence extends Transparent{
 		$connectNorth = isset($this->connections[Facing::NORTH]);
 		$connectSouth = isset($this->connections[Facing::SOUTH]);
 
-		if($connectNorth or $connectSouth){
+		if($connectNorth || $connectSouth){
 			//Z axis (north/south)
 			$bbs[] = AxisAlignedBB::one()
 				->squash(Axis::X, $inset)

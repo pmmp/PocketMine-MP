@@ -115,7 +115,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 	}
 
 	public function debug($message, bool $force = false){
-		if(!$this->logDebug and !$force){
+		if(!$this->logDebug && !$force){
 			return;
 		}
 		$this->send($message, \LogLevel::DEBUG, "DEBUG", TextFormat::GRAY);
@@ -193,7 +193,7 @@ class MainLogger extends \AttachableThreadedLogger implements \BufferedLogger{
 		$thread = \Thread::getCurrentThread();
 		if($thread === null){
 			$threadName = $this->mainThreadName . " thread";
-		}elseif($thread instanceof Thread or $thread instanceof Worker){
+		}elseif($thread instanceof Thread || $thread instanceof Worker){
 			$threadName = $thread->getThreadName() . " thread";
 		}else{
 			$threadName = (new \ReflectionClass($thread))->getShortName() . " thread";

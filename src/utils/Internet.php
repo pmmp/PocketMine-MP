@@ -80,7 +80,7 @@ class Internet{
 	public static function getIP(bool $force = false){
 		if(!self::$online){
 			return false;
-		}elseif(self::$ip !== false and !$force){
+		}elseif(self::$ip !== false && !$force){
 			return self::$ip;
 		}
 
@@ -90,22 +90,22 @@ class Internet{
 		}
 
 		$ip = self::getURL("http://checkip.dyndns.org/");
-		if($ip !== null and preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', trim(strip_tags($ip->getBody())), $matches) > 0){
+		if($ip !== null && preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', trim(strip_tags($ip->getBody())), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://www.checkip.org/");
-		if($ip !== null and preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip->getBody(), $matches) > 0){
+		if($ip !== null && preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip->getBody(), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://checkmyip.org/");
-		if($ip !== null and preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip->getBody(), $matches) > 0){
+		if($ip !== null && preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip->getBody(), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://ifconfig.me/ip");
-		if($ip !== null and ($addr = trim($ip->getBody())) != ""){
+		if($ip !== null && ($addr = trim($ip->getBody())) != ""){
 			return self::$ip = $addr;
 		}
 

@@ -24,32 +24,15 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\CoralType;
+use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\item\Item;
 
 abstract class BaseCoral extends Transparent{
-
-	protected CoralType $coralType;
-	protected bool $dead = false;
+	use CoralTypeTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		parent::__construct($idInfo, $name, $breakInfo);
 		$this->coralType = CoralType::TUBE();
-	}
-
-	public function getCoralType() : CoralType{ return $this->coralType; }
-
-	/** @return $this */
-	public function setCoralType(CoralType $coralType) : self{
-		$this->coralType = $coralType;
-		return $this;
-	}
-
-	public function isDead() : bool{ return $this->dead; }
-
-	/** @return $this */
-	public function setDead(bool $dead) : self{
-		$this->dead = $dead;
-		return $this;
 	}
 
 	public function onNearbyBlockChange() : void{

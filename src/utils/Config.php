@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use pocketmine\errorhandler\ErrorToExceptionHandler;
 use Webmozart\PathUtil\Path;
 use function array_change_key_case;
 use function array_fill_keys;
@@ -33,6 +34,7 @@ use function date;
 use function explode;
 use function file_exists;
 use function file_get_contents;
+use function get_debug_type;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -167,20 +169,31 @@ class Config{
 			if($content === false){
 				throw new \RuntimeException("Unable to load config file");
 			}
-			$config = null;
 			switch($this->type){
 				case Config::PROPERTIES:
 					$config = self::parseProperties($content);
 					break;
 				case Config::JSON:
-					$config = json_decode($content, true);
+					try{
+						$config = json_decode($content, true, flags: JSON_THROW_ON_ERROR);
+					}catch(\JsonException $e){
+						throw ConfigLoadException::wrap($this->file, $e);
+					}
 					break;
 				case Config::YAML:
 					$content = self::fixYAMLIndexes($content);
-					$config = yaml_parse($content);
+					try{
+						$config = ErrorToExceptionHandler::trap(fn() => yaml_parse($content));
+					}catch(\ErrorException $e){
+						throw ConfigLoadException::wrap($this->file, $e);
+					}
 					break;
 				case Config::SERIALIZED:
-					$config = unserialize($content);
+					try{
+						$config = ErrorToExceptionHandler::trap(fn() => unserialize($content));
+					}catch(\ErrorException $e){
+						throw ConfigLoadException::wrap($this->file, $e);
+					}
 					break;
 				case Config::ENUM:
 					$config = array_fill_keys(self::parseList($content), true);
@@ -188,7 +201,10 @@ class Config{
 				default:
 					throw new \InvalidArgumentException("Invalid config type specified");
 			}
-			$this->config = is_array($config) ? $config : $default;
+			if(!is_array($config)){
+				throw new ConfigLoadException("Failed to load config $this->file: Expected array for base type, but got " . get_debug_type($config));
+			}
+			$this->config = $config;
 			if($this->fillDefaults($default, $this->config) > 0){
 				$this->save();
 			}
@@ -377,7 +393,7 @@ class Config{
 
 		while(count($vars) > 0){
 			$baseKey = array_shift($vars);
-			if(is_array($base) and isset($base[$baseKey])){
+			if(is_array($base) && isset($base[$baseKey])){
 				$base = $base[$baseKey];
 			}else{
 				return $default;
@@ -489,7 +505,7 @@ class Config{
 		$changed = 0;
 		foreach(Utils::stringifyKeys($default) as $k => $v){
 			if(is_array($v)){
-				if(!isset($data[$k]) or !is_array($data[$k])){
+				if(!isset($data[$k]) || !is_array($data[$k])){
 					$data[$k] = [];
 				}
 				$changed += $this->fillDefaults($v, $data[$k]);

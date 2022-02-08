@@ -96,7 +96,7 @@ abstract class CraftingGrid extends SimpleInventory{
 	 * Returns the item at offset x,y, offset by where the starts of the recipe rectangle are.
 	 */
 	public function getIngredient(int $x, int $y) : Item{
-		if($this->startX !== null and $this->startY !== null){
+		if($this->startX !== null && $this->startY !== null){
 			return $this->getItem(($y + $this->startY) * $this->gridWidth + ($x + $this->startX));
 		}
 

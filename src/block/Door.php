@@ -72,7 +72,7 @@ class Door extends Transparent{
 
 		//copy door properties from other half
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
-		if($other instanceof Door and $other->isSameType($this)){
+		if($other instanceof Door && $other->isSameType($this)){
 			if($this->top){
 				$this->facing = $other->facing;
 				$this->open = $other->open;
@@ -129,7 +129,7 @@ class Door extends Transparent{
 		if($face === Facing::UP){
 			$blockUp = $this->getSide(Facing::UP);
 			$blockDown = $this->getSide(Facing::DOWN);
-			if(!$blockUp->canBeReplaced() or $blockDown->isTransparent()){
+			if(!$blockUp->canBeReplaced() || $blockDown->isTransparent()){
 				return false;
 			}
 
@@ -140,7 +140,7 @@ class Door extends Transparent{
 			$next = $this->getSide(Facing::rotateY($this->facing, false));
 			$next2 = $this->getSide(Facing::rotateY($this->facing, true));
 
-			if($next->isSameType($this) or (!$next2->isTransparent() and $next->isTransparent())){ //Door hinge
+			if($next->isSameType($this) || (!$next2->isTransparent() && $next->isTransparent())){ //Door hinge
 				$this->hingeRight = true;
 			}
 
@@ -158,7 +158,7 @@ class Door extends Transparent{
 		$this->open = !$this->open;
 
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
-		if($other instanceof Door and $other->isSameType($this)){
+		if($other instanceof Door && $other->isSameType($this)){
 			$other->open = $this->open;
 			$this->position->getWorld()->setBlock($other->position, $other);
 		}

@@ -55,7 +55,7 @@ final class MinimumCostFlowCalculator{
 		$cost = 1000;
 
 		foreach(Facing::HORIZONTAL as $j){
-			if($j === $originOpposite or $j === $lastOpposite){
+			if($j === $originOpposite || $j === $lastOpposite){
 				continue;
 			}
 

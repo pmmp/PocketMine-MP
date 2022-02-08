@@ -42,6 +42,8 @@ final class BlockLegacyMetadata{
 	public const BAMBOO_LEAF_SIZE_SHIFT = 1;
 	public const BAMBOO_LEAF_SIZE_MASK = 0x03;
 
+	public const BAMBOO_SAPLING_FLAG_READY = 0x01;
+
 	public const BARREL_FLAG_OPEN = 0x08;
 
 	public const BED_FLAG_HEAD = 0x08;
@@ -141,6 +143,8 @@ final class BlockLegacyMetadata{
 
 	public const LEAVES_FLAG_NO_DECAY = 0x04;
 	public const LEAVES_FLAG_CHECK_DECAY = 0x08;
+
+	public const LECTERN_FLAG_POWERED = 0x04;
 
 	public const LEVER_FLAG_POWERED = 0x08;
 

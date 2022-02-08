@@ -89,7 +89,7 @@ class SignText{
 		if(!is_int($index)){
 			throw new \InvalidArgumentException("Index must be an integer");
 		}
-		if($index < 0 or $index >= self::LINE_COUNT){
+		if($index < 0 || $index >= self::LINE_COUNT){
 			throw new \InvalidArgumentException("Line index is out of bounds");
 		}
 	}

@@ -73,7 +73,7 @@ final class GeneratorManager{
 		Utils::testValidInstance($class, Generator::class);
 
 		$name = strtolower($name);
-		if(!$overwrite and isset($this->list[$name])){
+		if(!$overwrite && isset($this->list[$name])){
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
 

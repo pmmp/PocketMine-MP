@@ -58,7 +58,7 @@ function generateMethodAnnotations(string $namespaceName, array $members) : stri
 	$memberLines = [];
 	foreach($members as $name => $member){
 		$reflect = new \ReflectionClass($member);
-		while($reflect !== false and $reflect->isAnonymous()){
+		while($reflect !== false && $reflect->isAnonymous()){
 			$reflect = $reflect->getParentClass();
 		}
 		if($reflect === false){

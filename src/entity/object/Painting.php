@@ -107,7 +107,7 @@ class Painting extends Entity{
 
 		if($this->lastDamageCause instanceof EntityDamageByEntityEvent){
 			$killer = $this->lastDamageCause->getDamager();
-			if($killer instanceof Player and !$killer->hasFiniteResources()){
+			if($killer instanceof Player && !$killer->hasFiniteResources()){
 				$drops = false;
 			}
 		}
@@ -212,7 +212,7 @@ class Painting extends Entity{
 				$pos = $startPos->getSide($rotatedFace, $w)->getSide(Facing::UP, $h);
 
 				$block = $world->getBlockAt($pos->x, $pos->y, $pos->z);
-				if($block->isSolid() or !$block->getSide($oppositeSide)->isSolid()){
+				if($block->isSolid() || !$block->getSide($oppositeSide)->isSolid()){
 					return false;
 				}
 			}

@@ -25,7 +25,6 @@ namespace pocketmine\generate_permission_doc;
 
 use pocketmine\permission\DefaultPermissions;
 use pocketmine\permission\PermissionManager;
-use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use pocketmine\VersionInfo;
 use Webmozart\PathUtil\Path;
@@ -48,10 +47,7 @@ function markdownify(string $name) : string{
 }
 DefaultPermissions::registerCorePermissions();
 
-$cwd = getcwd();
-if($cwd === false){
-	throw new AssumptionFailedError("getcwd() returned false");
-}
+$cwd = Utils::assumeNotFalse(getcwd());
 $output = Path::join($cwd, "core-permissions.md");
 echo "Writing output to $output\n";
 $doc = fopen($output, "wb");

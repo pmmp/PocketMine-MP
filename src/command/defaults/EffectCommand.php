@@ -96,7 +96,7 @@ class EffectCommand extends VanillaCommand{
 		$visible = true;
 		if(count($args) >= 5){
 			$v = strtolower($args[4]);
-			if($v === "on" or $v === "true" or $v === "t" or $v === "1"){
+			if($v === "on" || $v === "true" || $v === "t" || $v === "1"){
 				$visible = false;
 			}
 		}
