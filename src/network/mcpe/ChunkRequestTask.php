@@ -88,7 +88,7 @@ class ChunkRequestTask extends AsyncTask{
 			$this->mappingProtocol,
 			$this->tiles
 		);
-		$this->setResult($this->compressor->compress(PacketBatch::fromPackets($this->mappingProtocol, $encoderContext, LevelChunkPacket::create($this->chunkX, $this->chunkZ, $subCount, null, $payload))->getBuffer()));
+		$this->setResult($this->compressor->compress(PacketBatch::fromPackets($this->mappingProtocol, $encoderContext, LevelChunkPacket::create($this->chunkX, $this->chunkZ, $subCount, false, null, $payload))->getBuffer()));
 	}
 
 	public function onError() : void{
