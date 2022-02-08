@@ -59,7 +59,7 @@ class Skull extends Spawnable{
 			}
 		}
 		$rotation = $nbt->getByte(self::TAG_ROT, 0);
-		if($rotation >= 0 and $rotation <= 15){
+		if($rotation >= 0 && $rotation <= 15){
 			$this->skullRotation = $rotation;
 		}
 	}

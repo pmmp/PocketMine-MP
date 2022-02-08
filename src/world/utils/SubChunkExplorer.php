@@ -53,7 +53,7 @@ class SubChunkExplorer{
 	public function moveTo(int $x, int $y, int $z) : int{
 		$newChunkX = $x >> SubChunk::COORD_BIT_SIZE;
 		$newChunkZ = $z >> SubChunk::COORD_BIT_SIZE;
-		if($this->currentChunk === null or $this->currentX !== $newChunkX or $this->currentZ !== $newChunkZ){
+		if($this->currentChunk === null || $this->currentX !== $newChunkX || $this->currentZ !== $newChunkZ){
 			$this->currentX = $newChunkX;
 			$this->currentZ = $newChunkZ;
 			$this->currentSubChunk = null;
@@ -65,10 +65,10 @@ class SubChunkExplorer{
 		}
 
 		$newChunkY = $y >> SubChunk::COORD_BIT_SIZE;
-		if($this->currentSubChunk === null or $this->currentY !== $newChunkY){
+		if($this->currentSubChunk === null || $this->currentY !== $newChunkY){
 			$this->currentY = $newChunkY;
 
-			if($this->currentY < Chunk::MIN_SUBCHUNK_INDEX or $this->currentY > Chunk::MAX_SUBCHUNK_INDEX){
+			if($this->currentY < Chunk::MIN_SUBCHUNK_INDEX || $this->currentY > Chunk::MAX_SUBCHUNK_INDEX){
 				$this->currentSubChunk = null;
 				return SubChunkExplorerStatus::INVALID;
 			}

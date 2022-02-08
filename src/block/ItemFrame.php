@@ -86,7 +86,7 @@ class ItemFrame extends Flowable{
 
 	/** @return $this */
 	public function setFramedItem(?Item $item) : self{
-		if($item === null or $item->isNull()){
+		if($item === null || $item->isNull()){
 			$this->framedItem = null;
 			$this->itemRotation = 0;
 		}else{
@@ -161,7 +161,7 @@ class ItemFrame extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::DOWN or $face === Facing::UP or !$blockClicked->isSolid()){
+		if($face === Facing::DOWN || $face === Facing::UP || !$blockClicked->isSolid()){
 			return false;
 		}
 
@@ -172,7 +172,7 @@ class ItemFrame extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$drops = parent::getDropsForCompatibleTool($item);
-		if($this->framedItem !== null and lcg_value() <= $this->itemDropChance){
+		if($this->framedItem !== null && lcg_value() <= $this->itemDropChance){
 			$drops[] = clone $this->framedItem;
 		}
 

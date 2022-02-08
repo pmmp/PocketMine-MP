@@ -69,7 +69,7 @@ class FlowerPot extends Flowable{
 
 	/** @return $this */
 	public function setPlant(?Block $plant) : self{
-		if($plant === null or $plant instanceof Air){
+		if($plant === null || $plant instanceof Air){
 			$this->plant = null;
 		}else{
 			$this->plant = clone $plant;
@@ -83,12 +83,12 @@ class FlowerPot extends Flowable{
 		}
 
 		return
-			$block instanceof Cactus or
-			$block instanceof DeadBush or
-			$block instanceof Flower or
-			$block instanceof RedMushroom or
-			$block instanceof Sapling or
-			($block instanceof TallGrass and $block->getIdInfo()->getVariant() === BlockLegacyMetadata::TALLGRASS_FERN); //TODO: clean up
+			$block instanceof Cactus ||
+			$block instanceof DeadBush ||
+			$block instanceof Flower ||
+			$block instanceof RedMushroom ||
+			$block instanceof Sapling ||
+			($block instanceof TallGrass && $block->getIdInfo()->getVariant() === BlockLegacyMetadata::TALLGRASS_FERN); //TODO: clean up
 		//TODO: bamboo
 	}
 

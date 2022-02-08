@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
+use pocketmine\block\inventory\BrewingStandInventory;
 use pocketmine\utils\EnumTrait;
 
 /**
@@ -36,13 +37,24 @@ use pocketmine\utils\EnumTrait;
  * @method static BrewingStandSlot SOUTHWEST()
  */
 final class BrewingStandSlot{
-	use EnumTrait;
+	use EnumTrait {
+		__construct as Enum___construct;
+	}
 
 	protected static function setup() : void{
 		self::registerAll(
-			new self("east"),
-			new self("northwest"),
-			new self("southwest")
+			new self("east", BrewingStandInventory::SLOT_BOTTLE_LEFT),
+			new self("northwest", BrewingStandInventory::SLOT_BOTTLE_MIDDLE),
+			new self("southwest", BrewingStandInventory::SLOT_BOTTLE_RIGHT)
 		);
 	}
+
+	private function __construct(string $enumName, private int $slotNumber){
+		$this->Enum___construct($enumName);
+	}
+
+	/**
+	 * Returns the brewing stand inventory slot number associated with this visual slot.
+	 */
+	public function getSlotNumber() : int{ return $this->slotNumber; }
 }

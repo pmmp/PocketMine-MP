@@ -55,7 +55,7 @@ abstract class Timezone{
 	}
 
 	public static function init() : void{
-		$timezone = ini_get("date.timezone");
+		$timezone = Utils::assumeNotFalse(ini_get("date.timezone"), "date.timezone should always be set in ini");
 		if($timezone !== ""){
 			/*
 			 * This is here so that people don't come to us complaining and fill up the issue tracker when they put
@@ -77,7 +77,7 @@ abstract class Timezone{
 			}
 		}
 
-		if(($timezone = self::detectSystemTimezone()) !== false and date_default_timezone_set($timezone)){
+		if(($timezone = self::detectSystemTimezone()) !== false && date_default_timezone_set($timezone)){
 			//Success! Timezone has already been set and validated in the if statement.
 			//This here is just for redundancy just in case some program wants to read timezone data from the ini.
 			ini_set("date.timezone", $timezone);
@@ -85,11 +85,11 @@ abstract class Timezone{
 		}
 
 		if(($response = Internet::getURL("http://ip-api.com/json")) !== null //If system timezone detection fails or timezone is an invalid value.
-			and is_array($ip_geolocation_data = json_decode($response->getBody(), true))
-			and isset($ip_geolocation_data['status'])
-			and $ip_geolocation_data['status'] !== 'fail'
-			and is_string($ip_geolocation_data['timezone'])
-			and date_default_timezone_set($ip_geolocation_data['timezone'])
+			&& is_array($ip_geolocation_data = json_decode($response->getBody(), true))
+			&& isset($ip_geolocation_data['status'])
+			&& $ip_geolocation_data['status'] !== 'fail'
+			&& is_string($ip_geolocation_data['timezone'])
+			&& date_default_timezone_set($ip_geolocation_data['timezone'])
 		){
 			//Again, for redundancy.
 			ini_set("date.timezone", $ip_geolocation_data['timezone']);
@@ -150,7 +150,7 @@ abstract class Timezone{
 
 				// RHEL / CentOS
 				$data = @parse_ini_file('/etc/sysconfig/clock');
-				if($data !== false and isset($data['ZONE']) and is_string($data['ZONE'])){
+				if($data !== false && isset($data['ZONE']) && is_string($data['ZONE'])){
 					return trim($data['ZONE']);
 				}
 
@@ -165,7 +165,7 @@ abstract class Timezone{
 				return self::parseOffset($offset);
 			case Utils::OS_MACOS:
 				$filename = @readlink('/etc/localtime');
-				if($filename !== false and strpos($filename, '/usr/share/zoneinfo/') === 0){
+				if($filename !== false && strpos($filename, '/usr/share/zoneinfo/') === 0){
 					$timezone = substr($filename, 20);
 					return trim($timezone);
 				}

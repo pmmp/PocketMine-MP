@@ -91,7 +91,7 @@ class EffectManager{
 			$ev = new EntityEffectRemoveEvent($this->entity, $effect);
 			$ev->call();
 			if($ev->isCancelled()){
-				if($hasExpired and !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
+				if($hasExpired && !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
 					foreach($this->effectAddHooks as $hook){
 						$hook($ev->getEffect(), true);
 					}
@@ -140,7 +140,7 @@ class EffectManager{
 			$oldEffect = $this->effects[$index];
 			if(
 				abs($effect->getAmplifier()) < $oldEffect->getAmplifier()
-				or (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier()) and $effect->getDuration() < $oldEffect->getDuration())
+				|| (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier()) && $effect->getDuration() < $oldEffect->getDuration())
 			){
 				$cancelled = true;
 			}
@@ -180,7 +180,7 @@ class EffectManager{
 		$colors = [];
 		$ambient = true;
 		foreach($this->effects as $effect){
-			if($effect->isVisible() and $effect->getType()->hasBubbles()){
+			if($effect->isVisible() && $effect->getType()->hasBubbles()){
 				$level = $effect->getEffectLevel();
 				$color = $effect->getColor();
 				for($i = 0; $i < $level; ++$i){

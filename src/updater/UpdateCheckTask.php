@@ -53,7 +53,7 @@ class UpdateCheckTask extends AsyncTask{
 		if($response !== null){
 			$response = json_decode($response->getBody(), true);
 			if(is_array($response)){
-				if(isset($response["error"]) and is_string($response["error"])){
+				if(isset($response["error"]) && is_string($response["error"])){
 					$this->error = $response["error"];
 				}else{
 					$mapper = new \JsonMapper();

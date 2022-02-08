@@ -96,7 +96,7 @@ class Leaves extends Transparent{
 			return true;
 		}
 
-		if($block->getId() === $this->getId() and $distance <= 4){
+		if($block->getId() === $this->getId() && $distance <= 4){
 			foreach(Facing::ALL as $side){
 				if($this->findLog($pos->getSide($side), $visited, $distance + 1)){
 					return true;
@@ -108,7 +108,7 @@ class Leaves extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->noDecay and !$this->checkDecay){
+		if(!$this->noDecay && !$this->checkDecay){
 			$this->checkDecay = true;
 			$this->position->getWorld()->setBlock($this->position, $this, false);
 		}
@@ -119,10 +119,10 @@ class Leaves extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if(!$this->noDecay and $this->checkDecay){
+		if(!$this->noDecay && $this->checkDecay){
 			$ev = new LeavesDecayEvent($this);
 			$ev->call();
-			if($ev->isCancelled() or $this->findLog($this->position)){
+			if($ev->isCancelled() || $this->findLog($this->position)){
 				$this->checkDecay = false;
 				$this->position->getWorld()->setBlock($this->position, $this, false);
 			}else{
@@ -145,7 +145,7 @@ class Leaves extends Transparent{
 		if(mt_rand(1, 20) === 1){ //Saplings
 			$drops[] = ItemFactory::getInstance()->get(ItemIds::SAPLING, $this->treeType->getMagicNumber());
 		}
-		if(($this->treeType->equals(TreeType::OAK()) or $this->treeType->equals(TreeType::DARK_OAK())) and mt_rand(1, 200) === 1){ //Apples
+		if(($this->treeType->equals(TreeType::OAK()) || $this->treeType->equals(TreeType::DARK_OAK())) && mt_rand(1, 200) === 1){ //Apples
 			$drops[] = VanillaItems::APPLE();
 		}
 

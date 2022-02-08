@@ -134,7 +134,7 @@ abstract class Liquid extends Transparent{
 	abstract public function getBucketEmptySound() : Sound;
 
 	public function isSource() : bool{
-		return !$this->falling and $this->decay === 0;
+		return !$this->falling && $this->decay === 0;
 	}
 
 	/**
@@ -157,7 +157,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function getEffectiveFlowDecay(Block $block) : int{
-		if(!($block instanceof Liquid) or !$block->isSameType($this)){
+		if(!($block instanceof Liquid) || !$block->isSameType($this)){
 			return -1;
 		}
 
@@ -282,7 +282,7 @@ abstract class Liquid extends Transparent{
 			$newDecay = $smallestFlowDecay + $multiplier;
 			$falling = false;
 
-			if($newDecay >= 8 or $smallestFlowDecay < 0){
+			if($newDecay >= 8 || $smallestFlowDecay < 0){
 				$newDecay = -1;
 			}
 
@@ -293,14 +293,14 @@ abstract class Liquid extends Transparent{
 			$minAdjacentSources = $this->getMinAdjacentSourcesToFormSource();
 			if($minAdjacentSources !== null && $this->adjacentSources >= $minAdjacentSources){
 				$bottomBlock = $world->getBlockAt($this->position->x, $this->position->y - 1, $this->position->z);
-				if($bottomBlock->isSolid() or ($bottomBlock instanceof Liquid and $bottomBlock->isSameType($this) and $bottomBlock->isSource())){
+				if($bottomBlock->isSolid() || ($bottomBlock instanceof Liquid && $bottomBlock->isSameType($this) && $bottomBlock->isSource())){
 					$newDecay = 0;
 					$falling = false;
 				}
 			}
 
-			if($falling !== $this->falling or (!$falling and $newDecay !== $this->decay)){
-				if(!$falling and $newDecay < 0){
+			if($falling !== $this->falling || (!$falling && $newDecay !== $this->decay)){
+				if(!$falling && $newDecay < 0){
 					$world->setBlock($this->position, VanillaBlocks::AIR());
 					return;
 				}
@@ -315,7 +315,7 @@ abstract class Liquid extends Transparent{
 
 		$this->flowIntoBlock($bottomBlock, 0, true);
 
-		if($this->isSource() or !$bottomBlock->canBeFlowedInto()){
+		if($this->isSource() || !$bottomBlock->canBeFlowedInto()){
 			if($this->falling){
 				$adjacentDecay = 1; //falling liquid behaves like source block
 			}else{
@@ -334,7 +334,7 @@ abstract class Liquid extends Transparent{
 	}
 
 	protected function flowIntoBlock(Block $block, int $newFlowDecay, bool $falling) : void{
-		if($this->canFlowInto($block) and !($block instanceof Liquid)){
+		if($this->canFlowInto($block) && !($block instanceof Liquid)){
 			$new = clone $this;
 			$new->falling = $falling;
 			$new->decay = $falling ? 0 : $newFlowDecay;
@@ -353,7 +353,7 @@ abstract class Liquid extends Transparent{
 
 	/** @phpstan-impure */
 	private function getSmallestFlowDecay(Block $block, int $decay) : int{
-		if(!($block instanceof Liquid) or !$block->isSameType($this)){
+		if(!($block instanceof Liquid) || !$block->isSameType($this)){
 			return $decay;
 		}
 
@@ -384,8 +384,8 @@ abstract class Liquid extends Transparent{
 
 	protected function canFlowInto(Block $block) : bool{
 		return
-			$this->position->getWorld()->isInWorld($block->position->x, $block->position->y, $block->position->z) and
-			$block->canBeFlowedInto() and
-			!($block instanceof Liquid and $block->isSource()); //TODO: I think this should only be liquids of the same type
+			$this->position->getWorld()->isInWorld($block->position->x, $block->position->y, $block->position->z) &&
+			$block->canBeFlowedInto() &&
+			!($block instanceof Liquid && $block->isSource()); //TODO: I think this should only be liquids of the same type
 	}
 }

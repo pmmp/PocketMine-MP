@@ -37,7 +37,7 @@ class Thin extends Transparent{
 
 		foreach(Facing::HORIZONTAL as $facing){
 			$side = $this->getSide($facing);
-			if($side instanceof Thin or $side->isFullCube()){
+			if($side instanceof Thin || $side->isFullCube()){
 				$this->connections[$facing] = true;
 			}else{
 				unset($this->connections[$facing]);
@@ -51,7 +51,7 @@ class Thin extends Transparent{
 		/** @var AxisAlignedBB[] $bbs */
 		$bbs = [];
 
-		if(isset($this->connections[Facing::WEST]) or isset($this->connections[Facing::EAST])){
+		if(isset($this->connections[Facing::WEST]) || isset($this->connections[Facing::EAST])){
 			$bb = AxisAlignedBB::one()->squash(Axis::Z, $inset);
 
 			if(!isset($this->connections[Facing::WEST])){
@@ -62,7 +62,7 @@ class Thin extends Transparent{
 			$bbs[] = $bb;
 		}
 
-		if(isset($this->connections[Facing::NORTH]) or isset($this->connections[Facing::SOUTH])){
+		if(isset($this->connections[Facing::NORTH]) || isset($this->connections[Facing::SOUTH])){
 			$bb = AxisAlignedBB::one()->squash(Axis::X, $inset);
 
 			if(!isset($this->connections[Facing::NORTH])){

@@ -53,7 +53,7 @@ class NetherPortal extends Transparent{
 	 * @return $this
 	 */
 	public function setAxis(int $axis) : self{
-		if($axis !== Axis::X and $axis !== Axis::Z){
+		if($axis !== Axis::X && $axis !== Axis::Z){
 			throw new \InvalidArgumentException("Invalid axis");
 		}
 		$this->axis = $axis;

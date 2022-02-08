@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\block\BaseSign;
 use pocketmine\block\ItemFrame;
+use pocketmine\block\Lectern;
 use pocketmine\block\utils\SignText;
 use pocketmine\entity\animation\ConsumingItemAnimation;
 use pocketmine\entity\Attribute;
@@ -65,6 +66,7 @@ use pocketmine\network\mcpe\protocol\InteractPacket;
 use pocketmine\network\mcpe\protocol\InventoryTransactionPacket;
 use pocketmine\network\mcpe\protocol\ItemFrameDropItemPacket;
 use pocketmine\network\mcpe\protocol\LabTablePacket;
+use pocketmine\network\mcpe\protocol\LecternUpdatePacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacketV1;
 use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
@@ -74,6 +76,7 @@ use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
+use pocketmine\network\mcpe\protocol\PlayerAuthInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
@@ -86,6 +89,9 @@ use pocketmine\network\mcpe\protocol\SpawnExperienceOrbPacket;
 use pocketmine\network\mcpe\protocol\SubClientLoginPacket;
 use pocketmine\network\mcpe\protocol\TextPacket;
 use pocketmine\network\mcpe\protocol\types\ActorEvent;
+use pocketmine\network\mcpe\protocol\types\BlockPosition;
+use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
+use pocketmine\network\mcpe\protocol\types\entity\FloatMetadataProperty;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\MismatchTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
@@ -95,11 +101,15 @@ use pocketmine\network\mcpe\protocol\types\inventory\UIInventorySlotOffset;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemOnEntityTransactionData;
 use pocketmine\network\mcpe\protocol\types\inventory\UseItemTransactionData;
 use pocketmine\network\mcpe\protocol\types\PlayerAction;
+use pocketmine\network\mcpe\protocol\types\PlayerAuthInputFlags;
+use pocketmine\network\mcpe\protocol\types\PlayerBlockActionStopBreak;
+use pocketmine\network\mcpe\protocol\types\PlayerBlockActionWithBlockInfo;
 use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Limits;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\format\Chunk;
 use function array_push;
 use function base64_encode;
 use function count;
@@ -160,16 +170,31 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
-		$rawPos = $packet->position;
-		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $packet->yaw, $packet->headYaw, $packet->pitch] as $float){
+		//The client sends this every time it lands on the ground, even when using PlayerAuthInputPacket.
+		//Silence the debug spam that this causes.
+		return true;
+	}
+
+	private function resolveOnOffInputFlags(PlayerAuthInputPacket $packet, int $startFlag, int $stopFlag) : ?bool{
+		$enabled = $packet->hasFlag($startFlag);
+		if($enabled !== $packet->hasFlag($stopFlag)){
+			return $enabled;
+		}
+		//neither flag was set, or both were set
+		return null;
+	}
+
+	public function handlePlayerAuthInput(PlayerAuthInputPacket $packet) : bool{
+		$rawPos = $packet->getPosition();
+		foreach([$rawPos->x, $rawPos->y, $rawPos->z, $packet->getYaw(), $packet->getHeadYaw(), $packet->getPitch()] as $float){
 			if(is_infinite($float) || is_nan($float)){
 				$this->session->getLogger()->debug("Invalid movement received, contains NAN/INF components");
 				return false;
 			}
 		}
 
-		$yaw = fmod($packet->yaw, 360);
-		$pitch = fmod($packet->pitch, 360);
+		$yaw = fmod($packet->getYaw(), 360);
+		$pitch = fmod($packet->getPitch(), 360);
 		if($yaw < 0){
 			$yaw += 360;
 		}
@@ -177,9 +202,9 @@ class InGamePacketHandler extends PacketHandler{
 		$this->player->setRotation($yaw, $pitch);
 
 		$curPos = $this->player->getLocation();
-		$newPos = $packet->position->round(4)->subtract(0, 1.62, 0);
+		$newPos = $rawPos->round(4)->subtract(0, 1.62, 0);
 
-		if($this->forceMoveSync and $newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
+		if($this->forceMoveSync && $newPos->distanceSquared($curPos) > 1){  //Tolerate up to 1 block to avoid problems with client-sided physics when spawning in blocks
 			$this->session->getLogger()->debug("Got outdated pre-teleport movement, received " . $newPos . ", expected " . $curPos);
 			//Still getting movements from before teleport, ignore them
 			return false;
@@ -188,9 +213,57 @@ class InGamePacketHandler extends PacketHandler{
 		// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
 		$this->forceMoveSync = false;
 
+		$sneaking = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SNEAKING, PlayerAuthInputFlags::STOP_SNEAKING);
+		$sprinting = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
+		$swimming = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
+		$gliding = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_GLIDING, PlayerAuthInputFlags::STOP_GLIDING);
+		$mismatch =
+			($sneaking !== null && !$this->player->toggleSneak($sneaking)) |
+			($sprinting !== null && !$this->player->toggleSprint($sprinting)) |
+			($swimming !== null && !$this->player->toggleSwim($swimming)) |
+			($gliding !== null && !$this->player->toggleGlide($gliding));
+		if((bool) $mismatch){
+			$this->player->sendData([$this->player]);
+		}elseif($packet->hasFlag(PlayerAuthInputFlags::STOP_SWIMMING) || $packet->hasFlag(PlayerAuthInputFlags::STOP_GLIDING)){
+			//TODO: HACK! workaround for a client bug where the AABB doesn't change back properly when stopping swimming or gliding
+			$this->player->sendData([$this->player], [
+				EntityMetadataProperties::BOUNDING_BOX_HEIGHT => new FloatMetadataProperty($this->player->getSize()->getHeight())
+			]);
+		}
+
+		if($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)){
+			$this->player->jump();
+		}
+
+		//TODO: this packet has WAYYYYY more useful information that we're not using
 		$this->player->handleMovement($newPos);
 
-		return true;
+		$packetHandled = true;
+
+		$useItemTransaction = $packet->getItemInteractionData();
+		if($useItemTransaction !== null && !$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
+			$packetHandled = false;
+			$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
+		}
+
+		$blockActions = $packet->getBlockActions();
+		if($blockActions !== null){
+			foreach($blockActions as $k => $blockAction){
+				$actionHandled = false;
+				if($blockAction instanceof PlayerBlockActionStopBreak){
+					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), new BlockPosition(0, 0, 0), Facing::DOWN);
+				}elseif($blockAction instanceof PlayerBlockActionWithBlockInfo){
+					$actionHandled = $this->handlePlayerActionFromData($blockAction->getActionType(), $blockAction->getBlockPosition(), $blockAction->getFace());
+				}
+
+				if(!$actionHandled){
+					$packetHandled = false;
+					$this->session->getLogger()->debug("Unhandled player block action at offset $k in PlayerAuthInputPacket");
+				}
+			}
+		}
+
+		return $packetHandled;
 	}
 
 	public function handleLevelSoundEventPacketV1(LevelSoundEventPacketV1 $packet) : bool{
@@ -251,11 +324,11 @@ class InGamePacketHandler extends PacketHandler{
 		foreach($data->getActions() as $networkInventoryAction){
 			if(
 				(
-					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO and (
-						$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT or
+					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_TODO && (
+						$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_RESULT ||
 						$networkInventoryAction->windowId === NetworkInventoryAction::SOURCE_TYPE_CRAFTING_USE_INGREDIENT
 					)
-				) or (
+				) || (
 					$this->craftingTransaction !== null &&
 					!$networkInventoryAction->oldItem->getItemStack()->equals($networkInventoryAction->newItem->getItemStack()) &&
 					$networkInventoryAction->sourceType === NetworkInventoryAction::SOURCE_CONTAINER &&
@@ -350,10 +423,10 @@ class InGamePacketHandler extends PacketHandler{
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
 				//TODO: start hack for client spam bug
 				$clickPos = $data->getClickPosition();
-				$spamBug = ($this->lastRightClickData !== null and
-					microtime(true) - $this->lastRightClickTime < 0.1 and //100ms
-					$this->lastRightClickData->getPlayerPosition()->distanceSquared($data->getPlayerPosition()) < 0.00001 and
-					$this->lastRightClickData->getBlockPosition()->equals($data->getBlockPosition()) and
+				$spamBug = ($this->lastRightClickData !== null &&
+					microtime(true) - $this->lastRightClickTime < 0.1 && //100ms
+					$this->lastRightClickData->getPlayerPosition()->distanceSquared($data->getPlayerPosition()) < 0.00001 &&
+					$this->lastRightClickData->getBlockPosition()->equals($data->getBlockPosition()) &&
 					$this->lastRightClickData->getClickPosition()->distanceSquared($clickPos) < 0.00001 //signature spam bug has 0 distance, but allow some error
 				);
 				//get rid of continued spam if the player clicks and holds right-click
@@ -514,13 +587,17 @@ class InGamePacketHandler extends PacketHandler{
 	}
 
 	public function handlePlayerAction(PlayerActionPacket $packet) : bool{
-		$pos = new Vector3($packet->blockPosition->getX(), $packet->blockPosition->getY(), $packet->blockPosition->getZ());
+		return $this->handlePlayerActionFromData($packet->action, $packet->blockPosition, $packet->face);
+	}
 
-		switch($packet->action){
+	private function handlePlayerActionFromData(int $action, BlockPosition $blockPosition, int $face) : bool{
+		$pos = new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
+
+		switch($action){
 			case PlayerAction::START_BREAK:
-				self::validateFacing($packet->face);
-				if(!$this->player->attackBlock($pos, $packet->face)){
-					$this->onFailedBlockAction($pos, $packet->face);
+				self::validateFacing($face);
+				if(!$this->player->attackBlock($pos, $face)){
+					$this->onFailedBlockAction($pos, $face);
 				}
 
 				break;
@@ -535,40 +612,9 @@ class InGamePacketHandler extends PacketHandler{
 			case PlayerAction::STOP_SLEEPING:
 				$this->player->stopSleep();
 				break;
-			case PlayerAction::JUMP:
-				$this->player->jump();
-				return true;
-			case PlayerAction::START_SPRINT:
-				if(!$this->player->toggleSprint(true)){
-					$this->player->sendData([$this->player]);
-				}
-				return true;
-			case PlayerAction::STOP_SPRINT:
-				if(!$this->player->toggleSprint(false)){
-					$this->player->sendData([$this->player]);
-				}
-				return true;
-			case PlayerAction::START_SNEAK:
-				if(!$this->player->toggleSneak(true)){
-					$this->player->sendData([$this->player]);
-				}
-				return true;
-			case PlayerAction::STOP_SNEAK:
-				if(!$this->player->toggleSneak(false)){
-					$this->player->sendData([$this->player]);
-				}
-				return true;
-			case PlayerAction::START_GLIDE:
-			case PlayerAction::STOP_GLIDE:
-				break; //TODO
 			case PlayerAction::CRACK_BREAK:
-				self::validateFacing($packet->face);
-				$this->player->continueBreakBlock($pos, $packet->face);
-				break;
-			case PlayerAction::START_SWIMMING:
-				break; //TODO
-			case PlayerAction::STOP_SWIMMING:
-				//TODO: handle this when it doesn't spam every damn tick (yet another spam bug!!)
+				self::validateFacing($face);
+				$this->player->continueBreakBlock($pos, $face);
 				break;
 			case PlayerAction::INTERACT_BLOCK: //TODO: ignored (for now)
 				break;
@@ -576,7 +622,7 @@ class InGamePacketHandler extends PacketHandler{
 				//TODO: do we need to handle this?
 				break;
 			default:
-				$this->session->getLogger()->debug("Unhandled/unknown player action type " . $packet->action);
+				$this->session->getLogger()->debug("Unhandled/unknown player action type " . $action);
 				return false;
 		}
 
@@ -693,7 +739,7 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleItemFrameDropItem(ItemFrameDropItemPacket $packet) : bool{
 		$blockPosition = $packet->blockPosition;
 		$block = $this->player->getWorld()->getBlockAt($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ());
-		if($block instanceof ItemFrame and $block->getFramedItem() !== null){
+		if($block instanceof ItemFrame && $block->getFramedItem() !== null){
 			return $this->player->attackBlock(new Vector3($blockPosition->getX(), $blockPosition->getY(), $blockPosition->getZ()), $block->getFacing());
 		}
 		return false;
@@ -784,7 +830,7 @@ class InGamePacketHandler extends PacketHandler{
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_SWAP_PAGES:
-				if(!$newBook->pageExists($packet->pageNumber) or !$newBook->pageExists($packet->secondaryPageNumber)){
+				if(!$newBook->pageExists($packet->pageNumber) || !$newBook->pageExists($packet->secondaryPageNumber)){
 					//the client will create pages on its own without telling us until it tries to switch them
 					$newBook->addPage(max($packet->pageNumber, $packet->secondaryPageNumber));
 				}
@@ -859,7 +905,7 @@ class InGamePacketHandler extends PacketHandler{
 			$newParts = [];
 			$inQuotes = false;
 			for($i = 0, $len = strlen($raw); $i <= $len; ++$i){
-				if($i === $len or ($raw[$i] === "," and !$inQuotes)){
+				if($i === $len || ($raw[$i] === "," && !$inQuotes)){
 					$part = substr($raw, $lastComma + 1, $i - ($lastComma + 1));
 					if(trim($part) === ""){ //regular parts will have quotes or something else that makes them non-empty
 						$part = '""';
@@ -900,6 +946,31 @@ class InGamePacketHandler extends PacketHandler{
 
 	public function handleLabTable(LabTablePacket $packet) : bool{
 		return false; //TODO
+	}
+
+	public function handleLecternUpdate(LecternUpdatePacket $packet) : bool{
+		if($packet->dropBook){
+			//Drop book is handled with an interact event on use item transaction
+			return true;
+		}
+
+		$pos = $packet->blockPosition;
+		$chunkX = $pos->getX() >> Chunk::COORD_BIT_SIZE;
+		$chunkZ = $pos->getZ() >> Chunk::COORD_BIT_SIZE;
+		$world = $this->player->getWorld();
+		if(!$world->isChunkLoaded($chunkX, $chunkZ) || $world->isChunkLocked($chunkX, $chunkZ)){
+			return false;
+		}
+
+		$lectern = $world->getBlockAt($pos->getX(), $pos->getY(), $pos->getZ());
+		if($lectern instanceof Lectern && $this->player->canInteract($lectern->getPosition(), 15)){
+			if(!$lectern->onPageTurn($packet->page)){
+				$this->onFailedBlockAction($lectern->getPosition(), null);
+			}
+			return true;
+		}
+
+		return false;
 	}
 
 	public function handleNetworkStackLatency(NetworkStackLatencyPacket $packet) : bool{

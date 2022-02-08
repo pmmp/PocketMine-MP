@@ -38,7 +38,7 @@ class Bucket extends Item{
 
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		//TODO: move this to generic placement logic
-		if($blockClicked instanceof Liquid and $blockClicked->isSource()){
+		if($blockClicked instanceof Liquid && $blockClicked->isSource()){
 			$stack = clone $this;
 			$stack->pop();
 

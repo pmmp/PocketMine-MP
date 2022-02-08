@@ -114,7 +114,7 @@ class PermissibleInternal implements Permissible{
 
 		$result = new PermissionAttachment($plugin);
 		$this->attachments[spl_object_id($result)] = $result;
-		if($name !== null and $value !== null){
+		if($name !== null && $value !== null){
 			$result->setPermission($name, $value);
 		}
 

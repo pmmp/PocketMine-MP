@@ -66,16 +66,16 @@ class Torch extends Flowable{
 		$below = $this->getSide(Facing::DOWN);
 		$face = Facing::opposite($this->facing);
 
-		if($this->getSide($face)->isTransparent() and !($face === Facing::DOWN and ($below->getId() === BlockLegacyIds::FENCE or $below->getId() === BlockLegacyIds::COBBLESTONE_WALL))){
+		if($this->getSide($face)->isTransparent() && !($face === Facing::DOWN && ($below->getId() === BlockLegacyIds::FENCE || $below->getId() === BlockLegacyIds::COBBLESTONE_WALL))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockClicked->canBeReplaced() and !$blockClicked->getSide(Facing::DOWN)->isTransparent()){
+		if($blockClicked->canBeReplaced() && !$blockClicked->getSide(Facing::DOWN)->isTransparent()){
 			$this->facing = Facing::UP;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($face !== Facing::DOWN and (!$blockClicked->isTransparent() or ($face === Facing::UP and ($blockClicked->getId() === BlockLegacyIds::FENCE or $blockClicked->getId() === BlockLegacyIds::COBBLESTONE_WALL)))){
+		}elseif($face !== Facing::DOWN && (!$blockClicked->isTransparent() || ($face === Facing::UP && ($blockClicked->getId() === BlockLegacyIds::FENCE || $blockClicked->getId() === BlockLegacyIds::COBBLESTONE_WALL)))){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}else{

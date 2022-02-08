@@ -183,11 +183,11 @@ class SimpleCommandMap implements CommandMap{
 
 	private function registerAlias(Command $command, bool $isAlias, string $fallbackPrefix, string $label) : bool{
 		$this->knownCommands[$fallbackPrefix . ":" . $label] = $command;
-		if(($command instanceof VanillaCommand or $isAlias) and isset($this->knownCommands[$label])){
+		if(($command instanceof VanillaCommand || $isAlias) && isset($this->knownCommands[$label])){
 			return false;
 		}
 
-		if(isset($this->knownCommands[$label]) and $this->knownCommands[$label]->getLabel() === $label){
+		if(isset($this->knownCommands[$label]) && $this->knownCommands[$label]->getLabel() === $label){
 			return false;
 		}
 
