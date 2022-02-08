@@ -56,6 +56,7 @@ use pocketmine\network\mcpe\protocol\ClientCacheMissResponsePacket;
 use pocketmine\network\mcpe\protocol\ClientCacheStatusPacket;
 use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
 use pocketmine\network\mcpe\protocol\CodeBuilderPacket;
+use pocketmine\network\mcpe\protocol\CodeBuilderSourcePacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandOutputPacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
@@ -128,6 +129,7 @@ use pocketmine\network\mcpe\protocol\PlayerHotbarPacket;
 use pocketmine\network\mcpe\protocol\PlayerInputPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\PlayerStartItemCooldownPacket;
 use pocketmine\network\mcpe\protocol\PlaySoundPacket;
 use pocketmine\network\mcpe\protocol\PlayStatusPacket;
 use pocketmine\network\mcpe\protocol\PositionTrackingDBClientRequestPacket;
@@ -146,6 +148,7 @@ use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
 use pocketmine\network\mcpe\protocol\ScriptCustomEventPacket;
+use pocketmine\network\mcpe\protocol\ScriptMessagePacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsRequestPacket;
 use pocketmine\network\mcpe\protocol\ServerSettingsResponsePacket;
 use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
@@ -879,6 +882,18 @@ abstract class NetworkSession{
 	}
 
 	public function handleSubChunkRequest(SubChunkRequestPacket $packet) : bool{
+		return false;
+	}
+
+	public function handlePlayerStartItemCooldown(PlayerStartItemCooldownPacket $packet) : bool{
+		return false;
+	}
+
+	public function handleScriptMessage(ScriptMessagePacket $packet) : bool{
+		return false;
+	}
+
+	public function handleCodeBuilderSource(CodeBuilderSourcePacket $packet) : bool{
 		return false;
 	}
 }

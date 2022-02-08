@@ -61,7 +61,7 @@ class ChunkRequestTask extends AsyncTask{
 
 	public function onRun(){
 		$chunk = Chunk::fastDeserialize($this->chunk);
-		$pk = LevelChunkPacket::withoutCache($this->chunkX, $this->chunkZ, $chunk->getSubChunkSendCount() + 4, $chunk->networkSerialize($this->tiles));
+		$pk = LevelChunkPacket::create($this->chunkX, $this->chunkZ, $chunk->getSubChunkSendCount() + 4, false, null, $chunk->networkSerialize($this->tiles));
 
 		$batch = new BatchPacket();
 		$batch->addPacket($pk);

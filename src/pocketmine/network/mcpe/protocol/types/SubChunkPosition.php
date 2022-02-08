@@ -23,13 +23,33 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol\types;
 
-final class SubChunkRequestResult{
+use pocketmine\network\mcpe\NetworkBinaryStream;
 
-	public const SUCCESS = 1;
-	//why even respond at all in these cases? ...
-	public const NO_SUCH_CHUNK = 2;
-	public const WRONG_DIMENSION = 3;
-	public const NULL_PLAYER = 4;
-	public const Y_INDEX_OUT_OF_BOUNDS = 5;
-	public const SUCCESS_ALL_AIR = 6;
+final class SubChunkPosition{
+
+	public function __construct(
+		private int $x,
+		private int $y,
+		private int $z,
+	){}
+
+	public function getX() : int{ return $this->x; }
+
+	public function getY() : int{ return $this->y; }
+
+	public function getZ() : int{ return $this->z; }
+
+	public static function read(NetworkBinaryStream $in) : self{
+		$x = $in->getVarInt();
+		$y = $in->getVarInt();
+		$z = $in->getVarInt();
+
+		return new self($x, $y, $z);
+	}
+
+	public function write(NetworkBinaryStream $out) : void{
+		$out->putVarInt($this->x);
+		$out->putVarInt($this->y);
+		$out->putVarInt($this->z);
+	}
 }

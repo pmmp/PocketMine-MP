@@ -46,6 +46,8 @@ class BossEventPacket extends DataPacket{
 	public const TYPE_UNKNOWN_6 = 6;
 	/* S2C: Not implemented :( Intended to alter bar appearance, but these currently produce no effect on client-side whatsoever. */
 	public const TYPE_TEXTURE = 7;
+	/* C2S: Client asking the server to resend all boss data. */
+	public const TYPE_QUERY = 8;
 
 	/** @var int */
 	public $bossEid;
@@ -71,6 +73,7 @@ class BossEventPacket extends DataPacket{
 		switch($this->eventType){
 			case self::TYPE_REGISTER_PLAYER:
 			case self::TYPE_UNREGISTER_PLAYER:
+			case self::TYPE_QUERY:
 				$this->playerEid = $this->getEntityUniqueId();
 				break;
 			/** @noinspection PhpMissingBreakStatementInspection */
@@ -101,6 +104,7 @@ class BossEventPacket extends DataPacket{
 		switch($this->eventType){
 			case self::TYPE_REGISTER_PLAYER:
 			case self::TYPE_UNREGISTER_PLAYER:
+			case self::TYPE_QUERY:
 				$this->putEntityUniqueId($this->playerEid);
 				break;
 			/** @noinspection PhpMissingBreakStatementInspection */

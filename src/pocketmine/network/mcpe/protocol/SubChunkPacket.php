@@ -23,93 +23,70 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\protocol;
 
-#include <rules/DataPacket.h>
-
 use pocketmine\network\mcpe\NetworkSession;
-use pocketmine\network\mcpe\protocol\types\SubChunkPacketHeightMapInfo;
-use pocketmine\network\mcpe\protocol\types\SubChunkPacketHeightMapType;
+use pocketmine\network\mcpe\protocol\types\SubChunkPacketEntryWithCache as EntryWithBlobHash;
+use pocketmine\network\mcpe\protocol\types\SubChunkPacketEntryWithCacheList as ListWithBlobHashes;
+use pocketmine\network\mcpe\protocol\types\SubChunkPacketEntryWithoutCache as EntryWithoutBlobHash;
+use pocketmine\network\mcpe\protocol\types\SubChunkPacketEntryWithoutCacheList as ListWithoutBlobHashes;
+use pocketmine\network\mcpe\protocol\types\SubChunkPosition;
+use function count;
 
-class SubChunkPacket extends DataPacket{
+class SubChunkPacket extends DataPacket/* implements ClientboundPacket*/{
 	public const NETWORK_ID = ProtocolInfo::SUB_CHUNK_PACKET;
 
 	private int $dimension;
-	private int $subChunkX;
-	private int $subChunkY;
-	private int $subChunkZ;
-	private string $data;
-	private int $requestResult;
-	private ?SubChunkPacketHeightMapInfo $heightMapData = null;
-	private ?int $usedBlobHash = null;
+	private SubChunkPosition $baseSubChunkPosition;
+	private ListWithBlobHashes|ListWithoutBlobHashes $entries;
 
-	public static function create(int $dimension, int $subChunkX, int $subChunkY, int $subChunkZ, string $data, int $requestResult, ?SubChunkPacketHeightMapInfo $heightMapData, ?int $usedBlobHash) : self{
+	/**
+	 * @generate-create-func
+	 */
+	public static function create(int $dimension, SubChunkPosition $baseSubChunkPosition, ListWithBlobHashes|ListWithoutBlobHashes $entries) : self{
 		$result = new self;
 		$result->dimension = $dimension;
-		$result->subChunkX = $subChunkX;
-		$result->subChunkY = $subChunkY;
-		$result->subChunkZ = $subChunkZ;
-		$result->data = $data;
-		$result->requestResult = $requestResult;
-		$result->heightMapData = $heightMapData;
-		$result->usedBlobHash = $usedBlobHash;
+		$result->baseSubChunkPosition = $baseSubChunkPosition;
+		$result->entries = $entries;
 		return $result;
 	}
 
+	public function isCacheEnabled() : bool{ return $this->entries instanceof ListWithBlobHashes; }
+
 	public function getDimension() : int{ return $this->dimension; }
 
-	public function getSubChunkX() : int{ return $this->subChunkX; }
+	public function getBaseSubChunkPosition() : SubChunkPosition{ return $this->baseSubChunkPosition; }
 
-	public function getSubChunkY() : int{ return $this->subChunkY; }
-
-	public function getSubChunkZ() : int{ return $this->subChunkZ; }
-
-	public function getData() : string{ return $this->data; }
-
-	public function getRequestResult() : int{ return $this->requestResult; }
-
-	public function getHeightMapData() : ?SubChunkPacketHeightMapInfo{ return $this->heightMapData; }
-
-	public function getUsedBlobHash() : ?int{ return $this->usedBlobHash; }
+	public function getEntries() : ListWithBlobHashes|ListWithoutBlobHashes{ return $this->entries; }
 
 	protected function decodePayload() : void{
+		$cacheEnabled = $this->getBool();
 		$this->dimension = $this->getVarInt();
-		$this->subChunkX = $this->getVarInt();
-		$this->subChunkY = $this->getVarInt();
-		$this->subChunkZ = $this->getVarInt();
-		$this->data = $this->getString();
-		$this->requestResult = $this->getVarInt();
-		$heightMapDataType = $this->getByte();
-		$this->heightMapData = match($heightMapDataType){
-			SubChunkPacketHeightMapType::NO_DATA => null,
-			SubChunkPacketHeightMapType::DATA => SubChunkPacketHeightMapInfo::read($this),
-			SubChunkPacketHeightMapType::ALL_TOO_HIGH => SubChunkPacketHeightMapInfo::allTooHigh(),
-			SubChunkPacketHeightMapType::ALL_TOO_LOW => SubChunkPacketHeightMapInfo::allTooLow(),
-			default => throw new \UnexpectedValueException("Unknown heightmap data type $heightMapDataType")
-		};
-		$this->usedBlobHash = $this->getBool() ? $this->getLLong() : null;
+		$this->baseSubChunkPosition = SubChunkPosition::read($this);
+
+		$count = $this->getLInt();
+		if($cacheEnabled){
+			$entries = [];
+			for($i = 0; $i < $count; $i++){
+				$entries[] = EntryWithBlobHash::read($this);
+			}
+			$this->entries = new ListWithBlobHashes($entries);
+		}else{
+			$entries = [];
+			for($i = 0; $i < $count; $i++){
+				$entries[] = EntryWithoutBlobHash::read($this);
+			}
+			$this->entries = new ListWithoutBlobHashes($entries);
+		}
 	}
 
 	protected function encodePayload() : void{
+		$this->putBool($this->entries instanceof ListWithBlobHashes);
 		$this->putVarInt($this->dimension);
-		$this->putVarInt($this->subChunkX);
-		$this->putVarInt($this->subChunkY);
-		$this->putVarInt($this->subChunkZ);
-		$this->putString($this->data);
-		$this->putVarInt($this->requestResult);
-		if($this->heightMapData === null){
-			$this->putByte(SubChunkPacketHeightMapType::NO_DATA);
-		}elseif($this->heightMapData->isAllTooLow()){
-			$this->putByte(SubChunkPacketHeightMapType::ALL_TOO_LOW);
-		}elseif($this->heightMapData->isAllTooHigh()){
-			$this->putByte(SubChunkPacketHeightMapType::ALL_TOO_HIGH);
-		}else{
-			$heightMapData = $this->heightMapData; //avoid PHPStan purity issue
-			$this->putByte(SubChunkPacketHeightMapType::DATA);
-			$heightMapData->write($this);
-		}
-		$usedBlobHash = $this->usedBlobHash;
-		$this->putBool($usedBlobHash !== null);
-		if($usedBlobHash !== null){
-			$this->putLLong($usedBlobHash);
+		$this->baseSubChunkPosition->write($this);
+
+		$this->putLInt(count($this->entries->getEntries()));
+
+		foreach($this->entries->getEntries() as $entry){
+			$entry->write($this);
 		}
 	}
 
