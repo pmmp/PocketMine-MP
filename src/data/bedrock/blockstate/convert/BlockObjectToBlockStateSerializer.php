@@ -766,7 +766,6 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::MELON_STEM(), fn(MelonStem $block) => Helper::encodeStem($block, new Writer(Ids::MELON_STEM)));
 		$this->map(Blocks::MOB_HEAD(), function(Skull $block) : Writer{
 			return Writer::create(Ids::SKULL)
-				->writeBool(StateNames::NO_DROP_BIT, $block->isNoDrops())
 				->writeFacingWithoutDown($block->getFacing());
 		});
 		$this->map(Blocks::MONSTER_SPAWNER(), fn() => new Writer(Ids::MOB_SPAWNER));

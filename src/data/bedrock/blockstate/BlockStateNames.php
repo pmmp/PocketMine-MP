@@ -94,7 +94,6 @@ final class BlockStateNames{
 	public const MULTI_FACE_DIRECTION_BITS = "multi_face_direction_bits";
 	public const NEW_LEAF_TYPE = "new_leaf_type";
 	public const NEW_LOG_TYPE = "new_log_type";
-	public const NO_DROP_BIT = "no_drop_bit";
 	public const OCCUPIED_BIT = "occupied_bit";
 	public const OLD_LEAF_TYPE = "old_leaf_type";
 	public const OLD_LOG_TYPE = "old_log_type";

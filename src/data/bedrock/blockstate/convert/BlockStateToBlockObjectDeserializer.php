@@ -851,8 +851,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::SILVER_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(Blocks::LIGHT_GRAY_GLAZED_TERRACOTTA(), $in));
 		$this->map(Ids::SKULL, function(Reader $in) : Block{
 			return Blocks::MOB_HEAD()
-				->setFacing($in->readFacingWithoutDown())
-				->setNoDrops($in->readBool(StateNames::NO_DROP_BIT));
+				->setFacing($in->readFacingWithoutDown());
 		});
 		$this->map(Ids::SLIME, fn() => Blocks::SLIME());
 		$this->map(Ids::SMOKER, function(Reader $in) : Block{

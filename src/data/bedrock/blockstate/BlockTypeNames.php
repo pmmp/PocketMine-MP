@@ -374,6 +374,7 @@ final class BlockTypeNames{
 	public const FLOWING_LAVA = "minecraft:flowing_lava";
 	public const FLOWING_WATER = "minecraft:flowing_water";
 	public const FRAME = "minecraft:frame";
+	public const FROG_EGG = "minecraft:frog_egg";
 	public const FROSTED_ICE = "minecraft:frosted_ice";
 	public const FURNACE = "minecraft:furnace";
 	public const GILDED_BLACKSTONE = "minecraft:gilded_blackstone";
@@ -495,6 +496,7 @@ final class BlockTypeNames{
 	public const OAK_STAIRS = "minecraft:oak_stairs";
 	public const OBSERVER = "minecraft:observer";
 	public const OBSIDIAN = "minecraft:obsidian";
+	public const OCHRE_FROGLIGHT = "minecraft:ochre_froglight";
 	public const ORANGE_CANDLE = "minecraft:orange_candle";
 	public const ORANGE_CANDLE_CAKE = "minecraft:orange_candle_cake";
 	public const ORANGE_GLAZED_TERRACOTTA = "minecraft:orange_glazed_terracotta";
@@ -504,6 +506,7 @@ final class BlockTypeNames{
 	public const OXIDIZED_CUT_COPPER_STAIRS = "minecraft:oxidized_cut_copper_stairs";
 	public const OXIDIZED_DOUBLE_CUT_COPPER_SLAB = "minecraft:oxidized_double_cut_copper_slab";
 	public const PACKED_ICE = "minecraft:packed_ice";
+	public const PEARLESCENT_FROGLIGHT = "minecraft:pearlescent_froglight";
 	public const PINK_CANDLE = "minecraft:pink_candle";
 	public const PINK_CANDLE_CAKE = "minecraft:pink_candle_cake";
 	public const PINK_GLAZED_TERRACOTTA = "minecraft:pink_glazed_terracotta";
@@ -670,6 +673,7 @@ final class BlockTypeNames{
 	public const UNLIT_REDSTONE_TORCH = "minecraft:unlit_redstone_torch";
 	public const UNPOWERED_COMPARATOR = "minecraft:unpowered_comparator";
 	public const UNPOWERED_REPEATER = "minecraft:unpowered_repeater";
+	public const VERDANT_FROGLIGHT = "minecraft:verdant_froglight";
 	public const VINE = "minecraft:vine";
 	public const WALL_BANNER = "minecraft:wall_banner";
 	public const WALL_SIGN = "minecraft:wall_sign";
