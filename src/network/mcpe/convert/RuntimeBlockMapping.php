@@ -59,13 +59,17 @@ final class RuntimeBlockMapping{
 				self::CANONICAL_BLOCK_STATES_PATH => '',
 				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
 			],
+			ProtocolInfo::PROTOCOL_1_18_0 => [
+				self::CANONICAL_BLOCK_STATES_PATH => '-1.18.0',
+				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.18.0',
+			],
 			ProtocolInfo::PROTOCOL_1_17_40 => [ // 1.18.0 has negative chunk hacks
-				self::CANONICAL_BLOCK_STATES_PATH => '',
-				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
+				self::CANONICAL_BLOCK_STATES_PATH => '-1.18.0',
+				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.18.0',
 			],
 			ProtocolInfo::PROTOCOL_1_17_30 => [
 				self::CANONICAL_BLOCK_STATES_PATH => '-1.17.30',
-				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
+				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.18.0',
 			],
 			ProtocolInfo::PROTOCOL_1_17_10 => [
 				self::CANONICAL_BLOCK_STATES_PATH => '-1.17.10',

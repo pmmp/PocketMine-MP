@@ -529,6 +529,10 @@ class NetworkSession{
 		if($this->connected && !$this->disconnectGuard){
 			$this->disconnectGuard = true;
 			$func();
+
+			$event = new SessionDisconnectEvent($this);
+			$event->call();
+
 			$this->disconnectGuard = false;
 			foreach($this->disposeHooks as $callback){
 				$callback();
@@ -584,9 +588,6 @@ class NetworkSession{
 		if($notify){
 			$this->sendDataPacket(DisconnectPacket::create($reason !== "" ? $reason : null), true);
 		}
-
-		$event = new SessionDisconnectEvent($this);
-		$event->call();
 
 		$this->sender->close($notify ? $reason : "");
 	}
