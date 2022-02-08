@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6723715c08c1582240f1c219df330f96",
+    "content-hash": "7b0434a812ea018e8e5491fcd4e81441",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -253,12 +253,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "747359be18b433659556c5adb527e47b0b150fdd"
+                "reference": "42298c194b0ae5282f6745256e379c01334f82e6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/747359be18b433659556c5adb527e47b0b150fdd",
-                "reference": "747359be18b433659556c5adb527e47b0b150fdd",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/42298c194b0ae5282f6745256e379c01334f82e6",
+                "reference": "42298c194b0ae5282f6745256e379c01334f82e6",
                 "shasum": ""
             },
             "type": "library",
@@ -271,20 +271,20 @@
                 "issues": "https://github.com/pmmp/BedrockData/issues",
                 "source": "https://github.com/pmmp/BedrockData/tree/experimental/upgrade-tables"
             },
-            "time": "2022-02-05T16:34:56+00:00"
+            "time": "2022-02-08T22:24:32+00:00"
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "7.3.1+bedrock-1.18.0",
+            "version": "8.0.0+bedrock-1.18.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "c2667453b03ca08a8c54cd89a1fd45cb29196aeb"
+                "reference": "017e57c8f8a74118bcbba7332e7ebac9e6c81693"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/c2667453b03ca08a8c54cd89a1fd45cb29196aeb",
-                "reference": "c2667453b03ca08a8c54cd89a1fd45cb29196aeb",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/017e57c8f8a74118bcbba7332e7ebac9e6c81693",
+                "reference": "017e57c8f8a74118bcbba7332e7ebac9e6c81693",
                 "shasum": ""
             },
             "require": {
@@ -298,7 +298,7 @@
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.4.2",
+                "phpstan/phpstan": "1.4.5",
                 "phpstan/phpstan-phpunit": "^1.0.0",
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5"
@@ -316,9 +316,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/7.3.1+bedrock-1.18.0"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/8.0.0+bedrock-1.18.10"
             },
-            "time": "2022-01-26T21:14:23+00:00"
+            "time": "2022-02-08T19:17:56+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
