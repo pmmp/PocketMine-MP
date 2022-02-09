@@ -35,6 +35,7 @@ use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function array_map;
+use function count;
 use function file_get_contents;
 use function get_class;
 use function implode;
@@ -43,6 +44,8 @@ use function is_object;
 use function is_string;
 use function json_decode;
 use function ksort;
+use function str_pad;
+use function strval;
 use const JSON_THROW_ON_ERROR;
 use const SORT_NUMERIC;
 
@@ -133,14 +136,22 @@ final class BlockStateUpgradeSchemaUtils{
 			}
 		}
 
+		$convertedRemappedValuesIndex = [];
+		foreach(Utils::stringifyKeys($model->remappedPropertyValuesIndex ?? []) as $mappingKey => $mappingValues){
+			foreach($mappingValues as $k => $oldNew){
+				$convertedRemappedValuesIndex[$mappingKey][$k] = new BlockStateUpgradeSchemaValueRemap(
+					self::jsonModelToTag($oldNew->old),
+					self::jsonModelToTag($oldNew->new)
+				);
+			}
+		}
+
 		foreach(Utils::stringifyKeys($model->remappedPropertyValues ?? []) as $blockName => $properties){
 			foreach(Utils::stringifyKeys($properties) as $property => $mappedValuesKey){
-				foreach($mappedValuesKey as $oldNew){
-					$result->remappedPropertyValues[$blockName][$property][] = new BlockStateUpgradeSchemaValueRemap(
-						self::jsonModelToTag($oldNew->old),
-						self::jsonModelToTag($oldNew->new)
-					);
+				if(!isset($convertedRemappedValuesIndex[$mappedValuesKey])){
+					throw new \UnexpectedValueException("Missing key from schema values index $mappedValuesKey");
 				}
+				$result->remappedPropertyValues[$blockName][$property] = $convertedRemappedValuesIndex[$mappedValuesKey];
 			}
 		}
 
@@ -155,6 +166,64 @@ final class BlockStateUpgradeSchemaUtils{
 		}
 
 		return $result;
+	}
+
+	private static function buildRemappedValuesIndex(BlockStateUpgradeSchema $schema, BlockStateUpgradeSchemaModel $model) : void{
+		if(count($schema->remappedPropertyValues) === 0){
+			return;
+		}
+		$dedupMapping = [];
+		$dedupTable = [];
+		$dedupTableMap = [];
+		$counter = 0;
+
+		foreach(Utils::stringifyKeys($schema->remappedPropertyValues) as $blockName => $remaps){
+			foreach(Utils::stringifyKeys($remaps) as $propertyName => $remappedValues){
+				$remappedValuesMap = [];
+				foreach($remappedValues as $oldNew){
+					$remappedValuesMap[$oldNew->old->toString()] = $oldNew;
+				}
+
+				foreach(Utils::stringifyKeys($dedupTableMap) as $dedupName => $dedupValuesMap){
+					if(count($remappedValuesMap) !== count($dedupValuesMap)){
+						continue;
+					}
+
+					foreach(Utils::stringifyKeys($remappedValuesMap) as $oldHash => $remappedOldNew){
+						if(
+							!isset($dedupValuesMap[$oldHash]) ||
+							!$remappedOldNew->old->equals($dedupValuesMap[$oldHash]->old) ||
+							!$remappedOldNew->new->equals($dedupValuesMap[$oldHash]->new)
+						){
+							continue 2;
+						}
+					}
+
+					//we found a match
+					$dedupMapping[$blockName][$propertyName] = $dedupName;
+					continue 2;
+				}
+
+				//no match, add the values to the table
+				$newDedupName = $propertyName . "_" . str_pad(strval($counter++), 2, "0", STR_PAD_LEFT);
+				$dedupTableMap[$newDedupName] = $remappedValuesMap;
+				$dedupTable[$newDedupName] = $remappedValues;
+				$dedupMapping[$blockName][$propertyName] = $newDedupName;
+			}
+		}
+
+		$modelTable = [];
+		foreach(Utils::stringifyKeys($dedupTable) as $dedupName => $valuePairs){
+			foreach($valuePairs as $k => $pair){
+				$modelTable[$dedupName][$k] = new BlockStateUpgradeSchemaModelValueRemap(
+					BlockStateUpgradeSchemaUtils::tagToJsonModel($pair->old),
+					BlockStateUpgradeSchemaUtils::tagToJsonModel($pair->new),
+				);
+			}
+		}
+
+		$model->remappedPropertyValuesIndex = $modelTable;
+		$model->remappedPropertyValues = $dedupMapping;
 	}
 
 	public static function toJsonModel(BlockStateUpgradeSchema $schema) : BlockStateUpgradeSchemaModel{
@@ -173,16 +242,7 @@ final class BlockStateUpgradeSchemaUtils{
 			}
 		}
 
-		foreach(Utils::stringifyKeys($schema->remappedPropertyValues) as $blockName => $properties){
-			foreach(Utils::stringifyKeys($properties) as $property => $propertyValues){
-				foreach($propertyValues as $oldNew){
-					$result->remappedPropertyValues[$blockName][$property][] = new BlockStateUpgradeSchemaModelValueRemap(
-						self::tagToJsonModel($oldNew->old),
-						self::tagToJsonModel($oldNew->new)
-					);
-				}
-			}
-		}
+		self::buildRemappedValuesIndex($schema, $result);
 
 		foreach(Utils::stringifyKeys($schema->remappedStates) as $oldBlockName => $remaps){
 			foreach($remaps as $remap){

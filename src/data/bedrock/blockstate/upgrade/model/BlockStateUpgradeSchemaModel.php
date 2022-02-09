@@ -64,10 +64,16 @@ final class BlockStateUpgradeSchemaModel implements \JsonSerializable{
 	public array $renamedProperties;
 
 	/**
-	 * @var BlockStateUpgradeSchemaModelValueRemap[][][]
-	 * @phpstan-var array<string, array<string, list<BlockStateUpgradeSchemaModelValueRemap>>>
+	 * @var string[][]
+	 * @phpstan-var array<string, array<string, string>>
 	 */
 	public array $remappedPropertyValues;
+
+	/**
+	 * @var BlockStateUpgradeSchemaModelValueRemap[][]
+	 * @phpstan-var array<string, list<BlockStateUpgradeSchemaModelValueRemap>>
+	 */
+	public array $remappedPropertyValuesIndex;
 
 	/**
 	 * @var BlockStateUpgradeSchemaModelBlockRemap[][]
