@@ -181,7 +181,7 @@ final class Bell extends Transparent{
 		}
 	}
 
-	public function getDropsForIncompatibleTool(Item $item): array{
+	public function getDropsForIncompatibleTool(Item $item) : array{
 		return [$this->asItem()];
 	}
 }
