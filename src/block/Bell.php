@@ -180,4 +180,8 @@ final class Bell extends Transparent{
 			$this->position->getWorld()->broadcastPacketToViewers($this->position, $tile->createFakeUpdatePacket($faceHit));
 		}
 	}
+
+	public function getDropsForIncompatibleTool(Item $item): array{
+		return [$this->asItem()];
+	}
 }
