@@ -263,6 +263,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			case 11: //MCPE 1.11.0.1 beta (???)
 			case 10: //MCPE 1.9 (???)
 			case 9: //MCPE 1.8 (???)
+			case 8: //MCPE 1.2.13 (paletted subchunks)
 			case 7: //MCPE 1.2 (???)
 			case 6: //MCPE 1.2.0.2 beta (???)
 			case 4: //MCPE 1.1
