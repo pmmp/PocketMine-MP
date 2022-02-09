@@ -176,7 +176,7 @@ final class BlockStateUpgradeSchemaUtils{
 		foreach(Utils::stringifyKeys($schema->remappedPropertyValues) as $blockName => $properties){
 			foreach(Utils::stringifyKeys($properties) as $property => $propertyValues){
 				foreach($propertyValues as $oldNew){
-					$result->remappedPropertyValues[$blockName][$property][] = (array) new BlockStateUpgradeSchemaModelValueRemap(
+					$result->remappedPropertyValues[$blockName][$property][] = new BlockStateUpgradeSchemaModelValueRemap(
 						self::tagToJsonModel($oldNew->old),
 						self::tagToJsonModel($oldNew->new)
 					);
