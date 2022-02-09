@@ -101,6 +101,7 @@ class Composter extends Transparent{
 
 			$this->fill_level = 0;
 			$this->position->getWorld()->setBlock($this->position->add(0.5, 0.5, 0.5), $this);
+			return false;
 		}
 		if (!CompostFactory::getInstance()->isCompostable($item)) {
 			return false;
@@ -109,20 +110,15 @@ class Composter extends Transparent{
 
 		if (mt_rand(1, 100) <= CompostFactory::getInstance()->getPercentage($item)) {
 			++$this->fill_level;
-			if ($this->fill_level === 8) {
-				$this->position->getWorld()->addSound($this->position, new ComposterReadySound());
-			} else {
-				$this->position->getWorld()->addSound($this->position, new ComposterFillSuccessSound());
-			}
+			$this->position->getWorld()->addSound($this->position, $this->fill_level === 8 ? new ComposterReadySound() : new ComposterFillSuccessSound());
+			$this->position->getWorld()->setBlock($this->position, $this);
 		} else {
 			$this->position->getWorld()->addSound($this->position, new ComposterFillSound());
-			return true;
 		}
-		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		return $this->fill_level === 8 ? [
 			VanillaBlocks::COMPOSTER()->asItem(),
 			VanillaItems::BONE_MEAL()
