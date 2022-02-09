@@ -82,7 +82,7 @@ class Trapdoor extends Transparent{
 		if($player !== null){
 			$this->facing = Facing::opposite($player->getHorizontalFacing());
 		}
-		if(($clickVector->y > 0.5 and $face !== Facing::UP) or $face === Facing::DOWN){
+		if(($clickVector->y > 0.5 && $face !== Facing::UP) || $face === Facing::DOWN){
 			$this->top = true;
 		}
 

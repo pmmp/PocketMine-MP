@@ -25,7 +25,7 @@ namespace pocketmine\inventory\transaction\action;
 
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 
 /**
@@ -35,7 +35,7 @@ use pocketmine\player\Player;
 class DestroyItemAction extends InventoryAction{
 
 	public function __construct(Item $targetItem){
-		parent::__construct(ItemFactory::air(), $targetItem);
+		parent::__construct(VanillaItems::AIR(), $targetItem);
 	}
 
 	public function validate(Player $source) : void{

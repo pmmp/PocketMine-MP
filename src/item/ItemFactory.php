@@ -418,7 +418,7 @@ class ItemFactory{
 		$id = $item->getId();
 		$variant = $item->getMeta();
 
-		if(!$override and $this->isRegistered($id, $variant)){
+		if(!$override && $this->isRegistered($id, $variant)){
 			throw new \RuntimeException("Trying to overwrite an already registered item");
 		}
 
@@ -453,7 +453,7 @@ class ItemFactory{
 		if($meta !== -1){
 			if(isset($this->list[$offset = self::getListOffset($id, $meta)])){
 				$item = clone $this->list[$offset];
-			}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) and $this->list[$zero] instanceof Durable){
+			}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) && $this->list[$zero] instanceof Durable){
 				if($meta <= $this->list[$zero]->getMaxDurability()){
 					$item = clone $this->list[$zero];
 					$item->setDamage($meta);
@@ -478,6 +478,10 @@ class ItemFactory{
 		return $item;
 	}
 
+	/**
+	 * @deprecated
+	 * @see VanillaItems::AIR()
+	 */
 	public static function air() : Item{
 		return self::getInstance()->get(ItemIds::AIR, 0, 0);
 	}
@@ -494,7 +498,7 @@ class ItemFactory{
 	}
 
 	private static function getListOffset(int $id, int $variant) : int{
-		if($id < -0x8000 or $id > 0x7fff){
+		if($id < -0x8000 || $id > 0x7fff){
 			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
 		}
 		return (($id & 0xffff) << 16) | ($variant & 0xffff);

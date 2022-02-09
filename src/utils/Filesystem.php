@@ -23,10 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use pocketmine\errorhandler\ErrorToExceptionHandler;
 use Webmozart\PathUtil\Path;
 use function copy;
 use function dirname;
-use function disk_free_space;
 use function fclose;
 use function fflush;
 use function file_exists;
@@ -79,10 +79,9 @@ final class Filesystem{
 
 	public static function recursiveUnlink(string $dir) : void{
 		if(is_dir($dir)){
-			$objects = scandir($dir, SCANDIR_SORT_NONE);
-			if($objects === false) throw new AssumptionFailedError("scandir() shouldn't return false when is_dir() returns true");
+			$objects = Utils::assumeNotFalse(scandir($dir, SCANDIR_SORT_NONE), "scandir() shouldn't return false when is_dir() returns true");
 			foreach($objects as $object){
-				if($object !== "." and $object !== ".."){
+				if($object !== "." && $object !== ".."){
 					$fullObject = Path::join($dir, $object);
 					if(is_dir($fullObject)){
 						self::recursiveUnlink($fullObject);
@@ -112,8 +111,12 @@ final class Filesystem{
 				//if the parent dir doesn't exist, the user most likely made a mistake
 				throw new \RuntimeException("The parent directory of $destination does not exist, or is not a directory");
 			}
-			if(!@mkdir($destination) && !is_dir($destination)){
-				throw new \RuntimeException("Failed to create output directory $destination (permission denied?)");
+			try{
+				ErrorToExceptionHandler::trap(fn() => mkdir($destination));
+			}catch(\ErrorException $e){
+				if(!is_dir($destination)){
+					throw new \RuntimeException("Failed to create output directory $destination: " . $e->getMessage());
+				}
 			}
 		}
 		self::recursiveCopyInternal($origin, $destination);
@@ -127,8 +130,7 @@ final class Filesystem{
 				}
 				mkdir($destination); //TODO: access permissions?
 			}
-			$objects = scandir($origin, SCANDIR_SORT_NONE);
-			if($objects === false) throw new AssumptionFailedError("scandir() shouldn't return false when is_dir() returns true");
+			$objects = Utils::assumeNotFalse(scandir($origin, SCANDIR_SORT_NONE));
 			foreach($objects as $object){
 				if($object === "." || $object === ".."){
 					continue;
@@ -193,7 +195,7 @@ final class Filesystem{
 			//wait for a shared lock to avoid race conditions if two servers started at the same time - this makes sure the
 			//other server wrote its PID and released exclusive lock before we get our lock
 			flock($resource, LOCK_SH);
-			$pid = stream_get_contents($resource);
+			$pid = Utils::assumeNotFalse(stream_get_contents($resource), "This is a known valid file resource, at worst we should receive an empty string");
 			if(preg_match('/^\d+$/', $pid) === 1){
 				return (int) $pid;
 			}
@@ -233,6 +235,8 @@ final class Filesystem{
 	 * new contents.
 	 *
 	 * @param resource|null $context Context to pass to file_put_contents
+	 *
+	 * @throws \RuntimeException if the operation failed for any reason
 	 */
 	public static function safeFilePutContents(string $fileName, string $contents, int $flags = 0, $context = null) : void{
 		$directory = dirname($fileName);
@@ -250,23 +254,18 @@ final class Filesystem{
 			$counter++;
 		}while(is_dir($temporaryFileName));
 
-		$writeTemporaryFileResult = $context !== null ?
-			file_put_contents($temporaryFileName, $contents, $flags, $context) :
-			file_put_contents($temporaryFileName, $contents, $flags);
-
-		if($writeTemporaryFileResult !== strlen($contents)){
+		try{
+			ErrorToExceptionHandler::trap(fn() => $context !== null ?
+				file_put_contents($temporaryFileName, $contents, $flags, $context) :
+				file_put_contents($temporaryFileName, $contents, $flags)
+			);
+		}catch(\ErrorException $filePutContentsException){
 			$context !== null ?
 				@unlink($temporaryFileName, $context) :
 				@unlink($temporaryFileName);
-			$diskSpace = disk_free_space($directory);
-			if($diskSpace !== false && $diskSpace < strlen($contents)){
-				throw new \RuntimeException("Failed to write to temporary file $temporaryFileName (out of free disk space)");
-			}
-			throw new \RuntimeException("Failed to write to temporary file $temporaryFileName (possibly out of free disk space)");
+			throw new \RuntimeException("Failed to write to temporary file $temporaryFileName: " . $filePutContentsException->getMessage(), 0, $filePutContentsException);
 		}
 
-		//TODO: the @ prevents us receiving the actual error message, but right now it's necessary since we can't assume
-		//that the error handler has been set :(
 		$renameTemporaryFileResult = $context !== null ?
 			@rename($temporaryFileName, $fileName, $context) :
 			@rename($temporaryFileName, $fileName);
@@ -285,11 +284,13 @@ final class Filesystem{
 			 *     }
 			 * }
 			 */
-			$copyTemporaryFileResult = $context !== null ?
-				copy($temporaryFileName, $fileName, $context) :
-				copy($temporaryFileName, $fileName);
-			if(!$copyTemporaryFileResult){
-				throw new \RuntimeException("Failed to move temporary file contents into target file");
+			try{
+				ErrorToExceptionHandler::trap(fn() => $context !== null ?
+					copy($temporaryFileName, $fileName, $context) :
+					copy($temporaryFileName, $fileName)
+				);
+			}catch(\ErrorException $copyException){
+				throw new \RuntimeException("Failed to move temporary file contents into target file: " . $copyException->getMessage(), 0, $copyException);
 			}
 			@unlink($temporaryFileName);
 		}

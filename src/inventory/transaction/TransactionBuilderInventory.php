@@ -27,7 +27,7 @@ use pocketmine\inventory\BaseInventory;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 
 /**
  * This class facilitates generating SlotChangeActions to build an inventory transaction.
@@ -62,7 +62,7 @@ final class TransactionBuilderInventory extends BaseInventory{
 
 	protected function internalSetItem(int $index, Item $item) : void{
 		if(!$item->equalsExact($this->actualInventory->getItem($index))){
-			$this->changedSlots[$index] = $item->isNull() ? ItemFactory::air() : clone $item;
+			$this->changedSlots[$index] = $item->isNull() ? VanillaItems::AIR() : clone $item;
 		}
 	}
 

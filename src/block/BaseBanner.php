@@ -130,7 +130,7 @@ abstract class BaseBanner extends Transparent{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$drop = $this->asItem();
-		if($drop instanceof ItemBanner and count($this->patterns) > 0){
+		if($drop instanceof ItemBanner && count($this->patterns) > 0){
 			$drop->setPatterns($this->patterns);
 		}
 
@@ -139,7 +139,7 @@ abstract class BaseBanner extends Transparent{
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		$result = $this->asItem();
-		if($addUserData and $result instanceof ItemBanner and count($this->patterns) > 0){
+		if($addUserData && $result instanceof ItemBanner && count($this->patterns) > 0){
 			$result->setPatterns($this->patterns);
 		}
 		return $result;

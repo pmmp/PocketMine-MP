@@ -78,7 +78,7 @@ abstract class Projectile extends Entity{
 		$this->damage = $nbt->getDouble("damage", $this->damage);
 
 		(function() use ($nbt) : void{
-			if(($tileXTag = $nbt->getTag("tileX")) instanceof IntTag and ($tileYTag = $nbt->getTag("tileY")) instanceof IntTag and ($tileZTag = $nbt->getTag("tileZ")) instanceof IntTag){
+			if(($tileXTag = $nbt->getTag("tileX")) instanceof IntTag && ($tileYTag = $nbt->getTag("tileY")) instanceof IntTag && ($tileZTag = $nbt->getTag("tileZ")) instanceof IntTag){
 				$blockPos = new Vector3($tileXTag->getValue(), $tileYTag->getValue(), $tileZTag->getValue());
 			}else{
 				return;
@@ -102,7 +102,7 @@ abstract class Projectile extends Entity{
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
-		return $entity instanceof Living and !$this->onGround;
+		return $entity instanceof Living && !$this->onGround;
 	}
 
 	public function canBeCollidedWith() : bool{
@@ -155,7 +155,7 @@ abstract class Projectile extends Entity{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->blockHit !== null and $this->getWorld()->isInLoadedTerrain($this->blockHit->getPosition()) and !$this->blockHit->isSameState($this->getWorld()->getBlock($this->blockHit->getPosition()))){
+		if($this->blockHit !== null && $this->getWorld()->isInLoadedTerrain($this->blockHit->getPosition()) && !$this->blockHit->isSameState($this->getWorld()->getBlock($this->blockHit->getPosition()))){
 			$this->blockHit = null;
 		}
 
@@ -163,7 +163,7 @@ abstract class Projectile extends Entity{
 	}
 
 	public function hasMovementUpdate() : bool{
-		return $this->blockHit === null and parent::hasMovementUpdate();
+		return $this->blockHit === null && parent::hasMovementUpdate();
 	}
 
 	protected function move(float $dx, float $dy, float $dz) : void{
@@ -194,7 +194,7 @@ abstract class Projectile extends Entity{
 
 		$newDiff = $end->subtractVector($start);
 		foreach($this->getWorld()->getCollidingEntities($this->boundingBox->addCoord($newDiff->x, $newDiff->y, $newDiff->z)->expand(1, 1, 1), $this) as $entity){
-			if($entity->getId() === $this->getOwningEntityId() and $this->ticksLived < 5){
+			if($entity->getId() === $this->getOwningEntityId() && $this->ticksLived < 5){
 				continue;
 			}
 
@@ -253,8 +253,10 @@ abstract class Projectile extends Entity{
 
 			//recompute angles...
 			$f = sqrt(($this->motion->x ** 2) + ($this->motion->z ** 2));
-			$this->location->yaw = (atan2($this->motion->x, $this->motion->z) * 180 / M_PI);
-			$this->location->pitch = (atan2($this->motion->y, $f) * 180 / M_PI);
+			$this->setRotation(
+				atan2($this->motion->x, $this->motion->z) * 180 / M_PI,
+				atan2($this->motion->y, $f) * 180 / M_PI
+			);
 		}
 
 		$this->getWorld()->onEntityMoved($this);

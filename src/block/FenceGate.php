@@ -80,7 +80,7 @@ class FenceGate extends Transparent{
 
 	private function checkInWall() : bool{
 		return (
-			$this->getSide(Facing::rotateY($this->facing, false)) instanceof Wall or
+			$this->getSide(Facing::rotateY($this->facing, false)) instanceof Wall ||
 			$this->getSide(Facing::rotateY($this->facing, true)) instanceof Wall
 		);
 	}
@@ -105,7 +105,7 @@ class FenceGate extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->open = !$this->open;
-		if($this->open and $player !== null){
+		if($this->open && $player !== null){
 			$playerFacing = $player->getHorizontalFacing();
 			if($playerFacing === Facing::opposite($this->facing)){
 				$this->facing = $playerFacing;

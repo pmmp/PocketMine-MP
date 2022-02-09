@@ -63,7 +63,7 @@ final class WorldProviderManager{
 
 	public function addProvider(WorldProviderManagerEntry $providerEntry, string $name, bool $overwrite = false) : void{
 		$name = strtolower($name);
-		if(!$overwrite and isset($this->providers[$name])){
+		if(!$overwrite && isset($this->providers[$name])){
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
 

@@ -55,7 +55,7 @@ class DoublePlant extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$id = $blockReplace->getSide(Facing::DOWN)->getId();
-		if(($id === BlockLegacyIds::GRASS or $id === BlockLegacyIds::DIRT) and $blockReplace->getSide(Facing::UP)->canBeReplaced()){
+		if(($id === BlockLegacyIds::GRASS || $id === BlockLegacyIds::DIRT) && $blockReplace->getSide(Facing::UP)->canBeReplaced()){
 			$top = clone $this;
 			$top->top = true;
 			$tx->addBlock($blockReplace->position, $this)->addBlock($blockReplace->position->getSide(Facing::UP), $top);
@@ -72,14 +72,14 @@ class DoublePlant extends Flowable{
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
 
 		return (
-			$other instanceof DoublePlant and
-			$other->isSameType($this) and
+			$other instanceof DoublePlant &&
+			$other->isSameType($this) &&
 			$other->top !== $this->top
 		);
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->isValidHalfPlant() or (!$this->top and $this->getSide(Facing::DOWN)->isTransparent())){
+		if(!$this->isValidHalfPlant() || (!$this->top && $this->getSide(Facing::DOWN)->isTransparent())){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

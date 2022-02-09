@@ -58,6 +58,7 @@ abstract class Terminal{
 	public static string $COLOR_LIGHT_PURPLE = "";
 	public static string $COLOR_YELLOW = "";
 	public static string $COLOR_WHITE = "";
+	public static string $COLOR_MINECOIN_GOLD = "";
 
 	/** @var bool|null */
 	private static $formattingCodes = null;
@@ -73,10 +74,10 @@ abstract class Terminal{
 		$stdout = fopen("php://stdout", "w");
 		if($stdout === false) throw new AssumptionFailedError("Opening php://stdout should never fail");
 		$result = (
-			stream_isatty($stdout) and //STDOUT isn't being piped
+			stream_isatty($stdout) && //STDOUT isn't being piped
 			(
-				getenv('TERM') !== false or //Console says it supports colours
-				(function_exists('sapi_windows_vt100_support') and sapi_windows_vt100_support($stdout)) //we're on windows and have vt100 support
+				getenv('TERM') !== false || //Console says it supports colours
+				(function_exists('sapi_windows_vt100_support') && sapi_windows_vt100_support($stdout)) //we're on windows and have vt100 support
 			)
 		);
 		fclose($stdout);
@@ -110,6 +111,7 @@ abstract class Terminal{
 		self::$COLOR_LIGHT_PURPLE = $color(207);
 		self::$COLOR_YELLOW = $color(227);
 		self::$COLOR_WHITE = $color(231);
+		self::$COLOR_MINECOIN_GOLD = $color(184);
 	}
 
 	protected static function getEscapeCodes() : void{
@@ -142,11 +144,12 @@ abstract class Terminal{
 			self::$COLOR_LIGHT_PURPLE = $colors >= 256 ? $setaf(207) : $setaf(13);
 			self::$COLOR_YELLOW = $colors >= 256 ? $setaf(227) : $setaf(11);
 			self::$COLOR_WHITE = $colors >= 256 ? $setaf(231) : $setaf(15);
+			self::$COLOR_MINECOIN_GOLD = $colors >= 256 ? $setaf(184) : $setaf(11);
 		}else{
 			self::$COLOR_BLACK = self::$COLOR_DARK_GRAY = $setaf(0);
 			self::$COLOR_RED = self::$COLOR_DARK_RED = $setaf(1);
 			self::$COLOR_GREEN = self::$COLOR_DARK_GREEN = $setaf(2);
-			self::$COLOR_YELLOW = self::$COLOR_GOLD = $setaf(3);
+			self::$COLOR_YELLOW = self::$COLOR_GOLD = self::$COLOR_MINECOIN_GOLD = $setaf(3);
 			self::$COLOR_BLUE = self::$COLOR_DARK_BLUE = $setaf(4);
 			self::$COLOR_LIGHT_PURPLE = self::$COLOR_PURPLE = $setaf(5);
 			self::$COLOR_AQUA = self::$COLOR_DARK_AQUA = $setaf(6);
@@ -210,6 +213,7 @@ abstract class Terminal{
 				TextFormat::LIGHT_PURPLE => Terminal::$COLOR_LIGHT_PURPLE,
 				TextFormat::YELLOW => Terminal::$COLOR_YELLOW,
 				TextFormat::WHITE => Terminal::$COLOR_WHITE,
+				TextFormat::MINECOIN_GOLD => Terminal::$COLOR_MINECOIN_GOLD,
 				default => $token,
 			};
 		}

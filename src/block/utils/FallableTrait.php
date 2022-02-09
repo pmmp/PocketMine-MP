@@ -50,7 +50,7 @@ trait FallableTrait{
 	public function onNearbyBlockChange() : void{
 		$pos = $this->getPosition();
 		$down = $pos->getWorld()->getBlock($pos->getSide(Facing::DOWN));
-		if($down->getId() === BlockLegacyIds::AIR or $down instanceof Liquid or $down instanceof Fire){
+		if($down->getId() === BlockLegacyIds::AIR || $down instanceof Liquid || $down instanceof Fire){
 			$pos->getWorld()->setBlock($pos, VanillaBlocks::AIR());
 
 			$block = $this;

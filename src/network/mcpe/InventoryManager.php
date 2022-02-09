@@ -138,7 +138,7 @@ class InventoryManager{
 
 	public function onTransactionStart(InventoryTransaction $tx) : void{
 		foreach($tx->getActions() as $action){
-			if($action instanceof SlotChangeAction and ($windowId = $this->getWindowId($action->getInventory())) !== null){
+			if($action instanceof SlotChangeAction && ($windowId = $this->getWindowId($action->getInventory())) !== null){
 				//in some cases the inventory might not have a window ID, but still be referenced by a transaction (e.g. crafting grid changes), so we can't unconditionally record the change here or we might leak things
 				$this->initiatedSlotChanges[$windowId][$action->getSlot()] = $action->getTargetItem();
 			}
@@ -236,7 +236,7 @@ class InventoryManager{
 		if($windowId !== null){
 			$currentItem = $inventory->getItem($slot);
 			$clientSideItem = $this->initiatedSlotChanges[$windowId][$slot] ?? null;
-			if($clientSideItem === null or !$clientSideItem->equalsExact($currentItem)){
+			if($clientSideItem === null || !$clientSideItem->equalsExact($currentItem)){
 				$itemStackWrapper = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($currentItem));
 				if($windowId === ContainerIds::OFFHAND){
 					//TODO: HACK!

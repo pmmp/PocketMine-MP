@@ -43,6 +43,7 @@ use pocketmine\block\tile\FlowerPot as TileFlowerPot;
 use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\tile\ItemFrame as TileItemFrame;
 use pocketmine\block\tile\Jukebox as TileJukebox;
+use pocketmine\block\tile\Lectern as TileLectern;
 use pocketmine\block\tile\MonsterSpawner as TileMonsterSpawner;
 use pocketmine\block\tile\NormalFurnace as TileNormalFurnace;
 use pocketmine\block\tile\Note as TileNote;
@@ -260,6 +261,7 @@ class BlockFactory{
 		$this->registerAllMeta(new Opaque(new BID(Ids::LAPIS_BLOCK, 0), "Lapis Lazuli Block", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
 		$this->registerAllMeta(new LapisOre(new BID(Ids::LAPIS_ORE, 0), "Lapis Lazuli Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
 		$this->registerAllMeta(new Lava(new BIDFlattened(Ids::FLOWING_LAVA, [Ids::STILL_LAVA], 0), "Lava", BlockBreakInfo::indestructible(500.0)));
+		$this->registerAllMeta(new Lectern(new BID(Ids::LECTERN, 0, ItemIds::LECTERN, TileLectern::class), "Lectern", new BlockBreakInfo(2.0, BlockToolType::AXE)));
 		$this->registerAllMeta(new Lever(new BID(Ids::LEVER, 0), "Lever", new BlockBreakInfo(0.5)));
 		$this->registerAllMeta(new Loom(new BID(Ids::LOOM, 0), "Loom", new BlockBreakInfo(2.5, BlockToolType::AXE)));
 		$this->registerAllMeta(new Magma(new BID(Ids::MAGMA, 0), "Magma Block", new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
@@ -298,7 +300,7 @@ class BlockFactory{
 		$this->registerAllMeta(new Stair(new BID(Ids::PRISMARINE_STAIRS, 0), "Prismarine Stairs", $prismarineBreakInfo));
 
 		$pumpkinBreakInfo = new BlockBreakInfo(1.0, BlockToolType::AXE);
-		$this->registerAllMeta($pumpkin = new Opaque(new BID(Ids::PUMPKIN, 0), "Pumpkin", $pumpkinBreakInfo));
+		$this->registerAllMeta(new Pumpkin(new BID(Ids::PUMPKIN, 0), "Pumpkin", $pumpkinBreakInfo));
 		$this->registerAllMeta(new CarvedPumpkin(new BID(Ids::CARVED_PUMPKIN, 0), "Carved Pumpkin", $pumpkinBreakInfo));
 		$this->registerAllMeta(new LitPumpkin(new BID(Ids::JACK_O_LANTERN, 0), "Jack o'Lantern", $pumpkinBreakInfo));
 
@@ -396,35 +398,42 @@ class BlockFactory{
 
 		//TODO: in the future this won't be the same for all the types
 		$stoneSlabBreakInfo = new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_BRICK), "Brick", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_COBBLESTONE), "Cobblestone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_FAKE_WOODEN), "Fake Wooden", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_NETHER_BRICK), "Nether Brick", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_QUARTZ), "Quartz", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_SANDSTONE), "Sandstone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_SMOOTH_STONE), "Smooth Stone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(1, Meta::STONE_SLAB_STONE_BRICK), "Stone Brick", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_DARK_PRISMARINE), "Dark Prismarine", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_MOSSY_COBBLESTONE), "Mossy Cobblestone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_PRISMARINE), "Prismarine", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_PRISMARINE_BRICKS), "Prismarine Bricks", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_PURPUR), "Purpur", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_RED_NETHER_BRICK), "Red Nether Brick", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_RED_SANDSTONE), "Red Sandstone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(2, Meta::STONE_SLAB2_SMOOTH_SANDSTONE), "Smooth Sandstone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_ANDESITE), "Andesite", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_DIORITE), "Diorite", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_END_STONE_BRICK), "End Stone Brick", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_GRANITE), "Granite", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_POLISHED_ANDESITE), "Polished Andesite", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_POLISHED_DIORITE), "Polished Diorite", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_POLISHED_GRANITE), "Polished Granite", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(3, Meta::STONE_SLAB3_SMOOTH_RED_SANDSTONE), "Smooth Red Sandstone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_CUT_RED_SANDSTONE), "Cut Red Sandstone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_CUT_SANDSTONE), "Cut Sandstone", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_MOSSY_STONE_BRICK), "Mossy Stone Brick", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_SMOOTH_QUARTZ), "Smooth Quartz", $stoneSlabBreakInfo));
-		$this->registerSlabWithDoubleHighBitsRemapping(new Slab(BlockLegacyIdHelper::getStoneSlabIdentifier(4, Meta::STONE_SLAB4_STONE), "Stone", $stoneSlabBreakInfo));
+
+		$getStoneSlabId = static fn(int $stoneSlabId, int $meta) => BlockLegacyIdHelper::getStoneSlabIdentifier($stoneSlabId, $meta);
+		foreach([
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_BRICK), "Brick", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_COBBLESTONE), "Cobblestone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_FAKE_WOODEN), "Fake Wooden", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_NETHER_BRICK), "Nether Brick", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_QUARTZ), "Quartz", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_SANDSTONE), "Sandstone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_SMOOTH_STONE), "Smooth Stone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(1, Meta::STONE_SLAB_STONE_BRICK), "Stone Brick", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_DARK_PRISMARINE), "Dark Prismarine", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_MOSSY_COBBLESTONE), "Mossy Cobblestone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_PRISMARINE), "Prismarine", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_PRISMARINE_BRICKS), "Prismarine Bricks", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_PURPUR), "Purpur", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_RED_NETHER_BRICK), "Red Nether Brick", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_RED_SANDSTONE), "Red Sandstone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(2, Meta::STONE_SLAB2_SMOOTH_SANDSTONE), "Smooth Sandstone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_ANDESITE), "Andesite", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_DIORITE), "Diorite", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_END_STONE_BRICK), "End Stone Brick", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_GRANITE), "Granite", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_POLISHED_ANDESITE), "Polished Andesite", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_POLISHED_DIORITE), "Polished Diorite", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_POLISHED_GRANITE), "Polished Granite", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(3, Meta::STONE_SLAB3_SMOOTH_RED_SANDSTONE), "Smooth Red Sandstone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(4, Meta::STONE_SLAB4_CUT_RED_SANDSTONE), "Cut Red Sandstone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(4, Meta::STONE_SLAB4_CUT_SANDSTONE), "Cut Sandstone", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(4, Meta::STONE_SLAB4_MOSSY_STONE_BRICK), "Mossy Stone Brick", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(4, Meta::STONE_SLAB4_SMOOTH_QUARTZ), "Smooth Quartz", $stoneSlabBreakInfo),
+			new Slab($getStoneSlabId(4, Meta::STONE_SLAB4_STONE), "Stone", $stoneSlabBreakInfo),
+		] as $slabType){
+			$this->registerSlabWithDoubleHighBitsRemapping($slabType);
+		}
+
 		$this->registerAllMeta(new Opaque(new BID(Ids::STONECUTTER, 0), "Stonecutter", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->registerAllMeta(new Sugarcane(new BID(Ids::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane", BlockBreakInfo::instant()));
 		$this->registerAllMeta(new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH, 0, ItemIds::SWEET_BERRIES), "Sweet Berry Bush", BlockBreakInfo::instant()));
@@ -626,7 +635,6 @@ class BlockFactory{
 		//TODO: minecraft:jigsaw
 		//TODO: minecraft:kelp
 		//TODO: minecraft:lava_cauldron
-		//TODO: minecraft:lectern
 		//TODO: minecraft:movingBlock
 		//TODO: minecraft:observer
 		//TODO: minecraft:piston
@@ -973,7 +981,7 @@ class BlockFactory{
 		}
 
 		foreach($block->getIdInfo()->getAllBlockIds() as $id){
-			if(!$override and $this->isRegistered($id, $variant)){
+			if(!$override && $this->isRegistered($id, $variant)){
 				throw new \InvalidArgumentException("Block registration $id:$variant conflicts with an existing block");
 			}
 
@@ -982,7 +990,7 @@ class BlockFactory{
 					continue;
 				}
 
-				if(!$override and $this->isRegistered($id, $m)){
+				if(!$override && $this->isRegistered($id, $m)){
 					throw new \InvalidArgumentException("Block registration " . get_class($block) . " has states which conflict with other blocks");
 				}
 
@@ -1035,7 +1043,7 @@ class BlockFactory{
 	 * Deserializes a block from the provided legacy ID and legacy meta.
 	 */
 	public function get(int $id, int $meta) : Block{
-		if($meta < 0 or $meta >= (1 << Block::INTERNAL_METADATA_BITS)){
+		if($meta < 0 || $meta >= (1 << Block::INTERNAL_METADATA_BITS)){
 			throw new \InvalidArgumentException("Block meta value $meta is out of bounds");
 		}
 
@@ -1061,7 +1069,7 @@ class BlockFactory{
 	 */
 	public function isRegistered(int $id, int $meta = 0) : bool{
 		$b = $this->fullList[($id << Block::INTERNAL_METADATA_BITS) | $meta];
-		return $b !== null and !($b instanceof UnknownBlock);
+		return $b !== null && !($b instanceof UnknownBlock);
 	}
 
 	/**

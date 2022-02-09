@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function array_filter;
 use function array_map;
@@ -123,7 +124,7 @@ class Language{
 	protected static function loadLang(string $path, string $languageCode) : array{
 		$file = Path::join($path, $languageCode . ".ini");
 		if(file_exists($file)){
-			return array_map('\stripcslashes', parse_ini_file($file, false, INI_SCANNER_RAW));
+			return array_map('\stripcslashes', Utils::assumeNotFalse(parse_ini_file($file, false, INI_SCANNER_RAW), "Missing or inaccessible required resource files"));
 		}
 
 		throw new LanguageNotFoundException("Language \"$languageCode\" not found");
@@ -134,7 +135,7 @@ class Language{
 	 */
 	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null) : string{
 		$baseText = $this->get($str);
-		$baseText = $this->parseTranslation(($onlyPrefix === null or strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
+		$baseText = $this->parseTranslation(($onlyPrefix === null || strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
 
 		foreach($params as $i => $p){
 			$replacement = $p instanceof Translatable ? $this->translate($p) : (string) $p;
@@ -175,14 +176,14 @@ class Language{
 			if($replaceString !== null){
 				$ord = ord($c);
 				if(
-					($ord >= 0x30 and $ord <= 0x39) // 0-9
-					or ($ord >= 0x41 and $ord <= 0x5a) // A-Z
-					or ($ord >= 0x61 and $ord <= 0x7a) or // a-z
-					$c === "." or $c === "-"
+					($ord >= 0x30 && $ord <= 0x39) // 0-9
+					|| ($ord >= 0x41 && $ord <= 0x5a) // A-Z
+					|| ($ord >= 0x61 && $ord <= 0x7a) || // a-z
+					$c === "." || $c === "-"
 				){
 					$replaceString .= $c;
 				}else{
-					if(($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)){
+					if(($t = $this->internalGet(substr($replaceString, 1))) !== null && ($onlyPrefix === null || strpos($replaceString, $onlyPrefix) === 1)){
 						$newString .= $t;
 					}else{
 						$newString .= $replaceString;
@@ -203,7 +204,7 @@ class Language{
 		}
 
 		if($replaceString !== null){
-			if(($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)){
+			if(($t = $this->internalGet(substr($replaceString, 1))) !== null && ($onlyPrefix === null || strpos($replaceString, $onlyPrefix) === 1)){
 				$newString .= $t;
 			}else{
 				$newString .= $replaceString;

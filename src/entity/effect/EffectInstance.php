@@ -77,7 +77,7 @@ class EffectInstance{
 	 * @return $this
 	 */
 	public function setDuration(int $duration) : EffectInstance{
-		if($duration < 0 or $duration > Limits::INT32_MAX){
+		if($duration < 0 || $duration > Limits::INT32_MAX){
 			throw new \InvalidArgumentException("Effect duration must be in range 0 - " . Limits::INT32_MAX . ", got $duration");
 		}
 		$this->duration = $duration;
@@ -118,7 +118,7 @@ class EffectInstance{
 	 * @return $this
 	 */
 	public function setAmplifier(int $amplifier) : EffectInstance{
-		if($amplifier < 0 or $amplifier > 255){
+		if($amplifier < 0 || $amplifier > 255){
 			throw new \InvalidArgumentException("Amplifier must be in range 0 - 255, got $amplifier");
 		}
 		$this->amplifier = $amplifier;

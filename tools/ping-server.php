@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\tools\ping_server;
 
-use pocketmine\utils\AssumptionFailedError;
+use pocketmine\utils\Utils;
 use raklib\protocol\MessageIdentifiers;
 use raklib\protocol\PacketSerializer;
 use raklib\protocol\UnconnectedPing;
@@ -88,7 +88,7 @@ function ping_server(\Socket $socket, string $serverIp, int $serverPort, int $ti
 			\GlobalLogger::get()->error("Error reading from socket: " . socket_strerror(socket_last_error($socket)));
 			return false;
 		}
-		if($recvAddr === $serverIp and $recvPort === $serverPort and $recvBuffer !== "" and ord($recvBuffer[0]) === MessageIdentifiers::ID_UNCONNECTED_PONG){
+		if($recvAddr === $serverIp && $recvPort === $serverPort && $recvBuffer !== "" && ord($recvBuffer[0]) === MessageIdentifiers::ID_UNCONNECTED_PONG){
 			$pong = new UnconnectedPong();
 			$pong->decode(new PacketSerializer($recvBuffer));
 			\GlobalLogger::get()->info("--- Response received ---");
@@ -137,8 +137,7 @@ if(count($argv) > 2){
 	$port = $portRaw === "" ? 19132 : (int) $portRaw;
 }
 
-$sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
-if($sock === false) throw new AssumptionFailedError();
+$sock = Utils::assumeNotFalse(socket_create(AF_INET, SOCK_DGRAM, SOL_UDP));
 
 socket_bind($sock, "0.0.0.0");
 socket_getsockname($sock, $bindAddr, $bindPort);

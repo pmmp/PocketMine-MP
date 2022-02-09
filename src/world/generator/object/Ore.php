@@ -80,12 +80,12 @@ class Ore{
 						$sizeY = ($yy + 0.5 - $seedY) / $size;
 						$sizeY *= $sizeY;
 
-						if($yy > 0 and ($sizeX + $sizeY) < 1){
+						if($yy > 0 && ($sizeX + $sizeY) < 1){
 							for($zz = $startZ; $zz <= $endZ; ++$zz){
 								$sizeZ = ($zz + 0.5 - $seedZ) / $size;
 								$sizeZ *= $sizeZ;
 
-								if(($sizeX + $sizeY + $sizeZ) < 1 and $world->getBlockAt($xx, $yy, $zz)->isSameType($this->type->replaces)){
+								if(($sizeX + $sizeY + $sizeZ) < 1 && $world->getBlockAt($xx, $yy, $zz)->isSameType($this->type->replaces)){
 									$world->setBlockAt($xx, $yy, $zz, $this->type->material);
 								}
 							}

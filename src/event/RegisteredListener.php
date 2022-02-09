@@ -68,7 +68,7 @@ class RegisteredListener{
 	}
 
 	public function callEvent(Event $event) : void{
-		if($event instanceof Cancellable and $event->isCancelled() and !$this->isHandlingCancelled()){
+		if($event instanceof Cancellable && $event->isCancelled() && !$this->isHandlingCancelled()){
 			return;
 		}
 		$this->timings->startTiming();

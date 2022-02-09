@@ -82,7 +82,7 @@ class Cactus extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() !== BlockLegacyIds::SAND and !$down->isSameType($this)){
+		if($down->getId() !== BlockLegacyIds::SAND && !$down->isSameType($this)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}else{
 			foreach(Facing::HORIZONTAL as $side){
@@ -129,7 +129,7 @@ class Cactus extends Transparent{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() === BlockLegacyIds::SAND or $down->isSameType($this)){
+		if($down->getId() === BlockLegacyIds::SAND || $down->isSameType($this)){
 			foreach(Facing::HORIZONTAL as $side){
 				if($this->getSide($side)->isSolid()){
 					return false;

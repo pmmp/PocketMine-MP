@@ -32,6 +32,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @generate-registry-docblock
  *
  * @method static Boat ACACIA_BOAT()
+ * @method static ItemBlock AIR()
  * @method static Apple APPLE()
  * @method static Arrow ARROW()
  * @method static Potion AWKWARD_POTION()
@@ -392,6 +393,8 @@ final class VanillaItems{
 
 	protected static function setup() : void{
 		$factory = ItemFactory::getInstance();
+		self::register("air", $factory->get(ItemIds::AIR, 0, 0));
+
 		self::register("acacia_boat", $factory->get(333, 4));
 		self::register("apple", $factory->get(260));
 		self::register("arrow", $factory->get(262));

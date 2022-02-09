@@ -65,7 +65,7 @@ class Attribute{
 	protected $desynchronized = true;
 
 	public function __construct(string $id, float $minValue, float $maxValue, float $defaultValue, bool $shouldSend = true){
-		if($minValue > $maxValue or $defaultValue > $maxValue or $defaultValue < $minValue){
+		if($minValue > $maxValue || $defaultValue > $maxValue || $defaultValue < $minValue){
 			throw new \InvalidArgumentException("Invalid ranges: min value: $minValue, max value: $maxValue, $defaultValue: $defaultValue");
 		}
 		$this->id = $id;
@@ -123,7 +123,7 @@ class Attribute{
 	 * @return $this
 	 */
 	public function setDefaultValue(float $defaultValue){
-		if($defaultValue > $this->getMaxValue() or $defaultValue < $this->getMinValue()){
+		if($defaultValue > $this->getMaxValue() || $defaultValue < $this->getMinValue()){
 			throw new \InvalidArgumentException("Default $defaultValue is outside the range " . $this->getMinValue() . " - " . $this->getMaxValue());
 		}
 
@@ -146,7 +146,7 @@ class Attribute{
 	 * @return $this
 	 */
 	public function setValue(float $value, bool $fit = false, bool $forceSend = false){
-		if($value > $this->getMaxValue() or $value < $this->getMinValue()){
+		if($value > $this->getMaxValue() || $value < $this->getMinValue()){
 			if(!$fit){
 				throw new \InvalidArgumentException("Value $value is outside the range " . $this->getMinValue() . " - " . $this->getMaxValue());
 			}
@@ -172,7 +172,7 @@ class Attribute{
 	}
 
 	public function isDesynchronized() : bool{
-		return $this->shouldSend and $this->desynchronized;
+		return $this->shouldSend && $this->desynchronized;
 	}
 
 	public function markSynchronized(bool $synced = true) : void{

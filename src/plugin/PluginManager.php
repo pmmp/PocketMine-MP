@@ -137,7 +137,7 @@ class PluginManager{
 		$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_load($description->getFullName())));
 
 		$dataFolder = $this->getDataDirectory($path, $description->getName());
-		if(file_exists($dataFolder) and !is_dir($dataFolder)){
+		if(file_exists($dataFolder) && !is_dir($dataFolder)){
 			$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 				$description->getName(),
 				KnownTranslationFactory::pocketmine_plugin_badDataFolder($dataFolder)
@@ -237,8 +237,7 @@ class PluginManager{
 			$files = iterator_to_array(new \FilesystemIterator($path, \FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS));
 			shuffle($files); //this prevents plugins implicitly relying on the filesystem name order when they should be using dependency properties
 		}elseif(is_file($path)){
-			$realPath = realpath($path);
-			if($realPath === false) throw new AssumptionFailedError("realpath() should not return false on an accessible, existing file");
+			$realPath = Utils::assumeNotFalse(realpath($path), "realpath() should not return false on an accessible, existing file");
 			$files = [$realPath];
 		}else{
 			return;
@@ -275,7 +274,7 @@ class PluginManager{
 					continue;
 				}
 
-				if(isset($triage->plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
+				if(isset($triage->plugins[$name]) || $this->getPlugin($name) instanceof Plugin){
 					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_duplicateError($name)));
 					continue;
 				}
@@ -284,7 +283,7 @@ class PluginManager{
 					$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_spacesDiscouraged($name)));
 				}
 
-				if($this->graylist !== null and !$this->graylist->isAllowed($name)){
+				if($this->graylist !== null && !$this->graylist->isAllowed($name)){
 					$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 						$name,
 						$this->graylist->isWhitelist() ? KnownTranslationFactory::pocketmine_plugin_disallowedByWhitelist() : KnownTranslationFactory::pocketmine_plugin_disallowedByBlacklist()
@@ -315,7 +314,7 @@ class PluginManager{
 	private function checkDepsForTriage(string $pluginName, string $dependencyType, array &$dependencyLists, array $loadedPlugins, PluginLoadTriage $triage) : void{
 		if(isset($dependencyLists[$pluginName])){
 			foreach($dependencyLists[$pluginName] as $key => $dependency){
-				if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
+				if(isset($loadedPlugins[$dependency]) || $this->getPlugin($dependency) instanceof Plugin){
 					$this->server->getLogger()->debug("Successfully resolved $dependencyType dependency \"$dependency\" for plugin \"$pluginName\"");
 					unset($dependencyLists[$pluginName][$key]);
 				}elseif(array_key_exists($dependency, $triage->plugins)){
@@ -349,7 +348,7 @@ class PluginManager{
 				$this->checkDepsForTriage($name, "hard", $triage->dependencies, $loadedPlugins, $triage);
 				$this->checkDepsForTriage($name, "soft", $triage->softDependencies, $loadedPlugins, $triage);
 
-				if(!isset($triage->dependencies[$name]) and !isset($triage->softDependencies[$name])){
+				if(!isset($triage->dependencies[$name]) && !isset($triage->softDependencies[$name])){
 					unset($triage->plugins[$name]);
 					$loadedThisLoop++;
 
@@ -427,7 +426,7 @@ class PluginManager{
 	}
 
 	public function isPluginEnabled(Plugin $plugin) : bool{
-		return isset($this->plugins[$plugin->getDescription()->getName()]) and $plugin->isEnabled();
+		return isset($this->plugins[$plugin->getDescription()->getName()]) && $plugin->isEnabled();
 	}
 
 	public function enablePlugin(Plugin $plugin) : void{
@@ -486,7 +485,7 @@ class PluginManager{
 	 * @phpstan-return class-string<Event>|null
 	 */
 	private function getEventsHandledBy(\ReflectionMethod $method) : ?string{
-		if($method->isStatic() or !$method->getDeclaringClass()->implementsInterface(Listener::class)){
+		if($method->isStatic() || !$method->getDeclaringClass()->implementsInterface(Listener::class)){
 			return null;
 		}
 		$tags = Utils::parseDocComment((string) $method->getDocComment());
