@@ -54,8 +54,6 @@ final class BlockStateUpgrader{
 	}
 
 	public function upgrade(BlockStateData $blockStateData) : BlockStateData{
-		$oldName = $blockStateData->getName();
-
 		$version = $blockStateData->getVersion();
 		foreach($this->upgradeSchemas as $resultVersion => $schemas){
 			if($version > $resultVersion){
@@ -64,6 +62,15 @@ final class BlockStateUpgrader{
 				continue;
 			}
 			foreach($schemas as $schema){
+				$oldName = $blockStateData->getName();
+				if(isset($schema->remappedStates[$oldName])){
+					foreach($schema->remappedStates[$oldName] as $remap){
+						if($blockStateData->getStates()->equals($remap->oldState)){
+							$blockStateData = new BlockStateData($remap->newName, clone $remap->newState, $resultVersion);
+							continue 2;
+						}
+					}
+				}
 				$newName = $schema->renamedIds[$oldName] ?? null;
 
 				$stateChanges = 0;

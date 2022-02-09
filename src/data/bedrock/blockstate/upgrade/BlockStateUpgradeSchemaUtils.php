@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\blockstate\upgrade;
 
 use pocketmine\data\bedrock\blockstate\upgrade\model\BlockStateUpgradeSchemaModel;
+use pocketmine\data\bedrock\blockstate\upgrade\model\BlockStateUpgradeSchemaModelBlockRemap;
 use pocketmine\data\bedrock\blockstate\upgrade\model\BlockStateUpgradeSchemaModelTag;
 use pocketmine\data\bedrock\blockstate\upgrade\model\BlockStateUpgradeSchemaModelValueRemap;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
@@ -33,6 +34,7 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
+use function array_map;
 use function file_get_contents;
 use function get_class;
 use function implode;
@@ -142,6 +144,16 @@ final class BlockStateUpgradeSchemaUtils{
 			}
 		}
 
+		foreach(Utils::stringifyKeys($model->remappedStates ?? []) as $oldBlockName => $remaps){
+			foreach($remaps as $remap){
+				$result->remappedStates[$oldBlockName][] = new BlockStateUpgradeSchemaBlockRemap(
+					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->oldState),
+					$remap->newName,
+					array_map(fn(BlockStateUpgradeSchemaModelTag $tag) => self::jsonModelToTag($tag), $remap->newState),
+				);
+			}
+		}
+
 		return $result;
 	}
 
@@ -169,6 +181,16 @@ final class BlockStateUpgradeSchemaUtils{
 						self::tagToJsonModel($oldNew->new)
 					);
 				}
+			}
+		}
+
+		foreach(Utils::stringifyKeys($schema->remappedStates) as $oldBlockName => $remaps){
+			foreach($remaps as $remap){
+				$result->remappedStates[$oldBlockName][] = new BlockStateUpgradeSchemaModelBlockRemap(
+					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->oldState),
+					$remap->newName,
+					array_map(fn(Tag $tag) => self::tagToJsonModel($tag), $remap->newState),
+				);
 			}
 		}
 

@@ -57,6 +57,12 @@ final class BlockStateUpgradeSchema{
 	 */
 	public array $remappedPropertyValues = [];
 
+	/**
+	 * @var BlockStateUpgradeSchemaBlockRemap[][]
+	 * @phpstan-var array<string, list<BlockStateUpgradeSchemaBlockRemap>>
+	 */
+	public array $remappedStates = [];
+
 	public function __construct(
 		public int $maxVersionMajor,
 		public int $maxVersionMinor,
