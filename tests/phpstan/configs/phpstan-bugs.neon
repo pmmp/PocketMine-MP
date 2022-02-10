@@ -16,6 +16,11 @@ parameters:
 			path: ../../../src/crafting/CraftingManager.php
 
 		-
+			message: "#^Dead catch \\- JsonException is never thrown in the try block\\.$#"
+			count: 1
+			path: ../../../src/data/bedrock/blockstate/upgrade/BlockStateUpgradeSchemaUtils.php
+
+		-
 			message: "#^Call to function assert\\(\\) with false and 'unknown hit type' will always evaluate to false\\.$#"
 			count: 1
 			path: ../../../src/entity/projectile/Projectile.php
