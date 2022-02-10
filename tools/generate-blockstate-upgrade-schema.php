@@ -33,8 +33,14 @@ use pocketmine\nbt\tag\Tag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
+use function array_key_first;
+use function count;
 use function dirname;
+use function file_get_contents;
+use function file_put_contents;
 use function fwrite;
+use function json_encode;
+use function ksort;
 use const STDERR;
 
 require_once dirname(__DIR__) . '/vendor/autoload.php';
