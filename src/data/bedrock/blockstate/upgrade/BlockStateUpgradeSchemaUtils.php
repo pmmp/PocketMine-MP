@@ -48,6 +48,7 @@ use function str_pad;
 use function strval;
 use const JSON_THROW_ON_ERROR;
 use const SORT_NUMERIC;
+use const STR_PAD_LEFT;
 
 final class BlockStateUpgradeSchemaUtils{
 
