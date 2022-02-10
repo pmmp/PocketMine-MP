@@ -27,6 +27,7 @@ use pocketmine\data\bedrock\blockstate\BlockStateData;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Utils;
+use function array_unshift;
 use function ksort;
 use const SORT_NUMERIC;
 
@@ -39,18 +40,26 @@ final class BlockStateUpgrader{
 	 * @phpstan-param array<int, BlockStateUpgradeSchema> $upgradeSchemas
 	 */
 	public function __construct(array $upgradeSchemas){
-		foreach($upgradeSchemas as $priority => $schema){
-			$this->addSchema($schema, $priority);
+		foreach($upgradeSchemas as $schema){
+			$this->addSchema($schema);
 		}
 	}
 
-	public function addSchema(BlockStateUpgradeSchema $schema, int $priority) : void{
-		if(isset($this->upgradeSchemas[$schema->getVersionId()][$priority])){
-			throw new \InvalidArgumentException("Another schema already has this priority");
+	public function addSchema(BlockStateUpgradeSchema $schema) : void{
+		if(!$schema->isBackwardsCompatible()){
+			$schemaList = $this->upgradeSchemas[$schema->getVersionId()] ?? [];
+			foreach($schemaList as $otherSchema){
+				if(!$otherSchema->isBackwardsCompatible()){
+					throw new \InvalidArgumentException("Cannot add two backwards-incompatible schemas with the same version");
+				}
+			}
+			array_unshift($schemaList, $schema);
+			$this->upgradeSchemas[$schema->getVersionId()] = $schemaList;
+		}else{
+			//Backwards-compatible schemas can be added in any order
+			$this->upgradeSchemas[$schema->getVersionId()][] = $schema;
 		}
-		$this->upgradeSchemas[$schema->getVersionId()][$priority] = $schema;
 		ksort($this->upgradeSchemas, SORT_NUMERIC);
-		ksort($this->upgradeSchemas[$schema->getVersionId()], SORT_NUMERIC);
 	}
 
 	public function upgrade(BlockStateData $blockStateData) : BlockStateData{
@@ -62,6 +71,11 @@ final class BlockStateUpgrader{
 				continue;
 			}
 			foreach($schemas as $schema){
+				if(!$schema->isBackwardsCompatible() && $resultVersion === $version){
+					//backwards-compatible updates typically don't bump version and must always be applied because we
+					//can't tell any different, but backwards-incompatible ones SHOULD always get their own version bump
+					continue;
+				}
 				$oldName = $blockStateData->getName();
 				if(isset($schema->remappedStates[$oldName])){
 					foreach($schema->remappedStates[$oldName] as $remap){

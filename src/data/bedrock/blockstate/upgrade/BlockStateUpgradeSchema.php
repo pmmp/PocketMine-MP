@@ -64,6 +64,8 @@ final class BlockStateUpgradeSchema{
 	 */
 	public array $remappedStates = [];
 
+	private ?bool $backwardsCompatible = null;
+
 	public function __construct(
 		public int $maxVersionMajor,
 		public int $maxVersionMinor,
@@ -90,5 +92,23 @@ final class BlockStateUpgradeSchema{
 		}
 
 		return true;
+	}
+
+	public function isBackwardsCompatible() : bool{
+		if($this->backwardsCompatible === null){
+			$this->backwardsCompatible = true;
+			foreach([
+				$this->renamedIds,
+				$this->removedProperties,
+				$this->remappedPropertyValues,
+				$this->remappedStates
+			] as $bcBreakingRules){
+				if(count($bcBreakingRules) !== 0){
+					$this->backwardsCompatible = false;
+				}
+			}
+		}
+		//schemas which only add properties are backwards compatible
+		return $this->backwardsCompatible;
 	}
 }
