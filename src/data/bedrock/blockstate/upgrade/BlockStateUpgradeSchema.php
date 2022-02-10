@@ -73,4 +73,21 @@ final class BlockStateUpgradeSchema{
 	public function getVersionId() : int{
 		return ($this->maxVersionMajor << 24) | ($this->maxVersionMinor << 16) | ($this->maxVersionPatch << 8) | $this->maxVersionRevision;
 	}
+
+	public function isEmpty() : bool{
+		foreach([
+			$this->renamedIds,
+			$this->addedProperties,
+			$this->removedProperties,
+			$this->renamedProperties,
+			$this->remappedPropertyValues,
+			$this->remappedStates,
+		] as $list){
+			if(count($list) !== 0){
+				return false;
+			}
+		}
+
+		return true;
+	}
 }
