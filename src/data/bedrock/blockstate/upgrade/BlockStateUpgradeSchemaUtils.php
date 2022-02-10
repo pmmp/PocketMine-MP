@@ -38,6 +38,7 @@ use function array_map;
 use function count;
 use function file_get_contents;
 use function get_class;
+use function gettype;
 use function implode;
 use function is_int;
 use function is_object;
@@ -275,7 +276,6 @@ final class BlockStateUpgradeSchemaUtils{
 
 		$result = [];
 
-		$jsonMapper = new \JsonMapper();
 		/** @var string[] $matches */
 		foreach($iterator as $matches){
 			$filename = $matches[0];
@@ -283,16 +283,18 @@ final class BlockStateUpgradeSchemaUtils{
 
 			$fullPath = Path::join($path, $filename);
 
-			//TODO: should we bother handling exceptions in here?
-			$raw = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($fullPath));
-
-			$json = json_decode($raw, false, flags: JSON_THROW_ON_ERROR);
-			if(!is_object($json)){
-				throw new \RuntimeException("Unexpected root type of schema file $fullPath");
+			try{
+				$raw = ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents($fullPath));
+			}catch(\ErrorException $e){
+				throw new \RuntimeException("Loading schema file $fullPath: " . $e->getMessage(), 0, $e);
 			}
-			$model = $jsonMapper->map($json, new BlockStateUpgradeSchemaModel());
 
-			$schema = self::fromJsonModel($model);
+			try{
+				$schema = self::loadSchemaFromString($raw);
+			}catch(\RuntimeException $e){
+				throw new \RuntimeException("Loading schema file $fullPath: " . $e->getMessage(), 0, $e);
+			}
+
 			if($schema->getVersionId() > $currentVersion){
 				//this might be a beta schema which shouldn't be applicable
 				//TODO: why do we load the whole schema just to throw it away if it's too new? ...
@@ -304,5 +306,25 @@ final class BlockStateUpgradeSchemaUtils{
 
 		ksort($result, SORT_NUMERIC);
 		return $result;
+	}
+
+	public static function loadSchemaFromString(string $raw) : BlockStateUpgradeSchema{
+		try{
+			$json = json_decode($raw, false, flags: JSON_THROW_ON_ERROR);
+		}catch(\JsonException $e){
+			throw new \RuntimeException($e->getMessage(), 0, $e);
+		}
+		if(!is_object($json)){
+			throw new \RuntimeException("Unexpected root type of schema file " . gettype($json) . ", expected object");
+		}
+
+		$jsonMapper = new \JsonMapper();
+		try{
+			$model = $jsonMapper->map($json, new BlockStateUpgradeSchemaModel());
+		}catch(\JsonMapper_Exception $e){
+			throw new \RuntimeException($e->getMessage(), 0, $e);
+		}
+
+		return self::fromJsonModel($model);
 	}
 }
