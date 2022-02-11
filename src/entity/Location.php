@@ -32,7 +32,7 @@ class Location extends Position{
 	/** @var float */
 	public $yaw;
 	/** @var float */
-	public float $headYaw;
+	public $headYaw;
 	/** @var float */
 	public $pitch;
 
@@ -66,7 +66,7 @@ class Location extends Position{
 		return $this->yaw;
 	}
 
-	public function getHeadYaw(): float
+	public function getHeadYaw() : float
 	{
 		return $this->headYaw;
 	}
