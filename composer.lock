@@ -253,12 +253,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "1d96dd836a77996719ed09dced6e4bba99b0fc1e"
+                "reference": "b6ffd9dc61821358d65618d91f67e2ea21d421d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/1d96dd836a77996719ed09dced6e4bba99b0fc1e",
-                "reference": "1d96dd836a77996719ed09dced6e4bba99b0fc1e",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/b6ffd9dc61821358d65618d91f67e2ea21d421d0",
+                "reference": "b6ffd9dc61821358d65618d91f67e2ea21d421d0",
                 "shasum": ""
             },
             "type": "library",
@@ -271,7 +271,7 @@
                 "issues": "https://github.com/pmmp/BedrockData/issues",
                 "source": "https://github.com/pmmp/BedrockData/tree/experimental/upgrade-tables"
             },
-            "time": "2022-02-09T21:52:48+00:00"
+            "time": "2022-02-11T20:20:39+00:00"
         },
         {
             "name": "pocketmine/bedrock-protocol",
