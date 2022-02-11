@@ -24,17 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\data\bedrock\blockstate\upgrade\model;
 
 final class BlockStateUpgradeSchemaModelTag{
-
-	/** @required */
-	public string $type;
-	/**
-	 * @required
-	 * @var mixed JsonMapper doesn't support mixed type :(
-	 */
-	public $value;
-
-	public function __construct(string $type, mixed $value){
-		$this->type = $type;
-		$this->value = $value;
-	}
+	public int $byte;
+	public int $int;
+	public string $string;
 }

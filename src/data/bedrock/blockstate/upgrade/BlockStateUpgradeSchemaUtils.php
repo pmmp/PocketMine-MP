@@ -38,6 +38,7 @@ use function array_map;
 use function count;
 use function file_get_contents;
 use function get_class;
+use function get_debug_type;
 use function gettype;
 use function implode;
 use function is_int;
@@ -89,36 +90,28 @@ final class BlockStateUpgradeSchemaUtils{
 		return implode("\n", $lines);
 	}
 
-	private static function tagToJsonModel(Tag $tag) : BlockStateUpgradeSchemaModelTag{
-		$type = match(get_class($tag)){
-			IntTag::class => "int",
-			StringTag::class => "string",
-			ByteTag::class => "byte",
-			default => throw new \UnexpectedValueException()
-		};
+	public static function tagToJsonModel(Tag $tag) : BlockStateUpgradeSchemaModelTag{
+		$model = new BlockStateUpgradeSchemaModelTag();
+		if($tag instanceof IntTag){
+			$model->int = $tag->getValue();
+		}elseif($tag instanceof StringTag){
+			$model->string = $tag->getValue();
+		}elseif($tag instanceof ByteTag){
+			$model->byte = $tag->getValue();
+		}else{
+			throw new \UnexpectedValueException("Unexpected value type " . get_debug_type($tag));
+		}
 
-		return new BlockStateUpgradeSchemaModelTag($type, $tag->getValue());
+		return $model;
 	}
 
 	private static function jsonModelToTag(BlockStateUpgradeSchemaModelTag $model) : Tag{
-		if($model->type === "int"){
-			if(!is_int($model->value)){
-				throw new \UnexpectedValueException("Value for type int must be an int");
-			}
-			return new IntTag($model->value);
-		}elseif($model->type === "byte"){
-			if(!is_int($model->value)){
-				throw new \UnexpectedValueException("Value for type byte must be an int");
-			}
-			return new ByteTag($model->value);
-		}elseif($model->type === "string"){
-			if(!is_string($model->value)){
-				throw new \UnexpectedValueException("Value for type string must be a string");
-			}
-			return new StringTag($model->value);
-		}else{
-			throw new \UnexpectedValueException("Unknown blockstate value type $model->type");
-		}
+		return match(true){
+			isset($model->byte) && !isset($model->int) && !isset($model->string) => new ByteTag($model->byte),
+			!isset($model->byte) && isset($model->int) && !isset($model->string) => new IntTag($model->int),
+			!isset($model->byte) && !isset($model->int) && isset($model->string) => new StringTag($model->string),
+			default => throw new \UnexpectedValueException("Malformed JSON model tag, expected exactly one of 'byte', 'int' or 'string' properties")
+		};
 	}
 
 	public static function fromJsonModel(BlockStateUpgradeSchemaModel $model) : BlockStateUpgradeSchema{
