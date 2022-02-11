@@ -727,18 +727,19 @@ class NetworkSession{
 		$this->setHandler(new InGamePacketHandler($this->player, $this, $this->invManager));
 	}
 
-	public function syncMovement(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL) : void{
+	public function syncMovement(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL, ?float $headYaw = null) : void{
 		if($this->player !== null){
 			$location = $this->player->getLocation();
 			$yaw = $yaw ?? $location->getYaw();
 			$pitch = $pitch ?? $location->getPitch();
+			$headYaw = $headYaw ?? $location->getHeadYaw();
 
 			$this->sendDataPacket(MovePlayerPacket::simple(
 				$this->player->getId(),
 				$this->player->getOffsetPosition($pos),
 				$pitch,
 				$yaw,
-				$yaw, //TODO: head yaw
+				$headYaw,
 				$mode,
 				$this->player->onGround,
 				0, //TODO: riding entity ID

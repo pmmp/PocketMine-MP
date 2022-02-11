@@ -2341,7 +2341,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * TODO: remove this
 	 */
-	protected function sendPosition(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL) : void{
+	protected function sendPosition(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, int $mode = MovePlayerPacket::MODE_NORMAL, ?float $headYaw = null) : void{
 		$this->getNetworkSession()->syncMovement($pos, $yaw, $pitch, $mode);
 
 		$this->ySize = 0;
@@ -2350,7 +2350,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	/**
 	 * {@inheritdoc}
 	 */
-	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null) : bool{
+	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, ?float $headYaw = null) : bool{
 		if(parent::teleport($pos, $yaw, $pitch)){
 
 			$this->removeCurrentWindow();

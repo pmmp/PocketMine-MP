@@ -1331,15 +1331,24 @@ abstract class Entity{
 		return true;
 	}
 
-	public function setRotation(float $yaw, float $pitch) : void{
+	public function setRotation(float $yaw, float $pitch, float $headYaw = -1) : void{
 		$this->location->yaw = $yaw;
 		$this->location->pitch = $pitch;
+
+		if ($headYaw < 0) {
+			$headYaw = $yaw;
+		}
+		$this->location->headYaw = $headYaw;
 		$this->scheduleUpdate();
 	}
 
-	protected function setPositionAndRotation(Vector3 $pos, float $yaw, float $pitch) : bool{
+	protected function setPositionAndRotation(Vector3 $pos, float $yaw, float $pitch, float $headYaw = -1) : bool{
 		if($this->setPosition($pos)){
-			$this->setRotation($yaw, $pitch);
+			if ($headYaw < 0) {
+				$headYaw = $yaw;
+			}
+
+			$this->setRotation($yaw, $pitch, $headYaw);
 
 			return true;
 		}
@@ -1388,9 +1397,12 @@ abstract class Entity{
 	/**
 	 * @param Vector3|Position|Location $pos
 	 */
-	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null) : bool{
+	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null, ?float $headYaw = null) : bool{
 		if($pos instanceof Location){
 			$yaw = $yaw ?? $pos->yaw;
+			/** @noinspection CallableParameterUseCaseInTypeContextInspection - This will never happen. */
+			// Just here for BC.
+			$headYaw = $headYaw ?? $pos->headYaw;
 			$pitch = $pitch ?? $pos->pitch;
 		}
 		$from = $this->location->asPosition();
@@ -1404,7 +1416,7 @@ abstract class Entity{
 		$pos = $ev->getTo();
 
 		$this->setMotion(new Vector3(0, 0, 0));
-		if($this->setPositionAndRotation($pos, $yaw ?? $this->location->yaw, $pitch ?? $this->location->pitch)){
+		if($this->setPositionAndRotation($pos, $yaw ?? $this->location->yaw, $pitch ?? $this->location->pitch, $headYaw ?? $this->location->headYaw)){
 			$this->resetFallDistance();
 			$this->setForceMovementUpdate();
 
@@ -1441,7 +1453,7 @@ abstract class Entity{
 			$this->getMotion(),
 			$this->location->pitch,
 			$this->location->yaw,
-			$this->location->yaw, //TODO: head yaw
+			$this->location->headYaw,
 			array_map(function(Attribute $attr) : NetworkAttribute{
 				return new NetworkAttribute($attr->getId(), $attr->getMinValue(), $attr->getMaxValue(), $attr->getValue(), $attr->getDefaultValue());
 			}, $this->attributeMap->getAll()),

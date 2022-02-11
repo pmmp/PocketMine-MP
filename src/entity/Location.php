@@ -32,30 +32,43 @@ class Location extends Position{
 	/** @var float */
 	public $yaw;
 	/** @var float */
+	public float $headYaw;
+	/** @var float */
 	public $pitch;
 
-	public function __construct(float $x, float $y, float $z, ?World $world, float $yaw, float $pitch){
+	public function __construct(float $x, float $y, float $z, ?World $world, float $yaw, float $pitch, float $headYaw = -1){
 		$this->yaw = $yaw;
 		$this->pitch = $pitch;
+
+		if ($headYaw < 0) {
+			$headYaw = $yaw;
+		}
+
+		$this->headYaw = $headYaw;
 		parent::__construct($x, $y, $z, $world);
 	}
 
 	/**
 	 * @return Location
 	 */
-	public static function fromObject(Vector3 $pos, ?World $world, float $yaw = 0.0, float $pitch = 0.0){
-		return new Location($pos->x, $pos->y, $pos->z, $world ?? (($pos instanceof Position) ? $pos->world : null), $yaw, $pitch);
+	public static function fromObject(Vector3 $pos, ?World $world, float $yaw = 0.0, float $pitch = 0.0, float $headYaw = 0.0){
+		return new Location($pos->x, $pos->y, $pos->z, $world ?? (($pos instanceof Position) ? $pos->world : null), $yaw, $pitch, $headYaw);
 	}
 
 	/**
 	 * Return a Location instance
 	 */
 	public function asLocation() : Location{
-		return new Location($this->x, $this->y, $this->z, $this->world, $this->yaw, $this->pitch);
+		return new Location($this->x, $this->y, $this->z, $this->world, $this->yaw, $this->pitch, $this->headYaw);
 	}
 
 	public function getYaw() : float{
 		return $this->yaw;
+	}
+
+	public function getHeadYaw(): float
+	{
+		return $this->headYaw;
 	}
 
 	public function getPitch() : float{
@@ -68,7 +81,7 @@ class Location extends Position{
 
 	public function equals(Vector3 $v) : bool{
 		if($v instanceof Location){
-			return parent::equals($v) && $v->yaw == $this->yaw && $v->pitch == $this->pitch;
+			return parent::equals($v) && $v->yaw == $this->yaw && $v->headYaw == $this->headYaw && $v->pitch == $this->pitch;
 		}
 		return parent::equals($v);
 	}

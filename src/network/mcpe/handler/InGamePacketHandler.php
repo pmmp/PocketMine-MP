@@ -194,12 +194,17 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$yaw = fmod($packet->getYaw(), 360);
+		$headYaw = fmod($packet->getHeadYaw(), 360);
 		$pitch = fmod($packet->getPitch(), 360);
+
+		if ($headYaw < 0) {
+			$headYaw += 360;
+		}
 		if($yaw < 0){
 			$yaw += 360;
 		}
 
-		$this->player->setRotation($yaw, $pitch);
+		$this->player->setRotation($yaw, $pitch, $headYaw);
 
 		$curPos = $this->player->getLocation();
 		$newPos = $rawPos->round(4)->subtract(0, 1.62, 0);
