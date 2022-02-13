@@ -23,6 +23,32 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
+use pocketmine\block\Block;
+use pocketmine\block\BlockLegacyIds;
+use pocketmine\event\player\PlayerDropItemEvent;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+
 class GlassBottle extends Item{
 
+	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
+		if($blockClicked->getId() === BlockLegacyIds::FLOWING_WATER){
+			$watterPotion = VanillaItems::WATER_POTION();
+			if($player->getInventory()->canAddItem($watterPotion)){
+				$player->getInventory()->addItem($watterPotion);
+			} else {
+				$dropEvent = new PlayerDropItemEvent($player, $watterPotion);
+				$dropEvent->call();
+				if($dropEvent->isCancelled()){
+					return ItemUseResult::FAIL();
+				}
+				$player->dropItem($dropEvent->getItem());
+			}
+			$this->pop();
+
+			return ItemUseResult::SUCCESS();
+		}
+
+		return ItemUseResult::NONE();
+	}
 }
