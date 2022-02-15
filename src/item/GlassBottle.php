@@ -43,7 +43,7 @@ class GlassBottle extends Item{
 			}
 
 			foreach($player->getInventory()->addItem($waterPotion) as $remains){
-				$dropEvent = new PlayerDropItemEvent($player, $waterPotion);
+				$dropEvent = new PlayerDropItemEvent($player, $remains);
 				$dropEvent->call();
 				if($dropEvent->isCancelled()){
 					$player->getInventory()->setItemInHand($stack);
