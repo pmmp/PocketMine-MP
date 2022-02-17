@@ -23,14 +23,39 @@ declare(strict_types=1);
 
 namespace pocketmine\block\utils;
 
-trait PoweredByRedstoneTrait{
-	protected bool $powered = false;
+use pocketmine\event\block\RedstonePowerUpdateEvent;
 
-	public function isPowered() : bool{ return $this->powered; }
+trait PoweredByRedstoneTrait
+{
+    /**
+     * @var bool
+     */
+    protected bool $powered = false;
 
-	/** @return $this */
-	public function setPowered(bool $powered) : self{
-		$this->powered = $powered;
-		return $this;
-	}
+    /**
+     * @return bool
+     */
+    public function isPowered(): bool
+    {
+        return $this->powered;
+    }
+
+    /**
+     * @param bool $powered
+     * @return $this
+     */
+    public function setPowered(bool $powered): self
+    {
+        $ev = new RedstonePowerUpdateEvent(
+            $this,
+            $powered);
+        $ev->call();
+        if ($ev->isCancelled()) {
+            $this->powered = false;
+            return $this;
+        }
+
+        $this->powered = $ev->getPowered();
+        return $this;
+    }
 }
