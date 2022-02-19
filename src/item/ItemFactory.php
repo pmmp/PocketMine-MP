@@ -305,7 +305,6 @@ class ItemFactory{
 		//TODO: minecraft:emptyMap
 		//TODO: minecraft:enchanted_book
 		//TODO: minecraft:end_crystal
-		//TODO: minecraft:ender_eye
 		//TODO: minecraft:fireball
 		//TODO: minecraft:fireworks
 		//TODO: minecraft:fireworksCharge
