@@ -26,8 +26,12 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\item\Item;
+use pocketmine\item\VanillaItems;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
 
 class EndPortalFrame extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
@@ -65,5 +69,13 @@ class EndPortalFrame extends Opaque{
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 3 / 16)];
+	}
+
+	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if(!VanillaItems::ENDER_EYE()->equals($item) || $this->hasEye()){
+			return false;
+		}
+		$this->getPosition()->getWorld()->setBlock($this->getPosition(), $this->setEye(true));
+		return true;
 	}
 }
