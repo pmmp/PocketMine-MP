@@ -124,12 +124,14 @@ use function count;
 use function get_class;
 use function in_array;
 use function json_encode;
+use function ksort;
 use function strlen;
 use function strtolower;
 use function substr;
 use function time;
 use function ucfirst;
 use const JSON_THROW_ON_ERROR;
+use const SORT_NUMERIC;
 
 class NetworkSession{
 	private \PrefixedLogger $logger;
@@ -821,6 +823,9 @@ class NetworkSession{
 	 * @phpstan-param array<int, MetadataProperty> $properties
 	 */
 	public function syncActorData(Entity $entity, array $properties) : void{
+		//TODO: HACK! as of 1.18.10, the client responds differently to the same data ordered in different orders - for
+		//example, sending HEIGHT in the list before FLAGS when unsetting the SWIMMING flag results in a hitbox glitch
+		ksort($properties, SORT_NUMERIC);
 		$this->sendDataPacket(SetActorDataPacket::create($entity->getId(), $properties, 0));
 	}
 
