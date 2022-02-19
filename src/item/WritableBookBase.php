@@ -69,29 +69,18 @@ abstract class WritableBookBase extends Item{
 	 *
 	 * @return $this
 	 */
-	public function setPageText(int $pageId, string $pageText) : self{
+	public function setPageText(int $pageId, string $pageText = "") : self{
 		if(!$this->pageExists($pageId)){
-			$this->addPage($pageId);
+			if($pageId < 0){
+				throw new \InvalidArgumentException("Page number \"$pageId\" is out of range");
+			}
+
+			for($current = count($this->pages); $current < $pageId; $current++){
+				$this->pages[] = new WritableBookPage("");
+			}
 		}
 
 		$this->pages[$pageId] = new WritableBookPage($pageText);
-		return $this;
-	}
-
-	/**
-	 * Adds a new page with the given page ID.
-	 * Creates a new page for every page between the given ID and existing pages that doesn't yet exist.
-	 *
-	 * @return $this
-	 */
-	public function addPage(int $pageId) : self{
-		if($pageId < 0){
-			throw new \InvalidArgumentException("Page number \"$pageId\" is out of range");
-		}
-
-		for($current = count($this->pages); $current <= $pageId; $current++){
-			$this->pages[] = new WritableBookPage("");
-		}
 		return $this;
 	}
 
