@@ -659,8 +659,9 @@ class Item implements \JsonSerializable{
 			->setByte("Count", Binary::signByte($this->count))
 			->setShort("Damage", $this->getMeta());
 
-		if($this->hasNamedTag()){
-			$result->setTag("tag", $this->getNamedTag());
+		$tag = $this->getNamedTag();
+		if($tag->count() > 0){
+			$result->setTag("tag", $tag);
 		}
 
 		if($slot !== -1){
