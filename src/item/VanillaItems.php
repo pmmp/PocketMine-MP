@@ -137,6 +137,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Egg EGG()
  * @method static Item EMERALD()
  * @method static GoldenAppleEnchanted ENCHANTED_GOLDEN_APPLE()
+ * @method static Item ENDER_EYE()
  * @method static EnderPearl ENDER_PEARL()
  * @method static ExperienceBottle EXPERIENCE_BOTTLE()
  * @method static Item FEATHER()
@@ -500,6 +501,7 @@ final class VanillaItems{
 		self::register("egg", $factory->get(344));
 		self::register("emerald", $factory->get(388));
 		self::register("enchanted_golden_apple", $factory->get(466));
+		self::register("ender_eye", $factory->get(381));
 		self::register("ender_pearl", $factory->get(368));
 		self::register("experience_bottle", $factory->get(384));
 		self::register("feather", $factory->get(288));

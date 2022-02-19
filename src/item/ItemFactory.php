@@ -155,6 +155,7 @@ class ItemFactory{
 		$this->register(new Item(new ItemIdentifier(ItemIds::DYE, 0), "Ink Sac"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::DYE, 4), "Lapis Lazuli"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::EMERALD, 0), "Emerald"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::ENDER_EYE, 0), "Ender Eye"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::FEATHER, 0), "Feather"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::FERMENTED_SPIDER_EYE, 0), "Fermented Spider Eye"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::FLINT, 0), "Flint"));
