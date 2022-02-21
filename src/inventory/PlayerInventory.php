@@ -49,7 +49,7 @@ class PlayerInventory extends SimpleInventory{
 	}
 
 	public function isHotbarSlot(int $slot) : bool{
-		return $slot >= 0 && $slot <= $this->getHotbarSize();
+		return $slot >= 0 && $slot < $this->getHotbarSize();
 	}
 
 	/**
