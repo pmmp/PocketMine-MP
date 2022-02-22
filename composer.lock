@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7b0434a812ea018e8e5491fcd4e81441",
+    "content-hash": "98a6d4ddd8c38237bc86945326a856d9",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -248,17 +248,44 @@
             "time": "2020-12-01T19:48:11+00:00"
         },
         {
-            "name": "pocketmine/bedrock-data",
-            "version": "dev-experimental/upgrade-tables",
+            "name": "pocketmine/bedrock-block-upgrade-schema",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/pmmp/BedrockData.git",
-                "reference": "b6ffd9dc61821358d65618d91f67e2ea21d421d0"
+                "url": "https://github.com/pmmp/BedrockBlockUpgradeSchema.git",
+                "reference": "871e5fa8ea56458c05154697f7bb2be3490441d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/b6ffd9dc61821358d65618d91f67e2ea21d421d0",
-                "reference": "b6ffd9dc61821358d65618d91f67e2ea21d421d0",
+                "url": "https://api.github.com/repos/pmmp/BedrockBlockUpgradeSchema/zipball/871e5fa8ea56458c05154697f7bb2be3490441d7",
+                "reference": "871e5fa8ea56458c05154697f7bb2be3490441d7",
+                "shasum": ""
+            },
+            "default-branch": true,
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "CC0-1.0"
+            ],
+            "description": "Schemas describing how to upgrade saved block data in older Minecraft: Bedrock Edition world saves",
+            "support": {
+                "issues": "https://github.com/pmmp/BedrockBlockUpgradeSchema/issues",
+                "source": "https://github.com/pmmp/BedrockBlockUpgradeSchema/tree/master"
+            },
+            "time": "2022-02-22T22:00:27+00:00"
+        },
+        {
+            "name": "pocketmine/bedrock-data",
+            "version": "1.6.0+bedrock-1.18.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/pmmp/BedrockData.git",
+                "reference": "e98c511584a7bd58a95986374d2df4b04c6a2ba0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/pmmp/BedrockData/zipball/e98c511584a7bd58a95986374d2df4b04c6a2ba0",
+                "reference": "e98c511584a7bd58a95986374d2df4b04c6a2ba0",
                 "shasum": ""
             },
             "type": "library",
@@ -269,9 +296,9 @@
             "description": "Blobs of data generated from Minecraft: Bedrock Edition, used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockData/issues",
-                "source": "https://github.com/pmmp/BedrockData/tree/experimental/upgrade-tables"
+                "source": "https://github.com/pmmp/BedrockData/tree/bedrock-1.18.10"
             },
-            "time": "2022-02-11T20:20:39+00:00"
+            "time": "2022-02-08T19:13:47+00:00"
         },
         {
             "name": "pocketmine/bedrock-protocol",
@@ -3508,7 +3535,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "pocketmine/bedrock-data": 20
+        "pocketmine/bedrock-block-upgrade-schema": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

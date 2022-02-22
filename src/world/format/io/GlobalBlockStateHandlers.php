@@ -38,7 +38,7 @@ use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
 use Webmozart\PathUtil\Path;
 use function file_get_contents;
-use const pocketmine\BEDROCK_DATA_PATH;
+use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
 
 /**
  * Provides global access to blockstate serializers for all world providers.
@@ -58,7 +58,7 @@ final class GlobalBlockStateHandlers{
 		return self::$blockStateDeserializer ??= new CachingBlockStateDeserializer(
 			new UpgradingBlockStateDeserializer(
 				new BlockStateUpgrader(BlockStateUpgradeSchemaUtils::loadSchemas(
-					Path::join(BEDROCK_DATA_PATH, 'upgrade_schema'),
+					Path::join(BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH, 'nbt_upgrade_schema'),
 					BlockStateData::CURRENT_VERSION
 				)),
 				new BlockStateToBlockObjectDeserializer()
@@ -72,7 +72,10 @@ final class GlobalBlockStateHandlers{
 
 	public static function getLegacyBlockStateMapper() : LegacyBlockStateMapper{
 		return self::$legacyBlockStateMapper ??= LegacyBlockStateMapper::loadFromString(
-			ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents(Path::join(BEDROCK_DATA_PATH, 'r12_to_current_block_map.bin'))),
+			ErrorToExceptionHandler::trapAndRemoveFalse(fn() => file_get_contents(Path::join(
+				BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH,
+				'1.12.0_to_1.18.10_blockstate_map.bin'
+			))),
 			LegacyBlockIdToStringIdMap::getInstance()
 		);
 	}
