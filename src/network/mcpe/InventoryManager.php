@@ -50,6 +50,7 @@ use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
+use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
@@ -141,6 +142,18 @@ class InventoryManager{
 			if($action instanceof SlotChangeAction && ($windowId = $this->getWindowId($action->getInventory())) !== null){
 				//in some cases the inventory might not have a window ID, but still be referenced by a transaction (e.g. crafting grid changes), so we can't unconditionally record the change here or we might leak things
 				$this->initiatedSlotChanges[$windowId][$action->getSlot()] = $action->getTargetItem();
+			}
+		}
+	}
+
+	/**
+	 * @param NetworkInventoryAction[] $networkInventoryActions
+	 */
+	public function addPredictedSlotChanges(array $networkInventoryActions) : void{
+		foreach($networkInventoryActions as $action){
+			if($action->sourceType === NetworkInventoryAction::SOURCE_CONTAINER && isset($this->windowMap[$action->windowId])){
+				//this won't cover stuff like crafting grid due to too much magic
+				$this->initiatedSlotChanges[$action->windowId][$action->inventorySlot] = TypeConverter::getInstance()->netItemStackToCore($action->newItem->getItemStack());
 			}
 		}
 	}
