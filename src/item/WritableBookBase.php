@@ -69,7 +69,7 @@ abstract class WritableBookBase extends Item{
 	 *
 	 * @return $this
 	 */
-	public function setPageText(int $pageId, string $pageText = "") : self{
+	public function setPageText(int $pageId, string $pageText) : self{
 		if(!$this->pageExists($pageId)){
 			if($pageId < 0){
 				throw new \InvalidArgumentException("Page number \"$pageId\" is out of range");
