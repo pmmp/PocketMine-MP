@@ -118,7 +118,6 @@ use function is_infinite;
 use function is_nan;
 use function json_decode;
 use function json_encode;
-use function max;
 use function mb_strlen;
 use function microtime;
 use function preg_match;
@@ -823,10 +822,6 @@ class InGamePacketHandler extends PacketHandler{
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_SWAP_PAGES:
-				if(!$newBook->pageExists($packet->pageNumber) || !$newBook->pageExists($packet->secondaryPageNumber)){
-					//the client will create pages on its own without telling us until it tries to switch them
-					$newBook->setPageText(max($packet->pageNumber, $packet->secondaryPageNumber));
-				}
 				$newBook->swapPages($packet->pageNumber, $packet->secondaryPageNumber);
 				$modifiedPages = [$packet->pageNumber, $packet->secondaryPageNumber];
 				break;
