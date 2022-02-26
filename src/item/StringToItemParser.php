@@ -1035,7 +1035,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("cocoa_beans", fn() => VanillaItems::COCOA_BEANS());
 		$result->register("compass", fn() => VanillaItems::COMPASS());
 		$result->register("compound", fn() => VanillaItems::CHEMICAL_SALT());
-		$result->register("cooked_beef", fn() => VanillaItems::STEAK());
+		$result->register("cooked_beef", fn() => VanillaItems::COOKED_BEEF());
 		$result->register("cooked_chicken", fn() => VanillaItems::COOKED_CHICKEN());
 		$result->register("cooked_fish", fn() => VanillaItems::COOKED_FISH());
 		$result->register("cooked_mutton", fn() => VanillaItems::COOKED_MUTTON());

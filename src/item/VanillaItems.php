@@ -110,6 +110,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Coal COAL()
  * @method static CocoaBeans COCOA_BEANS()
  * @method static Compass COMPASS()
+ * @method static Steak COOKED_BEEF()
  * @method static CookedChicken COOKED_CHICKEN()
  * @method static CookedFish COOKED_FISH()
  * @method static CookedMutton COOKED_MUTTON()
@@ -473,6 +474,7 @@ final class VanillaItems{
 		self::register("coal", $factory->get(263));
 		self::register("cocoa_beans", $factory->get(351, 3));
 		self::register("compass", $factory->get(345));
+		self::register("cooked_beef", $factory->get(364));
 		self::register("cooked_chicken", $factory->get(366));
 		self::register("cooked_fish", $factory->get(350));
 		self::register("cooked_mutton", $factory->get(424));
