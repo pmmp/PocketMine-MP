@@ -249,7 +249,7 @@ class ItemFactory{
 		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::DARKOAK_SIGN, 0), VanillaBlocks::DARK_OAK_SIGN(), VanillaBlocks::DARK_OAK_WALL_SIGN()));
 		$this->register(new Snowball(new ItemIdentifier(ItemIds::SNOWBALL, 0), "Snowball"));
 		$this->register(new SpiderEye(new ItemIdentifier(ItemIds::SPIDER_EYE, 0), "Spider Eye"));
-		$this->register(new Steak(new ItemIdentifier(ItemIds::STEAK, 0), "Cooked Beef"));
+		$this->register(new Steak(new ItemIdentifier(ItemIds::STEAK, 0), "Steak"));
 		$this->register(new Stick(new ItemIdentifier(ItemIds::STICK, 0), "Stick"));
 		$this->register(new StringItem(new ItemIdentifier(ItemIds::STRING, 0), "String"));
 		$this->register(new SweetBerries(new ItemIdentifier(ItemIds::SWEET_BERRIES, 0), "Sweet Berries"));
