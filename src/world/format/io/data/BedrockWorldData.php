@@ -29,14 +29,12 @@ use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\nbt\TreeRoot;
-use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\utils\Binary;
 use pocketmine\utils\Filesystem;
 use pocketmine\utils\Limits;
 use pocketmine\world\format\io\exception\CorruptedWorldException;
 use pocketmine\world\format\io\exception\UnsupportedWorldFormatException;
 use pocketmine\world\generator\Flat;
-use pocketmine\world\generator\Generator;
 use pocketmine\world\generator\GeneratorManager;
 use pocketmine\world\World;
 use pocketmine\world\WorldCreationOptions;
@@ -50,6 +48,12 @@ use function time;
 class BedrockWorldData extends BaseNbtWorldData{
 
 	public const CURRENT_STORAGE_VERSION = 8;
+	/**
+	 * WARNING: In the future, this should be only as high as the newest world format currently supported. We don't
+	 * actually support worlds from 1.18.10 yet, but due to an old stupid bug, all worlds created by PM will report this
+	 * version.
+	 */
+	public const CURRENT_STORAGE_NETWORK_VERSION = 486; // 1.18.10
 
 	public const GENERATOR_LIMITED = 0;
 	public const GENERATOR_INFINITE = 1;
@@ -74,7 +78,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 			->setInt("Generator", $generatorType)
 			->setLong("LastPlayed", time())
 			->setString("LevelName", $name)
-			->setInt("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL)
+			->setInt("NetworkVersion", self::CURRENT_STORAGE_NETWORK_VERSION)
 			//->setInt("Platform", 2) //TODO: find out what the possible values are for
 			->setLong("RandomSeed", $options->getSeed())
 			->setInt("SpawnX", $options->getSpawnPosition()->getFloorX())
@@ -161,7 +165,7 @@ class BedrockWorldData extends BaseNbtWorldData{
 	}
 
 	public function save() : void{
-		$this->compoundTag->setInt("NetworkVersion", ProtocolInfo::CURRENT_PROTOCOL);
+		$this->compoundTag->setInt("NetworkVersion", self::CURRENT_STORAGE_NETWORK_VERSION);
 		$this->compoundTag->setInt("StorageVersion", self::CURRENT_STORAGE_VERSION);
 
 		$nbt = new LittleEndianNbtSerializer();
