@@ -788,7 +788,7 @@ abstract class Entity{
 				$this->location->yaw,
 				$this->location->yaw,
 				(
-					($teleport ? MoveActorAbsolutePacket::FLAG_TELEPORT : 0) |
+					//TODO: if the above hack for #4394 gets removed, we should be setting FLAG_TELEPORT here
 					($this->onGround ? MoveActorAbsolutePacket::FLAG_GROUND : 0)
 				)
 			)]);
