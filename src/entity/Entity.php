@@ -766,21 +766,33 @@ abstract class Entity{
 	}
 
 	protected function broadcastMovement(bool $teleport = false) : void{
-		$this->server->broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
-			$this->id,
-			$this->getOffsetPosition($this->location),
+		if($teleport){
+			//TODO: HACK! workaround for https://github.com/pmmp/PocketMine-MP/issues/4394
+			//this happens because MoveActor*Packet doesn't clear interpolation targets on the client, so the entity
+			//snaps to the teleport position, but then lerps back to the original position if a normal movement for the
+			//entity was recently broadcasted. This can be seen with players throwing ender pearls.
+			//TODO: remove this if the bug ever gets fixed (lol)
+			foreach($this->hasSpawned as $player){
+				$this->despawnFrom($player);
+				$this->spawnTo($player);
+			}
+		}else{
+			$this->server->broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
+				$this->id,
+				$this->getOffsetPosition($this->location),
 
-			//this looks very odd but is correct as of 1.5.0.7
-			//for arrows this is actually x/y/z rotation
-			//for mobs x and z are used for pitch and yaw, and y is used for headyaw
-			$this->location->pitch,
-			$this->location->yaw,
-			$this->location->yaw,
-			(
-				($teleport ? MoveActorAbsolutePacket::FLAG_TELEPORT : 0) |
-				($this->onGround ? MoveActorAbsolutePacket::FLAG_GROUND : 0)
-			)
-		)]);
+				//this looks very odd but is correct as of 1.5.0.7
+				//for arrows this is actually x/y/z rotation
+				//for mobs x and z are used for pitch and yaw, and y is used for headyaw
+				$this->location->pitch,
+				$this->location->yaw,
+				$this->location->yaw,
+				(
+					($teleport ? MoveActorAbsolutePacket::FLAG_TELEPORT : 0) |
+					($this->onGround ? MoveActorAbsolutePacket::FLAG_GROUND : 0)
+				)
+			)]);
+		}
 	}
 
 	protected function broadcastMotion() : void{
