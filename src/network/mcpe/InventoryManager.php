@@ -37,6 +37,7 @@ use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\convert\TypeConversionException;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -50,7 +51,9 @@ use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
+use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
+use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
@@ -141,6 +144,24 @@ class InventoryManager{
 			if($action instanceof SlotChangeAction && ($windowId = $this->getWindowId($action->getInventory())) !== null){
 				//in some cases the inventory might not have a window ID, but still be referenced by a transaction (e.g. crafting grid changes), so we can't unconditionally record the change here or we might leak things
 				$this->initiatedSlotChanges[$windowId][$action->getSlot()] = $action->getTargetItem();
+			}
+		}
+	}
+
+	/**
+	 * @param NetworkInventoryAction[] $networkInventoryActions
+	 * @throws PacketHandlingException
+	 */
+	public function addPredictedSlotChanges(array $networkInventoryActions) : void{
+		foreach($networkInventoryActions as $action){
+			if($action->sourceType === NetworkInventoryAction::SOURCE_CONTAINER && isset($this->windowMap[$action->windowId])){
+				//this won't cover stuff like crafting grid due to too much magic
+				try{
+					$item = TypeConverter::getInstance()->netItemStackToCore($action->newItem->getItemStack());
+				}catch(TypeConversionException $e){
+					throw new PacketHandlingException($e->getMessage(), 0, $e);
+				}
+				$this->initiatedSlotChanges[$action->windowId][$action->inventorySlot] = $item;
 			}
 		}
 	}

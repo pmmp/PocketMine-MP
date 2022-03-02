@@ -411,6 +411,7 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
+		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
@@ -500,6 +501,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
+		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
 		//TODO: use transactiondata for rollbacks here
 		switch($data->getActionType()){
@@ -520,6 +522,7 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
+		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
 		//TODO: use transactiondata for rollbacks here (resending entire inventory is very wasteful)
 		switch($data->getActionType()){
