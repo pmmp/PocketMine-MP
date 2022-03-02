@@ -148,18 +148,20 @@ class BrewingStand extends Spawnable implements Container, Nameable{
 	 * @phpstan-return array<int, BrewingRecipe>
 	 */
 	private function getBrewableRecipes() : array{
-		if($this->inventory->getItem(BrewingStandInventory::SLOT_INGREDIENT)->isNull()){
+		$ingredient = $this->inventory->getItem(BrewingStandInventory::SLOT_INGREDIENT);
+		if($ingredient->isNull()){
 			return [];
 		}
 
 		$recipes = [];
+		$craftingManager = $this->position->getWorld()->getServer()->getCraftingManager();
 		foreach([BrewingStandInventory::SLOT_BOTTLE_LEFT, BrewingStandInventory::SLOT_BOTTLE_MIDDLE, BrewingStandInventory::SLOT_BOTTLE_RIGHT] as $slot){
 			$input = $this->inventory->getItem($slot);
 			if($input->isNull()){
 				continue;
 			}
 
-			if(($recipe = $this->position->getWorld()->getServer()->getCraftingManager()->matchBrewingRecipe($input, $this->inventory->getItem(BrewingStandInventory::SLOT_INGREDIENT))) !== null){
+			if(($recipe = $craftingManager->matchBrewingRecipe($input, $ingredient)) !== null){
 				$recipes[$slot] = $recipe;
 			}
 		}
