@@ -180,14 +180,16 @@ class Fire extends Flowable{
 			if(!$ev->isCancelled()){
 				$block->onIncinerate();
 
-				$spreadedFire = false;
-				if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
-					$fire = clone $this;
-					$fire->age = min(15, $fire->age + (mt_rand(0, 4) >> 2));
-					$spreadedFire = $this->spreadBlock($block, $fire);
-				}
-				if(!$spreadedFire){
-					$this->position->getWorld()->setBlock($block->position, VanillaBlocks::AIR());
+				if($this->position->getWorld()->getBlock($block->getPosition())->isSameState($block)){
+					$spreadedFire = false;
+					if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
+						$fire = clone $this;
+						$fire->age = min(15, $fire->age + (mt_rand(0, 4) >> 2));
+						$spreadedFire = $this->spreadBlock($block, $fire);
+					}
+					if(!$spreadedFire){
+						$this->position->getWorld()->setBlock($block->position, VanillaBlocks::AIR());
+					}
 				}
 			}
 		}
