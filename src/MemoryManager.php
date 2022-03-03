@@ -508,8 +508,13 @@ class MemoryManager{
 				return "(error) ARRAY RECURSION LIMIT REACHED";
 			}
 			$data = [];
+			$numeric = 0;
 			foreach($from as $key => $value){
-				$data[$key] = self::continueDump($value, $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize);
+				$data[$numeric] = [
+					"k" => self::continueDump($key, $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize),
+					"v" => self::continueDump($value, $objects, $refCounts, $recursion + 1, $maxNesting, $maxStringSize),
+				];
+				$numeric++;
 			}
 		}elseif(is_string($from)){
 			$data = "(string) len(" . strlen($from) . ") " . substr(Utils::printable($from), 0, $maxStringSize);

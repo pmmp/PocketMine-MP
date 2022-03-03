@@ -37,9 +37,12 @@ class RedstoneRepeater extends Flowable{
 	use HorizontalFacingTrait;
 	use PoweredByRedstoneTrait;
 
+	public const MIN_DELAY = 1;
+	public const MAX_DELAY = 4;
+
 	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	protected int $delay = 1;
+	protected int $delay = self::MIN_DELAY;
 
 	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->idInfoFlattened = $idInfo;
@@ -52,7 +55,7 @@ class RedstoneRepeater extends Flowable{
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->delay = BlockDataSerializer::readBoundedInt("delay", ($stateMeta >> 2) + 1, 1, 4);
+		$this->delay = BlockDataSerializer::readBoundedInt("delay", ($stateMeta >> 2) + 1, self::MIN_DELAY, self::MAX_DELAY);
 		$this->powered = $id === $this->idInfoFlattened->getSecondId();
 	}
 
@@ -68,8 +71,8 @@ class RedstoneRepeater extends Flowable{
 
 	/** @return $this */
 	public function setDelay(int $delay) : self{
-		if($delay < 1 || $delay > 4){
-			throw new \InvalidArgumentException("Delay must be in range 1-4");
+		if($delay < self::MIN_DELAY || $delay > self::MAX_DELAY){
+			throw new \InvalidArgumentException("Delay must be in range " . self::MIN_DELAY . " ... " . self::MAX_DELAY);
 		}
 		$this->delay = $delay;
 		return $this;
@@ -95,8 +98,8 @@ class RedstoneRepeater extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(++$this->delay > 4){
-			$this->delay = 1;
+		if(++$this->delay > self::MAX_DELAY){
+			$this->delay = self::MIN_DELAY;
 		}
 		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
