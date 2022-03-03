@@ -160,7 +160,7 @@ class Internet{
 	 *
 	 * @param string[]|string $args
 	 * @param string[]        $extraHeaders
-	 * @param string|null     $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param string|null     $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occurred during the operation.
 	 * @phpstan-param string|array<string, string> $args
 	 * @phpstan-param list<string>                 $extraHeaders
 	 */
