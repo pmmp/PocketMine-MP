@@ -1006,6 +1006,7 @@ class Server{
 			$this->enablePlugins(PluginEnableOrder::STARTUP());
 
 			if(!$this->startupPrepareWorlds()){
+				$this->forceShutdown();
 				return;
 			}
 			$this->enablePlugins(PluginEnableOrder::POSTWORLD());
@@ -1072,13 +1073,21 @@ class Server{
 			return $generatorEntry->getGeneratorClass();
 		};
 
+		$anyWorldFailedToLoad = false;
+
 		foreach((array) $this->configGroup->getProperty("worlds", []) as $name => $options){
 			if($options === null){
 				$options = [];
 			}elseif(!is_array($options)){
+				//TODO: this probably should be an error
 				continue;
 			}
-			if(!$this->worldManager->loadWorld($name, true) && !$this->worldManager->isWorldGenerated($name)){
+			if(!$this->worldManager->loadWorld($name, true)){
+				if($this->worldManager->isWorldGenerated($name)){
+					//allow checking if other worlds are loadable, so the user gets all the errors in one go
+					$anyWorldFailedToLoad = true;
+					continue;
+				}
 				$creationOptions = WorldCreationOptions::create();
 				//TODO: error checking
 
@@ -1114,7 +1123,12 @@ class Server{
 				$default = "world";
 				$this->configGroup->setConfigString("level-name", "world");
 			}
-			if(!$this->worldManager->loadWorld($default, true) && !$this->worldManager->isWorldGenerated($default)){
+			if(!$this->worldManager->loadWorld($default, true)){
+				if($this->worldManager->isWorldGenerated($default)){
+					$this->getLogger()->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_defaultError()));
+
+					return false;
+				}
 				$generatorName = $this->configGroup->getConfigString("level-type");
 				$generatorOptions = $this->configGroup->getConfigString("generator-settings");
 				$generatorClass = $getGenerator($generatorName, $generatorOptions, $default);
@@ -1132,15 +1146,12 @@ class Server{
 
 			$world = $this->worldManager->getWorldByName($default);
 			if($world === null){
-				$this->getLogger()->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_defaultError()));
-				$this->forceShutdown();
-
-				return false;
+				throw new AssumptionFailedError("We just loaded/generated the default world, so it must exist");
 			}
 			$this->worldManager->setDefaultWorld($world);
 		}
 
-		return true;
+		return !$anyWorldFailedToLoad;
 	}
 
 	private function startupPrepareConnectableNetworkInterfaces(string $ip, int $port, bool $ipV6, bool $useQuery) : bool{
