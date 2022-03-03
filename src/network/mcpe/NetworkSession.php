@@ -1046,7 +1046,7 @@ class NetworkSession{
 		$this->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
 	}
 
-	public function onEmote(Player $from, string $emoteId) : void{
+	public function onEmote(Human $from, string $emoteId) : void{
 		$this->sendDataPacket(EmotePacket::create($from->getId(), $emoteId, EmotePacket::FLAG_SERVER));
 	}
 

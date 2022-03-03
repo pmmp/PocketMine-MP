@@ -161,6 +161,12 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		}
 	}
 
+	public function emote(string $emoteId) : void{
+		foreach($this->getViewers() as $player){
+			$player->getNetworkSession()->onEmote($this, $emoteId);
+		}
+	}
+
 	public function getHungerManager() : HungerManager{
 		return $this->hungerManager;
 	}
