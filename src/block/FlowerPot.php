@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -100,7 +101,7 @@ class FlowerPot extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
+		if($this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->equals(SupportType::NONE())){
 			return false;
 		}
 
@@ -108,7 +109,7 @@ class FlowerPot extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
+		if($this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->equals(SupportType::NONE())){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

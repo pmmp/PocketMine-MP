@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -61,9 +62,11 @@ abstract class Button extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		//TODO: check valid target block
-		$this->facing = $face;
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		if($blockClicked->getSupportType($face)->equals(SupportType::FULL())){
+			$this->facing = $face;
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		}
+		return false;
 	}
 
 	abstract protected function getActivationTime() : int;
@@ -84,6 +87,12 @@ abstract class Button extends Flowable{
 			$this->pressed = false;
 			$this->position->getWorld()->setBlock($this->position, $this);
 			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new RedstonePowerOffSound());
+		}
+	}
+
+	public function onNearbyBlockChange() : void{
+		if(!$this->getSide(Facing::opposite($this->facing))->getSupportType($this->facing)->equals(SupportType::FULL())){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 }

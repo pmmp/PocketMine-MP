@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
@@ -65,7 +66,7 @@ class Ladder extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockClicked->isTransparent() && Facing::axis($face) !== Axis::Y){
+		if($blockClicked->getSupportType($face)->equals(SupportType::FULL()) && Facing::axis($face) !== Axis::Y){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
@@ -74,7 +75,7 @@ class Ladder extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){ //Replace with common break method
+		if(!$this->getSide(Facing::opposite($this->facing))->getSupportType($this->facing)->equals(SupportType::FULL())){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

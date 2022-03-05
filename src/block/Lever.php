@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\LeverFacing;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;
@@ -96,7 +97,7 @@ class Lever extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockClicked->isSolid()){
+		if($blockClicked->getSupportType($face)->equals(SupportType::NONE())){
 			return false;
 		}
 
@@ -120,7 +121,8 @@ class Lever extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::opposite($this->facing->getFacing()))->isSolid()){
+		$supportType = $this->getSide(Facing::opposite($this->facing->getFacing()))->getSupportType($this->facing->getFacing());
+		if($supportType->equals(SupportType::NONE())){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

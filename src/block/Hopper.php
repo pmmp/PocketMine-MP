@@ -27,6 +27,7 @@ use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -97,6 +98,13 @@ class Hopper extends Transparent{
 
 	public function onScheduledUpdate() : void{
 		//TODO
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		if($facing === Facing::UP){
+			return SupportType::EDGE();
+		}
+		return SupportType::NONE();
 	}
 
 	//TODO: redstone logic, sucking logic

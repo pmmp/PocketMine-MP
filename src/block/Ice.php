@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\BlockMeltEvent;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
@@ -66,5 +67,9 @@ class Ice extends Transparent{
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
+	}
+
+	public function getSupportType(int $facing): SupportType{
+		return SupportType::FULL();
 	}
 }
