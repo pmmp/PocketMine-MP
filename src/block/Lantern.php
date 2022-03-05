@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -77,7 +78,10 @@ class Lantern extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canAttachTo($this->position->getWorld()->getBlock($blockReplace->getPosition()->up())) && !$this->canAttachTo($this->position->getWorld()->getBlock($blockReplace->getPosition()->down()))){
+		if($face === Facing::DOWN && $blockReplace->getSide(Facing::UP)->getSupportType(Facing::DOWN)->equals(SupportType::NONE())){
+			return false;
+		}
+		if($face === Facing::UP && $blockReplace->getSide(Facing::DOWN)->getSupportType(Facing::UP)->equals(SupportType::NONE())){
 			return false;
 		}
 
@@ -86,7 +90,7 @@ class Lantern extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canAttachTo($this->position->getWorld()->getBlock($this->hanging ? $this->position->up() : $this->position->down()))){
+		if($this->getSide($this->hanging ? Facing::UP : Facing::DOWN)->getSupportType($this->hanging ? Facing::DOWN : Facing::UP)->equals(SupportType::NONE())){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
