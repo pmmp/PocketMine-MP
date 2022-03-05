@@ -69,7 +69,7 @@ class Ice extends Transparent{
 		return true;
 	}
 
-	public function getSupportType(int $facing): SupportType{
+	public function getSupportType(int $facing) : SupportType{
 		return SupportType::FULL();
 	}
 }
