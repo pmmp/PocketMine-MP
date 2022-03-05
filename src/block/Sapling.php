@@ -67,8 +67,7 @@ class Sapling extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() === BlockLegacyIds::GRASS || $down->getId() === BlockLegacyIds::DIRT || $down->getId() === BlockLegacyIds::FARMLAND){
+		if($this->hasValidSupport()){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -86,7 +85,7 @@ class Sapling extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
+		if(!$this->hasValidSupport()){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -124,5 +123,13 @@ class Sapling extends Flowable{
 
 	public function getFuelTime() : int{
 		return 100;
+	}
+
+	protected function hasValidSupport() : bool{
+		$down = $this->getSide(Facing::DOWN);
+		if($down->getId() === BlockLegacyIds::GRASS || $down->getId() === BlockLegacyIds::DIRT || $down->getId() === BlockLegacyIds::FARMLAND){
+			return true;
+		}
+		return false;
 	}
 }
