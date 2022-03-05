@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
@@ -116,7 +117,7 @@ class Vine extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockClicked->isSolid() || Facing::axis($face) === Axis::Y){
+		if(!$blockClicked->getSupportType($face)->equals(SupportType::FULL()) || Facing::axis($face) === Axis::Y){
 			return false;
 		}
 
@@ -134,7 +135,7 @@ class Vine extends Flowable{
 		$supportedFaces = $up instanceof Vine ? array_intersect_key($this->faces, $up->faces) : [];
 
 		foreach($this->faces as $face){
-			if(!isset($supportedFaces[$face]) && !$this->getSide($face)->isSolid()){
+			if(!isset($supportedFaces[$face]) && !$this->getSide($face)->getSupportType(Facing::opposite($face))->equals(SupportType::FULL())){
 				unset($this->faces[$face]);
 				$changed = true;
 			}
