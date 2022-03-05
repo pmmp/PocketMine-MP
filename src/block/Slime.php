@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 
@@ -38,6 +39,10 @@ final class Slime extends Transparent{
 		}
 		$entity->resetFallDistance();
 		return -$entity->getMotion()->y;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::FULL();
 	}
 
 	//TODO: slime blocks should slow entities walking on them to about 0.4x original speed

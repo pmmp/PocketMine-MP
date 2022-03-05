@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\BlockMeltEvent;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
@@ -117,5 +118,12 @@ class SnowLayer extends Flowable implements Fallable{
 		return [
 			VanillaItems::SNOWBALL()->setCount(max(1, (int) floor($this->layers / 2)))
 		];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		if(!$this->canBeReplaced()){
+			return SupportType::FULL();
+		}
+		return SupportType::NONE();
 	}
 }
