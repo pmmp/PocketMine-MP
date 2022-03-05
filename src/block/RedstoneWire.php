@@ -36,7 +36,8 @@ class RedstoneWire extends Flowable{
 	use AnalogRedstoneSignalEmitterTrait;
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->equals(SupportType::NONE())){
+		$supportType = $this->getSide(Facing::DOWN)->getSupportType(Facing::UP);
+		if(!$supportType->equals(SupportType::NONE()) && !$supportType->equals(SupportType::CENTER())){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 		return false;
@@ -60,7 +61,8 @@ class RedstoneWire extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->equals(SupportType::NONE())){
+		$supportType = $this->getSide(Facing::DOWN)->getSupportType(Facing::UP);
+		if($supportType->equals(SupportType::NONE()) || $supportType->equals(SupportType::CENTER())){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
