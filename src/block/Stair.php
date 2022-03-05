@@ -131,7 +131,7 @@ class Stair extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		if($facing === Facing::UP && $this->isUpsideDown() || $facing === $this->facing){
+		if($facing === Facing::UP && $this->isUpsideDown() || $facing === $this->facing || $facing === Facing::DOWN && !$this->isUpsideDown()){
 			return SupportType::FULL();
 		}
 		return SupportType::NONE();

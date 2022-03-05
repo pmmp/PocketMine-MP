@@ -133,7 +133,7 @@ class Slab extends Transparent{
 	public function getSupportType(int $facing) : SupportType{
 		if($this->getSlabType()->equals(SlabType::DOUBLE())){
 			return SupportType::FULL();
-		}elseif ($facing === Facing::UP && $this->getSlabType()->equals(SlabType::TOP())) {
+		}elseif ($facing === Facing::UP && $this->getSlabType()->equals(SlabType::TOP()) || $facing === Facing::DOWN && $this->getSlabType()->equals(SlabType::BOTTOM())) {
 			return SupportType::FULL();
 		}
 		return SupportType::NONE();
