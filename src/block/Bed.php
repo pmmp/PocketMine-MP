@@ -28,6 +28,7 @@ use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
@@ -181,12 +182,13 @@ class Bed extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		if(!$down->isTransparent()){
+		$supportType = $this->getSide(Facing::DOWN)->getSupportType(Facing::UP);
+		if(!$supportType->equals(SupportType::CENTER()) && !$supportType->equals(SupportType::NONE())){
 			$this->facing = $player !== null ? $player->getHorizontalFacing() : Facing::NORTH;
 
 			$next = $this->getSide($this->getOtherHalfSide());
-			if($next->canBeReplaced() && !$next->getSide(Facing::DOWN)->isTransparent()){
+			$nextSupportType = $next->getSide(Facing::DOWN)->getSupportType(Facing::UP);
+			if($next->canBeReplaced() && !$nextSupportType->equals(SupportType::CENTER()) && !$nextSupportType->equals(SupportType::NONE())){
 				$nextState = clone $this;
 				$nextState->head = true;
 				$tx->addBlock($blockReplace->position, $this)->addBlock($next->position, $nextState);

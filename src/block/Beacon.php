@@ -23,10 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
+
 final class Beacon extends Transparent{
 
 	public function getLightLevel() : int{
 		return 15;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::FULL();
 	}
 
 	//TODO
