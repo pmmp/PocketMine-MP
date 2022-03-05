@@ -68,7 +68,7 @@ class Torch extends Flowable{
 		$below = $this->getSide(Facing::DOWN);
 		$face = Facing::opposite($this->facing);
 
-		if(!$this->canBeSupportBy($this->getSide($face), $this->facing) && !$this->canBeSupportBy($below, Facing::UP)){
+		if(!$this->canBeSupportBy($this->getSide($face), $this->facing)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
