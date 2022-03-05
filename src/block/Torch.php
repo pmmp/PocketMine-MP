@@ -24,11 +24,13 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function in_array;
 
 class Torch extends Flowable{
 
@@ -66,16 +68,16 @@ class Torch extends Flowable{
 		$below = $this->getSide(Facing::DOWN);
 		$face = Facing::opposite($this->facing);
 
-		if($this->getSide($face)->isTransparent() && !($face === Facing::DOWN && ($below->getId() === BlockLegacyIds::FENCE || $below->getId() === BlockLegacyIds::COBBLESTONE_WALL))){
+		if(!$this->canBeSupportBy($this->getSide($face), $this->facing) && !$this->canBeSupportBy($below, Facing::UP)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockClicked->canBeReplaced() && !$blockClicked->getSide(Facing::DOWN)->isTransparent()){
+		if($blockClicked->canBeReplaced() && $this->canBeSupportBy($blockClicked->getSide(Facing::DOWN), Facing::UP)){
 			$this->facing = Facing::UP;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($face !== Facing::DOWN && (!$blockClicked->isTransparent() || ($face === Facing::UP && ($blockClicked->getId() === BlockLegacyIds::FENCE || $blockClicked->getId() === BlockLegacyIds::COBBLESTONE_WALL)))){
+		}elseif($face !== Facing::DOWN && $this->canBeSupportBy($blockClicked->getSide(Facing::opposite($face)), $face)){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}else{
@@ -87,11 +89,20 @@ class Torch extends Flowable{
 				Facing::DOWN
 			] as $side){
 				$block = $this->getSide($side);
-				if(!$block->isTransparent()){
+				if($this->canBeSupportBy($block, Facing::opposite($side))){
 					$this->facing = Facing::opposite($side);
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				}
 			}
+		}
+		return false;
+	}
+
+	protected function canBeSupportBy(Block $support, int $face) : bool{
+		if($face === Facing::UP && !$support->getSupportType($face)->equals(SupportType::NONE())) {
+			return true;
+		}elseif (in_array($face, Facing::HORIZONTAL, true) && $support->getSupportType($face)->equals(SupportType::FULL())) {
+			return true;
 		}
 		return false;
 	}
