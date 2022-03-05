@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -83,7 +84,7 @@ class RedstoneRepeater extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockReplace->getSide(Facing::DOWN)->isTransparent()){
+		if(!$blockReplace->getSide(Facing::DOWN)->getSupportType(Facing::UP)->equals(SupportType::NONE())){
 			if($player !== null){
 				$this->facing = Facing::opposite($player->getHorizontalFacing());
 			}
@@ -103,7 +104,7 @@ class RedstoneRepeater extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
+		if($this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->equals(SupportType::NONE())){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
