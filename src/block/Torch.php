@@ -77,7 +77,7 @@ class Torch extends Flowable{
 		if($blockClicked->canBeReplaced() && $this->canBeSupportBy($blockClicked->getSide(Facing::DOWN), Facing::UP)){
 			$this->facing = Facing::UP;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($face !== Facing::DOWN && $this->canBeSupportBy($blockClicked->getSide(Facing::opposite($face)), $face)){
+		}elseif($face !== Facing::DOWN && $this->canBeSupportBy($blockClicked, $face)){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}else{
