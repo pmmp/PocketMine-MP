@@ -61,7 +61,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: pmmp/pocketmine-mp:${{ steps.tag-name.outputs.MAJOR }}
+          tags: pmmp/pocketmine-mp:${{ steps.tag-name.outputs.MINOR }}
           build-args: PMMP_TAG=${{ steps.tag-name.outputs.TAG_NAME }}
 
       - name: Build image for latest tag
