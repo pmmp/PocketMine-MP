@@ -1,0 +1,73 @@
+name: Update Docker Hub images
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    name: Update Docker Hub images
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1 
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Clone pmmp/PocketMine-Docker repository
+        uses: actions/checkout@v2
+        with:
+          repository: pmmp/PocketMine-Docker
+          fetch-depth: 1
+
+      - name: Get tag names
+        id: tag-name
+        run: |
+          VERSION=$(echo "${{ github.ref }}" | sed 's{^refs/tags/{{')
+          echo ::set-output name=TAG_NAME::$VERSION
+          echo ::set-output name=MAJOR::$(echo $VERSION | cut -d. -f1)
+          echo ::set-output name=MINOR::$(echo $VERSION | cut -d. -f1-2)
+
+      - name: Download new release information
+        run: curl -f -L ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.tag-name.outputs.TAG_NAME }}/build_info.json -o new_build_info.json
+
+      - name: Detect channel
+        id: channel
+        run: echo ::set-output name=CHANNEL::$(jq -r '.channel' new_build_info.json)
+
+      - name: Build image for tag
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: pmmp/pocketmine-mp:${{ steps.tag-name.outputs.TAG_NAME }}
+          build-args: PMMP_TAG=${{ steps.tag-name.outputs.TAG_NAME }}
+
+      - name: Build image for major tag
+        if: steps.channel.outputs.CHANNEL == 'stable'
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: pmmp/pocketmine-mp:${{ steps.tag-name.outputs.MAJOR }}
+          build-args: PMMP_TAG=${{ steps.tag-name.outputs.TAG_NAME }}
+
+      - name: Build image for minor tag
+        if: steps.channel.outputs.CHANNEL == 'stable'
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: pmmp/pocketmine-mp:${{ steps.tag-name.outputs.MAJOR }}
+          build-args: PMMP_TAG=${{ steps.tag-name.outputs.TAG_NAME }}
+
+      - name: Build image for latest tag
+        if: steps.channel.outputs.CHANNEL == 'stable'
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: pmmp/pocketmine-mp:latest
+          build-args: PMMP_TAG=${{ steps.tag-name.outputs.TAG_NAME }}
