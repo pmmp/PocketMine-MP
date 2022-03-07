@@ -26,11 +26,11 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
+use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
-use function in_array;
 
 class Torch extends Flowable{
 
@@ -101,7 +101,7 @@ class Torch extends Flowable{
 	protected function canBeSupportBy(Block $support, int $face) : bool{
 		if($face === Facing::UP && !$support->getSupportType($face)->equals(SupportType::NONE())) {
 			return true;
-		}elseif (in_array($face, Facing::HORIZONTAL, true) && $support->getSupportType($face)->equals(SupportType::FULL())) {
+		}elseif (Facing::axis($face) !== Axis::Y && $support->getSupportType($face)->equals(SupportType::FULL())) {
 			return true;
 		}
 		return false;
