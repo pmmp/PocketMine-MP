@@ -227,7 +227,7 @@ abstract class BaseRail extends Flowable{
 			$this->position->getWorld()->useBreakOn($this->position);
 		}else{
 			foreach($this->getCurrentShapeConnections() as $connection){
-				$supportType = $this->getSide($connection & ~RailConnectionInfo::FLAG_ASCEND)->getSupportType(Facing::opposite($connection & ~RailConnectionInfo::FLAG_ASCEND));
+				$supportType = $this->getSide($connection & ~RailConnectionInfo::FLAG_ASCEND)->getSupportType(Facing::UP);
 				if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0 && ($supportType->equals(SupportType::NONE()) || $supportType->equals(SupportType::CENTER()))){
 					$this->position->getWorld()->useBreakOn($this->position);
 					break;
