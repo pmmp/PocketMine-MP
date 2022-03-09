@@ -769,10 +769,6 @@ abstract class Entity{
 		$this->server->broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
 			$this->id,
 			$this->getOffsetPosition($this->location),
-
-			//this looks very odd but is correct as of 1.5.0.7
-			//for arrows this is actually x/y/z rotation
-			//for mobs x and z are used for pitch and yaw, and y is used for headyaw
 			$this->location->pitch,
 			$this->location->yaw,
 			$this->location->yaw,
