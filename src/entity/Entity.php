@@ -1324,6 +1324,8 @@ abstract class Entity{
 	}
 
 	public function setRotation(float $yaw, float $pitch) : void{
+		Utils::checkFloatNotInfOrNaN("yaw", $yaw);
+		Utils::checkFloatNotInfOrNaN("pitch", $pitch);
 		$this->location->yaw = $yaw;
 		$this->location->pitch = $pitch;
 		$this->scheduleUpdate();
@@ -1349,6 +1351,7 @@ abstract class Entity{
 	}
 
 	public function setMotion(Vector3 $motion) : bool{
+		Utils::checkVector3NotInfOrNaN($motion);
 		if(!$this->justCreated){
 			$ev = new EntityMotionEvent($this, $motion);
 			$ev->call();
@@ -1370,6 +1373,9 @@ abstract class Entity{
 	 * Adds the given values to the entity's motion vector.
 	 */
 	public function addMotion(float $x, float $y, float $z) : void{
+		Utils::checkFloatNotInfOrNaN("x", $x);
+		Utils::checkFloatNotInfOrNaN("y", $y);
+		Utils::checkFloatNotInfOrNaN("z", $z);
 		$this->motion = $this->motion->add($x, $y, $z);
 	}
 
@@ -1381,10 +1387,18 @@ abstract class Entity{
 	 * @param Vector3|Position|Location $pos
 	 */
 	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null) : bool{
+		Utils::checkVector3NotInfOrNaN($pos);
 		if($pos instanceof Location){
 			$yaw = $yaw ?? $pos->yaw;
 			$pitch = $pitch ?? $pos->pitch;
 		}
+		if($yaw !== null){
+			Utils::checkFloatNotInfOrNaN("yaw", $yaw);
+		}
+		if($pitch !== null){
+			Utils::checkFloatNotInfOrNaN("pitch", $pitch);
+		}
+
 		$from = $this->location->asPosition();
 		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getWorld() : $this->getWorld());
 		$ev = new EntityTeleportEvent($this, $from, $to);
