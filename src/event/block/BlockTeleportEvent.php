@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\math\Vector3;
+use pocketmine\utils\Utils;
 
 class BlockTeleportEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
@@ -44,6 +45,7 @@ class BlockTeleportEvent extends BlockEvent implements Cancellable{
 	}
 
 	public function setTo(Vector3 $to) : void{
+		Utils::checkVector3NotInfOrNaN($to);
 		$this->to = $to;
 	}
 }

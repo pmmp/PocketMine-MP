@@ -28,7 +28,9 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use DaveRandom\CallbackValidator\CallbackType;
+use pocketmine\entity\Location;
 use pocketmine\errorhandler\ErrorTypeToStringMap;
+use pocketmine\math\Vector3;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function array_combine;
@@ -57,7 +59,9 @@ use function interface_exists;
 use function is_a;
 use function is_array;
 use function is_bool;
+use function is_infinite;
 use function is_int;
+use function is_nan;
 use function is_object;
 use function is_string;
 use function mb_check_encoding;
@@ -601,5 +605,28 @@ final class Utils{
 			throw new AssumptionFailedError("Assumption failure: " . (is_string($context) ? $context : $context()) . " (THIS IS A BUG)");
 		}
 		return $value;
+	}
+
+	public static function checkFloatNotInfOrNaN(string $name, float $float) : void{
+		if(is_nan($float)){
+			throw new \InvalidArgumentException("$name cannot be NaN");
+		}
+		if(is_infinite($float)){
+			throw new \InvalidArgumentException("$name cannot be infinite");
+		}
+	}
+
+	public static function checkVector3NotInfOrNaN(Vector3 $vector3) : void{
+		if($vector3 instanceof Location){ //location could be masquerading as vector3
+			self::checkFloatNotInfOrNaN("yaw", $vector3->yaw);
+			self::checkFloatNotInfOrNaN("pitch", $vector3->pitch);
+		}
+		self::checkFloatNotInfOrNaN("x", $vector3->x);
+		self::checkFloatNotInfOrNaN("y", $vector3->y);
+		self::checkFloatNotInfOrNaN("z", $vector3->z);
+	}
+
+	public static function checkLocationNotInfOrNaN(Location $location) : void{
+		self::checkVector3NotInfOrNaN($location);
 	}
 }
