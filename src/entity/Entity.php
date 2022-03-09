@@ -56,6 +56,7 @@ use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\sound\Sound;
@@ -69,8 +70,6 @@ use function deg2rad;
 use function floor;
 use function fmod;
 use function get_class;
-use function is_infinite;
-use function is_nan;
 use function lcg_value;
 use function sin;
 use function spl_object_id;
@@ -218,6 +217,8 @@ abstract class Entity{
 	protected $targetId = null;
 
 	public function __construct(Location $location, ?CompoundTag $nbt = null){
+		Utils::checkLocationNotInfOrNaN($location);
+
 		$this->timings = Timings::getEntityTimings($this);
 
 		$this->size = $this->getInitialSizeInfo();
@@ -226,11 +227,6 @@ abstract class Entity{
 		$this->server = $location->getWorld()->getServer();
 
 		$this->location = $location->asLocation();
-		assert(
-			!is_nan($this->location->x) && !is_infinite($this->location->x) &&
-			!is_nan($this->location->y) && !is_infinite($this->location->y) &&
-			!is_nan($this->location->z) && !is_infinite($this->location->z)
-		);
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->recalculateBoundingBox();
