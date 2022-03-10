@@ -157,7 +157,7 @@ class InventoryManager{
 			if($action->sourceType === NetworkInventoryAction::SOURCE_CONTAINER && isset($this->windowMap[$action->windowId])){
 				//this won't cover stuff like crafting grid due to too much magic
 				try{
-					$item = TypeConverter::getInstance()->netItemStackToCore($action->newItem->getItemStack());
+					$item = TypeConverter::getInstance()->netItemStackToCore($this->session->getProtocolId(), $action->newItem->getItemStack());
 				}catch(TypeConversionException $e){
 					throw new PacketHandlingException($e->getMessage(), 0, $e);
 				}
