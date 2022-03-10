@@ -151,9 +151,11 @@ class SweetBerryBush extends Flowable{
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
-		//TODO: in MCPE, this only triggers if moving while inside the bush block - we don't have the system to deal
-		//with that reliably right now
 		if($this->age >= self::STAGE_BUSH_NO_BERRIES && $entity instanceof Living){
+			$entity->resetFallDistance();
+
+			//TODO: in MCPE, this only triggers if moving while inside the bush block - we don't have the system to deal
+			//with that reliably right now
 			$entity->attack(new EntityDamageByBlockEvent($this, $entity, EntityDamageByBlockEvent::CAUSE_CONTACT, 1));
 		}
 		return true;

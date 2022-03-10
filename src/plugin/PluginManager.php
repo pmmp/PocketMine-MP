@@ -435,10 +435,11 @@ class PluginManager{
 
 			$plugin->getScheduler()->setEnabled(true);
 			$plugin->onEnableStateChange(true);
+			if($plugin->isEnabled()){ //the plugin may have disabled itself during onEnable()
+				$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
 
-			$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
-
-			(new PluginEnableEvent($plugin))->call();
+				(new PluginEnableEvent($plugin))->call();
+			}
 		}
 	}
 
