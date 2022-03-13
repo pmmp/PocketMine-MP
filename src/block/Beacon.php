@@ -57,10 +57,8 @@ final class Beacon extends Transparent{
 		//TODO netherite block
 	];
 
-	/** @var null|Effect */
-	private $primaryEffect;
-	/** @var null|Effect */
-	private $secondaryEffect;
+	private ?Effect $primaryEffect = null;
+	private ?Effect $secondaryEffect = null;
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
