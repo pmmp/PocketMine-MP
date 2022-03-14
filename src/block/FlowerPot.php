@@ -77,11 +77,11 @@ class FlowerPot extends Flowable{
 		return $this;
 	}
 
-	public function canAddPlant(Block $block) : bool{
-		if($this->plant !== null){
-			return false;
-		}
+	public function isPlanted() : bool{
+		return $this->plant !== null;
+	}
 
+	public function canBePotted(Block $block) : bool{
 		return
 			$block instanceof Cactus ||
 			$block instanceof DeadBush ||
@@ -115,14 +115,22 @@ class FlowerPot extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$plant = $item->getBlock();
-		if(!$this->canAddPlant($plant)){
-			return false;
+		if ($this->isPlanted()) {
+			if ($this->canBePotted($plant)) {
+				return false;
+			}
+			if ($player !== null) {
+				foreach ($player->getInventory()->addItem($this->plant->asItem()) as $i) {
+					$player->dropItem($i);
+				}
+				$this->plant = null;
+				$this->position->getWorld()->setBlock($this->position, $this);
+			}
+			return true;
 		}
-
 		$this->setPlant($plant);
 		$item->pop();
 		$this->position->getWorld()->setBlock($this->position, $this);
-
 		return true;
 	}
 
