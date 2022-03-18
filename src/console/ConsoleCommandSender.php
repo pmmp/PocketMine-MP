@@ -39,7 +39,10 @@ class ConsoleCommandSender implements CommandSender{
 
 	/** @var Server */
 	private $server;
-	/** @var int|null */
+	/**
+	 * @var int|null
+	 * @phpstan-var positive-int|null
+	 */
 	protected $lineHeight = null;
 	/** @var Language */
 	private $language;

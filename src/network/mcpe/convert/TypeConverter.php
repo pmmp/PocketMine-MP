@@ -232,6 +232,9 @@ class TypeConverter{
 				$compound = null;
 			}
 		}
+		if($meta < 0 || $meta >= 0x7fff){ //this meta value may have been restored from the NBT
+			throw new TypeConversionException("Item meta must be in range 0 ... " . 0x7fff . " (received $meta)");
+		}
 
 		try{
 			return ItemFactory::getInstance()->get(

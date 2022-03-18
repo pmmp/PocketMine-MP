@@ -26,6 +26,7 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\utils\Utils;
 use pocketmine\world\Position;
 
 /**
@@ -54,6 +55,7 @@ class EntityTeleportEvent extends EntityEvent implements Cancellable{
 	}
 
 	public function setTo(Position $to) : void{
+		Utils::checkVector3NotInfOrNaN($to);
 		$this->to = $to;
 	}
 }
