@@ -43,7 +43,7 @@ jobs:
         run: echo ::set-output name=CHANNEL::$(jq -r '.channel' new_build_info.json)
 
       - name: Build image for tag
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v2.10.0
         with:
           push: true
           tags: pmmp/pocketmine-mp:${{ steps.tag-name.outputs.TAG_NAME }}
@@ -51,7 +51,7 @@ jobs:
 
       - name: Build image for major tag
         if: steps.channel.outputs.CHANNEL == 'stable'
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v2.10.0
         with:
           push: true
           context: ./pocketmine-mp
@@ -60,7 +60,7 @@ jobs:
 
       - name: Build image for minor tag
         if: steps.channel.outputs.CHANNEL == 'stable'
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v2.10.0
         with:
           push: true
           context: ./pocketmine-mp
@@ -69,7 +69,7 @@ jobs:
 
       - name: Build image for latest tag
         if: steps.channel.outputs.CHANNEL == 'stable'
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v2.10.0
         with:
           push: true
           context: ./pocketmine-mp
