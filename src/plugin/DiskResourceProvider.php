@@ -71,6 +71,7 @@ class DiskResourceProvider implements ResourceProvider{
 	public function getResources() : array{
 		$resources = [];
 		if(is_dir($this->file)){
+			/** @var \SplFileInfo $resource */
 			foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->file)) as $resource){
 				if($resource->isFile()){
 					$path = str_replace(DIRECTORY_SEPARATOR, "/", substr((string) $resource, strlen($this->file)));

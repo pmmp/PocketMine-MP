@@ -99,7 +99,7 @@ class Fire extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::DOWN)->isSolid() && !$this->hasAdjacentFlammableBlocks()){
+		if($this->getSide(Facing::DOWN)->isTransparent() && !$this->hasAdjacentFlammableBlocks()){
 			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 		}else{
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(30, 40));
@@ -129,7 +129,7 @@ class Fire extends Flowable{
 				}
 			}elseif(!$this->hasAdjacentFlammableBlocks()){
 				$canSpread = false;
-				if(!$down->isSolid() || $this->age > 3){
+				if($down->isTransparent() || $this->age > 3){
 					$result = VanillaBlocks::AIR();
 				}
 			}
