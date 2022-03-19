@@ -211,6 +211,13 @@ class InGamePacketHandler extends PacketHandler{
 		// Once we get a movement within a reasonable distance, treat it as a teleport ACK and remove position lock
 		$this->forceMoveSync = false;
 
+		if($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)){
+			$this->player->jump();
+		}
+
+		//TODO: this packet has WAYYYYY more useful information that we're not using
+		$this->player->handleMovement($newPos);
+
 		$sneaking = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SNEAKING, PlayerAuthInputFlags::STOP_SNEAKING);
 		$sprinting = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SPRINTING, PlayerAuthInputFlags::STOP_SPRINTING);
 		$swimming = $this->resolveOnOffInputFlags($packet, PlayerAuthInputFlags::START_SWIMMING, PlayerAuthInputFlags::STOP_SWIMMING);
@@ -223,13 +230,6 @@ class InGamePacketHandler extends PacketHandler{
 		if((bool) $mismatch){
 			$this->player->sendData([$this->player]);
 		}
-
-		if($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)){
-			$this->player->jump();
-		}
-
-		//TODO: this packet has WAYYYYY more useful information that we're not using
-		$this->player->handleMovement($newPos);
 
 		$packetHandled = true;
 
