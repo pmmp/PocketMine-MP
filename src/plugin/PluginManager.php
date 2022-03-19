@@ -531,7 +531,7 @@ class PluginManager{
 			if($method->isGenerator()){
 				throw new PluginException("Event handler " . Utils::getNiceClosureName($handlerClosure) . "() cannot be a generator");
 			}
-			
+
 			$tags = Utils::parseDocComment((string) $method->getDocComment());
 			if(isset($tags[ListenerMethodTags::NOT_HANDLER]) || ($eventClass = $this->getEventsHandledBy($method)) === null){
 				continue;
