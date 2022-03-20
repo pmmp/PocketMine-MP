@@ -1601,7 +1601,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function continueBreakBlock(Vector3 $pos, int $face) : void{
 		if($this->blockBreakHandler !== null && $this->blockBreakHandler->getBlockPos()->distanceSquared($pos) < 0.0001){
-			$this->blockBreakHandler->setTargetedFace($face);
+			$this->blockBreakHandler->update($face);
 		}
 	}
 
@@ -1618,6 +1618,21 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function breakBlock(Vector3 $pos) : bool{
 		$this->removeCurrentWindow();
+
+
+		if($this->server->isEnableAntiCheatBreak()){
+			$target = $this->getWorld()->getBlock($pos);
+			if($this->isSurvival(true) && !$target->getBreakInfo()->breaksInstantly() && $this->blockBreakHandler === null){
+				$this->logger->debug("utilise probablement un Instante Break ou un Nuker");
+				($server = $this->getServer())->broadcastMessage("[{$this->getName()}] utilise probablement un Instante Break ou un Nuker", $server->getBroadcastChannelSubscribers("hevolia.brodcast.anticheat"));
+				return false;
+			}elseif($this->isSurvival(true) && !$target->getBreakInfo()->breaksInstantly() && $this->blockBreakHandler !== null && !$this->blockBreakHandler->isBreakable()){
+				$this->stopBreakBlock($pos);
+				$this->logger->debug("utilise probablement un Instante Break ou un Nuker");
+				($server = $this->getServer())->broadcastMessage("[{$this->getName()}] utilise probablement un Instante Break ou un Nuker", $server->getBroadcastChannelSubscribers("hevolia.brodcast.anticheat"));
+				return false;
+			}
+		}
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? self::MAX_REACH_DISTANCE_CREATIVE : self::MAX_REACH_DISTANCE_SURVIVAL)){
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());

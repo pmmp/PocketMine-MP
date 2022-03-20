@@ -106,6 +106,8 @@ player:
   #If true, checks that joining players' Xbox user ID (XUID) match what was previously recorded.
   #This also prevents non-XBL players using XBL players' usernames to steal their data on servers with xbox-auth=off.
   verify-xuid: true
+  #Choose whether to enable anti Instabreak or Nuke.
+  anti-cheat-break: false
 
 level-settings:
   #The default format that worlds will use when created

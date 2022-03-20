@@ -442,7 +442,11 @@ class InGamePacketHandler extends PacketHandler{
 			case UseItemTransactionData::ACTION_BREAK_BLOCK:
 				$blockPos = $data->getBlockPosition();
 				$vBlockPos = new Vector3($blockPos->getX(), $blockPos->getY(), $blockPos->getZ());
-				if(!$this->player->breakBlock($vBlockPos)){
+				if($this->player->getWorld()?->getBlock($vBlockPos)->getBreakInfo()->breaksInstantly() || $this->player->isCreative()){
+					if(!$this->player->breakBlock($vBlockPos)){
+						$this->onFailedBlockAction($vBlockPos, null);
+					}
+				}else {
 					$this->onFailedBlockAction($vBlockPos, null);
 				}
 				return true;
