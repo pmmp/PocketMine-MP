@@ -281,16 +281,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->networkSession = $session;
 		$this->playerInfo = $playerInfo;
 		try{
-			$test = explode("_",$this->playerInfo->getLocale());
-			$this->language = new Language($test[0]);
+			$test = explode("_",$playerInfo->getLocale());
+			$this->language = new Language((Language::PREFIX_MCBE_TO_PMMP_PREFIX[$test[0]] ?? Language::FALLBACK_LANGUAGE));
 		}catch(LanguageNotFoundException $e){
 			$this->logger->error($e->getMessage());
-			try{
-				$this->language = new Language(Language::FALLBACK_LANGUAGE);
-			}catch(LanguageNotFoundException $e){
-				$this->logger->emergency("Fallback Player language \"" . Language::FALLBACK_LANGUAGE . "\" not found");
-				return;
-			}
+			return;
 		}
 		$this->authenticated = $authenticated;
 
