@@ -96,6 +96,7 @@ use pocketmine\item\Releasable;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
+use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -172,6 +173,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	private const MAX_REACH_DISTANCE_CREATIVE = 13;
 	private const MAX_REACH_DISTANCE_SURVIVAL = 7;
 	private const MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
+	private Language $language;
 
 	/**
 	 * Validates the given username.
@@ -278,6 +280,18 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->server = $server;
 		$this->networkSession = $session;
 		$this->playerInfo = $playerInfo;
+		try{
+			$test = explode("_",$this->playerInfo->getLocale());
+			$this->language = new Language($test[0]);
+		}catch(LanguageNotFoundException $e){
+			$this->logger->error($e->getMessage());
+			try{
+				$this->language = new Language(Language::FALLBACK_LANGUAGE);
+			}catch(LanguageNotFoundException $e){
+				$this->logger->emergency("Fallback Player language \"" . Language::FALLBACK_LANGUAGE . "\" not found");
+				return;
+			}
+		}
 		$this->authenticated = $authenticated;
 
 		$this->username = $username;
@@ -571,7 +585,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function getLanguage() : Language{
-		return $this->server->getLanguage();
+		return $this->language;
 	}
 
 	/**
