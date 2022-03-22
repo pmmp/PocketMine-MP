@@ -67,14 +67,6 @@ interface Inventory{
 	public function getAddableItemQuantity(Item $item) : int;
 
 	/**
-	 * Removes the given Item from the inventory.
-	 * It will return the Items that couldn't be removed.
-	 *
-	 * @return Item[]
-	 */
-	public function removeItem(Item ...$slots) : array;
-
-	/**
 	 * @return Item[]
 	 */
 	public function getContents(bool $includeEmpty = false) : array;
@@ -120,6 +112,14 @@ interface Inventory{
 	 * Will remove all the Items that has the same id and metadata (if not null)
 	 */
 	public function remove(Item $item) : void;
+
+	/**
+	 * Removes the given Item from the inventory.
+	 * It will return the Items that couldn't be removed.
+	 *
+	 * @return Item[]
+	 */
+	public function removeItem(Item ...$slots) : array;
 
 	/**
 	 * Will clear a specific slot
