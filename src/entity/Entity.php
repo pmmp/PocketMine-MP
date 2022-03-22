@@ -216,7 +216,13 @@ abstract class Entity{
 	/** @var int|null */
 	protected $targetId = null;
 
+	private bool $constructorCalled = false;
+
 	public function __construct(Location $location, ?CompoundTag $nbt = null){
+		if($this->constructorCalled){
+			throw new \LogicException("Attempted to call constructor for an Entity multiple times");
+		}
+		$this->constructorCalled = true;
 		Utils::checkLocationNotInfOrNaN($location);
 
 		$this->timings = Timings::getEntityTimings($this);
