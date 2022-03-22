@@ -91,7 +91,7 @@ class ShulkerBox extends Opaque{
 			$shulker = $this->position->getWorld()->getTile($this->position);
 			if($shulker instanceof TileShulkerBox){
 				if(
-					$this->getSide($this->facing)->getId() !== BlockLegacyIds::AIR ||
+					$this->getSide($this->facing)->isSolid() ||
 					!$shulker->canOpenWith($item->getCustomName())
 				){
 					return true;

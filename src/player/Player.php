@@ -253,6 +253,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected bool $blockCollision = true;
 	protected bool $flying = false;
 
+	/** @phpstan-var positive-int|null  */
 	protected ?int $lineHeight = null;
 	protected string $locale = "en_US";
 
