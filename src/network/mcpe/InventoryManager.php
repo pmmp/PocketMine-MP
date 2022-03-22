@@ -304,6 +304,28 @@ class InventoryManager{
 		}
 	}
 
+	public function syncMismatchedPredictedSlotChanges() : void{
+		foreach($this->initiatedSlotChanges as $windowId => $slots){
+			if(!isset($this->windowMap[$windowId])){
+				continue;
+			}
+			$inventory = $this->windowMap[$windowId];
+
+			foreach($slots as $slot => $expectedItem){
+				if(!$inventory->slotExists($slot)){
+					continue; //TODO: size desync ???
+				}
+				$actualItem = $inventory->getItem($slot);
+				if(!$actualItem->equalsExact($expectedItem)){
+					$this->session->getLogger()->debug("Detected prediction mismatch in inventory " . get_class($inventory) . "#" . spl_object_id($inventory) . " slot $slot");
+					$this->syncSlot($inventory, $slot);
+				}
+			}
+		}
+
+		$this->initiatedSlotChanges = [];
+	}
+
 	public function syncData(Inventory $inventory, int $propertyId, int $value) : void{
 		$windowId = $this->getWindowId($inventory);
 		if($windowId !== null){
