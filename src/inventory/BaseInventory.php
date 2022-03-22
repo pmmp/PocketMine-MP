@@ -55,6 +55,10 @@ abstract class BaseInventory implements Inventory{
 		return $this->maxStackSize;
 	}
 
+	public function setMaxStackSize(int $size) : void{
+		$this->maxStackSize = $size;
+	}
+
 	/**
 	 * @param Item[] $items
 	 */
@@ -321,10 +325,6 @@ abstract class BaseInventory implements Inventory{
 			}
 			unset($this->viewers[$hash]);
 		}
-	}
-
-	public function setMaxStackSize(int $size) : void{
-		$this->maxStackSize = $size;
 	}
 
 	public function onOpen(Player $who) : void{
