@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
-use function preg_match;
-
 trait EnumTrait{
 	use RegistryTrait;
 	use NotCloneable;

@@ -26,6 +26,7 @@ namespace pocketmine\utils;
 use function array_map;
 use function count;
 use function mb_strtoupper;
+use function preg_match;
 
 trait RegistryTrait{
 	/** @var object[] */
