@@ -59,6 +59,21 @@ abstract class BaseInventory implements Inventory{
 		$this->maxStackSize = $size;
 	}
 
+	abstract protected function internalSetItem(int $index, Item $item) : void;
+
+	public function setItem(int $index, Item $item) : void{
+		if($item->isNull()){
+			$item = VanillaItems::AIR();
+		}else{
+			$item = clone $item;
+		}
+
+		$oldItem = $this->getItem($index);
+
+		$this->internalSetItem($index, $item);
+		$this->onSlotChange($index, $oldItem);
+	}
+
 	/**
 	 * @param Item[] $items
 	 */
@@ -89,21 +104,6 @@ abstract class BaseInventory implements Inventory{
 		$this->onContentChange($oldContents);
 	}
 
-	abstract protected function internalSetItem(int $index, Item $item) : void;
-
-	public function setItem(int $index, Item $item) : void{
-		if($item->isNull()){
-			$item = VanillaItems::AIR();
-		}else{
-			$item = clone $item;
-		}
-
-		$oldItem = $this->getItem($index);
-
-		$this->internalSetItem($index, $item);
-		$this->onSlotChange($index, $oldItem);
-	}
-
 	public function contains(Item $item) : bool{
 		$count = max(1, $item->getCount());
 		$checkDamage = !$item->hasAnyDamageValue();
@@ -132,18 +132,6 @@ abstract class BaseInventory implements Inventory{
 
 		return $slots;
 	}
-
-	public function remove(Item $item) : void{
-		$checkDamage = !$item->hasAnyDamageValue();
-		$checkTags = $item->hasNamedTag();
-
-		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage, $checkTags)){
-				$this->clear($index);
-			}
-		}
-	}
-
 	public function first(Item $item, bool $exact = false) : int{
 		$count = $exact ? $item->getCount() : max(1, $item->getCount());
 		$checkDamage = $exact || !$item->hasAnyDamageValue();
@@ -255,6 +243,17 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		return $slot;
+	}
+
+	public function remove(Item $item) : void{
+		$checkDamage = !$item->hasAnyDamageValue();
+		$checkTags = $item->hasNamedTag();
+
+		foreach($this->getContents() as $index => $i){
+			if($item->equals($i, $checkDamage, $checkTags)){
+				$this->clear($index);
+			}
+		}
 	}
 
 	public function removeItem(Item ...$slots) : array{

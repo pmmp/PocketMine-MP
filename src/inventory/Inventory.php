@@ -47,6 +47,16 @@ interface Inventory{
 	public function setItem(int $index, Item $item) : void;
 
 	/**
+	 * @return Item[]
+	 */
+	public function getContents(bool $includeEmpty = false) : array;
+
+	/**
+	 * @param Item[] $items
+	 */
+	public function setContents(array $items) : void;
+
+	/**
 	 * Stores the given Items in the inventory. This will try to fill
 	 * existing stacks and empty slots as well as it can.
 	 *
@@ -65,16 +75,6 @@ interface Inventory{
 	 * Returns how many items from the given itemstack can be added to this inventory.
 	 */
 	public function getAddableItemQuantity(Item $item) : int;
-
-	/**
-	 * @return Item[]
-	 */
-	public function getContents(bool $includeEmpty = false) : array;
-
-	/**
-	 * @param Item[] $items
-	 */
-	public function setContents(array $items) : void;
 
 	/**
 	 * Checks if the inventory contains any Item with the same material data.
