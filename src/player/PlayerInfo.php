@@ -89,6 +89,13 @@ class PlayerInfo{
 	}
 
 	/**
+	 * @return string[]
+	 */
+	public function getLocaleArray() : array{
+		return explode("_",$this->locale);
+	}
+
+	/**
 	 * @return mixed[]
 	 * @phpstan-return array<string, mixed>
 	 */

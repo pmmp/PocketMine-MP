@@ -48,9 +48,11 @@ class Language{
 		"fr" => "fra",
 		"en" => "eng",
 		"de" => "deu",
-		"el" => "ell",
-		"gl" => "gle",
-		"jp" => "jpn",
+		"ja" => "jpn",
+		"ko" => "kor",
+		"zh" => "chs",
+		"ru" => "rus",
+		"nl" => "nld"
 	];
 
 	/**
