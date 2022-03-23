@@ -71,10 +71,10 @@ class BlockFactory{
 	use SingletonTrait;
 
 	/**
-	 * @var \SplFixedArray|Block[]
-	 * @phpstan-var \SplFixedArray<Block>
+	 * @var Block[]
+	 * @phpstan-var array<int, Block>
 	 */
-	private $fullList;
+	private array $fullList = [];
 
 	/**
 	 * @var int[]
@@ -110,8 +110,6 @@ class BlockFactory{
 	public $blastResistance;
 
 	public function __construct(){
-		$this->fullList = new \SplFixedArray(1024 << Block::INTERNAL_METADATA_BITS);
-
 		$this->light = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 0));
 		$this->lightFilter = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 1));
 		$this->blocksDirectSkyLight = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, false));
@@ -1017,7 +1015,7 @@ class BlockFactory{
 	public function remap(int $id, int $meta, Block $block) : void{
 		$index = ($id << Block::INTERNAL_METADATA_BITS) | $meta;
 		if($this->isRegistered($id, $meta)){
-			$existing = $this->fullList[$index];
+			$existing = $this->fullList[$index] ?? null;
 			if($existing !== null && $existing->getFullId() === $index){
 				throw new \InvalidArgumentException("$id:$meta is already mapped");
 			}else{
@@ -1053,12 +1051,12 @@ class BlockFactory{
 		}
 
 		$index = ($id << Block::INTERNAL_METADATA_BITS) | $meta;
-		if($index < 0 || $index >= $this->fullList->getSize()){
+		if($index < 0){
 			throw new \InvalidArgumentException("Block ID $id is out of bounds");
 		}
-		if($this->fullList[$index] !== null){ //hot
+		if(isset($this->fullList[$index])){ //hot
 			$block = clone $this->fullList[$index];
-		}elseif(($mappedIndex = $this->getMappedStateId($index)) !== $index && $this->fullList[$mappedIndex] !== null){ //cold
+		}elseif(($mappedIndex = $this->getMappedStateId($index)) !== $index && isset($this->fullList[$mappedIndex])){ //cold
 			$block = clone $this->fullList[$mappedIndex];
 		}else{
 			$block = new UnknownBlock(new BID($id, $meta), BlockBreakInfo::instant());
@@ -1076,13 +1074,13 @@ class BlockFactory{
 	 */
 	public function isRegistered(int $id, int $meta = 0) : bool{
 		$index = ($id << Block::INTERNAL_METADATA_BITS) | $meta;
-		$b = $this->fullList[$index];
+		$b = $this->fullList[$index] ?? null;
 		if($b === null){
 			$mappedIndex = $this->mappedStateIndexes[$index] ?? $this->defaultStateIndexes[$id] ?? null;
 			if($mappedIndex === null){
 				return false;
 			}
-			$b = $this->fullList[$mappedIndex];
+			$b = $this->fullList[$mappedIndex] ?? null;
 		}
 		return $b !== null && !($b instanceof UnknownBlock);
 	}
@@ -1091,7 +1089,7 @@ class BlockFactory{
 	 * @return Block[]
 	 */
 	public function getAllKnownStates() : array{
-		return array_filter($this->fullList->toArray(), function(?Block $v) : bool{ return $v !== null; });
+		return $this->fullList;
 	}
 
 	/**
@@ -1099,7 +1097,7 @@ class BlockFactory{
 	 * Used to correct invalid blockstates found in loaded chunks.
 	 */
 	public function getMappedStateId(int $fullState) : int{
-		if($this->fullList[$fullState] !== null){
+		if(isset($this->fullList[$fullState])){
 			return $fullState;
 		}
 		return $this->mappedStateIndexes[$fullState] ?? $this->defaultStateIndexes[$fullState >> Block::INTERNAL_METADATA_BITS] ?? $fullState;
