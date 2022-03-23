@@ -335,12 +335,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					$this->callDummyItemHeldEvent();
 				}
 			},
-			function(Inventory $unused, array $changedSlots) : void{
+			function() : void{
 				$this->setUsingItem(false);
-				$heldSlot = $this->inventory->getHeldItemIndex();
-				if(isset($changedSlots[$heldSlot])){
-					$this->callDummyItemHeldEvent();
-				}
+				$this->callDummyItemHeldEvent();
 			}
 		));
 
