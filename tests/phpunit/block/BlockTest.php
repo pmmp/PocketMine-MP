@@ -72,18 +72,10 @@ class BlockTest extends TestCase{
 	}
 
 	/**
-	 * Verifies that blocks with IDs larger than 255 can't be registered
-	 */
-	public function testRegisterIdTooLarge() : void{
-		self::expectException(\RuntimeException::class);
-		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(25555, 0), "Out Of Bounds Block", BlockBreakInfo::instant()));
-	}
-
-	/**
 	 * Verifies that blocks with IDs smaller than 0 can't be registered
 	 */
 	public function testRegisterIdTooSmall() : void{
-		self::expectException(\RuntimeException::class);
+		self::expectException(\InvalidArgumentException::class);
 		$this->blockFactory->register(new OutOfBoundsBlock(new BlockIdentifier(-1, 0), "Out Of Bounds Block", BlockBreakInfo::instant()));
 	}
 
