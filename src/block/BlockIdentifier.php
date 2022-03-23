@@ -38,6 +38,12 @@ class BlockIdentifier{
 	 * @phpstan-param class-string<Tile>|null $tileClass
 	 */
 	public function __construct(int $blockId, int $variant, ?int $itemId = null, ?string $tileClass = null){
+		if($blockId < 0){
+			throw new \InvalidArgumentException("Block ID may not be negative");
+		}
+		if($variant < 0){
+			throw new \InvalidArgumentException("Block variant may not be negative");
+		}
 		$this->blockId = $blockId;
 		$this->variant = $variant;
 		$this->itemId = $itemId;
