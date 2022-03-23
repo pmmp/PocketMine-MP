@@ -59,7 +59,9 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
 use function array_map;
 use function array_search;
+use function get_class;
 use function max;
+use function spl_object_id;
 
 /**
  * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
