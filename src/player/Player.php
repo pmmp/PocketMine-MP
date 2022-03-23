@@ -313,6 +313,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->setNameTag($this->username);
 	}
 
+	private function callDummyItemHeldEvent() : void{
+		$slot = $this->inventory->getHeldItemIndex();
+
+		$event = new PlayerItemHeldEvent($this, $this->inventory->getItem($slot), $slot);
+		$event->call();
+		//TODO: this event is actually cancellable, but cancelling it here has no meaningful result, so we
+		//just ignore it. We fire this only because the content of the held slot changed, not because the
+		//held slot index changed. We can't prevent that from here, and nor would it be sensible to.
+	}
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 		$this->addDefaultWindows();
@@ -321,10 +331,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			function(Inventory $unused, int $slot) : void{
 				if($slot === $this->inventory->getHeldItemIndex()){
 					$this->setUsingItem(false);
+
+					$this->callDummyItemHeldEvent();
 				}
 			},
 			function() : void{
 				$this->setUsingItem(false);
+				$this->callDummyItemHeldEvent();
 			}
 		));
 
