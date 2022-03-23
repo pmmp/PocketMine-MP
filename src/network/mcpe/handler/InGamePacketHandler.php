@@ -234,9 +234,13 @@ class InGamePacketHandler extends PacketHandler{
 		$packetHandled = true;
 
 		$useItemTransaction = $packet->getItemInteractionData();
-		if($useItemTransaction !== null && !$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
-			$packetHandled = false;
-			$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
+		if($useItemTransaction !== null){
+			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
+				$packetHandled = false;
+				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
+			}else{
+				$this->inventoryManager->syncMismatchedPredictedSlotChanges();
+			}
 		}
 
 		$blockActions = $packet->getBlockActions();
@@ -304,6 +308,8 @@ class InGamePacketHandler extends PacketHandler{
 
 		if(!$result){
 			$this->inventoryManager->syncAll();
+		}else{
+			$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 		}
 		return $result;
 	}
@@ -411,6 +417,7 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleUseItemTransaction(UseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
+		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
 		switch($data->getActionType()){
 			case UseItemTransactionData::ACTION_CLICK_BLOCK:
@@ -500,6 +507,7 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
+		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
 		//TODO: use transactiondata for rollbacks here
 		switch($data->getActionType()){
@@ -520,6 +528,7 @@ class InGamePacketHandler extends PacketHandler{
 
 	private function handleReleaseItemTransaction(ReleaseItemTransactionData $data) : bool{
 		$this->player->selectHotbarSlot($data->getHotbarSlot());
+		$this->inventoryManager->addPredictedSlotChanges($data->getActions());
 
 		//TODO: use transactiondata for rollbacks here (resending entire inventory is very wasteful)
 		switch($data->getActionType()){

@@ -44,7 +44,7 @@ class DumpMemoryCommand extends VanillaCommand{
 			return true;
 		}
 
-		$sender->getServer()->getMemoryManager()->dumpServerMemory($args[0] ?? (Path::join($sender->getServer()->getDataPath(), "memory_dumps" . date("D_M_j-H.i.s-T_Y"))), 48, 80);
+		$sender->getServer()->getMemoryManager()->dumpServerMemory($args[0] ?? (Path::join($sender->getServer()->getDataPath(), "memory_dumps", date("D_M_j-H.i.s-T_Y"))), 48, 80);
 		return true;
 	}
 }

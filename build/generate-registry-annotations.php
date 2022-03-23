@@ -82,6 +82,7 @@ function generateMethodAnnotations(string $namespaceName, array $members) : stri
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
+/** @var string $file */
 foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($argv[1], \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::CURRENT_AS_PATHNAME)) as $file){
 	if(substr($file, -4) !== ".php"){
 		continue;

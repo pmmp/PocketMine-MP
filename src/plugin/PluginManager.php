@@ -435,10 +435,11 @@ class PluginManager{
 
 			$plugin->getScheduler()->setEnabled(true);
 			$plugin->onEnableStateChange(true);
+			if($plugin->isEnabled()){ //the plugin may have disabled itself during onEnable()
+				$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
 
-			$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
-
-			(new PluginEnableEvent($plugin))->call();
+				(new PluginEnableEvent($plugin))->call();
+			}
 		}
 	}
 
@@ -575,7 +576,7 @@ class PluginManager{
 	 *
 	 * @throws \ReflectionException
 	 */
-	public function registerEvent(string $event, \Closure $handler, int $priority, Plugin $plugin, bool $handleCancelled = false) : void{
+	public function registerEvent(string $event, \Closure $handler, int $priority, Plugin $plugin, bool $handleCancelled = false) : RegisteredListener{
 		if(!is_subclass_of($event, Event::class)){
 			throw new PluginException($event . " is not an Event");
 		}
@@ -588,6 +589,8 @@ class PluginManager{
 
 		$timings = new TimingsHandler("Plugin: " . $plugin->getDescription()->getFullName() . " Event: " . $handlerName . "(" . (new \ReflectionClass($event))->getShortName() . ")");
 
-		HandlerListManager::global()->getListFor($event)->register(new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings));
+		$registeredListener = new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings);
+		HandlerListManager::global()->getListFor($event)->register($registeredListener);
+		return $registeredListener;
 	}
 }

@@ -37,6 +37,7 @@ use pocketmine\inventory\Inventory;
 use pocketmine\inventory\transaction\action\SlotChangeAction;
 use pocketmine\inventory\transaction\InventoryTransaction;
 use pocketmine\item\Item;
+use pocketmine\network\mcpe\convert\TypeConversionException;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
@@ -50,13 +51,17 @@ use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
+use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
+use pocketmine\network\PacketHandlingException;
 use pocketmine\player\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
 use function array_map;
 use function array_search;
+use function get_class;
 use function max;
+use function spl_object_id;
 
 /**
  * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
@@ -141,6 +146,24 @@ class InventoryManager{
 			if($action instanceof SlotChangeAction && ($windowId = $this->getWindowId($action->getInventory())) !== null){
 				//in some cases the inventory might not have a window ID, but still be referenced by a transaction (e.g. crafting grid changes), so we can't unconditionally record the change here or we might leak things
 				$this->initiatedSlotChanges[$windowId][$action->getSlot()] = $action->getTargetItem();
+			}
+		}
+	}
+
+	/**
+	 * @param NetworkInventoryAction[] $networkInventoryActions
+	 * @throws PacketHandlingException
+	 */
+	public function addPredictedSlotChanges(array $networkInventoryActions) : void{
+		foreach($networkInventoryActions as $action){
+			if($action->sourceType === NetworkInventoryAction::SOURCE_CONTAINER && isset($this->windowMap[$action->windowId])){
+				//this won't cover stuff like crafting grid due to too much magic
+				try{
+					$item = TypeConverter::getInstance()->netItemStackToCore($action->newItem->getItemStack());
+				}catch(TypeConversionException $e){
+					throw new PacketHandlingException($e->getMessage(), 0, $e);
+				}
+				$this->initiatedSlotChanges[$action->windowId][$action->inventorySlot] = $item;
 			}
 		}
 	}
@@ -281,6 +304,28 @@ class InventoryManager{
 		foreach($this->windowMap as $inventory){
 			$this->syncContents($inventory);
 		}
+	}
+
+	public function syncMismatchedPredictedSlotChanges() : void{
+		foreach($this->initiatedSlotChanges as $windowId => $slots){
+			if(!isset($this->windowMap[$windowId])){
+				continue;
+			}
+			$inventory = $this->windowMap[$windowId];
+
+			foreach($slots as $slot => $expectedItem){
+				if(!$inventory->slotExists($slot)){
+					continue; //TODO: size desync ???
+				}
+				$actualItem = $inventory->getItem($slot);
+				if(!$actualItem->equalsExact($expectedItem)){
+					$this->session->getLogger()->debug("Detected prediction mismatch in inventory " . get_class($inventory) . "#" . spl_object_id($inventory) . " slot $slot");
+					$this->syncSlot($inventory, $slot);
+				}
+			}
+		}
+
+		$this->initiatedSlotChanges = [];
 	}
 
 	public function syncData(Inventory $inventory, int $propertyId, int $value) : void{
