@@ -129,7 +129,7 @@ class Explosion{
 
 							$state = $this->subChunkExplorer->currentSubChunk->getFullBlock($vBlockX & SubChunk::COORD_MASK, $vBlockY & SubChunk::COORD_MASK, $vBlockZ & SubChunk::COORD_MASK);
 
-							$blastResistance = $blockFactory->blastResistance[$state];
+							$blastResistance = $blockFactory->blastResistance[$state] ?? 0;
 							if($blastResistance >= 0){
 								$blastForce -= ($blastResistance / 5 + 0.3) * $this->stepLen;
 								if($blastForce > 0){

@@ -58,8 +58,7 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemIds;
 use pocketmine\item\ToolTier;
 use pocketmine\utils\SingletonTrait;
-use function array_fill;
-use function array_filter;
+use pocketmine\world\light\LightUpdate;
 use function get_class;
 use function min;
 
@@ -89,32 +88,27 @@ class BlockFactory{
 	private array $mappedStateIndexes = [];
 
 	/**
-	 * @var \SplFixedArray|int[]
-	 * @phpstan-var \SplFixedArray<int>
+	 * @var int[]
+	 * @phpstan-var array<int, int>
 	 */
-	public $light;
+	public array $light = [];
 	/**
-	 * @var \SplFixedArray|int[]
-	 * @phpstan-var \SplFixedArray<int>
+	 * @var int[]
+	 * @phpstan-var array<int, int>
 	 */
-	public $lightFilter;
+	public array $lightFilter = [];
 	/**
-	 * @var \SplFixedArray|bool[]
-	 * @phpstan-var \SplFixedArray<bool>
+	 * @var true[]
+	 * @phpstan-var array<int, true>
 	 */
-	public $blocksDirectSkyLight;
+	public array $blocksDirectSkyLight = [];
 	/**
-	 * @var \SplFixedArray|float[]
-	 * @phpstan-var \SplFixedArray<float>
+	 * @var float[]
+	 * @phpstan-var array<int, float>
 	 */
-	public $blastResistance;
+	public array $blastResistance = [];
 
 	public function __construct(){
-		$this->light = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 0));
-		$this->lightFilter = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 1));
-		$this->blocksDirectSkyLight = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, false));
-		$this->blastResistance = \SplFixedArray::fromArray(array_fill(0, 1024 << Block::INTERNAL_METADATA_BITS, 0.0));
-
 		$railBreakInfo = new BlockBreakInfo(0.7);
 		$this->registerAllMeta(new ActivatorRail(new BID(Ids::ACTIVATOR_RAIL, 0), "Activator Rail", $railBreakInfo));
 		$this->registerAllMeta(new Air(new BID(Ids::AIR, 0), "Air", BlockBreakInfo::indestructible(-1.0)));
@@ -1031,11 +1025,13 @@ class BlockFactory{
 			$this->mappedStateIndexes[$index] = $fullId;
 		}else{
 			$this->fullList[$index] = $block;
+			$this->blastResistance[$index] = $block->getBreakInfo()->getBlastResistance();
+			$this->light[$index] = $block->getLightLevel();
+			$this->lightFilter[$index] = min(15, $block->getLightFilter() + LightUpdate::BASE_LIGHT_FILTER);
+			if($block->blocksDirectSkyLight()){
+				$this->blocksDirectSkyLight[$index] = true;
+			}
 		}
-		$this->light[$index] = $block->getLightLevel();
-		$this->lightFilter[$index] = min(15, $block->getLightFilter() + 1); //opacity plus 1 standard light filter
-		$this->blocksDirectSkyLight[$index] = $block->blocksDirectSkyLight();
-		$this->blastResistance[$index] = $block->getBreakInfo()->getBlastResistance();
 	}
 
 	/**

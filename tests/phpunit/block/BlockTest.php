@@ -137,7 +137,6 @@ class BlockTest extends TestCase{
 	 */
 	public function testLightFiltersValid() : void{
 		foreach($this->blockFactory->lightFilter as $id => $value){
-			self::assertNotNull($value, "Light filter value missing for $id");
 			self::assertLessThanOrEqual(15, $value, "Light filter value for $id is larger than the expected 15");
 			self::assertGreaterThan(0, $value, "Light filter value for $id must be larger than 0");
 		}
