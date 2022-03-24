@@ -50,6 +50,7 @@ use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\types\BlockPosition;
 use pocketmine\network\mcpe\protocol\types\inventory\ContainerIds;
 use pocketmine\network\mcpe\protocol\types\inventory\CreativeContentEntry;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStack;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\inventory\NetworkInventoryAction;
 use pocketmine\network\mcpe\protocol\types\inventory\WindowTypes;
@@ -152,20 +153,26 @@ class InventoryManager{
 
 	/**
 	 * @param NetworkInventoryAction[] $networkInventoryActions
-	 * @throws PacketHandlingException
 	 */
 	public function addPredictedSlotChanges(array $networkInventoryActions) : void{
 		foreach($networkInventoryActions as $action){
 			if($action->sourceType === NetworkInventoryAction::SOURCE_CONTAINER && isset($this->windowMap[$action->windowId])){
 				//this won't cover stuff like crafting grid due to too much magic
-				try{
-					$item = TypeConverter::getInstance()->netItemStackToCore($action->newItem->getItemStack());
-				}catch(TypeConversionException $e){
-					throw new PacketHandlingException($e->getMessage(), 0, $e);
-				}
-				$this->initiatedSlotChanges[$action->windowId][$action->inventorySlot] = $item;
+				$this->setClientSideItemStack($action->windowId, $action->inventorySlot, $action->newItem->getItemStack());
 			}
 		}
+	}
+
+	/**
+	 * @throws PacketHandlingException
+	 */
+	public function setClientSideItemStack(int $windowId, int $inventorySlot, ItemStack $itemStack) : void{
+		try{
+			$item = TypeConverter::getInstance()->netItemStackToCore($itemStack);
+		}catch(TypeConversionException $e){
+			throw new PacketHandlingException($e->getMessage(), 0, $e);
+		}
+		$this->initiatedSlotChanges[$windowId][$inventorySlot] = $item;
 	}
 
 	public function onCurrentWindowChange(Inventory $inventory) : void{
