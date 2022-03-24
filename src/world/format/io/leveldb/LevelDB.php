@@ -72,38 +72,9 @@ use const LEVELDB_ZLIB_RAW_COMPRESSION;
 
 class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
-	/** @deprecated */
-	protected const TAG_DATA_2D = ChunkDataKey::HEIGHTMAP_AND_2D_BIOMES;
-	/** @deprecated */
-	protected const TAG_DATA_2D_LEGACY = ChunkDataKey::HEIGHTMAP_AND_2D_BIOME_COLORS;
-	/** @deprecated */
-	protected const TAG_SUBCHUNK_PREFIX = ChunkDataKey::SUBCHUNK;
-	/** @deprecated */
-	protected const TAG_LEGACY_TERRAIN = ChunkDataKey::LEGACY_TERRAIN;
-	/** @deprecated */
-	protected const TAG_BLOCK_ENTITY = ChunkDataKey::BLOCK_ENTITIES;
-	/** @deprecated */
-	protected const TAG_ENTITY = ChunkDataKey::ENTITIES;
-	/** @deprecated */
-	protected const TAG_PENDING_TICK = ChunkDataKey::PENDING_SCHEDULED_TICKS;
-	/** @deprecated */
-	protected const TAG_BLOCK_EXTRA_DATA = ChunkDataKey::LEGACY_BLOCK_EXTRA_DATA;
-	/** @deprecated */
-	protected const TAG_BIOME_STATE = ChunkDataKey::BIOME_STATES;
-	/** @deprecated */
-	protected const TAG_STATE_FINALISATION = ChunkDataKey::FINALIZATION;
-
-	/** @deprecated */
-	protected const TAG_BORDER_BLOCKS = ChunkDataKey::BORDER_BLOCKS;
-	/** @deprecated */
-	protected const TAG_HARDCODED_SPAWNERS = ChunkDataKey::HARDCODED_SPAWNERS;
-
 	protected const FINALISATION_NEEDS_INSTATICKING = 0;
 	protected const FINALISATION_NEEDS_POPULATION = 1;
 	protected const FINALISATION_DONE = 2;
-
-	/** @deprecated  */
-	protected const TAG_VERSION = ChunkDataKey::NEW_VERSION;
 
 	protected const ENTRY_FLAT_WORLD_LAYERS = "game_flatworldlayers";
 
