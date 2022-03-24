@@ -59,7 +59,9 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
 use function array_map;
 use function array_search;
+use function get_class;
 use function max;
+use function spl_object_id;
 
 /**
  * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
@@ -302,6 +304,28 @@ class InventoryManager{
 		foreach($this->windowMap as $inventory){
 			$this->syncContents($inventory);
 		}
+	}
+
+	public function syncMismatchedPredictedSlotChanges() : void{
+		foreach($this->initiatedSlotChanges as $windowId => $slots){
+			if(!isset($this->windowMap[$windowId])){
+				continue;
+			}
+			$inventory = $this->windowMap[$windowId];
+
+			foreach($slots as $slot => $expectedItem){
+				if(!$inventory->slotExists($slot)){
+					continue; //TODO: size desync ???
+				}
+				$actualItem = $inventory->getItem($slot);
+				if(!$actualItem->equalsExact($expectedItem)){
+					$this->session->getLogger()->debug("Detected prediction mismatch in inventory " . get_class($inventory) . "#" . spl_object_id($inventory) . " slot $slot");
+					$this->syncSlot($inventory, $slot);
+				}
+			}
+		}
+
+		$this->initiatedSlotChanges = [];
 	}
 
 	public function syncData(Inventory $inventory, int $propertyId, int $value) : void{
