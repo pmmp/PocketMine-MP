@@ -35,16 +35,31 @@ class Wall extends Transparent{
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 
+		$this->recalculateConnections();
+	}
+
+	protected function recalculateConnections() : bool{
+		$changed = 0;
 		foreach(Facing::HORIZONTAL as $facing){
 			$block = $this->getSide($facing);
 			if($block instanceof static || $block instanceof FenceGate || ($block->isSolid() && !$block->isTransparent())){
-				$this->connections[$facing] = $facing;
-			}else{
+				if(!isset($this->connections[$facing])){
+					$this->connections[$facing] = $facing;
+					$changed++;
+				}
+			}elseif(isset($this->connections[$facing])){
 				unset($this->connections[$facing]);
+				$changed++;
 			}
 		}
 
-		$this->up = $this->getSide(Facing::UP)->getId() !== BlockLegacyIds::AIR;
+		$up = $this->getSide(Facing::UP)->getId() !== BlockLegacyIds::AIR;
+		if($up !== $this->up){
+			$this->up = $up;
+			$changed++;
+		}
+
+		return $changed > 0;
 	}
 
 	protected function recalculateCollisionBoxes() : array{
