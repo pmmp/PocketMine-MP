@@ -53,7 +53,7 @@
       "webmozart/path-util": "^2.3"
    },
    "require-dev": {
-      "phpstan/phpstan": "1.4.10",
+      "phpstan/phpstan": "1.5.0",
       "phpstan/phpstan-phpunit": "^1.0.0",
       "phpstan/phpstan-strict-rules": "^1.0.0",
       "phpunit/phpunit": "^9.2"
