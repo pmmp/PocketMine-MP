@@ -26,22 +26,24 @@ namespace pocketmine\lang;
 final class Translatable{
 
 	/** @var string $text */
-	protected $text;
+	protected string $text;
 	/** @var string[]|Translatable[] $params */
-	protected $params = [];
+	protected array $params = [];
 
 	/**
 	 * @param (float|int|string|Translatable)[] $params
 	 */
-	public function __construct(string $text, array $params = []){
+	public function __construct(string $text, array $params = [], bool $escapeSequence = false){
 		$this->text = $text;
-
 		foreach($params as $k => $param){
 			if(!($param instanceof Translatable)){
 				$this->params[$k] = (string) $param;
 			}else{
 				$this->params[$k] = $param;
 			}
+		}
+		if($escapeSequence){
+			$this->params['\n'] = "\n";
 		}
 	}
 
