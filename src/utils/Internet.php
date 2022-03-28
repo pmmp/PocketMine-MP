@@ -32,7 +32,6 @@ use function curl_getinfo;
 use function curl_init;
 use function curl_setopt_array;
 use function explode;
-use function is_int;
 use function is_string;
 use function preg_match;
 use function socket_close;
