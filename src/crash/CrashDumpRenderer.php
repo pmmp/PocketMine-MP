@@ -44,10 +44,11 @@ final class CrashDumpRenderer{
 		$this->addLine($this->data->general->name . " Crash Dump " . date("D M j H:i:s T Y", (int) $this->data->time));
 		$this->addLine();
 
-		$this->addLine("Error: " . $this->data->error["message"]);
-		$this->addLine("File: " . $this->data->error["file"]);
-		$this->addLine("Line: " . $this->data->error["line"]);
-		$this->addLine("Type: " . $this->data->error["type"]);
+		$version = new VersionString($this->data->general->base_version, $this->data->general->is_dev, $this->data->general->build);
+		$this->addLine($this->data->general->name . " version: " . $version->getFullVersion(true) . " [Protocol " . $this->data->general->protocol . "]");
+		$this->addLine("Git commit: " . $this->data->general->git);
+		$this->addLine("PHP version: " . $this->data->general->php);
+		$this->addLine("OS: " . $this->data->general->php_os . ", " . $this->data->general->os);
 
 		if($this->data->plugin_involvement !== CrashDump::PLUGIN_INVOLVEMENT_NONE){
 			$this->addLine();
@@ -62,30 +63,21 @@ final class CrashDumpRenderer{
 		}
 
 		$this->addLine();
-		$this->addLine("Code:");
 
-		foreach($this->data->code as $lineNumber => $line){
-			$this->addLine("[$lineNumber] $line");
-		}
-
-		$this->addLine();
+		$this->addLine("Error: " . $this->data->error["message"]);
+		$this->addLine("File: " . $this->data->error["file"]);
+		$this->addLine("Line: " . $this->data->error["line"]);
+		$this->addLine("Type: " . $this->data->error["type"]);
 		$this->addLine("Backtrace:");
 		foreach($this->data->trace as $line){
 			$this->addLine($line);
 		}
+
 		$this->addLine();
+		$this->addLine("Code:");
 
-		$version = new VersionString($this->data->general->base_version, $this->data->general->is_dev, $this->data->general->build);
-
-		$this->addLine($this->data->general->name . " version: " . $version->getFullVersion(true) . " [Protocol " . $this->data->general->protocol . "]");
-		$this->addLine("Git commit: " . $this->data->general->git);
-		$this->addLine("uname -a: " . $this->data->general->uname);
-		$this->addLine("PHP Version: " . $this->data->general->php);
-		$this->addLine("Zend version: " . $this->data->general->zend);
-		$this->addLine("OS: " . $this->data->general->php_os . ", " . $this->data->general->os);
-		$this->addLine("Composer libraries: ");
-		foreach(Utils::stringifyKeys($this->data->general->composer_libraries) as $library => $libraryVersion){
-			$this->addLine("- $library $libraryVersion");
+		foreach($this->data->code as $lineNumber => $line){
+			$this->addLine("[$lineNumber] $line");
 		}
 
 		if(count($this->data->plugins) > 0){
@@ -94,6 +86,14 @@ final class CrashDumpRenderer{
 			foreach($this->data->plugins as $p){
 				$this->addLine($p->name . " " . $p->version . " by " . implode(", ", $p->authors) . " for API(s) " . implode(", ", $p->api));
 			}
+		}
+
+		$this->addLine();
+		$this->addLine("uname -a: " . $this->data->general->uname);
+		$this->addLine("Zend version: " . $this->data->general->zend);
+		$this->addLine("Composer libraries: ");
+		foreach(Utils::stringifyKeys($this->data->general->composer_libraries) as $library => $libraryVersion){
+			$this->addLine("- $library $libraryVersion");
 		}
 	}
 

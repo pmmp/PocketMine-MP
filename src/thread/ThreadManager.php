@@ -64,6 +64,9 @@ class ThreadManager extends \Volatile{
 	 */
 	public function getAll() : array{
 		$array = [];
+		/**
+		 * @var Worker|Thread $thread
+		 */
 		foreach($this as $key => $thread){
 			$array[$key] = $thread;
 		}
