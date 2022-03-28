@@ -42,7 +42,7 @@ final class LegacyBlockStateMapper{
 	){}
 
 	public function fromStringIdMeta(string $id, int $meta) : ?BlockStateData{
-		return $this->mappingTable[$id][$meta] ?? null;
+		return $this->mappingTable[$id][$meta] ?? $this->mappingTable[$id][0] ?? null;
 	}
 
 	public function fromIntIdMeta(int $id, int $meta) : ?BlockStateData{
