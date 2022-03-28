@@ -49,6 +49,15 @@ class Sugarcane extends Flowable{
 		return 0b1111;
 	}
 
+	private function seekToBottom() : Sugarcane{
+		$world = $this->position->getWorld();
+		$bottom = $this;
+		while(($next = $world->getBlock($bottom->position->down())) instanceof Sugarcane && $next->isSameType($this)){
+			$bottom = $next;
+		}
+		return $bottom;
+	}
+
 	private function grow() : bool{
 		$grew = false;
 		for($y = 1; $y < 3; ++$y){
@@ -64,7 +73,7 @@ class Sugarcane extends Flowable{
 				}
 				$this->position->getWorld()->setBlock($b->position, $ev->getNewState());
 				$grew = true;
-			}else{
+			}elseif(!$b instanceof Sugarcane){
 				break;
 			}
 		}
@@ -86,7 +95,7 @@ class Sugarcane extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
-			if(!$this->getSide(Facing::DOWN)->isSameType($this) && $this->grow()){
+			if($this->seekToBottom()->grow()){
 				$item->pop();
 			}
 
