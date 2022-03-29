@@ -27,9 +27,12 @@ use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
 
 /**
- * Class used for Items that can be Blocks
+ * Class used for Items that directly represent blocks, such as stone, dirt, wood etc.
+ *
+ * This should NOT be used for items which are merely *associated* with blocks (e.g. seeds are not wheat crops; they
+ * just place wheat crops when used on the ground).
  */
-class ItemBlock extends Item{
+final class ItemBlock extends Item{
 	/** @var int */
 	private $blockFullId;
 
