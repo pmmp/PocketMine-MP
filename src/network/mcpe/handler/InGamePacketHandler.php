@@ -228,7 +228,7 @@ class InGamePacketHandler extends PacketHandler{
 			$this->player->jump();
 		}
 
-		if($curPos->equals($this->player->getPosition())){
+		if(!$this->forceMoveSync){
 			//TODO: HACK Allow plugins to update position with PlayerToggleSneakEvent etc.
 
 			//TODO: this packet has WAYYYYY more useful information that we're not using
