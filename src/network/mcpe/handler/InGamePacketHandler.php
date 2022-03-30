@@ -238,9 +238,13 @@ class InGamePacketHandler extends PacketHandler{
 		$packetHandled = true;
 
 		$useItemTransaction = $packet->getItemInteractionData();
-		if($useItemTransaction !== null && !$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
-			$packetHandled = false;
-			$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
+		if($useItemTransaction !== null){
+			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
+				$packetHandled = false;
+				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
+			}else{
+				$this->inventoryManager->syncMismatchedPredictedSlotChanges();
+			}
 		}
 
 		$blockActions = $packet->getBlockActions();
@@ -308,6 +312,8 @@ class InGamePacketHandler extends PacketHandler{
 
 		if(!$result){
 			$this->inventoryManager->syncAll();
+		}else{
+			$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 		}
 		return $result;
 	}

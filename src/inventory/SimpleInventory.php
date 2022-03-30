@@ -52,6 +52,10 @@ class SimpleInventory extends BaseInventory{
 		return $this->slots[$index] !== null ? clone $this->slots[$index] : VanillaItems::AIR();
 	}
 
+	protected function internalSetItem(int $index, Item $item) : void{
+		$this->slots[$index] = $item->isNull() ? null : $item;
+	}
+
 	/**
 	 * @return Item[]
 	 */
@@ -77,9 +81,5 @@ class SimpleInventory extends BaseInventory{
 				$this->slots[$i] = clone $items[$i];
 			}
 		}
-	}
-
-	protected function internalSetItem(int $index, Item $item) : void{
-		$this->slots[$index] = $item->isNull() ? null : $item;
 	}
 }
