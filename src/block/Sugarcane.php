@@ -73,7 +73,7 @@ class Sugarcane extends Flowable{
 				}
 				$this->position->getWorld()->setBlock($b->position, $ev->getNewState());
 				$grew = true;
-			}elseif(!$b instanceof Sugarcane){
+			}elseif(!$b->isSameType($this)){
 				break;
 			}
 		}
