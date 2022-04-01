@@ -1195,11 +1195,15 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$oldPos = $this->getLocation();
+
+
 		$distanceSquared = $newPos->distanceSquared($oldPos);
 
 		$revert = false;
 
-		if($distanceSquared > 100){
+		if($this->isSurvival(true) && !$this->isOnGround() && $newPos->y > $curPos->y){
+			$revert = true;
+		}else if($distanceSquared > 100){
 			//TODO: this is probably too big if we process every movement
 			/* !!! BEWARE YE WHO ENTER HERE !!!
 			 *
@@ -1218,6 +1222,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$revert = true;
 			$this->nextChunkOrderRun = 0;
 		}
+
 
 		if(!$revert && $distanceSquared != 0){
 			$dx = $newPos->x - $this->location->x;
