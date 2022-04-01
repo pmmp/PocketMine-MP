@@ -331,7 +331,7 @@ class PluginManager{
 	/**
 	 * @return Plugin[]
 	 */
-	public function loadPlugins(string $path) : array{
+	public function loadPlugins(string $path, PluginLoadOrder $type) : array{
 		if($this->loadPluginsGuard){
 			throw new \LogicException(__METHOD__ . "() cannot be called from within itself");
 		}
@@ -345,6 +345,10 @@ class PluginManager{
 		while(count($triage->plugins) > 0){
 			$loadedThisLoop = 0;
 			foreach(Utils::stringifyKeys($triage->plugins) as $name => $entry){
+				if($entry->getDescription()->getOrder() !== $type){
+					continue;
+				}
+
 				$this->checkDepsForTriage($name, "hard", $triage->dependencies, $loadedPlugins, $triage);
 				$this->checkDepsForTriage($name, "soft", $triage->softDependencies, $loadedPlugins, $triage);
 

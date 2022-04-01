@@ -78,8 +78,8 @@ use pocketmine\player\Player;
 use pocketmine\player\PlayerInfo;
 use pocketmine\plugin\PharPluginLoader;
 use pocketmine\plugin\Plugin;
-use pocketmine\plugin\PluginEnableOrder;
 use pocketmine\plugin\PluginGraylist;
+use pocketmine\plugin\PluginLoadOrder;
 use pocketmine\plugin\PluginManager;
 use pocketmine\plugin\PluginOwned;
 use pocketmine\plugin\ScriptPluginLoader;
@@ -1002,14 +1002,13 @@ class Server{
 
 			register_shutdown_function([$this, "crashDump"]);
 
-			$this->pluginManager->loadPlugins($this->pluginPath);
-			$this->enablePlugins(PluginEnableOrder::STARTUP());
-
+			$this->pluginManager->loadPlugins($this->pluginPath, PluginLoadOrder::STARTUP());
 			if(!$this->startupPrepareWorlds()){
 				$this->forceShutdown();
 				return;
 			}
-			$this->enablePlugins(PluginEnableOrder::POSTWORLD());
+			$this->pluginManager->loadPlugins($this->pluginPath, PluginLoadOrder::POSTWORLD());
+			$this->enablePlugins();
 
 			if(!$this->startupPrepareNetworkInterfaces()){
 				$this->forceShutdown();
@@ -1390,16 +1389,13 @@ class Server{
 		}
 	}
 
-	public function enablePlugins(PluginEnableOrder $type) : void{
+	public function enablePlugins() : void{
 		foreach($this->pluginManager->getPlugins() as $plugin){
-			if(!$plugin->isEnabled() && $plugin->getDescription()->getOrder()->equals($type)){
+			if(!$plugin->isEnabled()){
 				$this->pluginManager->enablePlugin($plugin);
 			}
 		}
-
-		if($type->equals(PluginEnableOrder::POSTWORLD())){
-			$this->commandMap->registerServerAliases();
-		}
+		$this->commandMap->registerServerAliases();
 	}
 
 	/**

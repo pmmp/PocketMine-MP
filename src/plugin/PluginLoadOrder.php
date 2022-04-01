@@ -32,10 +32,10 @@ use function mb_strtolower;
  * @see build/generate-registry-annotations.php
  * @generate-registry-docblock
  *
- * @method static PluginEnableOrder POSTWORLD()
- * @method static PluginEnableOrder STARTUP()
+ * @method static PluginLoadOrder POSTWORLD()
+ * @method static PluginLoadOrder STARTUP()
  */
-final class PluginEnableOrder{
+final class PluginLoadOrder{
 	use EnumTrait {
 		__construct as Enum___construct;
 		register as Enum_register;

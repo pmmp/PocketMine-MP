@@ -74,7 +74,7 @@ class PluginDescription{
 	private array $authors = [];
 	private string $website = "";
 	private string $prefix = "";
-	private PluginEnableOrder $order;
+	private PluginLoadOrder $order;
 
 	/**
 	 * @var Permission[][]
@@ -171,13 +171,13 @@ class PluginDescription{
 		$this->prefix = (string) ($plugin["prefix"] ?? $this->prefix);
 
 		if(isset($plugin["load"])){
-			$order = PluginEnableOrder::fromString($plugin["load"]);
+			$order = PluginLoadOrder::fromString($plugin["load"]);
 			if($order === null){
 				throw new PluginDescriptionParseException("Invalid Plugin \"load\"");
 			}
 			$this->order = $order;
 		}else{
-			$this->order = PluginEnableOrder::POSTWORLD();
+			$this->order = PluginLoadOrder::POSTWORLD();
 		}
 
 		$this->authors = [];
@@ -283,7 +283,7 @@ class PluginDescription{
 		return $this->name;
 	}
 
-	public function getOrder() : PluginEnableOrder{
+	public function getOrder() : PluginLoadOrder{
 		return $this->order;
 	}
 
