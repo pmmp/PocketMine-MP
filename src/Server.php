@@ -1390,11 +1390,8 @@ class Server{
 	}
 
 	public function enablePlugins() : void{
-		foreach($this->pluginManager->getPlugins() as $plugin){
-			if(!$plugin->isEnabled()){
-				$this->pluginManager->enablePlugin($plugin);
-			}
-		}
+		$this->pluginManager->enablePlugins();
+
 		$this->commandMap->registerServerAliases();
 	}
 
