@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b25dabeb28d350061bfb2098cd4ef3ee",
+    "content-hash": "2cece7458e6a61819972819606ac531e",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -275,16 +275,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "8.0.1+bedrock-1.18.10",
+            "version": "8.0.2+bedrock-1.18.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "a740f6095b35278c0e0dac6db84a5e4d2456b113"
+                "reference": "d1f1afdbb4ea61ea52eb511a79ee1ca561da349c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/a740f6095b35278c0e0dac6db84a5e4d2456b113",
-                "reference": "a740f6095b35278c0e0dac6db84a5e4d2456b113",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/d1f1afdbb4ea61ea52eb511a79ee1ca561da349c",
+                "reference": "d1f1afdbb4ea61ea52eb511a79ee1ca561da349c",
                 "shasum": ""
             },
             "require": {
@@ -298,7 +298,7 @@
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.4.5",
+                "phpstan/phpstan": "1.5.3",
                 "phpstan/phpstan-phpunit": "^1.0.0",
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5"
@@ -316,9 +316,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/8.0.1+bedrock-1.18.10"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/8.0.2+bedrock-1.18.10"
             },
-            "time": "2022-02-21T03:31:48+00:00"
+            "time": "2022-04-01T21:55:10+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
