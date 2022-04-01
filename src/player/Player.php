@@ -1287,7 +1287,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 	}
 
-	protected function revertMovement(Location $from) : void{
+	public function revertMovement(Location $from) : void{
 		$this->setPosition($from);
 		$this->sendPosition($from, $from->yaw, $from->pitch, MovePlayerPacket::MODE_RESET);
 	}
