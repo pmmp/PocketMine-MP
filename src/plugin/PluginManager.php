@@ -270,7 +270,7 @@ class PluginManager{
 					continue;
 				}
 
-				if($this->getPlugin($name) instanceof Plugin){
+				if(isset($this->plugins[$name])){
 					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_duplicateError($name)));
 					continue;
 				}
