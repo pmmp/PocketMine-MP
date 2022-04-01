@@ -225,6 +225,9 @@ class InGamePacketHandler extends PacketHandler{
 		}
 
 		if($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)){
+			if( !$this->player->isOnGround() && $newPos->y > $curPos->y){
+				return false;
+			}
 			$this->player->jump();
 		}
 
