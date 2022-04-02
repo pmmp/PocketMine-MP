@@ -32,7 +32,6 @@ use function curl_getinfo;
 use function curl_init;
 use function curl_setopt_array;
 use function explode;
-use function is_int;
 use function is_string;
 use function preg_match;
 use function socket_close;
@@ -220,7 +219,6 @@ class Internet{
 			}
 			if(!is_string($raw)) throw new AssumptionFailedError("curl_exec() should return string|false when CURLOPT_RETURNTRANSFER is set");
 			$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-			if(!is_int($httpCode)) throw new AssumptionFailedError("curl_getinfo(CURLINFO_HTTP_CODE) always returns int");
 			$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 			$rawHeaders = substr($raw, 0, $headerSize);
 			$body = substr($raw, $headerSize);
