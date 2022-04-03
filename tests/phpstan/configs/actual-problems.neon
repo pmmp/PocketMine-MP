@@ -906,11 +906,6 @@ parameters:
 			path: ../../../src/scheduler/TaskScheduler.php
 
 		-
-			message: "#^Method pocketmine\\\\thread\\\\ThreadManager\\:\\:getAll\\(\\) should return array\\<pocketmine\\\\thread\\\\Thread\\|pocketmine\\\\thread\\\\Worker\\> but returns array\\.$#"
-			count: 1
-			path: ../../../src/thread/ThreadManager.php
-
-		-
 			message: "#^Cannot access offset string on mixed\\.$#"
 			count: 3
 			path: ../../../src/utils/Config.php
@@ -924,16 +919,6 @@ parameters:
 			message: "#^Parameter \\#1 \\$config of static method pocketmine\\\\utils\\\\Config\\:\\:writeProperties\\(\\) expects array\\<string, bool\\|float\\|int\\|string\\>, array\\<string, mixed\\> given\\.$#"
 			count: 1
 			path: ../../../src/utils/Config.php
-
-		-
-			message: "#^Parameter \\#2 \\$offset of function substr expects int, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/Internet.php
-
-		-
-			message: "#^Parameter \\#3 \\$length of function substr expects int\\|null, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/Internet.php
 
 		-
 			message: "#^Parameter \\#1 \\$string of function trim expects string, string\\|false given\\.$#"
