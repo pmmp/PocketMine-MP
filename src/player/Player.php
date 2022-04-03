@@ -1205,7 +1205,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$revert = true;
 			$this->teleport($oldPos);
 			$this->logger->debug("Jump in air, reverting movement");
-		}else if($jump && $this->isSurvival(true)  && ($newPos->y > ($oldPos->y + 1))){
+		}else if($jump && $this->isSurvival(true)  && ($newPos->y > ($oldPos->y + 4))){
 			$revert = true;
 			$this->teleport($oldPos);
 			$this->logger->debug("Jump in air, reverting movement");
