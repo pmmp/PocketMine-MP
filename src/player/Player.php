@@ -1201,7 +1201,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$revert = false;
 
-		var_dump("====================\njump: $jump\nGround: {$this->isOnGround()}\nOldPos: {$oldPos->__toString()}\nNewPos: {$newPos->__toString()}");
 		if($jump && $this->isSurvival(true)  && !$this->isOnGround() && $newPos->y > $oldPos->y){
 			$revert = true;
 			$this->logger->debug("Jump in air, reverting movement");
@@ -1227,7 +1226,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 
-		if(!$revert && $distanceSquared != 0){
+		if($revert){
+			$this->revertMovement($oldPos);
+			return;
+		}
+
+		if($distanceSquared != 0){
 			$dx = $newPos->x - $this->location->x;
 			$dy = $newPos->y - $this->location->y;
 			$dz = $newPos->z - $this->location->z;
@@ -1235,9 +1239,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->move($dx, $dy, $dz);
 		}
 
-		if($revert){
-			$this->revertMovement($oldPos);
-		}
 	}
 
 	/**
