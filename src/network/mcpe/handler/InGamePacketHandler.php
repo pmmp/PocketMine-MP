@@ -170,6 +170,7 @@ class InGamePacketHandler extends PacketHandler{
 	public function handleMovePlayer(MovePlayerPacket $packet) : bool{
 		//The client sends this every time it lands on the ground, even when using PlayerAuthInputPacket.
 		//Silence the debug spam that this causes.
+		var_dump("\n---------------- ground: {$packet->onGround}");
 		return true;
 	}
 
