@@ -1190,7 +1190,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function handleMovement(Vector3 $newPos, bool $jump = false) : void{
 		$this->moveRateLimit--;
-		if($this->moveRateLimit < 0){
+		if($this->moveRateLimit < 0) {
 			return;
 		}
 
