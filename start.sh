@@ -81,6 +81,7 @@ if [ "$DO_LOOP" == "yes" ]; then
 	done
 else
 	"$PHP_BINARY" "$POCKETMINE_FILE" $@
-	handle_exit_code $?
+	exitcode=$?
+	handle_exit_code $exitcode
 	exit $exitcode
 fi
