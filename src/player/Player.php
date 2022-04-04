@@ -1236,7 +1236,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 		if($revert){
 			$this->revertMovement($oldPos);
-			$this->teleport($oldPos);
 		}
 
 	}
