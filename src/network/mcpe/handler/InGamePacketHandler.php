@@ -223,10 +223,6 @@ class InGamePacketHandler extends PacketHandler{
 		if((bool) $mismatch){
 			$this->player->sendData([$this->player]);
 		}
-
-		if($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)){
-			$this->player->jump();
-		}
 		//TODO: this packet has WAYYYYY more useful information that we're not using
 		$this->player->handleMovement($newPos,($packet->hasFlag(PlayerAuthInputFlags::NORTH_JUMP) || $packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)));
 
