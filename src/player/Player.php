@@ -1533,20 +1533,21 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * @return bool if it did something.
 	 */
-	public function releaseHeldItem() : bool{
-		try{
+	public function releaseHeldItem() : bool
+	{
+		try {
 			$item = $this->inventory->getItemInHand();
-			if(!$this->isUsingItem() || $this->hasItemCooldown($item)){
+			if (!$this->isUsingItem() || $this->hasItemCooldown($item)) {
 				return false;
 			}
 
 			$oldItem = clone $item;
 
 			$result = $item->onReleaseUsing($this);
-			if($result->equals(ItemUseResult::SUCCESS())){
+			if ($result->equals(ItemUseResult::SUCCESS())) {
 				$this->resetItemCooldown($item);
-				if(!$item->equalsExact($oldItem) && $oldItem->equalsExact($this->inventory->getItemInHand())){
-					if($item instanceof Durable && $item->isBroken()){
+				if (!$item->equalsExact($oldItem) && $oldItem->equalsExact($this->inventory->getItemInHand())) {
+					if ($item instanceof Durable && $item->isBroken()) {
 						$this->broadcastSound(new ItemBreakSound());
 					}
 					$this->inventory->setItemInHand($item);
@@ -1555,7 +1556,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}
 
 			return false;
-		}finally{
+		} finally {
 			$this->setUsingItem(false);
 		}
 	}
