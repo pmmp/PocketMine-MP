@@ -166,6 +166,14 @@ class PluginManager{
 			)));
 			return null;
 		}
+		$reflect = new \ReflectionClass($mainClass); //this shouldn't throw; we already checked that it exists
+		if(!$reflect->isInstantiable()){
+			$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+				$description->getName(),
+				KnownTranslationFactory::pocketmine_plugin_mainClassAbstract()
+			)));
+			return null;
+		}
 
 		$permManager = PermissionManager::getInstance();
 		foreach($description->getPermissions() as $permsGroup){
