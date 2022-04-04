@@ -1227,7 +1227,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->nextChunkOrderRun = 0;
 		}
 
-		var_dump($newPos);
 		if(!$revert && $distanceSquared != 0){
 			$dx = $newPos->x - $this->location->x;
 			$dy = $newPos->y - $this->location->y;
