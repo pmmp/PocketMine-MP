@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f3800582ad388d0ec2a95dffc3742d8e",
+    "content-hash": "afc47e972ac67ed1e1ab564a63171fa6",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -275,16 +275,16 @@
         },
         {
             "name": "pocketmine/bedrock-protocol",
-            "version": "8.0.1+bedrock-1.18.10",
+            "version": "8.0.2+bedrock-1.18.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/BedrockProtocol.git",
-                "reference": "a740f6095b35278c0e0dac6db84a5e4d2456b113"
+                "reference": "d1f1afdbb4ea61ea52eb511a79ee1ca561da349c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/a740f6095b35278c0e0dac6db84a5e4d2456b113",
-                "reference": "a740f6095b35278c0e0dac6db84a5e4d2456b113",
+                "url": "https://api.github.com/repos/pmmp/BedrockProtocol/zipball/d1f1afdbb4ea61ea52eb511a79ee1ca561da349c",
+                "reference": "d1f1afdbb4ea61ea52eb511a79ee1ca561da349c",
                 "shasum": ""
             },
             "require": {
@@ -298,7 +298,7 @@
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.4.5",
+                "phpstan/phpstan": "1.5.3",
                 "phpstan/phpstan-phpunit": "^1.0.0",
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5"
@@ -316,9 +316,9 @@
             "description": "An implementation of the Minecraft: Bedrock Edition protocol in PHP",
             "support": {
                 "issues": "https://github.com/pmmp/BedrockProtocol/issues",
-                "source": "https://github.com/pmmp/BedrockProtocol/tree/8.0.1+bedrock-1.18.10"
+                "source": "https://github.com/pmmp/BedrockProtocol/tree/8.0.2+bedrock-1.18.10"
             },
-            "time": "2022-02-21T03:31:48+00:00"
+            "time": "2022-04-01T21:55:10+00:00"
         },
         {
             "name": "pocketmine/binaryutils",
@@ -536,16 +536,16 @@
         },
         {
             "name": "pocketmine/locale-data",
-            "version": "2.4.3",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/pmmp/Language.git",
-                "reference": "4d0b081f1a79407e087968ea76aaf330db6ea2b5"
+                "reference": "df6fc7f2b48850b306c60466a11f7a27bb8fe1de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/pmmp/Language/zipball/4d0b081f1a79407e087968ea76aaf330db6ea2b5",
-                "reference": "4d0b081f1a79407e087968ea76aaf330db6ea2b5",
+                "url": "https://api.github.com/repos/pmmp/Language/zipball/df6fc7f2b48850b306c60466a11f7a27bb8fe1de",
+                "reference": "df6fc7f2b48850b306c60466a11f7a27bb8fe1de",
                 "shasum": ""
             },
             "type": "library",
@@ -553,9 +553,9 @@
             "description": "Language resources used by PocketMine-MP",
             "support": {
                 "issues": "https://github.com/pmmp/Language/issues",
-                "source": "https://github.com/pmmp/Language/tree/2.4.3"
+                "source": "https://github.com/pmmp/Language/tree/2.5.0"
             },
-            "time": "2022-01-25T23:18:24+00:00"
+            "time": "2022-04-01T22:36:58+00:00"
         },
         {
             "name": "pocketmine/log",
@@ -1789,16 +1789,16 @@
         },
         {
             "name": "phpdocumentor/type-resolver",
-            "version": "1.6.0",
+            "version": "1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/TypeResolver.git",
-                "reference": "93ebd0014cab80c4ea9f5e297ea48672f1b87706"
+                "reference": "77a32518733312af16a44300404e945338981de3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/93ebd0014cab80c4ea9f5e297ea48672f1b87706",
-                "reference": "93ebd0014cab80c4ea9f5e297ea48672f1b87706",
+                "url": "https://api.github.com/repos/phpDocumentor/TypeResolver/zipball/77a32518733312af16a44300404e945338981de3",
+                "reference": "77a32518733312af16a44300404e945338981de3",
                 "shasum": ""
             },
             "require": {
@@ -1833,9 +1833,9 @@
             "description": "A PSR-5 based resolver of Class names, Types and Structural Element Names",
             "support": {
                 "issues": "https://github.com/phpDocumentor/TypeResolver/issues",
-                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.6.0"
+                "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.6.1"
             },
-            "time": "2022-01-04T19:58:01+00:00"
+            "time": "2022-03-15T21:29:03+00:00"
         },
         {
             "name": "phpspec/prophecy",
@@ -1906,20 +1906,20 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.4.10",
+            "version": "1.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "898c479c39caa727bedf4311dd294a8f4e250e72"
+                "reference": "bbf68cae24f6dc023c607ea0f87da55dd9d55c2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/898c479c39caa727bedf4311dd294a8f4e250e72",
-                "reference": "898c479c39caa727bedf4311dd294a8f4e250e72",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/bbf68cae24f6dc023c607ea0f87da55dd9d55c2b",
+                "reference": "bbf68cae24f6dc023c607ea0f87da55dd9d55c2b",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1|^8.0"
+                "php": "^7.2|^8.0"
             },
             "conflict": {
                 "phpstan/phpstan-shim": "*"
@@ -1941,7 +1941,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.4.10"
+                "source": "https://github.com/phpstan/phpstan/tree/1.5.4"
             },
             "funding": [
                 {
@@ -1961,25 +1961,25 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-03-14T10:25:45+00:00"
+            "time": "2022-04-03T12:39:00+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-phpunit.git",
-                "reference": "9eb88c9f689003a8a2a5ae9e010338ee94dc39b3"
+                "reference": "09133ce914f1388a8bb8c7f8573aaa3723cff52a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/9eb88c9f689003a8a2a5ae9e010338ee94dc39b3",
-                "reference": "9eb88c9f689003a8a2a5ae9e010338ee94dc39b3",
+                "url": "https://api.github.com/repos/phpstan/phpstan-phpunit/zipball/09133ce914f1388a8bb8c7f8573aaa3723cff52a",
+                "reference": "09133ce914f1388a8bb8c7f8573aaa3723cff52a",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1 || ^8.0",
-                "phpstan/phpstan": "^1.0"
+                "php": "^7.2 || ^8.0",
+                "phpstan/phpstan": "^1.5.0"
             },
             "conflict": {
                 "phpunit/phpunit": "<7.0"
@@ -1992,9 +1992,6 @@
             },
             "type": "phpstan-extension",
             "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0-dev"
-                },
                 "phpstan": {
                     "includes": [
                         "extension.neon",
@@ -2014,9 +2011,9 @@
             "description": "PHPUnit extensions and rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-phpunit/issues",
-                "source": "https://github.com/phpstan/phpstan-phpunit/tree/1.0.0"
+                "source": "https://github.com/phpstan/phpstan-phpunit/tree/1.1.0"
             },
-            "time": "2021-10-14T08:03:54+00:00"
+            "time": "2022-03-28T09:20:49+00:00"
         },
         {
             "name": "phpstan/phpstan-strict-rules",
@@ -2389,16 +2386,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "9.5.19",
+            "version": "9.5.20",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "35ea4b7f3acabb26f4bb640f8c30866c401da807"
+                "reference": "12bc8879fb65aef2138b26fc633cb1e3620cffba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/35ea4b7f3acabb26f4bb640f8c30866c401da807",
-                "reference": "35ea4b7f3acabb26f4bb640f8c30866c401da807",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/12bc8879fb65aef2138b26fc633cb1e3620cffba",
+                "reference": "12bc8879fb65aef2138b26fc633cb1e3620cffba",
                 "shasum": ""
             },
             "require": {
@@ -2476,7 +2473,7 @@
             ],
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.19"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/9.5.20"
             },
             "funding": [
                 {
@@ -2488,7 +2485,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-03-15T09:57:31+00:00"
+            "time": "2022-04-01T12:37:26+00:00"
         },
         {
             "name": "sebastian/cli-parser",

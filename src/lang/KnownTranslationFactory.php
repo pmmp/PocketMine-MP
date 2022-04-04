@@ -1829,6 +1829,10 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function pocketmine_plugin_mainClassAbstract() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_MAINCLASSABSTRACT, []);
+	}
+
 	public static function pocketmine_plugin_mainClassNotFound() : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_MAINCLASSNOTFOUND, []);
 	}
