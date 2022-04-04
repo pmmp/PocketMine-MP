@@ -815,9 +815,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	private function recheckBroadcastPermissions() : void{
 		foreach([
-			DefaultPermissionNames::BROADCAST_ADMIN => Server::BROADCAST_CHANNEL_ADMINISTRATIVE,
-			DefaultPermissionNames::BROADCAST_USER => Server::BROADCAST_CHANNEL_USERS
-		] as $permission => $channel){
+					DefaultPermissionNames::BROADCAST_ADMIN => Server::BROADCAST_CHANNEL_ADMINISTRATIVE,
+					DefaultPermissionNames::BROADCAST_USER => Server::BROADCAST_CHANNEL_USERS
+				] as $permission => $channel){
 			if($this->hasPermission($permission)){
 				$this->server->subscribeToBroadcastChannel($channel, $this);
 			}else{
@@ -1201,10 +1201,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$revert = false;
 
+		$calcul = floor(abs(($oldPos->y - $newPos->y)));
 		if($jump) {
 			$newPos->y = $oldPos->y;
 			$this->jump();
-		}else if ($this->isSurvival(true) && $newPos->y > $oldPos->y){
+			if (!$this->isOnGround() && $calcul > 2){
+				$revert = true;
+			}
+		}else if ($this->isSurvival(true) && $calcul > 2){
 			$newPos->y = $oldPos->y;
 		}
 		if($distanceSquared > 100){
