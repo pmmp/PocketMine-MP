@@ -1205,11 +1205,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if($jump) {
 			$newPos->y = $oldPos->y;
 			$this->jump();
+			var_dump($calcul);
 			if (!$this->isOnGround() && $calcul > 2){
+				$newPos->y = $oldPos->y;
 				$revert = true;
 			}
 		}else if ($this->isSurvival(true) && $calcul > 2){
 			$newPos->y = $oldPos->y;
+			$revert = true;
 		}
 		if($distanceSquared > 100){
 			//TODO: this is probably too big if we process every movement
