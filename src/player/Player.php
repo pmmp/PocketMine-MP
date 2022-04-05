@@ -1188,32 +1188,33 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * @param Vector3 $newPos Coordinates of the player's feet, centered horizontally at the base of their bounding box.
 	 */
-	public function handleMovement(Vector3 $newPos, bool $jump = false) : void{
+	public function handleMovement(Vector3 $newPos, bool $jump = false) : void
+	{
 		$this->moveRateLimit--;
-		if($this->moveRateLimit < 0) {
+		if ($this->moveRateLimit < 0) {
 			return;
 		}
 
 		$oldPos = $this->getLocation();
 
-		$calcul = floor(abs(($newPos->y -$oldPos->y)));
+		$calcul = floor(abs(($newPos->y - $oldPos->y)));
 
 		$distanceSquared = $newPos->distanceSquared($oldPos);
 
 		$revert = false;
 
 		var_dump($calcul);
-		if($jump) {
+		if ($jump) {
 			$this->jump();
-			if ($this->isSurvival(true) && !$this->isOnGround()){
+			if ($this->isSurvival(true) && !$this->isOnGround()) {
 				$oldPos->y -= 1;
 				$revert = true;
 			}
-		}else if ($calcul > 0 && $this->isSurvival(true)){
-				$newPos->y = $oldPos->y;
-				$revert = true;
-			}
-		if($distanceSquared > 100){
+		} else if ($this->isSurvival(true) && $calcul > 0) {
+			$newPos->y = $oldPos->y;
+			$revert = true;
+		}
+		if ($distanceSquared > 100) {
 			//TODO: this is probably too big if we process every movement
 			/* !!! BEWARE YE WHO ENTER HERE !!!
 			 *
@@ -1228,12 +1229,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->logger->debug("Moved too fast, reverting movement");
 			$this->logger->debug("Old position: " . $this->location->asVector3() . ", new position: " . $newPos);
 			$revert = true;
-		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos)){
+		} elseif (!$this->getWorld()->isInLoadedTerrain($newPos)) {
 			$revert = true;
 			$this->nextChunkOrderRun = 0;
 		}
 
-		if(!$revert && $distanceSquared != 0){
+		if (!$revert && $distanceSquared != 0) {
 			$dx = $newPos->x - $this->location->x;
 			$dy = $newPos->y - $this->location->y;
 			$dz = $newPos->z - $this->location->z;
@@ -1241,7 +1242,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->move($dx, $dy, $dz);
 		}
 
-		if($revert){
+		if ($revert) {
 			$this->revertMovement($oldPos);
 		}
 
