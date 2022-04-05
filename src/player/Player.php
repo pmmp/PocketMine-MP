@@ -1651,7 +1651,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function continueBreakBlock(Vector3 $pos, int $face) : void{
 		if($this->blockBreakHandler !== null && $this->blockBreakHandler->getBlockPos()->distanceSquared($pos) < 0.0001){
-			$this->blockBreakHandler->update($face);
+			$this->blockBreakHandler->updateInfo($face);
 		}
 	}
 
