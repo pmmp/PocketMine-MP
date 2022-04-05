@@ -1203,7 +1203,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$revert = false;
 
 		$distanceY = floor(abs(($newPos->y - $oldPos->y)));
-		var_dump($newPos->x - $oldPos->x);
 		if ($jump) {
 			$this->jump();
 			if ($this->isSurvival(true) && !$this->isOnGround()) {
@@ -1236,6 +1235,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		if ($revert) {
 			$this->revertMovement($oldPos);
+			$this->teleport($oldPos);
 			return;
 		}
 		if ($distanceSquared != 0) {
