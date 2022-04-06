@@ -172,8 +172,6 @@ class InGamePacketHandler extends PacketHandler
 
 	public function handleMovePlayer(MovePlayerPacket $packet): bool
 	{
-		var_dump($packet->actorRuntimeId);
-
 		//The client sends this every time it lands on the ground, even when using PlayerAuthInputPacket.
 		//Silence the debug spam that this causes.
 		return true;
@@ -231,6 +229,7 @@ class InGamePacketHandler extends PacketHandler
 		if ((bool)$mismatch) {
 			$this->player->sendData([$this->player]);
 		}
+		var_dump($glide);
 		//TODO: this packet has WAYYYYY more useful information that we're not using
 		$this->player->handleMovement($newPos, ($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)));
 
