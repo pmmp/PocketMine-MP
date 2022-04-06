@@ -181,7 +181,6 @@ class InGamePacketHandler extends PacketHandler
 	}
 	public function handleMoveActorDelta(MoveActorDeltaPacket $packet): bool
 	{
-		var_dump($packet);
 		return false;
 	}
 
@@ -204,6 +203,7 @@ class InGamePacketHandler extends PacketHandler
 				return false;
 			}
 		}
+		var_dump($packet->getDelta());
 
 		$yaw = fmod($packet->getYaw(), 360);
 		$pitch = fmod($packet->getPitch(), 360);
