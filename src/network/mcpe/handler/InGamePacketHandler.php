@@ -179,10 +179,6 @@ class InGamePacketHandler extends PacketHandler
 		//Silence the debug spam that this causes.
 		return true;
 	}
-	public function handleMoveActorDelta(MoveActorDeltaPacket $packet): bool
-	{
-		return false;
-	}
 
 	private function resolveOnOffInputFlags(PlayerAuthInputPacket $packet, int $startFlag, int $stopFlag): ?bool
 	{
@@ -203,7 +199,6 @@ class InGamePacketHandler extends PacketHandler
 				return false;
 			}
 		}
-		var_dump($packet->getDelta());
 
 		$yaw = fmod($packet->getYaw(), 360);
 		$pitch = fmod($packet->getPitch(), 360);
