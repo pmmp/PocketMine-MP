@@ -229,7 +229,7 @@ class InGamePacketHandler extends PacketHandler
 		if ((bool)$mismatch) {
 			$this->player->sendData([$this->player]);
 		}
-		var_dump($glide);
+		var_dump($gliding);
 		//TODO: this packet has WAYYYYY more useful information that we're not using
 		$this->player->handleMovement($newPos, ($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)));
 
