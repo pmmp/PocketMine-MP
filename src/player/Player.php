@@ -1202,7 +1202,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		$revert = false;
 
-		$distanceY = floor(($oldPos->y - $newPos->y));
+		$distanceY = floor(($newPos->y - $oldPos->y));
 
 		if ($jump) {
 			$this->jump();
