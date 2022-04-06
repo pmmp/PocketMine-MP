@@ -75,6 +75,7 @@ use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
 use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
+use pocketmine\network\mcpe\protocol\MoveActorDeltaPacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
@@ -178,11 +179,10 @@ class InGamePacketHandler extends PacketHandler
 		//Silence the debug spam that this causes.
 		return true;
 	}
-
-	public function handleMoveActorAbsolute(MoveActorAbsolutePacket $packet): bool
+	public function handleMoveActorDelta(MoveActorDeltaPacket $packet): bool
 	{
-		var_dump($packet->position);
-		return  false;
+		var_dump($packet);
+		return false;
 	}
 
 	private function resolveOnOffInputFlags(PlayerAuthInputPacket $packet, int $startFlag, int $stopFlag): ?bool
