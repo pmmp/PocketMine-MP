@@ -60,6 +60,7 @@ use pocketmine\network\mcpe\protocol\BossEventPacket;
 use pocketmine\network\mcpe\protocol\CommandBlockUpdatePacket;
 use pocketmine\network\mcpe\protocol\CommandRequestPacket;
 use pocketmine\network\mcpe\protocol\ContainerClosePacket;
+use pocketmine\network\mcpe\protocol\CorrectPlayerMovePredictionPacket;
 use pocketmine\network\mcpe\protocol\CraftingEventPacket;
 use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\InteractPacket;
@@ -73,6 +74,7 @@ use pocketmine\network\mcpe\protocol\MapInfoRequestPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
 use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
+use pocketmine\network\mcpe\protocol\MoveActorAbsolutePacket;
 use pocketmine\network\mcpe\protocol\MovePlayerPacket;
 use pocketmine\network\mcpe\protocol\NetworkStackLatencyPacket;
 use pocketmine\network\mcpe\protocol\PlayerActionPacket;
@@ -177,6 +179,12 @@ class InGamePacketHandler extends PacketHandler
 		return true;
 	}
 
+	public function handleMoveActorAbsolute(MoveActorAbsolutePacket $packet): bool
+	{
+		var_dump($packet->position);
+		return  false;
+	}
+
 	private function resolveOnOffInputFlags(PlayerAuthInputPacket $packet, int $startFlag, int $stopFlag): ?bool
 	{
 		$enabled = $packet->hasFlag($startFlag);
@@ -229,7 +237,6 @@ class InGamePacketHandler extends PacketHandler
 		if ((bool)$mismatch) {
 			$this->player->sendData([$this->player]);
 		}
-		var_dump($gliding);
 		//TODO: this packet has WAYYYYY more useful information that we're not using
 		$this->player->handleMovement($newPos, ($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)));
 
