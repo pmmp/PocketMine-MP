@@ -172,6 +172,8 @@ class InGamePacketHandler extends PacketHandler
 
 	public function handleMovePlayer(MovePlayerPacket $packet): bool
 	{
+		var_dump($packet->actorRuntimeId);
+
 		//The client sends this every time it lands on the ground, even when using PlayerAuthInputPacket.
 		//Silence the debug spam that this causes.
 		return true;
@@ -650,7 +652,6 @@ class InGamePacketHandler extends PacketHandler
 
 	public function handleSetActorMotion(SetActorMotionPacket $packet): bool
 	{
-		var_dump($packet);
 		return true; //Not used: This packet is (erroneously) sent to the server when the client is riding a vehicle.
 	}
 
