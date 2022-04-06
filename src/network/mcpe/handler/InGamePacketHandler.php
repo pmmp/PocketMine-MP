@@ -650,6 +650,7 @@ class InGamePacketHandler extends PacketHandler
 
 	public function handleSetActorMotion(SetActorMotionPacket $packet): bool
 	{
+		var_dump($packet);
 		return true; //Not used: This packet is (erroneously) sent to the server when the client is riding a vehicle.
 	}
 
