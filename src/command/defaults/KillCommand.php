@@ -58,7 +58,7 @@ class KillCommand extends VanillaCommand{
 			return true;
 		}
 
-		$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, 1000));
+		$player->attack(new EntityDamageEvent($player, EntityDamageEvent::CAUSE_SUICIDE, PHP_INT_MAX));
 		if($player === $sender){
 			$sender->sendMessage(KnownTranslationFactory::commands_kill_successful($sender->getName()));
 		}else{
