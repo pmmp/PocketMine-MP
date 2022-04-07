@@ -1171,8 +1171,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * @param Vector3 $newPos Coordinates of the player's feet, centered horizontally at the base of their bounding box.
 	 */
-	public function handleMovement(Vector3 $newPos, bool $jump = false) : void{
-
+	public function handleMovement(Vector3 $newPos) : void{
 		$this->moveRateLimit--;
 		if($this->moveRateLimit < 0){
 			return;
@@ -1181,21 +1180,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$oldPos = $this->getLocation();
 		$distanceSquared = $newPos->distanceSquared($oldPos);
 
-
 		$revert = false;
 
-		$distanceY = floor($newPos->y - $oldPos->y);
-		if($jump){
-			$this->jump();
-			if ($this->isSurvival(true) && (!$this->isOnGround() || $distanceY > 0)) {
-				$newPos->y = $oldPos->y;
-				$revert = true;
-			}
-		}
-		if (!$jump && $this->isSurvival(true) && $distanceY > 0){
-			$newPos->y = $oldPos->y;
-			$revert = true;
-		}elseif($distanceSquared > 100){
+		if($distanceSquared > 100){
 			//TODO: this is probably too big if we process every movement
 			/* !!! BEWARE YE WHO ENTER HERE !!!
 			 *
@@ -1215,17 +1202,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->nextChunkOrderRun = 0;
 		}
 
-		unset($distanceY);
+
 		if($revert){
 			$this->revertMovement($oldPos);
-		}else if($distanceSquared != 0){
+		}elseif($distanceSquared != 0){
 			$dx = $newPos->x - $this->location->x;
 			$dy = $newPos->y - $this->location->y;
 			$dz = $newPos->z - $this->location->z;
 
 			$this->move($dx, $dy, $dz);
 		}
-
 	}
 
 	/**
