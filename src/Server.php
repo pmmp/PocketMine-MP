@@ -1002,7 +1002,13 @@ class Server{
 
 			register_shutdown_function([$this, "crashDump"]);
 
-			$this->pluginManager->loadPlugins($this->pluginPath);
+			$loadErrorCount = 0;
+			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
+			if($loadErrorCount > 0){
+				$this->logger->emergency("Some plugins failed to load");
+				$this->forceShutdown();
+				return;
+			}
 			$this->enablePlugins(PluginEnableOrder::STARTUP());
 
 			if(!$this->startupPrepareWorlds()){

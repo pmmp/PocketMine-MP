@@ -221,7 +221,7 @@ class PluginManager{
 	 * @param string[]|null $newLoaders
 	 * @phpstan-param list<class-string<PluginLoader>> $newLoaders
 	 */
-	private function triagePlugins(string $path, PluginLoadTriage $triage, ?array $newLoaders = null) : void{
+	private function triagePlugins(string $path, PluginLoadTriage $triage, int &$loadErrorCount, ?array $newLoaders = null) : void{
 		if(is_array($newLoaders)){
 			$loaders = [];
 			foreach($newLoaders as $key){
@@ -257,10 +257,12 @@ class PluginManager{
 						$file,
 						KnownTranslationFactory::pocketmine_plugin_invalidManifest($e->getMessage())
 					)));
+					$loadErrorCount++;
 					continue;
 				}catch(\RuntimeException $e){ //TODO: more specific exception handling
 					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($file, $e->getMessage())));
 					$this->server->getLogger()->logException($e);
+					$loadErrorCount++;
 					continue;
 				}
 				if($description === null){
@@ -271,11 +273,13 @@ class PluginManager{
 
 				if(($loadabilityError = $loadabilityChecker->check($description)) !== null){
 					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, $loadabilityError)));
+					$loadErrorCount++;
 					continue;
 				}
 
 				if(isset($triage->plugins[$name]) || $this->getPlugin($name) instanceof Plugin){
 					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_duplicateError($name)));
+					$loadErrorCount++;
 					continue;
 				}
 
@@ -288,6 +292,9 @@ class PluginManager{
 						$name,
 						$this->graylist->isWhitelist() ? KnownTranslationFactory::pocketmine_plugin_disallowedByWhitelist() : KnownTranslationFactory::pocketmine_plugin_disallowedByBlacklist()
 					)));
+					//this does NOT increment loadErrorCount, because using the graylist to prevent a plugin from
+					//loading is not considered accidental; this is the same as if the plugin were manually removed
+					//this means that the server will continue to boot even if some plugins were blocked by graylist
 					continue;
 				}
 
@@ -331,14 +338,14 @@ class PluginManager{
 	/**
 	 * @return Plugin[]
 	 */
-	public function loadPlugins(string $path) : array{
+	public function loadPlugins(string $path, int &$loadErrorCount = 0) : array{
 		if($this->loadPluginsGuard){
 			throw new \LogicException(__METHOD__ . "() cannot be called from within itself");
 		}
 		$this->loadPluginsGuard = true;
 
 		$triage = new PluginLoadTriage();
-		$this->triagePlugins($path, $triage);
+		$this->triagePlugins($path, $triage, $loadErrorCount);
 
 		$loadedPlugins = [];
 
@@ -364,10 +371,12 @@ class PluginManager{
 						if(count($diffLoaders) !== 0){
 							$this->server->getLogger()->debug("Plugin $name registered a new plugin loader during load, scanning for new plugins");
 							$plugins = $triage->plugins;
-							$this->triagePlugins($path, $triage, $diffLoaders);
+							$this->triagePlugins($path, $triage, $loadErrorCount, $diffLoaders);
 							$diffPlugins = array_diff_key($triage->plugins, $plugins);
 							$this->server->getLogger()->debug("Re-triage found plugins: " . implode(", ", array_keys($diffPlugins)));
 						}
+					}else{
+						$loadErrorCount++;
 					}
 				}
 			}
@@ -410,12 +419,14 @@ class PluginManager{
 								KnownTranslationFactory::pocketmine_plugin_unknownDependency(implode(", ", $unknownDependencies))
 							)));
 							unset($triage->plugins[$name]);
+							$loadErrorCount++;
 						}
 					}
 				}
 
 				foreach(Utils::stringifyKeys($triage->plugins) as $name => $file){
 					$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, KnownTranslationFactory::pocketmine_plugin_circularDependency())));
+					$loadErrorCount++;
 				}
 				break;
 			}
