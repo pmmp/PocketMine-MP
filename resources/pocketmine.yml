@@ -187,8 +187,13 @@ aliases:
   #abort: [pocketmine:stop]
 
   ##To add an alias, list the command(s) that it calls:
-  #giveadmin: [op]
+  #showtheversion: [version]
   #savestop: [save-all, stop]
+
+  ##To invoke another command with arguments, use $1 to pass the first argument, $2 for the second etc:
+  #giveadmin: [op $1] ## `giveadmin alex` -> `op alex`
+  #kill: [suicide, say "I tried to kill $1"] ## `kill alex` -> `suicide` + `say "I tried to kill alex"`
+  #giverandom: [give $1 $2, say "Someone has just received a $2!"] ## `giverandom alex diamond` -> `give alex diamond` + `say "Someone has just received a diamond!"`
 
   ##To change an existing command alias and make it do something else:
   #tp: [suicide]
