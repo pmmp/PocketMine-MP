@@ -156,7 +156,9 @@ class EffectManager{
 			return false;
 		}
 
-		$oldEffect?->getType()->remove($this->entity, $oldEffect);
+		if($oldEffect !== null){
+			$oldEffect->getType()->remove($this->entity, $oldEffect);
+		}
 
 		$effect->getType()->add($this->entity, $effect);
 		foreach($this->effectAddHooks as $hook){

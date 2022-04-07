@@ -504,13 +504,11 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function destroyCycles() : void{
-		/*
 		$this->inventory = null;
 		$this->offHandInventory = null;
 		$this->enderInventory = null;
 		$this->hungerManager = null;
 		$this->xpManager = null;
-		 */
 		parent::destroyCycles();
 	}
 }

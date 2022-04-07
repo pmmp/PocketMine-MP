@@ -96,7 +96,6 @@ use pocketmine\item\Releasable;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\lang\Language;
-use pocketmine\lang\LanguageNotFoundException;
 use pocketmine\lang\Translatable;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
@@ -173,7 +172,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	private const MAX_REACH_DISTANCE_CREATIVE = 13;
 	private const MAX_REACH_DISTANCE_SURVIVAL = 7;
 	private const MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
-	private Language $language;
 
 	/**
 	 * Validates the given username.
@@ -280,21 +278,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->server = $server;
 		$this->networkSession = $session;
 		$this->playerInfo = $playerInfo;
-		if($playerInfo->getLocaleArray() == 2){
-			try{
-				$this->language = new Language((Language::PREFIX_MCBE_TO_PMMP_PREFIX[$playerInfo->getLocaleArray()[0]] ?? Language::FALLBACK_LANGUAGE));
-			}catch(LanguageNotFoundException $e){
-				$this->logger->error($e->getMessage());
-				return;
-			}
-		}else{
-			try{
-				$this->language = new Language(Language::FALLBACK_LANGUAGE);
-			}catch(LanguageNotFoundException $e){
-				$this->logger->error($e->getMessage());
-				return;
-			}
-		}
 		$this->authenticated = $authenticated;
 
 		$this->username = $username;
@@ -601,7 +584,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	}
 
 	public function getLanguage() : Language{
-		return $this->language;
+		return $this->server->getLanguage();
 	}
 
 	/**
@@ -815,9 +798,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	private function recheckBroadcastPermissions() : void{
 		foreach([
-					DefaultPermissionNames::BROADCAST_ADMIN => Server::BROADCAST_CHANNEL_ADMINISTRATIVE,
-					DefaultPermissionNames::BROADCAST_USER => Server::BROADCAST_CHANNEL_USERS
-				] as $permission => $channel){
+			DefaultPermissionNames::BROADCAST_ADMIN => Server::BROADCAST_CHANNEL_ADMINISTRATIVE,
+			DefaultPermissionNames::BROADCAST_USER => Server::BROADCAST_CHANNEL_USERS
+		] as $permission => $channel){
 			if($this->hasPermission($permission)){
 				$this->server->subscribeToBroadcastChannel($channel, $this);
 			}else{
@@ -1188,33 +1171,18 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * @param Vector3 $newPos Coordinates of the player's feet, centered horizontally at the base of their bounding box.
 	 */
-	public function handleMovement(Vector3 $newPos, bool $jump = false) : void
-	{
+	public function handleMovement(Vector3 $newPos) : void{
 		$this->moveRateLimit--;
-		if ($this->moveRateLimit < 0) {
+		if($this->moveRateLimit < 0){
 			return;
 		}
 
 		$oldPos = $this->getLocation();
-
-
 		$distanceSquared = $newPos->distanceSquared($oldPos);
 
 		$revert = false;
 
-		$distanceY = floor($newPos->y - $oldPos->y);
-
-		if ($jump) {
-			$this->jump();
-			if ($this->isSurvival(true) && (!$this->isOnGround() || $distanceY > 0)) {
-				$newPos->y = $oldPos->y;
-				$revert = true;
-			}
-		}else if ($this->isSurvival(true) && $distanceY > 0){
-			$newPos->y = $oldPos->y;
-			$revert = true;
-		}
-		if ($distanceSquared > 100) {
+		if($distanceSquared > 100){
 			//TODO: this is probably too big if we process every movement
 			/* !!! BEWARE YE WHO ENTER HERE !!!
 			 *
@@ -1229,17 +1197,12 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->logger->debug("Moved too fast, reverting movement");
 			$this->logger->debug("Old position: " . $this->location->asVector3() . ", new position: " . $newPos);
 			$revert = true;
-		} elseif (!$this->getWorld()->isInLoadedTerrain($newPos)) {
+		}elseif(!$this->getWorld()->isInLoadedTerrain($newPos)){
 			$revert = true;
 			$this->nextChunkOrderRun = 0;
 		}
 
-		if ($revert) {
-			$this->revertMovement($oldPos);
-			$this->teleport($oldPos);
-			return;
-		}
-		if ($distanceSquared != 0) {
+		if(!$revert && $distanceSquared != 0){
 			$dx = $newPos->x - $this->location->x;
 			$dy = $newPos->y - $this->location->y;
 			$dz = $newPos->z - $this->location->z;
@@ -1247,7 +1210,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->move($dx, $dy, $dz);
 		}
 
-
+		if($revert){
+			$this->revertMovement($oldPos);
+		}
 	}
 
 	/**
@@ -1542,21 +1507,20 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * @return bool if it did something.
 	 */
-	public function releaseHeldItem() : bool
-	{
-		try {
+	public function releaseHeldItem() : bool{
+		try{
 			$item = $this->inventory->getItemInHand();
-			if (!$this->isUsingItem() || $this->hasItemCooldown($item)) {
+			if(!$this->isUsingItem() || $this->hasItemCooldown($item)){
 				return false;
 			}
 
 			$oldItem = clone $item;
 
 			$result = $item->onReleaseUsing($this);
-			if ($result->equals(ItemUseResult::SUCCESS())) {
+			if($result->equals(ItemUseResult::SUCCESS())){
 				$this->resetItemCooldown($item);
-				if (!$item->equalsExact($oldItem) && $oldItem->equalsExact($this->inventory->getItemInHand())) {
-					if ($item instanceof Durable && $item->isBroken()) {
+				if(!$item->equalsExact($oldItem) && $oldItem->equalsExact($this->inventory->getItemInHand())){
+					if($item instanceof Durable && $item->isBroken()){
 						$this->broadcastSound(new ItemBreakSound());
 					}
 					$this->inventory->setItemInHand($item);
@@ -1565,7 +1529,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}
 
 			return false;
-		} finally {
+		}finally{
 			$this->setUsingItem(false);
 		}
 	}
@@ -1650,7 +1614,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 	public function continueBreakBlock(Vector3 $pos, int $face) : void{
 		if($this->blockBreakHandler !== null && $this->blockBreakHandler->getBlockPos()->distanceSquared($pos) < 0.0001){
-			$this->blockBreakHandler->updateInfo($face);
+			$this->blockBreakHandler->setTargetedFace($face);
 		}
 	}
 
@@ -1667,21 +1631,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 */
 	public function breakBlock(Vector3 $pos) : bool{
 		$this->removeCurrentWindow();
-
-
-		if($this->server->isEnableAntiCheatBreak()){
-			$target = $this->getWorld()->getBlock($pos);
-			if($this->isSurvival(true) && !$target->getBreakInfo()->breaksInstantly() && $this->blockBreakHandler === null){
-				$this->logger->debug("utilise probablement un Instante Break ou un Nuker");
-				($server = $this->getServer())->broadcastMessage("[{$this->getName()}] utilise probablement un Instante Break ou un Nuker", $server->getBroadcastChannelSubscribers("hevolia.brodcast.anticheat"));
-				return false;
-			}elseif($this->isSurvival(true) && !$target->getBreakInfo()->breaksInstantly() && $this->blockBreakHandler !== null && !$this->blockBreakHandler->isBreakable()){
-				$this->stopBreakBlock($pos);
-				$this->logger->debug("utilise probablement un Instante Break ou un Nuker");
-				($server = $this->getServer())->broadcastMessage("[{$this->getName()}] utilise probablement un Instante Break ou un Nuker", $server->getBroadcastChannelSubscribers("hevolia.brodcast.anticheat"));
-				return false;
-			}
-		}
 
 		if($this->canInteract($pos->add(0.5, 0.5, 0.5), $this->isCreative() ? self::MAX_REACH_DISTANCE_CREATIVE : self::MAX_REACH_DISTANCE_SURVIVAL)){
 			$this->broadcastAnimation(new ArmSwingAnimation($this), $this->getViewers());

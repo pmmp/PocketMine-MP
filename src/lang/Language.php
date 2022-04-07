@@ -44,16 +44,6 @@ use const SCANDIR_SORT_NONE;
 class Language{
 
 	public const FALLBACK_LANGUAGE = "eng";
-	public const PREFIX_MCBE_TO_PMMP_PREFIX = [
-		"fr" => "fra",
-		"en" => "eng",
-		"de" => "deu",
-		"ja" => "jpn",
-		"ko" => "kor",
-		"zh" => "chs",
-		"ru" => "rus",
-		"nl" => "nld"
-	];
 
 	/**
 	 * @return string[]

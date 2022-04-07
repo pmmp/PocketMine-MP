@@ -34,8 +34,6 @@ class PlayerInfo{
 
 	/** @var string */
 	private $username;
-	/** @var string */
-	private $deviceId;
 	/** @var UuidInterface */
 	private $uuid;
 	/** @var Skin */
@@ -43,33 +41,21 @@ class PlayerInfo{
 	/** @var string */
 	private $locale;
 	/**
-	 * @var array
+	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private array $extraData;
+	private $extraData;
 
 	/**
-	 * @param string        $username
-	 * @param string        $deviceId
-	 * @param UuidInterface $uuid
-	 * @param Skin          $skin
-	 * @param string        $locale
-	 * @param array         $extraData
+	 * @param mixed[] $extraData
+	 * @phpstan-param array<string, mixed> $extraData
 	 */
-	public function __construct(string $username, string $deviceId, UuidInterface $uuid, Skin $skin, string $locale, array $extraData = []){
+	public function __construct(string $username, UuidInterface $uuid, Skin $skin, string $locale, array $extraData = []){
 		$this->username = TextFormat::clean($username);
-		$this->deviceId = $deviceId;
 		$this->uuid = $uuid;
 		$this->skin = $skin;
 		$this->locale = $locale;
 		$this->extraData = $extraData;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getDeviceId() : string{
-		return $this->deviceId;
 	}
 
 	public function getUsername() : string{
@@ -86,13 +72,6 @@ class PlayerInfo{
 
 	public function getLocale() : string{
 		return $this->locale;
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function getLocaleArray() : array{
-		return explode("_",$this->locale);
 	}
 
 	/**

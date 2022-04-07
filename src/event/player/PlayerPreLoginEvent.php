@@ -25,7 +25,6 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\Event;
-use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\player\PlayerInfo;
 use function array_keys;
 use function count;
@@ -55,8 +54,6 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 
 	/** @var PlayerInfo */
 	private $playerInfo;
-	/** @var NetworkSession */
-	private NetworkSession $networkSession;
 	/** @var string */
 	private $ip;
 	/** @var int */
@@ -67,9 +64,8 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 	/** @var string[] reason const => associated message */
 	protected $kickReasons = [];
 
-	public function __construct(PlayerInfo $playerInfo, NetworkSession $networkSession,  string $ip, int $port, bool $authRequired){
+	public function __construct(PlayerInfo $playerInfo, string $ip, int $port, bool $authRequired){
 		$this->playerInfo = $playerInfo;
-		$this->networkSession = $networkSession;
 		$this->ip = $ip;
 		$this->port = $port;
 		$this->authRequired = $authRequired;
@@ -82,15 +78,6 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 	 */
 	public function getPlayerInfo() : PlayerInfo{
 		return $this->playerInfo;
-	}
-
-	public function getDeviceId() : string{
-		return $this->playerInfo->getDeviceId();
-	}
-
-	public function getNetworkSession(): NetworkSession
-	{
-		return $this->networkSession;
 	}
 
 	public function getIp() : string{

@@ -471,10 +471,6 @@ class Server{
 		return $this->configGroup->getPropertyBool("player.save-player-data", true);
 	}
 
-	public function isEnableAntiCheatBreak() : bool{
-		return $this->configGroup->getPropertyBool("player.anti-cheat-break", false);
-	}
-
 	/**
 	 * @return OfflinePlayer|Player
 	 */
