@@ -224,12 +224,8 @@ class InGamePacketHandler extends PacketHandler{
 			$this->player->sendData([$this->player]);
 		}
 
-		if($packet->hasFlag(PlayerAuthInputFlags::START_JUMPING)){
-			$this->player->jump();
-		}
-
 		//TODO: this packet has WAYYYYY more useful information that we're not using
-		$this->player->handleMovement($newPos);
+		$this->player->handleMovement($newPos,$packet->hasFlag(PlayerAuthInputFlags::START_JUMPING));
 
 		$packetHandled = true;
 

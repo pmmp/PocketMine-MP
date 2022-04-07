@@ -1171,7 +1171,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	 *
 	 * @param Vector3 $newPos Coordinates of the player's feet, centered horizontally at the base of their bounding box.
 	 */
-	public function handleMovement(Vector3 $newPos) : void{
+	public function handleMovement(Vector3 $newPos, bool $jump = false) : void{
+
 		$this->moveRateLimit--;
 		if($this->moveRateLimit < 0){
 			return;
@@ -1180,7 +1181,21 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$oldPos = $this->getLocation();
 		$distanceSquared = $newPos->distanceSquared($oldPos);
 
+
 		$revert = false;
+
+		$distanceY = floor($newPos->y - $oldPos->y);
+		if($jump){
+			$this->jump();
+			if ($this->isSurvival(true) && (!$this->isOnGround() || $distanceY > 0)) {
+				$newPos->y = $oldPos->y;
+				$revert = true;
+			}
+		}else if ($this->isSurvival(true) && $distanceY > 0){
+			$newPos->y = $oldPos->y;
+			$revert = true;
+		}
+		unset($distanceY);
 
 		if($distanceSquared > 100){
 			//TODO: this is probably too big if we process every movement
