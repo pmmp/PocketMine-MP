@@ -1191,13 +1191,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$newPos->y = $oldPos->y;
 				$revert = true;
 			}
-		}else if ($this->isSurvival(true) && $distanceY > 0){
+		}
+		if (!$jump && $this->isSurvival(true) && $distanceY > 0){
 			$newPos->y = $oldPos->y;
 			$revert = true;
-		}
-		unset($distanceY);
-
-		if($distanceSquared > 100){
+		}elseif($distanceSquared > 100){
 			//TODO: this is probably too big if we process every movement
 			/* !!! BEWARE YE WHO ENTER HERE !!!
 			 *
@@ -1217,6 +1215,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			$this->nextChunkOrderRun = 0;
 		}
 
+		unset($distanceY);
 		if($revert){
 			$this->revertMovement($oldPos);
 		}else if($distanceSquared != 0){
