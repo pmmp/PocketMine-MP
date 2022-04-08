@@ -45,7 +45,7 @@ class HandlerListManager{
 	 * @param Plugin|Listener|RegisteredListener|null $object
 	 */
 	public function unregisterAll($object = null) : void{
-		if($object instanceof Listener or $object instanceof Plugin or $object instanceof RegisteredListener){
+		if($object instanceof Listener || $object instanceof Plugin || $object instanceof RegisteredListener){
 			foreach($this->allLists as $h){
 				$h->unregister($object);
 			}

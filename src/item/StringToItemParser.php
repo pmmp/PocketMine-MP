@@ -49,7 +49,7 @@ final class StringToItemParser extends StringToTParser{
 			$result->registerBlock($prefix("bed"), fn() => VanillaBlocks::BED()->setColor($color));
 			$result->registerBlock($prefix("carpet"), fn() => VanillaBlocks::CARPET()->setColor($color));
 			$result->registerBlock($prefix("concrete"), fn() => VanillaBlocks::CONCRETE()->setColor($color));
-			$result->registerBlock($prefix("concrete_powder"), fn() => VanillaBlocks::CONCRETE()->setColor($color));
+			$result->registerBlock($prefix("concrete_powder"), fn() => VanillaBlocks::CONCRETE_POWDER()->setColor($color));
 			$result->registerBlock($prefix("stained_clay"), fn() => VanillaBlocks::STAINED_CLAY()->setColor($color));
 			$result->registerBlock($prefix("stained_glass"), fn() => VanillaBlocks::STAINED_GLASS()->setColor($color));
 			$result->registerBlock($prefix("stained_glass_pane"), fn() => VanillaBlocks::STAINED_GLASS_PANE()->setColor($color));
@@ -1034,10 +1034,12 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("clownfish", fn() => VanillaItems::CLOWNFISH());
 		$result->register("coal", fn() => VanillaItems::COAL());
 		$result->register("cocoa_beans", fn() => VanillaItems::COCOA_BEANS());
+		$result->register("cod", fn() => VanillaItems::RAW_FISH());
 		$result->register("compass", fn() => VanillaItems::COMPASS());
 		$result->register("compound", fn() => VanillaItems::CHEMICAL_SALT());
 		$result->register("cooked_beef", fn() => VanillaItems::STEAK());
 		$result->register("cooked_chicken", fn() => VanillaItems::COOKED_CHICKEN());
+		$result->register("cooked_cod", fn() => VanillaItems::COOKED_FISH());
 		$result->register("cooked_fish", fn() => VanillaItems::COOKED_FISH());
 		$result->register("cooked_mutton", fn() => VanillaItems::COOKED_MUTTON());
 		$result->register("cooked_porkchop", fn() => VanillaItems::COOKED_PORKCHOP());
@@ -1219,6 +1221,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("rabbit_hide", fn() => VanillaItems::RABBIT_HIDE());
 		$result->register("rabbit_stew", fn() => VanillaItems::RABBIT_STEW());
 		$result->register("raw_beef", fn() => VanillaItems::RAW_BEEF());
+		$result->register("raw_cod", fn() => VanillaItems::RAW_FISH());
 		$result->register("raw_chicken", fn() => VanillaItems::RAW_CHICKEN());
 		$result->register("raw_fish", fn() => VanillaItems::RAW_FISH());
 		$result->register("raw_mutton", fn() => VanillaItems::RAW_MUTTON());

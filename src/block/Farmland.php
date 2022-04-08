@@ -33,6 +33,7 @@ use pocketmine\math\Facing;
 use function lcg_value;
 
 class Farmland extends Transparent{
+	public const MAX_WETNESS = 7;
 
 	protected int $wetness = 0; //"moisture" blockstate property in PC
 
@@ -41,7 +42,7 @@ class Farmland extends Transparent{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->wetness = BlockDataSerializer::readBoundedInt("wetness", $stateMeta, 0, 7);
+		$this->wetness = BlockDataSerializer::readBoundedInt("wetness", $stateMeta, 0, self::MAX_WETNESS);
 	}
 
 	public function getStateBitmask() : int{
@@ -52,8 +53,8 @@ class Farmland extends Transparent{
 
 	/** @return $this */
 	public function setWetness(int $wetness) : self{
-		if($wetness < 0 || $wetness > 7){
-			throw new \InvalidArgumentException("Wetness must be in range 0-7");
+		if($wetness < 0 || $wetness > self::MAX_WETNESS){
+			throw new \InvalidArgumentException("Wetness must be in range 0 ... " . self::MAX_WETNESS);
 		}
 		$this->wetness = $wetness;
 		return $this;
@@ -84,8 +85,8 @@ class Farmland extends Transparent{
 			}else{
 				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
 			}
-		}elseif($this->wetness < 7){
-			$this->wetness = 7;
+		}elseif($this->wetness < self::MAX_WETNESS){
+			$this->wetness = self::MAX_WETNESS;
 			$this->position->getWorld()->setBlock($this->position, $this, false);
 		}
 	}

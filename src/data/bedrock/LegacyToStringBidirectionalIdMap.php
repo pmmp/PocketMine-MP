@@ -50,7 +50,7 @@ abstract class LegacyToStringBidirectionalIdMap{
 			throw new AssumptionFailedError("Invalid format of ID map");
 		}
 		foreach($stringToLegacyId as $stringId => $legacyId){
-			if(!is_string($stringId) or !is_int($legacyId)){
+			if(!is_string($stringId) || !is_int($legacyId)){
 				throw new AssumptionFailedError("ID map should have string keys and int values");
 			}
 			$this->legacyToString[$legacyId] = $stringId;

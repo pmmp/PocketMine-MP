@@ -103,16 +103,16 @@ class ItemEntity extends Entity{
 
 		$hasUpdate = parent::entityBaseTick($tickDiff);
 
-		if(!$this->isFlaggedForDespawn() and $this->pickupDelay !== self::NEVER_DESPAWN){ //Infinite delay
+		if(!$this->isFlaggedForDespawn() && $this->pickupDelay !== self::NEVER_DESPAWN){ //Infinite delay
 			$this->pickupDelay -= $tickDiff;
 			if($this->pickupDelay < 0){
 				$this->pickupDelay = 0;
 			}
-			if($this->hasMovementUpdate() and $this->despawnDelay % self::MERGE_CHECK_PERIOD === 0){
+			if($this->hasMovementUpdate() && $this->despawnDelay % self::MERGE_CHECK_PERIOD === 0){
 				$mergeable = [$this]; //in case the merge target ends up not being this
 				$mergeTarget = $this;
 				foreach($this->getWorld()->getNearbyEntities($this->boundingBox->expandedCopy(0.5, 0.5, 0.5), $this) as $entity){
-					if(!$entity instanceof ItemEntity or $entity->isFlaggedForDespawn()){
+					if(!$entity instanceof ItemEntity || $entity->isFlaggedForDespawn()){
 						continue;
 					}
 
@@ -151,7 +151,7 @@ class ItemEntity extends Entity{
 	 */
 	public function isMergeable(ItemEntity $entity) : bool{
 		$item = $entity->item;
-		return $entity !== $this && $entity->pickupDelay !== self::NEVER_DESPAWN and $item->canStackWith($this->item) and $item->getCount() + $this->item->getCount() <= $item->getMaxStackSize();
+		return $entity !== $this && $entity->pickupDelay !== self::NEVER_DESPAWN && $item->canStackWith($this->item) && $item->getCount() + $this->item->getCount() <= $item->getMaxStackSize();
 	}
 
 	/**
@@ -238,7 +238,7 @@ class ItemEntity extends Entity{
 	 * @throws \InvalidArgumentException
 	 */
 	public function setDespawnDelay(int $despawnDelay) : void{
-		if(($despawnDelay < 0 or $despawnDelay > self::MAX_DESPAWN_DELAY) and $despawnDelay !== self::NEVER_DESPAWN){
+		if(($despawnDelay < 0 || $despawnDelay > self::MAX_DESPAWN_DELAY) && $despawnDelay !== self::NEVER_DESPAWN){
 			throw new \InvalidArgumentException("Despawn ticker must be in range 0 ... " . self::MAX_DESPAWN_DELAY . " or " . self::NEVER_DESPAWN . ", got $despawnDelay");
 		}
 		$this->despawnDelay = $despawnDelay;
@@ -291,13 +291,13 @@ class ItemEntity extends Entity{
 
 		$item = $this->getItem();
 		$playerInventory = match(true){
-			$player->getOffHandInventory()->getItem(0)->canStackWith($item) and $player->getOffHandInventory()->getAddableItemQuantity($item) > 0 => $player->getOffHandInventory(),
+			$player->getOffHandInventory()->getItem(0)->canStackWith($item) && $player->getOffHandInventory()->getAddableItemQuantity($item) > 0 => $player->getOffHandInventory(),
 			$player->getInventory()->getAddableItemQuantity($item) > 0 => $player->getInventory(),
 			default => null
 		};
 
 		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
-		if($player->hasFiniteResources() and $playerInventory === null){
+		if($player->hasFiniteResources() && $playerInventory === null){
 			$ev->cancel();
 		}
 

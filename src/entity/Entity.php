@@ -56,6 +56,7 @@ use pocketmine\player\Player;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
 use pocketmine\timings\TimingsHandler;
+use pocketmine\utils\Utils;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\Position;
 use pocketmine\world\sound\Sound;
@@ -69,8 +70,6 @@ use function deg2rad;
 use function floor;
 use function fmod;
 use function get_class;
-use function is_infinite;
-use function is_nan;
 use function lcg_value;
 use function sin;
 use function spl_object_id;
@@ -217,7 +216,15 @@ abstract class Entity{
 	/** @var int|null */
 	protected $targetId = null;
 
+	private bool $constructorCalled = false;
+
 	public function __construct(Location $location, ?CompoundTag $nbt = null){
+		if($this->constructorCalled){
+			throw new \LogicException("Attempted to call constructor for an Entity multiple times");
+		}
+		$this->constructorCalled = true;
+		Utils::checkLocationNotInfOrNaN($location);
+
 		$this->timings = Timings::getEntityTimings($this);
 
 		$this->size = $this->getInitialSizeInfo();
@@ -226,11 +233,6 @@ abstract class Entity{
 		$this->server = $location->getWorld()->getServer();
 
 		$this->location = $location->asLocation();
-		assert(
-			!is_nan($this->location->x) and !is_infinite($this->location->x) and
-			!is_nan($this->location->y) and !is_infinite($this->location->y) and
-			!is_nan($this->location->z) and !is_infinite($this->location->z)
-		);
 
 		$this->boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 		$this->recalculateBoundingBox();
@@ -590,7 +592,7 @@ abstract class Entity{
 					$this->health = 0;
 				}
 			}
-		}elseif($amount <= $this->getMaxHealth() or $amount < $this->health){
+		}elseif($amount <= $this->getMaxHealth() || $amount < $this->health){
 			$this->health = $amount;
 		}else{
 			$this->health = $this->getMaxHealth();
@@ -641,13 +643,13 @@ abstract class Entity{
 
 		$this->checkBlockIntersections();
 
-		if($this->location->y <= World::Y_MIN - 16 and $this->isAlive()){
+		if($this->location->y <= World::Y_MIN - 16 && $this->isAlive()){
 			$ev = new EntityDamageEvent($this, EntityDamageEvent::CAUSE_VOID, 10);
 			$this->attack($ev);
 			$hasUpdate = true;
 		}
 
-		if($this->isOnFire() and $this->doOnFireTick($tickDiff)){
+		if($this->isOnFire() && $this->doOnFireTick($tickDiff)){
 			$hasUpdate = true;
 		}
 
@@ -683,7 +685,7 @@ abstract class Entity{
 	 * @throws \InvalidArgumentException
 	 */
 	public function setFireTicks(int $fireTicks) : void{
-		if($fireTicks < 0 or $fireTicks > 0x7fff){
+		if($fireTicks < 0 || $fireTicks > 0x7fff){
 			throw new \InvalidArgumentException("Fire ticks must be in range 0 ... " . 0x7fff . ", got $fireTicks");
 		}
 		$this->fireTicks = $fireTicks;
@@ -700,13 +702,13 @@ abstract class Entity{
 	}
 
 	protected function doOnFireTick(int $tickDiff = 1) : bool{
-		if($this->isFireProof() and $this->fireTicks > 1){
+		if($this->isFireProof() && $this->fireTicks > 1){
 			$this->fireTicks = 1;
 		}else{
 			$this->fireTicks -= $tickDiff;
 		}
 
-		if(($this->fireTicks % 20 === 0) or $tickDiff > 20){
+		if(($this->fireTicks % 20 === 0) || $tickDiff > 20){
 			$this->dealFireDamage();
 		}
 
@@ -728,7 +730,7 @@ abstract class Entity{
 	}
 
 	public function canCollideWith(Entity $entity) : bool{
-		return !$this->justCreated and $entity !== $this;
+		return !$this->justCreated && $entity !== $this;
 	}
 
 	public function canBeCollidedWith() : bool{
@@ -748,13 +750,13 @@ abstract class Entity{
 			$this->setImmobile($still);
 		}
 
-		if($teleport or $diffPosition > 0.0001 or $diffRotation > 1.0 or (!$wasStill and $still)){
+		if($teleport || $diffPosition > 0.0001 || $diffRotation > 1.0 || (!$wasStill && $still)){
 			$this->lastLocation = $this->location->asLocation();
 
 			$this->broadcastMovement($teleport);
 		}
 
-		if($diffMotion > 0.0025 or $wasStill !== $still){ //0.05 ** 2
+		if($diffMotion > 0.0025 || $wasStill !== $still){ //0.05 ** 2
 			$this->lastMotion = clone $this->motion;
 
 			$this->broadcastMotion();
@@ -769,10 +771,6 @@ abstract class Entity{
 		$this->server->broadcastPackets($this->hasSpawned, [MoveActorAbsolutePacket::create(
 			$this->id,
 			$this->getOffsetPosition($this->location),
-
-			//this looks very odd but is correct as of 1.5.0.7
-			//for arrows this is actually x/y/z rotation
-			//for mobs x and z are used for pitch and yaw, and y is used for headyaw
 			$this->location->pitch,
 			$this->location->yaw,
 			$this->location->yaw,
@@ -853,27 +851,27 @@ abstract class Entity{
 				$direction = Facing::WEST;
 			}
 
-			if($eastNonSolid and 1 - $diffX < $limit){
+			if($eastNonSolid && 1 - $diffX < $limit){
 				$limit = 1 - $diffX;
 				$direction = Facing::EAST;
 			}
 
-			if($downNonSolid and $diffY < $limit){
+			if($downNonSolid && $diffY < $limit){
 				$limit = $diffY;
 				$direction = Facing::DOWN;
 			}
 
-			if($upNonSolid and 1 - $diffY < $limit){
+			if($upNonSolid && 1 - $diffY < $limit){
 				$limit = 1 - $diffY;
 				$direction = Facing::UP;
 			}
 
-			if($northNonSolid and $diffZ < $limit){
+			if($northNonSolid && $diffZ < $limit){
 				$limit = $diffZ;
 				$direction = Facing::NORTH;
 			}
 
-			if($southNonSolid and 1 - $diffZ < $limit){
+			if($southNonSolid && 1 - $diffZ < $limit){
 				$direction = Facing::SOUTH;
 			}
 
@@ -903,13 +901,13 @@ abstract class Entity{
 			$angle += 360.0;
 		}
 
-		if((0 <= $angle and $angle < 45) or (315 <= $angle and $angle < 360)){
+		if((0 <= $angle && $angle < 45) || (315 <= $angle && $angle < 360)){
 			return Facing::SOUTH;
 		}
-		if(45 <= $angle and $angle < 135){
+		if(45 <= $angle && $angle < 135){
 			return Facing::WEST;
 		}
-		if(135 <= $angle and $angle < 225){
+		if(135 <= $angle && $angle < 225){
 			return Facing::NORTH;
 		}
 
@@ -964,7 +962,7 @@ abstract class Entity{
 				abs($this->motion->z) <= self::MOTION_THRESHOLD ? 0 : null
 			);
 
-			if($this->motion->x != 0 or $this->motion->y != 0 or $this->motion->z != 0){
+			if($this->motion->x != 0 || $this->motion->y != 0 || $this->motion->z != 0){
 				$this->move($this->motion->x, $this->motion->y, $this->motion->z);
 			}
 
@@ -980,7 +978,7 @@ abstract class Entity{
 		$this->timings->stopTiming();
 
 		//if($this->isStatic())
-		return ($hasUpdate or $this->hasMovementUpdate());
+		return ($hasUpdate || $this->hasMovementUpdate());
 		//return !($this instanceof Player);
 	}
 
@@ -1019,10 +1017,10 @@ abstract class Entity{
 	 */
 	public function hasMovementUpdate() : bool{
 		return (
-			$this->forceMovementUpdate or
-			$this->motion->x != 0 or
-			$this->motion->y != 0 or
-			$this->motion->z != 0 or
+			$this->forceMovementUpdate ||
+			$this->motion->x != 0 ||
+			$this->motion->y != 0 ||
+			$this->motion->z != 0 ||
 			!$this->onGround
 		);
 	}
@@ -1095,7 +1093,7 @@ abstract class Entity{
 	public function isInsideOfSolid() : bool{
 		$block = $this->getWorld()->getBlockAt((int) floor($this->location->x), (int) floor($y = ($this->location->y + $this->getEyeHeight())), (int) floor($this->location->z));
 
-		return $block->isSolid() and !$block->isTransparent() and $block->collidesWithBB($this->getBoundingBox());
+		return $block->isSolid() && !$block->isTransparent() && $block->collidesWithBB($this->getBoundingBox());
 	}
 
 	protected function move(float $dx, float $dy, float $dz) : void{
@@ -1114,7 +1112,7 @@ abstract class Entity{
 
 			$moveBB = clone $this->boundingBox;
 
-			assert(abs($dx) <= 20 and abs($dy) <= 20 and abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
+			assert(abs($dx) <= 20 && abs($dy) <= 20 && abs($dz) <= 20, "Movement distance is excessive: dx=$dx, dy=$dy, dz=$dz");
 
 			$list = $this->getWorld()->getCollisionBoxes($this, $moveBB->addCoord($dx, $dy, $dz), false);
 
@@ -1124,7 +1122,7 @@ abstract class Entity{
 
 			$moveBB->offset(0, $dy, 0);
 
-			$fallingFlag = ($this->onGround or ($dy != $wantedY and $wantedY < 0));
+			$fallingFlag = ($this->onGround || ($dy != $wantedY && $wantedY < 0));
 
 			foreach($list as $bb){
 				$dx = $bb->calculateXOffset($moveBB, $dx);
@@ -1138,7 +1136,7 @@ abstract class Entity{
 
 			$moveBB->offset(0, 0, $dz);
 
-			if($this->stepHeight > 0 and $fallingFlag and ($wantedX != $dx or $wantedZ != $dz)){
+			if($this->stepHeight > 0 && $fallingFlag && ($wantedX != $dx || $wantedZ != $dz)){
 				$cx = $dx;
 				$cy = $dy;
 				$cz = $dz;
@@ -1214,9 +1212,9 @@ abstract class Entity{
 
 	protected function checkGroundState(float $wantedX, float $wantedY, float $wantedZ, float $dx, float $dy, float $dz) : void{
 		$this->isCollidedVertically = $wantedY != $dy;
-		$this->isCollidedHorizontally = ($wantedX != $dx or $wantedZ != $dz);
-		$this->isCollided = ($this->isCollidedHorizontally or $this->isCollidedVertically);
-		$this->onGround = ($wantedY != $dy and $wantedY < 0);
+		$this->isCollidedHorizontally = ($wantedX != $dx || $wantedZ != $dz);
+		$this->isCollided = ($this->isCollidedHorizontally || $this->isCollidedVertically);
+		$this->onGround = ($wantedY != $dy && $wantedY < 0);
 	}
 
 	/**
@@ -1332,6 +1330,8 @@ abstract class Entity{
 	}
 
 	public function setRotation(float $yaw, float $pitch) : void{
+		Utils::checkFloatNotInfOrNaN("yaw", $yaw);
+		Utils::checkFloatNotInfOrNaN("pitch", $pitch);
 		$this->location->yaw = $yaw;
 		$this->location->pitch = $pitch;
 		$this->scheduleUpdate();
@@ -1357,6 +1357,7 @@ abstract class Entity{
 	}
 
 	public function setMotion(Vector3 $motion) : bool{
+		Utils::checkVector3NotInfOrNaN($motion);
 		if(!$this->justCreated){
 			$ev = new EntityMotionEvent($this, $motion);
 			$ev->call();
@@ -1378,6 +1379,9 @@ abstract class Entity{
 	 * Adds the given values to the entity's motion vector.
 	 */
 	public function addMotion(float $x, float $y, float $z) : void{
+		Utils::checkFloatNotInfOrNaN("x", $x);
+		Utils::checkFloatNotInfOrNaN("y", $y);
+		Utils::checkFloatNotInfOrNaN("z", $z);
 		$this->motion = $this->motion->add($x, $y, $z);
 	}
 
@@ -1389,10 +1393,18 @@ abstract class Entity{
 	 * @param Vector3|Position|Location $pos
 	 */
 	public function teleport(Vector3 $pos, ?float $yaw = null, ?float $pitch = null) : bool{
+		Utils::checkVector3NotInfOrNaN($pos);
 		if($pos instanceof Location){
 			$yaw = $yaw ?? $pos->yaw;
 			$pitch = $pitch ?? $pos->pitch;
 		}
+		if($yaw !== null){
+			Utils::checkFloatNotInfOrNaN("yaw", $yaw);
+		}
+		if($pitch !== null){
+			Utils::checkFloatNotInfOrNaN("pitch", $pitch);
+		}
+
 		$from = $this->location->asPosition();
 		$to = Position::fromObject($pos, $pos instanceof Position ? $pos->getWorld() : $this->getWorld());
 		$ev = new EntityTeleportEvent($this, $from, $to);
@@ -1455,7 +1467,7 @@ abstract class Entity{
 		//TODO: this will cause some visible lag during chunk resends; if the player uses a spawn egg in a chunk, the
 		//created entity won't be visible until after the resend arrives. However, this is better than possibly crashing
 		//the player by sending them entities too early.
-		if(!isset($this->hasSpawned[$id]) and $player->getWorld() === $this->getWorld() and $player->hasReceivedChunk($this->location->getFloorX() >> Chunk::COORD_BIT_SIZE, $this->location->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
+		if(!isset($this->hasSpawned[$id]) && $player->getWorld() === $this->getWorld() && $player->hasReceivedChunk($this->location->getFloorX() >> Chunk::COORD_BIT_SIZE, $this->location->getFloorZ() >> Chunk::COORD_BIT_SIZE)){
 			$this->hasSpawned[$id] = $player;
 
 			$this->sendSpawnPacket($player);

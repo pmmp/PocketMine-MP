@@ -137,7 +137,7 @@ class PluginManager{
 		$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_load($description->getFullName())));
 
 		$dataFolder = $this->getDataDirectory($path, $description->getName());
-		if(file_exists($dataFolder) and !is_dir($dataFolder)){
+		if(file_exists($dataFolder) && !is_dir($dataFolder)){
 			$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 				$description->getName(),
 				KnownTranslationFactory::pocketmine_plugin_badDataFolder($dataFolder)
@@ -274,7 +274,7 @@ class PluginManager{
 					continue;
 				}
 
-				if(isset($triage->plugins[$name]) or $this->getPlugin($name) instanceof Plugin){
+				if(isset($triage->plugins[$name]) || $this->getPlugin($name) instanceof Plugin){
 					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_duplicateError($name)));
 					continue;
 				}
@@ -283,7 +283,7 @@ class PluginManager{
 					$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_spacesDiscouraged($name)));
 				}
 
-				if($this->graylist !== null and !$this->graylist->isAllowed($name)){
+				if($this->graylist !== null && !$this->graylist->isAllowed($name)){
 					$this->server->getLogger()->notice($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 						$name,
 						$this->graylist->isWhitelist() ? KnownTranslationFactory::pocketmine_plugin_disallowedByWhitelist() : KnownTranslationFactory::pocketmine_plugin_disallowedByBlacklist()
@@ -314,7 +314,7 @@ class PluginManager{
 	private function checkDepsForTriage(string $pluginName, string $dependencyType, array &$dependencyLists, array $loadedPlugins, PluginLoadTriage $triage) : void{
 		if(isset($dependencyLists[$pluginName])){
 			foreach($dependencyLists[$pluginName] as $key => $dependency){
-				if(isset($loadedPlugins[$dependency]) or $this->getPlugin($dependency) instanceof Plugin){
+				if(isset($loadedPlugins[$dependency]) || $this->getPlugin($dependency) instanceof Plugin){
 					$this->server->getLogger()->debug("Successfully resolved $dependencyType dependency \"$dependency\" for plugin \"$pluginName\"");
 					unset($dependencyLists[$pluginName][$key]);
 				}elseif(array_key_exists($dependency, $triage->plugins)){
@@ -348,7 +348,7 @@ class PluginManager{
 				$this->checkDepsForTriage($name, "hard", $triage->dependencies, $loadedPlugins, $triage);
 				$this->checkDepsForTriage($name, "soft", $triage->softDependencies, $loadedPlugins, $triage);
 
-				if(!isset($triage->dependencies[$name]) and !isset($triage->softDependencies[$name])){
+				if(!isset($triage->dependencies[$name]) && !isset($triage->softDependencies[$name])){
 					unset($triage->plugins[$name]);
 					$loadedThisLoop++;
 
@@ -426,7 +426,7 @@ class PluginManager{
 	}
 
 	public function isPluginEnabled(Plugin $plugin) : bool{
-		return isset($this->plugins[$plugin->getDescription()->getName()]) and $plugin->isEnabled();
+		return isset($this->plugins[$plugin->getDescription()->getName()]) && $plugin->isEnabled();
 	}
 
 	public function enablePlugin(Plugin $plugin) : void{
@@ -435,10 +435,11 @@ class PluginManager{
 
 			$plugin->getScheduler()->setEnabled(true);
 			$plugin->onEnableStateChange(true);
+			if($plugin->isEnabled()){ //the plugin may have disabled itself during onEnable()
+				$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
 
-			$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
-
-			(new PluginEnableEvent($plugin))->call();
+				(new PluginEnableEvent($plugin))->call();
+			}
 		}
 	}
 
@@ -485,7 +486,7 @@ class PluginManager{
 	 * @phpstan-return class-string<Event>|null
 	 */
 	private function getEventsHandledBy(\ReflectionMethod $method) : ?string{
-		if($method->isStatic() or !$method->getDeclaringClass()->implementsInterface(Listener::class)){
+		if($method->isStatic() || !$method->getDeclaringClass()->implementsInterface(Listener::class)){
 			return null;
 		}
 		$tags = Utils::parseDocComment((string) $method->getDocComment());
@@ -575,7 +576,7 @@ class PluginManager{
 	 *
 	 * @throws \ReflectionException
 	 */
-	public function registerEvent(string $event, \Closure $handler, int $priority, Plugin $plugin, bool $handleCancelled = false) : void{
+	public function registerEvent(string $event, \Closure $handler, int $priority, Plugin $plugin, bool $handleCancelled = false) : RegisteredListener{
 		if(!is_subclass_of($event, Event::class)){
 			throw new PluginException($event . " is not an Event");
 		}
@@ -588,6 +589,8 @@ class PluginManager{
 
 		$timings = new TimingsHandler("Plugin: " . $plugin->getDescription()->getFullName() . " Event: " . $handlerName . "(" . (new \ReflectionClass($event))->getShortName() . ")");
 
-		HandlerListManager::global()->getListFor($event)->register(new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings));
+		$registeredListener = new RegisteredListener($handler, $priority, $plugin, $handleCancelled, $timings);
+		HandlerListManager::global()->getListFor($event)->register($registeredListener);
+		return $registeredListener;
 	}
 }

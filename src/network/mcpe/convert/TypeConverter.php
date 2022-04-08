@@ -157,7 +157,7 @@ class TypeConverter{
 		}else{
 			[$id, $meta] = $idMeta;
 
-			if($itemStack instanceof Durable and $itemStack->getDamage() > 0){
+			if($itemStack instanceof Durable && $itemStack->getDamage() > 0){
 				if($nbt !== null){
 					if(($existing = $nbt->getTag(self::DAMAGE_TAG)) !== null){
 						$nbt->removeTag(self::DAMAGE_TAG);
@@ -233,6 +233,9 @@ class TypeConverter{
 				$compound = null;
 			}
 		}
+		if($meta < 0 || $meta >= 0x7fff){ //this meta value may have been restored from the NBT
+			throw new TypeConversionException("Item meta must be in range 0 ... " . 0x7fff . " (received $meta)");
+		}
 
 		try{
 			return ItemFactory::getInstance()->get(
@@ -267,7 +270,7 @@ class TypeConverter{
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
 				$window = null;
-				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){
+				if($action->windowId === ContainerIds::UI && $action->inventorySlot > 0){
 					if($action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
 						return null; //useless noise
 					}

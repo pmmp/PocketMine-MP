@@ -163,7 +163,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		}
 
 		$offset = $packet->chunkIndex * self::PACK_CHUNK_SIZE;
-		if($offset < 0 or $offset >= $pack->getPackSize()){
+		if($offset < 0 || $offset >= $pack->getPackSize()){
 			$this->disconnectWithError("Invalid out-of-bounds request for chunk $packet->chunkIndex of $packet->packId: offset $offset, file size " . $pack->getPackSize());
 			return false;
 		}

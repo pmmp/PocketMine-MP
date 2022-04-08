@@ -62,12 +62,12 @@ function find_regions_recursive(string $dir, array &$files) : void{
 		return;
 	}
 	foreach($dirFiles as $file){
-		if($file === "." or $file === ".."){
+		if($file === "." || $file === ".."){
 			continue;
 		}
 		$fullPath = $dir . "/" . $file;
 		if(
-			in_array(pathinfo($fullPath, PATHINFO_EXTENSION), SUPPORTED_EXTENSIONS, true) and
+			in_array(pathinfo($fullPath, PATHINFO_EXTENSION), SUPPORTED_EXTENSIONS, true) &&
 			is_file($fullPath)
 		){
 			$files[$fullPath] = filesize($fullPath);

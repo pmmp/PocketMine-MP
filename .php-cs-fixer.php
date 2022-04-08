@@ -43,6 +43,7 @@ return (new PhpCsFixer\Config)
 			'import_classes' => null,
 		],
 		'indentation_type' => true,
+		'logical_operators' => true,
 		'native_function_invocation' => [
 			'scope' => 'namespaced',
 			'include' => ['@all'],

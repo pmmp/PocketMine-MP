@@ -107,18 +107,13 @@ class BanEntry{
 	}
 
 	public function getString() : string{
-		$str = "";
-		$str .= $this->getName();
-		$str .= "|";
-		$str .= $this->getCreated()->format(self::$format);
-		$str .= "|";
-		$str .= $this->getSource();
-		$str .= "|";
-		$str .= $this->getExpires() === null ? "Forever" : $this->getExpires()->format(self::$format);
-		$str .= "|";
-		$str .= $this->getReason();
-
-		return $str;
+		return implode("|", [
+			$this->getName(),
+			$this->getCreated()->format(self::$format),
+			$this->getSource(),
+			$this->getExpires() === null ? "Forever" : $this->getExpires()->format(self::$format),
+			$this->getReason()
+		]);
 	}
 
 	/**
@@ -168,7 +163,7 @@ class BanEntry{
 		}
 		if(count($parts) > 0){
 			$expire = trim(array_shift($parts));
-			if($expire !== "" and strtolower($expire) !== "forever"){
+			if($expire !== "" && strtolower($expire) !== "forever"){
 				$entry->setExpires(self::parseDate($expire));
 			}
 		}

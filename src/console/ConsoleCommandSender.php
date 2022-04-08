@@ -39,7 +39,10 @@ class ConsoleCommandSender implements CommandSender{
 
 	/** @var Server */
 	private $server;
-	/** @var int|null */
+	/**
+	 * @var int|null
+	 * @phpstan-var positive-int|null
+	 */
 	protected $lineHeight = null;
 	/** @var Language */
 	private $language;
@@ -78,7 +81,7 @@ class ConsoleCommandSender implements CommandSender{
 	}
 
 	public function setScreenLineHeight(?int $height) : void{
-		if($height !== null and $height < 1){
+		if($height !== null && $height < 1){
 			throw new \InvalidArgumentException("Line height must be at least 1");
 		}
 		$this->lineHeight = $height;

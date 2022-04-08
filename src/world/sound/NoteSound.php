@@ -35,7 +35,7 @@ class NoteSound implements Sound{
 	private $note;
 
 	public function __construct(NoteInstrument $instrument, int $note){
-		if($note < 0 or $note > 255){
+		if($note < 0 || $note > 255){
 			throw new \InvalidArgumentException("Note $note is outside accepted range");
 		}
 		$this->instrument = $instrument;

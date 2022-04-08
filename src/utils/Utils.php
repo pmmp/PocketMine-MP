@@ -28,7 +28,9 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use DaveRandom\CallbackValidator\CallbackType;
+use pocketmine\entity\Location;
 use pocketmine\errorhandler\ErrorTypeToStringMap;
+use pocketmine\math\Vector3;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function array_combine;
@@ -57,7 +59,9 @@ use function interface_exists;
 use function is_a;
 use function is_array;
 use function is_bool;
+use function is_infinite;
 use function is_int;
+use function is_nan;
 use function is_object;
 use function is_string;
 use function mb_check_encoding;
@@ -189,7 +193,7 @@ final class Utils{
 	 * @param string $extra optional, additional data to identify the machine
 	 */
 	public static function getMachineUniqueId(string $extra = "") : UuidInterface{
-		if(self::$serverUniqueId !== null and $extra === ""){
+		if(self::$serverUniqueId !== null && $extra === ""){
 			return self::$serverUniqueId;
 		}
 
@@ -265,7 +269,7 @@ final class Utils{
 	 * Other => other
 	 */
 	public static function getOS(bool $recalculate = false) : string{
-		if(self::$os === null or $recalculate){
+		if(self::$os === null || $recalculate){
 			$uname = php_uname("s");
 			if(stripos($uname, "Darwin") !== false){
 				if(strpos(php_uname("m"), "iP") === 0){
@@ -273,7 +277,7 @@ final class Utils{
 				}else{
 					self::$os = self::OS_MACOS;
 				}
-			}elseif(stripos($uname, "Win") !== false or $uname === "Msys"){
+			}elseif(stripos($uname, "Win") !== false || $uname === "Msys"){
 				self::$os = self::OS_WINDOWS;
 			}elseif(stripos($uname, "Linux") !== false){
 				if(@file_exists("/system/build.prop")){
@@ -281,7 +285,7 @@ final class Utils{
 				}else{
 					self::$os = self::OS_LINUX;
 				}
-			}elseif(stripos($uname, "BSD") !== false or $uname === "DragonFly"){
+			}elseif(stripos($uname, "BSD") !== false || $uname === "DragonFly"){
 				self::$os = self::OS_BSD;
 			}else{
 				self::$os = self::OS_UNKNOWN;
@@ -294,7 +298,7 @@ final class Utils{
 	public static function getCoreCount(bool $recalculate = false) : int{
 		static $processors = 0;
 
-		if($processors > 0 and !$recalculate){
+		if($processors > 0 && !$recalculate){
 			return $processors;
 		}else{
 			$processors = 0;
@@ -443,7 +447,7 @@ final class Utils{
 		$messages = [];
 		for($i = 0; isset($trace[$i]); ++$i){
 			$params = "";
-			if(isset($trace[$i]["args"]) or isset($trace[$i]["params"])){
+			if(isset($trace[$i]["args"]) || isset($trace[$i]["params"])){
 				if(isset($trace[$i]["args"])){
 					$args = $trace[$i]["args"];
 				}else{
@@ -466,7 +470,7 @@ final class Utils{
 					return gettype($value) . " " . Utils::printable((string) $value);
 				}, $args));
 			}
-			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" or $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
+			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" || $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
 		}
 		return $messages;
 	}
@@ -601,5 +605,28 @@ final class Utils{
 			throw new AssumptionFailedError("Assumption failure: " . (is_string($context) ? $context : $context()) . " (THIS IS A BUG)");
 		}
 		return $value;
+	}
+
+	public static function checkFloatNotInfOrNaN(string $name, float $float) : void{
+		if(is_nan($float)){
+			throw new \InvalidArgumentException("$name cannot be NaN");
+		}
+		if(is_infinite($float)){
+			throw new \InvalidArgumentException("$name cannot be infinite");
+		}
+	}
+
+	public static function checkVector3NotInfOrNaN(Vector3 $vector3) : void{
+		if($vector3 instanceof Location){ //location could be masquerading as vector3
+			self::checkFloatNotInfOrNaN("yaw", $vector3->yaw);
+			self::checkFloatNotInfOrNaN("pitch", $vector3->pitch);
+		}
+		self::checkFloatNotInfOrNaN("x", $vector3->x);
+		self::checkFloatNotInfOrNaN("y", $vector3->y);
+		self::checkFloatNotInfOrNaN("z", $vector3->z);
+	}
+
+	public static function checkLocationNotInfOrNaN(Location $location) : void{
+		self::checkVector3NotInfOrNaN($location);
 	}
 }

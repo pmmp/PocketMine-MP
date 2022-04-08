@@ -79,7 +79,7 @@ class VersionString{
 		$retval = $this->baseVersion;
 		if($this->development){
 			$retval .= "+dev";
-			if($build and $this->build > 0){
+			if($build && $this->build > 0){
 				$retval .= "." . $this->build;
 			}
 		}

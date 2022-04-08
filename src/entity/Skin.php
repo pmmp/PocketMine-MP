@@ -68,7 +68,7 @@ final class Skin{
 		if(!in_array($len, self::ACCEPTED_SKIN_SIZES, true)){
 			throw new InvalidSkinException("Invalid skin data size $len bytes (allowed sizes: " . implode(", ", self::ACCEPTED_SKIN_SIZES) . ")");
 		}
-		if($capeData !== "" and strlen($capeData) !== 8192){
+		if($capeData !== "" && strlen($capeData) !== 8192){
 			throw new InvalidSkinException("Invalid cape data size " . strlen($capeData) . " bytes (must be exactly 8192 bytes)");
 		}
 

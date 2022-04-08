@@ -28,11 +28,12 @@ use pocketmine\event\block\BlockMeltEvent;
 use function mt_rand;
 
 class FrostedIce extends Ice{
+	public const MAX_AGE = 3;
 
 	protected int $age = 0;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 3);
+		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, self::MAX_AGE);
 	}
 
 	protected function writeStateToMeta() : int{
@@ -47,8 +48,8 @@ class FrostedIce extends Ice{
 
 	/** @return $this */
 	public function setAge(int $age) : self{
-		if($age < 0 || $age > 3){
-			throw new \InvalidArgumentException("Age must be in range 0-3");
+		if($age < 0 || $age > self::MAX_AGE){
+			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
 		}
 		$this->age = $age;
 		return $this;
@@ -63,7 +64,7 @@ class FrostedIce extends Ice{
 	}
 
 	public function onRandomTick() : void{
-		if((!$this->checkAdjacentBlocks(4) or mt_rand(0, 2) === 0) and
+		if((!$this->checkAdjacentBlocks(4) || mt_rand(0, 2) === 0) &&
 			$this->position->getWorld()->getHighestAdjacentFullLightAt($this->position->x, $this->position->y, $this->position->z) >= 12 - $this->age){
 			if($this->tryMelt()){
 				foreach($this->getAllSides() as $block){
@@ -85,11 +86,11 @@ class FrostedIce extends Ice{
 		$found = 0;
 		for($x = -1; $x <= 1; ++$x){
 			for($z = -1; $z <= 1; ++$z){
-				if($x === 0 and $z === 0){
+				if($x === 0 && $z === 0){
 					continue;
 				}
 				if(
-					$this->position->getWorld()->getBlockAt($this->position->x + $x, $this->position->y, $this->position->z + $z) instanceof FrostedIce and
+					$this->position->getWorld()->getBlockAt($this->position->x + $x, $this->position->y, $this->position->z + $z) instanceof FrostedIce &&
 					++$found >= $requirement
 				){
 					return true;
@@ -105,7 +106,7 @@ class FrostedIce extends Ice{
 	 * @return bool Whether the ice was destroyed.
 	 */
 	private function tryMelt() : bool{
-		if($this->age >= 3){
+		if($this->age >= self::MAX_AGE){
 			$ev = new BlockMeltEvent($this, VanillaBlocks::WATER());
 			$ev->call();
 			if(!$ev->isCancelled()){

@@ -30,8 +30,10 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class SeaPickle extends Transparent{
+	public const MIN_COUNT = 1;
+	public const MAX_COUNT = 4;
 
-	protected int $count = 1;
+	protected int $count = self::MIN_COUNT;
 	protected bool $underwater = false;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
@@ -51,8 +53,8 @@ class SeaPickle extends Transparent{
 
 	/** @return $this */
 	public function setCount(int $count) : self{
-		if($count < 1 || $count > 4){
-			throw new \InvalidArgumentException("Count must be in range 1-4");
+		if($count < self::MIN_COUNT || $count > self::MAX_COUNT){
+			throw new \InvalidArgumentException("Count must be in range " . self::MIN_COUNT . " ... " . self::MAX_COUNT);
 		}
 		$this->count = $count;
 		return $this;
@@ -83,12 +85,12 @@ class SeaPickle extends Transparent{
 
 	public function canBePlacedAt(Block $blockReplace, Vector3 $clickVector, int $face, bool $isClickedBlock) : bool{
 		//TODO: proper placement logic (needs a supporting face below)
-		return ($blockReplace instanceof SeaPickle and $blockReplace->count < 4) or parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
+		return ($blockReplace instanceof SeaPickle && $blockReplace->count < self::MAX_COUNT) || parent::canBePlacedAt($blockReplace, $clickVector, $face, $isClickedBlock);
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->underwater = false; //TODO: implement this once we have new water logic in place
-		if($blockReplace instanceof SeaPickle and $blockReplace->count < 4){
+		if($blockReplace instanceof SeaPickle && $blockReplace->count < self::MAX_COUNT){
 			$this->count = $blockReplace->count + 1;
 		}
 

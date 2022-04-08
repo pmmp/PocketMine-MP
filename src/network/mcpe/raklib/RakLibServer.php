@@ -129,7 +129,7 @@ class RakLibServer extends Thread{
 	public function startAndWait(int $options = PTHREADS_INHERIT_NONE) : void{
 		$this->start($options);
 		$this->synchronized(function() : void{
-			while(!$this->ready and $this->crashInfo === null){
+			while(!$this->ready && $this->crashInfo === null){
 				$this->wait();
 			}
 			$crashInfo = $this->crashInfo;

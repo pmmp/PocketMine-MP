@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\PillarRotationInMetadataTrait;
+use pocketmine\entity\Entity;
 
 class HayBale extends Opaque{
 	use PillarRotationInMetadataTrait;
@@ -34,5 +35,10 @@ class HayBale extends Opaque{
 
 	public function getFlammability() : int{
 		return 20;
+	}
+
+	public function onEntityLand(Entity $entity) : ?float{
+		$entity->fallDistance *= 0.2;
+		return null;
 	}
 }

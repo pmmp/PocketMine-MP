@@ -61,7 +61,7 @@ class EncryptionContext{
 	}
 
 	/**
-	 * Returns an EncryptionContext suitable for decrypting Minecraft packets from 1.16.200 and up.
+	 * Returns an EncryptionContext suitable for decrypting Minecraft packets from 1.16.220.50 (protocol version 429) and up.
 	 *
 	 * MCPE uses GCM, but without the auth tag, which defeats the whole purpose of using GCM.
 	 * GCM is just a wrapper around CTR which adds the auth tag, so CTR can replace GCM for this case.

@@ -130,6 +130,9 @@ class TaskScheduler{
 	}
 
 	public function mainThreadHeartbeat(int $currentTick) : void{
+		if(!$this->enabled){
+			throw new \LogicException("Cannot run heartbeat on a disabled scheduler");
+		}
 		$this->currentTick = $currentTick;
 		while($this->isReady($this->currentTick)){
 			/** @var TaskHandler $task */
@@ -150,6 +153,6 @@ class TaskScheduler{
 	}
 
 	private function isReady(int $currentTick) : bool{
-		return !$this->queue->isEmpty() and $this->queue->current()->getNextRun() <= $currentTick;
+		return !$this->queue->isEmpty() && $this->queue->current()->getNextRun() <= $currentTick;
 	}
 }
