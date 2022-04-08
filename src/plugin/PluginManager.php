@@ -308,7 +308,7 @@ class PluginManager{
 			$oldRegisteredLoaders = $this->fileAssociations;
 			$newPlugins = $this->internalLoadPlugins($path, $loadingStage, $newLoaders);
 			if($newLoaders !== null){
-				$this->server->getLogger()->debug("Re-triage found plugins: " . implode(", ", array_keys($newPlugins)));
+				$this->server->getLogger()->debug("New loaders found plugins: " . implode(", ", array_keys($newPlugins)));
 			}
 
 			$loadedPlugins = array_merge($loadedPlugins, $newPlugins);
@@ -336,25 +336,23 @@ class PluginManager{
 
 		$orderedPlugins = [];
 		$triagedPlugins[$plugin->getName()] = null;
-		foreach($plugin->getDescription()->getDepend() as $dependency){
-			if(!isset($this->plugins[$dependency])){
-				$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($plugin->getName(), KnownTranslationFactory::pocketmine_plugin_unknownDependency($dependency))));
+		foreach($plugin->getDescription()->getDepend() as $hardDependency){
+			if(!isset($this->plugins[$hardDependency])){
+				$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($plugin->getName(), KnownTranslationFactory::pocketmine_plugin_unknownDependency($hardDependency))));
 				$triagedPlugins[$plugin->getName()] = false;
-				return []; //missing dependency, can't enable
+				return []; // Missing dependency, can't enable
 			}
-			$orderedPlugins = $this->triagePlugin($this->plugins[$dependency], $triagedPlugins);
-			if($triagedPlugins[$dependency] === false){
-				$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($plugin->getName(), KnownTranslationFactory::pocketmine_plugin_unknownDependency($dependency))));
+			$orderedPlugins = $this->triagePlugin($this->plugins[$hardDependency], $triagedPlugins);
+			if($triagedPlugins[$hardDependency] === false){
+				$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($plugin->getName(), KnownTranslationFactory::pocketmine_plugin_unknownDependency($hardDependency))));
 				$triagedPlugins[$plugin->getName()] = false;
-				return []; //dependency failed to enable, so this plugin can't either
+				return []; // Dependency failed to enable, so this plugin can't either
 			}
 		}
 		$triagedPlugins[$plugin->getName()] = true;
-		foreach($plugin->getDescription()->getSoftDepend() as $dependency){
-			if(isset($this->plugins[$dependency])){
-				foreach($this->triagePlugin($this->plugins[$dependency], $triagedPlugins) as $softDependency){
-					$orderedPlugins[] = $softDependency;
-				}
+		foreach($plugin->getDescription()->getSoftDepend() as $softDependency){
+			if(isset($this->plugins[$softDependency])){
+				$orderedPlugins = array_merge($orderedPlugins, $this->triagePlugin($this->plugins[$softDependency], $triagedPlugins));
 			}
 		}
 		$orderedPlugins[] = $plugin->getName();
@@ -379,9 +377,7 @@ class PluginManager{
 		$orderedPlugins = [];
 		$triagedPlugins = [];
 		foreach($this->plugins as $plugin){
-			foreach($this->triagePlugin($plugin, $triagedPlugins) as $orderedPlugin){
-				$orderedPlugins[] = $orderedPlugin;
-			}
+			$orderedPlugins = array_merge($orderedPlugins, $this->triagePlugin($plugin, $triagedPlugins));
 		}
 		foreach(array_unique($orderedPlugins) as $pluginName){
 			if(!$this->plugins[$pluginName]->isEnabled()){
