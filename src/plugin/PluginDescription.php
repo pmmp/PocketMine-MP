@@ -61,8 +61,6 @@ class PluginDescription{
 	private array $depend = [];
 	/** @var string[] */
 	private array $softDepend = [];
-	/** @var string[] */
-	private array $loadBefore = [];
 	private string $version;
 	/**
 	 * @var PluginDescriptionCommandEntry[]
@@ -161,8 +159,6 @@ class PluginDescription{
 		}
 
 		$this->softDepend = (array) ($plugin["softdepend"] ?? $this->softDepend);
-
-		$this->loadBefore = (array) ($plugin["loadbefore"] ?? $this->loadBefore);
 
 		$this->website = (string) ($plugin["website"] ?? $this->website);
 
@@ -264,13 +260,6 @@ class PluginDescription{
 
 	public function getDescription() : string{
 		return $this->description;
-	}
-
-	/**
-	 * @return string[]
-	 */
-	public function getLoadBefore() : array{
-		return $this->loadBefore;
 	}
 
 	public function getMain() : string{
