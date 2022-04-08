@@ -358,7 +358,15 @@ class PluginManager{
 			}
 		}
 		$orderedPlugins[] = $plugin->getName();
-
+		foreach($plugin->getDescription()->getEnableBefore() as $postEnable){
+			$key = array_search($postEnable, $orderedPlugins, true); // check if the specified plugin will be enabled before the current one
+			if($key !== false) { // If the specified plugin will not be enabled before the current plugin, we don't care
+				$before = array_slice($orderedPlugins, 0, $key);
+				$before[] = $postEnable;
+				$after = array_slice($orderedPlugins, $key + 1);
+				$orderedPlugins = array_merge($before, $after);
+			}
+		}
 		return $orderedPlugins;
 	}
 

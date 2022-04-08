@@ -61,6 +61,8 @@ class PluginDescription{
 	private array $depend = [];
 	/** @var string[] */
 	private array $softDepend = [];
+	/** @var string[] */
+	private array $enableBefore = [];
 	private string $version;
 	/**
 	 * @var PluginDescriptionCommandEntry[]
@@ -159,6 +161,8 @@ class PluginDescription{
 		}
 
 		$this->softDepend = (array) ($plugin["softdepend"] ?? $this->softDepend);
+
+		$this->enableBefore = (array) ($plugin["enablebefore"] ?? $this->enableBefore);
 
 		$this->website = (string) ($plugin["website"] ?? $this->website);
 
@@ -260,6 +264,13 @@ class PluginDescription{
 
 	public function getDescription() : string{
 		return $this->description;
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getEnableBefore() : array{
+		return $this->enableBefore;
 	}
 
 	public function getMain() : string{
