@@ -335,7 +335,8 @@ class PluginManager{
 	}
 
 	/**
-	 * @param array  &$triagedPlugins
+	 * @param array &$triagedPlugins
+	 * @phpstan-param array<string, bool|null> &$triagedPlugins
 	 *
 	 * @return string[]
 	 */
