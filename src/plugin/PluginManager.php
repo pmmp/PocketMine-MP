@@ -360,17 +360,17 @@ class PluginManager{
 		$triagedPlugins[$plugin->getName()] = true;
 		foreach($plugin->getDescription()->getSoftDepend() as $softDependency){
 			if(isset($this->plugins[$softDependency])){
-				$orderedPlugins = array_push($orderedPlugins, ...$this->triagePlugin($this->plugins[$softDependency], $triagedPlugins));
+				array_push($orderedPlugins, ...$this->triagePlugin($this->plugins[$softDependency], $triagedPlugins));
 			}
 		}
 		$orderedPlugins[] = $plugin->getName();
 		foreach($plugin->getDescription()->getEnableBefore() as $postEnable){
 			$key = array_search($postEnable, $orderedPlugins, true); // check if the specified plugin will be enabled before the current one
 			if($key !== false) { // If the specified plugin will not be enabled before the current plugin, we don't care
-				$before = array_slice($orderedPlugins, 0, $key);
-				$before[] = $postEnable;
+				$orderedPlugins = array_slice($orderedPlugins, 0, $key);
+				$orderedPlugins[] = $postEnable;
 				$after = array_slice($orderedPlugins, $key + 1);
-				$orderedPlugins = array_push($before, ...$after);
+				array_push($orderedPlugins, ...$after);
 			}
 		}
 		return $orderedPlugins;
@@ -385,7 +385,7 @@ class PluginManager{
 		$orderedPlugins = [];
 		$triagedPlugins = [];
 		foreach($this->plugins as $plugin){
-			$orderedPlugins = array_push($orderedPlugins, ...$this->triagePlugin($plugin, $triagedPlugins));
+			array_push($orderedPlugins, ...$this->triagePlugin($plugin, $triagedPlugins));
 		}
 		foreach(array_unique($orderedPlugins) as $pluginName){
 			if(!$this->plugins[$pluginName]->isEnabled()){
