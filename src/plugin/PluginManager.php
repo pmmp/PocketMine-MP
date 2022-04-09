@@ -267,7 +267,7 @@ class PluginManager{
 					$this->server->getLogger()->logException($e);
 					continue;
 				}
-				if($description === null || $description->getOrder() !== $loadingStage){
+				if($description === null || !$description->getOrder()->equals($loadingStage)){
 					continue;
 				}
 
