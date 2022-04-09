@@ -43,7 +43,6 @@ use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function array_key_exists;
 use function array_keys;
-use function array_merge;
 use function array_push;
 use function array_search;
 use function array_slice;
@@ -318,7 +317,7 @@ class PluginManager{
 				$this->server->getLogger()->debug("New loaders found plugins: " . implode(", ", array_keys($newPlugins)));
 			}
 
-			$loadedPlugins = array_merge($loadedPlugins, $newPlugins);
+			array_push($loadedPlugins, ...$newPlugins);
 
 			$newLoaders = [];
 			foreach($this->fileAssociations as $k => $loader){
