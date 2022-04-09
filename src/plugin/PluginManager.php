@@ -65,7 +65,6 @@ use function mkdir;
 use function realpath;
 use function shuffle;
 use function sprintf;
-use function str_contains;
 use function strtolower;
 
 /**
@@ -283,7 +282,7 @@ class PluginManager{
 					continue;
 				}
 
-				if(str_contains($name, " ")){
+				if(strpos($name, " ") !== false){
 					$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_spacesDiscouraged($name)));
 				}
 
