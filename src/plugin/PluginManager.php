@@ -219,8 +219,12 @@ class PluginManager{
 	}
 
 	/**
+	 * @param string          $path
+	 * @param PluginLoadOrder $loadingStage
 	 * @param string[]|null $newLoaders
 	 * @phpstan-param list<class-string<PluginLoader>> $newLoaders
+	 *
+	 * @return Plugin[]
 	 */
 	private function internalLoadPlugins(string $path, PluginLoadOrder $loadingStage, ?array $newLoaders = null) : array{
 		if(is_array($newLoaders)){
@@ -331,6 +335,12 @@ class PluginManager{
 		return $loadedPlugins;
 	}
 
+	/**
+	 * @param Plugin $plugin
+	 * @param array  &$triagedPlugins
+	 *
+	 * @return string[]
+	 */
 	private function triagePlugin(Plugin $plugin, array &$triagedPlugins) : array{
 		if(isset($triagedPlugins[$plugin->getName()])) {
 			if($triagedPlugins[$plugin->getName()] === null) { // Circular dependency
