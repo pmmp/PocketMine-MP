@@ -64,6 +64,7 @@ use function mkdir;
 use function realpath;
 use function shuffle;
 use function sprintf;
+use function strpos;
 use function strtolower;
 
 /**
@@ -219,8 +220,6 @@ class PluginManager{
 	}
 
 	/**
-	 * @param string          $path
-	 * @param PluginLoadOrder $loadingStage
 	 * @param string[]|null $newLoaders
 	 * @phpstan-param list<class-string<PluginLoader>> $newLoaders
 	 *
@@ -336,7 +335,6 @@ class PluginManager{
 	}
 
 	/**
-	 * @param Plugin $plugin
 	 * @param array  &$triagedPlugins
 	 *
 	 * @return string[]
