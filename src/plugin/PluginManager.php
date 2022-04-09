@@ -42,11 +42,18 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function array_key_exists;
+use function array_keys;
+use function array_merge;
+use function array_push;
+use function array_search;
+use function array_slice;
+use function array_unique;
 use function class_exists;
 use function count;
 use function dirname;
 use function file_exists;
 use function get_class;
+use function implode;
 use function is_a;
 use function is_array;
 use function is_dir;
@@ -58,6 +65,7 @@ use function mkdir;
 use function realpath;
 use function shuffle;
 use function sprintf;
+use function str_contains;
 use function strtolower;
 
 /**
@@ -259,7 +267,7 @@ class PluginManager{
 					$this->server->getLogger()->logException($e);
 					continue;
 				}
-				if($description === null or $description->getOrder() !== $loadingStage){
+				if($description === null || $description->getOrder() !== $loadingStage){
 					continue;
 				}
 
