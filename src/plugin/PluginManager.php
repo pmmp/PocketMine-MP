@@ -352,7 +352,7 @@ class PluginManager{
 		$triagedPlugins[$plugin->getName()] = true;
 		foreach($plugin->getDescription()->getSoftDepend() as $softDependency){
 			if(isset($this->plugins[$softDependency])){
-				$orderedPlugins = array_merge($orderedPlugins, $this->triagePlugin($this->plugins[$softDependency], $triagedPlugins));
+				$orderedPlugins = array_push($orderedPlugins, ...$this->triagePlugin($this->plugins[$softDependency], $triagedPlugins));
 			}
 		}
 		$orderedPlugins[] = $plugin->getName();
@@ -362,7 +362,7 @@ class PluginManager{
 				$before = array_slice($orderedPlugins, 0, $key);
 				$before[] = $postEnable;
 				$after = array_slice($orderedPlugins, $key + 1);
-				$orderedPlugins = array_merge($before, $after);
+				$orderedPlugins = array_push($before, ...$after);
 			}
 		}
 		return $orderedPlugins;
@@ -377,7 +377,7 @@ class PluginManager{
 		$orderedPlugins = [];
 		$triagedPlugins = [];
 		foreach($this->plugins as $plugin){
-			$orderedPlugins = array_merge($orderedPlugins, $this->triagePlugin($plugin, $triagedPlugins));
+			$orderedPlugins = array_push($orderedPlugins, ...$this->triagePlugin($plugin, $triagedPlugins));
 		}
 		foreach(array_unique($orderedPlugins) as $pluginName){
 			if(!$this->plugins[$pluginName]->isEnabled()){
