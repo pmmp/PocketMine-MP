@@ -228,8 +228,10 @@ class InGamePacketHandler extends PacketHandler{
 			$this->player->jump();
 		}
 
-		//TODO: this packet has WAYYYYY more useful information that we're not using
-		$this->player->handleMovement($newPos);
+		if(!$this->forceMoveSync){
+			//TODO: this packet has WAYYYYY more useful information that we're not using
+			$this->player->handleMovement($newPos);
+		}
 
 		$packetHandled = true;
 
