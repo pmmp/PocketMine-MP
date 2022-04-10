@@ -228,9 +228,7 @@ class InGamePacketHandler extends PacketHandler{
 			$this->player->jump();
 		}
 
-		/** @phpstan-var bool $forceMoveSync */
-		$forceMoveSync = $this->forceMoveSync;
-		if(!$forceMoveSync){
+		if(!$this->forceMoveSync){
 			//TODO: this packet has WAYYYYY more useful information that we're not using
 			$this->player->handleMovement($newPos);
 		}
