@@ -37,6 +37,7 @@ use function implode;
 use function is_numeric;
 use function ksort;
 use function min;
+use function sort;
 use function strtolower;
 use const SORT_FLAG_CASE;
 use const SORT_NATURAL;
