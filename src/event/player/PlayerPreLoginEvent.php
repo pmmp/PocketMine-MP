@@ -31,7 +31,7 @@ use function count;
 
 /**
  * Called when a player connects to the server, prior to authentication taking place.
- * Cancelling this event will cause the player to be disconnected with the kick message set.
+ * Set a kick reason to cancel the event and disconnect the player with the kick message set.
  *
  * This event should be used to decide if the player may continue to login to the server. Do things like checking
  * bans, whitelisting, server-full etc here.
