@@ -1197,6 +1197,12 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_HELP_DESCRIPTION, []);
 	}
 
+	public static function pocketmine_command_help_specificCommand_aliases(Translatable|string $aliasList) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_ALIASES, [
+			"aliasList" => $aliasList,
+		]);
+	}
+
 	public static function pocketmine_command_help_specificCommand_description(Translatable|string $description) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_DESCRIPTION, [
 			"description" => $description,

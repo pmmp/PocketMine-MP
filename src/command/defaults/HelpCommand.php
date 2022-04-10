@@ -105,7 +105,7 @@ class HelpCommand extends VanillaCommand{
 					$lang = $sender->getLanguage();
 					$description = $cmd->getDescription();
 					$descriptionString = $description instanceof Translatable ? $lang->translate($description) : $description;
-					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($commandName)
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_header($cmd->getName())
 						->format(TextFormat::YELLOW . "--------- " . TextFormat::WHITE, TextFormat::YELLOW . " ---------"));
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_description(TextFormat::WHITE . $descriptionString)
 						->prefix(TextFormat::GOLD));
@@ -113,6 +113,11 @@ class HelpCommand extends VanillaCommand{
 					$usage = $cmd->getUsage();
 					$usageString = $usage instanceof Translatable ? $lang->translate($usage) : $usage;
 					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_usage(TextFormat::WHITE . implode("\n" . TextFormat::WHITE, explode("\n", $usageString)))
+						->prefix(TextFormat::GOLD));
+
+					$aliases = $cmd->getAliases();
+					sort($aliases, SORT_NATURAL);
+					$sender->sendMessage(KnownTranslationFactory::pocketmine_command_help_specificCommand_aliases(TextFormat::WHITE . implode(", ", $aliases))
 						->prefix(TextFormat::GOLD));
 
 					return true;
