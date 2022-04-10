@@ -166,6 +166,14 @@ class PluginManager{
 			)));
 			return null;
 		}
+		$reflect = new \ReflectionClass($mainClass); //this shouldn't throw; we already checked that it exists
+		if(!$reflect->isInstantiable()){
+			$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+				$description->getName(),
+				KnownTranslationFactory::pocketmine_plugin_mainClassAbstract()
+			)));
+			return null;
+		}
 
 		$permManager = PermissionManager::getInstance();
 		foreach($description->getPermissions() as $permsGroup){
@@ -463,8 +471,12 @@ class PluginManager{
 	}
 
 	public function tickSchedulers(int $currentTick) : void{
-		foreach($this->enabledPlugins as $p){
-			$p->getScheduler()->mainThreadHeartbeat($currentTick);
+		foreach($this->enabledPlugins as $pluginName => $p){
+			if(isset($this->enabledPlugins[$pluginName])){
+				//the plugin may have been disabled as a result of updating other plugins' schedulers, and therefore
+				//removed from enabledPlugins; however, foreach will still see it due to copy-on-write
+				$p->getScheduler()->mainThreadHeartbeat($currentTick);
+			}
 		}
 	}
 
