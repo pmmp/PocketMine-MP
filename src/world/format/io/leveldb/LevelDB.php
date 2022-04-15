@@ -123,11 +123,11 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	}
 
 	public function getWorldMinY() : int{
-		return 0;
+		return -64;
 	}
 
 	public function getWorldMaxY() : int{
-		return 256;
+		return 320;
 	}
 
 	public static function isValid(string $path) : bool{
@@ -513,25 +513,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$write->put($index . ChunkDataKey::NEW_VERSION, chr(self::CURRENT_LEVEL_CHUNK_VERSION));
 
 		$chunk = $chunkData->getChunk();
-
-		//TODO: This ensures that negative subchunks don't get destroyed in newer worlds for as long as we don't yet
-		//support negative height. Since we don't save with a shift, if the old save had the subchunks shifted, we need
-		//to shift them to their correct positions to avoid destroying data.
-		//This can be removed once we support the full height.
-		if($previousVersion !== null && self::hasOffsetCavesAndCliffsSubChunks($previousVersion)){
-			$subChunks = $chunk->getSubChunks();
-
-			for($y = -4; $y <= 20; $y++){
-				$key = $index . ChunkDataKey::SUBCHUNK . chr($y + self::CAVES_CLIFFS_EXPERIMENTAL_SUBCHUNK_KEY_OFFSET);
-				if(
-					(!isset($subChunks[$y]) || !$chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_BLOCKS)) &&
-					($subChunkData = $this->db->get($key)) !== false
-				){
-					$write->delete($key);
-					$write->put($index . ChunkDataKey::SUBCHUNK . chr($y & 0xff), $subChunkData);
-				}
-			}
-		}
 
 		if($chunk->getTerrainDirtyFlag(Chunk::DIRTY_FLAG_BLOCKS)){
 			$subChunks = $chunk->getSubChunks();
