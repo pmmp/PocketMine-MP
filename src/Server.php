@@ -1606,7 +1606,7 @@ class Server{
 						"reportPaste" => base64_encode($dump->getEncodedData())
 					], 10, [], $postUrlError);
 
-					if($reply !== null && ($data = json_decode($reply->getBody())) !== null){
+					if($reply !== null && is_object($data = json_decode($reply->getBody()))){
 						if(isset($data->crashId) && isset($data->crashUrl)){
 							$reportId = $data->crashId;
 							$reportUrl = $data->crashUrl;
