@@ -132,6 +132,7 @@ use function get_class;
 use function ini_set;
 use function is_array;
 use function is_dir;
+use function is_object;
 use function is_resource;
 use function is_string;
 use function json_decode;
