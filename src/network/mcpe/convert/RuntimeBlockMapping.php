@@ -80,7 +80,6 @@ final class RuntimeBlockMapping{
 			$networkId = $this->fallbackStateId;
 		}
 
-
 		return $this->networkIdCache[$internalStateId] = $networkId;
 	}
 
