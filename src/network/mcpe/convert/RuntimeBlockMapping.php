@@ -51,6 +51,7 @@ final class RuntimeBlockMapping{
 
 	/** Used when a blockstate can't be correctly serialized (e.g. because it's unknown) */
 	private BlockStateData $fallbackStateData;
+	private int $fallbackStateId;
 
 	private function __construct(){
 		$contents = Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt")), "Missing required resource file");
@@ -58,6 +59,7 @@ final class RuntimeBlockMapping{
 		$this->blockStateSerializer = GlobalBlockStateHandlers::getSerializer();
 
 		$this->fallbackStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);
+		$this->fallbackStateId = $this->blockStateDictionary->lookupStateIdFromData($this->fallbackStateData) ?? throw new AssumptionFailedError(BlockTypeNames::INFO_UPDATE . " should always exist");
 	}
 
 	public function toRuntimeId(int $internalStateId) : int{
@@ -67,17 +69,17 @@ final class RuntimeBlockMapping{
 
 		try{
 			$blockStateData = $this->blockStateSerializer->serialize($internalStateId);
+
+			$networkId = $this->blockStateDictionary->lookupStateIdFromData($blockStateData);
+			if($networkId === null){
+				throw new AssumptionFailedError("Unmapped blockstate returned by blockstate serializer: " . $blockStateData->toNbt());
+			}
 		}catch(BlockStateSerializeException){
 			//TODO: this will swallow any error caused by invalid block properties; this is not ideal, but it should be
 			//covered by unit tests, so this is probably a safe assumption.
-			$blockStateData = $this->fallbackStateData;
+			$networkId = $this->fallbackStateId;
 		}
 
-		$networkId = $this->blockStateDictionary->lookupStateIdFromData($blockStateData);
-
-		if($networkId === null){
-			throw new AssumptionFailedError("Unmapped blockstate returned by blockstate serializer: " . $blockStateData->toNbt());
-		}
 
 		return $this->networkIdCache[$internalStateId] = $networkId;
 	}
