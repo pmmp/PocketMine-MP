@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "afc47e972ac67ed1e1ab564a63171fa6",
+    "content-hash": "42596428c45fc8c1d65fb2a0dcd45ca3",
     "packages": [
         {
             "name": "adhocore/json-comment",
@@ -1819,16 +1819,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.5.4",
+            "version": "1.5.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "bbf68cae24f6dc023c607ea0f87da55dd9d55c2b"
+                "reference": "d77a607667f29ae099c0686f99664bd451fd23df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/bbf68cae24f6dc023c607ea0f87da55dd9d55c2b",
-                "reference": "bbf68cae24f6dc023c607ea0f87da55dd9d55c2b",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/d77a607667f29ae099c0686f99664bd451fd23df",
+                "reference": "d77a607667f29ae099c0686f99664bd451fd23df",
                 "shasum": ""
             },
             "require": {
@@ -1854,7 +1854,7 @@
             "description": "PHPStan - PHP Static Analysis Tool",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan/issues",
-                "source": "https://github.com/phpstan/phpstan/tree/1.5.4"
+                "source": "https://github.com/phpstan/phpstan/tree/1.5.5"
             },
             "funding": [
                 {
@@ -1874,7 +1874,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-04-03T12:39:00+00:00"
+            "time": "2022-04-14T12:20:26+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -3452,5 +3452,5 @@
     "platform-overrides": {
         "php": "8.0.0"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
