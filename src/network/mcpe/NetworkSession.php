@@ -635,7 +635,7 @@ class NetworkSession{
 				continue;
 			}
 			$info = $existingSession->getPlayerInfo();
-			if($info !== null && ($info->getUsername() === $this->info->getUsername() || $info->getUuid()->equals($this->info->getUuid()))){
+			if($info !== null && (strcasecmp($info->getUsername(), $this->info->getUsername()) === 0 || $info->getUuid()->equals($this->info->getUuid()))){
 				if($kickForXUIDMismatch($info instanceof XboxLivePlayerInfo ? $info->getXuid() : "")){
 					return;
 				}
