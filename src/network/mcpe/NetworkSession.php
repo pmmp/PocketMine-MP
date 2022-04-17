@@ -125,6 +125,7 @@ use function get_class;
 use function in_array;
 use function json_encode;
 use function ksort;
+use function strcasecmp;
 use function strlen;
 use function strtolower;
 use function substr;
