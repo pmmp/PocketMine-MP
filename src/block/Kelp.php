@@ -31,19 +31,12 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+
 use function mt_rand;
 
 class Kelp extends Transparent{
 
 	protected int $age = 0;
-
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN)) && $blockReplace instanceof Water){
-			$this->setAge(mt_rand(0, 24));
-			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}
-		return false;
-	}
 
 	protected function writeStateToMeta() : int{
 		return $this->age;
@@ -76,6 +69,14 @@ class Kelp extends Transparent{
 			!$block instanceof Magma &&
 			!$block instanceof SoulSand) ||
 			$block instanceof Kelp;
+	}
+
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN)) && $blockReplace instanceof Water){
+			$this->setAge(mt_rand(0, 24));
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		}
+		return false;
 	}
 
 	public function onNearbyBlockChange() : void{
