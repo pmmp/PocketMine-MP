@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.16]
+        php: [8.0.18]
 
     steps:
       - name: Build and prepare PHP cache
@@ -31,7 +31,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.16]
+        php: [8.0.18]
 
     steps:
       - uses: actions/checkout@v2
@@ -69,7 +69,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.16]
+        php: [8.0.18]
 
     steps:
       - uses: actions/checkout@v2
@@ -107,7 +107,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.16]
+        php: [8.0.18]
 
     steps:
       - uses: actions/checkout@v2
@@ -147,7 +147,7 @@ jobs:
       fail-fast: false
       matrix:
         image: [ubuntu-20.04]
-        php: [8.0.16]
+        php: [8.0.18]
 
     steps:
       - uses: actions/checkout@v2

@@ -128,6 +128,7 @@ use function get_class;
 use function in_array;
 use function json_encode;
 use function ksort;
+use function strcasecmp;
 use function strlen;
 use function strpos;
 use function strtolower;
@@ -658,7 +659,7 @@ class NetworkSession{
 				continue;
 			}
 			$info = $existingSession->getPlayerInfo();
-			if($info !== null && ($info->getUsername() === $this->info->getUsername() || $info->getUuid()->equals($this->info->getUuid()))){
+			if($info !== null && (strcasecmp($info->getUsername(), $this->info->getUsername()) === 0 || $info->getUuid()->equals($this->info->getUuid()))){
 				if($kickForXUIDMismatch($info instanceof XboxLivePlayerInfo ? $info->getXuid() : "")){
 					return;
 				}
