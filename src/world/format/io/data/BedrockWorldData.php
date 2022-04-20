@@ -47,13 +47,13 @@ use function time;
 
 class BedrockWorldData extends BaseNbtWorldData{
 
-	public const CURRENT_STORAGE_VERSION = 8;
+	public const CURRENT_STORAGE_VERSION = 9;
 	/**
 	 * WARNING: In the future, this should be only as high as the newest world format currently supported. We don't
 	 * actually support worlds from 1.18.10 yet, but due to an old stupid bug, all worlds created by PM will report this
 	 * version.
 	 */
-	public const CURRENT_STORAGE_NETWORK_VERSION = 486; // 1.18.10
+	public const CURRENT_STORAGE_NETWORK_VERSION = 503; // 1.18.10
 
 	public const GENERATOR_LIMITED = 0;
 	public const GENERATOR_INFINITE = 1;

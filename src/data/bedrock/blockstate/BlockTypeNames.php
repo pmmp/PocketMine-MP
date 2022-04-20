@@ -139,7 +139,7 @@ final class BlockTypeNames{
 	public const COMMAND_BLOCK = "minecraft:command_block";
 	public const COMPOSTER = "minecraft:composter";
 	public const CONCRETE = "minecraft:concrete";
-	public const CONCRETEPOWDER = "minecraft:concretePowder";
+	public const CONCRETE_POWDER = "minecraft:concrete_powder";
 	public const CONDUIT = "minecraft:conduit";
 	public const COPPER_BLOCK = "minecraft:copper_block";
 	public const COPPER_ORE = "minecraft:copper_ore";
@@ -374,7 +374,7 @@ final class BlockTypeNames{
 	public const FLOWING_LAVA = "minecraft:flowing_lava";
 	public const FLOWING_WATER = "minecraft:flowing_water";
 	public const FRAME = "minecraft:frame";
-	public const FROG_EGG = "minecraft:frog_egg";
+	public const FROG_SPAWN = "minecraft:frog_spawn";
 	public const FROSTED_ICE = "minecraft:frosted_ice";
 	public const FURNACE = "minecraft:furnace";
 	public const GILDED_BLACKSTONE = "minecraft:gilded_blackstone";
@@ -413,7 +413,7 @@ final class BlockTypeNames{
 	public const INFESTED_DEEPSLATE = "minecraft:infested_deepslate";
 	public const INFO_UPDATE = "minecraft:info_update";
 	public const INFO_UPDATE2 = "minecraft:info_update2";
-	public const INVISIBLEBEDROCK = "minecraft:invisibleBedrock";
+	public const INVISIBLE_BEDROCK = "minecraft:invisible_bedrock";
 	public const IRON_BARS = "minecraft:iron_bars";
 	public const IRON_BLOCK = "minecraft:iron_block";
 	public const IRON_DOOR = "minecraft:iron_door";
@@ -467,6 +467,9 @@ final class BlockTypeNames{
 	public const MAGENTA_CANDLE_CAKE = "minecraft:magenta_candle_cake";
 	public const MAGENTA_GLAZED_TERRACOTTA = "minecraft:magenta_glazed_terracotta";
 	public const MAGMA = "minecraft:magma";
+	public const MANGROVE_LEAVES = "minecraft:mangrove_leaves";
+	public const MANGROVE_PROPAGULE = "minecraft:mangrove_propagule";
+	public const MANGROVE_PROPAGULE_HANGING = "minecraft:mangrove_propagule_hanging";
 	public const MEDIUM_AMETHYST_BUD = "minecraft:medium_amethyst_bud";
 	public const MELON_BLOCK = "minecraft:melon_block";
 	public const MELON_STEM = "minecraft:melon_stem";
@@ -477,10 +480,14 @@ final class BlockTypeNames{
 	public const MOSSY_COBBLESTONE = "minecraft:mossy_cobblestone";
 	public const MOSSY_COBBLESTONE_STAIRS = "minecraft:mossy_cobblestone_stairs";
 	public const MOSSY_STONE_BRICK_STAIRS = "minecraft:mossy_stone_brick_stairs";
-	public const MOVINGBLOCK = "minecraft:movingBlock";
+	public const MOVING_BLOCK = "minecraft:moving_block";
+	public const MUD = "minecraft:mud";
+	public const MUD_BRICK_DOUBLE_SLAB = "minecraft:mud_brick_double_slab";
+	public const MUD_BRICK_SLAB = "minecraft:mud_brick_slab";
+	public const MUD_BRICK_STAIRS = "minecraft:mud_brick_stairs";
+	public const MUD_BRICK_WALL = "minecraft:mud_brick_wall";
+	public const MUD_BRICKS = "minecraft:mud_bricks";
 	public const MYCELIUM = "minecraft:mycelium";
-	public const MYSTERIOUS_FRAME = "minecraft:mysterious_frame";
-	public const MYSTERIOUS_FRAME_SLOT = "minecraft:mysterious_frame_slot";
 	public const NETHER_BRICK = "minecraft:nether_brick";
 	public const NETHER_BRICK_FENCE = "minecraft:nether_brick_fence";
 	public const NETHER_BRICK_STAIRS = "minecraft:nether_brick_stairs";
@@ -506,12 +513,13 @@ final class BlockTypeNames{
 	public const OXIDIZED_CUT_COPPER_STAIRS = "minecraft:oxidized_cut_copper_stairs";
 	public const OXIDIZED_DOUBLE_CUT_COPPER_SLAB = "minecraft:oxidized_double_cut_copper_slab";
 	public const PACKED_ICE = "minecraft:packed_ice";
+	public const PACKED_MUD = "minecraft:packed_mud";
 	public const PEARLESCENT_FROGLIGHT = "minecraft:pearlescent_froglight";
 	public const PINK_CANDLE = "minecraft:pink_candle";
 	public const PINK_CANDLE_CAKE = "minecraft:pink_candle_cake";
 	public const PINK_GLAZED_TERRACOTTA = "minecraft:pink_glazed_terracotta";
 	public const PISTON = "minecraft:piston";
-	public const PISTONARMCOLLISION = "minecraft:pistonArmCollision";
+	public const PISTON_ARM_COLLISION = "minecraft:piston_arm_collision";
 	public const PLANKS = "minecraft:planks";
 	public const PODZOL = "minecraft:podzol";
 	public const POINTED_DRIPSTONE = "minecraft:pointed_dripstone";
@@ -575,6 +583,7 @@ final class BlockTypeNames{
 	public const REDSTONE_TORCH = "minecraft:redstone_torch";
 	public const REDSTONE_WIRE = "minecraft:redstone_wire";
 	public const REEDS = "minecraft:reeds";
+	public const REINFORCED_DEEPSLATE = "minecraft:reinforced_deepslate";
 	public const REPEATING_COMMAND_BLOCK = "minecraft:repeating_command_block";
 	public const RESERVED6 = "minecraft:reserved6";
 	public const RESPAWN_ANCHOR = "minecraft:respawn_anchor";
@@ -588,9 +597,9 @@ final class BlockTypeNames{
 	public const SCULK_SENSOR = "minecraft:sculk_sensor";
 	public const SCULK_SHRIEKER = "minecraft:sculk_shrieker";
 	public const SCULK_VEIN = "minecraft:sculk_vein";
+	public const SEA_LANTERN = "minecraft:sea_lantern";
 	public const SEA_PICKLE = "minecraft:sea_pickle";
 	public const SEAGRASS = "minecraft:seagrass";
-	public const SEALANTERN = "minecraft:seaLantern";
 	public const SHROOMLIGHT = "minecraft:shroomlight";
 	public const SHULKER_BOX = "minecraft:shulker_box";
 	public const SILVER_GLAZED_TERRACOTTA = "minecraft:silver_glazed_terracotta";
@@ -629,7 +638,7 @@ final class BlockTypeNames{
 	public const STANDING_BANNER = "minecraft:standing_banner";
 	public const STANDING_SIGN = "minecraft:standing_sign";
 	public const STICKY_PISTON = "minecraft:sticky_piston";
-	public const STICKYPISTONARMCOLLISION = "minecraft:stickyPistonArmCollision";
+	public const STICKY_PISTON_ARM_COLLISION = "minecraft:sticky_piston_arm_collision";
 	public const STONE = "minecraft:stone";
 	public const STONE_BRICK_STAIRS = "minecraft:stone_brick_stairs";
 	public const STONE_BUTTON = "minecraft:stone_button";
@@ -662,7 +671,7 @@ final class BlockTypeNames{
 	public const TORCH = "minecraft:torch";
 	public const TRAPDOOR = "minecraft:trapdoor";
 	public const TRAPPED_CHEST = "minecraft:trapped_chest";
-	public const TRIPWIRE = "minecraft:tripWire";
+	public const TRIP_WIRE = "minecraft:trip_wire";
 	public const TRIPWIRE_HOOK = "minecraft:tripwire_hook";
 	public const TUFF = "minecraft:tuff";
 	public const TURTLE_EGG = "minecraft:turtle_egg";

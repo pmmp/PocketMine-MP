@@ -78,7 +78,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 	protected const ENTRY_FLAT_WORLD_LAYERS = "game_flatworldlayers";
 
-	protected const CURRENT_LEVEL_CHUNK_VERSION = ChunkVersion::v1_18_0_25_beta;
+	protected const CURRENT_LEVEL_CHUNK_VERSION = ChunkVersion::v1_18_30;
 	protected const CURRENT_LEVEL_SUBCHUNK_VERSION = SubChunkVersion::PALETTED_MULTI;
 
 	private const CAVES_CLIFFS_EXPERIMENTAL_SUBCHUNK_KEY_OFFSET = 4;
@@ -296,6 +296,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 		$subChunkKeyOffset = self::hasOffsetCavesAndCliffsSubChunks($chunkVersion) ? self::CAVES_CLIFFS_EXPERIMENTAL_SUBCHUNK_KEY_OFFSET : 0;
 
 		switch($chunkVersion){
+			case ChunkVersion::v1_18_30:
 			case ChunkVersion::v1_18_0_25_beta:
 			case ChunkVersion::v1_18_0_24_unused:
 			case ChunkVersion::v1_18_0_24_beta:

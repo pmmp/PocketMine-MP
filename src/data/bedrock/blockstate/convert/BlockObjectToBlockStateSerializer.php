@@ -396,7 +396,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeColor($block->getColor());
 		});
 		$this->map(Blocks::CONCRETE_POWDER(), function(ConcretePowder $block) : Writer{
-			return Writer::create(Ids::CONCRETEPOWDER)
+			return Writer::create(Ids::CONCRETE_POWDER)
 				->writeColor($block->getColor());
 		});
 		$this->map(Blocks::CORAL(), function(Coral $block) : Writer{
@@ -681,7 +681,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeString(StateNames::MONSTER_EGG_STONE_TYPE, StringValues::MONSTER_EGG_STONE_TYPE_STONE_BRICK));
 		$this->map(Blocks::INFO_UPDATE(), fn() => new Writer(Ids::INFO_UPDATE));
 		$this->map(Blocks::INFO_UPDATE2(), fn() => new Writer(Ids::INFO_UPDATE2));
-		$this->map(Blocks::INVISIBLE_BEDROCK(), fn() => new Writer(Ids::INVISIBLEBEDROCK));
+		$this->map(Blocks::INVISIBLE_BEDROCK(), fn() => new Writer(Ids::INVISIBLE_BEDROCK));
 		$this->map(Blocks::IRON(), fn() => new Writer(Ids::IRON_BLOCK));
 		$this->map(Blocks::IRON_BARS(), fn() => new Writer(Ids::IRON_BARS));
 		$this->map(Blocks::IRON_DOOR(), fn(Door $block) => Helper::encodeDoor($block, new Writer(Ids::IRON_DOOR)));
@@ -925,7 +925,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 		$this->map(Blocks::SANDSTONE_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_SANDSTONE));
 		$this->map(Blocks::SANDSTONE_STAIRS(), fn(Stair $block) => Helper::encodeStairs($block, new Writer(Ids::SANDSTONE_STAIRS)));
 		$this->map(Blocks::SANDSTONE_WALL(), fn(Wall $block) => Helper::encodeLegacyWall($block, StringValues::WALL_BLOCK_TYPE_SANDSTONE));
-		$this->map(Blocks::SEA_LANTERN(), fn() => new Writer(Ids::SEALANTERN));
+		$this->map(Blocks::SEA_LANTERN(), fn() => new Writer(Ids::SEA_LANTERN));
 		$this->map(Blocks::SEA_PICKLE(), function(SeaPickle $block) : Writer{
 			return Writer::create(Ids::SEA_PICKLE)
 				->writeBool(StateNames::DEAD_BIT, !$block->isUnderwater())
@@ -1045,7 +1045,7 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeHorizontalFacing($block->getFacing());
 		});
 		$this->map(Blocks::TRIPWIRE(), function(Tripwire $block) : Writer{
-			return Writer::create(Ids::TRIPWIRE)
+			return Writer::create(Ids::TRIP_WIRE)
 				->writeBool(StateNames::ATTACHED_BIT, $block->isConnected())
 				->writeBool(StateNames::DISARMED_BIT, $block->isDisarmed())
 				->writeBool(StateNames::POWERED_BIT, $block->isTriggered())

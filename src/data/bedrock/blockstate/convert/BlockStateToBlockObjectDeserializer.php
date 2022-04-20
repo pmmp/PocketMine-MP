@@ -226,7 +226,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Blocks::CONCRETE()
 				->setColor($in->readColor());
 		});
-		$this->map(Ids::CONCRETEPOWDER, function(Reader $in) : Block{
+		$this->map(Ids::CONCRETE_POWDER, function(Reader $in) : Block{
 			return Blocks::CONCRETE_POWDER()
 				->setColor($in->readColor());
 		});
@@ -531,7 +531,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::ICE, fn() => Blocks::ICE());
 		$this->map(Ids::INFO_UPDATE, fn() => Blocks::INFO_UPDATE());
 		$this->map(Ids::INFO_UPDATE2, fn() => Blocks::INFO_UPDATE2());
-		$this->map(Ids::INVISIBLEBEDROCK, fn() => Blocks::INVISIBLE_BEDROCK());
+		$this->map(Ids::INVISIBLE_BEDROCK, fn() => Blocks::INVISIBLE_BEDROCK());
 		$this->map(Ids::IRON_BARS, fn() => Blocks::IRON_BARS());
 		$this->map(Ids::IRON_BLOCK, fn() => Blocks::IRON());
 		$this->map(Ids::IRON_DOOR, fn(Reader $in) => Helper::decodeDoor(Blocks::IRON_DOOR(), $in));
@@ -838,7 +838,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				})
 				->setReady($in->readBool(StateNames::AGE_BIT));
 		});
-		$this->map(Ids::SEALANTERN, fn() => Blocks::SEA_LANTERN());
+		$this->map(Ids::SEA_LANTERN, fn() => Blocks::SEA_LANTERN());
 		$this->map(Ids::SEA_PICKLE, function(Reader $in) : Block{
 			return Blocks::SEA_PICKLE()
 				->setCount($in->readBoundedInt(StateNames::CLUSTER_COUNT, 0, 3) + 1)
@@ -983,7 +983,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			return Blocks::TRAPPED_CHEST()
 				->setFacing($in->readHorizontalFacing());
 		});
-		$this->map(Ids::TRIPWIRE, function(Reader $in) : Block{
+		$this->map(Ids::TRIP_WIRE, function(Reader $in) : Block{
 			return Blocks::TRIPWIRE()
 				->setConnected($in->readBool(StateNames::ATTACHED_BIT))
 				->setDisarmed($in->readBool(StateNames::DISARMED_BIT))
