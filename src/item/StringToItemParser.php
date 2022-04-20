@@ -260,6 +260,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("double_wooden_slabs", fn() => VanillaBlocks::OAK_SLAB()->setSlabType(SlabType::DOUBLE()));
 		$result->registerBlock("dragon_egg", fn() => VanillaBlocks::DRAGON_EGG());
 		$result->registerBlock("dried_kelp_block", fn() => VanillaBlocks::DRIED_KELP());
+		$result->registerBlock("dropper", fn() => VanillaBlocks::DROPPER());
 		$result->registerBlock("dyed_shulker_box", fn() => VanillaBlocks::DYED_SHULKER_BOX());
 		$result->registerBlock("element_0", fn() => VanillaBlocks::ELEMENT_ZERO());
 		$result->registerBlock("element_1", fn() => VanillaBlocks::ELEMENT_HYDROGEN());

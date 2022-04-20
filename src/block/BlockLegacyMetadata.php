@@ -111,6 +111,8 @@ final class BlockLegacyMetadata{
 
 	public const DOUBLE_PLANT_FLAG_TOP = 0x08;
 
+	public const DROPPER_TRIGGERED = 0x08;
+
 	public const END_PORTAL_FRAME_FLAG_EYE = 0x04;
 
 	public const FENCE_GATE_FLAG_OPEN = 0x04;

@@ -28,6 +28,7 @@ use pocketmine\block\inventory\BlockInventory;
 use pocketmine\block\inventory\BrewingStandInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\DispenserInventory;
+use pocketmine\block\inventory\DropperInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
@@ -207,6 +208,7 @@ class InventoryManager{
 						default => throw new AssumptionFailedError("Unreachable")
 					},
 				$inv instanceof DispenserInventory => WindowTypes::DISPENSER,
+				$inv instanceof DropperInventory => WindowTypes::DROPPER,
 				$inv instanceof EnchantInventory => WindowTypes::ENCHANTMENT,
 				$inv instanceof BrewingStandInventory => WindowTypes::BREWING_STAND,
 				$inv instanceof AnvilInventory => WindowTypes::ANVIL,
