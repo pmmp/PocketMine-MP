@@ -37,7 +37,7 @@ class DispenserInventory extends SimpleInventory implements BlockInventory{
 		parent::__construct($size);
 	}
 
-	/** @return int A random slot containing a non-empty item stack */
+	/** @return int a random slot containing a non-empty item stack or -1 if all are empty */
 	public function getRandomSlot() : int{
 		$slots = [];
 		for($slot = 0; $slot < $this->getSize(); ++$slot){
