@@ -60,6 +60,7 @@ final class TileFactory{
 		$this->register(Chest::class, ["Chest", "minecraft:chest"]);
 		$this->register(Comparator::class, ["Comparator", "minecraft:comparator"]);
 		$this->register(DaylightSensor::class, ["DaylightDetector", "minecraft:daylight_detector"]);
+		$this->register(Dispenser::class, ["Dispenser", "minecraft:dispenser"]);
 		$this->register(EnchantTable::class, ["EnchantTable", "minecraft:enchanting_table"]);
 		$this->register(EnderChest::class, ["EnderChest", "minecraft:ender_chest"]);
 		$this->register(FlowerPot::class, ["FlowerPot", "minecraft:flower_pot"]);
@@ -81,7 +82,6 @@ final class TileFactory{
 		//TODO: ChemistryTable
 		//TODO: CommandBlock
 		//TODO: Conduit
-		//TODO: Dispenser
 		//TODO: Dropper
 		//TODO: EndGateway
 		//TODO: EndPortal

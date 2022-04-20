@@ -37,6 +37,7 @@ use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\tile\Chest as TileChest;
 use pocketmine\block\tile\Comparator as TileComparator;
 use pocketmine\block\tile\DaylightSensor as TileDaylightSensor;
+use pocketmine\block\tile\Dispenser as TileDispenser;
 use pocketmine\block\tile\EnchantTable as TileEnchantingTable;
 use pocketmine\block\tile\EnderChest as TileEnderChest;
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
@@ -173,6 +174,7 @@ class BlockFactory{
 
 		$this->registerAllMeta(new Opaque(new BID(Ids::DIAMOND_BLOCK, 0), "Diamond Block", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
 		$this->registerAllMeta(new DiamondOre(new BID(Ids::DIAMOND_ORE, 0), "Diamond Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
+		$this->registerAllMeta(new Dispenser(new BID(Ids::DISPENSER, 0, null, TileDispenser::class), "Dispenser", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 3.5)));
 		$this->registerAllMeta(new Dirt(new BID(Ids::DIRT, 0), "Dirt", new BlockBreakInfo(0.5, BlockToolType::SHOVEL)));
 		$this->registerAllMeta(
 			new DoublePlant(new BID(Ids::DOUBLE_PLANT, Meta::DOUBLE_PLANT_SUNFLOWER), "Sunflower", BlockBreakInfo::instant()),
@@ -627,7 +629,6 @@ class BlockFactory{
 		//TODO: minecraft:command_block
 		//TODO: minecraft:composter
 		//TODO: minecraft:conduit
-		//TODO: minecraft:dispenser
 		//TODO: minecraft:dropper
 		//TODO: minecraft:end_gateway
 		//TODO: minecraft:end_portal

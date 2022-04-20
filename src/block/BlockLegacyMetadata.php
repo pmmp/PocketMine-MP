@@ -95,6 +95,8 @@ final class BlockLegacyMetadata{
 
 	public const DIRT_FLAG_COARSE = 0x1;
 
+	public const DISPENSER_TRIGGERED = 0x08;
+
 	public const DOOR_FLAG_TOP = 0x08;
 	public const DOOR_BOTTOM_FLAG_OPEN = 0x04;
 	public const DOOR_TOP_FLAG_RIGHT = 0x01;

@@ -161,6 +161,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Stair DIORITE_STAIRS()
  * @method static Wall DIORITE_WALL()
  * @method static Dirt DIRT()
+ * @method static Dispenser DISPENSER()
  * @method static DoubleTallGrass DOUBLE_TALLGRASS()
  * @method static DragonEgg DRAGON_EGG()
  * @method static DriedKelp DRIED_KELP()
@@ -722,6 +723,7 @@ final class VanillaBlocks{
 		self::register("diorite_slab", $factory->get(Ids::STONE_SLAB3, 4));
 		self::register("diorite_stairs", $factory->get(Ids::DIORITE_STAIRS, 0));
 		self::register("diorite_wall", $factory->get(Ids::COBBLESTONE_WALL, 3));
+		self::register("dispenser", $factory->get(Ids::DISPENSER, 0));
 		self::register("dirt", $factory->get(Ids::DIRT, 0));
 		self::register("double_tallgrass", $factory->get(Ids::DOUBLE_PLANT, 2));
 		self::register("dragon_egg", $factory->get(Ids::DRAGON_EGG, 0));

@@ -242,6 +242,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("diorite_slab", fn() => VanillaBlocks::DIORITE_SLAB());
 		$result->registerBlock("diorite_stairs", fn() => VanillaBlocks::DIORITE_STAIRS());
 		$result->registerBlock("diorite_wall", fn() => VanillaBlocks::DIORITE_WALL());
+		$result->registerBlock("dispenser", fn() => VanillaBlocks::DISPENSER());
 		$result->registerBlock("dirt", fn() => VanillaBlocks::DIRT());
 		$result->registerBlock("door_block", fn() => VanillaBlocks::OAK_DOOR());
 		$result->registerBlock("double_plant", fn() => VanillaBlocks::SUNFLOWER());
