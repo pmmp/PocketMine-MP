@@ -55,6 +55,7 @@ use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\GameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\player\Player;
@@ -473,6 +474,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$this->location->yaw,
 			$this->location->yaw, //TODO: head yaw
 			ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getInventory()->getItemInHand())),
+			GameMode::SURVIVAL,
 			$this->getAllNetworkData(),
 			AdventureSettingsPacket::create(0, 0, 0, 0, 0, $this->getId()), //TODO
 			[], //TODO: entity links
