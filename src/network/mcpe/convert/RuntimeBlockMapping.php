@@ -100,8 +100,8 @@ final class RuntimeBlockMapping{
 	}
 
 	/**
-	 * @param string[] $canonicalBlockStatesFile
-	 * @param string[] $r12ToCurrentBlockMapFile
+	 * @param string[] $canonicalBlockStatesFiles
+	 * @param string[] $r12ToCurrentBlockMapFiles
 	 */
 	private function __construct(array $canonicalBlockStatesFiles, array $r12ToCurrentBlockMapFiles){
 		foreach($canonicalBlockStatesFiles as $mappingProtocol => $canonicalBlockStatesFile){
