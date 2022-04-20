@@ -1377,8 +1377,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function chat(string $message) : bool{
 		$this->removeCurrentWindow();
 
+		//Fast length check, to make sure we don't get hung trying to explode MBs of string ...
+		$maxTotalLength = $this->messageCounter * (self::MAX_CHAT_BYTE_LENGTH + 1);
+		if(strlen($message) > $maxTotalLength){
+			return false;
+		}
+
 		$message = TextFormat::clean($message, false);
-		foreach(explode("\n", $message) as $messagePart){
+		foreach(explode("\n", $message, $this->messageCounter + 1) as $messagePart){
 			if(trim($messagePart) !== "" && strlen($messagePart) <= self::MAX_CHAT_BYTE_LENGTH && mb_strlen($messagePart, 'UTF-8') <= self::MAX_CHAT_CHAR_LENGTH && $this->messageCounter-- > 0){
 				if(strpos($messagePart, './') === 0){
 					$messagePart = substr($messagePart, 1);
