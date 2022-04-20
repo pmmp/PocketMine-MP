@@ -59,6 +59,10 @@ final class RuntimeBlockMapping{
 				self::CANONICAL_BLOCK_STATES_PATH => '',
 				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '',
 			],
+			ProtocolInfo::PROTOCOL_1_18_10 => [
+				self::CANONICAL_BLOCK_STATES_PATH => '-1.18.10',
+				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.18.10',
+			],
 			ProtocolInfo::PROTOCOL_1_18_0 => [
 				self::CANONICAL_BLOCK_STATES_PATH => '-1.18.0',
 				self::R12_TO_CURRENT_BLOCK_MAP_PATH => '-1.18.0',
@@ -86,9 +90,8 @@ final class RuntimeBlockMapping{
 
 		foreach($protocolPaths as $protocol => $paths){
 			$canonicalBlockStatesFiles[$protocol] = Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states" . $paths[self::CANONICAL_BLOCK_STATES_PATH] . ".nbt");
-			$r12ToCurrentBlockMapFiles[$protocol] = Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map" . $path . ".bin");
+			$r12ToCurrentBlockMapFiles[$protocol] = Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map" . $paths[self::R12_TO_CURRENT_BLOCK_MAP_PATH] . ".bin");
 		}
-
 
 		return new self(
 			$canonicalBlockStatesFiles,

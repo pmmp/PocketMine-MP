@@ -83,7 +83,7 @@ final class ChunkSerializer{
 		if($mappingProtocol >= ProtocolInfo::PROTOCOL_1_18_0){
 			//TODO: right now we don't support 3D natively, so we just 3Dify our 2D biomes so they fill the column
 			$encodedBiomePalette = self::serializeBiomesAsPalette($chunk);
-			$stream->put(str_repeat($encodedBiomePalette, 25));
+			$stream->put(str_repeat($encodedBiomePalette, $mappingProtocol >= ProtocolInfo::PROTOCOL_1_18_30 ? 24 : 25));
 		}else{
 			$stream->put($chunk->getBiomeIdArray());
 		}
