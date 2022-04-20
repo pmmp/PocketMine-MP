@@ -48,9 +48,16 @@ final class RuntimeBlockMapping{
 	/** @var CompoundTag[] */
 	private $bedrockKnownStates;
 
-	private function __construct(){
+	private static function make() : self{
+		return new self(
+			Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"),
+			Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map.bin")
+		);
+	}
+
+	public function __construct(string $canonicalBlockStatesFile, string $r12ToCurrentBlockMapFile){
 		$stream = PacketSerializer::decoder(
-			Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt")), "Missing required resource file"),
+			Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file"),
 			0,
 			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
 		);
@@ -60,15 +67,15 @@ final class RuntimeBlockMapping{
 		}
 		$this->bedrockKnownStates = $list;
 
-		$this->setupLegacyMappings();
+		$this->setupLegacyMappings($r12ToCurrentBlockMapFile);
 	}
 
-	private function setupLegacyMappings() : void{
+	private function setupLegacyMappings(string $r12ToCurrentBlockMapFile) : void{
 		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
 		$legacyStateMapReader = PacketSerializer::decoder(
-			Utils::assumeNotFalse(file_get_contents(Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map.bin")), "Missing required resource file"),
+			Utils::assumeNotFalse(file_get_contents($r12ToCurrentBlockMapFile), "Missing required resource file"),
 			0,
 			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
 		);
