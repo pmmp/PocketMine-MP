@@ -28,7 +28,6 @@ use pocketmine\data\bedrock\blockstate\BlockStateSerializeException;
 use pocketmine\data\bedrock\blockstate\BlockStateSerializer;
 use pocketmine\data\bedrock\blockstate\BlockTypeNames;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\network\mcpe\protocol\SimulationTypePacket;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\utils\Utils;
@@ -57,7 +56,7 @@ final class RuntimeBlockMapping{
 	private static function make() : self{
 		return new self(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"));
 	}
-	
+
 	public function __construct(string $canonicalBlockStatesFile){
 		$contents = Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file");
 		$this->blockStateDictionary = BlockStateDictionary::loadFromString($contents);
