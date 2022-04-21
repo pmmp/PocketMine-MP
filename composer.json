@@ -41,7 +41,7 @@
       "pocketmine/classloader": "^0.2.0",
       "pocketmine/color": "^0.2.0",
       "pocketmine/errorhandler": "^0.6.0",
-      "pocketmine/locale-data": "~2.5.0",
+      "pocketmine/locale-data": "~2.6.2",
       "pocketmine/log": "^0.4.0",
       "pocketmine/log-pthreads": "^0.4.0",
       "pocketmine/math": "^0.4.0",
