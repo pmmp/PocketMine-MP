@@ -379,6 +379,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_PLUGIN_INVALIDMANIFEST = "pocketmine.plugin.invalidManifest";
 	public const POCKETMINE_PLUGIN_LOAD = "pocketmine.plugin.load";
 	public const POCKETMINE_PLUGIN_LOADERROR = "pocketmine.plugin.loadError";
+	public const POCKETMINE_PLUGIN_MAINCLASSABSTRACT = "pocketmine.plugin.mainClassAbstract";
 	public const POCKETMINE_PLUGIN_MAINCLASSNOTFOUND = "pocketmine.plugin.mainClassNotFound";
 	public const POCKETMINE_PLUGIN_MAINCLASSWRONGTYPE = "pocketmine.plugin.mainClassWrongType";
 	public const POCKETMINE_PLUGIN_RESTRICTEDNAME = "pocketmine.plugin.restrictedName";

@@ -313,6 +313,16 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		$this->setNameTag($this->username);
 	}
 
+	private function callDummyItemHeldEvent() : void{
+		$slot = $this->inventory->getHeldItemIndex();
+
+		$event = new PlayerItemHeldEvent($this, $this->inventory->getItem($slot), $slot);
+		$event->call();
+		//TODO: this event is actually cancellable, but cancelling it here has no meaningful result, so we
+		//just ignore it. We fire this only because the content of the held slot changed, not because the
+		//held slot index changed. We can't prevent that from here, and nor would it be sensible to.
+	}
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 		$this->addDefaultWindows();
@@ -321,10 +331,13 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			function(Inventory $unused, int $slot) : void{
 				if($slot === $this->inventory->getHeldItemIndex()){
 					$this->setUsingItem(false);
+
+					$this->callDummyItemHeldEvent();
 				}
 			},
 			function() : void{
 				$this->setUsingItem(false);
+				$this->callDummyItemHeldEvent();
 			}
 		));
 
@@ -1364,8 +1377,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function chat(string $message) : bool{
 		$this->removeCurrentWindow();
 
+		//Fast length check, to make sure we don't get hung trying to explode MBs of string ...
+		$maxTotalLength = $this->messageCounter * (self::MAX_CHAT_BYTE_LENGTH + 1);
+		if(strlen($message) > $maxTotalLength){
+			return false;
+		}
+
 		$message = TextFormat::clean($message, false);
-		foreach(explode("\n", $message) as $messagePart){
+		foreach(explode("\n", $message, $this->messageCounter + 1) as $messagePart){
 			if(trim($messagePart) !== "" && strlen($messagePart) <= self::MAX_CHAT_BYTE_LENGTH && mb_strlen($messagePart, 'UTF-8') <= self::MAX_CHAT_CHAR_LENGTH && $this->messageCounter-- > 0){
 				if(strpos($messagePart, './') === 0){
 					$messagePart = substr($messagePart, 1);
@@ -2296,7 +2315,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 		if($this->isCreative()
 			&& $source->getCause() !== EntityDamageEvent::CAUSE_SUICIDE
-			&& $source->getCause() !== EntityDamageEvent::CAUSE_VOID
 		){
 			$source->cancel();
 		}elseif($this->allowFlight && $source->getCause() === EntityDamageEvent::CAUSE_FALL){

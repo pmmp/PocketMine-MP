@@ -86,7 +86,7 @@ parameters:
 			path: ../../../src/world/format/io/region/RegionLoader.php
 
 		-
-			message: "#^Call to static method PHPUnit\\\\Framework\\\\Assert\\:\\:assertNotSame\\(\\) with arguments stdClass, stdClass and 'Cloning registry…' will always evaluate to false\\.$#"
+			message: "#^Negated boolean expression is always true\\.$#"
 			count: 1
-			path: ../../phpunit/utils/CloningRegistryTraitTest.php
+			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
 

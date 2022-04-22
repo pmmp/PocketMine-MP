@@ -132,6 +132,7 @@ use function get_class;
 use function ini_set;
 use function is_array;
 use function is_dir;
+use function is_object;
 use function is_resource;
 use function is_string;
 use function json_decode;
@@ -1606,7 +1607,7 @@ class Server{
 						"reportPaste" => base64_encode($dump->getEncodedData())
 					], 10, [], $postUrlError);
 
-					if($reply !== null && ($data = json_decode($reply->getBody())) !== null){
+					if($reply !== null && is_object($data = json_decode($reply->getBody()))){
 						if(isset($data->crashId) && isset($data->crashUrl)){
 							$reportId = $data->crashId;
 							$reportUrl = $data->crashUrl;
