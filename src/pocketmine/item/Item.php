@@ -24,6 +24,7 @@ declare(strict_types=1);
 /**
  * All the Item classes
  */
+
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
@@ -41,6 +42,8 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\NamedTag;
 use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
+use pocketmine\network\mcpe\NetworkBinaryStream;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\Player;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\Binary;
@@ -65,6 +68,16 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/** @var LittleEndianNBTStream|null */
 	private static $cachedParser = null;
+
+	/**
+	 *  Handle legacy plugins that use this method
+	 *
+	 * @param NetworkBinaryStream $out
+	 */
+	public function write(NetworkBinaryStream $out) : void{
+		$itemstack = ItemStackWrapper::legacy($this);
+		$itemstack->write($out);
+	}
 
 	private static function parseCompoundTag(string $tag) : CompoundTag{
 		if($tag === ""){
@@ -222,12 +235,12 @@ class Item implements ItemIds, \JsonSerializable{
 	}
 
 	/**
-	 * @deprecated This method accepts NBT serialized in a network-dependent format.
-	 * @see Item::setNamedTag()
-	 *
 	 * @param CompoundTag|string|null $tags
 	 *
 	 * @return $this
+	 * @deprecated This method accepts NBT serialized in a network-dependent format.
+	 * @see Item::setNamedTag()
+	 *
 	 */
 	public function setCompoundTag($tags) : Item{
 		if($tags instanceof CompoundTag){
@@ -801,14 +814,16 @@ class Item implements ItemIds, \JsonSerializable{
 
 	/**
 	 * Returns an Item from properties created in an array by {@link Item#jsonSerialize}
+	 *
 	 * @param mixed[] $data
+	 *
 	 * @phpstan-param array{
-	 * 	id: int,
-	 * 	damage?: int,
-	 * 	count?: int,
-	 * 	nbt?: string,
-	 * 	nbt_hex?: string,
-	 * 	nbt_b64?: string
+	 *    id: int,
+	 *    damage?: int,
+	 *    count?: int,
+	 *    nbt?: string,
+	 *    nbt_hex?: string,
+	 *    nbt_b64?: string
 	 * } $data
 	 */
 	final public static function jsonDeserialize(array $data) : Item{

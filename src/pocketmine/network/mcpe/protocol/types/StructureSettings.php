@@ -50,6 +50,10 @@ class StructureSettings{
 	public $rotation;
 	/** @var int */
 	public $mirror;
+	/** @var int */
+	public $animationMode;
+	/** @var float */
+	public $animationSeconds;
 	/** @var float */
 	public $integrityValue;
 	/** @var int */

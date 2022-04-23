@@ -135,6 +135,7 @@ class Anvil extends McRegion{
 		$result->setLightPopulated($chunk->getByte("LightPopulated", 0) !== 0);
 		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
 		$result->setGenerated();
+		$result->setChanged(false);
 		return $result;
 	}
 

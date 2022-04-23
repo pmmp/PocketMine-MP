@@ -30,7 +30,7 @@ use pocketmine\network\mcpe\NetworkSession;
 class PhotoInfoRequestPacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::PHOTO_INFO_REQUEST_PACKET;
 
-	private $photoId;
+	private int $photoId;
 
 	public static function create(int $photoId) : self{
 		$result = new self;

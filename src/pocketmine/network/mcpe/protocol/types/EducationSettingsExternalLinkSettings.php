@@ -27,8 +27,8 @@ use pocketmine\network\mcpe\NetworkBinaryStream;
 
 final class EducationSettingsExternalLinkSettings{
 
-	private $displayName;
-	private $url;
+	private string $displayName;
+	private string $url;
 
 	public function __construct(string $url, string $displayName){
 		$this->displayName = $displayName;

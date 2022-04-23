@@ -163,32 +163,28 @@ class BanEntry{
 		}else{
 			$str = explode("|", trim($str));
 			$entry = new BanEntry(trim(array_shift($str)));
-			do{
-				if(count($str) === 0){
-					break;
-				}
+			if(count($str) === 0){
+				return $entry;
+			}
 
-				$entry->setCreated(self::parseDate(array_shift($str)));
-				if(count($str) === 0){
-					break;
-				}
+			$entry->setCreated(self::parseDate(array_shift($str)));
+			if(count($str) === 0){
+				return $entry;
+			}
 
-				$entry->setSource(trim(array_shift($str)));
-				if(count($str) === 0){
-					break;
-				}
+			$entry->setSource(trim(array_shift($str)));
+			if(count($str) === 0){
+				return $entry;
+			}
 
-				$expire = trim(array_shift($str));
-				if($expire !== "" and strtolower($expire) !== "forever"){
-					$entry->setExpires(self::parseDate($expire));
-				}
-				if(count($str) === 0){
-					break;
-				}
-
-				$entry->setReason(trim(array_shift($str)));
-			}while(false);
-
+			$expire = trim(array_shift($str));
+			if($expire !== "" and strtolower($expire) !== "forever"){
+				$entry->setExpires(self::parseDate($expire));
+			}
+			if(count($str) === 0){
+				return $entry;
+			}
+			$entry->setReason(trim(array_shift($str)));
 			return $entry;
 		}
 	}

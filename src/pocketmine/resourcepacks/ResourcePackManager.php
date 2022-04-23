@@ -31,6 +31,9 @@ use function file_exists;
 use function gettype;
 use function is_array;
 use function is_dir;
+use function is_float;
+use function is_int;
+use function is_string;
 use function mkdir;
 use function strtolower;
 use const DIRECTORY_SEPARATOR;
@@ -78,14 +81,12 @@ class ResourcePackManager{
 		}
 
 		foreach($resourceStack as $pos => $pack){
-			try{
-				$pack = (string) $pack;
-			}catch(\ErrorException $e){
+			if(!is_string($pack) && !is_int($pack) && !is_float($pack)){
 				$logger->critical("Found invalid entry in resource pack list at offset $pos of type " . gettype($pack));
 				continue;
 			}
+			$pack = (string) $pack;
 			try{
-				/** @var string $pack */
 				$packPath = $this->path . DIRECTORY_SEPARATOR . $pack;
 				if(!file_exists($packPath)){
 					throw new ResourcePackException("File or directory not found");

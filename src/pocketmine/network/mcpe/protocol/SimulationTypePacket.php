@@ -34,7 +34,7 @@ class SimulationTypePacket extends DataPacket/* implements ClientboundPacket*/{
 	public const EDITOR = 1;
 	public const TEST = 2;
 
-	private $type;
+	private int $type;
 
 	public static function create(int $type) : self{
 		$result = new self;

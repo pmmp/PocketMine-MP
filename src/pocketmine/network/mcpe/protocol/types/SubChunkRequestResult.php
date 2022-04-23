@@ -31,4 +31,5 @@ final class SubChunkRequestResult{
 	public const WRONG_DIMENSION = 3;
 	public const NULL_PLAYER = 4;
 	public const Y_INDEX_OUT_OF_BOUNDS = 5;
+	public const SUCCESS_ALL_AIR = 6;
 }

@@ -2059,7 +2059,6 @@ class Server{
 			"line" => $errline,
 			"trace" => $trace
 		];
-
 		global $lastExceptionError, $lastError;
 		$lastExceptionError = $lastError;
 	}

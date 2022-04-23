@@ -31,7 +31,7 @@ use pocketmine\network\mcpe\protocol\types\EducationUriResource;
 class EduUriResourcePacket extends DataPacket{
 	public const NETWORK_ID = ProtocolInfo::EDU_URI_RESOURCE_PACKET;
 
-	private $resource;
+	private EducationUriResource $resource;
 
 	public static function create(EducationUriResource $resource) : self{
 		$result = new self;

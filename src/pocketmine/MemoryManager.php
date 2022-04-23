@@ -353,34 +353,32 @@ class MemoryManager{
 		file_put_contents($outputFolder . "/staticProperties.js", json_encode($staticProperties, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
 		$logger->info("[Dump] Wrote $staticCount static properties");
 
-		if(isset($GLOBALS)){ //This might be null if we're on a different thread
-			$globalVariables = [];
-			$globalCount = 0;
+		$globalVariables = [];
+		$globalCount = 0;
 
-			$ignoredGlobals = [
-				'GLOBALS' => true,
-				'_SERVER' => true,
-				'_REQUEST' => true,
-				'_POST' => true,
-				'_GET' => true,
-				'_FILES' => true,
-				'_ENV' => true,
-				'_COOKIE' => true,
-				'_SESSION' => true
-			];
+		$ignoredGlobals = [
+			'GLOBALS' => true,
+			'_SERVER' => true,
+			'_REQUEST' => true,
+			'_POST' => true,
+			'_GET' => true,
+			'_FILES' => true,
+			'_ENV' => true,
+			'_COOKIE' => true,
+			'_SESSION' => true
+		];
 
-			foreach($GLOBALS as $varName => $value){
-				if(isset($ignoredGlobals[$varName])){
-					continue;
-				}
-
-				$globalCount++;
-				$globalVariables[$varName] = self::continueDump($value, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
+		foreach($GLOBALS as $varName => $value){
+			if(isset($ignoredGlobals[$varName])){
+				continue;
 			}
 
-			file_put_contents($outputFolder . "/globalVariables.js", json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
-			$logger->info("[Dump] Wrote $globalCount global variables");
+			$globalCount++;
+			$globalVariables[$varName] = self::continueDump($value, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 		}
+
+		file_put_contents($outputFolder . "/globalVariables.js", json_encode($globalVariables, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT));
+		$logger->info("[Dump] Wrote $globalCount global variables");
 
 		$data = self::continueDump($startingObject, $objects, $refCounts, 0, $maxNesting, $maxStringSize);
 

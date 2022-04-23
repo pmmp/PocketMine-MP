@@ -37,7 +37,7 @@ class ResourcePacksInfoPacket extends DataPacket{
 	/** @var bool */
 	public $hasScripts = false; //if true, causes disconnect for any platform that doesn't support scripts yet
 
-	public $forceServerPacks = false;
+	public bool $forceServerPacks = false;
 	/** @var ResourcePack[] */
 	public $behaviorPackEntries = [];
 	/** @var ResourcePack[] */

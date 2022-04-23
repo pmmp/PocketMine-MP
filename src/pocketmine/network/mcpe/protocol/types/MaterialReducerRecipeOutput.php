@@ -25,8 +25,8 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 final class MaterialReducerRecipeOutput{
 
-	private  $itemId;
-	private  $count;
+	private int $itemId;
+	private int $count;
 
 	public function __construct(int $itemId, int $count){
 		$this->itemId = $itemId;

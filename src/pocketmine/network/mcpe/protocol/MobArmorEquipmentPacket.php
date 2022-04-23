@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\Item;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 
@@ -56,18 +55,6 @@ class MobArmorEquipmentPacket extends DataPacket{
 
 	protected function encodePayload(){
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-		if($this->head instanceof Item) {
-		    $this->head = ItemStackWrapper::legacy($this->head);
-        }
-        if($this->chest instanceof Item) {
-            $this->chest = ItemStackWrapper::legacy($this->chest);
-        }
-        if($this->legs instanceof Item) {
-            $this->legs = ItemStackWrapper::legacy($this->legs);
-        }
-        if($this->feet instanceof Item) {
-            $this->feet = ItemStackWrapper::legacy($this->feet);
-        }
 		$this->head->write($this);
 		$this->chest->write($this);
 		$this->legs->write($this);

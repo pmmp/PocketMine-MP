@@ -201,6 +201,7 @@ class McRegion extends BaseLevelProvider{
 		$result->setLightPopulated($chunk->getByte("LightPopulated", 0) !== 0);
 		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
 		$result->setGenerated(true);
+		$result->setChanged(false);
 		return $result;
 	}
 

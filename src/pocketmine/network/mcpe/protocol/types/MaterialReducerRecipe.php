@@ -25,13 +25,13 @@ namespace pocketmine\network\mcpe\protocol\types;
 
 final class MaterialReducerRecipe{
 
-	private $inputItemId;
-	private $inputItemMeta;
+	private int $inputItemId;
+	private int $inputItemMeta;
 	/**
 	 * @var MaterialReducerRecipeOutput[]
 	 * @phpstan-var list<MaterialReducerRecipeOutput>
 	 */
-	private  $outputs;
+	private array $outputs;
 
 	/**
 	 * @param MaterialReducerRecipeOutput[] $outputs

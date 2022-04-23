@@ -118,7 +118,7 @@ class PlayerNetworkSessionAdapter extends NetworkSession{
 	}
 
 	public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool{
-		return false; //TODO
+		return $this->player->onEncryptionHandshake();
 	}
 
 	public function handleResourcePackClientResponse(ResourcePackClientResponsePacket $packet) : bool{
