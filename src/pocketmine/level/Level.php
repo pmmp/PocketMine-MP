@@ -370,7 +370,7 @@ class Level implements ChunkManager, Metadatable{
 	 */
 	public function __construct(Server $server, string $name, LevelProvider $provider){
 		$this->blockStates = BlockFactory::getBlockStatesArray();
-		$this->levelId = static::$levelIdCounter++;
+		$this->levelId = self::$levelIdCounter++;
 		$this->blockMetadata = new BlockMetadataStore($this);
 		$this->server = $server;
 		$this->autoSave = $server->getAutoSave();
@@ -760,8 +760,6 @@ class Level implements ChunkManager, Metadatable{
 
 	/**
 	 * @internal
-	 *
-	 * @param Player ...$targets If empty, will send to all players in the level.
 	 *
 	 * @return void
 	 */
@@ -2929,8 +2927,6 @@ class Level implements ChunkManager, Metadatable{
 	}
 
 	/**
-	 * @param Player ...$targets
-	 *
 	 * @return void
 	 */
 	public function sendDifficulty(Player ...$targets){

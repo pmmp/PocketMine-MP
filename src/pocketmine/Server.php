@@ -27,8 +27,6 @@ declare(strict_types=1);
  */
 namespace pocketmine;
 
-
-
 use pocketmine\block\BlockFactory;
 use pocketmine\command\CommandReader;
 use pocketmine\command\CommandSender;
@@ -73,6 +71,7 @@ use pocketmine\nbt\tag\ShortTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\AdvancedSourceInterface;
 use pocketmine\network\CompressBatchedTask;
+use pocketmine\network\mcpe\encryption\EncryptionContext;
 use pocketmine\network\mcpe\protocol\BatchPacket;
 use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
@@ -315,8 +314,6 @@ class Server{
 	private $dataPath;
 	/** @var string */
 	private $pluginPath;
-	/** @var array  */
-	private $crashes = [];
 
 	/**
 	 * @var string[]
@@ -352,6 +349,9 @@ class Server{
 
 	/** @var Level|null */
 	private $levelDefault = null;
+
+	/** @var array  */
+	private $crashes = [];
 
 	public function getName() : string{
 		return \pocketmine\NAME;
@@ -1410,6 +1410,8 @@ class Server{
 			}
 			$this->networkCompressionAsync = (bool) $this->getProperty("network.async-compression", true);
 
+			EncryptionContext::$ENABLED = (bool) $this->getProperty("network.enable-encryption", true);
+
 			$this->doTitleTick = ((bool) $this->getProperty("console.title-tick", true)) && Terminal::hasFormattingCodes();
 
 			$consoleSender = new ConsoleCommandSender();
@@ -1494,6 +1496,11 @@ class Server{
 				$this->getName(),
 				(\pocketmine\IS_DEVELOPMENT_BUILD ? TextFormat::YELLOW : "") . $this->getPocketMineVersion() . TextFormat::RESET
 			]));
+
+			$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.obsolete.warning1", ["3.x", "4.0"]));
+			$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.obsolete.warning2", ["3.x", "2022-03-01"]));
+			$this->logger->notice($this->getLanguage()->translateString("pocketmine.server.obsolete.warning3", ["https://github.com/pmmp/PocketMine-MP/issues/4701"]));
+
 			$this->logger->info($this->getLanguage()->translateString("pocketmine.server.license", [$this->getName()]));
 
 			Timings::init();
@@ -2000,8 +2007,8 @@ class Server{
 				$this->exceptionHandler($err);
 				$this->crashes[] = time();
 				if(count(array_filter($this->crashes, function ($time){
-						return $time > time()-10;
-					})) > 5){
+						return $time > time()-2;
+					})) > 20){
 					$this->forceShutdown();
 				}
 			}
@@ -2055,8 +2062,8 @@ class Server{
 
 		global $lastExceptionError, $lastError;
 		$lastExceptionError = $lastError;
-		$this->crashDump();
 	}
+
 
 	/**
 	 * @return void

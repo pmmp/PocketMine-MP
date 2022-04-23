@@ -30,10 +30,8 @@ use pocketmine\network\mcpe\protocol\DataPacket;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
 use pocketmine\network\Network;
 use pocketmine\Player;
-use pocketmine\scheduler\ClosureTask;
 use pocketmine\Server;
 use pocketmine\snooze\SleeperNotifier;
-use pocketmine\utils\Internet;
 use raklib\protocol\EncapsulatedPacket;
 use raklib\protocol\PacketReliability;
 use raklib\RakLib;
@@ -41,13 +39,13 @@ use raklib\server\RakLibServer;
 use raklib\server\ServerHandler;
 use raklib\server\ServerInstance;
 use raklib\utils\InternetAddress;
-use Zedstar16\_Api\OwnageAPI;
 use function addcslashes;
 use function base64_encode;
 use function get_class;
 use function implode;
 use function rtrim;
 use function spl_object_hash;
+use function substr;
 use function unserialize;
 use const PTHREADS_INHERIT_CONSTANTS;
 
@@ -57,6 +55,8 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 	 * communicate. It's important that we check this to avoid catastrophes.
 	 */
 	private const MCPE_RAKNET_PROTOCOL_VERSION = 10;
+
+	private const MCPE_RAKNET_PACKET_ID = "\xfe";
 
 	/** @var Server */
 	private $server;
@@ -166,42 +166,25 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			//get this now for blocking in case the player was closed before the exception was raised
 			$player = $this->players[$identifier];
 			$address = $player->getAddress();
+
 			try{
 				if($packet->buffer !== ""){
-					$pk = new BatchPacket($packet->buffer);
+					if($packet->buffer[0] !== self::MCPE_RAKNET_PACKET_ID){
+						throw new \UnexpectedValueException("Unexpected non-FE packet");
+					}
+
+					$cipher = $player->getCipher();
+					$buffer = substr($packet->buffer, 1);
+					$buffer = $cipher !== null ? $cipher->decrypt($buffer) : $buffer;
+
+					$pk = new BatchPacket(self::MCPE_RAKNET_PACKET_ID . $buffer);
 					$player->handleDataPacket($pk);
 				}
 			}catch(\Throwable $e){
-                $logger = $this->server->getLogger();
-                $logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . ": " . base64_encode($packet->buffer));
-                $logger->logException($e);
-
-                $lines = explode("\n", $e->getTraceAsString());
-                $new = [];
-                foreach ($lines as $key => $line) {
-                    $new[] = str_replace(["/home/servers/", "PocketMine-MP.phar"], "", $line);
-                }
-               /* $urls = [
-                    19134 => "https://discord.com/api/webhooks/",
-                    19136 => "https://discord.com/api/webhooks/",
-                    19135 => "https://discord.com/api/webhooks/",
-                    19169 => "https://discord.com/api/webhooks/",
-                ];
-                $url = $urls[Server::getInstance()->getPort(
-                    )] ?? "https://discord.com/api/webhooks/";
-                $timestamp = new \DateTime();
-                $timestamp->setTimezone(new \DateTimeZone("UTC"));
-                $webhookdata = [];
-                $webhookdata['content'] = "";
-                $webhookdata['embeds'][] = [
-                    'color' => 0xff0000,
-                    'timestamp' => $timestamp->format("Y-m-d\TH:i:s.v\Z"),
-                    'title' => $e->getMessage(),
-                    'description' => substr(implode("\n", $new), 0, 2000)
-                ];
-                Internet::postURL($url, json_encode($webhookdata), 1, ["Content-Type: application/json"]);
-               */
-                $player->sendMessage("§b> §cAn internal server error occurred");
+				$logger = $this->server->getLogger();
+				$logger->debug("Packet " . (isset($pk) ? get_class($pk) : "unknown") . ": " . base64_encode($packet->buffer));
+				$logger->logException($e);
+				$player->sendMessage("§b> §cAn internal server error occurred");
 			}
 		}
 	}
@@ -272,22 +255,15 @@ class RakLibInterface implements ServerInstance, AdvancedSourceInterface{
 			}
 
 			if($packet instanceof BatchPacket){
-				if($needACK){
-					$pk = new EncapsulatedPacket();
-					$pk->identifierACK = $this->identifiersACK[$identifier]++;
-					$pk->buffer = $packet->buffer;
-					$pk->reliability = PacketReliability::RELIABLE_ORDERED;
-					$pk->orderChannel = 0;
-				}else{
-					if(!isset($packet->__encapsulatedPacket)){
-						$packet->__encapsulatedPacket = new CachedEncapsulatedPacket;
-						$packet->__encapsulatedPacket->identifierACK = null;
-						$packet->__encapsulatedPacket->buffer = $packet->buffer;
-						$packet->__encapsulatedPacket->reliability = PacketReliability::RELIABLE_ORDERED;
-						$packet->__encapsulatedPacket->orderChannel = 0;
-					}
-					$pk = $packet->__encapsulatedPacket;
-				}
+				$cipher = $player->getCipher();
+				$rawBuffer = substr($packet->buffer, 1);
+				$buffer = self::MCPE_RAKNET_PACKET_ID . ($cipher !== null ? $cipher->encrypt($rawBuffer) : $rawBuffer);
+
+				$pk = new EncapsulatedPacket();
+				$pk->identifierACK = $needACK ? $this->identifiersACK[$identifier]++ : null;
+				$pk->buffer = $buffer;
+				$pk->reliability = PacketReliability::RELIABLE_ORDERED;
+				$pk->orderChannel = 0;
 
 				$this->interface->sendEncapsulated($identifier, $pk, ($needACK ? RakLib::FLAG_NEED_ACK : 0) | ($immediate ? RakLib::PRIORITY_IMMEDIATE : RakLib::PRIORITY_NORMAL));
 				return $pk->identifierACK;

@@ -25,7 +25,6 @@ namespace pocketmine\network\mcpe\protocol;
 
 #include <rules/DataPacket.h>
 
-use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
@@ -64,9 +63,6 @@ class AddItemActorPacket extends DataPacket{
 	protected function encodePayload(){
 		$this->putEntityUniqueId($this->entityUniqueId ?? $this->entityRuntimeId);
 		$this->putEntityRuntimeId($this->entityRuntimeId);
-        if ($this->item instanceof Item) {
-            $this->item = ItemStackWrapper::legacy($this->item);
-        }
 		$this->item->write($this);
 		$this->putVector3($this->position);
 		$this->putVector3Nullable($this->motion);

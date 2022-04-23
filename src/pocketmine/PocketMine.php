@@ -36,7 +36,7 @@ namespace pocketmine {
 
 	require_once __DIR__ . '/VersionInfo.php';
 
-	const MIN_PHP_VERSION = "7.3.6";
+	const MIN_PHP_VERSION = "8.0.0";
 
 	/**
 	 * @param string $message
@@ -74,7 +74,9 @@ namespace pocketmine {
 		}
 
 		$extensions = [
+			"chunkutils2" => "PocketMine ChunkUtils v2",
 			"curl" => "cURL",
+			"crypto" => "php-crypto",
 			"ctype" => "ctype",
 			"date" => "Date",
 			"hash" => "Hash",
@@ -103,8 +105,8 @@ namespace pocketmine {
 			if(substr_count($pthreads_version, ".") < 2){
 				$pthreads_version = "0.$pthreads_version";
 			}
-			if(version_compare($pthreads_version, "3.2.0") < 0){
-				$messages[] = "pthreads >= 3.2.0 is required, while you have $pthreads_version.";
+			if(version_compare($pthreads_version, "4.0.0") < 0 || version_compare($pthreads_version, "5.0.0") > 0){
+				$messages[] = "pthreads ^4.0.0 is required, while you have $pthreads_version.";
 			}
 		}
 
@@ -113,6 +115,16 @@ namespace pocketmine {
 			if(version_compare($leveldb_version, "0.2.1") < 0){
 				$messages[] = "php-leveldb >= 0.2.1 is required, while you have $leveldb_version.";
 			}
+		}
+
+		$chunkutils2_version = phpversion("chunkutils2");
+		$wantedVersionLock = "0.3";
+		$wantedVersionMin = "$wantedVersionLock.0";
+		if($chunkutils2_version !== false && (
+				version_compare($chunkutils2_version, $wantedVersionMin) < 0 ||
+				preg_match("/^" . preg_quote($wantedVersionLock, "/") . "\.\d+(?:-dev)?$/", $chunkutils2_version) === 0 //lock in at ^0.2, optionally at a patch release
+			)){
+			$messages[] = "chunkutils2 ^$wantedVersionMin is required, while you have $chunkutils2_version.";
 		}
 
 		if(extension_loaded("pocketmine")){
@@ -186,6 +198,8 @@ JIT_WARNING
 			}
 			critical_error("PHP binary used: " . $binary);
 			critical_error("Loaded php.ini: " . (($file = php_ini_loaded_file()) !== false ? $file : "none"));
+			$phprc = getenv("PHPRC");
+			critical_error("Value of PHPRC environment variable: " . ($phprc === false ? "" : $phprc));
 			critical_error("Please recompile PHP with the needed configuration, or refer to the installation instructions at http://pmmp.rtfd.io/en/rtfd/installation.html.");
 			echo PHP_EOL;
 			exit(1);
@@ -212,10 +226,8 @@ JIT_WARNING
 
 		set_error_handler([Utils::class, 'errorExceptionHandler']);
 
-		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
-		define('pocketmine\VERSION', $version->getFullVersion(true));
-
 		$gitHash = str_repeat("00", 20);
+		$buildNumber = 0;
 
 		if(\Phar::running(true) === ""){
 			$gitHash = Git::getRepositoryStatePretty(\pocketmine\PATH);
@@ -225,9 +237,16 @@ JIT_WARNING
 			if(isset($meta["git"])){
 				$gitHash = $meta["git"];
 			}
+			if(isset($meta["build"]) && is_int($meta["build"])){
+				$buildNumber = $meta["build"];
+			}
 		}
 
 		define('pocketmine\GIT_COMMIT', $gitHash);
+		define('pocketmine\BUILD_NUMBER', $buildNumber);
+
+		$version = new VersionString(\pocketmine\BASE_VERSION, \pocketmine\IS_DEVELOPMENT_BUILD, \pocketmine\BUILD_NUMBER);
+		define('pocketmine\VERSION', $version->getFullVersion(true));
 
 		$composerGitHash = InstalledVersions::getReference('pocketmine/pocketmine-mp');
 		if($composerGitHash !== null){

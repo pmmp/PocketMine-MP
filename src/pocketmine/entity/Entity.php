@@ -619,6 +619,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$this->propertyManager->setFloat(self::DATA_SCALE, 1);
 		$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_WIDTH, $this->width);
 		$this->propertyManager->setFloat(self::DATA_BOUNDING_BOX_HEIGHT, $this->height);
+		$this->propertyManager->setFloat(self::DATA_COLOR, 0);
 
 		$this->fireTicks = $this->namedtag->getShort("Fire", 0);
 		if($this->isOnFire()){
@@ -1229,10 +1230,10 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		$diffZ = $z - $floorZ;
 
 		if(BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ)]){
-			$westNonSolid  = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX - 1, $floorY, $floorZ)];
-			$eastNonSolid  = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX + 1, $floorY, $floorZ)];
-			$downNonSolid  = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY - 1, $floorZ)];
-			$upNonSolid    = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY + 1, $floorZ)];
+			$westNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX - 1, $floorY, $floorZ)];
+			$eastNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX + 1, $floorY, $floorZ)];
+			$downNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY - 1, $floorZ)];
+			$upNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY + 1, $floorZ)];
 			$northNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ - 1)];
 			$southNonSolid = !BlockFactory::$solid[$this->level->getBlockIdAt($floorX, $floorY, $floorZ + 1)];
 
@@ -1953,6 +1954,7 @@ abstract class Entity extends Location implements Metadatable, EntityIds{
 		if(
 			!isset($this->hasSpawned[$player->getLoaderId()]) and
 			$this->chunk !== null and
+			$player->getLevelNonNull() === $this->level and
 			isset($player->usedChunks[$chunkHash = Level::chunkHash($this->chunk->getX(), $this->chunk->getZ())]) and
 			$player->usedChunks[$chunkHash] === true
 		){

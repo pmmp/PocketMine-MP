@@ -365,8 +365,6 @@ class PluginManager{
 
 	/**
 	 * Returns whether a specified API version string is considered compatible with the server's API version.
-	 *
-	 * @param string ...$versions
 	 */
 	public function isCompatibleApi(string ...$versions) : bool{
 		$serverString = $this->server->getApiVersion();

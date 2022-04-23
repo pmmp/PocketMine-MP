@@ -393,7 +393,9 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	public function setCurrentTotalXp(int $amount) : bool{
 		$newLevel = ExperienceUtils::getLevelFromXp($amount);
 
-		return $this->setXpAndProgress((int) $newLevel, $newLevel - ((int) $newLevel));
+		$xpLevel = (int) $newLevel;
+		$xpProgress = $newLevel - (int) $newLevel;
+		return $this->setXpAndProgress($xpLevel, $xpProgress);
 	}
 
 	/**
@@ -403,6 +405,7 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * @param bool $playSound Whether to play level-up and XP gained sounds.
 	 */
 	public function addXp(int $amount, bool $playSound = true) : bool{
+		$amount = min($amount, INT32_MAX - $this->totalXp);
 		$oldLevel = $this->getXpLevel();
 		$oldTotal = $this->getCurrentTotalXp();
 
@@ -439,24 +442,26 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	}
 
 	protected function setXpAndProgress(?int $level, ?float $progress) : bool{
+		$newLevel = $level;
+		$newProgress = $progress;
 		if(!$this->justCreated){
-			$ev = new PlayerExperienceChangeEvent($this, $this->getXpLevel(), $this->getXpProgress(), $level, $progress);
+			$ev = new PlayerExperienceChangeEvent($this, $this->getXpLevel(), $this->getXpProgress(), $newLevel, $newProgress);
 			$ev->call();
 
 			if($ev->isCancelled()){
 				return false;
 			}
 
-			$level = $ev->getNewLevel();
-			$progress = $ev->getNewProgress();
+			$newLevel = $ev->getNewLevel();
+			$newProgress = $ev->getNewProgress();
 		}
 
-		if($level !== null){
-			$this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($level);
+		if($newLevel !== null){
+			$this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE_LEVEL)->setValue($newLevel);
 		}
 
-		if($progress !== null){
-			$this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue($progress);
+		if($newProgress !== null){
+			$this->getAttributeMap()->getAttribute(Attribute::EXPERIENCE)->setValue($newProgress);
 		}
 
 		return true;
@@ -475,8 +480,8 @@ class Human extends Creature implements ProjectileSource, InventoryHolder{
 	 * score when they die. (TODO: add this when MCPE supports it)
 	 */
 	public function setLifetimeTotalXp(int $amount) : void{
-		if($amount < 0){
-			throw new \InvalidArgumentException("XP must be greater than 0");
+		if($amount < 0 || $amount > INT32_MAX){
+			throw new \InvalidArgumentException("XP must be greater than 0 and less than " . INT32_MAX);
 		}
 
 		$this->totalXp = $amount;

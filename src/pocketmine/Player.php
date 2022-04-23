@@ -102,6 +102,8 @@ use pocketmine\nbt\tag\DoubleTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\ItemTypeDictionary;
+use pocketmine\network\mcpe\encryption\EncryptionContext;
+use pocketmine\network\mcpe\encryption\PrepareEncryptionTask;
 use pocketmine\network\mcpe\PlayerNetworkSessionAdapter;
 use pocketmine\network\mcpe\protocol\ActorEventPacket;
 use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
@@ -139,6 +141,7 @@ use pocketmine\network\mcpe\protocol\ResourcePackDataInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePacksInfoPacket;
 use pocketmine\network\mcpe\protocol\ResourcePackStackPacket;
 use pocketmine\network\mcpe\protocol\RespawnPacket;
+use pocketmine\network\mcpe\protocol\ServerToClientHandshakePacket;
 use pocketmine\network\mcpe\protocol\SetPlayerGameTypePacket;
 use pocketmine\network\mcpe\protocol\SetSpawnPositionPacket;
 use pocketmine\network\mcpe\protocol\SetTitlePacket;
@@ -184,6 +187,7 @@ use pocketmine\tile\ItemFrame;
 use pocketmine\tile\Spawnable;
 use pocketmine\tile\Tile;
 use pocketmine\timings\Timings;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\UUID;
 use function abs;
@@ -210,6 +214,7 @@ use function json_encode;
 use function json_last_error_msg;
 use function lcg_value;
 use function max;
+use function mb_strlen;
 use function microtime;
 use function min;
 use function preg_match;
@@ -284,6 +289,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	/** @var DataPacket[] */
 	private $batchedPackets = [];
 
+	private ?EncryptionContext $cipher = null;
+
 	/**
 	 * @var int
 	 * Last measurement of player's latency in milliseconds.
@@ -298,6 +305,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 	/** @var bool */
 	private $seenLoginPacket = false;
+	/** @var bool */
+	private $awaitingEncryptionHandshake = false;
 	/** @var bool */
 	private $resourcePacksDone = false;
 
@@ -563,7 +572,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 	}
 
 	public function spawnTo(Player $player) : void{
-		if($this->spawned and $player->spawned and $this->isAlive() and $player->isAlive() and $player->getLevelNonNull() === $this->level and $player->canSee($this) and !$this->isSpectator()){
+		if($this->spawned and $player->spawned and $this->isAlive() and $player->isAlive() and $player->canSee($this) and !$this->isSpectator()){
 			parent::spawnTo($player);
 		}
 	}
@@ -1117,7 +1126,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}
 
 		if($this->getHealth() <= 0){
-			$this->respawn();
+			$this->actuallyRespawn();
 		}
 	}
 
@@ -2072,9 +2081,49 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->xuid = $xuid;
 		}
 
-		//TODO: encryption
+		$identityPublicKey = base64_decode($packet->identityPublicKey, true);
+		if($identityPublicKey === false){
+			//if this is invalid it should have borked VerifyLoginTask
+			throw new AssumptionFailedError("We should never have reached here if the key is invalid");
+		}
+
+		if(EncryptionContext::$ENABLED){
+			$this->server->getAsyncPool()->submitTask(new PrepareEncryptionTask(
+				$identityPublicKey,
+				function(string $encryptionKey, string $handshakeJwt) : void{
+					if(!$this->isConnected()){
+						return;
+					}
+
+					$pk = new ServerToClientHandshakePacket();
+					$pk->jwt = $handshakeJwt;
+					$this->sendDataPacket($pk, false, true); //make sure this gets sent before encryption is enabled
+
+					$this->awaitingEncryptionHandshake = true;
+
+					$this->cipher = EncryptionContext::fakeGCM($encryptionKey);
+
+					$this->server->getLogger()->debug("Enabled encryption for " . $this->username);
+				}
+			));
+		}else{
+			$this->processLogin();
+		}
+	}
+
+	/**
+	 * @internal
+	 */
+	public function onEncryptionHandshake() : bool{
+		if(!$this->awaitingEncryptionHandshake){
+			return false;
+		}
+		$this->awaitingEncryptionHandshake = false;
+
+		$this->server->getLogger()->debug("Encryption handshake completed for " . $this->username);
 
 		$this->processLogin();
+		return true;
 	}
 
 	/**
@@ -2279,6 +2328,7 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		$pk->itemTable = ItemTypeDictionary::getInstance()->getEntries();
 		$pk->playerMovementSettings = new PlayerMovementSettings(PlayerMovementType::LEGACY, 0, false);
 		$pk->serverSoftwareVersion = sprintf("%s %s", \pocketmine\NAME, \pocketmine\VERSION);
+		$pk->blockPaletteChecksum = 0; //we don't bother with this (0 skips verification) - the preimage is some dumb stringified NBT, not even actual NBT
 		$this->dataPacket($pk);
 
 		$this->sendDataPacket(new AvailableActorIdentifiersPacket());
@@ -3124,10 +3174,22 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			$this->removeWindow($this->windowIndex[$packet->windowId]);
 			$this->closingWindowId = null;
 			//removeWindow handles sending the appropriate
-			return true;
+		}else{
+			/*
+			 * TODO: HACK!
+			 * If we told the client to remove a window on our own (e.g. a plugin called removeWindow()), our
+			 * first ContainerClose tricks the client into behaving as if it itself asked for the window to be closed.
+			 * This means that it will send us a ContainerClose of its own, which we must respond to the same way as if
+			 * the client closed the window by itself.
+			 * If we don't, the client will not be able to open any new windows.
+			 */
+			$pk = new ContainerClosePacket();
+			$pk->windowId = $packet->windowId;
+			$pk->server = false;
+			$this->sendDataPacket($pk);
 		}
 
-		return false;
+		return true;
 	}
 
 	public function handleAdventureSettings(AdventureSettingsPacket $packet) : bool{
@@ -3252,6 +3314,24 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		return true;
 	}
 
+	/**
+	 * @throws \UnexpectedValueException
+	 */
+	private function checkBookText(string $string, string $fieldName, int $softLimit, int $hardLimit, bool &$cancel) : string{
+		if(strlen($string) > $hardLimit){
+			throw new \UnexpectedValueException(sprintf("Book %s must be at most %d bytes, but have %d bytes", $fieldName, $hardLimit, strlen($string)));
+		}
+
+		$result = TextFormat::clean($string, false);
+		//strlen() is O(1), mb_strlen() is O(n)
+		if(strlen($result) > $softLimit * 4 || mb_strlen($result, 'UTF-8') > $softLimit){
+			$cancel = true;
+			$this->server->getLogger()->debug(sprintf("Cancelled book edit by %s due to %s exceeded soft limit of %d chars", $this->getName(), $fieldName, $softLimit));
+		}
+
+		return $result;
+	}
+
 	public function handleBookEdit(BookEditPacket $packet) : bool{
 		/** @var WritableBook $oldBook */
 		$oldBook = $this->inventory->getItem($packet->inventorySlot);
@@ -3261,10 +3341,11 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 
 		$newBook = clone $oldBook;
 		$modifiedPages = [];
-
+		$cancel = false;
 		switch($packet->type){
 			case BookEditPacket::TYPE_REPLACE_PAGE:
-				$newBook->setPageText($packet->pageNumber, $packet->text);
+				$text = self::checkBookText($packet->text, "page text", 256, 0x7fff, $cancel);
+				$newBook->setPageText($packet->pageNumber, $text);
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_ADD_PAGE:
@@ -3273,7 +3354,8 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 					//TODO: the client can send insert-before actions on trailing client-side pages which cause odd behaviour on the server
 					return false;
 				}
-				$newBook->insertPage($packet->pageNumber, $packet->text);
+				$text = self::checkBookText($packet->text, "page text", 256, 0x7fff, $cancel);
+				$newBook->insertPage($packet->pageNumber, $text);
 				$modifiedPages[] = $packet->pageNumber;
 				break;
 			case BookEditPacket::TYPE_DELETE_PAGE:
@@ -3292,17 +3374,36 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 				$modifiedPages = [$packet->pageNumber, $packet->secondaryPageNumber];
 				break;
 			case BookEditPacket::TYPE_SIGN_BOOK:
+				$title = self::checkBookText($packet->title, "title", 16, 0x7fff, $cancel);
+				//this one doesn't have a limit in vanilla, so we have to improvise
+				$author = self::checkBookText($packet->author, "author", 256, 0x7fff, $cancel);
+
 				/** @var WrittenBook $newBook */
 				$newBook = Item::get(Item::WRITTEN_BOOK, 0, 1, $newBook->getNamedTag());
-				$newBook->setAuthor($packet->author);
-				$newBook->setTitle($packet->title);
+				$newBook->setAuthor($author);
+				$newBook->setTitle($title);
 				$newBook->setGeneration(WrittenBook::GENERATION_ORIGINAL);
 				break;
 			default:
 				return false;
 		}
 
+		/*
+		 * Plugins may have created books with more than 50 pages; we allow plugins to do this, but not players.
+		 * Don't allow the page count to grow past 50, but allow deleting, swapping or altering text of existing pages.
+		 */
+		$oldPageCount = count($oldBook->getPages());
+		$newPageCount = count($newBook->getPages());
+		if(($newPageCount > $oldPageCount && $newPageCount > 50)){
+			$this->server->getLogger()->debug("Cancelled book edit by " . $this->getName() . " due to adding too many pages (new page count would be $newPageCount)");
+			$cancel = true;
+		}
+
 		$event = new PlayerEditBookEvent($this, $oldBook, $newBook, $packet->type, $modifiedPages);
+		if($cancel){
+			$event->setCancelled();
+		}
+
 		$event->call();
 		if($event->isCancelled()){
 			return true;
@@ -3379,6 +3480,13 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 		}finally{
 			$timings->stopTiming();
 		}
+	}
+
+	/**
+	 * @internal
+	 */
+	public function getCipher() : ?EncryptionContext{
+		return $this->cipher;
 	}
 
 	/**
@@ -3891,6 +3999,10 @@ class Player extends Human implements CommandSender, ChunkLoader, IPlayer{
 			return;
 		}
 
+		$this->actuallyRespawn();
+	}
+
+	protected function actuallyRespawn() : void{
 		$ev = new PlayerRespawnEvent($this, $this->getSpawn());
 		$ev->call();
 
