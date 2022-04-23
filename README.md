@@ -1,8 +1,8 @@
 ## Features/Changes
+- Support for v1.18.30
 - Server will not crash from errors (unless a crashloop occurs)
 - Removed internal server error
 - Compatible with plugins using `ItemBlock::write()` methods
-- Support PHP 7.3
 
 ## How to get compiled version?
 - Get a compiled `.phar` version from [here](https://github.com/ownagepe/PocketMine-MP/releases/tag/3.22.0)
