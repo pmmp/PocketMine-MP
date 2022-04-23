@@ -83,9 +83,10 @@ final class RuntimeBlockMapping{
 			$legacyStateMap[] = new R12ToCurrentBlockMapEntry($id, $meta, $state);
 		}
 
-		/**
-		 * @var int[][] $idToStatesMap string id -> int[] list of candidate state indices
-		 */
+
+		$replace = [
+			"minecraft:concretePowder" => "minecraft:concrete_powder"
+		];
 		$idToStatesMap = [];
 		foreach(self::$bedrockKnownStates as $k => $state){
 			$idToStatesMap[$state->getString("name")][] = $k;
@@ -105,9 +106,15 @@ final class RuntimeBlockMapping{
 			//TODO HACK: idiotic NBT compare behaviour on 3.x compares keys which are stored by values
 			$mappedState->setName("");
 			$mappedName = $mappedState->getString("name");
+			/*
+			if(isset($replace[$mappedName])){
+				$mappedName = $replace[$mappedName];
+			}*/
+
 			if(!isset($idToStatesMap[$mappedName])){
-				throw new \RuntimeException("Mapped new state does not appear in network table");
+				throw new \RuntimeException("Mapped new state of {$mappedName} does not appear in network table");
 			}
+
 			foreach($idToStatesMap[$mappedName] as $k){
 				$networkState = self::$bedrockKnownStates[$k];
 				if($mappedState->equals($networkState)){
@@ -115,8 +122,11 @@ final class RuntimeBlockMapping{
 					continue 2;
 				}
 			}
-			throw new \RuntimeException("Mapped new state does not appear in network table");
+			//	var_dump($mappedState);
+			//	var_dump($networkState);
+			throw new \RuntimeException("Mapped new state of {$mappedName}  does not appear in network table");
 		}
+
 	}
 
 	private static function lazyInit() : void{

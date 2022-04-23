@@ -86,6 +86,8 @@ class AddPlayerPacket extends DataPacket{
 	public $deviceId = ""; //TODO: fill player's device ID (???)
 	/** @var int */
 	public $buildPlatform = DeviceOS::UNKNOWN;
+    /** @var int */
+    public $gamemode = 0;
 
 	protected function decodePayload(){
 		$this->uuid = $this->getUUID();
@@ -99,6 +101,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->yaw = $this->getLFloat();
 		$this->headYaw = $this->getLFloat();
 		$this->item = ItemStackWrapper::read($this);
+        $this->gamemode = $this->getVarInt();
 		$this->metadata = $this->getEntityMetadata();
 
 		$this->uvarint1 = $this->getUnsignedVarInt();
@@ -130,6 +133,7 @@ class AddPlayerPacket extends DataPacket{
 		$this->putLFloat($this->yaw);
 		$this->putLFloat($this->headYaw ?? $this->yaw);
 		$this->item->write($this);
+        $this->putVarInt($this->gamemode);
 		$this->putEntityMetadata($this->metadata);
 
 		$this->putUnsignedVarInt($this->uvarint1);

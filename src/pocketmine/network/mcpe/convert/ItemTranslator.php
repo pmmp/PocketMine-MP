@@ -108,6 +108,11 @@ final class ItemTranslator{
 				if(!is_numeric($meta) || !is_string($newId)){
 					throw new AssumptionFailedError("Invalid item table format");
 				}
+
+				$oldintid = $legacyStringToIntMap[$oldId] ?? null;
+				if($oldintid === null){
+					continue;
+				}
 				$complexMappings[$newId] = [$legacyStringToIntMap[$oldId], (int) $meta];
 			}
 		}
