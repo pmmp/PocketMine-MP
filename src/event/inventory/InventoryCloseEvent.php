@@ -27,11 +27,10 @@ use pocketmine\inventory\Inventory;
 use pocketmine\player\Player;
 
 class InventoryCloseEvent extends InventoryEvent{
-	/** @var Player */
-	private $who;
-
-	public function __construct(Inventory $inventory, Player $who){
-		$this->who = $who;
+	public function __construct(
+		Inventory $inventory,
+		private Player $who
+	){
 		parent::__construct($inventory);
 	}
 

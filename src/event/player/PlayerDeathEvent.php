@@ -38,10 +38,8 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	/** @var Player */
 	protected $player;
 
-	/** @var Translatable|string */
-	private $deathMessage;
-	/** @var bool */
-	private $keepInventory = false;
+	private Translatable|string $deathMessage;
+	private bool $keepInventory = false;
 
 	/**
 	 * @param Item[]                   $drops

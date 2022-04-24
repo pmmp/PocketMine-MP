@@ -34,15 +34,12 @@ use pocketmine\player\Player;
 class PlayerChangeSkinEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Skin */
-	private $oldSkin;
-	/** @var Skin */
-	private $newSkin;
-
-	public function __construct(Player $player, Skin $oldSkin, Skin $newSkin){
+	public function __construct(
+		Player $player,
+		private Skin $oldSkin,
+		private Skin $newSkin
+	){
 		$this->player = $player;
-		$this->oldSkin = $oldSkin;
-		$this->newSkin = $newSkin;
 	}
 
 	public function getOldSkin() : Skin{
