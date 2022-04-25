@@ -29,9 +29,9 @@ use function count;
 
 class ShapelessRecipe implements CraftingRecipe{
 	/** @var Item[] */
-	private $ingredients = [];
+	private array $ingredients = [];
 	/** @var Item[] */
-	private $results;
+	private array $results;
 
 	/**
 	 * @param Item[] $ingredients No more than 9 total. This applies to sum of item stack counts, not count of array.
