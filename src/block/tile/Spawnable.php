@@ -33,21 +33,23 @@ abstract class Spawnable extends Tile{
 	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>|null
 	 */
 	private $spawnCompoundCache = null;
-	/** @var bool */
-	private $dirty = true; //default dirty, until it's been spawned appropriately on the world
 
 	/**
-	 * Returns whether the tile needs to be respawned to viewers.
+	 * @deprecated
 	 */
 	public function isDirty() : bool{
-		return $this->dirty;
+		return $this->spawnCompoundCache === null;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function setDirty(bool $dirty = true) : void{
-		if($dirty){
-			$this->spawnCompoundCache = null;
-		}
-		$this->dirty = $dirty;
+		$this->clearSpawnCompoundCache();
+	}
+
+	public function clearSpawnCompoundCache() : void{
+		$this->spawnCompoundCache = null;
 	}
 
 	/**
