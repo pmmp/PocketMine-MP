@@ -49,10 +49,8 @@ class Chest extends Spawnable implements Container, Nameable{
 	/** @var DoubleChestInventory|null */
 	protected $doubleInventory = null;
 
-	/** @var int|null */
-	private $pairX;
-	/** @var int|null */
-	private $pairZ;
+	private ?int $pairX = null;
+	private ?int $pairZ = null;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);

@@ -28,11 +28,8 @@ use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use function get_class;
 
 abstract class Spawnable extends Tile{
-	/**
-	 * @var CacheableNbt|null
-	 * @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>|null
-	 */
-	private $spawnCompoundCache = null;
+	/** @phpstan-var CacheableNbt<\pocketmine\nbt\tag\CompoundTag>|null */
+	private ?CacheableNbt $spawnCompoundCache = null;
 
 	/**
 	 * @deprecated

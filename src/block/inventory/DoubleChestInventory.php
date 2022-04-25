@@ -33,10 +33,8 @@ use pocketmine\world\sound\Sound;
 class DoubleChestInventory extends BaseInventory implements BlockInventory, InventoryHolder{
 	use AnimatedBlockInventoryTrait;
 
-	/** @var ChestInventory */
-	private $left;
-	/** @var ChestInventory */
-	private $right;
+	private ChestInventory $left;
+	private ChestInventory $right;
 
 	public function __construct(ChestInventory $left, ChestInventory $right){
 		$this->left = $left;
