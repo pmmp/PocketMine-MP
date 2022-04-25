@@ -40,23 +40,18 @@ use function str_replace;
 
 abstract class Command{
 
-	/** @var string */
-	private $name;
+	private string $name;
 
-	/** @var string */
-	private $nextLabel;
-
-	/** @var string */
-	private $label;
+	private string $nextLabel;
+	private string $label;
 
 	/** @var string[] */
-	private $aliases = [];
+	private array $aliases = [];
 
 	/** @var string[] */
-	private $activeAliases = [];
+	private array $activeAliases = [];
 
-	/** @var CommandMap|null */
-	private $commandMap = null;
+	private ?CommandMap $commandMap = null;
 
 	/** @var Translatable|string */
 	protected $description = "";
@@ -64,11 +59,8 @@ abstract class Command{
 	/** @var Translatable|string */
 	protected $usageMessage;
 
-	/** @var string|null */
-	private $permission = null;
-
-	/** @var string|null */
-	private $permissionMessage = null;
+	private ?string $permission = null;
+	private ?string $permissionMessage = null;
 
 	/** @var TimingsHandler|null */
 	public $timings = null;

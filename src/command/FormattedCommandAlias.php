@@ -33,7 +33,7 @@ use function substr;
 
 class FormattedCommandAlias extends Command{
 	/** @var string[] */
-	private $formatStrings = [];
+	private array $formatStrings = [];
 
 	/**
 	 * @param string[] $formatStrings
