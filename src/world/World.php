@@ -403,7 +403,6 @@ class World implements ChunkManager{
 			}
 		});
 
-
 		$this->scheduledBlockUpdateQueue = new ReversePriorityQueue();
 		$this->scheduledBlockUpdateQueue->setExtractFlags(\SplPriorityQueue::EXTR_BOTH);
 
