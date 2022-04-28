@@ -39,8 +39,7 @@ final class VersionInfo{
 		//NOOP
 	}
 
-	/** @var string|null */
-	private static $gitHash = null;
+	private static ?string $gitHash = null;
 
 	public static function GIT_HASH() : string{
 		if(self::$gitHash === null){
@@ -79,8 +78,7 @@ final class VersionInfo{
 		return self::$buildNumber;
 	}
 
-	/** @var VersionString|null */
-	private static $fullVersion = null;
+	private static ?VersionString $fullVersion = null;
 
 	public static function VERSION() : VersionString{
 		if(self::$fullVersion === null){
