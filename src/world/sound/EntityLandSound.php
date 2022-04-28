@@ -34,16 +34,10 @@ use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
  * Played when an entity hits the ground after falling a distance that doesn't cause damage, e.g. due to jumping.
  */
 class EntityLandSound implements Sound{
-
-	/** @var Entity */
-	private $entity;
-	/** @var Block */
-	private $blockLandedOn;
-
-	public function __construct(Entity $entity, Block $blockLandedOn){
-		$this->entity = $entity;
-		$this->blockLandedOn = $blockLandedOn;
-	}
+	public function __construct(
+		private Entity $entity,
+		private Block $blockLandedOn
+	){}
 
 	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::create(
