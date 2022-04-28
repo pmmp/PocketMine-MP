@@ -42,21 +42,14 @@ use pocketmine\world\World;
 
 class Normal extends Generator{
 
+	private int $waterHeight = 62;
 	/** @var Populator[] */
-	private $populators = [];
-	/** @var int */
-	private $waterHeight = 62;
-
+	private array $populators = [];
 	/** @var Populator[] */
-	private $generationPopulators = [];
-	/** @var Simplex */
-	private $noiseBase;
-
-	/** @var BiomeSelector */
-	private $selector;
-
-	/** @var Gaussian */
-	private $gaussian;
+	private array $generationPopulators = [];
+	private Simplex $noiseBase;
+	private BiomeSelector $selector;
+	private Gaussian $gaussian;
 
 	/**
 	 * @throws InvalidGeneratorOptionsException
