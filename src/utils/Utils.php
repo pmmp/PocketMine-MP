@@ -105,7 +105,7 @@ final class Utils{
 	public const OS_BSD = "bsd";
 	public const OS_UNKNOWN = "other";
 
-	private static ?string $os;
+	private static ?string $os = null;
 	private static ?UuidInterface $serverUniqueId = null;
 
 	/**
