@@ -52,12 +52,11 @@ final class NoteInstrument{
 		);
 	}
 
-	/** @var int */
-	private $magicNumber;
-
-	private function __construct(string $name, int $magicNumber){
+	private function __construct(
+		string $name,
+		private int $magicNumber
+	){
 		$this->Enum___construct($name);
-		$this->magicNumber = $magicNumber;
 	}
 
 	public function getMagicNumber() : int{

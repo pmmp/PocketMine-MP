@@ -30,22 +30,18 @@ use pocketmine\world\utils\SubChunkExplorerStatus;
 use function max;
 
 class BlockLightUpdate extends LightUpdate{
-
-	/**
-	 * @var int[]
-	 * @phpstan-var array<int, int>
-	 */
-	private $lightEmitters;
-
 	/**
 	 * @param int[] $lightFilters
 	 * @param int[] $lightEmitters
 	 * @phpstan-param array<int, int> $lightFilters
 	 * @phpstan-param array<int, int> $lightEmitters
 	 */
-	public function __construct(SubChunkExplorer $subChunkExplorer, array $lightFilters, array $lightEmitters){
+	public function __construct(
+		SubChunkExplorer $subChunkExplorer,
+		array $lightFilters,
+		private array $lightEmitters
+	){
 		parent::__construct($subChunkExplorer, $lightFilters);
-		$this->lightEmitters = $lightEmitters;
 	}
 
 	protected function getCurrentLightArray() : LightArray{

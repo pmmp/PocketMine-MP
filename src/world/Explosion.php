@@ -46,8 +46,7 @@ use function mt_rand;
 use function sqrt;
 
 class Explosion{
-	/** @var int */
-	private $rays = 16;
+	private int $rays = 16;
 	/** @var World */
 	public $world;
 	/** @var Position */
@@ -59,16 +58,12 @@ class Explosion{
 	public $affectedBlocks = [];
 	/** @var float */
 	public $stepLen = 0.3;
-	/** @var Entity|Block|null */
-	private $what;
 
-	/** @var SubChunkExplorer */
-	private $subChunkExplorer;
+	private Entity|Block|null $what;
 
-	/**
-	 * @param Entity|Block|null $what
-	 */
-	public function __construct(Position $center, float $size, $what = null){
+	private SubChunkExplorer $subChunkExplorer;
+
+	public function __construct(Position $center, float $size, Entity|Block|null $what = null){
 		if(!$center->isValid()){
 			throw new \InvalidArgumentException("Position does not have a valid world");
 		}

@@ -27,14 +27,11 @@ use pocketmine\item\Item;
 
 class FurnaceRecipe{
 
-	/** @var Item */
-	private $output;
-
-	/** @var Item */
-	private $ingredient;
-
-	public function __construct(Item $result, Item $ingredient){
-		$this->output = clone $result;
+	public function __construct(
+		private Item $result,
+		private Item $ingredient
+	){
+		$this->result = clone $result;
 		$this->ingredient = clone $ingredient;
 	}
 
@@ -43,6 +40,6 @@ class FurnaceRecipe{
 	}
 
 	public function getResult() : Item{
-		return clone $this->output;
+		return clone $this->result;
 	}
 }

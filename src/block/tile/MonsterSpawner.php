@@ -56,43 +56,24 @@ class MonsterSpawner extends Spawnable{
 	public const DEFAULT_SPAWN_RANGE = 4; //blocks
 	public const DEFAULT_REQUIRED_PLAYER_RANGE = 16;
 
-	/**
-	 * @var string
-	 * TODO: replace this with a cached entity or something of that nature
-	 */
-	private $entityTypeId = ":";
-	/**
-	 * @var ListTag|null
-	 * TODO: deserialize this properly and drop the NBT (PC and PE formats are different, just for fun)
-	 */
-	private $spawnPotentials = null;
-	/**
-	 * @var CompoundTag|null
-	 * TODO: deserialize this properly and drop the NBT (PC and PE formats are different, just for fun)
-	 */
-	private $spawnData = null;
+	/** TODO: replace this with a cached entity or something of that nature */
+	private string $entityTypeId = ":";
+	/** TODO: deserialize this properly and drop the NBT (PC and PE formats are different, just for fun) */
+	private ?ListTag $spawnPotentials = null;
+	/** TODO: deserialize this properly and drop the NBT (PC and PE formats are different, just for fun) */
+	private ?CompoundTag $spawnData = null;
 
-	/** @var float */
-	private $displayEntityWidth = 1;
-	/** @var float */
-	private $displayEntityHeight = 1;
-	/** @var float */
-	private $displayEntityScale = 1;
+	private float $displayEntityWidth = 1.0;
+	private float $displayEntityHeight = 1.0;
+	private float $displayEntityScale = 1.0;
 
-	/** @var int */
-	private $spawnDelay = self::DEFAULT_MIN_SPAWN_DELAY;
-	/** @var int */
-	private $minSpawnDelay = self::DEFAULT_MIN_SPAWN_DELAY;
-	/** @var int */
-	private $maxSpawnDelay = self::DEFAULT_MAX_SPAWN_DELAY;
-	/** @var int */
-	private $spawnPerAttempt = 1;
-	/** @var int */
-	private $maxNearbyEntities = self::DEFAULT_MAX_NEARBY_ENTITIES;
-	/** @var int */
-	private $spawnRange = self::DEFAULT_SPAWN_RANGE;
-	/** @var int */
-	private $requiredPlayerRange = self::DEFAULT_REQUIRED_PLAYER_RANGE;
+	private int $spawnDelay = self::DEFAULT_MIN_SPAWN_DELAY;
+	private int $minSpawnDelay = self::DEFAULT_MIN_SPAWN_DELAY;
+	private int $maxSpawnDelay = self::DEFAULT_MAX_SPAWN_DELAY;
+	private int $spawnPerAttempt = 1;
+	private int $maxNearbyEntities = self::DEFAULT_MAX_NEARBY_ENTITIES;
+	private int $spawnRange = self::DEFAULT_SPAWN_RANGE;
+	private int $requiredPlayerRange = self::DEFAULT_REQUIRED_PLAYER_RANGE;
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if(($legacyIdTag = $nbt->getTag(self::TAG_LEGACY_ENTITY_TYPE_ID)) instanceof IntTag){

@@ -33,22 +33,18 @@ use pocketmine\world\World;
 use function max;
 
 class SkyLightUpdate extends LightUpdate{
-
-	/**
-	 * @var true[]
-	 * @phpstan-var array<int, true>
-	 */
-	private $directSkyLightBlockers;
-
 	/**
 	 * @param int[]  $lightFilters
 	 * @param true[] $directSkyLightBlockers
 	 * @phpstan-param array<int, int>  $lightFilters
 	 * @phpstan-param array<int, true> $directSkyLightBlockers
 	 */
-	public function __construct(SubChunkExplorer $subChunkExplorer, array $lightFilters, array $directSkyLightBlockers){
+	public function __construct(
+		SubChunkExplorer $subChunkExplorer,
+		array $lightFilters,
+		private array $directSkyLightBlockers
+	){
 		parent::__construct($subChunkExplorer, $lightFilters);
-		$this->directSkyLightBlockers = $directSkyLightBlockers;
 	}
 
 	protected function getCurrentLightArray() : LightArray{

@@ -32,12 +32,11 @@ use pocketmine\utils\Utils;
 class BlockTeleportEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Vector3 */
-	private $to;
-
-	public function __construct(Block $block, Vector3 $to){
+	public function __construct(
+		Block $block,
+		private Vector3 $to
+	){
 		parent::__construct($block);
-		$this->to = $to;
 	}
 
 	public function getTo() : Vector3{
