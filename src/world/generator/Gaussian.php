@@ -26,11 +26,9 @@ namespace pocketmine\world\generator;
 use function exp;
 
 final class Gaussian{
-
-	/** @var int */
-	public $smoothSize;
+	public int $smoothSize;
 	/** @var float[][] */
-	public $kernel = [];
+	public array $kernel = [];
 
 	public function __construct(int $smoothSize){
 		$this->smoothSize = $smoothSize;
