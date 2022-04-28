@@ -50,9 +50,6 @@ class PlayerChangeSkinEvent extends PlayerEvent implements Cancellable{
 		return $this->newSkin;
 	}
 
-	/**
-	 * @throws \InvalidArgumentException if the specified skin is not valid
-	 */
 	public function setNewSkin(Skin $skin) : void{
 		$this->newSkin = $skin;
 	}

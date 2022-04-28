@@ -78,7 +78,7 @@ final class ChunkSerializer{
 
 		//TODO: right now we don't support 3D natively, so we just 3Dify our 2D biomes so they fill the column
 		$encodedBiomePalette = self::serializeBiomesAsPalette($chunk);
-		$stream->put(str_repeat($encodedBiomePalette, 25));
+		$stream->put(str_repeat($encodedBiomePalette, 24));
 
 		$stream->putByte(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
