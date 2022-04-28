@@ -52,6 +52,10 @@ class Cactus extends Transparent{
 		return 0b1111;
 	}
 
+	public function getSmeltingXp() : float{
+		return 0.2;
+	}
+
 	public function getAge() : int{ return $this->age; }
 
 	/** @return $this */

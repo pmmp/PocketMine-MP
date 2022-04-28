@@ -442,6 +442,13 @@ class Block{
 	}
 
 	/**
+	 * Returns experience reward when smelting.
+	 */
+	public function getSmeltingXp() : float{
+		return 0.0;
+	}
+
+	/**
 	 * Returns the time in ticks which the block will fuel a furnace for.
 	 */
 	public function getFuelTime() : int{

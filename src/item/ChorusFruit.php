@@ -86,4 +86,8 @@ class ChorusFruit extends Food{
 	public function getCooldownTicks() : int{
 		return 20;
 	}
+
+	public function getSmeltingXp() : float{
+		return 0.1;
+	}
 }

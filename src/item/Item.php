@@ -464,6 +464,13 @@ class Item implements \JsonSerializable{
 	}
 
 	/**
+	 * Returns experience reward when smelting.
+	 */
+	public function getSmeltingXp() : float{
+		return 0.0;
+	}
+
+	/**
 	 * Returns the time in ticks which the item will fuel a furnace for.
 	 */
 	public function getFuelTime() : int{

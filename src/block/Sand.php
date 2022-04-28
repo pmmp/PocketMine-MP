@@ -32,4 +32,8 @@ class Sand extends Opaque implements Fallable{
 	public function tickFalling() : ?Block{
 		return null;
 	}
+
+	public function getSmeltingXp() : float{
+		return 0.1;
+	}
 }

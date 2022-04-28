@@ -28,4 +28,8 @@ class Netherrack extends Opaque{
 	public function burnsForever() : bool{
 		return true;
 	}
+
+	public function getSmeltingXp() : float{
+		return 0.1;
+	}
 }

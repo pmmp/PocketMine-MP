@@ -39,4 +39,8 @@ class Potato extends Food{
 	public function getSaturationRestore() : float{
 		return 0.6;
 	}
+
+	public function getSmeltingXp() : float{
+		return 0.35;
+	}
 }

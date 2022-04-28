@@ -40,4 +40,8 @@ class RawChicken extends Food{
 	public function getAdditionalEffects() : array{
 		return mt_rand(0, 9) < 3 ? [new EffectInstance(VanillaEffects::HUNGER(), 600)] : [];
 	}
+
+	public function getSmeltingXp() : float{
+		return 0.35;
+	}
 }

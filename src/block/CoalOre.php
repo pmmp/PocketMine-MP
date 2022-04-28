@@ -39,6 +39,10 @@ class CoalOre extends Opaque{
 		return true;
 	}
 
+	public function getSmeltingXp() : float{
+		return 0.1;
+	}
+
 	protected function getXpDropAmount() : int{
 		return mt_rand(0, 2);
 	}

@@ -158,7 +158,7 @@ class BlockFactory{
 		$this->registerAllMeta(new CoalOre(new BID(Ids::COAL_ORE, 0), "Coal Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 
 		$cobblestoneBreakInfo = new BlockBreakInfo(2.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0);
-		$this->registerAllMeta($cobblestone = new Opaque(new BID(Ids::COBBLESTONE, 0), "Cobblestone", $cobblestoneBreakInfo));
+		$this->registerAllMeta($cobblestone = new Cobblestone(new BID(Ids::COBBLESTONE, 0), "Cobblestone", $cobblestoneBreakInfo));
 		$this->registerAllMeta(new Opaque(new BID(Ids::MOSSY_COBBLESTONE, 0), "Mossy Cobblestone", $cobblestoneBreakInfo));
 		$this->registerAllMeta(new Stair(new BID(Ids::COBBLESTONE_STAIRS, 0), "Cobblestone Stairs", $cobblestoneBreakInfo));
 		$this->registerAllMeta(new Stair(new BID(Ids::MOSSY_COBBLESTONE_STAIRS, 0), "Mossy Cobblestone Stairs", $cobblestoneBreakInfo));
@@ -225,7 +225,7 @@ class BlockFactory{
 		$this->registerAllMeta(new GlowingObsidian(new BID(Ids::GLOWINGOBSIDIAN, 0), "Glowing Obsidian", new BlockBreakInfo(10.0, BlockToolType::PICKAXE, ToolTier::DIAMOND()->getHarvestLevel(), 50.0)));
 		$this->registerAllMeta(new Glowstone(new BID(Ids::GLOWSTONE, 0), "Glowstone", new BlockBreakInfo(0.3, BlockToolType::PICKAXE)));
 		$this->registerAllMeta(new Opaque(new BID(Ids::GOLD_BLOCK, 0), "Gold Block", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel(), 30.0)));
-		$this->registerAllMeta(new Opaque(new BID(Ids::GOLD_ORE, 0), "Gold Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
+		$this->registerAllMeta(new GoldOre(new BID(Ids::GOLD_ORE, 0), "Gold Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::IRON()->getHarvestLevel())));
 
 		$grassBreakInfo = new BlockBreakInfo(0.6, BlockToolType::SHOVEL);
 		$this->registerAllMeta(new Grass(new BID(Ids::GRASS, 0), "Grass", $grassBreakInfo));
@@ -253,7 +253,7 @@ class BlockFactory{
 		$ironDoorBreakInfo = new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 25.0);
 		$this->registerAllMeta(new Door(new BID(Ids::IRON_DOOR_BLOCK, 0, ItemIds::IRON_DOOR), "Iron Door", $ironDoorBreakInfo));
 		$this->registerAllMeta(new Trapdoor(new BID(Ids::IRON_TRAPDOOR, 0), "Iron Trapdoor", $ironDoorBreakInfo));
-		$this->registerAllMeta(new Opaque(new BID(Ids::IRON_ORE, 0), "Iron Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
+		$this->registerAllMeta(new IronOre(new BID(Ids::IRON_ORE, 0), "Iron Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::STONE()->getHarvestLevel())));
 		$this->registerAllMeta(new ItemFrame(new BID(Ids::FRAME_BLOCK, 0, ItemIds::FRAME, TileItemFrame::class), "Item Frame", new BlockBreakInfo(0.25)));
 		$this->registerAllMeta(new Jukebox(new BID(Ids::JUKEBOX, 0, ItemIds::JUKEBOX, TileJukebox::class), "Jukebox", new BlockBreakInfo(0.8, BlockToolType::AXE))); //TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
 		$this->registerAllMeta(new Ladder(new BID(Ids::LADDER, 0), "Ladder", new BlockBreakInfo(0.4, BlockToolType::AXE)));
@@ -360,6 +360,10 @@ class BlockFactory{
 				public function isAffectedBySilkTouch() : bool{
 					return true;
 				}
+
+				public function getSmeltingXp() : float{
+					return 0.1;
+				}
 			},
 			new Opaque(new BID(Ids::STONE, Meta::STONE_ANDESITE), "Andesite", $stoneBreakInfo),
 			new Opaque(new BID(Ids::STONE, Meta::STONE_DIORITE), "Diorite", $stoneBreakInfo),
@@ -369,7 +373,11 @@ class BlockFactory{
 			new Opaque(new BID(Ids::STONE, Meta::STONE_POLISHED_GRANITE), "Polished Granite", $stoneBreakInfo)
 		);
 		$this->registerAllMeta(
-			$stoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_NORMAL), "Stone Bricks", $stoneBreakInfo),
+			$stoneBrick = new class(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_NORMAL), "Stone Bricks", $stoneBreakInfo) extends Opaque{
+				public function getSmeltingXp() : float{
+					return 0.1;
+				}
+			},
 			$mossyStoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_MOSSY), "Mossy Stone Bricks", $stoneBreakInfo),
 			$crackedStoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_CRACKED), "Cracked Stone Bricks", $stoneBreakInfo),
 			$chiseledStoneBrick = new Opaque(new BID(Ids::STONEBRICK, Meta::STONE_BRICK_CHISELED), "Chiseled Stone Bricks", $stoneBreakInfo)

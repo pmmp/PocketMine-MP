@@ -100,6 +100,10 @@ class RedstoneOre extends Opaque{
 		return true;
 	}
 
+	public function getSmeltingXp() : float{
+		return 0.7;
+	}
+
 	protected function getXpDropAmount() : int{
 		return mt_rand(1, 5);
 	}

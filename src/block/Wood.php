@@ -49,6 +49,10 @@ class Wood extends Opaque{
 
 	public function isStripped() : bool{ return $this->stripped; }
 
+	public function getSmeltingXp() : float{
+		return 0.15;
+	}
+
 	public function getFuelTime() : int{
 		return 300;
 	}

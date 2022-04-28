@@ -29,4 +29,8 @@ use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
 class GlazedTerracotta extends Opaque{
 	use FacesOppositePlacingPlayerTrait;
 	use NormalHorizontalFacingInMetadataTrait;
+
+	public function getSmeltingXp() : float{
+		return 0.1;
+	}
 }

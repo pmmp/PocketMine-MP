@@ -105,4 +105,8 @@ class SeaPickle extends Transparent{
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [$this->asItem()->setCount($this->count)];
 	}
+
+	public function getSmeltingXp() : float{
+		return 0.1;
+	}
 }

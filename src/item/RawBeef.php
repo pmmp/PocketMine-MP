@@ -32,4 +32,8 @@ class RawBeef extends Food{
 	public function getSaturationRestore() : float{
 		return 1.8;
 	}
+
+	public function getSmeltingXp() : float{
+		return 0.35;
+	}
 }

@@ -112,7 +112,7 @@ class ItemFactory{
 		$this->register(new Item(new ItemIdentifier(ItemIds::BONE, 0), "Bone"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::BRICK, 0), "Brick"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::CHORUS_FRUIT_POPPED, 0), "Popped Chorus Fruit"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::CLAY_BALL, 0), "Clay"));
+		$this->register(new ClayBall(new ItemIdentifier(ItemIds::CLAY_BALL, 0), "Clay"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::SALT), "Salt"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::SODIUM_OXIDE), "Sodium Oxide"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::SODIUM_HYDROXIDE), "Sodium Hydroxide"));

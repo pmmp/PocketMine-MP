@@ -39,6 +39,10 @@ class EmeraldOre extends Opaque{
 		return true;
 	}
 
+	public function getSmeltingXp() : float{
+		return 1.0;
+	}
+
 	protected function getXpDropAmount() : int{
 		return mt_rand(3, 7);
 	}

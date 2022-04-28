@@ -91,4 +91,15 @@ class Furnace extends Opaque{
 			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1); //TODO: check this
 		}
 	}
+
+	protected function getXpDropAmount() : int{
+		$furnace = $this->position->getWorld()->getTile($this->position);
+		if($furnace instanceof TileFurnace){
+			$xp = $furnace->getStoredXp();
+			if ($xp > 0.0) {
+				return $xp;
+			}
+		}
+		return parent::getXpDropAmount();
+	}
 }

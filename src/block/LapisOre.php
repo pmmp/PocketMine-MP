@@ -39,6 +39,10 @@ class LapisOre extends Opaque{
 		return true;
 	}
 
+	public function getSmeltingXp() : float{
+		return 0.2;
+	}
+
 	protected function getXpDropAmount() : int{
 		return mt_rand(2, 5);
 	}

@@ -42,6 +42,10 @@ class ItemBlock extends Item{
 		return BlockFactory::getInstance()->fromFullBlock($this->blockFullId);
 	}
 
+	public function getSmeltingXp() : float{
+		return $this->getBlock()->getSmeltingXp();
+	}
+
 	public function getFuelTime() : int{
 		return $this->getBlock()->getFuelTime();
 	}

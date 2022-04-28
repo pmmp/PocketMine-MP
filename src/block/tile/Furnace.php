@@ -32,12 +32,15 @@ use pocketmine\event\inventory\FurnaceSmeltEvent;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
+use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
 use pocketmine\player\Player;
 use pocketmine\world\World;
 use function array_map;
+use function floor;
+use function lcg_value;
 use function max;
 
 abstract class Furnace extends Spawnable implements Container, Nameable{
@@ -48,6 +51,16 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 	public const TAG_COOK_TIME = "CookTime";
 	public const TAG_MAX_TIME = "MaxTime";
 	public const TAG_STORED_XP = "StoredXPInt";
+
+	public static function getXpDropForItem(Item $raw, int $count) : int{
+		$totalXP = $raw->getSmeltingXp() * $count;
+		$xp = (int) floor($totalXP);
+		$fractional = $totalXP - $xp;
+		if ($fractional !== 0.0 && lcg_value() < $fractional) {
+			$xp++;
+		}
+		return $xp;
+	}
 
 	/** @var FurnaceInventory */
 	protected $inventory;
@@ -64,6 +77,21 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 				$world->scheduleDelayedBlockUpdate($pos, 1);
 			})
 		);
+		$this->inventory->getListeners()->add(new CallbackInventoryListener(
+			function(Inventory $unused, int $slot, Item $oldItem) use ($world, $pos) : void{
+				$newItem = $this->inventory->getItem($slot);
+				if($slot === FurnaceInventory::SLOT_RESULT &&
+					!$oldItem->isNull() &&
+					$newItem->getId() === ItemIds::AIR
+				){
+					$xp = $this->getStoredXp();
+					if($xp > 0){
+						$world->dropExperience($pos->add(0.5, 0.5, 0.5), $this->storedXp);
+						$this->setStoredXp(0);
+					}
+				}
+			}, null)
+		);
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
@@ -79,6 +107,8 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 			$this->maxFuelTime = $this->remainingFuelTime;
 		}
 
+		$this->storedXp = $nbt->getShort(self::TAG_STORED_XP, $this->storedXp);
+
 		$this->loadName($nbt);
 		$this->loadItems($nbt);
 
@@ -91,6 +121,7 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		$nbt->setShort(self::TAG_BURN_TIME, $this->remainingFuelTime);
 		$nbt->setShort(self::TAG_COOK_TIME, $this->cookTime);
 		$nbt->setShort(self::TAG_MAX_TIME, $this->maxFuelTime);
+		$nbt->setShort(self::TAG_STORED_XP, $this->storedXp);
 		$this->saveName($nbt);
 		$this->saveItems($nbt);
 	}
@@ -119,6 +150,14 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 	 */
 	public function getRealInventory(){
 		return $this->getInventory();
+	}
+
+	public function getStoredXp() : int{
+		return $this->storedXp;
+	}
+
+	public function setStoredXp(int $xp) : void{
+		$this->storedXp = $xp;
 	}
 
 	protected function checkFuel(Item $fuel) : void{
@@ -196,6 +235,7 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 						$this->inventory->setResult($ev->getResult());
 						$raw->pop();
 						$this->inventory->setSmelting($raw);
+						$this->setStoredXp(self::getXpDropForItem($raw, $ev->getResult()->getCount()));
 					}
 
 					$this->cookTime -= $furnaceType->getCookDurationTicks();

@@ -37,4 +37,8 @@ class Clay extends Opaque{
 	public function isAffectedBySilkTouch() : bool{
 		return true;
 	}
+
+	public function getSmeltingXp() : float{
+		return 0.35;
+	}
 }
