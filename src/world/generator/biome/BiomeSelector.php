@@ -37,7 +37,7 @@ abstract class BiomeSelector{
 	 * @var Biome[]|\SplFixedArray
 	 * @phpstan-var \SplFixedArray<Biome>
 	 */
-	private \SplFixedArray $map = null;
+	private \SplFixedArray $map;
 
 	public function __construct(Random $random){
 		$this->temperature = new Simplex($random, 2, 1 / 16, 1 / 512);
