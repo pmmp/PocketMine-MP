@@ -105,10 +105,8 @@ final class Utils{
 	public const OS_BSD = "bsd";
 	public const OS_UNKNOWN = "other";
 
-	/** @var string|null */
-	private static $os;
-	/** @var UuidInterface|null */
-	private static $serverUniqueId = null;
+	private static ?string $os;
+	private static ?UuidInterface $serverUniqueId = null;
 
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
