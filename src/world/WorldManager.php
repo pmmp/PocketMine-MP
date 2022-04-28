@@ -57,7 +57,7 @@ use function trim;
 class WorldManager{
 	/** @var World[] */
 	private array $worlds = [];
-	private ?World $defaultWorld;
+	private ?World $defaultWorld = null;
 
 	private bool $autoSave = true;
 	private int $autoSaveTicks = 6000;
