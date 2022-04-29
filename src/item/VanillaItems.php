@@ -105,7 +105,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Item CHEMICAL_TUNGSTEN_CHLORIDE()
  * @method static Item CHEMICAL_WATER()
  * @method static ChorusFruit CHORUS_FRUIT()
- * @method static Item CLAY()
+ * @method static ClayBall CLAY()
  * @method static Clock CLOCK()
  * @method static Clownfish CLOWNFISH()
  * @method static Coal COAL()
