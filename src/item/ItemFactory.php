@@ -356,28 +356,68 @@ class ItemFactory{
 
 	private function registerTierToolItems() : void{
 		$this->register(new Axe(new ItemIdentifier(ItemIds::DIAMOND_AXE, 0), "Diamond Axe", ToolTier::DIAMOND()));
-		$this->register(new Axe(new ItemIdentifier(ItemIds::GOLDEN_AXE, 0), "Golden Axe", ToolTier::GOLD()));
-		$this->register(new Axe(new ItemIdentifier(ItemIds::IRON_AXE, 0), "Iron Axe", ToolTier::IRON()));
+		$this->register(new class(new ItemIdentifier(ItemIds::GOLDEN_AXE, 0), "Golden Axe", ToolTier::GOLD()) extends Axe{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
+		$this->register(new class(new ItemIdentifier(ItemIds::IRON_AXE, 0), "Iron Axe", ToolTier::IRON()) extends Axe{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
 		$this->register(new Axe(new ItemIdentifier(ItemIds::STONE_AXE, 0), "Stone Axe", ToolTier::STONE()));
 		$this->register(new Axe(new ItemIdentifier(ItemIds::WOODEN_AXE, 0), "Wooden Axe", ToolTier::WOOD()));
 		$this->register(new Hoe(new ItemIdentifier(ItemIds::DIAMOND_HOE, 0), "Diamond Hoe", ToolTier::DIAMOND()));
-		$this->register(new Hoe(new ItemIdentifier(ItemIds::GOLDEN_HOE, 0), "Golden Hoe", ToolTier::GOLD()));
-		$this->register(new Hoe(new ItemIdentifier(ItemIds::IRON_HOE, 0), "Iron Hoe", ToolTier::IRON()));
+		$this->register(new class(new ItemIdentifier(ItemIds::GOLDEN_HOE, 0), "Golden Hoe", ToolTier::GOLD()) extends Hoe{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
+		$this->register(new class(new ItemIdentifier(ItemIds::IRON_HOE, 0), "Iron Hoe", ToolTier::IRON()) extends Hoe{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
 		$this->register(new Hoe(new ItemIdentifier(ItemIds::STONE_HOE, 0), "Stone Hoe", ToolTier::STONE()));
 		$this->register(new Hoe(new ItemIdentifier(ItemIds::WOODEN_HOE, 0), "Wooden Hoe", ToolTier::WOOD()));
 		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::DIAMOND_PICKAXE, 0), "Diamond Pickaxe", ToolTier::DIAMOND()));
-		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::GOLDEN_PICKAXE, 0), "Golden Pickaxe", ToolTier::GOLD()));
-		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::IRON_PICKAXE, 0), "Iron Pickaxe", ToolTier::IRON()));
+		$this->register(new class(new ItemIdentifier(ItemIds::GOLDEN_PICKAXE, 0), "Golden Pickaxe", ToolTier::GOLD()) extends Pickaxe{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
+		$this->register(new class(new ItemIdentifier(ItemIds::IRON_PICKAXE, 0), "Iron Pickaxe", ToolTier::IRON()) extends Pickaxe{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
 		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::STONE_PICKAXE, 0), "Stone Pickaxe", ToolTier::STONE()));
 		$this->register(new Pickaxe(new ItemIdentifier(ItemIds::WOODEN_PICKAXE, 0), "Wooden Pickaxe", ToolTier::WOOD()));
 		$this->register(new Shovel(new ItemIdentifier(ItemIds::DIAMOND_SHOVEL, 0), "Diamond Shovel", ToolTier::DIAMOND()));
-		$this->register(new Shovel(new ItemIdentifier(ItemIds::GOLDEN_SHOVEL, 0), "Golden Shovel", ToolTier::GOLD()));
-		$this->register(new Shovel(new ItemIdentifier(ItemIds::IRON_SHOVEL, 0), "Iron Shovel", ToolTier::IRON()));
+		$this->register(new class(new ItemIdentifier(ItemIds::GOLDEN_SHOVEL, 0), "Golden Shovel", ToolTier::GOLD()) extends Shovel{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
+		$this->register(new class(new ItemIdentifier(ItemIds::IRON_SHOVEL, 0), "Iron Shovel", ToolTier::IRON()) extends Shovel{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
 		$this->register(new Shovel(new ItemIdentifier(ItemIds::STONE_SHOVEL, 0), "Stone Shovel", ToolTier::STONE()));
 		$this->register(new Shovel(new ItemIdentifier(ItemIds::WOODEN_SHOVEL, 0), "Wooden Shovel", ToolTier::WOOD()));
 		$this->register(new Sword(new ItemIdentifier(ItemIds::DIAMOND_SWORD, 0), "Diamond Sword", ToolTier::DIAMOND()));
-		$this->register(new Sword(new ItemIdentifier(ItemIds::GOLDEN_SWORD, 0), "Golden Sword", ToolTier::GOLD()));
-		$this->register(new Sword(new ItemIdentifier(ItemIds::IRON_SWORD, 0), "Iron Sword", ToolTier::IRON()));
+		$this->register(new class(new ItemIdentifier(ItemIds::GOLDEN_SWORD, 0), "Golden Sword", ToolTier::GOLD()) extends Sword{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
+		$this->register(new class(new ItemIdentifier(ItemIds::IRON_SWORD, 0), "Iron Sword", ToolTier::IRON()) extends Sword{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
 		$this->register(new Sword(new ItemIdentifier(ItemIds::STONE_SWORD, 0), "Stone Sword", ToolTier::STONE()));
 		$this->register(new Sword(new ItemIdentifier(ItemIds::WOODEN_SWORD, 0), "Wooden Sword", ToolTier::WOOD()));
 	}
@@ -385,23 +425,55 @@ class ItemFactory{
 	private function registerArmorItems() : void{
 		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_BOOTS, 0), "Chainmail Boots", new ArmorTypeInfo(1, 196, ArmorInventory::SLOT_FEET)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_BOOTS, 0), "Diamond Boots", new ArmorTypeInfo(3, 430, ArmorInventory::SLOT_FEET)));
-		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_BOOTS, 0), "Golden Boots", new ArmorTypeInfo(1, 92, ArmorInventory::SLOT_FEET)));
-		$this->register(new Armor(new ItemIdentifier(ItemIds::IRON_BOOTS, 0), "Iron Boots", new ArmorTypeInfo(2, 196, ArmorInventory::SLOT_FEET)));
+		$this->register(new class(new ItemIdentifier(ItemIds::GOLDEN_BOOTS, 0), "Golden Boots", new ArmorTypeInfo(1, 92, ArmorInventory::SLOT_FEET)) extends Armor{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
+		$this->register(new class(new ItemIdentifier(ItemIds::IRON_BOOTS, 0), "Iron Boots", new ArmorTypeInfo(2, 196, ArmorInventory::SLOT_FEET)) extends Armor{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
 		$this->register(new Armor(new ItemIdentifier(ItemIds::LEATHER_BOOTS, 0), "Leather Boots", new ArmorTypeInfo(1, 66, ArmorInventory::SLOT_FEET)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_CHESTPLATE, 0), "Chainmail Chestplate", new ArmorTypeInfo(5, 241, ArmorInventory::SLOT_CHEST)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_CHESTPLATE, 0), "Diamond Chestplate", new ArmorTypeInfo(8, 529, ArmorInventory::SLOT_CHEST)));
-		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_CHESTPLATE, 0), "Golden Chestplate", new ArmorTypeInfo(5, 113, ArmorInventory::SLOT_CHEST)));
-		$this->register(new Armor(new ItemIdentifier(ItemIds::IRON_CHESTPLATE, 0), "Iron Chestplate", new ArmorTypeInfo(6, 241, ArmorInventory::SLOT_CHEST)));
+		$this->register(new class(new ItemIdentifier(ItemIds::GOLDEN_CHESTPLATE, 0), "Golden Chestplate", new ArmorTypeInfo(5, 113, ArmorInventory::SLOT_CHEST)) extends Armor{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
+		$this->register(new class(new ItemIdentifier(ItemIds::IRON_CHESTPLATE, 0), "Iron Chestplate", new ArmorTypeInfo(6, 241, ArmorInventory::SLOT_CHEST)) extends Armor{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
 		$this->register(new Armor(new ItemIdentifier(ItemIds::LEATHER_CHESTPLATE, 0), "Leather Tunic", new ArmorTypeInfo(3, 81, ArmorInventory::SLOT_CHEST)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_HELMET, 0), "Chainmail Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_HELMET, 0), "Diamond Helmet", new ArmorTypeInfo(3, 364, ArmorInventory::SLOT_HEAD)));
-		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_HELMET, 0), "Golden Helmet", new ArmorTypeInfo(2, 78, ArmorInventory::SLOT_HEAD)));
-		$this->register(new Armor(new ItemIdentifier(ItemIds::IRON_HELMET, 0), "Iron Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD)));
+		$this->register(new class(new ItemIdentifier(ItemIds::GOLDEN_HELMET, 0), "Golden Helmet", new ArmorTypeInfo(2, 78, ArmorInventory::SLOT_HEAD)) extends Armor{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
+		$this->register(new class(new ItemIdentifier(ItemIds::IRON_HELMET, 0), "Iron Helmet", new ArmorTypeInfo(2, 166, ArmorInventory::SLOT_HEAD)) extends Armor{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
 		$this->register(new Armor(new ItemIdentifier(ItemIds::LEATHER_HELMET, 0), "Leather Cap", new ArmorTypeInfo(1, 56, ArmorInventory::SLOT_HEAD)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::CHAIN_LEGGINGS, 0), "Chainmail Leggings", new ArmorTypeInfo(4, 226, ArmorInventory::SLOT_LEGS)));
 		$this->register(new Armor(new ItemIdentifier(ItemIds::DIAMOND_LEGGINGS, 0), "Diamond Leggings", new ArmorTypeInfo(6, 496, ArmorInventory::SLOT_LEGS)));
-		$this->register(new Armor(new ItemIdentifier(ItemIds::GOLDEN_LEGGINGS, 0), "Golden Leggings", new ArmorTypeInfo(3, 106, ArmorInventory::SLOT_LEGS)));
-		$this->register(new Armor(new ItemIdentifier(ItemIds::IRON_LEGGINGS, 0), "Iron Leggings", new ArmorTypeInfo(5, 226, ArmorInventory::SLOT_LEGS)));
+		$this->register(new class(new ItemIdentifier(ItemIds::GOLDEN_LEGGINGS, 0), "Golden Leggings", new ArmorTypeInfo(3, 106, ArmorInventory::SLOT_LEGS)) extends Armor{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
+		$this->register(new class(new ItemIdentifier(ItemIds::IRON_LEGGINGS, 0), "Iron Leggings", new ArmorTypeInfo(5, 226, ArmorInventory::SLOT_LEGS)) extends Armor{
+			public function getSmeltingXp() : float{
+				return 0.1;
+			}
+		});
 		$this->register(new Armor(new ItemIdentifier(ItemIds::LEATHER_LEGGINGS, 0), "Leather Pants", new ArmorTypeInfo(2, 76, ArmorInventory::SLOT_LEGS)));
 	}
 

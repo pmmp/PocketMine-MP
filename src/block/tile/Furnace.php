@@ -32,7 +32,6 @@ use pocketmine\event\inventory\FurnaceSmeltEvent;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\item\Item;
-use pocketmine\item\ItemIds;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\ContainerSetDataPacket;
@@ -55,8 +54,8 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 	public static function getXpDropForItem(Item $raw, int $count) : int{
 		$totalXP = $raw->getSmeltingXp() * $count;
 		$xp = (int) floor($totalXP);
-		$fractional = $totalXP - $xp;
-		if ($fractional !== 0.0 && lcg_value() < $fractional) {
+		$fractional = $totalXP - $xp; //represents the chance of an additional experience point
+		if($fractional !== 0.0 && lcg_value() < $fractional){
 			$xp++;
 		}
 		return $xp;
@@ -79,10 +78,9 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 		);
 		$this->inventory->getListeners()->add(new CallbackInventoryListener(
 			function(Inventory $unused, int $slot, Item $oldItem) use ($world, $pos) : void{
-				$newItem = $this->inventory->getItem($slot);
 				if($slot === FurnaceInventory::SLOT_RESULT &&
 					!$oldItem->isNull() &&
-					$newItem->getId() === ItemIds::AIR
+					!$this->inventory->getItem($slot)->equals($oldItem)
 				){
 					$xp = $this->getStoredXp();
 					if($xp > 0){
