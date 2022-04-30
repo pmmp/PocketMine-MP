@@ -2722,8 +2722,13 @@ class World implements ChunkManager{
 		unset($this->changedBlocks[$chunkHash]);
 
 		if(array_key_exists($chunkHash, $this->chunkPopulationRequestMap)){
+			$this->logger->debug("Rejecting population promise for chunk $x $z");
 			$this->chunkPopulationRequestMap[$chunkHash]->reject();
 			unset($this->chunkPopulationRequestMap[$chunkHash]);
+			if(isset($this->activeChunkPopulationTasks[$chunkHash])){
+				$this->logger->debug("Marking population task for chunk $x $z as orphaned");
+				$this->activeChunkPopulationTasks[$chunkHash] = false;
+			}
 		}
 
 		$this->timings->doChunkUnload->stopTiming();
@@ -2899,7 +2904,7 @@ class World implements ChunkManager{
 			unset($this->chunkPopulationRequestQueueIndex[$nextChunkHash]);
 			World::getXZ($nextChunkHash, $nextChunkX, $nextChunkZ);
 			if(isset($this->chunkPopulationRequestMap[$nextChunkHash])){
-				assert(!isset($this->activeChunkPopulationTasks[$nextChunkHash]), "Population for chunk $nextChunkX $nextChunkZ already running");
+				assert(!($this->activeChunkPopulationTasks[$nextChunkHash] ?? false), "Population for chunk $nextChunkX $nextChunkZ already running");
 				if(
 					!$this->orderChunkPopulation($nextChunkX, $nextChunkZ, null)->isResolved() &&
 					!isset($this->activeChunkPopulationTasks[$nextChunkHash])
@@ -3068,10 +3073,13 @@ class World implements ChunkManager{
 		}
 
 		$index = World::chunkHash($x, $z);
-		if(!isset($this->chunkPopulationRequestMap[$index])){
-			$this->logger->debug("Discarding population result for chunk x=$x,z=$z - promise was already broken");
+		if(!isset($this->activeChunkPopulationTasks[$index])){
+			throw new AssumptionFailedError("This should always be set, regardless of whether the task was orphaned or not");
+		}
+		if(!$this->activeChunkPopulationTasks[$index]){
+			$this->logger->debug("Discarding orphaned population result for chunk x=$x,z=$z");
 			unset($this->activeChunkPopulationTasks[$index]);
-		}elseif(isset($this->activeChunkPopulationTasks[$index])){
+		}else{
 			if($dirtyChunks === 0){
 				$oldChunk = $this->loadChunk($x, $z);
 				$this->setChunk($x, $z, $chunk);
