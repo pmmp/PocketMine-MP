@@ -117,18 +117,7 @@ class FormattedCommandAlias extends Command{
 				throw new \InvalidArgumentException("Missing required argument " . ($position + 1));
 			}
 
-			$replacement = "";
-			if($rest && $position < count($args)){
-				for($i = $position, $c = count($args); $i < $c; ++$i){
-					if($i !== $position){
-						$replacement .= " ";
-					}
-
-					$replacement .= $args[$i];
-				}
-			}elseif($position < count($args)){
-				$replacement .= $args[$position];
-			}
+			$replacement = self::buildReplacement($args, $position, $rest);
 
 			$formatString = substr($formatString, 0, $start) . $replacement . substr($formatString, $end);
 
@@ -142,5 +131,26 @@ class FormattedCommandAlias extends Command{
 
 	private static function inRange(int $i, int $j, int $k) : bool{
 		return $i >= $j && $i <= $k;
+	}
+
+	/**
+	 * @param string[] $args
+	 * @phpstan-param list<string> $args
+	 */
+	private static function buildReplacement(array $args, int $position, bool $rest) : string{
+		$replacement = "";
+		if($rest && $position < count($args)){
+			for($i = $position, $c = count($args); $i < $c; ++$i){
+				if($i !== $position){
+					$replacement .= " ";
+				}
+
+				$replacement .= $args[$i];
+			}
+		}elseif($position < count($args)){
+			$replacement .= $args[$position];
+		}
+
+		return $replacement;
 	}
 }
