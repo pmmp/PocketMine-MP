@@ -35,17 +35,12 @@ use pocketmine\network\mcpe\NetworkSession;
 class PlayerDuplicateLoginEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
-	/** @var NetworkSession */
-	private $connectingSession;
-	/** @var NetworkSession */
-	private $existingSession;
-	/** @var string */
-	private $disconnectMessage = "Logged in from another location";
+	private string $disconnectMessage = "Logged in from another location";
 
-	public function __construct(NetworkSession $connectingSession, NetworkSession $existingSession){
-		$this->connectingSession = $connectingSession;
-		$this->existingSession = $existingSession;
-	}
+	public function __construct(
+		private NetworkSession $connectingSession,
+		private NetworkSession $existingSession
+	){}
 
 	public function getConnectingSession() : NetworkSession{
 		return $this->connectingSession;

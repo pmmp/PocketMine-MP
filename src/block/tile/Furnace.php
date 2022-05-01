@@ -50,12 +50,9 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 
 	/** @var FurnaceInventory */
 	protected $inventory;
-	/** @var int */
-	private $remainingFuelTime = 0;
-	/** @var int */
-	private $cookTime = 0;
-	/** @var int */
-	private $maxFuelTime = 0;
+	private int $remainingFuelTime = 0;
+	private int $cookTime = 0;
+	private int $maxFuelTime = 0;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);

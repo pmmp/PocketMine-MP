@@ -33,16 +33,14 @@ use function strtolower;
 
 final class ServerConfigGroup{
 
-	/** @var Config */
-	private $pocketmineYml;
-	/** @var Config */
-	private $serverProperties;
+	private Config $pocketmineYml;
+	private Config $serverProperties;
 
 	/**
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private $propertyCache = [];
+	private array $propertyCache = [];
 
 	public function __construct(Config $pocketmineYml, Config $serverProperties){
 		$this->pocketmineYml = $pocketmineYml;

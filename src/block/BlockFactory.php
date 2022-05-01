@@ -74,7 +74,7 @@ class BlockFactory{
 	 * @var \SplFixedArray|Block[]
 	 * @phpstan-var \SplFixedArray<Block>
 	 */
-	private $fullList;
+	private \SplFixedArray $fullList;
 
 	/**
 	 * @var \SplFixedArray|int[]
@@ -86,22 +86,22 @@ class BlockFactory{
 	 * @var \SplFixedArray|int[]
 	 * @phpstan-var \SplFixedArray<int>
 	 */
-	public $light;
+	public \SplFixedArray $light;
 	/**
 	 * @var \SplFixedArray|int[]
 	 * @phpstan-var \SplFixedArray<int>
 	 */
-	public $lightFilter;
+	public \SplFixedArray $lightFilter;
 	/**
 	 * @var \SplFixedArray|bool[]
 	 * @phpstan-var \SplFixedArray<bool>
 	 */
-	public $blocksDirectSkyLight;
+	public \SplFixedArray $blocksDirectSkyLight;
 	/**
 	 * @var \SplFixedArray|float[]
 	 * @phpstan-var \SplFixedArray<float>
 	 */
-	public $blastResistance;
+	public \SplFixedArray $blastResistance;
 
 	public function __construct(){
 		$this->fullList = new \SplFixedArray(1024 << Block::INTERNAL_METADATA_BITS);

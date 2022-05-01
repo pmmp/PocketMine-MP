@@ -173,9 +173,30 @@ console:
   title-tick: true
 
 aliases:
-  #Examples:
-  #showtheversion: version
+  ##This section allows you to add, remove or remap command aliases.
+  ##A single alias can call one or more other commands (or aliases).
+  ##Aliases defined here will override any command aliases declared by plugins or PocketMine-MP itself.
+
+  ##To remove an alias, set it to [], like so (note that prefixed aliases like "pocketmine:stop" will remain and can't
+  ##be removed):
+  #stop: []
+
+  ##Commands are not removed, only their aliases. You can still refer to a command using its full (prefixed)
+  ##name, even if all its aliases are overwritten. The full name is usually something like "pocketmine:commandname" or
+  ##"pluginname:commandname".
+  #abort: [pocketmine:stop]
+
+  ##To add an alias, list the command(s) that it calls:
+  #showtheversion: [version]
   #savestop: [save-all, stop]
+
+  ##To invoke another command with arguments, use $1 to pass the first argument, $2 for the second etc:
+  #giveadmin: [op $1] ## `giveadmin alex` -> `op alex`
+  #kill: [suicide, say "I tried to kill $1"] ## `kill alex` -> `suicide` + `say "I tried to kill alex"`
+  #giverandom: [give $1 $2, say "Someone has just received a $2!"] ## `giverandom alex diamond` -> `give alex diamond` + `say "Someone has just received a diamond!"`
+
+  ##To change an existing command alias and make it do something else:
+  #tp: [suicide]
 
 worlds:
   #These settings will override the generator set in server.properties and allows loading multiple worlds

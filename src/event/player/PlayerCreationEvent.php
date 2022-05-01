@@ -34,23 +34,12 @@ use function is_a;
  */
 class PlayerCreationEvent extends Event{
 
-	/** @var NetworkSession */
-	private $session;
+	/** @phpstan-var class-string<Player> */
+	private string $baseClass = Player::class;
+	/** @phpstan-var class-string<Player> */
+	private string $playerClass = Player::class;
 
-	/**
-	 * @var string
-	 * @phpstan-var class-string<Player>
-	 */
-	private $baseClass = Player::class;
-	/**
-	 * @var string
-	 * @phpstan-var class-string<Player>
-	 */
-	private $playerClass = Player::class;
-
-	public function __construct(NetworkSession $session){
-		$this->session = $session;
-	}
+	public function __construct(private NetworkSession $session){}
 
 	public function getNetworkSession() : NetworkSession{
 		return $this->session;

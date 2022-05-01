@@ -29,10 +29,8 @@ final class Beacon extends Spawnable{
 	private const TAG_PRIMARY = "primary"; //TAG_Int
 	private const TAG_SECONDARY = "secondary"; //TAG_Int
 
-	/** @var int */
-	private $primaryEffect = 0;
-	/** @var int */
-	private $secondaryEffect = 0;
+	private int $primaryEffect = 0;
+	private int $secondaryEffect = 0;
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
 		$nbt->setInt(self::TAG_PRIMARY, $this->primaryEffect);

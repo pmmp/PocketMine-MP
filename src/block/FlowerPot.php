@@ -82,6 +82,10 @@ class FlowerPot extends Flowable{
 			return false;
 		}
 
+		return $this->isValidPlant($block);
+	}
+
+	private function isValidPlant(Block $block) : bool{
 		return
 			$block instanceof Cactus ||
 			$block instanceof DeadBush ||
@@ -115,8 +119,26 @@ class FlowerPot extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$plant = $item->getBlock();
-		if(!$this->canAddPlant($plant)){
-			return false;
+		if($this->plant !== null){
+			if($this->isValidPlant($plant)){
+				//for some reason, vanilla doesn't remove the contents of the pot if the held item is plantable
+				//and will also cause a new plant to be placed if clicking on the side
+				return false;
+			}
+
+			$removedItems = [$this->plant->asItem()];
+			if($player !== null){
+				//this one just has to be a weirdo :(
+				//this is the only block that directly adds items to the player inventory instead of just dropping items
+				$removedItems = $player->getInventory()->addItem(...$removedItems);
+			}
+			foreach($removedItems as $drops){
+				$this->position->getWorld()->dropItem($this->position->add(0.5, 0.5, 0.5), $drops);
+			}
+
+			$this->setPlant(null);
+			$this->position->getWorld()->setBlock($this->position, $this);
+			return true;
 		}
 
 		$this->setPlant($plant);
