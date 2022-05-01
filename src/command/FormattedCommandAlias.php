@@ -26,12 +26,20 @@ namespace pocketmine\command;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use function count;
-use function ord;
+use function preg_match;
 use function strlen;
 use function strpos;
 use function substr;
 
 class FormattedCommandAlias extends Command{
+	/**
+	 * - matches a $
+	 * - captures an optional second $ to indicate required/optional
+	 * - captures a series of digits which don't start with a 0
+	 * - captures an optional - to indicate variadic
+	 */
+	private const FORMAT_STRING_REGEX = '/\G\$(\$)?((?!0)+\d+)(-)?/';
+
 	/** @var string[] */
 	private array $formatStrings = [];
 
@@ -68,50 +76,21 @@ class FormattedCommandAlias extends Command{
 	 * @param string[] $args
 	 */
 	private function buildCommand(string $formatString, array $args) : string{
-		$index = strpos($formatString, '$');
-		while($index !== false){
+		$index = 0;
+		while(($index = strpos($formatString, '$', $index)) !== false){
 			$start = $index;
 			if($index > 0 && $formatString[$start - 1] === "\\"){
 				$formatString = substr($formatString, 0, $start - 1) . substr($formatString, $start);
-				$index = strpos($formatString, '$', $index);
+				//offset is now pointing at the next character because we just deleted the \
 				continue;
 			}
 
-			$required = false;
-			if($formatString[$index + 1] == '$'){
-				$required = true;
-
-				++$index;
-			}
-
-			++$index;
-
-			$argStart = $index;
-
-			while($index < strlen($formatString) && self::inRange(ord($formatString[$index]) - 48, 0, 9)){
-				++$index;
-			}
-
-			if($argStart === $index){
+			$info = self::extractPlaceholderInfo($formatString, $index);
+			if($info === null){
 				throw new \InvalidArgumentException("Invalid replacement token");
 			}
-
-			$position = (int) substr($formatString, $argStart, $index);
-
-			if($position === 0){
-				throw new \InvalidArgumentException("Invalid replacement token");
-			}
-
-			--$position;
-
-			$rest = false;
-
-			if($index < strlen($formatString) && $formatString[$index] === "-"){
-				$rest = true;
-				++$index;
-			}
-
-			$end = $index;
+			[$fullPlaceholder, $required, $position, $rest] = $info;
+			$position--; //array offsets start at 0, but placeholders start at 1
 
 			if($required && $position >= count($args)){
 				throw new \InvalidArgumentException("Missing required argument " . ($position + 1));
@@ -119,18 +98,13 @@ class FormattedCommandAlias extends Command{
 
 			$replacement = self::buildReplacement($args, $position, $rest);
 
+			$end = $index + strlen($fullPlaceholder);
 			$formatString = substr($formatString, 0, $start) . $replacement . substr($formatString, $end);
 
 			$index = $start + strlen($replacement);
-
-			$index = strpos($formatString, '$', $index);
 		}
 
 		return $formatString;
-	}
-
-	private static function inRange(int $i, int $j, int $k) : bool{
-		return $i >= $j && $i <= $k;
 	}
 
 	/**
@@ -152,5 +126,22 @@ class FormattedCommandAlias extends Command{
 		}
 
 		return $replacement;
+	}
+
+	/**
+	 * @phpstan-return array{string, bool, int, bool}
+	 */
+	private static function extractPlaceholderInfo(string $commandString, int $offset) : ?array{
+		if(preg_match(self::FORMAT_STRING_REGEX, $commandString, $matches, 0, $offset) !== 1){
+			return null;
+		}
+
+		$fullPlaceholder = $matches[0];
+
+		$required = ($matches[1] ?? "") !== "";
+		$position = (int) $matches[2];
+		$variadic = ($matches[3] ?? "") !== "";
+
+		return [$fullPlaceholder, $required, $position, $variadic];
 	}
 }
