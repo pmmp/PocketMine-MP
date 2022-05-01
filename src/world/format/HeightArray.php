@@ -32,7 +32,7 @@ final class HeightArray{
 	 * @var \SplFixedArray|int[]
 	 * @phpstan-var \SplFixedArray<int>
 	 */
-	private $array;
+	private \SplFixedArray $array;
 
 	/**
 	 * @param int[] $values ZZZZXXXX key bit order

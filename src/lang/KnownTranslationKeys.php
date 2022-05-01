@@ -262,6 +262,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_COMMAND_GIVE_DESCRIPTION = "pocketmine.command.give.description";
 	public const POCKETMINE_COMMAND_GIVE_USAGE = "pocketmine.command.give.usage";
 	public const POCKETMINE_COMMAND_HELP_DESCRIPTION = "pocketmine.command.help.description";
+	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_ALIASES = "pocketmine.command.help.specificCommand.aliases";
 	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_DESCRIPTION = "pocketmine.command.help.specificCommand.description";
 	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_HEADER = "pocketmine.command.help.specificCommand.header";
 	public const POCKETMINE_COMMAND_HELP_SPECIFICCOMMAND_USAGE = "pocketmine.command.help.specificCommand.usage";
@@ -379,6 +380,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_PLUGIN_INVALIDMANIFEST = "pocketmine.plugin.invalidManifest";
 	public const POCKETMINE_PLUGIN_LOAD = "pocketmine.plugin.load";
 	public const POCKETMINE_PLUGIN_LOADERROR = "pocketmine.plugin.loadError";
+	public const POCKETMINE_PLUGIN_MAINCLASSABSTRACT = "pocketmine.plugin.mainClassAbstract";
 	public const POCKETMINE_PLUGIN_MAINCLASSNOTFOUND = "pocketmine.plugin.mainClassNotFound";
 	public const POCKETMINE_PLUGIN_MAINCLASSWRONGTYPE = "pocketmine.plugin.mainClassWrongType";
 	public const POCKETMINE_PLUGIN_RESTRICTEDNAME = "pocketmine.plugin.restrictedName";

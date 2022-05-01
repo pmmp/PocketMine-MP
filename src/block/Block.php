@@ -152,7 +152,7 @@ class Block{
 				$oldTile->close();
 				$oldTile = null;
 			}elseif($oldTile instanceof Spawnable){
-				$oldTile->setDirty(); //destroy old network cache
+				$oldTile->clearSpawnCompoundCache(); //destroy old network cache
 			}
 		}
 		if($oldTile === null && $tileType !== null){

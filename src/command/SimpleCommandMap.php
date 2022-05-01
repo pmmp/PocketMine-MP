@@ -84,11 +84,7 @@ class SimpleCommandMap implements CommandMap{
 	/** @var Command[] */
 	protected $knownCommands = [];
 
-	/** @var Server */
-	private $server;
-
-	public function __construct(Server $server){
-		$this->server = $server;
+	public function __construct(private Server $server){
 		$this->setDefaultCommands();
 	}
 

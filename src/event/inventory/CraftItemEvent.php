@@ -34,28 +34,17 @@ use pocketmine\player\Player;
 class CraftItemEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
-	/** @var CraftingTransaction */
-	private $transaction;
-	/** @var CraftingRecipe */
-	private $recipe;
-	/** @var int */
-	private $repetitions;
-	/** @var Item[] */
-	private $inputs;
-	/** @var Item[] */
-	private $outputs;
-
 	/**
 	 * @param Item[]              $inputs
 	 * @param Item[]              $outputs
 	 */
-	public function __construct(CraftingTransaction $transaction, CraftingRecipe $recipe, int $repetitions, array $inputs, array $outputs){
-		$this->transaction = $transaction;
-		$this->recipe = $recipe;
-		$this->repetitions = $repetitions;
-		$this->inputs = $inputs;
-		$this->outputs = $outputs;
-	}
+	public function __construct(
+		private CraftingTransaction $transaction,
+		private CraftingRecipe $recipe,
+		private int $repetitions,
+		private array $inputs,
+		private array $outputs
+	){}
 
 	/**
 	 * Returns the inventory transaction involved in this crafting event.

@@ -30,12 +30,9 @@ use function abs;
 
 class DragonEggTeleportParticle implements Particle{
 
-	/** @var int */
-	private $xDiff;
-	/** @var int */
-	private $yDiff;
-	/** @var int */
-	private $zDiff;
+	private int $xDiff;
+	private int $yDiff;
+	private int $zDiff;
 
 	public function __construct(int $xDiff, int $yDiff, int $zDiff){
 		$this->xDiff = self::boundOrThrow($xDiff);

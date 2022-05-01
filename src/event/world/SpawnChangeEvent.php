@@ -31,12 +31,11 @@ use pocketmine\world\World;
  * The previous spawn is included
  */
 class SpawnChangeEvent extends WorldEvent{
-	/** @var Position */
-	private $previousSpawn;
-
-	public function __construct(World $world, Position $previousSpawn){
+	public function __construct(
+		World $world,
+		private Position $previousSpawn
+	){
 		parent::__construct($world);
-		$this->previousSpawn = $previousSpawn;
 	}
 
 	public function getPreviousSpawn() : Position{

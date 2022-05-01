@@ -42,9 +42,6 @@ final class CoralType{
 		__construct as Enum___construct;
 	}
 
-	/** @var string */
-	private $displayName;
-
 	protected static function setup() : void{
 		self::registerAll(
 			new self("tube", "Tube"),
@@ -55,9 +52,11 @@ final class CoralType{
 		);
 	}
 
-	private function __construct(string $name, string $displayName){
+	private function __construct(
+		string $name,
+		private string $displayName
+	){
 		$this->Enum___construct($name);
-		$this->displayName = $displayName;
 	}
 
 	public function getDisplayName() : string{ return $this->displayName; }

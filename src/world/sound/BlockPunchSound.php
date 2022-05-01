@@ -33,13 +33,7 @@ use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
  * Played when a player attacks a block in survival, attempting to break it.
  */
 class BlockPunchSound implements Sound{
-
-	/** @var Block */
-	private $block;
-
-	public function __construct(Block $block){
-		$this->block = $block;
-	}
+	public function __construct(private Block $block){}
 
 	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::nonActorSound(

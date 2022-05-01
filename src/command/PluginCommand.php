@@ -31,8 +31,7 @@ use pocketmine\plugin\PluginOwnedTrait;
 final class PluginCommand extends Command implements PluginOwned{
 	use PluginOwnedTrait;
 
-	/** @var CommandExecutor */
-	private $executor;
+	private CommandExecutor $executor;
 
 	public function __construct(string $name, Plugin $owner, CommandExecutor $executor){
 		parent::__construct($name);

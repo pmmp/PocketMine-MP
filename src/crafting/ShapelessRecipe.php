@@ -29,9 +29,9 @@ use function count;
 
 class ShapelessRecipe implements CraftingRecipe{
 	/** @var Item[] */
-	private $ingredients = [];
+	private array $ingredients = [];
 	/** @var Item[] */
-	private $results;
+	private array $results;
 	private ShapelessRecipeType $type;
 
 	/**
