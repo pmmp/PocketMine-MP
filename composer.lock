@@ -1930,16 +1930,16 @@
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "1.2.1",
+            "version": "1.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "f3ca6464eae640a556c69a02b3b77a2507475d2f"
+                "reference": "c0b61e25933ca27ff65c66971336dd6e5061d756"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/f3ca6464eae640a556c69a02b3b77a2507475d2f",
-                "reference": "f3ca6464eae640a556c69a02b3b77a2507475d2f",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/c0b61e25933ca27ff65c66971336dd6e5061d756",
+                "reference": "c0b61e25933ca27ff65c66971336dd6e5061d756",
                 "shasum": ""
             },
             "require": {
@@ -1972,9 +1972,9 @@
             "description": "Extra strict and opinionated rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-strict-rules/issues",
-                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/1.2.1"
+                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/1.2.2"
             },
-            "time": "2022-04-28T07:20:18+00:00"
+            "time": "2022-05-02T11:06:04+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
