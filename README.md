@@ -1,5 +1,13 @@
 <p align="center">
-	<a href="https://pmmp.io"><img src="http://cdn.pocketmine.net/img/PocketMine-MP-h.png"></img></a><br>
+	<a href="https://pmmp.io">
+		<!--[if IE]>
+			<img src="http://cdn.pocketmine.net/img/PocketMine-MP-h.png"></img>
+		<![endif]-->
+		<picture>
+			<source srcset="https://user-images.githubusercontent.com/8733998/166885185-1309ecc5-23e8-4fc2-b409-b1a5c1352a62.png" media="(prefers-color-scheme: dark)">
+			<img src="http://cdn.pocketmine.net/img/PocketMine-MP-h.png">
+		</picture>
+	</a><br>
 	<b>A highly customisable, open source server software for Minecraft: Bedrock Edition written in PHP</b>
 </p>
 
