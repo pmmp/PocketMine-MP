@@ -42,5 +42,9 @@ class Boat extends Item{
 		return 1200; //400 in PC
 	}
 
+	public function getMaxStackSize() : int{
+		return 1;
+	}
+
 	//TODO
 }
