@@ -149,7 +149,7 @@ class Leaves extends Transparent{
 			$drops[] = VanillaItems::APPLE();
 		}
 		if(mt_rand(1, 50) === 1){ //Sticks
-			$drops = VanillaItems::STICK()->setCount(mt_rand(1, 2));
+			$drops[] = VanillaItems::STICK()->setCount(mt_rand(1, 2));
 		}
 
 		return $drops;
