@@ -249,7 +249,7 @@ class SimpleCommandMap implements CommandMap{
 
 			foreach($commandStrings as $commandString){
 				$args = CommandStringHelper::parseQuoteAware($commandString);
-				$commandName = array_shift($args);
+				$commandName = array_shift($args) ?? "";
 				$command = $this->getCommand($commandName);
 
 				if($command === null){
