@@ -438,19 +438,13 @@ final class Utils{
 	}
 
 	private static function stringifyValueForTrace(mixed $value, int $maxStringLength) : string{
-		if(is_object($value)){
-			return "object " . self::getNiceClassName($value) . "#" . spl_object_id($value);
-		}
-		if(is_array($value)){
-			return "array[" . count($value) . "]";
-		}
-		if(is_string($value)){
-			return "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength);
-		}
-		if(is_bool($value)){
-			return $value ? "true" : "false";
-		}
-		return gettype($value) . " " . Utils::printable((string) $value);
+		return match(true){
+			is_object($value) => "object " . self::getNiceClassName($value) . "#" . spl_object_id($value),
+			is_array($value) => "array[" . count($value) . "]",
+			is_string($value) => "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength),
+			is_bool($value) => $value ? "true" : "false",
+			default => gettype($value) . " " . Utils::printable((string) $value)
+		};
 	}
 
 	/**
