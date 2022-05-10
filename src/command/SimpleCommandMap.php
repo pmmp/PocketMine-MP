@@ -71,7 +71,6 @@ use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use function array_shift;
 use function count;
-use function explode;
 use function implode;
 use function strcasecmp;
 use function strpos;
@@ -249,7 +248,7 @@ class SimpleCommandMap implements CommandMap{
 			$recursive = [];
 
 			foreach($commandStrings as $commandString){
-				$args = explode(" ", $commandString);
+				$args = CommandStringHelper::parseQuoteAware($commandString);
 				$commandName = array_shift($args);
 				$command = $this->getCommand($commandName);
 
