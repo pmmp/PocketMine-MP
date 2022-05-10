@@ -466,6 +466,7 @@ final class Utils{
 				}else{
 					$args = $trace[$i]["params"];
 				}
+				/** @var mixed[] $args */
 
 				$paramsList = [];
 				$offset = 0;
