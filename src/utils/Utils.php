@@ -443,6 +443,9 @@ final class Utils{
 			is_array($value) => "array[" . count($value) . "]",
 			is_string($value) => "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength),
 			is_bool($value) => $value ? "true" : "false",
+			is_int($value) => "int " . $value,
+			is_float($value) => "float " . $value,
+			$value === null => "null",
 			default => gettype($value) . " " . Utils::printable((string) $value)
 		};
 	}
