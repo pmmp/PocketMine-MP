@@ -48,6 +48,7 @@ class CommandStringHelperTest extends TestCase{
 
 	/**
 	 * @dataProvider parseQuoteAwareProvider
+	 * @param string[] $expected
 	 */
 	public function testParseQuoteAware(string $commandLine, array $expected) : void{
 		$actual = CommandStringHelper::parseQuoteAware($commandLine);
