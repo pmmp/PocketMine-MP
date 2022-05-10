@@ -49,7 +49,7 @@ final class CommandStringHelper{
 		foreach($matches[0] as $k => $_){
 			for($i = 1; $i <= 2; ++$i){
 				if($matches[$i][$k] !== ""){
-					$args[(int) $k] = $i === 1 ? stripslashes($matches[$i][$k]) : $matches[$i][$k];
+					$args[(int) $k] = preg_replace('/\\\\([\\\\"])/u', '$1', $matches[$i][$k]);
 					break;
 				}
 			}
