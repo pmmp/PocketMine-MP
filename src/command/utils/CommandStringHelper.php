@@ -41,7 +41,7 @@ final class CommandStringHelper{
 	 * - `say "This is a \"string containing quotes\""` -> ['say', 'This is a "string containing quotes"']
 	 *
 	 * @return string[]
-	 * @phpstan-return list<string>
+	 * @phpstan-return non-empty-list<string>
 	 */
 	public static function parseQuoteAware(string $commandLine) : array{
 		$args = [];
