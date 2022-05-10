@@ -23,8 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
-use pocketmine\Server;
+use pocketmine\command\utils\CommandStringHelper;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
+use function array_map;
+use function array_shift;
 use function count;
 use function preg_match;
 use function strlen;
@@ -52,24 +57,52 @@ class FormattedCommandAlias extends Command{
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-
 		$commands = [];
-		$result = false;
+		$result = true;
 
 		foreach($this->formatStrings as $formatString){
 			try{
-				$commands[] = $this->buildCommand($formatString, $args);
+				$formatArgs = CommandStringHelper::parseQuoteAware($formatString);
+				$commands[] = array_map(fn(string $formatArg) => $this->buildCommand($formatArg, $args), $formatArgs);
 			}catch(\InvalidArgumentException $e){
 				$sender->sendMessage(TextFormat::RED . $e->getMessage());
 				return false;
 			}
 		}
 
-		foreach($commands as $command){
-			$result |= Server::getInstance()->dispatchCommand($sender, $command, true);
+		$commandMap = $sender->getServer()->getCommandMap();
+		foreach($commands as $commandArgs){
+			//this approximately duplicates the logic found in SimpleCommandMap::dispatch()
+			//this is to allow directly invoking the commands without having to rebuild a command string and parse it
+			//again for no reason
+			//TODO: a method on CommandMap to invoke a command with pre-parsed arguments would probably be a good idea
+			//for a future major version
+			$commandLabel = array_shift($commandArgs);
+			if($commandLabel === null){
+				throw new AssumptionFailedError("This should have been checked before construction");
+			}
+
+			if(($target = $commandMap->getCommand($commandLabel)) !== null){
+				$target->timings->startTiming();
+
+				try{
+					$target->execute($sender, $commandLabel, $args);
+				}catch(InvalidCommandSyntaxException $e){
+					$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
+				}finally{
+					$target->timings->stopTiming();
+				}
+			}else{
+				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_notFound($commandLabel, "/help")->prefix(TextFormat::RED)));
+
+				//to match the behaviour of SimpleCommandMap::dispatch()
+				//this shouldn't normally happen, but might happen if the command was unregistered or modified after
+				//the alias was installed
+				$result = false;
+			}
 		}
 
-		return (bool) $result;
+		return $result;
 	}
 
 	/**
