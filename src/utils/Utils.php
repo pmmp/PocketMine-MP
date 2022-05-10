@@ -437,6 +437,22 @@ final class Utils{
 		return $lines;
 	}
 
+	private static function stringifyValueForTrace(mixed $value, int $maxStringLength) : string{
+		if(is_object($value)){
+			return "object " . self::getNiceClassName($value) . "#" . spl_object_id($value);
+		}
+		if(is_array($value)){
+			return "array[" . count($value) . "]";
+		}
+		if(is_string($value)){
+			return "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength);
+		}
+		if(is_bool($value)){
+			return $value ? "true" : "false";
+		}
+		return gettype($value) . " " . Utils::printable((string) $value);
+	}
+
 	/**
 	 * @param mixed[][] $trace
 	 * @phpstan-param list<array<string, mixed>> $trace
@@ -454,21 +470,13 @@ final class Utils{
 					$args = $trace[$i]["params"];
 				}
 
-				$params = implode(", ", array_map(function($value) use($maxStringLength) : string{
-					if(is_object($value)){
-						return "object " . self::getNiceClassName($value) . "#" . spl_object_id($value);
-					}
-					if(is_array($value)){
-						return "array[" . count($value) . "]";
-					}
-					if(is_string($value)){
-						return "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength);
-					}
-					if(is_bool($value)){
-						return $value ? "true" : "false";
-					}
-					return gettype($value) . " " . Utils::printable((string) $value);
-				}, $args));
+				$paramsList = [];
+				$offset = 0;
+				foreach($args as $argId => $value){
+					$paramsList[] = ($argId === $offset ? "" : "$argId: ") . self::stringifyValueForTrace($value, $maxStringLength);
+					$offset++;
+				}
+				$params = implode(", ", $paramsList);
 			}
 			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" || $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
 		}
