@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\command\utils;
 
 use function preg_match_all;
-use function stripslashes;
+use function preg_replace;
 
 final class CommandStringHelper{
 
