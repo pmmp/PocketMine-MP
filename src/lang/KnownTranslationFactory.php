@@ -1759,6 +1759,13 @@ final class KnownTranslationFactory{
 		]);
 	}
 
+	public static function pocketmine_plugin_enableError(Translatable|string $param0, Translatable|string $param1) : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_ENABLEERROR, [
+			0 => $param0,
+			1 => $param1,
+		]);
+	}
+
 	public static function pocketmine_plugin_extensionNotLoaded(Translatable|string $extensionName) : Translatable{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_EXTENSIONNOTLOADED, [
 			"extensionName" => $extensionName,
@@ -1857,6 +1864,10 @@ final class KnownTranslationFactory{
 		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_SPACESDISCOURAGED, [
 			0 => $param0,
 		]);
+	}
+
+	public static function pocketmine_plugin_suicide() : Translatable{
+		return new Translatable(KnownTranslationKeys::POCKETMINE_PLUGIN_SUICIDE, []);
 	}
 
 	public static function pocketmine_plugin_unknownDependency(Translatable|string $param0) : Translatable{
