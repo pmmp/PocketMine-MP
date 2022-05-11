@@ -448,7 +448,7 @@ class PluginManager{
 		return isset($this->plugins[$plugin->getDescription()->getName()]) && $plugin->isEnabled();
 	}
 
-	public function enablePlugin(Plugin $plugin) : void{
+	public function enablePlugin(Plugin $plugin) : bool{
 		if(!$plugin->isEnabled()){
 			$this->server->getLogger()->info($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_enable($plugin->getDescription()->getFullName())));
 
@@ -458,6 +458,8 @@ class PluginManager{
 				$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
 
 				(new PluginEnableEvent($plugin))->call();
+
+				return true;
 			}else{
 				$this->server->getLogger()->critical($this->server->getLanguage()->translate(
 					KnownTranslationFactory::pocketmine_plugin_enableError(
@@ -465,8 +467,12 @@ class PluginManager{
 						KnownTranslationFactory::pocketmine_plugin_suicide()
 					)
 				));
+
+				return false;
 			}
 		}
+
+		return true; //TODO: maybe this should be an error?
 	}
 
 	public function disablePlugins() : void{
