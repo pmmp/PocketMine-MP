@@ -46,6 +46,11 @@ parameters:
 			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
 
 		-
+			message: "#^Negated boolean expression is always true\\.$#"
+			count: 1
+			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
+
+		-
 			message: "#^Property pocketmine\\\\network\\\\mcpe\\\\raklib\\\\PthreadsChannelWriter\\:\\:\\$buffer is never read, only written\\.$#"
 			count: 1
 			path: ../../../src/network/mcpe/raklib/PthreadsChannelWriter.php
@@ -89,9 +94,4 @@ parameters:
 			message: "#^Call to function is_resource\\(\\) with resource will always evaluate to true\\.$#"
 			count: 2
 			path: ../../../src/world/format/io/region/RegionLoader.php
-
-		-
-			message: "#^Negated boolean expression is always true\\.$#"
-			count: 1
-			path: ../../../src/network/mcpe/handler/InGamePacketHandler.php
 

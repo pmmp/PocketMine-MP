@@ -368,6 +368,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_PLUGIN_DUPLICATEPERMISSIONERROR = "pocketmine.plugin.duplicatePermissionError";
 	public const POCKETMINE_PLUGIN_EMPTYEXTENSIONVERSIONCONSTRAINT = "pocketmine.plugin.emptyExtensionVersionConstraint";
 	public const POCKETMINE_PLUGIN_ENABLE = "pocketmine.plugin.enable";
+	public const POCKETMINE_PLUGIN_ENABLEERROR = "pocketmine.plugin.enableError";
 	public const POCKETMINE_PLUGIN_EXTENSIONNOTLOADED = "pocketmine.plugin.extensionNotLoaded";
 	public const POCKETMINE_PLUGIN_GENERICLOADERROR = "pocketmine.plugin.genericLoadError";
 	public const POCKETMINE_PLUGIN_INCOMPATIBLEAPI = "pocketmine.plugin.incompatibleAPI";
@@ -385,6 +386,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_PLUGIN_MAINCLASSWRONGTYPE = "pocketmine.plugin.mainClassWrongType";
 	public const POCKETMINE_PLUGIN_RESTRICTEDNAME = "pocketmine.plugin.restrictedName";
 	public const POCKETMINE_PLUGIN_SPACESDISCOURAGED = "pocketmine.plugin.spacesDiscouraged";
+	public const POCKETMINE_PLUGIN_SUICIDE = "pocketmine.plugin.suicide";
 	public const POCKETMINE_PLUGIN_UNKNOWNDEPENDENCY = "pocketmine.plugin.unknownDependency";
 	public const POCKETMINE_SAVE_START = "pocketmine.save.start";
 	public const POCKETMINE_SAVE_SUCCESS = "pocketmine.save.success";

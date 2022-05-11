@@ -447,6 +447,13 @@ class PluginManager{
 				$this->enabledPlugins[$plugin->getDescription()->getName()] = $plugin;
 
 				(new PluginEnableEvent($plugin))->call();
+			}else{
+				$this->server->getLogger()->critical($this->server->getLanguage()->translate(
+					KnownTranslationFactory::pocketmine_plugin_enableError(
+						$plugin->getName(),
+						KnownTranslationFactory::pocketmine_plugin_suicide()
+					)
+				));
 			}
 		}
 	}
