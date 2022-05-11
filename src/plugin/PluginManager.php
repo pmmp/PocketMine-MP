@@ -138,7 +138,7 @@ class PluginManager{
 
 		$dataFolder = $this->getDataDirectory($path, $description->getName());
 		if(file_exists($dataFolder) && !is_dir($dataFolder)){
-			$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+			$this->server->getLogger()->critical($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 				$description->getName(),
 				KnownTranslationFactory::pocketmine_plugin_badDataFolder($dataFolder)
 			)));
@@ -153,14 +153,14 @@ class PluginManager{
 
 		$mainClass = $description->getMain();
 		if(!class_exists($mainClass, true)){
-			$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+			$this->server->getLogger()->critical($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 				$description->getName(),
 				KnownTranslationFactory::pocketmine_plugin_mainClassNotFound()
 			)));
 			return null;
 		}
 		if(!is_a($mainClass, Plugin::class, true)){
-			$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+			$this->server->getLogger()->critical($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 				$description->getName(),
 				KnownTranslationFactory::pocketmine_plugin_mainClassWrongType(Plugin::class)
 			)));
@@ -168,7 +168,7 @@ class PluginManager{
 		}
 		$reflect = new \ReflectionClass($mainClass); //this shouldn't throw; we already checked that it exists
 		if(!$reflect->isInstantiable()){
-			$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+			$this->server->getLogger()->critical($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 				$description->getName(),
 				KnownTranslationFactory::pocketmine_plugin_mainClassAbstract()
 			)));
@@ -179,7 +179,7 @@ class PluginManager{
 		foreach($description->getPermissions() as $permsGroup){
 			foreach($permsGroup as $perm){
 				if($permManager->getPermission($perm->getName()) !== null){
-					$this->server->getLogger()->error($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+					$this->server->getLogger()->critical($language->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 						$description->getName(),
 						KnownTranslationFactory::pocketmine_plugin_duplicatePermissionError($perm->getName())
 					)));
@@ -261,14 +261,14 @@ class PluginManager{
 				try{
 					$description = $loader->getPluginDescription($file);
 				}catch(PluginDescriptionParseException $e){
-					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
+					$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError(
 						$file,
 						KnownTranslationFactory::pocketmine_plugin_invalidManifest($e->getMessage())
 					)));
 					$loadErrorCount++;
 					continue;
 				}catch(\RuntimeException $e){ //TODO: more specific exception handling
-					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($file, $e->getMessage())));
+					$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($file, $e->getMessage())));
 					$this->server->getLogger()->logException($e);
 					$loadErrorCount++;
 					continue;
@@ -280,13 +280,13 @@ class PluginManager{
 				$name = $description->getName();
 
 				if(($loadabilityError = $loadabilityChecker->check($description)) !== null){
-					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, $loadabilityError)));
+					$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_loadError($name, $loadabilityError)));
 					$loadErrorCount++;
 					continue;
 				}
 
 				if(isset($triage->plugins[$name]) || $this->getPlugin($name) instanceof Plugin){
-					$this->server->getLogger()->error($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_duplicateError($name)));
+					$this->server->getLogger()->critical($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_plugin_duplicateError($name)));
 					$loadErrorCount++;
 					continue;
 				}
