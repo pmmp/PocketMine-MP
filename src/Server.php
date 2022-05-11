@@ -1006,12 +1006,12 @@ class Server{
 			$loadErrorCount = 0;
 			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
 			if($loadErrorCount > 0){
-				$this->logger->emergency("Some plugins failed to load");
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someLoadErrors()));
 				$this->forceShutdown();
 				return;
 			}
 			if(!$this->enablePlugins(PluginEnableOrder::STARTUP())){
-				$this->logger->emergency("Some plugins failed to enable");
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
 				$this->forceShutdown();
 				return;
 			}
@@ -1022,7 +1022,7 @@ class Server{
 			}
 
 			if(!$this->enablePlugins(PluginEnableOrder::POSTWORLD())){
-				$this->logger->emergency("Some plugins failed to enable");
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
 				$this->forceShutdown();
 				return;
 			}
