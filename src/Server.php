@@ -1112,6 +1112,7 @@ class Server{
 
 				$generatorClass = $getGenerator($generatorName, $generatorOptions, $name);
 				if($generatorClass === null){
+					$anyWorldFailedToLoad = true;
 					continue;
 				}
 				$creationOptions->setGeneratorClass($generatorClass);
@@ -1148,16 +1149,19 @@ class Server{
 				$generatorName = $this->configGroup->getConfigString("level-type");
 				$generatorOptions = $this->configGroup->getConfigString("generator-settings");
 				$generatorClass = $getGenerator($generatorName, $generatorOptions, $default);
-				if($generatorClass !== null){
-					$creationOptions = WorldCreationOptions::create()
-						->setGeneratorClass($generatorClass)
-						->setGeneratorOptions($generatorOptions);
-					$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
-					if($convertedSeed !== null){
-						$creationOptions->setSeed($convertedSeed);
-					}
-					$this->worldManager->generateWorld($default, $creationOptions);
+
+				if($generatorClass === null){
+					$this->getLogger()->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_defaultError()));
+					return false;
 				}
+				$creationOptions = WorldCreationOptions::create()
+					->setGeneratorClass($generatorClass)
+					->setGeneratorOptions($generatorOptions);
+				$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
+				if($convertedSeed !== null){
+					$creationOptions->setSeed($convertedSeed);
+				}
+				$this->worldManager->generateWorld($default, $creationOptions);
 			}
 
 			$world = $this->worldManager->getWorldByName($default);
@@ -1460,7 +1464,7 @@ class Server{
 		}
 
 		if($this->isRunning){
-			$this->logger->emergency("Forcing server shutdown");
+			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_forcingShutdown()));
 		}
 		try{
 			if(!$this->isRunning()){
