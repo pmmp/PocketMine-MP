@@ -443,6 +443,16 @@ parameters:
 		-
 			message: "#^Cannot call method startTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
 			count: 1
+			path: ../../../src/command/FormattedCommandAlias.php
+
+		-
+			message: "#^Cannot call method stopTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
+			count: 1
+			path: ../../../src/command/FormattedCommandAlias.php
+
+		-
+			message: "#^Cannot call method startTiming\\(\\) on pocketmine\\\\timings\\\\TimingsHandler\\|null\\.$#"
+			count: 1
 			path: ../../../src/command/SimpleCommandMap.php
 
 		-

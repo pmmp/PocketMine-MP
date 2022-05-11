@@ -195,6 +195,12 @@ aliases:
   #kill: [suicide, say "I tried to kill $1"] ## `kill alex` -> `suicide` + `say "I tried to kill alex"`
   #giverandom: [give $1 $2, say "Someone has just received a $2!"] ## `giverandom alex diamond` -> `give alex diamond` + `say "Someone has just received a diamond!"`
 
+  ##To make arguments mandatory (so that the command fails if they are not provided), use $$, e.g. $$1, $$2:
+  #makeadmin: [op $$1] ## `makeadmin alex` -> `op alex`, `makeadmin` with no arguments = error
+
+  ##To pass through a range of arguments, put a - (hyphen) after the index:
+  #tpalias: [tp $1-] ## `tpalias 256 70 256` -> `tp 256 70 256` - this passes arguments 1 and everything after it to the `tp` command
+
   ##To change an existing command alias and make it do something else:
   #tp: [suicide]
 
