@@ -385,6 +385,8 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_PLUGIN_MAINCLASSNOTFOUND = "pocketmine.plugin.mainClassNotFound";
 	public const POCKETMINE_PLUGIN_MAINCLASSWRONGTYPE = "pocketmine.plugin.mainClassWrongType";
 	public const POCKETMINE_PLUGIN_RESTRICTEDNAME = "pocketmine.plugin.restrictedName";
+	public const POCKETMINE_PLUGIN_SOMEENABLEERRORS = "pocketmine.plugin.someEnableErrors";
+	public const POCKETMINE_PLUGIN_SOMELOADERRORS = "pocketmine.plugin.someLoadErrors";
 	public const POCKETMINE_PLUGIN_SPACESDISCOURAGED = "pocketmine.plugin.spacesDiscouraged";
 	public const POCKETMINE_PLUGIN_SUICIDE = "pocketmine.plugin.suicide";
 	public const POCKETMINE_PLUGIN_UNKNOWNDEPENDENCY = "pocketmine.plugin.unknownDependency";
@@ -405,6 +407,7 @@ final class KnownTranslationKeys{
 	public const POCKETMINE_SERVER_DEVBUILD_WARNING2 = "pocketmine.server.devBuild.warning2";
 	public const POCKETMINE_SERVER_DEVBUILD_WARNING3 = "pocketmine.server.devBuild.warning3";
 	public const POCKETMINE_SERVER_DONATE = "pocketmine.server.donate";
+	public const POCKETMINE_SERVER_FORCINGSHUTDOWN = "pocketmine.server.forcingShutdown";
 	public const POCKETMINE_SERVER_INFO = "pocketmine.server.info";
 	public const POCKETMINE_SERVER_INFO_EXTENDED = "pocketmine.server.info.extended";
 	public const POCKETMINE_SERVER_LICENSE = "pocketmine.server.license";
