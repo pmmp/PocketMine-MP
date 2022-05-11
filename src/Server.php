@@ -1003,14 +1003,29 @@ class Server{
 
 			register_shutdown_function([$this, "crashDump"]);
 
-			$this->pluginManager->loadPlugins($this->pluginPath);
-			$this->enablePlugins(PluginEnableOrder::STARTUP());
+			$loadErrorCount = 0;
+			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
+			if($loadErrorCount > 0){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someLoadErrors()));
+				$this->forceShutdown();
+				return;
+			}
+			if(!$this->enablePlugins(PluginEnableOrder::STARTUP())){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
+				$this->forceShutdown();
+				return;
+			}
 
 			if(!$this->startupPrepareWorlds()){
 				$this->forceShutdown();
 				return;
 			}
-			$this->enablePlugins(PluginEnableOrder::POSTWORLD());
+
+			if(!$this->enablePlugins(PluginEnableOrder::POSTWORLD())){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
+				$this->forceShutdown();
+				return;
+			}
 
 			if(!$this->startupPrepareNetworkInterfaces()){
 				$this->forceShutdown();
@@ -1395,16 +1410,21 @@ class Server{
 		}
 	}
 
-	public function enablePlugins(PluginEnableOrder $type) : void{
+	public function enablePlugins(PluginEnableOrder $type) : bool{
+		$allSuccess = true;
 		foreach($this->pluginManager->getPlugins() as $plugin){
 			if(!$plugin->isEnabled() && $plugin->getDescription()->getOrder()->equals($type)){
-				$this->pluginManager->enablePlugin($plugin);
+				if(!$this->pluginManager->enablePlugin($plugin)){
+					$allSuccess = false;
+				}
 			}
 		}
 
 		if($type->equals(PluginEnableOrder::POSTWORLD())){
 			$this->commandMap->registerServerAliases();
 		}
+
+		return $allSuccess;
 	}
 
 	/**
