@@ -1003,14 +1003,29 @@ class Server{
 
 			register_shutdown_function([$this, "crashDump"]);
 
-			$this->pluginManager->loadPlugins($this->pluginPath);
-			$this->enablePlugins(PluginEnableOrder::STARTUP());
+			$loadErrorCount = 0;
+			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
+			if($loadErrorCount > 0){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someLoadErrors()));
+				$this->forceShutdown();
+				return;
+			}
+			if(!$this->enablePlugins(PluginEnableOrder::STARTUP())){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
+				$this->forceShutdown();
+				return;
+			}
 
 			if(!$this->startupPrepareWorlds()){
 				$this->forceShutdown();
 				return;
 			}
-			$this->enablePlugins(PluginEnableOrder::POSTWORLD());
+
+			if(!$this->enablePlugins(PluginEnableOrder::POSTWORLD())){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
+				$this->forceShutdown();
+				return;
+			}
 
 			if(!$this->startupPrepareNetworkInterfaces()){
 				$this->forceShutdown();
@@ -1097,6 +1112,7 @@ class Server{
 
 				$generatorClass = $getGenerator($generatorName, $generatorOptions, $name);
 				if($generatorClass === null){
+					$anyWorldFailedToLoad = true;
 					continue;
 				}
 				$creationOptions->setGeneratorClass($generatorClass);
@@ -1133,16 +1149,19 @@ class Server{
 				$generatorName = $this->configGroup->getConfigString("level-type");
 				$generatorOptions = $this->configGroup->getConfigString("generator-settings");
 				$generatorClass = $getGenerator($generatorName, $generatorOptions, $default);
-				if($generatorClass !== null){
-					$creationOptions = WorldCreationOptions::create()
-						->setGeneratorClass($generatorClass)
-						->setGeneratorOptions($generatorOptions);
-					$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
-					if($convertedSeed !== null){
-						$creationOptions->setSeed($convertedSeed);
-					}
-					$this->worldManager->generateWorld($default, $creationOptions);
+
+				if($generatorClass === null){
+					$this->getLogger()->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_defaultError()));
+					return false;
 				}
+				$creationOptions = WorldCreationOptions::create()
+					->setGeneratorClass($generatorClass)
+					->setGeneratorOptions($generatorOptions);
+				$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
+				if($convertedSeed !== null){
+					$creationOptions->setSeed($convertedSeed);
+				}
+				$this->worldManager->generateWorld($default, $creationOptions);
 			}
 
 			$world = $this->worldManager->getWorldByName($default);
@@ -1391,16 +1410,21 @@ class Server{
 		}
 	}
 
-	public function enablePlugins(PluginEnableOrder $type) : void{
+	public function enablePlugins(PluginEnableOrder $type) : bool{
+		$allSuccess = true;
 		foreach($this->pluginManager->getPlugins() as $plugin){
 			if(!$plugin->isEnabled() && $plugin->getDescription()->getOrder()->equals($type)){
-				$this->pluginManager->enablePlugin($plugin);
+				if(!$this->pluginManager->enablePlugin($plugin)){
+					$allSuccess = false;
+				}
 			}
 		}
 
 		if($type->equals(PluginEnableOrder::POSTWORLD())){
 			$this->commandMap->registerServerAliases();
 		}
+
+		return $allSuccess;
 	}
 
 	/**
@@ -1440,7 +1464,7 @@ class Server{
 		}
 
 		if($this->isRunning){
-			$this->logger->emergency("Forcing server shutdown");
+			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_forcingShutdown()));
 		}
 		try{
 			if(!$this->isRunning()){
