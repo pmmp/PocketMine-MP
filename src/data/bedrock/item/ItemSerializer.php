@@ -54,12 +54,6 @@ final class ItemSerializer{
 	 */
 	private array $serializers = [];
 
-	/**
-	 * @var \Closure[]
-	 * @phpstan-var array<int, \Closure(ItemBlock) : Data>>
-	 */
-	private array $blockItemSerializers = [];
-
 	public function __construct(){
 		$this->registerSerializers();
 	}
@@ -82,20 +76,6 @@ final class ItemSerializer{
 	}
 
 	/**
-	 * @phpstan-param \Closure(ItemBlock) : Data $serializer
-	 */
-	public function mapBlock(Block $block, \Closure $serializer) : void{
-		if(!$block->asItem() instanceof ItemBlock){
-			throw new AssumptionFailedError("Mapped item must be an ItemBlock");
-		}
-		$index = $block->getTypeId();
-		if(isset($this->blockItemSerializers[$index])){
-			throw new AssumptionFailedError("Registering the same item twice!");
-		}
-		$this->blockItemSerializers[$index] = $serializer;
-	}
-
-	/**
 	 * @phpstan-template TItemType of Item
 	 * @phpstan-param TItemType $item
 	 */
@@ -104,15 +84,7 @@ final class ItemSerializer{
 			throw new \InvalidArgumentException("Cannot serialize a null itemstack");
 		}
 		if($item instanceof ItemBlock){
-			$block = $item->getBlock();
-			$index = $block->getTypeId();
-			$serializer = $this->blockItemSerializers[$index] ?? null;
-
-			if($serializer !== null){
-				$data = $serializer($item);
-			}else{ //assume that this is just a standard itemblock
-				$data = self::standardBlock($block);
-			}
+			$data = self::standardBlock($item->getBlock());
 		}else{
 			$index = ($item->getId() << 16) | ($item instanceof Durable ? 0 : $item->getMeta());
 
