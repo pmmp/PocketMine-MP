@@ -86,4 +86,10 @@ abstract class Button extends Flowable{
 			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new RedstonePowerOffSound());
 		}
 	}
+
+	public function onNearbyBlockChange() : void{
+		if($this->getSide(Facing::opposite($this->facing))->getId() === BlockLegacyIds::AIR){
+			$this->position->getWorld()->useBreakOn($this->position);
+		}
+	}
 }
