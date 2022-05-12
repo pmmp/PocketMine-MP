@@ -35,7 +35,7 @@
       "fgrosse/phpasn1": "^2.3",
       "netresearch/jsonmapper": "^4.0",
       "pocketmine/bedrock-block-upgrade-schema": "dev-master@dev",
-      "pocketmine/bedrock-data": "~1.7.0+bedrock-1.18.30",
+      "pocketmine/bedrock-data": "dev-modern-world-support@dev",
       "pocketmine/bedrock-protocol": "~9.0.0+bedrock-1.18.30",
       "pocketmine/binaryutils": "^0.2.1",
       "pocketmine/callback-validator": "^1.0.2",
