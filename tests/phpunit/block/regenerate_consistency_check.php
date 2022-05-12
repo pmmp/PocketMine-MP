@@ -21,6 +21,9 @@
 
 declare(strict_types=1);
 
+use pocketmine\block\Block;
+use pocketmine\block\UnknownBlock;
+
 require dirname(__DIR__, 3) . '/vendor/autoload.php';
 
 /* This script needs to be re-run after any intentional blockfactory change (adding or removing a block state). */
@@ -28,7 +31,11 @@ require dirname(__DIR__, 3) . '/vendor/autoload.php';
 $factory = new \pocketmine\block\BlockFactory();
 $remaps = [];
 $new = [];
-foreach($factory->getAllKnownStates() as $index => $block){
+for($index = 0; $index < 1024 << Block::INTERNAL_METADATA_BITS; $index++){
+	$block = $factory->fromFullBlock($index);
+	if($block instanceof UnknownBlock){
+		continue;
+	}
 	if($block->getFullId() !== $index){
 		$remaps[$index] = $block->getFullId();
 	}else{
