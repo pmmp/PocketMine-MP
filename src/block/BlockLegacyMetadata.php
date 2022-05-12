@@ -98,7 +98,6 @@ final class BlockLegacyMetadata{
 	public const DOOR_FLAG_TOP = 0x08;
 	public const DOOR_BOTTOM_FLAG_OPEN = 0x04;
 	public const DOOR_TOP_FLAG_RIGHT = 0x01;
-	public const DOOR_TOP_FLAG_POWERED = 0x02;
 
 	public const DOUBLE_PLANT_SUNFLOWER = 0;
 	public const DOUBLE_PLANT_LILAC = 1;

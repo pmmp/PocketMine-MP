@@ -36,7 +36,6 @@ use pocketmine\world\sound\DoorSound;
 
 class Door extends Transparent{
 	use HorizontalFacingTrait;
-	use PoweredByRedstoneTrait;
 
 	protected bool $top = false;
 	protected bool $hingeRight = false;
@@ -45,8 +44,7 @@ class Door extends Transparent{
 	protected function writeStateToMeta() : int{
 		if($this->top){
 			return BlockLegacyMetadata::DOOR_FLAG_TOP |
-				($this->hingeRight ? BlockLegacyMetadata::DOOR_TOP_FLAG_RIGHT : 0) |
-				($this->powered ? BlockLegacyMetadata::DOOR_TOP_FLAG_POWERED : 0);
+				($this->hingeRight ? BlockLegacyMetadata::DOOR_TOP_FLAG_RIGHT : 0);
 		}
 
 		return BlockDataSerializer::writeLegacyHorizontalFacing(Facing::rotateY($this->facing, true)) | ($this->open ? BlockLegacyMetadata::DOOR_BOTTOM_FLAG_OPEN : 0);
@@ -56,7 +54,6 @@ class Door extends Transparent{
 		$this->top = ($stateMeta & BlockLegacyMetadata::DOOR_FLAG_TOP) !== 0;
 		if($this->top){
 			$this->hingeRight = ($stateMeta & BlockLegacyMetadata::DOOR_TOP_FLAG_RIGHT) !== 0;
-			$this->powered = ($stateMeta & BlockLegacyMetadata::DOOR_TOP_FLAG_POWERED) !== 0;
 		}else{
 			$this->facing = Facing::rotateY(BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03), false);
 			$this->open = ($stateMeta & BlockLegacyMetadata::DOOR_BOTTOM_FLAG_OPEN) !== 0;
@@ -78,7 +75,6 @@ class Door extends Transparent{
 				$this->open = $other->open;
 			}else{
 				$this->hingeRight = $other->hingeRight;
-				$this->powered = $other->powered;
 			}
 		}
 	}
