@@ -41,8 +41,6 @@ use function file_get_contents;
 final class RuntimeBlockMapping{
 	use SingletonTrait;
 
-	private BlockStateDictionary $blockStateDictionary;
-	private BlockStateSerializer $blockStateSerializer;
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
@@ -54,14 +52,18 @@ final class RuntimeBlockMapping{
 	private int $fallbackStateId;
 
 	private static function make() : self{
-		return new self(Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"));
+		$canonicalBlockStatesFile = Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt");
+		$contents = Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file");
+		return new self(
+			BlockStateDictionary::loadFromString($contents),
+			GlobalBlockStateHandlers::getSerializer()
+		);
 	}
 
-	public function __construct(string $canonicalBlockStatesFile){
-		$contents = Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file");
-		$this->blockStateDictionary = BlockStateDictionary::loadFromString($contents);
-		$this->blockStateSerializer = GlobalBlockStateHandlers::getSerializer();
-
+	public function __construct(
+		private BlockStateDictionary $blockStateDictionary,
+		private BlockStateSerializer $blockStateSerializer
+	){
 		$this->fallbackStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);
 		$this->fallbackStateId = $this->blockStateDictionary->lookupStateIdFromData($this->fallbackStateData) ?? throw new AssumptionFailedError(BlockTypeNames::INFO_UPDATE . " should always exist");
 	}
