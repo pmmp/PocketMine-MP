@@ -219,7 +219,7 @@ final class ItemSerializer{
 		$this->map(Items::BAMBOO(), self::standardBlockWrapper());
 		$this->map(Items::CORAL_FAN(), self::standardBlockWrapper());
 
-		$this->map(Items::BANNER(), fn(Banner $item) =>  new Data(Ids::BANNER, DyeColorIdMap::getInstance()->toInvertedId($item->getColor())));
+		$this->map(Items::BANNER(), fn(Banner $item) => new Data(Ids::BANNER, DyeColorIdMap::getInstance()->toInvertedId($item->getColor())));
 		$this->map(Items::ACACIA_BOAT(), self::id(Ids::ACACIA_BOAT));
 		$this->map(Items::ACACIA_SIGN(), self::id(Ids::ACACIA_SIGN));
 		$this->map(Items::APPLE(), self::id(Ids::APPLE));

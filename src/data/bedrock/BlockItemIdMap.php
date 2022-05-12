@@ -23,10 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\data\bedrock;
 
-use pocketmine\entity\effect\StringToEffectParser;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
 use Webmozart\PathUtil\Path;
+use function array_search;
+use function file_get_contents;
+use function is_array;
+use function json_decode;
 use const pocketmine\BEDROCK_DATA_PATH;
 
 /**
