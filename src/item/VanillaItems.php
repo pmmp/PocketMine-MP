@@ -33,16 +33,20 @@ use pocketmine\utils\CloningRegistryTrait;
  * @generate-registry-docblock
  *
  * @method static Boat ACACIA_BOAT()
+ * @method static ItemBlockWallOrFloor ACACIA_SIGN()
  * @method static ItemBlock AIR()
  * @method static Apple APPLE()
  * @method static Arrow ARROW()
  * @method static Potion AWKWARD_POTION()
  * @method static SplashPotion AWKWARD_SPLASH_POTION()
  * @method static BakedPotato BAKED_POTATO()
+ * @method static Bamboo BAMBOO()
+ * @method static Banner BANNER()
  * @method static Beetroot BEETROOT()
  * @method static BeetrootSeeds BEETROOT_SEEDS()
  * @method static BeetrootSoup BEETROOT_SOUP()
  * @method static Boat BIRCH_BOAT()
+ * @method static ItemBlockWallOrFloor BIRCH_SIGN()
  * @method static Bed BLACK_BED()
  * @method static Dye BLACK_DYE()
  * @method static Item BLAZE_POWDER()
@@ -118,10 +122,12 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static CookedRabbit COOKED_RABBIT()
  * @method static CookedSalmon COOKED_SALMON()
  * @method static Cookie COOKIE()
+ * @method static ItemBlockWallOrFloor CORAL_FAN()
  * @method static Skull CREEPER_HEAD()
  * @method static Bed CYAN_BED()
  * @method static Dye CYAN_DYE()
  * @method static Boat DARK_OAK_BOAT()
+ * @method static ItemBlockWallOrFloor DARK_OAK_SIGN()
  * @method static Item DIAMOND()
  * @method static Axe DIAMOND_AXE()
  * @method static Armor DIAMOND_BOOTS()
@@ -189,6 +195,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Shovel IRON_SHOVEL()
  * @method static Sword IRON_SWORD()
  * @method static Boat JUNGLE_BOAT()
+ * @method static ItemBlockWallOrFloor JUNGLE_SIGN()
  * @method static Item LAPIS_LAZULI()
  * @method static LiquidBucket LAVA_BUCKET()
  * @method static Potion LEAPING_POTION()
@@ -249,6 +256,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Potion NIGHT_VISION_POTION()
  * @method static SplashPotion NIGHT_VISION_SPLASH_POTION()
  * @method static Boat OAK_BOAT()
+ * @method static ItemBlockWallOrFloor OAK_SIGN()
  * @method static Bed ORANGE_BED()
  * @method static Dye ORANGE_DYE()
  * @method static PaintingItem PAINTING()
@@ -308,6 +316,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Snowball SNOWBALL()
  * @method static SpiderEye SPIDER_EYE()
  * @method static Boat SPRUCE_BOAT()
+ * @method static ItemBlockWallOrFloor SPRUCE_SIGN()
  * @method static SpawnEgg SQUID_SPAWN_EGG()
  * @method static Steak STEAK()
  * @method static Stick STICK()
@@ -395,16 +404,20 @@ final class VanillaItems{
 	protected static function setup() : void{
 		$factory = ItemFactory::getInstance();
 		self::register("acacia_boat", $factory->get(Ids::BOAT, 4));
+		self::register("acacia_sign", $factory->get(Ids::ACACIA_SIGN));
 		self::register("air", $factory->get(Ids::AIR, 0, 0));
 		self::register("apple", $factory->get(Ids::APPLE));
 		self::register("arrow", $factory->get(Ids::ARROW));
 		self::register("awkward_potion", $factory->get(Ids::POTION, 4));
 		self::register("awkward_splash_potion", $factory->get(Ids::SPLASH_POTION, 4));
 		self::register("baked_potato", $factory->get(Ids::BAKED_POTATO));
+		self::register("bamboo", $factory->get(Ids::BAMBOO));
+		self::register("banner", $factory->get(Ids::BANNER));
 		self::register("beetroot", $factory->get(Ids::BEETROOT));
 		self::register("beetroot_seeds", $factory->get(Ids::BEETROOT_SEEDS));
 		self::register("beetroot_soup", $factory->get(Ids::BEETROOT_SOUP));
 		self::register("birch_boat", $factory->get(Ids::BOAT, 2));
+		self::register("birch_sign", $factory->get(Ids::BIRCH_SIGN));
 		self::register("black_bed", $factory->get(Ids::BED, 15));
 		self::register("black_dye", $factory->get(Ids::DYE, 16));
 		self::register("blaze_powder", $factory->get(Ids::BLAZE_POWDER));
@@ -480,10 +493,12 @@ final class VanillaItems{
 		self::register("cooked_rabbit", $factory->get(Ids::COOKED_RABBIT));
 		self::register("cooked_salmon", $factory->get(Ids::COOKED_SALMON));
 		self::register("cookie", $factory->get(Ids::COOKIE));
+		self::register("coral_fan", $factory->get(Ids::CORAL_FAN));
 		self::register("creeper_head", $factory->get(Ids::MOB_HEAD, 4));
 		self::register("cyan_bed", $factory->get(Ids::BED, 9));
 		self::register("cyan_dye", $factory->get(Ids::DYE, 6));
 		self::register("dark_oak_boat", $factory->get(Ids::BOAT, 5));
+		self::register("dark_oak_sign", $factory->get(Ids::DARKOAK_SIGN));
 		self::register("diamond", $factory->get(Ids::DIAMOND));
 		self::register("diamond_axe", $factory->get(Ids::DIAMOND_AXE));
 		self::register("diamond_boots", $factory->get(Ids::DIAMOND_BOOTS));
@@ -551,6 +566,7 @@ final class VanillaItems{
 		self::register("iron_shovel", $factory->get(Ids::IRON_SHOVEL));
 		self::register("iron_sword", $factory->get(Ids::IRON_SWORD));
 		self::register("jungle_boat", $factory->get(Ids::BOAT, 3));
+		self::register("jungle_sign", $factory->get(Ids::JUNGLE_SIGN));
 		self::register("lapis_lazuli", $factory->get(Ids::DYE, 4));
 		self::register("lava_bucket", $factory->get(Ids::BUCKET, 10));
 		self::register("leaping_potion", $factory->get(Ids::POTION, 9));
@@ -611,6 +627,7 @@ final class VanillaItems{
 		self::register("night_vision_potion", $factory->get(Ids::POTION, 5));
 		self::register("night_vision_splash_potion", $factory->get(Ids::SPLASH_POTION, 5));
 		self::register("oak_boat", $factory->get(Ids::BOAT));
+		self::register("oak_sign", $factory->get(Ids::SIGN));
 		self::register("orange_bed", $factory->get(Ids::BED, 1));
 		self::register("orange_dye", $factory->get(Ids::DYE, 14));
 		self::register("painting", $factory->get(Ids::PAINTING));
@@ -670,6 +687,7 @@ final class VanillaItems{
 		self::register("snowball", $factory->get(Ids::SNOWBALL));
 		self::register("spider_eye", $factory->get(Ids::SPIDER_EYE));
 		self::register("spruce_boat", $factory->get(Ids::BOAT, 1));
+		self::register("spruce_sign", $factory->get(Ids::SPRUCE_SIGN));
 		self::register("squid_spawn_egg", $factory->get(Ids::SPAWN_EGG, 17));
 		self::register("steak", $factory->get(Ids::COOKED_BEEF));
 		self::register("stick", $factory->get(Ids::STICK));
