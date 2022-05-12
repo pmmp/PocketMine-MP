@@ -25,6 +25,7 @@ namespace pocketmine\data\bedrock;
 
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function array_search;
 use function file_get_contents;
@@ -39,7 +40,11 @@ final class BlockItemIdMap{
 	use SingletonTrait;
 
 	private static function make() : self{
-		$map = json_decode(file_get_contents(Path::join(BEDROCK_DATA_PATH, 'block_id_to_item_id_map.json')), true, flags: JSON_THROW_ON_ERROR);
+		$map = json_decode(
+			Utils::assumeNotFalse(file_get_contents(Path::join(BEDROCK_DATA_PATH, 'block_id_to_item_id_map.json')), "Missing required resource file"),
+			associative: true,
+			flags: JSON_THROW_ON_ERROR
+		);
 		if(!is_array($map)){
 			throw new AssumptionFailedError("Invalid blockitem ID mapping table, expected array as root type");
 		}
