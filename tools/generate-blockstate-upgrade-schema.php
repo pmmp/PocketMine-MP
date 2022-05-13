@@ -208,7 +208,8 @@ function generateBlockStateUpgradeSchema(array $upgradeTable) : BlockStateUpgrad
 		($foundVersion >> 24) & 0xff,
 		($foundVersion >> 16) & 0xff,
 		($foundVersion >> 8) & 0xff,
-		($foundVersion & 0xff)
+		($foundVersion & 0xff),
+		0
 	);
 	foreach(Utils::stringifyKeys($upgradeTable) as $oldName => $blockStateMappings){
 		$newNameFound = [];

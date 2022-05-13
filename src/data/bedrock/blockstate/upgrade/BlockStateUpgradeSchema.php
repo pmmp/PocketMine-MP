@@ -64,8 +64,6 @@ final class BlockStateUpgradeSchema{
 	 */
 	public array $remappedStates = [];
 
-	private ?bool $backwardsCompatible = null;
-
 	public function __construct(
 		public int $maxVersionMajor,
 		public int $maxVersionMinor,

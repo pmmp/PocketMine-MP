@@ -52,7 +52,7 @@ class BlockStateUpgraderTest extends TestCase{
 	}
 
 	private function getNewSchemaVersion(int $versionId) : BlockStateUpgradeSchema{
-		$schema = new BlockStateUpgradeSchema(($versionId >> 24) & 0xff, ($versionId >> 16) & 0xff, ($versionId >> 8) & 0xff, $versionId & 0xff);
+		$schema = new BlockStateUpgradeSchema(($versionId >> 24) & 0xff, ($versionId >> 16) & 0xff, ($versionId >> 8) & 0xff, $versionId & 0xff, 0);
 		$this->upgrader->addSchema($schema);
 		return $schema;
 	}
