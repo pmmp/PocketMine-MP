@@ -80,11 +80,26 @@ class ItemFactory{
 		$this->register(new Clock(new ItemIdentifier(ItemIds::CLOCK, 0), "Clock"));
 		$this->register(new Clownfish(new ItemIdentifier(ItemIds::CLOWNFISH, 0), "Clownfish"));
 		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 0), "Coal"));
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 0), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::TUBE()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::TUBE())), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 1), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::BRAIN()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::BRAIN())), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 2), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::BUBBLE()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::BUBBLE())), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 3), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::FIRE()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::FIRE())), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 4), VanillaBlocks::CORAL_FAN()->setCoralType(CoralType::HORN()), VanillaBlocks::WALL_CORAL_FAN()->setCoralType(CoralType::HORN())), true);
+
+		foreach([
+			0 => CoralType::TUBE(),
+			1 => CoralType::BRAIN(),
+			2 => CoralType::BUBBLE(),
+			3 => CoralType::FIRE(),
+			4 => CoralType::HORN()
+		] as $meta => $coralType){
+			$this->register(new ItemBlockWallOrFloor(
+				new ItemIdentifier(ItemIds::CORAL_FAN, $meta),
+				VanillaBlocks::CORAL_FAN()->setCoralType($coralType)->setDead(false),
+				VanillaBlocks::WALL_CORAL_FAN()->setCoralType($coralType)->setDead(false)
+			), true);
+			$this->register(new ItemBlockWallOrFloor(
+				new ItemIdentifier(ItemIds::CORAL_FAN_DEAD, $meta),
+				VanillaBlocks::CORAL_FAN()->setCoralType($coralType)->setDead(true),
+				VanillaBlocks::WALL_CORAL_FAN()->setCoralType($coralType)->setDead(true)
+			), true);
+		}
+
 		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 1), "Charcoal"));
 		$this->register(new CocoaBeans(new ItemIdentifier(ItemIds::DYE, 3), "Cocoa Beans"));
 		$this->register(new Compass(new ItemIdentifier(ItemIds::COMPASS, 0), "Compass"));
