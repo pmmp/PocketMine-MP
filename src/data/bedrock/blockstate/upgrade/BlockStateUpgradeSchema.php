@@ -70,12 +70,15 @@ final class BlockStateUpgradeSchema{
 		public int $maxVersionMajor,
 		public int $maxVersionMinor,
 		public int $maxVersionPatch,
-		public int $maxVersionRevision
+		public int $maxVersionRevision,
+		private int $priority
 	){}
 
 	public function getVersionId() : int{
 		return ($this->maxVersionMajor << 24) | ($this->maxVersionMinor << 16) | ($this->maxVersionPatch << 8) | $this->maxVersionRevision;
 	}
+
+	public function getPriority() : int{ return $this->priority; }
 
 	public function isEmpty() : bool{
 		foreach([
@@ -92,23 +95,5 @@ final class BlockStateUpgradeSchema{
 		}
 
 		return true;
-	}
-
-	public function isBackwardsCompatible() : bool{
-		if($this->backwardsCompatible === null){
-			$this->backwardsCompatible = true;
-			foreach([
-				$this->renamedIds,
-				$this->removedProperties,
-				$this->remappedPropertyValues,
-				$this->remappedStates
-			] as $bcBreakingRules){
-				if(count($bcBreakingRules) !== 0){
-					$this->backwardsCompatible = false;
-				}
-			}
-		}
-		//schemas which only add properties are backwards compatible
-		return $this->backwardsCompatible;
 	}
 }

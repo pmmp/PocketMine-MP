@@ -27,7 +27,6 @@ use pocketmine\data\bedrock\blockstate\BlockStateData;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\Tag;
 use pocketmine\utils\Utils;
-use function array_unshift;
 use function ksort;
 use const SORT_NUMERIC;
 
@@ -46,19 +45,16 @@ final class BlockStateUpgrader{
 	}
 
 	public function addSchema(BlockStateUpgradeSchema $schema) : void{
-		if(!$schema->isBackwardsCompatible()){
-			$schemaList = $this->upgradeSchemas[$schema->getVersionId()] ?? [];
-			foreach($schemaList as $otherSchema){
-				if(!$otherSchema->isBackwardsCompatible()){
-					throw new \InvalidArgumentException("Cannot add two backwards-incompatible schemas with the same version");
-				}
-			}
-			array_unshift($schemaList, $schema);
-			$this->upgradeSchemas[$schema->getVersionId()] = $schemaList;
-		}else{
-			//Backwards-compatible schemas can be added in any order
-			$this->upgradeSchemas[$schema->getVersionId()][] = $schema;
+		$schemaList = $this->upgradeSchemas[$schema->getVersionId()] ?? [];
+
+		$priority = $schema->getPriority();
+		if(isset($schemaList[$priority])){
+			throw new \InvalidArgumentException("Cannot add two schemas to the same version with the same priority");
 		}
+		$schemaList[$priority] = $schema;
+		ksort($schemaList, SORT_NUMERIC);
+		$this->upgradeSchemas[$schema->getVersionId()] = $schemaList;
+
 		ksort($this->upgradeSchemas, SORT_NUMERIC);
 	}
 
@@ -71,11 +67,6 @@ final class BlockStateUpgrader{
 				continue;
 			}
 			foreach($schemas as $schema){
-				if(!$schema->isBackwardsCompatible() && $resultVersion === $version){
-					//backwards-compatible updates typically don't bump version and must always be applied because we
-					//can't tell any different, but backwards-incompatible ones SHOULD always get their own version bump
-					continue;
-				}
 				$oldName = $blockStateData->getName();
 				if(isset($schema->remappedStates[$oldName])){
 					foreach($schema->remappedStates[$oldName] as $remap){

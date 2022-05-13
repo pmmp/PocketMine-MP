@@ -111,12 +111,13 @@ final class BlockStateUpgradeSchemaUtils{
 		};
 	}
 
-	public static function fromJsonModel(BlockStateUpgradeSchemaModel $model) : BlockStateUpgradeSchema{
+	public static function fromJsonModel(BlockStateUpgradeSchemaModel $model, int $priority) : BlockStateUpgradeSchema{
 		$result = new BlockStateUpgradeSchema(
 			$model->maxVersionMajor,
 			$model->maxVersionMinor,
 			$model->maxVersionPatch,
-			$model->maxVersionRevision
+			$model->maxVersionRevision,
+			$priority
 		);
 		$result->renamedIds = $model->renamedIds ?? [];
 		$result->renamedProperties = $model->renamedProperties ?? [];
@@ -280,7 +281,7 @@ final class BlockStateUpgradeSchemaUtils{
 			}
 
 			try{
-				$schema = self::loadSchemaFromString($raw);
+				$schema = self::loadSchemaFromString($raw, $priority);
 			}catch(\RuntimeException $e){
 				throw new \RuntimeException("Loading schema file $fullPath: " . $e->getMessage(), 0, $e);
 			}
@@ -298,7 +299,7 @@ final class BlockStateUpgradeSchemaUtils{
 		return $result;
 	}
 
-	public static function loadSchemaFromString(string $raw) : BlockStateUpgradeSchema{
+	public static function loadSchemaFromString(string $raw, int $priority) : BlockStateUpgradeSchema{
 		try{
 			$json = json_decode($raw, false, flags: JSON_THROW_ON_ERROR);
 		}catch(\JsonException $e){
@@ -315,6 +316,6 @@ final class BlockStateUpgradeSchemaUtils{
 			throw new \RuntimeException($e->getMessage(), 0, $e);
 		}
 
-		return self::fromJsonModel($model);
+		return self::fromJsonModel($model, $priority);
 	}
 }
