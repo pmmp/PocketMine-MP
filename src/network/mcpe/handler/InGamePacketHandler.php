@@ -146,8 +146,6 @@ class InGamePacketHandler extends ChunkRequestHandler{
 	protected $lastRightClickTime = 0.0;
 	/** @var UseItemTransactionData|null */
 	protected $lastRightClickData = null;
-	/** @var BlockPosition|null */
-	protected $lastBlockCollide = null;
 
 	/** @var bool */
 	public $forceMoveSync = false;

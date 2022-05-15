@@ -30,9 +30,9 @@ use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\serializer\ChunkSerializer;
 use pocketmine\scheduler\AsyncTask;
+use pocketmine\utils\Binary;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
-use function unpack;
 use function xxhash64;
 
 class ChunkRequestTask extends AsyncTask{
@@ -81,12 +81,12 @@ class ChunkRequestTask extends AsyncTask{
 		$encoder->setProtocolId($this->mappingProtocol);
 
 		foreach(ChunkSerializer::serializeSubChunks($chunk, $blockMapper, $encoderContext, $this->mappingProtocol) as $subChunk){
-			$cache->addSubChunk(unpack("q", xxhash64($subChunk))[1], $subChunk);
+			$cache->addSubChunk(Binary::readLong(xxhash64($subChunk)), $subChunk);
 		}
 
 		$biomeEncoder = clone $encoder;
 		ChunkSerializer::serializeBiomes($chunk, $biomeEncoder);
-		$cache->setBiomes(unpack("q", xxhash64($chunkBuffer = $biomeEncoder->getBuffer()))[1], $chunkBuffer);
+		$cache->setBiomes(Binary::readLong(xxhash64($chunkBuffer = $biomeEncoder->getBuffer())), $chunkBuffer);
 
 		$chunkDataEncoder = clone $encoder;
 		ChunkSerializer::serializeChunkData($chunk, $chunkDataEncoder, $this->tiles);
@@ -115,10 +115,10 @@ class ChunkRequestTask extends AsyncTask{
 	}
 
 	public function onCompletion() : void{
-		/** @var CachedChunkPromise $promise */
 		/** @var CachedChunk $result */
 		$result = $this->getResult();
 
+		/** @var CachedChunkPromise $promise */
 		$promise = $this->fetchLocal(self::TLS_KEY_PROMISE);
 		$promise->resolve($result);
 	}
