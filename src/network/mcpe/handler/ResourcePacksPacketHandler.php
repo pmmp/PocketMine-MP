@@ -49,11 +49,9 @@ use function substr;
  * Handler used for the resource packs sequence phase of the session. This handler takes care of downloading resource
  * packs to the client.
  */
-class ResourcePacksPacketHandler extends PacketHandler{
+class ResourcePacksPacketHandler extends ChunkRequestHandler{
 	private const PACK_CHUNK_SIZE = 128 * 1024; //128KB
 
-	/** @var NetworkSession */
-	private $session;
 	/** @var ResourcePackManager */
 	private $resourcePackManager;
 	/**
@@ -69,7 +67,8 @@ class ResourcePacksPacketHandler extends PacketHandler{
 	 * @phpstan-param \Closure() : void $completionCallback
 	 */
 	public function __construct(NetworkSession $session, ResourcePackManager $resourcePackManager, \Closure $completionCallback){
-		$this->session = $session;
+		parent::__construct($session);
+
 		$this->resourcePackManager = $resourcePackManager;
 		$this->completionCallback = $completionCallback;
 	}

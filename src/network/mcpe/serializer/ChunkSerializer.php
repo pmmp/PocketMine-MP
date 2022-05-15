@@ -64,42 +64,77 @@ final class ChunkSerializer{
 		return 0;
 	}
 
-	public static function serializeFullChunk(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, int $mappingProtocol, ?string $tiles = null) : string{
+	/**
+	 * @return string[]
+	 */
+	public static function serializeSubChunks(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, int $mappingProtocol): array
+	{
 		$stream = PacketSerializer::encoder($encoderContext);
+		$stream->setProtocolId($mappingProtocol);
+
+		$emptyChunkStream = clone $stream;
+		$emptyChunkStream->putByte(8); //subchunk version 8
+		$emptyChunkStream->putByte(0); //0 layers - client will treat this as all-air
+
+		$subChunks = [];
 
 		if($mappingProtocol >= ProtocolInfo::PROTOCOL_1_18_0 && $chunk->getDimensionId() === DimensionIds::OVERWORLD){
 			//TODO: HACK! fill in fake subchunks to make up for the new negative space client-side
 			for($y = 0; $y < self::LOWER_PADDING_SIZE; $y++){
-				$stream->putByte(8); //subchunk version 8
-				$stream->putByte(0); //0 layers - client will treat this as all-air
+				$subChunks[] = $emptyChunkStream->getBuffer();
 			}
 		}
 
 		$subChunkCount = self::getSubChunkCount($chunk);
 		for($y = Chunk::MIN_SUBCHUNK_INDEX, $writtenCount = 0; $writtenCount < $subChunkCount; ++$y, ++$writtenCount){
-			self::serializeSubChunk($chunk->getSubChunk($y), $blockMapper, $stream, $mappingProtocol, false);
+			$subChunkStream = clone $stream;
+			self::serializeSubChunk($chunk->getSubChunk($y), $blockMapper, $subChunkStream, false);
+			$subChunks[] = $subChunkStream->getBuffer();
 		}
 
-		if($mappingProtocol >= ProtocolInfo::PROTOCOL_1_18_0){
+		return $subChunks;
+	}
+
+	public static function serializeFullChunk(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, int $mappingProtocol, ?string $tiles = null) : string{
+		$stream = PacketSerializer::encoder($encoderContext);
+		$stream->setProtocolId($mappingProtocol);
+
+		foreach(self::serializeSubChunks($chunk, $blockMapper, $encoderContext, $mappingProtocol) as $subChunk){
+			$stream->put($subChunk);
+		}
+
+		self::serializeBiomes($chunk, $stream);
+		self::serializeChunkData($chunk, $stream, $tiles);
+
+		return $stream->getBuffer();
+	}
+
+	public static function serializeBiomes(Chunk $chunk, PacketSerializer $stream) : void{
+		if($stream->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_0){
 			//TODO: right now we don't support 3D natively, so we just 3Dify our 2D biomes so they fill the column
 			$encodedBiomePalette = self::serializeBiomesAsPalette($chunk);
-			$stream->put(str_repeat($encodedBiomePalette, $mappingProtocol >= ProtocolInfo::PROTOCOL_1_18_30 ? 24 : 25));
+			$stream->put(str_repeat($encodedBiomePalette, $stream->getProtocolId() >= ProtocolInfo::PROTOCOL_1_18_30 ? 24 : 25));
 		}else{
 			$stream->put($chunk->getBiomeIdArray());
 		}
+	}
 
+	public static function serializeBorderBlocks(PacketSerializer $stream) : void {
 		$stream->putByte(0); //border block array count
 		//Border block entry format: 1 byte (4 bits X, 4 bits Z). These are however useless since they crash the regular client.
+	}
+
+	public static function serializeChunkData(Chunk $chunk, PacketSerializer $stream, ?string $tiles = null) : void{
+		self::serializeBorderBlocks($stream);
 
 		if($tiles !== null){
 			$stream->put($tiles);
 		}else{
 			$stream->put(self::serializeTiles($chunk));
 		}
-		return $stream->getBuffer();
 	}
 
-	public static function serializeSubChunk(SubChunk $subChunk, RuntimeBlockMapping $blockMapper, PacketSerializer $stream, int $mappingProtocol, bool $persistentBlockStates) : void{
+	public static function serializeSubChunk(SubChunk $subChunk, RuntimeBlockMapping $blockMapper, PacketSerializer $stream, bool $persistentBlockStates) : void{
 		$layers = $subChunk->getBlockLayers();
 		$stream->putByte(8); //version
 
@@ -107,7 +142,7 @@ final class ChunkSerializer{
 
 		foreach($layers as $blocks){
 			$bitsPerBlock = $blocks->getBitsPerBlock();
-			if($mappingProtocol <= ProtocolInfo::PROTOCOL_1_17_0 && $bitsPerBlock === 0){
+			if($stream->getProtocolId() <= ProtocolInfo::PROTOCOL_1_17_0 && $bitsPerBlock === 0){
 				//TODO: we use these in memory, but the game doesn't support them yet
 				//polyfill them with 1-bpb instead
 				$bitsPerBlock = 1;
@@ -128,11 +163,11 @@ final class ChunkSerializer{
 			if($persistentBlockStates){
 				$nbtSerializer = new NetworkNbtSerializer();
 				foreach($palette as $p){
-					$stream->put($nbtSerializer->write(new TreeRoot($blockMapper->getBedrockKnownStates()[$blockMapper->toRuntimeId($p, $mappingProtocol)])));
+					$stream->put($nbtSerializer->write(new TreeRoot($blockMapper->getBedrockKnownStates()[$blockMapper->toRuntimeId($p, $stream->getProtocolId())])));
 				}
 			}else{
 				foreach($palette as $p){
-					$stream->put(Binary::writeUnsignedVarInt($blockMapper->toRuntimeId($p, $mappingProtocol) << 1));
+					$stream->put(Binary::writeUnsignedVarInt($blockMapper->toRuntimeId($p, $stream->getProtocolId()) << 1));
 				}
 			}
 		}

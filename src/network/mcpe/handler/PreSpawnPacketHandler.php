@@ -45,21 +45,20 @@ use pocketmine\Server;
 /**
  * Handler used for the pre-spawn phase of the session.
  */
-class PreSpawnPacketHandler extends PacketHandler{
+class PreSpawnPacketHandler extends ChunkRequestHandler{
 
 	/** @var Server */
 	private $server;
 	/** @var Player */
 	private $player;
-	/** @var NetworkSession */
-	private $session;
 
 	private InventoryManager $inventoryManager;
 
 	public function __construct(Server $server, Player $player, NetworkSession $session, InventoryManager $inventoryManager){
+		parent::__construct($session);
+
 		$this->player = $player;
 		$this->server = $server;
-		$this->session = $session;
 		$this->inventoryManager = $inventoryManager;
 	}
 

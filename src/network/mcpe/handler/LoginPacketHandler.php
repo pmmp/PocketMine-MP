@@ -51,12 +51,10 @@ use function is_array;
 /**
  * Handles the initial login phase of the session. This handler is used as the initial state.
  */
-class LoginPacketHandler extends PacketHandler{
+class LoginPacketHandler extends ChunkRequestHandler{
 
 	/** @var Server */
 	private $server;
-	/** @var NetworkSession */
-	private $session;
 	/**
 	 * @var \Closure
 	 * @phpstan-var \Closure(PlayerInfo) : void
@@ -73,7 +71,8 @@ class LoginPacketHandler extends PacketHandler{
 	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void $authCallback
 	 */
 	public function __construct(Server $server, NetworkSession $session, \Closure $playerInfoConsumer, \Closure $authCallback){
-		$this->session = $session;
+		parent::__construct($session);
+
 		$this->server = $server;
 		$this->playerInfoConsumer = $playerInfoConsumer;
 		$this->authCallback = $authCallback;

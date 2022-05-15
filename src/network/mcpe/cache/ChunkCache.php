@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\network\mcpe\cache;
 
 use pocketmine\math\Vector3;
+use pocketmine\network\mcpe\CachedChunkPromise;
 use pocketmine\network\mcpe\ChunkRequestTask;
-use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\ProtocolInfo;
@@ -35,7 +35,6 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
 use function count;
 use function spl_object_id;
-use function strlen;
 
 /**
  * This class is used by the current MCPE protocol system to store cached chunk packets for fast resending.
@@ -89,7 +88,7 @@ class ChunkCache implements ChunkListener{
 	/** @var Compressor */
 	private $compressor;
 
-	/** @var CompressBatchPromise[][] */
+	/** @var CachedChunkPromise[][] */
 	private $caches = [];
 
 	/** @var int */
@@ -105,9 +104,9 @@ class ChunkCache implements ChunkListener{
 	/**
 	 * Requests asynchronous preparation of the chunk at the given coordinates.
 	 *
-	 * @return CompressBatchPromise a promise of resolution which will contain a compressed chunk packet.
+	 * @return CachedChunkPromise a promise of resolution which will contain a compressed chunk packet.
 	 */
-	public function request(int $chunkX, int $chunkZ, int $protocolId = ProtocolInfo::CURRENT_PROTOCOL) : CompressBatchPromise{
+	public function request(int $chunkX, int $chunkZ, int $protocolId = ProtocolInfo::CURRENT_PROTOCOL) : CachedChunkPromise{
 		$this->world->registerChunkListener($this, $chunkX, $chunkZ);
 		$chunk = $this->world->getChunk($chunkX, $chunkZ);
 		if($chunk === null){
@@ -126,7 +125,7 @@ class ChunkCache implements ChunkListener{
 
 		$this->world->timings->syncChunkSendPrepare->startTiming();
 		try{
-			$this->caches[$chunkHash][$mappingProtocol] = new CompressBatchPromise();
+			$this->caches[$chunkHash][$mappingProtocol] = new CachedChunkPromise();
 
 			$this->world->getServer()->getAsyncPool()->submitTask(
 				new ChunkRequestTask(
@@ -248,7 +247,7 @@ class ChunkCache implements ChunkListener{
 		foreach($this->caches as $caches){
 			foreach($caches as $cache){
 				if($cache->hasResult()){
-					$result += strlen($cache->getResult());
+					$result += $cache->getResult()->getSize();
 				}
 			}
 		}

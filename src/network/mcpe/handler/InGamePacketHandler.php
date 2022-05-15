@@ -133,13 +133,11 @@ use const JSON_THROW_ON_ERROR;
 /**
  * This handler handles packets related to general gameplay.
  */
-class InGamePacketHandler extends PacketHandler{
+class InGamePacketHandler extends ChunkRequestHandler{
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
 
 	/** @var Player */
 	private $player;
-	/** @var NetworkSession */
-	private $session;
 
 	/** @var CraftingTransaction|null */
 	protected $craftingTransaction = null;
@@ -148,6 +146,8 @@ class InGamePacketHandler extends PacketHandler{
 	protected $lastRightClickTime = 0.0;
 	/** @var UseItemTransactionData|null */
 	protected $lastRightClickData = null;
+	/** @var BlockPosition|null */
+	protected $lastBlockCollide = null;
 
 	/** @var bool */
 	public $forceMoveSync = false;
@@ -155,8 +155,9 @@ class InGamePacketHandler extends PacketHandler{
 	private InventoryManager $inventoryManager;
 
 	public function __construct(Player $player, NetworkSession $session, InventoryManager $inventoryManager){
+		parent::__construct($session);
+
 		$this->player = $player;
-		$this->session = $session;
 		$this->inventoryManager = $inventoryManager;
 	}
 
