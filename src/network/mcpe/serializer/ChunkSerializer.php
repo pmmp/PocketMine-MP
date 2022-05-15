@@ -67,7 +67,7 @@ final class ChunkSerializer{
 	/**
 	 * @return string[]
 	 */
-	public static function serializeSubChunks(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, int $mappingProtocol): array
+	public static function serializeSubChunks(Chunk $chunk, RuntimeBlockMapping $blockMapper, PacketSerializerContext $encoderContext, int $mappingProtocol) : array
 	{
 		$stream = PacketSerializer::encoder($encoderContext);
 		$stream->setProtocolId($mappingProtocol);

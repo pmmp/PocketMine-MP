@@ -32,6 +32,7 @@ use pocketmine\network\mcpe\serializer\ChunkSerializer;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\FastChunkSerializer;
+use function unpack;
 use function xxhash64;
 
 class ChunkRequestTask extends AsyncTask{
@@ -115,7 +116,10 @@ class ChunkRequestTask extends AsyncTask{
 
 	public function onCompletion() : void{
 		/** @var CachedChunkPromise $promise */
+		/** @var CachedChunk $result */
+		$result = $this->getResult();
+
 		$promise = $this->fetchLocal(self::TLS_KEY_PROMISE);
-		$promise->resolve($this->getResult());
+		$promise->resolve($result);
 	}
 }

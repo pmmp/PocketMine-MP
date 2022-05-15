@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace pocketmine\network\mcpe\handler;
 
 use pocketmine\network\mcpe\NetworkSession;

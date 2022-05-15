@@ -185,8 +185,6 @@ class NetworkSession{
 
 	private PacketBroadcaster $broadcaster;
 
-	private int $counter = 0;
-
 	/**
 	 * @var \Closure[]|ObjectSet
 	 * @phpstan-var ObjectSet<\Closure() : void>

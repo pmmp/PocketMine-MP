@@ -30,9 +30,12 @@ use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\utils\BinaryStream;
 use function count;
+use function strlen;
 
 class CachedChunk{
+	/** @var int[] */
 	protected array $hashes = [];
+	/** @var string[] */
 	protected array $blobs = [];
 
 	protected string $biomes;
@@ -51,6 +54,9 @@ class CachedChunk{
 		$this->biomeHash = $hash;
 	}
 
+	/**
+	 * @return int[]
+	 */
 	private function getHashes() : array{
 		$hashes = $this->hashes;
 		$hashes[] = $this->biomeHash;
@@ -86,7 +92,7 @@ class CachedChunk{
 	}
 
 	public function getPacket() : string{
-		if($this->cachablePacket === null){
+		if($this->packet === null){
 			throw new BadFunctionCallException("Tried to get cacheable packet before it was compressed");
 		}
 
@@ -129,8 +135,8 @@ class CachedChunk{
 		foreach($this->getHashMap() as $blob){
 			$size += strlen($blob);
 		}
-		$size += strlen($this->packet);
-		$size += strlen($this->cachablePacket);
+		$size += strlen($this->packet ?? "");
+		$size += strlen($this->cachablePacket ?? "");
 
 		return $size;
 	}
