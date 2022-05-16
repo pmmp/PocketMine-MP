@@ -62,6 +62,7 @@ use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\AvailableCommandsPacket;
 use pocketmine\network\mcpe\protocol\ChunkRadiusUpdatedPacket;
 use pocketmine\network\mcpe\protocol\ClientboundPacket;
+use pocketmine\network\mcpe\protocol\ClientCacheMissResponsePacket;
 use pocketmine\network\mcpe\protocol\DisconnectPacket;
 use pocketmine\network\mcpe\protocol\EmotePacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
@@ -120,6 +121,7 @@ use pocketmine\utils\ObjectSet;
 use pocketmine\utils\TextFormat;
 use pocketmine\utils\Utils;
 use pocketmine\world\Position;
+use function array_keys;
 use function array_map;
 use function array_replace;
 use function array_values;
@@ -591,6 +593,7 @@ class NetworkSession{
 	 * Instructs the remote client to connect to a different server.
 	 */
 	public function transfer(string $ip, int $port, string $reason = "transfer") : void{
+		$this->flushChunkCache();
 		$this->tryDisconnect(function() use ($ip, $port, $reason) : void{
 			$this->sendDataPacket(TransferPacket::create($ip, $port), true);
 			if($this->player !== null){
@@ -1139,5 +1142,16 @@ class NetworkSession{
 		}
 
 		$this->flushSendBuffer();
+	}
+
+	private function flushChunkCache() : void{
+		$blobs = array_map(static function(int $hash, string $blob) : ChunkCacheBlob{
+			return new ChunkCacheBlob($hash, $blob);
+		}, array_keys($this->chunkCacheBlobs), $this->chunkCacheBlobs);
+
+		if(count($blobs) > 0){
+			$this->sendDataPacket(ClientCacheMissResponsePacket::create($blobs));
+			unset($this->chunkCacheBlobs);
+		}
 	}
 }
