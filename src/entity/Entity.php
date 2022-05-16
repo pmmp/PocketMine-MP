@@ -286,6 +286,7 @@ abstract class Entity{
 
 	public function setNameTagVisible(bool $value = true) : void{
 		$this->nameTagVisible = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function setNameTagAlwaysVisible(bool $value = true) : void{
