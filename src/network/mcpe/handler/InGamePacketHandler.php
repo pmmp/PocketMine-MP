@@ -133,7 +133,7 @@ use const JSON_THROW_ON_ERROR;
 /**
  * This handler handles packets related to general gameplay.
  */
-class InGamePacketHandler extends ChunkRequestHandler{
+class InGamePacketHandler extends ChunkRequestPacketHandler{
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
 
 	/** @var Player */

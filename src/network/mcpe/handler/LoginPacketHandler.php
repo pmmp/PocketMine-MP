@@ -51,7 +51,7 @@ use function is_array;
 /**
  * Handles the initial login phase of the session. This handler is used as the initial state.
  */
-class LoginPacketHandler extends ChunkRequestHandler{
+class LoginPacketHandler extends ChunkRequestPacketHandler{
 
 	/** @var Server */
 	private $server;

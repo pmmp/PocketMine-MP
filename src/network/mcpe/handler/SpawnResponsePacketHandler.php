@@ -26,7 +26,7 @@ namespace pocketmine\network\mcpe\handler;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 
-final class SpawnResponsePacketHandler extends ChunkRequestHandler{
+final class SpawnResponsePacketHandler extends ChunkRequestPacketHandler{
 
 	/**
 	 * @var \Closure

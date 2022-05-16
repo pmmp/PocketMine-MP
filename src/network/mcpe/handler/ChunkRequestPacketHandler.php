@@ -8,16 +8,16 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\ClientCacheBlobStatusPacket;
 use pocketmine\network\mcpe\protocol\ClientCacheMissResponsePacket;
 use pocketmine\network\mcpe\protocol\ClientCacheStatusPacket;
+use pocketmine\network\PacketHandlingException;
 use function count;
 
-class ChunkRequestHandler extends PacketHandler{
+class ChunkRequestPacketHandler extends PacketHandler{
 
 	public function __construct(protected NetworkSession $session){ }
 
 	public function handleClientCacheStatus(ClientCacheStatusPacket $packet) : bool{
 		if($this->session->isCacheEnabled()){
-			$this->session->disconnect("Unexpected ClientCacheStatusPacket");
-			return false;
+			throw new PacketHandlingException("ClientCacheStatusPacket should not be received twice.");
 		}
 
 		$this->session->setCacheEnabled($packet->isEnabled());
@@ -26,8 +26,7 @@ class ChunkRequestHandler extends PacketHandler{
 
 	public function handleClientCacheBlobStatus(ClientCacheBlobStatusPacket $packet) : bool{
 		if(!$this->session->isCacheEnabled()){
-			$this->session->disconnect("Unexpected ClientCacheBlobStatusPacket");
-			return false;
+			throw new PacketHandlingException("ClientCacheBlobStatusPacket received, but cache is disabled.");
 		}
 
 		$blobs = [];

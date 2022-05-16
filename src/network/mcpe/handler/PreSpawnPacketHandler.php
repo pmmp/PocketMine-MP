@@ -45,7 +45,7 @@ use pocketmine\Server;
 /**
  * Handler used for the pre-spawn phase of the session.
  */
-class PreSpawnPacketHandler extends ChunkRequestHandler{
+class PreSpawnPacketHandler extends ChunkRequestPacketHandler{
 
 	/** @var Server */
 	private $server;
