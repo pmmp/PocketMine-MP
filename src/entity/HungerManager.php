@@ -208,7 +208,7 @@ class HungerManager{
 			if($food >= 18){
 				if($health < $this->entity->getMaxHealth()){
 					$this->entity->heal(new EntityRegainHealthEvent($this->entity, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
-					$this->exhaust(3.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
+					$this->exhaust(6.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
 				}
 			}elseif($food <= 0){
 				if(($difficulty === World::DIFFICULTY_EASY && $health > 10) || ($difficulty === World::DIFFICULTY_NORMAL && $health > 1) || $difficulty === World::DIFFICULTY_HARD){
