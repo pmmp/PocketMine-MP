@@ -54,7 +54,7 @@ abstract class AsyncTask extends \Threaded{
 	 *
 	 * Used to store objects which are only needed on one thread and should not be serialized.
 	 */
-	private static $threadLocalStorage = null;
+	private static ?\ArrayObject $threadLocalStorage = null;
 
 	/** @var AsyncWorker|null $worker */
 	public $worker = null;
