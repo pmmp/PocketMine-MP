@@ -23,7 +23,7 @@ jobs:
           php-version: 8.0
 
       - name: Restore Composer package cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/composer/files
