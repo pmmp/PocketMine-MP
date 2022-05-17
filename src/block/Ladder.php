@@ -66,7 +66,7 @@ class Ladder extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockClicked->getSupportType($face)->equals(SupportType::FULL()) && Facing::axis($face) !== Axis::Y){
+		if($this->canBeSupportedBy($blockClicked, $face) && Facing::axis($face) !== Axis::Y){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
@@ -75,8 +75,12 @@ class Ladder extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::opposite($this->facing))->getSupportType($this->facing)->equals(SupportType::FULL())){ //Replace with common break method
+		if(!$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)), $this->facing)){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
+
+	protected function canBeSupportedBy(Block $block, int $face) : bool{
+		return $block->getSupportType($face)->equals(SupportType::FULL());
 	}
 }
