@@ -44,7 +44,7 @@ class RedMushroom extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if(!$down->getSupportType(Facing::UP)->equals(SupportType::FULL())){
+		if(!$down->isTransparent()){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
