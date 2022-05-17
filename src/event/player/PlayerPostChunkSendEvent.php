@@ -21,30 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\item;
+namespace pocketmine\event\player;
 
-use pocketmine\block\utils\TreeType;
+use pocketmine\player\Player;
 
-class Boat extends Item{
-	/** @var TreeType */
-	private $woodType;
+/**
+ * Called after a player is sent a chunk as part of their view radius.
+ */
+final class PlayerPostChunkSendEvent extends PlayerEvent{
 
-	public function __construct(ItemIdentifier $identifier, string $name, TreeType $woodType){
-		parent::__construct($identifier, $name);
-		$this->woodType = $woodType;
+	public function __construct(
+		Player $player,
+		private int $chunkX,
+		private int $chunkZ
+	){
+		$this->player = $player;
 	}
 
-	public function getWoodType() : TreeType{
-		return $this->woodType;
-	}
+	public function getChunkX() : int{ return $this->chunkX; }
 
-	public function getFuelTime() : int{
-		return 1200; //400 in PC
-	}
-
-	public function getMaxStackSize() : int{
-		return 1;
-	}
-
-	//TODO
+	public function getChunkZ() : int{ return $this->chunkZ; }
 }

@@ -1273,7 +1273,7 @@ class World implements ChunkManager{
 	 * get an angle in radians, or by 360 to get an angle in degrees.
 	 */
 	public function computeSunAnglePercentage() : float{
-		$timeProgress = ($this->time % 24000) / 24000;
+		$timeProgress = ($this->time % self::TIME_FULL) / self::TIME_FULL;
 
 		//0.0 needs to be high noon, not dusk
 		$sunProgress = $timeProgress + ($timeProgress < 0.25 ? 0.75 : -0.25);
@@ -3004,9 +3004,14 @@ class World implements ChunkManager{
 			unset($this->activeChunkPopulationTasks[$index]);
 
 			if($dirtyChunks === 0){
-				$promise = $this->chunkPopulationRequestMap[$index];
-				unset($this->chunkPopulationRequestMap[$index]);
-				$promise->resolve($chunk);
+				$promise = $this->chunkPopulationRequestMap[$index] ?? null;
+				if($promise !== null){
+					unset($this->chunkPopulationRequestMap[$index]);
+					$promise->resolve($chunk);
+				}else{
+					//Handlers of ChunkPopulateEvent, ChunkLoadEvent, or just ChunkListeners can cause this
+					$this->logger->debug("Unable to resolve population promise for chunk x=$x,z=$z - populated chunk was forcibly unloaded while setting modified chunks");
+				}
 			}else{
 				//request failed, stick it back on the queue
 				//we didn't resolve the promise or touch it in any way, so any fake chunk loaders are still valid and
