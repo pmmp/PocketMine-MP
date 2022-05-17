@@ -46,7 +46,7 @@ jobs:
         run: curl -sS https://getcomposer.org/installer | php
 
       - name: Restore Composer package cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/composer/files
@@ -84,7 +84,7 @@ jobs:
         run: curl -sS https://getcomposer.org/installer | php
 
       - name: Restore Composer package cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/composer/files
@@ -124,7 +124,7 @@ jobs:
         run: curl -sS https://getcomposer.org/installer | php
 
       - name: Restore Composer package cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/composer/files
@@ -162,7 +162,7 @@ jobs:
         run: curl -sS https://getcomposer.org/installer | php
 
       - name: Restore Composer package cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/composer/files
