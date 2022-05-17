@@ -69,10 +69,6 @@ use function strtolower;
  * Manages all the plugins
  */
 class PluginManager{
-
-	/** @var Server */
-	private $server;
-
 	/** @var Plugin[] */
 	protected $plugins = [];
 
@@ -87,14 +83,11 @@ class PluginManager{
 	 */
 	protected $fileAssociations = [];
 
-	/** @var string|null */
-	private $pluginDataDirectory;
-	/** @var PluginGraylist|null */
-	private $graylist;
-
-	public function __construct(Server $server, ?string $pluginDataDirectory, ?PluginGraylist $graylist = null){
-		$this->server = $server;
-		$this->pluginDataDirectory = $pluginDataDirectory;
+	public function __construct(
+		private Server $server,
+		private ?string $pluginDataDirectory,
+		private ?PluginGraylist $graylist = null
+	){
 		if($this->pluginDataDirectory !== null){
 			if(!file_exists($this->pluginDataDirectory)){
 				@mkdir($this->pluginDataDirectory, 0777, true);
@@ -102,8 +95,6 @@ class PluginManager{
 				throw new \RuntimeException("Plugin data path $this->pluginDataDirectory exists and is not a directory");
 			}
 		}
-
-		$this->graylist = $graylist;
 	}
 
 	public function getPlugin(string $name) : ?Plugin{
