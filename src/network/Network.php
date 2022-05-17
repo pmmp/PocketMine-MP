@@ -28,6 +28,7 @@ namespace pocketmine\network;
 
 use pocketmine\event\server\NetworkInterfaceRegisterEvent;
 use pocketmine\event\server\NetworkInterfaceUnregisterEvent;
+use pocketmine\utils\Utils;
 use function base64_encode;
 use function get_class;
 use function preg_match;
@@ -45,7 +46,10 @@ class Network{
 	/** @var RawPacketHandler[] */
 	private $rawPacketHandlers = [];
 
-	/** @var int[] */
+	/**
+	 * @var int[]
+	 * @phpstan-var array<string, int>
+	 */
 	private $bannedIps = [];
 
 	/** @var BidirectionalBandwidthStatsTracker */
@@ -103,7 +107,7 @@ class Network{
 			if($interface instanceof AdvancedNetworkInterface){
 				$this->advancedInterfaces[$hash] = $interface;
 				$interface->setNetwork($this);
-				foreach($this->bannedIps as $ip => $until){
+				foreach(Utils::stringifyKeys($this->bannedIps) as $ip => $until){
 					$interface->blockAddress($ip);
 				}
 				foreach($this->rawPacketHandlers as $handler){
