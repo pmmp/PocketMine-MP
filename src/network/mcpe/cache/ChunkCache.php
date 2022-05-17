@@ -39,7 +39,7 @@ use function strlen;
  */
 class ChunkCache implements ChunkListener{
 	/** @var self[][] */
-	private static $instances = [];
+	private static array $instances = [];
 
 	/**
 	 * Fetches the ChunkCache instance for the given world. This lazily creates cache systems as needed.

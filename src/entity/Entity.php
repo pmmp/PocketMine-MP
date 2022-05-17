@@ -80,8 +80,7 @@ abstract class Entity{
 	public const MOTION_THRESHOLD = 0.00001;
 	protected const STEP_CLIP_MULTIPLIER = 0.4;
 
-	/** @var int */
-	private static $entityCount = 1;
+	private static int $entityCount = 1;
 
 	/**
 	 * Returns a new runtime entity ID for a new entity.
