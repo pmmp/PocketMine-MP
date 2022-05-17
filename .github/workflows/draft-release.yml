@@ -18,7 +18,7 @@ jobs:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.12.0
+        uses: shivammathur/setup-php@2.18.1
         with:
           php-version: 8.0
 
