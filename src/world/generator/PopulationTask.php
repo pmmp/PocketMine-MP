@@ -41,10 +41,6 @@ use function igbinary_unserialize;
 class PopulationTask extends AsyncTask{
 	private const TLS_KEY_ON_COMPLETION = "onCompletion";
 
-	private int $worldId;
-	private int $chunkX;
-	private int $chunkZ;
-
 	private ?string $chunk;
 
 	private string $adjacentChunks;
@@ -54,10 +50,14 @@ class PopulationTask extends AsyncTask{
 	 * @phpstan-param array<int, Chunk|null> $adjacentChunks
 	 * @phpstan-param OnCompletion $onCompletion
 	 */
-	public function __construct(int $worldId, int $chunkX, int $chunkZ, ?Chunk $chunk, array $adjacentChunks, \Closure $onCompletion){
-		$this->worldId = $worldId;
-		$this->chunkX = $chunkX;
-		$this->chunkZ = $chunkZ;
+	public function __construct(
+		private int $worldId,
+		private int $chunkX,
+		private int $chunkZ,
+		?Chunk $chunk,
+		array $adjacentChunks,
+		\Closure $onCompletion
+	){
 		$this->chunk = $chunk !== null ? FastChunkSerializer::serializeTerrain($chunk) : null;
 
 		$this->adjacentChunks = igbinary_serialize(array_map(

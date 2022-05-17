@@ -32,20 +32,16 @@ use function is_string;
 use function strtolower;
 
 final class ServerConfigGroup{
-
-	private Config $pocketmineYml;
-	private Config $serverProperties;
-
 	/**
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
 	private array $propertyCache = [];
 
-	public function __construct(Config $pocketmineYml, Config $serverProperties){
-		$this->pocketmineYml = $pocketmineYml;
-		$this->serverProperties = $serverProperties;
-	}
+	public function __construct(
+		private Config $pocketmineYml,
+		private Config $serverProperties
+	){}
 
 	/**
 	 * @param mixed  $defaultValue

@@ -30,16 +30,15 @@ use function is_resource;
 use function touch;
 
 final class MainLoggerThread extends \Thread{
-
-	private string $logFile;
 	private \Threaded $buffer;
 	private bool $syncFlush = false;
 	private bool $shutdown = false;
 
-	public function __construct(string $logFile){
+	public function __construct(
+		private string $logFile
+	){
 		$this->buffer = new \Threaded();
-		touch($logFile);
-		$this->logFile = $logFile;
+		touch($this->logFile);
 	}
 
 	public function write(string $line) : void{
