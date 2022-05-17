@@ -96,7 +96,7 @@ class Fence extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		if($facing === Facing::UP || $facing === Facing::DOWN){
+		if(Facing::axis($facing) === Axis::Y){
 			return SupportType::CENTER();
 		}
 		return SupportType::NONE();
