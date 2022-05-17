@@ -26,8 +26,7 @@ namespace pocketmine\item;
 use pocketmine\block\utils\TreeType;
 
 class Boat extends Item{
-	/** @var TreeType */
-	private $woodType;
+	private TreeType $woodType;
 
 	public function __construct(ItemIdentifier $identifier, string $name, TreeType $woodType){
 		parent::__construct($identifier, $name);

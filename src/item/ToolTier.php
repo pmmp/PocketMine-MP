@@ -52,21 +52,14 @@ final class ToolTier{
 		);
 	}
 
-	/** @var int */
-	private $harvestLevel;
-	/** @var int */
-	private $maxDurability;
-	/** @var int */
-	private $baseAttackPoints;
-	/** @var int */
-	private $baseEfficiency;
-
-	private function __construct(string $name, int $harvestLevel, int $maxDurability, int $baseAttackPoints, int $baseEfficiency){
+	private function __construct(
+		string $name,
+		private int $harvestLevel,
+		private int $maxDurability,
+		private int $baseAttackPoints,
+		private int $baseEfficiency
+	){
 		$this->Enum___construct($name);
-		$this->harvestLevel = $harvestLevel;
-		$this->maxDurability = $maxDurability;
-		$this->baseAttackPoints = $baseAttackPoints;
-		$this->baseEfficiency = $baseEfficiency;
 	}
 
 	public function getHarvestLevel() : int{
