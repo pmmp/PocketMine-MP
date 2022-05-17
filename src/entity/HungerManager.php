@@ -32,25 +32,17 @@ use function min;
 
 class HungerManager{
 
-	/** @var Human */
-	private $entity;
+	private Attribute $hungerAttr;
+	private Attribute $saturationAttr;
+	private Attribute $exhaustionAttr;
 
-	/** @var Attribute */
-	private $hungerAttr;
-	/** @var Attribute */
-	private $saturationAttr;
-	/** @var Attribute */
-	private $exhaustionAttr;
+	private int $foodTickTimer = 0;
 
-	/** @var int */
-	private $foodTickTimer = 0;
+	private bool $enabled = true;
 
-	/** @var bool */
-	private $enabled = true;
-
-	public function __construct(Human $entity){
-		$this->entity = $entity;
-
+	public function __construct(
+		private Human $entity
+	){
 		$this->hungerAttr = self::fetchAttribute($entity, Attribute::HUNGER);
 		$this->saturationAttr = self::fetchAttribute($entity, Attribute::SATURATION);
 		$this->exhaustionAttr = self::fetchAttribute($entity, Attribute::EXHAUSTION);

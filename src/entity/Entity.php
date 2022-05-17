@@ -96,8 +96,7 @@ abstract class Entity{
 	/** @var int */
 	protected $id;
 
-	/** @var EntityMetadataCollection */
-	private $networkProperties;
+	private EntityMetadataCollection $networkProperties;
 
 	/** @var EntityDamageEvent|null */
 	protected $lastDamageCause = null;
@@ -124,10 +123,8 @@ abstract class Entity{
 	/** @var EntitySizeInfo */
 	public $size;
 
-	/** @var float */
-	private $health = 20.0;
-	/** @var int */
-	private $maxHealth = 20;
+	private float $health = 20.0;
+	private int $maxHealth = 20;
 
 	/** @var float */
 	protected $ySize = 0.0;
@@ -150,8 +147,7 @@ abstract class Entity{
 	/** @var bool */
 	protected $isStatic = false;
 
-	/** @var bool */
-	private $savedWithChunk = true;
+	private bool $savedWithChunk = true;
 
 	/** @var bool */
 	public $isCollided = false;
@@ -181,8 +177,7 @@ abstract class Entity{
 	/** @var bool */
 	protected $closed = false;
 	private bool $closeInFlight = false;
-	/** @var bool */
-	private $needsDespawn = false;
+	private bool $needsDespawn = false;
 
 	/** @var TimingsHandler */
 	protected $timings;
