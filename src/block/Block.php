@@ -645,6 +645,6 @@ class Block{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
+		return SupportType::FULL();
 	}
 }
