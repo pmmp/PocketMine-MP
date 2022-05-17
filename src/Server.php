@@ -132,6 +132,7 @@ use function get_class;
 use function ini_set;
 use function is_array;
 use function is_dir;
+use function is_object;
 use function is_resource;
 use function is_string;
 use function json_decode;
@@ -1002,13 +1003,29 @@ class Server{
 
 			register_shutdown_function([$this, "crashDump"]);
 
-			$this->pluginManager->loadPlugins($this->pluginPath);
-			$this->enablePlugins(PluginEnableOrder::STARTUP());
-
-			if(!$this->startupPrepareWorlds()){
+			$loadErrorCount = 0;
+			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
+			if($loadErrorCount > 0){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someLoadErrors()));
+				$this->forceShutdown();
 				return;
 			}
-			$this->enablePlugins(PluginEnableOrder::POSTWORLD());
+			if(!$this->enablePlugins(PluginEnableOrder::STARTUP())){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
+				$this->forceShutdown();
+				return;
+			}
+
+			if(!$this->startupPrepareWorlds()){
+				$this->forceShutdown();
+				return;
+			}
+
+			if(!$this->enablePlugins(PluginEnableOrder::POSTWORLD())){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
+				$this->forceShutdown();
+				return;
+			}
 
 			if(!$this->startupPrepareNetworkInterfaces()){
 				$this->forceShutdown();
@@ -1072,13 +1089,21 @@ class Server{
 			return $generatorEntry->getGeneratorClass();
 		};
 
+		$anyWorldFailedToLoad = false;
+
 		foreach((array) $this->configGroup->getProperty("worlds", []) as $name => $options){
 			if($options === null){
 				$options = [];
 			}elseif(!is_array($options)){
+				//TODO: this probably should be an error
 				continue;
 			}
-			if(!$this->worldManager->loadWorld($name, true) && !$this->worldManager->isWorldGenerated($name)){
+			if(!$this->worldManager->loadWorld($name, true)){
+				if($this->worldManager->isWorldGenerated($name)){
+					//allow checking if other worlds are loadable, so the user gets all the errors in one go
+					$anyWorldFailedToLoad = true;
+					continue;
+				}
 				$creationOptions = WorldCreationOptions::create();
 				//TODO: error checking
 
@@ -1087,6 +1112,7 @@ class Server{
 
 				$generatorClass = $getGenerator($generatorName, $generatorOptions, $name);
 				if($generatorClass === null){
+					$anyWorldFailedToLoad = true;
 					continue;
 				}
 				$creationOptions->setGeneratorClass($generatorClass);
@@ -1114,33 +1140,38 @@ class Server{
 				$default = "world";
 				$this->configGroup->setConfigString("level-name", "world");
 			}
-			if(!$this->worldManager->loadWorld($default, true) && !$this->worldManager->isWorldGenerated($default)){
+			if(!$this->worldManager->loadWorld($default, true)){
+				if($this->worldManager->isWorldGenerated($default)){
+					$this->getLogger()->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_defaultError()));
+
+					return false;
+				}
 				$generatorName = $this->configGroup->getConfigString("level-type");
 				$generatorOptions = $this->configGroup->getConfigString("generator-settings");
 				$generatorClass = $getGenerator($generatorName, $generatorOptions, $default);
-				if($generatorClass !== null){
-					$creationOptions = WorldCreationOptions::create()
-						->setGeneratorClass($generatorClass)
-						->setGeneratorOptions($generatorOptions);
-					$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
-					if($convertedSeed !== null){
-						$creationOptions->setSeed($convertedSeed);
-					}
-					$this->worldManager->generateWorld($default, $creationOptions);
+
+				if($generatorClass === null){
+					$this->getLogger()->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_defaultError()));
+					return false;
 				}
+				$creationOptions = WorldCreationOptions::create()
+					->setGeneratorClass($generatorClass)
+					->setGeneratorOptions($generatorOptions);
+				$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
+				if($convertedSeed !== null){
+					$creationOptions->setSeed($convertedSeed);
+				}
+				$this->worldManager->generateWorld($default, $creationOptions);
 			}
 
 			$world = $this->worldManager->getWorldByName($default);
 			if($world === null){
-				$this->getLogger()->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_defaultError()));
-				$this->forceShutdown();
-
-				return false;
+				throw new AssumptionFailedError("We just loaded/generated the default world, so it must exist");
 			}
 			$this->worldManager->setDefaultWorld($world);
 		}
 
-		return true;
+		return !$anyWorldFailedToLoad;
 	}
 
 	private function startupPrepareConnectableNetworkInterfaces(string $ip, int $port, bool $ipV6, bool $useQuery) : bool{
@@ -1379,16 +1410,21 @@ class Server{
 		}
 	}
 
-	public function enablePlugins(PluginEnableOrder $type) : void{
+	public function enablePlugins(PluginEnableOrder $type) : bool{
+		$allSuccess = true;
 		foreach($this->pluginManager->getPlugins() as $plugin){
 			if(!$plugin->isEnabled() && $plugin->getDescription()->getOrder()->equals($type)){
-				$this->pluginManager->enablePlugin($plugin);
+				if(!$this->pluginManager->enablePlugin($plugin)){
+					$allSuccess = false;
+				}
 			}
 		}
 
 		if($type->equals(PluginEnableOrder::POSTWORLD())){
 			$this->commandMap->registerServerAliases();
 		}
+
+		return $allSuccess;
 	}
 
 	/**
@@ -1428,7 +1464,7 @@ class Server{
 		}
 
 		if($this->isRunning){
-			$this->logger->emergency("Forcing server shutdown");
+			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_forcingShutdown()));
 		}
 		try{
 			if(!$this->isRunning()){
@@ -1606,7 +1642,7 @@ class Server{
 						"reportPaste" => base64_encode($dump->getEncodedData())
 					], 10, [], $postUrlError);
 
-					if($reply !== null && ($data = json_decode($reply->getBody())) !== null){
+					if($reply !== null && is_object($data = json_decode($reply->getBody()))){
 						if(isset($data->crashId) && isset($data->crashUrl)){
 							$reportId = $data->crashId;
 							$reportUrl = $data->crashUrl;

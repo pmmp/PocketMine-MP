@@ -174,7 +174,7 @@ class UPnP{
 			'/upnp:controlURL'
 		), "xpath query is borked");
 
-		if(count($xpathResult) === 0){
+		if($xpathResult === null || count($xpathResult) === 0){
 			throw new UPnPException("Your router does not support portforwarding");
 		}
 		$controlURL = (string) $xpathResult[0];

@@ -34,7 +34,7 @@ final class BiomeRegistry{
 	 * @var Biome[]|\SplFixedArray
 	 * @phpstan-var \SplFixedArray<Biome>
 	 */
-	private $biomes;
+	private \SplFixedArray $biomes;
 
 	public function __construct(){
 		$this->biomes = new \SplFixedArray(Biome::MAX_BIOMES);

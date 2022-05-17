@@ -37,18 +37,16 @@ use function count;
 class EntityShootBowEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Item */
-	private $bow;
-	/** @var Entity */
-	private $projectile;
-	/** @var float */
-	private $force;
+	private Entity $projectile;
 
-	public function __construct(Living $shooter, Item $bow, Projectile $projectile, float $force){
+	public function __construct(
+		Living $shooter,
+		private Item $bow,
+		Projectile $projectile,
+		private float $force
+	){
 		$this->entity = $shooter;
-		$this->bow = $bow;
 		$this->projectile = $projectile;
-		$this->force = $force;
 	}
 
 	/**

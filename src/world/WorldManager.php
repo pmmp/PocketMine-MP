@@ -55,33 +55,19 @@ use function strval;
 use function trim;
 
 class WorldManager{
-	/** @var string */
-	private $dataPath;
-
-	/** @var WorldProviderManager */
-	private $providerManager;
-
 	/** @var World[] */
-	private $worlds = [];
-	/** @var World|null */
-	private $defaultWorld;
+	private array $worlds = [];
+	private ?World $defaultWorld = null;
 
-	/** @var Server */
-	private $server;
+	private bool $autoSave = true;
+	private int $autoSaveTicks = 6000;
+	private int $autoSaveTicker = 0;
 
-	/** @var bool */
-	private $autoSave = true;
-	/** @var int */
-	private $autoSaveTicks = 6000;
-
-	/** @var int */
-	private $autoSaveTicker = 0;
-
-	public function __construct(Server $server, string $dataPath, WorldProviderManager $providerManager){
-		$this->server = $server;
-		$this->dataPath = $dataPath;
-		$this->providerManager = $providerManager;
-	}
+	public function __construct(
+		private Server $server,
+		private string $dataPath,
+		private WorldProviderManager $providerManager
+	){}
 
 	public function getProviderManager() : WorldProviderManager{
 		return $this->providerManager;

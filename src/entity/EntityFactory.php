@@ -27,10 +27,11 @@ use DaveRandom\CallbackValidator\CallbackType;
 use DaveRandom\CallbackValidator\ParameterType;
 use DaveRandom\CallbackValidator\ReturnType;
 use pocketmine\block\BlockFactory;
-use pocketmine\data\bedrock\EntityLegacyIds;
+use pocketmine\data\bedrock\EntityLegacyIds as LegacyIds;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\data\bedrock\PotionTypeIds;
 use pocketmine\data\SavedDataLoadingException;
+use pocketmine\entity\EntityDataHelper as Helper;
 use pocketmine\entity\object\ExperienceOrb;
 use pocketmine\entity\object\FallingBlock;
 use pocketmine\entity\object\ItemEntity;
@@ -81,20 +82,20 @@ final class EntityFactory{
 		//TODO: index them by version to allow proper multi-save compatibility
 
 		$this->register(Arrow::class, function(World $world, CompoundTag $nbt) : Arrow{
-			return new Arrow(EntityDataHelper::parseLocation($nbt, $world), null, $nbt->getByte(Arrow::TAG_CRIT, 0) === 1, $nbt);
-		}, ['Arrow', 'minecraft:arrow'], EntityLegacyIds::ARROW);
+			return new Arrow(Helper::parseLocation($nbt, $world), null, $nbt->getByte(Arrow::TAG_CRIT, 0) === 1, $nbt);
+		}, ['Arrow', 'minecraft:arrow'], LegacyIds::ARROW);
 
 		$this->register(Egg::class, function(World $world, CompoundTag $nbt) : Egg{
-			return new Egg(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
-		}, ['Egg', 'minecraft:egg'], EntityLegacyIds::EGG);
+			return new Egg(Helper::parseLocation($nbt, $world), null, $nbt);
+		}, ['Egg', 'minecraft:egg'], LegacyIds::EGG);
 
 		$this->register(EnderPearl::class, function(World $world, CompoundTag $nbt) : EnderPearl{
-			return new EnderPearl(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
-		}, ['ThrownEnderpearl', 'minecraft:ender_pearl'], EntityLegacyIds::ENDER_PEARL);
+			return new EnderPearl(Helper::parseLocation($nbt, $world), null, $nbt);
+		}, ['ThrownEnderpearl', 'minecraft:ender_pearl'], LegacyIds::ENDER_PEARL);
 
 		$this->register(ExperienceBottle::class, function(World $world, CompoundTag $nbt) : ExperienceBottle{
-			return new ExperienceBottle(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
-		}, ['ThrownExpBottle', 'minecraft:xp_bottle'], EntityLegacyIds::XP_BOTTLE);
+			return new ExperienceBottle(Helper::parseLocation($nbt, $world), null, $nbt);
+		}, ['ThrownExpBottle', 'minecraft:xp_bottle'], LegacyIds::XP_BOTTLE);
 
 		$this->register(ExperienceOrb::class, function(World $world, CompoundTag $nbt) : ExperienceOrb{
 			$value = 1;
@@ -104,12 +105,12 @@ final class EntityFactory{
 				$value = $valuePeTag->getValue();
 			}
 
-			return new ExperienceOrb(EntityDataHelper::parseLocation($nbt, $world), $value, $nbt);
-		}, ['XPOrb', 'minecraft:xp_orb'], EntityLegacyIds::XP_ORB);
+			return new ExperienceOrb(Helper::parseLocation($nbt, $world), $value, $nbt);
+		}, ['XPOrb', 'minecraft:xp_orb'], LegacyIds::XP_ORB);
 
 		$this->register(FallingBlock::class, function(World $world, CompoundTag $nbt) : FallingBlock{
-			return new FallingBlock(EntityDataHelper::parseLocation($nbt, $world), FallingBlock::parseBlockNBT(BlockFactory::getInstance(), $nbt), $nbt);
-		}, ['FallingSand', 'minecraft:falling_block'], EntityLegacyIds::FALLING_BLOCK);
+			return new FallingBlock(Helper::parseLocation($nbt, $world), FallingBlock::parseBlockNBT(BlockFactory::getInstance(), $nbt), $nbt);
+		}, ['FallingSand', 'minecraft:falling_block'], LegacyIds::FALLING_BLOCK);
 
 		$this->register(ItemEntity::class, function(World $world, CompoundTag $nbt) : ItemEntity{
 			$itemTag = $nbt->getCompoundTag("Item");
@@ -121,8 +122,8 @@ final class EntityFactory{
 			if($item->isNull()){
 				throw new SavedDataLoadingException("Item is invalid");
 			}
-			return new ItemEntity(EntityDataHelper::parseLocation($nbt, $world), $item, $nbt);
-		}, ['Item', 'minecraft:item'], EntityLegacyIds::ITEM);
+			return new ItemEntity(Helper::parseLocation($nbt, $world), $item, $nbt);
+		}, ['Item', 'minecraft:item'], LegacyIds::ITEM);
 
 		$this->register(Painting::class, function(World $world, CompoundTag $nbt) : Painting{
 			$motive = PaintingMotive::getMotiveByName($nbt->getString("Motive"));
@@ -138,39 +139,39 @@ final class EntityFactory{
 				throw new SavedDataLoadingException("Missing facing info");
 			}
 
-			return new Painting(EntityDataHelper::parseLocation($nbt, $world), $blockIn, $facing, $motive, $nbt);
-		}, ['Painting', 'minecraft:painting'], EntityLegacyIds::PAINTING);
+			return new Painting(Helper::parseLocation($nbt, $world), $blockIn, $facing, $motive, $nbt);
+		}, ['Painting', 'minecraft:painting'], LegacyIds::PAINTING);
 
 		$this->register(PrimedTNT::class, function(World $world, CompoundTag $nbt) : PrimedTNT{
-			return new PrimedTNT(EntityDataHelper::parseLocation($nbt, $world), $nbt);
-		}, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt'], EntityLegacyIds::TNT);
+			return new PrimedTNT(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['PrimedTnt', 'PrimedTNT', 'minecraft:tnt'], LegacyIds::TNT);
 
 		$this->register(Snowball::class, function(World $world, CompoundTag $nbt) : Snowball{
-			return new Snowball(EntityDataHelper::parseLocation($nbt, $world), null, $nbt);
-		}, ['Snowball', 'minecraft:snowball'], EntityLegacyIds::SNOWBALL);
+			return new Snowball(Helper::parseLocation($nbt, $world), null, $nbt);
+		}, ['Snowball', 'minecraft:snowball'], LegacyIds::SNOWBALL);
 
 		$this->register(SplashPotion::class, function(World $world, CompoundTag $nbt) : SplashPotion{
 			$potionType = PotionTypeIdMap::getInstance()->fromId($nbt->getShort("PotionId", PotionTypeIds::WATER));
 			if($potionType === null){
 				throw new SavedDataLoadingException("No such potion type");
 			}
-			return new SplashPotion(EntityDataHelper::parseLocation($nbt, $world), null, $potionType, $nbt);
-		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], EntityLegacyIds::SPLASH_POTION);
+			return new SplashPotion(Helper::parseLocation($nbt, $world), null, $potionType, $nbt);
+		}, ['ThrownPotion', 'minecraft:potion', 'thrownpotion'], LegacyIds::SPLASH_POTION);
 
 		$this->register(Squid::class, function(World $world, CompoundTag $nbt) : Squid{
-			return new Squid(EntityDataHelper::parseLocation($nbt, $world), $nbt);
-		}, ['Squid', 'minecraft:squid'], EntityLegacyIds::SQUID);
+			return new Squid(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['Squid', 'minecraft:squid'], LegacyIds::SQUID);
 
 		$this->register(Villager::class, function(World $world, CompoundTag $nbt) : Villager{
-			return new Villager(EntityDataHelper::parseLocation($nbt, $world), $nbt);
-		}, ['Villager', 'minecraft:villager'], EntityLegacyIds::VILLAGER);
+			return new Villager(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['Villager', 'minecraft:villager'], LegacyIds::VILLAGER);
 
 		$this->register(Zombie::class, function(World $world, CompoundTag $nbt) : Zombie{
-			return new Zombie(EntityDataHelper::parseLocation($nbt, $world), $nbt);
-		}, ['Zombie', 'minecraft:zombie'], EntityLegacyIds::ZOMBIE);
+			return new Zombie(Helper::parseLocation($nbt, $world), $nbt);
+		}, ['Zombie', 'minecraft:zombie'], LegacyIds::ZOMBIE);
 
 		$this->register(Human::class, function(World $world, CompoundTag $nbt) : Human{
-			return new Human(EntityDataHelper::parseLocation($nbt, $world), Human::parseSkinNBT($nbt), $nbt);
+			return new Human(Helper::parseLocation($nbt, $world), Human::parseSkinNBT($nbt), $nbt);
 		}, ['Human']);
 
 		PaintingMotive::init();

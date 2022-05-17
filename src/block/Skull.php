@@ -36,12 +36,14 @@ use function assert;
 use function floor;
 
 class Skull extends Flowable{
+	public const MIN_ROTATION = 0;
+	public const MAX_ROTATION = 15;
 
 	protected SkullType $skullType;
 
 	protected int $facing = Facing::NORTH;
 	protected bool $noDrops = false;
-	protected int $rotation = 0; //TODO: split this into floor skull and wall skull handling
+	protected int $rotation = self::MIN_ROTATION; //TODO: split this into floor skull and wall skull handling
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->skullType = SkullType::SKELETON(); //TODO: this should be a parameter
@@ -105,8 +107,8 @@ class Skull extends Flowable{
 
 	/** @return $this */
 	public function setRotation(int $rotation) : self{
-		if($rotation < 0 || $rotation > 15){
-			throw new \InvalidArgumentException("Rotation must be a value between 0 and 15");
+		if($rotation < self::MIN_ROTATION || $rotation > self::MAX_ROTATION){
+			throw new \InvalidArgumentException("Rotation must be in range " . self::MIN_ROTATION . " ... " . self::MAX_ROTATION);
 		}
 		$this->rotation = $rotation;
 		return $this;

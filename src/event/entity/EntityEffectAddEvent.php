@@ -30,12 +30,8 @@ use pocketmine\entity\Entity;
  * Called when an effect is added to an Entity.
  */
 class EntityEffectAddEvent extends EntityEffectEvent{
-	/** @var EffectInstance|null */
-	private $oldEffect;
-
-	public function __construct(Entity $entity, EffectInstance $effect, ?EffectInstance $oldEffect = null){
+	public function __construct(Entity $entity, EffectInstance $effect, private ?EffectInstance $oldEffect = null){
 		parent::__construct($entity, $effect);
-		$this->oldEffect = $oldEffect;
 	}
 
 	/**

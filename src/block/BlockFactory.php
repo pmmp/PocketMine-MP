@@ -74,7 +74,7 @@ class BlockFactory{
 	 * @var \SplFixedArray|Block[]
 	 * @phpstan-var \SplFixedArray<Block>
 	 */
-	private $fullList;
+	private \SplFixedArray $fullList;
 
 	/**
 	 * @var \SplFixedArray|int[]
@@ -86,22 +86,22 @@ class BlockFactory{
 	 * @var \SplFixedArray|int[]
 	 * @phpstan-var \SplFixedArray<int>
 	 */
-	public $light;
+	public \SplFixedArray $light;
 	/**
 	 * @var \SplFixedArray|int[]
 	 * @phpstan-var \SplFixedArray<int>
 	 */
-	public $lightFilter;
+	public \SplFixedArray $lightFilter;
 	/**
 	 * @var \SplFixedArray|bool[]
 	 * @phpstan-var \SplFixedArray<bool>
 	 */
-	public $blocksDirectSkyLight;
+	public \SplFixedArray $blocksDirectSkyLight;
 	/**
 	 * @var \SplFixedArray|float[]
 	 * @phpstan-var \SplFixedArray<float>
 	 */
-	public $blastResistance;
+	public \SplFixedArray $blastResistance;
 
 	public function __construct(){
 		$this->fullList = new \SplFixedArray(1024 << Block::INTERNAL_METADATA_BITS);
@@ -394,6 +394,7 @@ class BlockFactory{
 		$this->registerAllMeta(new Stair(new BID(Ids::STONE_BRICK_STAIRS, 0), "Stone Brick Stairs", $stoneBreakInfo));
 		$this->registerAllMeta(new Stair(new BID(Ids::MOSSY_STONE_BRICK_STAIRS, 0), "Mossy Stone Brick Stairs", $stoneBreakInfo));
 		$this->registerAllMeta(new StoneButton(new BID(Ids::STONE_BUTTON, 0), "Stone Button", new BlockBreakInfo(0.5, BlockToolType::PICKAXE)));
+		$this->registerAllMeta(new Stonecutter(new BID(Ids::STONECUTTER_BLOCK, 0, ItemIds::STONECUTTER_BLOCK), "Stonecutter", new BlockBreakInfo(3.5, BlockToolType::PICKAXE)));
 		$this->registerAllMeta(new StonePressurePlate(new BID(Ids::STONE_PRESSURE_PLATE, 0), "Stone Pressure Plate", new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 
 		//TODO: in the future this won't be the same for all the types
@@ -434,7 +435,7 @@ class BlockFactory{
 			$this->registerSlabWithDoubleHighBitsRemapping($slabType);
 		}
 
-		$this->registerAllMeta(new Opaque(new BID(Ids::STONECUTTER, 0), "Stonecutter", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
+		$this->registerAllMeta(new Opaque(new BID(Ids::STONECUTTER, 0), "Legacy Stonecutter", new BlockBreakInfo(3.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));
 		$this->registerAllMeta(new Sugarcane(new BID(Ids::REEDS_BLOCK, 0, ItemIds::REEDS), "Sugarcane", BlockBreakInfo::instant()));
 		$this->registerAllMeta(new SweetBerryBush(new BID(Ids::SWEET_BERRY_BUSH, 0, ItemIds::SWEET_BERRIES), "Sweet Berry Bush", BlockBreakInfo::instant()));
 		$this->registerAllMeta(new TNT(new BID(Ids::TNT, 0), "TNT", BlockBreakInfo::instant()));
@@ -644,7 +645,6 @@ class BlockFactory{
 		//TODO: minecraft:seagrass
 		//TODO: minecraft:smithing_table
 		//TODO: minecraft:sticky_piston
-		//TODO: minecraft:stonecutter_block
 		//TODO: minecraft:structure_block
 		//TODO: minecraft:turtle_egg
 		//endregion

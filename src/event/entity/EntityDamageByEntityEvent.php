@@ -31,17 +31,13 @@ use pocketmine\entity\Living;
  * Called when an entity takes damage from another entity.
  */
 class EntityDamageByEntityEvent extends EntityDamageEvent{
-	/** @var int */
-	private $damagerEntityId;
-	/** @var float */
-	private $knockBack;
+	private int $damagerEntityId;
 
 	/**
 	 * @param float[] $modifiers
 	 */
-	public function __construct(Entity $damager, Entity $entity, int $cause, float $damage, array $modifiers = [], float $knockBack = 0.4){
+	public function __construct(Entity $damager, Entity $entity, int $cause, float $damage, array $modifiers = [], private float $knockBack = 0.4){
 		$this->damagerEntityId = $damager->getId();
-		$this->knockBack = $knockBack;
 		parent::__construct($entity, $cause, $damage, $modifiers);
 		$this->addAttackerModifiers($damager);
 	}
