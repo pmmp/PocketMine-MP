@@ -139,13 +139,15 @@ class FlowerPot extends Flowable{
 			$this->setPlant(null);
 			$this->position->getWorld()->setBlock($this->position, $this);
 			return true;
+		}elseif($this->isValidPlant($plant)){
+			$this->setPlant($plant);
+			$item->pop();
+			$this->position->getWorld()->setBlock($this->position, $this);
+
+			return true;
 		}
 
-		$this->setPlant($plant);
-		$item->pop();
-		$this->position->getWorld()->setBlock($this->position, $this);
-
-		return true;
+		return false;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
