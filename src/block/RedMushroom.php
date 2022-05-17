@@ -30,7 +30,6 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class RedMushroom extends Flowable{
-
 	public function ticksRandomly() : bool{
 		return true;
 	}
@@ -42,11 +41,18 @@ class RedMushroom extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		if(!$down->isTransparent()){
+		if($this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;
+	}
+
+	protected function canBeSupportedBy(Block $block) : bool{
+		$position = $block->getPosition();
+		$lightLevel = $position->getWorld()->getFullLightAt($position->x, $position->y, $position->z);
+		$id = $block->getId();
+		// TODO: nylium support
+		return ($lightLevel <= 12 && !$block->isTransparent()) || $id === BlockLegacyIds::MYCELIUM || $id === BlockLegacyIds::PODZOL;
 	}
 }
