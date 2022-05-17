@@ -47,4 +47,12 @@ final class SupportType{
 			new self("none")
 		);
 	}
+
+	public function hasEdgeSupport() : bool{
+		return $this->equals(self::EDGE()) || $this->equals(self::FULL());
+	}
+
+	public function hasCenterSupport() : bool{
+		return $this->equals(self::CENTER()) || $this->equals(self::FULL());
+	}
 }
