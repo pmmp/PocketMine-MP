@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\LeverFacing;
-use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\Facing;

@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AnyFacingTrait;
 use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;

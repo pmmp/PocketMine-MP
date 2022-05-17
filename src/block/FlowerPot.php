@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\FlowerPot as TileFlowerPot;
-use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
