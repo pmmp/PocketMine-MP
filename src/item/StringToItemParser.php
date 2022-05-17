@@ -869,7 +869,8 @@ final class StringToItemParser extends StringToTParser{
 		$result->registerBlock("stone_stairs", fn() => VanillaBlocks::STONE_STAIRS());
 		$result->registerBlock("stone_wall", fn() => VanillaBlocks::COBBLESTONE_WALL());
 		$result->registerBlock("stonebrick", fn() => VanillaBlocks::STONE_BRICKS());
-		$result->registerBlock("stonecutter", fn() => VanillaBlocks::LEGACY_STONECUTTER());
+		$result->registerBlock("stonecutter", fn() => VanillaBlocks::STONECUTTER());
+		$result->registerBlock("stonecutter_block", fn() => VanillaBlocks::STONECUTTER());
 		$result->registerBlock("stripped_acacia_log", fn() => VanillaBlocks::STRIPPED_ACACIA_LOG());
 		$result->registerBlock("stripped_acacia_wood", fn() => VanillaBlocks::STRIPPED_ACACIA_WOOD());
 		$result->registerBlock("stripped_birch_log", fn() => VanillaBlocks::STRIPPED_BIRCH_LOG());
