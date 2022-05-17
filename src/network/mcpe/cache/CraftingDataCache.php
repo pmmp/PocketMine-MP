@@ -54,7 +54,7 @@ final class CraftingDataCache{
 	 * @var CraftingDataPacket[]
 	 * @phpstan-var array<int, CraftingDataPacket>
 	 */
-	private $caches = [];
+	private array $caches = [];
 
 	public function getCache(CraftingManager $manager) : CraftingDataPacket{
 		$id = spl_object_id($manager);

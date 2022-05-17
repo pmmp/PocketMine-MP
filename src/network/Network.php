@@ -38,35 +38,28 @@ use const PHP_INT_MAX;
 
 class Network{
 	/** @var NetworkInterface[] */
-	private $interfaces = [];
+	private array $interfaces = [];
 
 	/** @var AdvancedNetworkInterface[] */
-	private $advancedInterfaces = [];
+	private array $advancedInterfaces = [];
 
 	/** @var RawPacketHandler[] */
-	private $rawPacketHandlers = [];
+	private array $rawPacketHandlers = [];
 
 	/**
 	 * @var int[]
 	 * @phpstan-var array<string, int>
 	 */
-	private $bannedIps = [];
+	private array $bannedIps = [];
 
-	/** @var BidirectionalBandwidthStatsTracker */
-	private $bandwidthTracker;
+	private BidirectionalBandwidthStatsTracker $bandwidthTracker;
+	private string $name;
+	private NetworkSessionManager$sessionManager;
 
-	/** @var string */
-	private $name;
-
-	/** @var NetworkSessionManager */
-	private $sessionManager;
-
-	/** @var \Logger */
-	private $logger;
-
-	public function __construct(\Logger $logger){
+	public function __construct(
+		private \Logger $logger
+	){
 		$this->sessionManager = new NetworkSessionManager();
-		$this->logger = $logger;
 		$this->bandwidthTracker = new BidirectionalBandwidthStatsTracker(5);
 	}
 

@@ -31,13 +31,11 @@ class CompressBatchPromise{
 	 * @var \Closure[]
 	 * @phpstan-var (\Closure(self) : void)[]
 	 */
-	private $callbacks = [];
+	private array $callbacks = [];
 
-	/** @var string|null */
-	private $result = null;
+	private ?string $result = null;
 
-	/** @var bool */
-	private $cancelled = false;
+	private bool $cancelled = false;
 
 	/**
 	 * @phpstan-param \Closure(self) : void ...$callbacks

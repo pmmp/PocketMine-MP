@@ -40,21 +40,17 @@ use function strlen;
 use function substr;
 
 class QueryHandler implements RawPacketHandler{
-	/** @var Server */
-	private $server;
-	/** @var string */
-	private $lastToken;
-	/** @var string */
-	private $token;
+	private string $lastToken;
+	private string $token;
 
-	/** @var \Logger */
-	private $logger;
+	private \Logger $logger;
 
 	public const HANDSHAKE = 9;
 	public const STATISTICS = 0;
 
-	public function __construct(Server $server){
-		$this->server = $server;
+	public function __construct(
+		private Server $server
+	){
 		$this->logger = new \PrefixedLogger($this->server->getLogger(), "Query Handler");
 
 		/*
@@ -66,7 +62,7 @@ class QueryHandler implements RawPacketHandler{
 		packets can conflict with the MCPE ones.
 		*/
 
-		$this->regenerateToken();
+		$this->token = $this->generateToken();
 		$this->lastToken = $this->token;
 	}
 
@@ -74,9 +70,13 @@ class QueryHandler implements RawPacketHandler{
 		return '/^\xfe\xfd.+$/s';
 	}
 
+	private function generateToken() : string{
+		return random_bytes(16);
+	}
+
 	public function regenerateToken() : void{
 		$this->lastToken = $this->token;
-		$this->token = random_bytes(16);
+		$this->token = $this->generateToken();
 	}
 
 	public static function getTokenString(string $token, string $salt) : int{

@@ -62,31 +62,21 @@ class RakLibInterface implements ServerEventListener, AdvancedNetworkInterface{
 
 	private const MCPE_RAKNET_PACKET_ID = "\xfe";
 
-	/** @var Server */
-	private $server;
+	private Server $server;
+	private Network $network;
 
-	/** @var Network */
-	private $network;
-
-	/** @var int */
-	private $rakServerId;
-
-	/** @var RakLibServer */
-	private $rakLib;
+	private int $rakServerId;
+	private RakLibServer $rakLib;
 
 	/** @var NetworkSession[] */
-	private $sessions = [];
+	private array $sessions = [];
 
-	/** @var RakLibToUserThreadMessageReceiver */
-	private $eventReceiver;
-	/** @var UserToRakLibThreadMessageSender */
-	private $interface;
+	private RakLibToUserThreadMessageReceiver $eventReceiver;
+	private UserToRakLibThreadMessageSender $interface;
 
-	/** @var SleeperNotifier */
-	private $sleeper;
+	private SleeperNotifier $sleeper;
 
-	/** @var PacketBroadcaster */
-	private $broadcaster;
+	private PacketBroadcaster $broadcaster;
 
 	public function __construct(Server $server, string $ip, int $port, bool $ipV6){
 		$this->server = $server;
