@@ -62,19 +62,13 @@ abstract class AsyncTask extends \Threaded{
 	/** @var \Threaded */
 	public $progressUpdates;
 
-	/** @var scalar|null */
-	private $result = null;
-	/** @var bool */
-	private $serialized = false;
-	/** @var bool */
-	private $cancelRun = false;
-	/** @var bool */
-	private $submitted = false;
+	private string|int|bool|null|float $result = null;
+	private bool $serialized = false;
+	private bool $cancelRun = false;
+	private bool $submitted = false;
 
-	/** @var bool */
-	private $crashed = false;
-	/** @var bool */
-	private $finished = false;
+	private bool $crashed = false;
+	private bool $finished = false;
 
 	public function run() : void{
 		$this->result = null;
