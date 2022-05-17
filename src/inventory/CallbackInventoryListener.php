@@ -31,30 +31,19 @@ class CallbackInventoryListener implements InventoryListener{
 	//TODO: turn the closure signatures into type aliases when PHPStan supports them
 
 	/**
-	 * @var \Closure|null
-	 * @phpstan-var (\Closure(Inventory, int, Item) : void)|null
-	 */
-	private $onSlotChangeCallback;
-	/**
-	 * @var \Closure|null
-	 * @phpstan-var (\Closure(Inventory, Item[]) : void)|null
-	 */
-	private $onContentChangeCallback;
-
-	/**
 	 * @phpstan-param (\Closure(Inventory, int, Item) : void)|null $onSlotChange
 	 * @phpstan-param (\Closure(Inventory, Item[]) : void)|null $onContentChange
 	 */
-	public function __construct(?\Closure $onSlotChange, ?\Closure $onContentChange){
+	public function __construct(
+		private ?\Closure $onSlotChange,
+		private ?\Closure $onContentChange
+	){
 		if($onSlotChange !== null){
 			Utils::validateCallableSignature(function(Inventory $inventory, int $slot, Item $oldItem) : void{}, $onSlotChange);
 		}
 		if($onContentChange !== null){
 			Utils::validateCallableSignature(function(Inventory $inventory, array $oldContents) : void{}, $onContentChange);
 		}
-
-		$this->onSlotChangeCallback = $onSlotChange;
-		$this->onContentChangeCallback = $onContentChange;
 	}
 
 	/**
@@ -72,8 +61,8 @@ class CallbackInventoryListener implements InventoryListener{
 	}
 
 	public function onSlotChange(Inventory $inventory, int $slot, Item $oldItem) : void{
-		if($this->onSlotChangeCallback !== null){
-			($this->onSlotChangeCallback)($inventory, $slot, $oldItem);
+		if($this->onSlotChange !== null){
+			($this->onSlotChange)($inventory, $slot, $oldItem);
 		}
 	}
 
@@ -81,8 +70,8 @@ class CallbackInventoryListener implements InventoryListener{
 	 * @param Item[] $oldContents
 	 */
 	public function onContentChange(Inventory $inventory, array $oldContents) : void{
-		if($this->onContentChangeCallback !== null){
-			($this->onContentChangeCallback)($inventory, $oldContents);
+		if($this->onContentChange !== null){
+			($this->onContentChange)($inventory, $oldContents);
 		}
 	}
 }
