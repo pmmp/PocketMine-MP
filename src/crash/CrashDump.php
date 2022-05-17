@@ -81,7 +81,6 @@ class CrashDump{
 	public const PLUGIN_INVOLVEMENT_INDIRECT = "indirect";
 
 	private CrashDumpData $data;
-	/** @var string */
 	private string $encodedData;
 
 	public function __construct(
