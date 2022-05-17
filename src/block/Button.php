@@ -62,7 +62,7 @@ abstract class Button extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockClicked->getSupportType($face)->equals(SupportType::FULL())){
+		if($this->canBeSupportBy($blockClicked, $face)){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
@@ -91,8 +91,12 @@ abstract class Button extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::opposite($this->facing))->getSupportType($this->facing)->equals(SupportType::FULL())){
+		if(!$this->canBeSupportBy($this->getSide(Facing::opposite($this->facing)), $this->facing)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
+
+	protected function canBeSupportBy(Block $support, int $face) : bool{
+		return $support->getSupportType($face)->hasCenterSupport();
 	}
 }

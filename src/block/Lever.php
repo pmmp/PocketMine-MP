@@ -97,7 +97,7 @@ class Lever extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($blockClicked->getSupportType($face)->equals(SupportType::NONE())){
+		if(!$this->canBeSupportedBy($blockClicked, $face)){
 			return false;
 		}
 
@@ -121,8 +121,8 @@ class Lever extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		$supportType = $this->getSide(Facing::opposite($this->facing->getFacing()))->getSupportType($this->facing->getFacing());
-		if($supportType->equals(SupportType::NONE())){
+		$facing = $this->facing->getFacing();
+		if(!$this->canBeSupportedBy($this->getSide(Facing::opposite($facing)), $facing)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -135,6 +135,10 @@ class Lever extends Flowable{
 			$this->activated ? new RedstonePowerOnSound() : new RedstonePowerOffSound()
 		);
 		return true;
+	}
+
+	protected function canBeSupportedBy(Block $block, int $face) : bool{
+		return $block->getSupportType($face)->hasCenterSupport();
 	}
 
 	//TODO

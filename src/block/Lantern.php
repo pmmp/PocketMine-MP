@@ -78,10 +78,7 @@ class Lantern extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::DOWN && $blockReplace->getSide(Facing::UP)->getSupportType(Facing::DOWN)->equals(SupportType::NONE())){
-			return false;
-		}
-		if($face === Facing::UP && $blockReplace->getSide(Facing::DOWN)->getSupportType(Facing::UP)->equals(SupportType::NONE())){
+		if(Facing::axis($face) === Axis::Y && !$this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
 			return false;
 		}
 
@@ -90,8 +87,13 @@ class Lantern extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide($this->hanging ? Facing::UP : Facing::DOWN)->getSupportType($this->hanging ? Facing::DOWN : Facing::UP)->equals(SupportType::NONE())){
+		$face = $this->hanging ? Facing::UP : Facing::DOWN;
+		if(!$this->canBeSupportedBy($this->getSide($face), Facing::opposite($face))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
+
+	protected function canBeSupportedBy(Block $block, int $face) : bool{
+		return $block->getSupportType($face)->hasCenterSupport();
 	}
 }

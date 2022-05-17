@@ -105,7 +105,7 @@ class FlowerPot extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->equals(SupportType::NONE())){
+		if($this->canBeSupportedBy($this->getSide(Facing::DOWN), Facing::UP)){
 			return false;
 		}
 
@@ -113,9 +113,13 @@ class FlowerPot extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->equals(SupportType::NONE())){
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN), Facing::UP)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
+
+	protected function canBeSupportedBy(Block $block, int $face) : bool{
+		return $block->getSupportType($face)->hasCenterSupport();
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
