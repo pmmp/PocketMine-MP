@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
@@ -35,7 +34,7 @@ use function mt_rand;
 class DeadBush extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->equals(SupportType::FULL())){
+		if($this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -43,7 +42,7 @@ class DeadBush extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->equals(SupportType::FULL())){
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
@@ -64,5 +63,13 @@ class DeadBush extends Flowable{
 
 	public function getFlammability() : int{
 		return 100;
+	}
+
+	protected function canBeSupportedBy(Block $block) : bool{
+		$id = $block->getId();
+		return $id === BlockLegacyIds::SAND
+			|| $id === BlockLegacyIds::PODZOL
+			|| $id === BlockLegacyIds::DIRT
+			|| $id === BlockLegacyIds::TERRACOTTA;
 	}
 }
