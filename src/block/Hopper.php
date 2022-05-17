@@ -102,7 +102,7 @@ class Hopper extends Transparent{
 
 	public function getSupportType(int $facing) : SupportType{
 		if($facing === Facing::UP){
-			return SupportType::EDGE();
+			return SupportType::FULL();
 		}
 		return SupportType::NONE();
 	}
