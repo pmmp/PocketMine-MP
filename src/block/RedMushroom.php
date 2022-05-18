@@ -41,18 +41,11 @@ class RedMushroom extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedBy($this->getSide(Facing::DOWN))){
+		$down = $this->getSide(Facing::DOWN);
+		if(!$down->isTransparent()){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
 		return false;
-	}
-
-	protected function canBeSupportedBy(Block $block) : bool{
-		$position = $block->getPosition();
-		$lightLevel = $position->getSide(Facing::UP)->getWorld()->getFullLightAt($position->x, $position->y, $position->z);
-		$id = $block->getId();
-		// TODO: nylium support
-		return ($lightLevel <= 12 && !$block->isTransparent()) || $id === BlockLegacyIds::MYCELIUM || $id === BlockLegacyIds::PODZOL;
 	}
 }

@@ -118,24 +118,11 @@ class Sugarcane extends Flowable{
 		}
 	}
 
-	/**
-	 * checks only the solid support of the sugar cane and not the proximity with water
-	 */
-	protected function canBeSupportedBy(Block $block) : bool{
-		$id = $block->getId();
-		//TODO: rooted dirt, moss block
-		return $id === BlockLegacyIds::GRASS
-			|| $id === BlockLegacyIds::DIRT
-			|| $id === BlockLegacyIds::PODZOL
-			|| $id === BlockLegacyIds::MYCELIUM
-			|| $id === BlockLegacyIds::SAND;
-	}
-
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->isSameType($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($this->canBeSupportedBy($down)){
+		}elseif($down->getId() === BlockLegacyIds::GRASS || $down->getId() === BlockLegacyIds::DIRT || $down->getId() === BlockLegacyIds::SAND || $down->getId() === BlockLegacyIds::PODZOL){
 			foreach(Facing::HORIZONTAL as $side){
 				if($down->getSide($side) instanceof Water){
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
