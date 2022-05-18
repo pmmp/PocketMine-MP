@@ -50,7 +50,7 @@ class RedMushroom extends Flowable{
 
 	protected function canBeSupportedBy(Block $block) : bool{
 		$position = $block->getPosition();
-		$lightLevel = $position->getWorld()->getFullLightAt($position->x, $position->y, $position->z);
+		$lightLevel = $position->getSide(Facing::UP)->getWorld()->getFullLightAt($position->x, $position->y, $position->z);
 		$id = $block->getId();
 		// TODO: nylium support
 		return ($lightLevel <= 12 && !$block->isTransparent()) || $id === BlockLegacyIds::MYCELIUM || $id === BlockLegacyIds::PODZOL;
