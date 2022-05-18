@@ -436,11 +436,7 @@ class PluginManager{
 			$plugin->getScheduler()->setEnabled(true);
 			try{
 				$plugin->onEnableStateChange(true);
-			}catch(DisablePluginException $e){
-				$errorMessage = $e->getMessage();
-				if($errorMessage !== ""){
-					$plugin->getLogger()->error($errorMessage);
-				}
+			}catch(DisablePluginException){
 				$this->disablePlugin($plugin);
 				return;
 			}
