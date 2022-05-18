@@ -72,10 +72,6 @@ class Lantern extends Transparent{
 		];
 	}
 
-	protected function canAttachTo(Block $b) : bool{
-		return !$b->isTransparent();
-	}
-
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(Facing::axis($face) === Axis::Y && !$this->canBeSupportedBy($blockReplace->getSide(Facing::opposite($face)), $face)){
 			return false;
