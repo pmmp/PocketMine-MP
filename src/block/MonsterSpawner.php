@@ -23,9 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
-use pocketmine\math\Facing;
 
 use function mt_rand;
 
@@ -41,12 +39,5 @@ class MonsterSpawner extends Transparent{
 
 	public function onScheduledUpdate() : void{
 		//TODO
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		if($facing === Facing::UP || $facing === Facing::DOWN){
-			return SupportType::CENTER();
-		}
-		return SupportType::FULL();
 	}
 }
