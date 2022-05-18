@@ -104,7 +104,7 @@ class FlowerPot extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedBy($this->getSide(Facing::DOWN), Facing::UP)){
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN), Facing::UP)){
 			return false;
 		}
 
