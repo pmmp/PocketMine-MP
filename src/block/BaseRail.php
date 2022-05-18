@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\RailConnectionInfo;
-use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -40,7 +39,7 @@ abstract class BaseRail extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$supportType = $blockReplace->getSide(Facing::DOWN)->getSupportType(Facing::UP);
-		if(!$supportType->equals(SupportType::NONE()) && !$supportType->equals(SupportType::CENTER())){
+		if($supportType->hasEdgeSupport()){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -223,12 +222,12 @@ abstract class BaseRail extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$supportType = $this->getSide(Facing::DOWN)->getSupportType(Facing::UP);
-		if($supportType->equals(SupportType::NONE()) || $supportType->equals(SupportType::CENTER())){
+		if(!$supportType->hasEdgeSupport()){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}else{
 			foreach($this->getCurrentShapeConnections() as $connection){
 				$supportType = $this->getSide($connection & ~RailConnectionInfo::FLAG_ASCEND)->getSupportType(Facing::UP);
-				if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0 && ($supportType->equals(SupportType::NONE()) || $supportType->equals(SupportType::CENTER()))){
+				if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0 && !$supportType->hasEdgeSupport()){
 					$this->position->getWorld()->useBreakOn($this->position);
 					break;
 				}
