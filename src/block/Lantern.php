@@ -81,7 +81,7 @@ class Lantern extends Transparent{
 			return false;
 		}
 
-		$this->hanging = ($face === Facing::DOWN || !$this->canAttachTo($this->position->getWorld()->getBlock($blockReplace->getPosition()->down())));
+		$this->hanging = ($face === Facing::DOWN || !$this->canBeSupportedBy($this->position->getWorld()->getBlock($blockReplace->getPosition()->down()), Facing::UP));
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
