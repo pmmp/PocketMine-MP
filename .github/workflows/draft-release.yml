@@ -60,7 +60,7 @@ jobs:
         run: php build/generate-build-info-json.php ${{ github.sha }} ${{ steps.get-pm-version.outputs.PM_VERSION }} ${{ github.repository }} ${{ steps.build-number.outputs.BUILD_NUMBER }} > build_info.json
 
       - name: Upload release artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: release_artifacts
           path: |
