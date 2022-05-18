@@ -23,12 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\SupportType;
-
 class HardenedGlass extends Transparent{
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::FULL();
-	}
 
 }

@@ -24,7 +24,6 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
-use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\event\entity\EntityTrampleFarmlandEvent;
@@ -128,9 +127,5 @@ class Farmland extends Transparent{
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		return VanillaBlocks::DIRT()->asItem();
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::FULL();
 	}
 }

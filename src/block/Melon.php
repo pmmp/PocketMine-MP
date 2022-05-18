@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\item\VanillaItems;
 use function mt_rand;
@@ -38,9 +37,5 @@ class Melon extends Transparent{
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::FULL();
 	}
 }

@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 
 class Glass extends Transparent{
@@ -34,9 +33,5 @@ class Glass extends Transparent{
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::FULL();
 	}
 }

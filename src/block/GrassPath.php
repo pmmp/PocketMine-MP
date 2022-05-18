@@ -23,7 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -51,9 +50,5 @@ class GrassPath extends Transparent{
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::FULL();
 	}
 }
