@@ -26,13 +26,9 @@ namespace pocketmine\world\format\io\region;
 use function range;
 
 class RegionLocationTableEntry{
-
-	/** @var int */
-	private $firstSector;
-	/** @var int */
-	private $sectorCount;
-	/** @var int */
-	private $timestamp;
+	private int $firstSector;
+	private int $sectorCount;
+	private int $timestamp;
 
 	/**
 	 * @throws \InvalidArgumentException

@@ -57,8 +57,8 @@ class CraftingTransaction extends InventoryTransaction{
 	protected $inputs = [];
 	/** @var Item[] */
 	protected $outputs = [];
-	/** @var CraftingManager */
-	private $craftingManager;
+
+	private CraftingManager $craftingManager;
 
 	public function __construct(Player $source, CraftingManager $craftingManager, array $actions = []){
 		parent::__construct($source, $actions);

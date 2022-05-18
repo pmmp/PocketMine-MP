@@ -47,41 +47,22 @@ use function strtolower;
 use function trim;
 
 abstract class PluginBase implements Plugin, CommandExecutor{
+	private bool $isEnabled = false;
 
-	/** @var PluginLoader */
-	private $loader;
+	private ?Config $config = null;
+	private string $configFile;
 
-	/** @var Server */
-	private $server;
+	private PluginLogger $logger;
+	private TaskScheduler $scheduler;
 
-	/** @var bool */
-	private $isEnabled = false;
-
-	/** @var PluginDescription */
-	private $description;
-
-	/** @var string */
-	private $dataFolder;
-	/** @var Config|null */
-	private $config = null;
-	/** @var string */
-	private $configFile;
-	/** @var string */
-	private $file;
-
-	/** @var PluginLogger */
-	private $logger;
-
-	/** @var TaskScheduler */
-	private $scheduler;
-
-	/** @var ResourceProvider */
-	private $resourceProvider;
-
-	public function __construct(PluginLoader $loader, Server $server, PluginDescription $description, string $dataFolder, string $file, ResourceProvider $resourceProvider){
-		$this->loader = $loader;
-		$this->server = $server;
-		$this->description = $description;
+	public function __construct(
+		private PluginLoader $loader,
+		private Server $server,
+		private PluginDescription $description,
+		private string $dataFolder,
+		private string $file,
+		private ResourceProvider $resourceProvider
+	){
 		$this->dataFolder = rtrim($dataFolder, "/" . DIRECTORY_SEPARATOR) . "/";
 		//TODO: this is accessed externally via reflection, not unused
 		$this->file = rtrim($file, "/" . DIRECTORY_SEPARATOR) . "/";
@@ -90,7 +71,6 @@ abstract class PluginBase implements Plugin, CommandExecutor{
 		$prefix = $this->getDescription()->getPrefix();
 		$this->logger = new PluginLogger($server->getLogger(), $prefix !== "" ? $prefix : $this->getName());
 		$this->scheduler = new TaskScheduler($this->getFullName());
-		$this->resourceProvider = $resourceProvider;
 
 		$this->onLoad();
 

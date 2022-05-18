@@ -48,22 +48,12 @@ use function sprintf;
  * Handler used for the pre-spawn phase of the session.
  */
 class PreSpawnPacketHandler extends PacketHandler{
-
-	/** @var Server */
-	private $server;
-	/** @var Player */
-	private $player;
-	/** @var NetworkSession */
-	private $session;
-
-	private InventoryManager $inventoryManager;
-
-	public function __construct(Server $server, Player $player, NetworkSession $session, InventoryManager $inventoryManager){
-		$this->player = $player;
-		$this->server = $server;
-		$this->session = $session;
-		$this->inventoryManager = $inventoryManager;
-	}
+	public function __construct(
+		private Server $server,
+		private Player $player,
+		private NetworkSession $session,
+		private InventoryManager $inventoryManager
+	){}
 
 	public function setUp() : void{
 		$location = $this->player->getLocation();

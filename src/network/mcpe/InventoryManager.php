@@ -31,6 +31,7 @@ use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\FurnaceInventory;
 use pocketmine\block\inventory\HopperInventory;
 use pocketmine\block\inventory\LoomInventory;
+use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\CreativeInventory;
 use pocketmine\inventory\Inventory;
@@ -59,7 +60,9 @@ use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\ObjectSet;
 use function array_map;
 use function array_search;
+use function get_class;
 use function max;
+use function spl_object_id;
 
 /**
  * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
@@ -72,15 +75,9 @@ class InventoryManager{
 	private const RESERVED_WINDOW_ID_RANGE_START = ContainerIds::LAST - 10;
 	private const HARDCODED_INVENTORY_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 2;
 
-	/** @var Player */
-	private $player;
-	/** @var NetworkSession */
-	private $session;
-
 	/** @var Inventory[] */
-	private $windowMap = [];
-	/** @var int */
-	private $lastInventoryNetworkId = ContainerIds::FIRST;
+	private array $windowMap = [];
+	private int $lastInventoryNetworkId = ContainerIds::FIRST;
 
 	/**
 	 * TODO: HACK! This tracks GUIs for inventories that the server considers "always open" so that the client can't
@@ -95,17 +92,16 @@ class InventoryManager{
 	 * @var Item[][]
 	 * @phpstan-var array<int, array<int, Item>>
 	 */
-	private $initiatedSlotChanges = [];
-	/** @var int */
-	private $clientSelectedHotbarSlot = -1;
+	private array $initiatedSlotChanges = [];
+	private int $clientSelectedHotbarSlot = -1;
 
 	/** @phpstan-var ObjectSet<ContainerOpenClosure> */
 	private ObjectSet $containerOpenCallbacks;
 
-	public function __construct(Player $player, NetworkSession $session){
-		$this->player = $player;
-		$this->session = $session;
-
+	public function __construct(
+		private Player $player,
+		private NetworkSession $session
+	){
 		$this->containerOpenCallbacks = new ObjectSet();
 		$this->containerOpenCallbacks->add(\Closure::fromCallable([self::class, 'createContainerOpen']));
 
@@ -208,6 +204,7 @@ class InventoryManager{
 				$inv instanceof AnvilInventory => WindowTypes::ANVIL,
 				$inv instanceof HopperInventory => WindowTypes::HOPPER,
 				$inv instanceof CraftingTableInventory => WindowTypes::WORKBENCH,
+				$inv instanceof StonecutterInventory => WindowTypes::STONECUTTER,
 				default => WindowTypes::CONTAINER
 			};
 			return [ContainerOpenPacket::blockInv($id, $windowType, $blockPosition)];
@@ -302,6 +299,28 @@ class InventoryManager{
 		foreach($this->windowMap as $inventory){
 			$this->syncContents($inventory);
 		}
+	}
+
+	public function syncMismatchedPredictedSlotChanges() : void{
+		foreach($this->initiatedSlotChanges as $windowId => $slots){
+			if(!isset($this->windowMap[$windowId])){
+				continue;
+			}
+			$inventory = $this->windowMap[$windowId];
+
+			foreach($slots as $slot => $expectedItem){
+				if(!$inventory->slotExists($slot)){
+					continue; //TODO: size desync ???
+				}
+				$actualItem = $inventory->getItem($slot);
+				if(!$actualItem->equalsExact($expectedItem)){
+					$this->session->getLogger()->debug("Detected prediction mismatch in inventory " . get_class($inventory) . "#" . spl_object_id($inventory) . " slot $slot");
+					$this->syncSlot($inventory, $slot);
+				}
+			}
+		}
+
+		$this->initiatedSlotChanges = [];
 	}
 
 	public function syncData(Inventory $inventory, int $propertyId, int $value) : void{

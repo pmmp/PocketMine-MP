@@ -64,31 +64,25 @@ class EntityDamageEvent extends EntityEvent implements Cancellable{
 	public const CAUSE_CUSTOM = 14;
 	public const CAUSE_STARVATION = 15;
 
-	/** @var int */
-	private $cause;
-	/** @var float */
-	private $baseDamage;
-	/** @var float */
-	private $originalBase;
+	private float $baseDamage;
+	private float $originalBase;
 
 	/** @var float[] */
-	private $modifiers;
-	/** @var float[] */
-	private $originals;
-
-	/** @var int */
-	private $attackCooldown = 10;
+	private array $originals;
+	private int $attackCooldown = 10;
 
 	/**
 	 * @param float[] $modifiers
 	 */
-	public function __construct(Entity $entity, int $cause, float $damage, array $modifiers = []){
+	public function __construct(
+		Entity $entity,
+		private int $cause,
+		float $damage,
+		private array $modifiers = []
+	){
 		$this->entity = $entity;
-		$this->cause = $cause;
 		$this->baseDamage = $this->originalBase = $damage;
-
-		$this->modifiers = $modifiers;
-		$this->originals = $this->modifiers;
+		$this->originals = $modifiers;
 	}
 
 	public function getCause() : int{

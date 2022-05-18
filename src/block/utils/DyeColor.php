@@ -75,15 +75,12 @@ final class DyeColor{
 		);
 	}
 
-	/** @var string */
-	private $displayName;
-	/** @var Color */
-	private $rgbValue;
-
-	private function __construct(string $enumName, string $displayName, Color $rgbValue){
+	private function __construct(
+		string $enumName,
+		private string $displayName,
+		private Color $rgbValue
+	){
 		$this->Enum___construct($enumName);
-		$this->displayName = $displayName;
-		$this->rgbValue = $rgbValue;
 	}
 
 	public function getDisplayName() : string{

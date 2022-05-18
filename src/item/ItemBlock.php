@@ -30,8 +30,7 @@ use pocketmine\block\BlockFactory;
  * Class used for Items that can be Blocks
  */
 class ItemBlock extends Item{
-	/** @var int */
-	private $blockFullId;
+	private int $blockFullId;
 
 	public function __construct(ItemIdentifier $identifier, Block $block){
 		parent::__construct($identifier, $block->getName());

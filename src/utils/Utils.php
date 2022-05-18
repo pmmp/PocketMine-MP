@@ -28,7 +28,9 @@ declare(strict_types=1);
 namespace pocketmine\utils;
 
 use DaveRandom\CallbackValidator\CallbackType;
+use pocketmine\entity\Location;
 use pocketmine\errorhandler\ErrorTypeToStringMap;
+use pocketmine\math\Vector3;
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
 use function array_combine;
@@ -57,7 +59,10 @@ use function interface_exists;
 use function is_a;
 use function is_array;
 use function is_bool;
+use function is_float;
+use function is_infinite;
 use function is_int;
+use function is_nan;
 use function is_object;
 use function is_string;
 use function mb_check_encoding;
@@ -101,10 +106,8 @@ final class Utils{
 	public const OS_BSD = "bsd";
 	public const OS_UNKNOWN = "other";
 
-	/** @var string|null */
-	private static $os;
-	/** @var UuidInterface|null */
-	private static $serverUniqueId = null;
+	private static ?string $os = null;
+	private static ?UuidInterface $serverUniqueId = null;
 
 	/**
 	 * Returns a readable identifier for the given Closure, including file and line.
@@ -433,6 +436,19 @@ final class Utils{
 		return $lines;
 	}
 
+	private static function stringifyValueForTrace(mixed $value, int $maxStringLength) : string{
+		return match(true){
+			is_object($value) => "object " . self::getNiceClassName($value) . "#" . spl_object_id($value),
+			is_array($value) => "array[" . count($value) . "]",
+			is_string($value) => "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength),
+			is_bool($value) => $value ? "true" : "false",
+			is_int($value) => "int " . $value,
+			is_float($value) => "float " . $value,
+			$value === null => "null",
+			default => gettype($value) . " " . Utils::printable((string) $value)
+		};
+	}
+
 	/**
 	 * @param mixed[][] $trace
 	 * @phpstan-param list<array<string, mixed>> $trace
@@ -449,22 +465,15 @@ final class Utils{
 				}else{
 					$args = $trace[$i]["params"];
 				}
+				/** @var mixed[] $args */
 
-				$params = implode(", ", array_map(function($value) use($maxStringLength) : string{
-					if(is_object($value)){
-						return "object " . self::getNiceClassName($value) . "#" . spl_object_id($value);
-					}
-					if(is_array($value)){
-						return "array[" . count($value) . "]";
-					}
-					if(is_string($value)){
-						return "string[" . strlen($value) . "] " . substr(Utils::printable($value), 0, $maxStringLength);
-					}
-					if(is_bool($value)){
-						return $value ? "true" : "false";
-					}
-					return gettype($value) . " " . Utils::printable((string) $value);
-				}, $args));
+				$paramsList = [];
+				$offset = 0;
+				foreach($args as $argId => $value){
+					$paramsList[] = ($argId === $offset ? "" : "$argId: ") . self::stringifyValueForTrace($value, $maxStringLength);
+					$offset++;
+				}
+				$params = implode(", ", $paramsList);
 			}
 			$messages[] = "#$i " . (isset($trace[$i]["file"]) ? Filesystem::cleanPath($trace[$i]["file"]) : "") . "(" . (isset($trace[$i]["line"]) ? $trace[$i]["line"] : "") . "): " . (isset($trace[$i]["class"]) ? $trace[$i]["class"] . (($trace[$i]["type"] === "dynamic" || $trace[$i]["type"] === "->") ? "->" : "::") : "") . $trace[$i]["function"] . "(" . Utils::printable($params) . ")";
 		}
@@ -601,5 +610,28 @@ final class Utils{
 			throw new AssumptionFailedError("Assumption failure: " . (is_string($context) ? $context : $context()) . " (THIS IS A BUG)");
 		}
 		return $value;
+	}
+
+	public static function checkFloatNotInfOrNaN(string $name, float $float) : void{
+		if(is_nan($float)){
+			throw new \InvalidArgumentException("$name cannot be NaN");
+		}
+		if(is_infinite($float)){
+			throw new \InvalidArgumentException("$name cannot be infinite");
+		}
+	}
+
+	public static function checkVector3NotInfOrNaN(Vector3 $vector3) : void{
+		if($vector3 instanceof Location){ //location could be masquerading as vector3
+			self::checkFloatNotInfOrNaN("yaw", $vector3->yaw);
+			self::checkFloatNotInfOrNaN("pitch", $vector3->pitch);
+		}
+		self::checkFloatNotInfOrNaN("x", $vector3->x);
+		self::checkFloatNotInfOrNaN("y", $vector3->y);
+		self::checkFloatNotInfOrNaN("z", $vector3->z);
+	}
+
+	public static function checkLocationNotInfOrNaN(Location $location) : void{
+		self::checkVector3NotInfOrNaN($location);
 	}
 }

@@ -31,8 +31,7 @@ class ServerKiller extends Thread{
 	/** @var int */
 	public $time;
 
-	/** @var bool */
-	private $stopped = false;
+	private bool $stopped = false;
 
 	/**
 	 * @param int $time

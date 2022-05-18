@@ -135,11 +135,6 @@ use const JSON_THROW_ON_ERROR;
 class InGamePacketHandler extends PacketHandler{
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
 
-	/** @var Player */
-	private $player;
-	/** @var NetworkSession */
-	private $session;
-
 	/** @var CraftingTransaction|null */
 	protected $craftingTransaction = null;
 
@@ -151,13 +146,11 @@ class InGamePacketHandler extends PacketHandler{
 	/** @var bool */
 	public $forceMoveSync = false;
 
-	private InventoryManager $inventoryManager;
-
-	public function __construct(Player $player, NetworkSession $session, InventoryManager $inventoryManager){
-		$this->player = $player;
-		$this->session = $session;
-		$this->inventoryManager = $inventoryManager;
-	}
+	public function __construct(
+		private Player $player,
+		private NetworkSession $session,
+		private InventoryManager $inventoryManager
+	){}
 
 	public function handleText(TextPacket $packet) : bool{
 		if($packet->type === TextPacket::TYPE_CHAT){
@@ -228,15 +221,21 @@ class InGamePacketHandler extends PacketHandler{
 			$this->player->jump();
 		}
 
-		//TODO: this packet has WAYYYYY more useful information that we're not using
-		$this->player->handleMovement($newPos);
+		if(!$this->forceMoveSync){
+			//TODO: this packet has WAYYYYY more useful information that we're not using
+			$this->player->handleMovement($newPos);
+		}
 
 		$packetHandled = true;
 
 		$useItemTransaction = $packet->getItemInteractionData();
-		if($useItemTransaction !== null && !$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
-			$packetHandled = false;
-			$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
+		if($useItemTransaction !== null){
+			if(!$this->handleUseItemTransaction($useItemTransaction->getTransactionData())){
+				$packetHandled = false;
+				$this->session->getLogger()->debug("Unhandled transaction in PlayerAuthInputPacket (type " . $useItemTransaction->getTransactionData()->getActionType() . ")");
+			}else{
+				$this->inventoryManager->syncMismatchedPredictedSlotChanges();
+			}
 		}
 
 		$blockActions = $packet->getBlockActions();
@@ -304,6 +303,8 @@ class InGamePacketHandler extends PacketHandler{
 
 		if(!$result){
 			$this->inventoryManager->syncAll();
+		}else{
+			$this->inventoryManager->syncMismatchedPredictedSlotChanges();
 		}
 		return $result;
 	}
@@ -451,13 +452,10 @@ class InGamePacketHandler extends PacketHandler{
 					if(!$this->player->consumeHeldItem()){
 						$hungerAttr = $this->player->getAttributeMap()->get(Attribute::HUNGER) ?? throw new AssumptionFailedError();
 						$hungerAttr->markSynchronized(false);
-						$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 					}
 					return true;
 				}
-				if(!$this->player->useHeldItem()){
-					$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
-				}
+				$this->player->useHeldItem();
 				return true;
 		}
 
@@ -477,7 +475,6 @@ class InGamePacketHandler extends PacketHandler{
 	 * Internal function used to execute rollbacks when an action fails on a block.
 	 */
 	private function onFailedBlockAction(Vector3 $blockPos, ?int $face) : void{
-		$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
 		if($blockPos->distanceSquared($this->player->getLocation()) < 10000){
 			$blocks = $blockPos->sidesArray();
 			if($face !== null){
@@ -506,14 +503,10 @@ class InGamePacketHandler extends PacketHandler{
 		//TODO: use transactiondata for rollbacks here
 		switch($data->getActionType()){
 			case UseItemOnEntityTransactionData::ACTION_INTERACT:
-				if(!$this->player->interactEntity($target, $data->getClickPosition())){
-					$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
-				}
+				$this->player->interactEntity($target, $data->getClickPosition());
 				return true;
 			case UseItemOnEntityTransactionData::ACTION_ATTACK:
-				if(!$this->player->attackEntity($target)){
-					$this->inventoryManager->syncSlot($this->player->getInventory(), $this->player->getInventory()->getHeldItemIndex());
-				}
+				$this->player->attackEntity($target);
 				return true;
 		}
 

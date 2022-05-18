@@ -42,7 +42,7 @@ abstract class WritableBookBase extends Item{
 	 * @var WritableBookPage[]
 	 * @phpstan-var list<WritableBookPage>
 	 */
-	private $pages = [];
+	private array $pages = [];
 
 	public function __construct(ItemIdentifier $identifier, string $name){
 		parent::__construct($identifier, $name);

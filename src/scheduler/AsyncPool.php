@@ -42,47 +42,40 @@ use const PTHREADS_INHERIT_INI;
 class AsyncPool{
 	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI;
 
-	/** @var \ClassLoader */
-	private $classLoader;
-	/** @var \ThreadedLogger */
-	private $logger;
 	/** @var int */
 	protected $size;
-	/** @var int */
-	private $workerMemoryLimit;
 
 	/**
 	 * @var \SplQueue[]|AsyncTask[][]
 	 * @phpstan-var array<int, \SplQueue<AsyncTask>>
 	 */
-	private $taskQueues = [];
+	private array $taskQueues = [];
 
 	/**
 	 * @var AsyncWorker[]
 	 * @phpstan-var array<int, AsyncWorker>
 	 */
-	private $workers = [];
+	private array $workers = [];
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private $workerLastUsed = [];
+	private array $workerLastUsed = [];
 
 	/**
 	 * @var \Closure[]
 	 * @phpstan-var (\Closure(int $workerId) : void)[]
 	 */
-	private $workerStartHooks = [];
+	private array $workerStartHooks = [];
 
-	/** @var SleeperHandler */
-	private $eventLoop;
-
-	public function __construct(int $size, int $workerMemoryLimit, \ClassLoader $classLoader, \ThreadedLogger $logger, SleeperHandler $eventLoop){
+	public function __construct(
+		int $size,
+		private int $workerMemoryLimit,
+		private \ClassLoader $classLoader,
+		private \ThreadedLogger $logger,
+		private SleeperHandler $eventLoop
+	){
 		$this->size = $size;
-		$this->workerMemoryLimit = $workerMemoryLimit;
-		$this->classLoader = $classLoader;
-		$this->logger = $logger;
-		$this->eventLoop = $eventLoop;
 	}
 
 	/**

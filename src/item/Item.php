@@ -65,10 +65,9 @@ class Item implements \JsonSerializable{
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
 
-	/** @var ItemIdentifier */
-	private $identifier;
-	/** @var CompoundTag */
-	private $nbt;
+	private ItemIdentifier $identifier;
+	private CompoundTag $nbt;
+
 	/** @var int */
 	protected $count = 1;
 	/** @var string */
@@ -306,7 +305,7 @@ class Item implements \JsonSerializable{
 
 		$this->canPlaceOn = [];
 		$canPlaceOn = $tag->getListTag("CanPlaceOn");
-		if($canPlaceOn !== null){
+		if($canPlaceOn !== null && $canPlaceOn->getTagType() === NBT::TAG_String){
 			/** @var StringTag $entry */
 			foreach($canPlaceOn as $entry){
 				$this->canPlaceOn[$entry->getValue()] = $entry->getValue();
@@ -314,7 +313,7 @@ class Item implements \JsonSerializable{
 		}
 		$this->canDestroy = [];
 		$canDestroy = $tag->getListTag("CanDestroy");
-		if($canDestroy !== null){
+		if($canDestroy !== null && $canDestroy->getTagType() === NBT::TAG_String){
 			/** @var StringTag $entry */
 			foreach($canDestroy as $entry){
 				$this->canDestroy[$entry->getValue()] = $entry->getValue();

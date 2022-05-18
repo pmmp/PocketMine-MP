@@ -125,6 +125,7 @@ use function get_class;
 use function in_array;
 use function json_encode;
 use function ksort;
+use function strcasecmp;
 use function strlen;
 use function strtolower;
 use function substr;
@@ -135,11 +136,7 @@ use const SORT_NUMERIC;
 
 class NetworkSession{
 	private \PrefixedLogger $logger;
-	private Server $server;
 	private ?Player $player = null;
-	private NetworkSessionManager $manager;
-	private string $ip;
-	private int $port;
 	private ?PlayerInfo $info = null;
 	private ?int $ping = null;
 
@@ -162,17 +159,11 @@ class NetworkSession{
 	 * @phpstan-var \SplQueue<CompressBatchPromise>
 	 */
 	private \SplQueue $compressedQueue;
-	private Compressor $compressor;
 	private bool $forceAsyncCompression = true;
 
-	private PacketPool $packetPool;
 	private PacketSerializerContext $packetSerializerContext;
 
 	private ?InventoryManager $invManager = null;
-
-	private PacketSender $sender;
-
-	private PacketBroadcaster $broadcaster;
 
 	/**
 	 * @var \Closure[]|ObjectSet
@@ -180,19 +171,19 @@ class NetworkSession{
 	 */
 	private ObjectSet $disposeHooks;
 
-	public function __construct(Server $server, NetworkSessionManager $manager, PacketPool $packetPool, PacketSender $sender, PacketBroadcaster $broadcaster, Compressor $compressor, string $ip, int $port){
-		$this->server = $server;
-		$this->manager = $manager;
-		$this->sender = $sender;
-		$this->broadcaster = $broadcaster;
-		$this->ip = $ip;
-		$this->port = $port;
-
+	public function __construct(
+		private Server $server,
+		private NetworkSessionManager $manager,
+		private PacketPool $packetPool,
+		private PacketSender $sender,
+		private PacketBroadcaster $broadcaster,
+		private Compressor $compressor,
+		private string $ip,
+		private int $port
+	){
 		$this->logger = new \PrefixedLogger($this->server->getLogger(), $this->getLogPrefix());
 
 		$this->compressedQueue = new \SplQueue();
-		$this->compressor = $compressor;
-		$this->packetPool = $packetPool;
 
 		//TODO: allow this to be injected
 		$this->packetSerializerContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
@@ -635,7 +626,7 @@ class NetworkSession{
 				continue;
 			}
 			$info = $existingSession->getPlayerInfo();
-			if($info !== null && ($info->getUsername() === $this->info->getUsername() || $info->getUuid()->equals($this->info->getUuid()))){
+			if($info !== null && (strcasecmp($info->getUsername(), $this->info->getUsername()) === 0 || $info->getUuid()->equals($this->info->getUuid()))){
 				if($kickForXUIDMismatch($info instanceof XboxLivePlayerInfo ? $info->getXuid() : "")){
 					return;
 				}

@@ -42,12 +42,12 @@ final class TileFactory{
 	 * @var string[] classes that extend Tile
 	 * @phpstan-var array<string, class-string<Tile>>
 	 */
-	private $knownTiles = [];
+	private array $knownTiles = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<class-string<Tile>, string>
 	 */
-	private $saveNames = [];
+	private array $saveNames = [];
 
 	public function __construct(){
 		$this->register(Barrel::class, ["Barrel", "minecraft:barrel"]);

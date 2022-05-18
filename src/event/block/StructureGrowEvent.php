@@ -17,13 +17,12 @@ use pocketmine\world\BlockTransaction;
 class StructureGrowEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	private BlockTransaction $transaction;
-	private ?Player $player;
-
-	public function __construct(Block $block, BlockTransaction $transaction, ?Player $player){
+	public function __construct(
+		Block $block,
+		private BlockTransaction $transaction,
+		private ?Player $player
+	){
 		parent::__construct($block);
-		$this->transaction = $transaction;
-		$this->player = $player;
 	}
 
 	public function getTransaction() : BlockTransaction{

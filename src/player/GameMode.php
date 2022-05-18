@@ -69,18 +69,16 @@ final class GameMode{
 		return self::$aliasMap[mb_strtolower($str)] ?? null;
 	}
 
-	/** @var string */
-	private $englishName;
-	/** @var string[] */
-	private $aliases;
-
 	/**
 	 * @param string[] $aliases
 	 */
-	private function __construct(string $enumName, string $englishName, private Translatable $translatableName, array $aliases = []){
+	private function __construct(
+		string $enumName,
+		private string $englishName,
+		private Translatable $translatableName,
+		private array $aliases = []
+	){
 		$this->Enum___construct($enumName);
-		$this->englishName = $englishName;
-		$this->aliases = $aliases;
 	}
 
 	public function getEnglishName() : string{

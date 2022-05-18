@@ -61,12 +61,12 @@ use const SCANDIR_SORT_NONE;
 
 final class Filesystem{
 	/** @var resource[] */
-	private static $lockFileHandles = [];
+	private static array $lockFileHandles = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	private static $cleanedPaths = [
+	private static array $cleanedPaths = [
 		\pocketmine\PATH => self::CLEAN_PATH_SRC_PREFIX
 	];
 

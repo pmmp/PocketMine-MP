@@ -148,6 +148,9 @@ class Leaves extends Transparent{
 		if(($this->treeType->equals(TreeType::OAK()) || $this->treeType->equals(TreeType::DARK_OAK())) && mt_rand(1, 200) === 1){ //Apples
 			$drops[] = VanillaItems::APPLE();
 		}
+		if(mt_rand(1, 50) === 1){
+			$drops[] = VanillaItems::STICK()->setCount(mt_rand(1, 2));
+		}
 
 		return $drops;
 	}

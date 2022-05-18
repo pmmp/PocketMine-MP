@@ -132,6 +132,7 @@ use function get_class;
 use function ini_set;
 use function is_array;
 use function is_dir;
+use function is_object;
 use function is_resource;
 use function is_string;
 use function json_decode;
@@ -222,8 +223,6 @@ class Server{
 
 	private int $sendUsageTicker = 0;
 
-	private \AttachableThreadedLogger $logger;
-
 	private MemoryManager $memoryManager;
 
 	private ConsoleReaderThread $console;
@@ -248,7 +247,6 @@ class Server{
 
 	private UuidInterface $serverID;
 
-	private \DynamicClassLoader $autoloader;
 	private string $dataPath;
 	private string $pluginPath;
 
@@ -765,7 +763,12 @@ class Server{
 		return self::$instance;
 	}
 
-	public function __construct(\DynamicClassLoader $autoloader, \AttachableThreadedLogger $logger, string $dataPath, string $pluginPath){
+	public function __construct(
+		private \DynamicClassLoader $autoloader,
+		private \AttachableThreadedLogger $logger,
+		string $dataPath,
+		string $pluginPath
+	){
 		if(self::$instance !== null){
 			throw new \LogicException("Only one server instance can exist at once");
 		}
@@ -773,8 +776,6 @@ class Server{
 		$this->startTime = microtime(true);
 
 		$this->tickSleeper = new SleeperHandler();
-		$this->autoloader = $autoloader;
-		$this->logger = $logger;
 
 		$this->signalHandler = new SignalHandler(function() : void{
 			$this->logger->info("Received signal interrupt, stopping the server");
@@ -1002,14 +1003,29 @@ class Server{
 
 			register_shutdown_function([$this, "crashDump"]);
 
-			$this->pluginManager->loadPlugins($this->pluginPath);
-			$this->enablePlugins(PluginEnableOrder::STARTUP());
+			$loadErrorCount = 0;
+			$this->pluginManager->loadPlugins($this->pluginPath, $loadErrorCount);
+			if($loadErrorCount > 0){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someLoadErrors()));
+				$this->forceShutdown();
+				return;
+			}
+			if(!$this->enablePlugins(PluginEnableOrder::STARTUP())){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
+				$this->forceShutdown();
+				return;
+			}
 
 			if(!$this->startupPrepareWorlds()){
 				$this->forceShutdown();
 				return;
 			}
-			$this->enablePlugins(PluginEnableOrder::POSTWORLD());
+
+			if(!$this->enablePlugins(PluginEnableOrder::POSTWORLD())){
+				$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_plugin_someEnableErrors()));
+				$this->forceShutdown();
+				return;
+			}
 
 			if(!$this->startupPrepareNetworkInterfaces()){
 				$this->forceShutdown();
@@ -1096,6 +1112,7 @@ class Server{
 
 				$generatorClass = $getGenerator($generatorName, $generatorOptions, $name);
 				if($generatorClass === null){
+					$anyWorldFailedToLoad = true;
 					continue;
 				}
 				$creationOptions->setGeneratorClass($generatorClass);
@@ -1132,16 +1149,19 @@ class Server{
 				$generatorName = $this->configGroup->getConfigString("level-type");
 				$generatorOptions = $this->configGroup->getConfigString("generator-settings");
 				$generatorClass = $getGenerator($generatorName, $generatorOptions, $default);
-				if($generatorClass !== null){
-					$creationOptions = WorldCreationOptions::create()
-						->setGeneratorClass($generatorClass)
-						->setGeneratorOptions($generatorOptions);
-					$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
-					if($convertedSeed !== null){
-						$creationOptions->setSeed($convertedSeed);
-					}
-					$this->worldManager->generateWorld($default, $creationOptions);
+
+				if($generatorClass === null){
+					$this->getLogger()->emergency($this->getLanguage()->translate(KnownTranslationFactory::pocketmine_level_defaultError()));
+					return false;
 				}
+				$creationOptions = WorldCreationOptions::create()
+					->setGeneratorClass($generatorClass)
+					->setGeneratorOptions($generatorOptions);
+				$convertedSeed = Generator::convertSeed($this->configGroup->getConfigString("level-seed"));
+				if($convertedSeed !== null){
+					$creationOptions->setSeed($convertedSeed);
+				}
+				$this->worldManager->generateWorld($default, $creationOptions);
 			}
 
 			$world = $this->worldManager->getWorldByName($default);
@@ -1390,16 +1410,21 @@ class Server{
 		}
 	}
 
-	public function enablePlugins(PluginEnableOrder $type) : void{
+	public function enablePlugins(PluginEnableOrder $type) : bool{
+		$allSuccess = true;
 		foreach($this->pluginManager->getPlugins() as $plugin){
 			if(!$plugin->isEnabled() && $plugin->getDescription()->getOrder()->equals($type)){
-				$this->pluginManager->enablePlugin($plugin);
+				if(!$this->pluginManager->enablePlugin($plugin)){
+					$allSuccess = false;
+				}
 			}
 		}
 
 		if($type->equals(PluginEnableOrder::POSTWORLD())){
 			$this->commandMap->registerServerAliases();
 		}
+
+		return $allSuccess;
 	}
 
 	/**
@@ -1439,7 +1464,7 @@ class Server{
 		}
 
 		if($this->isRunning){
-			$this->logger->emergency("Forcing server shutdown");
+			$this->logger->emergency($this->language->translate(KnownTranslationFactory::pocketmine_server_forcingShutdown()));
 		}
 		try{
 			if(!$this->isRunning()){
@@ -1617,7 +1642,7 @@ class Server{
 						"reportPaste" => base64_encode($dump->getEncodedData())
 					], 10, [], $postUrlError);
 
-					if($reply !== null && ($data = json_decode($reply->getBody())) !== null){
+					if($reply !== null && is_object($data = json_decode($reply->getBody()))){
 						if(isset($data->crashId) && isset($data->crashUrl)){
 							$reportId = $data->crashId;
 							$reportUrl = $data->crashUrl;
