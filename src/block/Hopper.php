@@ -101,10 +101,7 @@ class Hopper extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		if($facing === Facing::UP){
-			return SupportType::FULL();
-		}
-		return SupportType::NONE();
+		return $facing === Facing::UP ? SupportType::FULL() : SupportType::NONE();
 	}
 
 	//TODO: redstone logic, sucking logic

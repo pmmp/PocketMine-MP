@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
+use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 
@@ -79,9 +80,6 @@ class Wall extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		if($facing === Facing::UP || $facing === Facing::DOWN){
-			return SupportType::CENTER();
-		}
-		return SupportType::NONE();
+		return Facing::axis($facing) === Axis::Y ? SupportType::CENTER() : SupportType::NONE();
 	}
 }
