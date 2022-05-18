@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\SupportType;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\FoodSource;
 use pocketmine\entity\Living;
@@ -134,5 +135,9 @@ class Cake extends Transparent implements FoodSource{
 
 	public function onConsume(Living $consumer) : void{
 		$this->position->getWorld()->setBlock($this->position, $this->getResidue());
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 }

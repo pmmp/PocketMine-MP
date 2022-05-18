@@ -83,4 +83,8 @@ class Ladder extends Transparent{
 	protected function canBeSupportedBy(Block $block, int $face) : bool{
 		return $block->getSupportType($face)->equals(SupportType::FULL());
 	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
 }

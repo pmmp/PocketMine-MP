@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\SignText;
+use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\SignChangeEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
@@ -133,5 +134,9 @@ abstract class BaseSign extends Transparent{
 		}
 
 		return false;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 }

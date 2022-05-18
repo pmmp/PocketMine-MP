@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
@@ -144,5 +145,9 @@ class CocoaBlock extends Transparent{
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		return VanillaItems::COCOA_BEANS();
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 }

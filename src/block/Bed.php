@@ -220,4 +220,8 @@ class Bed extends Transparent{
 	protected function canBeSupportedBy(Block $block, int $face) : bool{
 		return !$block->getSupportType($face)->equals(SupportType::NONE());
 	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
 }

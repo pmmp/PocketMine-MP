@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\MinimumCostFlowCalculator;
+use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
@@ -388,5 +389,9 @@ abstract class Liquid extends Transparent{
 			$this->position->getWorld()->isInWorld($block->position->x, $block->position->y, $block->position->z) &&
 			$block->canBeFlowedInto() &&
 			!($block instanceof Liquid && $block->isSource()); //TODO: I think this should only be liquids of the same type
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 }

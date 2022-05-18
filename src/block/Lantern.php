@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -90,5 +91,9 @@ class Lantern extends Transparent{
 
 	protected function canBeSupportedBy(Block $block, int $face) : bool{
 		return $block->getSupportType($face)->hasCenterSupport();
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 }

@@ -51,5 +51,9 @@ abstract class PressurePlate extends Transparent{
 		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	//TODO
 }
