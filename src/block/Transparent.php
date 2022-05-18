@@ -23,15 +23,9 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
-use pocketmine\block\utils\SupportType;
-
 class Transparent extends Block{
 
 	public function isTransparent() : bool{
 		return true;
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }
