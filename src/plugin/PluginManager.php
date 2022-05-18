@@ -448,7 +448,7 @@ class PluginManager{
 				$plugin->onEnableStateChange(true);
 			}catch(DisablePluginException){
 				$this->disablePlugin($plugin);
-				return;
+				return false;
 			}
 
 			if($plugin->isEnabled()){ //the plugin may have disabled itself during onEnable()
