@@ -25,7 +25,6 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
-
 use function mt_rand;
 
 class MonsterSpawner extends Transparent{
