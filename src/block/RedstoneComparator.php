@@ -126,7 +126,7 @@ class RedstoneComparator extends Flowable{
 		}
 	}
 
-	protected function canBeSupportedBy(Block $block) : bool{
+	private function canBeSupportedBy(Block $block) : bool{
 		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
 	}
 

@@ -113,6 +113,17 @@ class Stair extends Transparent{
 		return $bbs;
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		if($facing === Facing::UP && $this->isUpsideDown() ||
+			($facing === $this->facing && !$this->shape->equals(StairShape::OUTER_LEFT()) && !$this->shape->equals(StairShape::OUTER_RIGHT())) ||
+			($facing === Facing::rotate($this->facing, Axis::Y, false) && $this->shape->equals(StairShape::INNER_LEFT())) ||
+			($facing === Facing::rotate($this->facing, Axis::Y, true) && $this->shape->equals(StairShape::INNER_RIGHT())) ||
+			$facing === Facing::DOWN && !$this->isUpsideDown()){
+			return SupportType::FULL();
+		}
+		return SupportType::NONE();
+	}
+
 	private function getPossibleCornerFacing(bool $oppositeFacing) : ?int{
 		$side = $this->getSide($oppositeFacing ? Facing::opposite($this->facing) : $this->facing);
 		return (
@@ -129,16 +140,5 @@ class Stair extends Transparent{
 		$this->upsideDown = (($clickVector->y > 0.5 && $face !== Facing::UP) || $face === Facing::DOWN);
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		if($facing === Facing::UP && $this->isUpsideDown() ||
-				($facing === $this->facing && !$this->shape->equals(StairShape::OUTER_LEFT()) && !$this->shape->equals(StairShape::OUTER_RIGHT())) ||
-				($facing === Facing::rotate($this->facing, Axis::Y, false) && $this->shape->equals(StairShape::INNER_LEFT())) ||
-				($facing === Facing::rotate($this->facing, Axis::Y, true) && $this->shape->equals(StairShape::INNER_RIGHT())) ||
-				$facing === Facing::DOWN && !$this->isUpsideDown()){
-			return SupportType::FULL();
-		}
-		return SupportType::NONE();
 	}
 }

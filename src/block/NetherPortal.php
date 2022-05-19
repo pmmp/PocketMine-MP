@@ -76,6 +76,10 @@ class NetherPortal extends Transparent{
 		return [];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function getDrops(Item $item) : array{
 		return [];
 	}
@@ -83,9 +87,5 @@ class NetherPortal extends Transparent{
 	public function onEntityInside(Entity $entity) : bool{
 		//TODO
 		return true;
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

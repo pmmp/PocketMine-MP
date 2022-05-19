@@ -88,6 +88,10 @@ class DaylightSensor extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 10 / 16)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->inverted = !$this->inverted;
 		$this->signalStrength = $this->recalculateSignalStrength();
@@ -112,10 +116,6 @@ class DaylightSensor extends Transparent{
 
 		$sunAngle = $this->position->getWorld()->getSunAnglePercentage();
 		return max(0, (int) round($lightLevel * cos(($sunAngle + ((($sunAngle < 0.5 ? 0 : 1) - $sunAngle) / 5)) * 2 * M_PI)));
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 
 	//TODO

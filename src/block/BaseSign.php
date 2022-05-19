@@ -78,6 +78,10 @@ abstract class BaseSign extends Transparent{
 		return [];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	abstract protected function getSupportingFace() : int;
 
 	public function onNearbyBlockChange() : void{
@@ -134,9 +138,5 @@ abstract class BaseSign extends Transparent{
 		}
 
 		return false;
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

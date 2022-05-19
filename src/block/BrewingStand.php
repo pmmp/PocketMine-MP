@@ -84,6 +84,10 @@ class BrewingStand extends Transparent{
 		];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function hasSlot(BrewingStandSlot $slot) : bool{
 		return array_key_exists($slot->id(), $this->slots);
 	}
@@ -145,9 +149,5 @@ class BrewingStand extends Transparent{
 				$this->position->getWorld()->setBlock($this->position, $this);
 			}
 		}
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

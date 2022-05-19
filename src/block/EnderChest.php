@@ -50,6 +50,10 @@ class EnderChest extends Transparent{
 		return [AxisAlignedBB::one()->contract(0.025, 0, 0.025)->trim(Facing::UP, 0.05)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
 			$enderChest = $this->position->getWorld()->getTile($this->position);
@@ -70,9 +74,5 @@ class EnderChest extends Transparent{
 
 	public function isAffectedBySilkTouch() : bool{
 		return true;
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

@@ -81,6 +81,13 @@ class SnowLayer extends Flowable implements Fallable{
 		return [AxisAlignedBB::one()->trim(Facing::UP, $this->layers >= 4 ? 0.5 : 1)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		if(!$this->canBeReplaced()){
+			return SupportType::FULL();
+		}
+		return SupportType::NONE();
+	}
+
 	private function canBeSupportedBy(Block $b) : bool{
 		return $b->getSupportType(Facing::UP)->hasCenterSupport();
 	}
@@ -121,12 +128,5 @@ class SnowLayer extends Flowable implements Fallable{
 		return [
 			VanillaItems::SNOWBALL()->setCount(max(1, (int) floor($this->layers / 2)))
 		];
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		if(!$this->canBeReplaced()){
-			return SupportType::FULL();
-		}
-		return SupportType::NONE();
 	}
 }

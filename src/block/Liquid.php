@@ -115,6 +115,10 @@ abstract class Liquid extends Transparent{
 		return [];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [];
 	}
@@ -389,9 +393,5 @@ abstract class Liquid extends Transparent{
 			$this->position->getWorld()->isInWorld($block->position->x, $block->position->y, $block->position->z) &&
 			$block->canBeFlowedInto() &&
 			!($block instanceof Liquid && $block->isSource()); //TODO: I think this should only be liquids of the same type
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

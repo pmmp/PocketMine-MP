@@ -95,6 +95,10 @@ class Bed extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 16)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function isHeadPart() : bool{
 		return $this->head;
 	}
@@ -217,11 +221,7 @@ class Bed extends Transparent{
 		return parent::getAffectedBlocks();
 	}
 
-	protected function canBeSupportedBy(Block $block, int $face) : bool{
+	private function canBeSupportedBy(Block $block, int $face) : bool{
 		return !$block->getSupportType($face)->equals(SupportType::NONE());
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

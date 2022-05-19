@@ -65,6 +65,10 @@ class Ladder extends Transparent{
 		return [AxisAlignedBB::one()->trim($this->facing, 13 / 16)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($this->canBeSupportedBy($blockClicked, $face) && Facing::axis($face) !== Axis::Y){
 			$this->facing = $face;
@@ -80,11 +84,7 @@ class Ladder extends Transparent{
 		}
 	}
 
-	protected function canBeSupportedBy(Block $block, int $face) : bool{
+	private function canBeSupportedBy(Block $block, int $face) : bool{
 		return $block->getSupportType($face)->equals(SupportType::FULL());
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

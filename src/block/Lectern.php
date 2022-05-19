@@ -93,6 +93,10 @@ class Lectern extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 0.1)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function isProducingSignal() : bool{ return $this->producingSignal; }
 
 	/** @return $this */
@@ -163,9 +167,5 @@ class Lectern extends Transparent{
 			$this->producingSignal = false;
 			$this->position->getWorld()->setBlock($this->position, $this);
 		}
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

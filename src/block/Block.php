@@ -611,6 +611,10 @@ class Block{
 		return [AxisAlignedBB::one()];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::FULL();
+	}
+
 	public function isFullCube() : bool{
 		$bb = $this->getCollisionBoxes();
 
@@ -642,9 +646,5 @@ class Block{
 		}
 
 		return $currentHit;
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::FULL();
 	}
 }

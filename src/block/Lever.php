@@ -136,7 +136,7 @@ class Lever extends Flowable{
 		return true;
 	}
 
-	protected function canBeSupportedBy(Block $block, int $face) : bool{
+	private function canBeSupportedBy(Block $block, int $face) : bool{
 		return $block->getSupportType($face)->hasCenterSupport();
 	}
 

@@ -126,16 +126,16 @@ class Slab extends Transparent{
 		return [AxisAlignedBB::one()->trim($this->slabType->equals(SlabType::TOP()) ? Facing::DOWN : Facing::UP, 0.5)];
 	}
 
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [$this->asItem()->setCount($this->slabType->equals(SlabType::DOUBLE()) ? 2 : 1)];
-	}
-
 	public function getSupportType(int $facing) : SupportType{
 		if($this->slabType->equals(SlabType::DOUBLE())){
 			return SupportType::FULL();
-		}elseif ($facing === Facing::UP && $this->slabType->equals(SlabType::TOP()) || $facing === Facing::DOWN && $this->slabType->equals(SlabType::BOTTOM())) {
+		}elseif($facing === Facing::UP && $this->slabType->equals(SlabType::TOP()) || $facing === Facing::DOWN && $this->slabType->equals(SlabType::BOTTOM())){
 			return SupportType::FULL();
 		}
 		return SupportType::NONE();
+	}
+
+	public function getDropsForCompatibleTool(Item $item) : array{
+		return [$this->asItem()->setCount($this->slabType->equals(SlabType::DOUBLE()) ? 2 : 1)];
 	}
 }

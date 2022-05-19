@@ -79,6 +79,10 @@ class Hopper extends Transparent{
 		return $result;
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return $facing === Facing::UP ? SupportType::FULL() : SupportType::NONE();
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->facing = $face === Facing::DOWN ? Facing::DOWN : Facing::opposite($face);
 
@@ -98,10 +102,6 @@ class Hopper extends Transparent{
 
 	public function onScheduledUpdate() : void{
 		//TODO
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return $facing === Facing::UP ? SupportType::FULL() : SupportType::NONE();
 	}
 
 	//TODO: redstone logic, sucking logic

@@ -81,7 +81,7 @@ final class Coral extends BaseCoral{
 		}
 	}
 
-	protected function canBeSupportedBy(Block $block) : bool{
+	private function canBeSupportedBy(Block $block) : bool{
 		return $block->getSupportType(Facing::UP)->hasCenterSupport();
 	}
 }

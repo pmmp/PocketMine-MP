@@ -120,6 +120,10 @@ class Door extends Transparent{
 		return [AxisAlignedBB::one()->trim($this->open ? Facing::rotateY($this->facing, !$this->hingeRight) : $this->facing, 327 / 400)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function onNearbyBlockChange() : void{
 		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN), Facing::UP) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position); //this will delete both halves if they exist
@@ -186,11 +190,7 @@ class Door extends Transparent{
 		return parent::getAffectedBlocks();
 	}
 
-	protected function canBeSupportedBy(Block $block, int $face) : bool{
+	private function canBeSupportedBy(Block $block, int $face) : bool{
 		return $block->getSupportType($face)->hasEdgeSupport();
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

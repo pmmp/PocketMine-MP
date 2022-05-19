@@ -102,6 +102,10 @@ final class Bell extends Transparent{
 		];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function getAttachmentType() : BellAttachmentType{ return $this->attachmentType; }
 
 	/** @return $this */
@@ -181,9 +185,4 @@ final class Bell extends Transparent{
 			$this->position->getWorld()->broadcastPacketToViewers($this->position, $tile->createFakeUpdatePacket($faceHit));
 		}
 	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
-	}
-
 }

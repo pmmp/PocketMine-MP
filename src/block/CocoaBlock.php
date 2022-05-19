@@ -84,6 +84,10 @@ class CocoaBlock extends Transparent{
 		];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	private function canAttachTo(Block $block) : bool{
 		return $block instanceof Wood && $block->getTreeType()->equals(TreeType::JUNGLE());
 	}
@@ -145,9 +149,5 @@ class CocoaBlock extends Transparent{
 
 	public function getPickedItem(bool $addUserData = false) : Item{
 		return VanillaItems::COCOA_BEANS();
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

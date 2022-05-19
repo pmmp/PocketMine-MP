@@ -101,6 +101,10 @@ class Bamboo extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::SOUTH, $inset)->trim(Facing::EAST, $inset)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	private static function getOffsetSeed(int $x, int $y, int $z) : int{
 		$p1 = gmp_mul($z, 0x6ebfff5);
 		$p2 = gmp_mul($x, 0x2fc20f);
@@ -237,9 +241,5 @@ class Bamboo extends Transparent{
 			$this->ready = true;
 			$world->setBlock($this->position, $this);
 		}
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

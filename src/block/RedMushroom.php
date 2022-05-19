@@ -30,6 +30,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class RedMushroom extends Flowable{
+
 	public function ticksRandomly() : bool{
 		return true;
 	}

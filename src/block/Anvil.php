@@ -81,6 +81,10 @@ class Anvil extends Transparent implements Fallable{
 		return [AxisAlignedBB::one()->squash(Facing::axis(Facing::rotateY($this->facing, false)), 1 / 8)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
 			$player->setCurrentWindow(new AnvilInventory($this->position));
@@ -98,9 +102,5 @@ class Anvil extends Transparent implements Fallable{
 
 	public function tickFalling() : ?Block{
 		return null;
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

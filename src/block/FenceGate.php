@@ -79,6 +79,10 @@ class FenceGate extends Transparent{
 		return $this->open ? [] : [AxisAlignedBB::one()->extend(Facing::UP, 0.5)->squash(Facing::axis($this->facing), 6 / 16)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	private function checkInWall() : bool{
 		return (
 			$this->getSide(Facing::rotateY($this->facing, false)) instanceof Wall ||
@@ -128,9 +132,5 @@ class FenceGate extends Transparent{
 
 	public function getFlammability() : int{
 		return 20;
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

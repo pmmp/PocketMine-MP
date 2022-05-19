@@ -64,6 +64,10 @@ class Cake extends Transparent implements FoodSource{
 		];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function getBites() : int{ return $this->bites; }
 
 	/** @return $this */
@@ -135,9 +139,5 @@ class Cake extends Transparent implements FoodSource{
 
 	public function onConsume(Living $consumer) : void{
 		$this->position->getWorld()->setBlock($this->position, $this->getResidue());
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

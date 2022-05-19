@@ -95,7 +95,7 @@ abstract class Button extends Flowable{
 		}
 	}
 
-	protected function canBeSupportedBy(Block $support, int $face) : bool{
+	private function canBeSupportedBy(Block $support, int $face) : bool{
 		return $support->getSupportType($face)->hasCenterSupport();
 	}
 }

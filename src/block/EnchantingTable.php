@@ -40,6 +40,10 @@ class EnchantingTable extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 0.25)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
 			//TODO lock
@@ -48,9 +52,5 @@ class EnchantingTable extends Transparent{
 		}
 
 		return true;
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }

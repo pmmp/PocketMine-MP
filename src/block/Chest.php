@@ -46,6 +46,10 @@ class Chest extends Transparent{
 		return [AxisAlignedBB::one()->contract(0.025, 0, 0.025)->trim(Facing::UP, 0.05)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function onPostPlace() : void{
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileChest){
@@ -92,9 +96,5 @@ class Chest extends Transparent{
 
 	public function getFuelTime() : int{
 		return 300;
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
 	}
 }
