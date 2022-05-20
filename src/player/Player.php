@@ -2481,7 +2481,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			return false;
 		}
 
-		//TODO: client side race condition here makes the opening work incorrectly
 		$this->removeCurrentWindow();
 
 		if(($inventoryManager = $this->getNetworkSession()->getInvManager()) === null){
