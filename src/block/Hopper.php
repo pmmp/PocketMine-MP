@@ -80,7 +80,11 @@ class Hopper extends Transparent{
 	}
 
 	public function getSupportType(int $facing) : SupportType{
-		return $facing === Facing::UP ? SupportType::FULL() : SupportType::NONE();
+		return match($facing){
+			Facing::UP => SupportType::FULL(),
+			Facing::DOWN => $this->facing === Facing::DOWN ? SupportType::CENTER() : SupportType::NONE(),
+			default => SupportType::NONE()
+		};
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
