@@ -66,12 +66,10 @@ class DeadBush extends Flowable{
 	}
 
 	private function isValidSupport(Block $block) : bool{
-		$id = $block->getId();
-		return $id === BlockLegacyIds::SAND
-			|| $id === BlockLegacyIds::PODZOL
-			|| $id === BlockLegacyIds::MYCELIUM
-			|| $id === BlockLegacyIds::DIRT
-			|| $id === BlockLegacyIds::HARDENED_CLAY
-			|| $id === BlockLegacyIds::TERRACOTTA;
+		return $block instanceof Sand
+			|| $block instanceof Podzol
+			|| $block instanceof Mycelium
+			|| $block instanceof Dirt
+			|| $block instanceof HardenedClay;
 	}
 }
