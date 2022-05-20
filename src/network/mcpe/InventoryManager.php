@@ -67,13 +67,6 @@ use function spl_object_id;
  * @phpstan-type ContainerOpenClosure \Closure(int $id, Inventory $inventory) : (list<ClientboundPacket>|null)
  */
 class InventoryManager{
-
-	//TODO: HACK!
-	//these IDs are used for 1.16 to restore 1.14ish crafting & inventory behaviour; since they don't seem to have any
-	//effect on the behaviour of inventory transactions I don't currently plan to integrate these into the main system.
-	private const RESERVED_WINDOW_ID_RANGE_START = ContainerIds::LAST - 10;
-	private const HARDCODED_INVENTORY_WINDOW_ID = self::RESERVED_WINDOW_ID_RANGE_START + 2;
-
 	/** @var Player */
 	private $player;
 	/** @var NetworkSession */
@@ -85,15 +78,6 @@ class InventoryManager{
 	private $lastInventoryNetworkId = ContainerIds::FIRST;
 
 	/**
-	 * TODO: HACK! This tracks GUIs for inventories that the server considers "always open" so that the client can't
-	 * open them twice. (1.16 hack)
-	 * @var true[]
-	 * @phpstan-var array<int, true>
-	 * @internal
-	 */
-	protected $openHardcodedWindows = [];
-
-	/**
 	 * @var Item[][]
 	 * @phpstan-var array<int, array<int, Item>>
 	 */
@@ -103,6 +87,10 @@ class InventoryManager{
 
 	/** @phpstan-var ObjectSet<ContainerOpenClosure> */
 	private ObjectSet $containerOpenCallbacks;
+
+	private ?int $pendingCloseWindowId = null;
+	/** @phpstan-var \Closure() : void */
+	private ?\Closure $pendingOpenWindowCallback = null;
 
 	public function __construct(Player $player, NetworkSession $session){
 		$this->player = $player;
@@ -123,6 +111,12 @@ class InventoryManager{
 
 	private function add(int $id, Inventory $inventory) : void{
 		$this->windowMap[$id] = $inventory;
+	}
+
+	private function addDynamic(Inventory $inventory) : int{
+		$this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % ContainerIds::LAST);
+		$this->add($this->lastInventoryNetworkId, $inventory);
+		return $this->lastInventoryNetworkId;
 	}
 
 	private function remove(int $id) : void{
@@ -168,21 +162,47 @@ class InventoryManager{
 		}
 	}
 
+	/**
+	 * When the server initiates a window close, it does so by sending a ContainerClose to the client, which causes the
+	 * client to behave as if it initiated the close itself. It responds by sending a ContainerClose back to the server,
+	 * which the server is then expected to respond to.
+	 *
+	 * Sending the client a new window before sending this final response creates buggy behaviour on the client, which
+	 * is problematic when switching windows. Therefore, we defer sending any new windows until after the client
+	 * responds to our window close instruction, so that we can complete the window handshake correctly.
+	 *
+	 * This is a pile of complicated garbage that only exists because Mojang overengineered the process of opening and
+	 * closing inventory windows.
+	 *
+	 * @phpstan-param \Closure() : void $func
+	 */
+	private function openWindowDeferred(\Closure $func) : void{
+		if($this->pendingCloseWindowId !== null){
+			$this->session->getLogger()->debug("Deferring opening of new window, waiting for close ack of window $this->pendingCloseWindowId");
+			$this->pendingOpenWindowCallback = $func;
+		}else{
+			$func();
+		}
+	}
+
 	public function onCurrentWindowChange(Inventory $inventory) : void{
 		$this->onCurrentWindowRemove();
-		$this->add($this->lastInventoryNetworkId = max(ContainerIds::FIRST, ($this->lastInventoryNetworkId + 1) % self::RESERVED_WINDOW_ID_RANGE_START), $inventory);
 
-		foreach($this->containerOpenCallbacks as $callback){
-			$pks = $callback($this->lastInventoryNetworkId, $inventory);
-			if($pks !== null){
-				foreach($pks as $pk){
-					$this->session->sendDataPacket($pk);
+		$this->openWindowDeferred(function() use ($inventory) : void{
+			$windowId = $this->addDynamic($inventory);
+
+			foreach($this->containerOpenCallbacks as $callback){
+				$pks = $callback($windowId, $inventory);
+				if($pks !== null){
+					foreach($pks as $pk){
+						$this->session->sendDataPacket($pk);
+					}
+					$this->syncContents($inventory);
+					return;
 				}
-				$this->syncContents($inventory);
-				return;
 			}
-		}
-		throw new \LogicException("Unsupported inventory type");
+			throw new \LogicException("Unsupported inventory type");
+		});
 	}
 
 	/** @phpstan-return ObjectSet<ContainerOpenClosure> */
@@ -218,31 +238,32 @@ class InventoryManager{
 	}
 
 	public function onClientOpenMainInventory() : void{
-		$id = self::HARDCODED_INVENTORY_WINDOW_ID;
-		if(!isset($this->openHardcodedWindows[$id])){
-			//TODO: HACK! this restores 1.14ish behaviour, but this should be able to be listened to and
-			//controlled by plugins. However, the player is always a subscriber to their own inventory so it
-			//doesn't integrate well with the regular container system right now.
-			$this->openHardcodedWindows[$id] = true;
+		$this->onCurrentWindowRemove();
+
+		$this->openWindowDeferred(function() : void{
+			$windowId = $this->addDynamic($this->player->getInventory());
+
 			$this->session->sendDataPacket(ContainerOpenPacket::entityInv(
-				InventoryManager::HARDCODED_INVENTORY_WINDOW_ID,
+				$windowId,
 				WindowTypes::INVENTORY,
 				$this->player->getId()
 			));
-		}
+		});
 	}
 
 	public function onCurrentWindowRemove() : void{
 		if(isset($this->windowMap[$this->lastInventoryNetworkId])){
 			$this->remove($this->lastInventoryNetworkId);
 			$this->session->sendDataPacket(ContainerClosePacket::create($this->lastInventoryNetworkId, true));
+			if($this->pendingCloseWindowId !== null){
+				throw new AssumptionFailedError("We should not have opened a new window while a window was waiting to be closed");
+			}
+			$this->pendingCloseWindowId = $this->lastInventoryNetworkId;
 		}
 	}
 
 	public function onClientRemoveWindow(int $id) : void{
-		if(isset($this->openHardcodedWindows[$id])){
-			unset($this->openHardcodedWindows[$id]);
-		}elseif($id === $this->lastInventoryNetworkId){
+		if($id === $this->lastInventoryNetworkId){
 			$this->remove($id);
 			$this->player->removeCurrentWindow();
 		}else{
@@ -252,6 +273,13 @@ class InventoryManager{
 		//Always send this, even if no window matches. If we told the client to close a window, it will behave as if it
 		//initiated the close and expect an ack.
 		$this->session->sendDataPacket(ContainerClosePacket::create($id, false));
+
+		if($this->pendingOpenWindowCallback !== null && $id === $this->pendingCloseWindowId){
+			$this->session->getLogger()->debug("Opening deferred window after close ack of window $id");
+			$this->pendingCloseWindowId = null;
+			($this->pendingOpenWindowCallback)();
+			$this->pendingOpenWindowCallback = null;
+		}
 	}
 
 	public function syncSlot(Inventory $inventory, int $slot) : void{
