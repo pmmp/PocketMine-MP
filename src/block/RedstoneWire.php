@@ -65,6 +65,6 @@ class RedstoneWire extends Flowable{
 	}
 
 	private function canBeSupportedBy(Block $block) : bool{
-		return $block->getSupportType(Facing::UP)->hasEdgeSupport();
+		return $block->getSupportType(Facing::UP)->hasCenterSupport();
 	}
 }
