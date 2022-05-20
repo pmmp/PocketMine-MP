@@ -99,11 +99,7 @@ class Torch extends Flowable{
 	}
 
 	private function canBeSupportedBy(Block $support, int $face) : bool{
-		if($face === Facing::UP && $support->getSupportType($face)->hasCenterSupport()){
-			return true;
-		}elseif(Facing::axis($face) !== Axis::Y && $support->getSupportType($face)->equals(SupportType::FULL())){
-			return true;
-		}
-		return false;
+		return ($face === Facing::UP && $support->getSupportType($face)->hasCenterSupport()) ||
+			(Facing::axis($face) !== Axis::Y && $support->getSupportType($face)->equals(SupportType::FULL()));
 	}
 }
