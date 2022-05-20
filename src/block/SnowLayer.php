@@ -89,7 +89,7 @@ class SnowLayer extends Flowable implements Fallable{
 	}
 
 	private function canBeSupportedBy(Block $b) : bool{
-		return $b->getSupportType(Facing::UP)->hasCenterSupport();
+		return $b->getSupportType(Facing::UP)->equals(SupportType::FULL());
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
