@@ -27,6 +27,7 @@ use pocketmine\block\tile\Hopper as TileHopper;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -76,6 +77,14 @@ class Hopper extends Transparent{
 			$result[] = AxisAlignedBB::one()->trim($f, 14 / 16);
 		}
 		return $result;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return match($facing){
+			Facing::UP => SupportType::FULL(),
+			Facing::DOWN => $this->facing === Facing::DOWN ? SupportType::CENTER() : SupportType::NONE(),
+			default => SupportType::NONE()
+		};
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
