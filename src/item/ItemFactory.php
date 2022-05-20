@@ -55,7 +55,7 @@ class ItemFactory{
 	use SingletonTrait;
 
 	/** @var Item[] */
-	private $list = [];
+	private array $list = [];
 
 	public function __construct(){
 		$this->registerArmorItems();

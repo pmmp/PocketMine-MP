@@ -21,28 +21,19 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\scheduler;
+namespace pocketmine\block\inventory;
 
-use pocketmine\MemoryManager;
-use Webmozart\PathUtil\Path;
+use pocketmine\inventory\SimpleInventory;
+use pocketmine\inventory\TemporaryInventory;
+use pocketmine\world\Position;
 
-/**
- * Task used to dump memory from AsyncWorkers
- */
-class DumpWorkerMemoryTask extends AsyncTask{
-	public function __construct(
-		private string $outputFolder,
-		private int $maxNesting,
-		private int $maxStringSize
-	){}
+class StonecutterInventory extends SimpleInventory implements BlockInventory, TemporaryInventory{
+	use BlockInventoryTrait;
 
-	public function onRun() : void{
-		MemoryManager::dumpMemory(
-			$this->worker,
-			Path::join($this->outputFolder, "AsyncWorker#" . $this->worker->getAsyncWorkerId()),
-			$this->maxNesting,
-			$this->maxStringSize,
-			new \PrefixedLogger($this->worker->getLogger(), "Memory Dump")
-		);
+	public const SLOT_INPUT = 0;
+
+	public function __construct(Position $holder){
+		$this->holder = $holder;
+		parent::__construct(1);
 	}
 }

@@ -21,28 +21,26 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\scheduler;
+namespace pocketmine\crafting;
 
-use pocketmine\MemoryManager;
-use Webmozart\PathUtil\Path;
+use pocketmine\utils\EnumTrait;
 
 /**
- * Task used to dump memory from AsyncWorkers
+ * This doc-block is generated automatically, do not modify it manually.
+ * This must be regenerated whenever registry members are added, removed or changed.
+ * @see build/generate-registry-annotations.php
+ * @generate-registry-docblock
+ *
+ * @method static ShapelessRecipeType CRAFTING()
+ * @method static ShapelessRecipeType STONECUTTER()
  */
-class DumpWorkerMemoryTask extends AsyncTask{
-	public function __construct(
-		private string $outputFolder,
-		private int $maxNesting,
-		private int $maxStringSize
-	){}
+final class ShapelessRecipeType{
+	use EnumTrait;
 
-	public function onRun() : void{
-		MemoryManager::dumpMemory(
-			$this->worker,
-			Path::join($this->outputFolder, "AsyncWorker#" . $this->worker->getAsyncWorkerId()),
-			$this->maxNesting,
-			$this->maxStringSize,
-			new \PrefixedLogger($this->worker->getLogger(), "Memory Dump")
+	protected static function setup() : void{
+		self::registerAll(
+			new self("crafting"),
+			new self("stonecutter")
 		);
 	}
 }

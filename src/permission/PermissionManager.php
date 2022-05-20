@@ -27,8 +27,7 @@ use function count;
 use function spl_object_id;
 
 class PermissionManager{
-	/** @var PermissionManager|null */
-	private static $instance = null;
+	private static ?self $instance = null;
 
 	public static function getInstance() : PermissionManager{
 		if(self::$instance === null){

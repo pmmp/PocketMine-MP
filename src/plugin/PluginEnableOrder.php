@@ -67,18 +67,14 @@ final class PluginEnableOrder{
 	}
 
 	/**
-	 * @var string[]
-	 * @phpstan-var list<string>
-	 */
-	private array $aliases;
-
-	/**
 	 * @param string[] $aliases
 	 * @phpstan-param list<string> $aliases
 	 */
-	private function __construct(string $enumName, array $aliases){
+	private function __construct(
+		string $enumName,
+		private array $aliases
+	){
 		$this->Enum___construct($enumName);
-		$this->aliases = $aliases;
 	}
 
 	/**

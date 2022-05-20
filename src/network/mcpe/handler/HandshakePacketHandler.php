@@ -29,19 +29,10 @@ use pocketmine\network\mcpe\protocol\ClientToServerHandshakePacket;
  * Handler responsible for awaiting client response from crypto handshake.
  */
 class HandshakePacketHandler extends PacketHandler{
-
-	/**
-	 * @var \Closure
-	 * @phpstan-var \Closure() : void
-	 */
-	private $onHandshakeCompleted;
-
 	/**
 	 * @phpstan-param \Closure() : void $onHandshakeCompleted
 	 */
-	public function __construct(\Closure $onHandshakeCompleted){
-		$this->onHandshakeCompleted = $onHandshakeCompleted;
-	}
+	public function __construct(private \Closure $onHandshakeCompleted){}
 
 	public function handleClientToServerHandshake(ClientToServerHandshakePacket $packet) : bool{
 		($this->onHandshakeCompleted)();

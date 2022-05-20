@@ -54,7 +54,7 @@ abstract class AsyncTask extends \Threaded{
 	 *
 	 * Used to store objects which are only needed on one thread and should not be serialized.
 	 */
-	private static $threadLocalStorage = null;
+	private static ?\ArrayObject $threadLocalStorage = null;
 
 	/** @var AsyncWorker|null $worker */
 	public $worker = null;
@@ -62,19 +62,13 @@ abstract class AsyncTask extends \Threaded{
 	/** @var \Threaded */
 	public $progressUpdates;
 
-	/** @var scalar|null */
-	private $result = null;
-	/** @var bool */
-	private $serialized = false;
-	/** @var bool */
-	private $cancelRun = false;
-	/** @var bool */
-	private $submitted = false;
+	private string|int|bool|null|float $result = null;
+	private bool $serialized = false;
+	private bool $cancelRun = false;
+	private bool $submitted = false;
 
-	/** @var bool */
-	private $crashed = false;
-	/** @var bool */
-	private $finished = false;
+	private bool $crashed = false;
+	private bool $finished = false;
 
 	public function run() : void{
 		$this->result = null;

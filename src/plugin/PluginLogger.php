@@ -34,7 +34,7 @@ class PluginLogger extends \PrefixedLogger implements \AttachableLogger{
 	 * @var \Closure[]
 	 * @phpstan-var LoggerAttachment[]
 	 */
-	private $attachments = [];
+	private array $attachments = [];
 
 	/**
 	 * @phpstan-param LoggerAttachment $attachment

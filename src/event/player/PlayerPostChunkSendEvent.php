@@ -21,28 +21,24 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\scheduler;
+namespace pocketmine\event\player;
 
-use pocketmine\MemoryManager;
-use Webmozart\PathUtil\Path;
+use pocketmine\player\Player;
 
 /**
- * Task used to dump memory from AsyncWorkers
+ * Called after a player is sent a chunk as part of their view radius.
  */
-class DumpWorkerMemoryTask extends AsyncTask{
-	public function __construct(
-		private string $outputFolder,
-		private int $maxNesting,
-		private int $maxStringSize
-	){}
+final class PlayerPostChunkSendEvent extends PlayerEvent{
 
-	public function onRun() : void{
-		MemoryManager::dumpMemory(
-			$this->worker,
-			Path::join($this->outputFolder, "AsyncWorker#" . $this->worker->getAsyncWorkerId()),
-			$this->maxNesting,
-			$this->maxStringSize,
-			new \PrefixedLogger($this->worker->getLogger(), "Memory Dump")
-		);
+	public function __construct(
+		Player $player,
+		private int $chunkX,
+		private int $chunkZ
+	){
+		$this->player = $player;
 	}
+
+	public function getChunkX() : int{ return $this->chunkX; }
+
+	public function getChunkZ() : int{ return $this->chunkZ; }
 }

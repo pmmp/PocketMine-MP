@@ -33,8 +33,7 @@ use pocketmine\block\BlockFactory;
  * just place wheat crops when used on the ground).
  */
 final class ItemBlock extends Item{
-	/** @var int */
-	private $blockFullId;
+	private int $blockFullId;
 
 	public function __construct(ItemIdentifier $identifier, Block $block){
 		parent::__construct($identifier, $block->getName());

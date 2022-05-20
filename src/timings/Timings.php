@@ -34,8 +34,7 @@ use function dechex;
 abstract class Timings{
 	public const INCLUDED_BY_OTHER_TIMINGS_PREFIX = "** ";
 
-	/** @var bool */
-	private static $initialized = false;
+	private static bool $initialized = false;
 
 	/** @var TimingsHandler */
 	public static $fullTick;

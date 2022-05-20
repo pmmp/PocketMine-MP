@@ -28,24 +28,17 @@ use pocketmine\utils\Internet;
 use pocketmine\utils\InternetException;
 
 final class UPnPNetworkInterface implements NetworkInterface{
+	private ?string $serviceURL = null;
 
-	/** @var string */
-	private $ip;
-	/** @var int */
-	private $port;
-
-	/** @var string|null */
-	private $serviceURL = null;
-	/** @var \Logger */
-	private $logger;
-
-	public function __construct(\Logger $logger, string $ip, int $port){
+	public function __construct(
+		private \Logger $logger,
+		private string $ip,
+		private int $port
+	){
 		if(!Internet::$online){
 			throw new \RuntimeException("Server is offline");
 		}
 
-		$this->ip = $ip;
-		$this->port = $port;
 		$this->logger = new \PrefixedLogger($logger, "UPnP Port Forwarder");
 	}
 

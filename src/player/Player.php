@@ -65,6 +65,7 @@ use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\event\player\PlayerJumpEvent;
 use pocketmine\event\player\PlayerKickEvent;
 use pocketmine\event\player\PlayerMoveEvent;
+use pocketmine\event\player\PlayerPostChunkSendEvent;
 use pocketmine\event\player\PlayerQuitEvent;
 use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerToggleFlightEvent;
@@ -785,6 +786,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 							$this->getNetworkSession()->notifyTerrainReady();
 						}
+						(new PlayerPostChunkSendEvent($this, $X, $Z))->call();
 					});
 				},
 				static function() : void{
@@ -1251,11 +1253,11 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 			$horizontalDistanceTravelled = sqrt((($from->x - $to->x) ** 2) + (($from->z - $to->z) ** 2));
 			if($horizontalDistanceTravelled > 0){
-				//TODO: check swimming (adds 0.015 exhaustion in MCPE)
+				//TODO: check for swimming
 				if($this->isSprinting()){
-					$this->hungerManager->exhaust(0.1 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_SPRINTING);
+					$this->hungerManager->exhaust(0.01 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_SPRINTING);
 				}else{
-					$this->hungerManager->exhaust(0.01 * $horizontalDistanceTravelled, PlayerExhaustEvent::CAUSE_WALKING);
+					$this->hungerManager->exhaust(0.0, PlayerExhaustEvent::CAUSE_WALKING);
 				}
 
 				if($this->nextChunkOrderRun > 20){
@@ -1650,7 +1652,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 					}
 					$this->inventory->setItemInHand($item);
 				}
-				$this->hungerManager->exhaust(0.025, PlayerExhaustEvent::CAUSE_MINING);
+				$this->hungerManager->exhaust(0.005, PlayerExhaustEvent::CAUSE_MINING);
 				return true;
 			}
 		}else{
@@ -1760,7 +1762,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->inventory->setItemInHand($heldItem);
 			}
 
-			$this->hungerManager->exhaust(0.3, PlayerExhaustEvent::CAUSE_ATTACK);
+			$this->hungerManager->exhaust(0.1, PlayerExhaustEvent::CAUSE_ATTACK);
 		}
 
 		return true;
@@ -2303,7 +2305,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected function applyPostDamageEffects(EntityDamageEvent $source) : void{
 		parent::applyPostDamageEffects($source);
 
-		$this->hungerManager->exhaust(0.3, PlayerExhaustEvent::CAUSE_DAMAGE);
+		$this->hungerManager->exhaust(0.1, PlayerExhaustEvent::CAUSE_DAMAGE);
 	}
 
 	public function attack(EntityDamageEvent $source) : void{

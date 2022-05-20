@@ -70,12 +70,12 @@ final class EntityFactory{
 	 * @var \Closure[] save ID => creator function
 	 * @phpstan-var array<int|string, \Closure(World, CompoundTag) : Entity>
 	 */
-	private $creationFuncs = [];
+	private array $creationFuncs = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<class-string<Entity>, string>
 	 */
-	private $saveNames = [];
+	private array $saveNames = [];
 
 	public function __construct(){
 		//define legacy save IDs first - use them for saving for maximum compatibility with Minecraft PC
@@ -173,8 +173,6 @@ final class EntityFactory{
 		$this->register(Human::class, function(World $world, CompoundTag $nbt) : Human{
 			return new Human(Helper::parseLocation($nbt, $world), Human::parseSkinNBT($nbt), $nbt);
 		}, ['Human']);
-
-		PaintingMotive::init();
 	}
 
 	/**

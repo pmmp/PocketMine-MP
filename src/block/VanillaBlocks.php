@@ -529,6 +529,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static StainedHardenedGlass STAINED_HARDENED_GLASS()
  * @method static StainedHardenedGlassPane STAINED_HARDENED_GLASS_PANE()
  * @method static Opaque STONE()
+ * @method static Stonecutter STONECUTTER()
  * @method static Opaque STONE_BRICKS()
  * @method static Slab STONE_BRICK_SLAB()
  * @method static Stair STONE_BRICK_STAIRS()
@@ -1099,6 +1100,7 @@ final class VanillaBlocks{
 		self::register("stone_pressure_plate", $factory->get(Ids::STONE_PRESSURE_PLATE, 0));
 		self::register("stone_slab", $factory->get(Ids::STONE_SLAB4, 2));
 		self::register("stone_stairs", $factory->get(Ids::NORMAL_STONE_STAIRS, 0));
+		self::register("stonecutter", $factory->get(Ids::STONECUTTER_BLOCK, 2));
 		self::register("stripped_acacia_log", $factory->get(Ids::STRIPPED_ACACIA_LOG, 0));
 		self::register("stripped_acacia_wood", $factory->get(Ids::WOOD, 12));
 		self::register("stripped_birch_log", $factory->get(Ids::STRIPPED_BIRCH_LOG, 0));
