@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
@@ -73,6 +74,10 @@ class NetherPortal extends Transparent{
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function getDrops(Item $item) : array{
