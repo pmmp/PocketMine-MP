@@ -23,6 +23,6 @@ declare(strict_types=1);
 
 namespace pocketmine\plugin;
 
-class DisablePluginException extends \RuntimeException{
+final class DisablePluginException extends \RuntimeException{
 
 }
