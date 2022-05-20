@@ -65,7 +65,7 @@ class DeadBush extends Flowable{
 		return 100;
 	}
 
-	private function isValidSupport(Block $block): bool{
+	private function isValidSupport(Block $block) : bool{
 		$id = $block->getId();
 		return $id === BlockLegacyIds::SAND
 			|| $id === BlockLegacyIds::PODZOL
