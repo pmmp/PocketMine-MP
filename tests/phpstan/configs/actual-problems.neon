@@ -1415,3 +1415,13 @@ parameters:
 			count: 1
 			path: ../../phpunit/scheduler/AsyncPoolTest.php
 
+		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getHighestBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/RedMushroomBlock.php
+
+		-
+			message: "#^Parameter \\#1 \\$z of method pocketmine\\\\world\\\\World\\:\\:getHighestBlockAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/RedMushroomBlock.php
+
