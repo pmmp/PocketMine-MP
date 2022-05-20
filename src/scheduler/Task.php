@@ -26,14 +26,9 @@ namespace pocketmine\scheduler;
 use pocketmine\utils\Utils;
 
 abstract class Task{
+	private ?TaskHandler $taskHandler = null;
 
-	/** @var TaskHandler|null */
-	private $taskHandler = null;
-
-	/**
-	 * @return TaskHandler|null
-	 */
-	final public function getHandler(){
+	final public function getHandler() : ?TaskHandler{
 		return $this->taskHandler;
 	}
 

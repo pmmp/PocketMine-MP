@@ -27,7 +27,7 @@ use function array_filter;
 
 class AttributeMap{
 	/** @var Attribute[] */
-	private $attributes = [];
+	private array $attributes = [];
 
 	public function add(Attribute $attribute) : void{
 		$this->attributes[$attribute->getId()] = $attribute;

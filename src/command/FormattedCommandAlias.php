@@ -45,15 +45,14 @@ class FormattedCommandAlias extends Command{
 	 */
 	private const FORMAT_STRING_REGEX = '/\G\$(\$)?((?!0)+\d+)(-)?/';
 
-	/** @var string[] */
-	private array $formatStrings = [];
-
 	/**
 	 * @param string[] $formatStrings
 	 */
-	public function __construct(string $alias, array $formatStrings){
+	public function __construct(
+		string $alias,
+		private array $formatStrings
+	){
 		parent::__construct($alias);
-		$this->formatStrings = $formatStrings;
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){

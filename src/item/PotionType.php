@@ -81,8 +81,6 @@ final class PotionType{
 		__construct as Enum___construct;
 	}
 
-	private string $displayName;
-
 	protected static function setup() : void{
 		self::registerAll(
 			new self("water", "Water", fn() => []),
@@ -204,16 +202,15 @@ final class PotionType{
 		);
 	}
 
-	/** @phpstan-var \Closure() : list<EffectInstance>  */
-	private \Closure $effectsGetter;
-
 	/**
 	 * @phpstan-param \Closure() : list<EffectInstance> $effectsGetter
 	 */
-	private function __construct(string $enumName, string $displayName, \Closure $effectsGetter){
+	private function __construct(
+		string $enumName,
+		private string $displayName,
+		private \Closure $effectsGetter
+	){
 		$this->Enum___construct($enumName);
-		$this->displayName = $displayName;
-		$this->effectsGetter = $effectsGetter;
 	}
 
 	public function getDisplayName() : string{ return $this->displayName; }

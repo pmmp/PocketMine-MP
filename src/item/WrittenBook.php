@@ -40,12 +40,9 @@ class WrittenBook extends WritableBookBase{
 	public const TAG_AUTHOR = "author"; //TAG_String
 	public const TAG_TITLE = "title"; //TAG_String
 
-	/** @var int */
-	private $generation = self::GENERATION_ORIGINAL;
-	/** @var string */
-	private $author = "";
-	/** @var string */
-	private $title = "";
+	private int $generation = self::GENERATION_ORIGINAL;
+	private string $author = "";
+	private string $title = "";
 
 	public function getMaxStackSize() : int{
 		return 16;

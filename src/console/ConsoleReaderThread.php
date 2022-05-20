@@ -46,13 +46,10 @@ use const PHP_BINARY;
 use const STREAM_SHUT_RDWR;
 
 final class ConsoleReaderThread extends Thread{
-	private \Threaded $buffer;
-	private ?SleeperNotifier $notifier;
-
-	public function __construct(\Threaded $buffer, ?SleeperNotifier $notifier = null){
-		$this->buffer = $buffer;
-		$this->notifier = $notifier;
-	}
+	public function __construct(
+		private \Threaded $buffer,
+		private ?SleeperNotifier $notifier = null
+	){}
 
 	protected function onRun() : void{
 		$buffer = $this->buffer;

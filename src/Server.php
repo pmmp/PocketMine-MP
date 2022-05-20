@@ -223,8 +223,6 @@ class Server{
 
 	private int $sendUsageTicker = 0;
 
-	private \AttachableThreadedLogger $logger;
-
 	private MemoryManager $memoryManager;
 
 	private ConsoleReaderThread $console;
@@ -249,7 +247,6 @@ class Server{
 
 	private UuidInterface $serverID;
 
-	private \DynamicClassLoader $autoloader;
 	private string $dataPath;
 	private string $pluginPath;
 
@@ -766,7 +763,12 @@ class Server{
 		return self::$instance;
 	}
 
-	public function __construct(\DynamicClassLoader $autoloader, \AttachableThreadedLogger $logger, string $dataPath, string $pluginPath){
+	public function __construct(
+		private \DynamicClassLoader $autoloader,
+		private \AttachableThreadedLogger $logger,
+		string $dataPath,
+		string $pluginPath
+	){
 		if(self::$instance !== null){
 			throw new \LogicException("Only one server instance can exist at once");
 		}
@@ -774,8 +776,6 @@ class Server{
 		$this->startTime = microtime(true);
 
 		$this->tickSleeper = new SleeperHandler();
-		$this->autoloader = $autoloader;
-		$this->logger = $logger;
 
 		$this->signalHandler = new SignalHandler(function() : void{
 			$this->logger->info("Received signal interrupt, stopping the server");

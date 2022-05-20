@@ -26,13 +26,10 @@ namespace pocketmine\world\generator;
 use function exp;
 
 final class Gaussian{
-	public int $smoothSize;
 	/** @var float[][] */
 	public array $kernel = [];
 
-	public function __construct(int $smoothSize){
-		$this->smoothSize = $smoothSize;
-
+	public function __construct(public int $smoothSize){
 		$bellSize = 1 / $this->smoothSize;
 		$bellHeight = 2 * $this->smoothSize;
 

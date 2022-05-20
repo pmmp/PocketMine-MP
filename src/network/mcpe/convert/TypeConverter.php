@@ -60,8 +60,7 @@ class TypeConverter{
 	private const PM_ID_TAG = "___Id___";
 	private const PM_META_TAG = "___Meta___";
 
-	/** @var int */
-	private $shieldRuntimeId;
+	private int $shieldRuntimeId;
 
 	public function __construct(){
 		//TODO: inject stuff via constructor
