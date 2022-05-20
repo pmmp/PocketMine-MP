@@ -13,17 +13,17 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@2.12.0
+        uses: shivammathur/setup-php@2.18.1
         with:
           php-version: 8.0
 
       - name: Restore Composer package cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/composer/files
@@ -60,7 +60,7 @@ jobs:
         run: php build/generate-build-info-json.php ${{ github.sha }} ${{ steps.get-pm-version.outputs.PM_VERSION }} ${{ github.repository }} ${{ steps.build-number.outputs.BUILD_NUMBER }} > build_info.json
 
       - name: Upload release artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: release_artifacts
           path: |
@@ -69,7 +69,7 @@ jobs:
             ${{ github.workspace }}/build_info.json
 
       - name: Create draft release
-        uses: ncipollo/release-action@v1.8.6
+        uses: ncipollo/release-action@v1.10.0
         with:
           artifacts: ${{ github.workspace }}/PocketMine-MP.phar,${{ github.workspace }}/start.*,${{ github.workspace }}/build_info.json
           commit: ${{ github.sha }}

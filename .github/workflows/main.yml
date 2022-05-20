@@ -34,7 +34,7 @@ jobs:
         php: [8.0.18]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@aa636a4fe0c1c035fd9a3f05e360eadd86e06440
@@ -46,7 +46,7 @@ jobs:
         run: curl -sS https://getcomposer.org/installer | php
 
       - name: Restore Composer package cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/composer/files
@@ -72,7 +72,7 @@ jobs:
         php: [8.0.18]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@aa636a4fe0c1c035fd9a3f05e360eadd86e06440
@@ -84,7 +84,7 @@ jobs:
         run: curl -sS https://getcomposer.org/installer | php
 
       - name: Restore Composer package cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/composer/files
@@ -110,7 +110,7 @@ jobs:
         php: [8.0.18]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
@@ -124,7 +124,7 @@ jobs:
         run: curl -sS https://getcomposer.org/installer | php
 
       - name: Restore Composer package cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/composer/files
@@ -150,7 +150,7 @@ jobs:
         php: [8.0.18]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup PHP
         uses: pmmp/setup-php-action@aa636a4fe0c1c035fd9a3f05e360eadd86e06440
@@ -162,7 +162,7 @@ jobs:
         run: curl -sS https://getcomposer.org/installer | php
 
       - name: Restore Composer package cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cache/composer/files
@@ -192,10 +192,10 @@ jobs:
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup PHP and tools
-        uses: shivammathur/setup-php@2.15.0
+        uses: shivammathur/setup-php@2.18.1
         with:
           php-version: 8.0
           tools: php-cs-fixer:3.2
