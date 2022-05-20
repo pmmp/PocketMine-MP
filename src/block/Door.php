@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -114,8 +115,12 @@ class Door extends Transparent{
 		return [AxisAlignedBB::one()->trim($this->open ? Facing::rotateY($this->facing, !$this->hingeRight) : $this->facing, 327 / 400)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getId() === BlockLegacyIds::AIR){ //Replace with common break method
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position); //this will delete both halves if they exist
 		}
 	}
@@ -124,7 +129,7 @@ class Door extends Transparent{
 		if($face === Facing::UP){
 			$blockUp = $this->getSide(Facing::UP);
 			$blockDown = $this->getSide(Facing::DOWN);
-			if(!$blockUp->canBeReplaced() || $blockDown->isTransparent()){
+			if(!$blockUp->canBeReplaced() || !$this->canBeSupportedBy($blockDown)){
 				return false;
 			}
 
@@ -178,5 +183,9 @@ class Door extends Transparent{
 			return [$this, $other];
 		}
 		return parent::getAffectedBlocks();
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block->getSupportType(Facing::UP)->hasEdgeSupport();
 	}
 }

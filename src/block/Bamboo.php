@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
@@ -98,6 +99,10 @@ class Bamboo extends Transparent{
 		//this places the BB at the northwest corner, not the center
 		$inset = 1 - (($this->thick ? 3 : 2) / 16);
 		return [AxisAlignedBB::one()->trim(Facing::SOUTH, $inset)->trim(Facing::EAST, $inset)];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	private static function getOffsetSeed(int $x, int $y, int $z) : int{

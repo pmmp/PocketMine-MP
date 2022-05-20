@@ -21,27 +21,8 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\block;
+namespace pocketmine\plugin;
 
-use pocketmine\block\utils\SupportType;
-use pocketmine\item\Item;
-use function mt_rand;
+final class DisablePluginException extends \RuntimeException{
 
-class MonsterSpawner extends Transparent{
-
-	public function getDropsForCompatibleTool(Item $item) : array{
-		return [];
-	}
-
-	protected function getXpDropAmount() : int{
-		return mt_rand(15, 43);
-	}
-
-	public function onScheduledUpdate() : void{
-		//TODO
-	}
-
-	public function getSupportType(int $facing) : SupportType{
-		return SupportType::NONE();
-	}
 }

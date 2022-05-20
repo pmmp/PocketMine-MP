@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\CoralTypeTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 
 abstract class BaseCoral extends Transparent{
@@ -65,4 +66,8 @@ abstract class BaseCoral extends Transparent{
 	public function isSolid() : bool{ return false; }
 
 	protected function recalculateCollisionBoxes() : array{ return []; }
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
 }

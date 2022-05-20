@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\MinimumCostFlowCalculator;
+use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
@@ -112,6 +113,10 @@ abstract class Liquid extends Transparent{
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

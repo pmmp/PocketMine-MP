@@ -336,6 +336,21 @@ parameters:
 			path: ../../../src/block/Mycelium.php
 
 		-
+			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/RedMushroom.php
+
+		-
+			message: "#^Parameter \\#2 \\$y of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/RedMushroom.php
+
+		-
+			message: "#^Parameter \\#3 \\$z of method pocketmine\\\\world\\\\World\\:\\:getFullLightAt\\(\\) expects int, float\\|int given\\.$#"
+			count: 1
+			path: ../../../src/block/RedMushroom.php
+
+		-
 			message: "#^Parameter \\#1 \\$x of method pocketmine\\\\world\\\\World\\:\\:getBlockLightAt\\(\\) expects int, float\\|int given\\.$#"
 			count: 1
 			path: ../../../src/block/SnowLayer.php

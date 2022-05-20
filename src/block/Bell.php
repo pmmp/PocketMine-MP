@@ -28,6 +28,7 @@ use pocketmine\block\utils\BellAttachmentType;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\InvalidBlockStateException;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -99,6 +100,10 @@ final class Bell extends Transparent{
 		return [
 			$this->attachmentType->equals(BellAttachmentType::ONE_WALL()) ? $box->trim($this->facing, 3 / 16) : $box
 		];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function getAttachmentType() : BellAttachmentType{ return $this->attachmentType; }
