@@ -51,7 +51,7 @@ abstract class PressurePlate extends Transparent{
 		return false;
 	}
 
-	protected function canBeSupportedBy(Block $block) : bool{
+	private function canBeSupportedBy(Block $block) : bool{
 		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
 	}
 
