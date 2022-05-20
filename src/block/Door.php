@@ -125,7 +125,7 @@ class Door extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN), Facing::UP) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position); //this will delete both halves if they exist
 		}
 	}
@@ -134,7 +134,7 @@ class Door extends Transparent{
 		if($face === Facing::UP){
 			$blockUp = $this->getSide(Facing::UP);
 			$blockDown = $this->getSide(Facing::DOWN);
-			if(!$blockUp->canBeReplaced() || !$this->canBeSupportedBy($blockDown, Facing::UP)){
+			if(!$blockUp->canBeReplaced() || !$this->canBeSupportedBy($blockDown)){
 				return false;
 			}
 
@@ -190,7 +190,7 @@ class Door extends Transparent{
 		return parent::getAffectedBlocks();
 	}
 
-	private function canBeSupportedBy(Block $block, int $face) : bool{
-		return $block->getSupportType($face)->hasEdgeSupport();
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block->getSupportType(Facing::UP)->hasEdgeSupport();
 	}
 }

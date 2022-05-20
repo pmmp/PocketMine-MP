@@ -186,11 +186,11 @@ class Bed extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->canBeSupportedBy($this->getSide(Facing::DOWN), Facing::UP)){
+		if($this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			$this->facing = $player !== null ? $player->getHorizontalFacing() : Facing::NORTH;
 
 			$next = $this->getSide($this->getOtherHalfSide());
-			if($next->canBeReplaced() && $this->canBeSupportedBy($next->getSide(Facing::DOWN), Facing::UP)){
+			if($next->canBeReplaced() && $this->canBeSupportedBy($next->getSide(Facing::DOWN))){
 				$nextState = clone $this;
 				$nextState->head = true;
 				$tx->addBlock($blockReplace->position, $this)->addBlock($next->position, $nextState);
@@ -221,7 +221,7 @@ class Bed extends Transparent{
 		return parent::getAffectedBlocks();
 	}
 
-	private function canBeSupportedBy(Block $block, int $face) : bool{
-		return !$block->getSupportType($face)->equals(SupportType::NONE());
+	private function canBeSupportedBy(Block $block) : bool{
+		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
 	}
 }
