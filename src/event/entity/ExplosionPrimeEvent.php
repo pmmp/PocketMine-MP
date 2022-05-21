@@ -28,7 +28,11 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 
 /**
- * Called when a entity decides to explode
+ * Called when an entity decides to explode, before the explosion's impact is calculated.
+ * This allows changing the force of the explosion and whether it will destroy blocks.
+ *
+ * @see EntityExplodeEvent
+ *
  * @phpstan-extends EntityEvent<Entity>
  */
 class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
