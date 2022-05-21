@@ -28,6 +28,9 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 
 /**
+ * Called when a dropped item tries to despawn due to its despawn delay running out.
+ * Cancelling the event will reset the despawn delay to default (5 minutes).
+ *
  * @phpstan-extends EntityEvent<ItemEntity>
  */
 class ItemDespawnEvent extends EntityEvent implements Cancellable{
