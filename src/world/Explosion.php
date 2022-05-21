@@ -42,6 +42,7 @@ use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use function ceil;
 use function floor;
+use function min;
 use function mt_rand;
 use function sqrt;
 
@@ -154,7 +155,7 @@ class Explosion{
 	 */
 	public function explodeB() : bool{
 		$source = (new Vector3($this->source->x, $this->source->y, $this->source->z))->floor();
-		$yield = (1 / $this->size) * 100;
+		$yield = min(100, (1 / $this->size) * 100);
 
 		if($this->what instanceof Entity){
 			$ev = new EntityExplodeEvent($this->what, $this->source, $this->affectedBlocks, $yield);
