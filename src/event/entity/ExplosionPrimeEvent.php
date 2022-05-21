@@ -44,6 +44,9 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 	private $blockBreaking;
 
 	public function __construct(Entity $entity, float $force){
+		if($force <= 0){
+			throw new \InvalidArgumentException("Explosion radius must be positive");
+		}
 		$this->entity = $entity;
 		$this->force = $force;
 		$this->blockBreaking = true;
@@ -54,6 +57,9 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 	}
 
 	public function setForce(float $force) : void{
+		if($force <= 0){
+			throw new \InvalidArgumentException("Explosion radius must be positive");
+		}
 		$this->force = $force;
 	}
 
