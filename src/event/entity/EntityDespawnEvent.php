@@ -26,7 +26,9 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 
 /**
- * Called when a entity is despawned
+ * Called when an entity is removed from the world. This could be for a variety of reasons, including chunks being
+ * unloaded, entity death, etc.
+ *
  * @phpstan-extends EntityEvent<Entity>
  */
 class EntityDespawnEvent extends EntityEvent{
