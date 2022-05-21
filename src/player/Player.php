@@ -2502,14 +2502,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function removeCurrentWindow() : void{
 		$this->doCloseInventory();
 		if($this->currentWindow !== null){
-			(new InventoryCloseEvent($this->currentWindow, $this))->call();
-
+			$currentWindow = $this->currentWindow;
 			$this->logger->debug("Closing inventory " . get_class($this->currentWindow) . "#" . spl_object_id($this->currentWindow));
 			$this->currentWindow->onClose($this);
 			if(($inventoryManager = $this->getNetworkSession()->getInvManager()) !== null){
 				$inventoryManager->onCurrentWindowRemove();
 			}
 			$this->currentWindow = null;
+			(new InventoryCloseEvent($currentWindow, $this))->call();
 		}
 	}
 
