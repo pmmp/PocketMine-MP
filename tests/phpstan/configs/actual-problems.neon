@@ -956,11 +956,6 @@ parameters:
 			path: ../../../src/utils/Utils.php
 
 		-
-			message: "#^Parameter \\#2 \\$array of function array_map expects array, mixed given\\.$#"
-			count: 1
-			path: ../../../src/utils/Utils.php
-
-		-
 			message: "#^Cannot call method getFullBlock\\(\\) on pocketmine\\\\world\\\\format\\\\SubChunk\\|null\\.$#"
 			count: 1
 			path: ../../../src/world/Explosion.php
