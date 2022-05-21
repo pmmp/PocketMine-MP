@@ -156,8 +156,6 @@ class Explosion{
 	 * and creating sounds and particles.
 	 */
 	public function explodeB() : bool{
-		$updateBlocks = [];
-
 		$source = (new Vector3($this->source->x, $this->source->y, $this->source->z))->floor();
 		$yield = (1 / $this->size) * 100;
 
