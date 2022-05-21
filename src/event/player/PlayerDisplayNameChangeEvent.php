@@ -27,15 +27,12 @@ use pocketmine\player\Player;
 
 class PlayerDisplayNameChangeEvent extends PlayerEvent{
 
-	/** @var string */
-	private $oldName;
-	/** @var string */
-	private $newName;
-
-	public function __construct(Player $player, string $oldName, string $newName){
+	public function __construct(
+		Player $player,
+		private string $oldName,
+		private string $newName
+	){
 		$this->player = $player;
-		$this->oldName = $oldName;
-		$this->newName = $newName;
 	}
 
 	public function getOldName() : string{

@@ -124,20 +124,19 @@ use function count;
 use function get_class;
 use function in_array;
 use function json_encode;
-use function json_last_error_msg;
+use function ksort;
+use function strcasecmp;
 use function strlen;
 use function strtolower;
 use function substr;
 use function time;
 use function ucfirst;
+use const JSON_THROW_ON_ERROR;
+use const SORT_NUMERIC;
 
 class NetworkSession{
 	private \PrefixedLogger $logger;
-	private Server $server;
 	private ?Player $player = null;
-	private NetworkSessionManager $manager;
-	private string $ip;
-	private int $port;
 	private ?PlayerInfo $info = null;
 	private ?int $ping = null;
 
@@ -160,17 +159,11 @@ class NetworkSession{
 	 * @phpstan-var \SplQueue<CompressBatchPromise>
 	 */
 	private \SplQueue $compressedQueue;
-	private Compressor $compressor;
 	private bool $forceAsyncCompression = true;
 
-	private PacketPool $packetPool;
 	private PacketSerializerContext $packetSerializerContext;
 
 	private ?InventoryManager $invManager = null;
-
-	private PacketSender $sender;
-
-	private PacketBroadcaster $broadcaster;
 
 	/**
 	 * @var \Closure[]|ObjectSet
@@ -178,19 +171,19 @@ class NetworkSession{
 	 */
 	private ObjectSet $disposeHooks;
 
-	public function __construct(Server $server, NetworkSessionManager $manager, PacketPool $packetPool, PacketSender $sender, PacketBroadcaster $broadcaster, Compressor $compressor, string $ip, int $port){
-		$this->server = $server;
-		$this->manager = $manager;
-		$this->sender = $sender;
-		$this->broadcaster = $broadcaster;
-		$this->ip = $ip;
-		$this->port = $port;
-
+	public function __construct(
+		private Server $server,
+		private NetworkSessionManager $manager,
+		private PacketPool $packetPool,
+		private PacketSender $sender,
+		private PacketBroadcaster $broadcaster,
+		private Compressor $compressor,
+		private string $ip,
+		private int $port
+	){
 		$this->logger = new \PrefixedLogger($this->server->getLogger(), $this->getLogPrefix());
 
 		$this->compressedQueue = new \SplQueue();
-		$this->compressor = $compressor;
-		$this->packetPool = $packetPool;
 
 		//TODO: allow this to be injected
 		$this->packetSerializerContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
@@ -392,7 +385,7 @@ class NetworkSession{
 
 			$ev = new DataPacketReceiveEvent($this, $packet);
 			$ev->call();
-			if(!$ev->isCancelled() and ($this->handler === null or !$packet->handle($this->handler))){
+			if(!$ev->isCancelled() && ($this->handler === null || !$packet->handle($this->handler))){
 				$this->logger->debug("Unhandled " . $packet->getName() . ": " . base64_encode($stream->getBuffer()));
 			}
 		}finally{
@@ -402,7 +395,7 @@ class NetworkSession{
 
 	public function sendDataPacket(ClientboundPacket $packet, bool $immediate = false) : bool{
 		//Basic safety restriction. TODO: improve this
-		if(!$this->loggedIn and !$packet->canBeSentBeforeLogin()){
+		if(!$this->loggedIn && !$packet->canBeSentBeforeLogin()){
 			throw new \InvalidArgumentException("Attempted to send " . get_class($packet) . " to " . $this->getDisplayName() . " too early");
 		}
 
@@ -473,7 +466,7 @@ class NetworkSession{
 		}else{
 			$this->compressedQueue->enqueue($payload);
 			$payload->onResolve(function(CompressBatchPromise $payload) : void{
-				if($this->connected and $this->compressedQueue->bottom() === $payload){
+				if($this->connected && $this->compressedQueue->bottom() === $payload){
 					$this->compressedQueue->dequeue(); //result unused
 					$this->sendEncoded($payload->getResult());
 
@@ -507,7 +500,7 @@ class NetworkSession{
 	 * @phpstan-param \Closure() : void $func
 	 */
 	private function tryDisconnect(\Closure $func, string $reason) : void{
-		if($this->connected and !$this->disconnectGuard){
+		if($this->connected && !$this->disconnectGuard){
 			$this->disconnectGuard = true;
 			$func();
 			$this->disconnectGuard = false;
@@ -586,7 +579,7 @@ class NetworkSession{
 			return;
 		}
 		if($error === null){
-			if($authenticated and !($this->info instanceof XboxLivePlayerInfo)){
+			if($authenticated && !($this->info instanceof XboxLivePlayerInfo)){
 				$error = "Expected XUID but none found";
 			}elseif($clientPubKey === null){
 				$error = "Missing client public key"; //failsafe
@@ -633,7 +626,7 @@ class NetworkSession{
 				continue;
 			}
 			$info = $existingSession->getPlayerInfo();
-			if($info !== null and ($info->getUsername() === $this->info->getUsername() or $info->getUuid()->equals($this->info->getUuid()))){
+			if($info !== null && (strcasecmp($info->getUsername(), $this->info->getUsername()) === 0 || $info->getUuid()->equals($this->info->getUuid()))){
 				if($kickForXUIDMismatch($info instanceof XboxLivePlayerInfo ? $info->getXuid() : "")){
 					return;
 				}
@@ -797,7 +790,7 @@ class NetworkSession{
 		$pk->setFlag(AdventureSettingsPacket::NO_PVP, $for->isSpectator());
 		$pk->setFlag(AdventureSettingsPacket::AUTO_JUMP, $for->hasAutoJump());
 		$pk->setFlag(AdventureSettingsPacket::ALLOW_FLIGHT, $for->getAllowFlight());
-		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, $for->isSpectator());
+		$pk->setFlag(AdventureSettingsPacket::NO_CLIP, !$for->hasBlockCollision());
 		$pk->setFlag(AdventureSettingsPacket::FLYING, $for->isFlying());
 
 		//TODO: permission flags
@@ -821,6 +814,9 @@ class NetworkSession{
 	 * @phpstan-param array<int, MetadataProperty> $properties
 	 */
 	public function syncActorData(Entity $entity, array $properties) : void{
+		//TODO: HACK! as of 1.18.10, the client responds differently to the same data ordered in different orders - for
+		//example, sending HEIGHT in the list before FLAGS when unsetting the SWIMMING flag results in a hitbox glitch
+		ksort($properties, SORT_NUMERIC);
 		$this->sendDataPacket(SetActorDataPacket::create($entity->getId(), $properties, 0));
 	}
 
@@ -840,7 +836,7 @@ class NetworkSession{
 	public function syncAvailableCommands() : void{
 		$commandData = [];
 		foreach($this->server->getCommandMap()->getCommands() as $name => $command){
-			if(isset($commandData[$command->getName()]) or $command->getName() === "help" or !$command->testPermissionSilent($this->player)){
+			if(isset($commandData[$command->getName()]) || $command->getName() === "help" || !$command->testPermissionSilent($this->player)){
 				continue;
 			}
 
@@ -900,11 +896,7 @@ class NetworkSession{
 	}
 
 	public function onFormSent(int $id, Form $form) : bool{
-		$formData = json_encode($form);
-		if($formData === false){
-			throw new \InvalidArgumentException("Failed to encode form JSON: " . json_last_error_msg());
-		}
-		return $this->sendDataPacket(ModalFormRequestPacket::create($id, $formData));
+		return $this->sendDataPacket(ModalFormRequestPacket::create($id, json_encode($form, JSON_THROW_ON_ERROR)));
 	}
 
 	/**
@@ -924,7 +916,7 @@ class NetworkSession{
 					return;
 				}
 				$currentWorld = $this->player->getLocation()->getWorld();
-				if($world !== $currentWorld or ($status = $this->player->getUsedChunkStatus($chunkX, $chunkZ)) === null){
+				if($world !== $currentWorld || ($status = $this->player->getUsedChunkStatus($chunkX, $chunkZ)) === null){
 					$this->logger->debug("Tried to send no-longer-active chunk $chunkX $chunkZ in world " . $world->getFolderName());
 					return;
 				}
@@ -1045,7 +1037,7 @@ class NetworkSession{
 		$this->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
 	}
 
-	public function onEmote(Player $from, string $emoteId) : void{
+	public function onEmote(Human $from, string $emoteId) : void{
 		$this->sendDataPacket(EmotePacket::create($from->getId(), $emoteId, EmotePacket::FLAG_SERVER));
 	}
 

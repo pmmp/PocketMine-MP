@@ -42,21 +42,14 @@ use pocketmine\world\World;
 
 class Normal extends Generator{
 
+	private int $waterHeight = 62;
 	/** @var Populator[] */
-	private $populators = [];
-	/** @var int */
-	private $waterHeight = 62;
-
+	private array $populators = [];
 	/** @var Populator[] */
-	private $generationPopulators = [];
-	/** @var Simplex */
-	private $noiseBase;
-
-	/** @var BiomeSelector */
-	private $selector;
-
-	/** @var Gaussian */
-	private $gaussian;
+	private array $generationPopulators = [];
+	private Simplex $noiseBase;
+	private BiomeSelector $selector;
+	private Gaussian $gaussian;
 
 	/**
 	 * @throws InvalidGeneratorOptionsException
@@ -173,7 +166,7 @@ class Normal extends Generator{
 
 						$weight = $this->gaussian->kernel[$sx + $this->gaussian->smoothSize][$sz + $this->gaussian->smoothSize];
 
-						if($sx === 0 and $sz === 0){
+						if($sx === 0 && $sz === 0){
 							$adjacent = $biome;
 						}else{
 							$index = World::chunkHash($absoluteX + $sx, $absoluteZ + $sz);

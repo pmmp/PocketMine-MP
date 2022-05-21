@@ -42,12 +42,12 @@ final class TileFactory{
 	 * @var string[] classes that extend Tile
 	 * @phpstan-var array<string, class-string<Tile>>
 	 */
-	private $knownTiles = [];
+	private array $knownTiles = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<class-string<Tile>, string>
 	 */
-	private $saveNames = [];
+	private array $saveNames = [];
 
 	public function __construct(){
 		$this->register(Barrel::class, ["Barrel", "minecraft:barrel"]);
@@ -68,6 +68,7 @@ final class TileFactory{
 		$this->register(Hopper::class, ["Hopper", "minecraft:hopper"]);
 		$this->register(ItemFrame::class, ["ItemFrame"]); //this is an entity in PC
 		$this->register(Jukebox::class, ["Jukebox", "RecordPlayer", "minecraft:jukebox"]);
+		$this->register(Lectern::class, ["Lectern", "minecraft:lectern"]);
 		$this->register(MonsterSpawner::class, ["MobSpawner", "minecraft:mob_spawner"]);
 		$this->register(Note::class, ["Music", "minecraft:noteblock"]);
 		$this->register(ShulkerBox::class, ["ShulkerBox", "minecraft:shulker_box"]);
@@ -85,7 +86,6 @@ final class TileFactory{
 		//TODO: EndGateway
 		//TODO: EndPortal
 		//TODO: JigsawBlock
-		//TODO: Lectern
 		//TODO: MovingBlock
 		//TODO: NetherReactor
 		//TODO: PistonArm

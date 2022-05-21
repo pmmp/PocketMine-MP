@@ -28,6 +28,7 @@ use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
@@ -94,6 +95,10 @@ class Bed extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 16)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function isHeadPart() : bool{
 		return $this->head;
 	}
@@ -120,7 +125,7 @@ class Bed extends Transparent{
 
 	public function getOtherHalf() : ?Bed{
 		$other = $this->getSide($this->getOtherHalfSide());
-		if($other instanceof Bed and $other->head !== $this->head and $other->facing === $this->facing){
+		if($other instanceof Bed && $other->head !== $this->head && $other->facing === $this->facing){
 			return $other;
 		}
 
@@ -135,14 +140,14 @@ class Bed extends Transparent{
 				$player->sendMessage(TextFormat::GRAY . "This bed is incomplete");
 
 				return true;
-			}elseif($playerPos->distanceSquared($this->position) > 4 and $playerPos->distanceSquared($other->position) > 4){
+			}elseif($playerPos->distanceSquared($this->position) > 4 && $playerPos->distanceSquared($other->position) > 4){
 				$player->sendMessage(KnownTranslationFactory::tile_bed_tooFar()->prefix(TextFormat::GRAY));
 				return true;
 			}
 
 			$time = $this->position->getWorld()->getTimeOfDay();
 
-			$isNight = ($time >= World::TIME_NIGHT and $time < World::TIME_SUNRISE);
+			$isNight = ($time >= World::TIME_NIGHT && $time < World::TIME_SUNRISE);
 
 			if(!$isNight){
 				$player->sendMessage(KnownTranslationFactory::tile_bed_noSleep()->prefix(TextFormat::GRAY));
@@ -166,7 +171,7 @@ class Bed extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(($other = $this->getOtherHalf()) !== null and $other->occupied !== $this->occupied){
+		if(!$this->head && ($other = $this->getOtherHalf()) !== null && $other->occupied !== $this->occupied){
 			$this->occupied = $other->occupied;
 			$this->position->getWorld()->setBlock($this->position, $this);
 		}
@@ -181,12 +186,11 @@ class Bed extends Transparent{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		$down = $this->getSide(Facing::DOWN);
-		if(!$down->isTransparent()){
+		if($this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			$this->facing = $player !== null ? $player->getHorizontalFacing() : Facing::NORTH;
 
 			$next = $this->getSide($this->getOtherHalfSide());
-			if($next->canBeReplaced() and !$next->getSide(Facing::DOWN)->isTransparent()){
+			if($next->canBeReplaced() && $this->canBeSupportedBy($next->getSide(Facing::DOWN))){
 				$nextState = clone $this;
 				$nextState->head = true;
 				$tx->addBlock($blockReplace->position, $this)->addBlock($next->position, $nextState);
@@ -215,5 +219,9 @@ class Bed extends Transparent{
 		}
 
 		return parent::getAffectedBlocks();
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
 	}
 }

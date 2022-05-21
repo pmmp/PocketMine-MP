@@ -28,13 +28,7 @@ use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 
 class RecordSound implements Sound{
-
-	/** @var RecordType */
-	private $recordType;
-
-	public function __construct(RecordType $recordType){
-		$this->recordType = $recordType;
-	}
+	public function __construct(private RecordType $recordType){}
 
 	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::nonActorSound($this->recordType->getSoundId(), $pos, false)];

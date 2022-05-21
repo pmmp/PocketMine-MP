@@ -46,10 +46,19 @@ class CraftingManager{
 	protected $furnaceRecipeManagers;
 
 	/**
-	 * @var ObjectSet
-	 * @phpstan-var ObjectSet<\Closure() : void>
+	 * @var PotionTypeRecipe[][]
+	 * @phpstan-var array<string, array<string, PotionTypeRecipe>>
 	 */
-	private $recipeRegisteredCallbacks;
+	protected $potionTypeRecipes = [];
+
+	/**
+	 * @var PotionContainerChangeRecipe[][]
+	 * @phpstan-var array<int, array<string, PotionContainerChangeRecipe>>
+	 */
+	protected $potionContainerChangeRecipes = [];
+
+	/** @phpstan-var ObjectSet<\Closure() : void> */
+	private ObjectSet $recipeRegisteredCallbacks;
 
 	public function __construct(){
 		$this->recipeRegisteredCallbacks = new ObjectSet();
@@ -140,6 +149,22 @@ class CraftingManager{
 		return $this->furnaceRecipeManagers[$furnaceType->id()];
 	}
 
+	/**
+	 * @return PotionTypeRecipe[][]
+	 * @phpstan-return array<string, array<string, PotionTypeRecipe>>
+	 */
+	public function getPotionTypeRecipes() : array{
+		return $this->potionTypeRecipes;
+	}
+
+	/**
+	 * @return PotionContainerChangeRecipe[][]
+	 * @phpstan-return array<int, array<string, PotionContainerChangeRecipe>>
+	 */
+	public function getPotionContainerChangeRecipes() : array{
+		return $this->potionContainerChangeRecipes;
+	}
+
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
 		$this->shapedRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
 
@@ -150,6 +175,25 @@ class CraftingManager{
 
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
+
+		foreach($this->recipeRegisteredCallbacks as $callback){
+			$callback();
+		}
+	}
+
+	public function registerPotionTypeRecipe(PotionTypeRecipe $recipe) : void{
+		$input = $recipe->getInput();
+		$ingredient = $recipe->getIngredient();
+		$this->potionTypeRecipes[$input->getId() . ":" . $input->getMeta()][$ingredient->getId() . ":" . ($ingredient->hasAnyDamageValue() ? "?" : $ingredient->getMeta())] = $recipe;
+
+		foreach($this->recipeRegisteredCallbacks as $callback){
+			$callback();
+		}
+	}
+
+	public function registerPotionContainerChangeRecipe(PotionContainerChangeRecipe $recipe) : void{
+		$ingredient = $recipe->getIngredient();
+		$this->potionContainerChangeRecipes[$recipe->getInputItemId()][$ingredient->getId() . ":" . ($ingredient->hasAnyDamageValue() ? "?" : $ingredient->getMeta())] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
@@ -205,5 +249,12 @@ class CraftingManager{
 				yield $recipe;
 			}
 		}
+	}
+
+	public function matchBrewingRecipe(Item $input, Item $ingredient) : ?BrewingRecipe{
+		return $this->potionTypeRecipes[$input->getId() . ":" . $input->getMeta()][$ingredient->getId() . ":" . $ingredient->getMeta()] ??
+			$this->potionTypeRecipes[$input->getId() . ":" . $input->getMeta()][$ingredient->getId() . ":?"] ??
+			$this->potionContainerChangeRecipes[$input->getId()][$ingredient->getId() . ":" . $ingredient->getMeta()] ??
+			$this->potionContainerChangeRecipes[$input->getId()][$ingredient->getId() . ":?"] ?? null;
 	}
 }

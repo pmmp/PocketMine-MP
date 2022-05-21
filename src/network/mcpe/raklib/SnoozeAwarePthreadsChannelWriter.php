@@ -27,13 +27,10 @@ use pocketmine\snooze\SleeperNotifier;
 use raklib\server\ipc\InterThreadChannelWriter;
 
 final class SnoozeAwarePthreadsChannelWriter implements InterThreadChannelWriter{
-	private \Threaded $buffer;
-	private SleeperNotifier $notifier;
-
-	public function __construct(\Threaded $buffer, SleeperNotifier $notifier){
-		$this->buffer = $buffer;
-		$this->notifier = $notifier;
-	}
+	public function __construct(
+		private \Threaded $buffer,
+		private SleeperNotifier $notifier
+	){}
 
 	public function write(string $str) : void{
 		$this->buffer[] = $str;

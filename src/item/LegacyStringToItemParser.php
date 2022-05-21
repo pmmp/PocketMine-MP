@@ -25,6 +25,7 @@ namespace pocketmine\item;
 
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
 use Webmozart\PathUtil\Path;
 use function explode;
 use function file_get_contents;
@@ -49,14 +50,10 @@ use function trim;
 final class LegacyStringToItemParser{
 	use SingletonTrait;
 
-	/** @var ItemFactory */
-	private $itemFactory;
-
 	private static function make() : self{
 		$result = new self(ItemFactory::getInstance());
 
-		$mappingsRaw = @file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'item_from_string_bc_map.json'));
-		if($mappingsRaw === false) throw new AssumptionFailedError("Missing required resource file");
+		$mappingsRaw = Utils::assumeNotFalse(@file_get_contents(Path::join(\pocketmine\RESOURCE_PATH, 'item_from_string_bc_map.json')), "Missing required resource file");
 
 		$mappings = json_decode($mappingsRaw, true);
 		if(!is_array($mappings)) throw new AssumptionFailedError("Invalid mappings format, expected array");
@@ -73,11 +70,9 @@ final class LegacyStringToItemParser{
 	 * @var int[]
 	 * @phpstan-var array<string, int>
 	 */
-	private $map = [];
+	private array $map = [];
 
-	public function __construct(ItemFactory $itemFactory){
-		$this->itemFactory = $itemFactory;
-	}
+	public function __construct(private ItemFactory $itemFactory){}
 
 	public function addMapping(string $alias, int $id) : void{
 		$this->map[$alias] = $id;

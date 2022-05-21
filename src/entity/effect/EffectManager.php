@@ -34,9 +34,6 @@ use function spl_object_id;
 
 class EffectManager{
 
-	/** @var Living */
-	private $entity;
-
 	/** @var EffectInstance[] */
 	protected $effects = [];
 
@@ -56,8 +53,9 @@ class EffectManager{
 	 */
 	protected $effectRemoveHooks;
 
-	public function __construct(Living $entity){
-		$this->entity = $entity;
+	public function __construct(
+		private Living $entity
+	){
 		$this->bubbleColor = new Color(0, 0, 0, 0);
 		$this->effectAddHooks = new ObjectSet();
 		$this->effectRemoveHooks = new ObjectSet();
@@ -91,7 +89,7 @@ class EffectManager{
 			$ev = new EntityEffectRemoveEvent($this->entity, $effect);
 			$ev->call();
 			if($ev->isCancelled()){
-				if($hasExpired and !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
+				if($hasExpired && !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
 					foreach($this->effectAddHooks as $hook){
 						$hook($ev->getEffect(), true);
 					}
@@ -140,7 +138,7 @@ class EffectManager{
 			$oldEffect = $this->effects[$index];
 			if(
 				abs($effect->getAmplifier()) < $oldEffect->getAmplifier()
-				or (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier()) and $effect->getDuration() < $oldEffect->getDuration())
+				|| (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier()) && $effect->getDuration() < $oldEffect->getDuration())
 			){
 				$cancelled = true;
 			}
@@ -180,7 +178,7 @@ class EffectManager{
 		$colors = [];
 		$ambient = true;
 		foreach($this->effects as $effect){
-			if($effect->isVisible() and $effect->getType()->hasBubbles()){
+			if($effect->isVisible() && $effect->getType()->hasBubbles()){
 				$level = $effect->getEffectLevel();
 				$color = $effect->getColor();
 				for($i = 0; $i < $level; ++$i){

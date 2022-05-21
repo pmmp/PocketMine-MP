@@ -31,9 +31,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 class LiquidBucket extends Item{
-
-	/** @var Liquid */
-	private $liquid;
+	private Liquid $liquid;
 
 	public function __construct(ItemIdentifier $identifier, string $name, Liquid $liquid){
 		parent::__construct($identifier, $name);

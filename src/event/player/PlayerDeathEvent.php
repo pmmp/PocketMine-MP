@@ -38,10 +38,9 @@ class PlayerDeathEvent extends EntityDeathEvent{
 	/** @var Player */
 	protected $player;
 
-	/** @var Translatable|string */
-	private $deathMessage;
-	/** @var bool */
-	private $keepInventory = false;
+	private Translatable|string $deathMessage;
+	private bool $keepInventory = false;
+	private bool $keepXp = false;
 
 	/**
 	 * @param Item[]                   $drops
@@ -78,6 +77,14 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 	public function setKeepInventory(bool $keepInventory) : void{
 		$this->keepInventory = $keepInventory;
+	}
+
+	public function getKeepXp() : bool{
+		return $this->keepXp;
+	}
+
+	public function setKeepXp(bool $keepXp) : void{
+		$this->keepXp = $keepXp;
 	}
 
 	/**

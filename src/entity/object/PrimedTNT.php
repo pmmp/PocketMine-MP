@@ -58,7 +58,7 @@ class PrimedTNT extends Entity implements Explosive{
 	}
 
 	public function setFuse(int $fuse) : void{
-		if($fuse < 0 or $fuse > 32767){
+		if($fuse < 0 || $fuse > 32767){
 			throw new \InvalidArgumentException("Fuse must be in the range 0-32767");
 		}
 		$this->fuse = $fuse;
@@ -112,7 +112,7 @@ class PrimedTNT extends Entity implements Explosive{
 			}
 		}
 
-		return $hasUpdate or $this->fuse >= 0;
+		return $hasUpdate || $this->fuse >= 0;
 	}
 
 	public function explode() : void{

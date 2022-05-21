@@ -31,16 +31,15 @@ use function str_repeat;
 
 final class VersionInfo{
 	public const NAME = "PocketMine-MP";
-	public const BASE_VERSION = "4.0.5";
+	public const BASE_VERSION = "4.4.0";
 	public const IS_DEVELOPMENT_BUILD = true;
-	public const BUILD_CHANNEL = "stable";
+	public const BUILD_CHANNEL = "beta";
 
 	private function __construct(){
 		//NOOP
 	}
 
-	/** @var string|null */
-	private static $gitHash = null;
+	private static ?string $gitHash = null;
 
 	public static function GIT_HASH() : string{
 		if(self::$gitHash === null){
@@ -79,8 +78,7 @@ final class VersionInfo{
 		return self::$buildNumber;
 	}
 
-	/** @var VersionString|null */
-	private static $fullVersion = null;
+	private static ?VersionString $fullVersion = null;
 
 	public static function VERSION() : VersionString{
 		if(self::$fullVersion === null){

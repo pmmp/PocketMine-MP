@@ -23,6 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
+use pocketmine\item\Item;
+use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
+use pocketmine\player\Player;
+use pocketmine\world\BlockTransaction;
+
 abstract class PressurePlate extends Transparent{
 
 	public function isSolid() : bool{
@@ -31,6 +38,21 @@ abstract class PressurePlate extends Transparent{
 
 	protected function recalculateCollisionBoxes() : array{
 		return [];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($this->canBeSupportedBy($blockClicked)){
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		}
+		return false;
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
 	}
 
 	//TODO

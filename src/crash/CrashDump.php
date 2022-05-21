@@ -41,7 +41,6 @@ use function file_exists;
 use function file_get_contents;
 use function get_loaded_extensions;
 use function json_encode;
-use function json_last_error_msg;
 use function ksort;
 use function max;
 use function mb_strtoupper;
@@ -60,6 +59,7 @@ use function substr;
 use function zend_version;
 use function zlib_encode;
 use const FILE_IGNORE_NEW_LINES;
+use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 use const PHP_OS;
 use const PHP_VERSION;
@@ -80,18 +80,14 @@ class CrashDump{
 	public const PLUGIN_INVOLVEMENT_DIRECT = "direct";
 	public const PLUGIN_INVOLVEMENT_INDIRECT = "indirect";
 
-	/** @var Server */
-	private $server;
 	private CrashDumpData $data;
-	/** @var string */
-	private $encodedData;
+	private string $encodedData;
 
-	private ?PluginManager $pluginManager;
-
-	public function __construct(Server $server, ?PluginManager $pluginManager){
+	public function __construct(
+		private Server $server,
+		private ?PluginManager $pluginManager
+	){
 		$now = microtime(true);
-		$this->server = $server;
-		$this->pluginManager = $pluginManager;
 
 		$this->data = new CrashDumpData();
 		$this->data->format_version = self::FORMAT_VERSION;
@@ -104,13 +100,8 @@ class CrashDump{
 
 		$this->extraData();
 
-		$json = json_encode($this->data, JSON_UNESCAPED_SLASHES);
-		if($json === false){
-			throw new \RuntimeException("Failed to encode crashdump JSON: " . json_last_error_msg());
-		}
-		$zlibEncoded = zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9);
-		if($zlibEncoded === false) throw new AssumptionFailedError("ZLIB compression failed");
-		$this->encodedData = $zlibEncoded;
+		$json = json_encode($this->data, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+		$this->encodedData = Utils::assumeNotFalse(zlib_encode($json, ZLIB_ENCODING_DEFLATE, 9), "ZLIB compression failed");
 	}
 
 	public function getEncodedData() : string{
@@ -169,8 +160,7 @@ class CrashDump{
 		$extensions = [];
 		foreach(get_loaded_extensions() as $ext){
 			$version = phpversion($ext);
-			if($version === false) throw new AssumptionFailedError();
-			$extensions[$ext] = $version;
+			$extensions[$ext] = $version !== false ? $version : "**UNKNOWN**";
 		}
 		$this->data->extensions = $extensions;
 
@@ -228,10 +218,10 @@ class CrashDump{
 			}
 		}
 
-		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-code", true) and file_exists($error["fullFile"])){
+		if($this->server->getConfigGroup()->getPropertyBool("auto-report.send-code", true) && file_exists($error["fullFile"])){
 			$file = @file($error["fullFile"], FILE_IGNORE_NEW_LINES);
 			if($file !== false){
-				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 and isset($file[$l]); ++$l){
+				for($l = max(0, $error["line"] - 10); $l < $error["line"] + 10 && isset($file[$l]); ++$l){
 					$this->data->code[$l + 1] = $file[$l];
 				}
 			}

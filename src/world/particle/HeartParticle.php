@@ -28,12 +28,7 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
 class HeartParticle implements Particle{
-	/** @var int */
-	private $scale;
-
-	public function __construct(int $scale = 0){
-		$this->scale = $scale;
-	}
+	public function __construct(private int $scale = 0){}
 
 	public function encode(Vector3 $pos) : array{
 		return [LevelEventPacket::standardParticle(ParticleIds::HEART, $this->scale, $pos)];

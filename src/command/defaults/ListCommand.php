@@ -52,7 +52,7 @@ class ListCommand extends VanillaCommand{
 		$playerNames = array_map(function(Player $player) : string{
 			return $player->getName();
 		}, array_filter($sender->getServer()->getOnlinePlayers(), function(Player $player) use ($sender) : bool{
-			return !($sender instanceof Player) or $sender->canSee($player);
+			return !($sender instanceof Player) || $sender->canSee($player);
 		}));
 		sort($playerNames, SORT_STRING);
 

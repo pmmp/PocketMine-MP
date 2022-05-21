@@ -33,12 +33,11 @@ use pocketmine\event\CancellableTrait;
 class BlockBurnEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Block */
-	private $causingBlock;
-
-	public function __construct(Block $block, Block $causingBlock){
+	public function __construct(
+		Block $block,
+		private Block $causingBlock
+	){
 		parent::__construct($block);
-		$this->causingBlock = $causingBlock;
 	}
 
 	/**

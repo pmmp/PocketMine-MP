@@ -38,21 +38,16 @@ use function abs;
 
 class Nether extends Generator{
 
-	/** @var Populator[] */
-	private $populators = [];
-	/** @var int */
-	private $waterHeight = 32;
-	/** @var int */
-	private $emptyHeight = 64;
-	/** @var int */
-	private $emptyAmplitude = 1;
-	/** @var float */
-	private $density = 0.5;
+	private int $waterHeight = 32;
+	private int $emptyHeight = 64;
+	private int $emptyAmplitude = 1;
+	private float $density = 0.5;
 
 	/** @var Populator[] */
-	private $generationPopulators = [];
-	/** @var Simplex */
-	private $noiseBase;
+	private array $populators = [];
+	/** @var Populator[] */
+	private array $generationPopulators = [];
+	private Simplex $noiseBase;
 
 	/**
 	 * @throws InvalidGeneratorOptionsException
@@ -86,7 +81,7 @@ class Nether extends Generator{
 				$chunk->setBiomeId($x, $z, BiomeIds::HELL);
 
 				for($y = 0; $y < 128; ++$y){
-					if($y === 0 or $y === 127){
+					if($y === 0 || $y === 127){
 						$chunk->setFullBlock($x, $y, $z, $bedrock);
 						continue;
 					}

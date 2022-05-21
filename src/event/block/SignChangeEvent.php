@@ -35,20 +35,12 @@ use pocketmine\player\Player;
 class SignChangeEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var BaseSign */
-	private $sign;
-
-	/** @var Player */
-	private $player;
-
-	/** @var SignText */
-	private $text;
-
-	public function __construct(BaseSign $sign, Player $player, SignText $text){
+	public function __construct(
+		private BaseSign $sign,
+		private Player $player,
+		private SignText $text
+	){
 		parent::__construct($sign);
-		$this->sign = $sign;
-		$this->player = $player;
-		$this->text = $text;
 	}
 
 	public function getSign() : BaseSign{

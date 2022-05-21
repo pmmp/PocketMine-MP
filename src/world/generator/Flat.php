@@ -34,11 +34,9 @@ use pocketmine\world\generator\populator\Populator;
 use function count;
 
 class Flat extends Generator{
-
-	/** @var Chunk */
-	private $chunk;
+	private Chunk $chunk;
 	/** @var Populator[] */
-	private $populators = [];
+	private array $populators = [];
 
 	private FlatGeneratorOptions $options;
 
@@ -75,7 +73,7 @@ class Flat extends Generator{
 		$count = count($structure);
 		for($sy = 0; $sy < $count; $sy += SubChunk::EDGE_LENGTH){
 			$subchunk = $this->chunk->getSubChunk($sy >> SubChunk::COORD_BIT_SIZE);
-			for($y = 0; $y < SubChunk::EDGE_LENGTH and isset($structure[$y | $sy]); ++$y){
+			for($y = 0; $y < SubChunk::EDGE_LENGTH && isset($structure[$y | $sy]); ++$y){
 				$id = $structure[$y | $sy];
 
 				for($Z = 0; $Z < SubChunk::EDGE_LENGTH; ++$Z){

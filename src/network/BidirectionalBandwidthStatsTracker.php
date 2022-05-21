@@ -24,12 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\network;
 
 final class BidirectionalBandwidthStatsTracker{
-
-	/** @var BandwidthStatsTracker */
-	private $send;
-
-	/** @var BandwidthStatsTracker */
-	private $receive;
+	private BandwidthStatsTracker $send;
+	private BandwidthStatsTracker $receive;
 
 	/** @phpstan-param positive-int $historySize */
 	public function __construct(int $historySize){

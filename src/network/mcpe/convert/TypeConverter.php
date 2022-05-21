@@ -27,6 +27,7 @@ use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
 use pocketmine\block\inventory\LoomInventory;
+use pocketmine\block\inventory\StonecutterInventory;
 use pocketmine\inventory\transaction\action\CreateItemAction;
 use pocketmine\inventory\transaction\action\DestroyItemAction;
 use pocketmine\inventory\transaction\action\DropItemAction;
@@ -59,8 +60,7 @@ class TypeConverter{
 	private const PM_ID_TAG = "___Id___";
 	private const PM_META_TAG = "___Meta___";
 
-	/** @var int */
-	private $shieldRuntimeId;
+	private int $shieldRuntimeId;
 
 	public function __construct(){
 		//TODO: inject stuff via constructor
@@ -156,7 +156,7 @@ class TypeConverter{
 		}else{
 			[$id, $meta] = $idMeta;
 
-			if($itemStack instanceof Durable and $itemStack->getDamage() > 0){
+			if($itemStack instanceof Durable && $itemStack->getDamage() > 0){
 				if($nbt !== null){
 					if(($existing = $nbt->getTag(self::DAMAGE_TAG)) !== null){
 						$nbt->removeTag(self::DAMAGE_TAG);
@@ -232,6 +232,9 @@ class TypeConverter{
 				$compound = null;
 			}
 		}
+		if($meta < 0 || $meta >= 0x7fff){ //this meta value may have been restored from the NBT
+			throw new TypeConversionException("Item meta must be in range 0 ... " . 0x7fff . " (received $meta)");
+		}
 
 		try{
 			return ItemFactory::getInstance()->get(
@@ -266,7 +269,7 @@ class TypeConverter{
 		switch($action->sourceType){
 			case NetworkInventoryAction::SOURCE_CONTAINER:
 				$window = null;
-				if($action->windowId === ContainerIds::UI and $action->inventorySlot > 0){
+				if($action->windowId === ContainerIds::UI && $action->inventorySlot > 0){
 					if($action->inventorySlot === UIInventorySlotOffset::CREATED_ITEM_OUTPUT){
 						return null; //useless noise
 					}
@@ -280,6 +283,7 @@ class TypeConverter{
 							$current instanceof AnvilInventory => UIInventorySlotOffset::ANVIL,
 							$current instanceof EnchantInventory => UIInventorySlotOffset::ENCHANTING_TABLE,
 							$current instanceof LoomInventory => UIInventorySlotOffset::LOOM,
+							$current instanceof StonecutterInventory => [UIInventorySlotOffset::STONE_CUTTER_INPUT => StonecutterInventory::SLOT_INPUT],
 							$current instanceof CraftingTableInventory => UIInventorySlotOffset::CRAFTING3X3_INPUT,
 							default => null
 						};

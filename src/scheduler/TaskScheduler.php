@@ -31,11 +31,7 @@ use pocketmine\utils\ObjectSet;
 use pocketmine\utils\ReversePriorityQueue;
 
 class TaskScheduler{
-	/** @var string|null */
-	private $owner;
-
-	/** @var bool */
-	private $enabled = true;
+	private bool $enabled = true;
 
 	/**
 	 * @var ReversePriorityQueue
@@ -52,8 +48,9 @@ class TaskScheduler{
 	/** @var int */
 	protected $currentTick = 0;
 
-	public function __construct(?string $owner = null){
-		$this->owner = $owner;
+	public function __construct(
+		private ?string $owner = null
+	){
 		$this->queue = new ReversePriorityQueue();
 		$this->tasks = new ObjectSet();
 	}
@@ -130,6 +127,9 @@ class TaskScheduler{
 	}
 
 	public function mainThreadHeartbeat(int $currentTick) : void{
+		if(!$this->enabled){
+			throw new \LogicException("Cannot run heartbeat on a disabled scheduler");
+		}
 		$this->currentTick = $currentTick;
 		while($this->isReady($this->currentTick)){
 			/** @var TaskHandler $task */
@@ -150,6 +150,6 @@ class TaskScheduler{
 	}
 
 	private function isReady(int $currentTick) : bool{
-		return !$this->queue->isEmpty() and $this->queue->current()->getNextRun() <= $currentTick;
+		return !$this->queue->isEmpty() && $this->queue->current()->getNextRun() <= $currentTick;
 	}
 }

@@ -58,7 +58,7 @@ function generateMethodAnnotations(string $namespaceName, array $members) : stri
 	$memberLines = [];
 	foreach($members as $name => $member){
 		$reflect = new \ReflectionClass($member);
-		while($reflect !== false and $reflect->isAnonymous()){
+		while($reflect !== false && $reflect->isAnonymous()){
 			$reflect = $reflect->getParentClass();
 		}
 		if($reflect === false){
@@ -82,6 +82,7 @@ function generateMethodAnnotations(string $namespaceName, array $members) : stri
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
+/** @var string $file */
 foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($argv[1], \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::CURRENT_AS_PATHNAME)) as $file){
 	if(substr($file, -4) !== ".php"){
 		continue;
@@ -116,4 +117,3 @@ foreach(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($argv[1],
 		echo "No changes made to file $file\n";
 	}
 }
-

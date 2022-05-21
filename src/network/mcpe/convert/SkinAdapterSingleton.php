@@ -27,8 +27,7 @@ namespace pocketmine\network\mcpe\convert;
  * Accessor for SkinAdapter
  */
 class SkinAdapterSingleton{
-	/** @var SkinAdapter|null */
-	private static $skinAdapter = null;
+	private static ?SkinAdapter $skinAdapter = null;
 
 	public static function get() : SkinAdapter{
 		if(self::$skinAdapter === null){

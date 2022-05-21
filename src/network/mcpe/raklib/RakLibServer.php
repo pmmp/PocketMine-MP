@@ -40,8 +40,7 @@ use function register_shutdown_function;
 use const PTHREADS_INHERIT_NONE;
 
 class RakLibServer extends Thread{
-	/** @var InternetAddress */
-	private $address;
+	private InternetAddress $address;
 
 	/** @var \ThreadedLogger */
 	protected $logger;
@@ -63,8 +62,8 @@ class RakLibServer extends Thread{
 	protected $serverId;
 	/** @var int */
 	protected $maxMtuSize;
-	/** @var int */
-	private $protocolVersion;
+
+	private int $protocolVersion;
 
 	/** @var SleeperNotifier */
 	protected $mainThreadNotifier;
@@ -129,7 +128,7 @@ class RakLibServer extends Thread{
 	public function startAndWait(int $options = PTHREADS_INHERIT_NONE) : void{
 		$this->start($options);
 		$this->synchronized(function() : void{
-			while(!$this->ready and $this->crashInfo === null){
+			while(!$this->ready && $this->crashInfo === null){
 				$this->wait();
 			}
 			$crashInfo = $this->crashInfo;

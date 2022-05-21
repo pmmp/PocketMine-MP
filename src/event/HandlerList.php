@@ -28,18 +28,14 @@ use function array_fill_keys;
 use function spl_object_id;
 
 class HandlerList{
-
-	/** @var string */
-	private $class;
 	/** @var RegisteredListener[][] */
-	private $handlerSlots = [];
-	/** @var HandlerList|null */
-	private $parentList;
+	private array $handlerSlots = [];
 
-	public function __construct(string $class, ?HandlerList $parentList){
-		$this->class = $class;
+	public function __construct(
+		private string $class,
+		private ?HandlerList $parentList
+	){
 		$this->handlerSlots = array_fill_keys(EventPriority::ALL, []);
-		$this->parentList = $parentList;
 	}
 
 	/**
@@ -65,11 +61,11 @@ class HandlerList{
 	 * @param RegisteredListener|Listener|Plugin $object
 	 */
 	public function unregister($object) : void{
-		if($object instanceof Plugin or $object instanceof Listener){
+		if($object instanceof Plugin || $object instanceof Listener){
 			foreach($this->handlerSlots as $priority => $list){
 				foreach($list as $hash => $listener){
-					if(($object instanceof Plugin and $listener->getPlugin() === $object)
-						or ($object instanceof Listener and (new \ReflectionFunction($listener->getHandler()))->getClosureThis() === $object) //this doesn't even need to be a listener :D
+					if(($object instanceof Plugin && $listener->getPlugin() === $object)
+						|| ($object instanceof Listener && (new \ReflectionFunction($listener->getHandler()))->getClosureThis() === $object) //this doesn't even need to be a listener :D
 					){
 						unset($this->handlerSlots[$priority][$hash]);
 					}

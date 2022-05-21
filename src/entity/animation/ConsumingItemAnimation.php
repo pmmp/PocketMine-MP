@@ -31,16 +31,10 @@ use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
 final class ConsumingItemAnimation implements Animation{
 
-	/** @var Human */
-	private $human;
-	/** @var Item */
-	private $item;
-
-	public function __construct(Human $human, Item $item){
-		//TODO: maybe this can be expanded to more than just player entities?
-		$this->human = $human;
-		$this->item = $item;
-	}
+	public function __construct(
+		private Human $human, //TODO: maybe this can be expanded to more than just player entities?
+		private Item $item
+	){}
 
 	public function encode() : array{
 		[$netId, $netData] = ItemTranslator::getInstance()->toNetworkId($this->item->getId(), $this->item->getMeta());

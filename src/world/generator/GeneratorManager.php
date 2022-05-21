@@ -37,7 +37,7 @@ final class GeneratorManager{
 	 * @var GeneratorManagerEntry[] name => classname mapping
 	 * @phpstan-var array<string, GeneratorManagerEntry>
 	 */
-	private $list = [];
+	private array $list = [];
 
 	public function __construct(){
 		$this->addGenerator(Flat::class, "flat", \Closure::fromCallable(function(string $preset) : ?InvalidGeneratorOptionsException{
@@ -73,7 +73,7 @@ final class GeneratorManager{
 		Utils::testValidInstance($class, Generator::class);
 
 		$name = strtolower($name);
-		if(!$overwrite and isset($this->list[$name])){
+		if(!$overwrite && isset($this->list[$name])){
 			throw new \InvalidArgumentException("Alias \"$name\" is already assigned");
 		}
 

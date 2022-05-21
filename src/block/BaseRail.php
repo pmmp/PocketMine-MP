@@ -38,7 +38,7 @@ use function in_array;
 abstract class BaseRail extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockReplace->getSide(Facing::DOWN)->isTransparent()){
+		if($blockReplace->getSide(Facing::DOWN)->getSupportType(Facing::UP)->hasEdgeSupport()){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -101,7 +101,7 @@ abstract class BaseRail extends Flowable{
 			}
 
 			if(
-				$other instanceof BaseRail and
+				$other instanceof BaseRail &&
 				in_array($otherConnection, $other->getCurrentShapeConnections(), true)
 			){
 				$connections[] = $connection;
@@ -179,7 +179,7 @@ abstract class BaseRail extends Flowable{
 					$otherSide |= RailConnectionInfo::FLAG_ASCEND;
 				}
 
-				if(!($other instanceof BaseRail) or count($otherConnections = $other->getConnectedDirections()) >= 2){
+				if(!($other instanceof BaseRail) || count($otherConnections = $other->getConnectedDirections()) >= 2){
 					//we can only connect to a rail that has less than 2 connections
 					continue;
 				}
@@ -220,11 +220,11 @@ abstract class BaseRail extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
+		if(!$this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->hasEdgeSupport()){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}else{
 			foreach($this->getCurrentShapeConnections() as $connection){
-				if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0 and $this->getSide($connection & ~RailConnectionInfo::FLAG_ASCEND)->isTransparent()){
+				if(($connection & RailConnectionInfo::FLAG_ASCEND) !== 0 && !$this->getSide($connection & ~RailConnectionInfo::FLAG_ASCEND)->getSupportType(Facing::UP)->hasEdgeSupport()){
 					$this->position->getWorld()->useBreakOn($this->position);
 					break;
 				}

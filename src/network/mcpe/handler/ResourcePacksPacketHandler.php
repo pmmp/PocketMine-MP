@@ -52,27 +52,17 @@ use function substr;
 class ResourcePacksPacketHandler extends PacketHandler{
 	private const PACK_CHUNK_SIZE = 128 * 1024; //128KB
 
-	/** @var NetworkSession */
-	private $session;
-	/** @var ResourcePackManager */
-	private $resourcePackManager;
-	/**
-	 * @var \Closure
-	 * @phpstan-var \Closure() : void
-	 */
-	private $completionCallback;
-
 	/** @var bool[][] uuid => [chunk index => hasSent] */
-	private $downloadedChunks = [];
+	private array $downloadedChunks = [];
 
 	/**
 	 * @phpstan-param \Closure() : void $completionCallback
 	 */
-	public function __construct(NetworkSession $session, ResourcePackManager $resourcePackManager, \Closure $completionCallback){
-		$this->session = $session;
-		$this->resourcePackManager = $resourcePackManager;
-		$this->completionCallback = $completionCallback;
-	}
+	public function __construct(
+		private NetworkSession $session,
+		private ResourcePackManager $resourcePackManager,
+		private \Closure $completionCallback
+	){}
 
 	public function setUp() : void{
 		$resourcePackEntries = array_map(static function(ResourcePack $pack) : ResourcePackInfoEntry{
@@ -163,7 +153,7 @@ class ResourcePacksPacketHandler extends PacketHandler{
 		}
 
 		$offset = $packet->chunkIndex * self::PACK_CHUNK_SIZE;
-		if($offset < 0 or $offset >= $pack->getPackSize()){
+		if($offset < 0 || $offset >= $pack->getPackSize()){
 			$this->disconnectWithError("Invalid out-of-bounds request for chunk $packet->chunkIndex of $packet->packId: offset $offset, file size " . $pack->getPackSize());
 			return false;
 		}

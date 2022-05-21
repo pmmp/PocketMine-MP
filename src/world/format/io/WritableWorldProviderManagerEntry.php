@@ -30,19 +30,17 @@ use pocketmine\world\WorldCreationOptions;
  * @phpstan-type Generate \Closure(string $path, string $name, WorldCreationOptions $options) : void
  */
 final class WritableWorldProviderManagerEntry extends WorldProviderManagerEntry{
-	/** @phpstan-var FromPath */
-	private \Closure $fromPath;
-	/** @phpstan-var Generate */
-	private \Closure $generate;
 
 	/**
 	 * @phpstan-param FromPath $fromPath
 	 * @phpstan-param Generate $generate
 	 */
-	public function __construct(\Closure $isValid, \Closure $fromPath, \Closure $generate){
+	public function __construct(
+		\Closure $isValid,
+		private \Closure $fromPath,
+		private \Closure $generate
+	){
 		parent::__construct($isValid);
-		$this->fromPath = $fromPath;
-		$this->generate = $generate;
 	}
 
 	public function fromPath(string $path) : WritableWorldProvider{

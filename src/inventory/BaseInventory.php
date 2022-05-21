@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\inventory;
 
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 use pocketmine\utils\ObjectSet;
 use function array_slice;
@@ -53,6 +53,25 @@ abstract class BaseInventory implements Inventory{
 
 	public function getMaxStackSize() : int{
 		return $this->maxStackSize;
+	}
+
+	public function setMaxStackSize(int $size) : void{
+		$this->maxStackSize = $size;
+	}
+
+	abstract protected function internalSetItem(int $index, Item $item) : void;
+
+	public function setItem(int $index, Item $item) : void{
+		if($item->isNull()){
+			$item = VanillaItems::AIR();
+		}else{
+			$item = clone $item;
+		}
+
+		$oldItem = $this->getItem($index);
+
+		$this->internalSetItem($index, $item);
+		$this->onSlotChange($index, $oldItem);
 	}
 
 	/**
@@ -85,21 +104,6 @@ abstract class BaseInventory implements Inventory{
 		$this->onContentChange($oldContents);
 	}
 
-	abstract protected function internalSetItem(int $index, Item $item) : void;
-
-	public function setItem(int $index, Item $item) : void{
-		if($item->isNull()){
-			$item = ItemFactory::air();
-		}else{
-			$item = clone $item;
-		}
-
-		$oldItem = $this->getItem($index);
-
-		$this->internalSetItem($index, $item);
-		$this->onSlotChange($index, $oldItem);
-	}
-
 	public function contains(Item $item) : bool{
 		$count = max(1, $item->getCount());
 		$checkDamage = !$item->hasAnyDamageValue();
@@ -128,25 +132,13 @@ abstract class BaseInventory implements Inventory{
 
 		return $slots;
 	}
-
-	public function remove(Item $item) : void{
-		$checkDamage = !$item->hasAnyDamageValue();
-		$checkTags = $item->hasNamedTag();
-
-		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage, $checkTags)){
-				$this->clear($index);
-			}
-		}
-	}
-
 	public function first(Item $item, bool $exact = false) : int{
 		$count = $exact ? $item->getCount() : max(1, $item->getCount());
 		$checkDamage = $exact || !$item->hasAnyDamageValue();
 		$checkTags = $exact || $item->hasNamedTag();
 
 		foreach($this->getContents() as $index => $i){
-			if($item->equals($i, $checkDamage, $checkTags) and ($i->getCount() === $count or (!$exact and $i->getCount() > $count))){
+			if($item->equals($i, $checkDamage, $checkTags) && ($i->getCount() === $count || (!$exact && $i->getCount() > $count))){
 				return $index;
 			}
 		}
@@ -224,7 +216,7 @@ abstract class BaseInventory implements Inventory{
 				$emptySlots[] = $i;
 			}
 
-			if($slot->canStackWith($item) and $item->getCount() < $item->getMaxStackSize()){
+			if($slot->canStackWith($item) && $item->getCount() < $item->getMaxStackSize()){
 				$amount = min($item->getMaxStackSize() - $item->getCount(), $slot->getCount(), $this->getMaxStackSize());
 				if($amount > 0){
 					$slot->setCount($slot->getCount() - $amount);
@@ -251,6 +243,17 @@ abstract class BaseInventory implements Inventory{
 		}
 
 		return $slot;
+	}
+
+	public function remove(Item $item) : void{
+		$checkDamage = !$item->hasAnyDamageValue();
+		$checkTags = $item->hasNamedTag();
+
+		foreach($this->getContents() as $index => $i){
+			if($item->equals($i, $checkDamage, $checkTags)){
+				$this->clear($index);
+			}
+		}
 	}
 
 	public function removeItem(Item ...$slots) : array{
@@ -290,7 +293,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function clear(int $index) : void{
-		$this->setItem($index, ItemFactory::air());
+		$this->setItem($index, VanillaItems::AIR());
 	}
 
 	public function clearAll() : void{
@@ -321,10 +324,6 @@ abstract class BaseInventory implements Inventory{
 			}
 			unset($this->viewers[$hash]);
 		}
-	}
-
-	public function setMaxStackSize(int $size) : void{
-		$this->maxStackSize = $size;
 	}
 
 	public function onOpen(Player $who) : void{
@@ -367,7 +366,7 @@ abstract class BaseInventory implements Inventory{
 	}
 
 	public function slotExists(int $slot) : bool{
-		return $slot >= 0 and $slot < $this->getSize();
+		return $slot >= 0 && $slot < $this->getSize();
 	}
 
 	public function getListeners() : ObjectSet{

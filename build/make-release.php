@@ -50,7 +50,7 @@ use const STR_PAD_LEFT;
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 
 function replaceVersion(string $versionInfoPath, string $newVersion, bool $isDev, string $channel) : void{
-	$versionInfo = file_get_contents($versionInfoPath);
+	$versionInfo = Utils::assumeNotFalse(file_get_contents($versionInfoPath), $versionInfoPath . " should always exist");
 	$versionInfo = preg_replace(
 		$pattern = '/^([\t ]*public )?const BASE_VERSION = "(\d+)\.(\d+)\.(\d+)(?:-(.*))?";$/m',
 		'$1const BASE_VERSION = "' . $newVersion . '";',
@@ -74,6 +74,14 @@ const ACCEPTED_OPTS = [
 	"next" => "Version to put in the file after tagging",
 	"channel" => "Release channel to post this build into"
 ];
+
+function systemWrapper(string $command, string $errorMessage) : void{
+	system($command, $result);
+	if($result !== 0){
+		echo "error: $errorMessage; aborting\n";
+		exit(1);
+	}
+}
 
 function main() : void{
 	$filteredOpts = [];
@@ -115,7 +123,7 @@ function main() : void{
 	echo "$currentVer will be published on release channel \"$channel\".\n";
 	echo "please add appropriate notes to the changelog and press enter...";
 	fgets(STDIN);
-	system('git add "' . dirname(__DIR__) . '/changelogs"');
+	systemWrapper('git add "' . dirname(__DIR__) . '/changelogs"', "failed to stage changelog changes");
 	system('git diff --cached --quiet "' . dirname(__DIR__) . '/changelogs"', $result);
 	if($result === 0){
 		echo "error: no changelog changes detected; aborting\n";
@@ -123,14 +131,15 @@ function main() : void{
 	}
 	$versionInfoPath = dirname(__DIR__) . '/src/VersionInfo.php';
 	replaceVersion($versionInfoPath, $currentVer->getBaseVersion(), false, $channel);
-	system('git commit -m "Release ' . $currentVer->getBaseVersion() . '" --include "' . $versionInfoPath . '"');
-	system('git tag ' . $currentVer->getBaseVersion());
+	systemWrapper('git commit -m "Release ' . $currentVer->getBaseVersion() . '" --include "' . $versionInfoPath . '"', "failed to create release commit");
+	systemWrapper('git tag ' . $currentVer->getBaseVersion(), "failed to create release tag");
+
 	replaceVersion($versionInfoPath, $nextVer->getBaseVersion(), true, $channel);
-	system('git add "' . $versionInfoPath . '"');
-	system('git commit -m "' . $nextVer->getBaseVersion() . ' is next" --include "' . $versionInfoPath . '"');
+	systemWrapper('git add "' . $versionInfoPath . '"', "failed to stage changes for post-release commit");
+	systemWrapper('git commit -m "' . $nextVer->getBaseVersion() . ' is next" --include "' . $versionInfoPath . '"', "failed to create post-release commit");
 	echo "pushing changes in 5 seconds\n";
 	sleep(5);
-	system('git push origin HEAD ' . $currentVer->getBaseVersion());
+	systemWrapper('git push origin HEAD ' . $currentVer->getBaseVersion(), "failed to push changes to remote");
 }
 
 main();

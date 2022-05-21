@@ -30,10 +30,8 @@ use pocketmine\world\ChunkManager;
 use pocketmine\world\format\Chunk;
 
 class TallGrass implements Populator{
-	/** @var int */
-	private $randomAmount = 1;
-	/** @var int */
-	private $baseAmount = 0;
+	private int $randomAmount = 1;
+	private int $baseAmount = 0;
 
 	public function setRandomAmount(int $amount) : void{
 		$this->randomAmount = $amount;
@@ -52,7 +50,7 @@ class TallGrass implements Populator{
 			$z = $random->nextRange($chunkZ * Chunk::EDGE_LENGTH, $chunkZ * Chunk::EDGE_LENGTH + (Chunk::EDGE_LENGTH - 1));
 			$y = $this->getHighestWorkableBlock($world, $x, $z);
 
-			if($y !== -1 and $this->canTallGrassStay($world, $x, $y, $z)){
+			if($y !== -1 && $this->canTallGrassStay($world, $x, $y, $z)){
 				$world->setBlockAt($x, $y, $z, $block);
 			}
 		}
@@ -60,13 +58,13 @@ class TallGrass implements Populator{
 
 	private function canTallGrassStay(ChunkManager $world, int $x, int $y, int $z) : bool{
 		$b = $world->getBlockAt($x, $y, $z)->getId();
-		return ($b === BlockLegacyIds::AIR or $b === BlockLegacyIds::SNOW_LAYER) and $world->getBlockAt($x, $y - 1, $z)->getId() === BlockLegacyIds::GRASS;
+		return ($b === BlockLegacyIds::AIR || $b === BlockLegacyIds::SNOW_LAYER) && $world->getBlockAt($x, $y - 1, $z)->getId() === BlockLegacyIds::GRASS;
 	}
 
 	private function getHighestWorkableBlock(ChunkManager $world, int $x, int $z) : int{
 		for($y = 127; $y >= 0; --$y){
 			$b = $world->getBlockAt($x, $y, $z)->getId();
-			if($b !== BlockLegacyIds::AIR and $b !== BlockLegacyIds::LEAVES and $b !== BlockLegacyIds::LEAVES2 and $b !== BlockLegacyIds::SNOW_LAYER){
+			if($b !== BlockLegacyIds::AIR && $b !== BlockLegacyIds::LEAVES && $b !== BlockLegacyIds::LEAVES2 && $b !== BlockLegacyIds::SNOW_LAYER){
 				return $y + 1;
 			}
 		}
