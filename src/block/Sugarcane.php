@@ -124,7 +124,8 @@ class Sugarcane extends Flowable{
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}elseif($this->isValidSupport($down)){
 			foreach(Facing::HORIZONTAL as $side){
-				if($down->getSide($side) instanceof Water || $down->getSide($side) instanceof FrostedIce){
+				$sideBlock = $down->getSide($side);
+				if($sideBlock instanceof Water || $sideBlock instanceof FrostedIce){
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 				}
 			}
@@ -136,7 +137,7 @@ class Sugarcane extends Flowable{
 	private function isValidSupport(Block $block) : bool{
 		$id = $block->getId();
 		//TODO: rooted dirt, moss block
-		return $id === BlockLegacyIds::SUGARCANE_BLOCK
+		return $block->isSameType($this)
 			|| $id === BlockLegacyIds::GRASS
 			|| $id === BlockLegacyIds::DIRT
 			|| $id === BlockLegacyIds::PODZOL
