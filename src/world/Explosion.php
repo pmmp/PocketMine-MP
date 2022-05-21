@@ -95,9 +95,6 @@ class Explosion{
 
 		$blockFactory = BlockFactory::getInstance();
 
-		$currentChunk = null;
-		$currentSubChunk = null;
-
 		$mRays = $this->rays - 1;
 		for($i = 0; $i < $this->rays; ++$i){
 			for($j = 0; $j < $this->rays; ++$j){
