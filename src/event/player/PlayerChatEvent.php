@@ -28,6 +28,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 use pocketmine\player\Player;
 use pocketmine\utils\Utils;
+use pocketmine\utils\WaitGroup;
 
 /**
  * Called when a player chats something
@@ -44,6 +45,8 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	/** @var CommandSender[] */
 	protected $recipients = [];
 
+	private WaitGroup $waitGroup;
+
 	/**
 	 * @param CommandSender[] $recipients
 	 */
@@ -54,6 +57,8 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 		$this->format = $format;
 
 		$this->recipients = $recipients;
+
+		$this->waitGroup = new WaitGroup;
 	}
 
 	public function getMessage() : string{
@@ -92,5 +97,9 @@ class PlayerChatEvent extends PlayerEvent implements Cancellable{
 	public function setRecipients(array $recipients) : void{
 		Utils::validateArrayValueType($recipients, function(CommandSender $_) : void{});
 		$this->recipients = $recipients;
+	}
+
+	public function getWaitGroup() : WaitGroup{
+		return $this->waitGroup;
 	}
 }
