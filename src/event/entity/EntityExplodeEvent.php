@@ -53,6 +53,9 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 		$this->entity = $entity;
 		$this->position = $position;
 		$this->blocks = $blocks;
+		if($yield < 0.0 || $yield > 100.0){
+			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
+		}
 		$this->yield = $yield;
 	}
 
@@ -80,6 +83,9 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	}
 
 	public function setYield(float $yield) : void{
+		if($yield < 0.0 || $yield > 100.0){
+			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
+		}
 		$this->yield = $yield;
 	}
 }
