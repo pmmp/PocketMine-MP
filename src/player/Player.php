@@ -33,6 +33,7 @@ use pocketmine\data\java\GameModeIdMap;
 use pocketmine\entity\animation\Animation;
 use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\CriticalHitAnimation;
+use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
@@ -2223,8 +2224,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}
 		}
 
-		$this->getWorld()->dropExperience($this->location, $ev->getXpDropAmount());
-		$this->xpManager->setXpAndProgress(0, 0.0);
+		if(!$ev->getKeepXp()){
+			$this->getWorld()->dropExperience($this->location, $ev->getXpDropAmount());
+			$this->xpManager->setXpAndProgress(0, 0.0);
+		}
 
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcastMessage($ev->getDeathMessage());
@@ -2285,6 +2288,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->setHealth($this->getMaxHealth());
 
 				foreach($this->attributeMap->getAll() as $attr){
+					if($attr->getId() === Attribute::EXPERIENCE || $attr->getId() === Attribute::EXPERIENCE_LEVEL){ //we have already reset both of those if needed when the player died
+						continue;
+					}
 					$attr->resetToDefault();
 				}
 
