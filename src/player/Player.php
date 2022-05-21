@@ -2289,7 +2289,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 
 				foreach($this->attributeMap->getAll() as $attr){
 					if($attr->getId() === Attribute::EXPERIENCE || $attr->getId() === Attribute::EXPERIENCE_LEVEL){ //we have already reset both of those if needed when the player died
-						$attr->markSynchronized(false);
 						continue;
 					}
 					$attr->resetToDefault();
