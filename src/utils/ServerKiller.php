@@ -31,8 +31,7 @@ class ServerKiller extends Thread{
 	/** @var int */
 	public $time;
 
-	/** @var bool */
-	private $stopped = false;
+	private bool $stopped = false;
 
 	/**
 	 * @param int $time
@@ -50,7 +49,7 @@ class ServerKiller extends Thread{
 		});
 		if(time() - $start >= $this->time){
 			echo "\nTook too long to stop, server was killed forcefully!\n";
-			@Process::kill(Process::pid());
+			@Process::kill(Process::pid(), true);
 		}
 	}
 

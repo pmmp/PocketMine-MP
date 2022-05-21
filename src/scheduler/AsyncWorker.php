@@ -30,25 +30,14 @@ use function ini_set;
 
 class AsyncWorker extends Worker{
 	/** @var mixed[] */
-	private static $store = [];
+	private static array $store = [];
 
-	/** @var \ThreadedLogger */
-	private $logger;
-	/** @var int */
-	private $id;
-
-	/** @var int */
-	private $memoryLimit;
-
-	/** @var SleeperNotifier */
-	private $notifier;
-
-	public function __construct(\ThreadedLogger $logger, int $id, int $memoryLimit, SleeperNotifier $notifier){
-		$this->logger = $logger;
-		$this->id = $id;
-		$this->memoryLimit = $memoryLimit;
-		$this->notifier = $notifier;
-	}
+	public function __construct(
+		private \ThreadedLogger $logger,
+		private int $id,
+		private int $memoryLimit,
+		private SleeperNotifier $notifier
+	){}
 
 	public function getNotifier() : SleeperNotifier{
 		return $this->notifier;
@@ -92,7 +81,7 @@ class AsyncWorker extends Worker{
 	 */
 	public function saveToThreadStore(string $identifier, $value) : void{
 		if(\Thread::getCurrentThread() !== $this){
-			throw new \InvalidStateException("Thread-local data can only be stored in the thread context");
+			throw new \LogicException("Thread-local data can only be stored in the thread context");
 		}
 		self::$store[$identifier] = $value;
 	}
@@ -109,7 +98,7 @@ class AsyncWorker extends Worker{
 	 */
 	public function getFromThreadStore(string $identifier){
 		if(\Thread::getCurrentThread() !== $this){
-			throw new \InvalidStateException("Thread-local data can only be fetched in the thread context");
+			throw new \LogicException("Thread-local data can only be fetched in the thread context");
 		}
 		return self::$store[$identifier] ?? null;
 	}
@@ -119,7 +108,7 @@ class AsyncWorker extends Worker{
 	 */
 	public function removeFromThreadStore(string $identifier) : void{
 		if(\Thread::getCurrentThread() !== $this){
-			throw new \InvalidStateException("Thread-local data can only be removed in the thread context");
+			throw new \LogicException("Thread-local data can only be removed in the thread context");
 		}
 		unset(self::$store[$identifier]);
 	}

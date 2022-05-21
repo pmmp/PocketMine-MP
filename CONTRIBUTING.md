@@ -2,125 +2,102 @@
 
 # PocketMine-MP Contribution Guidelines
 
+PocketMine-MP is an open source project, and contributions from the community are welcomed, as long as they comply with our quality standards and licensing.
 
-## Creating an Issue
-- If you are reporting a bug:
-  - **make sure that you are using the latest supported version** before opening an issue.
-  - **test it on a clean test server, WITHOUT PLUGINS**, to see if the issue still occurs. If not then it may be a plugin issue. Please also indicate the result of such tests.
-- **[Search the issue tracker](https://github.com/pmmp/PocketMine-MP/issues?utf8=%E2%9C%93&q=is%3Aissue)** to check if anyone has already reported it, to avoid needlessly creating duplicate issues. Make sure you also check closed issues, as an issue you think is valid may already have been resolved.
-- **Do not report plugin issues here.** If your issue is related to a plugin, contact the plugin's original author instead.
-- **Support requests are not bugs.** Issues such as "How do I do this" are not bugs and will be closed. If you need help, please see [here](README.md#discussion) and do not misuse our issue tracker.
-- **No generic titles** such as "Question", "Help", "Crash Report" etc. A good issue report provides a quick summary in the title. If you just got a crash report but you don't understand it, please look for a line starting with `Message`. It summarizes the bug.
-- **Provide information in the issue body, not in the title.** No tags like `[BUG]` are allowed in the title, including `[SOLVED]` for solved issues.
-- **No generic issue reports.** For bugs, it is the issue author's responsibility to provide us an issue that is **trackable, debuggable, reproducible, reported professionally and is an actual bug**.
-<br>Valid issue reports must include instructions how to reproduce the issue or a crashdump/backtrace (unless the cause of the issue is obvious).
-<br>**If you do not provide us with a summary or instructions on how to reproduce the issue, it will be treated as spam and will therefore be closed.**
-<br>In simple words, if the issue cannot be properly confirmed to be valid or lacks required information, the issue will be closed until further information is provided.
-- To express appreciation, objection, confusion or other supported reactions on pull requests, issues or comments on them, use GitHub [reactions](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments) rather than posting an individual comment with an emoji only. This helps keeping the issue/pull request conversation clean and readable.
-- If your issue is related to the PocketMine-MP website, forums, etc., please [talk to a human directly](README.md#discussion).
+Code contributions must be submitted using [GitHub Pull Requests](https://github.com/pmmp/PocketMine-MP/pulls), where they will be reviewed by maintainers.
 
+Small contributions (e.g. minor bug fixes) can be submitted as pull requests directly.
 
+Larger contributions like feature additions should be preceded by a [Change Proposal](#rfcs--change-proposals) to allow maintainers and other people to discuss and decide if it's a good idea or not.
 
-## Contributing
-To contribute to the repository, [fork it on GitHub](https://github.com/pmmp/PocketMine-MP/fork), create a branch on your fork, and make your changes on your fork. You can then make a [pull request](https://github.com/pmmp/PocketMine-MP/pull/new) to the project to compare your branch to ours and propose your changes to our repository. We use the Pull Request system to allow members of the team to review changes before they are merged.
+## Useful documentation from github.com
+- [About pull requests](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests)
+- [About forks](https://docs.github.com/en/github/collaborating-with-pull-requests/working-with-forks/about-forks)
+- [Creating a pull request from a fork](https://docs.github.com/en/github/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork)
 
-### Licensing
-By proposing a pull request to the project, you agree to your code being distributed within PocketMine-MP under the [LGPL license](LICENSE).
+## Other things you'll need
+- [git](https://git-scm.com/)
 
-### Contribution standards
-- **We enforce a very high standard for contributions**. This is because PocketMine-MP and its related projects are used very widely in production. While this might seem like we are being mean at times, **our priority is what is best for PocketMine-MP itself**.
-We try to ensure that our project's codebase is as clean as possible and ensure that only top-quality material makes it through to PocketMine-MP itself.
-- **If a contribution does not meet our standards, changes may be requested or the pull request may be closed.**
+## Making a pull request
+The basic procedure to create a pull request is:
+1. [Fork the repository on GitHub](https://github.com/pmmp/PocketMine-MP/fork). This gives you your own copy of the repository to make changes to.
+2. Create a branch on your fork for your changes.
+3. Make the changes you want to make on this branch.
+4. You can then make a [pull request](https://github.com/pmmp/PocketMine-MP/pull/new) to the project.
 
-### Pull requests
-- **Create a new branch for each pull request.** Do not create a pull request with commits that exist in another pull request.
+## Pull request reviews
+Pull requests will be reviewed by maintainers when they are available.
+Note that there might be a long wait time before a reviewer looks at your PR.
+
+Depending on the changes, maintainers might ask you to make changes to the PR to fix problems or to improve the code.
+**Do not delete your fork** while your pull request remains open, otherwise you won't be able to make any requested changes and the PR will end up being declined.
+
+### Requirements
+The following are required as a minimum for pull requests. PRs that don't meet these requirements will be declined unless updated to meet them.
+
+#### Licensing
+PocketMine-MP is licensed under [LGPLv3 license](LICENSE).
+By proposing a pull request, you agree to your code being distributed within PocketMine-MP under the same license.
+If you take code from other projects, that code MUST be licensed under an LGPL-compatible license.
+
+#### PRs should be about exactly ONE thing
+If you want to make multiple changes, those changes should each be contributed as separate pull requests. **DO NOT** mix unrelated changes.
+
+#### PRs must not include unnecessary/unrelated changes
+Do not include changes which aren't strictly necessary. This makes it harder to review a PR, because the code diff becomes larger and harder to review.
+This means:
+- don't reformat or rearrange existing code
+- don't change things that aren't related to the PR's objective
+- don't rewrite existing code just to make it "look nicer"
+- don't change PhpDocs to native types in code you didn't write
+
+#### Tests must be provided
+Where possible, PHPUnit tests should be written for new or changed code.
+If that's not possible (e.g. for in-game functionality), the code must be tested manually and details of the tests done must be provided.
+**Simply saying "Tested" is not acceptable** and will lead to your PR being declined.
+
+#### Comments and documentation must be written in American English
+English is the shared languages of all current maintainers.
+
+#### Code must be in the PocketMine-MP style
+It's your responsibility to ensure your code matches the formatting and styling of the rest of the code.
+If you use PhpStorm, a `Project` code style is provided, which you can use to automatically format new code.
+You can also use [`php-cs-fixer`](https://github.com/FriendsOfPHP/PHP-CS-Fixer) to format your code.
+
+### Recommendations
+
+- **Do not edit code directly on github.com.** We recommend learning how to use [`git`](https://git-scm.com). `git` allows you to "clone" a repository onto your computer, so that you can make changes using an IDE.
+- **Use an IDE, not a text editor.** We recommend PhpStorm or VSCode.
+- **Create a new branch on your fork for each pull request.** This allows you to use the same fork to make multiple pull requests at the same time.
 - **Use descriptive commit titles.** You can see an example [here](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
 - **Do not include multiple unrelated changes in one commit.** An atomic style for commits is preferred - this means that changes included in a commit should be part of a single distinct change set. See [this link](https://www.freshconsulting.com/atomic-commits/) for more information on atomic commits. See the [documentation on `git add`](https://git-scm.com/docs/git-add) for information on how to isolate local changes for committing.
 - **Your pull request will be checked and discussed in due time.** Since the team is scattered all around the world, your PR may not receive any attention for some time.
-- **It is inadvisable to create large pull requests with lots of changes** unless this has been discussed with the team beforehand. Large pull requests are difficult to review, and such pull requests may end up being closed. The only exception is when all features in the pull request are related to each other, and share the same core changes.
-- **You may be asked to rebase your pull request** if the branch becomes outdated and/or if possibly conflicting changes are made to the target branch. To see how to do this, read [this page](https://github.com/edx/edx-platform/wiki/How-to-Rebase-a-Pull-Request).
-- **Details should be provided of tests done.** Simply saying "Tested" or equivalent is not acceptable.
-
-### Code contributions
-- **Avoid committing changes directly on GitHub. This includes use of the web editor, and also uploading files.** The web editor lacks most useful GIT features and **should only be used for very minor changes**. It is immediately clear if the web editor has been used, and if so the PR is more likely to be rejected. If you want to make serious contributions, **please learn how to use [GIT version control](https://git-scm.com/)**.
-- **Do not copy-paste code**. There are potential license issues implicit with copy-pasting, and copy-paste usually indicates a lack of understanding of the actual code. Copy-pasted code is obvious a mile off and **any PR like this is likely to be closed**. If you want to use somebody else's code from a Git repository, **use [GIT's cherry-pick feature](https://git-scm.com/docs/git-cherry-pick)** to cherry-pick the commit. **Cherry-picking is the politer way to copy somebody's changes** and retains all the original accreditation, so there is no need for copy-pasted commits with descriptions like `Some code, thanks @exampleperson`.
-- **Make sure you can explain your changes**. If you can't provide a good explanation of changes, your PR may be rejected.
-- **Code should use the same style as in PocketMine-MP.** See [below](#code-syntax) for an example.
-- **The code must be clear** and written in English, comments included.
+- **Do not make large pull requests without an RFC.** Large changes should be discussed beforehand using the [RFC / Change Proposal](#rfcs--change-proposals) process. Large changes are much harder to review and are more likely to be declined if maintainers don't have a good idea what you're trying to do in advance.
+- **Do not copy-paste code**. There are potential license issues implicit with copy-pasting, and copy-paste usually indicates a lack of understanding of the actual code. Copy-pasted code is obvious a mile off and **any PR like this is likely to be closed**. If you want to use somebody else's code from a Git repository, **use [GIT's cherry-pick feature](https://git-scm.com/docs/git-cherry-pick)** to cherry-pick the commit.
 
 
 **Thanks for contributing to PocketMine-MP!**
 
+## RFCs / Change Proposals
+Change Proposals are issues or discussions which describe a new feature proposal or behavioural change.
+They are used to get feedback from maintainers and the community about an idea for a change, to decide whether or not it's a good idea.
 
+### Submitting an RFC
+RFCs should be submitted using Issues or Discussions.
+RFCs _can_ be submitted as pull requests if you've already written the code, but this is not recommended, since it's not guaranteed that an RFC will pass, in which case your effort would be wasted.
 
-### Code Syntax
+RFCs should include the following:
+- A summary of what you want to change
+- Why you want to change it (e.g. what problems it solves)
+- Alternative methods you've considered to solve the problem. This should include any possible ways that what you want can be done without the change.
 
-It is mainly [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-1-basic-coding-standard.md) with a few exceptions.
+### Voting on RFCs
+Community members can vote on RFCs. This gives maintainers an idea of how popular the idea is.
+Votes can be cast using :+1: and :-1: reactions.
 
-- Opening braces MUST go on the same line, and MUST NOT have spaces before.
-- `else if` MUST be written as `elseif`. _(It is in PSR-2, but using a SHOULD)_
-- Control structure keywords or opening braces MUST NOT have one space before or after them.
-- Code MUST use tabs for indenting.
-- Long arrays MAY be split across multiple lines, where each subsequent line is indented once.
-- Files MUST use only the `<?php` tag.
-- Files MUST NOT have an ending `?>` tag.
-- Code MUST use namespaces.
-- Strings SHOULD use the double quote `"` except when the single quote is required.
-- All code SHOULD have parameter and type declarations where possible.
-- Strict types SHOULD be enabled on new files where it is sensible to do so.
-- All constant declarations SHOULD be preceded by a visibility modifier.
+**Please don't downvote without providing a reason why!**
 
-```php
-<?php
+### Implementing RFCs
+Anyone can write the code to implement an RFC, and submit a pull request for it. It doesn't have to be the RFC author.
 
-declare(strict_types=1);
-
-namespace pocketmine\example;
-
-class ExampleClass{
-
-	public const EXAMPLE_CLASS_CONSTANT = 1;
-
-	public $examplePublicVariable = "defaultValue";
-	private $examplePrivateVariable;
-
-	/**
-	 * Creates an instance of ExampleClass
-	 *
-	 * @param string      $firstArgument  the first argument
-	 * @param string|null $secondArgument default null
-	 */
-	public function __construct(string $firstArgument, ?string &$secondArgument = null){
-		if($firstArgument === "exampleValue"){ //Remember to use === instead of == when possible
-			//do things
-		}elseif($firstArgument === "otherValue"){
-			$secondArgument = function(){
-				$this->examplePrivateVariable = [
-					0 => "value1",
-					1 => "value2",
-					2 => "value3",
-					3 => "value4",
-					4 => "value5",
-					5 => "value6",
-				];
-			};
-		}
-	}
-
-	public function doStuff(string $stuff) : string{
-		return $stuff;
-	}
-}
-```
-
-<!-- TODO: RFC and voting on the forums instead -->
-### RFC and Voting
-* These are big Pull Requests or contributions that change important behavior.
-* RFCs will be tagged with the *Type: Request For Comments* label
-* A vote will be held once the RFC is ready. All users can vote commenting on the Pull Request
-* Comments MUST use "Yes" or "No" on the FIRST sentence to signify the vote, except when they don't want it to be counted.
-* If your comment is a voting comment, specify the reason of your vote or it won't be counted.
-* After voting has been closed, no further votes will be counted.
-* An RFC will be rejected if less than 50% + 1 (simple majority) has voted Yes.
-* If the RFC is approved, Team Members have the final word on its implementation or rejection.
-* RFCs with complex voting options will specify the vote percentage or other details.
+Implementations should be submitted as pull requests. The pull request description must include a link to the RFC.

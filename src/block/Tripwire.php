@@ -25,18 +25,10 @@ namespace pocketmine\block;
 
 class Tripwire extends Flowable{
 
-	/** @var bool */
-	protected $triggered = false;
-	/** @var bool */
-	protected $suspended = false; //unclear usage, makes hitbox bigger if set
-	/** @var bool */
-	protected $connected = false;
-	/** @var bool */
-	protected $disarmed = false;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
+	protected bool $triggered = false;
+	protected bool $suspended = false; //unclear usage, makes hitbox bigger if set
+	protected bool $connected = false;
+	protected bool $disarmed = false;
 
 	protected function writeStateToMeta() : int{
 		return ($this->triggered ? BlockLegacyMetadata::TRIPWIRE_FLAG_TRIGGERED : 0) |

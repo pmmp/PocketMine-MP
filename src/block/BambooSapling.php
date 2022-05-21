@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\event\block\StructureGrowEvent;
 use pocketmine\item\Bamboo as ItemBamboo;
 use pocketmine\item\Fertilizer;
 use pocketmine\item\Item;
@@ -32,18 +33,17 @@ use pocketmine\world\BlockTransaction;
 
 final class BambooSapling extends Flowable{
 
-	/** @var bool */
-	private $ready = false;
+	private bool $ready = false;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->ready = ($stateMeta & BlockLegacyMetadata::SAPLING_FLAG_READY) !== 0;
+		$this->ready = ($stateMeta & BlockLegacyMetadata::BAMBOO_SAPLING_FLAG_READY) !== 0;
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->ready ? BlockLegacyMetadata::SAPLING_FLAG_READY : 0;
+		return $this->ready ? BlockLegacyMetadata::BAMBOO_SAPLING_FLAG_READY : 0;
 	}
 
-	public function getStateBitmask() : int{ return 0b1000; }
+	public function getStateBitmask() : int{ return 0b1; }
 
 	public function isReady() : bool{ return $this->ready; }
 
@@ -65,7 +65,7 @@ final class BambooSapling extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canBeSupportedBy($blockReplace->pos->getWorld()->getBlock($blockReplace->pos->down()))){
+		if(!$this->canBeSupportedBy($blockReplace->position->getWorld()->getBlock($blockReplace->position->down()))){
 			return false;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
@@ -73,7 +73,7 @@ final class BambooSapling extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer || $item instanceof ItemBamboo){
-			if($this->grow()){
+			if($this->grow($player)){
 				$item->pop();
 				return true;
 			}
@@ -82,21 +82,28 @@ final class BambooSapling extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canBeSupportedBy($this->pos->getWorld()->getBlock($this->pos->down()))){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+		if(!$this->canBeSupportedBy($this->position->getWorld()->getBlock($this->position->down()))){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
-	private function grow() : bool{
-		$world = $this->pos->getWorld();
-		if(!$world->getBlock($this->pos->up())->canBeReplaced()){
+	private function grow(?Player $player) : bool{
+		$world = $this->position->getWorld();
+		if(!$world->getBlock($this->position->up())->canBeReplaced()){
 			return false;
 		}
 
 		$tx = new BlockTransaction($world);
 		$bamboo = VanillaBlocks::BAMBOO();
-		$tx->addBlock($this->pos, $bamboo)
-			->addBlock($this->pos->up(), (clone $bamboo)->setLeafSize(Bamboo::SMALL_LEAVES));
+		$tx->addBlock($this->position, $bamboo)
+			->addBlock($this->position->up(), (clone $bamboo)->setLeafSize(Bamboo::SMALL_LEAVES));
+
+		$ev = new StructureGrowEvent($this, $tx, $player);
+		$ev->call();
+		if($ev->isCancelled()){
+			return false;
+		}
+
 		return $tx->apply();
 	}
 
@@ -105,15 +112,15 @@ final class BambooSapling extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		$world = $this->pos->getWorld();
+		$world = $this->position->getWorld();
 		if($this->ready){
 			$this->ready = false;
-			if($world->getFullLight($this->pos) < 9 || !$this->grow()){
-				$world->setBlock($this->pos, $this);
+			if($world->getFullLight($this->position) < 9 || !$this->grow(null)){
+				$world->setBlock($this->position, $this);
 			}
-		}elseif($world->getBlock($this->pos->up())->canBeReplaced()){
+		}elseif($world->getBlock($this->position->up())->canBeReplaced()){
 			$this->ready = true;
-			$world->setBlock($this->pos, $this);
+			$world->setBlock($this->position, $this);
 		}
 	}
 

@@ -28,7 +28,8 @@ use pocketmine\utils\EnumTrait;
 /**
  * This doc-block is generated automatically, do not modify it manually.
  * This must be regenerated whenever registry members are added, removed or changed.
- * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
+ * @see build/generate-registry-annotations.php
+ * @generate-registry-docblock
  *
  * @method static TreeType ACACIA()
  * @method static TreeType BIRCH()
@@ -44,7 +45,7 @@ final class TreeType{
 	}
 
 	/** @var TreeType[] */
-	private static $numericIdMap = [];
+	private static array $numericIdMap = [];
 
 	protected static function setup() : void{
 		self::registerAll(
@@ -75,15 +76,12 @@ final class TreeType{
 		return self::$numericIdMap[$magicNumber];
 	}
 
-	/** @var string */
-	private $displayName;
-	/** @var int */
-	private $magicNumber;
-
-	private function __construct(string $enumName, string $displayName, int $magicNumber){
+	private function __construct(
+		string $enumName,
+		private string $displayName,
+		private int $magicNumber
+	){
 		$this->Enum___construct($enumName);
-		$this->displayName = $displayName;
-		$this->magicNumber = $magicNumber;
 	}
 
 	public function getDisplayName() : string{

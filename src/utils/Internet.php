@@ -79,7 +79,7 @@ class Internet{
 	public static function getIP(bool $force = false){
 		if(!self::$online){
 			return false;
-		}elseif(self::$ip !== false and !$force){
+		}elseif(self::$ip !== false && !$force){
 			return self::$ip;
 		}
 
@@ -89,22 +89,22 @@ class Internet{
 		}
 
 		$ip = self::getURL("http://checkip.dyndns.org/");
-		if($ip !== null and preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', trim(strip_tags($ip->getBody())), $matches) > 0){
+		if($ip !== null && preg_match('#Current IP Address\: ([0-9a-fA-F\:\.]*)#', trim(strip_tags($ip->getBody())), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://www.checkip.org/");
-		if($ip !== null and preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip->getBody(), $matches) > 0){
+		if($ip !== null && preg_match('#">([0-9a-fA-F\:\.]*)</span>#', $ip->getBody(), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://checkmyip.org/");
-		if($ip !== null and preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip->getBody(), $matches) > 0){
+		if($ip !== null && preg_match('#Your IP address is ([0-9a-fA-F\:\.]*)#', $ip->getBody(), $matches) > 0){
 			return self::$ip = $matches[1];
 		}
 
 		$ip = self::getURL("http://ifconfig.me/ip");
-		if($ip !== null and ($addr = trim($ip->getBody())) != ""){
+		if($ip !== null && ($addr = trim($ip->getBody())) != ""){
 			return self::$ip = $addr;
 		}
 
@@ -159,7 +159,7 @@ class Internet{
 	 *
 	 * @param string[]|string $args
 	 * @param string[]        $extraHeaders
-	 * @param string|null     $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occured during the operation.
+	 * @param string|null     $err reference parameter, will be set to the output of curl_error(). Use this to retrieve errors that occurred during the operation.
 	 * @phpstan-param string|array<string, string> $args
 	 * @phpstan-param list<string>                 $extraHeaders
 	 */
@@ -185,7 +185,7 @@ class Internet{
 	 * @param \Closure|null $onSuccess    function to be called if there is no error. Accepts a resource argument as the cURL handle.
 	 * @phpstan-param array<int, mixed>                $extraOpts
 	 * @phpstan-param list<string>                     $extraHeaders
-	 * @phpstan-param (\Closure(resource) : void)|null $onSuccess
+	 * @phpstan-param (\Closure(\CurlHandle) : void)|null $onSuccess
 	 *
 	 * @throws InternetException if a cURL error occurs
 	 */
@@ -209,7 +209,7 @@ class Internet{
 			CURLOPT_RETURNTRANSFER => true,
 			CURLOPT_CONNECTTIMEOUT_MS => (int) ($timeout * 1000),
 			CURLOPT_TIMEOUT_MS => (int) ($timeout * 1000),
-			CURLOPT_HTTPHEADER => array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 " . VersionInfo::NAME . "/" . VersionInfo::getVersionObj()->getFullVersion(true)], $extraHeaders),
+			CURLOPT_HTTPHEADER => array_merge(["User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:12.0) Gecko/20100101 Firefox/12.0 " . VersionInfo::NAME . "/" . VersionInfo::VERSION()->getFullVersion(true)], $extraHeaders),
 			CURLOPT_HEADER => true
 		]);
 		try{
@@ -218,7 +218,6 @@ class Internet{
 				throw new InternetException(curl_error($ch));
 			}
 			if(!is_string($raw)) throw new AssumptionFailedError("curl_exec() should return string|false when CURLOPT_RETURNTRANSFER is set");
-			/** @var int $httpCode */
 			$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 			$headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
 			$rawHeaders = substr($raw, 0, $headerSize);

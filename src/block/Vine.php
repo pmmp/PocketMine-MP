@@ -35,12 +35,8 @@ use function count;
 
 class Vine extends Flowable{
 
-	/** @var bool[] */
-	protected $faces = [];
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::AXE));
-	}
+	/** @var int[] */
+	protected array $faces = [];
 
 	protected function writeStateToMeta() : int{
 		return
@@ -62,11 +58,40 @@ class Vine extends Flowable{
 	}
 
 	private function setFaceFromMeta(int $meta, int $flag, int $face) : void{
-		if(($meta & $flag) !== 0){
-			$this->faces[$face] = true;
+		$this->setFace($face, ($meta & $flag) !== 0);
+	}
+
+	/** @return int[] */
+	public function getFaces() : array{ return $this->faces; }
+
+	/**
+	 * @param int[] $faces
+	 * @phpstan-param list<Facing::NORTH|Facing::EAST|Facing::SOUTH|Facing::WEST> $faces
+	 * @return $this
+	 */
+	public function setFaces(array $faces) : self{
+		$uniqueFaces = [];
+		foreach($faces as $face){
+			if($face !== Facing::NORTH && $face !== Facing::SOUTH && $face !== Facing::WEST && $face !== Facing::EAST){
+				throw new \InvalidArgumentException("Facing can only be north, east, south or west");
+			}
+			$uniqueFaces[$face] = $face;
+		}
+		$this->faces = $uniqueFaces;
+		return $this;
+	}
+
+	/** @return $this */
+	public function setFace(int $face, bool $value) : self{
+		if($face !== Facing::NORTH && $face !== Facing::SOUTH && $face !== Facing::WEST && $face !== Facing::EAST){
+			throw new \InvalidArgumentException("Facing can only be north, east, south or west");
+		}
+		if($value){
+			$this->faces[$face] = $face;
 		}else{
 			unset($this->faces[$face]);
 		}
+		return $this;
 	}
 
 	public function hasEntityCollision() : bool{
@@ -91,12 +116,12 @@ class Vine extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockClicked->isSolid() or Facing::axis($face) === Axis::Y){
+		if(!$blockClicked->isSolid() || Facing::axis($face) === Axis::Y){
 			return false;
 		}
 
 		$this->faces = $blockReplace instanceof Vine ? $blockReplace->faces : [];
-		$this->faces[Facing::opposite($face)] = true;
+		$this->faces[Facing::opposite($face)] = Facing::opposite($face);
 
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
@@ -108,8 +133,8 @@ class Vine extends Flowable{
 		//check which faces have corresponding vines in the block above
 		$supportedFaces = $up instanceof Vine ? array_intersect_key($this->faces, $up->faces) : [];
 
-		foreach($this->faces as $face => $bool){
-			if(!isset($supportedFaces[$face]) and !$this->getSide($face)->isSolid()){
+		foreach($this->faces as $face){
+			if(!isset($supportedFaces[$face]) && !$this->getSide($face)->isSolid()){
 				unset($this->faces[$face]);
 				$changed = true;
 			}
@@ -117,9 +142,9 @@ class Vine extends Flowable{
 
 		if($changed){
 			if(count($this->faces) === 0){
-				$this->pos->getWorld()->useBreakOn($this->pos);
+				$this->position->getWorld()->useBreakOn($this->position);
 			}else{
-				$this->pos->getWorld()->setBlock($this->pos, $this);
+				$this->position->getWorld()->setBlock($this->position, $this);
 			}
 		}
 	}

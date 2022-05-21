@@ -26,19 +26,12 @@ namespace pocketmine\network\mcpe\raklib;
 use pocketmine\network\mcpe\PacketSender;
 
 class RakLibPacketSender implements PacketSender{
+	private bool $closed = false;
 
-	/** @var int */
-	private $sessionId;
-	/** @var RakLibInterface */
-	private $handler;
-
-	/** @var bool */
-	private $closed = false;
-
-	public function __construct(int $sessionId, RakLibInterface $handler){
-		$this->sessionId = $sessionId;
-		$this->handler = $handler;
-	}
+	public function __construct(
+		private int $sessionId,
+		private RakLibInterface $handler
+	){}
 
 	public function send(string $payload, bool $immediate) : void{
 		if(!$this->closed){

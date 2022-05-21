@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -38,13 +39,9 @@ class Door extends Transparent{
 	use HorizontalFacingTrait;
 	use PoweredByRedstoneTrait;
 
-	/** @var bool */
-	protected $top = false;
-	/** @var bool */
-	protected $hingeRight = false;
-
-	/** @var bool */
-	protected $open = false;
+	protected bool $top = false;
+	protected bool $hingeRight = false;
+	protected bool $open = false;
 
 	protected function writeStateToMeta() : int{
 		if($this->top){
@@ -76,7 +73,7 @@ class Door extends Transparent{
 
 		//copy door properties from other half
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
-		if($other instanceof Door and $other->isSameType($this)){
+		if($other instanceof Door && $other->isSameType($this)){
 			if($this->top){
 				$this->facing = $other->facing;
 				$this->open = $other->open;
@@ -119,12 +116,17 @@ class Door extends Transparent{
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
-		return [AxisAlignedBB::one()->trim($this->open ? Facing::rotateY($this->facing, !$this->hingeRight) : $this->facing, 13 / 16)];
+		//TODO: doors are 0.1825 blocks thick, instead of 0.1875 like JE (https://bugs.mojang.com/browse/MCPE-19214)
+		return [AxisAlignedBB::one()->trim($this->open ? Facing::rotateY($this->facing, !$this->hingeRight) : $this->facing, 327 / 400)];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getId() === BlockLegacyIds::AIR){ //Replace with common break method
-			$this->pos->getWorld()->useBreakOn($this->pos); //this will delete both halves if they exist
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN)) && !$this->getSide(Facing::DOWN) instanceof Door){ //Replace with common break method
+			$this->position->getWorld()->useBreakOn($this->position); //this will delete both halves if they exist
 		}
 	}
 
@@ -132,7 +134,7 @@ class Door extends Transparent{
 		if($face === Facing::UP){
 			$blockUp = $this->getSide(Facing::UP);
 			$blockDown = $this->getSide(Facing::DOWN);
-			if(!$blockUp->canBeReplaced() or $blockDown->isTransparent()){
+			if(!$blockUp->canBeReplaced() || !$this->canBeSupportedBy($blockDown)){
 				return false;
 			}
 
@@ -143,14 +145,14 @@ class Door extends Transparent{
 			$next = $this->getSide(Facing::rotateY($this->facing, false));
 			$next2 = $this->getSide(Facing::rotateY($this->facing, true));
 
-			if($next->isSameType($this) or (!$next2->isTransparent() and $next->isTransparent())){ //Door hinge
+			if($next->isSameType($this) || (!$next2->isTransparent() && $next->isTransparent())){ //Door hinge
 				$this->hingeRight = true;
 			}
 
 			$topHalf = clone $this;
 			$topHalf->top = true;
 
-			$tx->addBlock($blockReplace->pos, $this)->addBlock($blockUp->pos, $topHalf);
+			$tx->addBlock($blockReplace->position, $this)->addBlock($blockUp->position, $topHalf);
 			return true;
 		}
 
@@ -161,13 +163,13 @@ class Door extends Transparent{
 		$this->open = !$this->open;
 
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
-		if($other instanceof Door and $other->isSameType($this)){
+		if($other instanceof Door && $other->isSameType($this)){
 			$other->open = $this->open;
-			$this->pos->getWorld()->setBlock($other->pos, $other);
+			$this->position->getWorld()->setBlock($other->position, $other);
 		}
 
-		$this->pos->getWorld()->setBlock($this->pos, $this);
-		$this->pos->getWorld()->addSound($this->pos, new DoorSound());
+		$this->position->getWorld()->setBlock($this->position, $this);
+		$this->position->getWorld()->addSound($this->position, new DoorSound());
 
 		return true;
 	}
@@ -186,5 +188,9 @@ class Door extends Transparent{
 			return [$this, $other];
 		}
 		return parent::getAffectedBlocks();
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block->getSupportType(Facing::UP)->hasEdgeSupport();
 	}
 }

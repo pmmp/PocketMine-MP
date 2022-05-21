@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\Axis;
 use pocketmine\math\AxisAlignedBB;
@@ -33,8 +34,7 @@ use pocketmine\world\BlockTransaction;
 
 class Lantern extends Transparent{
 
-	/** @var bool */
-	protected $hanging = false;
+	protected bool $hanging = false;
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->hanging = ($stateMeta & BlockLegacyMetadata::LANTERN_FLAG_HANGING) !== 0;
@@ -73,22 +73,27 @@ class Lantern extends Transparent{
 		];
 	}
 
-	protected function canAttachTo(Block $b) : bool{
-		return !$b->isTransparent();
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$this->canAttachTo($this->pos->getWorld()->getBlock($blockReplace->getPos()->up())) and !$this->canAttachTo($this->pos->getWorld()->getBlock($blockReplace->getPos()->down()))){
+		if(!$this->canBeSupportedBy($blockReplace->getSide(Facing::UP), Facing::DOWN) && !$this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN), Facing::UP)){
 			return false;
 		}
 
-		$this->hanging = ($face === Facing::DOWN or !$this->canAttachTo($this->pos->getWorld()->getBlock($blockReplace->getPos()->down())));
+		$this->hanging = ($face === Facing::DOWN || !$this->canBeSupportedBy($this->position->getWorld()->getBlock($blockReplace->getPosition()->down()), Facing::UP));
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->canAttachTo($this->pos->getWorld()->getBlock($this->hanging ? $this->pos->up() : $this->pos->down()))){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+		$face = $this->hanging ? Facing::UP : Facing::DOWN;
+		if(!$this->canBeSupportedBy($this->getSide($face), Facing::opposite($face))){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
+
+	private function canBeSupportedBy(Block $block, int $face) : bool{
+		return $block->getSupportType($face)->hasCenterSupport();
 	}
 }

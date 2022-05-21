@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\world\format\io\region;
 
+use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\nbt\BigEndianNbtSerializer;
 use pocketmine\nbt\NbtDataException;
 use pocketmine\nbt\tag\ByteArrayTag;
@@ -31,6 +32,7 @@ use pocketmine\nbt\tag\IntArrayTag;
 use pocketmine\nbt\tag\ListTag;
 use pocketmine\world\format\BiomeArray;
 use pocketmine\world\format\Chunk;
+use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\ChunkUtils;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\SubChunk;
@@ -49,7 +51,7 @@ trait LegacyAnvilChunkTrait{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	protected function deserializeChunk(string $data) : Chunk{
+	protected function deserializeChunk(string $data) : ?ChunkData{
 		$decompressed = @zlib_decode($data);
 		if($decompressed === false){
 			throw new CorruptedChunkException("Failed to decompress chunk NBT");
@@ -85,16 +87,19 @@ trait LegacyAnvilChunkTrait{
 			$biomeArray = $makeBiomeArray(ChunkUtils::convertBiomeColors($biomeColorsTag->getValue())); //Convert back to original format
 		}elseif(($biomesTag = $chunk->getTag("Biomes")) instanceof ByteArrayTag){
 			$biomeArray = $makeBiomeArray($biomesTag->getValue());
+		}else{
+			$biomeArray = BiomeArray::fill(BiomeIds::OCEAN);
 		}
 
-		$result = new Chunk(
-			$subChunks,
+		return new ChunkData(
+			new Chunk(
+				$subChunks,
+				$biomeArray,
+				$chunk->getByte("TerrainPopulated", 0) !== 0
+			),
 			($entitiesTag = $chunk->getTag("Entities")) instanceof ListTag ? self::getCompoundList("Entities", $entitiesTag) : [],
 			($tilesTag = $chunk->getTag("TileEntities")) instanceof ListTag ? self::getCompoundList("TileEntities", $tilesTag) : [],
-			$biomeArray
 		);
-		$result->setPopulated($chunk->getByte("TerrainPopulated", 0) !== 0);
-		return $result;
 	}
 
 	abstract protected function deserializeSubChunk(CompoundTag $subChunk) : SubChunk;

@@ -25,8 +25,11 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\BrewingStand as TileBrewingStand;
 use pocketmine\block\utils\BrewingStandSlot;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
-use pocketmine\item\ToolTier;
+use pocketmine\math\Axis;
+use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use function array_key_exists;
@@ -37,11 +40,7 @@ class BrewingStand extends Transparent{
 	 * @var BrewingStandSlot[]
 	 * @phpstan-var array<int, BrewingStandSlot>
 	 */
-	protected $slots = [];
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel()));
-	}
+	protected array $slots = [];
 
 	protected function writeStateToMeta() : int{
 		$flags = 0;
@@ -70,6 +69,23 @@ class BrewingStand extends Transparent{
 
 	public function getStateBitmask() : int{
 		return 0b111;
+	}
+
+	protected function recalculateCollisionBoxes() : array{
+		return [
+			//bottom slab part - in PC this is also inset on X/Z by 1/16, but Bedrock sucks
+			AxisAlignedBB::one()->trim(Facing::UP, 7 / 8),
+
+			//center post
+			AxisAlignedBB::one()
+				->squash(Axis::X, 7 / 16)
+				->squash(Axis::Z, 7 / 16)
+				->trim(Facing::UP, 1 / 8)
+		];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function hasSlot(BrewingStandSlot $slot) : bool{
@@ -104,8 +120,8 @@ class BrewingStand extends Transparent{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player instanceof Player){
-			$stand = $this->pos->getWorld()->getTile($this->pos);
-			if($stand instanceof TileBrewingStand and $stand->canOpenWith($item->getCustomName())){
+			$stand = $this->position->getWorld()->getTile($this->position);
+			if($stand instanceof TileBrewingStand && $stand->canOpenWith($item->getCustomName())){
 				$player->setCurrentWindow($stand->getInventory());
 			}
 		}
@@ -114,6 +130,24 @@ class BrewingStand extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		//TODO
+		$brewing = $this->position->getWorld()->getTile($this->position);
+		if($brewing instanceof TileBrewingStand){
+			if($brewing->onUpdate()){
+				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+			}
+
+			$changed = false;
+			foreach(BrewingStandSlot::getAll() as $slot){
+				$occupied = !$brewing->getInventory()->isSlotEmpty($slot->getSlotNumber());
+				if($occupied !== $this->hasSlot($slot)){
+					$this->setSlot($slot, $occupied);
+					$changed = true;
+				}
+			}
+
+			if($changed){
+				$this->position->getWorld()->setBlock($this->position, $this);
+			}
+		}
 	}
 }

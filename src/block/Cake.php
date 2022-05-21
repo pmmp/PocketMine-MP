@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\SupportType;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\FoodSource;
 use pocketmine\entity\Living;
@@ -35,20 +36,16 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Cake extends Transparent implements FoodSource{
+	public const MAX_BITES = 6;
 
-	/** @var int */
-	protected $bites = 0;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5));
-	}
+	protected int $bites = 0;
 
 	protected function writeStateToMeta() : int{
 		return $this->bites;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->bites = BlockDataSerializer::readBoundedInt("bites", $stateMeta, 0, 6);
+		$this->bites = BlockDataSerializer::readBoundedInt("bites", $stateMeta, 0, self::MAX_BITES);
 	}
 
 	public function getStateBitmask() : int{
@@ -67,12 +64,16 @@ class Cake extends Transparent implements FoodSource{
 		];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function getBites() : int{ return $this->bites; }
 
 	/** @return $this */
 	public function setBites(int $bites) : self{
-		if($bites < 0 || $bites > 6){
-			throw new \InvalidArgumentException("Bites must be in range 0-6");
+		if($bites < 0 || $bites > self::MAX_BITES){
+			throw new \InvalidArgumentException("Bites must be in range 0 ... " . self::MAX_BITES);
 		}
 		$this->bites = $bites;
 		return $this;
@@ -89,7 +90,7 @@ class Cake extends Transparent implements FoodSource{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->getId() === BlockLegacyIds::AIR){ //Replace with common break method
-			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::AIR());
+			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::AIR());
 		}
 	}
 
@@ -99,8 +100,7 @@ class Cake extends Transparent implements FoodSource{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
-			$player->consumeObject($this);
-			return true;
+			return $player->consumeObject($this);
 		}
 
 		return false;
@@ -124,7 +124,7 @@ class Cake extends Transparent implements FoodSource{
 	public function getResidue(){
 		$clone = clone $this;
 		$clone->bites++;
-		if($clone->bites > 6){
+		if($clone->bites > self::MAX_BITES){
 			$clone = VanillaBlocks::AIR();
 		}
 		return $clone;
@@ -138,6 +138,6 @@ class Cake extends Transparent implements FoodSource{
 	}
 
 	public function onConsume(Living $consumer) : void{
-		$this->pos->getWorld()->setBlock($this->pos, $this->getResidue());
+		$this->position->getWorld()->setBlock($this->position, $this->getResidue());
 	}
 }

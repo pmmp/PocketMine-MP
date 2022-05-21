@@ -34,19 +34,16 @@ use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 abstract class Crops extends Flowable{
-	/** @var int */
-	protected $age = 0;
+	public const MAX_AGE = 7;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
+	protected int $age = 0;
 
 	protected function writeStateToMeta() : int{
 		return $this->age;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 7);
+		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, self::MAX_AGE);
 	}
 
 	public function getStateBitmask() : int{
@@ -57,8 +54,8 @@ abstract class Crops extends Flowable{
 
 	/** @return $this */
 	public function setAge(int $age) : self{
-		if($age < 0 || $age > 7){
-			throw new \InvalidArgumentException("Age must be in range 0-7");
+		if($age < 0 || $age > self::MAX_AGE){
+			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
 		}
 		$this->age = $age;
 		return $this;
@@ -73,20 +70,19 @@ abstract class Crops extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->age < 7 and $item instanceof Fertilizer){
+		if($this->age < self::MAX_AGE && $item instanceof Fertilizer){
 			$block = clone $this;
 			$block->age += mt_rand(2, 5);
-			if($block->age > 7){
-				$block->age = 7;
+			if($block->age > self::MAX_AGE){
+				$block->age = self::MAX_AGE;
 			}
 
 			$ev = new BlockGrowEvent($this, $block);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
+				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+				$item->pop();
 			}
-
-			$item->pop();
 
 			return true;
 		}
@@ -96,7 +92,7 @@ abstract class Crops extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->getId() !== BlockLegacyIds::FARMLAND){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
@@ -105,13 +101,13 @@ abstract class Crops extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < 7 and mt_rand(0, 2) === 1){
+		if($this->age < self::MAX_AGE && mt_rand(0, 2) === 1){
 			$block = clone $this;
 			++$block->age;
 			$ev = new BlockGrowEvent($this, $block);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
+				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
 			}
 		}
 	}

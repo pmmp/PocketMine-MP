@@ -33,7 +33,11 @@ trait ColorInMetadataTrait{
 	 * @see Block::readStateFromData()
 	 */
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->color = DyeColorIdMap::getInstance()->fromId($stateMeta);
+		$color = DyeColorIdMap::getInstance()->fromId($stateMeta);
+		if($color === null){
+			throw new InvalidBlockStateException("No dye colour corresponds to ID $stateMeta");
+		}
+		$this->color = $color;
 	}
 
 	/**
@@ -44,16 +48,16 @@ trait ColorInMetadataTrait{
 	}
 
 	/**
+	 * @see Block::writeStateToItemMeta()
+	 */
+	protected function writeStateToItemMeta() : int{
+		return DyeColorIdMap::getInstance()->toId($this->color);
+	}
+
+	/**
 	 * @see Block::getStateBitmask()
 	 */
 	public function getStateBitmask() : int{
 		return 0b1111;
-	}
-
-	/**
-	 * @see Block::getNonPersistentStateBitmask()
-	 */
-	public function getNonPersistentStateBitmask() : int{
-		return 0;
 	}
 }

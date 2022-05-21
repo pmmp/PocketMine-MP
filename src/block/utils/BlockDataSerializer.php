@@ -131,7 +131,7 @@ final class BlockDataSerializer{
 			3 => Facing::SOUTH
 		][$value] ?? null;
 		if($result === null){
-			throw new \InvalidArgumentException("Invalid coral facing $value");
+			throw new InvalidBlockStateException("Invalid coral facing $value");
 		}
 		return $result;
 	}
@@ -150,7 +150,7 @@ final class BlockDataSerializer{
 	}
 
 	public static function readBoundedInt(string $name, int $v, int $min, int $max) : int{
-		if($v < $min or $v > $max){
+		if($v < $min || $v > $max){
 			throw new InvalidBlockStateException("$name should be in range $min - $max, got $v");
 		}
 		return $v;

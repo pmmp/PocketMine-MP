@@ -31,24 +31,23 @@ use function substr;
  * Handles different types of plugins
  */
 class PharPluginLoader implements PluginLoader{
-
-	/** @var \DynamicClassLoader */
-	private $loader;
-
-	public function __construct(\DynamicClassLoader $loader){
-		$this->loader = $loader;
-	}
+	public function __construct(
+		private \DynamicClassLoader $loader
+	){}
 
 	public function canLoadPlugin(string $path) : bool{
 		$ext = ".phar";
-		return is_file($path) and substr($path, -strlen($ext)) === $ext;
+		return is_file($path) && substr($path, -strlen($ext)) === $ext;
 	}
 
 	/**
 	 * Loads the plugin contained in $file
 	 */
 	public function loadPlugin(string $file) : void{
-		$this->loader->addPath("$file/src");
+		$description = $this->getPluginDescription($file);
+		if($description !== null){
+			$this->loader->addPath($description->getSrcNamespacePrefix(), "$file/src");
+		}
 	}
 
 	/**

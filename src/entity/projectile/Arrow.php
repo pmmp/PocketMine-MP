@@ -28,8 +28,8 @@ use pocketmine\entity\animation\ArrowShakeAnimation;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Location;
+use pocketmine\event\entity\EntityItemPickupEvent;
 use pocketmine\event\entity\ProjectileHitEvent;
-use pocketmine\event\inventory\InventoryPickupArrowEvent;
 use pocketmine\item\VanillaItems;
 use pocketmine\math\RayTraceResult;
 use pocketmine\nbt\tag\CompoundTag;
@@ -50,6 +50,7 @@ class Arrow extends Projectile{
 	public const PICKUP_CREATIVE = 2;
 
 	private const TAG_PICKUP = "pickup"; //TAG_Byte
+	public const TAG_CRIT = "crit"; //TAG_Byte
 
 	protected $gravity = 0.05;
 	protected $drag = 0.01;
@@ -80,12 +81,14 @@ class Arrow extends Projectile{
 		parent::initEntity($nbt);
 
 		$this->pickupMode = $nbt->getByte(self::TAG_PICKUP, self::PICKUP_ANY);
+		$this->critical = $nbt->getByte(self::TAG_CRIT, 0) === 1;
 		$this->collideTicks = $nbt->getShort("life", $this->collideTicks);
 	}
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();
 		$nbt->setByte(self::TAG_PICKUP, $this->pickupMode);
+		$nbt->setByte(self::TAG_CRIT, $this->critical ? 1 : 0);
 		$nbt->setShort("life", $this->collideTicks);
 		return $nbt;
 	}
@@ -96,6 +99,7 @@ class Arrow extends Projectile{
 
 	public function setCritical(bool $value = true) : void{
 		$this->critical = $value;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function getResultDamage() : int{
@@ -170,14 +174,18 @@ class Arrow extends Projectile{
 		}
 
 		$item = VanillaItems::ARROW();
+		$playerInventory = match(true){
+			!$player->hasFiniteResources() => null, //arrows are not picked up in creative
+			$player->getOffHandInventory()->getItem(0)->canStackWith($item) && $player->getOffHandInventory()->canAddItem($item) => $player->getOffHandInventory(),
+			$player->getInventory()->canAddItem($item) => $player->getInventory(),
+			default => null
+		};
 
-		$playerInventory = $player->getInventory();
-		if($player->hasFiniteResources() and !$playerInventory->canAddItem($item)){
-			return;
+		$ev = new EntityItemPickupEvent($player, $this, $item, $playerInventory);
+		if($player->hasFiniteResources() && $playerInventory === null){
+			$ev->cancel();
 		}
-
-		$ev = new InventoryPickupArrowEvent($playerInventory, $this);
-		if($this->pickupMode === self::PICKUP_NONE or ($this->pickupMode === self::PICKUP_CREATIVE and !$player->isCreative())){
+		if($this->pickupMode === self::PICKUP_NONE || ($this->pickupMode === self::PICKUP_CREATIVE && !$player->isCreative())){
 			$ev->cancel();
 		}
 
@@ -190,7 +198,7 @@ class Arrow extends Projectile{
 			$viewer->getNetworkSession()->onPlayerPickUpItem($player, $this);
 		}
 
-		$playerInventory->addItem(clone $item);
+		$ev->getInventory()?->addItem($ev->getItem());
 		$this->flagForDespawn();
 	}
 

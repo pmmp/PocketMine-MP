@@ -25,27 +25,18 @@ namespace pocketmine\resourcepacks\json;
 
 final class ManifestModuleEntry{
 
-	/**
-	 * @var string
-	 */
-	public $description;
+	public string $description;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $type;
+	/** @required */
+	public string $type;
 
-	/**
-	 * @var string
-	 * @required
-	 */
-	public $uuid;
+	/** @required */
+	public string $uuid;
 
 	/**
 	 * @var int[]
 	 * @phpstan-var array{int, int, int}
 	 * @required
 	 */
-	public $version;
+	public array $version;
 }

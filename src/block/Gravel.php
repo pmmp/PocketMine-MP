@@ -32,10 +32,6 @@ use function mt_rand;
 class Gravel extends Opaque implements Fallable{
 	use FallableTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::SHOVEL));
-	}
-
 	public function getDropsForCompatibleTool(Item $item) : array{
 		if(mt_rand(1, 10) === 1){
 			return [

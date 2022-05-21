@@ -29,10 +29,8 @@ use function count;
 use function hrtime;
 
 class TimingsHandler{
-	/** @var bool */
-	private static $enabled = false;
-	/** @var int */
-	private static $timingStart = 0;
+	private static bool $enabled = false;
+	private static int $timingStart = 0;
 
 	/** @return string[] */
 	public static function printTimings() : array{
@@ -99,21 +97,13 @@ class TimingsHandler{
 		}
 	}
 
-	/** @var string */
-	private $name;
-	/** @var TimingsHandler|null */
-	private $parent = null;
+	private ?TimingsRecord $record = null;
+	private int $timingDepth = 0;
 
-	/** @var TimingsRecord|null */
-	private $record = null;
-
-	/** @var int */
-	private $timingDepth = 0;
-
-	public function __construct(string $name, ?TimingsHandler $parent = null){
-		$this->name = $name;
-		$this->parent = $parent;
-	}
+	public function __construct(
+		private string $name,
+		private ?TimingsHandler $parent = null
+	){}
 
 	public function getName() : string{ return $this->name; }
 

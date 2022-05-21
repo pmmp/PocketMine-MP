@@ -25,24 +25,13 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\ColorInMetadataTrait;
 use pocketmine\block\utils\DyeColor;
-use pocketmine\item\Item;
 
 class Wool extends Opaque{
 	use ColorInMetadataTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->color = DyeColor::WHITE();
-		parent::__construct($idInfo, $name, $breakInfo ?? new class(0.8, BlockToolType::SHEARS) extends BlockBreakInfo{
-				public function getBreakTime(Item $item) : float{
-					$time = parent::getBreakTime($item);
-					if($item->getBlockToolType() === BlockToolType::SHEARS){
-						$time *= 3; //shears break compatible blocks 15x faster, but wool 5x
-					}
-
-					return $time;
-				}
-			}
-		);
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getFlameEncouragement() : int{

@@ -1,7 +1,0 @@
-parameters:
-	ignoreErrors:
-		-
-			message: "#^Parameter \\#1 \\$class of method pocketmine\\\\world\\\\format\\\\io\\\\WorldProviderManager\\:\\:addProvider\\(\\) expects class\\-string\\<pocketmine\\\\world\\\\format\\\\io\\\\WorldProvider\\>, string given\\.$#"
-			count: 2
-			path: ../../phpunit/world/format/io/LevelProviderManagerTest.php
-

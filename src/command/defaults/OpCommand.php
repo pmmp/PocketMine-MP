@@ -26,7 +26,8 @@ namespace pocketmine\command\defaults;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function array_shift;
@@ -37,10 +38,10 @@ class OpCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.op.description",
-			"%commands.op.usage"
+			KnownTranslationFactory::pocketmine_command_op_description(),
+			KnownTranslationFactory::commands_op_usage()
 		);
-		$this->setPermission("pocketmine.command.op.give");
+		$this->setPermission(DefaultPermissionNames::COMMAND_OP_GIVE);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -59,9 +60,9 @@ class OpCommand extends VanillaCommand{
 
 		$sender->getServer()->addOp($name);
 		if(($player = $sender->getServer()->getPlayerExact($name)) !== null){
-			$player->sendMessage(TextFormat::GRAY . "You are now op!");
+			$player->sendMessage(KnownTranslationFactory::commands_op_message()->prefix(TextFormat::GRAY));
 		}
-		Command::broadcastCommandMessage($sender, new TranslationContainer("commands.op.success", [$name]));
+		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_op_success($name));
 		return true;
 	}
 }

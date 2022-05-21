@@ -29,7 +29,8 @@ use pocketmine\utils\EnumTrait;
 /**
  * This doc-block is generated automatically, do not modify it manually.
  * This must be regenerated whenever registry members are added, removed or changed.
- * @see \pocketmine\utils\RegistryUtils::_generateMethodAnnotations()
+ * @see build/generate-registry-annotations.php
+ * @generate-registry-docblock
  *
  * @method static DyeColor BLACK()
  * @method static DyeColor BLUE()
@@ -74,15 +75,12 @@ final class DyeColor{
 		);
 	}
 
-	/** @var string */
-	private $displayName;
-	/** @var Color */
-	private $rgbValue;
-
-	private function __construct(string $enumName, string $displayName, Color $rgbValue){
+	private function __construct(
+		string $enumName,
+		private string $displayName,
+		private Color $rgbValue
+	){
 		$this->Enum___construct($enumName);
-		$this->displayName = $displayName;
-		$this->rgbValue = $rgbValue;
 	}
 
 	public function getDisplayName() : string{

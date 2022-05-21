@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\AnalogRedstoneSignalEmitterTrait;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -38,18 +39,17 @@ use const M_PI;
 class DaylightSensor extends Transparent{
 	use AnalogRedstoneSignalEmitterTrait;
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	/** @var bool */
-	protected $inverted = false;
+	protected bool $inverted = false;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::AXE));
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->inverted ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->inverted ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	protected function writeStateToMeta() : int{
@@ -58,7 +58,7 @@ class DaylightSensor extends Transparent{
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->signalStrength = BlockDataSerializer::readBoundedInt("signalStrength", $stateMeta, 0, 15);
-		$this->inverted = $id === $this->idInfo->getSecondId();
+		$this->inverted = $id === $this->idInfoFlattened->getSecondId();
 	}
 
 	public function getStateBitmask() : int{
@@ -88,10 +88,14 @@ class DaylightSensor extends Transparent{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 10 / 16)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->inverted = !$this->inverted;
 		$this->signalStrength = $this->recalculateSignalStrength();
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
 	}
 
@@ -99,18 +103,18 @@ class DaylightSensor extends Transparent{
 		$signalStrength = $this->recalculateSignalStrength();
 		if($this->signalStrength !== $signalStrength){
 			$this->signalStrength = $signalStrength;
-			$this->pos->getWorld()->setBlock($this->pos, $this);
+			$this->position->getWorld()->setBlock($this->position, $this);
 		}
-		$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, 20);
+		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
 	}
 
 	private function recalculateSignalStrength() : int{
-		$lightLevel = $this->pos->getWorld()->getRealBlockSkyLightAt($this->pos->x, $this->pos->y, $this->pos->z);
+		$lightLevel = $this->position->getWorld()->getRealBlockSkyLightAt($this->position->x, $this->position->y, $this->position->z);
 		if($this->inverted){
 			return 15 - $lightLevel;
 		}
 
-		$sunAngle = $this->pos->getWorld()->getSunAnglePercentage();
+		$sunAngle = $this->position->getWorld()->getSunAnglePercentage();
 		return max(0, (int) round($lightLevel * cos(($sunAngle + ((($sunAngle < 0.5 ? 0 : 1) - $sunAngle) / 5)) * 2 * M_PI)));
 	}
 

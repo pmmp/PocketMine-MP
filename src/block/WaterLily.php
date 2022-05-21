@@ -32,10 +32,6 @@ use pocketmine\world\BlockTransaction;
 
 class WaterLily extends Flowable{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6));
-	}
-
 	/**
 	 * @return AxisAlignedBB[]
 	 */
@@ -56,7 +52,7 @@ class WaterLily extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if(!($this->getSide(Facing::DOWN) instanceof Water)){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 }

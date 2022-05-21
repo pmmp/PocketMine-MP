@@ -27,16 +27,13 @@ use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\utils\TreeType;
 use pocketmine\utils\Random;
 use pocketmine\world\ChunkManager;
-use pocketmine\world\generator\object\Tree as ObjectTree;
+use pocketmine\world\format\Chunk;
+use pocketmine\world\generator\object\TreeFactory;
 
-class Tree extends Populator{
-	/** @var int */
-	private $randomAmount = 1;
-	/** @var int */
-	private $baseAmount = 0;
-
-	/** @var TreeType */
-	private $type;
+class Tree implements Populator{
+	private int $randomAmount = 1;
+	private int $baseAmount = 0;
+	private TreeType $type;
 
 	/**
 	 * @param TreeType|null $type default oak
@@ -56,22 +53,24 @@ class Tree extends Populator{
 	public function populate(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void{
 		$amount = $random->nextRange(0, $this->randomAmount) + $this->baseAmount;
 		for($i = 0; $i < $amount; ++$i){
-			$x = $random->nextRange($chunkX << 4, ($chunkX << 4) + 15);
-			$z = $random->nextRange($chunkZ << 4, ($chunkZ << 4) + 15);
+			$x = $random->nextRange($chunkX << Chunk::COORD_BIT_SIZE, ($chunkX << Chunk::COORD_BIT_SIZE) + Chunk::EDGE_LENGTH);
+			$z = $random->nextRange($chunkZ << Chunk::COORD_BIT_SIZE, ($chunkZ << Chunk::COORD_BIT_SIZE) + Chunk::EDGE_LENGTH);
 			$y = $this->getHighestWorkableBlock($world, $x, $z);
 			if($y === -1){
 				continue;
 			}
-			ObjectTree::growTree($world, $x, $y, $z, $random, $this->type);
+			$tree = TreeFactory::get($random, $this->type);
+			$transaction = $tree?->getBlockTransaction($world, $x, $y, $z, $random);
+			$transaction?->apply();
 		}
 	}
 
 	private function getHighestWorkableBlock(ChunkManager $world, int $x, int $z) : int{
 		for($y = 127; $y >= 0; --$y){
 			$b = $world->getBlockAt($x, $y, $z)->getId();
-			if($b === BlockLegacyIds::DIRT or $b === BlockLegacyIds::GRASS){
+			if($b === BlockLegacyIds::DIRT || $b === BlockLegacyIds::GRASS){
 				return $y + 1;
-			}elseif($b !== BlockLegacyIds::AIR and $b !== BlockLegacyIds::SNOW_LAYER){
+			}elseif($b !== BlockLegacyIds::AIR && $b !== BlockLegacyIds::SNOW_LAYER){
 				return -1;
 			}
 		}

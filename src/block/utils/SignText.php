@@ -36,7 +36,7 @@ class SignText{
 	public const LINE_COUNT = 4;
 
 	/** @var string[] */
-	private $lines;
+	private array $lines;
 
 	/**
 	 * @param string[]|null $lines index-sensitive; omitting an index will leave it unchanged
@@ -89,7 +89,7 @@ class SignText{
 		if(!is_int($index)){
 			throw new \InvalidArgumentException("Index must be an integer");
 		}
-		if($index < 0 or $index >= self::LINE_COUNT){
+		if($index < 0 || $index >= self::LINE_COUNT){
 			throw new \InvalidArgumentException("Line index is out of bounds");
 		}
 	}

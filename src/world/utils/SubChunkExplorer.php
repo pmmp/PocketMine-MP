@@ -51,9 +51,9 @@ class SubChunkExplorer{
 	 * @phpstan-return SubChunkExplorerStatus::*
 	 */
 	public function moveTo(int $x, int $y, int $z) : int{
-		$newChunkX = $x >> 4;
-		$newChunkZ = $z >> 4;
-		if($this->currentChunk === null or $this->currentX !== $newChunkX or $this->currentZ !== $newChunkZ){
+		$newChunkX = $x >> SubChunk::COORD_BIT_SIZE;
+		$newChunkZ = $z >> SubChunk::COORD_BIT_SIZE;
+		if($this->currentChunk === null || $this->currentX !== $newChunkX || $this->currentZ !== $newChunkZ){
 			$this->currentX = $newChunkX;
 			$this->currentZ = $newChunkZ;
 			$this->currentSubChunk = null;
@@ -64,11 +64,11 @@ class SubChunkExplorer{
 			}
 		}
 
-		$newChunkY = $y >> 4;
-		if($this->currentSubChunk === null or $this->currentY !== $newChunkY){
+		$newChunkY = $y >> SubChunk::COORD_BIT_SIZE;
+		if($this->currentSubChunk === null || $this->currentY !== $newChunkY){
 			$this->currentY = $newChunkY;
 
-			if($this->currentY < 0 or $this->currentY >= $this->currentChunk->getHeight()){
+			if($this->currentY < Chunk::MIN_SUBCHUNK_INDEX || $this->currentY > Chunk::MAX_SUBCHUNK_INDEX){
 				$this->currentSubChunk = null;
 				return SubChunkExplorerStatus::INVALID;
 			}
@@ -85,7 +85,7 @@ class SubChunkExplorer{
 	 */
 	public function moveToChunk(int $chunkX, int $chunkY, int $chunkZ) : int{
 		//this is a cold path, so we don't care much if it's a bit slower (extra fcall overhead)
-		return $this->moveTo($chunkX << 4, $chunkY << 4, $chunkZ << 4);
+		return $this->moveTo($chunkX << SubChunk::COORD_BIT_SIZE, $chunkY << SubChunk::COORD_BIT_SIZE, $chunkZ << SubChunk::COORD_BIT_SIZE);
 	}
 
 	/**

@@ -36,8 +36,7 @@ use pocketmine\world\sound\RedstonePowerOnSound;
 abstract class Button extends Flowable{
 	use AnyFacingTrait;
 
-	/** @var bool */
-	protected $pressed = false;
+	protected bool $pressed = false;
 
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::writeFacing($this->facing) | ($this->pressed ? BlockLegacyMetadata::BUTTON_FLAG_POWERED : 0);
@@ -62,9 +61,11 @@ abstract class Button extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		//TODO: check valid target block
-		$this->facing = $face;
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		if($this->canBeSupportedBy($blockClicked, $face)){
+			$this->facing = $face;
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		}
+		return false;
 	}
 
 	abstract protected function getActivationTime() : int;
@@ -72,9 +73,9 @@ abstract class Button extends Flowable{
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if(!$this->pressed){
 			$this->pressed = true;
-			$this->pos->getWorld()->setBlock($this->pos, $this);
-			$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, $this->getActivationTime());
-			$this->pos->getWorld()->addSound($this->pos->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
+			$this->position->getWorld()->setBlock($this->position, $this);
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, $this->getActivationTime());
+			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new RedstonePowerOnSound());
 		}
 
 		return true;
@@ -83,8 +84,18 @@ abstract class Button extends Flowable{
 	public function onScheduledUpdate() : void{
 		if($this->pressed){
 			$this->pressed = false;
-			$this->pos->getWorld()->setBlock($this->pos, $this);
-			$this->pos->getWorld()->addSound($this->pos->add(0.5, 0.5, 0.5), new RedstonePowerOffSound());
+			$this->position->getWorld()->setBlock($this->position, $this);
+			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new RedstonePowerOffSound());
 		}
+	}
+
+	public function onNearbyBlockChange() : void{
+		if(!$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)), $this->facing)){
+			$this->position->getWorld()->useBreakOn($this->position);
+		}
+	}
+
+	private function canBeSupportedBy(Block $support, int $face) : bool{
+		return $support->getSupportType($face)->hasCenterSupport();
 	}
 }

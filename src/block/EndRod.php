@@ -36,10 +36,6 @@ use pocketmine\world\BlockTransaction;
 class EndRod extends Flowable{
 	use AnyFacingTrait;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
-
 	protected function writeStateToMeta() : int{
 		$result = BlockDataSerializer::writeFacing($this->facing);
 		if(Facing::axis($this->facing) !== Axis::Y){
@@ -50,7 +46,7 @@ class EndRod extends Flowable{
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		if($stateMeta !== 0 and $stateMeta !== 1){
+		if($stateMeta !== 0 && $stateMeta !== 1){
 			$stateMeta ^= 1;
 		}
 
@@ -63,7 +59,7 @@ class EndRod extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$this->facing = $face;
-		if($blockClicked instanceof EndRod and $blockClicked->facing === $this->facing){
+		if($blockClicked instanceof EndRod && $blockClicked->facing === $this->facing){
 			$this->facing = Facing::opposite($face);
 		}
 

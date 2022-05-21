@@ -25,9 +25,11 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\tile\Banner as TileBanner;
-use pocketmine\block\utils\BannerPattern;
+use pocketmine\block\utils\BannerPatternLayer;
 use pocketmine\block\utils\DyeColor;
+use pocketmine\data\bedrock\BannerPatternTypeIdMap;
 use pocketmine\data\bedrock\DyeColorIdMap;
+use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
 use function count;
@@ -37,14 +39,13 @@ class Banner extends ItemBlockWallOrFloor{
 	public const TAG_PATTERN_COLOR = TileBanner::TAG_PATTERN_COLOR;
 	public const TAG_PATTERN_NAME = TileBanner::TAG_PATTERN_NAME;
 
-	/** @var DyeColor */
-	private $color;
+	private DyeColor $color;
 
 	/**
-	 * @var BannerPattern[]
-	 * @phpstan-var list<BannerPattern>
+	 * @var BannerPatternLayer[]
+	 * @phpstan-var list<BannerPatternLayer>
 	 */
-	private $patterns = [];
+	private array $patterns = [];
 
 	public function __construct(ItemIdentifier $identifier, Block $floorVariant, Block $wallVariant){
 		parent::__construct($identifier, $floorVariant, $wallVariant);
@@ -65,21 +66,18 @@ class Banner extends ItemBlockWallOrFloor{
 		return DyeColorIdMap::getInstance()->toInvertedId($this->color);
 	}
 
-	public function getMaxStackSize() : int{
-		return 16;
-	}
-
 	/**
-	 * @return BannerPattern[]
-	 * @phpstan-return list<BannerPattern>
+	 * @return BannerPatternLayer[]
+	 * @phpstan-return list<BannerPatternLayer>
 	 */
 	public function getPatterns() : array{
 		return $this->patterns;
 	}
 
 	/**
-	 * @param BannerPattern[] $patterns
-	 * @phpstan-param list<BannerPattern> $patterns
+	 * @param BannerPatternLayer[]             $patterns
+	 *
+	 * @phpstan-param list<BannerPatternLayer> $patterns
 	 *
 	 * @return $this
 	 */
@@ -98,11 +96,17 @@ class Banner extends ItemBlockWallOrFloor{
 		$this->patterns = [];
 
 		$colorIdMap = DyeColorIdMap::getInstance();
+		$patternIdMap = BannerPatternTypeIdMap::getInstance();
 		$patterns = $tag->getListTag(self::TAG_PATTERNS);
-		if($patterns !== null){
+		if($patterns !== null && $patterns->getTagType() === NBT::TAG_Compound){
 			/** @var CompoundTag $t */
 			foreach($patterns as $t){
-				$this->patterns[] = new BannerPattern($t->getString(self::TAG_PATTERN_NAME), $colorIdMap->fromInvertedId($t->getInt(self::TAG_PATTERN_COLOR)));
+				$patternColor = $colorIdMap->fromInvertedId($t->getInt(self::TAG_PATTERN_COLOR)) ?? DyeColor::BLACK(); //TODO: missing pattern colour should be an error
+				$patternType = $patternIdMap->fromId($t->getString(self::TAG_PATTERN_NAME));
+				if($patternType === null){
+					continue; //TODO: this should be an error
+				}
+				$this->patterns[] = new BannerPatternLayer($patternType, $patternColor);
 			}
 		}
 	}
@@ -113,9 +117,10 @@ class Banner extends ItemBlockWallOrFloor{
 		if(count($this->patterns) > 0){
 			$patterns = new ListTag();
 			$colorIdMap = DyeColorIdMap::getInstance();
+			$patternIdMap = BannerPatternTypeIdMap::getInstance();
 			foreach($this->patterns as $pattern){
 				$patterns->push(CompoundTag::create()
-					->setString(self::TAG_PATTERN_NAME, $pattern->getId())
+					->setString(self::TAG_PATTERN_NAME, $patternIdMap->toId($pattern->getType()))
 					->setInt(self::TAG_PATTERN_COLOR, $colorIdMap->toInvertedId($pattern->getColor()))
 				);
 			}

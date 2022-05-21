@@ -25,9 +25,9 @@ namespace pocketmine\resourcepacks\json;
 
 final class ManifestMetadata{
 	/** @var string[]|null */
-	public $authors = null;
-	/** @var string|null */
-	public $license = null;
-	/** @var string|null */
-	public $url = null;
+	public ?array $authors = null;
+
+	public ?string $license = null;
+
+	public ?string $url = null;
 }

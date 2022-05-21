@@ -54,7 +54,7 @@ abstract class AsyncTask extends \Threaded{
 	 *
 	 * Used to store objects which are only needed on one thread and should not be serialized.
 	 */
-	private static $threadLocalStorage = null;
+	private static ?\ArrayObject $threadLocalStorage = null;
 
 	/** @var AsyncWorker|null $worker */
 	public $worker = null;
@@ -62,19 +62,13 @@ abstract class AsyncTask extends \Threaded{
 	/** @var \Threaded */
 	public $progressUpdates;
 
-	/** @var scalar|null */
-	private $result = null;
-	/** @var bool */
-	private $serialized = false;
-	/** @var bool */
-	private $cancelRun = false;
-	/** @var bool */
-	private $submitted = false;
+	private string|int|bool|null|float $result = null;
+	private bool $serialized = false;
+	private bool $cancelRun = false;
+	private bool $submitted = false;
 
-	/** @var bool */
-	private $crashed = false;
-	/** @var bool */
-	private $finished = false;
+	private bool $crashed = false;
+	private bool $finished = false;
 
 	public function run() : void{
 		$this->result = null;
@@ -93,7 +87,7 @@ abstract class AsyncTask extends \Threaded{
 	}
 
 	public function isCrashed() : bool{
-		return $this->crashed or $this->isTerminated();
+		return $this->crashed || $this->isTerminated();
 	}
 
 	/**
@@ -101,7 +95,11 @@ abstract class AsyncTask extends \Threaded{
 	 * because it is not true prior to task execution.
 	 */
 	public function isFinished() : bool{
-		return $this->finished or $this->isCrashed();
+		return $this->finished || $this->isCrashed();
+	}
+
+	public function hasResult() : bool{
+		return $this->result !== null;
 	}
 
 	/**
@@ -115,23 +113,19 @@ abstract class AsyncTask extends \Threaded{
 		return $this->result;
 	}
 
+	/**
+	 * @param mixed $result
+	 */
+	public function setResult($result) : void{
+		$this->result = ($this->serialized = !is_scalar($result)) ? igbinary_serialize($result) : $result;
+	}
+
 	public function cancelRun() : void{
 		$this->cancelRun = true;
 	}
 
 	public function hasCancelledRun() : bool{
 		return $this->cancelRun;
-	}
-
-	public function hasResult() : bool{
-		return $this->result !== null;
-	}
-
-	/**
-	 * @param mixed $result
-	 */
-	public function setResult($result) : void{
-		$this->result = ($this->serialized = !is_scalar($result)) ? igbinary_serialize($result) : $result;
 	}
 
 	public function setSubmitted() : void{
@@ -236,7 +230,7 @@ abstract class AsyncTask extends \Threaded{
 	 */
 	protected function fetchLocal(string $key){
 		$id = spl_object_id($this);
-		if(self::$threadLocalStorage === null or !isset(self::$threadLocalStorage[$id][$key])){
+		if(self::$threadLocalStorage === null || !isset(self::$threadLocalStorage[$id][$key])){
 			throw new \InvalidArgumentException("No matching thread-local data found on this thread");
 		}
 
@@ -245,7 +239,7 @@ abstract class AsyncTask extends \Threaded{
 
 	final public function __destruct(){
 		$this->reallyDestruct();
-		if(self::$threadLocalStorage !== null and isset(self::$threadLocalStorage[$h = spl_object_id($this)])){
+		if(self::$threadLocalStorage !== null && isset(self::$threadLocalStorage[$h = spl_object_id($this)])){
 			unset(self::$threadLocalStorage[$h]);
 			if(self::$threadLocalStorage->count() === 0){
 				self::$threadLocalStorage = null;

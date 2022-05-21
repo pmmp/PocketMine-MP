@@ -29,11 +29,8 @@ use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 
 class ItemBlockWallOrFloor extends Item{
-
-	/** @var int */
-	private $floorVariant;
-	/** @var int */
-	private $wallVariant;
+	private int $floorVariant;
+	private int $wallVariant;
 
 	public function __construct(ItemIdentifier $identifier, Block $floorVariant, Block $wallVariant){
 		parent::__construct($identifier, $floorVariant->getName());
@@ -50,5 +47,9 @@ class ItemBlockWallOrFloor extends Item{
 
 	public function getFuelTime() : int{
 		return $this->getBlock()->getFuelTime();
+	}
+
+	public function getMaxStackSize() : int{
+		return $this->getBlock()->getMaxStackSize();
 	}
 }

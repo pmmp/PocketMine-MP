@@ -28,47 +28,33 @@ use pocketmine\plugin\PluginException;
 use function spl_object_id;
 
 class PermissionAttachment{
-	/** @var PermissionRemovedExecutor|null */
-	private $removed = null;
-
 	/** @var bool[] */
-	private $permissions = [];
+	private array $permissions = [];
 
 	/**
-	 * @var Permissible[]
-	 * @phpstan-var array<int, Permissible>
+	 * @var PermissibleInternal[]
+	 * @phpstan-var array<int, PermissibleInternal>
 	 */
-	private $subscribers = [];
-
-	/** @var Plugin */
-	private $plugin;
+	private array $subscribers = [];
 
 	/**
 	 * @throws PluginException
 	 */
-	public function __construct(Plugin $plugin){
+	public function __construct(
+		private Plugin $plugin
+	){
 		if(!$plugin->isEnabled()){
 			throw new PluginException("Plugin " . $plugin->getDescription()->getName() . " is disabled");
 		}
-
-		$this->plugin = $plugin;
 	}
 
 	public function getPlugin() : Plugin{
 		return $this->plugin;
 	}
 
-	public function setRemovalCallback(PermissionRemovedExecutor $ex) : void{
-		$this->removed = $ex;
-	}
-
-	public function getRemovalCallback() : ?PermissionRemovedExecutor{
-		return $this->removed;
-	}
-
 	/**
-	 * @return Permissible[]
-	 * @phpstan-return array<int, Permissible>
+	 * @return PermissibleInternal[]
+	 * @phpstan-return array<int, PermissibleInternal>
 	 */
 	public function getSubscribers() : array{ return $this->subscribers; }
 
@@ -148,14 +134,14 @@ class PermissionAttachment{
 	/**
 	 * @internal
 	 */
-	public function subscribePermissible(Permissible $permissible) : void{
+	public function subscribePermissible(PermissibleInternal $permissible) : void{
 		$this->subscribers[spl_object_id($permissible)] = $permissible;
 	}
 
 	/**
 	 * @internal
 	 */
-	public function unsubscribePermissible(Permissible $permissible) : void{
+	public function unsubscribePermissible(PermissibleInternal $permissible) : void{
 		unset($this->subscribers[spl_object_id($permissible)]);
 	}
 }

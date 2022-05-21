@@ -1,13 +1,5 @@
 # Security Policy
 
-## Supported Versions
-The following release lines are currently receiving active security updates and bug fixes:
-
-| Version  | Supported          |
-| -------- | ------------------ |
-| 3.15.x   | :white_check_mark: |
-| < 3.15.0 | :x:                |
-
 ## Reporting a Vulnerability
 
 **DO NOT report vulnerabilities on the GitHub issue tracker.**

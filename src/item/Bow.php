@@ -46,7 +46,13 @@ class Bow extends Tool implements Releasable{
 
 	public function onReleaseUsing(Player $player) : ItemUseResult{
 		$arrow = VanillaItems::ARROW();
-		if($player->hasFiniteResources() and !$player->getInventory()->contains($arrow)){
+		$inventory = match(true){
+			$player->getOffHandInventory()->contains($arrow) => $player->getOffHandInventory(),
+			$player->getInventory()->contains($arrow) => $player->getInventory(),
+			default => null
+		};
+
+		if($player->hasFiniteResources() && $inventory === null){
 			return ItemUseResult::FAIL();
 		}
 
@@ -79,7 +85,7 @@ class Bow extends Tool implements Releasable{
 		}
 		$ev = new EntityShootBowEvent($player, $this, $entity, $baseForce * 3);
 
-		if($baseForce < 0.1 or $diff < 5 or $player->isSpectator()){
+		if($baseForce < 0.1 || $diff < 5 || $player->isSpectator()){
 			$ev->cancel();
 		}
 
@@ -110,11 +116,15 @@ class Bow extends Tool implements Releasable{
 
 		if($player->hasFiniteResources()){
 			if(!$infinity){ //TODO: tipped arrows are still consumed when Infinity is applied
-				$player->getInventory()->removeItem($arrow);
+				$inventory?->removeItem($arrow);
 			}
 			$this->applyDamage(1);
 		}
 
 		return ItemUseResult::SUCCESS();
+	}
+
+	public function canStartUsingItem(Player $player) : bool{
+		return !$player->hasFiniteResources() || $player->getOffHandInventory()->contains($arrow = VanillaItems::ARROW()) || $player->getInventory()->contains($arrow);
 	}
 }

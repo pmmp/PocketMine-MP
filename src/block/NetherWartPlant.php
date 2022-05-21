@@ -33,20 +33,16 @@ use pocketmine\world\BlockTransaction;
 use function mt_rand;
 
 class NetherWartPlant extends Flowable{
+	public const MAX_AGE = 3;
 
-	/** @var int */
-	protected $age = 0;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
+	protected int $age = 0;
 
 	protected function writeStateToMeta() : int{
 		return $this->age;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 3);
+		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, self::MAX_AGE);
 	}
 
 	public function getStateBitmask() : int{
@@ -57,8 +53,8 @@ class NetherWartPlant extends Flowable{
 
 	/** @return $this */
 	public function setAge(int $age) : self{
-		if($age < 0 || $age > 3){
-			throw new \InvalidArgumentException("Age must be in range 0-3");
+		if($age < 0 || $age > self::MAX_AGE){
+			throw new \InvalidArgumentException("Age must be in range 0 ..." . self::MAX_AGE);
 		}
 		$this->age = $age;
 		return $this;
@@ -75,7 +71,7 @@ class NetherWartPlant extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->getId() !== BlockLegacyIds::SOUL_SAND){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
@@ -84,20 +80,20 @@ class NetherWartPlant extends Flowable{
 	}
 
 	public function onRandomTick() : void{
-		if($this->age < 3 and mt_rand(0, 10) === 0){ //Still growing
+		if($this->age < self::MAX_AGE && mt_rand(0, 10) === 0){ //Still growing
 			$block = clone $this;
 			$block->age++;
 			$ev = new BlockGrowEvent($this, $block);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState());
+				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
 			}
 		}
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			$this->asItem()->setCount($this->age === 3 ? mt_rand(2, 4) : 1)
+			$this->asItem()->setCount($this->age === self::MAX_AGE ? mt_rand(2, 4) : 1)
 		];
 	}
 }

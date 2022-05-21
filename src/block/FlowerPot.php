@@ -34,45 +34,31 @@ use function assert;
 
 class FlowerPot extends Flowable{
 
-	/**
-	 * TODO: get rid of this hack (it's currently needed to deal with blockfactory state handling)
-	 * @var bool
-	 */
-	protected $occupied = false;
-
-	/** @var Block|null */
-	protected $plant = null;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
+	protected ?Block $plant = null;
 
 	protected function writeStateToMeta() : int{
-		return $this->occupied ? BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED : 0;
-	}
-
-	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->occupied = ($stateMeta & BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED) !== 0;
+		//TODO: HACK! this is just to make the client actually render the plant - we purposely don't read the flag back
+		return $this->plant !== null ? BlockLegacyMetadata::FLOWER_POT_FLAG_OCCUPIED : 0;
 	}
 
 	public function getStateBitmask() : int{
-		return 0b1111; //vanilla uses various values, we only care about 1 and 0 for PE
+		return 0b1;
 	}
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileFlowerPot){
 			$this->setPlant($tile->getPlant());
 		}else{
-			$this->occupied = false;
+			$this->setPlant(null);
 		}
 	}
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
 
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileFlowerPot);
 		$tile->setPlant($this->plant);
 	}
@@ -83,12 +69,11 @@ class FlowerPot extends Flowable{
 
 	/** @return $this */
 	public function setPlant(?Block $plant) : self{
-		if($plant === null or $plant instanceof Air){
+		if($plant === null || $plant instanceof Air){
 			$this->plant = null;
 		}else{
 			$this->plant = clone $plant;
 		}
-		$this->occupied = $this->plant !== null;
 		return $this;
 	}
 
@@ -97,13 +82,17 @@ class FlowerPot extends Flowable{
 			return false;
 		}
 
+		return $this->isValidPlant($block);
+	}
+
+	private function isValidPlant(Block $block) : bool{
 		return
-			$block instanceof Cactus or
-			$block instanceof DeadBush or
-			$block instanceof Flower or
-			$block instanceof RedMushroom or
-			$block instanceof Sapling or
-			($block instanceof TallGrass and $block->getIdInfo()->getVariant() === BlockLegacyMetadata::TALLGRASS_FERN); //TODO: clean up
+			$block instanceof Cactus ||
+			$block instanceof DeadBush ||
+			$block instanceof Flower ||
+			$block instanceof RedMushroom ||
+			$block instanceof Sapling ||
+			($block instanceof TallGrass && $block->getIdInfo()->getVariant() === BlockLegacyMetadata::TALLGRASS_FERN); //TODO: clean up
 		//TODO: bamboo
 	}
 
@@ -115,7 +104,7 @@ class FlowerPot extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			return false;
 		}
 
@@ -123,22 +112,46 @@ class FlowerPot extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		return $block->getSupportType(Facing::UP)->hasCenterSupport();
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$plant = $item->getBlock();
-		if(!$this->canAddPlant($plant)){
-			return false;
+		if($this->plant !== null){
+			if($this->isValidPlant($plant)){
+				//for some reason, vanilla doesn't remove the contents of the pot if the held item is plantable
+				//and will also cause a new plant to be placed if clicking on the side
+				return false;
+			}
+
+			$removedItems = [$this->plant->asItem()];
+			if($player !== null){
+				//this one just has to be a weirdo :(
+				//this is the only block that directly adds items to the player inventory instead of just dropping items
+				$removedItems = $player->getInventory()->addItem(...$removedItems);
+			}
+			foreach($removedItems as $drops){
+				$this->position->getWorld()->dropItem($this->position->add(0.5, 0.5, 0.5), $drops);
+			}
+
+			$this->setPlant(null);
+			$this->position->getWorld()->setBlock($this->position, $this);
+			return true;
+		}elseif($this->isValidPlant($plant)){
+			$this->setPlant($plant);
+			$item->pop();
+			$this->position->getWorld()->setBlock($this->position, $this);
+
+			return true;
 		}
 
-		$this->setPlant($plant);
-		$item->pop();
-		$this->pos->getWorld()->setBlock($this->pos, $this);
-
-		return true;
+		return false;
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

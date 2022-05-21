@@ -31,6 +31,8 @@ use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use function is_infinite;
+use function is_nan;
 use function lcg_value;
 
 class ItemFrame extends Flowable{
@@ -38,18 +40,11 @@ class ItemFrame extends Flowable{
 
 	public const ROTATIONS = 8;
 
-	/** @var bool */
-	protected $hasMap = false; //makes frame appear large if set
-	/** @var Item|null */
-	protected $framedItem = null;
-	/** @var int */
-	protected $itemRotation = 0;
-	/** @var float */
-	protected $itemDropChance = 1.0;
+	protected bool $hasMap = false; //makes frame appear large if set
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.25));
-	}
+	protected ?Item $framedItem = null;
+	protected int $itemRotation = 0;
+	protected float $itemDropChance = 1.0;
 
 	protected function writeStateToMeta() : int{
 		return BlockDataSerializer::write5MinusHorizontalFacing($this->facing) | ($this->hasMap ? BlockLegacyMetadata::ITEM_FRAME_FLAG_HAS_MAP : 0);
@@ -62,7 +57,7 @@ class ItemFrame extends Flowable{
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileItemFrame){
 			$this->framedItem = $tile->getItem();
 			if($this->framedItem->isNull()){
@@ -75,7 +70,7 @@ class ItemFrame extends Flowable{
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileItemFrame){
 			$tile->setItem($this->framedItem);
 			$tile->setItemRotation($this->itemRotation);
@@ -93,7 +88,7 @@ class ItemFrame extends Flowable{
 
 	/** @return $this */
 	public function setFramedItem(?Item $item) : self{
-		if($item === null or $item->isNull()){
+		if($item === null || $item->isNull()){
 			$this->framedItem = null;
 			$this->itemRotation = 0;
 		}else{
@@ -118,6 +113,9 @@ class ItemFrame extends Flowable{
 
 	/** @return $this */
 	public function setItemDropChance(float $itemDropChance) : self{
+		if($itemDropChance < 0.0 || $itemDropChance > 1.0 || is_nan($itemDropChance) || is_infinite($itemDropChance)){
+			throw new \InvalidArgumentException("Drop chance must be in range 0-1");
+		}
 		$this->itemDropChance = $itemDropChance;
 		return $this;
 	}
@@ -144,7 +142,7 @@ class ItemFrame extends Flowable{
 			return true;
 		}
 
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->position->getWorld()->setBlock($this->position, $this);
 
 		return true;
 	}
@@ -154,21 +152,21 @@ class ItemFrame extends Flowable{
 			return false;
 		}
 		if(lcg_value() <= $this->itemDropChance){
-			$this->pos->getWorld()->dropItem($this->pos->add(0.5, 0.5, 0.5), clone $this->framedItem);
+			$this->position->getWorld()->dropItem($this->position->add(0.5, 0.5, 0.5), clone $this->framedItem);
 		}
 		$this->setFramedItem(null);
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
 	}
 
 	public function onNearbyBlockChange() : void{
 		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::DOWN or $face === Facing::UP or !$blockClicked->isSolid()){
+		if($face === Facing::DOWN || $face === Facing::UP || !$blockClicked->isSolid()){
 			return false;
 		}
 
@@ -179,7 +177,7 @@ class ItemFrame extends Flowable{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		$drops = parent::getDropsForCompatibleTool($item);
-		if($this->framedItem !== null and lcg_value() <= $this->itemDropChance){
+		if($this->framedItem !== null && lcg_value() <= $this->itemDropChance){
 			$drops[] = clone $this->framedItem;
 		}
 

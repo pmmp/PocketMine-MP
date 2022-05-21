@@ -25,6 +25,7 @@ namespace pocketmine\world\generator\object;
 
 use pocketmine\block\VanillaBlocks;
 use pocketmine\utils\Random;
+use pocketmine\world\BlockTransaction;
 use pocketmine\world\ChunkManager;
 
 class OakTree extends Tree{
@@ -33,8 +34,8 @@ class OakTree extends Tree{
 		parent::__construct(VanillaBlocks::OAK_LOG(), VanillaBlocks::OAK_LEAVES());
 	}
 
-	public function placeObject(ChunkManager $world, int $x, int $y, int $z, Random $random) : void{
+	public function getBlockTransaction(ChunkManager $world, int $x, int $y, int $z, Random $random) : ?BlockTransaction{
 		$this->treeHeight = $random->nextBoundedInt(3) + 4;
-		parent::placeObject($world, $x, $y, $z, $random);
+		return parent::getBlockTransaction($world, $x, $y, $z, $random);
 	}
 }

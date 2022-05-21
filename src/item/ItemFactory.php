@@ -25,13 +25,16 @@ namespace pocketmine\item;
 
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
+use pocketmine\block\utils\CoralType;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\RecordType;
 use pocketmine\block\utils\SkullType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\block\VanillaBlocks;
+use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\EntityLegacyIds;
+use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Location;
 use pocketmine\entity\Squid;
@@ -39,6 +42,7 @@ use pocketmine\entity\Villager;
 use pocketmine\entity\Zombie;
 use pocketmine\inventory\ArmorInventory;
 use pocketmine\math\Vector3;
+use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\utils\SingletonTrait;
 use pocketmine\world\World;
@@ -51,7 +55,7 @@ class ItemFactory{
 	use SingletonTrait;
 
 	/** @var Item[] */
-	private $list = [];
+	private array $list = [];
 
 	public function __construct(){
 		$this->registerArmorItems();
@@ -77,11 +81,26 @@ class ItemFactory{
 		$this->register(new Clock(new ItemIdentifier(ItemIds::CLOCK, 0), "Clock"));
 		$this->register(new Clownfish(new ItemIdentifier(ItemIds::CLOWNFISH, 0), "Clownfish"));
 		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 0), "Coal"));
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 0), VanillaBlocks::TUBE_CORAL_FAN(), VanillaBlocks::TUBE_WALL_CORAL_FAN()), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 1), VanillaBlocks::BRAIN_CORAL_FAN(), VanillaBlocks::BRAIN_WALL_CORAL_FAN()), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 2), VanillaBlocks::BUBBLE_CORAL_FAN(), VanillaBlocks::BUBBLE_WALL_CORAL_FAN()), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 3), VanillaBlocks::FIRE_CORAL_FAN(), VanillaBlocks::FIRE_WALL_CORAL_FAN()), true);
-		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::CORAL_FAN, 4), VanillaBlocks::HORN_CORAL_FAN(), VanillaBlocks::HORN_WALL_CORAL_FAN()), true);
+
+		foreach([
+			0 => CoralType::TUBE(),
+			1 => CoralType::BRAIN(),
+			2 => CoralType::BUBBLE(),
+			3 => CoralType::FIRE(),
+			4 => CoralType::HORN()
+		] as $meta => $coralType){
+			$this->register(new ItemBlockWallOrFloor(
+				new ItemIdentifier(ItemIds::CORAL_FAN, $meta),
+				VanillaBlocks::CORAL_FAN()->setCoralType($coralType)->setDead(false),
+				VanillaBlocks::WALL_CORAL_FAN()->setCoralType($coralType)->setDead(false)
+			), true);
+			$this->register(new ItemBlockWallOrFloor(
+				new ItemIdentifier(ItemIds::CORAL_FAN_DEAD, $meta),
+				VanillaBlocks::CORAL_FAN()->setCoralType($coralType)->setDead(true),
+				VanillaBlocks::WALL_CORAL_FAN()->setCoralType($coralType)->setDead(true)
+			), true);
+		}
+
 		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 1), "Charcoal"));
 		$this->register(new CocoaBeans(new ItemIdentifier(ItemIds::DYE, 3), "Cocoa Beans"));
 		$this->register(new Compass(new ItemIdentifier(ItemIds::COMPASS, 0), "Compass"));
@@ -109,44 +128,44 @@ class ItemFactory{
 		$this->register(new Item(new ItemIdentifier(ItemIds::BRICK, 0), "Brick"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::CHORUS_FRUIT_POPPED, 0), "Popped Chorus Fruit"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::CLAY_BALL, 0), "Clay"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 0), "Salt"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 1), "Sodium Oxide"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 2), "Sodium Hydroxide"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 3), "Magnesium Nitrate"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 4), "Iron Sulphide"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 5), "Lithium Hydride"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 6), "Sodium Hydride"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 7), "Calcium Bromide"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 8), "Magnesium Oxide"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 9), "Sodium Acetate"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 10), "Luminol"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 11), "Charcoal")); //??? maybe bug
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 12), "Sugar")); //??? maybe bug
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 13), "Aluminium Oxide"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 14), "Boron Trioxide"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 15), "Soap"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 16), "Polyethylene"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 17), "Rubbish"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 18), "Magnesium Salts"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 19), "Sulphate"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 20), "Barium Sulphate"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 21), "Potassium Chloride"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 22), "Mercuric Chloride"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 23), "Cerium Chloride"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 24), "Tungsten Chloride"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 25), "Calcium Chloride"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 26), "Water")); //???
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 27), "Glue"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 28), "Hypochlorite"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 29), "Crude Oil"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 30), "Latex"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 31), "Potassium Iodide"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 32), "Sodium Fluoride"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 33), "Benzene"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 34), "Ink"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 35), "Hydrogen Peroxide"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 36), "Ammonia"));
-		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, 37), "Sodium Hypochlorite"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::SALT), "Salt"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::SODIUM_OXIDE), "Sodium Oxide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::SODIUM_HYDROXIDE), "Sodium Hydroxide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::MAGNESIUM_NITRATE), "Magnesium Nitrate"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::IRON_SULPHIDE), "Iron Sulphide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::LITHIUM_HYDRIDE), "Lithium Hydride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::SODIUM_HYDRIDE), "Sodium Hydride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::CALCIUM_BROMIDE), "Calcium Bromide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::MAGNESIUM_OXIDE), "Magnesium Oxide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::SODIUM_ACETATE), "Sodium Acetate"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::LUMINOL), "Luminol"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::CHARCOAL), "Charcoal")); //??? maybe bug
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::SUGAR), "Sugar")); //??? maybe bug
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::ALUMINIUM_OXIDE), "Aluminium Oxide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::BORON_TRIOXIDE), "Boron Trioxide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::SOAP), "Soap"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::POLYETHYLENE), "Polyethylene"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::RUBBISH), "Rubbish"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::MAGNESIUM_SALTS), "Magnesium Salts"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::SULPHATE), "Sulphate"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::BARIUM_SULPHATE), "Barium Sulphate"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::POTASSIUM_CHLORIDE), "Potassium Chloride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::MERCURIC_CHLORIDE), "Mercuric Chloride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::CERIUM_CHLORIDE), "Cerium Chloride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::TUNGSTEN_CHLORIDE), "Tungsten Chloride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::CALCIUM_CHLORIDE), "Calcium Chloride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::WATER), "Water")); //???
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::GLUE), "Glue"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::HYPOCHLORITE), "Hypochlorite"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::CRUDE_OIL), "Crude Oil"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::LATEX), "Latex"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::POTASSIUM_IODIDE), "Potassium Iodide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::SODIUM_FLUORIDE), "Sodium Fluoride"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::BENZENE), "Benzene"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::INK), "Ink"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::HYDROGEN_PEROXIDE), "Hydrogen Peroxide"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::AMMONIA), "Ammonia"));
+		$this->register(new Item(new ItemIdentifier(ItemIds::COMPOUND, CompoundTypeIds::SODIUM_HYPOCHLORITE), "Sodium Hypochlorite"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::DIAMOND, 0), "Diamond"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::DRAGON_BREATH, 0), "Dragon's Breath"));
 		$this->register(new Item(new ItemIdentifier(ItemIds::DYE, 0), "Ink Sac"));
@@ -238,17 +257,18 @@ class ItemFactory{
 		$this->register(new Redstone(new ItemIdentifier(ItemIds::REDSTONE, 0), "Redstone"));
 		$this->register(new RottenFlesh(new ItemIdentifier(ItemIds::ROTTEN_FLESH, 0), "Rotten Flesh"));
 		$this->register(new Shears(new ItemIdentifier(ItemIds::SHEARS, 0), "Shears"));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::SIGN, 0), VanillaBlocks::OAK_SIGN(), VanillaBlocks::OAK_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::SPRUCE_SIGN, 0), VanillaBlocks::SPRUCE_SIGN(), VanillaBlocks::SPRUCE_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::BIRCH_SIGN, 0), VanillaBlocks::BIRCH_SIGN(), VanillaBlocks::BIRCH_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::JUNGLE_SIGN, 0), VanillaBlocks::JUNGLE_SIGN(), VanillaBlocks::JUNGLE_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::ACACIA_SIGN, 0), VanillaBlocks::ACACIA_SIGN(), VanillaBlocks::ACACIA_WALL_SIGN()));
-		$this->register(new Sign(new ItemIdentifier(ItemIds::DARKOAK_SIGN, 0), VanillaBlocks::DARK_OAK_SIGN(), VanillaBlocks::DARK_OAK_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::SIGN, 0), VanillaBlocks::OAK_SIGN(), VanillaBlocks::OAK_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::SPRUCE_SIGN, 0), VanillaBlocks::SPRUCE_SIGN(), VanillaBlocks::SPRUCE_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::BIRCH_SIGN, 0), VanillaBlocks::BIRCH_SIGN(), VanillaBlocks::BIRCH_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::JUNGLE_SIGN, 0), VanillaBlocks::JUNGLE_SIGN(), VanillaBlocks::JUNGLE_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::ACACIA_SIGN, 0), VanillaBlocks::ACACIA_SIGN(), VanillaBlocks::ACACIA_WALL_SIGN()));
+		$this->register(new ItemBlockWallOrFloor(new ItemIdentifier(ItemIds::DARKOAK_SIGN, 0), VanillaBlocks::DARK_OAK_SIGN(), VanillaBlocks::DARK_OAK_WALL_SIGN()));
 		$this->register(new Snowball(new ItemIdentifier(ItemIds::SNOWBALL, 0), "Snowball"));
 		$this->register(new SpiderEye(new ItemIdentifier(ItemIds::SPIDER_EYE, 0), "Spider Eye"));
 		$this->register(new Steak(new ItemIdentifier(ItemIds::STEAK, 0), "Steak"));
 		$this->register(new Stick(new ItemIdentifier(ItemIds::STICK, 0), "Stick"));
 		$this->register(new StringItem(new ItemIdentifier(ItemIds::STRING, 0), "String"));
+		$this->register(new SweetBerries(new ItemIdentifier(ItemIds::SWEET_BERRIES, 0), "Sweet Berries"));
 		$this->register(new Totem(new ItemIdentifier(ItemIds::TOTEM, 0), "Totem of Undying"));
 		$this->register(new WheatSeeds(new ItemIdentifier(ItemIds::WHEAT_SEEDS, 0), "Wheat Seeds"));
 		$this->register(new WritableBook(new ItemIdentifier(ItemIds::WRITABLE_BOOK, 0), "Book & Quill"));
@@ -277,9 +297,10 @@ class ItemFactory{
 			))->setColor($color));
 		}
 
-		foreach(Potion::ALL as $type){
-			$this->register(new Potion(new ItemIdentifier(ItemIds::POTION, $type), "Potion", $type));
-			$this->register(new SplashPotion(new ItemIdentifier(ItemIds::SPLASH_POTION, $type), "Splash Potion", $type));
+		foreach(PotionType::getAll() as $type){
+			$typeId = PotionTypeIdMap::getInstance()->toId($type);
+			$this->register(new Potion(new ItemIdentifier(ItemIds::POTION, $typeId), $type->getDisplayName() . " Potion", $type));
+			$this->register(new SplashPotion(new ItemIdentifier(ItemIds::SPLASH_POTION, $typeId), $type->getDisplayName() . " Splash Potion", $type));
 		}
 
 		foreach(TreeType::getAll() as $type){
@@ -323,7 +344,6 @@ class ItemFactory{
 		//TODO: minecraft:shield
 		//TODO: minecraft:sparkler
 		//TODO: minecraft:spawn_egg
-		//TODO: minecraft:sweet_berries
 		//TODO: minecraft:tnt_minecart
 		//TODO: minecraft:trident
 		//TODO: minecraft:turtle_helmet
@@ -414,7 +434,7 @@ class ItemFactory{
 		$id = $item->getId();
 		$variant = $item->getMeta();
 
-		if(!$override and $this->isRegistered($id, $variant)){
+		if(!$override && $this->isRegistered($id, $variant)){
 			throw new \RuntimeException("Trying to overwrite an already registered item");
 		}
 
@@ -429,6 +449,10 @@ class ItemFactory{
 		$this->list[self::getListOffset($identifier->getId(), $identifier->getMeta())] = clone $item;
 	}
 
+	private static function itemToBlockId(int $id) : int{
+		return $id < 0 ? 255 - $id : $id;
+	}
+
 	/**
 	 * @deprecated This method should ONLY be used for deserializing data, e.g. from a config or database. For all other
 	 * purposes, use VanillaItems.
@@ -437,6 +461,7 @@ class ItemFactory{
 	 * Deserializes an item from the provided legacy ID, legacy meta, count and NBT.
 	 *
 	 * @throws \InvalidArgumentException
+	 * @throws NbtException
 	 */
 	public function get(int $id, int $meta = 0, int $count = 1, ?CompoundTag $tags = null) : Item{
 		/** @var Item|null $item */
@@ -444,7 +469,7 @@ class ItemFactory{
 		if($meta !== -1){
 			if(isset($this->list[$offset = self::getListOffset($id, $meta)])){
 				$item = clone $this->list[$offset];
-			}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) and $this->list[$zero] instanceof Durable){
+			}elseif(isset($this->list[$zero = self::getListOffset($id, 0)]) && $this->list[$zero] instanceof Durable){
 				if($meta <= $this->list[$zero]->getMaxDurability()){
 					$item = clone $this->list[$zero];
 					$item->setDamage($meta);
@@ -453,7 +478,7 @@ class ItemFactory{
 				}
 			}elseif($id < 256){ //intentionally includes negatives, for extended block IDs
 				//TODO: do not assume that item IDs and block IDs are the same or related
-				$item = new ItemBlock(new ItemIdentifier($id, $meta), BlockFactory::getInstance()->get($id < 0 ? 255 - $id : $id, $meta & 0xf));
+				$item = new ItemBlock(new ItemIdentifier($id, $meta), BlockFactory::getInstance()->get(self::itemToBlockId($id), $meta & 0xf));
 			}
 		}
 
@@ -469,6 +494,10 @@ class ItemFactory{
 		return $item;
 	}
 
+	/**
+	 * @deprecated
+	 * @see VanillaItems::AIR()
+	 */
 	public static function air() : Item{
 		return self::getInstance()->get(ItemIds::AIR, 0, 0);
 	}
@@ -478,14 +507,14 @@ class ItemFactory{
 	 */
 	public function isRegistered(int $id, int $variant = 0) : bool{
 		if($id < 256){
-			return BlockFactory::getInstance()->isRegistered($id);
+			return BlockFactory::getInstance()->isRegistered(self::itemToBlockId($id));
 		}
 
 		return isset($this->list[self::getListOffset($id, $variant)]);
 	}
 
 	private static function getListOffset(int $id, int $variant) : int{
-		if($id < -0x8000 or $id > 0x7fff){
+		if($id < -0x8000 || $id > 0x7fff){
 			throw new \InvalidArgumentException("ID must be in range " . -0x8000 . " - " . 0x7fff);
 		}
 		return (($id & 0xffff) << 16) | ($variant & 0xffff);

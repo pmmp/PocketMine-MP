@@ -40,23 +40,20 @@ class LightPopulationTask extends AsyncTask{
 	/** @var string */
 	public $chunk;
 
-	/** @var string */
-	private $resultHeightMap;
-	/** @var string */
-	private $resultSkyLightArrays;
-	/** @var string */
-	private $resultBlockLightArrays;
+	private string $resultHeightMap;
+	private string $resultSkyLightArrays;
+	private string $resultBlockLightArrays;
 
 	/**
 	 * @phpstan-param \Closure(array<int, LightArray> $blockLight, array<int, LightArray> $skyLight, array<int, int> $heightMap) : void $onCompletion
 	 */
 	public function __construct(Chunk $chunk, \Closure $onCompletion){
-		$this->chunk = FastChunkSerializer::serialize($chunk);
+		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
 		$this->storeLocal(self::TLS_KEY_COMPLETION_CALLBACK, $onCompletion);
 	}
 
 	public function onRun() : void{
-		$chunk = FastChunkSerializer::deserialize($this->chunk);
+		$chunk = FastChunkSerializer::deserializeTerrain($this->chunk);
 
 		$manager = new SimpleChunkManager(World::Y_MIN, World::Y_MAX);
 		$manager->setChunk(0, 0, $chunk);

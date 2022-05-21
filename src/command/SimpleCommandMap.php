@@ -64,16 +64,15 @@ use pocketmine\command\defaults\TransferServerCommand;
 use pocketmine\command\defaults\VanillaCommand;
 use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WhitelistCommand;
+use pocketmine\command\utils\CommandStringHelper;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\Server;
+use pocketmine\utils\TextFormat;
 use function array_shift;
 use function count;
-use function explode;
 use function implode;
-use function min;
-use function preg_match_all;
 use function strcasecmp;
-use function stripslashes;
 use function strpos;
 use function strtolower;
 use function trim;
@@ -83,11 +82,7 @@ class SimpleCommandMap implements CommandMap{
 	/** @var Command[] */
 	protected $knownCommands = [];
 
-	/** @var Server */
-	private $server;
-
-	public function __construct(Server $server){
-		$this->server = $server;
+	public function __construct(private Server $server){
 		$this->setDefaultCommands();
 	}
 
@@ -182,11 +177,11 @@ class SimpleCommandMap implements CommandMap{
 
 	private function registerAlias(Command $command, bool $isAlias, string $fallbackPrefix, string $label) : bool{
 		$this->knownCommands[$fallbackPrefix . ":" . $label] = $command;
-		if(($command instanceof VanillaCommand or $isAlias) and isset($this->knownCommands[$label])){
+		if(($command instanceof VanillaCommand || $isAlias) && isset($this->knownCommands[$label])){
 			return false;
 		}
 
-		if(isset($this->knownCommands[$label]) and $this->knownCommands[$label]->getLabel() === $label){
+		if(isset($this->knownCommands[$label]) && $this->knownCommands[$label]->getLabel() === $label){
 			return false;
 		}
 
@@ -199,58 +194,25 @@ class SimpleCommandMap implements CommandMap{
 		return true;
 	}
 
-	/**
-	 * Returns a command to match the specified command line, or null if no matching command was found.
-	 * This method is intended to provide capability for handling commands with spaces in their name.
-	 * The referenced parameters will be modified accordingly depending on the resulting matched command.
-	 *
-	 * @param string   $commandName reference parameter
-	 * @param string[] $args reference parameter
-	 */
-	public function matchCommand(string &$commandName, array &$args) : ?Command{
-		$count = min(count($args), 255);
-
-		for($i = 0; $i < $count; ++$i){
-			$commandName .= array_shift($args);
-			if(($command = $this->getCommand($commandName)) instanceof Command){
-				return $command;
-			}
-
-			$commandName .= " ";
-		}
-
-		return null;
-	}
-
 	public function dispatch(CommandSender $sender, string $commandLine) : bool{
-		$args = [];
-		preg_match_all('/"((?:\\\\.|[^\\\\"])*)"|(\S+)/u', $commandLine, $matches);
-		foreach($matches[0] as $k => $_){
-			for($i = 1; $i <= 2; ++$i){
-				if($matches[$i][$k] !== ""){
-					$args[$k] = stripslashes($matches[$i][$k]);
-					break;
-				}
+		$args = CommandStringHelper::parseQuoteAware($commandLine);
+
+		$sentCommandLabel = array_shift($args);
+		if($sentCommandLabel !== null && ($target = $this->getCommand($sentCommandLabel)) !== null){
+			$target->timings->startTiming();
+
+			try{
+				$target->execute($sender, $sentCommandLabel, $args);
+			}catch(InvalidCommandSyntaxException $e){
+				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
+			}finally{
+				$target->timings->stopTiming();
 			}
-		}
-		$sentCommandLabel = "";
-		$target = $this->matchCommand($sentCommandLabel, $args);
-
-		if($target === null){
-			return false;
+			return true;
 		}
 
-		$target->timings->startTiming();
-
-		try{
-			$target->execute($sender, $sentCommandLabel, $args);
-		}catch(InvalidCommandSyntaxException $e){
-			$sender->sendMessage($sender->getLanguage()->translateString("commands.generic.usage", [$target->getUsage()]));
-		}finally{
-			$target->timings->stopTiming();
-		}
-
-		return true;
+		$sender->sendMessage(KnownTranslationFactory::pocketmine_command_notFound($sentCommandLabel ?? "", "/help")->prefix(TextFormat::RED));
+		return false;
 	}
 
 	public function clearCommands() : void{
@@ -277,7 +239,7 @@ class SimpleCommandMap implements CommandMap{
 
 		foreach($values as $alias => $commandStrings){
 			if(strpos($alias, ":") !== false){
-				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.illegal", [$alias]));
+				$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_alias_illegal($alias)));
 				continue;
 			}
 
@@ -286,9 +248,9 @@ class SimpleCommandMap implements CommandMap{
 			$recursive = [];
 
 			foreach($commandStrings as $commandString){
-				$args = explode(" ", $commandString);
-				$commandName = "";
-				$command = $this->matchCommand($commandName, $args);
+				$args = CommandStringHelper::parseQuoteAware($commandString);
+				$commandName = array_shift($args) ?? "";
+				$command = $this->getCommand($commandName);
 
 				if($command === null){
 					$bad[] = $commandString;
@@ -300,12 +262,12 @@ class SimpleCommandMap implements CommandMap{
 			}
 
 			if(count($recursive) > 0){
-				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.recursive", [$alias, implode(", ", $recursive)]));
+				$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_alias_recursive($alias, implode(", ", $recursive))));
 				continue;
 			}
 
 			if(count($bad) > 0){
-				$this->server->getLogger()->warning($this->server->getLanguage()->translateString("pocketmine.command.alias.notFound", [$alias, implode(", ", $bad)]));
+				$this->server->getLogger()->warning($this->server->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_alias_notFound($alias, implode(", ", $bad))));
 				continue;
 			}
 

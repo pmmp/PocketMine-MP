@@ -33,13 +33,13 @@ final class DyeColorIdMap{
 	 * @var DyeColor[]
 	 * @phpstan-var array<int, DyeColor>
 	 */
-	private $idToEnum = [];
+	private array $idToEnum = [];
 
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private $enumToId = [];
+	private array $enumToId = [];
 
 	private function __construct(){
 		$this->register(0, DyeColor::WHITE());
@@ -73,11 +73,11 @@ final class DyeColorIdMap{
 		return ~$this->toId($color) & 0xf;
 	}
 
-	public function fromId(int $id) : DyeColor{
-		return $this->idToEnum[$id]; //TODO: this might not be present (e.g. corrupted data)
+	public function fromId(int $id) : ?DyeColor{
+		return $this->idToEnum[$id];
 	}
 
-	public function fromInvertedId(int $id) : DyeColor{
+	public function fromInvertedId(int $id) : ?DyeColor{
 		return $this->fromId(~$id & 0xf);
 	}
 }

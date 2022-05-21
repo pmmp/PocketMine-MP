@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity;
 
-use pocketmine\block\inventory\EnderChestInventory;
+use pocketmine\data\SavedDataLoadingException;
 use pocketmine\entity\animation\TotemUseAnimation;
 use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
@@ -33,7 +33,9 @@ use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
+use pocketmine\inventory\PlayerEnderInventory;
 use pocketmine\inventory\PlayerInventory;
+use pocketmine\inventory\PlayerOffHandInventory;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\item\Item;
 use pocketmine\item\Totem;
@@ -46,12 +48,14 @@ use pocketmine\nbt\tag\StringTag;
 use pocketmine\network\mcpe\convert\SkinAdapterSingleton;
 use pocketmine\network\mcpe\convert\TypeConverter;
 use pocketmine\network\mcpe\protocol\AddPlayerPacket;
-use pocketmine\network\mcpe\protocol\MovePlayerPacket;
+use pocketmine\network\mcpe\protocol\AdventureSettingsPacket;
 use pocketmine\network\mcpe\protocol\PlayerListPacket;
 use pocketmine\network\mcpe\protocol\PlayerSkinPacket;
+use pocketmine\network\mcpe\protocol\types\DeviceOS;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
 use pocketmine\network\mcpe\protocol\types\entity\StringMetadataProperty;
+use pocketmine\network\mcpe\protocol\types\GameMode;
 use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\network\mcpe\protocol\types\PlayerListEntry;
 use pocketmine\player\Player;
@@ -73,8 +77,11 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	/** @var PlayerInventory */
 	protected $inventory;
 
-	/** @var EnderChestInventory */
-	protected $enderChestInventory;
+	/** @var PlayerOffHandInventory */
+	protected $offHandInventory;
+
+	/** @var PlayerEnderInventory */
+	protected $enderInventory;
 
 	/** @var UuidInterface */
 	protected $uuid;
@@ -99,12 +106,12 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 	/**
 	 * @throws InvalidSkinException
-	 * @throws \UnexpectedValueException
+	 * @throws SavedDataLoadingException
 	 */
 	public static function parseSkinNBT(CompoundTag $nbt) : Skin{
 		$skinTag = $nbt->getCompoundTag("Skin");
 		if($skinTag === null){
-			throw new \UnexpectedValueException("Missing skin data");
+			throw new SavedDataLoadingException("Missing skin data");
 		}
 		return new Skin( //this throws if the skin is invalid
 			$skinTag->getString("Name"),
@@ -142,16 +149,22 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	 */
 	public function sendSkin(?array $targets = null) : void{
 		$this->server->broadcastPackets($targets ?? $this->hasSpawned, [
-			PlayerSkinPacket::create($this->getUniqueId(), SkinAdapterSingleton::get()->toSkinData($this->skin))
+			PlayerSkinPacket::create($this->getUniqueId(), "", "", SkinAdapterSingleton::get()->toSkinData($this->skin))
 		]);
 	}
 
 	public function jump() : void{
 		parent::jump();
 		if($this->isSprinting()){
-			$this->hungerManager->exhaust(0.8, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
+			$this->hungerManager->exhaust(0.2, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
 		}else{
-			$this->hungerManager->exhaust(0.2, PlayerExhaustEvent::CAUSE_JUMPING);
+			$this->hungerManager->exhaust(0.05, PlayerExhaustEvent::CAUSE_JUMPING);
+		}
+	}
+
+	public function emote(string $emoteId) : void{
+		foreach($this->getViewers() as $player){
+			$player->getNetworkSession()->onEmote($this, $emoteId);
 		}
 	}
 
@@ -160,7 +173,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	}
 
 	public function consumeObject(Consumable $consumable) : bool{
-		if($consumable instanceof FoodSource && $consumable->requiresHunger() and !$this->hungerManager->isHungry()){
+		if($consumable instanceof FoodSource && $consumable->requiresHunger() && !$this->hungerManager->isHungry()){
 			return false;
 		}
 
@@ -193,8 +206,10 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $this->inventory;
 	}
 
-	public function getEnderChestInventory() : EnderChestInventory{
-		return $this->enderChestInventory;
+	public function getOffHandInventory() : PlayerOffHandInventory{ return $this->offHandInventory; }
+
+	public function getEnderInventory() : PlayerEnderInventory{
+		return $this->enderInventory;
 	}
 
 	/**
@@ -209,6 +224,19 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->uuid = Uuid::uuid3(Uuid::NIL, ((string) $this->getId()) . $this->skin->getSkinData() . $this->getNameTag());
 	}
 
+	/**
+	 * @param Item[] $items
+	 * @phpstan-param array<int, Item> $items
+	 */
+	private static function populateInventoryFromListTag(Inventory $inventory, array $items) : void{
+		$listeners = $inventory->getListeners()->toArray();
+		$inventory->getListeners()->clear();
+
+		$inventory->setContents($items);
+
+		$inventory->getListeners()->add(...$listeners);
+	}
+
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);
 
@@ -218,7 +246,7 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		$this->inventory = new PlayerInventory($this);
 		$syncHeldItem = function() : void{
 			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->onMobEquipmentChange($this);
+				$viewer->getNetworkSession()->onMobMainHandItemChange($this);
 			}
 		};
 		$this->inventory->getListeners()->add(new CallbackInventoryListener(
@@ -233,44 +261,55 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 				}
 			}
 		));
-		$this->enderChestInventory = new EnderChestInventory();
+		$this->offHandInventory = new PlayerOffHandInventory($this);
+		$this->enderInventory = new PlayerEnderInventory($this);
 		$this->initHumanData($nbt);
 
 		$inventoryTag = $nbt->getListTag("Inventory");
 		if($inventoryTag !== null){
-			$armorListeners = $this->armorInventory->getListeners()->toArray();
-			$this->armorInventory->getListeners()->clear();
-			$inventoryListeners = $this->inventory->getListeners()->toArray();
-			$this->inventory->getListeners()->clear();
+			$inventoryItems = [];
+			$armorInventoryItems = [];
 
 			/** @var CompoundTag $item */
 			foreach($inventoryTag as $i => $item){
 				$slot = $item->getByte("Slot");
-				if($slot >= 0 and $slot < 9){ //Hotbar
+				if($slot >= 0 && $slot < 9){ //Hotbar
 					//Old hotbar saving stuff, ignore it
-				}elseif($slot >= 100 and $slot < 104){ //Armor
-					$this->armorInventory->setItem($slot - 100, Item::nbtDeserialize($item));
-				}elseif($slot >= 9 and $slot < $this->inventory->getSize() + 9){
-					$this->inventory->setItem($slot - 9, Item::nbtDeserialize($item));
+				}elseif($slot >= 100 && $slot < 104){ //Armor
+					$armorInventoryItems[$slot - 100] = Item::nbtDeserialize($item);
+				}elseif($slot >= 9 && $slot < $this->inventory->getSize() + 9){
+					$inventoryItems[$slot - 9] = Item::nbtDeserialize($item);
 				}
 			}
 
-			$this->armorInventory->getListeners()->add(...$armorListeners);
-			$this->inventory->getListeners()->add(...$inventoryListeners);
+			self::populateInventoryFromListTag($this->inventory, $inventoryItems);
+			self::populateInventoryFromListTag($this->armorInventory, $armorInventoryItems);
 		}
+		$offHand = $nbt->getCompoundTag("OffHandItem");
+		if($offHand !== null){
+			$this->offHandInventory->setItem(0, Item::nbtDeserialize($offHand));
+		}
+		$this->offHandInventory->getListeners()->add(CallbackInventoryListener::onAnyChange(function() : void{
+			foreach($this->getViewers() as $viewer){
+				$viewer->getNetworkSession()->onMobOffHandItemChange($this);
+			}
+		}));
 
 		$enderChestInventoryTag = $nbt->getListTag("EnderChestInventory");
 		if($enderChestInventoryTag !== null){
+			$enderChestInventoryItems = [];
+
 			/** @var CompoundTag $item */
 			foreach($enderChestInventoryTag as $i => $item){
-				$this->enderChestInventory->setItem($item->getByte("Slot"), Item::nbtDeserialize($item));
+				$enderChestInventoryItems[$item->getByte("Slot")] = Item::nbtDeserialize($item);
 			}
+			self::populateInventoryFromListTag($this->enderInventory, $enderChestInventoryItems);
 		}
 
 		$this->inventory->setHeldItemIndex($nbt->getInt("SelectedInventorySlot", 0));
 		$this->inventory->getHeldItemIndexChangeListeners()->add(function(int $oldIndex) : void{
 			foreach($this->getViewers() as $viewer){
-				$viewer->getNetworkSession()->onMobEquipmentChange($this);
+				$viewer->getNetworkSession()->onMobMainHandItemChange($this);
 			}
 		});
 
@@ -308,8 +347,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		parent::applyDamageModifiers($source);
 
 		$type = $source->getCause();
-		if($type !== EntityDamageEvent::CAUSE_SUICIDE and $type !== EntityDamageEvent::CAUSE_VOID
-			and $this->inventory->getItemInHand() instanceof Totem){ //TODO: check offhand as well (when it's implemented)
+		if($type !== EntityDamageEvent::CAUSE_SUICIDE && $type !== EntityDamageEvent::CAUSE_VOID
+			&& ($this->inventory->getItemInHand() instanceof Totem || $this->offHandInventory->getItem(0) instanceof Totem)){
 
 			$compensation = $this->getHealth() - $source->getFinalDamage() - 1;
 			if($compensation < 0){
@@ -335,6 +374,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			if($hand instanceof Totem){
 				$hand->pop(); //Plugins could alter max stack size
 				$this->inventory->setItemInHand($hand);
+			}elseif(($offHand = $this->offHandInventory->getItem(0)) instanceof Totem){
+				$offHand->pop();
+				$this->offHandInventory->setItem(0, $offHand);
 			}
 		}
 	}
@@ -342,7 +384,8 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	public function getDrops() : array{
 		return array_filter(array_merge(
 			$this->inventory !== null ? array_values($this->inventory->getContents()) : [],
-			$this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : []
+			$this->armorInventory !== null ? array_values($this->armorInventory->getContents()) : [],
+			$this->offHandInventory !== null ? array_values($this->offHandInventory->getContents()) : [],
 		), function(Item $item) : bool{ return !$item->hasEnchantment(VanillaEnchantments::VANISHING()); });
 	}
 
@@ -381,14 +424,18 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 
 			$nbt->setInt("SelectedInventorySlot", $this->inventory->getHeldItemIndex());
 		}
+		$offHandItem = $this->offHandInventory->getItem(0);
+		if(!$offHandItem->isNull()){
+			$nbt->setTag("OffHandItem", $offHandItem->nbtSerialize());
+		}
 
-		if($this->enderChestInventory !== null){
+		if($this->enderInventory !== null){
 			/** @var CompoundTag[] $items */
 			$items = [];
 
-			$slotCount = $this->enderChestInventory->getSize();
+			$slotCount = $this->enderInventory->getSize();
 			for($slot = 0; $slot < $slotCount; ++$slot){
-				$item = $this->enderChestInventory->getItem($slot);
+				$item = $this->enderInventory->getItem($slot);
 				if(!$item->isNull()){
 					$items[] = $item->nbtSerialize($slot);
 				}
@@ -421,22 +468,31 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::add([PlayerListEntry::createAdditionEntry($this->uuid, $this->id, $this->getName(), SkinAdapterSingleton::get()->toSkinData($this->skin))]));
 		}
 
-		$pk = new AddPlayerPacket();
-		$pk->uuid = $this->getUniqueId();
-		$pk->username = $this->getName();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->location->asVector3();
-		$pk->motion = $this->getMotion();
-		$pk->yaw = $this->location->yaw;
-		$pk->pitch = $this->location->pitch;
-		$pk->item = ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getInventory()->getItemInHand()));
-		$pk->metadata = $this->getAllNetworkData();
-		$player->getNetworkSession()->sendDataPacket($pk);
+		$player->getNetworkSession()->sendDataPacket(AddPlayerPacket::create(
+			$this->getUniqueId(),
+			$this->getName(),
+			$this->getId(), //TODO: actor unique ID
+			$this->getId(),
+			"",
+			$this->location->asVector3(),
+			$this->getMotion(),
+			$this->location->pitch,
+			$this->location->yaw,
+			$this->location->yaw, //TODO: head yaw
+			ItemStackWrapper::legacy(TypeConverter::getInstance()->coreItemStackToNet($this->getInventory()->getItemInHand())),
+			GameMode::SURVIVAL,
+			$this->getAllNetworkData(),
+			AdventureSettingsPacket::create(0, 0, 0, 0, 0, $this->getId()), //TODO
+			[], //TODO: entity links
+			"", //device ID (we intentionally don't send this - secvuln)
+			DeviceOS::UNKNOWN //we intentionally don't send this (secvuln)
+		));
 
 		//TODO: Hack for MCPE 1.2.13: DATA_NAMETAG is useless in AddPlayerPacket, so it has to be sent separately
 		$this->sendData([$player], [EntityMetadataProperties::NAMETAG => new StringMetadataProperty($this->getNameTag())]);
 
 		$player->getNetworkSession()->onMobArmorChange($this);
+		$player->getNetworkSession()->onMobOffHandItemChange($this);
 
 		if(!($this instanceof Player)){
 			$player->getNetworkSession()->sendDataPacket(PlayerListPacket::remove([PlayerListEntry::createRemovalEntry($this->uuid)]));
@@ -447,32 +503,18 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 		return $vector3->add(0, 1.621, 0); //TODO: +0.001 hack for MCPE falling underground
 	}
 
-	public function broadcastMovement(bool $teleport = false) : void{
-		//TODO: workaround 1.14.30 bug: MoveActor(Absolute|Delta)Packet don't work on players anymore :(
-		$pk = new MovePlayerPacket();
-		$pk->entityRuntimeId = $this->getId();
-		$pk->position = $this->getOffsetPosition($this->location);
-		$pk->yaw = $this->location->yaw;
-		$pk->pitch = $this->location->pitch;
-		$pk->headYaw = $this->location->yaw;
-		$pk->mode = $teleport ? MovePlayerPacket::MODE_TELEPORT : MovePlayerPacket::MODE_NORMAL;
-		//we can't assume that everyone who is using our chunk wants to see this movement,
-		//because this human might be a player who shouldn't be receiving his own movement.
-		//this didn't matter when we were able to use MoveActorPacket because
-		//the client just ignored MoveActor for itself, but it doesn't ignore MovePlayer for itself.
-		$this->server->broadcastPackets($this->hasSpawned, [$pk]);
-	}
-
 	protected function onDispose() : void{
 		$this->inventory->removeAllViewers();
 		$this->inventory->getHeldItemIndexChangeListeners()->clear();
-		$this->enderChestInventory->removeAllViewers();
+		$this->offHandInventory->removeAllViewers();
+		$this->enderInventory->removeAllViewers();
 		parent::onDispose();
 	}
 
 	protected function destroyCycles() : void{
 		$this->inventory = null;
-		$this->enderChestInventory = null;
+		$this->offHandInventory = null;
+		$this->enderInventory = null;
 		$this->hungerManager = null;
 		$this->xpManager = null;
 		parent::destroyCycles();

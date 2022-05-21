@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\query;
 
+use pocketmine\player\GameMode;
 use pocketmine\player\Player;
 use pocketmine\plugin\Plugin;
 use pocketmine\Server;
@@ -36,52 +37,39 @@ use function substr;
 final class QueryInfo{
 	public const GAME_ID = "MINECRAFTPE";
 
-	/** @var string */
-	private $serverName;
-	/** @var bool */
-	private $listPlugins;
+	private string $serverName;
+	private bool $listPlugins;
 	/** @var Plugin[] */
-	private $plugins;
+	private array $plugins;
 	/** @var Player[] */
-	private $players;
+	private array $players;
 
-	/** @var string */
-	private $gametype;
-	/** @var string */
-	private $version;
-	/** @var string */
-	private $server_engine;
-	/** @var string */
-	private $map;
-	/** @var int */
-	private $numPlayers;
-	/** @var int */
-	private $maxPlayers;
-	/** @var string */
-	private $whitelist;
-	/** @var int */
-	private $port;
-	/** @var string */
-	private $ip;
+	private string $gametype;
+	private string $version;
+	private string $server_engine;
+	private string $map;
+	private int $numPlayers;
+	private int $maxPlayers;
+	private string $whitelist;
+	private int $port;
+	private string $ip;
 
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	private $extraData = [];
+	private array $extraData = [];
 
-	/** @var string|null */
-	private $longQueryCache = null;
-	/** @var string|null */
-	private $shortQueryCache = null;
+	private ?string $longQueryCache = null;
+	private ?string $shortQueryCache = null;
 
 	public function __construct(Server $server){
 		$this->serverName = $server->getMotd();
-		$this->listPlugins = (bool) $server->getConfigGroup()->getProperty("settings.query-plugins", true);
+		$this->listPlugins = $server->getConfigGroup()->getPropertyBool("settings.query-plugins", true);
 		$this->plugins = $server->getPluginManager()->getPlugins();
 		$this->players = $server->getOnlinePlayers();
 
-		$this->gametype = ($server->getGamemode()->getMagicNumber() & 0x01) === 0 ? "SMP" : "CMP";
+		$this->gametype = ($server->getGamemode()->equals(GameMode::SURVIVAL()) || $server->getGamemode()->equals(GameMode::ADVENTURE())) ? "SMP" : "CMP";
 		$this->version = $server->getVersion();
 		$this->server_engine = $server->getName() . " " . $server->getPocketMineVersion();
 		$world = $server->getWorldManager()->getDefaultWorld();
@@ -203,7 +191,7 @@ final class QueryInfo{
 		$query = "";
 
 		$plist = $this->server_engine;
-		if(count($this->plugins) > 0 and $this->listPlugins){
+		if(count($this->plugins) > 0 && $this->listPlugins){
 			$plist .= ":";
 			foreach($this->plugins as $p){
 				$d = $p->getDescription();
@@ -232,7 +220,7 @@ final class QueryInfo{
 			$query .= $key . "\x00" . $value . "\x00";
 		}
 
-		foreach($this->extraData as $key => $value){
+		foreach(Utils::stringifyKeys($this->extraData) as $key => $value){
 			$query .= $key . "\x00" . $value . "\x00";
 		}
 

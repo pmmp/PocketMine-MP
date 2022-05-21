@@ -30,11 +30,9 @@ use pocketmine\event\entity\EntityEffectRemoveEvent;
 use pocketmine\utils\ObjectSet;
 use function abs;
 use function count;
+use function spl_object_id;
 
 class EffectManager{
-
-	/** @var Living */
-	private $entity;
 
 	/** @var EffectInstance[] */
 	protected $effects = [];
@@ -55,8 +53,9 @@ class EffectManager{
 	 */
 	protected $effectRemoveHooks;
 
-	public function __construct(Living $entity){
-		$this->entity = $entity;
+	public function __construct(
+		private Living $entity
+	){
 		$this->bubbleColor = new Color(0, 0, 0, 0);
 		$this->effectAddHooks = new ObjectSet();
 		$this->effectRemoveHooks = new ObjectSet();
@@ -83,14 +82,14 @@ class EffectManager{
 	 * Removes the effect with the specified ID from the mob.
 	 */
 	public function remove(Effect $effectType) : void{
-		$index = $effectType->getRuntimeId();
+		$index = spl_object_id($effectType);
 		if(isset($this->effects[$index])){
 			$effect = $this->effects[$index];
 			$hasExpired = $effect->hasExpired();
 			$ev = new EntityEffectRemoveEvent($this->entity, $effect);
 			$ev->call();
 			if($ev->isCancelled()){
-				if($hasExpired and !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
+				if($hasExpired && !$ev->getEffect()->hasExpired()){ //altered duration of an expired effect to make it not get removed
 					foreach($this->effectAddHooks as $hook){
 						$hook($ev->getEffect(), true);
 					}
@@ -113,14 +112,14 @@ class EffectManager{
 	 * effect.
 	 */
 	public function get(Effect $effect) : ?EffectInstance{
-		return $this->effects[$effect->getRuntimeId()] ?? null;
+		return $this->effects[spl_object_id($effect)] ?? null;
 	}
 
 	/**
 	 * Returns whether the specified effect is active on the mob.
 	 */
 	public function has(Effect $effect) : bool{
-		return isset($this->effects[$effect->getRuntimeId()]);
+		return isset($this->effects[spl_object_id($effect)]);
 	}
 
 	/**
@@ -134,12 +133,12 @@ class EffectManager{
 		$oldEffect = null;
 		$cancelled = false;
 
-		$index = $effect->getType()->getRuntimeId();
+		$index = spl_object_id($effect->getType());
 		if(isset($this->effects[$index])){
 			$oldEffect = $this->effects[$index];
 			if(
 				abs($effect->getAmplifier()) < $oldEffect->getAmplifier()
-				or (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier()) and $effect->getDuration() < $oldEffect->getDuration())
+				|| (abs($effect->getAmplifier()) === abs($oldEffect->getAmplifier()) && $effect->getDuration() < $oldEffect->getDuration())
 			){
 				$cancelled = true;
 			}
@@ -179,7 +178,7 @@ class EffectManager{
 		$colors = [];
 		$ambient = true;
 		foreach($this->effects as $effect){
-			if($effect->isVisible() and $effect->getType()->hasBubbles()){
+			if($effect->isVisible() && $effect->getType()->hasBubbles()){
 				$level = $effect->getEffectLevel();
 				$color = $effect->getColor();
 				for($i = 0; $i < $level; ++$i){

@@ -27,6 +27,7 @@ use pocketmine\item\enchantment\Enchantment;
 use pocketmine\item\enchantment\VanillaEnchantments;
 use pocketmine\utils\SingletonTrait;
 use function array_key_exists;
+use function spl_object_id;
 
 /**
  * Handles translation of internal enchantment types to and from Minecraft: Bedrock IDs.
@@ -38,12 +39,12 @@ final class EnchantmentIdMap{
 	 * @var Enchantment[]
 	 * @phpstan-var array<int, Enchantment>
 	 */
-	private $idToEnch = [];
+	private array $idToEnch = [];
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private $enchToId = [];
+	private array $enchToId = [];
 
 	private function __construct(){
 		$this->register(EnchantmentIds::PROTECTION, VanillaEnchantments::PROTECTION());
@@ -76,7 +77,7 @@ final class EnchantmentIdMap{
 
 	public function register(int $mcpeId, Enchantment $enchantment) : void{
 		$this->idToEnch[$mcpeId] = $enchantment;
-		$this->enchToId[$enchantment->getRuntimeId()] = $mcpeId;
+		$this->enchToId[spl_object_id($enchantment)] = $mcpeId;
 	}
 
 	public function fromId(int $id) : ?Enchantment{
@@ -85,10 +86,10 @@ final class EnchantmentIdMap{
 	}
 
 	public function toId(Enchantment $enchantment) : int{
-		if(!array_key_exists($enchantment->getRuntimeId(), $this->enchToId)){
+		if(!array_key_exists(spl_object_id($enchantment), $this->enchToId)){
 			//this should never happen, so we treat it as an exceptional condition
 			throw new \InvalidArgumentException("Enchantment does not have a mapped ID");
 		}
-		return $this->enchToId[$enchantment->getRuntimeId()];
+		return $this->enchToId[spl_object_id($enchantment)];
 	}
 }

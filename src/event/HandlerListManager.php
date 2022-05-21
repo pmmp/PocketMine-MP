@@ -28,24 +28,23 @@ use pocketmine\utils\Utils;
 
 class HandlerListManager{
 
-	/** @var HandlerListManager|null */
-	private static $globalInstance = null;
+	private static ?self $globalInstance = null;
 
 	public static function global() : self{
 		return self::$globalInstance ?? (self::$globalInstance = new self);
 	}
 
 	/** @var HandlerList[] classname => HandlerList */
-	private $allLists = [];
+	private array $allLists = [];
 
 	/**
 	 * Unregisters all the listeners
 	 * If a Plugin or Listener is passed, all the listeners with that object will be removed
 	 *
-	 * @param Plugin|Listener|null $object
+	 * @param Plugin|Listener|RegisteredListener|null $object
 	 */
 	public function unregisterAll($object = null) : void{
-		if($object instanceof Listener or $object instanceof Plugin){
+		if($object instanceof Listener || $object instanceof Plugin || $object instanceof RegisteredListener){
 			foreach($this->allLists as $h){
 				$h->unregister($object);
 			}
@@ -83,6 +82,9 @@ class HandlerListManager{
 	 * Returns the HandlerList for listeners that explicitly handle this event.
 	 *
 	 * Calling this method also lazily initializes the $classMap inheritance tree of handler lists.
+	 *
+	 * @phpstan-template TEvent of Event
+	 * @phpstan-param class-string<TEvent> $event
 	 *
 	 * @throws \ReflectionException
 	 * @throws \InvalidArgumentException

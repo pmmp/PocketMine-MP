@@ -24,9 +24,11 @@ declare(strict_types=1);
 namespace pocketmine\crafting;
 
 use pocketmine\item\Item;
+use pocketmine\nbt\LittleEndianNbtSerializer;
+use pocketmine\nbt\TreeRoot;
+use pocketmine\utils\BinaryStream;
 use pocketmine\utils\DestructorCallbackTrait;
 use pocketmine\utils\ObjectSet;
-use function json_encode;
 use function usort;
 
 class CraftingManager{
@@ -37,23 +39,41 @@ class CraftingManager{
 	/** @var ShapelessRecipe[][] */
 	protected $shapelessRecipes = [];
 
-	/** @var FurnaceRecipeManager */
-	protected $furnaceRecipeManager;
+	/**
+	 * @var FurnaceRecipeManager[]
+	 * @phpstan-var array<int, FurnaceRecipeManager>
+	 */
+	protected $furnaceRecipeManagers;
 
 	/**
-	 * @var ObjectSet
-	 * @phpstan-var ObjectSet<\Closure() : void>
+	 * @var PotionTypeRecipe[][]
+	 * @phpstan-var array<string, array<string, PotionTypeRecipe>>
 	 */
-	private $recipeRegisteredCallbacks;
+	protected $potionTypeRecipes = [];
+
+	/**
+	 * @var PotionContainerChangeRecipe[][]
+	 * @phpstan-var array<int, array<string, PotionContainerChangeRecipe>>
+	 */
+	protected $potionContainerChangeRecipes = [];
+
+	/** @phpstan-var ObjectSet<\Closure() : void> */
+	private ObjectSet $recipeRegisteredCallbacks;
 
 	public function __construct(){
 		$this->recipeRegisteredCallbacks = new ObjectSet();
-		$this->furnaceRecipeManager = new FurnaceRecipeManager();
-		$this->furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(function(FurnaceRecipe $recipe) : void{
-			foreach($this->recipeRegisteredCallbacks as $callback){
-				$callback();
-			}
-		});
+		foreach(FurnaceType::getAll() as $furnaceType){
+			$this->furnaceRecipeManagers[$furnaceType->id()] = new FurnaceRecipeManager();
+		}
+
+		$recipeRegisteredCallbacks = $this->recipeRegisteredCallbacks;
+		foreach($this->furnaceRecipeManagers as $furnaceRecipeManager){
+			$furnaceRecipeManager->getRecipeRegisteredCallbacks()->add(static function(FurnaceRecipe $recipe) use ($recipeRegisteredCallbacks) : void{
+				foreach($recipeRegisteredCallbacks as $callback){
+					$callback();
+				}
+			});
+		}
 	}
 
 	/** @phpstan-return ObjectSet<\Closure() : void> */
@@ -80,7 +100,7 @@ class CraftingManager{
 
 		foreach($items as $i => $item){
 			foreach($result as $otherItem){
-				if($item->equals($otherItem)){
+				if($item->canStackWith($otherItem)){
 					$otherItem->setCount($otherItem->getCount() + $item->getCount());
 					continue 2;
 				}
@@ -99,12 +119,16 @@ class CraftingManager{
 	private static function hashOutputs(array $outputs) : string{
 		$outputs = self::pack($outputs);
 		usort($outputs, [self::class, "sort"]);
+		$result = new BinaryStream();
 		foreach($outputs as $o){
-			//this reduces accuracy of hash, but it's necessary to deal with recipe book shift-clicking stupidity
-			$o->setCount(1);
+			//count is not written because the outputs might be from multiple repetitions of a single recipe
+			//this reduces the accuracy of the hash, but it won't matter in most cases.
+			$result->putVarInt($o->getId());
+			$result->putVarInt($o->getMeta());
+			$result->put((new LittleEndianNbtSerializer())->write(new TreeRoot($o->getNamedTag())));
 		}
 
-		return json_encode($outputs);
+		return $result->getBuffer();
 	}
 
 	/**
@@ -121,8 +145,24 @@ class CraftingManager{
 		return $this->shapedRecipes;
 	}
 
-	public function getFurnaceRecipeManager() : FurnaceRecipeManager{
-		return $this->furnaceRecipeManager;
+	public function getFurnaceRecipeManager(FurnaceType $furnaceType) : FurnaceRecipeManager{
+		return $this->furnaceRecipeManagers[$furnaceType->id()];
+	}
+
+	/**
+	 * @return PotionTypeRecipe[][]
+	 * @phpstan-return array<string, array<string, PotionTypeRecipe>>
+	 */
+	public function getPotionTypeRecipes() : array{
+		return $this->potionTypeRecipes;
+	}
+
+	/**
+	 * @return PotionContainerChangeRecipe[][]
+	 * @phpstan-return array<int, array<string, PotionContainerChangeRecipe>>
+	 */
+	public function getPotionContainerChangeRecipes() : array{
+		return $this->potionContainerChangeRecipes;
 	}
 
 	public function registerShapedRecipe(ShapedRecipe $recipe) : void{
@@ -135,6 +175,25 @@ class CraftingManager{
 
 	public function registerShapelessRecipe(ShapelessRecipe $recipe) : void{
 		$this->shapelessRecipes[self::hashOutputs($recipe->getResults())][] = $recipe;
+
+		foreach($this->recipeRegisteredCallbacks as $callback){
+			$callback();
+		}
+	}
+
+	public function registerPotionTypeRecipe(PotionTypeRecipe $recipe) : void{
+		$input = $recipe->getInput();
+		$ingredient = $recipe->getIngredient();
+		$this->potionTypeRecipes[$input->getId() . ":" . $input->getMeta()][$ingredient->getId() . ":" . ($ingredient->hasAnyDamageValue() ? "?" : $ingredient->getMeta())] = $recipe;
+
+		foreach($this->recipeRegisteredCallbacks as $callback){
+			$callback();
+		}
+	}
+
+	public function registerPotionContainerChangeRecipe(PotionContainerChangeRecipe $recipe) : void{
+		$ingredient = $recipe->getIngredient();
+		$this->potionContainerChangeRecipes[$recipe->getInputItemId()][$ingredient->getId() . ":" . ($ingredient->hasAnyDamageValue() ? "?" : $ingredient->getMeta())] = $recipe;
 
 		foreach($this->recipeRegisteredCallbacks as $callback){
 			$callback();
@@ -190,5 +249,12 @@ class CraftingManager{
 				yield $recipe;
 			}
 		}
+	}
+
+	public function matchBrewingRecipe(Item $input, Item $ingredient) : ?BrewingRecipe{
+		return $this->potionTypeRecipes[$input->getId() . ":" . $input->getMeta()][$ingredient->getId() . ":" . $ingredient->getMeta()] ??
+			$this->potionTypeRecipes[$input->getId() . ":" . $input->getMeta()][$ingredient->getId() . ":?"] ??
+			$this->potionContainerChangeRecipes[$input->getId()][$ingredient->getId() . ":" . $ingredient->getMeta()] ??
+			$this->potionContainerChangeRecipes[$input->getId()][$ingredient->getId() . ":?"] ?? null;
 	}
 }

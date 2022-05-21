@@ -28,7 +28,7 @@ use pocketmine\item\Item;
 use pocketmine\player\Player;
 use pocketmine\utils\ObjectSet;
 
-class PlayerInventory extends BaseInventory{
+class PlayerInventory extends SimpleInventory{
 
 	/** @var Human */
 	protected $holder;
@@ -49,7 +49,7 @@ class PlayerInventory extends BaseInventory{
 	}
 
 	public function isHotbarSlot(int $slot) : bool{
-		return $slot >= 0 and $slot <= $this->getHotbarSize();
+		return $slot >= 0 && $slot < $this->getHotbarSize();
 	}
 
 	/**

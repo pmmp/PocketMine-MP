@@ -23,10 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\thread;
 
+use pocketmine\scheduler\AsyncTask;
 use const PTHREADS_INHERIT_NONE;
 
 /**
- * This class must be extended by all custom threading classes
+ * Specialized Worker class for PocketMine-MP-related use cases. It handles setting up autoloading and error handling.
+ *
+ * Workers are a special type of thread which execute tasks passed to them during their lifetime. Since creating a new
+ * thread has a high resource cost, workers can be kept around and reused for lots of short-lived tasks.
+ *
+ * As a plugin developer, you'll rarely (if ever) actually need to use this class directly.
+ * If you want to run tasks on other CPU cores, check out AsyncTask first.
+ * @see AsyncTask
  */
 abstract class Worker extends \Worker{
 	use CommonThreadPartsTrait;
@@ -35,8 +43,8 @@ abstract class Worker extends \Worker{
 		//this is intentionally not traitified
 		ThreadManager::getInstance()->add($this);
 
-		if($this->getClassLoader() === null){
-			$this->setClassLoader();
+		if($this->getClassLoaders() === null){
+			$this->setClassLoaders();
 		}
 		return parent::start($options);
 	}
@@ -47,7 +55,7 @@ abstract class Worker extends \Worker{
 	public function quit() : void{
 		$this->isKilled = true;
 
-		if($this->isRunning()){
+		if(!$this->isShutdown()){
 			while($this->unstack() !== null);
 			$this->notify();
 			$this->shutdown();

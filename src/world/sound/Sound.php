@@ -31,5 +31,5 @@ interface Sound{
 	/**
 	 * @return ClientboundPacket[]
 	 */
-	public function encode(?Vector3 $pos) : array;
+	public function encode(Vector3 $pos) : array;
 }

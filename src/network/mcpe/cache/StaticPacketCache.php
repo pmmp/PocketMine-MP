@@ -28,15 +28,11 @@ use pocketmine\network\mcpe\protocol\BiomeDefinitionListPacket;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\types\CacheableNbt;
 use pocketmine\utils\SingletonTrait;
+use Webmozart\PathUtil\Path;
 use function file_get_contents;
 
 class StaticPacketCache{
 	use SingletonTrait;
-
-	/** @var BiomeDefinitionListPacket */
-	private $biomeDefs;
-	/** @var AvailableActorIdentifiersPacket */
-	private $availableActorIdentifiers;
 
 	/**
 	 * @phpstan-return CacheableNbt<\pocketmine\nbt\tag\CompoundTag>
@@ -49,15 +45,15 @@ class StaticPacketCache{
 
 	private static function make() : self{
 		return new self(
-			BiomeDefinitionListPacket::create(self::loadCompoundFromFile(\pocketmine\RESOURCE_PATH . '/vanilla/biome_definitions.nbt')),
-			AvailableActorIdentifiersPacket::create(self::loadCompoundFromFile(\pocketmine\RESOURCE_PATH . '/vanilla/entity_identifiers.nbt'))
+			BiomeDefinitionListPacket::create(self::loadCompoundFromFile(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'biome_definitions.nbt'))),
+			AvailableActorIdentifiersPacket::create(self::loadCompoundFromFile(Path::join(\pocketmine\BEDROCK_DATA_PATH, 'entity_identifiers.nbt')))
 		);
 	}
 
-	public function __construct(BiomeDefinitionListPacket $biomeDefs, AvailableActorIdentifiersPacket $availableActorIdentifiers){
-		$this->biomeDefs = $biomeDefs;
-		$this->availableActorIdentifiers = $availableActorIdentifiers;
-	}
+	public function __construct(
+		private BiomeDefinitionListPacket $biomeDefs,
+		private AvailableActorIdentifiersPacket $availableActorIdentifiers
+	){}
 
 	public function getBiomeDefs() : BiomeDefinitionListPacket{
 		return $this->biomeDefs;

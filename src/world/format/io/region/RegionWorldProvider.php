@@ -27,11 +27,12 @@ use pocketmine\nbt\NBT;
 use pocketmine\nbt\tag\ByteArrayTag;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\ListTag;
-use pocketmine\world\format\Chunk;
 use pocketmine\world\format\io\BaseWorldProvider;
+use pocketmine\world\format\io\ChunkData;
 use pocketmine\world\format\io\data\JavaWorldData;
 use pocketmine\world\format\io\exception\CorruptedChunkException;
 use pocketmine\world\format\io\WorldData;
+use Webmozart\PathUtil\Path;
 use function assert;
 use function file_exists;
 use function is_dir;
@@ -43,7 +44,6 @@ use function strlen;
 use function strrpos;
 use function substr;
 use function time;
-use const DIRECTORY_SEPARATOR;
 use const SCANDIR_SORT_NONE;
 
 abstract class RegionWorldProvider extends BaseWorldProvider{
@@ -59,8 +59,8 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	abstract protected static function getPcWorldFormatVersion() : int;
 
 	public static function isValid(string $path) : bool{
-		if(file_exists($path . "/level.dat") and is_dir($path . "/region/")){
-			foreach(scandir($path . "/region/", SCANDIR_SORT_NONE) as $file){
+		if(file_exists(Path::join($path, "level.dat")) && is_dir($regionPath = Path::join($path, "region"))){
+			foreach(scandir($regionPath, SCANDIR_SORT_NONE) as $file){
 				$extPos = strrpos($file, ".");
 				if($extPos !== false && substr($file, $extPos + 1) === static::getRegionFileExtension()){
 					//we don't care if other region types exist, we only care if this format is possible
@@ -76,7 +76,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	protected $regions = [];
 
 	protected function loadLevelData() : WorldData{
-		return new JavaWorldData($this->getPath() . DIRECTORY_SEPARATOR . "level.dat");
+		return new JavaWorldData(Path::join($this->getPath(), "level.dat"));
 	}
 
 	public function doGarbageCollection() : void{
@@ -106,7 +106,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	 * Returns the path to a specific region file based on its X/Z coordinates
 	 */
 	protected function pathToRegion(int $regionX, int $regionZ) : string{
-		return $this->path . "/region/r.$regionX.$regionZ." . static::getRegionFileExtension();
+		return Path::join($this->path, "region", "r.$regionX.$regionZ." . static::getRegionFileExtension());
 	}
 
 	protected function loadRegion(int $regionX, int $regionZ) : RegionLoader{
@@ -146,7 +146,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	abstract protected function deserializeChunk(string $data) : Chunk;
+	abstract protected function deserializeChunk(string $data) : ?ChunkData;
 
 	/**
 	 * @return CompoundTag[]
@@ -173,6 +173,9 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	protected static function readFixedSizeByteArray(CompoundTag $chunk, string $tagName, int $length) : string{
 		$tag = $chunk->getTag($tagName);
 		if(!($tag instanceof ByteArrayTag)){
+			if($tag === null){
+				throw new CorruptedChunkException("'$tagName' key is missing from chunk NBT");
+			}
 			throw new CorruptedChunkException("Expected TAG_ByteArray for '$tagName'");
 		}
 		$data = $tag->getValue();
@@ -185,10 +188,10 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	/**
 	 * @throws CorruptedChunkException
 	 */
-	public function loadChunk(int $chunkX, int $chunkZ) : ?Chunk{
+	public function loadChunk(int $chunkX, int $chunkZ) : ?ChunkData{
 		$regionX = $regionZ = null;
 		self::getRegionIndex($chunkX, $chunkZ, $regionX, $regionZ);
-		assert(is_int($regionX) and is_int($regionZ));
+		assert(is_int($regionX) && is_int($regionZ));
 
 		if(!file_exists($this->pathToRegion($regionX, $regionZ))){
 			return null;
@@ -205,7 +208,7 @@ abstract class RegionWorldProvider extends BaseWorldProvider{
 	private function createRegionIterator() : \RegexIterator{
 		return new \RegexIterator(
 			new \FilesystemIterator(
-				$this->path . '/region/',
+				Path::join($this->path, 'region'),
 				\FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS
 			),
 			'/\/r\.(-?\d+)\.(-?\d+)\.' . static::getRegionFileExtension() . '$/',

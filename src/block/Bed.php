@@ -25,13 +25,15 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Bed as TileBed;
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\block\utils\ColoredTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\data\bedrock\DyeColorIdMap;
-use pocketmine\item\Bed as ItemBed;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -41,18 +43,15 @@ use pocketmine\world\BlockTransaction;
 use pocketmine\world\World;
 
 class Bed extends Transparent{
+	use ColoredTrait;
 	use HorizontalFacingTrait;
 
-	/** @var bool */
-	protected $occupied = false;
-	/** @var bool */
-	protected $head = false;
-	/** @var DyeColor */
-	protected $color;
+	protected bool $occupied = false;
+	protected bool $head = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2));
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->color = DyeColor::RED();
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	protected function writeStateToMeta() : int{
@@ -74,7 +73,7 @@ class Bed extends Transparent{
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		//read extra state information from the tile - this is an ugly hack
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBed){
 			$this->color = $tile->getColor();
 		}
@@ -83,7 +82,7 @@ class Bed extends Transparent{
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
 		//extra block properties storage hack
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileBed){
 			$tile->setColor($this->color);
 		}
@@ -94,6 +93,10 @@ class Bed extends Transparent{
 	 */
 	protected function recalculateCollisionBoxes() : array{
 		return [AxisAlignedBB::one()->trim(Facing::UP, 7 / 16)];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	public function isHeadPart() : bool{
@@ -122,7 +125,7 @@ class Bed extends Transparent{
 
 	public function getOtherHalf() : ?Bed{
 		$other = $this->getSide($this->getOtherHalfSide());
-		if($other instanceof Bed and $other->head !== $this->head and $other->facing === $this->facing){
+		if($other instanceof Bed && $other->head !== $this->head && $other->facing === $this->facing){
 			return $other;
 		}
 
@@ -137,17 +140,17 @@ class Bed extends Transparent{
 				$player->sendMessage(TextFormat::GRAY . "This bed is incomplete");
 
 				return true;
-			}elseif($playerPos->distanceSquared($this->pos) > 4 and $playerPos->distanceSquared($other->pos) > 4){
-				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.tooFar"));
+			}elseif($playerPos->distanceSquared($this->position) > 4 && $playerPos->distanceSquared($other->position) > 4){
+				$player->sendMessage(KnownTranslationFactory::tile_bed_tooFar()->prefix(TextFormat::GRAY));
 				return true;
 			}
 
-			$time = $this->pos->getWorld()->getTimeOfDay();
+			$time = $this->position->getWorld()->getTimeOfDay();
 
-			$isNight = ($time >= World::TIME_NIGHT and $time < World::TIME_SUNRISE);
+			$isNight = ($time >= World::TIME_NIGHT && $time < World::TIME_SUNRISE);
 
 			if(!$isNight){
-				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.noSleep"));
+				$player->sendMessage(KnownTranslationFactory::tile_bed_noSleep()->prefix(TextFormat::GRAY));
 
 				return true;
 			}
@@ -155,12 +158,12 @@ class Bed extends Transparent{
 			$b = ($this->isHeadPart() ? $this : $other);
 
 			if($b->isOccupied()){
-				$player->sendMessage(new TranslationContainer(TextFormat::GRAY . "%tile.bed.occupied"));
+				$player->sendMessage(KnownTranslationFactory::tile_bed_occupied()->prefix(TextFormat::GRAY));
 
 				return true;
 			}
 
-			$player->sleepOn($b->pos);
+			$player->sleepOn($b->position);
 		}
 
 		return true;
@@ -168,25 +171,29 @@ class Bed extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(($other = $this->getOtherHalf()) !== null and $other->occupied !== $this->occupied){
+		if(!$this->head && ($other = $this->getOtherHalf()) !== null && $other->occupied !== $this->occupied){
 			$this->occupied = $other->occupied;
-			$this->pos->getWorld()->setBlock($this->pos, $this);
+			$this->position->getWorld()->setBlock($this->position, $this);
 		}
 	}
 
-	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($item instanceof ItemBed){ //TODO: the item should do this
-			$this->color = $item->getColor();
+	public function onEntityLand(Entity $entity) : ?float{
+		if($entity instanceof Living && $entity->isSneaking()){
+			return null;
 		}
-		$down = $this->getSide(Facing::DOWN);
-		if(!$down->isTransparent()){
+		$entity->fallDistance *= 0.5;
+		return $entity->getMotion()->y * -3 / 4; // 2/3 in Java, according to the wiki
+	}
+
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($this->canBeSupportedBy($this->getSide(Facing::DOWN))){
 			$this->facing = $player !== null ? $player->getHorizontalFacing() : Facing::NORTH;
 
 			$next = $this->getSide($this->getOtherHalfSide());
-			if($next->canBeReplaced() and !$next->getSide(Facing::DOWN)->isTransparent()){
+			if($next->canBeReplaced() && $this->canBeSupportedBy($next->getSide(Facing::DOWN))){
 				$nextState = clone $this;
 				$nextState->head = true;
-				$tx->addBlock($blockReplace->pos, $this)->addBlock($next->pos, $nextState);
+				$tx->addBlock($blockReplace->position, $this)->addBlock($next->position, $nextState);
 				return true;
 			}
 		}
@@ -202,8 +209,8 @@ class Bed extends Transparent{
 		return [];
 	}
 
-	public function asItem() : Item{
-		return ItemFactory::getInstance()->get($this->idInfo->getItemId(), DyeColorIdMap::getInstance()->toId($this->color));
+	protected function writeStateToItemMeta() : int{
+		return DyeColorIdMap::getInstance()->toId($this->color);
 	}
 
 	public function getAffectedBlocks() : array{
@@ -212,5 +219,9 @@ class Bed extends Transparent{
 		}
 
 		return parent::getAffectedBlocks();
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
 	}
 }

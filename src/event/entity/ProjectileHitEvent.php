@@ -31,12 +31,11 @@ use pocketmine\math\RayTraceResult;
  * @phpstan-extends EntityEvent<Projectile>
  */
 abstract class ProjectileHitEvent extends EntityEvent{
-	/** @var RayTraceResult */
-	private $rayTraceResult;
-
-	public function __construct(Projectile $entity, RayTraceResult $rayTraceResult){
+	public function __construct(
+		Projectile $entity,
+		private RayTraceResult $rayTraceResult
+	){
 		$this->entity = $entity;
-		$this->rayTraceResult = $rayTraceResult;
 	}
 
 	/**

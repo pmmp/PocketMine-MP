@@ -23,13 +23,16 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
+use pocketmine\block\Block;
 use pocketmine\block\BlockLegacyIds;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\network\mcpe\protocol\serializer\NetworkNbtSerializer;
 use pocketmine\network\mcpe\protocol\serializer\PacketSerializer;
-use pocketmine\utils\AssumptionFailedError;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\utils\SingletonTrait;
+use pocketmine\utils\Utils;
+use Webmozart\PathUtil\Path;
 use function file_get_contents;
 
 /**
@@ -39,32 +42,43 @@ final class RuntimeBlockMapping{
 	use SingletonTrait;
 
 	/** @var int[] */
-	private $legacyToRuntimeMap = [];
+	private array $legacyToRuntimeMap = [];
 	/** @var int[] */
-	private $runtimeToLegacyMap = [];
+	private array $runtimeToLegacyMap = [];
 	/** @var CompoundTag[] */
-	private $bedrockKnownStates;
+	private array $bedrockKnownStates;
 
-	private function __construct(){
-		$canonicalBlockStatesFile = file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/canonical_block_states.nbt");
-		if($canonicalBlockStatesFile === false){
-			throw new AssumptionFailedError("Missing required resource file");
-		}
-		$stream = new PacketSerializer($canonicalBlockStatesFile);
+	private static function make() : self{
+		return new self(
+			Path::join(\pocketmine\BEDROCK_DATA_PATH, "canonical_block_states.nbt"),
+			Path::join(\pocketmine\BEDROCK_DATA_PATH, "r12_to_current_block_map.bin")
+		);
+	}
+
+	public function __construct(string $canonicalBlockStatesFile, string $r12ToCurrentBlockMapFile){
+		$stream = PacketSerializer::decoder(
+			Utils::assumeNotFalse(file_get_contents($canonicalBlockStatesFile), "Missing required resource file"),
+			0,
+			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
+		);
 		$list = [];
 		while(!$stream->feof()){
 			$list[] = $stream->getNbtCompoundRoot();
 		}
 		$this->bedrockKnownStates = $list;
 
-		$this->setupLegacyMappings();
+		$this->setupLegacyMappings($r12ToCurrentBlockMapFile);
 	}
 
-	private function setupLegacyMappings() : void{
+	private function setupLegacyMappings(string $r12ToCurrentBlockMapFile) : void{
 		$legacyIdMap = LegacyBlockIdToStringIdMap::getInstance();
 		/** @var R12ToCurrentBlockMapEntry[] $legacyStateMap */
 		$legacyStateMap = [];
-		$legacyStateMapReader = new PacketSerializer(file_get_contents(\pocketmine\RESOURCE_PATH . "vanilla/r12_to_current_block_map.bin"));
+		$legacyStateMapReader = PacketSerializer::decoder(
+			Utils::assumeNotFalse(file_get_contents($r12ToCurrentBlockMapFile), "Missing required resource file"),
+			0,
+			new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary())
+		);
 		$nbtReader = new NetworkNbtSerializer();
 		while(!$legacyStateMapReader->feof()){
 			$id = $legacyStateMapReader->getString();
@@ -84,7 +98,7 @@ final class RuntimeBlockMapping{
 			$idToStatesMap[$state->getString("name")][] = $k;
 		}
 		foreach($legacyStateMap as $pair){
-			$id = $legacyIdMap->stringToLegacy($pair->getId()) ?? null;
+			$id = $legacyIdMap->stringToLegacy($pair->getId());
 			if($id === null){
 				throw new \RuntimeException("No legacy ID matches " . $pair->getId());
 			}
@@ -110,7 +124,7 @@ final class RuntimeBlockMapping{
 	}
 
 	public function toRuntimeId(int $internalStateId) : int{
-		return $this->legacyToRuntimeMap[$internalStateId] ?? $this->legacyToRuntimeMap[BlockLegacyIds::INFO_UPDATE << 4];
+		return $this->legacyToRuntimeMap[$internalStateId] ?? $this->legacyToRuntimeMap[BlockLegacyIds::INFO_UPDATE << Block::INTERNAL_METADATA_BITS];
 	}
 
 	public function fromRuntimeId(int $runtimeId) : int{
@@ -118,8 +132,8 @@ final class RuntimeBlockMapping{
 	}
 
 	private function registerMapping(int $staticRuntimeId, int $legacyId, int $legacyMeta) : void{
-		$this->legacyToRuntimeMap[($legacyId << 4) | $legacyMeta] = $staticRuntimeId;
-		$this->runtimeToLegacyMap[$staticRuntimeId] = ($legacyId << 4) | $legacyMeta;
+		$this->legacyToRuntimeMap[($legacyId << Block::INTERNAL_METADATA_BITS) | $legacyMeta] = $staticRuntimeId;
+		$this->runtimeToLegacyMap[$staticRuntimeId] = ($legacyId << Block::INTERNAL_METADATA_BITS) | $legacyMeta;
 	}
 
 	/**

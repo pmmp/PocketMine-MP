@@ -26,9 +26,8 @@ namespace pocketmine\entity\object;
 use pocketmine\entity\Entity;
 use pocketmine\entity\EntitySizeInfo;
 use pocketmine\entity\Human;
+use pocketmine\entity\Location;
 use pocketmine\nbt\tag\CompoundTag;
-use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ShortTag;
 use pocketmine\network\mcpe\protocol\types\entity\EntityIds;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataCollection;
 use pocketmine\network\mcpe\protocol\types\entity\EntityMetadataProperties;
@@ -98,7 +97,12 @@ class ExperienceOrb extends Entity{
 	protected $targetPlayerRuntimeId = null;
 
 	/** @var int */
-	protected $xpValue = 1;
+	protected $xpValue;
+
+	public function __construct(Location $location, int $xpValue, ?CompoundTag $nbt = null){
+		$this->xpValue = $xpValue;
+		parent::__construct($location, $nbt);
+	}
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
 
@@ -106,15 +110,6 @@ class ExperienceOrb extends Entity{
 		parent::initEntity($nbt);
 
 		$this->age = $nbt->getShort("Age", 0);
-
-		$value = 1;
-		if(($valuePcTag = $nbt->getTag(self::TAG_VALUE_PC)) instanceof ShortTag){ //PC
-			$value = $valuePcTag->getValue();
-		}elseif(($valuePeTag = $nbt->getTag(self::TAG_VALUE_PE)) instanceof IntTag){ //PE save format
-			$value = $valuePeTag->getValue();
-		}
-
-		$this->setXpValue($value);
 	}
 
 	public function saveNBT() : CompoundTag{
@@ -137,6 +132,7 @@ class ExperienceOrb extends Entity{
 			throw new \InvalidArgumentException("XP amount must be greater than 0, got $amount");
 		}
 		$this->xpValue = $amount;
+		$this->networkPropertiesDirty = true;
 	}
 
 	public function hasTargetPlayer() : bool{
@@ -170,7 +166,7 @@ class ExperienceOrb extends Entity{
 		}
 
 		$currentTarget = $this->getTargetPlayer();
-		if($currentTarget !== null and (!$currentTarget->isAlive() or $currentTarget->location->distanceSquared($this->location) > self::MAX_TARGET_DISTANCE ** 2)){
+		if($currentTarget !== null && (!$currentTarget->isAlive() || !$currentTarget->getXpManager()->canAttractXpOrbs() || $currentTarget->location->distanceSquared($this->location) > self::MAX_TARGET_DISTANCE ** 2)){
 			$currentTarget = null;
 		}
 
@@ -178,7 +174,7 @@ class ExperienceOrb extends Entity{
 			if($currentTarget === null){
 				$newTarget = $this->getWorld()->getNearestEntity($this->location, self::MAX_TARGET_DISTANCE, Human::class);
 
-				if($newTarget instanceof Human and !($newTarget instanceof Player and $newTarget->isSpectator())){
+				if($newTarget instanceof Human && !($newTarget instanceof Player && $newTarget->isSpectator()) && $newTarget->getXpManager()->canAttractXpOrbs()){
 					$currentTarget = $newTarget;
 				}
 			}
@@ -198,7 +194,7 @@ class ExperienceOrb extends Entity{
 				$this->motion = $this->motion->addVector($vector->normalize()->multiply(0.2 * (1 - sqrt($distance)) ** 2));
 			}
 
-			if($currentTarget->getXpManager()->canPickupXp() and $this->boundingBox->intersectsWith($currentTarget->getBoundingBox())){
+			if($currentTarget->getXpManager()->canPickupXp() && $this->boundingBox->intersectsWith($currentTarget->getBoundingBox())){
 				$this->flagForDespawn();
 
 				$currentTarget->getXpManager()->onPickupXp($this->getXpValue());

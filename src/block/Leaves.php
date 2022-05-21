@@ -23,6 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\event\block\LeavesDecayEvent;
 use pocketmine\item\Item;
@@ -37,16 +38,13 @@ use pocketmine\world\World;
 use function mt_rand;
 
 class Leaves extends Transparent{
-	/** @var TreeType */
-	protected $treeType;
 
-	/** @var bool */
-	protected $noDecay = false;
-	/** @var bool */
-	protected $checkDecay = false;
+	protected TreeType $treeType;
+	protected bool $noDecay = false;
+	protected bool $checkDecay = false;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, TreeType $treeType, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.2, BlockToolType::SHEARS));
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo, TreeType $treeType){
+		parent::__construct($idInfo, $name, $breakInfo);
 		$this->treeType = $treeType;
 	}
 
@@ -94,12 +92,12 @@ class Leaves extends Transparent{
 		}
 		$visited[$index] = true;
 
-		$block = $this->pos->getWorld()->getBlock($pos);
+		$block = $this->position->getWorld()->getBlock($pos);
 		if($block instanceof Wood){ //type doesn't matter
 			return true;
 		}
 
-		if($block->getId() === $this->getId() and $distance <= 4){
+		if($block->getId() === $this->getId() && $distance <= 4){
 			foreach(Facing::ALL as $side){
 				if($this->findLog($pos->getSide($side), $visited, $distance + 1)){
 					return true;
@@ -111,9 +109,9 @@ class Leaves extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->noDecay and !$this->checkDecay){
+		if(!$this->noDecay && !$this->checkDecay){
 			$this->checkDecay = true;
-			$this->pos->getWorld()->setBlock($this->pos, $this, false);
+			$this->position->getWorld()->setBlock($this->position, $this, false);
 		}
 	}
 
@@ -122,14 +120,14 @@ class Leaves extends Transparent{
 	}
 
 	public function onRandomTick() : void{
-		if(!$this->noDecay and $this->checkDecay){
+		if(!$this->noDecay && $this->checkDecay){
 			$ev = new LeavesDecayEvent($this);
 			$ev->call();
-			if($ev->isCancelled() or $this->findLog($this->pos)){
+			if($ev->isCancelled() || $this->findLog($this->position)){
 				$this->checkDecay = false;
-				$this->pos->getWorld()->setBlock($this->pos, $this, false);
+				$this->position->getWorld()->setBlock($this->position, $this, false);
 			}else{
-				$this->pos->getWorld()->useBreakOn($this->pos);
+				$this->position->getWorld()->useBreakOn($this->position);
 			}
 		}
 	}
@@ -139,20 +137,27 @@ class Leaves extends Transparent{
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function getDrops(Item $item) : array{
+	public function getDropsForCompatibleTool(Item $item) : array{
 		if(($item->getBlockToolType() & BlockToolType::SHEARS) !== 0){
-			return $this->getDropsForCompatibleTool($item);
+			return parent::getDropsForCompatibleTool($item);
 		}
 
 		$drops = [];
 		if(mt_rand(1, 20) === 1){ //Saplings
 			$drops[] = ItemFactory::getInstance()->get(ItemIds::SAPLING, $this->treeType->getMagicNumber());
 		}
-		if(($this->treeType->equals(TreeType::OAK()) or $this->treeType->equals(TreeType::DARK_OAK())) and mt_rand(1, 200) === 1){ //Apples
+		if(($this->treeType->equals(TreeType::OAK()) || $this->treeType->equals(TreeType::DARK_OAK())) && mt_rand(1, 200) === 1){ //Apples
 			$drops[] = VanillaItems::APPLE();
+		}
+		if(mt_rand(1, 50) === 1){
+			$drops[] = VanillaItems::STICK()->setCount(mt_rand(1, 2));
 		}
 
 		return $drops;
+	}
+
+	public function isAffectedBySilkTouch() : bool{
+		return true;
 	}
 
 	public function getFlameEncouragement() : int{
@@ -161,5 +166,9 @@ class Leaves extends Transparent{
 
 	public function getFlammability() : int{
 		return 60;
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 }

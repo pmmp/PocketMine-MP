@@ -25,7 +25,8 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
 use function count;
@@ -36,10 +37,10 @@ class MeCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.me.description",
-			"%commands.me.usage"
+			KnownTranslationFactory::pocketmine_command_me_description(),
+			KnownTranslationFactory::commands_me_usage()
 		);
-		$this->setPermission("pocketmine.command.me");
+		$this->setPermission(DefaultPermissionNames::COMMAND_ME);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -51,7 +52,7 @@ class MeCommand extends VanillaCommand{
 			throw new InvalidCommandSyntaxException();
 		}
 
-		$sender->getServer()->broadcastMessage(new TranslationContainer("chat.type.emote", [$sender instanceof Player ? $sender->getDisplayName() : $sender->getName(), TextFormat::WHITE . implode(" ", $args)]));
+		$sender->getServer()->broadcastMessage(KnownTranslationFactory::chat_type_emote($sender instanceof Player ? $sender->getDisplayName() : $sender->getName(), TextFormat::WHITE . implode(" ", $args)));
 
 		return true;
 	}

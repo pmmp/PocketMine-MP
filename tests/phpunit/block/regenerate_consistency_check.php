@@ -21,31 +21,56 @@
 
 declare(strict_types=1);
 
-require \dirname(__DIR__, 3) . '/vendor/autoload.php';
+require dirname(__DIR__, 3) . '/vendor/autoload.php';
 
 /* This script needs to be re-run after any intentional blockfactory change (adding or removing a block state). */
 
 $factory = new \pocketmine\block\BlockFactory();
+$remaps = [];
+$new = [];
+foreach($factory->getAllKnownStates() as $index => $block){
+	if($block->getFullId() !== $index){
+		$remaps[$index] = $block->getFullId();
+	}else{
+		$new[$index] = $block->getName();
+	}
+}
+$oldTable = json_decode(file_get_contents(__DIR__ . '/block_factory_consistency_check.json'), true);
+if(!is_array($oldTable)){
+	throw new \pocketmine\utils\AssumptionFailedError("Old table should be array{knownStates: array<string, string>, remaps: array<string, int>}");
+}
+$old = $oldTable["knownStates"];
+$oldRemaps = $oldTable["remaps"];
 
-$old = \json_decode(\file_get_contents(__DIR__ . '/block_factory_consistency_check.json'), true);
-$new = \array_map(
-	function(\pocketmine\block\Block $block) : string{
-		return $block->getName();
-	},
-	$factory->getAllKnownStates()
-);
 foreach($old as $k => $name){
 	if(!isset($new[$k])){
-		echo "Removed state for $name (" . ($k >> 4) . ":" . ($k & 0xf) . ")\n";
+		echo "Removed state for $name (" . ($k >> \pocketmine\block\Block::INTERNAL_METADATA_BITS) . ":" . ($k & \pocketmine\block\Block::INTERNAL_METADATA_MASK) . ")\n";
 	}
 }
 foreach($new as $k => $name){
 	if(!isset($old[$k])){
-		echo "Added state for $name (" . ($k >> 4) . ":" . ($k & 0xf) . ")\n";
+		echo "Added state for $name (" . ($k >> \pocketmine\block\Block::INTERNAL_METADATA_BITS) . ":" . ($k & \pocketmine\block\Block::INTERNAL_METADATA_MASK) . ")\n";
 	}elseif($old[$k] !== $name){
-		echo "Name changed (" . ($k >> 4) . ":" . ($k & 0xf) . "): " . $old[$k] . " -> " . $name . "\n";
+		echo "Name changed (" . ($k >> \pocketmine\block\Block::INTERNAL_METADATA_BITS) . ":" . ($k & \pocketmine\block\Block::INTERNAL_METADATA_MASK) . "): " . $old[$k] . " -> " . $name . "\n";
 	}
 }
-\file_put_contents(__DIR__ . '/block_factory_consistency_check.json', \json_encode(
-	$new
+
+foreach($oldRemaps as $index => $mapped){
+	if(!isset($remaps[$index])){
+		echo "Removed remap of " . ($index >> 4) . ":" . ($index & 0xf) . "\n";
+	}
+}
+foreach($remaps as $index => $mapped){
+	if(!isset($oldRemaps[$index])){
+		echo "New remap of " . ($index >> 4) . ":" . ($index & 0xf) . " (" . ($mapped >> 4) . ":" . ($mapped & 0xf) . ") (" . $new[$mapped] . ")\n";
+	}elseif($oldRemaps[$index] !== $mapped){
+		echo "Remap changed for " . ($index >> 4) . ":" . ($index & 0xf) . " (" . ($oldRemaps[$index] >> 4) . ":" . ($oldRemaps[$index] & 0xf) . " (" . $old[$oldRemaps[$index]] . ") -> " . ($mapped >> 4) . ":" . ($mapped & 0xf) . " (" . $new[$mapped] . "))\n";
+	}
+}
+file_put_contents(__DIR__ . '/block_factory_consistency_check.json', json_encode(
+	[
+		"knownStates" => $new,
+		"remaps" => $remaps
+	],
+	JSON_THROW_ON_ERROR
 ));

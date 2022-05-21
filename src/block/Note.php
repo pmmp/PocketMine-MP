@@ -30,16 +30,11 @@ class Note extends Opaque{
 	public const MIN_PITCH = 0;
 	public const MAX_PITCH = 24;
 
-	/** @var int */
-	private $pitch = self::MIN_PITCH;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.8, BlockToolType::AXE));
-	}
+	private int $pitch = self::MIN_PITCH;
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileNote){
 			$this->pitch = $tile->getPitch();
 		}else{
@@ -49,7 +44,7 @@ class Note extends Opaque{
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileNote);
 		$tile->setPitch($this->pitch);
 	}
@@ -64,7 +59,7 @@ class Note extends Opaque{
 
 	/** @return $this */
 	public function setPitch(int $pitch) : self{
-		if($pitch < self::MIN_PITCH or $pitch > self::MAX_PITCH){
+		if($pitch < self::MIN_PITCH || $pitch > self::MAX_PITCH){
 			throw new \InvalidArgumentException("Pitch must be in range " . self::MIN_PITCH . " - " . self::MAX_PITCH);
 		}
 		$this->pitch = $pitch;

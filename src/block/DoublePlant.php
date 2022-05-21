@@ -31,12 +31,7 @@ use pocketmine\world\BlockTransaction;
 
 class DoublePlant extends Flowable{
 
-	/** @var bool */
-	protected $top = false;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
+	protected bool $top = false;
 
 	protected function writeStateToMeta() : int{
 		return ($this->top ? BlockLegacyMetadata::DOUBLE_PLANT_FLAG_TOP : 0);
@@ -60,10 +55,10 @@ class DoublePlant extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$id = $blockReplace->getSide(Facing::DOWN)->getId();
-		if(($id === BlockLegacyIds::GRASS or $id === BlockLegacyIds::DIRT) and $blockReplace->getSide(Facing::UP)->canBeReplaced()){
+		if(($id === BlockLegacyIds::GRASS || $id === BlockLegacyIds::DIRT) && $blockReplace->getSide(Facing::UP)->canBeReplaced()){
 			$top = clone $this;
 			$top->top = true;
-			$tx->addBlock($blockReplace->pos, $this)->addBlock($blockReplace->pos->getSide(Facing::UP), $top);
+			$tx->addBlock($blockReplace->position, $this)->addBlock($blockReplace->position->getSide(Facing::UP), $top);
 			return true;
 		}
 
@@ -77,15 +72,15 @@ class DoublePlant extends Flowable{
 		$other = $this->getSide($this->top ? Facing::DOWN : Facing::UP);
 
 		return (
-			$other instanceof DoublePlant and
-			$other->isSameType($this) and
+			$other instanceof DoublePlant &&
+			$other->isSameType($this) &&
 			$other->top !== $this->top
 		);
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->isValidHalfPlant() or (!$this->top and $this->getSide(Facing::DOWN)->isTransparent())){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+		if(!$this->isValidHalfPlant() || (!$this->top && $this->getSide(Facing::DOWN)->isTransparent())){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 

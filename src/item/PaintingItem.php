@@ -51,7 +51,7 @@ class PaintingItem extends Item{
 				continue;
 			}
 
-			if(Painting::canFit($player->getWorld(), $blockReplace->getPos(), $face, true, $motive)){
+			if(Painting::canFit($player->getWorld(), $blockReplace->getPosition(), $face, true, $motive)){
 				if($currentTotalDimension > $totalDimension){
 					$totalDimension = $currentTotalDimension;
 					/*
@@ -73,8 +73,8 @@ class PaintingItem extends Item{
 		/** @var PaintingMotive $motive */
 		$motive = $motives[array_rand($motives)];
 
-		$replacePos = $blockReplace->getPos();
-		$clickedPos = $blockClicked->getPos();
+		$replacePos = $blockReplace->getPosition();
+		$clickedPos = $blockClicked->getPosition();
 
 		$entity = new Painting(Location::fromObject($replacePos, $replacePos->getWorld()), $clickedPos, $face, $motive);
 		$this->pop();

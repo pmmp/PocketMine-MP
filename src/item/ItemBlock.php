@@ -30,8 +30,7 @@ use pocketmine\block\BlockFactory;
  * Class used for Items that can be Blocks
  */
 class ItemBlock extends Item{
-	/** @var int */
-	private $blockFullId;
+	private int $blockFullId;
 
 	public function __construct(ItemIdentifier $identifier, Block $block){
 		parent::__construct($identifier, $block->getName());
@@ -44,5 +43,9 @@ class ItemBlock extends Item{
 
 	public function getFuelTime() : int{
 		return $this->getBlock()->getFuelTime();
+	}
+
+	public function getMaxStackSize() : int{
+		return $this->getBlock()->getMaxStackSize();
 	}
 }

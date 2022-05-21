@@ -31,13 +31,9 @@ use pocketmine\world\BlockTransaction;
 
 class Flower extends Flowable{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
-
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() === BlockLegacyIds::GRASS or $down->getId() === BlockLegacyIds::DIRT or $down->getId() === BlockLegacyIds::FARMLAND){
+		if($down->getId() === BlockLegacyIds::GRASS || $down->getId() === BlockLegacyIds::DIRT || $down->getId() === BlockLegacyIds::FARMLAND){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -46,7 +42,7 @@ class Flower extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 

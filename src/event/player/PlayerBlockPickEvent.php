@@ -35,15 +35,12 @@ use pocketmine\player\Player;
 class PlayerBlockPickEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Block */
-	private $blockClicked;
-	/** @var Item */
-	private $resultItem;
-
-	public function __construct(Player $player, Block $blockClicked, Item $resultItem){
+	public function __construct(
+		Player $player,
+		private Block $blockClicked,
+		private Item $resultItem
+	){
 		$this->player = $player;
-		$this->blockClicked = $blockClicked;
-		$this->resultItem = $resultItem;
 	}
 
 	public function getBlock() : Block{

@@ -25,10 +25,11 @@ namespace pocketmine\world\sound;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 class EnderChestOpenSound implements Sound{
 
-	public function encode(?Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_ENDERCHEST_OPEN, $pos)];
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::ENDERCHEST_OPEN, $pos, false)];
 	}
 }

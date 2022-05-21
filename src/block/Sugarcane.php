@@ -33,53 +33,52 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 class Sugarcane extends Flowable{
+	public const MAX_AGE = 15;
 
-	/** @var int */
-	protected $age = 0;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
-	}
+	protected int $age = 0;
 
 	protected function writeStateToMeta() : int{
 		return $this->age;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, 15);
+		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta, 0, self::MAX_AGE);
 	}
 
 	public function getStateBitmask() : int{
 		return 0b1111;
 	}
 
-	private function grow() : void{
+	private function grow() : bool{
+		$grew = false;
 		for($y = 1; $y < 3; ++$y){
-			if(!$this->pos->getWorld()->isInWorld($this->pos->x, $this->pos->y + $y, $this->pos->z)){
+			if(!$this->position->getWorld()->isInWorld($this->position->x, $this->position->y + $y, $this->position->z)){
 				break;
 			}
-			$b = $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + $y, $this->pos->z);
+			$b = $this->position->getWorld()->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
 			if($b->getId() === BlockLegacyIds::AIR){
 				$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
 				$ev->call();
 				if($ev->isCancelled()){
 					break;
 				}
-				$this->pos->getWorld()->setBlock($b->pos, $ev->getNewState());
+				$this->position->getWorld()->setBlock($b->position, $ev->getNewState());
+				$grew = true;
 			}else{
 				break;
 			}
 		}
 		$this->age = 0;
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->position->getWorld()->setBlock($this->position, $this);
+		return $grew;
 	}
 
 	public function getAge() : int{ return $this->age; }
 
 	/** @return $this */
 	public function setAge(int $age) : self{
-		if($age < 0 || $age > 15){
-			throw new \InvalidArgumentException("Age must be in range 0-15");
+		if($age < 0 || $age > self::MAX_AGE){
+			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
 		}
 		$this->age = $age;
 		return $this;
@@ -87,11 +86,9 @@ class Sugarcane extends Flowable{
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($item instanceof Fertilizer){
-			if(!$this->getSide(Facing::DOWN)->isSameType($this)){
-				$this->grow();
+			if(!$this->getSide(Facing::DOWN)->isSameType($this) && $this->grow()){
+				$item->pop();
 			}
-
-			$item->pop();
 
 			return true;
 		}
@@ -101,8 +98,8 @@ class Sugarcane extends Flowable{
 
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->isTransparent() and !$down->isSameType($this)){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+		if($down->isTransparent() && !$down->isSameType($this)){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}
 
@@ -112,11 +109,11 @@ class Sugarcane extends Flowable{
 
 	public function onRandomTick() : void{
 		if(!$this->getSide(Facing::DOWN)->isSameType($this)){
-			if($this->age === 15){
+			if($this->age === self::MAX_AGE){
 				$this->grow();
 			}else{
 				++$this->age;
-				$this->pos->getWorld()->setBlock($this->pos, $this);
+				$this->position->getWorld()->setBlock($this->position, $this);
 			}
 		}
 	}
@@ -125,7 +122,7 @@ class Sugarcane extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->isSameType($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($down->getId() === BlockLegacyIds::GRASS or $down->getId() === BlockLegacyIds::DIRT or $down->getId() === BlockLegacyIds::SAND or $down->getId() === BlockLegacyIds::PODZOL){
+		}elseif($down->getId() === BlockLegacyIds::GRASS || $down->getId() === BlockLegacyIds::DIRT || $down->getId() === BlockLegacyIds::SAND || $down->getId() === BlockLegacyIds::PODZOL){
 			foreach(Facing::HORIZONTAL as $side){
 				if($down->getSide($side) instanceof Water){
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);

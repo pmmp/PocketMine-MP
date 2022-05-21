@@ -24,29 +24,21 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\tile\Tile;
+use pocketmine\utils\Utils;
 
 class BlockIdentifier{
-
-	/** @var int */
-	private $blockId;
-	/** @var int */
-	private $variant;
-	/** @var int|null */
-	private $itemId;
-	/**
-	 * @var string|null
-	 * @phpstan-var class-string<Tile>|null
-	 */
-	private $tileClass;
-
 	/**
 	 * @phpstan-param class-string<Tile>|null $tileClass
 	 */
-	public function __construct(int $blockId, int $variant, ?int $itemId = null, ?string $tileClass = null){
-		$this->blockId = $blockId;
-		$this->variant = $variant;
-		$this->itemId = $itemId;
-		$this->tileClass = $tileClass;
+	public function __construct(
+		private int $blockId,
+		private int $variant,
+		private ?int $itemId = null,
+		private ?string $tileClass = null
+	){
+		if($tileClass !== null){
+			Utils::testValidInstance($tileClass, Tile::class);
+		}
 	}
 
 	public function getBlockId() : int{

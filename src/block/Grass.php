@@ -33,13 +33,10 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use pocketmine\world\generator\object\TallGrass as TallGrassObject;
+use pocketmine\world\sound\ItemUseOnBlockSound;
 use function mt_rand;
 
 class Grass extends Opaque{
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::SHOVEL));
-	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
@@ -56,27 +53,27 @@ class Grass extends Opaque{
 	}
 
 	public function onRandomTick() : void{
-		$lightAbove = $this->pos->getWorld()->getFullLightAt($this->pos->x, $this->pos->y + 1, $this->pos->z);
-		if($lightAbove < 4 and $this->pos->getWorld()->getBlockAt($this->pos->x, $this->pos->y + 1, $this->pos->z)->getLightFilter() >= 2){
+		$lightAbove = $this->position->getWorld()->getFullLightAt($this->position->x, $this->position->y + 1, $this->position->z);
+		if($lightAbove < 4 && $this->position->getWorld()->getBlockAt($this->position->x, $this->position->y + 1, $this->position->z)->getLightFilter() >= 2){
 			//grass dies
 			$ev = new BlockSpreadEvent($this, $this, VanillaBlocks::DIRT());
 			$ev->call();
 			if(!$ev->isCancelled()){
-				$this->pos->getWorld()->setBlock($this->pos, $ev->getNewState(), false);
+				$this->position->getWorld()->setBlock($this->position, $ev->getNewState(), false);
 			}
 		}elseif($lightAbove >= 9){
 			//try grass spread
 			for($i = 0; $i < 4; ++$i){
-				$x = mt_rand($this->pos->x - 1, $this->pos->x + 1);
-				$y = mt_rand($this->pos->y - 3, $this->pos->y + 1);
-				$z = mt_rand($this->pos->z - 1, $this->pos->z + 1);
+				$x = mt_rand($this->position->x - 1, $this->position->x + 1);
+				$y = mt_rand($this->position->y - 3, $this->position->y + 1);
+				$z = mt_rand($this->position->z - 1, $this->position->z + 1);
 
-				$b = $this->pos->getWorld()->getBlockAt($x, $y, $z);
+				$b = $this->position->getWorld()->getBlockAt($x, $y, $z);
 				if(
-					!($b instanceof Dirt) or
-					$b instanceof CoarseDirt or
-					$this->pos->getWorld()->getFullLightAt($x, $y + 1, $z) < 4 or
-					$this->pos->getWorld()->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
+					!($b instanceof Dirt) ||
+					$b->isCoarse() ||
+					$this->position->getWorld()->getFullLightAt($x, $y + 1, $z) < 4 ||
+					$this->position->getWorld()->getBlockAt($x, $y + 1, $z)->getLightFilter() >= 2
 				){
 					continue;
 				}
@@ -84,7 +81,7 @@ class Grass extends Opaque{
 				$ev = new BlockSpreadEvent($b, $this, VanillaBlocks::GRASS());
 				$ev->call();
 				if(!$ev->isCancelled()){
-					$this->pos->getWorld()->setBlock($b->pos, $ev->getNewState(), false);
+					$this->position->getWorld()->setBlock($b->position, $ev->getNewState(), false);
 				}
 			}
 		}
@@ -96,17 +93,21 @@ class Grass extends Opaque{
 		}
 		if($item instanceof Fertilizer){
 			$item->pop();
-			TallGrassObject::growGrass($this->pos->getWorld(), $this->pos, new Random(mt_rand()), 8, 2);
+			TallGrassObject::growGrass($this->position->getWorld(), $this->position, new Random(mt_rand()), 8, 2);
 
 			return true;
 		}elseif($item instanceof Hoe){
 			$item->applyDamage(1);
-			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::FARMLAND());
+			$newBlock = VanillaBlocks::FARMLAND();
+			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
+			$this->position->getWorld()->setBlock($this->position, $newBlock);
 
 			return true;
-		}elseif($item instanceof Shovel and $this->getSide(Facing::UP)->getId() === BlockLegacyIds::AIR){
+		}elseif($item instanceof Shovel && $this->getSide(Facing::UP)->getId() === BlockLegacyIds::AIR){
 			$item->applyDamage(1);
-			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::GRASS_PATH());
+			$newBlock = VanillaBlocks::GRASS_PATH();
+			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
+			$this->position->getWorld()->setBlock($this->position, $newBlock);
 
 			return true;
 		}

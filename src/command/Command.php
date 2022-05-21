@@ -27,7 +27,9 @@ declare(strict_types=1);
 namespace pocketmine\command;
 
 use pocketmine\command\utils\CommandException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\console\ConsoleCommandSender;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\lang\Translatable;
 use pocketmine\permission\PermissionManager;
 use pocketmine\Server;
 use pocketmine\timings\Timings;
@@ -38,35 +40,27 @@ use function str_replace;
 
 abstract class Command{
 
-	/** @var string */
-	private $name;
+	private string $name;
 
-	/** @var string */
-	private $nextLabel;
-
-	/** @var string */
-	private $label;
+	private string $nextLabel;
+	private string $label;
 
 	/** @var string[] */
-	private $aliases = [];
+	private array $aliases = [];
 
 	/** @var string[] */
-	private $activeAliases = [];
+	private array $activeAliases = [];
 
-	/** @var CommandMap|null */
-	private $commandMap = null;
+	private ?CommandMap $commandMap = null;
 
-	/** @var string */
+	/** @var Translatable|string */
 	protected $description = "";
 
-	/** @var string */
+	/** @var Translatable|string */
 	protected $usageMessage;
 
-	/** @var string|null */
-	private $permission = null;
-
-	/** @var string|null */
-	private $permissionMessage = null;
+	private ?string $permission = null;
+	private ?string $permissionMessage = null;
 
 	/** @var TimingsHandler|null */
 	public $timings = null;
@@ -74,7 +68,7 @@ abstract class Command{
 	/**
 	 * @param string[] $aliases
 	 */
-	public function __construct(string $name, string $description = "", ?string $usageMessage = null, array $aliases = []){
+	public function __construct(string $name, Translatable|string $description = "", Translatable|string|null $usageMessage = null, array $aliases = []){
 		$this->name = $name;
 		$this->setLabel($name);
 		$this->setDescription($description);
@@ -109,27 +103,28 @@ abstract class Command{
 		$this->permission = $permission;
 	}
 
-	public function testPermission(CommandSender $target) : bool{
-		if($this->testPermissionSilent($target)){
+	public function testPermission(CommandSender $target, ?string $permission = null) : bool{
+		if($this->testPermissionSilent($target, $permission)){
 			return true;
 		}
 
 		if($this->permissionMessage === null){
-			$target->sendMessage($target->getLanguage()->translateString(TextFormat::RED . "%commands.generic.permission"));
+			$target->sendMessage(KnownTranslationFactory::pocketmine_command_error_permission($this->name)->prefix(TextFormat::RED));
 		}elseif($this->permissionMessage !== ""){
-			$target->sendMessage(str_replace("<permission>", $this->permission, $this->permissionMessage));
+			$target->sendMessage(str_replace("<permission>", $permission ?? $this->permission, $this->permissionMessage));
 		}
 
 		return false;
 	}
 
-	public function testPermissionSilent(CommandSender $target) : bool{
-		if($this->permission === null or $this->permission === ""){
+	public function testPermissionSilent(CommandSender $target, ?string $permission = null) : bool{
+		$permission ??= $this->permission;
+		if($permission === null || $permission === ""){
 			return true;
 		}
 
-		foreach(explode(";", $this->permission) as $permission){
-			if($target->hasPermission($permission)){
+		foreach(explode(";", $permission) as $p){
+			if($target->hasPermission($p)){
 				return true;
 			}
 		}
@@ -179,7 +174,7 @@ abstract class Command{
 	}
 
 	private function allowChangesFrom(CommandMap $commandMap) : bool{
-		return $this->commandMap === null or $this->commandMap === $commandMap;
+		return $this->commandMap === null || $this->commandMap === $commandMap;
 	}
 
 	public function isRegistered() : bool{
@@ -197,11 +192,11 @@ abstract class Command{
 		return $this->permissionMessage;
 	}
 
-	public function getDescription() : string{
+	public function getDescription() : Translatable|string{
 		return $this->description;
 	}
 
-	public function getUsage() : string{
+	public function getUsage() : Translatable|string{
 		return $this->usageMessage;
 	}
 
@@ -215,7 +210,7 @@ abstract class Command{
 		}
 	}
 
-	public function setDescription(string $description) : void{
+	public function setDescription(Translatable|string $description) : void{
 		$this->description = $description;
 	}
 
@@ -223,26 +218,16 @@ abstract class Command{
 		$this->permissionMessage = $permissionMessage;
 	}
 
-	public function setUsage(string $usage) : void{
+	public function setUsage(Translatable|string $usage) : void{
 		$this->usageMessage = $usage;
 	}
 
-	/**
-	 * @param TranslationContainer|string $message
-	 */
-	public static function broadcastCommandMessage(CommandSender $source, $message, bool $sendToSource = true) : void{
+	public static function broadcastCommandMessage(CommandSender $source, Translatable|string $message, bool $sendToSource = true) : void{
 		$users = $source->getServer()->getBroadcastChannelSubscribers(Server::BROADCAST_CHANNEL_ADMINISTRATIVE);
-		if($message instanceof TranslationContainer){
-			$formatted = "[" . $source->getName() . ": " . ($source->getLanguage()->get($message->getText()) !== $message->getText() ? "%" : "") . $message->getText() . "]";
+		$result = KnownTranslationFactory::chat_type_admin($source->getName(), $message);
+		$colored = $result->prefix(TextFormat::GRAY . TextFormat::ITALIC);
 
-			$result = new TranslationContainer($formatted, $message->getParameters());
-			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . $formatted, $message->getParameters());
-		}else{
-			$result = new TranslationContainer("chat.type.admin", [$source->getName(), $message]);
-			$colored = new TranslationContainer(TextFormat::GRAY . TextFormat::ITALIC . "%chat.type.admin", [$source->getName(), $message]);
-		}
-
-		if($sendToSource and !($source instanceof ConsoleCommandSender)){
+		if($sendToSource && !($source instanceof ConsoleCommandSender)){
 			$source->sendMessage($message);
 		}
 

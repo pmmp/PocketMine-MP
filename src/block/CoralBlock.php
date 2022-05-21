@@ -24,18 +24,14 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\CoralType;
+use pocketmine\block\utils\CoralTypeTrait;
 use pocketmine\block\utils\InvalidBlockStateException;
 use pocketmine\data\bedrock\CoralTypeIdMap;
 use pocketmine\item\Item;
 use function mt_rand;
 
 final class CoralBlock extends Opaque{
-
-	/** @var CoralType */
-	private $coralType; //TODO: make this dynamic via setter
-
-	/** @var bool */
-	private $dead = false;
+	use CoralTypeTrait;
 
 	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->coralType = CoralType::TUBE();
@@ -55,43 +51,33 @@ final class CoralBlock extends Opaque{
 		return ($this->dead ? BlockLegacyMetadata::CORAL_BLOCK_FLAG_DEAD : 0) | CoralTypeIdMap::getInstance()->toId($this->coralType);
 	}
 
+	protected function writeStateToItemMeta() : int{
+		return $this->writeStateToMeta();
+	}
+
 	public function getStateBitmask() : int{
 		return 0b1111;
 	}
 
-	public function getNonPersistentStateBitmask() : int{
-		return 0;
-	}
-
-	public function getCoralType() : CoralType{ return $this->coralType; }
-
-	public function isDead() : bool{ return $this->dead; }
-
-	/** @return $this */
-	public function setDead(bool $dead) : self{
-		$this->dead = $dead;
-		return $this;
-	}
-
 	public function onNearbyBlockChange() : void{
 		if(!$this->dead){
-			$this->pos->getWorld()->scheduleDelayedBlockUpdate($this->pos, mt_rand(40, 200));
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, mt_rand(40, 200));
 		}
 	}
 
 	public function onScheduledUpdate() : void{
 		if(!$this->dead){
-			$world = $this->pos->getWorld();
+			$world = $this->position->getWorld();
 
 			$hasWater = false;
-			foreach($this->pos->sides() as $vector3){
+			foreach($this->position->sides() as $vector3){
 				if($world->getBlock($vector3) instanceof Water){
 					$hasWater = true;
 					break;
 				}
 			}
 			if(!$hasWater){
-				$world->setBlock($this->pos, $this->setDead(true));
+				$world->setBlock($this->position, $this->setDead(true));
 			}
 		}
 	}

@@ -27,9 +27,6 @@ use pocketmine\block\tile\Skull as TileSkull;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\SkullType;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
-use pocketmine\item\ItemIds;
-use pocketmine\item\Skull as ItemSkull;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
@@ -39,35 +36,37 @@ use function assert;
 use function floor;
 
 class Skull extends Flowable{
-	/** @var SkullType */
-	protected $skullType;
+	public const MIN_ROTATION = 0;
+	public const MAX_ROTATION = 15;
 
-	/** @var int */
-	protected $facing = Facing::NORTH;
+	protected SkullType $skullType;
 
-	/** @var int */
-	protected $rotation = 0; //TODO: split this into floor skull and wall skull handling
+	protected int $facing = Facing::NORTH;
+	protected bool $noDrops = false;
+	protected int $rotation = self::MIN_ROTATION; //TODO: split this into floor skull and wall skull handling
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->skullType = SkullType::SKELETON(); //TODO: this should be a parameter
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0));
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	protected function writeStateToMeta() : int{
-		return $this->facing === Facing::UP ? 1 : BlockDataSerializer::writeHorizontalFacing($this->facing);
+		return ($this->facing === Facing::UP ? 1 : BlockDataSerializer::writeHorizontalFacing($this->facing)) |
+			($this->noDrops ? BlockLegacyMetadata::SKULL_FLAG_NO_DROPS : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = $stateMeta === 1 ? Facing::UP : BlockDataSerializer::readHorizontalFacing($stateMeta);
+		$this->noDrops = ($stateMeta & BlockLegacyMetadata::SKULL_FLAG_NO_DROPS) !== 0;
 	}
 
 	public function getStateBitmask() : int{
-		return 0b111;
+		return 0b1111;
 	}
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSkull){
 			$this->skullType = $tile->getSkullType();
 			$this->rotation = $tile->getRotation();
@@ -77,7 +76,7 @@ class Skull extends Flowable{
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
 		//extra block properties storage hack
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileSkull);
 		$tile->setRotation($this->rotation);
 		$tile->setSkullType($this->skullType);
@@ -87,12 +86,54 @@ class Skull extends Flowable{
 		return $this->skullType;
 	}
 
+	/** @return $this */
+	public function setSkullType(SkullType $skullType) : self{
+		$this->skullType = $skullType;
+		return $this;
+	}
+
+	public function getFacing() : int{ return $this->facing; }
+
+	/** @return $this */
+	public function setFacing(int $facing) : self{
+		if($facing === Facing::DOWN){
+			throw new \InvalidArgumentException("Skull may not face DOWN");
+		}
+		$this->facing = $facing;
+		return $this;
+	}
+
+	public function getRotation() : int{ return $this->rotation; }
+
+	/** @return $this */
+	public function setRotation(int $rotation) : self{
+		if($rotation < self::MIN_ROTATION || $rotation > self::MAX_ROTATION){
+			throw new \InvalidArgumentException("Rotation must be in range " . self::MIN_ROTATION . " ... " . self::MAX_ROTATION);
+		}
+		$this->rotation = $rotation;
+		return $this;
+	}
+
+	public function isNoDrops() : bool{ return $this->noDrops; }
+
+	/** @return $this */
+	public function setNoDrops(bool $noDrops) : self{
+		$this->noDrops = $noDrops;
+		return $this;
+	}
+
 	/**
 	 * @return AxisAlignedBB[]
 	 */
 	protected function recalculateCollisionBoxes() : array{
-		//TODO: different bounds depending on attached face
-		return [AxisAlignedBB::one()->contract(0.25, 0, 0.25)->trim(Facing::UP, 0.5)];
+		$collisionBox = AxisAlignedBB::one()->contract(0.25, 0, 0.25)->trim(Facing::UP, 0.5);
+		return match($this->facing){
+			Facing::NORTH => [$collisionBox->offset(0, 0.25, 0.25)],
+			Facing::SOUTH => [$collisionBox->offset(0, 0.25, -0.25)],
+			Facing::WEST => [$collisionBox->offset(0.25, 0.25, 0)],
+			Facing::EAST => [$collisionBox->offset(-0.25, 0.25, 0)],
+			default => [$collisionBox]
+		};
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -101,16 +142,13 @@ class Skull extends Flowable{
 		}
 
 		$this->facing = $face;
-		if($item instanceof ItemSkull){
-			$this->skullType = $item->getSkullType(); //TODO: the item should handle this, but this hack is currently needed because of tile mess
-		}
-		if($player !== null and $face === Facing::UP){
+		if($player !== null && $face === Facing::UP){
 			$this->rotation = ((int) floor(($player->getLocation()->getYaw() * 16 / 360) + 0.5)) & 0xf;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function asItem() : Item{
-		return ItemFactory::getInstance()->get(ItemIds::SKULL, $this->skullType->getMagicNumber());
+	protected function writeStateToItemMeta() : int{
+		return $this->skullType->getMagicNumber();
 	}
 }

@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\entity\object;
 
 class PaintingMotive{
+	private static bool $initialized = false;
+
 	/** @var PaintingMotive[] */
 	protected static $motives = [];
 
@@ -76,6 +78,9 @@ class PaintingMotive{
 	 * @return PaintingMotive[]
 	 */
 	public static function getAll() : array{
+		if(!self::$initialized){
+			self::init();
+		}
 		return self::$motives;
 	}
 

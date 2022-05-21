@@ -28,9 +28,7 @@ use pocketmine\block\utils\DyeColor;
 use pocketmine\block\VanillaBlocks;
 
 class Bed extends Item{
-
-	/** @var DyeColor */
-	private $color;
+	private DyeColor $color;
 
 	public function __construct(ItemIdentifier $identifier, string $name, DyeColor $color){
 		parent::__construct($identifier, $name);
@@ -42,7 +40,7 @@ class Bed extends Item{
 	}
 
 	public function getBlock(?int $clickedFace = null) : Block{
-		return VanillaBlocks::BED();
+		return VanillaBlocks::BED()->setColor($this->color);
 	}
 
 	public function getMaxStackSize() : int{

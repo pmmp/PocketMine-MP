@@ -28,6 +28,7 @@ use pocketmine\data\bedrock\BiomeIds;
 use pocketmine\world\biome\Biome;
 use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\format\Chunk;
 use pocketmine\world\generator\biome\BiomeSelector;
 use pocketmine\world\generator\Gaussian;
 use pocketmine\world\generator\Generator;
@@ -41,21 +42,14 @@ use pocketmine\world\World;
 
 class Normal extends Generator{
 
+	private int $waterHeight = 62;
 	/** @var Populator[] */
-	private $populators = [];
-	/** @var int */
-	private $waterHeight = 62;
-
+	private array $populators = [];
 	/** @var Populator[] */
-	private $generationPopulators = [];
-	/** @var Simplex */
-	private $noiseBase;
-
-	/** @var BiomeSelector */
-	private $selector;
-
-	/** @var Gaussian */
-	private $gaussian;
+	private array $generationPopulators = [];
+	private Simplex $noiseBase;
+	private BiomeSelector $selector;
+	private Gaussian $gaussian;
 
 	/**
 	 * @throws InvalidGeneratorOptionsException
@@ -76,7 +70,7 @@ class Normal extends Generator{
 					}elseif($temperature < 0.85){
 						return BiomeIds::RIVER;
 					}else{
-						return BiomeIds::SWAMP;
+						return BiomeIds::SWAMPLAND;
 					}
 				}elseif($rainfall < 0.60){
 					if($temperature < 0.25){
@@ -96,9 +90,9 @@ class Normal extends Generator{
 					}
 				}else{
 					if($temperature < 0.20){
-						return BiomeIds::MOUNTAINS;
+						return BiomeIds::EXTREME_HILLS;
 					}elseif($temperature < 0.40){
-						return BiomeIds::SMALL_MOUNTAINS;
+						return BiomeIds::EXTREME_HILLS_EDGE;
 					}else{
 						return BiomeIds::RIVER;
 					}
@@ -144,7 +138,7 @@ class Normal extends Generator{
 	public function generateChunk(ChunkManager $world, int $chunkX, int $chunkZ) : void{
 		$this->random->setSeed(0xdeadbeef ^ ($chunkX << 8) ^ $chunkZ ^ $this->seed);
 
-		$noise = $this->noiseBase->getFastNoise3D(16, 128, 16, 4, 8, 4, $chunkX * 16, 0, $chunkZ * 16);
+		$noise = $this->noiseBase->getFastNoise3D(Chunk::EDGE_LENGTH, 128, Chunk::EDGE_LENGTH, 4, 8, 4, $chunkX * Chunk::EDGE_LENGTH, 0, $chunkZ * Chunk::EDGE_LENGTH);
 
 		$chunk = $world->getChunk($chunkX, $chunkZ);
 
@@ -154,11 +148,11 @@ class Normal extends Generator{
 		$stillWater = VanillaBlocks::WATER()->getFullId();
 		$stone = VanillaBlocks::STONE()->getFullId();
 
-		$baseX = $chunkX * 16;
-		$baseZ = $chunkZ * 16;
-		for($x = 0; $x < 16; ++$x){
+		$baseX = $chunkX * Chunk::EDGE_LENGTH;
+		$baseZ = $chunkZ * Chunk::EDGE_LENGTH;
+		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
 			$absoluteX = $baseX + $x;
-			for($z = 0; $z < 16; ++$z){
+			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
 				$absoluteZ = $baseZ + $z;
 				$minSum = 0;
 				$maxSum = 0;
@@ -172,7 +166,7 @@ class Normal extends Generator{
 
 						$weight = $this->gaussian->kernel[$sx + $this->gaussian->smoothSize][$sz + $this->gaussian->smoothSize];
 
-						if($sx === 0 and $sz === 0){
+						if($sx === 0 && $sz === 0){
 							$adjacent = $biome;
 						}else{
 							$index = World::chunkHash($absoluteX + $sx, $absoluteZ + $sz);

@@ -29,17 +29,18 @@ use pocketmine\block\Liquid;
 use pocketmine\utils\Random;
 use pocketmine\world\biome\BiomeRegistry;
 use pocketmine\world\ChunkManager;
+use pocketmine\world\format\Chunk;
 use function count;
 use function min;
 
-class GroundCover extends Populator{
+class GroundCover implements Populator{
 
 	public function populate(ChunkManager $world, int $chunkX, int $chunkZ, Random $random) : void{
 		$chunk = $world->getChunk($chunkX, $chunkZ);
 		$factory = BlockFactory::getInstance();
 		$biomeRegistry = BiomeRegistry::getInstance();
-		for($x = 0; $x < 16; ++$x){
-			for($z = 0; $z < 16; ++$z){
+		for($x = 0; $x < Chunk::EDGE_LENGTH; ++$x){
+			for($z = 0; $z < Chunk::EDGE_LENGTH; ++$z){
 				$biome = $biomeRegistry->getBiome($chunk->getBiomeId($x, $z));
 				$cover = $biome->getGroundCover();
 				if(count($cover) > 0){
@@ -56,13 +57,13 @@ class GroundCover extends Populator{
 					}
 					$startY = min(127, $startY + $diffY);
 					$endY = $startY - count($cover);
-					for($y = $startY; $y > $endY and $y >= 0; --$y){
+					for($y = $startY; $y > $endY && $y >= 0; --$y){
 						$b = $cover[$startY - $y];
 						$id = $factory->fromFullBlock($chunk->getFullBlock($x, $y, $z));
-						if($id->getId() === BlockLegacyIds::AIR and $b->isSolid()){
+						if($id->getId() === BlockLegacyIds::AIR && $b->isSolid()){
 							break;
 						}
-						if($b->canBeFlowedInto() and $id instanceof Liquid){
+						if($b->canBeFlowedInto() && $id instanceof Liquid){
 							continue;
 						}
 

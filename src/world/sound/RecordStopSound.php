@@ -25,10 +25,11 @@ namespace pocketmine\world\sound;
 
 use pocketmine\math\Vector3;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
+use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
 class RecordStopSound implements Sound{
 
-	public function encode(?Vector3 $pos) : array{
-		return [LevelSoundEventPacket::create(LevelSoundEventPacket::SOUND_STOP_RECORD, $pos)];
+	public function encode(Vector3 $pos) : array{
+		return [LevelSoundEventPacket::nonActorSound(LevelSoundEvent::STOP_RECORD, $pos, false)];
 	}
 }

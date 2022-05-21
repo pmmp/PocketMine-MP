@@ -25,8 +25,9 @@ namespace pocketmine\command\defaults;
 
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\permission\BanEntry;
+use pocketmine\permission\DefaultPermissionNames;
 use function array_map;
 use function count;
 use function implode;
@@ -39,10 +40,10 @@ class BanListCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.banlist.description",
-			"%commands.banlist.usage"
+			KnownTranslationFactory::pocketmine_command_banlist_description(),
+			KnownTranslationFactory::commands_banlist_usage()
 		);
-		$this->setPermission("pocketmine.command.ban.list");
+		$this->setPermission(DefaultPermissionNames::COMMAND_BAN_LIST);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -71,9 +72,9 @@ class BanListCommand extends VanillaCommand{
 		$message = implode(", ", $list);
 
 		if($args[0] === "ips"){
-			$sender->sendMessage(new TranslationContainer("commands.banlist.ips", [count($list)]));
+			$sender->sendMessage(KnownTranslationFactory::commands_banlist_ips((string) count($list)));
 		}else{
-			$sender->sendMessage(new TranslationContainer("commands.banlist.players", [count($list)]));
+			$sender->sendMessage(KnownTranslationFactory::commands_banlist_players((string) count($list)));
 		}
 
 		$sender->sendMessage($message);

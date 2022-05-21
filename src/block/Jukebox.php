@@ -32,13 +32,8 @@ use pocketmine\world\sound\RecordSound;
 use pocketmine\world\sound\RecordStopSound;
 
 class Jukebox extends Opaque{
-	/** @var Record|null */
-	private $record = null;
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		//TODO: in PC the hardness is 2.0, not 0.8, unsure if this is a MCPE bug or not
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.8, BlockToolType::AXE));
-	}
+	private ?Record $record = null;
 
 	public function getFuelTime() : int{
 		return 300;
@@ -49,12 +44,12 @@ class Jukebox extends Opaque{
 			if($this->record !== null){
 				$this->ejectRecord();
 			}elseif($item instanceof Record){
-				$player->sendJukeboxPopup("record.nowPlaying", ["%" . $item->getRecordType()->getTranslationKey()]);
+				$player->sendJukeboxPopup("record.nowPlaying", [$player->getLanguage()->translate($item->getRecordType()->getTranslatableName())]);
 				$this->insertRecord($item->pop());
 			}
 		}
 
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->position->getWorld()->setBlock($this->position, $this);
 
 		return true;
 	}
@@ -65,7 +60,7 @@ class Jukebox extends Opaque{
 
 	public function ejectRecord() : void{
 		if($this->record !== null){
-			$this->getPos()->getWorld()->dropItem($this->getPos()->add(0.5, 1, 0.5), $this->record);
+			$this->getPosition()->getWorld()->dropItem($this->getPosition()->add(0.5, 1, 0.5), $this->record);
 			$this->record = null;
 			$this->stopSound();
 		}
@@ -80,12 +75,12 @@ class Jukebox extends Opaque{
 
 	public function startSound() : void{
 		if($this->record !== null){
-			$this->getPos()->getWorld()->addSound($this->getPos(), new RecordSound($this->record->getRecordType()));
+			$this->getPosition()->getWorld()->addSound($this->getPosition(), new RecordSound($this->record->getRecordType()));
 		}
 	}
 
 	public function stopSound() : void{
-		$this->getPos()->getWorld()->addSound($this->getPos(), new RecordStopSound());
+		$this->getPosition()->getWorld()->addSound($this->getPosition(), new RecordStopSound());
 	}
 
 	public function onBreak(Item $item, ?Player $player = null) : bool{
@@ -103,7 +98,7 @@ class Jukebox extends Opaque{
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$jukebox = $this->pos->getWorld()->getTile($this->pos);
+		$jukebox = $this->position->getWorld()->getTile($this->position);
 		if($jukebox instanceof JukeboxTile){
 			$this->record = $jukebox->getRecord();
 		}
@@ -111,7 +106,7 @@ class Jukebox extends Opaque{
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$jukebox = $this->pos->getWorld()->getTile($this->pos);
+		$jukebox = $this->position->getWorld()->getTile($this->position);
 		if($jukebox instanceof JukeboxTile){
 			$jukebox->setRecord($this->record);
 		}

@@ -31,9 +31,7 @@ use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 
 class LiquidBucket extends Item{
-
-	/** @var Liquid */
-	private $liquid;
+	private Liquid $liquid;
 
 	public function __construct(ItemIdentifier $identifier, string $name, Liquid $liquid){
 		parent::__construct($identifier, $name);
@@ -67,8 +65,8 @@ class LiquidBucket extends Item{
 		$ev = new PlayerBucketEmptyEvent($player, $blockReplace, $face, $this, VanillaItems::BUCKET());
 		$ev->call();
 		if(!$ev->isCancelled()){
-			$player->getWorld()->setBlock($blockReplace->getPos(), $resultBlock->getFlowingForm());
-			$player->getWorld()->addSound($blockReplace->getPos()->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
+			$player->getWorld()->setBlock($blockReplace->getPosition(), $resultBlock->getFlowingForm());
+			$player->getWorld()->addSound($blockReplace->getPosition()->add(0.5, 0.5, 0.5), $resultBlock->getBucketEmptySound());
 
 			if($player->hasFiniteResources()){
 				$player->getInventory()->setItemInHand($ev->getItem());

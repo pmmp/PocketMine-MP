@@ -26,7 +26,7 @@ namespace pocketmine\inventory\transaction\action;
 use pocketmine\event\player\PlayerDropItemEvent;
 use pocketmine\inventory\transaction\TransactionValidationException;
 use pocketmine\item\Item;
-use pocketmine\item\ItemFactory;
+use pocketmine\item\VanillaItems;
 use pocketmine\player\Player;
 
 /**
@@ -35,7 +35,7 @@ use pocketmine\player\Player;
 class DropItemAction extends InventoryAction{
 
 	public function __construct(Item $targetItem){
-		parent::__construct(ItemFactory::air(), $targetItem);
+		parent::__construct(VanillaItems::AIR(), $targetItem);
 	}
 
 	public function validate(Player $source) : void{
@@ -46,6 +46,9 @@ class DropItemAction extends InventoryAction{
 
 	public function onPreExecute(Player $source) : bool{
 		$ev = new PlayerDropItemEvent($source, $this->targetItem);
+		if($source->isSpectator()){
+			$ev->cancel();
+		}
 		$ev->call();
 		if($ev->isCancelled()){
 			return false;

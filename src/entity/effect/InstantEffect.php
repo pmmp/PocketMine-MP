@@ -23,10 +23,13 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\effect;
 
+use pocketmine\color\Color;
+use pocketmine\lang\Translatable;
+
 abstract class InstantEffect extends Effect{
 
-	public function getDefaultDuration() : int{
-		return 1;
+	public function __construct(Translatable|string $name, Color $color, bool $bad = false, bool $hasBubbles = true){
+		parent::__construct($name, $color, $bad, 1, $hasBubbles);
 	}
 
 	public function canTick(EffectInstance $instance) : bool{

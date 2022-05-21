@@ -23,9 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\auth;
 
-use FG\ASN1\Exception\ParserException;
-use Mdanter\Ecc\Crypto\Key\PublicKeyInterface;
-use Mdanter\Ecc\Serializer\PublicKey\DerPublicKeySerializer;
+use pocketmine\lang\KnownTranslationKeys;
 use pocketmine\network\mcpe\JwtException;
 use pocketmine\network\mcpe\JwtUtils;
 use pocketmine\network\mcpe\protocol\types\login\JwtChainLinkBody;
@@ -34,6 +32,7 @@ use pocketmine\scheduler\AsyncTask;
 use function base64_decode;
 use function igbinary_serialize;
 use function igbinary_unserialize;
+use function openssl_error_string;
 use function time;
 
 class ProcessLoginTask extends AsyncTask{
@@ -43,39 +42,33 @@ class ProcessLoginTask extends AsyncTask{
 
 	private const CLOCK_DRIFT_MAX = 60;
 
-	/** @var string */
-	private $chain;
-	/** @var string */
-	private $clientDataJwt;
+	private string $chain;
 
 	/**
-	 * @var string|null
 	 * Whether the keychain signatures were validated correctly. This will be set to an error message if any link in the
 	 * keychain is invalid for whatever reason (bad signature, not in nbf-exp window, etc). If this is non-null, the
 	 * keychain might have been tampered with. The player will always be disconnected if this is non-null.
 	 */
-	private $error = "Unknown";
+	private ?string $error = "Unknown";
 	/**
-	 * @var bool
 	 * Whether the player is logged into Xbox Live. This is true if any link in the keychain is signed with the Mojang
 	 * root public key.
 	 */
-	private $authenticated = false;
-	/** @var bool */
-	private $authRequired;
-
-	/** @var PublicKeyInterface|null */
-	private $clientPublicKey = null;
+	private bool $authenticated = false;
+	private ?string $clientPublicKey = null;
 
 	/**
 	 * @param string[] $chainJwts
-	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?PublicKeyInterface $clientPublicKey) : void $onCompletion
+	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPublicKey) : void $onCompletion
 	 */
-	public function __construct(array $chainJwts, string $clientDataJwt, bool $authRequired, \Closure $onCompletion){
+	public function __construct(
+		array $chainJwts,
+		private string $clientDataJwt,
+		private bool $authRequired,
+		\Closure $onCompletion
+	){
 		$this->storeLocal(self::TLS_KEY_ON_COMPLETION, $onCompletion);
 		$this->chain = igbinary_serialize($chainJwts);
-		$this->clientDataJwt = $clientDataJwt;
-		$this->authRequired = $authRequired;
 	}
 
 	public function onRun() : void{
@@ -87,7 +80,7 @@ class ProcessLoginTask extends AsyncTask{
 		}
 	}
 
-	private function validateChain() : PublicKeyInterface{
+	private function validateChain() : string{
 		/** @var string[] $chain */
 		$chain = igbinary_unserialize($this->chain);
 
@@ -106,7 +99,7 @@ class ProcessLoginTask extends AsyncTask{
 
 		$this->validateToken($this->clientDataJwt, $currentKey);
 
-		return (new DerPublicKeySerializer())->parse(base64_decode($clientKey, true));
+		return $clientKey;
 	}
 
 	/**
@@ -131,38 +124,34 @@ class ProcessLoginTask extends AsyncTask{
 			throw new VerifyLoginException("Invalid JWT header: " . $e->getMessage(), 0, $e);
 		}
 
+		$headerDerKey = base64_decode($headers->x5u, true);
+		if($headerDerKey === false){
+			throw new VerifyLoginException("Invalid JWT public key: base64 decoding error decoding x5u");
+		}
+
 		if($currentPublicKey === null){
 			if(!$first){
-				throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.missingKey");
+				throw new VerifyLoginException(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_MISSINGKEY);
 			}
-
-			//First link, check that it is self-signed
-			$currentPublicKey = $headers->x5u;
-		}elseif($headers->x5u !== $currentPublicKey){
+		}elseif($headerDerKey !== $currentPublicKey){
 			//Fast path: if the header key doesn't match what we expected, the signature isn't going to validate anyway
-			throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.badSignature");
-		}
-
-		$derPublicKeySerializer = new DerPublicKeySerializer();
-		$rawPublicKey = base64_decode($currentPublicKey, true);
-		if($rawPublicKey === false){
-			throw new VerifyLoginException("Failed to decode base64'd public key");
-		}
-		try{
-			$signingKey = $derPublicKeySerializer->parse($rawPublicKey);
-		}catch(\RuntimeException | ParserException $e){
-			throw new VerifyLoginException("Failed to parse DER public key: " . $e->getMessage(), 0, $e);
+			throw new VerifyLoginException(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_BADSIGNATURE);
 		}
 
 		try{
-			if(!JwtUtils::verify($jwt, $signingKey)){
-				throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.badSignature");
+			$signingKeyOpenSSL = JwtUtils::parseDerPublicKey($headerDerKey);
+		}catch(JwtException $e){
+			throw new VerifyLoginException("Invalid JWT public key: " . openssl_error_string());
+		}
+		try{
+			if(!JwtUtils::verify($jwt, $signingKeyOpenSSL)){
+				throw new VerifyLoginException(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_BADSIGNATURE);
 			}
 		}catch(JwtException $e){
 			throw new VerifyLoginException($e->getMessage(), 0, $e);
 		}
 
-		if($currentPublicKey === self::MOJANG_ROOT_PUBLIC_KEY){
+		if($headers->x5u === self::MOJANG_ROOT_PUBLIC_KEY){
 			$this->authenticated = true; //we're signed into xbox live
 		}
 
@@ -179,21 +168,27 @@ class ProcessLoginTask extends AsyncTask{
 		}
 
 		$time = time();
-		if(isset($claims->nbf) and $claims->nbf > $time + self::CLOCK_DRIFT_MAX){
-			throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.tooEarly");
+		if(isset($claims->nbf) && $claims->nbf > $time + self::CLOCK_DRIFT_MAX){
+			throw new VerifyLoginException(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_TOOEARLY);
 		}
 
-		if(isset($claims->exp) and $claims->exp < $time - self::CLOCK_DRIFT_MAX){
-			throw new VerifyLoginException("%pocketmine.disconnect.invalidSession.tooLate");
+		if(isset($claims->exp) && $claims->exp < $time - self::CLOCK_DRIFT_MAX){
+			throw new VerifyLoginException(KnownTranslationKeys::POCKETMINE_DISCONNECT_INVALIDSESSION_TOOLATE);
 		}
 
-		$currentPublicKey = $claims->identityPublicKey ?? null; //if there are further links, the next link should be signed with this
+		if(isset($claims->identityPublicKey)){
+			$identityPublicKey = base64_decode($claims->identityPublicKey, true);
+			if($identityPublicKey === false){
+				throw new VerifyLoginException("Invalid identityPublicKey: base64 error decoding");
+			}
+			$currentPublicKey = $identityPublicKey; //if there are further links, the next link should be signed with this
+		}
 	}
 
 	public function onCompletion() : void{
 		/**
 		 * @var \Closure $callback
-		 * @phpstan-var \Closure(bool, bool, ?string, ?PublicKeyInterface) : void $callback
+		 * @phpstan-var \Closure(bool, bool, ?string, ?string) : void $callback
 		 */
 		$callback = $this->fetchLocal(self::TLS_KEY_ON_COMPLETION);
 		$callback($this->authenticated, $this->authRequired, $this->error, $this->clientPublicKey);

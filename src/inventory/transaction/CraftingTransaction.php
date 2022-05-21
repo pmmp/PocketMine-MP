@@ -57,8 +57,8 @@ class CraftingTransaction extends InventoryTransaction{
 	protected $inputs = [];
 	/** @var Item[] */
 	protected $outputs = [];
-	/** @var CraftingManager */
-	private $craftingManager;
+
+	private CraftingManager $craftingManager;
 
 	public function __construct(Player $source, CraftingManager $craftingManager, array $actions = []){
 		parent::__construct($source, $actions);
@@ -84,7 +84,7 @@ class CraftingTransaction extends InventoryTransaction{
 			$recipeItem = array_pop($recipeItems);
 			$needCount = $recipeItem->getCount();
 			foreach($recipeItems as $i => $otherRecipeItem){
-				if($otherRecipeItem->equals($recipeItem)){ //make sure they have the same wildcards set
+				if($otherRecipeItem->canStackWith($recipeItem)){ //make sure they have the same wildcards set
 					$needCount += $otherRecipeItem->getCount();
 					unset($recipeItems[$i]);
 				}
@@ -92,7 +92,7 @@ class CraftingTransaction extends InventoryTransaction{
 
 			$haveCount = 0;
 			foreach($txItems as $j => $txItem){
-				if($txItem->equals($recipeItem, !$wildcards or !$recipeItem->hasAnyDamageValue(), !$wildcards or $recipeItem->hasNamedTag())){
+				if($txItem->equals($recipeItem, !$wildcards || !$recipeItem->hasAnyDamageValue(), !$wildcards || $recipeItem->hasNamedTag())){
 					$haveCount += $txItem->getCount();
 					unset($txItems[$j]);
 				}

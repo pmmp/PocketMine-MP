@@ -26,39 +26,35 @@ namespace pocketmine\block\inventory;
 use pocketmine\inventory\BaseInventory;
 use pocketmine\inventory\InventoryHolder;
 use pocketmine\item\Item;
-use pocketmine\world\Position;
+use pocketmine\world\sound\ChestCloseSound;
+use pocketmine\world\sound\ChestOpenSound;
+use pocketmine\world\sound\Sound;
 
-class DoubleChestInventory extends ChestInventory implements InventoryHolder{
-	/** @var ChestInventory */
-	private $left;
-	/** @var ChestInventory */
-	private $right;
+class DoubleChestInventory extends BaseInventory implements BlockInventory, InventoryHolder{
+	use AnimatedBlockInventoryTrait;
 
-	public function __construct(ChestInventory $left, ChestInventory $right){
-		$this->left = $left;
-		$this->right = $right;
-		BaseInventory::__construct($this->left->getSize() + $this->right->getSize());
+	public function __construct(
+		private ChestInventory $left,
+		private ChestInventory $right
+	){
+		$this->holder = $this->left->getHolder();
+		parent::__construct();
 	}
 
 	public function getInventory(){
 		return $this;
 	}
 
-	/**
-	 * @return Position
-	 */
-	public function getHolder(){
-		return $this->left->getHolder();
+	public function getSize() : int{
+		return $this->left->getSize() + $this->right->getSize();
 	}
 
 	public function getItem(int $index) : Item{
 		return $index < $this->left->getSize() ? $this->left->getItem($index) : $this->right->getItem($index - $this->left->getSize());
 	}
 
-	public function setItem(int $index, Item $item) : void{
-		$old = $this->getItem($index);
+	protected function internalSetItem(int $index, Item $item) : void{
 		$index < $this->left->getSize() ? $this->left->setItem($index, $item) : $this->right->setItem($index - $this->left->getSize(), $item);
-		$this->onSlotChange($index, $old);
 	}
 
 	public function getContents(bool $includeEmpty = false) : array{
@@ -71,6 +67,27 @@ class DoubleChestInventory extends ChestInventory implements InventoryHolder{
 
 		return $result;
 	}
+
+	protected function internalSetContents(array $items) : void{
+		$leftSize = $this->left->getSize();
+
+		$leftContents = [];
+		$rightContents = [];
+
+		foreach($items as $i => $item){
+			if($i < $this->left->getSize()){
+				$leftContents[$i] = $item;
+			}else{
+				$rightContents[$i - $leftSize] = $item;
+			}
+		}
+		$this->left->setContents($leftContents);
+		$this->right->setContents($rightContents);
+	}
+
+	protected function getOpenSound() : Sound{ return new ChestOpenSound(); }
+
+	protected function getCloseSound() : Sound{ return new ChestCloseSound(); }
 
 	protected function animateBlock(bool $isOpen) : void{
 		$this->left->animateBlock($isOpen);

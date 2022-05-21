@@ -47,12 +47,20 @@ interface Inventory{
 	public function setItem(int $index, Item $item) : void;
 
 	/**
+	 * @return Item[]
+	 */
+	public function getContents(bool $includeEmpty = false) : array;
+
+	/**
+	 * @param Item[] $items
+	 */
+	public function setContents(array $items) : void;
+
+	/**
 	 * Stores the given Items in the inventory. This will try to fill
 	 * existing stacks and empty slots as well as it can.
 	 *
 	 * Returns the Items that did not fit.
-	 *
-	 * @param Item ...$slots
 	 *
 	 * @return Item[]
 	 */
@@ -64,24 +72,9 @@ interface Inventory{
 	public function canAddItem(Item $item) : bool;
 
 	/**
-	 * Removes the given Item from the inventory.
-	 * It will return the Items that couldn't be removed.
-	 *
-	 * @param Item ...$slots
-	 *
-	 * @return Item[]
+	 * Returns how many items from the given itemstack can be added to this inventory.
 	 */
-	public function removeItem(Item ...$slots) : array;
-
-	/**
-	 * @return Item[]
-	 */
-	public function getContents(bool $includeEmpty = false) : array;
-
-	/**
-	 * @param Item[] $items
-	 */
-	public function setContents(array $items) : void;
+	public function getAddableItemQuantity(Item $item) : int;
 
 	/**
 	 * Checks if the inventory contains any Item with the same material data.
@@ -119,6 +112,14 @@ interface Inventory{
 	 * Will remove all the Items that has the same id and metadata (if not null)
 	 */
 	public function remove(Item $item) : void;
+
+	/**
+	 * Removes the given Item from the inventory.
+	 * It will return the Items that couldn't be removed.
+	 *
+	 * @return Item[]
+	 */
+	public function removeItem(Item ...$slots) : array;
 
 	/**
 	 * Will clear a specific slot

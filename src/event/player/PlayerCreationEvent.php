@@ -26,6 +26,7 @@ namespace pocketmine\event\player;
 use pocketmine\event\Event;
 use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\player\Player;
+use pocketmine\utils\Utils;
 use function is_a;
 
 /**
@@ -33,23 +34,12 @@ use function is_a;
  */
 class PlayerCreationEvent extends Event{
 
-	/** @var NetworkSession */
-	private $session;
+	/** @phpstan-var class-string<Player> */
+	private string $baseClass = Player::class;
+	/** @phpstan-var class-string<Player> */
+	private string $playerClass = Player::class;
 
-	/**
-	 * @var string
-	 * @phpstan-var class-string<Player>
-	 */
-	private $baseClass = Player::class;
-	/**
-	 * @var string
-	 * @phpstan-var class-string<Player>
-	 */
-	private $playerClass = Player::class;
-
-	public function __construct(NetworkSession $session){
-		$this->session = $session;
-	}
+	public function __construct(private NetworkSession $session){}
 
 	public function getNetworkSession() : NetworkSession{
 		return $this->session;
@@ -96,10 +86,7 @@ class PlayerCreationEvent extends Event{
 	 * @phpstan-param class-string<Player> $class
 	 */
 	public function setPlayerClass($class) : void{
-		if(!is_a($class, $this->baseClass, true)){
-			throw new \RuntimeException("Class $class must extend " . $this->baseClass);
-		}
-
+		Utils::testValidInstance($class, $this->baseClass);
 		$this->playerClass = $class;
 	}
 }

@@ -35,8 +35,8 @@ class FlintSteel extends Tool{
 	public function onInteractBlock(Player $player, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector) : ItemUseResult{
 		if($blockReplace->getId() === BlockLegacyIds::AIR){
 			$world = $player->getWorld();
-			$world->setBlock($blockReplace->getPos(), VanillaBlocks::FIRE());
-			$world->addSound($blockReplace->getPos()->add(0.5, 0.5, 0.5), new FlintSteelSound());
+			$world->setBlock($blockReplace->getPosition(), VanillaBlocks::FIRE());
+			$world->addSound($blockReplace->getPosition()->add(0.5, 0.5, 0.5), new FlintSteelSound());
 
 			$this->applyDamage(1);
 

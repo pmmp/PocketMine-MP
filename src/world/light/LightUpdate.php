@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\world\light;
 
 use pocketmine\world\format\LightArray;
+use pocketmine\world\format\SubChunk;
 use pocketmine\world\utils\SubChunkExplorer;
 use pocketmine\world\utils\SubChunkExplorerStatus;
 use pocketmine\world\World;
@@ -31,6 +32,14 @@ use function max;
 
 //TODO: make light updates asynchronous
 abstract class LightUpdate{
+	private const ADJACENTS = [
+		[ 1,  0,  0],
+		[-1,  0,  0],
+		[ 0,  1,  0],
+		[ 0, -1,  0],
+		[ 0,  0,  1],
+		[ 0,  0, -1]
+	];
 
 	/**
 	 * @var \SplFixedArray|int[]
@@ -69,22 +78,15 @@ abstract class LightUpdate{
 
 	protected function getEffectiveLight(int $x, int $y, int $z) : int{
 		if($this->subChunkExplorer->moveTo($x, $y, $z) !== SubChunkExplorerStatus::INVALID){
-			return $this->getCurrentLightArray()->get($x & 0xf, $y & 0xf, $z & 0xf);
+			return $this->getCurrentLightArray()->get($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
 		}
 		return 0;
 	}
 
 	protected function getHighestAdjacentLight(int $x, int $y, int $z) : int{
 		$adjacent = 0;
-		foreach([
-			[$x + 1, $y, $z],
-			[$x - 1, $y, $z],
-			[$x, $y + 1, $z],
-			[$x, $y - 1, $z],
-			[$x, $y, $z + 1],
-			[$x, $y, $z - 1]
-		] as [$x1, $y1, $z1]){
-			if(($adjacent = max($adjacent, $this->getEffectiveLight($x1, $y1, $z1))) === 15){
+		foreach(self::ADJACENTS as [$ox, $oy, $oz]){
+			if(($adjacent = max($adjacent, $this->getEffectiveLight($x + $ox, $y + $oy, $z + $oz))) === 15){
 				break;
 			}
 		}
@@ -100,10 +102,10 @@ abstract class LightUpdate{
 		foreach($this->updateNodes as $blockHash => [$x, $y, $z, $newLevel]){
 			if($this->subChunkExplorer->moveTo($x, $y, $z) !== SubChunkExplorerStatus::INVALID){
 				$lightArray = $this->getCurrentLightArray();
-				$oldLevel = $lightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
+				$oldLevel = $lightArray->get($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK);
 
 				if($oldLevel !== $newLevel){
-					$lightArray->set($x & 0xf, $y & 0xf, $z & 0xf, $newLevel);
+					$lightArray->set($x & SubChunk::COORD_MASK, $y & SubChunk::COORD_MASK, $z & SubChunk::COORD_MASK, $newLevel);
 					if($oldLevel < $newLevel){ //light increased
 						$context->spreadVisited[$blockHash] = true;
 						$context->spreadQueue->enqueue([$x, $y, $z]);
@@ -125,19 +127,14 @@ abstract class LightUpdate{
 			$touched++;
 			[$x, $y, $z, $oldAdjacentLight] = $context->removalQueue->dequeue();
 
-			$points = [
-				[$x + 1, $y, $z],
-				[$x - 1, $y, $z],
-				[$x, $y + 1, $z],
-				[$x, $y - 1, $z],
-				[$x, $y, $z + 1],
-				[$x, $y, $z - 1]
-			];
+			foreach(self::ADJACENTS as [$ox, $oy, $oz]){
+				$cx = $x + $ox;
+				$cy = $y + $oy;
+				$cz = $z + $oz;
 
-			foreach($points as [$cx, $cy, $cz]){
 				if($this->subChunkExplorer->moveTo($cx, $cy, $cz) !== SubChunkExplorerStatus::INVALID){
 					$this->computeRemoveLight($cx, $cy, $cz, $oldAdjacentLight, $context);
-				}elseif($this->getEffectiveLight($cx, $cy, $cz) > 0 and !isset($context->spreadVisited[$index = World::blockHash($cx, $cy, $cz)])){
+				}elseif($this->getEffectiveLight($cx, $cy, $cz) > 0 && !isset($context->spreadVisited[$index = World::blockHash($cx, $cy, $cz)])){
 					$context->spreadVisited[$index] = true;
 					$context->spreadQueue->enqueue([$cx, $cy, $cz]);
 				}
@@ -155,16 +152,11 @@ abstract class LightUpdate{
 				continue;
 			}
 
-			$points = [
-				[$x + 1, $y, $z],
-				[$x - 1, $y, $z],
-				[$x, $y + 1, $z],
-				[$x, $y - 1, $z],
-				[$x, $y, $z + 1],
-				[$x, $y, $z - 1]
-			];
+			foreach(self::ADJACENTS as [$ox, $oy, $oz]){
+				$cx = $x + $ox;
+				$cy = $y + $oy;
+				$cz = $z + $oz;
 
-			foreach($points as [$cx, $cy, $cz]){
 				if($this->subChunkExplorer->moveTo($cx, $cy, $cz) !== SubChunkExplorerStatus::INVALID){
 					$this->computeSpreadLight($cx, $cy, $cz, $newAdjacentLight, $context);
 				}
@@ -176,10 +168,13 @@ abstract class LightUpdate{
 
 	protected function computeRemoveLight(int $x, int $y, int $z, int $oldAdjacentLevel, LightPropagationContext $context) : void{
 		$lightArray = $this->getCurrentLightArray();
-		$current = $lightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
+		$lx = $x & SubChunk::COORD_MASK;
+		$ly = $y & SubChunk::COORD_MASK;
+		$lz = $z & SubChunk::COORD_MASK;
+		$current = $lightArray->get($lx, $ly, $lz);
 
-		if($current !== 0 and $current < $oldAdjacentLevel){
-			$lightArray->set($x & 0xf, $y & 0xf, $z & 0xf, 0);
+		if($current !== 0 && $current < $oldAdjacentLevel){
+			$lightArray->set($lx, $ly, $lz, 0);
 
 			if(!isset($context->removalVisited[$index = World::blockHash($x, $y, $z)])){
 				$context->removalVisited[$index] = true;
@@ -197,13 +192,16 @@ abstract class LightUpdate{
 
 	protected function computeSpreadLight(int $x, int $y, int $z, int $newAdjacentLevel, LightPropagationContext $context) : void{
 		$lightArray = $this->getCurrentLightArray();
-		$current = $lightArray->get($x & 0xf, $y & 0xf, $z & 0xf);
-		$potentialLight = $newAdjacentLevel - $this->lightFilters[$this->subChunkExplorer->currentSubChunk->getFullBlock($x & 0x0f, $y & 0x0f, $z & 0x0f)];
+		$lx = $x & SubChunk::COORD_MASK;
+		$ly = $y & SubChunk::COORD_MASK;
+		$lz = $z & SubChunk::COORD_MASK;
+		$current = $lightArray->get($lx, $ly, $lz);
+		$potentialLight = $newAdjacentLevel - $this->lightFilters[$this->subChunkExplorer->currentSubChunk->getFullBlock($lx, $ly, $lz)];
 
 		if($current < $potentialLight){
-			$lightArray->set($x & 0xf, $y & 0xf, $z & 0xf, $potentialLight);
+			$lightArray->set($lx, $ly, $lz, $potentialLight);
 
-			if(!isset($context->spreadVisited[$index = World::blockHash($x, $y, $z)]) and $potentialLight > 1){
+			if(!isset($context->spreadVisited[$index = World::blockHash($x, $y, $z)]) && $potentialLight > 1){
 				$context->spreadVisited[$index] = true;
 				$context->spreadQueue->enqueue([$x, $y, $z]);
 			}

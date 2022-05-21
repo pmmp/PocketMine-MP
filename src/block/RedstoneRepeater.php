@@ -26,6 +26,7 @@ namespace pocketmine\block;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
 use pocketmine\block\utils\PoweredByRedstoneTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -37,24 +38,26 @@ class RedstoneRepeater extends Flowable{
 	use HorizontalFacingTrait;
 	use PoweredByRedstoneTrait;
 
-	/** @var BlockIdentifierFlattened */
-	protected $idInfo;
+	public const MIN_DELAY = 1;
+	public const MAX_DELAY = 4;
 
-	/** @var int */
-	protected $delay = 1;
+	protected BlockIdentifierFlattened $idInfoFlattened;
 
-	public function __construct(BlockIdentifierFlattened $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? BlockBreakInfo::instant());
+	protected int $delay = self::MIN_DELAY;
+
+	public function __construct(BlockIdentifierFlattened $idInfo, string $name, BlockBreakInfo $breakInfo){
+		$this->idInfoFlattened = $idInfo;
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function getId() : int{
-		return $this->powered ? $this->idInfo->getSecondId() : parent::getId();
+		return $this->powered ? $this->idInfoFlattened->getSecondId() : parent::getId();
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->delay = BlockDataSerializer::readBoundedInt("delay", ($stateMeta >> 2) + 1, 1, 4);
-		$this->powered = $id === $this->idInfo->getSecondId();
+		$this->delay = BlockDataSerializer::readBoundedInt("delay", ($stateMeta >> 2) + 1, self::MIN_DELAY, self::MAX_DELAY);
+		$this->powered = $id === $this->idInfoFlattened->getSecondId();
 	}
 
 	public function writeStateToMeta() : int{
@@ -69,8 +72,8 @@ class RedstoneRepeater extends Flowable{
 
 	/** @return $this */
 	public function setDelay(int $delay) : self{
-		if($delay < 1 || $delay > 4){
-			throw new \InvalidArgumentException("Delay must be in range 1-4");
+		if($delay < self::MIN_DELAY || $delay > self::MAX_DELAY){
+			throw new \InvalidArgumentException("Delay must be in range " . self::MIN_DELAY . " ... " . self::MAX_DELAY);
 		}
 		$this->delay = $delay;
 		return $this;
@@ -84,7 +87,7 @@ class RedstoneRepeater extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockReplace->getSide(Facing::DOWN)->isTransparent()){
+		if($this->canBeSupportedBy($blockReplace->getSide(Facing::DOWN))){
 			if($player !== null){
 				$this->facing = Facing::opposite($player->getHorizontalFacing());
 			}
@@ -96,17 +99,21 @@ class RedstoneRepeater extends Flowable{
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(++$this->delay > 4){
-			$this->delay = 1;
+		if(++$this->delay > self::MAX_DELAY){
+			$this->delay = self::MIN_DELAY;
 		}
-		$this->pos->getWorld()->setBlock($this->pos, $this);
+		$this->position->getWorld()->setBlock($this->position, $this);
 		return true;
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+		if(!$this->canBeSupportedBy($this->getSide(Facing::DOWN))){
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
+
+	private function canBeSupportedBy(Block $block) : bool{
+		return !$block->getSupportType(Facing::UP)->equals(SupportType::NONE());
 	}
 
 	//TODO: redstone functionality

@@ -27,6 +27,7 @@ use pocketmine\block\utils\ColorInMetadataTrait;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\Fallable;
 use pocketmine\block\utils\FallableTrait;
+use pocketmine\event\block\BlockFormEvent;
 use pocketmine\math\Facing;
 
 class ConcretePowder extends Opaque implements Fallable{
@@ -35,14 +36,18 @@ class ConcretePowder extends Opaque implements Fallable{
 		onNearbyBlockChange as protected startFalling;
 	}
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
 		$this->color = DyeColor::WHITE();
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::SHOVEL));
+		parent::__construct($idInfo, $name, $breakInfo);
 	}
 
 	public function onNearbyBlockChange() : void{
 		if(($block = $this->checkAdjacentWater()) !== null){
-			$this->pos->getWorld()->setBlock($this->pos, $block);
+			$ev = new BlockFormEvent($this, $block);
+			$ev->call();
+			if(!$ev->isCancelled()){
+				$this->position->getWorld()->setBlock($this->position, $ev->getNewState());
+			}
 		}else{
 			$this->startFalling();
 		}

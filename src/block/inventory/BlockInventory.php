@@ -23,22 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
-use pocketmine\inventory\BaseInventory;
 use pocketmine\world\Position;
 
-class BlockInventory extends BaseInventory{
-	/** @var Position */
-	protected $holder;
-
-	public function __construct(Position $holder, int $size){
-		$this->holder = $holder->asPosition();
-		parent::__construct($size);
-	}
-
-	/**
-	 * @return Position
-	 */
-	public function getHolder(){
-		return $this->holder;
-	}
+interface BlockInventory{
+	public function getHolder() : Position;
 }

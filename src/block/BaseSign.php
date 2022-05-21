@@ -25,42 +25,50 @@ namespace pocketmine\block;
 
 use pocketmine\block\tile\Sign as TileSign;
 use pocketmine\block\utils\SignText;
+use pocketmine\block\utils\SupportType;
 use pocketmine\event\block\SignChangeEvent;
+use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
+use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\utils\TextFormat;
+use pocketmine\world\BlockTransaction;
 use function array_map;
 use function assert;
 use function strlen;
 
 abstract class BaseSign extends Transparent{
-	//TODO: conditionally useless properties, find a way to fix
+	protected SignText $text;
+	protected ?int $editorEntityRuntimeId = null;
 
-	/** @var SignText */
-	protected $text;
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(1.0, BlockToolType::AXE));
+	public function __construct(BlockIdentifier $idInfo, string $name, BlockBreakInfo $breakInfo){
+		parent::__construct($idInfo, $name, $breakInfo);
 		$this->text = new SignText();
 	}
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileSign){
 			$this->text = $tile->getText();
+			$this->editorEntityRuntimeId = $tile->getEditorEntityRuntimeId();
 		}
 	}
 
 	public function writeStateToWorld() : void{
 		parent::writeStateToWorld();
-		$tile = $this->pos->getWorld()->getTile($this->pos);
+		$tile = $this->position->getWorld()->getTile($this->position);
 		assert($tile instanceof TileSign);
 		$tile->setText($this->text);
+		$tile->setEditorEntityRuntimeId($this->editorEntityRuntimeId);
 	}
 
 	public function isSolid() : bool{
 		return false;
+	}
+
+	public function getMaxStackSize() : int{
+		return 16;
 	}
 
 	/**
@@ -70,12 +78,23 @@ abstract class BaseSign extends Transparent{
 		return [];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	abstract protected function getSupportingFace() : int;
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide($this->getSupportingFace())->getId() === BlockLegacyIds::AIR){
-			$this->pos->getWorld()->useBreakOn($this->pos);
+			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
+
+	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
+		if($player !== null){
+			$this->editorEntityRuntimeId = $player->getId();
+		}
+		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
 	/**
@@ -108,10 +127,13 @@ abstract class BaseSign extends Transparent{
 		$ev = new SignChangeEvent($this, $author, new SignText(array_map(function(string $line) : string{
 			return TextFormat::clean($line, false);
 		}, $text->getLines())));
+		if($this->editorEntityRuntimeId === null || $this->editorEntityRuntimeId !== $author->getId()){
+			$ev->cancel();
+		}
 		$ev->call();
 		if(!$ev->isCancelled()){
 			$this->setText($ev->getNewText());
-			$this->pos->getWorld()->setBlock($this->pos, $this);
+			$this->position->getWorld()->setBlock($this->position, $this);
 			return true;
 		}
 

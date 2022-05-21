@@ -25,9 +25,11 @@ namespace pocketmine\network\mcpe;
 
 use pocketmine\network\mcpe\compression\CompressBatchPromise;
 use pocketmine\network\mcpe\compression\Compressor;
+use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\LevelChunkPacket;
 use pocketmine\network\mcpe\protocol\serializer\PacketBatch;
+use pocketmine\network\mcpe\protocol\serializer\PacketSerializerContext;
 use pocketmine\network\mcpe\serializer\ChunkSerializer;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\world\format\Chunk;
@@ -47,8 +49,7 @@ class ChunkRequestTask extends AsyncTask{
 	/** @var Compressor */
 	protected $compressor;
 
-	/** @var string */
-	private $tiles = "";
+	private string $tiles;
 
 	/**
 	 * @phpstan-param (\Closure() : void)|null $onError
@@ -56,7 +57,7 @@ class ChunkRequestTask extends AsyncTask{
 	public function __construct(int $chunkX, int $chunkZ, Chunk $chunk, CompressBatchPromise $promise, Compressor $compressor, ?\Closure $onError = null){
 		$this->compressor = $compressor;
 
-		$this->chunk = FastChunkSerializer::serializeWithoutLight($chunk);
+		$this->chunk = FastChunkSerializer::serializeTerrain($chunk);
 		$this->chunkX = $chunkX;
 		$this->chunkZ = $chunkZ;
 		$this->tiles = ChunkSerializer::serializeTiles($chunk);
@@ -66,10 +67,11 @@ class ChunkRequestTask extends AsyncTask{
 	}
 
 	public function onRun() : void{
-		$chunk = FastChunkSerializer::deserialize($this->chunk);
-		$subCount = ChunkSerializer::getSubChunkCount($chunk);
-		$payload = ChunkSerializer::serialize($chunk, RuntimeBlockMapping::getInstance(), $this->tiles);
-		$this->setResult($this->compressor->compress(PacketBatch::fromPackets(LevelChunkPacket::withoutCache($this->chunkX, $this->chunkZ, $subCount, $payload))->getBuffer()));
+		$chunk = FastChunkSerializer::deserializeTerrain($this->chunk);
+		$subCount = ChunkSerializer::getSubChunkCount($chunk) + ChunkSerializer::LOWER_PADDING_SIZE;
+		$encoderContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
+		$payload = ChunkSerializer::serializeFullChunk($chunk, RuntimeBlockMapping::getInstance(), $encoderContext, $this->tiles);
+		$this->setResult($this->compressor->compress(PacketBatch::fromPackets($encoderContext, LevelChunkPacket::create($this->chunkX, $this->chunkZ, $subCount, false, null, $payload))->getBuffer()));
 	}
 
 	public function onError() : void{

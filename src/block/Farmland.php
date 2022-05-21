@@ -24,25 +24,25 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
+use pocketmine\entity\Entity;
+use pocketmine\entity\Living;
+use pocketmine\event\entity\EntityTrampleFarmlandEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
+use function lcg_value;
 
 class Farmland extends Transparent{
+	public const MAX_WETNESS = 7;
 
-	/** @var int */
-	protected $wetness = 0; //"moisture" blockstate property in PC
-
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.6, BlockToolType::SHOVEL));
-	}
+	protected int $wetness = 0; //"moisture" blockstate property in PC
 
 	protected function writeStateToMeta() : int{
 		return $this->wetness;
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->wetness = BlockDataSerializer::readBoundedInt("wetness", $stateMeta, 0, 7);
+		$this->wetness = BlockDataSerializer::readBoundedInt("wetness", $stateMeta, 0, self::MAX_WETNESS);
 	}
 
 	public function getStateBitmask() : int{
@@ -53,8 +53,8 @@ class Farmland extends Transparent{
 
 	/** @return $this */
 	public function setWetness(int $wetness) : self{
-		if($wetness < 0 || $wetness > 7){
-			throw new \InvalidArgumentException("Wetness must be in range 0-7");
+		if($wetness < 0 || $wetness > self::MAX_WETNESS){
+			throw new \InvalidArgumentException("Wetness must be in range 0 ... " . self::MAX_WETNESS);
 		}
 		$this->wetness = $wetness;
 		return $this;
@@ -69,7 +69,7 @@ class Farmland extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		if($this->getSide(Facing::UP)->isSolid()){
-			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::DIRT());
+			$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
 		}
 	}
 
@@ -81,24 +81,35 @@ class Farmland extends Transparent{
 		if(!$this->canHydrate()){
 			if($this->wetness > 0){
 				$this->wetness--;
-				$this->pos->getWorld()->setBlock($this->pos, $this, false);
+				$this->position->getWorld()->setBlock($this->position, $this, false);
 			}else{
-				$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::DIRT());
+				$this->position->getWorld()->setBlock($this->position, VanillaBlocks::DIRT());
 			}
-		}elseif($this->wetness < 7){
-			$this->wetness = 7;
-			$this->pos->getWorld()->setBlock($this->pos, $this, false);
+		}elseif($this->wetness < self::MAX_WETNESS){
+			$this->wetness = self::MAX_WETNESS;
+			$this->position->getWorld()->setBlock($this->position, $this, false);
 		}
+	}
+
+	public function onEntityLand(Entity $entity) : ?float{
+		if($entity instanceof Living && lcg_value() < $entity->getFallDistance() - 0.5){
+			$ev = new EntityTrampleFarmlandEvent($entity, $this);
+			$ev->call();
+			if(!$ev->isCancelled()){
+				$this->getPosition()->getWorld()->setBlock($this->getPosition(), VanillaBlocks::DIRT());
+			}
+		}
+		return null;
 	}
 
 	protected function canHydrate() : bool{
 		//TODO: check rain
-		$start = $this->pos->add(-4, 0, -4);
-		$end = $this->pos->add(4, 1, 4);
+		$start = $this->position->add(-4, 0, -4);
+		$end = $this->position->add(4, 1, 4);
 		for($y = $start->y; $y <= $end->y; ++$y){
 			for($z = $start->z; $z <= $end->z; ++$z){
 				for($x = $start->x; $x <= $end->x; ++$x){
-					if($this->pos->getWorld()->getBlockAt($x, $y, $z) instanceof Water){
+					if($this->position->getWorld()->getBlockAt($x, $y, $z) instanceof Water){
 						return true;
 					}
 				}

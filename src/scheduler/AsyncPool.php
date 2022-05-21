@@ -33,7 +33,6 @@ use function count;
 use function spl_object_id;
 use function time;
 use const PHP_INT_MAX;
-use const PTHREADS_INHERIT_CONSTANTS;
 use const PTHREADS_INHERIT_INI;
 
 /**
@@ -41,49 +40,42 @@ use const PTHREADS_INHERIT_INI;
  * workers.
  */
 class AsyncPool{
-	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI | PTHREADS_INHERIT_CONSTANTS;
+	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI;
 
-	/** @var \ClassLoader */
-	private $classLoader;
-	/** @var \ThreadedLogger */
-	private $logger;
 	/** @var int */
 	protected $size;
-	/** @var int */
-	private $workerMemoryLimit;
 
 	/**
 	 * @var \SplQueue[]|AsyncTask[][]
 	 * @phpstan-var array<int, \SplQueue<AsyncTask>>
 	 */
-	private $taskQueues = [];
+	private array $taskQueues = [];
 
 	/**
 	 * @var AsyncWorker[]
 	 * @phpstan-var array<int, AsyncWorker>
 	 */
-	private $workers = [];
+	private array $workers = [];
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private $workerLastUsed = [];
+	private array $workerLastUsed = [];
 
 	/**
 	 * @var \Closure[]
 	 * @phpstan-var (\Closure(int $workerId) : void)[]
 	 */
-	private $workerStartHooks = [];
+	private array $workerStartHooks = [];
 
-	/** @var SleeperHandler */
-	private $eventLoop;
-
-	public function __construct(int $size, int $workerMemoryLimit, \ClassLoader $classLoader, \ThreadedLogger $logger, SleeperHandler $eventLoop){
+	public function __construct(
+		int $size,
+		private int $workerMemoryLimit,
+		private \ClassLoader $classLoader,
+		private \ThreadedLogger $logger,
+		private SleeperHandler $eventLoop
+	){
 		$this->size = $size;
-		$this->workerMemoryLimit = $workerMemoryLimit;
-		$this->classLoader = $classLoader;
-		$this->logger = $logger;
-		$this->eventLoop = $eventLoop;
 	}
 
 	/**
@@ -147,7 +139,7 @@ class AsyncPool{
 			$this->eventLoop->addNotifier($notifier, function() use ($worker) : void{
 				$this->collectTasksFromWorker($worker);
 			});
-			$this->workers[$worker]->setClassLoader($this->classLoader);
+			$this->workers[$worker]->setClassLoaders([$this->classLoader]);
 			$this->workers[$worker]->start(self::WORKER_START_OPTIONS);
 
 			$this->taskQueues[$worker] = new \SplQueue();
@@ -164,7 +156,7 @@ class AsyncPool{
 	 * Submits an AsyncTask to an arbitrary worker.
 	 */
 	public function submitTaskToWorker(AsyncTask $task, int $worker) : void{
-		if($worker < 0 or $worker >= $this->size){
+		if($worker < 0 || $worker >= $this->size){
 			throw new \InvalidArgumentException("Invalid worker $worker");
 		}
 		if($task->isSubmitted()){
@@ -198,7 +190,7 @@ class AsyncPool{
 				}
 			}
 		}
-		if($worker === null or ($minUsage > 0 and count($this->workers) < $this->size)){
+		if($worker === null || ($minUsage > 0 && count($this->workers) < $this->size)){
 			//select a worker to start on the fly
 			for($i = 0; $i < $this->size; ++$i){
 				if(!isset($this->workers[$i])){
@@ -233,11 +225,17 @@ class AsyncPool{
 	 * @return bool whether there are tasks left to be collected
 	 */
 	public function collectTasks() : bool{
-		$more = false;
 		foreach($this->taskQueues as $worker => $queue){
-			$more = $this->collectTasksFromWorker($worker) || $more;
+			$this->collectTasksFromWorker($worker);
 		}
-		return $more;
+
+		//we check this in a second loop, because task collection could have caused new tasks to be added to the queues
+		foreach($this->taskQueues as $queue){
+			if(!$queue->isEmpty()){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public function collectTasksFromWorker(int $worker) : bool{
@@ -292,7 +290,7 @@ class AsyncPool{
 		$ret = 0;
 		$time = time();
 		foreach($this->taskQueues as $i => $queue){
-			if((!isset($this->workerLastUsed[$i]) or $this->workerLastUsed[$i] + 300 < $time) and $queue->isEmpty()){
+			if((!isset($this->workerLastUsed[$i]) || $this->workerLastUsed[$i] + 300 < $time) && $queue->isEmpty()){
 				$this->workers[$i]->quit();
 				$this->eventLoop->removeNotifier($this->workers[$i]->getNotifier());
 				unset($this->workers[$i], $this->taskQueues[$i], $this->workerLastUsed[$i]);
@@ -307,20 +305,8 @@ class AsyncPool{
 	 * Cancels all pending tasks and shuts down all the workers in the pool.
 	 */
 	public function shutdown() : void{
-		$this->collectTasks();
-
-		foreach($this->workers as $worker){
-			/** @var AsyncTask $task */
-			while(($task = $worker->unstack()) !== null){
-				//NOOP: the below loop will deal with marking tasks as garbage
-			}
-		}
-		foreach($this->taskQueues as $queue){
-			while(!$queue->isEmpty()){
-				/** @var AsyncTask $task */
-				$task = $queue->dequeue();
-				$task->cancelRun();
-			}
+		while($this->collectTasks()){
+			//NOOP
 		}
 
 		foreach($this->workers as $worker){

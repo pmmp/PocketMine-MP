@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\resourcepacks;
 
 use pocketmine\utils\Config;
+use Webmozart\PathUtil\Path;
 use function array_keys;
 use function copy;
 use function count;
@@ -31,24 +32,22 @@ use function file_exists;
 use function gettype;
 use function is_array;
 use function is_dir;
+use function is_float;
+use function is_int;
 use function is_string;
 use function mkdir;
 use function strtolower;
 use const DIRECTORY_SEPARATOR;
 
 class ResourcePackManager{
-
-	/** @var string */
-	private $path;
-
-	/** @var bool */
-	private $serverForceResources = false;
+	private string $path;
+	private bool $serverForceResources = false;
 
 	/** @var ResourcePack[] */
-	private $resourcePacks = [];
+	private array $resourcePacks = [];
 
 	/** @var ResourcePack[] */
-	private $uuidList = [];
+	private array $uuidList = [];
 
 	/**
 	 * @param string  $path Path to resource-packs directory.
@@ -63,11 +62,12 @@ class ResourcePackManager{
 			throw new \InvalidArgumentException("Resource packs path $path exists and is not a directory");
 		}
 
-		if(!file_exists($this->path . "resource_packs.yml")){
-			copy(\pocketmine\RESOURCE_PATH . "resource_packs.yml", $this->path . "resource_packs.yml");
+		$resourcePacksYml = Path::join($this->path, "resource_packs.yml");
+		if(!file_exists($resourcePacksYml)){
+			copy(Path::join(\pocketmine\RESOURCE_PATH, "resource_packs.yml"), $resourcePacksYml);
 		}
 
-		$resourcePacksConfig = new Config($this->path . "resource_packs.yml", Config::YAML, []);
+		$resourcePacksConfig = new Config($resourcePacksYml, Config::YAML, []);
 
 		$this->serverForceResources = (bool) $resourcePacksConfig->get("force_resources", false);
 
@@ -79,12 +79,13 @@ class ResourcePackManager{
 		}
 
 		foreach($resourceStack as $pos => $pack){
-			if(!is_string($pack)){
+			if(!is_string($pack) && !is_int($pack) && !is_float($pack)){
 				$logger->critical("Found invalid entry in resource pack list at offset $pos of type " . gettype($pack));
 				continue;
 			}
+			$pack = (string) $pack;
 			try{
-				$packPath = $this->path . DIRECTORY_SEPARATOR . $pack;
+				$packPath = Path::join($this->path, $pack);
 				if(!file_exists($packPath)){
 					throw new ResourcePackException("File or directory not found");
 				}
@@ -120,7 +121,7 @@ class ResourcePackManager{
 	 * Returns the directory which resource packs are loaded from.
 	 */
 	public function getPath() : string{
-		return $this->path;
+		return $this->path . DIRECTORY_SEPARATOR;
 	}
 
 	/**

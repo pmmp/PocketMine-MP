@@ -44,15 +44,18 @@ trait ContainerTrait{
 	abstract public function getRealInventory();
 
 	protected function loadItems(CompoundTag $tag) : void{
-		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag){
+		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag && $inventoryTag->getTagType() === NBT::TAG_Compound){
 			$inventory = $this->getRealInventory();
 			$listeners = $inventory->getListeners()->toArray();
 			$inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
-			$inventory->clearAll();
+
+			$newContents = [];
 			/** @var CompoundTag $itemNBT */
 			foreach($inventoryTag as $itemNBT){
-				$inventory->setItem($itemNBT->getByte("Slot"), Item::nbtDeserialize($itemNBT));
+				$newContents[$itemNBT->getByte("Slot")] = Item::nbtDeserialize($itemNBT);
 			}
+			$inventory->setContents($newContents);
+
 			$inventory->getListeners()->add(...$listeners);
 		}
 
@@ -78,20 +81,20 @@ trait ContainerTrait{
 	 * @see Container::canOpenWith()
 	 */
 	public function canOpenWith(string $key) : bool{
-		return $this->lock === null or $this->lock === $key;
+		return $this->lock === null || $this->lock === $key;
 	}
 
 	/**
 	 * @see Position::asPosition()
 	 */
-	abstract protected function getPos() : Position;
+	abstract protected function getPosition() : Position;
 
 	/**
 	 * @see Tile::onBlockDestroyedHook()
 	 */
 	protected function onBlockDestroyedHook() : void{
 		$inv = $this->getRealInventory();
-		$pos = $this->getPos();
+		$pos = $this->getPosition();
 
 		foreach($inv->getContents() as $k => $item){
 			$pos->getWorld()->dropItem($pos->add(0.5, 0.5, 0.5), $item);

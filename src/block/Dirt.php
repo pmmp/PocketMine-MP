@@ -28,17 +28,43 @@ use pocketmine\item\Item;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\world\sound\ItemUseOnBlockSound;
 
 class Dirt extends Opaque{
 
-	public function __construct(BlockIdentifier $idInfo, string $name, ?BlockBreakInfo $breakInfo = null){
-		parent::__construct($idInfo, $name, $breakInfo ?? new BlockBreakInfo(0.5, BlockToolType::SHOVEL));
+	protected bool $coarse = false;
+
+	public function readStateFromData(int $id, int $stateMeta) : void{
+		$this->coarse = ($stateMeta & BlockLegacyMetadata::DIRT_FLAG_COARSE) !== 0;
+	}
+
+	protected function writeStateToMeta() : int{
+		return $this->coarse ? BlockLegacyMetadata::DIRT_FLAG_COARSE : 0;
+	}
+
+	protected function writeStateToItemMeta() : int{
+		return $this->writeStateToMeta();
+	}
+
+	public function getStateBitmask() : int{
+		return 0b1;
+	}
+
+	public function isCoarse() : bool{ return $this->coarse; }
+
+	/** @return $this */
+	public function setCoarse(bool $coarse) : self{
+		$this->coarse = $coarse;
+		return $this;
 	}
 
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($face === Facing::UP and $item instanceof Hoe){
+		if($face === Facing::UP && $item instanceof Hoe){
 			$item->applyDamage(1);
-			$this->pos->getWorld()->setBlock($this->pos, VanillaBlocks::FARMLAND());
+
+			$newBlock = $this->coarse ? VanillaBlocks::DIRT() : VanillaBlocks::FARMLAND();
+			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));
+			$this->position->getWorld()->setBlock($this->position, $newBlock);
 
 			return true;
 		}

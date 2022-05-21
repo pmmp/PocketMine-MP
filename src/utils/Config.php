@@ -23,17 +23,18 @@ declare(strict_types=1);
 
 namespace pocketmine\utils;
 
+use pocketmine\errorhandler\ErrorToExceptionHandler;
+use Webmozart\PathUtil\Path;
 use function array_change_key_case;
+use function array_fill_keys;
 use function array_keys;
-use function array_pop;
 use function array_shift;
-use function basename;
 use function count;
 use function date;
 use function explode;
 use function file_exists;
 use function file_get_contents;
-use function file_put_contents;
+use function get_debug_type;
 use function implode;
 use function is_array;
 use function is_bool;
@@ -53,6 +54,7 @@ use function yaml_parse;
 use const CASE_LOWER;
 use const JSON_BIGINT_AS_STRING;
 use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
 
 /**
  * Config Class for simple config manipulation of multiple formats.
@@ -72,23 +74,19 @@ class Config{
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private $config = [];
+	private array $config = [];
 
 	/**
 	 * @var mixed[]
 	 * @phpstan-var array<string, mixed>
 	 */
-	private $nestedCache = [];
+	private array $nestedCache = [];
 
-	/** @var string */
-	private $file;
-	/** @var int */
-	private $type = Config::DETECT;
-	/** @var int */
-	private $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
+	private string $file;
+	private int $type = Config::DETECT;
+	private int $jsonOptions = JSON_PRETTY_PRINT | JSON_BIGINT_AS_STRING;
 
-	/** @var bool */
-	private $changed = false;
+	private bool $changed = false;
 
 	/** @var int[] */
 	public static $formats = [
@@ -144,16 +142,14 @@ class Config{
 	 * @param mixed[] $default
 	 * @phpstan-param array<string, mixed> $default
 	 *
-	 * @throws \InvalidArgumentException if config type could not be auto-detected
-	 * @throws \InvalidStateException if config type is invalid
+	 * @throws \InvalidArgumentException if config type is invalid or could not be auto-detected
 	 */
 	private function load(string $file, int $type = Config::DETECT, array $default = []) : void{
 		$this->file = $file;
 
 		$this->type = $type;
 		if($this->type === Config::DETECT){
-			$extension = explode(".", basename($this->file));
-			$extension = strtolower(trim(array_pop($extension)));
+			$extension = strtolower(Path::getExtension($this->file));
 			if(isset(Config::$formats[$extension])){
 				$this->type = Config::$formats[$extension];
 			}else{
@@ -169,28 +165,42 @@ class Config{
 			if($content === false){
 				throw new \RuntimeException("Unable to load config file");
 			}
-			$config = null;
 			switch($this->type){
 				case Config::PROPERTIES:
-					$config = $this->parseProperties($content);
+					$config = self::parseProperties($content);
 					break;
 				case Config::JSON:
-					$config = json_decode($content, true);
+					try{
+						$config = json_decode($content, true, flags: JSON_THROW_ON_ERROR);
+					}catch(\JsonException $e){
+						throw ConfigLoadException::wrap($this->file, $e);
+					}
 					break;
 				case Config::YAML:
 					$content = self::fixYAMLIndexes($content);
-					$config = yaml_parse($content);
+					try{
+						$config = ErrorToExceptionHandler::trap(fn() => yaml_parse($content));
+					}catch(\ErrorException $e){
+						throw ConfigLoadException::wrap($this->file, $e);
+					}
 					break;
 				case Config::SERIALIZED:
-					$config = unserialize($content);
+					try{
+						$config = ErrorToExceptionHandler::trap(fn() => unserialize($content));
+					}catch(\ErrorException $e){
+						throw ConfigLoadException::wrap($this->file, $e);
+					}
 					break;
 				case Config::ENUM:
-					$config = self::parseList($content);
+					$config = array_fill_keys(self::parseList($content), true);
 					break;
 				default:
-					throw new \InvalidStateException("Config type is unknown");
+					throw new \InvalidArgumentException("Invalid config type specified");
 			}
-			$this->config = is_array($config) ? $config : $default;
+			if(!is_array($config)){
+				throw new ConfigLoadException("Failed to load config $this->file: Expected array for base type, but got " . get_debug_type($config));
+			}
+			$this->config = $config;
 			if($this->fillDefaults($default, $this->config) > 0){
 				$this->save();
 			}
@@ -206,17 +216,15 @@ class Config{
 
 	/**
 	 * Flushes the config to disk in the appropriate format.
-	 *
-	 * @throws \InvalidStateException if config type is not valid
 	 */
 	public function save() : void{
 		$content = null;
 		switch($this->type){
 			case Config::PROPERTIES:
-				$content = $this->writeProperties();
+				$content = self::writeProperties($this->config);
 				break;
 			case Config::JSON:
-				$content = json_encode($this->config, $this->jsonOptions);
+				$content = json_encode($this->config, $this->jsonOptions | JSON_THROW_ON_ERROR);
 				break;
 			case Config::YAML:
 				$content = yaml_emit($this->config, YAML_UTF8_ENCODING);
@@ -225,13 +233,13 @@ class Config{
 				$content = serialize($this->config);
 				break;
 			case Config::ENUM:
-				$content = implode("\r\n", array_keys($this->config));
+				$content = self::writeList(array_keys($this->config));
 				break;
 			default:
-				throw new \InvalidStateException("Config type is unknown, has not been set or not detected");
+				throw new AssumptionFailedError("Config type is unknown, has not been set or not detected");
 		}
 
-		file_put_contents($this->file, $content);
+		Filesystem::safeFilePutContents($this->file, $content);
 
 		$this->changed = false;
 	}
@@ -239,7 +247,7 @@ class Config{
 	/**
 	 * Sets the options for the JSON encoding when saving
 	 *
-	 * @return Config $this
+	 * @return $this
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
 	 */
@@ -256,7 +264,7 @@ class Config{
 	/**
 	 * Enables the given option in addition to the currently set JSON options
 	 *
-	 * @return Config $this
+	 * @return $this
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
 	 */
@@ -273,7 +281,7 @@ class Config{
 	/**
 	 * Disables the given option for the JSON encoding when saving
 	 *
-	 * @return Config $this
+	 * @return $this
 	 * @throws \RuntimeException if the Config is not in JSON
 	 * @see json_encode
 	 */
@@ -345,14 +353,14 @@ class Config{
 			$this->config[$base] = [];
 		}
 
-		$base =& $this->config[$base];
+		$base = &$this->config[$base];
 
 		while(count($vars) > 0){
 			$baseKey = array_shift($vars);
 			if(!isset($base[$baseKey])){
 				$base[$baseKey] = [];
 			}
-			$base =& $base[$baseKey];
+			$base = &$base[$baseKey];
 		}
 
 		$base = $value;
@@ -381,7 +389,7 @@ class Config{
 
 		while(count($vars) > 0){
 			$baseKey = array_shift($vars);
-			if(is_array($base) and isset($base[$baseKey])){
+			if(is_array($base) && isset($base[$baseKey])){
 				$base = $base[$baseKey];
 			}else{
 				return $default;
@@ -397,14 +405,14 @@ class Config{
 
 		$vars = explode(".", $key);
 
-		$currentNode =& $this->config;
+		$currentNode = &$this->config;
 		while(count($vars) > 0){
 			$nodeName = array_shift($vars);
 			if(isset($currentNode[$nodeName])){
 				if(count($vars) === 0){ //final node
 					unset($currentNode[$nodeName]);
 				}elseif(is_array($currentNode[$nodeName])){
-					$currentNode =& $currentNode[$nodeName];
+					$currentNode = &$currentNode[$nodeName];
 				}
 			}else{
 				break;
@@ -429,7 +437,7 @@ class Config{
 	public function set($k, $v = true) : void{
 		$this->config[$k] = $v;
 		$this->changed = true;
-		foreach($this->nestedCache as $nestedKey => $nvalue){
+		foreach(Utils::stringifyKeys($this->nestedCache) as $nestedKey => $nvalue){
 			if(substr($nestedKey, 0, strlen($k) + 1) === ($k . ".")){
 				unset($this->nestedCache[$nestedKey]);
 			}
@@ -491,9 +499,9 @@ class Config{
 	 */
 	private function fillDefaults(array $default, &$data) : int{
 		$changed = 0;
-		foreach($default as $k => $v){
+		foreach(Utils::stringifyKeys($default) as $k => $v){
 			if(is_array($v)){
-				if(!isset($data[$k]) or !is_array($data[$k])){
+				if(!isset($data[$k]) || !is_array($data[$k])){
 					$data[$k] = [];
 				}
 				$changed += $this->fillDefaults($v, $data[$k]);
@@ -511,28 +519,38 @@ class Config{
 	}
 
 	/**
-	 * @return true[]
-	 * @phpstan-return array<string, true>
+	 * @return string[]
+	 * @phpstan-return list<string>
 	 */
-	private static function parseList(string $content) : array{
+	public static function parseList(string $content) : array{
 		$result = [];
 		foreach(explode("\n", trim(str_replace("\r\n", "\n", $content))) as $v){
 			$v = trim($v);
-			if($v == ""){
+			if($v === ""){
 				continue;
 			}
-			$result[$v] = true;
+			$result[] = $v;
 		}
 		return $result;
 	}
 
-	private function writeProperties() : string{
+	/**
+	 * @param string[] $entries
+	 * @phpstan-param list<string> $entries
+	 */
+	public static function writeList(array $entries) : string{
+		return implode("\n", $entries);
+	}
+
+	/**
+	 * @param string[]|int[]|float[]|bool[] $config
+	 * @phpstan-param array<string, string|int|float|bool> $config
+	 */
+	public static function writeProperties(array $config) : string{
 		$content = "#Properties Config file\r\n#" . date("D M j H:i:s T Y") . "\r\n";
-		foreach($this->config as $k => $v){
+		foreach(Utils::stringifyKeys($config) as $k => $v){
 			if(is_bool($v)){
 				$v = $v ? "on" : "off";
-			}elseif(is_array($v)){
-				$v = implode(";", $v);
 			}
 			$content .= $k . "=" . $v . "\r\n";
 		}
@@ -541,9 +559,10 @@ class Config{
 	}
 
 	/**
-	 * @return mixed[]
+	 * @return string[]|int[]|float[]|bool[]
+	 * @phpstan-return array<string, string|int|float|bool>
 	 */
-	private function parseProperties(string $content) : array{
+	public static function parseProperties(string $content) : array{
 		$result = [];
 		if(preg_match_all('/^\s*([a-zA-Z0-9\-_\.]+)[ \t]*=([^\r\n]*)/um', $content, $matches) > 0){ //false or 0 matches
 			foreach($matches[1] as $i => $k){
@@ -559,11 +578,15 @@ class Config{
 					case "no":
 						$v = false;
 						break;
+					default:
+						$v = match($v){
+							(string) ((int) $v) => (int) $v,
+							(string) ((float) $v) => (float) $v,
+							default => $v,
+						};
+						break;
 				}
-				if(isset($result[$k])){
-					\GlobalLogger::get()->debug("[Config] Repeated property " . $k . " on file " . $this->file);
-				}
-				$result[$k] = $v;
+				$result[(string) $k] = $v;
 			}
 		}
 

@@ -29,8 +29,9 @@ use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\VanillaItems;
-use pocketmine\lang\TranslationContainer;
+use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\math\Vector3;
+use pocketmine\permission\DefaultPermissionNames;
 use pocketmine\player\Player;
 use pocketmine\utils\Random;
 use pocketmine\utils\TextFormat;
@@ -77,10 +78,10 @@ class ParticleCommand extends VanillaCommand{
 	public function __construct(string $name){
 		parent::__construct(
 			$name,
-			"%pocketmine.command.particle.description",
-			"%pocketmine.command.particle.usage"
+			KnownTranslationFactory::pocketmine_command_particle_description(),
+			KnownTranslationFactory::pocketmine_command_particle_usage()
 		);
-		$this->setPermission("pocketmine.command.particle");
+		$this->setPermission(DefaultPermissionNames::COMMAND_PARTICLE);
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
@@ -118,11 +119,11 @@ class ParticleCommand extends VanillaCommand{
 		$particle = $this->getParticle($name, $data);
 
 		if($particle === null){
-			$sender->sendMessage(new TranslationContainer(TextFormat::RED . "%commands.particle.notFound", [$name]));
+			$sender->sendMessage(KnownTranslationFactory::commands_particle_notFound($name)->prefix(TextFormat::RED));
 			return true;
 		}
 
-		$sender->sendMessage(new TranslationContainer("commands.particle.success", [$name, $count]));
+		$sender->sendMessage(KnownTranslationFactory::commands_particle_success($name, (string) $count));
 
 		$random = new Random((int) (microtime(true) * 1000) + mt_rand());
 
@@ -180,12 +181,12 @@ class ParticleCommand extends VanillaCommand{
 			case "slime":
 				return new ItemBreakParticle(VanillaItems::SLIMEBALL());
 			case "itembreak":
-				if($data !== null and $data !== 0){
+				if($data !== null && $data !== 0){
 					return new ItemBreakParticle(ItemFactory::getInstance()->get($data));
 				}
 				break;
 			case "terrain":
-				if($data !== null and $data !== 0){
+				if($data !== null && $data !== 0){
 					return new TerrainParticle(BlockFactory::getInstance()->get($data, 0));
 				}
 				break;

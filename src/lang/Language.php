@@ -23,6 +23,8 @@ declare(strict_types=1);
 
 namespace pocketmine\lang;
 
+use pocketmine\utils\Utils;
+use Webmozart\PathUtil\Path;
 use function array_filter;
 use function array_map;
 use function explode;
@@ -51,7 +53,7 @@ class Language{
 	 */
 	public static function getLanguageList(string $path = "") : array{
 		if($path === ""){
-			$path = \pocketmine\RESOURCE_PATH . "locale/";
+			$path = \pocketmine\LOCALE_DATA_PATH;
 		}
 
 		if(is_dir($path)){
@@ -100,7 +102,7 @@ class Language{
 		$this->langName = strtolower($lang);
 
 		if($path === null){
-			$path = \pocketmine\RESOURCE_PATH . "locale/";
+			$path = \pocketmine\LOCALE_DATA_PATH;
 		}
 
 		$this->lang = self::loadLang($path, $this->langName);
@@ -108,7 +110,7 @@ class Language{
 	}
 
 	public function getName() : string{
-		return $this->get("language.name");
+		return $this->get(KnownTranslationKeys::LANGUAGE_NAME);
 	}
 
 	public function getLang() : string{
@@ -120,34 +122,36 @@ class Language{
 	 * @phpstan-return array<string, string>
 	 */
 	protected static function loadLang(string $path, string $languageCode) : array{
-		$file = $path . $languageCode . ".ini";
+		$file = Path::join($path, $languageCode . ".ini");
 		if(file_exists($file)){
-			return array_map('\stripcslashes', parse_ini_file($file, false, INI_SCANNER_RAW));
+			return array_map('\stripcslashes', Utils::assumeNotFalse(parse_ini_file($file, false, INI_SCANNER_RAW), "Missing or inaccessible required resource files"));
 		}
 
 		throw new LanguageNotFoundException("Language \"$languageCode\" not found");
 	}
 
 	/**
-	 * @param (float|int|string)[] $params
+	 * @param (float|int|string|Translatable)[] $params
 	 */
 	public function translateString(string $str, array $params = [], ?string $onlyPrefix = null) : string{
 		$baseText = $this->get($str);
-		$baseText = $this->parseTranslation(($onlyPrefix === null or strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
+		$baseText = $this->parseTranslation(($onlyPrefix === null || strpos($str, $onlyPrefix) === 0) ? $baseText : $str, $onlyPrefix);
 
 		foreach($params as $i => $p){
-			$baseText = str_replace("{%$i}", $this->parseTranslation((string) $p), $baseText);
+			$replacement = $p instanceof Translatable ? $this->translate($p) : (string) $p;
+			$baseText = str_replace("{%$i}", $replacement, $baseText);
 		}
 
 		return $baseText;
 	}
 
-	public function translate(TranslationContainer $c) : string{
+	public function translate(Translatable $c) : string{
 		$baseText = $this->internalGet($c->getText());
 		$baseText = $this->parseTranslation($baseText ?? $c->getText());
 
 		foreach($c->getParameters() as $i => $p){
-			$baseText = str_replace("{%$i}", $this->parseTranslation($p), $baseText);
+			$replacement = $p instanceof Translatable ? $this->translate($p) : $p;
+			$baseText = str_replace("{%$i}", $replacement, $baseText);
 		}
 
 		return $baseText;
@@ -172,14 +176,14 @@ class Language{
 			if($replaceString !== null){
 				$ord = ord($c);
 				if(
-					($ord >= 0x30 and $ord <= 0x39) // 0-9
-					or ($ord >= 0x41 and $ord <= 0x5a) // A-Z
-					or ($ord >= 0x61 and $ord <= 0x7a) or // a-z
-					$c === "." or $c === "-"
+					($ord >= 0x30 && $ord <= 0x39) // 0-9
+					|| ($ord >= 0x41 && $ord <= 0x5a) // A-Z
+					|| ($ord >= 0x61 && $ord <= 0x7a) || // a-z
+					$c === "." || $c === "-"
 				){
 					$replaceString .= $c;
 				}else{
-					if(($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)){
+					if(($t = $this->internalGet(substr($replaceString, 1))) !== null && ($onlyPrefix === null || strpos($replaceString, $onlyPrefix) === 1)){
 						$newString .= $t;
 					}else{
 						$newString .= $replaceString;
@@ -200,7 +204,7 @@ class Language{
 		}
 
 		if($replaceString !== null){
-			if(($t = $this->internalGet(substr($replaceString, 1))) !== null and ($onlyPrefix === null or strpos($replaceString, $onlyPrefix) === 1)){
+			if(($t = $this->internalGet(substr($replaceString, 1))) !== null && ($onlyPrefix === null || strpos($replaceString, $onlyPrefix) === 1)){
 				$newString .= $t;
 			}else{
 				$newString .= $replaceString;
