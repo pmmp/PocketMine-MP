@@ -28,12 +28,10 @@ use pocketmine\event\CancellableTrait;
 use pocketmine\player\Player;
 
 /**
- * Called when a player runs a command or chats, early in the process
+ * Called when a player runs a command or chats, before it is processed.
  *
- * You don't want to use this except for a few cases like logging commands,
- * blocking commands on certain places, or applying modifiers.
- *
- * The message contains a slash at the start
+ * If the message is prefixed with a / (forward slash), it will be interpreted as a command.
+ * Otherwise, it will be broadcasted as a chat message.
  */
 class PlayerCommandPreprocessEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
