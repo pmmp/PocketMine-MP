@@ -723,6 +723,7 @@ class NetworkSession{
 	}
 
 	public function onServerRespawn() : void{
+		$this->syncAttributes($this->player, $this->player->getAttributeMap()->getAll());
 		$this->player->sendData(null);
 
 		$this->syncAdventureSettings($this->player);
