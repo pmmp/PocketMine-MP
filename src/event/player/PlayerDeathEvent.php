@@ -40,7 +40,6 @@ class PlayerDeathEvent extends EntityDeathEvent{
 
 	private Translatable|string $deathMessage;
 	private bool $keepInventory = false;
-
 	private bool $keepXp = false;
 
 	/**
