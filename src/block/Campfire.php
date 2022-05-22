@@ -60,7 +60,6 @@ class Campfire extends Transparent{
 	/** @phpstan-var array<int, int> */
 	protected array $cookingTimes = [];
 
-
 	public function writeStateToMeta() : int{
 		return BlockDataSerializer::writeHorizontalFacing($this->facing) | (!$this->lit ? BlockLegacyMetadata::CAMPFIRE_FLAG_EXTINGUISHED : 0);
 	}
