@@ -66,17 +66,20 @@ class Campfire extends Spawnable implements Container{
 	}
 
 	/**
-	 * @phpstan-param array<int, int>
+	 * @phpstan-param array<int, int> $cookingTimes
 	 */
-	public function setCookingTimes(array $cookingTime) : void{
-		$this->cookingTimes = $cookingTime;
+	public function setCookingTimes(array $cookingTimes) : void{
+		$this->cookingTimes = $cookingTimes;
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		$this->loadItems($nbt);
 
-		if(($tag = $nbt->getTag(self::TAG_COOKING_TIMES)) !== null){
-			/** @var IntTag $time */
+		if(($tag = $nbt->getTag(self::TAG_COOKING_TIMES)) instanceof ListTag){
+			/**
+			 * @var int $slot
+			 * @var IntTag $time
+			 */
 			foreach($tag->getValue() as $slot => $time){
 				$this->cookingTimes[$slot] = $time->getValue();
 			}
@@ -94,6 +97,7 @@ class Campfire extends Spawnable implements Container{
 	}
 
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
+		/** @var int $slot */
 		foreach($this->getInventory()->getContents() as $slot => $item){
 			$nbt->setTag("Item" . $slot + 1, $item->nbtSerialize());
 		}

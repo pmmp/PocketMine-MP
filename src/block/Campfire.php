@@ -41,14 +41,15 @@ use pocketmine\item\Item;
 use pocketmine\item\PotionType;
 use pocketmine\item\Shovel;
 use pocketmine\item\VanillaItems;
-use pocketmine\math\Vector3;
 use pocketmine\math\Facing;
+use pocketmine\math\Vector3;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\CampfireSound;
 use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\FlintSteelSound;
 use function count;
+use function mt_rand;
 
 class Campfire extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
