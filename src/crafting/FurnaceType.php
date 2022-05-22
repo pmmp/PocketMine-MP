@@ -25,6 +25,7 @@ namespace pocketmine\crafting;
 
 use pocketmine\utils\EnumTrait;
 use pocketmine\world\sound\BlastFurnaceSound;
+use pocketmine\world\sound\CampfireSound;
 use pocketmine\world\sound\FurnaceSound;
 use pocketmine\world\sound\SmokerSound;
 use pocketmine\world\sound\Sound;

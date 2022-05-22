@@ -60,6 +60,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static Bed BROWN_BED()
  * @method static Dye BROWN_DYE()
  * @method static Bucket BUCKET()
+ * @method static ItemBlock CAMPFIRE()
  * @method static Carrot CARROT()
  * @method static Armor CHAINMAIL_BOOTS()
  * @method static Armor CHAINMAIL_CHESTPLATE()
@@ -422,6 +423,7 @@ final class VanillaItems{
 		self::register("brown_bed", $factory->get(Ids::BED, 12));
 		self::register("brown_dye", $factory->get(Ids::DYE, 17));
 		self::register("bucket", $factory->get(Ids::BUCKET));
+		self::register("campfire", $factory->get(Ids::CAMPFIRE_ITEM));
 		self::register("carrot", $factory->get(Ids::CARROT));
 		self::register("chainmail_boots", $factory->get(Ids::CHAINMAIL_BOOTS));
 		self::register("chainmail_chestplate", $factory->get(Ids::CHAINMAIL_CHESTPLATE));

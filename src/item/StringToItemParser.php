@@ -976,6 +976,7 @@ final class StringToItemParser extends StringToTParser{
 		$result->register("brick", fn() => VanillaItems::BRICK());
 		$result->register("brown_dye", fn() => VanillaItems::BROWN_DYE());
 		$result->register("bucket", fn() => VanillaItems::BUCKET());
+		$result->register("campfire", fn() => VanillaItems::CAMPFIRE());
 		$result->register("carrot", fn() => VanillaItems::CARROT());
 		$result->register("chain_boots", fn() => VanillaItems::CHAINMAIL_BOOTS());
 		$result->register("chain_chestplate", fn() => VanillaItems::CHAINMAIL_CHESTPLATE());

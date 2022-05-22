@@ -154,7 +154,7 @@ class BlockFactory{
 
 		$chestBreakInfo = new BlockBreakInfo(2.5, BlockToolType::AXE);
 		$this->registerAllMeta(new Chest(new BID(Ids::CHEST, 0, null, TileChest::class), "Chest", $chestBreakInfo));
-		$this->registerAllMeta(new Campfire(new BID(Ids::CAMPFIRE, 0, ItemIds::CAMPFIRE, TileCampfire::class), "Campfire", new BlockBreakInfo(2, BlockToolType::AXE, 0, 10)));
+		$this->registerAllMeta(new Campfire(new BID(Ids::CAMPFIRE, 0, ItemIds::CAMPFIRE, TileCampfire::class), "Campfire", new BlockBreakInfo(5.0, BlockToolType::AXE)));
 		$this->registerAllMeta(new Clay(new BID(Ids::CLAY_BLOCK, 0), "Clay Block", new BlockBreakInfo(0.6, BlockToolType::SHOVEL)));
 		$this->registerAllMeta(new Coal(new BID(Ids::COAL_BLOCK, 0), "Coal Block", new BlockBreakInfo(5.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel(), 30.0)));
 		$this->registerAllMeta(new CoalOre(new BID(Ids::COAL_ORE, 0), "Coal Ore", new BlockBreakInfo(3.0, BlockToolType::PICKAXE, ToolTier::WOOD()->getHarvestLevel())));

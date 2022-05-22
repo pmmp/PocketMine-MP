@@ -23,10 +23,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block;
 
+use pocketmine\block\inventory\CampfireInventory;
 use pocketmine\block\tile\Campfire as TileCampfire;
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\FacesOppositePlacingPlayerTrait;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\crafting\FurnaceRecipe;
 use pocketmine\crafting\FurnaceType;
 use pocketmine\entity\Entity;
@@ -43,37 +45,36 @@ use pocketmine\math\Vector3;
 use pocketmine\math\Facing;
 use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
+use pocketmine\world\sound\CampfireSound;
 use pocketmine\world\sound\FireExtinguishSound;
 use pocketmine\world\sound\FlintSteelSound;
-use pocketmine\world\sound\ItemFrameAddItemSound;
 use function count;
 
 class Campfire extends Transparent{
 	use FacesOppositePlacingPlayerTrait;
 	use HorizontalFacingTrait;
 
-	protected bool $extinguished = false;
-	/** @var Item[] */
-	protected array $items = [];
-	/** @var int[] */
-	protected array $itemTime = [];
+	protected bool $lit = true;
+	protected CampfireInventory $inventory;
+	/** @phpstan-var array<int, int> */
+	protected array $cookingTimes = [];
 
 
 	public function writeStateToMeta() : int{
-		return BlockDataSerializer::writeLegacyHorizontalFacing($this->facing) | ($this->extinguished ? BlockLegacyMetadata::CAMPFIRE_FLAG_EXTINGUISHED : 0);
+		return BlockDataSerializer::writeHorizontalFacing($this->facing) | (!$this->lit ? BlockLegacyMetadata::CAMPFIRE_FLAG_EXTINGUISHED : 0);
 	}
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
-		$this->facing = BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03);
-		$this->extinguished = ($stateMeta & BlockLegacyMetadata::CAMPFIRE_FLAG_EXTINGUISHED) === BlockLegacyMetadata::CAMPFIRE_FLAG_EXTINGUISHED;
+		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta & 0x03);
+		$this->lit = ($stateMeta & BlockLegacyMetadata::CAMPFIRE_FLAG_EXTINGUISHED) !== BlockLegacyMetadata::CAMPFIRE_FLAG_EXTINGUISHED;
 	}
 
 	public function readStateFromWorld() : void{
 		parent::readStateFromWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileCampfire){
-			$this->items = $tile->getInventory()->getContents();
-			$this->itemTime = $tile->getItemTimes();
+			$this->inventory = $tile->getInventory();
+			$this->cookingTimes = $tile->getCookingTimes();
 		}
 	}
 
@@ -81,8 +82,7 @@ class Campfire extends Transparent{
 		parent::writeStateToWorld();
 		$tile = $this->position->getWorld()->getTile($this->position);
 		if($tile instanceof TileCampfire){
-			$tile->getInventory()->setContents($this->items);
-			$tile->setItemTimes($this->itemTime);
+			$tile->setCookingTimes($this->cookingTimes);
 		}
 	}
 
@@ -95,7 +95,7 @@ class Campfire extends Transparent{
 	}
 
 	public function getLightLevel() : int{
-		return $this->extinguished ? 0 : 15;
+		return $this->lit ? 15 : 0;
 	}
 
 	public function isAffectedBySilkTouch() : bool{
@@ -108,13 +108,21 @@ class Campfire extends Transparent{
 		];
 	}
 
-	public function isExtinguished() : bool{
-		return $this->extinguished;
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
+	public function getInventory() : CampfireInventory{
+		return $this->inventory;
+	}
+
+	public function isLit() : bool{
+		return $this->lit;
 	}
 
 	/** @return $this */
-	public function setExtinguished(bool $extinguish = true) : self{
-		$this->extinguished = $extinguish;
+	public function setLit(bool $lit = true) : self{
+		$this->lit = $lit;
 		return $this;
 	}
 
@@ -122,97 +130,51 @@ class Campfire extends Transparent{
 		return FurnaceType::CAMPFIRE();
 	}
 
-	public function canCook(Item $item) : bool{
-		return $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($this->getFurnaceType())->match($item) instanceof FurnaceRecipe;
+	public function setCookingTime(int $slot, int $time) : void{
+		$this->cookingTimes[$slot] = $time;
 	}
 
-	public function canAddItem(Item $item) : bool{
-		if(count($this->items) >= 4){
-			return false;
-		}
-		return $this->canCook($item);
-	}
-
-	public function setItem(Item $item, int $slot) : void{
-		if($slot < 0 or $slot > 3){
-			throw new \InvalidArgumentException("Slot must be in range 0-3, got " . $slot);
-		}
-		if($item->isNull()){
-			if(isset($this->items[$slot])){
-				unset($this->items[$slot]);
-			}
-		}else{
-			$this->items[$slot] = $item;
-		}
-	}
-
-	public function setSlotTime(int $slot, int $time) : void{
-		$this->itemTime[$slot] = $time;
-	}
-
-	public function getSlotTime(int $slot) : int{
-		return $this->itemTime[$slot] ?? 0;
-	}
-
-	public function addItem(Item $item) : bool{
-		$item->setCount(1);
-		if(!$this->canAddItem($item)){
-			return false;
-		}
-		$this->setItem($item, count($this->items));
-		return true;
-	}
-
-	private function increaseSlotTime(int $slot) : void{
-		$this->setSlotTime($slot, $this->getSlotTime($slot) + 1);
+	public function getCookingTime(int $slot) : int{
+		return $this->cookingTimes[$slot] ?? 0;
 	}
 
 	private function extinguish() : void{
 		$this->position->getWorld()->addSound($this->position, new FireExtinguishSound());
-		$this->position->getWorld()->setBlock($this->position, $this->setExtinguished());
+		$this->position->getWorld()->setBlock($this->position, $this->setLit(false));
 	}
 
 	private function fire() : void{
 		$this->position->getWorld()->addSound($this->position, new FlintSteelSound());
-		$this->position->getWorld()->setBlock($this->position, $this->setExtinguished(false));
-		$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+		$this->position->getWorld()->setBlock($this->position, $this->setLit());
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if($this->getSide(Facing::DOWN)->isTransparent()){
+		if(!$this->getSide(Facing::DOWN)->getSupportType(Facing::UP)->hasCenterSupport()){
 			return false;
 		}
 		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 	}
 
-	public function onBreak(Item $item, ?Player $player = null) : bool{
-		$this->items = [];
-		$this->itemTime = [];
-		return parent::onBreak($item, $player);
-	}
-
 	public function onInteract(Item $item, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		if($player !== null){
 			if($item instanceof FlintSteel){
-				if($this->extinguished){
+				if(!$this->lit){
 					$item->applyDamage(1);
 					$this->fire();
 				}
 				return true;
 			}
-			if($item instanceof Shovel && !$this->extinguished){
+			if($item instanceof Shovel && $this->lit){
 				$item->applyDamage(1);
 				$this->extinguish();
 				return true;
 			}
 
-			if($this->addItem(clone $item)){
+			$ingredient = clone $item;
+			$ingredient->setCount(1);
+			if($this->inventory->canAddItem($ingredient)){
+				$this->inventory->addItem($ingredient);
 				$item->pop();
-				$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new ItemFrameAddItemSound());
-				$this->position->getWorld()->setBlock($this->position, $this);
-				if(count($this->items) === 1){
-					$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
-				}
 				return true;
 			}
 		}
@@ -221,20 +183,20 @@ class Campfire extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		$block = $this->getSide(Facing::UP);
-		if($block instanceof Water && !$this->extinguished){
+		if($block instanceof Water && $this->lit){
 			$this->extinguish();
 		}
 	}
 
 	public function onEntityInside(Entity $entity) : bool{
-		if($this->extinguished){
+		if(!$this->lit){
 			if($entity->isOnFire()){
 				$this->fire();
 				return true;
 			}
 			return false;
 		}
-		if($entity instanceof SplashPotion && $entity->getPotionType()->getDisplayName() === PotionType::WATER()->getDisplayName()){
+		if($entity instanceof SplashPotion && $entity->getPotionType()->equals(PotionType::WATER())){
 			$this->extinguish();
 			return true;
 		}elseif($entity instanceof Living){
@@ -245,20 +207,25 @@ class Campfire extends Transparent{
 	}
 
 	public function onScheduledUpdate() : void{
-		if(!$this->extinguished){
-			foreach($this->items as $slot => $item){
-				$this->increaseSlotTime($slot);
-				if($this->getSlotTime($slot) >= $this->getFurnaceType()->getCookDurationTicks()){
-					$this->setItem(VanillaItems::AIR(), $slot);
-					$this->setSlotTime($slot, 0);
+		if($this->lit){
+			$items = $this->inventory->getContents();
+			foreach($items as $slot => $item){
+				$this->setCookingTime($slot, $this->getCookingTime($slot) + 20);
+				if($this->getCookingTime($slot) >= $this->getFurnaceType()->getCookDurationTicks()){
+					$this->inventory->setItem($slot, VanillaItems::AIR());
+					$this->setCookingTime($slot, 0);
 					$result = ($item = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($this->getFurnaceType())->match($item)) instanceof FurnaceRecipe ? $item->getResult() : VanillaItems::AIR();
 					$this->position->getWorld()->dropItem($this->position->add(0, 1, 0), $result);
 				}
 			}
-			$this->position->getWorld()->setBlock($this->position, $this);
-			if(!empty($this->items)){
-				$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 1);
+			if(count($items) > 0){
+				$this->position->getWorld()->setBlock($this->position, $this);
 			}
+			if(mt_rand(1, 10) === 1){
+				$this->position->getWorld()->addSound($this->position, new CampfireSound());
+			}
+
+			$this->position->getWorld()->scheduleDelayedBlockUpdate($this->position, 20);
 		}
 	}
 }

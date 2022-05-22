@@ -24,9 +24,12 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
+use pocketmine\block\Campfire;
+use pocketmine\crafting\FurnaceRecipe;
+use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\SimpleInventory;
+use pocketmine\item\Item;
 use pocketmine\world\Position;
-
 
 class CampfireInventory extends SimpleInventory implements BlockInventory{
 	use BlockInventoryTrait;
@@ -34,5 +37,22 @@ class CampfireInventory extends SimpleInventory implements BlockInventory{
 	public function __construct(Position $holder){
 		$this->holder = $holder;
 		parent::__construct(4);
+	}
+
+	public function getMaxStackSize() : int{
+		return 1;
+	}
+
+	public function canAddItem(Item $item) : bool{
+		return $this->holder->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager(FurnaceType::CAMPFIRE())->match($item) instanceof FurnaceRecipe && parent::canAddItem($item);
+	}
+
+	public function onSlotChange(int $index, Item $before) : void{
+		parent::onSlotChange($index, $before);
+
+		$block = $this->holder->getWorld()->getBlock($this->holder);
+		if($block instanceof Campfire){
+			$this->holder->getWorld()->setBlock($this->holder, $block);
+		}
 	}
 }
