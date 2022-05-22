@@ -29,7 +29,7 @@ use pocketmine\item\Item;
 use pocketmine\player\Player;
 
 /**
- * Called when a player tries to drop an item from its hotbar
+ * Called when a player tries to drop an item
  */
 class PlayerDropItemEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
