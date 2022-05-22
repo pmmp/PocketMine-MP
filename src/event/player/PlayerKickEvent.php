@@ -29,7 +29,7 @@ use pocketmine\lang\Translatable;
 use pocketmine\player\Player;
 
 /**
- * Called when a player leaves the server
+ * Called when a player is kicked (forcibly disconnected) from the server, e.g. if an operator used /kick.
  */
 class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
@@ -46,18 +46,33 @@ class PlayerKickEvent extends PlayerEvent implements Cancellable{
 		$this->reason = $reason;
 	}
 
+	/**
+	 * Sets the message shown on the kicked player's disconnection screen.
+	 * This message is also displayed in the console and server log.
+	 */
 	public function setReason(string $reason) : void{
 		$this->reason = $reason;
 	}
 
+	/**
+	 * Returns the message shown on the kicked player's disconnection screen.
+	 * This message is also displayed in the console and server log.
+	 * When kicked by the /kick command, the default is something like "Kicked by admin.".
+	 */
 	public function getReason() : string{
 		return $this->reason;
 	}
 
+	/**
+	 * Sets the quit message broadcasted to other players.
+	 */
 	public function setQuitMessage(Translatable|string $quitMessage) : void{
 		$this->quitMessage = $quitMessage;
 	}
 
+	/**
+	 * Returns the quit message broadcasted to other players, e.g. "Steve left the game".
+	 */
 	public function getQuitMessage() : Translatable|string{
 		return $this->quitMessage;
 	}

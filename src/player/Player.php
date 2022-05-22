@@ -33,6 +33,7 @@ use pocketmine\data\java\GameModeIdMap;
 use pocketmine\entity\animation\Animation;
 use pocketmine\entity\animation\ArmSwingAnimation;
 use pocketmine\entity\animation\CriticalHitAnimation;
+use pocketmine\entity\Attribute;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Human;
@@ -2223,8 +2224,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			}
 		}
 
-		$this->getWorld()->dropExperience($this->location, $ev->getXpDropAmount());
-		$this->xpManager->setXpAndProgress(0, 0.0);
+		if(!$ev->getKeepXp()){
+			$this->getWorld()->dropExperience($this->location, $ev->getXpDropAmount());
+			$this->xpManager->setXpAndProgress(0, 0.0);
+		}
 
 		if($ev->getDeathMessage() != ""){
 			$this->server->broadcastMessage($ev->getDeathMessage());
@@ -2285,6 +2288,9 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->setHealth($this->getMaxHealth());
 
 				foreach($this->attributeMap->getAll() as $attr){
+					if($attr->getId() === Attribute::EXPERIENCE || $attr->getId() === Attribute::EXPERIENCE_LEVEL){ //we have already reset both of those if needed when the player died
+						continue;
+					}
 					$attr->resetToDefault();
 				}
 
@@ -2373,6 +2379,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if(parent::teleport($pos, $yaw, $pitch)){
 
 			$this->removeCurrentWindow();
+			$this->stopSleep();
 
 			$this->sendPosition($this->location, $this->location->yaw, $this->location->pitch, MovePlayerPacket::MODE_TELEPORT);
 			$this->broadcastMovement(true);
@@ -2384,7 +2391,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			if($this->spawnChunkLoadCount !== -1){
 				$this->spawnChunkLoadCount = 0;
 			}
-			$this->stopSleep();
 			$this->blockBreakHandler = null;
 
 			//TODO: workaround for player last pos not getting updated
@@ -2496,14 +2502,14 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	public function removeCurrentWindow() : void{
 		$this->doCloseInventory();
 		if($this->currentWindow !== null){
-			(new InventoryCloseEvent($this->currentWindow, $this))->call();
-
+			$currentWindow = $this->currentWindow;
 			$this->logger->debug("Closing inventory " . get_class($this->currentWindow) . "#" . spl_object_id($this->currentWindow));
 			$this->currentWindow->onClose($this);
 			if(($inventoryManager = $this->getNetworkSession()->getInvManager()) !== null){
 				$inventoryManager->onCurrentWindowRemove();
 			}
 			$this->currentWindow = null;
+			(new InventoryCloseEvent($currentWindow, $this))->call();
 		}
 	}
 

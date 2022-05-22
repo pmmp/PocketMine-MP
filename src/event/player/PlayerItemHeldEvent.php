@@ -28,6 +28,11 @@ use pocketmine\event\CancellableTrait;
 use pocketmine\item\Item;
 use pocketmine\player\Player;
 
+/**
+ * Called when a player's held item changes.
+ * This could be because they selected a different hotbar slot, or because the item in the selected hotbar slot was
+ * changed.
+ */
 class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 

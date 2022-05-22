@@ -26,6 +26,15 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\object\ItemEntity;
 
 /**
+ * Called when an item is spawned or loaded.
+ *
+ * Some possible reasons include:
+ * - item is loaded from disk
+ * - player dropping an item
+ * - block drops
+ * - loot of a player or entity
+ *
+ * @see PlayerDropItemEvent
  * @phpstan-extends EntityEvent<ItemEntity>
  */
 class ItemSpawnEvent extends EntityEvent{
