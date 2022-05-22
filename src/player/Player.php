@@ -2379,6 +2379,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		if(parent::teleport($pos, $yaw, $pitch)){
 
 			$this->removeCurrentWindow();
+			$this->stopSleep();
 
 			$this->sendPosition($this->location, $this->location->yaw, $this->location->pitch, MovePlayerPacket::MODE_TELEPORT);
 			$this->broadcastMovement(true);
@@ -2390,7 +2391,6 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 			if($this->spawnChunkLoadCount !== -1){
 				$this->spawnChunkLoadCount = 0;
 			}
-			$this->stopSleep();
 			$this->blockBreakHandler = null;
 
 			//TODO: workaround for player last pos not getting updated

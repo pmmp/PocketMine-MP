@@ -28,12 +28,18 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 
 /**
- * Called when any CommandSender runs a command, early in the process
+ * Called when any CommandSender runs a command, before it is parsed.
  *
- * You don't want to use this except for a few cases like logging commands,
- * blocking commands on certain places, or applying modifiers.
+ * This can be used for logging commands, or preprocessing the command string to add custom features (e.g. selectors).
  *
- * The message DOES NOT contain a slash at the start
+ * WARNING: DO NOT use this to block commands. Many commands have aliases.
+ * For example, /version can also be invoked using /ver or /about.
+ * To prevent command senders from using certain commands, deny them permission to use the commands you don't want them
+ * to have access to.
+ *
+ * @see Permissible::addAttachment()
+ *
+ * The message DOES NOT begin with a slash.
  */
 class CommandEvent extends ServerEvent implements Cancellable{
 	use CancellableTrait;

@@ -27,7 +27,7 @@ use pocketmine\world\format\Chunk;
 use pocketmine\world\World;
 
 /**
- * Called when a Chunk is loaded
+ * Called when a Chunk is loaded or newly created by the world generator.
  */
 class ChunkLoadEvent extends ChunkEvent{
 	public function __construct(
@@ -40,6 +40,10 @@ class ChunkLoadEvent extends ChunkEvent{
 		parent::__construct($world, $chunkX, $chunkZ, $chunk);
 	}
 
+	/**
+	 * Returns whether the chunk is newly generated.
+	 * If false, the chunk was loaded from storage.
+	 */
 	public function isNewChunk() : bool{
 		return $this->newChunk;
 	}
