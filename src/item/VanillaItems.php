@@ -122,7 +122,7 @@ use pocketmine\utils\CloningRegistryTrait;
  * @method static CookedRabbit COOKED_RABBIT()
  * @method static CookedSalmon COOKED_SALMON()
  * @method static Cookie COOKIE()
- * @method static ItemBlockWallOrFloor CORAL_FAN()
+ * @method static CoralFan CORAL_FAN()
  * @method static Skull CREEPER_HEAD()
  * @method static Bed CYAN_BED()
  * @method static Dye CYAN_DYE()
