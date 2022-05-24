@@ -35,6 +35,7 @@ final class ItemIdentifierFlattened extends ItemIdentifier{
 	/** @return int[] */
 	public function getAdditionalIds() : array{ return $this->additionalIds; }
 
+	/** @return int[] */
 	public function getAllIds() : array{
 		return [$this->getId(), ...$this->additionalIds];
 	}
