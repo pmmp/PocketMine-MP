@@ -43,8 +43,16 @@ final class ItemSerializerDeserializerTest extends TestCase{
 				continue;
 			}
 
-			$itemData = $this->serializer->serialize($item);
-			$newItem = $this->deserializer->deserialize($itemData);
+			try{
+				$itemData = $this->serializer->serialize($item);
+			}catch(ItemTypeSerializeException $e){
+				self::fail($e->getMessage());
+			}
+			try{
+				$newItem = $this->deserializer->deserialize($itemData);
+			}catch(ItemTypeDeserializeException $e){
+				self::fail($e->getMessage());
+			}
 
 			self::assertTrue($item->equalsExact($newItem));
 		}
@@ -57,8 +65,16 @@ final class ItemSerializerDeserializerTest extends TestCase{
 				continue;
 			}
 
-			$itemData = $this->serializer->serialize($item);
-			$newItem = $this->deserializer->deserialize($itemData);
+			try{
+				$itemData = $this->serializer->serialize($item);
+			}catch(ItemTypeSerializeException $e){
+				self::fail($e->getMessage());
+			}
+			try{
+				$newItem = $this->deserializer->deserialize($itemData);
+			}catch(ItemTypeDeserializeException $e){
+				self::fail($e->getMessage());
+			}
 
 			self::assertTrue($item->equalsExact($newItem));
 		}
