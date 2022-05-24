@@ -22,7 +22,6 @@ declare(strict_types=1);
 
 namespace pocketmine\network\mcpe\convert;
 
-use pocketmine\block\BlockLegacyIds;
 use pocketmine\block\inventory\AnvilInventory;
 use pocketmine\block\inventory\CraftingTableInventory;
 use pocketmine\block\inventory\EnchantInventory;
@@ -37,6 +36,7 @@ use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\item\ItemIds;
+use pocketmine\item\VanillaItems;
 use pocketmine\nbt\NbtException;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -141,20 +141,18 @@ class TypeConverter{
 			$nbt = clone $itemStack->getNamedTag();
 		}
 
-		$isBlockItem = $itemStack->getId() < 256;
-
 		$idMeta = ItemTranslator::getInstance()->toNetworkIdQuiet($itemStack->getId(), $itemStack->getMeta());
 		if($idMeta === null){
 			//Display unmapped items as INFO_UPDATE, but stick something in their NBT to make sure they don't stack with
 			//other unmapped items.
-			[$id, $meta] = ItemTranslator::getInstance()->toNetworkId(ItemIds::INFO_UPDATE, 0);
+			[$id, $meta, $blockRuntimeId] = ItemTranslator::getInstance()->toNetworkId(ItemIds::INFO_UPDATE, 0);
 			if($nbt === null){
 				$nbt = new CompoundTag();
 			}
 			$nbt->setInt(self::PM_ID_TAG, $itemStack->getId());
 			$nbt->setInt(self::PM_META_TAG, $itemStack->getMeta());
 		}else{
-			[$id, $meta] = $idMeta;
+			[$id, $meta, $blockRuntimeId] = $idMeta;
 
 			if($itemStack instanceof Durable && $itemStack->getDamage() > 0){
 				if($nbt !== null){
@@ -166,22 +164,6 @@ class TypeConverter{
 					$nbt = new CompoundTag();
 				}
 				$nbt->setInt(self::DAMAGE_TAG, $itemStack->getDamage());
-			}elseif($isBlockItem && $itemStack->getMeta() !== 0){
-				//TODO HACK: This foul-smelling code ensures that we can correctly deserialize an item when the
-				//client sends it back to us, because as of 1.16.220, blockitems quietly discard their metadata
-				//client-side. Aside from being very annoying, this also breaks various server-side behaviours.
-				if($nbt === null){
-					$nbt = new CompoundTag();
-				}
-				$nbt->setInt(self::PM_META_TAG, $itemStack->getMeta());
-			}
-		}
-
-		$blockRuntimeId = 0;
-		if($isBlockItem){
-			$block = $itemStack->getBlock();
-			if($block->getId() !== BlockLegacyIds::AIR){
-				$blockRuntimeId = RuntimeBlockMapping::getInstance()->toRuntimeId($block->getFullId());
 			}
 		}
 
@@ -202,17 +184,24 @@ class TypeConverter{
 	 */
 	public function netItemStackToCore(ItemStack $itemStack) : Item{
 		if($itemStack->getId() === 0){
-			return ItemFactory::getInstance()->get(ItemIds::AIR, 0, 0);
+			return VanillaItems::AIR();
 		}
 		$compound = $itemStack->getNbt();
 
-		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkId($itemStack->getId(), $itemStack->getMeta());
+		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkId($itemStack->getId(), $itemStack->getMeta(), $itemStack->getBlockRuntimeId());
 
 		if($compound !== null){
 			$compound = clone $compound;
-			if(($idTag = $compound->getTag(self::PM_ID_TAG)) instanceof IntTag){
-				$id = $idTag->getValue();
-				$compound->removeTag(self::PM_ID_TAG);
+
+			if($id === ItemIds::INFO_UPDATE && $meta === 0){
+				if(($idTag = $compound->getTag(self::PM_ID_TAG)) instanceof IntTag){
+					$id = $idTag->getValue();
+					$compound->removeTag(self::PM_ID_TAG);
+				}
+				if(($metaTag = $compound->getTag(self::PM_META_TAG)) instanceof IntTag){
+					$meta = $metaTag->getValue();
+					$compound->removeTag(self::PM_META_TAG);
+				}
 			}
 			if(($damageTag = $compound->getTag(self::DAMAGE_TAG)) instanceof IntTag){
 				$meta = $damageTag->getValue();
@@ -221,14 +210,7 @@ class TypeConverter{
 					$compound->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
 					$compound->setTag(self::DAMAGE_TAG, $conflicted);
 				}
-			}elseif(($metaTag = $compound->getTag(self::PM_META_TAG)) instanceof IntTag){
-				//TODO HACK: This foul-smelling code ensures that we can correctly deserialize an item when the
-				//client sends it back to us, because as of 1.16.220, blockitems quietly discard their metadata
-				//client-side. Aside from being very annoying, this also breaks various server-side behaviours.
-				$meta = $metaTag->getValue();
-				$compound->removeTag(self::PM_META_TAG);
-			}
-			if($compound->count() === 0){
+			}elseif($compound->count() === 0){
 				$compound = null;
 			}
 		}
