@@ -34,7 +34,6 @@ use pocketmine\data\bedrock\item\ItemTypeIds as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\item\Banner;
-use pocketmine\item\Durable;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\item\PotionType;
