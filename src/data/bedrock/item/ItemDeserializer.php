@@ -35,7 +35,6 @@ use pocketmine\data\bedrock\EntityLegacyIds;
 use pocketmine\data\bedrock\item\ItemTypeIds as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\PotionTypeIdMap;
-use pocketmine\data\SavedDataLoadingException;
 use pocketmine\item\Item;
 use pocketmine\item\PotionType;
 use pocketmine\item\VanillaItems as Items;
@@ -64,13 +63,16 @@ final class ItemDeserializer{
 		$this->deserializers[$id] = $deserializer;
 	}
 
+	/**
+	 * @throws ItemTypeDeserializeException
+	 */
 	public function deserialize(Data $data) : Item{
 		if(($blockData = $data->getBlock()) !== null){
 			//TODO: this is rough duct tape; we need a better way to deal with this
 			try{
 				$block = GlobalBlockStateHandlers::getDeserializer()->deserialize($blockData);
 			}catch(BlockStateDeserializeException $e){
-				throw new SavedDataLoadingException("Failed to deserialize item data: " . $e->getMessage(), 0, $e);
+				throw new ItemTypeDeserializeException("Failed to deserialize item data: " . $e->getMessage(), 0, $e);
 			}
 
 			//TODO: worth caching this or not?
@@ -78,7 +80,7 @@ final class ItemDeserializer{
 		}
 		$id = $data->getName();
 		if(!isset($this->deserializers[$id])){
-			throw new SavedDataLoadingException("No deserializer found for ID $id");
+			throw new ItemTypeDeserializeException("No deserializer found for ID $id");
 		}
 
 		return ($this->deserializers[$id])($data);
@@ -97,7 +99,7 @@ final class ItemDeserializer{
 			if($data->getMeta() === 0){
 				return Items::ARROW();
 			}
-			throw new SavedDataLoadingException("Tipped arrows are not implemented yet");
+			throw new ItemTypeDeserializeException("Tipped arrows are not implemented yet");
 		});
 		//TODO: minecraft:axolotl_bucket
 		//TODO: minecraft:axolotl_spawn_egg
@@ -107,7 +109,7 @@ final class ItemDeserializer{
 			$meta = $data->getMeta();
 			$color = DyeColorIdMap::getInstance()->fromInvertedId($meta);
 			if($color === null){
-				throw new SavedDataLoadingException("Unknown banner meta $meta");
+				throw new ItemTypeDeserializeException("Unknown banner meta $meta");
 			}
 			return Items::BANNER()->setColor($color);
 		});
@@ -117,7 +119,7 @@ final class ItemDeserializer{
 			$meta = $data->getMeta();
 			$color = DyeColorIdMap::getInstance()->fromId($meta);
 			if($color === null){
-				throw new SavedDataLoadingException("Unknown bed meta $meta");
+				throw new ItemTypeDeserializeException("Unknown bed meta $meta");
 			}
 			return Blocks::BED()->setColor($color)->asItem();
 		});
@@ -139,7 +141,7 @@ final class ItemDeserializer{
 			try{
 				$treeType = TreeType::fromMagicNumber($data->getMeta());
 			}catch(\InvalidArgumentException $e){
-				throw new SavedDataLoadingException($e->getMessage(), 0, $e);
+				throw new ItemTypeDeserializeException($e->getMessage(), 0, $e);
 			}
 			return match($treeType->id()){
 				TreeType::OAK()->id() => Items::OAK_BOAT(),
@@ -229,7 +231,7 @@ final class ItemDeserializer{
 			CompoundTypeIds::HYDROGEN_PEROXIDE => Items::CHEMICAL_HYDROGEN_PEROXIDE(),
 			CompoundTypeIds::AMMONIA => Items::CHEMICAL_AMMONIA(),
 			CompoundTypeIds::SODIUM_HYPOCHLORITE => Items::CHEMICAL_SODIUM_HYPOCHLORITE(),
-			default => throw new SavedDataLoadingException("Unknown chemical meta " . $data->getMeta())
+			default => throw new ItemTypeDeserializeException("Unknown chemical meta " . $data->getMeta())
 		});
 		$this->map(Ids::COOKED_BEEF, fn() => Items::STEAK());
 		$this->map(Ids::COOKED_CHICKEN, fn() => Items::COOKED_CHICKEN());
@@ -284,7 +286,7 @@ final class ItemDeserializer{
 			}
 			$dyeColor = DyeColorIdMap::getInstance()->fromInvertedId($meta);
 			if($dyeColor === null){
-				throw new SavedDataLoadingException("Unknown dye meta $meta");
+				throw new ItemTypeDeserializeException("Unknown dye meta $meta");
 			}
 			return match($dyeColor->id()){
 				DyeColor::CYAN()->id() => Items::CYAN_DYE(),
@@ -475,7 +477,7 @@ final class ItemDeserializer{
 			$meta = $data->getMeta();
 			$potionType = PotionTypeIdMap::getInstance()->fromId($meta);
 			if($potionType === null){
-				throw new SavedDataLoadingException("Unknown potion type ID $meta");
+				throw new ItemTypeDeserializeException("Unknown potion type ID $meta");
 			}
 			return match($potionType->id()){
 				PotionType::WATER()->id() => Items::WATER_POTION(),
@@ -520,7 +522,7 @@ final class ItemDeserializer{
 				PotionType::STRONG_TURTLE_MASTER()->id() => Items::STRONG_TURTLE_MASTER_POTION(),
 				PotionType::SLOW_FALLING()->id() => Items::SLOW_FALLING_POTION(),
 				PotionType::LONG_SLOW_FALLING()->id() => Items::LONG_SLOW_FALLING_POTION(),
-				default => throw new SavedDataLoadingException("Unhandled potion type " . $potionType->getDisplayName())
+				default => throw new ItemTypeDeserializeException("Unhandled potion type " . $potionType->getDisplayName())
 			};
 		});
 		//TODO: minecraft:powder_snow_bucket
@@ -565,7 +567,7 @@ final class ItemDeserializer{
 			try{
 				$skullType = SkullType::fromMagicNumber($meta);
 			}catch(\InvalidArgumentException $e){
-				throw new SavedDataLoadingException($e->getMessage(), 0, $e);
+				throw new ItemTypeDeserializeException($e->getMessage(), 0, $e);
 			}
 			return match($skullType->id()) {
 				SkullType::SKELETON()->id() => Items::SKELETON_SKULL(),
@@ -574,7 +576,7 @@ final class ItemDeserializer{
 				SkullType::CREEPER()->id() => Items::CREEPER_HEAD(),
 				SkullType::PLAYER()->id() => Items::PLAYER_HEAD(),
 				SkullType::DRAGON()->id() => Items::DRAGON_HEAD(),
-				default => throw new SavedDataLoadingException("Unexpected skull type " . $skullType->getDisplayName())
+				default => throw new ItemTypeDeserializeException("Unexpected skull type " . $skullType->getDisplayName())
 			};
 		});
 		//TODO: minecraft:skull_banner_pattern
@@ -587,7 +589,7 @@ final class ItemDeserializer{
 			EntityLegacyIds::ZOMBIE => Items::ZOMBIE_SPAWN_EGG(),
 			EntityLegacyIds::SQUID => Items::SQUID_SPAWN_EGG(),
 			EntityLegacyIds::VILLAGER => Items::VILLAGER_SPAWN_EGG(),
-			default => throw new SavedDataLoadingException("Unhandled spawn egg meta " . $data->getMeta())
+			default => throw new ItemTypeDeserializeException("Unhandled spawn egg meta " . $data->getMeta())
 		});
 		$this->map(Ids::SPIDER_EYE, fn() => Items::SPIDER_EYE());
 		//TODO: minecraft:spider_spawn_egg
@@ -595,7 +597,7 @@ final class ItemDeserializer{
 			$meta = $data->getMeta();
 			$potionType = PotionTypeIdMap::getInstance()->fromId($meta);
 			if($potionType === null){
-				throw new SavedDataLoadingException("Unknown potion type ID $meta");
+				throw new ItemTypeDeserializeException("Unknown potion type ID $meta");
 			}
 			return match($potionType->id()){
 				PotionType::WATER()->id() => Items::WATER_SPLASH_POTION(),
@@ -640,7 +642,7 @@ final class ItemDeserializer{
 				PotionType::STRONG_TURTLE_MASTER()->id() => Items::STRONG_TURTLE_MASTER_SPLASH_POTION(),
 				PotionType::SLOW_FALLING()->id() => Items::SLOW_FALLING_SPLASH_POTION(),
 				PotionType::LONG_SLOW_FALLING()->id() => Items::LONG_SLOW_FALLING_SPLASH_POTION(),
-				default => throw new SavedDataLoadingException("Unhandled potion type " . $potionType->getDisplayName())
+				default => throw new ItemTypeDeserializeException("Unhandled potion type " . $potionType->getDisplayName())
 			};
 		});
 		$this->map(Ids::SPRUCE_BOAT, fn() => Items::SPRUCE_BOAT());

@@ -27,6 +27,7 @@ use pocketmine\block\Block;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SkullType;
 use pocketmine\data\bedrock\BlockItemIdMap;
+use pocketmine\data\bedrock\blockstate\BlockStateSerializeException;
 use pocketmine\data\bedrock\CompoundTypeIds;
 use pocketmine\data\bedrock\DyeColorIdMap;
 use pocketmine\data\bedrock\item\ItemTypeIds as Ids;
@@ -78,6 +79,8 @@ final class ItemSerializer{
 	/**
 	 * @phpstan-template TItemType of Item
 	 * @phpstan-param TItemType $item
+	 *
+	 * @throws ItemTypeSerializeException
 	 */
 	public function serialize(Item $item) : Data{
 		if($item->isNull()){
@@ -102,8 +105,7 @@ final class ItemSerializer{
 			}
 
 			if($locatedSerializer === null){
-				//TODO: proper exceptions
-				throw new \LogicException("No serializer registered for " . get_class($item) . " " . $item->getName());
+				throw new ItemTypeSerializeException("No serializer registered for " . get_class($item) . " " . $item->getName());
 			}
 
 			/**
@@ -119,15 +121,22 @@ final class ItemSerializer{
 		return $data;
 	}
 
+	/**
+	 * @throws ItemTypeSerializeException
+	 */
 	private static function standardBlock(Block $block) : Data{
-		$blockStateData = GlobalBlockStateHandlers::getSerializer()->serialize($block->getFullId());
+		try{
+			$blockStateData = GlobalBlockStateHandlers::getSerializer()->serialize($block->getFullId());
+		}catch(BlockStateSerializeException $e){
+			throw new ItemTypeSerializeException($e->getMessage(), 0, $e);
+		}
 
 		$itemNameId = BlockItemIdMap::getInstance()->lookupItemId($blockStateData->getName());
 		if($itemNameId === null){
 			//TODO: this might end up being a hassle for custom blocks, since it'll force providing an item
 			//serializer for every custom block
 			//it would probably be better if we allow adding custom item <-> block ID mappings for this
-			throw new \LogicException("No blockitem serializer or blockitem ID mapping registered for block " . $blockStateData->getName());
+			throw new ItemTypeSerializeException("No blockitem serializer or blockitem ID mapping registered for block " . $blockStateData->getName());
 		}
 
 		return new Data($itemNameId, 0, $blockStateData);

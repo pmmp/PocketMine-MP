@@ -188,6 +188,8 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 	/**
 	 * @phpstan-template TBlockType of Block
 	 * @phpstan-param TBlockType $blockState
+	 *
+	 * @throws BlockStateSerializeException
 	 */
 	public function serializeBlock(Block $blockState) : BlockStateData{
 		$typeId = $blockState->getTypeId();
