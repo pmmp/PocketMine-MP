@@ -210,7 +210,8 @@ class TypeConverter{
 					$compound->removeTag(self::DAMAGE_TAG_CONFLICT_RESOLUTION);
 					$compound->setTag(self::DAMAGE_TAG, $conflicted);
 				}
-			}elseif($compound->count() === 0){
+			}
+			if($compound->count() === 0){
 				$compound = null;
 			}
 		}
