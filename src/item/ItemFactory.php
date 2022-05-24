@@ -82,23 +82,10 @@ class ItemFactory{
 		$this->register(new Clownfish(new ItemIdentifier(ItemIds::CLOWNFISH, 0), "Clownfish"));
 		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 0), "Coal"));
 
-		foreach([
-			0 => CoralType::TUBE(),
-			1 => CoralType::BRAIN(),
-			2 => CoralType::BUBBLE(),
-			3 => CoralType::FIRE(),
-			4 => CoralType::HORN()
-		] as $meta => $coralType){
-			$this->register(new ItemBlockWallOrFloor(
-				new ItemIdentifier(ItemIds::CORAL_FAN, $meta),
-				VanillaBlocks::CORAL_FAN()->setCoralType($coralType)->setDead(false),
-				VanillaBlocks::WALL_CORAL_FAN()->setCoralType($coralType)->setDead(false)
-			), true);
-			$this->register(new ItemBlockWallOrFloor(
-				new ItemIdentifier(ItemIds::CORAL_FAN_DEAD, $meta),
-				VanillaBlocks::CORAL_FAN()->setCoralType($coralType)->setDead(true),
-				VanillaBlocks::WALL_CORAL_FAN()->setCoralType($coralType)->setDead(true)
-			), true);
+		$identifier = new ItemIdentifierFlattened(ItemIds::CORAL_FAN, 0, [ItemIds::CORAL_FAN_DEAD]);
+		foreach(CoralType::getAll() as $coralType){
+			$this->register((new CoralFan($identifier))->setCoralType($coralType)->setDead(false), true);
+			$this->register((new CoralFan($identifier))->setCoralType($coralType)->setDead(true), true);
 		}
 
 		$this->register(new Coal(new ItemIdentifier(ItemIds::COAL, 1), "Charcoal"));

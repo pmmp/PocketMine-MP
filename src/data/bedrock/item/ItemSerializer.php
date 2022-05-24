@@ -68,7 +68,7 @@ final class ItemSerializer{
 		if($item->hasAnyDamageValue()){
 			throw new \InvalidArgumentException("Cannot serialize a recipe wildcard");
 		}
-		$index = ($item->getId() << 16) | $item->getMeta();
+		$index = $item->getTypeId();
 		if(isset($this->serializers[$index])){
 			//TODO: REMOVE ME
 			throw new AssumptionFailedError("Registering the same item twice!");
@@ -89,7 +89,7 @@ final class ItemSerializer{
 		if($item instanceof ItemBlock){
 			$data = self::standardBlock($item->getBlock());
 		}else{
-			$index = ($item->getId() << 16) | ($item instanceof Durable ? 0 : $item->getMeta());
+			$index = $item->getTypeId();
 
 			$locatedSerializer = $this->serializers[$index][get_class($item)] ?? null;
 			if($locatedSerializer === null){

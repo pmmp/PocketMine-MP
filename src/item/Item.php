@@ -439,7 +439,12 @@ class Item implements \JsonSerializable{
 		return VanillaBlocks::AIR();
 	}
 
-	final public function getId() : int{
+	final public function getTypeId() : int{
+		//don't use Item::getMeta(), since it might be overridden for non-type information (e.g. durability)
+		return ($this->identifier->getId() << 16) | $this->identifier->getMeta();
+	}
+
+	public function getId() : int{
 		return $this->identifier->getId();
 	}
 
