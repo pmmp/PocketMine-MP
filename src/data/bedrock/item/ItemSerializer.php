@@ -26,6 +26,7 @@ namespace pocketmine\data\bedrock\item;
 use pocketmine\block\Block;
 use pocketmine\block\utils\DyeColor;
 use pocketmine\block\utils\SkullType;
+use pocketmine\block\VanillaBlocks as Blocks;
 use pocketmine\data\bedrock\BlockItemIdMap;
 use pocketmine\data\bedrock\blockstate\BlockStateSerializeException;
 use pocketmine\data\bedrock\CompoundTypeIds;
@@ -34,6 +35,7 @@ use pocketmine\data\bedrock\item\ItemTypeIds as Ids;
 use pocketmine\data\bedrock\item\SavedItemData as Data;
 use pocketmine\data\bedrock\PotionTypeIdMap;
 use pocketmine\item\Banner;
+use pocketmine\item\CoralFan;
 use pocketmine\item\Item;
 use pocketmine\item\ItemBlock;
 use pocketmine\item\PotionType;
@@ -44,7 +46,6 @@ use function class_parents;
 use function get_class;
 
 final class ItemSerializer{
-
 	/**
 	 * These callables actually accept Item, but for the sake of type completeness, it has to be never, since we can't
 	 * describe the bottom type of a type hierarchy only containing Item.
@@ -52,7 +53,13 @@ final class ItemSerializer{
 	 * @var \Closure[][]
 	 * @phpstan-var array<int, array<class-string, \Closure(never) : Data>>
 	 */
-	private array $serializers = [];
+	private array $itemSerializers = [];
+
+	/**
+	 * @var \Closure[][]
+	 * @phpstan-var array<int, array<class-string, \Closure(never) : Data>>
+	 */
+	private array $blockItemSerializers = [];
 
 	public function __construct(){
 		$this->registerSerializers();
@@ -68,11 +75,24 @@ final class ItemSerializer{
 			throw new \InvalidArgumentException("Cannot serialize a recipe wildcard");
 		}
 		$index = $item->getTypeId();
-		if(isset($this->serializers[$index])){
+		if(isset($this->itemSerializers[$index])){
 			//TODO: REMOVE ME
 			throw new AssumptionFailedError("Registering the same item twice!");
 		}
-		$this->serializers[$index][get_class($item)] = $serializer;
+		$this->itemSerializers[$index][get_class($item)] = $serializer;
+	}
+
+	/**
+	 * @phpstan-template TBlockType of Block
+	 * @phpstan-param TBlockType $block
+	 * @phpstan-param \Closure(TBlockType) : Data $serializer
+	 */
+	public function mapBlock(Block $block, \Closure $serializer) : void{
+		$index = $block->getTypeId();
+		if(isset($this->blockItemSerializers[$index])){
+			throw new AssumptionFailedError("Registering the same blockitem twice!");
+		}
+		$this->blockItemSerializers[$index][get_class($block)] = $serializer;
 	}
 
 	/**
@@ -86,17 +106,17 @@ final class ItemSerializer{
 			throw new \InvalidArgumentException("Cannot serialize a null itemstack");
 		}
 		if($item instanceof ItemBlock){
-			$data = self::standardBlock($item->getBlock());
+			$data = $this->serializeBlockItem($item->getBlock());
 		}else{
 			$index = $item->getTypeId();
 
-			$locatedSerializer = $this->serializers[$index][get_class($item)] ?? null;
+			$locatedSerializer = $this->itemSerializers[$index][get_class($item)] ?? null;
 			if($locatedSerializer === null){
 				$parents = class_parents($item);
 				if($parents !== false){
 					foreach($parents as $parent){
-						if(isset($this->serializers[$index][$parent])){
-							$locatedSerializer = $this->serializers[$index][$parent];
+						if(isset($this->itemSerializers[$index][$parent])){
+							$locatedSerializer = $this->itemSerializers[$index][$parent];
 							break;
 						}
 					}
@@ -121,6 +141,39 @@ final class ItemSerializer{
 	}
 
 	/**
+	 * @phpstan-template TBlockType of Block
+	 * @phpstan-param TBlockType $block
+	 *
+	 * @throws ItemTypeSerializeException
+	 */
+	private function serializeBlockItem(Block $block) : Data{
+		$index = $block->getTypeId();
+
+		$locatedSerializer = $this->blockItemSerializers[$index][get_class($block)] ?? null;
+		if($locatedSerializer === null){
+			$parents = class_parents($block);
+			if($parents !== false){
+				foreach($parents as $parent){
+					if(isset($this->blockItemSerializers[$index][$parent])){
+						$locatedSerializer = $this->blockItemSerializers[$index][$parent];
+						break;
+					}
+				}
+			}
+		}
+
+		if($locatedSerializer !== null){
+			/** @phpstan-var \Closure(TBlockType) : Data $serializer */
+			$serializer = $locatedSerializer;
+			$data = $serializer($block);
+		}else{
+			$data = self::standardBlock($block);
+		}
+
+		return $data;
+	}
+
+	/**
 	 * @throws ItemTypeSerializeException
 	 */
 	private static function standardBlock(Block $block) : Data{
@@ -130,22 +183,9 @@ final class ItemSerializer{
 			throw new ItemTypeSerializeException($e->getMessage(), 0, $e);
 		}
 
-		$itemNameId = BlockItemIdMap::getInstance()->lookupItemId($blockStateData->getName());
-		if($itemNameId === null){
-			//TODO: this might end up being a hassle for custom blocks, since it'll force providing an item
-			//serializer for every custom block
-			//it would probably be better if we allow adding custom item <-> block ID mappings for this
-			throw new ItemTypeSerializeException("No blockitem serializer or blockitem ID mapping registered for block " . $blockStateData->getName());
-		}
+		$itemNameId = BlockItemIdMap::getInstance()->lookupItemId($blockStateData->getName()) ?? $blockStateData->getName();
 
 		return new Data($itemNameId, 0, $blockStateData);
-	}
-
-	/**
-	 * @phpstan-return \Closure(Item) : Data
-	 */
-	private static function standardBlockWrapper() : \Closure{
-		return fn(Item $item) => self::standardBlock($item->getBlock());
 	}
 
 	/**
@@ -194,12 +234,33 @@ final class ItemSerializer{
 		return fn() => new Data(Ids::SPLASH_POTION, $meta);
 	}
 
-	private function registerSerializers() : void{
-		//these are encoded as regular blocks, but they have to be accounted for explicitly since they don't use ItemBlock
-		$this->map(Items::BAMBOO(), self::standardBlockWrapper());
-		$this->map(Items::CORAL_FAN(), self::standardBlockWrapper());
+	private function registerSpecialBlockSerializers() : void{
+		$this->mapBlock(Blocks::ACACIA_DOOR(), self::id(Ids::ACACIA_DOOR));
+		$this->mapBlock(Blocks::BIRCH_DOOR(), self::id(Ids::BIRCH_DOOR));
+		$this->mapBlock(Blocks::BREWING_STAND(), self::id(Ids::BREWING_STAND));
+		$this->mapBlock(Blocks::CAKE(), self::id(Ids::CAKE));
+		$this->mapBlock(Blocks::DARK_OAK_DOOR(), self::id(Ids::DARK_OAK_DOOR));
+		$this->mapBlock(Blocks::FLOWER_POT(), self::id(Ids::FLOWER_POT));
+		$this->mapBlock(Blocks::HOPPER(), self::id(Ids::HOPPER));
+		$this->mapBlock(Blocks::IRON_DOOR(), self::id(Ids::IRON_DOOR));
+		$this->mapBlock(Blocks::ITEM_FRAME(), self::id(Ids::FRAME));
+		$this->mapBlock(Blocks::JUNGLE_DOOR(), self::id(Ids::JUNGLE_DOOR));
+		$this->mapBlock(Blocks::NETHER_WART(), self::id(Ids::NETHER_WART));
+		$this->mapBlock(Blocks::OAK_DOOR(), self::id(Ids::WOODEN_DOOR));
+		$this->mapBlock(Blocks::REDSTONE_COMPARATOR(), self::id(Ids::COMPARATOR));
+		$this->mapBlock(Blocks::REDSTONE_REPEATER(), self::id(Ids::REPEATER));
+		$this->mapBlock(Blocks::SPRUCE_DOOR(), self::id(Ids::SPRUCE_DOOR));
+		$this->mapBlock(Blocks::SUGARCANE(), self::id(Ids::SUGAR_CANE));
+	}
 
-		$this->map(Items::BANNER(), fn(Banner $item) => new Data(Ids::BANNER, DyeColorIdMap::getInstance()->toInvertedId($item->getColor())));
+	private function registerSerializers() : void{
+		$this->registerSpecialBlockSerializers();
+
+		//these are encoded as regular blocks, but they have to be accounted for explicitly since they don't use ItemBlock
+		//Bamboo->getBlock() returns BambooSapling :(
+		$this->map(Items::BAMBOO(), fn() => self::standardBlock(Blocks::BAMBOO()));
+		$this->map(Items::CORAL_FAN(), fn(CoralFan $item) => self::standardBlock($item->getBlock()));
+
 		$this->map(Items::ACACIA_BOAT(), self::id(Ids::ACACIA_BOAT));
 		$this->map(Items::ACACIA_SIGN(), self::id(Ids::ACACIA_SIGN));
 		$this->map(Items::APPLE(), self::id(Ids::APPLE));
@@ -207,6 +268,7 @@ final class ItemSerializer{
 		$this->map(Items::AWKWARD_POTION(), self::potion(PotionType::AWKWARD()));
 		$this->map(Items::AWKWARD_SPLASH_POTION(), self::splashPotion(PotionType::AWKWARD()));
 		$this->map(Items::BAKED_POTATO(), self::id(Ids::BAKED_POTATO));
+		$this->map(Items::BANNER(), fn(Banner $item) => new Data(Ids::BANNER, DyeColorIdMap::getInstance()->toInvertedId($item->getColor())));
 		$this->map(Items::BEETROOT(), self::id(Ids::BEETROOT));
 		$this->map(Items::BEETROOT_SEEDS(), self::id(Ids::BEETROOT_SEEDS));
 		$this->map(Items::BEETROOT_SOUP(), self::id(Ids::BEETROOT_SOUP));
