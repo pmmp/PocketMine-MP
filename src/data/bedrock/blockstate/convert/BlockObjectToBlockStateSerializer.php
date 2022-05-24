@@ -108,6 +108,7 @@ use pocketmine\block\StainedHardenedGlass;
 use pocketmine\block\StainedHardenedGlassPane;
 use pocketmine\block\Stair;
 use pocketmine\block\StoneButton;
+use pocketmine\block\Stonecutter;
 use pocketmine\block\StonePressurePlate;
 use pocketmine\block\Sugarcane;
 use pocketmine\block\SweetBerryBush;
@@ -994,6 +995,8 @@ final class BlockObjectToBlockStateSerializer implements BlockStateSerializer{
 				->writeColor($block->getColor());
 		});
 		$this->map(Blocks::STONE(), fn() => Helper::encodeStone(StringValues::STONE_TYPE_STONE));
+		$this->map(Blocks::STONECUTTER(), fn(Stonecutter $block) => Writer::create(Ids::STONECUTTER_BLOCK)
+			->writeHorizontalFacing($block->getFacing()));
 		$this->map(Blocks::STONE_BRICKS(), fn() => Helper::encodeStoneBricks(StringValues::STONE_BRICK_TYPE_DEFAULT));
 		$this->map(Blocks::STONE_BRICK_SLAB(), fn(Slab $block) => Helper::encodeStoneSlab1($block, StringValues::STONE_SLAB_TYPE_STONE_BRICK));
 		$this->map(Blocks::STONE_BRICK_STAIRS(), fn(Stair $block) => Helper::encodeStairs($block, new Writer(Ids::STONE_BRICK_STAIRS)));

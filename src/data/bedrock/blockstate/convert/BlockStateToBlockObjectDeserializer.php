@@ -932,6 +932,10 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			};
 		});
 		$this->map(Ids::STONECUTTER, fn() => Blocks::LEGACY_STONECUTTER());
+		$this->map(Ids::STONECUTTER_BLOCK, function(Reader $in) : Block{
+			return Blocks::STONECUTTER()
+				->setFacing($in->readHorizontalFacing());
+		});
 		$this->map(Ids::STRIPPED_ACACIA_LOG, function(Reader $in) : Block{
 			return Blocks::STRIPPED_ACACIA_LOG()
 				->setAxis($in->readPillarAxis());
@@ -2176,12 +2180,6 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			 */
 		//});
 		//$this->map(Ids::STICKY_PISTON, function(Reader $in) : Block{
-			/*
-			 * TODO: Un-implemented block
-			 * facing_direction (IntTag) = 0, 1, 2, 3, 4, 5
-			 */
-		//});
-		//$this->map(Ids::STONECUTTER_BLOCK, function(Reader $in) : Block{
 			/*
 			 * TODO: Un-implemented block
 			 * facing_direction (IntTag) = 0, 1, 2, 3, 4, 5
