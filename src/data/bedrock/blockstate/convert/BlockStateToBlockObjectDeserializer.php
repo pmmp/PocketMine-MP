@@ -112,7 +112,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				});
 		});
 		$this->map(Ids::BAMBOO_SAPLING, function(Reader $in) : Block{
-			//TODO: sapling_type intentionally ignored (its presence is a bug)
+			$in->ignored(StateNames::SAPLING_TYPE); //bug in MCPE
 			return Blocks::BAMBOO_SAPLING()->setReady($in->readBool(StateNames::AGE_BIT));
 		});
 		$this->map(Ids::BARREL, function(Reader $in) : Block{
@@ -134,7 +134,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		});
 		$this->map(Ids::BEETROOT, fn(Reader $in) => Helper::decodeCrops(Blocks::BEETROOTS(), $in));
 		$this->map(Ids::BELL, function(Reader $in) : Block{
-			//TODO: ignored toggle_bit (appears to be internally used in MCPE only, useless for us)
+			$in->ignored(StateNames::TOGGLE_BIT); //only useful at runtime
 			return Blocks::BELL()
 				->setFacing($in->readLegacyHorizontalFacing())
 				->setAttachmentType($in->readBellAttachmentType());
@@ -156,7 +156,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::BLUE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(Blocks::BLUE_GLAZED_TERRACOTTA(), $in));
 		$this->map(Ids::BLUE_ICE, fn() => Blocks::BLUE_ICE());
 		$this->map(Ids::BONE_BLOCK, function(Reader $in) : Block{
-			//TODO: intentionally ignored "deprecated" blockstate (useless)
+			$in->ignored(StateNames::DEPRECATED);
 			return Blocks::BONE_BLOCK()->setAxis($in->readPillarAxis());
 		});
 		$this->map(Ids::BOOKSHELF, fn() => Blocks::BOOKSHELF());
@@ -248,8 +248,13 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setCoralType($in->readBool(StateNames::CORAL_HANG_TYPE_BIT) ? CoralType::BRAIN() : CoralType::TUBE()));
 		$this->map(Ids::CORAL_FAN_HANG2, fn(Reader $in) => Helper::decodeWallCoralFan(Blocks::WALL_CORAL_FAN(), $in)
 				->setCoralType($in->readBool(StateNames::CORAL_HANG_TYPE_BIT) ? CoralType::FIRE() : CoralType::BUBBLE()));
-		$this->map(Ids::CORAL_FAN_HANG3, fn(Reader $in) => Helper::decodeWallCoralFan(Blocks::WALL_CORAL_FAN(), $in)
-				->setCoralType(CoralType::HORN()));
+		$this->map(Ids::CORAL_FAN_HANG3, function(Reader $in) : Block{
+			if($in->readBool(StateNames::CORAL_HANG_TYPE_BIT)){
+				throw $in->badValueException(StateNames::CORAL_HANG_TYPE_BIT, "1", "This should always be zero for hang3");
+			}
+			return Helper::decodeWallCoralFan(Blocks::WALL_CORAL_FAN(), $in)
+				->setCoralType(CoralType::HORN());
+		});
 		$this->map(Ids::CRAFTING_TABLE, fn() => Blocks::CRAFTING_TABLE());
 		$this->map(Ids::CYAN_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(Blocks::CYAN_GLAZED_TERRACOTTA(), $in));
 		$this->map(Ids::DARK_OAK_BUTTON, fn(Reader $in) => Helper::decodeButton(Blocks::DARK_OAK_BUTTON(), $in));
@@ -294,18 +299,23 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 			})->setTop($in->readBool(StateNames::UPPER_BLOCK_BIT));
 		});
 		$this->map(Ids::DOUBLE_STONE_SLAB, function(Reader $in) : Block{
+			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
 			return Helper::mapStoneSlab1Type($in)->setSlabType(SlabType::DOUBLE());
 		});
 		$this->map(Ids::DOUBLE_STONE_SLAB2, function(Reader $in) : Block{
+			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
 			return Helper::mapStoneSlab2Type($in)->setSlabType(SlabType::DOUBLE());
 		});
 		$this->map(Ids::DOUBLE_STONE_SLAB3, function(Reader $in) : Block{
+			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
 			return Helper::mapStoneSlab3Type($in)->setSlabType(SlabType::DOUBLE());
 		});
 		$this->map(Ids::DOUBLE_STONE_SLAB4, function(Reader $in) : Block{
+			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
 			return Helper::mapStoneSlab4Type($in)->setSlabType(SlabType::DOUBLE());
 		});
 		$this->map(Ids::DOUBLE_WOODEN_SLAB, function(Reader $in) : Block{
+			$in->ignored(StateNames::TOP_SLOT_BIT); //useless for double slabs
 			return Helper::mapWoodenSlabType($in)->setSlabType(SlabType::DOUBLE());
 		});
 		$this->map(Ids::DRAGON_EGG, fn() => Blocks::DRAGON_EGG());
@@ -469,14 +479,15 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 				->setAge($in->readBoundedInt(StateNames::AGE, 0, 15));
 		});
 		$this->map(Ids::FLETCHING_TABLE, fn() => Blocks::FLETCHING_TABLE());
-		$this->map(Ids::FLOWER_POT, function() : Block{
-			//TODO: ignored update_bit (only useful on network to make the client actually render contents, not needed on disk)
+		$this->map(Ids::FLOWER_POT, function(Reader $in) : Block{
+			$in->ignored(StateNames::UPDATE_BIT);
 			return Blocks::FLOWER_POT();
 		});
 		$this->map(Ids::FLOWING_LAVA, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::LAVA(), $in));
 		$this->map(Ids::FLOWING_WATER, fn(Reader $in) => Helper::decodeFlowingLiquid(Blocks::WATER(), $in));
 		$this->map(Ids::FRAME, function(Reader $in) : Block{
 			//TODO: in R13 this can be any side, not just horizontal
+			$in->todo(StateNames::ITEM_FRAME_PHOTO_BIT); //TODO: not sure what the point of this is
 			return Blocks::ITEM_FRAME()
 				->setFacing($in->readHorizontalFacing())
 				->setHasMap($in->readBool(StateNames::ITEM_FRAME_MAP_BIT));
@@ -519,7 +530,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		});
 		$this->map(Ids::HARDENED_CLAY, fn() => Blocks::HARDENED_CLAY());
 		$this->map(Ids::HAY_BLOCK, function(Reader $in) : Block{
-			//TODO: intentionally ignored "deprecated" blockstate (useless)
+			$in->ignored(StateNames::DEPRECATED);
 			return Blocks::HAY_BALE()->setAxis($in->readPillarAxis());
 		});
 		$this->map(Ids::HEAVY_WEIGHTED_PRESSURE_PLATE, fn(Reader $in) => Helper::decodeWeightedPressurePlate(Blocks::WEIGHTED_PRESSURE_PLATE_HEAVY(), $in));
@@ -724,30 +735,42 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		});
 		$this->map(Ids::PRISMARINE_BRICKS_STAIRS, fn(Reader $in) => Helper::decodeStairs(Blocks::PRISMARINE_BRICKS_STAIRS(), $in));
 		$this->map(Ids::PRISMARINE_STAIRS, fn(Reader $in) => Helper::decodeStairs(Blocks::PRISMARINE_STAIRS(), $in));
-		$this->map(Ids::PUMPKIN, function() : Block{
-			//TODO: intentionally ignored "direction" property (obsolete)
+		$this->map(Ids::PUMPKIN, function(Reader $in) : Block{
+			$in->ignored(StateNames::DIRECTION); //obsolete
 			return Blocks::PUMPKIN();
 		});
 		$this->map(Ids::PUMPKIN_STEM, fn(Reader $in) => Helper::decodeStem(Blocks::PUMPKIN_STEM(), $in));
 		$this->map(Ids::PURPLE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(Blocks::PURPLE_GLAZED_TERRACOTTA(), $in));
 		$this->map(Ids::PURPUR_BLOCK, function(Reader $in) : Block{
-			return match($type = $in->readString(StateNames::CHISEL_TYPE)){
-				StringValues::CHISEL_TYPE_CHISELED, //TODO: bug in MCPE
-				StringValues::CHISEL_TYPE_SMOOTH, //TODO: bug in MCPE
-				StringValues::CHISEL_TYPE_DEFAULT => Blocks::PURPUR(), //TODO: axis intentionally ignored (useless)
-				StringValues::CHISEL_TYPE_LINES => Blocks::PURPUR_PILLAR()->setAxis($in->readPillarAxis()),
-				default => throw $in->badValueException(StateNames::CHISEL_TYPE, $type),
-			};
+			$type = $in->readString(StateNames::CHISEL_TYPE);
+			if($type === StringValues::CHISEL_TYPE_LINES){
+				return Blocks::PURPUR_PILLAR()->setAxis($in->readPillarAxis());
+			}else{
+				$in->ignored(StateNames::PILLAR_AXIS); //axis only applies to pillars
+				return match($type){
+					StringValues::CHISEL_TYPE_CHISELED, //TODO: bug in MCPE
+					StringValues::CHISEL_TYPE_SMOOTH, //TODO: bug in MCPE
+					StringValues::CHISEL_TYPE_DEFAULT => Blocks::PURPUR(),
+					default => throw $in->badValueException(StateNames::CHISEL_TYPE, $type),
+				};
+			}
 		});
 		$this->map(Ids::PURPUR_STAIRS, fn(Reader $in) => Helper::decodeStairs(Blocks::PURPUR_STAIRS(), $in));
 		$this->map(Ids::QUARTZ_BLOCK, function(Reader $in) : Block{
-			return match($type = $in->readString(StateNames::CHISEL_TYPE)){
-				StringValues::CHISEL_TYPE_CHISELED => Blocks::CHISELED_QUARTZ()->setAxis($in->readPillarAxis()),
-				StringValues::CHISEL_TYPE_DEFAULT => Blocks::QUARTZ(), //TODO: axis intentionally ignored (useless)
-				StringValues::CHISEL_TYPE_LINES => Blocks::QUARTZ_PILLAR()->setAxis($in->readPillarAxis()),
-				StringValues::CHISEL_TYPE_SMOOTH => Blocks::SMOOTH_QUARTZ(), //TODO: axis intentionally ignored (useless)
-				default => throw $in->badValueException(StateNames::CHISEL_TYPE, $type),
-			};
+			switch($type = $in->readString(StateNames::CHISEL_TYPE)){
+				case StringValues::CHISEL_TYPE_CHISELED:
+					return Blocks::CHISELED_QUARTZ()->setAxis($in->readPillarAxis());
+				case StringValues::CHISEL_TYPE_DEFAULT:
+					$in->ignored(StateNames::PILLAR_AXIS);
+					return Blocks::QUARTZ();
+				case StringValues::CHISEL_TYPE_LINES:
+					return Blocks::QUARTZ_PILLAR()->setAxis($in->readPillarAxis());
+				case StringValues::CHISEL_TYPE_SMOOTH:
+					$in->ignored(StateNames::PILLAR_AXIS);
+					return Blocks::SMOOTH_QUARTZ();
+				default:
+					return throw $in->badValueException(StateNames::CHISEL_TYPE, $type);
+			}
 		});
 		$this->map(Ids::QUARTZ_ORE, fn() => Blocks::NETHER_QUARTZ_ORE());
 		$this->map(Ids::QUARTZ_STAIRS, fn(Reader $in) => Helper::decodeStairs(Blocks::QUARTZ_STAIRS(), $in));
@@ -865,7 +888,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::SMOOTH_STONE, fn() => Blocks::SMOOTH_STONE());
 		$this->map(Ids::SNOW, fn() => Blocks::SNOW());
 		$this->map(Ids::SNOW_LAYER, function(Reader $in) : Block{
-			//TODO: intentionally ignored covered_bit property (appears useless and we don't track it)
+			$in->ignored(StateNames::COVERED_BIT); //seems to be useless
 			return Blocks::SNOW_LAYER()->setLayers($in->readBoundedInt(StateNames::HEIGHT, 0, 7) + 1);
 		});
 		$this->map(Ids::SOUL_SAND, fn() => Blocks::SOUL_SAND());
@@ -1032,7 +1055,7 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		$this->map(Ids::WHEAT, fn(Reader $in) => Helper::decodeCrops(Blocks::WHEAT(), $in));
 		$this->map(Ids::WHITE_GLAZED_TERRACOTTA, fn(Reader $in) => Helper::decodeGlazedTerracotta(Blocks::WHITE_GLAZED_TERRACOTTA(), $in));
 		$this->map(Ids::WOOD, function(Reader $in) : Block{
-			//TODO: our impl doesn't support axis yet
+			$in->todo(StateNames::PILLAR_AXIS); //TODO: our impl doesn't support axis yet
 			$stripped = $in->readBool(StateNames::STRIPPED_BIT);
 			return match($woodType = $in->readString(StateNames::WOOD_TYPE)){
 				StringValues::WOOD_TYPE_ACACIA => $stripped ? Blocks::STRIPPED_ACACIA_WOOD() : Blocks::ACACIA_WOOD(),
@@ -2513,6 +2536,9 @@ final class BlockStateToBlockObjectDeserializer implements BlockStateDeserialize
 		if(!array_key_exists($id, $this->deserializeFuncs)){
 			throw new BlockStateDeserializeException("Unknown block ID \"$id\"");
 		}
-		return $this->deserializeFuncs[$id](new Reader($blockStateData));
+		$reader = new Reader($blockStateData);
+		$block = $this->deserializeFuncs[$id]($reader);
+		$reader->checkUnreadProperties();
+		return $block;
 	}
 }

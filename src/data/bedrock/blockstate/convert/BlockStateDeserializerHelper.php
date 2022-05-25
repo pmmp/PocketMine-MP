@@ -182,6 +182,7 @@ final class BlockStateDeserializerHelper{
 	/** @throws BlockStateDeserializeException */
 	public static function decodeStem(Stem $block, BlockStateReader $in) : Stem{
 		//TODO: our stems don't support facings yet (facing_direction)
+		$in->todo(BlockStateNames::FACING_DIRECTION);
 		return self::decodeCrops($block, $in);
 	}
 
@@ -196,6 +197,12 @@ final class BlockStateDeserializerHelper{
 	/** @throws BlockStateDeserializeException */
 	public static function decodeWall(Wall $block, BlockStateReader $in) : Wall{
 		//TODO: our walls don't support the full range of needed states yet
+		$in->todo(BlockStateNames::WALL_POST_BIT); //TODO
+		$in->todo(BlockStateNames::WALL_CONNECTION_TYPE_EAST);
+		$in->todo(BlockStateNames::WALL_CONNECTION_TYPE_NORTH);
+		$in->todo(BlockStateNames::WALL_CONNECTION_TYPE_SOUTH);
+		$in->todo(BlockStateNames::WALL_CONNECTION_TYPE_WEST);
+
 		return $block;
 	}
 
