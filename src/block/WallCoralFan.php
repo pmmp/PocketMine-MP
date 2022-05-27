@@ -54,7 +54,7 @@ final class WallCoralFan extends BaseCoral{
 
 		$coralTypeFlag = $stateMeta & BlockLegacyMetadata::CORAL_FAN_HANG_TYPE_MASK;
 		switch($id){
-			case $this->idInfoFlattened->getBlockId():
+			case $this->idInfoFlattened->getLegacyBlockId():
 				$this->coralType = $coralTypeFlag === BlockLegacyMetadata::CORAL_FAN_HANG_TUBE ? CoralType::TUBE() : CoralType::BRAIN();
 				break;
 			case $this->idInfoFlattened->getAdditionalId(0):
@@ -73,7 +73,7 @@ final class WallCoralFan extends BaseCoral{
 
 	public function getId() : int{
 		if($this->coralType->equals(CoralType::TUBE()) || $this->coralType->equals(CoralType::BRAIN())){
-			return $this->idInfoFlattened->getBlockId();
+			return $this->idInfoFlattened->getLegacyBlockId();
 		}elseif($this->coralType->equals(CoralType::BUBBLE()) || $this->coralType->equals(CoralType::FIRE())){
 			return $this->idInfoFlattened->getAdditionalId(0);
 		}elseif($this->coralType->equals(CoralType::HORN())){

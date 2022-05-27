@@ -28,32 +28,41 @@ use function count;
 class BlockIdentifierFlattened extends BlockIdentifier{
 
 	/** @var int[] */
-	private array $additionalIds;
+	private array $legacyAdditionalIds;
 
 	/**
-	 * @param int[] $additionalIds
+	 * @param int[] $legacyAdditionalIds
 	 */
-	public function __construct(int $blockId, array $additionalIds, int $variant, ?int $itemId = null, ?string $tileClass = null){
-		if(count($additionalIds) === 0){
+	public function __construct(int $blockTypeId, int $legacyBlockId, array $legacyAdditionalIds, int $legacyVariant, ?int $legacyItemId = null, ?string $tileClass = null){
+		if(count($legacyAdditionalIds) === 0){
 			throw new \InvalidArgumentException("Expected at least 1 additional ID");
 		}
-		parent::__construct($blockId, $variant, $itemId, $tileClass);
+		parent::__construct($blockTypeId, $legacyBlockId, $legacyVariant, $legacyItemId, $tileClass);
 
-		$this->additionalIds = $additionalIds;
+		$this->legacyAdditionalIds = $legacyAdditionalIds;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function getAdditionalId(int $index) : int{
-		if(!isset($this->additionalIds[$index])){
+		if(!isset($this->legacyAdditionalIds[$index])){
 			throw new \InvalidArgumentException("No such ID at index $index");
 		}
-		return $this->additionalIds[$index];
+		return $this->legacyAdditionalIds[$index];
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public function getSecondId() : int{
 		return $this->getAdditionalId(0);
 	}
 
-	public function getAllBlockIds() : array{
-		return [$this->getBlockId(), ...$this->additionalIds];
+	/**
+	 * @deprecated
+	 */
+	public function getAllLegacyBlockIds() : array{
+		return [$this->getLegacyBlockId(), ...$this->legacyAdditionalIds];
 	}
 }

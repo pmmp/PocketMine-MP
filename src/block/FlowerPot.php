@@ -92,7 +92,7 @@ class FlowerPot extends Flowable{
 			$block instanceof Flower ||
 			$block instanceof RedMushroom ||
 			$block instanceof Sapling ||
-			($block instanceof TallGrass && $block->getIdInfo()->getVariant() === BlockLegacyMetadata::TALLGRASS_FERN); //TODO: clean up
+			($block instanceof TallGrass && $block->getIdInfo()->getLegacyVariant() === BlockLegacyMetadata::TALLGRASS_FERN); //TODO: clean up
 		//TODO: bamboo
 	}
 
