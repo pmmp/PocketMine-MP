@@ -28,6 +28,7 @@ use pocketmine\data\bedrock\item\ItemSerializer;
 use pocketmine\data\bedrock\item\ItemTypeSerializeException;
 use pocketmine\data\bedrock\item\SavedItemData;
 use pocketmine\item\ItemFactory;
+use pocketmine\item\ItemIds;
 use pocketmine\network\mcpe\protocol\serializer\ItemTypeDictionary;
 use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\SingletonTrait;
@@ -86,6 +87,7 @@ final class ItemTranslator{
 	 */
 	public function toNetworkId(int $internalId, int $internalMeta) : array{
 		return $this->toNetworkIdQuiet($internalId, $internalMeta) ??
+			$this->toNetworkIdQuiet(ItemIds::INFO_UPDATE, 0) ?? //TODO: bad duct tape
 			throw new \InvalidArgumentException("Unmapped ID/metadata combination $internalId:$internalMeta");
 	}
 
