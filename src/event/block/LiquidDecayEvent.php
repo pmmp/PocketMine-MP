@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\block;
 
 /**
- * Called when leaves decay due to not being attached to wood.
+ * Called when liquid decay due to liquid source removed
  */
-class LeavesDecayEvent extends BlockDecayEvent{
+class LiquidDecayEvent extends BlockDecayEvent{
 }

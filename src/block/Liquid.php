@@ -28,6 +28,7 @@ use pocketmine\block\utils\MinimumCostFlowCalculator;
 use pocketmine\entity\Entity;
 use pocketmine\event\block\BlockFormEvent;
 use pocketmine\event\block\BlockSpreadEvent;
+use pocketmine\event\block\LiquidDecayEvent;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -301,6 +302,11 @@ abstract class Liquid extends Transparent{
 
 			if($falling !== $this->falling || (!$falling && $newDecay !== $this->decay)){
 				if(!$falling && $newDecay < 0){
+					$event = new LiquidDecayEvent($this);
+					$event->call();
+					if($event->isCancelled()) {
+						return;
+					}
 					$world->setBlock($this->position, VanillaBlocks::AIR());
 					return;
 				}
