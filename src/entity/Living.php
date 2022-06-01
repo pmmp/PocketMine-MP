@@ -76,47 +76,30 @@ use const M_PI;
 abstract class Living extends Entity{
 	protected const DEFAULT_BREATH_TICKS = 300;
 
-	/** @var int */
-	protected $attackTime = 0;
+	protected int $attackTime = 0;
 
-	/** @var int */
-	public $deadTicks = 0;
-	/** @var int */
-	protected $maxDeadTicks = 25;
+	public int $deadTicks = 0;
+	protected int $maxDeadTicks = 25;
 
-	/** @var float */
-	protected $jumpVelocity = 0.42;
+	protected float $jumpVelocity = 0.42;
 
-	/** @var EffectManager */
-	protected $effectManager;
+	protected EffectManager $effectManager;
 
-	/** @var ArmorInventory */
-	protected $armorInventory;
+	protected ArmorInventory $armorInventory;
 
-	/** @var bool */
-	protected $breathing = true;
-	/** @var int */
-	protected $breathTicks = self::DEFAULT_BREATH_TICKS;
-	/** @var int */
-	protected $maxBreathTicks = self::DEFAULT_BREATH_TICKS;
+	protected bool $breathing = true;
+	protected int $breathTicks = self::DEFAULT_BREATH_TICKS;
+	protected int $maxBreathTicks = self::DEFAULT_BREATH_TICKS;
 
-	/** @var Attribute */
-	protected $healthAttr;
-	/** @var Attribute */
-	protected $absorptionAttr;
-	/** @var Attribute */
-	protected $knockbackResistanceAttr;
-	/** @var Attribute */
-	protected $moveSpeedAttr;
+	protected Attribute $healthAttr;
+	protected Attribute $absorptionAttr;
+	protected Attribute $knockbackResistanceAttr;
+	protected Attribute $moveSpeedAttr;
 
-	/** @var bool */
-	protected $sprinting = false;
-	/** @var bool */
-	protected $sneaking = false;
-	/** @var bool */
-	protected $gliding = false;
-	/** @var bool */
-	protected $swimming = false;
+	protected bool $sprinting = false;
+	protected bool $sneaking = false;
+	protected bool $gliding = false;
+	protected bool $swimming = false;
 
 	protected function getInitialDragMultiplier() : float{ return 0.02; }
 
@@ -851,8 +834,10 @@ abstract class Living extends Entity{
 	}
 
 	protected function destroyCycles() : void{
-		$this->armorInventory = null;
-		$this->effectManager = null;
+		unset(
+			$this->armorInventory,
+			$this->effectManager
+		);
 		parent::destroyCycles();
 	}
 }

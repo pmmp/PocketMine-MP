@@ -50,17 +50,11 @@ class ItemEntity extends Entity{
 	public const NEVER_DESPAWN = -1;
 	public const MAX_DESPAWN_DELAY = 32767 + self::DEFAULT_DESPAWN_DELAY; //max value storable by mojang NBT :(
 
-	/** @var string */
-	protected $owner = "";
-	/** @var string */
-	protected $thrower = "";
-	/** @var int */
-	protected $pickupDelay = 0;
-	/** @var Item */
-	protected $item;
-
-	/** @var int */
-	protected $despawnDelay = self::DEFAULT_DESPAWN_DELAY;
+	protected string $owner = "";
+	protected string $thrower = "";
+	protected int $pickupDelay = 0;
+	protected int $despawnDelay = self::DEFAULT_DESPAWN_DELAY;
+	protected Item $item;
 
 	public function __construct(Location $location, Item $item, ?CompoundTag $nbt = null){
 		if($item->isNull()){
@@ -196,12 +190,8 @@ class ItemEntity extends Entity{
 		}
 		$nbt->setShort("Age", $age);
 		$nbt->setShort("PickupDelay", $this->pickupDelay);
-		if($this->owner !== null){
-			$nbt->setString("Owner", $this->owner);
-		}
-		if($this->thrower !== null){
-			$nbt->setString("Thrower", $this->thrower);
-		}
+		$nbt->setString("Owner", $this->owner);
+		$nbt->setString("Thrower", $this->thrower);
 
 		return $nbt;
 	}

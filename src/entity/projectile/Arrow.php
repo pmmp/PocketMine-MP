@@ -52,20 +52,11 @@ class Arrow extends Projectile{
 	private const TAG_PICKUP = "pickup"; //TAG_Byte
 	public const TAG_CRIT = "crit"; //TAG_Byte
 
-	/** @var float */
-	protected $damage = 2.0;
-
-	/** @var int */
-	protected $pickupMode = self::PICKUP_ANY;
-
-	/** @var float */
-	protected $punchKnockback = 0.0;
-
-	/** @var int */
-	protected $collideTicks = 0;
-
-	/** @var bool */
-	protected $critical = false;
+	protected float $damage = 2.0;
+	protected int $pickupMode = self::PICKUP_ANY;
+	protected float $punchKnockback = 0.0;
+	protected int $collideTicks = 0;
+	protected bool $critical = false;
 
 	public function __construct(Location $location, ?Entity $shootingEntity, bool $critical, ?CompoundTag $nbt = null){
 		parent::__construct($location, $shootingEntity, $nbt);

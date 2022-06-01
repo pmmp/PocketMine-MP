@@ -51,11 +51,8 @@ use const PHP_INT_MAX;
 
 abstract class Projectile extends Entity{
 
-	/** @var float */
-	protected $damage = 0.0;
-
-	/** @var Block|null */
-	protected $blockHit;
+	protected float $damage = 0.0;
+	protected ?Block $blockHit = null;
 
 	public function __construct(Location $location, ?Entity $shootingEntity, ?CompoundTag $nbt = null){
 		parent::__construct($location, $nbt);

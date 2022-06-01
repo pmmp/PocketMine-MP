@@ -46,8 +46,7 @@ class FallingBlock extends Entity{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::FALLING_BLOCK; }
 
-	/** @var Block */
-	protected $block;
+	protected Block $block;
 
 	public function __construct(Location $location, Block $block, ?CompoundTag $nbt = null){
 		$this->block = $block;

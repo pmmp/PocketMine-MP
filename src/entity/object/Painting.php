@@ -56,12 +56,9 @@ class Painting extends Entity{
 		Facing::EAST => 3
 	];
 
-	/** @var Vector3 */
-	protected $blockIn;
-	/** @var int */
-	protected $facing = Facing::NORTH;
-	/** @var PaintingMotive */
-	protected $motive;
+	protected Vector3 $blockIn;
+	protected int $facing;
+	protected PaintingMotive $motive;
 
 	public function __construct(Location $location, Vector3 $blockIn, int $facing, PaintingMotive $motive, ?CompoundTag $nbt = null){
 		$this->motive = $motive;

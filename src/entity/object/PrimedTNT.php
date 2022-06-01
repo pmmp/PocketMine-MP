@@ -41,9 +41,7 @@ class PrimedTNT extends Entity implements Explosive{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::TNT; }
 
-	/** @var int */
-	protected $fuse;
-
+	protected int $fuse;
 	protected bool $worksUnderwater = false;
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.98, 0.98); }

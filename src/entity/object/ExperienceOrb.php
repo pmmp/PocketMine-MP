@@ -78,23 +78,15 @@ class ExperienceOrb extends Entity{
 		return $result;
 	}
 
-	/** @var int */
-	protected $age = 0;
+	protected int $age = 0;
 
-	/**
-	 * @var int
-	 * Ticker used for determining interval in which to look for new target players.
-	 */
-	protected $lookForTargetTime = 0;
+	/** Ticker used for determining interval in which to look for new target players. */
+	protected int $lookForTargetTime = 0;
 
-	/**
-	 * @var int|null
-	 * Runtime entity ID of the player this XP orb is targeting.
-	 */
-	protected $targetPlayerRuntimeId = null;
+	/** Runtime entity ID of the player this XP orb is targeting. */
+	protected ?int $targetPlayerRuntimeId = null;
 
-	/** @var int */
-	protected $xpValue;
+	protected int $xpValue;
 
 	public function __construct(Location $location, int $xpValue, ?CompoundTag $nbt = null){
 		$this->xpValue = $xpValue;

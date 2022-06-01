@@ -52,8 +52,7 @@ class SplashPotion extends Throwable{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::SPLASH_POTION; }
 
-	/** @var bool */
-	protected $linger = false;
+	protected bool $linger = false;
 	protected PotionType $potionType;
 
 	public function __construct(Location $location, ?Entity $shootingEntity, PotionType $potionType, ?CompoundTag $nbt = null){
