@@ -126,7 +126,7 @@ class TypeConverter{
 
 	public function recipeIngredientToCoreItemStack(RecipeIngredient $ingredient) : Item{
 		if($ingredient->getId() === 0){
-			return ItemFactory::getInstance()->get(ItemIds::AIR, 0, 0);
+			return VanillaItems::AIR();
 		}
 		[$id, $meta] = ItemTranslator::getInstance()->fromNetworkIdWithWildcardHandling($ingredient->getId(), $ingredient->getMeta());
 		return ItemFactory::getInstance()->get($id, $meta, $ingredient->getCount());
