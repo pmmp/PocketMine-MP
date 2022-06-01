@@ -46,8 +46,6 @@ class PrimedTNT extends Entity implements Explosive{
 
 	protected bool $worksUnderwater = false;
 
-	public $canCollide = false;
-
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.98, 0.98); }
 
 	protected function getInitialDragMultiplier() : float{ return 0.02; }

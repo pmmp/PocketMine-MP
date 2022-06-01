@@ -140,8 +140,6 @@ abstract class Entity{
 	public $lastUpdate;
 	/** @var int */
 	protected $fireTicks = 0;
-	/** @var bool */
-	public $canCollide = true;
 
 	/** @var bool */
 	protected $isStatic = false;

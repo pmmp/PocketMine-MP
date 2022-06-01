@@ -49,8 +49,6 @@ class FallingBlock extends Entity{
 	/** @var Block */
 	protected $block;
 
-	public $canCollide = false;
-
 	public function __construct(Location $location, Block $block, ?CompoundTag $nbt = null){
 		$this->block = $block;
 		parent::__construct($location, $nbt);

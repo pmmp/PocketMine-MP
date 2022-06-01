@@ -59,8 +59,6 @@ class ItemEntity extends Entity{
 	/** @var Item */
 	protected $item;
 
-	public $canCollide = false;
-
 	/** @var int */
 	protected $despawnDelay = self::DEFAULT_DESPAWN_DELAY;
 
