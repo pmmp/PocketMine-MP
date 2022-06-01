@@ -56,11 +56,6 @@ class Painting extends Entity{
 		Facing::EAST => 3
 	];
 
-	/** @var float */
-	protected $gravity = 0.0;
-	/** @var float */
-	protected $drag = 1.0;
-
 	/** @var Vector3 */
 	protected $blockIn;
 	/** @var int */
@@ -79,6 +74,10 @@ class Painting extends Entity{
 		//these aren't accurate, but it doesn't matter since they aren't used (vanilla PC does something similar)
 		return new EntitySizeInfo(0.5, 0.5);
 	}
+
+	protected function getInitialDragMultiplier() : float{ return 1.0; }
+
+	protected function getInitialGravity() : float{ return 0.0; }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		$this->setMaxHealth(1);

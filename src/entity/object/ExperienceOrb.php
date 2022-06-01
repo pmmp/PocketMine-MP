@@ -78,9 +78,6 @@ class ExperienceOrb extends Entity{
 		return $result;
 	}
 
-	public $gravity = 0.04;
-	public $drag = 0.02;
-
 	/** @var int */
 	protected $age = 0;
 
@@ -105,6 +102,10 @@ class ExperienceOrb extends Entity{
 	}
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
+
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);

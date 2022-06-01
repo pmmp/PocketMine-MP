@@ -59,9 +59,6 @@ class ItemEntity extends Entity{
 	/** @var Item */
 	protected $item;
 
-	protected $gravity = 0.04;
-	protected $drag = 0.02;
-
 	public $canCollide = false;
 
 	/** @var int */
@@ -76,6 +73,10 @@ class ItemEntity extends Entity{
 	}
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
+
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);

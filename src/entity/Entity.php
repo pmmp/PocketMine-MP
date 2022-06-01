@@ -222,6 +222,8 @@ abstract class Entity{
 		$this->timings = Timings::getEntityTimings($this);
 
 		$this->size = $this->getInitialSizeInfo();
+		$this->drag = $this->getInitialDragMultiplier();
+		$this->gravity = $this->getInitialGravity();
 
 		$this->id = self::nextRuntimeId();
 		$this->server = $location->getWorld()->getServer();
@@ -256,6 +258,21 @@ abstract class Entity{
 	}
 
 	abstract protected function getInitialSizeInfo() : EntitySizeInfo;
+
+	/**
+	 * Returns the percentage by which the entity's velocity is reduced per tick when moving through air.
+	 * The entity's velocity is multiplied by 1 minus this value.
+	 *
+	 * @return float 0-1
+	 */
+	abstract protected function getInitialDragMultiplier() : float;
+
+	/**
+	 * Returns the downwards acceleration of the entity when falling, in blocks/tick².
+	 *
+	 * @return float minimum 0
+	 */
+	abstract protected function getInitialGravity() : float;
 
 	public function getNameTag() : string{
 		return $this->nameTag;

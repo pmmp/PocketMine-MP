@@ -52,9 +52,6 @@ class Arrow extends Projectile{
 	private const TAG_PICKUP = "pickup"; //TAG_Byte
 	public const TAG_CRIT = "crit"; //TAG_Byte
 
-	protected $gravity = 0.05;
-	protected $drag = 0.01;
-
 	/** @var float */
 	protected $damage = 2.0;
 
@@ -76,6 +73,10 @@ class Arrow extends Projectile{
 	}
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.25, 0.25); }
+
+	protected function getInitialDragMultiplier() : float{ return 0.01; }
+
+	protected function getInitialGravity() : float{ return 0.05; }
 
 	protected function initEntity(CompoundTag $nbt) : void{
 		parent::initEntity($nbt);

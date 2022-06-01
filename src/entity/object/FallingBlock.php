@@ -46,9 +46,6 @@ class FallingBlock extends Entity{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::FALLING_BLOCK; }
 
-	protected $gravity = 0.04;
-	protected $drag = 0.02;
-
 	/** @var Block */
 	protected $block;
 
@@ -60,6 +57,10 @@ class FallingBlock extends Entity{
 	}
 
 	protected function getInitialSizeInfo() : EntitySizeInfo{ return new EntitySizeInfo(0.98, 0.98); }
+
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.04; }
 
 	public static function parseBlockNBT(BlockFactory $factory, CompoundTag $nbt) : Block{
 		$blockId = 0;

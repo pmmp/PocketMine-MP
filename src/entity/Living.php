@@ -76,9 +76,6 @@ use const M_PI;
 abstract class Living extends Entity{
 	protected const DEFAULT_BREATH_TICKS = 300;
 
-	protected $gravity = 0.08;
-	protected $drag = 0.02;
-
 	/** @var int */
 	protected $attackTime = 0;
 
@@ -120,6 +117,10 @@ abstract class Living extends Entity{
 	protected $gliding = false;
 	/** @var bool */
 	protected $swimming = false;
+
+	protected function getInitialDragMultiplier() : float{ return 0.02; }
+
+	protected function getInitialGravity() : float{ return 0.08; }
 
 	abstract public function getName() : string;
 
