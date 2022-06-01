@@ -141,9 +141,6 @@ abstract class Entity{
 	/** @var int */
 	protected $fireTicks = 0;
 
-	/** @var bool */
-	protected $isStatic = false;
-
 	private bool $savedWithChunk = true;
 
 	/** @var bool */
@@ -999,9 +996,7 @@ abstract class Entity{
 
 		$this->timings->stopTiming();
 
-		//if($this->isStatic())
 		return ($hasUpdate || $this->hasMovementUpdate());
-		//return !($this instanceof Player);
 	}
 
 	final public function scheduleUpdate() : void{
