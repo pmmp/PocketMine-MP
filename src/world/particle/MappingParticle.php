@@ -28,13 +28,9 @@ use pocketmine\block\Block;
 abstract class MappingParticle implements Particle{
 
 	/** @var int */
-	protected $mappingProtocol;
-	/** @var Block */
-	protected $block;
+	protected int $mappingProtocol;
 
-	public function __construct(Block $b){
-		$this->block = $b;
-	}
+	public function __construct(protected Block $b){}
 
 	public function setMappingProtocol(int $mappingProtocol) : void{
 		$this->mappingProtocol = $mappingProtocol;
