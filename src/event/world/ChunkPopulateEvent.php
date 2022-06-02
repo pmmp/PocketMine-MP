@@ -24,7 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\event\world;
 
 /**
- * Called when a Chunk is populated (after receiving it on the main thread)
+ * Called when a Chunk is fully populated by the world generator.
+ * This means that the terrain has been generated, and all artifacts (e.g. trees, grass, ponds, etc.) have been placed.
  */
 class ChunkPopulateEvent extends ChunkEvent{
 

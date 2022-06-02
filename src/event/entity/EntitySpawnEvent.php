@@ -26,7 +26,8 @@ namespace pocketmine\event\entity;
 use pocketmine\entity\Entity;
 
 /**
- * Called when a entity is spawned
+ * Called when an entity is added to the world. This might be a new entity or an entity loaded from storage.
+ *
  * @phpstan-extends EntityEvent<Entity>
  */
 class EntitySpawnEvent extends EntityEvent{
