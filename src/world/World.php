@@ -1904,11 +1904,9 @@ class World implements ChunkManager{
 	public function getCollidingEntities(AxisAlignedBB $bb, ?Entity $entity = null) : array{
 		$nearby = [];
 
-		if($entity === null || $entity->canCollide){
-			foreach($this->getNearbyEntities($bb, $entity) as $ent){
-				if($ent->canBeCollidedWith() && ($entity === null || $entity->canCollideWith($ent))){
-					$nearby[] = $ent;
-				}
+		foreach($this->getNearbyEntities($bb, $entity) as $ent){
+			if($ent->canBeCollidedWith() && ($entity === null || $entity->canCollideWith($ent))){
+				$nearby[] = $ent;
 			}
 		}
 

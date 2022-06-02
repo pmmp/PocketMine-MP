@@ -52,17 +52,15 @@ class SplashPotion extends Throwable{
 
 	public static function getNetworkTypeId() : string{ return EntityIds::SPLASH_POTION; }
 
-	protected $gravity = 0.05;
-	protected $drag = 0.01;
-
-	/** @var bool */
-	protected $linger = false;
+	protected bool $linger = false;
 	protected PotionType $potionType;
 
 	public function __construct(Location $location, ?Entity $shootingEntity, PotionType $potionType, ?CompoundTag $nbt = null){
 		$this->potionType = $potionType;
 		parent::__construct($location, $shootingEntity, $nbt);
 	}
+
+	protected function getInitialGravity() : float{ return 0.05; }
 
 	public function saveNBT() : CompoundTag{
 		$nbt = parent::saveNBT();

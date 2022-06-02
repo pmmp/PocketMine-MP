@@ -241,8 +241,8 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 	protected ?float $lastMovementProcess = null;
 
 	protected int $inAirTicks = 0;
-	/** @var float */
-	protected $stepHeight = 0.6;
+
+	protected float $stepHeight = 0.6;
 
 	protected ?Vector3 $sleeping = null;
 	private ?Position $spawnPosition = null;
@@ -2217,16 +2217,10 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 				$this->getWorld()->dropItem($this->location, $item);
 			}
 
-			if($this->inventory !== null){
-				$this->inventory->setHeldItemIndex(0);
-				$this->inventory->clearAll();
-			}
-			if($this->armorInventory !== null){
-				$this->armorInventory->clearAll();
-			}
-			if($this->offHandInventory !== null){
-				$this->offHandInventory->clearAll();
-			}
+			$this->inventory->setHeldItemIndex(0);
+			$this->inventory->clearAll();
+			$this->armorInventory->clearAll();
+			$this->offHandInventory->clearAll();
 		}
 
 		if(!$ev->getKeepXp()){

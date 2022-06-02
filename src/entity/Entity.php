@@ -90,125 +90,79 @@ abstract class Entity{
 	}
 
 	/** @var Player[] */
-	protected $hasSpawned = [];
+	protected array $hasSpawned = [];
 
-	/** @var int */
-	protected $id;
+	protected int $id;
 
 	private EntityMetadataCollection $networkProperties;
 
-	/** @var EntityDamageEvent|null */
-	protected $lastDamageCause = null;
+	protected ?EntityDamageEvent $lastDamageCause = null;
 
 	/** @var Block[]|null */
-	protected $blocksAround;
+	protected ?array $blocksAround = null;
 
-	/** @var Location */
-	protected $location;
-	/** @var Location */
-	protected $lastLocation;
-	/** @var Vector3 */
-	protected $motion;
-	/** @var Vector3 */
-	protected $lastMotion;
-	/** @var bool */
-	protected $forceMovementUpdate = false;
+	protected Location $location;
+	protected Location $lastLocation;
+	protected Vector3 $motion;
+	protected Vector3 $lastMotion;
+	protected bool $forceMovementUpdate = false;
 
-	/** @var AxisAlignedBB */
-	public $boundingBox;
-	/** @var bool */
-	public $onGround = false;
+	public AxisAlignedBB $boundingBox;
+	public bool $onGround = false;
 
-	/** @var EntitySizeInfo */
-	public $size;
+	public EntitySizeInfo $size;
 
 	private float $health = 20.0;
 	private int $maxHealth = 20;
 
-	/** @var float */
-	protected $ySize = 0.0;
-	/** @var float */
-	protected $stepHeight = 0.0;
-	/** @var bool */
-	public $keepMovement = false;
+	protected float $ySize = 0.0;
+	protected float $stepHeight = 0.0;
+	public bool $keepMovement = false;
 
-	/** @var float */
-	public $fallDistance = 0.0;
-	/** @var int */
-	public $ticksLived = 0;
-	/** @var int */
-	public $lastUpdate;
-	/** @var int */
-	protected $fireTicks = 0;
-	/** @var bool */
-	public $canCollide = true;
-
-	/** @var bool */
-	protected $isStatic = false;
+	public float $fallDistance = 0.0;
+	public int $ticksLived = 0;
+	public int $lastUpdate;
+	protected int $fireTicks = 0;
 
 	private bool $savedWithChunk = true;
 
-	/** @var bool */
-	public $isCollided = false;
-	/** @var bool */
-	public $isCollidedHorizontally = false;
-	/** @var bool */
-	public $isCollidedVertically = false;
+	public bool $isCollided = false;
+	public bool $isCollidedHorizontally = false;
+	public bool $isCollidedVertically = false;
 
-	/** @var int */
-	public $noDamageTicks = 0;
-	/** @var bool */
-	protected $justCreated = true;
+	public int $noDamageTicks = 0;
+	protected bool $justCreated = true;
 
-	/** @var AttributeMap */
-	protected $attributeMap;
+	protected AttributeMap $attributeMap;
 
-	/** @var float */
-	protected $gravity;
-	/** @var float */
-	protected $drag;
-	/** @var bool */
-	protected $gravityEnabled = true;
+	protected float $gravity;
+	protected float $drag;
+	protected bool $gravityEnabled = true;
 
-	/** @var Server */
-	protected $server;
+	protected Server $server;
 
-	/** @var bool */
-	protected $closed = false;
+	protected bool $closed = false;
 	private bool $closeInFlight = false;
 	private bool $needsDespawn = false;
 
-	/** @var TimingsHandler */
-	protected $timings;
+	protected TimingsHandler $timings;
 
 	protected bool $networkPropertiesDirty = false;
 
-	/** @var string */
-	protected $nameTag = "";
-	/** @var bool */
-	protected $nameTagVisible = true;
-	/** @var bool */
-	protected $alwaysShowNameTag = false;
-	/** @var string */
-	protected $scoreTag = "";
-	/** @var float */
-	protected $scale = 1.0;
+	protected string $nameTag = "";
+	protected bool $nameTagVisible = true;
+	protected bool $alwaysShowNameTag = false;
+	protected string $scoreTag = "";
+	protected float $scale = 1.0;
 
-	/** @var bool */
-	protected $canClimb = false;
-	/** @var bool */
-	protected $canClimbWalls = false;
-	/** @var bool */
-	protected $immobile = false;
-	/** @var bool */
-	protected $invisible = false;
-	/** @var bool */
-	protected $silent = false;
+	protected bool $canClimb = false;
+	protected bool $canClimbWalls = false;
+	protected bool $immobile = false;
+	protected bool $invisible = false;
+	protected bool $silent = false;
 
-	/** @var int|null */
-	protected $ownerId = null;
-	/** @var int|null */
-	protected $targetId = null;
+	protected ?int $ownerId = null;
+	protected ?int $targetId = null;
 
 	private bool $constructorCalled = false;
 
@@ -222,6 +176,8 @@ abstract class Entity{
 		$this->timings = Timings::getEntityTimings($this);
 
 		$this->size = $this->getInitialSizeInfo();
+		$this->drag = $this->getInitialDragMultiplier();
+		$this->gravity = $this->getInitialGravity();
 
 		$this->id = self::nextRuntimeId();
 		$this->server = $location->getWorld()->getServer();
@@ -256,6 +212,21 @@ abstract class Entity{
 	}
 
 	abstract protected function getInitialSizeInfo() : EntitySizeInfo;
+
+	/**
+	 * Returns the percentage by which the entity's velocity is reduced per tick when moving through air.
+	 * The entity's velocity is multiplied by 1 minus this value.
+	 *
+	 * @return float 0-1
+	 */
+	abstract protected function getInitialDragMultiplier() : float;
+
+	/**
+	 * Returns the downwards acceleration of the entity when falling, in blocks/tick².
+	 *
+	 * @return float minimum 0
+	 */
+	abstract protected function getInitialGravity() : float;
 
 	public function getNameTag() : string{
 		return $this->nameTag;
@@ -984,9 +955,7 @@ abstract class Entity{
 
 		$this->timings->stopTiming();
 
-		//if($this->isStatic())
 		return ($hasUpdate || $this->hasMovementUpdate());
-		//return !($this instanceof Player);
 	}
 
 	final public function scheduleUpdate() : void{
