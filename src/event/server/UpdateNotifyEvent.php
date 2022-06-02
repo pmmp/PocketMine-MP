@@ -30,12 +30,7 @@ use pocketmine\updater\UpdateChecker;
  * Plugins may use this event to perform actions when an update notification is received.
  */
 class UpdateNotifyEvent extends ServerEvent{
-	/** @var UpdateChecker */
-	private $updater;
-
-	public function __construct(UpdateChecker $updater){
-		$this->updater = $updater;
-	}
+	public function __construct(private UpdateChecker $updater){}
 
 	public function getUpdater() : UpdateChecker{
 		return $this->updater;

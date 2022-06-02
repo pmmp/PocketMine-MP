@@ -51,8 +51,7 @@ class ChunkRequestTask extends AsyncTask{
 	/** @var int */
 	protected $mappingProtocol;
 
-	/** @var string */
-	private $tiles = "";
+	private string $tiles;
 
 	/**
 	 * @phpstan-param (\Closure() : void)|null $onError

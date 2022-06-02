@@ -156,9 +156,15 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	public function jump() : void{
 		parent::jump();
 		if($this->isSprinting()){
-			$this->hungerManager->exhaust(0.8, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
+			$this->hungerManager->exhaust(0.2, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
 		}else{
-			$this->hungerManager->exhaust(0.2, PlayerExhaustEvent::CAUSE_JUMPING);
+			$this->hungerManager->exhaust(0.05, PlayerExhaustEvent::CAUSE_JUMPING);
+		}
+	}
+
+	public function emote(string $emoteId) : void{
+		foreach($this->getViewers() as $player){
+			$player->getNetworkSession()->onEmote($this, $emoteId);
 		}
 	}
 

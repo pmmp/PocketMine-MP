@@ -36,13 +36,13 @@ final class EffectIdMap{
 	 * @var Effect[]
 	 * @phpstan-var array<int, Effect>
 	 */
-	private $idToEffect = [];
+	private array $idToEffect = [];
 
 	/**
 	 * @var int[]
 	 * @phpstan-var array<int, int>
 	 */
-	private $effectToId = [];
+	private array $effectToId = [];
 
 	private function __construct(){
 		$this->register(EffectIds::SPEED, VanillaEffects::SPEED());

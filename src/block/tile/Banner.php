@@ -44,14 +44,13 @@ class Banner extends Spawnable{
 	public const TAG_PATTERN_COLOR = "Color";
 	public const TAG_PATTERN_NAME = "Pattern";
 
-	/** @var DyeColor */
-	private $baseColor;
+	private DyeColor $baseColor;
 
 	/**
 	 * @var BannerPatternLayer[]
 	 * @phpstan-var list<BannerPatternLayer>
 	 */
-	private $patterns = [];
+	private array $patterns = [];
 
 	public function __construct(World $world, Vector3 $pos){
 		$this->baseColor = DyeColor::BLACK();

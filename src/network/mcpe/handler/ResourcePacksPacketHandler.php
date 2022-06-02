@@ -52,25 +52,18 @@ use function substr;
 class ResourcePacksPacketHandler extends ChunkRequestPacketHandler{
 	private const PACK_CHUNK_SIZE = 128 * 1024; //128KB
 
-	/** @var ResourcePackManager */
-	private $resourcePackManager;
-	/**
-	 * @var \Closure
-	 * @phpstan-var \Closure() : void
-	 */
-	private $completionCallback;
-
 	/** @var bool[][] uuid => [chunk index => hasSent] */
-	private $downloadedChunks = [];
+	private array $downloadedChunks = [];
 
 	/**
 	 * @phpstan-param \Closure() : void $completionCallback
 	 */
-	public function __construct(NetworkSession $session, ResourcePackManager $resourcePackManager, \Closure $completionCallback){
+	public function __construct(
+		NetworkSession $session,
+		private ResourcePackManager $resourcePackManager,
+		private \Closure $completionCallback
+	){
 		parent::__construct($session);
-
-		$this->resourcePackManager = $resourcePackManager;
-		$this->completionCallback = $completionCallback;
 	}
 
 	public function setUp() : void{

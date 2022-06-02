@@ -52,30 +52,17 @@ use function is_array;
  * Handles the initial login phase of the session. This handler is used as the initial state.
  */
 class LoginPacketHandler extends ChunkRequestPacketHandler{
-
-	/** @var Server */
-	private $server;
-	/**
-	 * @var \Closure
-	 * @phpstan-var \Closure(PlayerInfo) : void
-	 */
-	private $playerInfoConsumer;
-	/**
-	 * @var \Closure
-	 * @phpstan-var \Closure(bool, bool, ?string, ?string) : void
-	 */
-	private $authCallback;
-
 	/**
 	 * @phpstan-param \Closure(PlayerInfo) : void $playerInfoConsumer
 	 * @phpstan-param \Closure(bool $isAuthenticated, bool $authRequired, ?string $error, ?string $clientPubKey) : void $authCallback
 	 */
-	public function __construct(Server $server, NetworkSession $session, \Closure $playerInfoConsumer, \Closure $authCallback){
+	public function __construct(
+		private Server $server,
+		NetworkSession $session,
+		private \Closure $playerInfoConsumer,
+		private \Closure $authCallback
+	){
 		parent::__construct($session);
-
-		$this->server = $server;
-		$this->playerInfoConsumer = $playerInfoConsumer;
-		$this->authCallback = $authCallback;
 	}
 
 	public function handleLogin(LoginPacket $packet) : bool{

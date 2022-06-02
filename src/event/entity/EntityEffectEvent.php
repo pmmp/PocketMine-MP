@@ -34,12 +34,11 @@ use pocketmine\event\CancellableTrait;
 class EntityEffectEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var EffectInstance */
-	private $effect;
-
-	public function __construct(Entity $entity, EffectInstance $effect){
+	public function __construct(
+		Entity $entity,
+		private EffectInstance $effect
+	){
 		$this->entity = $entity;
-		$this->effect = $effect;
 	}
 
 	public function getEffect() : EffectInstance{

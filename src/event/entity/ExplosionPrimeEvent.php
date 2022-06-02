@@ -40,8 +40,7 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 
 	/** @var float */
 	protected $force;
-	/** @var bool */
-	private $blockBreaking;
+	private bool $blockBreaking = true;
 
 	public function __construct(Entity $entity, float $force){
 		if($force <= 0){
@@ -49,7 +48,6 @@ class ExplosionPrimeEvent extends EntityEvent implements Cancellable{
 		}
 		$this->entity = $entity;
 		$this->force = $force;
-		$this->blockBreaking = true;
 	}
 
 	public function getForce() : float{

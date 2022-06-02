@@ -33,13 +33,7 @@ use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
  * This is the bone-breaker "crunch" sound.
  */
 class EntityLongFallSound implements Sound{
-
-	/** @var Entity */
-	private $entity;
-
-	public function __construct(Entity $entity){
-		$this->entity = $entity;
-	}
+	public function __construct(private Entity $entity){}
 
 	public function encode(Vector3 $pos) : array{
 		return [LevelSoundEventPacket::create(

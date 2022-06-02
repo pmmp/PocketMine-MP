@@ -25,6 +25,7 @@ namespace pocketmine\event\player;
 
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
+use pocketmine\event\server\CommandEvent;
 use pocketmine\player\Player;
 
 /**
@@ -32,6 +33,10 @@ use pocketmine\player\Player;
  *
  * If the message is prefixed with a / (forward slash), it will be interpreted as a command.
  * Otherwise, it will be broadcasted as a chat message.
+ *
+ * @deprecated
+ * @see PlayerChatEvent to handle chat messages
+ * @see CommandEvent to intercept commands
  */
 class PlayerCommandPreprocessEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;

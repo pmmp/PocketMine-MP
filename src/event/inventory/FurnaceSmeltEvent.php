@@ -32,19 +32,14 @@ use pocketmine\item\Item;
 class FurnaceSmeltEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Furnace */
-	private $furnace;
-	/** @var Item */
-	private $source;
-	/** @var Item */
-	private $result;
-
-	public function __construct(Furnace $furnace, Item $source, Item $result){
+	public function __construct(
+		private Furnace $furnace,
+		private Item $source,
+		private Item $result
+	){
 		parent::__construct($furnace->getBlock());
 		$this->source = clone $source;
 		$this->source->setCount(1);
-		$this->result = $result;
-		$this->furnace = $furnace;
 	}
 
 	public function getFurnace() : Furnace{

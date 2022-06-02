@@ -136,9 +136,6 @@ use const JSON_THROW_ON_ERROR;
 class InGamePacketHandler extends ChunkRequestPacketHandler{
 	private const MAX_FORM_RESPONSE_DEPTH = 2; //modal/simple will be 1, custom forms 2 - they will never contain anything other than string|int|float|bool|null
 
-	/** @var Player */
-	private $player;
-
 	/** @var CraftingTransaction|null */
 	protected $craftingTransaction = null;
 
@@ -150,13 +147,12 @@ class InGamePacketHandler extends ChunkRequestPacketHandler{
 	/** @var bool */
 	public $forceMoveSync = false;
 
-	private InventoryManager $inventoryManager;
-
-	public function __construct(Player $player, NetworkSession $session, InventoryManager $inventoryManager){
+	public function __construct(
+		private Player $player,
+		NetworkSession $session,
+		private InventoryManager $inventoryManager
+	){
 		parent::__construct($session);
-
-		$this->player = $player;
-		$this->inventoryManager = $inventoryManager;
 	}
 
 	public function handleText(TextPacket $packet) : bool{

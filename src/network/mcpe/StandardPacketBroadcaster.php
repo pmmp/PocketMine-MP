@@ -28,16 +28,7 @@ use pocketmine\Server;
 use function spl_object_id;
 
 final class StandardPacketBroadcaster implements PacketBroadcaster{
-
-	/** @var Server */
-	private $server;
-	/** @var int */
-	private $protocolId;
-
-	public function __construct(Server $server, int $protocolId){
-		$this->server = $server;
-		$this->protocolId = $protocolId;
-	}
+	public function __construct(private Server $server, private int $protocolId){}
 
 	public function broadcastPackets(array $recipients, array $packets) : void{
 		$buffers = [];

@@ -99,7 +99,7 @@ class GiveCommand extends VanillaCommand{
 		$player->getInventory()->addItem($item);
 
 		Command::broadcastCommandMessage($sender, KnownTranslationFactory::commands_give_success(
-			$item->getName() . " (" . $item->getId() . ":" . $item->getMeta() . ")",
+			$item->getName() . " (" . $args[1] . ")",
 			(string) $item->getCount(),
 			$player->getName()
 		));

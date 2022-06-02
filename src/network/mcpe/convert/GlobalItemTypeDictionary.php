@@ -75,15 +75,10 @@ final class GlobalItemTypeDictionary{
 		return new self($dictionaries);
 	}
 
-	/** @var ItemTypeDictionary[] */
-	private array $dictionaries;
-
 	/**
 	 * @param ItemTypeDictionary[] $dictionaries
 	 */
-	public function __construct(array $dictionaries){
-		$this->dictionaries = $dictionaries;
-	}
+	public function __construct(private array $dictionaries){}
 
 	public static function getDictionaryProtocol(int $protocolId) : int{
 		return $protocolId;

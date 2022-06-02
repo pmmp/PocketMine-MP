@@ -34,12 +34,11 @@ use pocketmine\player\Player;
 class PlayerDropItemEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Item */
-	private $drop;
-
-	public function __construct(Player $player, Item $drop){
+	public function __construct(
+		Player $player,
+		private Item $drop
+	){
 		$this->player = $player;
-		$this->drop = $drop;
 	}
 
 	public function getItem() : Item{

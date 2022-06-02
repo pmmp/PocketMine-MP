@@ -36,15 +36,12 @@ use pocketmine\player\Player;
 class PlayerItemHeldEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Item */
-	private $item;
-	/** @var int */
-	private $hotbarSlot;
-
-	public function __construct(Player $player, Item $item, int $hotbarSlot){
+	public function __construct(
+		Player $player,
+		private Item $item,
+		private int $hotbarSlot
+	){
 		$this->player = $player;
-		$this->item = $item;
-		$this->hotbarSlot = $hotbarSlot;
 	}
 
 	/**

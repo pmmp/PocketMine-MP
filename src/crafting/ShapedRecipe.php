@@ -34,16 +34,14 @@ use function strpos;
 
 class ShapedRecipe implements CraftingRecipe{
 	/** @var string[] */
-	private $shape = [];
+	private array $shape = [];
 	/** @var Item[] char => Item map */
-	private $ingredientList = [];
+	private array $ingredientList = [];
 	/** @var Item[] */
-	private $results = [];
+	private array $results = [];
 
-	/** @var int */
-	private $height;
-	/** @var int */
-	private $width;
+	private int $height;
+	private int $width;
 
 	/**
 	 * Constructs a ShapedRecipe instance.

@@ -38,21 +38,16 @@ use function abs;
 
 class Nether extends Generator{
 
-	/** @var Populator[] */
-	private $populators = [];
-	/** @var int */
-	private $waterHeight = 32;
-	/** @var int */
-	private $emptyHeight = 64;
-	/** @var int */
-	private $emptyAmplitude = 1;
-	/** @var float */
-	private $density = 0.5;
+	private int $waterHeight = 32;
+	private int $emptyHeight = 64;
+	private int $emptyAmplitude = 1;
+	private float $density = 0.5;
 
 	/** @var Populator[] */
-	private $generationPopulators = [];
-	/** @var Simplex */
-	private $noiseBase;
+	private array $populators = [];
+	/** @var Populator[] */
+	private array $generationPopulators = [];
+	private Simplex $noiseBase;
 
 	/**
 	 * @throws InvalidGeneratorOptionsException

@@ -44,12 +44,7 @@ use pocketmine\inventory\transaction\InventoryTransaction;
 class InventoryTransactionEvent extends Event implements Cancellable{
 	use CancellableTrait;
 
-	/** @var InventoryTransaction */
-	private $transaction;
-
-	public function __construct(InventoryTransaction $transaction){
-		$this->transaction = $transaction;
-	}
+	public function __construct(private InventoryTransaction $transaction){}
 
 	public function getTransaction() : InventoryTransaction{
 		return $this->transaction;

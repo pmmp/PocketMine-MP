@@ -25,6 +25,7 @@ namespace pocketmine\network\mcpe\cache;
 
 use pocketmine\crafting\CraftingManager;
 use pocketmine\crafting\FurnaceType;
+use pocketmine\crafting\ShapelessRecipeType;
 use pocketmine\item\Item;
 use pocketmine\network\mcpe\convert\GlobalItemTypeDictionary;
 use pocketmine\network\mcpe\convert\ItemTranslator;
@@ -54,7 +55,7 @@ final class CraftingDataCache{
 	 * @var CraftingDataPacket[]
 	 * @phpstan-var array<int, array<int, CraftingDataPacket>>
 	 */
-	private $caches = [];
+	private array $caches = [];
 
 	public function getCache(int $dictionaryProtocol, CraftingManager $manager) : CraftingDataPacket{
 		$id = spl_object_id($manager);
@@ -77,7 +78,6 @@ final class CraftingDataCache{
 	 */
 	private function buildCraftingDataCache(CraftingManager $manager) : array{
 		Timings::$craftingDataCacheRebuild->startTiming();
-
 		$packets = [];
 
 		foreach(GlobalItemTypeDictionary::getInstance()->getDictionaries() as $dictionaryProtocol => $unused){
@@ -87,6 +87,11 @@ final class CraftingDataCache{
 			$recipesWithTypeIds = [];
 			foreach($manager->getShapelessRecipes() as $list){
 				foreach($list as $recipe){
+					$typeTag = match($recipe->getType()->id()){
+						ShapelessRecipeType::CRAFTING()->id() => CraftingRecipeBlockName::CRAFTING_TABLE,
+						ShapelessRecipeType::STONECUTTER()->id() => CraftingRecipeBlockName::STONECUTTER,
+						default => throw new AssumptionFailedError("Unreachable"),
+					};
 					$recipesWithTypeIds[] = new ProtocolShapelessRecipe(
 						CraftingDataPacket::ENTRY_SHAPELESS,
 						Binary::writeInt(++$counter),
@@ -97,7 +102,7 @@ final class CraftingDataCache{
 							return $converter->coreItemStackToNet($dictionaryProtocol, $item);
 						}, $recipe->getResults()),
 						$nullUUID,
-						CraftingRecipeBlockName::CRAFTING_TABLE,
+						$typeTag,
 						50,
 						$counter
 					);

@@ -30,14 +30,10 @@ use pocketmine\block\BaseBanner;
  * @see BaseBanner
  */
 class BannerPatternLayer{
-	private BannerPatternType $type;
-	/** @var DyeColor */
-	private $color;
-
-	public function __construct(BannerPatternType $type, DyeColor $color){
-		$this->type = $type;
-		$this->color = $color;
-	}
+	public function __construct(
+		private BannerPatternType $type,
+		private DyeColor $color
+	){}
 
 	public function getType() : BannerPatternType{ return $this->type; }
 

@@ -57,11 +57,8 @@ class CraftingManager{
 	 */
 	protected $potionContainerChangeRecipes = [];
 
-	/**
-	 * @var ObjectSet
-	 * @phpstan-var ObjectSet<\Closure() : void>
-	 */
-	private $recipeRegisteredCallbacks;
+	/** @phpstan-var ObjectSet<\Closure() : void> */
+	private ObjectSet $recipeRegisteredCallbacks;
 
 	public function __construct(){
 		$this->recipeRegisteredCallbacks = new ObjectSet();

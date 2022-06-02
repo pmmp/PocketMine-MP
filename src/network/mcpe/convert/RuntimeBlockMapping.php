@@ -47,11 +47,11 @@ final class RuntimeBlockMapping{
 	public const R12_TO_CURRENT_BLOCK_MAP_PATH = 1;
 
 	/** @var int[][] */
-	private $legacyToRuntimeMap = [];
+	private array $legacyToRuntimeMap = [];
 	/** @var int[][] */
-	private $runtimeToLegacyMap = [];
+	private array $runtimeToLegacyMap = [];
 	/** @var CompoundTag[][] */
-	private $bedrockKnownStates = [];
+	private array $bedrockKnownStates = [];
 
 	private static function make() : self{
 		$protocolPaths = [

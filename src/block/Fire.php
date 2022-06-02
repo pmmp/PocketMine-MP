@@ -185,7 +185,7 @@ class Fire extends Flowable{
 					$spreadedFire = false;
 					if(mt_rand(0, $this->age + 9) < 5){ //TODO: check rain
 						$fire = clone $this;
-						$fire->age = min(15, $fire->age + (mt_rand(0, 4) >> 2));
+						$fire->age = min(self::MAX_AGE, $fire->age + (mt_rand(0, 4) >> 2));
 						$spreadedFire = $this->spreadBlock($block, $fire);
 					}
 					if(!$spreadedFire){

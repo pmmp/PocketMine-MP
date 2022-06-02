@@ -30,8 +30,7 @@ use function sin;
 use const M_PI;
 
 class Ore{
-	/** @var Random */
-	private $random;
+	private Random $random;
 	/** @var OreType */
 	public $type;
 

@@ -28,15 +28,14 @@ use pocketmine\utils\Utils;
 
 class HandlerListManager{
 
-	/** @var HandlerListManager|null */
-	private static $globalInstance = null;
+	private static ?self $globalInstance = null;
 
 	public static function global() : self{
 		return self::$globalInstance ?? (self::$globalInstance = new self);
 	}
 
 	/** @var HandlerList[] classname => HandlerList */
-	private $allLists = [];
+	private array $allLists = [];
 
 	/**
 	 * Unregisters all the listeners

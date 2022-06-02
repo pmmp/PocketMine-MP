@@ -28,12 +28,7 @@ use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\types\ParticleIds;
 
 class CriticalParticle extends ProtocolParticle{
-	/** @var int */
-	private $scale;
-
-	public function __construct(int $scale = 2){
-		$this->scale = $scale;
-	}
+	public function __construct(private int $scale = 2){}
 
 	public function encode(Vector3 $pos) : array{
 		return [LevelEventPacket::standardParticle(ParticleIds::CRITICAL, $this->scale, $pos, $this->particleProtocol)];

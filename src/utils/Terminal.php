@@ -60,8 +60,7 @@ abstract class Terminal{
 	public static string $COLOR_WHITE = "";
 	public static string $COLOR_MINECOIN_GOLD = "";
 
-	/** @var bool|null */
-	private static $formattingCodes = null;
+	private static ?bool $formattingCodes = null;
 
 	public static function hasFormattingCodes() : bool{
 		if(self::$formattingCodes === null){

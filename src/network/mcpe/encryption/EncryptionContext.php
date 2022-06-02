@@ -37,18 +37,13 @@ class EncryptionContext{
 	/** @var bool */
 	public static $ENABLED = true;
 
-	/** @var string */
-	private $key;
+	private string $key;
 
-	/** @var Cipher */
-	private $decryptCipher;
+	private Cipher $decryptCipher;
+	private int $decryptCounter = 0;
 
-	/** @var int */
-	private $decryptCounter = 0;
-	/** @var Cipher */
-	private $encryptCipher;
-	/** @var int */
-	private $encryptCounter = 0;
+	private Cipher $encryptCipher;
+	private int $encryptCounter = 0;
 
 	public function __construct(string $encryptionKey, string $algorithm, string $iv){
 		$this->key = $encryptionKey;

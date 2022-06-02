@@ -27,20 +27,11 @@ use pocketmine\network\mcpe\NetworkSession;
 use pocketmine\network\mcpe\protocol\SetLocalPlayerAsInitializedPacket;
 
 final class SpawnResponsePacketHandler extends ChunkRequestPacketHandler{
-
-	/**
-	 * @var \Closure
-	 * @phpstan-var \Closure() : void
-	 */
-	private $responseCallback;
-
 	/**
 	 * @phpstan-param \Closure() : void $responseCallback
 	 */
-	public function __construct(\Closure $responseCallback, NetworkSession $session){
+	public function __construct(private \Closure $responseCallback, NetworkSession $session){
 		parent::__construct($session);
-
-		$this->responseCallback = $responseCallback;
 	}
 
 	public function handleSetLocalPlayerAsInitialized(SetLocalPlayerAsInitializedPacket $packet) : bool{
