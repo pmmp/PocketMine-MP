@@ -27,7 +27,6 @@ use pocketmine\block\Block;
 
 abstract class MappingParticle implements Particle{
 
-	/** @var int */
 	protected int $mappingProtocol;
 
 	public function __construct(protected Block $b){}

@@ -28,7 +28,6 @@ use pocketmine\player\Player;
 
 abstract class ProtocolParticle implements Particle{
 
-	/** @var int */
 	protected int $particleProtocol;
 
 	public function setParticleProtocol(int $particleProtocol) : void{

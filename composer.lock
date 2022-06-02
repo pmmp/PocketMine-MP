@@ -227,12 +227,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/NetherGamesMC/BedrockProtocol.git",
-                "reference": "60818ab3480d3bb5769424d592a8c12a0936ea5f"
+                "reference": "7a8dde2449c8ab8f6e628eaf3442d5c7871aade0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/60818ab3480d3bb5769424d592a8c12a0936ea5f",
-                "reference": "60818ab3480d3bb5769424d592a8c12a0936ea5f",
+                "url": "https://api.github.com/repos/NetherGamesMC/BedrockProtocol/zipball/7a8dde2449c8ab8f6e628eaf3442d5c7871aade0",
+                "reference": "7a8dde2449c8ab8f6e628eaf3442d5c7871aade0",
                 "shasum": ""
             },
             "require": {
@@ -246,7 +246,7 @@
                 "ramsey/uuid": "^4.1"
             },
             "require-dev": {
-                "phpstan/phpstan": "1.6.2",
+                "phpstan/phpstan": "1.7.7",
                 "phpstan/phpstan-phpunit": "^1.0.0",
                 "phpstan/phpstan-strict-rules": "^1.0.0",
                 "phpunit/phpunit": "^9.5"
@@ -275,7 +275,7 @@
             "support": {
                 "source": "https://github.com/NetherGamesMC/BedrockProtocol/tree/master"
             },
-            "time": "2022-04-30T16:18:09+00:00"
+            "time": "2022-06-02T15:19:16+00:00"
         },
         {
             "name": "netresearch/jsonmapper",
