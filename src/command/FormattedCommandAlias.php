@@ -23,124 +23,157 @@ declare(strict_types=1);
 
 namespace pocketmine\command;
 
-use pocketmine\Server;
+use pocketmine\command\utils\CommandStringHelper;
+use pocketmine\command\utils\InvalidCommandSyntaxException;
+use pocketmine\lang\KnownTranslationFactory;
+use pocketmine\utils\AssumptionFailedError;
 use pocketmine\utils\TextFormat;
+use function array_map;
+use function array_shift;
 use function count;
-use function ord;
+use function preg_match;
 use function strlen;
 use function strpos;
 use function substr;
 
 class FormattedCommandAlias extends Command{
-	/** @var string[] */
-	private $formatStrings = [];
+	/**
+	 * - matches a $
+	 * - captures an optional second $ to indicate required/optional
+	 * - captures a series of digits which don't start with a 0
+	 * - captures an optional - to indicate variadic
+	 */
+	private const FORMAT_STRING_REGEX = '/\G\$(\$)?((?!0)+\d+)(-)?/';
 
 	/**
 	 * @param string[] $formatStrings
 	 */
-	public function __construct(string $alias, array $formatStrings){
+	public function __construct(
+		string $alias,
+		private array $formatStrings
+	){
 		parent::__construct($alias);
-		$this->formatStrings = $formatStrings;
 	}
 
 	public function execute(CommandSender $sender, string $commandLabel, array $args){
-
 		$commands = [];
-		$result = false;
+		$result = true;
 
 		foreach($this->formatStrings as $formatString){
 			try{
-				$commands[] = $this->buildCommand($formatString, $args);
+				$formatArgs = CommandStringHelper::parseQuoteAware($formatString);
+				$commands[] = array_map(fn(string $formatArg) => $this->buildCommand($formatArg, $args), $formatArgs);
 			}catch(\InvalidArgumentException $e){
 				$sender->sendMessage(TextFormat::RED . $e->getMessage());
 				return false;
 			}
 		}
 
-		foreach($commands as $command){
-			$result |= Server::getInstance()->dispatchCommand($sender, $command, true);
+		$commandMap = $sender->getServer()->getCommandMap();
+		foreach($commands as $commandArgs){
+			//this approximately duplicates the logic found in SimpleCommandMap::dispatch()
+			//this is to allow directly invoking the commands without having to rebuild a command string and parse it
+			//again for no reason
+			//TODO: a method on CommandMap to invoke a command with pre-parsed arguments would probably be a good idea
+			//for a future major version
+			$commandLabel = array_shift($commandArgs);
+			if($commandLabel === null){
+				throw new AssumptionFailedError("This should have been checked before construction");
+			}
+
+			if(($target = $commandMap->getCommand($commandLabel)) !== null){
+				$target->timings->startTiming();
+
+				try{
+					$target->execute($sender, $commandLabel, $args);
+				}catch(InvalidCommandSyntaxException $e){
+					$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::commands_generic_usage($target->getUsage())));
+				}finally{
+					$target->timings->stopTiming();
+				}
+			}else{
+				$sender->sendMessage($sender->getLanguage()->translate(KnownTranslationFactory::pocketmine_command_notFound($commandLabel, "/help")->prefix(TextFormat::RED)));
+
+				//to match the behaviour of SimpleCommandMap::dispatch()
+				//this shouldn't normally happen, but might happen if the command was unregistered or modified after
+				//the alias was installed
+				$result = false;
+			}
 		}
 
-		return (bool) $result;
+		return $result;
 	}
 
 	/**
 	 * @param string[] $args
 	 */
 	private function buildCommand(string $formatString, array $args) : string{
-		$index = strpos($formatString, '$');
-		while($index !== false){
+		$index = 0;
+		while(($index = strpos($formatString, '$', $index)) !== false){
 			$start = $index;
 			if($index > 0 && $formatString[$start - 1] === "\\"){
 				$formatString = substr($formatString, 0, $start - 1) . substr($formatString, $start);
-				$index = strpos($formatString, '$', $index);
+				//offset is now pointing at the next character because we just deleted the \
 				continue;
 			}
 
-			$required = false;
-			if($formatString[$index + 1] == '$'){
-				$required = true;
-
-				++$index;
-			}
-
-			++$index;
-
-			$argStart = $index;
-
-			while($index < strlen($formatString) && self::inRange(ord($formatString[$index]) - 48, 0, 9)){
-				++$index;
-			}
-
-			if($argStart === $index){
+			$info = self::extractPlaceholderInfo($formatString, $index);
+			if($info === null){
 				throw new \InvalidArgumentException("Invalid replacement token");
 			}
-
-			$position = (int) substr($formatString, $argStart, $index);
-
-			if($position === 0){
-				throw new \InvalidArgumentException("Invalid replacement token");
-			}
-
-			--$position;
-
-			$rest = false;
-
-			if($index < strlen($formatString) && $formatString[$index] === "-"){
-				$rest = true;
-				++$index;
-			}
-
-			$end = $index;
+			[$fullPlaceholder, $required, $position, $rest] = $info;
+			$position--; //array offsets start at 0, but placeholders start at 1
 
 			if($required && $position >= count($args)){
 				throw new \InvalidArgumentException("Missing required argument " . ($position + 1));
 			}
 
-			$replacement = "";
-			if($rest && $position < count($args)){
-				for($i = $position, $c = count($args); $i < $c; ++$i){
-					if($i !== $position){
-						$replacement .= " ";
-					}
+			$replacement = self::buildReplacement($args, $position, $rest);
 
-					$replacement .= $args[$i];
-				}
-			}elseif($position < count($args)){
-				$replacement .= $args[$position];
-			}
-
+			$end = $index + strlen($fullPlaceholder);
 			$formatString = substr($formatString, 0, $start) . $replacement . substr($formatString, $end);
 
 			$index = $start + strlen($replacement);
-
-			$index = strpos($formatString, '$', $index);
 		}
 
 		return $formatString;
 	}
 
-	private static function inRange(int $i, int $j, int $k) : bool{
-		return $i >= $j && $i <= $k;
+	/**
+	 * @param string[] $args
+	 * @phpstan-param list<string> $args
+	 */
+	private static function buildReplacement(array $args, int $position, bool $rest) : string{
+		$replacement = "";
+		if($rest && $position < count($args)){
+			for($i = $position, $c = count($args); $i < $c; ++$i){
+				if($i !== $position){
+					$replacement .= " ";
+				}
+
+				$replacement .= $args[$i];
+			}
+		}elseif($position < count($args)){
+			$replacement .= $args[$position];
+		}
+
+		return $replacement;
+	}
+
+	/**
+	 * @phpstan-return array{string, bool, int, bool}
+	 */
+	private static function extractPlaceholderInfo(string $commandString, int $offset) : ?array{
+		if(preg_match(self::FORMAT_STRING_REGEX, $commandString, $matches, 0, $offset) !== 1){
+			return null;
+		}
+
+		$fullPlaceholder = $matches[0];
+
+		$required = ($matches[1] ?? "") !== "";
+		$position = (int) $matches[2];
+		$variadic = ($matches[3] ?? "") !== "";
+
+		return [$fullPlaceholder, $required, $position, $variadic];
 	}
 }

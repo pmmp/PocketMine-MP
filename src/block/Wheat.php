@@ -30,7 +30,7 @@ use function mt_rand;
 class Wheat extends Crops{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
-		if($this->age >= 7){
+		if($this->age >= self::MAX_AGE){
 			return [
 				VanillaItems::WHEAT(),
 				VanillaItems::WHEAT_SEEDS()->setCount(mt_rand(0, 3))

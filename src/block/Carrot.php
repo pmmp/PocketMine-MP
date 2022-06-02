@@ -31,7 +31,7 @@ class Carrot extends Crops{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::CARROT()->setCount($this->age >= 7 ? mt_rand(1, 4) : 1)
+			VanillaItems::CARROT()->setCount($this->age >= self::MAX_AGE ? mt_rand(1, 4) : 1)
 		];
 	}
 

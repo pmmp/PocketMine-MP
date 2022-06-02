@@ -65,10 +65,9 @@ class Item implements \JsonSerializable{
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
 
-	/** @var ItemIdentifier */
-	private $identifier;
-	/** @var CompoundTag */
-	private $nbt;
+	private ItemIdentifier $identifier;
+	private CompoundTag $nbt;
+
 	/** @var int */
 	protected $count = 1;
 	/** @var string */
@@ -678,7 +677,7 @@ class Item implements \JsonSerializable{
 	 */
 	public static function nbtDeserialize(CompoundTag $tag) : Item{
 		if($tag->getTag("id") === null || $tag->getTag("Count") === null){
-			return ItemFactory::getInstance()->get(0);
+			return VanillaItems::AIR();
 		}
 
 		$count = Binary::unsignByte($tag->getByte("Count"));

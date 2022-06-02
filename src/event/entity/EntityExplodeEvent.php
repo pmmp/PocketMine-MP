@@ -31,7 +31,11 @@ use pocketmine\utils\Utils;
 use pocketmine\world\Position;
 
 /**
- * Called when a entity explodes
+ * Called when an entity explodes, after the explosion's impact has been calculated.
+ * No changes have been made to the world at this stage.
+ *
+ * @see ExplosionPrimeEvent
+ *
  * @phpstan-extends EntityEvent<Entity>
  */
 class EntityExplodeEvent extends EntityEvent implements Cancellable{
@@ -47,12 +51,16 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	protected $yield;
 
 	/**
-	 * @param Block[]  $blocks
+	 * @param Block[] $blocks
+	 * @param float   $yield 0-100
 	 */
 	public function __construct(Entity $entity, Position $position, array $blocks, float $yield){
 		$this->entity = $entity;
 		$this->position = $position;
 		$this->blocks = $blocks;
+		if($yield < 0.0 || $yield > 100.0){
+			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
+		}
 		$this->yield = $yield;
 	}
 
@@ -61,6 +69,8 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
+	 * Returns a list of blocks destroyed by the explosion.
+	 *
 	 * @return Block[]
 	 */
 	public function getBlockList() : array{
@@ -68,6 +78,8 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	}
 
 	/**
+	 * Sets the blocks destroyed by the explosion.
+	 *
 	 * @param Block[] $blocks
 	 */
 	public function setBlockList(array $blocks) : void{
@@ -75,11 +87,22 @@ class EntityExplodeEvent extends EntityEvent implements Cancellable{
 		$this->blocks = $blocks;
 	}
 
+	/**
+	 * Returns the percentage chance of drops from each block destroyed by the explosion.
+	 * @return float 0-100
+	 */
 	public function getYield() : float{
 		return $this->yield;
 	}
 
+	/**
+	 * Sets the percentage chance of drops from each block destroyed by the explosion.
+	 * @param float $yield 0-100
+	 */
 	public function setYield(float $yield) : void{
+		if($yield < 0.0 || $yield > 100.0){
+			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
+		}
 		$this->yield = $yield;
 	}
 }

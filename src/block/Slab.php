@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\SlabType;
+use pocketmine\block\utils\SupportType;
 use pocketmine\item\Item;
 use pocketmine\math\AxisAlignedBB;
 use pocketmine\math\Facing;
@@ -123,6 +124,15 @@ class Slab extends Transparent{
 			return [AxisAlignedBB::one()];
 		}
 		return [AxisAlignedBB::one()->trim($this->slabType->equals(SlabType::TOP()) ? Facing::DOWN : Facing::UP, 0.5)];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		if($this->slabType->equals(SlabType::DOUBLE())){
+			return SupportType::FULL();
+		}elseif(($facing === Facing::UP && $this->slabType->equals(SlabType::TOP())) || ($facing === Facing::DOWN && $this->slabType->equals(SlabType::BOTTOM()))){
+			return SupportType::FULL();
+		}
+		return SupportType::NONE();
 	}
 
 	public function getDropsForCompatibleTool(Item $item) : array{

@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\block;
 
 use pocketmine\block\utils\NormalHorizontalFacingInMetadataTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\entity\Entity;
 use pocketmine\entity\Living;
 use pocketmine\item\Item;
@@ -64,8 +65,12 @@ class Ladder extends Transparent{
 		return [AxisAlignedBB::one()->trim($this->facing, 13 / 16)];
 	}
 
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
+	}
+
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		if(!$blockClicked->isTransparent() && Facing::axis($face) !== Axis::Y){
+		if($this->canBeSupportedBy($blockClicked, $face) && Facing::axis($face) !== Axis::Y){
 			$this->facing = $face;
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
@@ -74,8 +79,12 @@ class Ladder extends Transparent{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if(!$this->getSide(Facing::opposite($this->facing))->isSolid()){ //Replace with common break method
+		if(!$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)), $this->facing)){ //Replace with common break method
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
+	}
+
+	private function canBeSupportedBy(Block $block, int $face) : bool{
+		return $block->getSupportType($face)->equals(SupportType::FULL());
 	}
 }

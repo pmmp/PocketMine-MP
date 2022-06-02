@@ -42,11 +42,11 @@ final class RuntimeBlockMapping{
 	use SingletonTrait;
 
 	/** @var int[] */
-	private $legacyToRuntimeMap = [];
+	private array $legacyToRuntimeMap = [];
 	/** @var int[] */
-	private $runtimeToLegacyMap = [];
+	private array $runtimeToLegacyMap = [];
 	/** @var CompoundTag[] */
-	private $bedrockKnownStates;
+	private array $bedrockKnownStates;
 
 	private static function make() : self{
 		return new self(

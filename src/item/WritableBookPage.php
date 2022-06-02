@@ -32,10 +32,8 @@ class WritableBookPage{
 	public const PAGE_LENGTH_HARD_LIMIT_BYTES = Limits::INT16_MAX;
 	public const PHOTO_NAME_LENGTH_HARD_LIMIT_BYTES = Limits::INT16_MAX;
 
-	/** @var string */
-	private $text;
-	/** @var string */
-	private $photoName;
+	private string $text;
+	private string $photoName;
 
 	/**
 	 * @throws \InvalidArgumentException

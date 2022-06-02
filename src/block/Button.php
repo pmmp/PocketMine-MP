@@ -61,9 +61,11 @@ abstract class Button extends Flowable{
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
-		//TODO: check valid target block
-		$this->facing = $face;
-		return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		if($this->canBeSupportedBy($blockClicked, $face)){
+			$this->facing = $face;
+			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
+		}
+		return false;
 	}
 
 	abstract protected function getActivationTime() : int;
@@ -85,5 +87,15 @@ abstract class Button extends Flowable{
 			$this->position->getWorld()->setBlock($this->position, $this);
 			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new RedstonePowerOffSound());
 		}
+	}
+
+	public function onNearbyBlockChange() : void{
+		if(!$this->canBeSupportedBy($this->getSide(Facing::opposite($this->facing)), $this->facing)){
+			$this->position->getWorld()->useBreakOn($this->position);
+		}
+	}
+
+	private function canBeSupportedBy(Block $support, int $face) : bool{
+		return $support->getSupportType($face)->hasCenterSupport();
 	}
 }

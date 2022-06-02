@@ -30,11 +30,8 @@ final class FurnaceRecipeManager{
 	/** @var FurnaceRecipe[] */
 	protected $furnaceRecipes = [];
 
-	/**
-	 * @var ObjectSet
-	 * @phpstan-var ObjectSet<\Closure(FurnaceRecipe) : void>
-	 */
-	private $recipeRegisteredCallbacks;
+	/** @phpstan-var ObjectSet<\Closure(FurnaceRecipe) : void> */
+	private ObjectSet $recipeRegisteredCallbacks;
 
 	public function __construct(){
 		$this->recipeRegisteredCallbacks = new ObjectSet();

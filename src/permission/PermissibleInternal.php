@@ -44,19 +44,19 @@ class PermissibleInternal implements Permissible{
 	 * @var bool[]
 	 * @phpstan-var array<string, bool>
 	 */
-	private $rootPermissions;
+	private array $rootPermissions;
 
 	/** @var PermissionAttachment[] */
-	private $attachments = [];
+	private array $attachments = [];
 
 	/** @var PermissionAttachmentInfo[] */
-	private $permissions = [];
+	private array $permissions = [];
 
 	/**
 	 * @var ObjectSet|\Closure[]
 	 * @phpstan-var ObjectSet<\Closure(array<string, bool> $changedPermissionsOldValues) : void>
 	 */
-	private $permissionRecalculationCallbacks;
+	private ObjectSet $permissionRecalculationCallbacks;
 
 	/**
 	 * @param bool[] $basePermissions

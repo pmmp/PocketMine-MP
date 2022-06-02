@@ -27,7 +27,7 @@ use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
 
 /**
- * Called when a Chunk is unloaded
+ * Called when a Chunk is unloaded from memory.
  */
 class ChunkUnloadEvent extends ChunkEvent implements Cancellable{
 	use CancellableTrait;

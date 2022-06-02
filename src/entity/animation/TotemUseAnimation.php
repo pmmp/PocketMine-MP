@@ -29,13 +29,8 @@ use pocketmine\network\mcpe\protocol\types\ActorEvent;
 
 final class TotemUseAnimation implements Animation{
 
-	/** @var Human */
-	private $human;
-
-	public function __construct(Human $human){
-		//TODO: check if this can be expanded to more than just humans
-		$this->human = $human;
-	}
+	//TODO: check if this can be expanded to more than just humans
+	public function __construct(private Human $human){}
 
 	public function encode() : array{
 		return [

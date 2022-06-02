@@ -29,15 +29,18 @@ use function count;
 
 class ShapelessRecipe implements CraftingRecipe{
 	/** @var Item[] */
-	private $ingredients = [];
+	private array $ingredients = [];
 	/** @var Item[] */
-	private $results;
+	private array $results;
+	private ShapelessRecipeType $type;
 
 	/**
 	 * @param Item[] $ingredients No more than 9 total. This applies to sum of item stack counts, not count of array.
 	 * @param Item[] $results List of result items created by this recipe.
+	 * TODO: we'll want to make the type parameter mandatory in PM5
 	 */
-	public function __construct(array $ingredients, array $results){
+	public function __construct(array $ingredients, array $results, ?ShapelessRecipeType $type = null){
+		$this->type = $type ?? ShapelessRecipeType::CRAFTING();
 		foreach($ingredients as $item){
 			//Ensure they get split up properly
 			if(count($this->ingredients) + $item->getCount() > 9){
@@ -61,6 +64,10 @@ class ShapelessRecipe implements CraftingRecipe{
 
 	public function getResultsFor(CraftingGrid $grid) : array{
 		return $this->getResults();
+	}
+
+	public function getType() : ShapelessRecipeType{
+		return $this->type;
 	}
 
 	/**

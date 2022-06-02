@@ -52,22 +52,18 @@ class PlayerPreLoginEvent extends Event implements Cancellable{
 		self::KICK_REASON_BANNED
 	];
 
-	/** @var PlayerInfo */
-	private $playerInfo;
-	/** @var string */
-	private $ip;
-	/** @var int */
-	private $port;
 	/** @var bool */
 	protected $authRequired;
 
 	/** @var string[] reason const => associated message */
 	protected $kickReasons = [];
 
-	public function __construct(PlayerInfo $playerInfo, string $ip, int $port, bool $authRequired){
-		$this->playerInfo = $playerInfo;
-		$this->ip = $ip;
-		$this->port = $port;
+	public function __construct(
+		private PlayerInfo $playerInfo,
+		private string $ip,
+		private int $port,
+		bool $authRequired
+	){
 		$this->authRequired = $authRequired;
 	}
 

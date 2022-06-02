@@ -43,12 +43,12 @@ class EnderChestInventory extends DelegateInventory implements BlockInventory{
 		onClose as animatedBlockInventoryTrait_onClose;
 	}
 
-	private PlayerEnderInventory $inventory;
-
-	public function __construct(Position $holder, PlayerEnderInventory $inventory){
+	public function __construct(
+		Position $holder,
+		private PlayerEnderInventory $inventory
+	){
 		parent::__construct($inventory);
 		$this->holder = $holder;
-		$this->inventory = $inventory;
 	}
 
 	public function getEnderInventory() : PlayerEnderInventory{

@@ -39,16 +39,11 @@ final class Skin{
 		128 * 128 * 4
 	];
 
-	/** @var string */
-	private $skinId;
-	/** @var string */
-	private $skinData;
-	/** @var string */
-	private $capeData;
-	/** @var string */
-	private $geometryName;
-	/** @var string */
-	private $geometryData;
+	private string $skinId;
+	private string $skinData;
+	private string $capeData;
+	private string $geometryName;
+	private string $geometryData;
 
 	private static function checkLength(string $string, string $name, int $maxLength) : void{
 		if(strlen($string) > $maxLength){

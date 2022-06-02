@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\event\world;
 
 /**
- * Called when a World is loaded
+ * Called when a world is loaded or newly created/generated.
  */
 class WorldLoadEvent extends WorldEvent{
 

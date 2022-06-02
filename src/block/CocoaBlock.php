@@ -25,6 +25,7 @@ namespace pocketmine\block;
 
 use pocketmine\block\utils\BlockDataSerializer;
 use pocketmine\block\utils\HorizontalFacingTrait;
+use pocketmine\block\utils\SupportType;
 use pocketmine\block\utils\TreeType;
 use pocketmine\event\block\BlockGrowEvent;
 use pocketmine\item\Fertilizer;
@@ -41,6 +42,8 @@ use function mt_rand;
 class CocoaBlock extends Transparent{
 	use HorizontalFacingTrait;
 
+	public const MAX_AGE = 2;
+
 	protected int $age = 0;
 
 	protected function writeStateToMeta() : int{
@@ -49,7 +52,7 @@ class CocoaBlock extends Transparent{
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = Facing::opposite(BlockDataSerializer::readLegacyHorizontalFacing($stateMeta & 0x03));
-		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta >> 2, 0, 2);
+		$this->age = BlockDataSerializer::readBoundedInt("age", $stateMeta >> 2, 0, self::MAX_AGE);
 	}
 
 	public function getStateBitmask() : int{
@@ -60,8 +63,8 @@ class CocoaBlock extends Transparent{
 
 	/** @return $this */
 	public function setAge(int $age) : self{
-		if($age < 0 || $age > 2){
-			throw new \InvalidArgumentException("Age must be in range 0-2");
+		if($age < 0 || $age > self::MAX_AGE){
+			throw new \InvalidArgumentException("Age must be in range 0 ... " . self::MAX_AGE);
 		}
 		$this->age = $age;
 		return $this;
@@ -79,6 +82,10 @@ class CocoaBlock extends Transparent{
 				->trim(Facing::opposite($this->facing), 1 / 16) //gap between log and pod
 				->trim($this->facing, (11 - $this->age * 2) / 16) //outward face
 		];
+	}
+
+	public function getSupportType(int $facing) : SupportType{
+		return SupportType::NONE();
 	}
 
 	private function canAttachTo(Block $block) : bool{
@@ -121,7 +128,7 @@ class CocoaBlock extends Transparent{
 	}
 
 	private function grow() : bool{
-		if($this->age < 2){
+		if($this->age < self::MAX_AGE){
 			$block = clone $this;
 			$block->age++;
 			$ev = new BlockGrowEvent($this, $block);
@@ -136,7 +143,7 @@ class CocoaBlock extends Transparent{
 
 	public function getDropsForCompatibleTool(Item $item) : array{
 		return [
-			VanillaItems::COCOA_BEANS()->setCount($this->age === 2 ? mt_rand(2, 3) : 1)
+			VanillaItems::COCOA_BEANS()->setCount($this->age === self::MAX_AGE ? mt_rand(2, 3) : 1)
 		];
 	}
 

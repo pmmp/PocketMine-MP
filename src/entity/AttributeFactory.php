@@ -29,7 +29,7 @@ final class AttributeFactory{
 	use SingletonTrait;
 
 	/** @var Attribute[] */
-	private $attributes = [];
+	private array $attributes = [];
 
 	public function __construct(){
 		$this->register(Attribute::ABSORPTION, 0.00, 340282346638528859811704183484516925440.00, 0.00);

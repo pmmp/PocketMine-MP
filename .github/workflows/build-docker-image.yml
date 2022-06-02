@@ -12,16 +12,16 @@ jobs:
 
     steps:
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Clone pmmp/PocketMine-Docker repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: pmmp/PocketMine-Docker
           fetch-depth: 1
@@ -46,7 +46,7 @@ jobs:
         run: echo ::set-output name=NAME::$(echo "${GITHUB_REPOSITORY,,}")
 
       - name: Build image for tag
-        uses: docker/build-push-action@v2.10.0
+        uses: docker/build-push-action@v3.0.0
         with:
           push: true
           context: ./pocketmine-mp
@@ -59,7 +59,7 @@ jobs:
 
       - name: Build image for major tag
         if: steps.channel.outputs.CHANNEL == 'stable'
-        uses: docker/build-push-action@v2.10.0
+        uses: docker/build-push-action@v3.0.0
         with:
           push: true
           context: ./pocketmine-mp
@@ -72,7 +72,7 @@ jobs:
 
       - name: Build image for minor tag
         if: steps.channel.outputs.CHANNEL == 'stable'
-        uses: docker/build-push-action@v2.10.0
+        uses: docker/build-push-action@v3.0.0
         with:
           push: true
           context: ./pocketmine-mp
@@ -85,7 +85,7 @@ jobs:
 
       - name: Build image for latest tag
         if: steps.channel.outputs.CHANNEL == 'stable'
-        uses: docker/build-push-action@v2.10.0
+        uses: docker/build-push-action@v3.0.0
         with:
           push: true
           context: ./pocketmine-mp

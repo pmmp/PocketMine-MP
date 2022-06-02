@@ -25,5 +25,9 @@ namespace pocketmine\item;
 
 class Minecart extends Item{
 
+	public function getMaxStackSize() : int{
+		return 1;
+	}
+
 	//TODO
 }

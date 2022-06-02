@@ -775,7 +775,7 @@ abstract class Living extends Entity{
 			$id = $block->getId();
 
 			if($transparent === null){
-				if($id !== 0){
+				if($id !== BlockLegacyIds::AIR){
 					break;
 				}
 			}else{

@@ -64,17 +64,15 @@ use pocketmine\command\defaults\TransferServerCommand;
 use pocketmine\command\defaults\VanillaCommand;
 use pocketmine\command\defaults\VersionCommand;
 use pocketmine\command\defaults\WhitelistCommand;
+use pocketmine\command\utils\CommandStringHelper;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
 use pocketmine\lang\KnownTranslationFactory;
 use pocketmine\Server;
 use pocketmine\utils\TextFormat;
 use function array_shift;
 use function count;
-use function explode;
 use function implode;
-use function preg_match_all;
 use function strcasecmp;
-use function stripslashes;
 use function strpos;
 use function strtolower;
 use function trim;
@@ -84,11 +82,7 @@ class SimpleCommandMap implements CommandMap{
 	/** @var Command[] */
 	protected $knownCommands = [];
 
-	/** @var Server */
-	private $server;
-
-	public function __construct(Server $server){
-		$this->server = $server;
+	public function __construct(private Server $server){
 		$this->setDefaultCommands();
 	}
 
@@ -201,16 +195,7 @@ class SimpleCommandMap implements CommandMap{
 	}
 
 	public function dispatch(CommandSender $sender, string $commandLine) : bool{
-		$args = [];
-		preg_match_all('/"((?:\\\\.|[^\\\\"])*)"|(\S+)/u', $commandLine, $matches);
-		foreach($matches[0] as $k => $_){
-			for($i = 1; $i <= 2; ++$i){
-				if($matches[$i][$k] !== ""){
-					$args[$k] = $i === 1 ? stripslashes($matches[$i][$k]) : $matches[$i][$k];
-					break;
-				}
-			}
-		}
+		$args = CommandStringHelper::parseQuoteAware($commandLine);
 
 		$sentCommandLabel = array_shift($args);
 		if($sentCommandLabel !== null && ($target = $this->getCommand($sentCommandLabel)) !== null){
@@ -263,8 +248,8 @@ class SimpleCommandMap implements CommandMap{
 			$recursive = [];
 
 			foreach($commandStrings as $commandString){
-				$args = explode(" ", $commandString);
-				$commandName = array_shift($args);
+				$args = CommandStringHelper::parseQuoteAware($commandString);
+				$commandName = array_shift($args) ?? "";
 				$command = $this->getCommand($commandName);
 
 				if($command === null){

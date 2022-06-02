@@ -33,20 +33,14 @@ abstract class CraftingGrid extends SimpleInventory{
 	public const SIZE_SMALL = 2;
 	public const SIZE_BIG = 3;
 
-	/** @var int */
-	private $gridWidth;
+	private ?int $startX = null;
+	private ?int $xLen = null;
+	private ?int $startY = null;
+	private ?int $yLen = null;
 
-	/** @var int|null */
-	private $startX;
-	/** @var int|null */
-	private $xLen;
-	/** @var int|null */
-	private $startY;
-	/** @var int|null */
-	private $yLen;
-
-	public function __construct(int $gridWidth){
-		$this->gridWidth = $gridWidth;
+	public function __construct(
+		private int $gridWidth
+	){
 		parent::__construct($this->getGridWidth() ** 2);
 	}
 

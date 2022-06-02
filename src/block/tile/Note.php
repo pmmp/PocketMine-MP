@@ -30,8 +30,7 @@ use pocketmine\nbt\tag\CompoundTag;
  * @deprecated
  */
 class Note extends Tile{
-	/** @var int */
-	private $pitch = 0;
+	private int $pitch = 0;
 
 	public function readSaveData(CompoundTag $nbt) : void{
 		if(($pitch = $nbt->getByte("note", $this->pitch)) > BlockNote::MIN_PITCH && $pitch <= BlockNote::MAX_PITCH){

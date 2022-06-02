@@ -136,11 +136,7 @@ use const SORT_NUMERIC;
 
 class NetworkSession{
 	private \PrefixedLogger $logger;
-	private Server $server;
 	private ?Player $player = null;
-	private NetworkSessionManager $manager;
-	private string $ip;
-	private int $port;
 	private ?PlayerInfo $info = null;
 	private ?int $ping = null;
 
@@ -163,17 +159,11 @@ class NetworkSession{
 	 * @phpstan-var \SplQueue<CompressBatchPromise>
 	 */
 	private \SplQueue $compressedQueue;
-	private Compressor $compressor;
 	private bool $forceAsyncCompression = true;
 
-	private PacketPool $packetPool;
 	private PacketSerializerContext $packetSerializerContext;
 
 	private ?InventoryManager $invManager = null;
-
-	private PacketSender $sender;
-
-	private PacketBroadcaster $broadcaster;
 
 	/**
 	 * @var \Closure[]|ObjectSet
@@ -181,19 +171,19 @@ class NetworkSession{
 	 */
 	private ObjectSet $disposeHooks;
 
-	public function __construct(Server $server, NetworkSessionManager $manager, PacketPool $packetPool, PacketSender $sender, PacketBroadcaster $broadcaster, Compressor $compressor, string $ip, int $port){
-		$this->server = $server;
-		$this->manager = $manager;
-		$this->sender = $sender;
-		$this->broadcaster = $broadcaster;
-		$this->ip = $ip;
-		$this->port = $port;
-
+	public function __construct(
+		private Server $server,
+		private NetworkSessionManager $manager,
+		private PacketPool $packetPool,
+		private PacketSender $sender,
+		private PacketBroadcaster $broadcaster,
+		private Compressor $compressor,
+		private string $ip,
+		private int $port
+	){
 		$this->logger = new \PrefixedLogger($this->server->getLogger(), $this->getLogPrefix());
 
 		$this->compressedQueue = new \SplQueue();
-		$this->compressor = $compressor;
-		$this->packetPool = $packetPool;
 
 		//TODO: allow this to be injected
 		$this->packetSerializerContext = new PacketSerializerContext(GlobalItemTypeDictionary::getInstance()->getDictionary());
@@ -723,6 +713,7 @@ class NetworkSession{
 	}
 
 	public function onServerRespawn() : void{
+		$this->syncAttributes($this->player, $this->player->getAttributeMap()->getAll());
 		$this->player->sendData(null);
 
 		$this->syncAdventureSettings($this->player);
@@ -1047,7 +1038,7 @@ class NetworkSession{
 		$this->sendDataPacket(SetTitlePacket::setAnimationTimes($fadeIn, $stay, $fadeOut));
 	}
 
-	public function onEmote(Player $from, string $emoteId) : void{
+	public function onEmote(Human $from, string $emoteId) : void{
 		$this->sendDataPacket(EmotePacket::create($from->getId(), $emoteId, EmotePacket::FLAG_SERVER));
 	}
 
