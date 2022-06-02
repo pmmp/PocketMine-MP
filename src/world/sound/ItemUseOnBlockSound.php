@@ -29,7 +29,7 @@ use pocketmine\network\mcpe\convert\RuntimeBlockMapping;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\network\mcpe\protocol\types\LevelSoundEvent;
 
-final class ItemUseOnBlockSound implements Sound{
+final class ItemUseOnBlockSound extends MappingSound{
 
 	public function __construct(
 		private Block $block
@@ -42,7 +42,7 @@ final class ItemUseOnBlockSound implements Sound{
 			LevelSoundEvent::ITEM_USE_ON,
 			$pos,
 			false,
-			RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId())
+			RuntimeBlockMapping::getInstance()->toRuntimeId($this->block->getFullId(), $this->mappingProtocol)
 		)];
 	}
 }
