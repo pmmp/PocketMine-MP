@@ -44,6 +44,7 @@ use pocketmine\item\VanillaItems;
 use pocketmine\math\Facing;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
+use pocketmine\utils\Limits;
 use pocketmine\world\BlockTransaction;
 use pocketmine\world\sound\CampfireSound;
 use pocketmine\world\sound\FireExtinguishSound;
@@ -57,7 +58,7 @@ class Campfire extends Transparent{
 
 	protected bool $lit = true;
 	protected CampfireInventory $inventory;
-	/** @phpstan-var array<int, int> */
+	/** @var array<int, int> */
 	protected array $cookingTimes = [];
 
 	public function writeStateToMeta() : int{
@@ -66,7 +67,7 @@ class Campfire extends Transparent{
 
 	public function readStateFromData(int $id, int $stateMeta) : void{
 		$this->facing = BlockDataSerializer::readHorizontalFacing($stateMeta & 0x03);
-		$this->lit = ($stateMeta & BlockLegacyMetadata::CAMPFIRE_FLAG_EXTINGUISHED) !== BlockLegacyMetadata::CAMPFIRE_FLAG_EXTINGUISHED;
+		$this->lit = ($stateMeta & BlockLegacyMetadata::CAMPFIRE_FLAG_EXTINGUISHED) === 0;
 	}
 
 	public function readStateFromWorld() : void{
@@ -121,16 +122,19 @@ class Campfire extends Transparent{
 	}
 
 	/** @return $this */
-	public function setLit(bool $lit = true) : self{
+	public function setLit(bool $lit) : self{
 		$this->lit = $lit;
 		return $this;
 	}
 
-	public function getFurnaceType() : FurnaceType{
-		return FurnaceType::CAMPFIRE();
-	}
-
 	public function setCookingTime(int $slot, int $time) : void{
+		if($slot < 0 || $slot > 3){
+			throw new \InvalidArgumentException("Slot must be in range 0-3");
+		}
+		if($time < 0 || $time > Limits::INT32_MAX){
+			throw new \InvalidArgumentException("CookingTime must be in range 0-".Limits::INT32_MAX);
+		}
+
 		$this->cookingTimes[$slot] = $time;
 	}
 
@@ -145,7 +149,7 @@ class Campfire extends Transparent{
 
 	private function fire() : void{
 		$this->position->getWorld()->addSound($this->position, new FlintSteelSound());
-		$this->position->getWorld()->setBlock($this->position, $this->setLit());
+		$this->position->getWorld()->setBlock($this->position, $this->setLit(true));
 	}
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
@@ -170,12 +174,13 @@ class Campfire extends Transparent{
 				return true;
 			}
 
-			$ingredient = clone $item;
-			$ingredient->setCount(1);
-			if($this->inventory->canAddItem($ingredient)){
-				$this->inventory->addItem($ingredient);
-				$item->pop();
-				return true;
+			if($this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager(FurnaceType::CAMPFIRE())->match($item) !== null){
+				$ingredient = clone $item;
+				$ingredient->setCount(1);
+				if(count($this->inventory->addItem($ingredient)) === 0){
+					$item->pop();
+					return true;
+				}
 			}
 		}
 		return false;
@@ -202,6 +207,7 @@ class Campfire extends Transparent{
 		}elseif($entity instanceof Living){
 			$entity->attack(new EntityDamageByBlockEvent($this, $entity, EntityDamageEvent::CAUSE_FIRE, 1));
 			$entity->setOnFire(8);
+			return false;
 		}
 		return false;
 	}
@@ -211,10 +217,10 @@ class Campfire extends Transparent{
 			$items = $this->inventory->getContents();
 			foreach($items as $slot => $item){
 				$this->setCookingTime($slot, $this->getCookingTime($slot) + 20);
-				if($this->getCookingTime($slot) >= $this->getFurnaceType()->getCookDurationTicks()){
+				if($this->getCookingTime($slot) >= FurnaceType::CAMPFIRE()->getCookDurationTicks()){
 					$this->inventory->setItem($slot, VanillaItems::AIR());
 					$this->setCookingTime($slot, 0);
-					$result = ($item = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager($this->getFurnaceType())->match($item)) instanceof FurnaceRecipe ? $item->getResult() : VanillaItems::AIR();
+					$result = ($item = $this->position->getWorld()->getServer()->getCraftingManager()->getFurnaceRecipeManager(FurnaceType::CAMPFIRE())->match($item)) instanceof FurnaceRecipe ? $item->getResult() : VanillaItems::AIR();
 					$this->position->getWorld()->dropItem($this->position->add(0, 1, 0), $result);
 				}
 			}

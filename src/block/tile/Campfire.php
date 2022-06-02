@@ -23,7 +23,10 @@ declare(strict_types=1);
 
 namespace pocketmine\block\tile;
 
+use pocketmine\block\Campfire as BlockCampfire;
 use pocketmine\block\inventory\CampfireInventory;
+use pocketmine\inventory\CallbackInventoryListener;
+use pocketmine\inventory\Inventory;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
@@ -36,12 +39,20 @@ class Campfire extends Spawnable implements Container{
 	public const TAG_COOKING_TIMES = "CookingTimes";
 
 	protected CampfireInventory $inventory;
-	/** @phpstan-var array<int, int> */
+	/** @var array<int, int> */
 	private array $cookingTimes = [];
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);
 		$this->inventory = new CampfireInventory($this->position);
+		$this->inventory->getListeners()->add(CallbackInventoryListener::onAnyChange(
+			static function(Inventory $unused) use ($world, $pos) : void{
+				$block = $world->getBlock($pos);
+				if($block instanceof BlockCampfire){
+					$world->setBlock($pos, $block);
+				}
+			})
+		);
 	}
 
 	/**
@@ -59,14 +70,14 @@ class Campfire extends Spawnable implements Container{
 	}
 
 	/**
-	 * @phpstan-return array<int, int>
+	 * @return array<int, int>
 	 */
 	public function getCookingTimes() : array{
 		return $this->cookingTimes;
 	}
 
 	/**
-	 * @phpstan-param array<int, int> $cookingTimes
+	 * @param array<int, int> $cookingTimes
 	 */
 	public function setCookingTimes(array $cookingTimes) : void{
 		$this->cookingTimes = $cookingTimes;
