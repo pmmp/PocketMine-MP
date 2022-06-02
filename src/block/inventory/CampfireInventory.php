@@ -23,11 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\block\inventory;
 
-use pocketmine\block\Campfire;
-use pocketmine\crafting\FurnaceRecipe;
-use pocketmine\crafting\FurnaceType;
 use pocketmine\inventory\SimpleInventory;
-use pocketmine\item\Item;
 use pocketmine\world\Position;
 
 class CampfireInventory extends SimpleInventory implements BlockInventory{

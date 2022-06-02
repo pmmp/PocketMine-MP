@@ -132,7 +132,7 @@ class Campfire extends Transparent{
 			throw new \InvalidArgumentException("Slot must be in range 0-3");
 		}
 		if($time < 0 || $time > Limits::INT32_MAX){
-			throw new \InvalidArgumentException("CookingTime must be in range 0-".Limits::INT32_MAX);
+			throw new \InvalidArgumentException("CookingTime must be in range 0-" . Limits::INT32_MAX);
 		}
 
 		$this->cookingTimes[$slot] = $time;
