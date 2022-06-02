@@ -29,7 +29,7 @@ use pocketmine\entity\effect\EffectInstance;
 use pocketmine\entity\effect\VanillaEffects;
 use pocketmine\entity\projectile\ProjectileSource;
 use pocketmine\event\entity\EntityDamageEvent;
-use pocketmine\event\player\PlayerExhaustEvent;
+use pocketmine\event\entity\EntityExhaustEvent;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
 use pocketmine\inventory\InventoryHolder;
@@ -146,9 +146,9 @@ class Human extends Living implements ProjectileSource, InventoryHolder{
 	public function jump() : void{
 		parent::jump();
 		if($this->isSprinting()){
-			$this->hungerManager->exhaust(0.2, PlayerExhaustEvent::CAUSE_SPRINT_JUMPING);
+			$this->hungerManager->exhaust(0.2, EntityExhaustEvent::CAUSE_SPRINT_JUMPING);
 		}else{
-			$this->hungerManager->exhaust(0.05, PlayerExhaustEvent::CAUSE_JUMPING);
+			$this->hungerManager->exhaust(0.05, EntityExhaustEvent::CAUSE_JUMPING);
 		}
 	}
 

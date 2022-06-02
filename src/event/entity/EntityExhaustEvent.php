@@ -21,17 +21,16 @@
 
 declare(strict_types=1);
 
-namespace pocketmine\event\player;
+namespace pocketmine\event\entity;
 
 use pocketmine\entity\Human;
 use pocketmine\event\Cancellable;
 use pocketmine\event\CancellableTrait;
-use pocketmine\event\entity\EntityEvent;
 
 /**
  * @phpstan-extends EntityEvent<Human>
  */
-class PlayerExhaustEvent extends EntityEvent implements Cancellable{
+class EntityExhaustEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
 	public const CAUSE_ATTACK = 1;
@@ -46,23 +45,12 @@ class PlayerExhaustEvent extends EntityEvent implements Cancellable{
 	public const CAUSE_SPRINT_JUMPING = 10;
 	public const CAUSE_CUSTOM = 11;
 
-	/** @var Human */
-	protected $player;
-
 	public function __construct(
-		Human $human,
+		protected Human $human,
 		private float $amount,
 		private int $cause
 	){
 		$this->entity = $human;
-		$this->player = $human;
-	}
-
-	/**
-	 * @return Human
-	 */
-	public function getPlayer(){
-		return $this->player;
 	}
 
 	public function getAmount() : float{

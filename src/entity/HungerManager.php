@@ -24,8 +24,8 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityExhaustEvent;
 use pocketmine\event\entity\EntityRegainHealthEvent;
-use pocketmine\event\player\PlayerExhaustEvent;
 use pocketmine\world\World;
 use function max;
 use function min;
@@ -129,11 +129,11 @@ class HungerManager{
 	 *
 	 * @return float the amount of exhaustion level increased
 	 */
-	public function exhaust(float $amount, int $cause = PlayerExhaustEvent::CAUSE_CUSTOM) : float{
+	public function exhaust(float $amount, int $cause = EntityExhaustEvent::CAUSE_CUSTOM) : float{
 		if(!$this->enabled){
 			return 0;
 		}
-		$ev = new PlayerExhaustEvent($this->entity, $amount, $cause);
+		$ev = new EntityExhaustEvent($this->entity, $amount, $cause);
 		$ev->call();
 		if($ev->isCancelled()){
 			return 0.0;
@@ -200,7 +200,7 @@ class HungerManager{
 			if($food >= 18){
 				if($health < $this->entity->getMaxHealth()){
 					$this->entity->heal(new EntityRegainHealthEvent($this->entity, 1, EntityRegainHealthEvent::CAUSE_SATURATION));
-					$this->exhaust(6.0, PlayerExhaustEvent::CAUSE_HEALTH_REGEN);
+					$this->exhaust(6.0, EntityExhaustEvent::CAUSE_HEALTH_REGEN);
 				}
 			}elseif($food <= 0){
 				if(($difficulty === World::DIFFICULTY_EASY && $health > 10) || ($difficulty === World::DIFFICULTY_NORMAL && $health > 1) || $difficulty === World::DIFFICULTY_HARD){
