@@ -27,16 +27,17 @@ use pocketmine\block\Campfire as BlockCampfire;
 use pocketmine\block\inventory\CampfireInventory;
 use pocketmine\inventory\CallbackInventoryListener;
 use pocketmine\inventory\Inventory;
+use pocketmine\item\Item;
 use pocketmine\math\Vector3;
 use pocketmine\nbt\tag\CompoundTag;
 use pocketmine\nbt\tag\IntTag;
-use pocketmine\nbt\tag\ListTag;
 use pocketmine\world\World;
 
 class Campfire extends Spawnable implements Container{
 	use ContainerTrait;
 
-	public const TAG_COOKING_TIMES = "CookingTimes";
+	public const TAG_ITEM = "Item";
+	public const TAG_COOKING_TIME = "ItemTime";
 
 	protected CampfireInventory $inventory;
 	/** @var array<int, int> */
@@ -84,33 +85,44 @@ class Campfire extends Spawnable implements Container{
 	}
 
 	public function readSaveData(CompoundTag $nbt) : void{
-		$this->loadItems($nbt);
+		$items = [];
+		$listeners = $this->inventory->getListeners()->toArray();
+		$this->inventory->getListeners()->remove(...$listeners); //prevent any events being fired by initialization
 
-		if(($tag = $nbt->getTag(self::TAG_COOKING_TIMES)) instanceof ListTag){
-			/**
-			 * @var int $slot
-			 * @var IntTag $time
-			 */
-			foreach($tag->getValue() as $slot => $time){
-				$this->cookingTimes[$slot] = $time->getValue();
+		for($slot = 1; $slot <= 4; $slot++){
+			if(($tag = $nbt->getTag(self::TAG_ITEM . $slot)) instanceof CompoundTag){
+				$items[$slot - 1] = Item::nbtDeserialize($tag);
+			}
+
+			if(($tag = $nbt->getTag(self::TAG_COOKING_TIME . $slot)) instanceof IntTag){
+				$this->cookingTimes[$slot - 1] = $tag->getValue();
+			}
+		}
+
+		$this->inventory->setContents($items);
+		$this->inventory->getListeners()->add(...$listeners);
+	}
+
+	protected function writeSaveData(CompoundTag $nbt) : void{
+		for($slot = 1; $slot <= 4; $slot++){
+			$item = $this->inventory->getItem($slot - 1);
+			if(!$item->isNull()){
+				$nbt->setTag(self::TAG_ITEM . $slot, $item->nbtSerialize($slot));
+			}
+
+			$cookingTime = $this->cookingTimes[$slot - 1] ?? 0;
+			if($cookingTime !== 0){
+				$nbt->setInt(self::TAG_COOKING_TIME . $slot, $cookingTime);
 			}
 		}
 	}
 
-	protected function writeSaveData(CompoundTag $nbt) : void{
-		$this->saveItems($nbt);
-
-		$times = [];
-		foreach($this->cookingTimes as $time){
-			$times[] = new IntTag($time);
-		}
-		$nbt->setTag(self::TAG_COOKING_TIMES, new ListTag($times));
-	}
-
 	protected function addAdditionalSpawnData(CompoundTag $nbt) : void{
-		/** @var int $slot */
-		foreach($this->getInventory()->getContents() as $slot => $item){
-			$nbt->setTag("Item" . $slot + 1, $item->nbtSerialize());
+		for($slot = 1; $slot <= 4; $slot++){
+			$item = $this->inventory->getItem($slot - 1);
+			if(!$item->isNull()){
+				$nbt->setTag(self::TAG_ITEM . $slot, $item->nbtSerialize());
+			}
 		}
 	}
 }
