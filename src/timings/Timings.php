@@ -36,96 +36,58 @@ abstract class Timings{
 
 	private static bool $initialized = false;
 
-	/** @var TimingsHandler */
-	public static $fullTick;
-	/** @var TimingsHandler */
-	public static $serverTick;
-	/** @var TimingsHandler */
-	public static $memoryManager;
-	/** @var TimingsHandler */
-	public static $garbageCollector;
-	/** @var TimingsHandler */
-	public static $titleTick;
-	/** @var TimingsHandler */
-	public static $playerNetworkSend;
-	/** @var TimingsHandler */
-	public static $playerNetworkSendCompress;
-	/** @var TimingsHandler */
-	public static $playerNetworkSendEncrypt;
-	/** @var TimingsHandler */
-	public static $playerNetworkReceive;
-	/** @var TimingsHandler */
-	public static $playerNetworkReceiveDecompress;
-	/** @var TimingsHandler */
-	public static $playerNetworkReceiveDecrypt;
-	/** @var TimingsHandler */
-	public static $playerChunkOrder;
-	/** @var TimingsHandler */
-	public static $playerChunkSend;
-	/** @var TimingsHandler */
-	public static $connection;
-	/** @var TimingsHandler */
-	public static $scheduler;
-	/** @var TimingsHandler */
-	public static $serverCommand;
-	/** @var TimingsHandler */
-	public static $worldLoad;
-	/** @var TimingsHandler */
-	public static $worldSave;
-	/** @var TimingsHandler */
-	public static $population;
-	/** @var TimingsHandler */
-	public static $generationCallback;
-	/** @var TimingsHandler */
-	public static $permissibleCalculation;
-	/** @var TimingsHandler */
-	public static $permissibleCalculationDiff;
-	/** @var TimingsHandler */
-	public static $permissibleCalculationCallback;
+	public static TimingsHandler $fullTick;
+	public static TimingsHandler $serverTick;
+	public static TimingsHandler $memoryManager;
+	public static TimingsHandler $garbageCollector;
+	public static TimingsHandler $titleTick;
+	public static TimingsHandler $playerNetworkSend;
+	public static TimingsHandler $playerNetworkSendCompress;
+	public static TimingsHandler $playerNetworkSendEncrypt;
+	public static TimingsHandler $playerNetworkReceive;
+	public static TimingsHandler $playerNetworkReceiveDecompress;
+	public static TimingsHandler $playerNetworkReceiveDecrypt;
+	public static TimingsHandler $playerChunkOrder;
+	public static TimingsHandler $playerChunkSend;
+	public static TimingsHandler $connection;
+	public static TimingsHandler $scheduler;
+	public static TimingsHandler $serverCommand;
+	public static TimingsHandler $worldLoad;
+	public static TimingsHandler $worldSave;
+	public static TimingsHandler $population;
+	public static TimingsHandler $generationCallback;
+	public static TimingsHandler $permissibleCalculation;
+	public static TimingsHandler $permissibleCalculationDiff;
+	public static TimingsHandler $permissibleCalculationCallback;
+	public static TimingsHandler $entityMove;
+	public static TimingsHandler $playerCheckNearEntities;
+	public static TimingsHandler $tickEntity;
+	public static TimingsHandler $tickTileEntity;
+	public static TimingsHandler $entityBaseTick;
+	public static TimingsHandler $livingEntityBaseTick;
 
-	/** @var TimingsHandler */
-	public static $entityMove;
-	/** @var TimingsHandler */
-	public static $playerCheckNearEntities;
-	/** @var TimingsHandler */
-	public static $tickEntity;
-	/** @var TimingsHandler */
-	public static $tickTileEntity;
+	public static TimingsHandler $schedulerSync;
+	public static TimingsHandler $schedulerAsync;
 
-	/** @var TimingsHandler */
-	public static $entityBaseTick;
-	/** @var TimingsHandler */
-	public static $livingEntityBaseTick;
+	public static TimingsHandler $playerCommand;
 
-	/** @var TimingsHandler */
-	public static $schedulerSync;
-	/** @var TimingsHandler */
-	public static $schedulerAsync;
+	public static TimingsHandler $craftingDataCacheRebuild;
 
-	/** @var TimingsHandler */
-	public static $playerCommand;
-
-	/** @var TimingsHandler */
-	public static $craftingDataCacheRebuild;
-
-	/** @var TimingsHandler */
-	public static $syncPlayerDataLoad;
-	/** @var TimingsHandler */
-	public static $syncPlayerDataSave;
+	public static TimingsHandler $syncPlayerDataLoad;
+	public static TimingsHandler $syncPlayerDataSave;
 
 	/** @var TimingsHandler[] */
-	public static $entityTypeTimingMap = [];
+	public static array $entityTypeTimingMap = [];
 	/** @var TimingsHandler[] */
-	public static $tileEntityTypeTimingMap = [];
+	public static array $tileEntityTypeTimingMap = [];
 	/** @var TimingsHandler[] */
-	public static $packetReceiveTimingMap = [];
+	public static array $packetReceiveTimingMap = [];
 	/** @var TimingsHandler[] */
-	public static $packetSendTimingMap = [];
+	public static array $packetSendTimingMap = [];
 	/** @var TimingsHandler[] */
-	public static $pluginTaskTimingMap = [];
+	public static array $pluginTaskTimingMap = [];
 
-	/** @var TimingsHandler */
-	public static $broadcastPackets;
+	public static TimingsHandler $broadcastPackets;
 
 	public static function init() : void{
 		if(self::$initialized){

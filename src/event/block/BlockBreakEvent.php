@@ -35,30 +35,22 @@ use pocketmine\player\Player;
 class BlockBreakEvent extends BlockEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Player */
-	protected $player;
-
-	/** @var Item */
-	protected $item;
-
-	/** @var bool */
-	protected $instaBreak = false;
 	/** @var Item[] */
-	protected $blockDrops = [];
-	/** @var int */
-	protected $xpDrops;
+	protected array $blockDrops = [];
 
 	/**
 	 * @param Item[] $drops
 	 */
-	public function __construct(Player $player, Block $block, Item $item, bool $instaBreak = false, array $drops = [], int $xpDrops = 0){
+	public function __construct(
+		protected Player $player,
+		Block $block,
+		protected Item $item,
+		protected bool $instaBreak = false,
+		array $drops = [],
+		protected int $xpDrops = 0
+	){
 		parent::__construct($block);
-		$this->item = $item;
-		$this->player = $player;
-
-		$this->instaBreak = $instaBreak;
 		$this->setDrops($drops);
-		$this->xpDrops = $xpDrops;
 	}
 
 	/**

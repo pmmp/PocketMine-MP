@@ -29,17 +29,15 @@ use pocketmine\world\WorldException;
 use function file_exists;
 
 abstract class BaseWorldProvider implements WorldProvider{
-	/** @var string */
-	protected $path;
-	/** @var WorldData */
-	protected $worldData;
+	protected WorldData $worldData;
 
-	public function __construct(string $path){
+	public function __construct(
+		protected string $path
+	){
 		if(!file_exists($path)){
 			throw new WorldException("World does not exist");
 		}
 
-		$this->path = $path;
 		$this->worldData = $this->loadLevelData();
 	}
 

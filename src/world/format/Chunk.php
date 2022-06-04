@@ -45,25 +45,21 @@ class Chunk{
 
 	private int $terrainDirtyFlags = 0;
 
-	/** @var bool|null */
-	protected $lightPopulated = false;
-	/** @var bool */
-	protected $terrainPopulated = false;
+	protected ?bool $lightPopulated = false;
+	protected bool $terrainPopulated = false;
 
 	/**
 	 * @var \SplFixedArray|SubChunk[]
 	 * @phpstan-var \SplFixedArray<SubChunk>
 	 */
-	protected $subChunks;
+	protected \SplFixedArray $subChunks;
 
 	/** @var Tile[] */
-	protected $tiles = [];
+	protected array $tiles = [];
 
-	/** @var HeightArray */
-	protected $heightMap;
+	protected HeightArray $heightMap;
 
-	/** @var BiomeArray */
-	protected $biomeIds;
+	protected BiomeArray $biomeIds;
 
 	/**
 	 * @param SubChunk[] $subChunks

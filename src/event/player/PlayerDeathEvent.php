@@ -35,8 +35,7 @@ use pocketmine\lang\Translatable;
 use pocketmine\player\Player;
 
 class PlayerDeathEvent extends EntityDeathEvent{
-	/** @var Player */
-	protected $player;
+	protected Player $player;
 
 	private Translatable|string $deathMessage;
 	private bool $keepInventory = false;

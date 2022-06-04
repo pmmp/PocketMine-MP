@@ -48,8 +48,7 @@ abstract class Furnace extends Spawnable implements Container, Nameable{
 	public const TAG_COOK_TIME = "CookTime";
 	public const TAG_MAX_TIME = "MaxTime";
 
-	/** @var FurnaceInventory */
-	protected $inventory;
+	protected FurnaceInventory $inventory;
 	private int $remainingFuelTime = 0;
 	private int $cookTime = 0;
 	private int $maxFuelTime = 0;

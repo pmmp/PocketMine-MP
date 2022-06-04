@@ -27,7 +27,7 @@ class PaintingMotive{
 	private static bool $initialized = false;
 
 	/** @var PaintingMotive[] */
-	protected static $motives = [];
+	protected static array $motives = [];
 
 	public static function init() : void{
 		foreach([

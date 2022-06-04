@@ -38,11 +38,9 @@ class ShulkerBox extends Spawnable implements Container, Nameable{
 
 	public const TAG_FACING = "facing";
 
-	/** @var int */
-	protected $facing = Facing::NORTH;
+	protected int $facing = Facing::NORTH;
 
-	/** @var ShulkerBoxInventory */
-	protected $inventory;
+	protected ShulkerBoxInventory $inventory;
 
 	public function __construct(World $world, Vector3 $pos){
 		parent::__construct($world, $pos);

@@ -34,16 +34,12 @@ use pocketmine\player\Player;
 class PlayerKickEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Translatable|string */
-	protected $quitMessage;
-
-	/** @var string */
-	protected $reason;
-
-	public function __construct(Player $player, string $reason, Translatable|string $quitMessage){
+	public function __construct(
+		Player $player,
+		protected string $reason,
+		protected Translatable|string $quitMessage
+	){
 		$this->player = $player;
-		$this->quitMessage = $quitMessage;
-		$this->reason = $reason;
 	}
 
 	/**

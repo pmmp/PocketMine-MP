@@ -42,29 +42,19 @@ abstract class LightUpdate{
 	];
 
 	/**
-	 * @var \SplFixedArray|int[]
-	 * @phpstan-var \SplFixedArray<int>
-	 */
-	protected $lightFilters;
-
-	/**
 	 * @var int[][] blockhash => [x, y, z, new light level]
 	 * @phpstan-var array<int, array{int, int, int, int}>
 	 */
-	protected $updateNodes = [];
-
-	/** @var SubChunkExplorer */
-	protected $subChunkExplorer;
+	protected array $updateNodes = [];
 
 	/**
 	 * @param \SplFixedArray|int[] $lightFilters
 	 * @phpstan-param \SplFixedArray<int> $lightFilters
 	 */
-	public function __construct(SubChunkExplorer $subChunkExplorer, \SplFixedArray $lightFilters){
-		$this->lightFilters = $lightFilters;
-
-		$this->subChunkExplorer = $subChunkExplorer;
-	}
+	public function __construct(
+		protected SubChunkExplorer $subChunkExplorer,
+		protected \SplFixedArray $lightFilters
+	){}
 
 	abstract protected function getCurrentLightArray() : LightArray;
 

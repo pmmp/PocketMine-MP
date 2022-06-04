@@ -32,15 +32,10 @@ use pocketmine\player\Player;
  * Represents an action involving a change that applies in some way to an inventory or other item-source.
  */
 abstract class InventoryAction{
-	/** @var Item */
-	protected $sourceItem;
-	/** @var Item */
-	protected $targetItem;
-
-	public function __construct(Item $sourceItem, Item $targetItem){
-		$this->sourceItem = $sourceItem;
-		$this->targetItem = $targetItem;
-	}
+	public function __construct(
+		protected Item $sourceItem,
+		protected Item $targetItem
+	){}
 
 	/**
 	 * Returns the item that was present before the action took place.

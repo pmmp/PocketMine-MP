@@ -96,8 +96,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 	protected const CURRENT_LEVEL_CHUNK_VERSION = ChunkVersion::v1_2_0; //yes, I know this is wrong, but it ensures vanilla auto-fixes stuff we currently don't
 	protected const CURRENT_LEVEL_SUBCHUNK_VERSION = SubChunkVersion::PALETTED_MULTI;
 
-	/** @var \LevelDB */
-	protected $db;
+	protected \LevelDB $db;
 
 	private static function checkForLevelDBExtension() : void{
 		if(!extension_loaded('leveldb')){

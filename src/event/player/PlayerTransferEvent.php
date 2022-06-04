@@ -33,18 +33,13 @@ use pocketmine\player\Player;
 class PlayerTransferEvent extends PlayerEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var string */
-	protected $address;
-	/** @var int */
-	protected $port = 19132;
-	/** @var string */
-	protected $message;
-
-	public function __construct(Player $player, string $address, int $port, string $message){
+	public function __construct(
+		Player $player,
+		protected string $address,
+		protected int $port,
+		protected string $message
+	){
 		$this->player = $player;
-		$this->address = $address;
-		$this->port = $port;
-		$this->message = $message;
 	}
 
 	/**

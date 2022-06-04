@@ -34,12 +34,11 @@ use pocketmine\player\Player;
  * @see PlayerLoginEvent
  */
 class PlayerJoinEvent extends PlayerEvent{
-	/** @var string|Translatable */
-	protected $joinMessage;
-
-	public function __construct(Player $player, Translatable|string $joinMessage){
+	public function __construct(
+		Player $player,
+		protected Translatable|string $joinMessage
+	){
 		$this->player = $player;
-		$this->joinMessage = $joinMessage;
 	}
 
 	public function setJoinMessage(Translatable|string $joinMessage) : void{

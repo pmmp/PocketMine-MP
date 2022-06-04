@@ -111,18 +111,11 @@ abstract class Noise{
 		);
 	}
 
-	/** @var float */
-	protected $persistence;
-	/** @var float */
-	protected $expansion;
-	/** @var int */
-	protected $octaves;
-
-	public function __construct(int $octaves, float $persistence, float $expansion){
-		$this->octaves = $octaves;
-		$this->persistence = $persistence;
-		$this->expansion = $expansion;
-	}
+	public function __construct(
+		protected int $octaves,
+		protected float $persistence,
+		protected float $expansion
+	){}
 
 	/**
 	 * @param float $x

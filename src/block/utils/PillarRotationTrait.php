@@ -32,9 +32,7 @@ use pocketmine\player\Player;
 use pocketmine\world\BlockTransaction;
 
 trait PillarRotationTrait{
-
-	/** @var int */
-	protected $axis = Axis::Y;
+	protected int $axis = Axis::Y;
 
 	/** @see Axis */
 	public function getAxis() : int{ return $this->axis; }

@@ -53,17 +53,14 @@ abstract class Command{
 
 	private ?CommandMap $commandMap = null;
 
-	/** @var Translatable|string */
-	protected $description = "";
+	protected Translatable|string $description = "";
 
-	/** @var Translatable|string */
-	protected $usageMessage;
+	protected Translatable|string $usageMessage;
 
 	private ?string $permission = null;
 	private ?string $permissionMessage = null;
 
-	/** @var TimingsHandler|null */
-	public $timings = null;
+	public ?TimingsHandler $timings = null;
 
 	/**
 	 * @param string[] $aliases

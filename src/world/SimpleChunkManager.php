@@ -32,7 +32,7 @@ use pocketmine\world\format\Chunk;
 class SimpleChunkManager implements ChunkManager{
 
 	/** @var Chunk[] */
-	protected $chunks = [];
+	protected array $chunks = [];
 
 	public function __construct(
 		private int $minY,

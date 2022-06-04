@@ -42,9 +42,6 @@ use const PTHREADS_INHERIT_INI;
 class AsyncPool{
 	private const WORKER_START_OPTIONS = PTHREADS_INHERIT_INI;
 
-	/** @var int */
-	protected $size;
-
 	/**
 	 * @var \SplQueue[]|AsyncTask[][]
 	 * @phpstan-var array<int, \SplQueue<AsyncTask>>
@@ -69,14 +66,12 @@ class AsyncPool{
 	private array $workerStartHooks = [];
 
 	public function __construct(
-		int $size,
+		protected int $size,
 		private int $workerMemoryLimit,
 		private \ClassLoader $classLoader,
 		private \ThreadedLogger $logger,
 		private SleeperHandler $eventLoop
-	){
-		$this->size = $size;
-	}
+	){}
 
 	/**
 	 * Returns the maximum size of the pool. Note that there may be less active workers than this number.

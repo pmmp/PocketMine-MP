@@ -70,10 +70,10 @@ use function strtolower;
  */
 class PluginManager{
 	/** @var Plugin[] */
-	protected $plugins = [];
+	protected array $plugins = [];
 
 	/** @var Plugin[] */
-	protected $enabledPlugins = [];
+	protected array $enabledPlugins = [];
 
 	private bool $loadPluginsGuard = false;
 
@@ -81,7 +81,7 @@ class PluginManager{
 	 * @var PluginLoader[]
 	 * @phpstan-var array<class-string<PluginLoader>, PluginLoader>
 	 */
-	protected $fileAssociations = [];
+	protected array $fileAssociations = [];
 
 	public function __construct(
 		private Server $server,

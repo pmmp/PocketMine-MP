@@ -35,27 +35,27 @@ class CraftingManager{
 	use DestructorCallbackTrait;
 
 	/** @var ShapedRecipe[][] */
-	protected $shapedRecipes = [];
+	protected array $shapedRecipes = [];
 	/** @var ShapelessRecipe[][] */
-	protected $shapelessRecipes = [];
+	protected array $shapelessRecipes = [];
 
 	/**
 	 * @var FurnaceRecipeManager[]
 	 * @phpstan-var array<int, FurnaceRecipeManager>
 	 */
-	protected $furnaceRecipeManagers;
+	protected array $furnaceRecipeManagers;
 
 	/**
 	 * @var PotionTypeRecipe[][]
 	 * @phpstan-var array<string, array<string, PotionTypeRecipe>>
 	 */
-	protected $potionTypeRecipes = [];
+	protected array $potionTypeRecipes = [];
 
 	/**
 	 * @var PotionContainerChangeRecipe[][]
 	 * @phpstan-var array<int, array<string, PotionContainerChangeRecipe>>
 	 */
-	protected $potionContainerChangeRecipes = [];
+	protected array $potionContainerChangeRecipes = [];
 
 	/** @phpstan-var ObjectSet<\Closure() : void> */
 	private ObjectSet $recipeRegisteredCallbacks;

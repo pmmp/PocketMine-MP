@@ -24,18 +24,16 @@ declare(strict_types=1);
 namespace pocketmine\lang;
 
 final class Translatable{
-
-	/** @var string $text */
-	protected $text;
 	/** @var string[]|Translatable[] $params */
-	protected $params = [];
+	protected array $params = [];
 
 	/**
 	 * @param (float|int|string|Translatable)[] $params
 	 */
-	public function __construct(string $text, array $params = []){
-		$this->text = $text;
-
+	public function __construct(
+		protected string $text,
+		array $params = []
+	){
 		foreach($params as $k => $param){
 			if(!($param instanceof Translatable)){
 				$this->params[$k] = (string) $param;

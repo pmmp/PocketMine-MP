@@ -65,36 +65,28 @@ class Item implements \JsonSerializable{
 	public const TAG_DISPLAY_NAME = "Name";
 	public const TAG_DISPLAY_LORE = "Lore";
 
-	private ItemIdentifier $identifier;
 	private CompoundTag $nbt;
 
-	/** @var int */
-	protected $count = 1;
-	/** @var string */
-	protected $name;
+	protected int $count = 1;
 
 	//TODO: this stuff should be moved to itemstack properties, not mushed in with type properties
 
-	/** @var string */
-	protected $customName = "";
+	protected string $customName = "";
 	/** @var string[] */
-	protected $lore = [];
-	/**
-	 * TODO: this needs to die in a fire
-	 * @var CompoundTag|null
-	 */
-	protected $blockEntityTag = null;
+	protected array $lore = [];
+	/** TODO: this needs to die in a fire */
+	protected ?CompoundTag $blockEntityTag = null;
 
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	protected $canPlaceOn = [];
+	protected array $canPlaceOn = [];
 	/**
 	 * @var string[]
 	 * @phpstan-var array<string, string>
 	 */
-	protected $canDestroy;
+	protected array $canDestroy = [];
 
 	/**
 	 * Constructs a new Item type. This constructor should ONLY be used when constructing a new item TYPE to register
@@ -103,12 +95,10 @@ class Item implements \JsonSerializable{
 	 * NOTE: This should NOT BE USED for creating items to set into an inventory. Use {@link ItemFactory#get} for that
 	 * purpose.
 	 */
-	public function __construct(ItemIdentifier $identifier, string $name = "Unknown"){
-		$this->identifier = $identifier;
-		$this->name = $name;
-
-		$this->canPlaceOn = [];
-		$this->canDestroy = [];
+	public function __construct(
+		private ItemIdentifier $identifier,
+		protected string $name = "Unknown"
+	){
 		$this->nbt = new CompoundTag();
 	}
 
