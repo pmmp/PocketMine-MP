@@ -53,7 +53,7 @@ class Sugarcane extends Flowable{
 	private function seekToBottom() : Position{
 		$world = $this->position->getWorld();
 		$bottom = $this->position;
-		while(($next = $world->getBlock($bottom->down())) instanceof Sugarcane && $next->isSameType($this)){
+		while(($next = $world->getBlock($bottom->down()))->isSameType($this)){
 			$bottom = $next->position;
 		}
 		return $bottom;
