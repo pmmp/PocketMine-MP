@@ -175,7 +175,6 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 					$blockStateData = GlobalBlockStateHandlers::getLegacyBlockStateMapper()->fromStringIdMeta($id, $data);
 					if($blockStateData === null){
-						//TODO: this might be a slightly-invalid state that isn't in the mapping table
 						$blockStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);
 					}
 				}else{
