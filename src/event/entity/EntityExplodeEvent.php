@@ -41,27 +41,20 @@ use pocketmine\world\Position;
 class EntityExplodeEvent extends EntityEvent implements Cancellable{
 	use CancellableTrait;
 
-	/** @var Position */
-	protected $position;
-
-	/** @var Block[] */
-	protected $blocks;
-
-	/** @var float */
-	protected $yield;
-
 	/**
 	 * @param Block[] $blocks
 	 * @param float   $yield 0-100
 	 */
-	public function __construct(Entity $entity, Position $position, array $blocks, float $yield){
+	public function __construct(
+		Entity $entity,
+		protected Position $position,
+		protected array $blocks,
+		protected float $yield
+	){
 		$this->entity = $entity;
-		$this->position = $position;
-		$this->blocks = $blocks;
 		if($yield < 0.0 || $yield > 100.0){
 			throw new \InvalidArgumentException("Yield must be in range 0.0 - 100.0");
 		}
-		$this->yield = $yield;
 	}
 
 	public function getPosition() : Position{

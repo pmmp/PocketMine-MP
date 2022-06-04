@@ -27,8 +27,7 @@ use pocketmine\math\Axis;
 use pocketmine\math\Facing;
 
 trait HorizontalFacingTrait{
-	/** @var int */
-	protected $facing = Facing::NORTH;
+	protected int $facing = Facing::NORTH;
 
 	public function getFacing() : int{ return $this->facing; }
 

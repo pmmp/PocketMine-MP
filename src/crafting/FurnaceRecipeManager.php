@@ -28,7 +28,7 @@ use pocketmine\utils\ObjectSet;
 
 final class FurnaceRecipeManager{
 	/** @var FurnaceRecipe[] */
-	protected $furnaceRecipes = [];
+	protected array $furnaceRecipes = [];
 
 	/** @phpstan-var ObjectSet<\Closure(FurnaceRecipe) : void> */
 	private ObjectSet $recipeRegisteredCallbacks;

@@ -83,8 +83,7 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 
 	private const CAVES_CLIFFS_EXPERIMENTAL_SUBCHUNK_KEY_OFFSET = 4;
 
-	/** @var \LevelDB */
-	protected $db;
+	protected \LevelDB $db;
 
 	private static function checkForLevelDBExtension() : void{
 		if(!extension_loaded('leveldb')){

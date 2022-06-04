@@ -46,7 +46,7 @@ final class GameMode{
 	}
 
 	/** @var self[] */
-	protected static $aliasMap = [];
+	protected static array $aliasMap = [];
 
 	protected static function setup() : void{
 		self::registerAll(

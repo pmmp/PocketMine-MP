@@ -170,7 +170,7 @@ class World implements ChunkManager{
 	private array $entitiesByChunk = [];
 
 	/** @var Entity[] */
-	public $updateEntities = [];
+	public array $updateEntities = [];
 	/** @var Block[][] */
 	private array $blockCache = [];
 
@@ -202,8 +202,7 @@ class World implements ChunkManager{
 	private array $unloadQueue = [];
 
 	private int $time;
-	/** @var bool */
-	public $stopTime = false;
+	public bool $stopTime = false;
 
 	private float $sunAnglePercentage = 0.0;
 	private int $skyLightReduction = 0;
@@ -261,11 +260,9 @@ class World implements ChunkManager{
 	/** @var bool[] */
 	private array $randomTickBlocks = [];
 
-	/** @var WorldTimings */
-	public $timings;
+	public WorldTimings $timings;
 
-	/** @var float */
-	public $tickRateTime = 0;
+	public float $tickRateTime = 0;
 
 	private bool $doingTick = false;
 

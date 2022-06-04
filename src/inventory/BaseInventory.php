@@ -37,15 +37,14 @@ use function spl_object_id;
  * This class provides everything needed to implement an inventory, minus the underlying storage system.
  */
 abstract class BaseInventory implements Inventory{
-	/** @var int */
-	protected $maxStackSize = Inventory::MAX_STACK;
+	protected int $maxStackSize = Inventory::MAX_STACK;
 	/** @var Player[] */
-	protected $viewers = [];
+	protected array $viewers = [];
 	/**
 	 * @var InventoryListener[]|ObjectSet
 	 * @phpstan-var ObjectSet<InventoryListener>
 	 */
-	protected $listeners;
+	protected ObjectSet $listeners;
 
 	public function __construct(){
 		$this->listeners = new ObjectSet();

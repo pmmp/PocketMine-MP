@@ -39,16 +39,10 @@ class ChunkRequestTask extends AsyncTask{
 	private const TLS_KEY_PROMISE = "promise";
 	private const TLS_KEY_ERROR_HOOK = "errorHook";
 
-	/** @var string */
-	protected $chunk;
-	/** @var int */
-	protected $chunkX;
-	/** @var int */
-	protected $chunkZ;
-
-	/** @var Compressor */
-	protected $compressor;
-
+	protected string $chunk;
+	protected int $chunkX;
+	protected int $chunkZ;
+	protected Compressor $compressor;
 	private string $tiles;
 
 	/**

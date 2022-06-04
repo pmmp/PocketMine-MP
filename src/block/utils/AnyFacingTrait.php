@@ -26,8 +26,7 @@ namespace pocketmine\block\utils;
 use pocketmine\math\Facing;
 
 trait AnyFacingTrait{
-	/** @var int */
-	protected $facing = Facing::DOWN;
+	protected int $facing = Facing::DOWN;
 
 	public function getFacing() : int{ return $this->facing; }
 

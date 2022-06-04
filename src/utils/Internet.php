@@ -64,10 +64,8 @@ use const SOCK_DGRAM;
 use const SOL_UDP;
 
 class Internet{
-	/** @var string|false */
-	public static $ip = false;
-	/** @var bool */
-	public static $online = true;
+	public static string|false $ip = false;
+	public static bool $online = true;
 
 	/**
 	 * Gets the External IP using an external service, it is cached
