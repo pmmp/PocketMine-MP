@@ -165,22 +165,8 @@ class LevelDB extends BaseWorldProvider implements WritableWorldProvider{
 			try{
 				$offset = $stream->getOffset();
 
-				$tag = $nbt->read($stream->getBuffer(), $offset)->mustGetCompoundTag();
+				$blockStateData = GlobalBlockStateHandlers::nbtToBlockStateData($nbt->read($stream->getBuffer(), $offset)->mustGetCompoundTag());
 				$stream->setOffset($offset);
-
-				if($tag->getTag("name") !== null && $tag->getTag("val") !== null){
-					//Legacy (pre-1.13) blockstate - upgrade it to a version we understand
-					$id = $tag->getString("name");
-					$data = $tag->getShort("val");
-
-					$blockStateData = GlobalBlockStateHandlers::getLegacyBlockStateMapper()->fromStringIdMeta($id, $data);
-					if($blockStateData === null){
-						$blockStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);
-					}
-				}else{
-					//Modern (post-1.13) blockstate
-					$blockStateData = BlockStateData::fromNbt($tag);
-				}
 
 				try{
 					$palette[] = $blockStateDeserializer->deserialize($blockStateData);

@@ -26,6 +26,7 @@ namespace pocketmine\world\format\io;
 use pocketmine\data\bedrock\blockstate\BlockStateData;
 use pocketmine\data\bedrock\blockstate\BlockStateDeserializer;
 use pocketmine\data\bedrock\blockstate\BlockStateSerializer;
+use pocketmine\data\bedrock\blockstate\BlockTypeNames;
 use pocketmine\data\bedrock\blockstate\CachingBlockStateDeserializer;
 use pocketmine\data\bedrock\blockstate\CachingBlockStateSerializer;
 use pocketmine\data\bedrock\blockstate\convert\BlockObjectToBlockStateSerializer;
@@ -36,6 +37,7 @@ use pocketmine\data\bedrock\blockstate\upgrade\LegacyBlockStateMapper;
 use pocketmine\data\bedrock\blockstate\UpgradingBlockStateDeserializer;
 use pocketmine\data\bedrock\LegacyBlockIdToStringIdMap;
 use pocketmine\errorhandler\ErrorToExceptionHandler;
+use pocketmine\nbt\tag\CompoundTag;
 use Webmozart\PathUtil\Path;
 use function file_get_contents;
 use const pocketmine\BEDROCK_BLOCK_UPGRADE_SCHEMA_PATH;
@@ -78,5 +80,24 @@ final class GlobalBlockStateHandlers{
 			))),
 			LegacyBlockIdToStringIdMap::getInstance()
 		);
+	}
+
+	public static function nbtToBlockStateData(CompoundTag $tag) : BlockStateData{
+		if($tag->getTag("name") !== null && $tag->getTag("val") !== null){
+			//Legacy (pre-1.13) blockstate - upgrade it to a version we understand
+			$id = $tag->getString("name");
+			$data = $tag->getShort("val");
+
+			$blockStateData = GlobalBlockStateHandlers::getLegacyBlockStateMapper()->fromStringIdMeta($id, $data);
+			if($blockStateData === null){
+				//unknown block, invalid ID
+				$blockStateData = new BlockStateData(BlockTypeNames::INFO_UPDATE, CompoundTag::create(), BlockStateData::CURRENT_VERSION);
+			}
+		}else{
+			//Modern (post-1.13) blockstate
+			$blockStateData = BlockStateData::fromNbt($tag);
+		}
+
+		return $blockStateData;
 	}
 }
