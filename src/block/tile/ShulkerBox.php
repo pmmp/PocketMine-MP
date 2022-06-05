@@ -93,17 +93,11 @@ class ShulkerBox extends Spawnable implements Container, Nameable{
 		$this->facing = $facing;
 	}
 
-	/**
-	 * @return ShulkerBoxInventory
-	 */
-	public function getInventory(){
+	public function getInventory() : ShulkerBoxInventory{
 		return $this->inventory;
 	}
 
-	/**
-	 * @return ShulkerBoxInventory
-	 */
-	public function getRealInventory(){
+	public function getRealInventory() : ShulkerBoxInventory{
 		return $this->inventory;
 	}
 

@@ -38,10 +38,7 @@ trait ContainerTrait{
 	/** @var string|null */
 	private $lock = null;
 
-	/**
-	 * @return Inventory
-	 */
-	abstract public function getRealInventory();
+	abstract public function getRealInventory() : Inventory;
 
 	protected function loadItems(CompoundTag $tag) : void{
 		if(($inventoryTag = $tag->getTag(Container::TAG_ITEMS)) instanceof ListTag && $inventoryTag->getTagType() === NBT::TAG_Compound){
