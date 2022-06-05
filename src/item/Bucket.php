@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\item;
 
 use pocketmine\block\Block;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\Liquid;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\event\player\PlayerBucketFillEvent;
@@ -42,7 +43,15 @@ class Bucket extends Item{
 			$stack = clone $this;
 			$stack->pop();
 
-			$resultItem = ItemFactory::getInstance()->get(ItemIds::BUCKET, $blockClicked->getFlowingForm()->getId());
+			$resultItem = match($blockClicked->getTypeId()){
+				BlockTypeIds::LAVA => VanillaItems::LAVA_BUCKET(),
+				BlockTypeIds::WATER => VanillaItems::WATER_BUCKET(),
+				default => null
+			};
+			if($resultItem === null){
+				return ItemUseResult::FAIL();
+			}
+
 			$ev = new PlayerBucketFillEvent($player, $blockReplace, $face, $this, $resultItem);
 			$ev->call();
 			if(!$ev->isCancelled()){
