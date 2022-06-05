@@ -23,7 +23,15 @@ declare(strict_types=1);
 
 namespace pocketmine\item;
 
-class FishingRod extends Item{
+class FishingRod extends Durable{
+
+	public function getMaxStackSize() : int{
+		return 1;
+	}
+
+	public function getMaxDurability() : int{
+		return 384;
+	}
 
 	//TODO
 }
