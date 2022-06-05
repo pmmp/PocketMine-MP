@@ -224,7 +224,7 @@ class Fire extends Flowable{
 						continue;
 					}
 					$block = $world->getBlockAt($targetX, $targetY, $targetZ);
-					if($block->getId() !== BlockLegacyIds::AIR){
+					if($block->getTypeId() !== BlockTypeIds::AIR){
 						continue;
 					}
 

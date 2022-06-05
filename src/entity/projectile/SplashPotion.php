@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\entity\projectile;
 
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\color\Color;
 use pocketmine\data\bedrock\PotionTypeIdMap;
@@ -130,11 +130,11 @@ class SplashPotion extends Throwable{
 		}elseif($event instanceof ProjectileHitBlockEvent && $this->getPotionType()->equals(PotionType::WATER())){
 			$blockIn = $event->getBlockHit()->getSide($event->getRayTraceResult()->getHitFace());
 
-			if($blockIn->getId() === BlockLegacyIds::FIRE){
+			if($blockIn->getTypeId() === BlockTypeIds::FIRE){
 				$this->getWorld()->setBlock($blockIn->getPosition(), VanillaBlocks::AIR());
 			}
 			foreach($blockIn->getHorizontalSides() as $horizontalSide){
-				if($horizontalSide->getId() === BlockLegacyIds::FIRE){
+				if($horizontalSide->getTypeId() === BlockTypeIds::FIRE){
 					$this->getWorld()->setBlock($horizontalSide->getPosition(), VanillaBlocks::AIR());
 				}
 			}

@@ -97,7 +97,7 @@ class Leaves extends Transparent{
 			return true;
 		}
 
-		if($block->getId() === $this->getId() && $distance <= 4){
+		if($block instanceof Leaves && $distance <= 4){
 			foreach(Facing::ALL as $side){
 				if($this->findLog($pos->getSide($side), $visited, $distance + 1)){
 					return true;

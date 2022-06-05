@@ -55,7 +55,7 @@ class Wall extends Transparent{
 			}
 		}
 
-		$up = $this->getSide(Facing::UP)->getId() !== BlockLegacyIds::AIR;
+		$up = $this->getSide(Facing::UP)->getTypeId() !== BlockTypeIds::AIR;
 		if($up !== $this->up){
 			$this->up = $up;
 			$changed++;

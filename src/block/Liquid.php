@@ -348,7 +348,7 @@ abstract class Liquid extends Transparent{
 			$ev = new BlockSpreadEvent($block, $this, $new);
 			$ev->call();
 			if(!$ev->isCancelled()){
-				if($block->getId() !== BlockLegacyIds::AIR){
+				if($block->getTypeId() !== BlockTypeIds::AIR){
 					$this->position->getWorld()->useBreakOn($block->position);
 				}
 

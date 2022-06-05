@@ -88,7 +88,7 @@ class Cactus extends Transparent{
 
 	public function onNearbyBlockChange() : void{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() !== BlockLegacyIds::SAND && !$down->isSameType($this)){
+		if($down->getTypeId() !== BlockTypeIds::SAND && $down->getTypeId() !== BlockTypeIds::RED_SAND && !$down->isSameType($this)){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}else{
 			foreach(Facing::HORIZONTAL as $side){
@@ -113,7 +113,7 @@ class Cactus extends Transparent{
 						break;
 					}
 					$b = $this->position->getWorld()->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
-					if($b->getId() === BlockLegacyIds::AIR){
+					if($b->getTypeId() === BlockTypeIds::AIR){
 						$ev = new BlockGrowEvent($b, VanillaBlocks::CACTUS());
 						$ev->call();
 						if($ev->isCancelled()){
@@ -135,7 +135,7 @@ class Cactus extends Transparent{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() === BlockLegacyIds::SAND || $down->isSameType($this)){
+		if($down->getTypeId() === BlockTypeIds::SAND || $down->getTypeId() === BlockTypeIds::RED_SAND || $down->isSameType($this)){
 			foreach(Facing::HORIZONTAL as $side){
 				if($this->getSide($side)->isSolid()){
 					return false;

@@ -29,7 +29,7 @@ namespace pocketmine\world;
 use pocketmine\block\Air;
 use pocketmine\block\Block;
 use pocketmine\block\BlockFactory;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\tile\Spawnable;
 use pocketmine\block\tile\Tile;
 use pocketmine\block\tile\TileFactory;
@@ -444,7 +444,7 @@ class World implements ChunkManager{
 				continue;
 			}
 
-			if($block->getId() !== BlockLegacyIds::AIR){
+			if($block->getTypeId() !== BlockTypeIds::AIR){
 				$dontTickBlocks[$block->getTypeId()] = $name;
 			}
 		}
@@ -1776,7 +1776,7 @@ class World implements ChunkManager{
 			return false;
 		}
 
-		if($blockClicked->getId() === BlockLegacyIds::AIR){
+		if($blockClicked->getTypeId() === BlockTypeIds::AIR){
 			return false;
 		}
 
@@ -2651,7 +2651,7 @@ class World implements ChunkManager{
 		$x = (int) $v->x;
 		$z = (int) $v->z;
 		$y = (int) min($max - 2, $v->y);
-		$wasAir = $this->getBlockAt($x, $y - 1, $z)->getId() === BlockLegacyIds::AIR; //TODO: bad hack, clean up
+		$wasAir = $this->getBlockAt($x, $y - 1, $z)->getTypeId() === BlockTypeIds::AIR; //TODO: bad hack, clean up
 		for(; $y > $this->minY; --$y){
 			if($this->getBlockAt($x, $y, $z)->isFullCube()){
 				if($wasAir){

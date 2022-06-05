@@ -103,7 +103,7 @@ class Grass extends Opaque{
 			$this->position->getWorld()->setBlock($this->position, $newBlock);
 
 			return true;
-		}elseif($item instanceof Shovel && $this->getSide(Facing::UP)->getId() === BlockLegacyIds::AIR){
+		}elseif($item instanceof Shovel && $this->getSide(Facing::UP)->getTypeId() === BlockTypeIds::AIR){
 			$item->applyDamage(1);
 			$newBlock = VanillaBlocks::GRASS_PATH();
 			$this->position->getWorld()->addSound($this->position->add(0.5, 0.5, 0.5), new ItemUseOnBlockSound($newBlock));

@@ -124,7 +124,7 @@ abstract class BaseBanner extends Transparent{
 	abstract protected function getSupportingFace() : int;
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide($this->getSupportingFace())->getId() === BlockLegacyIds::AIR){
+		if($this->getSide($this->getSupportingFace())->getTypeId() === BlockTypeIds::AIR){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

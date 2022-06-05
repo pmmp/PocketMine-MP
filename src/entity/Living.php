@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\entity;
 
 use pocketmine\block\Block;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\data\bedrock\EffectIdMap;
 use pocketmine\entity\animation\DeathAnimation;
 use pocketmine\entity\animation\HurtAnimation;
@@ -346,7 +346,7 @@ abstract class Living extends Entity{
 				new EntityLongFallSound($this) :
 				new EntityShortFallSound($this)
 			);
-		}elseif($fallBlock->getId() !== BlockLegacyIds::AIR){
+		}elseif($fallBlock->getTypeId() !== BlockTypeIds::AIR){
 			$this->broadcastSound(new EntityLandSound($this, $fallBlock));
 		}
 		return $newVerticalVelocity;
@@ -756,10 +756,10 @@ abstract class Living extends Entity{
 				--$nextIndex;
 			}
 
-			$id = $block->getId();
+			$id = $block->getTypeId();
 
 			if($transparent === null){
-				if($id !== BlockLegacyIds::AIR){
+				if($id !== BlockTypeIds::AIR){
 					break;
 				}
 			}else{

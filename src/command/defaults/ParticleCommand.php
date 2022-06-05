@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace pocketmine\command\defaults;
 
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\color\Color;
 use pocketmine\command\CommandSender;
 use pocketmine\command\utils\InvalidCommandSyntaxException;
@@ -190,7 +190,7 @@ class ParticleCommand extends VanillaCommand{
 			case "terrain":
 				if($data !== null){
 					$block = StringToItemParser::getInstance()->parse($data)?->getBlock();
-					if($block !== null && $block->getId() !== BlockLegacyIds::AIR){
+					if($block !== null && $block->getTypeId() !== BlockTypeIds::AIR){
 						return new TerrainParticle($block);
 					}
 				}
@@ -217,7 +217,7 @@ class ParticleCommand extends VanillaCommand{
 				}
 				break;
 			case "blockcrack":
-				if($data !== null && ($block = StringToItemParser::getInstance()->parse($data)?->getBlock()) !== null && $block->getId() !== BlockLegacyIds::AIR){
+				if($data !== null && ($block = StringToItemParser::getInstance()->parse($data)?->getBlock()) !== null && $block->getTypeId() !== BlockTypeIds::AIR){
 					return new TerrainParticle($block);
 				}
 				break;

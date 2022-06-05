@@ -62,7 +62,7 @@ class NetherWartPlant extends Flowable{
 
 	public function place(BlockTransaction $tx, Item $item, Block $blockReplace, Block $blockClicked, int $face, Vector3 $clickVector, ?Player $player = null) : bool{
 		$down = $this->getSide(Facing::DOWN);
-		if($down->getId() === BlockLegacyIds::SOUL_SAND){
+		if($down->getTypeId() === BlockTypeIds::SOUL_SAND){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
 		}
 
@@ -70,7 +70,7 @@ class NetherWartPlant extends Flowable{
 	}
 
 	public function onNearbyBlockChange() : void{
-		if($this->getSide(Facing::DOWN)->getId() !== BlockLegacyIds::SOUL_SAND){
+		if($this->getSide(Facing::DOWN)->getTypeId() !== BlockTypeIds::SOUL_SAND){
 			$this->position->getWorld()->useBreakOn($this->position);
 		}
 	}

@@ -24,7 +24,7 @@ declare(strict_types=1);
 namespace pocketmine\player;
 
 use pocketmine\block\Bed;
-use pocketmine\block\BlockLegacyIds;
+use pocketmine\block\BlockTypeIds;
 use pocketmine\block\UnknownBlock;
 use pocketmine\block\VanillaBlocks;
 use pocketmine\command\CommandSender;
@@ -1613,7 +1613,7 @@ class Player extends Human implements CommandSender, ChunkListener, IPlayer{
 		}
 
 		$block = $target->getSide($face);
-		if($block->getId() === BlockLegacyIds::FIRE){
+		if($block->getTypeId() === BlockTypeIds::FIRE){
 			$this->getWorld()->setBlock($block->getPosition(), VanillaBlocks::AIR());
 			$this->getWorld()->addSound($block->getPosition()->add(0.5, 0.5, 0.5), new FireExtinguishSound());
 			return true;

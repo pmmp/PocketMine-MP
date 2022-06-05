@@ -56,7 +56,7 @@ class Sugarcane extends Flowable{
 				break;
 			}
 			$b = $this->position->getWorld()->getBlockAt($this->position->x, $this->position->y + $y, $this->position->z);
-			if($b->getId() === BlockLegacyIds::AIR){
+			if($b->getTypeId() === BlockTypeIds::AIR){
 				$ev = new BlockGrowEvent($b, VanillaBlocks::SUGARCANE());
 				$ev->call();
 				if($ev->isCancelled()){
@@ -122,7 +122,7 @@ class Sugarcane extends Flowable{
 		$down = $this->getSide(Facing::DOWN);
 		if($down->isSameType($this)){
 			return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
-		}elseif($down->getId() === BlockLegacyIds::GRASS || $down->getId() === BlockLegacyIds::DIRT || $down->getId() === BlockLegacyIds::SAND || $down->getId() === BlockLegacyIds::PODZOL){
+		}elseif($down->getTypeId() === BlockTypeIds::GRASS || $down->getTypeId() === BlockTypeIds::DIRT || $down->getTypeId() === BlockTypeIds::SAND || $down->getTypeId() === BlockTypeIds::RED_SAND || $down->getTypeId() === BlockTypeIds::PODZOL){
 			foreach(Facing::HORIZONTAL as $side){
 				if($down->getSide($side) instanceof Water){
 					return parent::place($tx, $item, $blockReplace, $blockClicked, $face, $clickVector, $player);
